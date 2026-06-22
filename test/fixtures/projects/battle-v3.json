@@ -1,0 +1,258 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Battle Fixture",
+    "author": "T11",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "hero": {
+        "id": "hero",
+        "image": { "type": "bundled", "id": "tex_hero" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "slime": {
+        "id": "slime",
+        "image": { "type": "bundled", "id": "tex_slime" },
+        "frames": 1,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "dragon": {
+        "id": "dragon",
+        "image": { "type": "bundled", "id": "tex_dragon" },
+        "frames": 1,
+        "frameWidth": 48,
+        "frameHeight": 48
+      }
+    },
+    "uploaded": {}
+  },
+  "resourceProfiles": [
+    {
+      "kind": "charset",
+      "name": "Hero",
+      "tileWidth": 24,
+      "tileHeight": 32,
+      "assetId": "hero"
+    },
+    {
+      "kind": "battleCharset",
+      "name": "Hero Battle",
+      "tileWidth": 48,
+      "tileHeight": 48,
+      "assetId": "hero"
+    },
+    {
+      "kind": "monster",
+      "name": "Slime",
+      "assetId": "slime"
+    },
+    {
+      "kind": "monster",
+      "name": "Dragon",
+      "assetId": "dragon"
+    },
+    {
+      "kind": "chipset",
+      "name": "Default chipset",
+      "tileWidth": 16,
+      "tileHeight": 16,
+      "assetId": "tex_tiles_default"
+    }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "Default tileset",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 8,
+      "passability": [
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true }
+      ],
+      "priority": ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
+      "terrain": [0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  },
+  "switches": [],
+  "variables": [],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "Hero",
+        "classId": "class_fighter",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "skillIds": ["skill_fire"]
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_fighter",
+        "name": "Fighter",
+        "skillIds": ["skill_fire"]
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_fire",
+        "name": "Fire",
+        "scope": "enemy",
+        "power": 20,
+        "animationId": "anim_fire"
+      },
+      {
+        "id": "skill_claw",
+        "name": "Claw",
+        "scope": "enemy",
+        "power": 80,
+        "animationId": "anim_hit"
+      }
+    ],
+    "items": [
+      {
+        "id": "item_bomb",
+        "name": "Bomb",
+        "scope": "enemy",
+        "price": 50,
+        "skillId": "skill_fire"
+      }
+    ],
+    "equipment": [
+      {
+        "id": "equip_sword",
+        "name": "Sword",
+        "slot": "weapon",
+        "price": 100
+      }
+    ],
+    "enemies": [
+      {
+        "id": "enemy_slime",
+        "name": "Slime",
+        "monsterResourceId": "slime",
+        "skillIds": []
+      },
+      {
+        "id": "enemy_dragon",
+        "name": "Dragon",
+        "monsterResourceId": "dragon",
+        "skillIds": ["skill_claw"]
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_slime",
+        "name": "Slime Troop",
+        "enemyIds": ["enemy_slime"],
+        "battleEventPages": [
+          {
+            "id": "troop_state_page",
+            "name": "Apply burn",
+            "conditions": [],
+            "graphic": {},
+            "trigger": { "kind": "auto" },
+            "priority": "below",
+            "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+            "commands": []
+          }
+        ]
+      },
+      {
+        "id": "troop_dragon",
+        "name": "Dragon Troop",
+        "enemyIds": ["enemy_dragon"],
+        "battleEventPages": []
+      }
+    ],
+    "states": [
+      {
+        "id": "state_burn",
+        "name": "Burn"
+      }
+    ],
+    "battleAnimations": [
+      {
+        "id": "anim_fire",
+        "name": "Fire",
+        "resourceId": "slime"
+      },
+      {
+        "id": "anim_hit",
+        "name": "Hit",
+        "resourceId": "dragon"
+      }
+    ]
+  },
+  "system": {
+    "startActorIds": ["actor_hero"],
+    "titleResourceId": "tex_tiles_default",
+    "systemResourceId": "tex_tiles_default",
+    "battleSystemResourceId": "tex_tiles_default",
+    "initialTroopId": "troop_slime"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {
+      "item_bomb": 1
+    },
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_battle": {
+      "id": "map_battle",
+      "name": "Battle Start",
+      "width": 2,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0, 0],
+      "upperTiles": [-1, -1],
+      "events": [
+        {
+          "id": "battle-start",
+          "x": 1,
+          "y": 0,
+          "trigger": { "kind": "action" },
+          "commands": [
+            {
+              "kind": "battleProcessing",
+              "troopId": "troop_slime",
+              "canEscape": true,
+              "canLose": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mapTree": { "mapId": "map_battle", "children": [] },
+  "startMapId": "map_battle",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

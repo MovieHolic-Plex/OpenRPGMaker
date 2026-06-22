@@ -1,0 +1,12 @@
+{
+  "tilesets": {
+    "tiles_default": {
+      "tileSize": 16
+    }
+  },
+  "maps": {
+    "sample": {
+      "tileSize": 16
+    }
+  }
+}

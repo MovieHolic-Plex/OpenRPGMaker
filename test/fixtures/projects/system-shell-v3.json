@@ -1,0 +1,226 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "T12 System Shell",
+    "author": "e2e",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "npc_base": {
+        "id": "npc_base",
+        "image": { "type": "bundled", "id": "tex_npc_base" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {
+      "title_shell": {
+        "id": "title_shell",
+        "name": "title-shell",
+        "kind": "title",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADlQGOSwS2tQAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      },
+      "system_shell": {
+        "id": "system_shell",
+        "name": "system-shell",
+        "kind": "system",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAgH+Ud7FvgAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      },
+      "battle_system_shell": {
+        "id": "battle_system_shell",
+        "name": "battle-system-shell",
+        "kind": "system2",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk2M9QDwADmgGTXOvWLwAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      }
+    }
+  },
+  "resourceProfiles": [
+    { "kind": "title", "name": "Default Title", "assetId": "title_shell" },
+    { "kind": "system", "name": "Default System", "assetId": "system_shell" },
+    { "kind": "system2", "name": "Default System2", "assetId": "battle_system_shell" },
+    { "kind": "music", "name": "Theme", "assetId": "bgm_theme" },
+    { "kind": "picture", "name": "Gate Picture", "assetId": "picture_gate" }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "Default tileset",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 8,
+      "passability": [
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true }
+      ],
+      "priority": ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
+      "terrain": [0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  },
+  "switches": [
+    { "id": "sw_saved", "name": "Saved switch" }
+  ],
+  "variables": [
+    { "id": "var_score", "name": "Score" }
+  ],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "Hero",
+        "classId": "class_hero",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "npc_base",
+        "battleCharacterResourceId": "npc_base",
+        "skillIds": ["skill_flash"]
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_hero",
+        "name": "Hero",
+        "skillIds": ["skill_flash"]
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_flash",
+        "name": "Flash",
+        "scope": "enemy",
+        "power": 99,
+        "animationId": "anim_flash"
+      }
+    ],
+    "items": [],
+    "equipment": [],
+    "enemies": [
+      {
+        "id": "enemy_shell",
+        "name": "Shell Test",
+        "monsterResourceId": "npc_base",
+        "skillIds": []
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_shell",
+        "name": "Shell Troop",
+        "enemyIds": ["enemy_shell"],
+        "battleEventPages": []
+      }
+    ],
+    "states": [],
+    "battleAnimations": [
+      {
+        "id": "anim_flash",
+        "name": "Flash",
+        "resourceId": "npc_base"
+      }
+    ]
+  },
+  "system": {
+    "startActorIds": ["actor_hero"],
+    "titleResourceId": "title_shell",
+    "systemResourceId": "system_shell",
+    "battleSystemResourceId": "battle_system_shell",
+    "initialTroopId": "troop_shell"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {},
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_system": {
+      "id": "map_system",
+      "name": "System",
+      "width": 5,
+      "height": 4,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "upperTiles": [
+        -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1
+      ],
+      "events": [
+        {
+          "id": "mutate-save-state",
+          "x": 1,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "setSwitch", "switchId": "sw_saved", "value": true },
+            { "kind": "setVariable", "variableId": "var_score", "op": "=", "value": 41 }
+          ]
+        },
+        {
+          "id": "audio-picture",
+          "x": 2,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "playAudio", "resourceId": "bgm_theme", "loop": true },
+            { "kind": "showPicture", "pictureId": "pic_1", "resourceId": "picture_gate", "x": 16, "y": 24 }
+          ]
+        },
+        {
+          "id": "game-over",
+          "x": 3,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "gameOver" }
+          ]
+        },
+        {
+          "id": "battle-start",
+          "x": 4,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            {
+              "kind": "battleProcessing",
+              "troopId": "troop_shell",
+              "canEscape": true,
+              "canLose": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mapTree": { "mapId": "map_system", "children": [] },
+  "startMapId": "map_system",
+  "startPos": { "x": 0, "y": 1 },
+  "flags": {}
+}

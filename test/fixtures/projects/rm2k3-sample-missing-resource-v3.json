@@ -1,0 +1,218 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "T14 RM2K3 Sample Missing Resource",
+    "author": "e2e",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "sample_hero": {
+        "id": "sample_hero",
+        "image": { "type": "bundled", "id": "tex_hero" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "sample_npc": {
+        "id": "sample_npc",
+        "image": { "type": "bundled", "id": "tex_npc_base" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {
+      "sample_title": {
+        "id": "sample_title",
+        "name": "sample-title",
+        "kind": "title",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADlQGOSwS2tQAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      },
+      "sample_system": {
+        "id": "sample_system",
+        "name": "sample-system",
+        "kind": "system",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAgH+Ud7FvgAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      },
+      "sample_system2": {
+        "id": "sample_system2",
+        "name": "sample-system2",
+        "kind": "system2",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk2M9QDwADmgGTXOvWLwAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      }
+    }
+  },
+  "resourceProfiles": [
+    { "kind": "chipset", "name": "Default chipset", "tileWidth": 16, "tileHeight": 16, "assetId": "tex_tiles_default" },
+    { "kind": "charset", "name": "Hero charset", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_hero" },
+    { "kind": "charset", "name": "Town NPC charset", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_npc" },
+    { "kind": "battleCharset", "name": "Hero battle charset", "tileWidth": 48, "tileHeight": 48, "assetId": "sample_hero" },
+    { "kind": "title", "name": "Sample title", "assetId": "sample_title" },
+    { "kind": "system", "name": "Sample system", "assetId": "sample_system" },
+    { "kind": "system2", "name": "Sample system2", "assetId": "sample_system2" },
+    { "kind": "picture", "name": "Gate picture", "assetId": "sample_picture_gate" },
+    { "kind": "music", "name": "Sample theme", "assetId": "sample_theme" },
+    { "kind": "sound", "name": "Sample switch sound", "assetId": "sample_switch_se" }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "Default tileset",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 8,
+      "passability": [
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true }
+      ],
+      "priority": ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
+      "terrain": [0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  },
+  "switches": [
+    { "id": "sw_gate_open", "name": "Gate open" },
+    { "id": "sw_battle_won", "name": "Battle won" },
+    { "id": "sw_blessed", "name": "Blessed" }
+  ],
+  "variables": [
+    { "id": "var_choice", "name": "Choice result" },
+    { "id": "var_blessing", "name": "Blessing count" }
+  ],
+  "commonEvents": [
+    {
+      "id": "ce_blessing",
+      "name": "Blessing",
+      "trigger": "none",
+      "commands": [
+        { "kind": "setSwitch", "switchId": "sw_blessed", "value": true },
+        { "kind": "setVariable", "variableId": "var_blessing", "op": "=", "value": 3 },
+        { "kind": "showPicture", "pictureId": "pic_gate", "resourceId": "sample_picture_gate", "x": 24, "y": 32 },
+        { "kind": "playAudio", "resourceId": "sample_theme", "loop": true }
+      ]
+    }
+  ],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "Mira",
+        "classId": "class_guardian",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "sample_hero",
+        "battleCharacterResourceId": "sample_hero",
+        "skillIds": ["skill_spark"]
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_guardian",
+        "name": "Guardian",
+        "skillIds": ["skill_spark"]
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_spark",
+        "name": "Spark",
+        "scope": "enemy",
+        "power": 99,
+        "animationId": "anim_spark"
+      }
+    ],
+    "items": [
+      {
+        "id": "item_potion",
+        "name": "Potion",
+        "scope": "ally",
+        "price": 10
+      }
+    ],
+    "equipment": [
+      {
+        "id": "equip_bronze_sword",
+        "name": "Bronze Sword",
+        "slot": "weapon",
+        "price": 100
+      }
+    ],
+    "enemies": [
+      {
+        "id": "enemy_slime",
+        "name": "Cave Slime",
+        "monsterResourceId": "sample_monster",
+        "skillIds": []
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_slime",
+        "name": "Cave Slime Troop",
+        "enemyIds": ["enemy_slime"],
+        "battleEventPages": []
+      }
+    ],
+    "states": [
+      {
+        "id": "state_guard",
+        "name": "Guard"
+      }
+    ],
+    "battleAnimations": [
+      {
+        "id": "anim_spark",
+        "name": "Spark",
+        "resourceId": "sample_monster"
+      }
+    ]
+  },
+  "system": {
+    "startActorIds": ["actor_hero"],
+    "titleResourceId": "sample_title",
+    "systemResourceId": "sample_system",
+    "battleSystemResourceId": "sample_system2",
+    "initialTroopId": "troop_slime"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": { "item_potion": 1 },
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_town": {
+      "id": "map_town",
+      "name": "Sample Town",
+      "width": 1,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0],
+      "upperTiles": [-1],
+      "events": []
+    }
+  },
+  "mapTree": { "mapId": "map_town", "children": [] },
+  "startMapId": "map_town",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

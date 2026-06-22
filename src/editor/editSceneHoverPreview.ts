@@ -1,0 +1,34 @@
+import type Phaser from "phaser";
+import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
+import type { MapId } from "@/project/types";
+
+type HoverPreviewSpec = {
+  readonly centerX: number;
+  readonly centerY: number;
+  readonly layer: Phaser.GameObjects.Container;
+  readonly mapId: MapId;
+  readonly scene: Phaser.Scene;
+};
+
+export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
+  spec.layer.removeAll(true);
+  const map = store.getCurrent().maps[spec.mapId];
+  if (!map) return;
+  const tileset = store.getCurrent().tilesets[map.tilesetId];
+  if (!tileset) return;
+  const state = editorState.get();
+  if (state.selectedTile < 0 || (state.tool !== "paint" && state.tool !== "fill")) return;
+  if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
+  const size = state.tool === "fill" ? 1 : state.brushSize;
+  const offset = Math.floor(size / 2);
+  for (let y = spec.centerY - offset; y <= spec.centerY + offset; y++) {
+    for (let x = spec.centerX - offset; x <= spec.centerX + offset; x++) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, state.selectedTile);
+      preview.setAlpha(0.62);
+      spec.layer.add(preview);
+    }
+  }
+}

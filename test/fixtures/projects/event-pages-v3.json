@@ -1,0 +1,168 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Event Page Fixture",
+    "author": "T2",
+    "terms": {
+      "gold": "G"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "hero": {
+        "id": "hero",
+        "image": { "type": "bundled", "id": "tex_hero" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "npc_villager": {
+        "id": "npc_villager",
+        "image": { "type": "bundled", "id": "tex_npc_villager" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {}
+  },
+  "resourceProfiles": [
+    {
+      "kind": "charset",
+      "name": "Default charset",
+      "tileWidth": 24,
+      "tileHeight": 32,
+      "assetId": "npc_villager"
+    },
+    {
+      "kind": "chipset",
+      "name": "Default chipset",
+      "tileWidth": 16,
+      "tileHeight": 16,
+      "assetId": "tex_tiles_default"
+    }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "Default tileset",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 8,
+      "passability": [
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": false, "down": false, "left": false, "right": false },
+        { "up": false, "down": false, "left": false, "right": false },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": false, "down": false, "left": false, "right": false },
+        { "up": true, "down": true, "left": true, "right": true }
+      ],
+      "priority": ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
+      "terrain": [0, 1, 0, 0, 0, 0, 0, 0]
+    }
+  },
+  "switches": [{ "id": "sw_page", "name": "Page switch" }],
+  "variables": [{ "id": "var_page", "name": "Page variable" }],
+  "commonEvents": [
+    {
+      "id": "ce_hello",
+      "name": "Hello",
+      "trigger": "none",
+      "commands": [{ "kind": "text", "body": "common" }]
+    }
+  ],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "Hero",
+        "classId": "class_fighter",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "skillIds": ["skill_fire"]
+      }
+    ],
+    "classes": [{ "id": "class_fighter", "name": "Fighter", "skillIds": ["skill_fire"] }],
+    "skills": [{ "id": "skill_fire", "name": "Fire", "scope": "enemy", "power": 10 }],
+    "items": [{ "id": "item_potion", "name": "Potion", "scope": "ally", "price": 50 }],
+    "equipment": [{ "id": "equip_sword", "name": "Sword", "slot": "weapon", "price": 100 }],
+    "enemies": [{ "id": "enemy_slime", "name": "Slime", "monsterResourceId": "npc_villager", "skillIds": ["skill_fire"] }],
+    "troops": [
+      {
+        "id": "troop_slime",
+        "name": "Slime Troop",
+        "enemyIds": ["enemy_slime"],
+        "battleEventPages": []
+      }
+    ],
+    "states": [{ "id": "state_poison", "name": "Poison" }],
+    "battleAnimations": [{ "id": "anim_hit", "name": "Hit", "resourceId": "npc_villager" }]
+  },
+  "system": {
+    "startActorIds": ["actor_hero"],
+    "titleResourceId": "tex_tiles_default",
+    "systemResourceId": "tex_tiles_default",
+    "battleSystemResourceId": "tex_tiles_default",
+    "initialTroopId": "troop_slime"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {},
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_page": {
+      "id": "map_page",
+      "name": "Pages",
+      "width": 2,
+      "height": 2,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0, 0, 0, 0],
+      "upperTiles": [-1, -1, -1, -1],
+      "events": [
+        {
+          "id": "ev_page",
+          "x": 1,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [{ "kind": "text", "body": "legacy" }],
+          "pages": [
+            {
+              "id": "page_1",
+              "name": "Base page",
+              "conditions": [],
+              "graphic": { "sprite": { "type": "bundled", "id": "npc_villager" } },
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [{ "kind": "text", "body": "page 1" }]
+            },
+            {
+              "id": "page_2",
+              "name": "Switch page",
+              "conditions": [{ "kind": "switch", "switchId": "sw_page", "value": true }],
+              "graphic": { "sprite": { "type": "bundled", "id": "npc_villager" } },
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                { "kind": "battleProcessing", "troopId": "troop_slime", "canEscape": true, "canLose": false }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mapTree": { "mapId": "map_page", "children": [] },
+  "startMapId": "map_page",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

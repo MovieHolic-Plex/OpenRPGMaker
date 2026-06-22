@@ -1,0 +1,79 @@
+import { emptyToUndefined, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { updateDatabaseRecord, type DatabaseCollection } from "@/editor/databaseActions";
+import { store } from "@/project/store";
+import { el } from "@/util/dom";
+
+export function skillFields(form: HTMLElement, id: string): void {
+  const skill = store.getCurrent().database.skills.find((record) => record.id === id);
+  if (!skill) return;
+  form.append(selectLiteral("대상", "db-field-scope", skill.scope, ["self", "ally", "enemy", "allEnemies"], (value) =>
+    updateDatabaseRecord("skills", id, { scope: value })
+  ));
+  form.append(numberField("위력", "db-field-power", skill.power, (value) => updateDatabaseRecord("skills", id, { power: value })));
+  form.append(selectField("애니메이션", "db-picker-animation", skill.animationId ?? "", store.getCurrent().database.battleAnimations, (value) =>
+    updateDatabaseRecord("skills", id, { animationId: emptyToUndefined(value) })
+  ));
+}
+
+export function itemFields(form: HTMLElement, id: string): void {
+  const item = store.getCurrent().database.items.find((record) => record.id === id);
+  if (!item) return;
+  form.append(numberField("가격", "db-field-price", item.price, (value) => updateDatabaseRecord("items", id, { price: value })));
+  form.append(selectLiteral("대상", "db-field-scope", item.scope, ["none", "ally", "enemy"], (value) =>
+    updateDatabaseRecord("items", id, { scope: value })
+  ));
+  skillPicker(form, "items", id);
+}
+
+export function equipmentFields(form: HTMLElement, id: string): void {
+  const equipment = store.getCurrent().database.equipment.find((record) => record.id === id);
+  if (!equipment) return;
+  form.append(numberField("가격", "db-field-price", equipment.price, (value) => updateDatabaseRecord("equipment", id, { price: value })));
+  form.append(selectLiteral("부위", "db-field-slot", equipment.slot, ["weapon", "shield", "armor", "helmet", "accessory"], (value) =>
+    updateDatabaseRecord("equipment", id, { slot: value })
+  ));
+  skillPicker(form, "equipment", id);
+}
+
+export function enemyFields(form: HTMLElement, id: string): void {
+  const enemy = store.getCurrent().database.enemies.find((record) => record.id === id);
+  if (!enemy) return;
+  form.append(textField("몬스터 그래픽", "db-field-monster-resource", enemy.monsterResourceId ?? "", (value) =>
+    updateDatabaseRecord("enemies", id, { monsterResourceId: emptyToUndefined(value) })
+  ));
+}
+
+export function troopFields(form: HTMLElement, id: string): void {
+  const troop = store.getCurrent().database.troops.find((record) => record.id === id);
+  if (!troop) return;
+  form.append(el("div", { class: "db-preview", text: `전투 이벤트 페이지: ${troop.battleEventPages.length}` }));
+}
+
+export function animationFields(form: HTMLElement, id: string, rerender: () => void): void {
+  const animation = store.getCurrent().database.battleAnimations.find((record) => record.id === id);
+  if (!animation) return;
+  form.append(textField("리소스", "db-field-animation-resource", animation.resourceId ?? "", (value) => {
+    updateDatabaseRecord("battleAnimations", id, { resourceId: emptyToUndefined(value) });
+    rerender();
+  }));
+  form.append(el("div", { class: "db-preview", text: `미리보기 리소스: ${animation.resourceId ?? "없음"}` }));
+}
+
+export function skillPicker(form: HTMLElement, collection: DatabaseCollection, id: string): void {
+  const selected = selectedSkill(collection, id);
+  form.append(selectField("스킬", "db-picker-skill", selected, store.getCurrent().database.skills, (value) => {
+    if (collection === "actors") updateDatabaseRecord(collection, id, { learnedSkills: value ? [{ level: 1, skillId: value }] : [] });
+    if (collection === "classes" || collection === "enemies") updateDatabaseRecord(collection, id, { skillIds: value ? [value] : [] });
+    if (collection === "items" || collection === "equipment") updateDatabaseRecord(collection, id, { skillId: emptyToUndefined(value) });
+  }));
+}
+
+function selectedSkill(collection: DatabaseCollection, id: string): string {
+  const project = store.getCurrent();
+  if (collection === "actors") return project.database.actors.find((record) => record.id === id)?.learnedSkills[0]?.skillId ?? "";
+  if (collection === "classes") return project.database.classes.find((record) => record.id === id)?.learnedSkills[0]?.skillId ?? "";
+  if (collection === "enemies") return project.database.enemies.find((record) => record.id === id)?.actions[0]?.skillId ?? "";
+  if (collection === "items") return project.database.items.find((record) => record.id === id)?.skillId ?? "";
+  if (collection === "equipment") return project.database.equipment.find((record) => record.id === id)?.skillId ?? "";
+  return "";
+}

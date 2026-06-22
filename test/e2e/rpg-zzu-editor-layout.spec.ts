@@ -1,0 +1,408 @@
+import { expect, test, type Page } from "@playwright/test";
+
+async function expectNoDocumentHorizontalOverflow(page: Page): Promise<void> {
+  await expect.poll(async () =>
+    page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)
+  ).toBe(true);
+}
+
+async function expectCenterClickable(page: Page, selector: string): Promise<void> {
+  await page.waitForSelector(selector, { state: "visible" });
+  const receivesPointer = await page.evaluate((targetSelector) => {
+    const node = document.querySelector(targetSelector);
+    if (!(node instanceof HTMLElement)) return false;
+    node.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const box = node.getBoundingClientRect();
+    const x = Math.floor(box.left + box.width / 2);
+    const y = Math.floor(box.top + box.height / 2);
+    const target = document.elementFromPoint(x, y);
+    return target === node || Boolean(target?.closest(targetSelector));
+  }, selector);
+  expect(receivesPointer).toBe(true);
+}
+
+function byteDistance(a: Uint8Array, b: Uint8Array): number {
+  const length = Math.min(a.length, b.length);
+  let diff = Math.abs(a.length - b.length);
+  for (let i = 0; i < length; i++) {
+    diff += Math.abs((a[i] ?? 0) - (b[i] ?? 0));
+  }
+  return diff;
+}
+
+test("editor sidebars avoid document overflow and keep key controls clickable", async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 820 },
+    { width: 1280, height: 800 },
+    { width: 1024, height: 768 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto(`/?freshProject=1&layoutContract=${viewport.width}`);
+    await expectNoDocumentHorizontalOverflow(page);
+  }
+
+  await page.setViewportSize({ width: 1440, height: 820 });
+  await page.goto("/?freshProject=1&layoutContract=clickability");
+  await expectCenterClickable(page, "[data-testid='toolbar-left-panel']");
+  await expectCenterClickable(page, "[data-testid='toolbar-right-panel']");
+  await expectCenterClickable(page, "[data-testid='tool-pan']");
+  await expectCenterClickable(page, "[data-testid='layer-event']");
+  await expectCenterClickable(page, "[data-testid='right-tab-database']");
+  await page.getByTestId("right-tab-database").click();
+  await expectCenterClickable(page, "[data-testid='db-tab-enemies']");
+  await expectCenterClickable(page, "[data-testid='right-tab-resources']");
+  await expectCenterClickable(page, "[data-testid='edit-canvas'] canvas");
+  await expectNoDocumentHorizontalOverflow(page);
+});
+
+test("chipset palette exposes category-only vertical scrolling", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 820 });
+  await page.goto("/?freshProject=1&paletteVerticalCategoryScroll=1");
+
+  const palette = page.getByTestId("tile-palette");
+  await expect(palette).toBeVisible();
+  await page.getByTestId("chipset-band-a3").click();
+  await expect(page.getByTestId("chipset-band-a3")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("chipset-band-a1")).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByTestId("chipset-tile-0")).toHaveCount(0);
+  await expect.poll(async () => page.locator("[data-testid^='chipset-tile-']").count()).toBeGreaterThan(0);
+  const initialMetrics = await palette.evaluate((node) => ({
+    clientWidth: node.clientWidth,
+    clientHeight: node.clientHeight,
+    scrollLeft: node.scrollLeft,
+    scrollTop: node.scrollTop,
+    scrollWidth: node.scrollWidth,
+    scrollHeight: node.scrollHeight,
+  }));
+  expect(initialMetrics.scrollWidth).toBeLessThanOrEqual(initialMetrics.clientWidth);
+  expect(initialMetrics.scrollLeft).toBe(0);
+  expect(initialMetrics.scrollTop).toBe(0);
+
+  await palette.evaluate((node) => {
+    node.scrollTop = 120;
+  });
+  await expect.poll(() => palette.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+  await expect(page.getByTestId("chipset-scroll-right")).toHaveCount(0);
+});
+
+test("chipset palette keeps its scroll position when selecting a visible scrolled tile", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 520 });
+  await page.goto("/?freshProject=1&paletteSelectKeepsScroll=1");
+
+  const palette = page.getByTestId("tile-palette");
+  const paletteRoot = page.getByTestId("left-palette-root");
+  const visibleTileTestId = await palette.evaluate((node) => {
+    node.scrollTop = 120;
+    const sheetBox = node.getBoundingClientRect();
+    const cells = Array.from(node.querySelectorAll("[data-testid^='chipset-tile-']"));
+    const visibleCell = cells.find((cell) => {
+      if (!(cell instanceof HTMLElement)) return false;
+      const box = cell.getBoundingClientRect();
+      return box.top >= sheetBox.top && box.bottom <= sheetBox.bottom;
+    });
+    return visibleCell instanceof HTMLElement ? visibleCell.dataset.testid ?? "" : "";
+  });
+  const beforeClick = await palette.evaluate((node) => node.scrollTop);
+  const beforeRootScroll = await paletteRoot.evaluate((node) => node.scrollTop);
+  expect(beforeClick).toBeGreaterThan(0);
+  expect(visibleTileTestId).toContain("chipset-tile-");
+
+  await page.getByTestId(visibleTileTestId).click();
+  await expect(page.getByTestId("selected-tile-status")).not.toContainText("없음");
+  await expect.poll(() => page.getByTestId("tile-palette").evaluate((node) => node.scrollTop)).toBe(beforeClick);
+  await expect.poll(() => page.getByTestId("left-palette-root").evaluate((node) => node.scrollTop)).toBe(beforeRootScroll);
+});
+
+test("chipset palette routes vertical wheel scrolling while hovering tiles", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/?freshProject=1&paletteVerticalWheel=1");
+
+  const palette = page.getByTestId("tile-palette");
+  const paletteRoot = page.getByTestId("left-palette-root");
+  await expect(palette).toBeVisible();
+
+  const box = await palette.boundingBox();
+  if (!box) throw new Error("missing tile palette");
+  await page.mouse.move(Math.floor(box.x + box.width / 2), Math.floor(box.y + box.height / 2));
+
+  const before = await page.evaluate(() => {
+    const root = document.querySelector('[data-testid="left-palette-root"]');
+    const sheet = document.querySelector('[data-testid="tile-palette"]');
+    if (!(root instanceof HTMLElement) || !(sheet instanceof HTMLElement)) return 0;
+    return root.scrollTop + sheet.scrollTop;
+  });
+  await page.mouse.wheel(0, 500);
+  await expect.poll(async () => {
+    return page.evaluate(() => {
+      const root = document.querySelector('[data-testid="left-palette-root"]');
+      const sheet = document.querySelector('[data-testid="tile-palette"]');
+      if (!(root instanceof HTMLElement) || !(sheet instanceof HTMLElement)) return 0;
+      return root.scrollTop + sheet.scrollTop;
+    });
+  }).toBeGreaterThan(before);
+  await expect(paletteRoot).toBeVisible();
+});
+
+test("left sidebar keeps an RM2000-style compact palette over map tree", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&leftSidebarReference=1");
+
+  const leftPanel = page.locator(".left-panel");
+  const paletteRoot = page.getByTestId("left-palette-root");
+  const mapRoot = page.getByTestId("left-map-root");
+  const chipset = page.getByTestId("tile-palette");
+
+  await expect(leftPanel).toBeVisible();
+  await expect(paletteRoot).toBeVisible();
+  await expect(mapRoot).toBeVisible();
+  await expect(chipset).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const panel = document.querySelector(".left-panel");
+    const palette = document.querySelector('[data-testid="left-palette-root"]');
+    const map = document.querySelector('[data-testid="left-map-root"]');
+    const quickToggle = document.querySelector('[data-testid="quick-tile-toggle"]');
+    const chipsetPalette = document.querySelector('[data-testid="tile-palette"]');
+    const chipsetGrid = document.querySelector('[data-testid="chipset-sheet"]');
+    const firstChipsetTile = document.querySelector("[data-testid^='chipset-tile-']");
+    if (
+      !(panel instanceof HTMLElement) ||
+      !(palette instanceof HTMLElement) ||
+      !(map instanceof HTMLElement) ||
+      !(quickToggle instanceof HTMLElement) ||
+      !(chipsetPalette instanceof HTMLElement) ||
+      !(chipsetGrid instanceof HTMLElement) ||
+      !(firstChipsetTile instanceof HTMLElement)
+    ) {
+      return null;
+    }
+    const panelBox = panel.getBoundingClientRect();
+    const paletteBox = palette.getBoundingClientRect();
+    const mapBox = map.getBoundingClientRect();
+    const quickToggleBox = quickToggle.getBoundingClientRect();
+    const gridBox = chipsetGrid.getBoundingClientRect();
+    const cellBox = firstChipsetTile.getBoundingClientRect();
+    const cellStyle = getComputedStyle(firstChipsetTile);
+    const paletteStyle = getComputedStyle(chipsetPalette);
+    return {
+      atlasColumns: Number.parseFloat(paletteStyle.getPropertyValue("--chipset-cols")),
+      cellBackgroundWidth: Number.parseFloat(cellStyle.backgroundSize),
+      cellHeight: cellBox.height,
+      cellWidth: cellBox.width,
+      gridContentWidth: gridBox.width - 4,
+      panelWidth: panelBox.width,
+      paletteTopOffset: quickToggleBox.top - paletteBox.top,
+      paletteHeight: paletteBox.height,
+      mapHeight: mapBox.height,
+      chipsetColumnCount: getComputedStyle(chipsetGrid).gridTemplateColumns.split(" ").length,
+    };
+  });
+
+  expect(metrics).not.toBeNull();
+  expect(metrics?.panelWidth).toBeLessThanOrEqual(268);
+  expect(metrics?.chipsetColumnCount).toBe(6);
+  expect(metrics?.cellWidth).toBeGreaterThan(34);
+  expect(Math.abs((metrics?.cellWidth ?? 0) - (metrics?.cellHeight ?? 0))).toBeLessThanOrEqual(1);
+  expect(Math.abs((metrics?.cellWidth ?? 0) * 6 + 5 - (metrics?.gridContentWidth ?? 0))).toBeLessThanOrEqual(2);
+  expect(Math.abs((metrics?.cellBackgroundWidth ?? 0) - (metrics?.cellWidth ?? 0) * (metrics?.atlasColumns ?? 0))).toBeLessThanOrEqual(2);
+  expect(metrics?.paletteTopOffset).toBeLessThanOrEqual(220);
+  expect(metrics?.paletteHeight).toBeGreaterThan(metrics?.mapHeight ?? 0);
+  expect(metrics?.mapHeight).toBeGreaterThanOrEqual(150);
+});
+
+test("quick tile picker filters AI-labeled tiles without horizontal scrolling", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&quickTilePicker=1");
+
+  await expect(page.getByTestId("quick-tile-picker")).toBeHidden();
+  await page.getByTestId("quick-tile-toggle").click();
+  await expect(page.getByTestId("quick-tile-picker")).toBeVisible();
+  await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
+  await expect(page.getByTestId("layer-lower")).toContainText("하위");
+  await expect(page.getByTestId("layer-upper")).toContainText("상위");
+  await expect(page.getByTestId("layer-event")).toContainText("이벤트");
+  await page.getByTestId("tile-category-house").click();
+  await page.getByTestId("tile-search-input").fill("132");
+  await expect(page.getByTestId("quick-tile-132")).toBeVisible();
+  await page.getByTestId("quick-tile-132").click();
+  await expect(page.getByTestId("selected-tile-status")).toContainText("132");
+
+  const paletteRoot = page.getByTestId("left-palette-root");
+  await paletteRoot.evaluate((node) => {
+    node.scrollTop = 64;
+  });
+  const beforeRootScroll = await paletteRoot.evaluate((node) => node.scrollTop);
+  expect(beforeRootScroll).toBeGreaterThan(0);
+
+  await page.getByTestId("tile-category-fence").click();
+  await page.getByTestId("tile-search-input").fill("379");
+  await expect(page.getByTestId("quick-tile-379")).toBeVisible();
+  await expect(page.getByTestId("quick-tile-379").locator(".quick-tile-index")).toBeHidden();
+  await page.getByTestId("tile-number-toggle").click();
+  await expect(page.getByTestId("quick-tile-379").locator(".quick-tile-index")).toBeVisible();
+  await page.getByTestId("quick-tile-379").click();
+  await expect(page.getByTestId("selected-tile-status")).toContainText("379");
+  await expect.poll(() => page.getByTestId("left-palette-root").evaluate((node) => node.scrollTop)).toBe(beforeRootScroll);
+});
+
+test("left sidebar tool buttons use visible pixel icons with accessible names", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&leftSidebarIcons=1");
+
+  const expectedTools = [
+    { testId: "tool-paint", label: "연필" },
+    { testId: "tool-fill", label: "채우기" },
+    { testId: "tool-eyedropper", label: "스포이트" },
+    { testId: "tool-pan", label: "이동" },
+    { testId: "tool-select", label: "선택" },
+    { testId: "tool-collision", label: "통행" },
+    { testId: "tool-event", label: "이벤트" },
+    { testId: "tool-erase", label: "지우개" },
+  ] as const;
+
+  for (const tool of expectedTools) {
+    const button = page.getByTestId(tool.testId);
+    await expect(button).toBeVisible();
+    await expect(button).toHaveAttribute("aria-label", tool.label);
+    await expect(button.locator(".rm-tool-icon")).toBeVisible();
+  }
+
+  await expect(page.getByTestId("tool-grid")).not.toContainText("스포이트");
+});
+
+test("map tree and tile placement expose compact icon actions", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&mapTreeTileComfort=1");
+
+  const mapTree = page.getByTestId("map-tree");
+  await expect(mapTree.locator("[data-testid^='map-add-child-']").first()).toBeVisible();
+  await expect(mapTree.locator("[data-testid^='map-set-start-']").first()).toBeVisible();
+  await expect(mapTree.locator("[data-testid^='map-delete-']").first()).toBeVisible();
+  await expect(mapTree.locator(".rm-tool-icon-folder")).toBeVisible();
+
+  const beforeNodeCount = await mapTree.locator("[data-testid^='map-tree-node-']").count();
+  await mapTree.locator("[data-testid^='map-add-child-']").first().click();
+  await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
+  await expect(mapTree.locator("[data-testid^='map-toggle-']").first()).toHaveAttribute("aria-expanded", "true");
+  await mapTree.locator("[data-testid^='map-toggle-']").first().click();
+  await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount);
+  await mapTree.locator("[data-testid^='map-toggle-']").first().click();
+  await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
+  await expect(mapTree.locator("[data-testid^='map-tree-node-']").nth(1)).toHaveAttribute("draggable", "true");
+
+  await expect(page.getByTestId("brush-size-control")).toBeHidden();
+  await expect(page.getByTestId("quick-tile-toggle")).toBeVisible();
+  await expect(page.getByTestId("tile-number-toggle")).toBeVisible();
+
+  for (const testId of ["undo-button", "redo-button", "copy-button", "paste-button"] as const) {
+    const button = page.getByTestId(testId);
+    await expect(button).toBeHidden();
+  }
+});
+
+test("map tree context menu is accessible from mouse, keyboard, and action button", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&mapTreeContextMenu=1");
+
+  const mapTree = page.getByTestId("map-tree");
+  await page.getByTestId("map-add").click();
+  const beforeNodeCount = await mapTree.locator("[data-testid^='map-tree-node-']").count();
+  const rootNode = mapTree.locator("[data-testid^='map-tree-node-']").first();
+
+  await rootNode.click({ button: "right" });
+  const menu = page.getByRole("menu", { name: /맵 액션/ });
+  await expect(menu).toBeVisible();
+  await expect(rootNode).toHaveClass(/active/);
+  await expect(page.getByRole("menuitem", { name: "맵 설정" })).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByRole("menuitem", { name: "새 하위 맵" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "복제" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "스크린샷 저장" })).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(menu).toHaveCount(0);
+
+  await rootNode.focus();
+  await page.keyboard.press("Shift+F10");
+  await expect(page.getByRole("menu", { name: /맵 액션/ })).toBeVisible();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu", { name: /맵 액션/ })).toHaveCount(0);
+
+  await mapTree.locator("[data-testid^='map-context-trigger-']").first().click();
+  await expect(page.getByRole("menu", { name: /맵 액션/ })).toBeVisible();
+  await page.getByRole("menuitem", { name: "복제" }).click();
+  await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
+
+  await mapTree.locator("[data-testid^='map-context-trigger-']").first().click();
+  await expect(page.getByRole("menu", { name: /맵 액션/ })).toBeVisible();
+  await page.mouse.click(600, 120);
+  await expect(page.getByRole("menu", { name: /맵 액션/ })).toHaveCount(0);
+});
+
+test("right click picks the tile under the cursor and layer mode is visually distinct", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?logCabinShowcase=1&focusX=3&focusY=4&rightClickEyedropper=1");
+
+  await page.getByTestId("layer-upper").click();
+  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
+  await page.getByRole("button", { name: "1배 확대" }).click();
+
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const roofTile = { x: Math.floor(box.x + 3.5 * 16), y: Math.floor(box.y + 4.5 * 16) };
+  const clip = { x: roofTile.x - 80, y: roofTile.y - 80, width: 160, height: 160 };
+  const upperLayerView = await page.screenshot({ clip });
+
+  await page.mouse.click(roofTile.x, roofTile.y, { button: "right" });
+  await expect(page.getByTestId("selected-tile-status")).toContainText("374");
+
+  await page.getByTestId("layer-lower").click();
+  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(async () => byteDistance(upperLayerView, await page.screenshot({ clip }))).toBeGreaterThan(24);
+});
+
+test("middle mouse drag pans the map without changing the selected layer", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?logCabinShowcase=1&middleMousePan=1&focusX=16&focusY=13");
+
+  await page.getByTestId("layer-upper").click();
+  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
+
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const before = await canvas.screenshot();
+  const start = { x: Math.floor(box.x + box.width * 0.62), y: Math.floor(box.y + box.height * 0.52) };
+  const end = { x: start.x - 220, y: start.y };
+
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down({ button: "middle" });
+  await page.mouse.move(end.x, end.y, { steps: 8 });
+  await page.mouse.up({ button: "middle" });
+
+  await expect.poll(async () => byteDistance(before, await canvas.screenshot())).toBeGreaterThan(1000);
+  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("tool-paint")).toHaveAttribute("aria-pressed", "true");
+});
+
+test("selected tile is previewed on map hover before placement", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&tileHoverPreview=1");
+
+  await page.getByTestId("chipset-band-a3").click();
+  await page.getByTestId("chipset-tile-132").click();
+  await expect(page.getByTestId("selected-tile-status")).toContainText("132");
+
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const target = { x: Math.floor(box.x + box.width / 2), y: Math.floor(box.y + box.height / 2) };
+  const clip = { x: target.x - 20, y: target.y - 20, width: 40, height: 40 };
+  const before = await page.screenshot({ clip });
+
+  await page.mouse.move(target.x, target.y);
+  await expect.poll(async () => byteDistance(before, await page.screenshot({ clip }))).toBeGreaterThan(24);
+});

@@ -1,0 +1,116 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Missing Battle Troop",
+    "author": "T11",
+    "terms": {
+      "gold": "G"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "hero": {
+        "id": "hero",
+        "image": { "type": "bundled", "id": "tex_hero" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {}
+  },
+  "resourceProfiles": [
+    {
+      "kind": "chipset",
+      "name": "Default chipset",
+      "tileWidth": 16,
+      "tileHeight": 16,
+      "assetId": "tex_tiles_default"
+    }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "Default tileset",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 1,
+      "passability": [{ "up": true, "down": true, "left": true, "right": true }],
+      "priority": ["lower"],
+      "terrain": [0]
+    }
+  },
+  "switches": [],
+  "variables": [],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "Hero",
+        "classId": "class_fighter",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "skillIds": []
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_fighter",
+        "name": "Fighter",
+        "skillIds": []
+      }
+    ],
+    "skills": [],
+    "items": [],
+    "equipment": [],
+    "enemies": [],
+    "troops": [],
+    "states": [],
+    "battleAnimations": []
+  },
+  "system": {
+    "startActorIds": ["actor_hero"]
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {},
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_missing_troop": {
+      "id": "map_missing_troop",
+      "name": "Missing Troop",
+      "width": 1,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0],
+      "upperTiles": [-1],
+      "events": [
+        {
+          "id": "battle-start",
+          "x": 0,
+          "y": 0,
+          "trigger": { "kind": "action" },
+          "commands": [
+            {
+              "kind": "battleProcessing",
+              "troopId": "troop_missing",
+              "canEscape": true,
+              "canLose": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mapTree": { "mapId": "map_missing_troop", "children": [] },
+  "startMapId": "map_missing_troop",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

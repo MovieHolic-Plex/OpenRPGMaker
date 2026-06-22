@@ -1,0 +1,210 @@
+{
+  "battle": {
+    "title": "Side-view battle and combat database parity",
+    "checklist": [
+      {
+        "id": "battle-side-view-layout",
+        "requirement": "Side-view battle presentation uses actor BattleCharSet sprites against Enemies and troop placements instead of first-person combat.",
+        "status": "done"
+      },
+      {
+        "id": "battle-database-records",
+        "requirement": "Battle records reference Actors, Classes, Skills, Items, Equipment, Enemies, Troops, States, Battle Animations, System, and Terms.",
+        "status": "done"
+      },
+      {
+        "id": "battle-event-handoff",
+        "requirement": "Battle processing commands suspend the map interpreter and resume with victory, defeat, escape, or abort branches.",
+        "status": "done"
+      },
+      {
+        "id": "battle-animation-assets",
+        "requirement": "BattleCharSet, BattleWeapon, Monster, Battle/Backdrop, System2, and animation timing metadata are validated before play.",
+        "status": "done"
+      }
+    ]
+  },
+  "database": {
+    "title": "RM2K3-like database tabs and minimum field depth",
+    "checklist": [
+      {
+        "id": "database-actors-fields",
+        "requirement": "Actors include name, class, level range, parameters, equipment slots, initial equipment, learned skills, charset, and battle charset.",
+        "status": "done"
+      },
+      {
+        "id": "database-enemies-troops",
+        "requirement": "Enemies include stats, rewards, drops, monster graphic, actions, and rates; Troops include placements and battle Event pages.",
+        "status": "done"
+      },
+      {
+        "id": "database-full-tabs",
+        "requirement": "Database tabs cover Actors, Classes, Skills, Items, Equipment, Enemies, Troops, States, Battle Animations, Tilesets, Common Events, System, Terms, Switches, and Variables.",
+        "status": "done"
+      },
+      {
+        "id": "database-reference-safety",
+        "requirement": "Delete and edit flows provide reference safeguards for Skills, Items, Enemies, Troops, Switches, Variables, resources, and Common Events.",
+        "status": "done"
+      }
+    ]
+  },
+  "eventPages": {
+    "title": "Event pages, triggers, and command coverage",
+    "checklist": [
+      {
+        "id": "eventPages-highest-number",
+        "requirement": "Event pages resolve by deterministic highest-number valid page semantics and reevaluate after commands that affect page conditions.",
+        "status": "done"
+      },
+      {
+        "id": "eventPages-page-fields",
+        "requirement": "Each page owns conditions, graphic, trigger, priority, autonomous movement, options, and a structured command list.",
+        "status": "done"
+      },
+      {
+        "id": "eventPages-command-catalog",
+        "requirement": "Commands cover messages, choices, switches, variables, conditions, loops, labels, waits, transfer, move route, tile change, pictures, audio, common events, battle, shop, inn, game over, and return to title.",
+        "status": "done"
+      },
+      {
+        "id": "eventPages-editor-authoring",
+        "requirement": "Editor affordances include page order, copy and paste, condition pickers, nested command editing, and validation for missing resources.",
+        "status": "done"
+      }
+    ]
+  },
+  "resourceProfiles": {
+    "title": "RM2K3-shaped resource profiles",
+    "checklist": [
+      {
+        "id": "resourceProfiles-chipset",
+        "requirement": "ChipSet-style map resources slice 16x16 tiles with passability, priority, terrain, lower layer, and upper layer metadata.",
+        "status": "done"
+      },
+      {
+        "id": "resourceProfiles-charset",
+        "requirement": "CharSet resources slice 24x32 character frames for map actors and events, with transparent-color metadata.",
+        "status": "done"
+      },
+      {
+        "id": "resourceProfiles-battle",
+        "requirement": "BattleCharSet resources define battle actor frames, while Monster, BattleWeapon, Battle/Backdrop, System2, and Battle Animations remain separate profiles.",
+        "status": "done"
+      },
+      {
+        "id": "resourceProfiles-system-media",
+        "requirement": "Title, Game Over, System, System2, Picture, FaceSet, Music, Sound, BGM, BGS, ME, and SE resources are typed and validated by profile.",
+        "status": "done"
+      }
+    ]
+  },
+  "runtimePresentation": {
+    "title": "Retro runtime presentation and immutable play state",
+    "checklist": [
+      {
+        "id": "runtimePresentation-play-surface",
+        "requirement": "Play mode presents a 320x240 logical surface with integer nearest-neighbor scaling; editor canvases may remain modern and resizable.",
+        "status": "done"
+      },
+      {
+        "id": "runtimePresentation-tile-grid",
+        "requirement": "Map runtime composes 16x16 lower and upper tiles, event graphics, pictures, screen effects, menu, save, title, and game-over surfaces.",
+        "status": "done"
+      },
+      {
+        "id": "runtimePresentation-session-state",
+        "requirement": "Runtime overrides, transfer position, variables, switches, battle result, timers, pictures, and audio state live in session or save state, never authoring Project data.",
+        "status": "done"
+      },
+      {
+        "id": "runtimePresentation-editor-topology",
+        "requirement": "Editor topology keeps lower, upper, and event layers, map tree, chipset palette, database, resources, and play mode as inspectable surfaces.",
+        "status": "done"
+      }
+    ]
+  },
+  "migration": {
+    "title": "Schema v3 migration and recovery",
+    "checklist": [
+      {
+        "id": "migration-schema-version",
+        "requirement": "Project persistence advances to SCHEMA_VERSION = 3 with typed validators for resources, database records, event pages, and runtime-safe references.",
+        "status": "done"
+      },
+      {
+        "id": "migration-backup-restore",
+        "requirement": "Migration and bulk import create a recoverable backup before destructive changes and prove restore behavior after failed validation.",
+        "status": "done"
+      },
+      {
+        "id": "migration-old-projects",
+        "requirement": "Current v1 and v2 projects either migrate into valid v3 data or fail with actionable validation messages and preserved original data.",
+        "status": "done"
+      },
+      {
+        "id": "migration-invalid-references",
+        "requirement": "Missing Actors, Enemies, Skills, Items, Troops, maps, switches, variables, resources, or command references are rejected at load or import boundaries.",
+        "status": "done"
+      }
+    ]
+  },
+  "concurrency": {
+    "title": "Interpreter concurrency and deterministic scheduling",
+    "checklist": [
+      {
+        "id": "concurrency-autorun",
+        "requirement": "Autorun events block player movement while active and resume input only when their interpreter state reaches a suspension point or completion.",
+        "status": "done"
+      },
+      {
+        "id": "concurrency-parallel",
+        "requirement": "Parallel events run on a deterministic scheduler with per-event wait state, bounded reentrancy, and stable ordering across frames.",
+        "status": "done"
+      },
+      {
+        "id": "concurrency-common-events",
+        "requirement": "Common event calls have recursion limits, clear diagnostics, and explicit suspension behavior for transfer, battle, menu, save, and game over.",
+        "status": "done"
+      },
+      {
+        "id": "concurrency-page-reevaluation",
+        "requirement": "Switch, variable, item, actor, timer, and battle-result changes trigger event page reevaluation without mutating authoring data.",
+        "status": "done"
+      }
+    ]
+  },
+  "legalGuardrails": {
+    "title": "Legal and product scope guardrails",
+    "checklist": [
+      {
+        "id": "legalGuardrails-no-rtp",
+        "requirement": "Must NOT copy official RTP assets, copied logos, proprietary sample data, exact proprietary dialog layouts, or trademark-confusing names.",
+        "status": "outOfScope",
+        "reason": "Excluded by legal and trademark guardrails for the RM2K3-like editor scope.",
+        "guardrail": "No official RTP assets, copied logos, proprietary sample data, exact proprietary dialog layouts, or trademark-confusing names."
+      },
+      {
+        "id": "legalGuardrails-no-binary-compat",
+        "requirement": "Must NOT claim .lmu, .ldb, .lmt, or RM2K3 binary compatibility; JSON import/export is the only supported project format.",
+        "status": "outOfScope",
+        "reason": "Excluded by product-scope guardrails; project interchange remains JSON-only.",
+        "guardrail": "No .lmu, .ldb, .lmt, or RM2K3 binary compatibility claims."
+      },
+      {
+        "id": "legalGuardrails-no-engine-rewrite",
+        "requirement": "Must NOT rewrite away from the existing TypeScript, Vite, and Phaser stack while satisfying the fidelity contract.",
+        "status": "outOfScope",
+        "reason": "Excluded by implementation guardrails that preserve the existing stack.",
+        "guardrail": "No rewrite away from TypeScript, Vite, and Phaser."
+      },
+      {
+        "id": "legalGuardrails-no-tests-only",
+        "requirement": "Must NOT declare implementation complete from tests alone; later waves require browser or artifact evidence for editor, play, and battle surfaces.",
+        "status": "outOfScope",
+        "reason": "Excluded as a completion shortcut by evidence guardrails for fidelity work.",
+        "guardrail": "No implementation-complete claims from tests alone."
+      }
+    ]
+  }
+}
