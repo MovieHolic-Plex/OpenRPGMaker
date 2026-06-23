@@ -95,14 +95,20 @@ export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: Ev
     );
   }
   wrap.append(row);
-  wrap.append(
-    el("div", {
-      class: "empty-hint",
-      text: page.commands.map((command) => command.kind).join(" -> "),
-      dataset: { testid: "page-command-summary" },
-    })
-  );
+  // summary는 카탈로그와 분리되어 dynamic 영역에서 별도 렌더링한다
+  // (renderPageCommandSummary). 카탈로그가 정적(stable) 영역에 있어도
+  // summary는 매 store 변경 시 최신 commands를 반영한다.
+  wrap.append(renderPageCommandSummary(page));
   return wrap;
+}
+
+// 페이지 명령 요약 — 카탈로그와 분리하여 dynamic 영역에서 개별 렌더링 가능.
+export function renderPageCommandSummary(page: EventPage): HTMLElement {
+  return el("div", {
+    class: "empty-hint",
+    text: page.commands.map((command) => command.kind).join(" -> "),
+    dataset: { testid: "page-command-summary" },
+  });
 }
 
 export function renderEventPageProps(mapId: MapId, eventId: string, page: EventPage): HTMLElement {

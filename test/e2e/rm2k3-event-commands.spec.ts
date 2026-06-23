@@ -7,7 +7,7 @@ type SeedProject = Project;
 type DebugState = {
   project: {
     startMapId: string;
-    maps: Record<string, { events: { pages?: { commands: CommandExport[] }[] }[] }>;
+    maps: Record<string, { events: { id: string; pages?: { commands: CommandExport[] }[] }[] }>;
   };
 };
 
@@ -141,7 +141,7 @@ function makeBattleProject(): SeedProject {
 
 test("event command catalog adds typed commands to the active page", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
+  await page.goto("/?freshProject=1");
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
   await clickMapCenter(page);
@@ -164,7 +164,11 @@ test("event command catalog adds typed commands to the active page", async ({ pa
 
   await expect(page.getByTestId("page-command-summary")).toContainText("battleProcessing");
   const state = await debugState(page);
-  const commands = state.project.maps[state.project.startMapId].events[0].pages?.[0].commands ?? [];
+  // freshProject=1 사용 시 시작 맵에 사전 정의된 이벤트(starterMapObjects)가
+  // events[0]에 존재할 수 있다. 클릭으로 새로 만든 이벤트(ev_ 접두사)를 찾아 검증.
+  const events = state.project.maps[state.project.startMapId].events;
+  const authored = events.find((event) => event.id.startsWith("ev_")) ?? events[0];
+  const commands = authored.pages?.[0].commands ?? [];
   for (const kind of [
     "text",
     "choices",

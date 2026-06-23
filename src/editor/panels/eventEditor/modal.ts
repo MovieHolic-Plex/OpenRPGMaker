@@ -2,7 +2,7 @@ import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-import { renderEventEditorContent } from "./content";
+import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 
@@ -22,16 +22,31 @@ export function openEventEditorModal(mapId: MapId, eventId: string): void {
     class: "event-editor-modal-window",
     attrs: { role: "dialog", "aria-modal": "true", "aria-label": "Event Editor" },
   });
+  // body를 두 영역으로 분리:
+  //  - stableBody: 카탈로그(명령 추가 버튼) 등 클릭 연속성이 중요한 정적 UI.
+  //    store 변경 시에도 재생성하지 않아 빠른 연타 클릭이 detach되지 않는다.
+  //  - dynamicBody: 페이지 탭/명령 리스트 등 상태 반영이 필요한 영역.
   const body = el("div", { class: "event-editor-modal-body" });
+  const stableBody = el("div", { class: "event-editor-modal-stable" });
+  const dynamicBody = el("div", { class: "event-editor-modal-dynamic" });
+  body.append(stableBody, dynamicBody);
   const close = createCloseHandler(backdrop);
   windowEl.append(renderModalHeader(request, close), body);
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
   });
+  let stableRendered = false;
   const refresh = () => {
-    clearChildren(body);
-    renderEventEditorContent(body, request.mapId, request.eventId);
+    // 정적 영역은 최초 1회만 렌더링. store 변경에도 카탈로그 버튼을 보존하여
+    // 연속 클릭(명령 연타) 중 버튼이 detach되는 것을 막는다.
+    if (!stableRendered) {
+      clearChildren(stableBody);
+      renderEventEditorStable(stableBody, request.mapId, request.eventId);
+      stableRendered = true;
+    }
+    clearChildren(dynamicBody);
+    renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
   };
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);

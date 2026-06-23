@@ -1,6 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
 import { EDITOR_BRUSH_SIZES, editorState } from "@/editor/editorState";
 import type { EditorBrushSize, Tool, Layer } from "@/editor/editorState";
+import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { setTerrainTag } from "@/editor/tilesetActions";
 import { setMapTileset } from "@/editor/actions";
@@ -105,12 +106,10 @@ export function renderTilePalette(container: HTMLElement): void {
   container.append(toolSection);
 
   if (state.layer === "event") {
-    container.append(
-      el("div", {
-        class: "empty-hint",
-        text: "이벤트 도구로 맵을 클릭해 이벤트를 배치하거나 선택하세요.",
-      })
-    );
+    // 이벤트 레이어에서는 이벤트 편집기(목록/선택/요약)를 사이드 패널에 렌더링한다.
+    // 새 이벤트가 생성·선택되면 renderEventEditor 내부의 maybeAutoOpenEventEditor가
+    // 명령 카탈로그 모달을 자동으로 연다.
+    renderEventEditor(container);
     return;
   }
 

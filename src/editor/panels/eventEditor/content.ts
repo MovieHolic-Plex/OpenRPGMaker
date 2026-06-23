@@ -12,17 +12,60 @@ import {
 } from "@/editor/eventPages";
 import { DEFAULT_SPRITE_NPC } from "@/project/defaults";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderCommandList } from "./commandList";
 import { openEventCommandPicker } from "./commandPicker";
 import { commandKindSelect, selectedOptionValue } from "./dom";
 import { renderEventProps } from "./eventProps";
 import { COMMAND_KIND_OPTIONS } from "./options";
-import { renderEventPageProps, renderPageCommandCatalog, renderPageTabs } from "./pageProps";
+import { renderEventPageProps, renderPageCommandCatalog, renderPageCommandSummary, renderPageTabs } from "./pageProps";
 import type { CommandListActions } from "./types";
 
 export function renderEventEditorContent(container: HTMLElement, mapId: MapId, eventId: string): void {
+  // 레거시 단일 컨테이너 진입(인라인 편집기 등). 모달은 stable/dynamic 분리 함수를 쓴다.
+  renderEventEditorDynamic(container, mapId, eventId);
+}
+
+// 정적 영역 — 카탈로그(명령 추가 버튼). 최초 1회만 렌더링한다.
+// store 변경에도 버튼을 재생성하지 않아, 빠른 연속 클릭(명령 연타) 중
+// 버튼이 detach되어 클릭이 빈 곳에 떨어지는 것을 막는다.
+// 클릭 핸들러는 매번 현재 활성 페이지를 store에서 lazy 조회한다.
+export function renderEventEditorStable(container: HTMLElement, mapId: MapId, eventId: string): void {
+  const section = el("div", { class: "panel-section event-editor-stable" });
+  const stub: EventPage = {
+    id: "",
+    name: "",
+    conditions: [],
+    graphic: {},
+    trigger: { kind: "action" },
+    priority: "same",
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+    commands: [],
+  };
+  const catalog = renderPageCommandCatalog(mapId, eventId, stub);
+  // 카탈로그 안의 stub summary 노드는 dynamic 영역에서 최신값으로 따로 렌더링하므로 제거.
+  catalog.querySelector("[data-testid='page-command-summary']")?.remove();
+  // 카탈로그 버튼의 클릭 핸들러를 lazy pageId 기반으로 교체.
+  const buttons = catalog.querySelectorAll<HTMLElement>("[data-testid^='command-add-']");
+  for (const btn of buttons) {
+    const testId = btn.dataset.testid ?? "";
+    const kind = commandKindForTestId(testId);
+    if (!kind) continue;
+    const fresh = btn.cloneNode(true) as HTMLElement;
+    fresh.addEventListener("click", () => {
+      const pageId = activePageIdOf(mapId, eventId);
+      if (!pageId) return;
+      addEventPageCommand(mapId, eventId, pageId, newCommand(kind));
+    });
+    btn.replaceWith(fresh);
+  }
+  section.append(catalog);
+  container.append(section);
+}
+
+// 동적 영역 — 페이지 탭/설정/명령 리스트. store 변경 시마다 갱신된다.
+export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, eventId: string): void {
   const section = el("div", { class: "panel-section event-editor", dataset: { testid: "event-editor-content" } });
   section.append(el("h3", { text: "Event Editor" }));
 
@@ -55,10 +98,11 @@ export function renderEventEditorContent(container: HTMLElement, mapId: MapId, e
     renderCommandList(cmdList, activePage.commands, [], actions);
     settingsColumn.append(
       renderEventPageProps(mapId, ev.id, activePage),
+      renderPageCommandSummary(activePage),
       renderNpcQuickAuthor(mapId, ev.id, activePage.id),
       renderEventProps(mapId, ev)
     );
-    commandsColumn.append(renderPageCommandCatalog(mapId, ev.id, activePage), el("h3", { text: "Contents" }), cmdList, rootCommandAddRow(actions));
+    commandsColumn.append(el("h3", { text: "Contents" }), cmdList, rootCommandAddRow(actions));
     section.append(
       el("div", {
         class: "event-editor-page-header",
@@ -71,6 +115,35 @@ export function renderEventEditorContent(container: HTMLElement, mapId: MapId, e
     );
   }
   container.append(section);
+}
+
+// 현재 활성 페이지 id를 매 호출마다 store/editorState에서 최신값으로 조회한다.
+// 카탈로그 클릭 핸들러가 렌더링 시점의 stale 페이지 참조 대신 이것을 쓴다.
+function activePageIdOf(mapId: MapId, eventId: string): string | null {
+  const ev = store.getCurrent().maps[mapId]?.events.find((e) => e.id === eventId);
+  if (!ev) return null;
+  const pages = ev.pages ?? [];
+  if (!pages.length) return null;
+  const selectedPageId = editorState.get().selectedEventPageId;
+  const active = pages.find((page) => page.id === selectedPageId) ?? pages[pages.length - 1];
+  return active.id;
+}
+
+function commandKindForTestId(testId: string): Command["kind"] | null {
+  const map: Record<string, Command["kind"]> = {
+    "command-add-text": "text",
+    "command-add-choice": "choices",
+    "command-add-switch": "setSwitch",
+    "command-add-variable": "setVariable",
+    "command-add-branch": "fork",
+    "command-add-timer": "timer",
+    "command-add-move-route": "moveEvent",
+    "command-add-picture": "showPicture",
+    "command-add-audio": "playAudio",
+    "command-add-battle": "battleProcessing",
+    "command-add-game-over": "gameOver",
+  };
+  return map[testId] ?? null;
 }
 
 function renderNpcQuickAuthor(mapId: MapId, eventId: string, pageId: string): HTMLElement {

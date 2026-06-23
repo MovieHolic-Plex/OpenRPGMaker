@@ -41,6 +41,13 @@ async function debugState(page: Page): Promise<DebugState> {
   return JSON.parse(text) as DebugState;
 }
 
+// freshProject 사용 시 시작 맵에 사전 정의된 이벤트(starterMapObjects)가 있을 수 있다.
+// 클릭으로 새로 만든 이벤트(ev_ 접두사)를 우선 반환한다.
+function authoredEvent(state: DebugState): DebugState["project"]["maps"][string]["events"][number] | undefined {
+  const events = state.project.maps[state.project.startMapId].events;
+  return events.find((event) => "id" in event && typeof event.id === "string" && event.id.startsWith("ev_")) ?? events[0];
+}
+
 async function runtimeState(page: Page): Promise<RuntimeState> {
   const text = await page.getByTestId("runtime-state-json").textContent();
   if (!text) throw new Error("missing runtime state");
@@ -184,7 +191,7 @@ async function seedProject(page: Page, project: SeedProject): Promise<void> {
 
 test("event editor manages RM2K3-style pages with conditions and page-owned text", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
+  await page.goto("/?freshProject=1");
 
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
@@ -214,12 +221,13 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
 
   await expect.poll(async () => {
     const state = await debugState(page);
-    const event = state.project.maps[state.project.startMapId].events[0];
-    return event.pages?.length ?? 0;
+    const event = authoredEvent(state);
+    return event?.pages?.length ?? 0;
   }).toBe(3);
 
   const state = await debugState(page);
-  const event = state.project.maps[state.project.startMapId].events[0];
+  const event = authoredEvent(state);
+  if (!event) throw new Error("authored event not found");
   const pages = event.pages ?? [];
   expect(pages.some((item) => item.commands.some((command) => command.body === "Page one"))).toBe(true);
   expect(pages.some((item) =>
