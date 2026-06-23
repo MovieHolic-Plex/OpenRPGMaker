@@ -76,7 +76,10 @@ const TREE_TOP_LEFT = 262;
 const TREE_TOP_RIGHT = 263;
 const TREE_BOTTOM_LEFT = 292;
 const TREE_BOTTOM_RIGHT = 293;
-const LOWER_TRANSPARENT_HOUSE_TILES = new Set([85, 87, 378, 379, 380, 408, 409, 410, 438, 439]);
+// 패턴이 upper 레이어에 찍은 울타리(378~439 계열)/창문(85,87) 오버레이는
+// RM2K3 정석에 따라 upper에 유지한다 (chipsetMapping.isUpperChipsetTile과 일관).
+// 강등 대상이 없으므로 normalize는 사실상 no-op이 된다.
+const LOWER_TRANSPARENT_HOUSE_TILES = new Set<number>();
 
 const DB_EXTRACTED_HOUSE_LOWER_PATTERN = [
   [240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240],

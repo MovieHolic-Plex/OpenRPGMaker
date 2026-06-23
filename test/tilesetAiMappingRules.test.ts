@@ -183,7 +183,8 @@ describe("tileset AI mapping rules", () => {
 
     applyAiMappingAnswerForTest(tileset, selectedTiles, answer);
 
-    expect(tileset.tileGroups).toEqual([
+    const aiGroups = tileset.tileGroups?.filter((group) => group.id.startsWith("ai-")) ?? [];
+    expect(aiGroups).toEqual([
       expect.objectContaining({
         confidence: "high",
         name: "성벽 상단 블록",
@@ -191,7 +192,7 @@ describe("tileset AI mapping rules", () => {
         sourceRect: { x: 6, y: 8, width: 6, height: 4 },
       }),
     ]);
-    expect(tileset.tileGroups?.[0]?.previewMap?.lowerTiles).toHaveLength(256);
+    expect(aiGroups[0]?.previewMap?.lowerTiles).toHaveLength(256);
   });
 
   it("persists AI pattern grammar on tile groups", () => {
@@ -242,13 +243,14 @@ describe("tileset AI mapping rules", () => {
 
     applyAiMappingAnswerForTest(tileset, selectedTiles, answer);
 
-    expect(tileset.tileGroups?.[0]?.patternGrammar).toEqual(expect.objectContaining({
+    const aiGroup = tileset.tileGroups?.find((group) => group.id.startsWith("ai-"));
+    expect(aiGroup?.patternGrammar).toEqual(expect.objectContaining({
       axis: "horizontal",
       kind: "horizontal_expandable",
       preserveCaps: true,
       repeat: "body",
     }));
-    expect(tileset.tileGroups?.[0]?.patternGrammar?.parts.map((part) => part.role)).toEqual(["leftCap", "repeatBody", "rightCap"]);
+    expect(aiGroup?.patternGrammar?.parts.map((part) => part.role)).toEqual(["leftCap", "repeatBody", "rightCap"]);
   });
 
   it("builds a user-confirmed path autotile mapping inside the tileset AI tool", () => {
@@ -263,12 +265,13 @@ describe("tileset AI mapping rules", () => {
 
     applyAiMappingAnswerForTest(tileset, selectedTiles, answer);
 
-    expect(tileset.tileGroups?.[0]).toEqual(expect.objectContaining({
+    const aiGroup = tileset.tileGroups?.find((group) => group.id.startsWith("ai-"));
+    expect(aiGroup).toEqual(expect.objectContaining({
       defaultLayer: "lower",
       name: "길 오토타일",
       role: "terrain",
     }));
-    expect(tileset.tileGroups?.[0]?.patternGrammar).toEqual(expect.objectContaining({
+    expect(aiGroup?.patternGrammar).toEqual(expect.objectContaining({
       axis: "both",
       kind: "autotile_3x3",
       repeat: "center",

@@ -29,11 +29,6 @@ function lowerVisualTiles(map: ReturnType<typeof createSmallHouseVariantMaps>[nu
   return [...map.lowerTiles, ...Object.values(map.lowerTileStacks ?? {}).flat()];
 }
 
-function lowerVisualAt(map: ReturnType<typeof createSmallHouseVariantMaps>[number], x: number, y: number): readonly number[] {
-  const index = at(map, x, y);
-  return [map.lowerTiles[index], ...(map.lowerTileStacks?.[index] ?? [])];
-}
-
 function lowerDoorTopIndex(map: ReturnType<typeof createSmallHouseVariantMaps>[number]): number {
   const framedDoorIndex = map.lowerTiles.indexOf(FRAMED_DOOR_TOP);
   return framedDoorIndex >= 0 ? framedDoorIndex : map.lowerTiles.indexOf(EXTRACTED_DOOR_TOP);
@@ -65,10 +60,11 @@ describe("small house variants", () => {
       expect(map.height).toBeGreaterThanOrEqual(15);
       expect(map.tilesetId).toBe(DEFAULT_TILESET_ID);
 
-      expect(lowerVisualTiles(map).some((tile) => FENCE_TILES.has(tile))).toBe(true);
-      expect(lowerVisualTiles(map).some((tile) => WINDOW_TILES.has(tile))).toBe(true);
-      expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(false);
-      expect(map.upperTiles.some((tile) => WINDOW_TILES.has(tile))).toBe(false);
+      // fence/window는 RM2K3 정석에 따라 upper 오버레이 (chipsetMapping.isUpperChipsetTile과 일관).
+      expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(true);
+      expect(map.upperTiles.some((tile) => WINDOW_TILES.has(tile))).toBe(true);
+      expect(lowerVisualTiles(map).some((tile) => FENCE_TILES.has(tile))).toBe(false);
+      expect(lowerVisualTiles(map).some((tile) => WINDOW_TILES.has(tile))).toBe(false);
       expect(hasLowerDoorPair(map)).toBe(true);
       expect(map.upperTiles).not.toContain(EXTRACTED_DOOR_TOP);
       expect(map.upperTiles).not.toContain(EXTRACTED_DOOR_BOTTOM);
@@ -87,7 +83,7 @@ describe("small house variants", () => {
     expect(map.lowerTiles.some((tile) => STONE_WALL_TILES.has(tile))).toBe(false);
     expect(map.lowerTiles.some((tile) => tile === WATER_TILE)).toBe(true);
     expect(map.lowerTiles.some((tile) => SAND_TILES.has(tile))).toBe(true);
-    expect(lowerVisualTiles(map).some((tile) => FENCE_TILES.has(tile))).toBe(true);
+    expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(true);
     expect(hasLowerDoorPair(map)).toBe(true);
   });
 
@@ -98,7 +94,7 @@ describe("small house variants", () => {
 
     expect(map.lowerTiles.some((tile) => STONE_WALL_TILES.has(tile))).toBe(true);
     expect(map.lowerTiles.some((tile) => WOOD_WALL_TILES.has(tile))).toBe(false);
-    expect(lowerVisualTiles(map).some((tile) => FENCE_TILES.has(tile))).toBe(true);
+    expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(true);
     expect(map.upperTiles.some((tile) => tile === TILE.TREE)).toBe(true);
     expect(hasLowerDoorPair(map)).toBe(true);
   });
@@ -110,8 +106,8 @@ describe("small house variants", () => {
 
     expect(map.lowerTiles[at(map, 8, 10)]).toBe(FRAMED_DOOR_TOP);
     expect(map.lowerTiles[at(map, 8, 11)]).toBe(FRAMED_DOOR_BOTTOM);
-    expect(lowerVisualAt(map, 6, 7)).toContain(87);
-    expect(lowerVisualAt(map, 10, 9)).toContain(87);
+    expect(map.upperTiles[at(map, 6, 7)]).toBe(87);
+    expect(map.upperTiles[at(map, 10, 9)]).toBe(87);
     expect(map.upperTiles.some((tile) => UPPER_ROOF_TILES.has(tile))).toBe(true);
     expect(map.lowerTiles.some((tile) => DIRT_ROAD_TILES.has(tile))).toBe(true);
   });
@@ -135,8 +131,8 @@ describe("small house variants", () => {
     expect(DIRT_ROAD_TILES.has(map.lowerTiles[at(map, 10, 14)] ?? -1)).toBe(true);
     expect(DIRT_ROAD_TILES.has(map.lowerTiles[at(map, 10, 17)] ?? -1)).toBe(true);
     expect(map.upperTiles[at(map, 10, 17)]).toBe(TILE.EMPTY);
-    expect(lowerVisualAt(map, 4, 6)).toContain(87);
-    expect(lowerVisualAt(map, 15, 6)).toContain(87);
+    expect(map.upperTiles[at(map, 4, 6)]).toBe(87);
+    expect(map.upperTiles[at(map, 15, 6)]).toBe(87);
   });
 
   it("variant 8 stamps a T-shaped wood house with a centered stem door", () => {
@@ -155,8 +151,8 @@ describe("small house variants", () => {
     expect(map.lowerTiles[at(map, 10, 12)]).toBe(FRAMED_DOOR_TOP);
     expect(map.lowerTiles[at(map, 10, 13)]).toBe(FRAMED_DOOR_BOTTOM);
     expect(map.upperTiles[at(map, 10, 12)]).toBe(TILE.EMPTY);
-    expect(lowerVisualAt(map, 4, 6)).toContain(85);
-    expect(lowerVisualAt(map, 15, 6)).toContain(85);
+    expect(map.upperTiles[at(map, 4, 6)]).toBe(85);
+    expect(map.upperTiles[at(map, 15, 6)]).toBe(85);
   });
 
   it("variant 9 stamps a T-shaped stone house with a centered stem door", () => {
@@ -175,8 +171,8 @@ describe("small house variants", () => {
     expect(map.lowerTiles[at(map, 10, 12)]).toBe(FRAMED_DOOR_TOP);
     expect(map.lowerTiles[at(map, 10, 13)]).toBe(FRAMED_DOOR_BOTTOM);
     expect(map.upperTiles[at(map, 10, 12)]).toBe(TILE.EMPTY);
-    expect(lowerVisualAt(map, 4, 6)).toContain(85);
-    expect(lowerVisualAt(map, 15, 6)).toContain(85);
+    expect(map.upperTiles[at(map, 4, 6)]).toBe(85);
+    expect(map.upperTiles[at(map, 15, 6)]).toBe(85);
   });
 
   it("locks variant 3 roof, door, and path anchors", () => {

@@ -104,7 +104,9 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
 
 function setTileRuntimeContract(tileset: TilesetDef, tile: number, group: CombinedTownHarnessGroup): boolean {
   let changed = false;
-  const priority = group.defaultLayer === "upper" ? "upper" : "lower";
+  // mixed 그룹: 통행 가능(passable/star) 소품은 upper 오버레이, 고형(solid)은 lower.
+  // RM2K3 정석 — 꽃/장식 같은 디테일은 lower 지형 위에 겹쳐 통행을 막지 않는다.
+  const priority = resolveRuntimeLayer(group);
   if (tileset.priority[tile] !== priority) {
     tileset.priority[tile] = priority;
     changed = true;
@@ -130,6 +132,15 @@ function ensureTileMetaLength(tileset: TilesetDef): void {
 function groupForTile(tileset: Pick<TilesetDef, "id" | "image">, tile: number): CombinedTownHarnessGroup | null {
   if (!isCombinedTownTileset(tileset)) return null;
   return COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.tileIds.includes(tile)) ?? null;
+}
+
+// harness 그룹 → 런타임 priority 결정.
+// - defaultLayer가 명시(lower/upper)면 그대로.
+// - mixed면 passage로 분기: 통행 가능(passable/star)은 upper 오버레이, 고형(solid)은 lower.
+function resolveRuntimeLayer(group: CombinedTownHarnessGroup): "lower" | "upper" {
+  if (group.defaultLayer === "upper") return "upper";
+  if (group.defaultLayer === "mixed") return group.passage === "solid" ? "lower" : "upper";
+  return "lower";
 }
 
 function terrainTagForGroup(group: CombinedTownHarnessGroup, fallback: number): number {

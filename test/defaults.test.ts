@@ -120,7 +120,7 @@ describe("createBlankProject", () => {
     expect(tileset.passability[TILE.PATH]).toEqual(passable);
     expect(tileset.priority[TILE.TREE]).toBe("lower");
     expect(tileset.passability[TILE.TREE]).toEqual(solid);
-    expect(tileset.priority[TILE.FLOWERS]).toBe("lower");
+    expect(tileset.priority[TILE.FLOWERS]).toBe("upper");
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);
     expect(tileset.priority[85]).toBe("lower");
     expect(tileset.priority[378]).toBe("lower");
