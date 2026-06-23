@@ -6,6 +6,7 @@ import {
   deleteEventPageCommandAt,
   ensureEventPages,
   moveEventPageCommandAt,
+  moveEventPageCommandToIndex,
   replaceEventPageCommandAt,
   setEventPageTextCommand,
   updateEventPage,
@@ -216,6 +217,7 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
     replaceCommand: (path, command) => replaceEventPageCommandAt(mapId, eventId, pageId, path, command),
     deleteCommand: (path) => deleteEventPageCommandAt(mapId, eventId, pageId, path),
     moveCommand: (path, dir) => moveEventPageCommandAt(mapId, eventId, pageId, path, dir),
+    moveCommandTo: (sourcePath, toIndex) => moveEventPageCommandToIndex(mapId, eventId, pageId, sourcePath, toIndex),
   };
 }
 

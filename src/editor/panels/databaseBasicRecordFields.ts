@@ -1,5 +1,6 @@
 import { emptyToUndefined, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord, type DatabaseCollection } from "@/editor/databaseActions";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
@@ -54,11 +55,33 @@ export function troopFields(form: HTMLElement, id: string): void {
 export function animationFields(form: HTMLElement, id: string, rerender: () => void): void {
   const animation = store.getCurrent().database.battleAnimations.find((record) => record.id === id);
   if (!animation) return;
+  const project = store.getCurrent();
   form.append(textField("리소스", "db-field-animation-resource", animation.resourceId ?? "", (value) => {
     updateDatabaseRecord("battleAnimations", id, { resourceId: emptyToUndefined(value) });
     rerender();
   }));
-  form.append(el("div", { class: "db-preview", text: `미리보기 리소스: ${animation.resourceId ?? "없음"}` }));
+  // 실제 픽셀 아트 미리보기(없으면 안내).
+  const previewWrap = el("div", { class: "db-preview db-animation-preview", dataset: { testid: "db-animation-preview" } });
+  const resourceId = animation.resourceId;
+  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
+  if (url) {
+    const image = el("img", { attrs: { alt: `${animation.name} 미리보기`, src: url } });
+    image.className = "db-animation-image";
+    previewWrap.append(image);
+  } else {
+    previewWrap.append(el("div", { class: "empty-hint", text: `미리보기 리소스: ${resourceId ?? "없음"}` }));
+  }
+  form.append(previewWrap);
+  // 이 애니메이션을 사용하는 스킬/아이템 참조 표시.
+  const referencingSkills = project.database.skills.filter((skill) => skill.animationId === animation.id);
+  if (referencingSkills.length > 0) {
+    const refs = el("div", { class: "db-refs", dataset: { testid: "db-animation-references" } });
+    refs.append(el("div", { class: "db-field-hint", text: "사용하는 스킬:" }));
+    for (const skill of referencingSkills) {
+      refs.append(el("div", { class: "db-ref-row", text: `${skill.name} (${skill.id})` }));
+    }
+    form.append(refs);
+  }
 }
 
 export function skillPicker(form: HTMLElement, collection: DatabaseCollection, id: string): void {

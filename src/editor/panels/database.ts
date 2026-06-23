@@ -38,24 +38,12 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "variables", label: "변수", testid: "db-tab-variables" },
 ];
 
-const tabGroups: readonly string[] = ["용어", "시스템", "시스템 2", "공통 이벤트"];
-
 const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
 
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
-  const groupHeader = el("div", {
-    class: "db-category-tabs",
-    children: tabGroups.map((label) =>
-      el("button", {
-        class: "db-category-tab",
-        text: label,
-        attrs: { type: "button" },
-      })
-    ),
-  });
   const header = el("div", { class: "db-tabs" });
   for (const tab of tabs) {
     header.append(
@@ -75,7 +63,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
 
   const body = el("div", { class: "db-body" });
   renderActiveTab(body, container);
-  container.append(groupHeader, header, body);
+  container.append(header, body);
 }
 
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {

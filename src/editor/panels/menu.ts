@@ -16,6 +16,7 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { saveProjectNow } from "@/editor/saveActions";
 import { separator, toolbarButton } from "./menuToolbar";
 
 const MENU_ITEMS = [
@@ -128,7 +129,7 @@ function menuCommands(
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
         item("열기", "menu-project-load", () => void doLoad()),
-        item("저장", "menu-project-save", () => void doSave()),
+        item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
         item("내보내기...", "menu-project-export", () => void doExport()),
         item("가져오기...", "menu-project-import", () => doImport()),
@@ -158,7 +159,7 @@ function menuCommands(
       ];
     case "help":
       return [
-        item("단축키", "menu-help-shortcuts", () => toast("오른쪽 클릭: 스포이트 / 가운데 버튼 드래그: 맵 이동 / Space: 임시 이동", "ok")),
+        item("단축키", "menu-help-shortcuts", () => toast(SHORTCUT_HELP, "ok")),
         item("정보", "menu-help-about", () => toast("RPG 쯔꾸르 - RM2000/2003 스타일 웹 에디터", "ok")),
       ];
   }
@@ -168,10 +169,13 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
   return { kind: "item", label, testId, onClick, disabled };
 }
 
+const SHORTCUT_HELP =
+  "F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
+
 function appendFileActions(row: HTMLElement, history: ReturnType<typeof getMapEditHistoryState>, topbar: HTMLElement): void {
   row.append(
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 프로젝트 열기", icon: "open", onClick: () => void doLoad() }),
-    toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장", icon: "save", onClick: () => void doSave() }),
+    toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
     toolbarButton({ testId: "toolbar-export", label: "내보내기", title: "RPGZZU 패키지로 내보내기", icon: "export", onClick: () => void doExport() }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
@@ -321,19 +325,6 @@ async function togglePlayMode(): Promise<void> {
 async function openTestPlayWindow(): Promise<void> {
   await store.flush();
   window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
-}
-
-async function doSave(): Promise<void> {
-  try {
-    await store.flush();
-    toast("저장됨", "ok");
-  } catch (error) {
-    if (error instanceof Error) {
-      toast(`저장 실패: ${error.message}`, "error");
-      return;
-    }
-    throw error;
-  }
 }
 
 async function doLoad(): Promise<void> {

@@ -6,7 +6,9 @@ export type BattleResult = "victory" | "defeat" | "escape";
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
   | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string }
-  | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string };
+  | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string }
+  | { readonly kind: "defend" }
+  | { readonly kind: "escape" };
 
 export interface BattleRuntimeOptions {
   readonly project: Project;

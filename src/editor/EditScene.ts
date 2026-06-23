@@ -22,6 +22,8 @@ import {
 import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
 import { recordProjectSnapshot, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { addEvent } from "@/editor/eventActions";
+import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { saveProjectNow } from "@/editor/saveActions";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
 
@@ -405,12 +407,16 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
+    // 텍스트 입력/모달이 포커스를 잡고 있으면 에디터 단축키를 끈다.
+    if (shouldIgnoreEditorShortcut(event)) return;
     if (event.code === "Space") {
       event.preventDefault();
       this.spacePanActive = true;
       return;
     }
     if (!(event.ctrlKey || event.metaKey) && this.panWithArrowKey(event)) return;
+    // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
+    if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
     this.handleShortcut(event);
   }
 
@@ -454,9 +460,15 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private handleShortcut(event: KeyboardEvent): void {
     if (!(event.ctrlKey || event.metaKey)) return;
+    const key = event.key.toLowerCase();
+    // Ctrl+S: 저장(맵 컨텍스트와 무관하게 항상 동작).
+    if (key === "s") {
+      event.preventDefault();
+      void saveProjectNow();
+      return;
+    }
     const mid = this.mapId();
     if (!mid) return;
-    const key = event.key.toLowerCase();
     if (key === "z") {
       event.preventDefault();
       if (event.shiftKey) {

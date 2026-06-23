@@ -83,8 +83,12 @@ npm run typecheck # 타입 검사만
 ### v1→v2 자동 마이그레이션
 기존 v1 저장 파일은 로드 시 자동 변환: `tiles`→`lowerTiles`, `flags`→`switches`, `collisions`→`passability`. 스키마 version 1→2.
 
-### 전투는 명시적 비목표
-전투 시스템 및 전투-종속 Database(액터/적/아이템/스킬)는 별도 스펙에서 추가. 현재 Database는 전투-독립적 항목만.
+### 전투 (RM2K3 사이드뷰)
+사이드뷰 ATB 전투가 통합되어 있으며, 모든 능력치가 Database에서 구동됩니다:
+- **액터 능력치**: Database 액터의 파라미터 곡선(maxHp/maxMp/공격/방어/정신/민첩)에서 레벨별로 산출.
+- **적 능력치**: 적 레코드의 `stats` + `rewards`(경험치/골드/드롭)를 그대로 사용.
+- **스킬 효과**: damage/healing/support/switch 효과 분기, 방어력/방어 상태(데미지 반감) 반영.
+- **전투 명령**: 공격 / 스킬 / 아이템 / 방어 / 도주(스킬·아이템은 서브메뉴). 액터 전투 캐릭터 스프라이트 렌더링.
 
 ## 에셋 교체 (선택)
 
@@ -95,19 +99,40 @@ npm run typecheck # 타입 검사만
 
 라이선스: 외부 에셋 사용 시 각 에셋의 라이선스를 준수하고 README에 표기하세요.
 
+## 에디터 단축키 (RM2K3 스타일)
+
+| 키 | 동작 |
+|----|------|
+| `F5` / `F6` / `F7` | 하위 / 상위 / 이벤트 레이어 전환 |
+| `1`~`7` | 도구 (연필/채우기/스포이트/이동/선택/통행/이벤트) |
+| `+` / `-` | 정수 줌 확대/축소 |
+| `Ctrl+S` | 저장 |
+| `Ctrl+Z` / `Ctrl+Y` (또는 `Ctrl+Shift+Z`) | 실행취소 / 다시실행 |
+| `Ctrl+C` / `Ctrl+V` | 타일 영역 복사 / 붙여넣기 |
+| `Space` (누르는 동안) | 임시 맵 이동 |
+| 가운데 버튼 드래그 | 맵 이동 |
+
+텍스트 입력/모달이 포커스를 잡고 있으면 단축키는 자동으로 비활성화됩니다.
+
+## 이벤트 명령 편집
+이벤트 명령 리스트는 RM2K3처럼 **드래그로 순서 변경**할 수 있습니다(명령 왼쪽 ⠿ 핸들을 드래그). 위/아래(↑↓)/삭제(×) 버튼도 유지됩니다.
+
 ## 현재 범위
 
-포함(v2): 3레이어 맵, Map Tree, Database(switches/variables/commonEvents/tilesets/terms), RM2K3 명령 세트, Resource Manager(임포트), 패널 유연 레이아웃, v1→v2 마이그레이션.
+포함(v3): 3레이어 맵, Map Tree, Database(switches/variables/commonEvents/tilesets/terms + 액터/직업/스킬/아이템/장비/적/적그룹/상태/전투애니메이션/시스템), RM2K3 명령 세트(드래그 재정렬), Resource Manager(임포트), 패널 유연 레이아웃, v1→v3 마이그레이션, **RM2K3 사이드뷰 전투(DB 구동)**, **실행취소/다시실행**, **드래그 영역 복사/붙여넣기**, **에디터 키보드 단축키**.
 
-제외(이후 단계): 전투 시스템, 전투 Database(액터/적/아이템/스킬), 실행취소(Ctrl+Z), 드래그 영역 복사, BGM/사운드, 백엔드/계정.
+제외(이후 단계): BGM/사운드, 백엔드/계정.
 
 ## 테스트
 
-순수 로직 위주 단위 테스트(`test/`, 87개):
+순수 로직 위주 단위 테스트(`test/`, 368개):
 - `interpreter.test.ts` — RM2K3 명령 상태머신(순차/choices/fork/변수연산/스위치/타이머/입력대기/라벨-루프/changeTile/moveEvent/callCommonEvent)
 - `migration.test.ts` — v1→v2 변환(tiles→lowerTiles, flags→switches, collisions→passability) + 왕복
 - `io.test.ts` — v2 직렬화 왕복 + 잘못된 파일 거부
 - `defaults.test.ts` / `collision.test.ts` — v2 프로젝트 무결성, passability 기반 충돌
 - `actions.test.ts` / `eventActions.test.ts` — 페인트/채우기, 명령 경로 탐색
+- `battleRuntime.test.ts` / `battleRuntimeDb.test.ts` — ATB 전투 런타임, DB 구동 능력치/보상/스킬 효과/방어/도주
+- `eventCommandReorder.test.ts` — 이벤트 명령 드래그 재정렬 백엔드
+- `editorHotkeys.test.ts` — RM2K3 스타일 에디터 단축키 매핑
 
 Phaser 씬/DOM UI는 `npm run dev` + codex 브라우저 QA로 검증.

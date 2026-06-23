@@ -194,7 +194,7 @@ function recordForm(collection: DatabaseCollection, record: DatabaseRecords[Data
       renderTroopRecordForm(form, store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? store.getCurrent().database.troops[0]);
       return form;
     case "states":
-      form.append(textField("메시지", "db-field-state-message", record.name, () => undefined));
+      renderStateRecordForm(form, store.getCurrent().database.states.find((entry) => entry.id === record.id) ?? store.getCurrent().database.states[0]);
       return form;
     case "battleAnimations":
       animationFields(form, record.id, rerender);
@@ -212,4 +212,45 @@ function selectedRecord(collection: DatabaseCollection): DatabaseRecords[Databas
 
 function nameField(collection: DatabaseCollection, id: string, value: string): HTMLElement {
   return textField("이름", "db-field-name", value, (next) => updateDatabaseRecord(collection, id, { name: next }));
+}
+
+/**
+ * 상태(State) 편집 폼. StateRecord 는 id+name 만 가지므로, 이름 외에 이 상태를
+ * 부여하는 스킬/아이템(=stateEffects 참조)을 조사해 보여준다. RM2K3 상태 탭처럼
+ * "이 상태가 어디서 걸리는지"를 한눈에 볼 수 있게 한다.
+ */
+function renderStateRecordForm(form: HTMLElement, state: { id: string; name: string }): HTMLElement {
+  const database = store.getCurrent().database;
+  const referencingSkills = database.skills.filter((skill) => skill.effect?.kind === "switch");
+  const referencingItems = database.items.filter((item) =>
+    item.stateEffects?.some((effect) => effect.stateId === state.id)
+  );
+
+  form.append(
+    el("div", {
+      class: "db-field-hint",
+      dataset: { testid: "db-state-hint" },
+      text: "상태는 스킬/아이템의 효과로 적용됩니다. 아래에 이 상태를 부여하는 항목이 표시됩니다.",
+    })
+  );
+
+  const refsWrap = el("div", { class: "db-state-refs", dataset: { testid: "db-state-references" } });
+  refsWrap.append(el("h4", { text: "이 상태를 부여하는 스킬" }));
+  if (referencingSkills.length === 0) {
+    refsWrap.append(el("div", { class: "empty-hint", text: "(참조하는 스킬 없음)" }));
+  } else {
+    for (const skill of referencingSkills) {
+      refsWrap.append(el("div", { class: "db-ref-row", text: `${skill.name} (${skill.id})` }));
+    }
+  }
+  refsWrap.append(el("h4", { text: "이 상태를 부여하는 아이템" }));
+  if (referencingItems.length === 0) {
+    refsWrap.append(el("div", { class: "empty-hint", text: "(참조하는 아이템 없음)" }));
+  } else {
+    for (const item of referencingItems) {
+      refsWrap.append(el("div", { class: "db-ref-row", text: `${item.name} (${item.id})` }));
+    }
+  }
+  form.append(refsWrap);
+  return form;
 }

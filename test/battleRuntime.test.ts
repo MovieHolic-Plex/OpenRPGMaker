@@ -42,10 +42,12 @@ describe("side-view battle runtime", () => {
     // When: the actor uses the Attack command.
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
 
-    // Then: the targeted enemy loses HP and the turn returns to gauge filling.
+    // Then: the targeted enemy loses HP. The weak slime(10 HP) falls to one
+    // attack from the database-driven hero curve, resolving as victory.
     const after = runtime.snapshot().enemies[0]?.hp;
     expect(after).toBeLessThan(before ?? 0);
-    expect(runtime.snapshot().phase).toBe("charging");
+    expect(after).toBe(0);
+    expect(runtime.snapshot().result).toBe("victory");
   });
 
   it("records skill animation and defeats an enemy into victory", () => {

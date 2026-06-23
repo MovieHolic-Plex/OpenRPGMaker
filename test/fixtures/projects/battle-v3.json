@@ -155,12 +155,30 @@
         "id": "enemy_slime",
         "name": "Slime",
         "monsterResourceId": "slime",
+        "stats": {
+          "maxHp": 10,
+          "maxMp": 1,
+          "attack": 10,
+          "defense": 10,
+          "mind": 10,
+          "agility": 10
+        },
+        "rewards": { "exp": 7, "gold": 3 },
         "skillIds": []
       },
       {
         "id": "enemy_dragon",
         "name": "Dragon",
         "monsterResourceId": "dragon",
+        "stats": {
+          "maxHp": 70,
+          "maxMp": 10,
+          "attack": 1000,
+          "defense": 30,
+          "mind": 10,
+          "agility": 50
+        },
+        "rewards": { "exp": 200, "gold": 500 },
         "skillIds": ["skill_claw"]
       }
     ],

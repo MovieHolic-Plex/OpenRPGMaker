@@ -209,6 +209,33 @@ export function moveEventPageCommandAt(
   });
 }
 
+/**
+ * 드래그-앤-드롭 재정렬용: 한 컨테이너 안에서 sourcePath 의 명령을 toIndex 위치로 옮긴다.
+ * store 변경 1회로 처리해 DOM 이 중간에 재렌더되는 문제를 피한다.
+ * toIndex 는 소스를 제거하기 전 기준이 아닌, 제거 후 기준의 목표 위치다.
+ */
+export function moveEventPageCommandToIndex(
+  mapId: MapId,
+  eventId: string,
+  pageId: string,
+  sourcePath: readonly number[],
+  toIndex: number
+): void {
+  store.update((project) => {
+    const container = sourcePath.slice(0, -1);
+    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, container);
+    if (!list) return;
+    const from = sourcePath[sourcePath.length - 1];
+    if (from === undefined || from < 0 || from >= list.length) return;
+    const clamped = Math.max(0, Math.min(list.length - 1, toIndex));
+    if (clamped === from) return;
+    const moved = list[from];
+    if (!moved) return;
+    list.splice(from, 1);
+    list.splice(clamped, 0, moved);
+  });
+}
+
 export function triggerFromKind(kind: Trigger["kind"]): Trigger {
   return { kind };
 }
