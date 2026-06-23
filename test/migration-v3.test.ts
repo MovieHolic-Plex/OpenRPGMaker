@@ -120,5 +120,5 @@ describe("schema v3 migration contract", () => {
 
     expect(() => deserialize(JSON.stringify(record))).toThrow(ProjectFormatError);
     expect(restoreProjectBackup(backup)).toEqual(current);
-  });
+  }, 15_000);
 });

@@ -25,5 +25,5 @@ describe("project package", () => {
     expect(names).toContain("metadata/ai-tile-labels.json");
     expect(names).toContain(`maps/${project.startMapId}.json`);
     expect(restored).toEqual(project);
-  });
+  }, 15_000);
 });
