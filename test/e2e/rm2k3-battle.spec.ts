@@ -57,7 +57,7 @@ test("side-view battleProcessing plays through victory and restores the map", as
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page);
   await page.click('[data-testid="mode-play"]');
-  await page.getByRole("button", { name: "New Game" }).click();
+  await page.getByTestId("title-new-game").click();
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 2_000 });
   await page.click('[data-testid="event-battle-start"]');
