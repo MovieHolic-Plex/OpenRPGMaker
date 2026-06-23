@@ -54,7 +54,7 @@ test("final manual QA covers RM2K3 editor surfaces and sample game end to end", 
   await dismissDialogue(page, "Save here before entering the dungeon.");
   await openMenu(page);
   await page.getByTestId("save-slot-1").click();
-  await expect(page.getByTestId("main-menu")).toContainText("Slot 1 saved");
+  await expect(page.getByTestId("main-menu")).toContainText("1번 저장 칸에 저장했습니다");
   await closeMenu(page);
 
   await enterDungeon(page);
