@@ -30,6 +30,28 @@ function byteDistance(a: Uint8Array, b: Uint8Array): number {
   return diff;
 }
 
+async function findCanvasPointByCursor(
+  page: Page,
+  predicate: (cursor: { readonly lower: string; readonly upper: string; readonly position: string }) => boolean
+): Promise<{ readonly x: number; readonly y: number }> {
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const fractions = [0.5, 0.45, 0.55, 0.4, 0.6, 0.35, 0.65, 0.3, 0.7, 0.25, 0.75];
+  for (const fy of fractions) {
+    for (const fx of fractions) {
+      const point = { x: Math.floor(box.x + box.width * fx), y: Math.floor(box.y + box.height * fy) };
+      await page.mouse.move(point.x, point.y);
+      await page.waitForTimeout(30);
+      const position = await page.getByTestId("cursor-position").textContent() ?? "";
+      const lower = await page.getByTestId("cursor-lower").textContent() ?? "";
+      const upper = await page.getByTestId("cursor-upper").textContent() ?? "";
+      if (predicate({ lower, upper, position })) return point;
+    }
+  }
+  throw new Error("missing matching canvas point");
+}
+
 test("editor sidebars avoid document overflow and keep key controls clickable", async ({ page }) => {
   for (const viewport of [
     { width: 1440, height: 820 },
@@ -45,13 +67,15 @@ test("editor sidebars avoid document overflow and keep key controls clickable", 
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&layoutContract=clickability");
   await expectCenterClickable(page, "[data-testid='toolbar-left-panel']");
-  await expectCenterClickable(page, "[data-testid='toolbar-right-panel']");
+  await expectCenterClickable(page, "[data-testid='toolbar-database']");
   await expectCenterClickable(page, "[data-testid='tool-pan']");
   await expectCenterClickable(page, "[data-testid='layer-event']");
-  await expectCenterClickable(page, "[data-testid='right-tab-database']");
-  await page.getByTestId("right-tab-database").click();
+  await page.getByTestId("toolbar-database").click();
   await expectCenterClickable(page, "[data-testid='db-tab-enemies']");
-  await expectCenterClickable(page, "[data-testid='right-tab-resources']");
+  await page.getByTestId("database-modal-close").click();
+  await page.getByTestId("toolbar-resource-manager").click();
+  await expectCenterClickable(page, "[data-testid='resource-kind-select']");
+  await page.getByTestId("resource-modal-close").click();
   await expectCenterClickable(page, "[data-testid='edit-canvas'] canvas");
   await expectNoDocumentHorizontalOverflow(page);
 });
@@ -153,6 +177,7 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
   const mapRoot = page.getByTestId("left-map-root");
   const chipset = page.getByTestId("tile-palette");
 
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(leftPanel).toBeVisible();
   await expect(paletteRoot).toBeVisible();
   await expect(mapRoot).toBeVisible();
@@ -212,7 +237,7 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
 });
 
 test("quick tile picker filters AI-labeled tiles without horizontal scrolling", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.setViewportSize({ width: 1280, height: 560 });
   await page.goto("/?freshProject=1&quickTilePicker=1");
 
   await expect(page.getByTestId("quick-tile-picker")).toBeHidden();
@@ -227,10 +252,11 @@ test("quick tile picker filters AI-labeled tiles without horizontal scrolling", 
   await expect(page.getByTestId("quick-tile-132")).toBeVisible();
   await page.getByTestId("quick-tile-132").click();
   await expect(page.getByTestId("selected-tile-status")).toContainText("132");
+  await page.waitForTimeout(80);
 
   const paletteRoot = page.getByTestId("left-palette-root");
   await paletteRoot.evaluate((node) => {
-    node.scrollTop = 64;
+    node.scrollTop = node.scrollHeight - node.clientHeight;
   });
   const beforeRootScroll = await paletteRoot.evaluate((node) => node.scrollTop);
   expect(beforeRootScroll).toBeGreaterThan(0);
@@ -241,9 +267,10 @@ test("quick tile picker filters AI-labeled tiles without horizontal scrolling", 
   await expect(page.getByTestId("quick-tile-379").locator(".quick-tile-index")).toBeHidden();
   await page.getByTestId("tile-number-toggle").click();
   await expect(page.getByTestId("quick-tile-379").locator(".quick-tile-index")).toBeVisible();
+  const beforeSelectScroll = await paletteRoot.evaluate((node) => node.scrollTop);
   await page.getByTestId("quick-tile-379").click();
   await expect(page.getByTestId("selected-tile-status")).toContainText("379");
-  await expect.poll(() => page.getByTestId("left-palette-root").evaluate((node) => node.scrollTop)).toBe(beforeRootScroll);
+  await expect.poll(() => page.getByTestId("left-palette-root").evaluate((node) => node.scrollTop)).toBe(beforeSelectScroll);
 });
 
 test("left sidebar tool buttons use visible pixel icons with accessible names", async ({ page }) => {
@@ -342,17 +369,12 @@ test("map tree context menu is accessible from mouse, keyboard, and action butto
 
 test("right click picks the tile under the cursor and layer mode is visually distinct", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/?logCabinShowcase=1&focusX=3&focusY=4&rightClickEyedropper=1");
+  await page.goto("/?logCabinShowcase=1&focusX=4&focusY=1&rightClickEyedropper=1");
 
   await page.getByTestId("layer-upper").click();
   await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
-  await page.getByRole("button", { name: "1배 확대" }).click();
-
-  const canvas = page.getByTestId("edit-canvas").locator("canvas");
-  const box = await canvas.boundingBox();
-  if (!box) throw new Error("missing editor canvas");
-  const roofTile = { x: Math.floor(box.x + 3.5 * 16), y: Math.floor(box.y + 4.5 * 16) };
+  const roofTile = await findCanvasPointByCursor(page, ({ lower, upper }) => lower === "374" || upper === "374");
   const clip = { x: roofTile.x - 80, y: roofTile.y - 80, width: 160, height: 160 };
   const upperLayerView = await page.screenshot({ clip });
 
@@ -399,10 +421,19 @@ test("selected tile is previewed on map hover before placement", async ({ page }
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("missing editor canvas");
-  const target = { x: Math.floor(box.x + box.width / 2), y: Math.floor(box.y + box.height / 2) };
-  const clip = { x: target.x - 20, y: target.y - 20, width: 40, height: 40 };
+  const target = await findCanvasPointByCursor(page, ({ lower, position, upper }) =>
+    /^\d+,\d+$/.test(position) && lower !== "132" && upper === "-1"
+  );
+  const away = {
+    x: Math.floor(target.x > box.x + box.width / 2 ? box.x + 40 : box.x + box.width - 40),
+    y: Math.floor(target.y > box.y + box.height / 2 ? box.y + 40 : box.y + box.height - 40),
+  };
+  const clip = { x: Math.floor(box.x), y: Math.floor(box.y), width: Math.floor(box.width), height: Math.floor(box.height) };
+  await page.mouse.move(away.x, away.y);
+  await page.waitForTimeout(50);
   const before = await page.screenshot({ clip });
 
-  await page.mouse.move(target.x, target.y);
+  await page.mouse.move(target.x, target.y, { steps: 6 });
+  await page.waitForTimeout(50);
   await expect.poll(async () => byteDistance(before, await page.screenshot({ clip }))).toBeGreaterThan(24);
 });

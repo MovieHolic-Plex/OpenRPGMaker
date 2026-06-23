@@ -6,7 +6,6 @@ import type { Project } from "./types";
 import { createBlankProject } from "./defaults";
 import { createDevShowcaseProjectForLocation } from "./devShowcaseProjects";
 import { ensureBundledTilesets } from "./defaults/defaultAssets";
-import { clearTileMetadataSqlite, loadProjectFromSqlite, saveProjectToSqlite } from "./tileMetadataDb";
 
 const DB_NAME = "rpg-zzu";
 const STORE = "projects";
@@ -94,20 +93,11 @@ class ProjectStore {
         this.emit();
         return this.current;
       }
-      const sqlite = await loadProjectFromSqlite();
-      if (sqlite.found && sqlite.project) {
-        this.current = sqlite.project;
-        if (ensureBundledTilesets(this.current)) await this.persistCurrent();
-        this.loaded = true;
-        this.emit();
-        return this.current;
-      }
       const saved = await idbGet();
       if (saved && typeof saved.version === "number") {
         this.current = saved;
         const changed = ensureBundledTilesets(this.current);
         if (changed) await this.persistCurrent();
-        else await saveProjectToSqlite(this.current);
       }
     } catch (e) {
       console.warn("[store] 로드 실패, 빈 프로젝트로 시작:", e);
@@ -158,7 +148,6 @@ class ProjectStore {
 
   async clearAll(): Promise<void> {
     await idbClear();
-    await clearTileMetadataSqlite();
     this.current = createBlankProject();
     this.emit();
   }
@@ -182,7 +171,6 @@ class ProjectStore {
   }
 
   private async persistCurrent(): Promise<void> {
-    await saveProjectToSqlite(this.current);
     await idbPut(this.current);
   }
 }

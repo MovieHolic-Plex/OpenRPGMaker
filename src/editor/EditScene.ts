@@ -69,20 +69,26 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!this.isMiddleButtonEvent(event)) return;
     event.preventDefault();
     event.stopPropagation();
+    event.stopImmediatePropagation();
     this.startPanAt(event.clientX, event.clientY);
   };
   private readonly handleAuxiliaryCanvasClick = (event: MouseEvent | PointerEvent): void => {
     if (!this.isMiddleButtonEvent(event)) return;
     event.preventDefault();
     event.stopPropagation();
+    event.stopImmediatePropagation();
   };
   private readonly handleWindowPanMove = (event: MouseEvent | PointerEvent): void => {
     if (!this.isPanning) return;
     event.preventDefault();
     event.stopPropagation();
+    event.stopImmediatePropagation();
     this.continuePanAt(event.clientX, event.clientY);
   };
-  private readonly handleWindowPanEnd = (): void => {
+  private readonly handleWindowPanEnd = (event?: MouseEvent | PointerEvent): void => {
+    event?.preventDefault();
+    event?.stopPropagation();
+    event?.stopImmediatePropagation();
     this.stopPan();
   };
 
@@ -100,7 +106,9 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.tileLayer = this.add.container(0, 0);
     this.hoverPreviewLayer = this.add.container(0, 0);
+    this.hoverPreviewLayer.setDepth(8);
     this.overlayLayer = this.add.container(0, 0);
+    this.overlayLayer.setDepth(9);
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;

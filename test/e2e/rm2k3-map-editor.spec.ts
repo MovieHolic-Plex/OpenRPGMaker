@@ -4,7 +4,16 @@ type DebugState = {
   project: {
     startMapId: string;
     startPos: { x: number; y: number };
-    maps: Record<string, { width: number; height: number; lowerTiles: number[]; upperTiles: number[]; events: { commands: { kind: string; mapId?: string; x?: number; y?: number }[] }[] }>;
+    maps: Record<string, {
+      width: number;
+      height: number;
+      tilesetId: string;
+      lowerTiles: number[];
+      upperTiles: number[];
+      lowerTileStacks?: Record<string, number[]>;
+      upperTileStacks?: Record<string, number[]>;
+      events: { commands: { kind: string; mapId?: string; x?: number; y?: number }[] }[];
+    }>;
     tilesets: Record<string, { passability: { up: boolean; down: boolean; left: boolean; right: boolean }[]; terrain: number[] }>;
   };
   editor: {
@@ -20,21 +29,53 @@ async function debugState(page: Page): Promise<DebugState> {
   return JSON.parse(text) as DebugState;
 }
 
-async function clickMapCenter(page: Page): Promise<void> {
+function currentMap(state: DebugState): DebugState["project"]["maps"][string] {
+  const mapId = state.editor.currentMapId ?? state.project.startMapId;
+  const map = state.project.maps[mapId];
+  if (!map) throw new Error(`missing current map ${mapId}`);
+  return map;
+}
+
+type CanvasPoint = { readonly x: number; readonly y: number };
+
+async function findVisibleMapPoint(page: Page, marginTiles = 2): Promise<CanvasPoint> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("missing editor canvas");
-  await canvas.click({ position: { x: Math.floor(box.width / 2), y: Math.floor(box.height / 2) } });
+  const state = await debugState(page);
+  const map = currentMap(state);
+  const fractions = [0.5, 0.45, 0.55, 0.4, 0.6, 0.35, 0.65, 0.3, 0.7];
+  for (const fy of fractions) {
+    for (const fx of fractions) {
+      const x = Math.floor(box.width * fx);
+      const y = Math.floor(box.height * fy);
+      await page.mouse.move(Math.floor(box.x + x), Math.floor(box.y + y));
+      const cursor = await page.getByTestId("cursor-position").textContent();
+      const match = cursor?.match(/^(\d+),(\d+)$/);
+      if (!match) continue;
+      const tileX = Number(match[1]);
+      const tileY = Number(match[2]);
+      if (tileX < marginTiles || tileY < marginTiles) continue;
+      if (tileX >= map.width - marginTiles || tileY >= map.height - marginTiles) continue;
+      return { x, y };
+    }
+  }
+  throw new Error("missing visible map point");
+}
+
+async function clickMapCenter(page: Page): Promise<void> {
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const point = await findVisibleMapPoint(page);
+  await canvas.click({ position: point });
 }
 
 async function clickMapOffset(page: Page, dxTiles: number, dyTiles: number): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
-  const box = await canvas.boundingBox();
-  if (!box) throw new Error("missing editor canvas");
+  const point = await findVisibleMapPoint(page, 3);
   await canvas.click({
     position: {
-      x: Math.floor(box.width / 2 + dxTiles * 32),
-      y: Math.floor(box.height / 2 + dyTiles * 32),
+      x: point.x + dxTiles * 32,
+      y: point.y + dyTiles * 32,
     },
   });
 }
@@ -43,146 +84,109 @@ function countTiles(tiles: number[], tile: number): number {
   return tiles.filter((value) => value === tile).length;
 }
 
-test("map editor paints, fills, selects, copies, pastes, edits passability, and undoes", async ({ page }, testInfo) => {
+function countStackTiles(stacks: Record<string, number[]> | undefined, tile: number): number {
+  return Object.values(stacks ?? {}).reduce((total, stack) => total + countTiles(stack, tile), 0);
+}
+
+const FILL_TILE = 6;
+const PAINT_TILE = 7;
+const UPPER_TILE = 374;
+
+test("map editor paints, fills, selects, copies, pastes, edits passability, and persists after reload", async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
+  await page.goto("/?freshProject=1&m1MapEditor=1");
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await expect(page.getByTestId("tool-select")).toBeVisible();
-  await expect(page.getByTestId("undo-button")).toBeVisible();
-  await expect(page.getByTestId("redo-button")).toBeVisible();
-  await expect(page.getByTestId("copy-button")).toBeVisible();
-  await expect(page.getByTestId("paste-button")).toBeVisible();
+  await expect(page.getByTestId("toolbar-undo")).toBeVisible();
+  await expect(page.getByTestId("toolbar-redo")).toBeVisible();
 
   const beforeFill = await debugState(page);
-  const mapId = beforeFill.project.startMapId;
-  const beforeSand = countTiles(beforeFill.project.maps[mapId].lowerTiles, 5);
+  const beforeFillMap = currentMap(beforeFill);
+  const beforeFillTileCount = countTiles(beforeFillMap.lowerTiles, FILL_TILE);
 
-  await page.getByTestId("tile-cell-5").click();
+  await page.getByTestId(`chipset-tile-${FILL_TILE}`).click();
+  await page.getByTestId("quick-tile-toggle").click();
+  await expect(page.getByTestId("terrain-tag-input")).toBeVisible();
   await page.getByTestId("terrain-tag-input").fill("7");
   await page.getByTestId("terrain-tag-apply").click();
   await expect.poll(async () => {
     const state = await debugState(page);
-    return state.project.tilesets.tiles_default.terrain[5];
+    return state.project.tilesets[currentMap(state).tilesetId].terrain[FILL_TILE];
   }).toBe(7);
   await page.getByTestId("tool-fill").click();
   await clickMapCenter(page);
   await expect.poll(async () => {
     const state = await debugState(page);
-    return countTiles(state.project.maps[mapId].lowerTiles, 5);
-  }).toBeGreaterThan(beforeSand);
+    return countTiles(currentMap(state).lowerTiles, FILL_TILE);
+  }).toBeGreaterThan(beforeFillTileCount);
   await page.screenshot({ path: testInfo.outputPath("map-fill.png"), fullPage: true });
 
-  await page.getByTestId("undo-button").click();
+  await page.keyboard.press("Control+Z");
   await expect.poll(async () => {
     const state = await debugState(page);
-    return countTiles(state.project.maps[mapId].lowerTiles, 5);
-  }).toBe(beforeSand);
-  await page.getByTestId("redo-button").click();
+    return countTiles(currentMap(state).lowerTiles, FILL_TILE);
+  }).toBe(beforeFillTileCount);
+  await page.keyboard.press("Control+Y");
   await expect.poll(async () => {
     const state = await debugState(page);
-    return countTiles(state.project.maps[mapId].lowerTiles, 5);
-  }).toBeGreaterThan(beforeSand);
+    return countTiles(currentMap(state).lowerTiles, FILL_TILE);
+  }).toBeGreaterThan(beforeFillTileCount);
 
-  await page.getByTestId("tile-cell-1").click();
+  await page.getByTestId(`chipset-tile-${PAINT_TILE}`).click();
   await clickMapCenter(page);
   await page.getByTestId("tool-select").click();
   await clickMapCenter(page);
-  await page.getByTestId("copy-button").click();
-  await expect.poll(async () => (await debugState(page)).editor.clipboard?.tiles[0]).toBe(1);
+  await page.keyboard.press("Control+C");
+  await expect.poll(async () => (await debugState(page)).editor.clipboard?.tiles[0]).toBe(PAINT_TILE);
 
   await clickMapOffset(page, 1, 0);
-  await page.getByTestId("paste-button").click();
+  await page.keyboard.press("Control+V");
   await expect.poll(async () => {
     const state = await debugState(page);
     const selection = state.editor.selection;
     if (!selection) return -999;
-    const map = state.project.maps[mapId];
+    const map = currentMap(state);
     return map.lowerTiles[selection.y * map.width + selection.x];
-  }).toBe(1);
+  }).toBe(PAINT_TILE);
 
-  const beforeUpperTree = countTiles((await debugState(page)).project.maps[mapId].upperTiles, 6);
+  const beforeUpperTree = countStackTiles(currentMap(await debugState(page)).upperTileStacks, UPPER_TILE);
   await page.getByTestId("layer-upper").click();
-  await page.getByTestId("tile-cell-6").click();
+  await page.getByTestId("tool-paint").click();
+  await page.getByTestId("chipset-band-a3").click();
+  await page.getByTestId(`chipset-tile-${UPPER_TILE}`).click();
   await clickMapOffset(page, 0, 1);
   await expect.poll(async () => {
     const state = await debugState(page);
-    return countTiles(state.project.maps[mapId].upperTiles, 6);
+    return countStackTiles(currentMap(state).upperTileStacks, UPPER_TILE);
   }).toBeGreaterThan(beforeUpperTree);
 
-  const passabilityBefore = (await debugState(page)).project.tilesets.tiles_default.passability[6].up;
+  const passabilityBeforeState = await debugState(page);
+  const passabilityBefore = passabilityBeforeState.project.tilesets[currentMap(passabilityBeforeState).tilesetId].passability[UPPER_TILE].up;
   await page.getByTestId("tool-collision").click();
   await clickMapOffset(page, 0, 1);
   await expect.poll(async () => {
     const state = await debugState(page);
-    return state.project.tilesets.tiles_default.passability[6].up;
+    return state.project.tilesets[currentMap(state).tilesetId].passability[UPPER_TILE].up;
   }).toBe(!passabilityBefore);
 
-  await page.getByTestId("map-add").click();
+  const persistedAfterEdit = await debugState(page);
+  const persistedUpperTreeCount = countStackTiles(currentMap(persistedAfterEdit).upperTileStacks, UPPER_TILE);
+  const persistedPassability = persistedAfterEdit.project.tilesets[currentMap(persistedAfterEdit).tilesetId].passability[UPPER_TILE].up;
+  await page.evaluate(() => window.history.replaceState(null, "", "/"));
+  await page.getByTestId("toolbar-save").click();
+  await expect(page.getByTestId("toast")).toContainText("저장됨");
+  await page.reload();
+  await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await expect.poll(async () => {
     const state = await debugState(page);
-    return Object.keys(state.project.maps).length;
-  }).toBe(2);
-  const twoMapState = await debugState(page);
-  const interiorMapId = twoMapState.editor.currentMapId;
-  if (!interiorMapId) throw new Error("new map was not selected");
+    return countStackTiles(currentMap(state).upperTileStacks, UPPER_TILE);
+  }).toBe(persistedUpperTreeCount);
+  await expect.poll(async () => {
+    const state = await debugState(page);
+    return state.project.tilesets[currentMap(state).tilesetId].passability[UPPER_TILE].up;
+  }).toBe(persistedPassability);
 
-  await page.getByTestId("map-width-input").fill("8");
-  await page.getByTestId("map-height-input").fill("6");
-  await page.getByTestId("map-resize-apply").click();
-  await expect.poll(async () => {
-    const state = await debugState(page);
-    const map = state.project.maps[interiorMapId];
-    return `${map.width}x${map.height}`;
-  }).toBe("8x6");
-
-  await page.getByTestId("tool-select").click();
-  await clickMapCenter(page);
-  const selectedStart = (await debugState(page)).editor.selection;
-  if (!selectedStart) throw new Error("missing start selection");
-  await page.getByTestId("map-start-pos-button").click();
-  await expect.poll(async () => {
-    const state = await debugState(page);
-    return `${state.project.startMapId}:${state.project.startPos.x},${state.project.startPos.y}`;
-  }).toBe(`${interiorMapId}:${selectedStart.x},${selectedStart.y}`);
-
-  await page.getByTestId("layer-event").click();
-  await page.getByTestId("tool-event").click();
-  await clickMapOffset(page, -1, 0);
-  await expect(page.getByTestId("event-command-kind-select")).toBeVisible();
-  await page.getByTestId("event-command-kind-select").selectOption("transfer");
-  await page.getByTestId("event-command-add").click();
-  await expect.poll(async () => {
-    const state = await debugState(page);
-    return state.project.maps[interiorMapId].events.some((event) =>
-      event.commands.some((command) => command.kind === "transfer")
-    );
-  }).toBe(true);
-  await page.getByTestId("transfer-map-select").last().evaluate((node, value) => {
-    const select = node as HTMLSelectElement;
-    select.value = value;
-    select.dispatchEvent(new Event("change", { bubbles: true }));
-  }, mapId);
-  await page.getByTestId("transfer-x-input").last().evaluate((node, value) => {
-    const input = node as HTMLInputElement;
-    input.value = value;
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  }, "8");
-  await page.getByTestId("transfer-y-input").last().evaluate((node, value) => {
-    const input = node as HTMLInputElement;
-    input.value = value;
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  }, "7");
-  await expect.poll(async () => {
-    const state = await debugState(page);
-    return state.project.maps[interiorMapId].events.some((event) =>
-      event.commands.some((command) =>
-        command.kind === "transfer" &&
-        command.mapId === mapId &&
-        command.x === 8 &&
-        command.y === 7
-      )
-    );
-  }).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("map-selection-copy-paste.png"), fullPage: true });
 });

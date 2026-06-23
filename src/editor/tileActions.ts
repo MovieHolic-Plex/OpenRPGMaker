@@ -4,6 +4,7 @@ import { isRoadTile, shapeRoadAround, type RoadPoint } from "@/project/defaults/
 import { appendTileToStack, popTileFromStack, topTileInStack } from "@/project/mapOverlayTiles";
 import { harnessLayerForTile, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { GameMap, MapId, PassFlag } from "@/project/types";
+import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
 export type TileLayer = "lower" | "upper";
 type LowerTileEdit = {
@@ -47,6 +48,7 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
       ? { up: false, down: false, left: false, right: false }
       : { up: true, down: true, left: true, right: true };
     ts.passability[tileIdx] = next;
+    markUserTileRuntimeMetadata(ts, tileIdx, { passage: allOpen ? "solid" : "passable" });
   });
 }
 

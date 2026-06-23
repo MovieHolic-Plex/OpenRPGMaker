@@ -86,6 +86,25 @@ describe("EasyRPG Combined Town tileset harness", () => {
     });
   });
 
+  it("preserves user-edited runtime passage and terrain when re-seeding the harness", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    tileset.passability[374] = { up: false, down: false, left: false, right: false };
+    tileset.terrain[374] = 9;
+    tileset.tileMeta![374] = {
+      ...(tileset.tileMeta?.[374] ?? { label: "", description: "" }),
+      passage: "solid",
+      terrainTag: 9,
+      source: "user",
+      userLocked: true,
+    };
+
+    applyCombinedTownHarness(tileset);
+
+    expect(tileset.passability[374]).toEqual({ up: false, down: false, left: false, right: false });
+    expect(tileset.terrain[374]).toBe(9);
+    expect(tileset.tileMeta?.[374]).toMatchObject({ passage: "solid", terrainTag: 9, source: "user", userLocked: true });
+  });
+
   it("marks transparent object groups as stackable without forcing mixed props to one layer", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
     const harnessTileCount = new Set(COMBINED_TOWN_HARNESS_GROUPS.flatMap((group) => [...group.tileIds])).size;

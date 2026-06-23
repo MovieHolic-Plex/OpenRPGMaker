@@ -337,13 +337,13 @@ function makeQuickTileCell(
   });
 }
 
-function selectTile(index: number, _tileLayer: Exclude<Layer, "event">): void {
+function selectTile(index: number, tileLayer: Exclude<Layer, "event">): void {
   preservePaletteViewport(() => {
     const existingIndex = recentTiles.indexOf(index);
     if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);
     recentTiles.unshift(index);
     if (recentTiles.length > 18) recentTiles.length = 18;
-    editorState.set({ selectedTile: index, tool: "paint" });
+    editorState.set({ layer: tileLayer, selectedTile: index, tool: "paint" });
   });
 }
 

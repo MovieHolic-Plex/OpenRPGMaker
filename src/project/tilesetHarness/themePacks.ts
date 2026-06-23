@@ -111,7 +111,7 @@ function preserveUserPrefixCollision(
 function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: number): boolean {
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
-  if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group);
+  if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
   const nextMeta: TileAiMetadata = {
     label: `${group.name} ${tile}`,
     description: group.description,
@@ -128,27 +128,42 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
     tileset.tileMeta![tile] = nextMeta;
     changed = true;
   }
-  return setTileRuntimeContract(tileset, tile, group) || changed;
+  return setTileRuntimeContract(tileset, tile, group, tileset.tileMeta?.[tile]) || changed;
 }
 
-function setTileRuntimeContract(tileset: TilesetDef, tile: number, group: PackHarnessGroup): boolean {
+function setTileRuntimeContract(
+  tileset: TilesetDef,
+  tile: number,
+  group: PackHarnessGroup,
+  meta?: TileAiMetadata
+): boolean {
   let changed = false;
-  const priority = group.defaultLayer === "upper" ? "upper" : "lower";
+  const hasUserRuntime = isUserRuntimeMeta(meta);
+  const priority = hasUserRuntime && (meta?.defaultLayer === "lower" || meta?.defaultLayer === "upper")
+    ? meta.defaultLayer
+    : group.defaultLayer === "upper" ? "upper" : "lower";
   if (tileset.priority[tile] !== priority) {
     tileset.priority[tile] = priority;
     changed = true;
   }
-  const passability = group.passage === "solid" ? solid : passable;
+  const passage = hasUserRuntime && meta?.passage ? meta.passage : group.passage;
+  const passability = passage === "solid" ? solid : passable;
   if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
     tileset.passability[tile] = { ...passability };
     changed = true;
   }
-  const terrain = group.role === "terrain" ? 0 : tileset.terrain[tile] ?? 0;
+  const terrain = hasUserRuntime && typeof meta?.terrainTag === "number"
+    ? meta.terrainTag
+    : group.role === "terrain" ? 0 : tileset.terrain[tile] ?? 0;
   if (tileset.terrain[tile] !== terrain) {
     tileset.terrain[tile] = terrain;
     changed = true;
   }
   return changed;
+}
+
+function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
+  return meta?.source === "user" || meta?.userLocked === true;
 }
 
 function ensureTileMetaLength(tileset: TilesetDef): void {

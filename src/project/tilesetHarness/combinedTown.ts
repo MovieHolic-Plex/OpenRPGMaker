@@ -98,30 +98,45 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
     tileset.tileMeta![tile] = nextMeta;
     changed = true;
   }
-  changed = setTileRuntimeContract(tileset, tile, group) || changed;
+  changed = setTileRuntimeContract(tileset, tile, group, tileset.tileMeta?.[tile]) || changed;
   return changed;
 }
 
-function setTileRuntimeContract(tileset: TilesetDef, tile: number, group: CombinedTownHarnessGroup): boolean {
+function setTileRuntimeContract(
+  tileset: TilesetDef,
+  tile: number,
+  group: CombinedTownHarnessGroup,
+  meta?: TileAiMetadata
+): boolean {
   let changed = false;
   // mixed 그룹: 통행 가능(passable/star) 소품은 upper 오버레이, 고형(solid)은 lower.
   // RM2K3 정석 — 꽃/장식 같은 디테일은 lower 지형 위에 겹쳐 통행을 막지 않는다.
-  const priority = resolveRuntimeLayer(group);
+  const hasUserRuntime = isUserRuntimeMeta(meta);
+  const priority = hasUserRuntime && (meta?.defaultLayer === "lower" || meta?.defaultLayer === "upper")
+    ? meta.defaultLayer
+    : resolveRuntimeLayer(group);
   if (tileset.priority[tile] !== priority) {
     tileset.priority[tile] = priority;
     changed = true;
   }
-  const passability = group.passage === "solid" ? solid : passable;
+  const passage = hasUserRuntime && meta?.passage ? meta.passage : group.passage;
+  const passability = passage === "solid" ? solid : passable;
   if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
     tileset.passability[tile] = { ...passability };
     changed = true;
   }
-  const terrain = terrainTagForGroup(group, describeChipsetTile(tile).terrainTag);
+  const terrain = hasUserRuntime && typeof meta?.terrainTag === "number"
+    ? meta.terrainTag
+    : terrainTagForGroup(group, describeChipsetTile(tile).terrainTag);
   if (tileset.terrain[tile] !== terrain) {
     tileset.terrain[tile] = terrain;
     changed = true;
   }
   return changed;
+}
+
+function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
+  return meta?.source === "user" || meta?.userLocked === true;
 }
 
 function ensureTileMetaLength(tileset: TilesetDef): void {
