@@ -40,7 +40,7 @@ async function importJsonThroughChooser(
   file: string
 ): Promise<void> {
   const chooser = page.waitForEvent("filechooser");
-  await page.locator(".topbar button").nth(3).click();
+  await page.getByTestId("toolbar-import").click();
   const fileChooser = await chooser;
   await fileChooser.setFiles(file);
   await expect(page.getByTestId("toast")).toContainText("가져오기 완료");
@@ -161,7 +161,7 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   expect(exported.database.troops.some((record) => record.name === "T14 Editor Troop")).toBe(true);
   await testInfo.attach("exported-sample.json", { body: serialize(exported), contentType: "application/json" });
   await importExportedJsonViaBrowser(page, deserialize(serialize(exported)));
-  await page.locator(".topbar button").first().click();
+  await page.getByTestId("toolbar-save").click();
   await expect(page.getByTestId("toast")).toContainText("저장됨");
   await page.reload();
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
@@ -231,7 +231,7 @@ test("missing-resource sample import fails recoverably through the browser impor
   const beforeMaps = Object.keys(before.maps);
 
   const chooser = page.waitForEvent("filechooser");
-  await page.locator(".topbar button").nth(3).click();
+  await page.getByTestId("toolbar-import").click();
   const fileChooser = await chooser;
   await fileChooser.setFiles("test/fixtures/projects/rm2k3-sample-missing-resource-v3.json");
 
