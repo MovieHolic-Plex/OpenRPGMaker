@@ -516,6 +516,16 @@ button.btn:disabled {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-1);
+  overflow-y: auto;
+}
+/* tile-palette가 chipset-sheet이기도 할 때, .chipset-sheet의 고정 height
+   (540px)가 좌측 패널을 넘쳐 map-tree를 침범하지 않도록 부모 flex 영역만
+   차지하게 override. specificity를 위해 두 클래스를 함께 지정. */
+.chipset-sheet.tile-palette {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
 }
 .tile-cell {
   width: 100%;
@@ -4451,6 +4461,11 @@ body:has([data-testid='resource-modal']) .right-panel {
 .left-panel-stack[data-testid="left-palette-root"] {
   display: flex;
   flex-direction: column;
+  /* 내부(tool section + tile-palette)가 많아도 이 영역을 넘어 아래
+     map-tree(left-map-root)를 침범하지 않게 clip한다.
+     grid row(minmax(0,1fr))가 height를 고정하므로 overflow:hidden으로
+     자식을 이 영역 안에 가둔다. */
+  overflow: hidden;
   overflow-anchor: none;
   position: relative;
   scrollbar-gutter: stable;
