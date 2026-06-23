@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
-import { applyCombinedTownHarness, COMBINED_TOWN_HARNESS_GROUPS, harnessLayerForTile, isHarnessStackableTile } from "@/project/tilesetHarness";
+import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, COMBINED_TOWN_HARNESS_GROUPS, DUNGEON_HARNESS_PREFIX, harnessLayerForTile, INTERIOR_HARNESS_PREFIX, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
 describe("EasyRPG Combined Town tileset harness", () => {
@@ -54,6 +54,21 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(uploaded.tileGroups).toBeUndefined();
   });
 
+  it("rejects uploaded Combined Town id collisions", () => {
+    const base = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const uploaded: TilesetDef = {
+      ...structuredClone(base),
+      id: DEFAULT_TILESET_ID,
+      image: { type: "uploaded", id: "custom-town" },
+      tileMeta: undefined,
+      tileGroups: undefined,
+    };
+
+    expect(applyCombinedTownHarness(uploaded)).toBe(false);
+    expect(uploaded.tileMeta).toBeUndefined();
+    expect(uploaded.tileGroups).toBeUndefined();
+  });
+
   it("preserves user-locked values when re-seeding the harness", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
     tileset.tileMeta![85] = {
@@ -80,5 +95,70 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(isHarnessStackableTile(tileset, 378)).toBe(true);
     expect(isHarnessStackableTile(tileset, TILE.TREE)).toBe(true);
     expect(harnessLayerForTile(tileset, TILE.TREE)).toBeNull();
+  });
+});
+
+describe("EasyRPG theme metadata packs", () => {
+  it("seeds exact-match dungeon and interior packs in default tilesets", () => {
+    const project = createBlankProject();
+    const dungeon = project.tilesets.easyrpg_chipset_dungeon;
+    const interior = project.tilesets.easyrpg_chipset_interior;
+
+    expect(dungeon.tileGroups?.some((group) => group.id.startsWith(DUNGEON_HARNESS_PREFIX))).toBe(true);
+    expect(interior.tileGroups?.some((group) => group.id.startsWith(INTERIOR_HARNESS_PREFIX))).toBe(true);
+    expect(dungeon.tileMeta?.[270]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "passable" });
+    expect(dungeon.tileMeta?.[1]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "solid" });
+    expect(interior.tileMeta?.[270]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "passable" });
+    expect(interior.tileMeta?.[1]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "solid" });
+  });
+
+  it("applies packs only to exact bundled texture ids", () => {
+    const base = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    const uploaded: TilesetDef = {
+      ...structuredClone(base),
+      id: "uploaded-dungeon",
+      image: { type: "uploaded", id: "tex_easyrpg_chipset_dungeon" },
+      tileMeta: undefined,
+      tileGroups: undefined,
+    };
+
+    expect(applyEasyRpgThemeMetadataPacks(uploaded)).toBe(false);
+    expect(uploaded.tileMeta).toBeUndefined();
+    expect(uploaded.tileGroups).toBeUndefined();
+  });
+
+  it("replaces only pack-owned groups and preserves unrelated groups", () => {
+    const tileset = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    tileset.tileGroups = [
+      ...(tileset.tileGroups ?? []),
+      { id: "user-custom-group", name: "User Group", role: "terrain", defaultLayer: "lower", tileIds: [12], description: "", placementRules: "", source: "user", confidence: "high" },
+      { id: `${DUNGEON_HARNESS_PREFIX}old`, name: "Old Pack Group", role: "terrain", defaultLayer: "lower", tileIds: [13], description: "", placementRules: "", source: "bundled-default", confidence: "high" },
+      { id: `${DUNGEON_HARNESS_PREFIX}user-collision`, name: "User Prefix Collision", role: "terrain", defaultLayer: "lower", tileIds: [14], description: "", placementRules: "", source: "user", confidence: "high" },
+      { id: `${DUNGEON_HARNESS_PREFIX}floor`, name: "User Floor Collision", role: "terrain", defaultLayer: "lower", tileIds: [15], description: "", placementRules: "", source: "user", confidence: "high" },
+      { id: `${DUNGEON_HARNESS_PREFIX}floor-user-preserved`, name: "Existing Preserved Collision", role: "terrain", defaultLayer: "lower", tileIds: [16], description: "", placementRules: "", source: "user", confidence: "high" },
+    ];
+
+    applyEasyRpgThemeMetadataPacks(tileset);
+
+    expect(tileset.tileGroups?.some((group) => group.id === "user-custom-group")).toBe(true);
+    expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}old`)).toBe(false);
+    expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}floor`)).toBe(true);
+    expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}user-collision`)).toBe(true);
+    expect(tileset.tileGroups?.some((group) => group.name === "User Floor Collision")).toBe(true);
+    expect(tileset.tileGroups?.some((group) => group.name === "Existing Preserved Collision")).toBe(true);
+    expect(new Set(tileset.tileGroups?.map((group) => group.id)).size).toBe(tileset.tileGroups?.length);
+  });
+
+  it("preserves source:user and userLocked tile metadata while applying runtime contracts", () => {
+    const tileset = createBlankProject().tilesets.easyrpg_chipset_interior;
+    tileset.tileMeta![270] = { label: "내 바닥", description: "사용자 확정", source: "user", confidence: "high", passage: "passable" };
+    tileset.tileMeta![1] = { label: "잠근 벽", description: "잠금", source: "bundled-default", confidence: "high", userLocked: true, passage: "solid" };
+
+    applyEasyRpgThemeMetadataPacks(tileset);
+
+    expect(tileset.tileMeta?.[270]).toMatchObject({ label: "내 바닥", source: "user" });
+    expect(tileset.tileMeta?.[1]).toMatchObject({ label: "잠근 벽", userLocked: true });
+    expect(tileset.passability[270]).toEqual({ up: true, down: true, left: true, right: true });
+    expect(tileset.passability[1]).toEqual({ up: false, down: false, left: false, right: false });
   });
 });

@@ -1,21 +1,27 @@
 import type { PassFlag, Project, TileAiMetadata, TilesetDef } from "@/project/types";
-import { DEFAULT_TILESET_ID, DEFAULT_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 import { DIRT_ROAD_TILE, TERRAIN_TAG, describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import {
   COMBINED_TOWN_HARNESS_GROUPS,
   COMBINED_TOWN_HARNESS_PREFIX,
   type CombinedTownHarnessGroup,
 } from "./combinedTownGroups";
+import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
 
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
 
-export function isCombinedTownTileset(tileset: Pick<TilesetDef, "id" | "image">): boolean {
-  return tileset.id === DEFAULT_TILESET_ID || (tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY);
+export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boolean {
+  return tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY;
 }
 
 export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): boolean {
-  return Object.values(project.tilesets).reduce((changed, tileset) => applyCombinedTownHarness(tileset) || changed, false);
+  let changed = false;
+  for (const tileset of Object.values(project.tilesets)) {
+    changed = applyCombinedTownHarness(tileset) || changed;
+    changed = applyEasyRpgThemeMetadataPacks(tileset) || changed;
+  }
+  return changed;
 }
 
 export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
@@ -88,7 +94,7 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
     source: "bundled-default",
     ...(meta?.userLocked ? { userLocked: true } : {}),
   };
-  if (meta?.userLocked !== true && JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
+  if (meta?.userLocked !== true && meta?.source !== "user" && JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
     tileset.tileMeta![tile] = nextMeta;
     changed = true;
   }

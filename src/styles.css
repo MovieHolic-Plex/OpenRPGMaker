@@ -4403,6 +4403,29 @@ body:has(.database-modal-backdrop) .ai-assistant-panel {
   padding: 6px;
   resize: none;
 }
+.ai-preview-status {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  color: var(--text-secondary);
+  display: grid;
+  gap: 3px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 6px;
+}
+
+.ai-preview-status p {
+  line-height: 1.35;
+  margin: 0;
+}
+
+.ai-preview-approve:not(:disabled) {
+  background: #e4f3dc;
+  border-color: #8aac78;
+  color: #285320;
+  font-weight: 700;
+}
 
 .left-panel-stack {
   background: var(--bg-panel);

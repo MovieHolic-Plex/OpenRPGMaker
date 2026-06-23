@@ -1,7 +1,7 @@
 import type { AssetSet, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
-import { applyCombinedTownHarness, ensureTilesetHarnesses } from "@/project/tilesetHarness";
+import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { bundledAssetRef, DEFAULT_SPRITE_FRAME_HEIGHT, DEFAULT_SPRITE_FRAME_WIDTH, DEFAULT_SPRITE_HERO, DEFAULT_SPRITE_NPC, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_NAME, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 
@@ -86,16 +86,15 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
-  const base = makeBundledTileset(bundledEasyRpgTilesetId(asset.textureKey), asset.name, asset.textureKey);
-  return {
-    ...base,
-    tileMeta: Array.from({ length: base.count }, () => ({
-      label: "",
-      description: "",
-      source: "unknown",
-    })),
-    tileGroups: [],
-  };
+  const tileset = makeBundledTileset(bundledEasyRpgTilesetId(asset.textureKey), asset.name, asset.textureKey);
+  tileset.tileMeta = Array.from({ length: tileset.count }, () => ({
+    label: "",
+    description: "",
+    source: "unknown",
+  }));
+  tileset.tileGroups = [];
+  applyEasyRpgThemeMetadataPacks(tileset);
+  return tileset;
 }
 
 export function defaultSprites(): Record<string, SpriteDef> {

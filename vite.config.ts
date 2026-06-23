@@ -10,7 +10,8 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    open: true,
+    allowedHosts: ["mdc-server"],
+    open: false,
     proxy: {
       "/api/ai": {
         target: "https://yunwu.ai/v1",

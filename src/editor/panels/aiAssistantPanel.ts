@@ -1,7 +1,10 @@
 import { editorState } from "@/editor/editorState";
+import { createAiPreviewProject, type AiPreviewResult } from "@/project/aiPreviewGenerator";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
+import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 type DragState = {
   readonly dragId: number | "mouse";
@@ -10,13 +13,48 @@ type DragState = {
   readonly panelStartX: number;
   readonly panelStartY: number;
 };
+type PendingAiPreview = Extract<AiPreviewResult, { ok: true }> & {
+  readonly sourceFingerprint: string;
+};
+
 
 const PANEL_MARGIN = 8;
 const PANEL_POSITION_KEY = "rpg-zzu.aiAssistant.position";
 
 export function renderAiAssistantPanel(): HTMLElement {
   let dragState: DragState | null = null;
+  let pendingPreview: PendingAiPreview | null = null;
   const status = el("span", { class: "ai-assistant-status", text: "대기" });
+  const previewStatus = el("div", {
+    class: "ai-preview-status",
+    text: "AI 프리뷰를 생성하면 증거와 승인 버튼이 여기에 표시됩니다.",
+    dataset: { testid: "ai-preview-status" },
+  });
+  const approveButton = el("button", {
+    class: "ai-assistant-action ai-preview-approve",
+    text: "프리뷰 승인해서 프로젝트에 적용",
+    attrs: { type: "button", disabled: "true" },
+    dataset: { testid: "ai-preview-approve" },
+    on: {
+      click: () => {
+        if (!pendingPreview) return;
+        if (!aiPreviewSourceMatches(store.getCurrent(), pendingPreview.sourceFingerprint)) {
+          pendingPreview = null;
+          approveButton.setAttribute("disabled", "true");
+          status.textContent = "다시 생성 필요";
+          renderPreviewLines(previewStatus, ["프로젝트가 프리뷰 생성 이후 변경되었습니다. 현재 프로젝트 기준으로 프리뷰를 다시 생성해 주세요."]);
+          return;
+        }
+        store.replace(pendingPreview.project);
+        editorState.set({ currentMapId: pendingPreview.map.id, selectedEventId: null, selectedEventPageId: null });
+        status.textContent = "승인됨";
+        approveButton.setAttribute("disabled", "true");
+        renderPreviewLines(previewStatus, [`승인 완료: ${pendingPreview.map.name}`, "원본 프로젝트는 승인 전까지 변경되지 않았고, 승인 후 프리뷰 프로젝트가 현재 프로젝트가 되었습니다."]);
+        pendingPreview = null;
+        toast("AI 프리뷰를 프로젝트에 적용했습니다.", "ok");
+      },
+    },
+  });
   const promptInput = el("textarea", {
     class: "ai-assistant-input",
     text: "",
@@ -68,6 +106,51 @@ export function renderAiAssistantPanel(): HTMLElement {
             },
           }),
           promptInput,
+          el("button", {
+            class: "ai-assistant-action",
+            text: "AI 프리뷰 생성",
+            attrs: { type: "button" },
+            dataset: { testid: "ai-preview-generate" },
+            on: {
+              click: () => {
+                const goal = promptInput.value.trim();
+                pendingPreview = null;
+                approveButton.setAttribute("disabled", "true");
+                if (!goal) {
+                  status.textContent = "목표 필요";
+                  renderPreviewLines(previewStatus, ["프리뷰 목표를 먼저 입력하세요. 예: 작은 항구 마을"]);
+                  return;
+                }
+                const project = store.getCurrent();
+                const mapId = editorState.get().currentMapId ?? project.startMapId;
+                const sourceMap = project.maps[mapId];
+                const result = createAiPreviewProject({
+                  goal,
+                  sourceProject: project,
+                  tilesetId: sourceMap?.tilesetId,
+                  mapName: `AI Preview - ${goal}`.slice(0, 80),
+                });
+                if (!result.ok) {
+                  status.textContent = "증거 부족";
+                  renderPreviewLines(previewStatus, [
+                    "프리뷰 생성 실패: 고신뢰 증거가 부족합니다.",
+                    ...aiPreviewEvidenceLines(result),
+                  ]);
+                  return;
+                }
+                pendingPreview = { ...result, sourceFingerprint: aiPreviewSourceFingerprint(project) };
+                approveButton.removeAttribute("disabled");
+                status.textContent = "검토 대기";
+                renderPreviewLines(previewStatus, [
+                  ...aiPreviewDiffLines(project, result),
+                  ...aiPreviewEvidenceLines(result),
+                  "승인 전까지 원본 프로젝트는 변경되지 않습니다.",
+                ]);
+              },
+            },
+          }),
+          previewStatus,
+          approveButton,
         ],
       }),
     ],
@@ -215,6 +298,44 @@ function currentMapDraft(): string {
 function writeAssistantDraft(input: HTMLTextAreaElement, status: HTMLElement, draft: string, label: string): void {
   input.value = draft;
   status.textContent = label;
+}
+function renderPreviewLines(container: HTMLElement, lines: readonly string[]): void {
+  container.replaceChildren(...lines.map((line) => el("p", { text: line })));
+}
+
+export function aiPreviewDiffLines(sourceProject: Project, result: AiPreviewResult): string[] {
+  if (!result.ok) return ["적용될 프로젝트 변경 없음."];
+  return [
+    `프리뷰 맵: ${result.map.name} (${result.map.width}×${result.map.height})`,
+    `맵 수: ${Object.keys(sourceProject.maps).length} → ${Object.keys(result.project.maps).length}`,
+    `시작 맵: ${sourceProject.startMapId} → ${result.project.startMapId}`,
+    `NPC: ${result.evidence.npcMetadata.map((npc) => `${npc.displayName}/${npc.role}`).join(", ")}`,
+  ];
+}
+
+export function aiPreviewEvidenceLines(result: AiPreviewResult): string[] {
+  if (!result.ok) {
+    return [
+      `질문: ${result.clarificationQuestion}`,
+      ...result.missingEvidence.map((evidence) => `부족한 증거: ${evidence.code} — ${evidence.detail}`),
+    ];
+  }
+  const validation = Object.entries(result.evidence.validation)
+    .map(([key, passed]) => `${key}=${passed ? "통과" : "실패"}`)
+    .join(", ");
+  return [
+    `ChipSet 증거: ${result.evidence.chipsetCandidate.tilesetId} / ${result.evidence.chipsetCandidate.confidence}`,
+    `CharSet 증거: ${result.evidence.charsetCandidates.map((candidate) => candidate.assetId).join(", ")}`,
+    `타일 그룹: ${result.evidence.tileGroups.map((group) => `${group.role}(${group.tileIds.length})`).join(", ")}`,
+    `검증: ${validation}`,
+  ];
+}
+export function aiPreviewSourceFingerprint(project: Project): string {
+  return JSON.stringify(project);
+}
+
+export function aiPreviewSourceMatches(project: Project, fingerprint: string): boolean {
+  return aiPreviewSourceFingerprint(project) === fingerprint;
 }
 
 function restorePanelPosition(panel: HTMLElement): void {
