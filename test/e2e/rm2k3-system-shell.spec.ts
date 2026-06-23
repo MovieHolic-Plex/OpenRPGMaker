@@ -98,7 +98,7 @@ test("system shell supports title, menu, saves, audio, pictures, game over, and 
   await expect(page.getByTestId("main-menu")).toHaveAttribute("data-system-resource", "system_shell");
   await expect(page.getByTestId("main-menu")).toHaveCSS("border-image-source", /data:image\/png/);
   await page.click('[data-testid="save-slot-1"]');
-  await expect(page.getByTestId("main-menu")).toContainText("Slot 1 saved");
+  await expect(page.getByTestId("main-menu")).toContainText("1번 저장 칸에 저장했습니다");
   await page.screenshot({ path: testInfo.outputPath("main-menu.png"), fullPage: true });
 
   await page.getByTestId("event-mutate-save-state").click();
@@ -112,7 +112,7 @@ test("system shell supports title, menu, saves, audio, pictures, game over, and 
   await expect.poll(async () => (await runtimeState(page)).variables.var_score).toBe(41);
   await page.keyboard.press("Escape");
   await page.getByTestId("save-slot-2").click();
-  await expect(page.getByTestId("main-menu")).toContainText("Slot 2 saved");
+  await expect(page.getByTestId("main-menu")).toContainText("2번 저장 칸에 저장했습니다");
 
   await page.keyboard.press("Escape");
   await page.getByTestId("event-audio-picture").click();
