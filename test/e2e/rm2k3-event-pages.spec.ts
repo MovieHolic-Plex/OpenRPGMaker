@@ -62,7 +62,9 @@ async function clickMapCenter(page: Page): Promise<void> {
 }
 
 async function tapKey(page: Page, key: string, holdMs = 80): Promise<void> {
-  await page.keyboard.press(key, { delay: holdMs });
+  // 공유 헬퍼로 위임 — headless 입력 주입 + 브라우저 폴백.
+  const { tapKey: runtimeTapKey } = await import("./runtimeInput");
+  await runtimeTapKey(page, key, holdMs);
 }
 
 function loadEventFixture(): MutableEventFixture {

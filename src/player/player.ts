@@ -266,4 +266,5 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 export function teardownPlayer(): void {
   teardownShell?.();
   teardownShell = null;
+  delete (window as unknown as { __rpgzzuInput?: unknown }).__rpgzzuInput;
 }

@@ -110,6 +110,15 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     this.centerCamera();
     void this.fireAutoTriggers();
+    // 자동화(E2E)용 입력 주입 훅. headless Chromium에서는 window keydown이
+    // Phaser keyboard 매니저에 도달하지 않아 실제 키보드 입력이 잡히지 않는다.
+    // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
+    // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 쓰이지 않는다.
+    const w = window as unknown as { __rpgzzuInput?: { action: () => void; dir: (d: string | null) => void } };
+    w.__rpgzzuInput = {
+      action: () => this.input_?.injectActionEdge(),
+      dir: (d) => this.input_?.injectDirection(d as "down" | "left" | "right" | "up" | null),
+    };
   }
 
   update(_time: number, deltaMs: number): void {

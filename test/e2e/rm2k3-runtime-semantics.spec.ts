@@ -43,7 +43,8 @@ async function seedProject(page: Page, project: SeedProject): Promise<void> {
 }
 
 async function tapKey(page: Page, key: string, holdMs = 80): Promise<void> {
-  await page.keyboard.press(key, { delay: holdMs });
+  const { tapKey: runtimeTapKey } = await import("./runtimeInput");
+  await runtimeTapKey(page, key, holdMs);
 }
 
 function makeRuntimeProject(): SeedProject {
