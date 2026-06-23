@@ -81,7 +81,7 @@ export async function importSampleProject(page: Page): Promise<void> {
   await page.goto("/");
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   const chooser = page.waitForEvent("filechooser");
-  await page.locator(".topbar button").nth(3).click();
+  await page.getByTestId("toolbar-import").click();
   const fileChooser = await chooser;
   await fileChooser.setFiles("test/fixtures/projects/rm2k3-sample-v3.json");
   await expect(page.getByTestId("toast")).toContainText("가져오기 완료");

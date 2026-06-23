@@ -10,7 +10,7 @@ test("editor copies the first five RM2000 workbench shell affordances", async ({
   await expect(page.getByTestId("rm2k3-toolbar-row-primary")).toBeVisible();
   await expect(page.getByTestId("rm2k3-toolbar-row-edit")).toBeVisible();
   await expect(page.getByTestId("toolbar-save")).toBeVisible();
-  await expect(page.getByTestId("toolbar-test-play-window")).toBeVisible();
+  await expect(page.getByTestId("mode-play")).toBeVisible();
 
   await expect(page.getByTestId("left-palette-root")).toBeVisible();
   await expect(page.getByTestId("left-map-root")).toBeVisible();
