@@ -1,8 +1,11 @@
 import { renderResourceManager } from "@/editor/panels/resourceManager";
+import { hideRightPanel, showRightPanel } from "@/editor/panels/editor";
 import { el } from "@/util/dom";
 
 export function openResourceModal(): void {
   document.querySelector("[data-testid='resource-modal']")?.remove();
+  // 우측 패널이 같은 testId 컨트롤을 렌더하므로 충돌 방지를 위해 숨긴다.
+  hideRightPanel();
 
   const body = el("div", { class: "database-modal-body" });
   const closeButton = el("button", {
@@ -33,6 +36,7 @@ export function openResourceModal(): void {
   const close = (): void => {
     backdrop.remove();
     document.removeEventListener("keydown", onKeyDown);
+    showRightPanel();
   };
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") close();

@@ -133,6 +133,21 @@ export function isLeftCollapsed(): boolean {
   return leftCollapsed;
 }
 
+// 모달(리소스/데이터베이스)이 열릴 때 호출 — 우측 패널이 같은 testId
+// 컨트롤을 렌더하므로 모달과 충돌(strict mode violation)한다. 모달이 항상
+// 우선이도록 우측 패널 내용을 DOM에서 제거한다(display:none 으로는 Playwright
+// strict mode가 여전히 두 요소를 잡는다). 모달 닫힘 시 showRightPanel로 복원.
+// suppressed 플래그로 store/editorState 구독의 자동 refresh도 막는다.
+let rightPanelSuppressed = false;
+export function hideRightPanel(): void {
+  rightPanelSuppressed = true;
+  if (rightTabbody) clearChildren(rightTabbody);
+}
+export function showRightPanel(): void {
+  rightPanelSuppressed = false;
+  refreshRightPanel();
+}
+
 function projectExportNodeElement(): HTMLElement {
   projectExportNode = el("pre", {
     attrs: { hidden: "true" },
@@ -174,6 +189,11 @@ function refreshPanels(): void {
 // 우측 패널 활성 탭 내용 렌더링 + 탭 활성 상태 동기화.
 function refreshRightPanel(): void {
   if (!rightRoot || !rightTabbody) return;
+  // 모달 열림 중에는 우측 패널을 비워둔다(testId 충돌 방지).
+  if (rightPanelSuppressed) {
+    clearChildren(rightTabbody);
+    return;
+  }
   // 탭 활성 클래스 동기화.
   const tabs = rightRoot.querySelectorAll<HTMLElement>(".right-tab");
   tabs.forEach((tab) => {

@@ -4338,7 +4338,12 @@ body:has(.right-panel) .ai-assistant-panel {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
-body:has(.database-modal-backdrop) .ai-assistant-panel {
+body:has(.database-modal-backdrop) .ai-assistant-panel,
+/* 리소스/데이터베이스 모달이 열렸을 때 우측 패널을 숨긴다 — 모달이 같은
+   testId(resource-kind-select 등)를 가진 컨트롤을 렌더하므로 충돌(strict mode
+   violation)을 막기 위함. 모달이 항상 우선이다. */
+body:has(.database-modal-backdrop) .right-panel,
+body:has([data-testid='resource-modal']) .right-panel {
   display: none;
 }
 
