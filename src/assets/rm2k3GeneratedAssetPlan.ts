@@ -1,4 +1,4 @@
-import planInput from "./rm2k3GeneratedAssetPlan.json";
+import planInput from "./rm2k3GeneratedAssetPlan.json" with { type: "json" };
 import { validateGeneratedAssetManifest, type GeneratedAssetManifest } from "./generatedAssetManifest";
 
 export const RM2K3_GENERATED_ASSET_PLAN = parsePlan();
