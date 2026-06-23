@@ -83,7 +83,7 @@ test("missing troop import prevents battle start with a visible error", async ({
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
   const chooser = page.waitForEvent("filechooser");
-  await page.getByText("가져오기").click();
+  await page.getByTestId("toolbar-import").click();
   const fileChooser = await chooser;
   await fileChooser.setFiles("test/fixtures/projects/battle-missing-troop-v3.json");
   await expect(page.getByText(/가져오기 실패:/)).toContainText("battleProcessing: troopId");
