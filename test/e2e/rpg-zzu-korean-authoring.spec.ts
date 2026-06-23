@@ -90,6 +90,10 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
     return event ? "encounter-ready" : "missing";
   }).toBe("encounter-ready");
 
+  // 이벤트 편집기 모달이 우측 패널 클릭을 가리지 않도록 닫는다.
+  await page.getByTestId("event-editor-modal-close").click().catch(() => {
+    /* 모달이 열려있지 않을 수 있음 */
+  });
   await page.getByTestId("right-tab-database").click();
   await expect(page.getByTestId("db-tab-enemies")).toHaveText("몬스터");
   await page.getByTestId("db-tab-enemies").click();

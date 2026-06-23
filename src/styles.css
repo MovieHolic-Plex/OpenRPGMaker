@@ -4327,6 +4327,12 @@ button.btn.primary {
   z-index: 30;
   padding: 8px;
 }
+/* 우측 작업 패널(리소스/데이터베이스)이 활성일 때 AI 어시스턴트는
+   숨긴다 — 우측 패널이 RM2K3 핵심 작업 영역이고 AI는 보조 도구이며,
+   fixed 위치의 AI 패널이 우측 패널 탭 클릭을 가로채는 것을 막는다. */
+body:has(.right-panel) .ai-assistant-panel {
+  display: none;
+}
 
 .ai-assistant-panel.is-dragging {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);

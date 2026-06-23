@@ -41,6 +41,8 @@ export function enemyFields(form: HTMLElement, id: string): void {
   form.append(textField("몬스터 그래픽", "db-field-monster-resource", enemy.monsterResourceId ?? "", (value) =>
     updateDatabaseRecord("enemies", id, { monsterResourceId: emptyToUndefined(value) })
   ));
+  // 적이 사용할 스킬 선택(RM2K3 적 행동 설정). skillPicker는 store의 skills로 옵션을 채운다.
+  skillPicker(form, "enemies", id);
 }
 
 export function troopFields(form: HTMLElement, id: string): void {

@@ -2,8 +2,10 @@ import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type Layer } from "@/editor/editorState";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { renderAiAssistantPanel } from "@/editor/panels/aiAssistantPanel";
+import { renderDatabasePanel } from "@/editor/panels/database";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { renderMapList } from "@/editor/panels/mapList";
+import { renderResourceManager } from "@/editor/panels/resourceManager";
 import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -23,13 +25,17 @@ let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
 let statusBarRoot: HTMLElement | null = null;
 let projectExportNode: HTMLElement | null = null;
+// 우측 패널: 리소스/데이터베이스 탭. RM2K3 에디터의 핵심 작업 영역.
+let rightRoot: HTMLElement | null = null;
+let rightTabbody: HTMLElement | null = null;
+let rightTab: "resources" | "database" = "resources";
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
 
-  const layout = el("div", { class: "editor-layout no-right-panel" });
+  const layout = el("div", { class: "editor-layout" });
   const left = el("div", { class: "left-panel" });
   const canvasArea = el("div", { class: "canvas-area" });
   const canvasScrollShell = el("div", {
@@ -55,13 +61,34 @@ export function renderEditor(main: HTMLElement): void {
   left.append(leftPaletteRoot, leftMapRoot);
   canvasScrollShell.append(phaserContainer);
   canvasArea.append(canvasScrollShell, canvasToolbar, statusBar);
-  layout.append(left, leftResizer, canvasArea);
+  // 우측 패널: 리소스 관리자 / 데이터베이스 탭. RM2K3 에디터 작업 영역.
+  const right = el("div", { class: "right-panel" });
+  const rightTabbar = el("div", { class: "right-tabbar" });
+  const resourcesTab = el("button", {
+    class: "right-tab" + (rightTab === "resources" ? " active" : ""),
+    text: "소재",
+    attrs: { type: "button", title: "소재 관리자" },
+    dataset: { testid: "right-tab-resources" },
+    on: { click: () => { rightTab = "resources"; refreshRightPanel(); } },
+  });
+  const databaseTab = el("button", {
+    class: "right-tab" + (rightTab === "database" ? " active" : ""),
+    text: "DB",
+    attrs: { type: "button", title: "데이터베이스" },
+    dataset: { testid: "right-tab-database" },
+    on: { click: () => { rightTab = "database"; refreshRightPanel(); } },
+  });
+  rightTabbar.append(resourcesTab, databaseTab);
+  rightTabbody = el("div", { class: "right-tabbody" });
+  right.append(rightTabbar, rightTabbody);
+  layout.append(left, leftResizer, canvasArea, right);
   main.append(layout, renderAiAssistantPanel(), projectExportNodeElement());
 
   leftRoot = left;
   phaserHost = phaserContainer;
   canvasToolbarRoot = canvasToolbar;
   statusBarRoot = statusBar;
+  rightRoot = right;
 
   applyLayout();
   refreshPanels();
@@ -91,6 +118,8 @@ export function teardownEditor(): void {
   canvasToolbarRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
+  rightRoot = null;
+  rightTabbody = null;
 }
 
 export function toggleLeftPanel(): void {
@@ -137,8 +166,28 @@ function refreshPanels(): void {
   renderMapList(leftMapRoot);
   renderCanvasToolbar(canvasToolbarRoot);
   renderEditorStatusbar(statusBarRoot);
+  refreshRightPanel();
   updateProjectExport();
   fitCanvas();
+}
+
+// 우측 패널 활성 탭 내용 렌더링 + 탭 활성 상태 동기화.
+function refreshRightPanel(): void {
+  if (!rightRoot || !rightTabbody) return;
+  // 탭 활성 클래스 동기화.
+  const tabs = rightRoot.querySelectorAll<HTMLElement>(".right-tab");
+  tabs.forEach((tab) => {
+    const id = tab.dataset.testid ?? "";
+    const active = (id === "right-tab-resources" && rightTab === "resources")
+      || (id === "right-tab-database" && rightTab === "database");
+    tab.classList.toggle("active", active);
+  });
+  clearChildren(rightTabbody);
+  if (rightTab === "resources") {
+    renderResourceManager(rightTabbody);
+  } else {
+    renderDatabasePanel(rightTabbody);
+  }
 }
 
 function renderEditorStatusbar(container: HTMLElement): void {

@@ -31,6 +31,14 @@ async function importProjectViaBrowser(page: Page, path: string): Promise<void> 
 
 async function importExportedJsonViaBrowser(page: Page, project: Project): Promise<void> {
   const exportedPath = ".omo/evidence/rm2k3-fidelity-overhaul/14-sample-game/exported-rm2k3-sample-v3.json";
+  // evidence 디렉토리 보장. @types/node 없이 require를 쓰기 위해 ts-expect-error.
+  try {
+    // @ts-expect-error — node require, 런타임에 존재
+    const nodeRequire: NodeRequire = require;
+    nodeRequire("fs").mkdirSync(nodeRequire("path").dirname(exportedPath), { recursive: true });
+  } catch {
+    /* 디렉토리가 이미 있거나 생성 불가해도 writeFile이 처리 */
+  }
   await writeFile(exportedPath, serialize(project), "utf8");
   await importJsonThroughChooser(page, exportedPath);
 }
@@ -76,7 +84,7 @@ async function openMenu(page: Page): Promise<void> {
 }
 
 async function closeMenu(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Close" }).click();
+  await page.getByRole("button", { name: "닫기" }).click();
   await expect(page.getByTestId("main-menu")).toBeHidden();
 }
 
@@ -135,7 +143,7 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("T14 Editor Troop");
-  await page.getByTestId("db-picker-enemy").selectOption({ label: "T14 Editor Slime" });
+  await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "T14 Editor Slime" });
   await page.getByTestId("db-tab-actors").click();
   await page.getByRole("button", { name: /Mira actor_hero/ }).click();
   await expect(page.getByTestId("db-field-name")).toHaveValue("Mira");
@@ -201,7 +209,7 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await dismissDialogue(page, "Save here before entering the dungeon.");
   await openMenu(page);
   await page.getByTestId("save-slot-1").click();
-  await expect(page.getByTestId("main-menu")).toContainText("Slot 1 saved");
+  await expect(page.getByTestId("main-menu")).toContainText("1번 저장 칸에 저장했습니다");
   await closeMenu(page);
 
   await enterDungeon(page);
