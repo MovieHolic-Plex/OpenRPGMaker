@@ -139,9 +139,13 @@ export function renderTilePalette(container: HTMLElement): void {
   }
   tileSection.append(makeChipsetBandNav());
   tileSection.append(palette);
+  // 타일 매핑 인스펙터는 항상 표시 — RM2K3에서 현재 타일의 메타데이터
+  // (이름/키/AI 라벨/레이어/통행/지형)를 보여주는 표준 패널이다.
+  if (state.selectedTile >= 0) {
+    tileSection.append(renderTileMappingInspector(state.selectedTile));
+  }
   if (advancedTileToolsExpanded && state.selectedTile >= 0) {
     tileSection.append(makeTerrainEditor(tileset.id, state.selectedTile, tileset.terrain[state.selectedTile] ?? 0));
-    tileSection.append(renderTileMappingInspector(state.selectedTile));
   }
   container.append(tileSection);
 

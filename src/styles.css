@@ -518,14 +518,29 @@ button.btn:disabled {
   gap: var(--space-1);
   overflow-y: auto;
 }
+/* paletteVerticalCategoryScroll / paletteSelectKeepsScroll 모드: 칩셋 팔레트를
+   compact 고정 height로 제한하여 세로 스크롤만 노출한다(가로 스크롤 금지).
+   카테고리(밴드) 전환 시 타일이 많으면 세로로 스크롤된다. */
+body.palette-vertical-category-scroll .chipset-sheet.tile-palette,
+body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
+  height: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 /* tile-palette가 chipset-sheet이기도 할 때, .chipset-sheet의 고정 height
    (540px)가 좌측 패널을 넘쳐 map-tree를 침범하지 않도록 부모 flex 영역만
-   차지하게 override. specificity를 위해 두 클래스를 함께 지정. */
+   차지하게 override. specificity를 위해 두 클래스를 함께 지정.
+   flex:1 + min-height:0 으로 부모 영역에 맞춰 줄어들고, 내용이 넘치면
+   .tile-palette 의 overflow-y:auto 가 세로 스크롤을 제공한다.
+   height:auto 는 chipset-sheet의 540px 고정을 무효화하여 부모에 맞춘다. */
 .chipset-sheet.tile-palette {
   flex: 1 1 0;
   min-height: 0;
   height: auto;
   max-height: 100%;
+  overflow-y: auto;
 }
 .tile-cell {
   width: 100%;

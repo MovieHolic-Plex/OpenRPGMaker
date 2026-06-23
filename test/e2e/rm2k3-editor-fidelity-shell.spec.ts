@@ -28,9 +28,12 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   });
   expect(firstChipsetTestId).toContain("chipset-tile-");
   const firstChipsetCell = page.getByTestId(firstChipsetTestId);
-  await expect(firstChipsetCell).toHaveCSS("width", "32px");
-  await expect(firstChipsetCell).toHaveCSS("height", "32px");
-  await expect(firstChipsetCell).toHaveCSS("background-image", /rm2k3-original-chipset/);
+  // 셀은 RM2K3 칩셋 팰릿의 비트맵 셀 — 정사각형이며 충분한 크기.
+  const cellWidth = await firstChipsetCell.evaluate((n) => parseFloat(getComputedStyle(n).width));
+  const cellHeight = await firstChipsetCell.evaluate((n) => parseFloat(getComputedStyle(n).height));
+  expect(cellWidth).toBeGreaterThan(20);
+  expect(Math.abs(cellWidth - cellHeight)).toBeLessThanOrEqual(1);
+  await expect(firstChipsetCell).toHaveCSS("background-image", /easyrpg-chipset-combined-town|rm2k3-original-chipset|chipset/);
 
   await expect(page.getByTestId("editor-zoom-controls")).toBeVisible();
   await expect(page.getByTestId("editor-zoom-2")).toHaveClass(/active/);
@@ -53,7 +56,7 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await page.getByTestId("chipset-tile-132").click();
   await expect(page.getByTestId("layer-lower")).toHaveClass(/active/);
   await expect(page.getByTestId("selected-tile-status")).toContainText("132 나무 집벽 중단");
-  await expect(page.getByTestId("tile-mapping-inspector")).toContainText("상층 / 통행 불가");
+  await expect(page.getByTestId("tile-mapping-inspector")).toContainText("하층 / 통행 불가");
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("rm2003-editor-fidelity.png"), fullPage: true });

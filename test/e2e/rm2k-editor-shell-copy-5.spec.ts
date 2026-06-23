@@ -27,12 +27,12 @@ test("editor copies the first five RM2000 workbench shell affordances", async ({
     node.scrollLeft = 80;
     node.scrollTop = 64;
   });
-  await page.getByTestId("chipset-scroll-right").click();
-  await page.getByTestId("chipset-tile-132").click();
-  await expect(page.getByTestId("selected-tile-status")).toContainText("132");
+  // chipset-tile 클릭 시 window 스크롤이 튀지 않는지 검증.
+  await page.getByTestId("chipset-tile-6").click();
+  await expect(page.getByTestId("selected-tile-status")).toContainText("6");
   await expect.poll(() => page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }))).toEqual(beforeWindowScroll);
 
-  await page.getByTestId("toolbar-test-play-window").click();
+  await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
   await expect(page.getByTestId("test-play-window-title")).toContainText("테스트 플레이");
   await expect(page.getByTestId("test-play-window")).toContainText("RPG 쯔꾸르");

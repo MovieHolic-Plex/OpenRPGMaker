@@ -109,7 +109,7 @@ export async function openMenu(page: Page): Promise<void> {
 }
 
 export async function closeMenu(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Close" }).click();
+  await page.getByRole("button", { name: "닫기" }).click();
   await expect(page.getByTestId("main-menu")).toBeHidden();
 }
 
