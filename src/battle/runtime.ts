@@ -67,11 +67,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       chargeRate: ACTOR_CHARGE_RATE,
       gauge: 0,
       stateIds: [],
-      skillIds: actor.learnedSkills.map((entry) => entry.skillId),
+      skillIds: (actor.learnedSkills ?? []).map((entry) => entry.skillId),
     };
   });
 
-  const enemies = troopRecord.enemyIds.map((enemyId, index) => {
+  // troop는 enemyIds(플랫) 또는 members(위치/숨김 포함) 중 하나로 적을 지정한다.
+  // RM2K3 에디터는 members를 사용하지만, 일부 레거시/fixture는 enemyIds를 쓴다.
+  const enemyIds = troopRecord.enemyIds ?? (troopRecord.members ?? []).map((member) => member.enemyId);
+  const enemies = enemyIds.map((enemyId, index) => {
     const enemy = options.project.database.enemies.find((record) => record.id === enemyId);
     if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
     const isDragon = enemy.id.includes("dragon");

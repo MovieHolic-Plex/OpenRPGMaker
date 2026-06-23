@@ -289,13 +289,14 @@ test("map runtime schedules events without mutating authoring project data", asy
   await expect(page.getByTestId("event-sprite-npc-1")).toBeVisible();
 
   await page.getByTestId("play-canvas").locator("canvas").click();
-  await tapKey(page, "ArrowDown");
-  await expect.poll(async () => (await runtimeState(page)).player.y).toBe(0);
+  // auto 이벤트(autorun-1)가 맵 진입 즉시 실행되어 input을 잠근다.
+  // 실행 중에는 inputEnabled가 false여야 한다(RM2K3 autorun 동작).
   await expect.poll(async () => (await runtimeState(page)).switches.sw_auto).toBe(true);
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
 
   await tapKey(page, "ArrowRight");
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
+  // (1,0)의 npc-1은 same priority + overlapForbidden이므로 우측 이동을 막는다.
   let state = await runtimeState(page);
   expect(state.player).toEqual({ x: 0, y: 0 });
 
