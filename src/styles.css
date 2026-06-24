@@ -18,6 +18,18 @@
   --ok: #6edb94;
   /* 골드 액센트(대사창 톤과 조화). */
   --gold: #f5d04a;
+  /* DESIGN.md §2 토큰 — 사용처가 존재하지만 정의가 빠져 색이 깨지던 변수들.
+     모던 다크 팔레트 기준 값으로 정의한다(레트로 라이트 테마는 아래 두 번째 :root 에서 override). */
+  --surface-app: var(--bg);
+  --accent-secondary: var(--gold);
+  --accent-editor: #86b878;
+  --accent-blue: var(--accent);
+  --bg-recessed: #121418;
+  --surface-button: var(--bg-panel-2);
+  --mono: var(--font-mono);
+  --status-warning: #e7b45b;
+  --status-success: var(--ok);
+  --pixel-grid: rgba(255, 255, 255, 0.15);
   --surface-workbench: #f8f5ec;
   --surface-panel: #fffdf7;
   --surface-recessed: #d8d0be;
@@ -4123,6 +4135,18 @@ body.resizing {
   --danger: #9d1f1f;
   --ok: #1f6f38;
   --gold: #7c5e22;
+  /* DESIGN.md §2 토큰 — 사용처가 존재했으나 정의가 빠져 있어 색이 깨지던 변수들.
+     RM2K3 레트로 라이트 테마와 의미론적 역할에 맞춰 정의한다. */
+  --surface-app: var(--bg);
+  --accent-secondary: var(--gold);
+  --accent-editor: #3a6b32;
+  --accent-blue: var(--accent);
+  --bg-recessed: #d8d0be;
+  --surface-button: var(--bg-panel-2);
+  --mono: var(--font-mono);
+  --status-warning: #b4761e;
+  --status-success: var(--ok);
+  --pixel-grid: rgba(0, 0, 0, 0.2);
 }
 
 .topbar {
