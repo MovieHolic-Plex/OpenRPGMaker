@@ -1,6 +1,7 @@
 import { clearChildren, el } from "@/util/dom";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
+import { databaseWorkbenchStatusText, type DatabaseWorkbenchSummary } from "@/editor/panels/databaseWorkbench";
 import {
   renderCommonEventsTab,
   renderSwitchesTab,
@@ -44,6 +45,7 @@ let activeTab: DatabaseTab = readStoredActiveTab();
 
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
+  const activeTabMeta = tabMeta(activeTab);
   const header = el("div", { class: "db-tabs" });
   for (const tab of tabs) {
     header.append(
@@ -63,7 +65,13 @@ export function renderDatabasePanel(container: HTMLElement): void {
 
   const body = el("div", { class: "db-body" });
   renderActiveTab(body, container);
-  container.append(header, body);
+  const status = el("div", {
+    class: "db-workbench-status",
+    attrs: { "aria-live": "polite" },
+    dataset: { testid: "db-workbench-status" },
+    text: databaseWorkbenchStatusText(activeTabSummary(activeTabMeta, body)),
+  });
+  container.append(header, status, body);
 }
 
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
@@ -106,6 +114,54 @@ function setActiveTab(tab: DatabaseTab): void {
   activeTab = tab;
   if (typeof window === "undefined") return;
   window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
+}
+
+function tabMeta(tabId: DatabaseTab): { readonly id: DatabaseTab; readonly label: string } {
+  return tabs.find((tab) => tab.id === tabId) ?? tabs[0];
+}
+
+function activeTabSummary(tab: { readonly id: DatabaseTab; readonly label: string }, body: HTMLElement): DatabaseWorkbenchSummary {
+  const activeRow = recordCollectionForTab(tab.id) ? body.querySelector<HTMLElement>(".db-list-row.active") : null;
+  return {
+    recordId: activeRow?.dataset.recordId,
+    recordName: activeRow?.dataset.recordName,
+    selectedIndex: numericDataset(activeRow, "recordIndex"),
+    tabId: tab.id,
+    tabLabel: tab.label,
+    totalCount: numericDataset(activeRow, "recordTotal"),
+  };
+}
+
+function numericDataset(node: HTMLElement | null, key: string): number | undefined {
+  if (!node) return undefined;
+  const value = node.dataset[key];
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function recordCollectionForTab(tab: DatabaseTab): DatabaseCollection | undefined {
+  switch (tab) {
+    case "actors":
+    case "classes":
+    case "skills":
+    case "items":
+    case "equipment":
+    case "enemies":
+    case "troops":
+    case "states":
+      return tab;
+    case "animations":
+      return "battleAnimations";
+    case "commonEvents":
+    case "switches":
+    case "system":
+    case "terms":
+    case "tilesets":
+    case "variables":
+      return undefined;
+  }
+  return undefined;
 }
 
 function readStoredActiveTab(): DatabaseTab {

@@ -27,6 +27,7 @@
 
 - Files:
   - `easyrpg/charset/*.png` from upstream `CharSet/*.png`
+  - `easyrpg/chipset/*.png` from upstream `ChipSet/*.png`
   - `easyrpg/faceset/*.png` from upstream `FaceSet/*.png`
   - `easyrpg/music/*.mid` from upstream `Music/*.mid`
   - `easyrpg/sound/*.wav` from upstream `Sound/*.wav`

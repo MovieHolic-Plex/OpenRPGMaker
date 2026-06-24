@@ -30,6 +30,7 @@ export {
   defaultSprites,
   defaultTilesets,
   defaultTileset,
+  ensureBundledResourceProfiles,
   ensureBundledTilesets,
 } from "./defaults/defaultAssets";
 export {
@@ -57,6 +58,7 @@ export {
 export {
   createBlankProject,
   createDbExtractedHouseTemplateProject,
+  createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createRetroHouseShowcaseProject,
   createSmallHouseVariantProject,

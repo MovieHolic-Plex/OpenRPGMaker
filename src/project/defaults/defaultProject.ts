@@ -23,6 +23,7 @@ import {
   createRetroHouseShowcaseMap,
   createDbExtractedHouseTemplateMap,
   createSmallHouseVariantMap,
+  createSmallHouseVariantMaps,
   createStarterMap,
   createTownArchitectureCityMap,
   createTownArchitectureTestMap,
@@ -32,6 +33,8 @@ import {
   type TownHouseShowcaseStyle,
   singleNodeTree,
 } from "./defaultMaps";
+
+const HOUSE_TEMPLATE_GALLERY_TOWN_STYLES = ["l", "courtyard", "multi", "road"] as const satisfies readonly TownHouseShowcaseStyle[];
 
 export function createBlankProject(): Project {
   return createProjectWithStarterMap(createStarterMap());
@@ -68,6 +71,17 @@ export function createDbExtractedHouseTemplateProject(): Project {
 export function createSmallHouseVariantProject(selectedVariant: SmallHouseVariantIndex = 1): Project {
   const project = createProjectWithMaps([createSmallHouseVariantMap(selectedVariant)], 0);
   project.startPos = smallHouseVariantStartPos(selectedVariant);
+  return project;
+}
+
+export function createHouseTemplateGalleryProject(): Project {
+  const project = createProjectWithMaps([
+    ...createSmallHouseVariantMaps(),
+    createDbExtractedHouseTemplateMap(),
+    ...HOUSE_TEMPLATE_GALLERY_TOWN_STYLES.map((style) => createTownHouseShowcaseMap(style)),
+    createTownArchitectureTestMap(),
+  ], 0);
+  project.startPos = smallHouseVariantStartPos(1);
   return project;
 }
 

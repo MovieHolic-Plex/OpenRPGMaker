@@ -6,7 +6,6 @@ import {
   DEFAULT_TILESET_ID,
   TILE,
 } from "./constants";
-import { decorateStarterMap64 } from "./decoratedStarterMap";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "./roadAutotile";
 export {
   createTownArchitectureCityMap,
@@ -20,7 +19,7 @@ export {
   type TownHouseShowcaseStyle,
 } from "./townShowcaseMaps";
 
-const STARTER_MAP_SIZE = 64;
+const STARTER_MAP_SIZE = 30;
 const LOG_CABIN_SHOWCASE_SIZE = 32;
 const RETRO_HOUSE_SHOWCASE_SIZE = 10;
 const RETRO_EXTERIOR_TILESET_ID = "easyrpg_chipset_retro_house";
@@ -79,6 +78,16 @@ const PORCH_LOG_CABIN_PATTERN = [
   [-1, 438, 379, 379, 379, 410, -1],
   [-1, 408, -1, 327, 328, 408, -1],
 ] as const;
+const STARTER_VILLAGE_HOUSE_ORIGINS = [
+  { x: 5, y: 5 },
+  { x: 19, y: 5 },
+  { x: 5, y: 17 },
+] as const;
+const STARTER_VILLAGE_ROADS = [
+  { x: 4, y: 10, width: 20, height: 3 },
+  { x: 13, y: 10, width: 3, height: 15 },
+  { x: 7, y: 22, width: 9, height: 3 },
+] as const satisfies readonly RoadRect[];
 
 export function createBlankMap(
   name: string,
@@ -103,7 +112,7 @@ export function createBlankMap(
 
 export function createStarterMap(): GameMap {
   const map = createBlankMap("마을", STARTER_MAP_SIZE, STARTER_MAP_SIZE);
-  decorateStarterMap64(map);
+  decorateStarterVillage(map);
   return map;
 }
 
@@ -149,6 +158,26 @@ export function singleNodeTree(mapId: MapId): MapTreeNode {
 function paintRoadNetwork(map: GameMap, rects: readonly RoadRect[]): void {
   for (const rect of rects) paintRoadRect(map, rect);
   shapeRoadEdges(map, rects);
+}
+
+function decorateStarterVillage(map: GameMap): void {
+  paintBoundary(map);
+  paintRoadNetwork(map, STARTER_VILLAGE_ROADS);
+  for (const origin of STARTER_VILLAGE_HOUSE_ORIGINS) {
+    stampLower(map, origin, SMALL_LOG_CABIN_PATTERN);
+  }
+  clearUpperTilesOnRoad(map);
+}
+
+function paintBoundary(map: GameMap): void {
+  for (let x = 0; x < map.width; x += 1) {
+    setLower(map, x, 0, TILE.WALL);
+    setLower(map, x, map.height - 1, TILE.WALL);
+  }
+  for (let y = 0; y < map.height; y += 1) {
+    setLower(map, 0, y, TILE.WALL);
+    setLower(map, map.width - 1, y, TILE.WALL);
+  }
 }
 
 function stampUpper(

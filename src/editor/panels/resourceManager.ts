@@ -1,5 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { setMapTileset } from "@/editor/actions";
+import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -10,6 +12,11 @@ import {
   validateResourceDimensions,
 } from "@/project/resourceProfiles";
 import type { PassFlag, ResourceKind, TilesetDef, UploadedAsset } from "@/project/types";
+
+type TilesetEnsureResult = {
+  readonly id: TilesetDef["id"];
+  readonly created: boolean;
+};
 
 function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   const kind = toResourceKind(asset.kind);
@@ -209,21 +216,35 @@ function renderUploadedAssets(container: HTMLElement, uploaded: UploadedAsset[])
     );
     row.append(info);
     if (asset.kind === "chipset" || asset.kind === "tileset") {
-      row.append(
+      const actions = el("div", { class: "rm-asset-actions" });
+      actions.append(
         el("button", {
           class: "btn",
           text: "타일셋 추가",
+          dataset: { testid: `resource-add-tileset-${asset.id}` },
           on: {
             click: () => {
-              const tileset = makeTilesetFromUpload(asset);
-              store.update((project) => {
-                project.tilesets[tileset.id] = tileset;
-              });
-              toast(`타일셋 추가됨: ${tileset.name}`, "ok");
+              const result = ensureTilesetFromUpload(asset);
+              toast(result.created ? `타일셋 추가됨: ${asset.name}` : `이미 추가된 타일셋: ${asset.name}`, "ok");
             },
           },
         })
       );
+      actions.append(
+        el("button", {
+          class: "btn primary",
+          text: "현재 맵에 적용",
+          dataset: { testid: `resource-apply-tileset-${asset.id}` },
+          on: {
+            click: () => {
+              const result = ensureTilesetFromUpload(asset);
+              setMapTileset(currentMapId(), result.id);
+              toast(`현재 맵 칩셋 적용: ${asset.name}`, "ok");
+            },
+          },
+        })
+      );
+      row.append(actions);
     }
     row.append(
       el("button", {
@@ -241,6 +262,29 @@ function renderUploadedAssets(container: HTMLElement, uploaded: UploadedAsset[])
     );
     container.append(row);
   }
+}
+
+function ensureTilesetFromUpload(asset: UploadedAsset): TilesetEnsureResult {
+  const existingId = uploadedTilesetIdForAsset(asset.id);
+  if (existingId) return { id: existingId, created: false };
+  const tileset = makeTilesetFromUpload(asset);
+  store.update((project) => {
+    project.tilesets[tileset.id] = tileset;
+  });
+  return { id: tileset.id, created: true };
+}
+
+function uploadedTilesetIdForAsset(assetId: UploadedAsset["id"]): TilesetDef["id"] | null {
+  const project = store.getCurrent();
+  const tileset = Object.values(project.tilesets).find((candidate) => {
+    return candidate.image.type === "uploaded" && candidate.image.id === assetId;
+  });
+  return tileset?.id ?? null;
+}
+
+function currentMapId(): string {
+  const project = store.getCurrent();
+  return editorState.get().currentMapId ?? project.startMapId;
 }
 
 function makePreviewGrid(width: number, height: number, tileSize: number): HTMLElement {

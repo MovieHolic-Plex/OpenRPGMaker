@@ -4,7 +4,9 @@ import {
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   bundledEasyRpgTilesetId,
 } from "@/assets/bundled";
+import { EASYRPG_CHIPSET_ASSETS } from "@/assets/easyrpgRtp";
 import { createBlankProject } from "@/project/defaults";
+import { ensureBundledResourceProfiles } from "@/project/defaults/defaultAssets";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 
 describe("bundled EasyRPG RTP assets", () => {
@@ -38,5 +40,37 @@ describe("bundled EasyRPG RTP assets", () => {
       const expectedSource = id === DEFAULT_TILESET_ID ? "bundled-default" : "unknown";
       expect(tileset.tileMeta?.[0]?.source).toBe(expectedSource);
     }
+  });
+
+  it("exposes synced EasyRPG RTP ChipSet package entries as resource profiles", () => {
+    const p = createBlankProject();
+    const exterior = EASYRPG_CHIPSET_ASSETS.find((asset) => asset.id === "easyrpg-chipset-exterior");
+    const profile = p.resourceProfiles.find((resourceProfile) => resourceProfile.assetId === "easyrpg-chipset-exterior");
+
+    expect(exterior).toMatchObject({
+      path: "assets/easyrpg/chipset/Exterior.png",
+      sourcePath: "ChipSet/Exterior.png",
+    });
+    expect(profile).toMatchObject({
+      kind: "chipset",
+      name: "EasyRPG RTP Exterior ChipSet",
+      tileWidth: 16,
+      tileHeight: 16,
+      imageWidth: 480,
+      imageHeight: 256,
+      assetId: "easyrpg-chipset-exterior",
+    });
+  });
+
+  it("adds synced EasyRPG RTP package profiles to saved projects that predate them", () => {
+    const p = createBlankProject();
+    p.resourceProfiles = p.resourceProfiles.filter((profile) => profile.assetId !== "easyrpg-chipset-exterior");
+
+    expect(ensureBundledResourceProfiles(p)).toBe(true);
+    expect(p.resourceProfiles.find((profile) => profile.assetId === "easyrpg-chipset-exterior")).toMatchObject({
+      kind: "chipset",
+      imageWidth: 480,
+      imageHeight: 256,
+    });
   });
 });

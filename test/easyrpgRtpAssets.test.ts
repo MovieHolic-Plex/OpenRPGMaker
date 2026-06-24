@@ -7,7 +7,7 @@ import {
 } from "@/assets/easyrpgRtp";
 
 describe("EasyRPG RTP asset manifest", () => {
-  it("lists the inspected non-tileset EasyRPG RTP asset categories when the scoped RTP import is generated", () => {
+  it("lists the inspected EasyRPG RTP asset categories when the scoped RTP import is generated", () => {
     const categories = new Set(EASYRPG_RTP_ASSETS.map((asset) => asset.category));
 
     expect(categories).toEqual(
@@ -16,6 +16,7 @@ describe("EasyRPG RTP asset manifest", () => {
         "battle",
         "battleWeapon",
         "charset",
+        "chipset",
         "faceset",
         "gameOver",
         "monster",
@@ -25,6 +26,15 @@ describe("EasyRPG RTP asset manifest", () => {
         "system",
         "system2",
         "title",
+      ])
+    );
+    expect(EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset")).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "easyrpg-chipset-exterior",
+          path: "assets/easyrpg/chipset/Exterior.png",
+          sourcePath: "ChipSet/Exterior.png",
+        }),
       ])
     );
     expect(EASYRPG_CHARSET_ASSETS.length).toBeGreaterThanOrEqual(17);

@@ -99,6 +99,7 @@ describe("generatedAssetResourceResolver", () => {
     // Given: a vendored EasyRPG RTP replacement asset id and its Phaser texture key.
     // When/Then: both identifiers resolve to the same browser-readable package asset.
     expect(resolveEasyRpgRuntimeAssetUrl("easyrpg-faceset-actor1")).toBe("/assets/easyrpg/faceset/Actor1.png");
+    expect(resolveEasyRpgRuntimeAssetUrl("easyrpg-chipset-exterior")).toBe("/assets/easyrpg/chipset/Exterior.png");
     expect(resolveAssetResourceUrl("easyrpg-charset-actor1")).toBe("/assets/easyrpg/charset/Actor1.png");
     expect(resolveAssetResourceUrl("tex_easyrpg_charset_actor1")).toBe("/assets/easyrpg/charset/Actor1.png");
   });

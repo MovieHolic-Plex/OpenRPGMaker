@@ -28,7 +28,9 @@ let projectExportNode: HTMLElement | null = null;
 // 우측 패널: 리소스/데이터베이스 탭. RM2K3 에디터의 핵심 작업 영역.
 let rightRoot: HTMLElement | null = null;
 let rightTabbody: HTMLElement | null = null;
+let rightRestoreButton: HTMLButtonElement | null = null;
 let rightTab: "resources" | "database" = "resources";
+let rightCollapsed = false;
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 
@@ -78,10 +80,24 @@ export function renderEditor(main: HTMLElement): void {
     dataset: { testid: "right-tab-database" },
     on: { click: () => { rightTab = "database"; refreshRightPanel(); } },
   });
-  rightTabbar.append(resourcesTab, databaseTab);
+  const collapseRight = el("button", {
+    class: "right-panel-collapse",
+    text: "x",
+    attrs: { type: "button", title: "우측 패널 접기", "aria-label": "우측 패널 접기" },
+    dataset: { testid: "right-panel-collapse" },
+    on: { click: () => toggleRightPanel() },
+  }) as HTMLButtonElement;
+  rightTabbar.append(resourcesTab, databaseTab, collapseRight);
   rightTabbody = el("div", { class: "right-tabbody" });
   right.append(rightTabbar, rightTabbody);
-  layout.append(left, leftResizer, canvasArea, right);
+  const rightRestore = el("button", {
+    class: "right-panel-restore",
+    text: "소재/DB",
+    attrs: { type: "button", title: "우측 패널 펼치기", "aria-label": "우측 패널 펼치기" },
+    dataset: { testid: "right-panel-restore" },
+    on: { click: () => toggleRightPanel() },
+  }) as HTMLButtonElement;
+  layout.append(left, leftResizer, canvasArea, rightRestore, right);
   main.append(layout, renderAiAssistantPanel(), projectExportNodeElement());
 
   leftRoot = left;
@@ -89,6 +105,7 @@ export function renderEditor(main: HTMLElement): void {
   canvasToolbarRoot = canvasToolbar;
   statusBarRoot = statusBar;
   rightRoot = right;
+  rightRestoreButton = rightRestore;
 
   applyLayout();
   refreshPanels();
@@ -120,6 +137,7 @@ export function teardownEditor(): void {
   projectExportNode = null;
   rightRoot = null;
   rightTabbody = null;
+  rightRestoreButton = null;
 }
 
 export function toggleLeftPanel(): void {
@@ -131,6 +149,12 @@ export function toggleLeftPanel(): void {
 
 export function isLeftCollapsed(): boolean {
   return leftCollapsed;
+}
+
+export function toggleRightPanel(): void {
+  rightCollapsed = !rightCollapsed;
+  applyLayout();
+  fitCanvas();
 }
 
 // 모달(리소스/데이터베이스)이 열릴 때 호출 — 우측 패널이 같은 testId
@@ -168,11 +192,21 @@ function applyLayout(): void {
   if (leftFolded) {
     leftRoot.style.display = "none";
     leftResizer.style.display = "none";
+    applyRightLayout();
     return;
   }
   leftRoot.style.display = "";
   leftRoot.style.width = `${leftWidth}px`;
   leftResizer.style.display = "";
+  applyRightLayout();
+}
+
+function applyRightLayout(): void {
+  const layout = rightRoot?.closest<HTMLElement>(".editor-layout");
+  if (!layout || !rightRoot || !rightRestoreButton) return;
+  layout.classList.toggle("no-right-panel", rightCollapsed);
+  rightRoot.hidden = rightCollapsed;
+  rightRestoreButton.hidden = !rightCollapsed;
 }
 
 function refreshPanels(): void {

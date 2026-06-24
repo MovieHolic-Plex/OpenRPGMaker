@@ -1,6 +1,7 @@
 import {
   createBlankProject,
   createDbExtractedHouseTemplateProject,
+  createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createRetroHouseShowcaseProject,
   createSmallHouseVariantProject,
@@ -22,6 +23,7 @@ const DEV_TOWN_ARCHITECTURE_CITY_PARAM = "townArchitectureCity";
 const DEV_TOWN_ARCHITECTURE_TEST_PARAM = "townArchitectureTest";
 const DEV_DB_EXTRACTED_HOUSE_TEMPLATE_PARAM = "dbExtractedHouseTemplate";
 const DEV_SMALL_HOUSE_VARIANT_PARAM = "smallHouseVariant";
+const DEV_HOUSE_TEMPLATE_GALLERY_PARAM = "houseTemplateGallery";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
   if (typeof window === "undefined") return null;
@@ -35,6 +37,9 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (params.has(DEV_TOWN_CITY_SHOWCASE_PARAM)) return createTownCityShowcaseProject();
   if (params.has(DEV_TOWN_ARCHITECTURE_CITY_PARAM)) return createTownArchitectureCityProject();
   if (params.has(DEV_TOWN_ARCHITECTURE_TEST_PARAM)) return createTownArchitectureTestProject();
+  if (params.has(DEV_HOUSE_TEMPLATE_GALLERY_PARAM) || params.get(DEV_SMALL_HOUSE_VARIANT_PARAM) === "all") {
+    return createHouseTemplateGalleryProject();
+  }
   if (params.has(DEV_SMALL_HOUSE_VARIANT_PARAM)) {
     return createSmallHouseVariantProject(normalizeSmallHouseVariant(params.get(DEV_SMALL_HOUSE_VARIANT_PARAM)));
   }

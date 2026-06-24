@@ -13,12 +13,33 @@ import {
   DEFAULT_TILE_SIZE,
   LEGACY_RM_TILESET_ID,
 } from "@/project/defaults";
-import { CHIPSET_TILE_GROUPS, TERRAIN_TAG, describeChipsetTile, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
+import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
 import { TILE_SIZE as PREVIEW_TILE_SIZE } from "@/assets/tilePreview";
 import { serialize } from "@/project/io";
 import { SCHEMA_VERSION } from "@/project/types";
 import sampleProject from "./fixtures/projects/rm2k3-sample-v3.json";
+
+const STARTER_VILLAGE_SMALL_HOUSE_PATTERN = [
+  [374, 375, 374, 375, 374],
+  [404, 405, 404, 405, 404],
+  [102, 103, 103, 103, 104],
+  [132, 133, 329, 133, 134],
+  [162, 163, 359, 163, 164],
+] as const;
+
+const STARTER_VILLAGE_HOUSE_DOOR_APPROACHES = [
+  { x: 7, y: 10 },
+  { x: 21, y: 10 },
+  { x: 7, y: 22 },
+] as const;
+const STARTER_VILLAGE_FIRST_DOOR_APPROACH = STARTER_VILLAGE_HOUSE_DOOR_APPROACHES[0];
+
+type PatternSubject = {
+  readonly tiles: readonly number[];
+  readonly mapWidth: number;
+  readonly mapHeight: number;
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -176,15 +197,27 @@ describe("createBlankMap", () => {
 });
 
 describe("createStarterMap", () => {
-  it("기본 샘플 맵은 64x64 크기다", () => {
+  it("builds the default 마을 as a 30x30 village with exactly three small houses and connected roads", () => {
+    // Given: the starter map factory creates the first user-visible map.
+    // When: the default starter map is generated.
     const m = createStarterMap();
-    expect(m.width).toBe(64);
-    expect(m.height).toBe(64);
-    expect(m.lowerTiles.length).toBe(64 * 64);
-    expect(m.upperTiles.length).toBe(64 * 64);
+
+    // Then: the map has the requested compact village shape.
+    expect(m.name).toBe("마을");
+    expect(m.width).toBe(30);
+    expect(m.height).toBe(30);
+    expect(m.lowerTiles.length).toBe(30 * 30);
+    expect(m.upperTiles.length).toBe(30 * 30);
+    expect(countPatternOccurrences({ tiles: m.lowerTiles, mapWidth: m.width, mapHeight: m.height }, STARTER_VILLAGE_SMALL_HOUSE_PATTERN)).toBe(3);
+    expect(roadComponentSize(m, STARTER_VILLAGE_FIRST_DOOR_APPROACH)).toBe(roadTileCount(m));
+    for (const approach of STARTER_VILLAGE_HOUSE_DOOR_APPROACHES) {
+      expect(isDirtRoadTile(m.lowerTiles[approach.y * m.width + approach.x] ?? TILE.EMPTY)).toBe(true);
+      expect(roadComponentContains(m, STARTER_VILLAGE_FIRST_DOOR_APPROACH, approach)).toBe(true);
+      expect(m.upperTiles[approach.y * m.width + approach.x]).toBe(TILE.EMPTY);
+    }
   });
 
-  it("경계가 전부 벽이다(lower)", () => {
+  it("keeps the compact village boundary walled", () => {
     const m = createStarterMap();
     for (let x = 0; x < m.width; x++) {
       expect(m.lowerTiles[0 * m.width + x]).toBe(TILE.WALL);
@@ -196,102 +229,98 @@ describe("createStarterMap", () => {
     }
   });
 
-  it("uses chipset-aligned dirt body tiles for the main road", () => {
+  it("uses chipset-aligned dirt tiles for the connected village road", () => {
     const m = createStarterMap();
-    const roadBodyTiles = new Set<number>(CHIPSET_TILE_GROUPS.dirtRoadBody);
+    const roadTiles = new Set<number>(dirtLikeTiles());
     const roadSamples = [
-      { x: 32, y: 10 },
-      { x: 32, y: 50 },
-      { x: 20, y: 36 },
-      { x: 52, y: 36 },
-      { x: 44, y: 46 },
+      { x: 4, y: 10 },
+      { x: 14, y: 11 },
+      { x: 23, y: 12 },
+      { x: 7, y: 22 },
+      { x: 15, y: 24 },
     ];
-    expect(roadBodyTiles.has(TILE.PATH)).toBe(true);
+    expect(roadTiles.has(TILE.PATH)).toBe(true);
     for (const point of roadSamples) {
       const tile = m.lowerTiles[point.y * m.width + point.x];
       expect(tile).toBeDefined();
-      expect(roadBodyTiles.has(tile)).toBe(true);
+      expect(roadTiles.has(tile ?? TILE.EMPTY)).toBe(true);
+      expect(m.upperTiles[point.y * m.width + point.x]).toBe(TILE.EMPTY);
     }
-  });
-
-  it("uses chipset-aligned dirt edge tiles around road borders", () => {
-    const m = createStarterMap();
-    const roadEdgeSamples = [
-      { x: 32, y: 4, expectedTile: 391 },
-      { x: 32, y: 59, expectedTile: 451 },
-      { x: 31, y: 10, expectedTile: 420 },
-      { x: 34, y: 10, expectedTile: 422 },
-      { x: 31, y: 4, expectedTile: 390 },
-      { x: 34, y: 4, expectedTile: 392 },
-      { x: 31, y: 59, expectedTile: 450 },
-      { x: 34, y: 59, expectedTile: 452 },
-    ];
-
-    for (const sample of roadEdgeSamples) {
-      expect(m.lowerTiles[sample.y * m.width + sample.x]).toBe(sample.expectedTile);
-    }
-  });
-
-  it("uses chipset-aligned sand edge tiles around sand plazas", () => {
-    const m = createStarterMap();
-    const sandSamples = [
-      { x: 50, y: 49, expectedTile: 424 },
-      { x: 50, y: 45, expectedTile: 394 },
-      { x: 50, y: 53, expectedTile: 454 },
-      { x: 46, y: 49, expectedTile: 423 },
-      { x: 55, y: 49, expectedTile: 425 },
-      { x: 46, y: 45, expectedTile: 393 },
-      { x: 55, y: 45, expectedTile: 395 },
-      { x: 46, y: 53, expectedTile: 453 },
-      { x: 55, y: 53, expectedTile: 455 },
-    ];
-
-    for (const sample of sandSamples) {
-      expect(m.lowerTiles[sample.y * m.width + sample.x]).toBe(sample.expectedTile);
-    }
-  });
-
-  it("uses coherent body tiles for generated lakes, sand, and stone floors", () => {
-    const m = createStarterMap();
-    const waterBodyTiles = new Set<number>(CHIPSET_TILE_GROUPS.waterBody);
-    const sandBodyTiles = new Set<number>(CHIPSET_TILE_GROUPS.sandBody);
-    const stoneBodyTiles = new Set<number>(CHIPSET_TILE_GROUPS.stoneFloorBody);
-
-    expect(waterBodyTiles.has(m.lowerTiles[26 * m.width + 12] ?? TILE.EMPTY)).toBe(true);
-    expect(sandBodyTiles.has(m.lowerTiles[49 * m.width + 50] ?? TILE.EMPTY)).toBe(true);
-    expect(stoneBodyTiles.has(m.lowerTiles[14 * m.width + 43] ?? TILE.EMPTY)).toBe(true);
-  });
-
-  it("stores generated lakes as semantic animated water for renderer autotiling", () => {
-    const m = createStarterMap();
-    const bodyTiles = new Set<number>(CHIPSET_TILE_GROUPS.waterBody);
-    const sandBodyTiles = new Set<number>(CHIPSET_TILE_GROUPS.sandBody);
-
-    expect(m.lowerTiles[21 * m.width + 12]).not.toBe(TILE.WATER);
-    expect(sandBodyTiles.has(m.lowerTiles[21 * m.width + 12] ?? TILE.EMPTY)).toBe(false);
-    expect(bodyTiles.has(m.lowerTiles[22 * m.width + 12] ?? TILE.EMPTY)).toBe(true);
-    expect(bodyTiles.has(m.lowerTiles[26 * m.width + 12] ?? TILE.EMPTY)).toBe(true);
-    expect(m.upperTiles[22 * m.width + 12]).toBe(TILE.EMPTY);
-  });
-
-  it("uses expanded decoration groups in the generated showcase map", () => {
-    const m = createStarterMap();
-    const woodFloorTiles = new Set<number>(CHIPSET_TILE_GROUPS.woodFloorBody);
-    const groundDetailTiles = new Set<number>(CHIPSET_TILE_GROUPS.groundDetail);
-    const fenceTiles = new Set<number>(CHIPSET_TILE_GROUPS.fenceObjects);
-
-    expect(woodFloorTiles.has(m.lowerTiles[15 * m.width + 12] ?? TILE.EMPTY)).toBe(true);
-    expect(groundDetailTiles.has(m.lowerTiles[25 * m.width + 36] ?? TILE.EMPTY)).toBe(true);
-    expect(fenceTiles.has(m.upperTiles[24 * m.width + 42] ?? TILE.EMPTY)).toBe(true);
-    expect(CHIPSET_TILE_GROUPS.darkWallBody).toContain(m.lowerTiles[55 * m.width + 24] ?? TILE.EMPTY);
-      expect(CHIPSET_TILE_GROUPS.houseRoofObjects).toContain(m.lowerTiles[31 * m.width + 39] ?? TILE.EMPTY);
-      expect(CHIPSET_TILE_GROUPS.houseWhiteWallUpperObjects).toContain(m.lowerTiles[33 * m.width + 39] ?? TILE.EMPTY);
-      expect(CHIPSET_TILE_GROUPS.houseWhiteWallUpperObjects).toContain(m.lowerTiles[33 * m.width + 42] ?? TILE.EMPTY);
-      expect(CHIPSET_TILE_GROUPS.houseEntranceUpperObjects).toContain(m.lowerTiles[34 * m.width + 43] ?? TILE.EMPTY);
-      expect(CHIPSET_TILE_GROUPS.houseEntranceLowerObjects).toContain(m.lowerTiles[35 * m.width + 43] ?? TILE.EMPTY);
-      expect(CHIPSET_TILE_GROUPS.houseWhiteWallRepeatColumnObjects).toContain(m.lowerTiles[35 * m.width + 44] ?? TILE.EMPTY);
-    expect(CHIPSET_TILE_GROUPS.tentObjects).toContain(m.upperTiles[47 * m.width + 57] ?? TILE.EMPTY);
-    expect(CHIPSET_TILE_GROUPS.signObjects).toContain(m.upperTiles[38 * m.width + 38] ?? TILE.EMPTY);
-    expect(CHIPSET_TILE_GROUPS.fireObjects).toContain(m.upperTiles[44 * m.width + 55] ?? TILE.EMPTY);
   });
 });
+
+function countPatternOccurrences(
+  subject: PatternSubject,
+  pattern: readonly (readonly number[])[]
+): number {
+  let count = 0;
+  const patternHeight = pattern.length;
+  const patternWidth = pattern[0]?.length ?? 0;
+  for (let y = 0; y <= subject.mapHeight - patternHeight; y += 1) {
+    for (let x = 0; x <= subject.mapWidth - patternWidth; x += 1) {
+      if (matchesPatternAt(subject, pattern, { x, y })) count += 1;
+    }
+  }
+  return count;
+}
+
+function matchesPatternAt(
+  subject: PatternSubject,
+  pattern: readonly (readonly number[])[],
+  origin: { readonly x: number; readonly y: number }
+): boolean {
+  for (let y = 0; y < pattern.length; y += 1) {
+    const row = pattern[y];
+    if (!row) return false;
+    for (let x = 0; x < row.length; x += 1) {
+      const tile = row[x];
+      if (tile !== undefined && tile >= 0 && subject.tiles[(origin.y + y) * subject.mapWidth + origin.x + x] !== tile) return false;
+    }
+  }
+  return true;
+}
+
+function roadTileCount(map: ReturnType<typeof createStarterMap>): number {
+  return map.lowerTiles.filter(isDirtRoadTile).length;
+}
+
+function roadComponentSize(map: ReturnType<typeof createStarterMap>, start: { readonly x: number; readonly y: number }): number {
+  return collectRoadComponent(map, start).size;
+}
+
+function roadComponentContains(
+  map: ReturnType<typeof createStarterMap>,
+  start: { readonly x: number; readonly y: number },
+  target: { readonly x: number; readonly y: number }
+): boolean {
+  return collectRoadComponent(map, start).has(pointKey(target));
+}
+
+function collectRoadComponent(map: ReturnType<typeof createStarterMap>, start: { readonly x: number; readonly y: number }): Set<string> {
+  const visited = new Set<string>();
+  const queue = [start];
+  while (queue.length > 0) {
+    const point = queue.shift();
+    if (!point) continue;
+    const key = pointKey(point);
+    if (visited.has(key)) continue;
+    const tile = map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
+    if (!isDirtRoadTile(tile)) continue;
+    visited.add(key);
+    queue.push(
+      { x: point.x + 1, y: point.y },
+      { x: point.x - 1, y: point.y },
+      { x: point.x, y: point.y + 1 },
+      { x: point.x, y: point.y - 1 }
+    );
+  }
+  return visited;
+}
+
+function pointKey(point: { readonly x: number; readonly y: number }): string {
+  return `${point.x},${point.y}`;
+}
+
+function isDirtRoadTile(tile: number): boolean {
+  return dirtLikeTiles().includes(tile);
+}

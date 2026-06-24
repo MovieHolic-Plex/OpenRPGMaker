@@ -15,6 +15,7 @@ const CATEGORY_CONFIG = [
   { sourceDir: "Battle", category: "battle", extension: ".png", publicDir: "battle" },
   { sourceDir: "BattleWeapon", category: "battleWeapon", extension: ".png", publicDir: "battle-weapon" },
   { sourceDir: "CharSet", category: "charset", extension: ".png", publicDir: "charset" },
+  { sourceDir: "ChipSet", category: "chipset", extension: ".png", publicDir: "chipset" },
   { sourceDir: "FaceSet", category: "faceset", extension: ".png", publicDir: "faceset" },
   { sourceDir: "GameOver", category: "gameOver", extension: ".png", publicDir: "game-over" },
   { sourceDir: "Monster", category: "monster", extension: ".png", publicDir: "monster" },
@@ -141,6 +142,7 @@ function generateSource(assets) {
 export const EASYRPG_BACKDROP_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "backdrop");
 export const EASYRPG_BATTLE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battle");
 export const EASYRPG_BATTLE_WEAPON_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battleWeapon");
+export const EASYRPG_CHIPSET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset");
 export const EASYRPG_FACESET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "faceset");
 export const EASYRPG_GAME_OVER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "gameOver");
 export const EASYRPG_MONSTER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "monster");
@@ -172,6 +174,7 @@ function generatedTypes() {
   | "battle"
   | "battleWeapon"
   | "charset"
+  | "chipset"
   | "faceset"
   | "gameOver"
   | "monster"

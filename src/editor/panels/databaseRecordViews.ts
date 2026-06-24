@@ -1,5 +1,5 @@
 import { el } from "@/util/dom";
-import { textField } from "@/editor/panels/databaseControls";
+import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
 import {
   addDatabaseRecord,
   deleteDatabaseRecord,
@@ -142,12 +142,16 @@ function recordList(
   rerender: () => void
 ): HTMLElement {
   const list = el("div", { class: "db-list" });
-  const query = searchQuery.toLowerCase();
+  let visibleIndex = 0;
   for (const record of records) {
-    if (query && !record.name.toLowerCase().includes(query) && !record.id.toLowerCase().includes(query)) continue;
+    if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
+    visibleIndex += 1;
+    const isSelected = record.id === selectedId;
     list.append(
       el("button", {
-        class: `db-list-row${record.id === selectedId ? " active" : ""}`,
+        class: `db-list-row${isSelected ? " active" : ""}`,
+        attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
+        dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(records.length), testid: `db-record-row-${record.id}` },
         text: `${record.name} ${record.id}`,
         on: {
           click: () => {

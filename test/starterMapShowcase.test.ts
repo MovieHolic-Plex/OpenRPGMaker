@@ -4,7 +4,7 @@ import {
   createStarterMap,
   TILE,
 } from "@/project/defaults";
-import { CHIPSET_TILE_GROUPS, DIRT_ROAD_TILE, dirtLikeTiles } from "@/project/defaults/chipsetMapping";
+import { DIRT_ROAD_TILE, dirtLikeTiles } from "@/project/defaults/chipsetMapping";
 
 type LayerPatternSubject = {
   readonly tiles: readonly number[];
@@ -13,90 +13,23 @@ type LayerPatternSubject = {
 };
 
 describe("starter map chipset showcase", () => {
-  it("places mapped lake water, desert sand, and stakes in the 64x64 showcase", () => {
+  it("builds a compact default 마을 with three small houses and visible roads", () => {
     const map = createStarterMap();
-
-    expect(CHIPSET_TILE_GROUPS.lakeWaterBody).toContain(map.lowerTiles[31 * map.width + 56] ?? TILE.EMPTY);
-    expect(CHIPSET_TILE_GROUPS.waterfallWater).not.toContain(map.lowerTiles[31 * map.width + 56] ?? TILE.EMPTY);
-    expect(CHIPSET_TILE_GROUPS.sandGround).toContain(map.lowerTiles[31 * map.width + 53] ?? TILE.EMPTY);
-    expect(CHIPSET_TILE_GROUPS.stakeObjects).toContain(map.upperTiles[31 * map.width + 53] ?? TILE.EMPTY);
-  });
-
-  it("places complete mapped house patterns in the village showcase", () => {
-    const map = createStarterMap();
-    const villageHouseOrigin = { x: 39, y: 31 };
-    const secondHouseOrigin = { x: 49, y: 38 };
-    const woodHouseOrigin = { x: 31, y: 40 };
-    const protrudingWoodHouseOrigin = { x: 23, y: 40 };
-    const blueComplexHouseOrigin = { x: 8, y: 35 };
-    const visibleLogCabinOrigin = { x: 5, y: 5 };
-    const villageHouse = [
-      [374, 375, 374, 375, 374, 375, 374, 375, 374],
-      [404, 405, 404, 405, 404, 405, 404, 405, 404],
-      [15, 16, 16, 16, 16, 16, 16, 16, 17],
-      [45, 46, 46, 46, 329, 46, 46, 46, 47],
-      [75, 76, 76, 76, 359, 76, 76, 76, 77],
-    ];
-    const woodHouse = [
+    const smallHouse = [
       [374, 375, 374, 375, 374],
       [404, 405, 404, 405, 404],
       [102, 103, 103, 103, 104],
       [132, 133, 329, 133, 134],
       [162, 163, 359, 163, 164],
     ];
-    const visibleLogCabin = [
-      [374, 375, 374, 375, 374, 375, 374, 375],
-      [404, 405, 404, 405, 404, 405, 404, 405],
-      [102, 103, 103, 103, 103, 103, 103, 104],
-      [132, 133, 133, 329, 133, 133, 133, 134],
-      [162, 163, 163, 359, 163, 163, 163, 164],
-    ];
-    const protrudingWoodHouse = [
-      [374, 375, 374, 375, 374, 375, 374],
-      [404, 405, 404, 405, 404, 405, 404],
-      [102, 103, 374, 375, 374, 103, 104],
-      [132, 133, 404, 405, 404, 133, 134],
-      [162, 163, 102, 103, 104, 163, 164],
-      [-1, -1, 132, 329, 134, -1, -1],
-      [-1, -1, 162, 359, 164, -1, -1],
-    ];
-    const blueComplexHouse = [
-      [406, 407, 406, 407, 406, 407, 406, 407, 406, 407, 406],
-      [436, 437, 436, 437, 436, 437, 436, 437, 436, 437, 436],
-      [-1, -1, -1, -1, 406, 407, 406, -1, -1, -1, -1],
-      [-1, -1, -1, -1, 436, 437, 436, -1, -1, -1, -1],
-      [102, 103, 103, 103, 102, 103, 104, 103, 103, 103, 104],
-      [132, 133, 133, 133, 132, 329, 134, 133, 133, 133, 134],
-      [162, 163, 163, 163, 162, 359, 164, 163, 163, 163, 164],
-      [-1, -1, -1, -1, 132, 329, 134, -1, -1, -1, -1],
-      [-1, -1, -1, -1, 162, 359, 164, -1, -1, -1, -1],
-    ];
 
-    expectHousePattern(map, villageHouseOrigin, villageHouse);
-    expectHousePattern(map, secondHouseOrigin, villageHouse);
-    expectHousePattern(map, woodHouseOrigin, woodHouse);
-    expectHousePattern(map, visibleLogCabinOrigin, visibleLogCabin);
-    expectHousePattern(map, protrudingWoodHouseOrigin, protrudingWoodHouse);
-    expectHousePattern(map, blueComplexHouseOrigin, blueComplexHouse);
-    expectVillageHouseUsesWhiteWallsWithEntrance(map, villageHouseOrigin);
-    expectVillageHouseUsesWhiteWallsWithEntrance(map, secondHouseOrigin);
-    expect(map.events).toContainEqual(expect.objectContaining({
-      id: "event_second_village_house_wood_door_b",
-      x: 53,
-      y: 42,
-      pages: [
-        expect.objectContaining({
-          graphic: {
-            sprite: { type: "bundled", id: "tex_easyrpg_charset_object1" },
-            pattern: 27,
-            direction: "down",
-          },
-        }),
-      ],
-    }));
-    expect(map.upperTiles[42 * map.width + 49]).not.toBe(12);
-    expect(map.upperTiles[42 * map.width + 16]).not.toBe(193);
+    expect(map.width).toBe(30);
+    expect(map.height).toBe(30);
+    expectHousePattern(map, { x: 5, y: 5 }, smallHouse);
+    expectHousePattern(map, { x: 19, y: 5 }, smallHouse);
+    expectHousePattern(map, { x: 5, y: 17 }, smallHouse);
     expect(new Set(dirtLikeTiles()).has(map.lowerTiles[10 * map.width + 8] ?? TILE.EMPTY)).toBe(true);
+    expect(new Set(dirtLikeTiles()).has(map.lowerTiles[22 * map.width + 7] ?? TILE.EMPTY)).toBe(true);
     expectUpperLayerEmptyOnRoad(map);
   });
 
@@ -210,24 +143,6 @@ function expectLayerPattern(
     for (let x = 0; row && x < row.length; x += 1) {
       const tile = row[x];
       if (tile !== -1) expect(subject.tiles[(subject.origin.y + y) * subject.mapWidth + subject.origin.x + x]).toBe(tile);
-    }
-  }
-}
-
-function expectVillageHouseUsesWhiteWallsWithEntrance(
-  map: ReturnType<typeof createStarterMap>,
-  origin: { readonly x: number; readonly y: number }
-): void {
-  const allowedTiles = new Set<number>([
-    ...CHIPSET_TILE_GROUPS.houseWhiteWallObjects,
-    ...CHIPSET_TILE_GROUPS.houseEntranceObjects,
-  ]);
-  const purpleWallTiles = new Set<number>(CHIPSET_TILE_GROUPS.housePurpleStoneWallObjects);
-  for (let y = 2; y <= 4; y += 1) {
-    for (let x = 0; x < 9; x += 1) {
-      const tile = map.lowerTiles[(origin.y + y) * map.width + origin.x + x] ?? TILE.EMPTY;
-      expect(allowedTiles.has(tile)).toBe(true);
-      expect(purpleWallTiles.has(tile)).toBe(false);
     }
   }
 }

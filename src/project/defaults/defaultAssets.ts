@@ -193,12 +193,26 @@ export function defaultResourceProfiles(): ResourceProfile[] {
   return profiles;
 }
 
+export function ensureBundledResourceProfiles(project: { resourceProfiles: ResourceProfile[] }): boolean {
+  let changed = false;
+  const existingAssetIds = new Set(project.resourceProfiles.map((profile) => profile.assetId).filter((assetId) => assetId !== undefined));
+  for (const profile of defaultResourceProfiles()) {
+    if (profile.assetId === undefined) continue;
+    if (existingAssetIds.has(profile.assetId)) continue;
+    project.resourceProfiles.push({ ...profile });
+    existingAssetIds.add(profile.assetId);
+    changed = true;
+  }
+  return changed;
+}
+
 function resourceKindForEasyRpgCategory(category: (typeof EASYRPG_RTP_ASSETS)[number]["category"]): ResourceKind | null {
   if (category === "music" || category === "sound") return null;
   return category;
 }
 
 function tileWidthForEasyRpgKind(kind: ResourceKind): number | undefined {
+  if (kind === "chipset") return 16;
   if (kind === "charset") return 24;
   if (kind === "faceset") return 48;
   if (kind === "battleWeapon") return 64;
@@ -206,6 +220,7 @@ function tileWidthForEasyRpgKind(kind: ResourceKind): number | undefined {
 }
 
 function tileHeightForEasyRpgKind(kind: ResourceKind): number | undefined {
+  if (kind === "chipset") return 16;
   if (kind === "charset") return 32;
   if (kind === "faceset") return 48;
   if (kind === "battleWeapon") return 64;
@@ -213,6 +228,7 @@ function tileHeightForEasyRpgKind(kind: ResourceKind): number | undefined {
 }
 
 function imageWidthForEasyRpgKind(kind: ResourceKind, fileName: string): number | undefined {
+  if (kind === "chipset") return 480;
   if (kind === "charset") return 288;
   if (kind === "faceset") return 192;
   if (kind === "battleWeapon") return 192;
@@ -226,6 +242,7 @@ function imageWidthForEasyRpgKind(kind: ResourceKind, fileName: string): number 
 }
 
 function imageHeightForEasyRpgKind(kind: ResourceKind, fileName: string): number | undefined {
+  if (kind === "chipset") return 256;
   if (kind === "charset") return 256;
   if (kind === "faceset") return 192;
   if (kind === "battleWeapon") return 512;

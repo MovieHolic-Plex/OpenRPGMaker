@@ -5,7 +5,7 @@
 import type { Project } from "./types";
 import { createBlankProject } from "./defaults";
 import { createDevShowcaseProjectForLocation } from "./devShowcaseProjects";
-import { ensureBundledTilesets } from "./defaults/defaultAssets";
+import { ensureBundledResourceProfiles, ensureBundledTilesets } from "./defaults/defaultAssets";
 
 const DB_NAME = "rpg-zzu";
 const STORE = "projects";
@@ -96,7 +96,9 @@ class ProjectStore {
       const saved = await idbGet();
       if (saved && typeof saved.version === "number") {
         this.current = saved;
-        const changed = ensureBundledTilesets(this.current);
+        const tilesetsChanged = ensureBundledTilesets(this.current);
+        const resourceProfilesChanged = ensureBundledResourceProfiles(this.current);
+        const changed = tilesetsChanged || resourceProfilesChanged;
         if (changed) await this.persistCurrent();
       }
     } catch (e) {

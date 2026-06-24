@@ -1,4 +1,5 @@
 import { renderDatabasePanel } from "@/editor/panels/database";
+import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import { hideRightPanel, showRightPanel } from "@/editor/panels/editor";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -68,15 +69,46 @@ export function openDatabaseModal(): void {
     if (event.target === backdrop) close();
   });
   document.addEventListener("keydown", onKeyDown);
+  const footerStatus = el("div", {
+    class: "database-footer-status",
+    attrs: { "aria-live": "polite" },
+    dataset: { testid: "db-footer-status" },
+    text: databaseFooterStatusText(),
+  });
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
-      el("button", { class: "database-footer-button primary", text: "OK", on: { click: close } }),
-      el("button", { class: "database-footer-button", text: "취소", on: { click: close } }),
-      el("button", { class: "database-footer-button", text: "적용", on: { click: () => void applyDatabaseChanges() } }),
+      footerStatus,
+      el("button", {
+        class: "database-footer-button primary",
+        text: "OK",
+        attrs: { type: "button" },
+        dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
+        on: { click: close },
+      }),
+      el("button", {
+        class: "database-footer-button",
+        text: "취소",
+        attrs: { type: "button" },
+        dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.cancel },
+        on: { click: close },
+      }),
+      el("button", {
+        class: "database-footer-button",
+        text: "적용",
+        attrs: { type: "button" },
+        dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.apply },
+        on: {
+          click: () => {
+            footerStatus.textContent = "변경 내용을 저장하는 중입니다.";
+            void applyDatabaseChanges(footerStatus);
+          },
+        },
+      }),
       el("button", {
         class: "database-footer-button",
         text: "도움말",
+        attrs: { type: "button" },
         on: { click: () => toast("데이터베이스에서 레코드와 시스템 설정을 조정합니다.", "ok") },
       }),
     ],
@@ -91,12 +123,14 @@ export function openDatabaseModal(): void {
   closeButton.focus();
 }
 
-async function applyDatabaseChanges(): Promise<void> {
+async function applyDatabaseChanges(status: HTMLElement): Promise<void> {
   try {
     await store.flush();
+    status.textContent = "적용했습니다. 닫아도 안전합니다.";
     toast("적용했습니다.", "ok");
   } catch (error) {
     if (error instanceof Error) {
+      status.textContent = "적용 실패. 메시지를 확인하세요.";
       toast(`적용 실패: ${error.message}`, "error");
       return;
     }

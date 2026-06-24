@@ -31,6 +31,21 @@ async function exportedProject(page: import("@playwright/test").Page): Promise<E
   return debug.project;
 }
 
+test("RM2K3 database modal exposes workbench context and footer status", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1");
+
+  await page.getByTestId("toolbar-database").click();
+
+  await expect(page.getByTestId("database-modal")).toBeVisible();
+  await expect(page.getByTestId("db-workbench-status")).toContainText("주인공");
+  await expect(page.getByTestId("db-workbench-status")).toContainText(/actor/i);
+  await expect(page.getByTestId("db-footer-status")).toContainText("선택");
+  await expect(page.getByTestId("database-footer-ok")).toBeVisible();
+  await expect(page.getByTestId("database-footer-cancel")).toBeVisible();
+  await expect(page.getByTestId("database-footer-apply")).toBeVisible();
+});
+
 test("RM2K3 database editor edits records, updates dependent pickers, and blocks referenced deletes", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1");

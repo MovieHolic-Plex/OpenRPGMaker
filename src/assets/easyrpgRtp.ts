@@ -8,6 +8,7 @@ export type EasyRpgRtpCategory =
   | "battle"
   | "battleWeapon"
   | "charset"
+  | "chipset"
   | "faceset"
   | "gameOver"
   | "monster"
@@ -57,6 +58,14 @@ export const EASYRPG_RTP_ASSETS = [
   { category: "charset", id: "easyrpg-charset-people5", name: "EasyRPG RTP People5 CharSet", sourcePath: "CharSet/People5.png", path: "assets/easyrpg/charset/People5.png", fileName: "People5.png", textureKey: "tex_easyrpg_charset_people5", group: "People" },
   { category: "charset", id: "easyrpg-charset-template", name: "EasyRPG RTP Template CharSet", sourcePath: "CharSet/Template.png", path: "assets/easyrpg/charset/Template.png", fileName: "Template.png", textureKey: "tex_easyrpg_charset_template", group: "Template" },
   { category: "charset", id: "easyrpg-charset-vehicles", name: "EasyRPG RTP Vehicles CharSet", sourcePath: "CharSet/Vehicles.png", path: "assets/easyrpg/charset/Vehicles.png", fileName: "Vehicles.png", textureKey: "tex_easyrpg_charset_vehicles", group: "Vehicles" },
+  { category: "chipset", id: "easyrpg-chipset-dungeon", name: "EasyRPG RTP Dungeon ChipSet", sourcePath: "ChipSet/Dungeon.png", path: "assets/easyrpg/chipset/Dungeon.png", fileName: "Dungeon.png" },
+  { category: "chipset", id: "easyrpg-chipset-exterior", name: "EasyRPG RTP Exterior ChipSet", sourcePath: "ChipSet/Exterior.png", path: "assets/easyrpg/chipset/Exterior.png", fileName: "Exterior.png" },
+  { category: "chipset", id: "easyrpg-chipset-interior", name: "EasyRPG RTP Interior ChipSet", sourcePath: "ChipSet/Interior.png", path: "assets/easyrpg/chipset/Interior.png", fileName: "Interior.png" },
+  { category: "chipset", id: "easyrpg-chipset-retro-dungeon", name: "EasyRPG RTP retro_Dungeon ChipSet", sourcePath: "ChipSet/retro_Dungeon.png", path: "assets/easyrpg/chipset/retro_Dungeon.png", fileName: "retro_Dungeon.png" },
+  { category: "chipset", id: "easyrpg-chipset-retro-exterior", name: "EasyRPG RTP retro_Exterior ChipSet", sourcePath: "ChipSet/retro_Exterior.png", path: "assets/easyrpg/chipset/retro_Exterior.png", fileName: "retro_Exterior.png" },
+  { category: "chipset", id: "easyrpg-chipset-retro-world", name: "EasyRPG RTP retro_World ChipSet", sourcePath: "ChipSet/retro_World.png", path: "assets/easyrpg/chipset/retro_World.png", fileName: "retro_World.png" },
+  { category: "chipset", id: "easyrpg-chipset-ship", name: "EasyRPG RTP Ship ChipSet", sourcePath: "ChipSet/Ship.png", path: "assets/easyrpg/chipset/Ship.png", fileName: "Ship.png" },
+  { category: "chipset", id: "easyrpg-chipset-world", name: "EasyRPG RTP World ChipSet", sourcePath: "ChipSet/World.png", path: "assets/easyrpg/chipset/World.png", fileName: "World.png" },
   { category: "faceset", id: "easyrpg-faceset-actor1", name: "EasyRPG RTP Actor1 FaceSet", sourcePath: "FaceSet/Actor1.png", path: "assets/easyrpg/faceset/Actor1.png", fileName: "Actor1.png" },
   { category: "faceset", id: "easyrpg-faceset-actor2", name: "EasyRPG RTP Actor2 FaceSet", sourcePath: "FaceSet/Actor2.png", path: "assets/easyrpg/faceset/Actor2.png", fileName: "Actor2.png" },
   { category: "faceset", id: "easyrpg-faceset-monster", name: "EasyRPG RTP Monster FaceSet", sourcePath: "FaceSet/Monster.png", path: "assets/easyrpg/faceset/Monster.png", fileName: "Monster.png" },
@@ -221,6 +230,7 @@ export const EASYRPG_RTP_ASSETS = [
 export const EASYRPG_BACKDROP_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "backdrop");
 export const EASYRPG_BATTLE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battle");
 export const EASYRPG_BATTLE_WEAPON_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battleWeapon");
+export const EASYRPG_CHIPSET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset");
 export const EASYRPG_FACESET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "faceset");
 export const EASYRPG_GAME_OVER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "gameOver");
 export const EASYRPG_MONSTER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "monster");

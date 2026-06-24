@@ -64,6 +64,11 @@ light from top-left.
   - `easyrpg-charset-object1.png`, `easyrpg-charset-object2.png`: event-object sprites; use these for real door/chest/sign objects instead of forcing every door into ChipSet tiles.
 - **출처/라이선스**: EasyRPG RTP. See `public/assets/ATTRIBUTION.md` and `vendor/easyrpg-rtp/AUTHORS.md`.
 
+## easyrpg/chipset/*.png
+- **치수**: 480x256, 16px tile, RPG Maker 2000/2003 ChipSet compatible.
+- **용도**: generated EasyRPG RTP runtime package entries for Resource Manager and project resource references.
+- **출처/라이선스**: EasyRPG RTP `ChipSet/*.png`, pinned in `public/assets/easyrpg/rtp-manifest.json`. License text and authors are mirrored in `public/assets/easyrpg/COPYING` and `public/assets/easyrpg/AUTHORS.md`.
+
 ---
 
 ## 정밀수정 워크플로우

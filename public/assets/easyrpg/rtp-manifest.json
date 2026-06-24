@@ -207,6 +207,70 @@
       "group": "Vehicles"
     },
     {
+      "category": "chipset",
+      "id": "easyrpg-chipset-dungeon",
+      "name": "EasyRPG RTP Dungeon ChipSet",
+      "sourcePath": "ChipSet/Dungeon.png",
+      "path": "assets/easyrpg/chipset/Dungeon.png",
+      "fileName": "Dungeon.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-exterior",
+      "name": "EasyRPG RTP Exterior ChipSet",
+      "sourcePath": "ChipSet/Exterior.png",
+      "path": "assets/easyrpg/chipset/Exterior.png",
+      "fileName": "Exterior.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-interior",
+      "name": "EasyRPG RTP Interior ChipSet",
+      "sourcePath": "ChipSet/Interior.png",
+      "path": "assets/easyrpg/chipset/Interior.png",
+      "fileName": "Interior.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-retro-dungeon",
+      "name": "EasyRPG RTP retro_Dungeon ChipSet",
+      "sourcePath": "ChipSet/retro_Dungeon.png",
+      "path": "assets/easyrpg/chipset/retro_Dungeon.png",
+      "fileName": "retro_Dungeon.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-retro-exterior",
+      "name": "EasyRPG RTP retro_Exterior ChipSet",
+      "sourcePath": "ChipSet/retro_Exterior.png",
+      "path": "assets/easyrpg/chipset/retro_Exterior.png",
+      "fileName": "retro_Exterior.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-retro-world",
+      "name": "EasyRPG RTP retro_World ChipSet",
+      "sourcePath": "ChipSet/retro_World.png",
+      "path": "assets/easyrpg/chipset/retro_World.png",
+      "fileName": "retro_World.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-ship",
+      "name": "EasyRPG RTP Ship ChipSet",
+      "sourcePath": "ChipSet/Ship.png",
+      "path": "assets/easyrpg/chipset/Ship.png",
+      "fileName": "Ship.png"
+    },
+    {
+      "category": "chipset",
+      "id": "easyrpg-chipset-world",
+      "name": "EasyRPG RTP World ChipSet",
+      "sourcePath": "ChipSet/World.png",
+      "path": "assets/easyrpg/chipset/World.png",
+      "fileName": "World.png"
+    },
+    {
       "category": "faceset",
       "id": "easyrpg-faceset-actor1",
       "name": "EasyRPG RTP Actor1 FaceSet",
