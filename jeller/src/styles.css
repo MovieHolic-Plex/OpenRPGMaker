@@ -1,0 +1,114 @@
+:root {
+  --bg: #1a1d22;
+  --bg-soft: #242830;
+  --fg: #e8e8e8;
+  --fg-dim: #9aa0aa;
+  --accent: #c9a227;
+  --border: #353a44;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Pretendard", -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  min-height: 100vh;
+}
+
+#app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.tagline {
+  font-size: 0.75rem;
+  color: var(--fg-dim);
+}
+
+.app-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.step-badge {
+  font-size: 0.7rem;
+  color: var(--fg-dim);
+  background: var(--bg-soft);
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.map-view {
+  background: var(--bg-soft);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+
+.map-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.map-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.poll-hint {
+  font-size: 0.7rem;
+  color: var(--fg-dim);
+}
+
+.map-svg {
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
+  display: block;
+}
+
+.legend-svg {
+  width: 100%;
+  height: 20px;
+  margin-top: 12px;
+}
+
+.map-error {
+  color: #e57373;
+  font-size: 0.85rem;
+  padding: 24px;
+  text-align: center;
+  line-height: 1.6;
+}
