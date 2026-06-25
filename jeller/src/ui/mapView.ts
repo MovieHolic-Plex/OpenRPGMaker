@@ -4,6 +4,7 @@
 import type { Nation, Territory } from "@/types";
 import { selectAll } from "@/api/client";
 import { axialToPixel, computeViewBox, hexPoints } from "@/render/hex";
+import { escapeXml } from "@/render/escape";
 
 const POLL_INTERVAL_MS = 5000;
 
@@ -73,19 +74,6 @@ function renderMap(container: HTMLElement, snap: MapSnapshot): void {
 }
 
 const HEX_LABEL_OFFSET = -2;
-
-function escapeXml(s: string): string {
-  return s.replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case "<": return "&lt;";
-      case ">": return "&gt;";
-      case "&": return "&amp;";
-      case "'": return "&apos;";
-      case '"': return "&quot;";
-      default: return c;
-    }
-  });
-}
 
 /** 맵 뷰 부팅. 폴링 시작 후 첫 렌더. */
 export async function bootMapView(container: HTMLElement): Promise<() => void> {

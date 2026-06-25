@@ -5,8 +5,10 @@ import {
   applyCapture,
   isNationEliminated,
   isUnificationAchieved,
+  applyAction,
+  actionOffice,
 } from "@/engine";
-import type { FactionId, Territory } from "@/types";
+import type { ActionKind, FactionId, Territory } from "@/types";
 
 function territory(over: Partial<Territory> = {}): Territory {
   return {
@@ -117,5 +119,70 @@ describe("isUnificationAchieved", () => {
 
   it("고을이 없으면 null", () => {
     expect(isUnificationAchieved([])).toBe(null);
+  });
+});
+
+// ── 행동 카드 (STEP 2) ──────────────────────────────────
+
+describe("actionOffice", () => {
+  it("내정 행동은 interior, 군사 행동은 military", () => {
+    const interior: ActionKind[] = ["tax_raise", "grain_levy", "infrastructure", "relief"];
+    const military: ActionKind[] = ["conscript", "train", "attack", "defend"];
+    for (const a of interior) expect(actionOffice(a)).toBe("interior");
+    for (const a of military) expect(actionOffice(a)).toBe("military");
+  });
+});
+
+describe("applyAction — 내정", () => {
+  it("tax_raise: 곡물 증가, 인구 감소", () => {
+    const t = territory({ population: 1000, grain: 500 });
+    const r = applyAction("tax_raise", t);
+    expect(r.territoryPatch.grain).toBe(600); // +100
+    expect(r.territoryPatch.population).toBe(970); // -30
+    expect(r.fame_delta).toBeGreaterThan(0);
+  });
+
+  it("grain_levy: 곡물 대폭 증가, 인구 크게 감소", () => {
+    const t = territory({ population: 1000, grain: 500 });
+    const r = applyAction("grain_levy", t);
+    expect(r.territoryPatch.grain).toBe(700); // +200
+    expect(r.territoryPatch.population).toBe(940); // -60
+  });
+
+  it("relief: 곡물 소비, 인구 회복", () => {
+    const t = territory({ population: 1000, grain: 500 });
+    const r = applyAction("relief", t);
+    expect(r.territoryPatch.grain).toBe(400); // -100
+    expect(r.territoryPatch.population).toBe(1040); // +40
+  });
+});
+
+describe("applyAction — 군사", () => {
+  it("conscript: 병력 증가, 인구·곡물 감소", () => {
+    const t = territory({ population: 1000, grain: 500, troops: 100 });
+    const r = applyAction("conscript", t);
+    expect(r.territoryPatch.troops).toBe(200); // +100
+    expect(r.territoryPatch.population).toBe(900); // -100
+    expect(r.territoryPatch.grain).toBe(300); // -200
+  });
+
+  it("train: 전투력 증가, 병력 약간 손실", () => {
+    const t = territory({ troops: 200, combat_power: 50 });
+    const r = applyAction("train", t);
+    expect(r.territoryPatch.combat_power).toBe(55); // +5
+    expect(r.territoryPatch.troops).toBe(196); // -4
+  });
+
+  it("defend: 전투력만 약간 증가, 병력 보존", () => {
+    const t = territory({ troops: 200, combat_power: 50 });
+    const r = applyAction("defend", t);
+    expect(r.territoryPatch.combat_power).toBe(53); // +3
+    expect(r.territoryPatch.troops).toBeUndefined(); // 변화 없음
+  });
+
+  it("combat_power는 100을 넘지 않는다", () => {
+    const t = territory({ troops: 200, combat_power: 98 });
+    const r = applyAction("train", t);
+    expect(r.territoryPatch.combat_power).toBe(100);
   });
 });

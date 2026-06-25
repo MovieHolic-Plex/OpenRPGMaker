@@ -3,8 +3,10 @@
 // 스펙: "결정론적 엔진(코드) → 공정·예측 가능. GPT 안 씀."
 
 import type {
+  ActionKind,
   CombatResult,
   FactionId,
+  Office,
   TickResult,
   Territory,
 } from "@/types";
@@ -149,3 +151,168 @@ export function computeTick(allTerritories: Territory[], tick: number): TickResu
     territory_ownership_changes: [],
   };
 }
+
+// ── 행동 카드 (신하 부문) ────────────────────────────────
+// 각 카드는 "고을 1곳에 대한 부분 갱신"을 반환. GPT 없이 결정론적.
+// 스펙 4절의 행동 카드 표와 1:1.
+
+/** 행동 적용 결과 — 갱신된 고을 부분 + 사람이 볼 효과 요약. */
+export interface ActionResult {
+  territoryPatch: Partial<Territory>;
+  summary: string; // "곡물 +200, 민심 -5" 식의 한 줄
+  fame_delta: number; // 왕의 판결(STEP 3)에 영향 줄 공명 변화
+}
+
+/** 어떤 행동이 어떤 부문에 속하는지. */
+export function actionOffice(kind: ActionKind): Office {
+  switch (kind) {
+    case "tax_raise":
+    case "grain_levy":
+    case "infrastructure":
+    case "relief":
+      return "interior";
+    case "conscript":
+    case "train":
+    case "attack":
+    case "defend":
+      return "military";
+  }
+}
+
+/**
+ * 내정 행동 적용 — 영의정이 한 고을에 대해.
+ * 민심은 명시적 필드가 없으므로, population 증감으로 대리 표현
+ * (민심 하락 = 인구 유출, 진휼 = 인구 유지/회복).
+ */
+function applyInterior(kind: ActionKind, t: Territory): ActionResult {
+  switch (kind) {
+    case "tax_raise": {
+      // 세수 ↑ → 곡물 증가, 민심↓ → 인구 유출
+      const grainGain = Math.round(t.population * 0.1);
+      const popLoss = Math.round(t.population * 0.03);
+      return {
+        territoryPatch: {
+          grain: t.grain + grainGain,
+          population: Math.max(0, t.population - popLoss),
+        },
+        summary: `곡물 +${grainGain}, 민심 하락(인구 -${popLoss})`,
+        fame_delta: 1,
+      };
+    }
+    case "grain_levy": {
+      // 군량 징수 → 곡물 대폭 증가, 민심 크게↓
+      const grainGain = Math.round(t.population * 0.2);
+      const popLoss = Math.round(t.population * 0.06);
+      return {
+        territoryPatch: {
+          grain: t.grain + grainGain,
+          population: Math.max(0, t.population - popLoss),
+        },
+        summary: `군량 +${grainGain}, 민심 급락(인구 -${popLoss})`,
+        fame_delta: 0,
+      };
+    }
+    case "infrastructure": {
+      // 치수·양잠 → 장기 효과, 즉효 약함. 곡물 약간 소비, 인구 약 증가
+      const grainCost = 50;
+      const popGain = Math.round(t.population * 0.02);
+      return {
+        territoryPatch: {
+          grain: Math.max(0, t.grain - grainCost),
+          population: t.population + popGain,
+        },
+        summary: `치수 시공 (곡물 -${grainCost}), 인구 +${popGain}`,
+        fame_delta: 2,
+      };
+    }
+    case "relief": {
+      // 진휼 → 곡물 소비, 민심↑ (인구 회복)
+      const grainCost = Math.round(t.population * 0.1);
+      const popGain = Math.round(t.population * 0.04);
+      return {
+        territoryPatch: {
+          grain: Math.max(0, t.grain - grainCost),
+          population: t.population + popGain,
+        },
+        summary: `기민 구제 (곡물 -${grainCost}), 인구 +${popGain}`,
+        fame_delta: 2,
+      };
+    }
+    default:
+      return { territoryPatch: {}, summary: "알 수 없는 내정 행동", fame_delta: 0 };
+  }
+}
+
+/**
+ * 군사 행동 적용 — 병조판서가 한 고을에 대해.
+ * attack은 별도 전투 흐름(전쟁 생성)으로 가야 하지만, MVP에선
+ * 출병 시 즉시 인접 약한 고을 타격으로 단순화.
+ */
+function applyMilitary(kind: ActionKind, t: Territory): ActionResult {
+  switch (kind) {
+    case "conscript": {
+      // 징병 → 병력↑, 인구↓, 곡물↓
+      const troopGain = Math.round(t.population * 0.1);
+      const popLoss = troopGain;
+      const grainCost = troopGain * 2;
+      return {
+        territoryPatch: {
+          troops: t.troops + troopGain,
+          population: Math.max(0, t.population - popLoss),
+          grain: Math.max(0, t.grain - grainCost),
+        },
+        summary: `병력 +${troopGain}, 인구 -${popLoss}, 곡물 -${grainCost}`,
+        fame_delta: 1,
+      };
+    }
+    case "train": {
+      // 훈련 → 전투력↑, 병력 약간 손실(부상)
+      const powerGain = 5;
+      const troopLoss = Math.round(t.troops * 0.02);
+      return {
+        territoryPatch: {
+          combat_power: Math.min(100, t.combat_power + powerGain),
+          troops: Math.max(0, t.troops - troopLoss),
+        },
+        summary: `전투력 +${powerGain}, 병력 -${troopLoss}`,
+        fame_delta: 1,
+      };
+    }
+    case "defend": {
+      // 철수/수비 → 병력 보존, 전투력 약↑ (방비 강화)
+      return {
+        territoryPatch: {
+          combat_power: Math.min(100, t.combat_power + 3),
+        },
+        summary: "수비 태세 (전투력 +3)",
+        fame_delta: 1,
+      };
+    }
+    case "attack": {
+      // 출병 — 별도 전쟁 흐름이 필요하나 MVP에선 자원 소모만 표시.
+      // 실제 점령은 전쟁 시뮬레이션(bot-step과 동일 공식)으로 submit-action에서 처리.
+      const troopCost = Math.round(t.troops * 0.3);
+      return {
+        territoryPatch: {
+          troops: Math.max(0, t.troops - troopCost),
+        },
+        summary: `출병 준비 (병력 -${troopCost} 투입)`,
+        fame_delta: 0,
+      };
+    }
+    default:
+      return { territoryPatch: {}, summary: "알 수 없는 군사 행동", fame_delta: 0 };
+  }
+}
+
+/**
+ * 행동 적용 진입점.
+ * 부문 불일치(군사 부문 신하가 내정 행동 제출)는 호출 측에서 사전 검증 권장.
+ */
+export function applyAction(kind: ActionKind, t: Territory): ActionResult {
+  if (actionOffice(kind) === "interior") {
+    return applyInterior(kind, t);
+  }
+  return applyMilitary(kind, t);
+}
+

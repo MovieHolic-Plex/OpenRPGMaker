@@ -154,3 +154,47 @@ export interface TickResult {
   nations_eliminated: FactionId[];
   territory_ownership_changes: { territory_id: string; from: FactionId | null; to: FactionId | null }[];
 }
+
+// ── 숏 DTO (Edge Function ↔ 클라이언트) ─────────────────
+
+export interface ShortOption {
+  kind: ActionKind;
+  label: string;
+  hint: string;
+}
+
+export interface ShortData {
+  short_id: string;
+  event_id: number | null;
+  type: EventType;
+  briefing: string;
+  territory?: {
+    id: string;
+    name: string;
+    troops: number;
+    grain: number;
+    population: number;
+  };
+  options: ShortOption[];
+  tick: number;
+}
+
+export interface ActionSubmissionResult {
+  result: {
+    action: ActionKind;
+    territory: Territory;
+    summary: string;
+    fame_delta: number;
+    new_fame: number;
+  };
+  verdict: {
+    kind: Verdict;
+    king_line: string;
+  } | null; // STEP 3에서 채워짐
+}
+
+export interface EnterResult {
+  user_id: string;
+  subject: Subject;
+  reassigned: boolean;
+}
