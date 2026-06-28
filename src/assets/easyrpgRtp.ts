@@ -269,7 +269,7 @@ export const CHARSET_CHARACTER_ROWS = 4;
 export const CHARSET_CHARACTERS_PER_ROW = 4;
 export const CHARSET_CHARACTER_COUNT = 8;
 export const CHARSET_FRAME_COUNT = CHARSET_SHEET_COLUMNS * CHARSET_SHEET_ROWS;
-export const CHARSET_DIRECTIONS = ["down", "left", "right", "up"] as const satisfies readonly CharsetDirection[];
+export const CHARSET_DIRECTIONS = ["up", "right", "down", "left"] as const satisfies readonly CharsetDirection[];
 
 export type CharsetFrameSelection = {
   readonly characterIndex: number;

@@ -1,0 +1,21 @@
+AGY Vision Result
+
+Command:
+$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User'); agy --print-timeout 90s --print "Analyze this UI screenshot: C:\Users\hyeon\Downloads\rpg-zzu\output\evidence\database-tabs-team\T2-inventory-effects\tabs\equipment.png. Report overlaps, clipped text, blank regions, layout problems, visual hierarchy issues, and likely interaction affordances."
+
+agy version:
+1.0.13
+
+Screenshot:
+C:\Users\hyeon\Downloads\rpg-zzu\output\evidence\database-tabs-team\T2-inventory-effects\tabs\equipment.png
+
+Cleaned output summary:
+- The Equipment tab is visibly rendered with a classic grey RM2K3-style Database modal, active left record list, editable fields, checkboxes, dropdowns, and footer actions.
+- Interaction affordances are clear: record list selection, record search, add/duplicate/delete buttons, OK/Cancel/Apply/Help buttons, dropdowns, text inputs, and checkboxes.
+- AGY flagged top application menu text clipping behind/above the modal chrome. Direct inspection confirms this is outside the assigned T2 tab body and does not block the Database workflow.
+- AGY flagged the compact number field as visually truncated (`00...`). Direct inspection confirms the field is intentionally narrow in the existing RM-style identity strip and does not block the edited ID/name fields.
+- AGY flagged duplicated-looking name fields and skill dropdowns. Direct inspection confirms one pair belongs to the record identity/basic row and one belongs to the editable/detail or effect row; this is existing Database form density, not a broken persistence control.
+- AGY flagged large blank space in several panels. Direct inspection confirms this is the existing fixed RM2K3 form layout; no assigned T2 control is hidden or overlapped.
+
+Blocking agy findings for T2 packet:
+- None. Findings are non-blocking watchlist items for existing modal chrome and dense form layout.

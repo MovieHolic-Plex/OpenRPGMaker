@@ -1,6 +1,9 @@
 import { addChildMap, addMap, deleteMap, duplicateMap, moveMapInTree, setStartMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
+import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
+import { renderMapProps } from "@/editor/panels/mapProps";
+import { openMapShiftDialog } from "@/editor/panels/mapShiftDialog";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -40,7 +43,7 @@ export function renderMapList(container: HTMLElement): void {
   const state = editorState.get();
   const activeId = state.currentMapId ?? project.startMapId;
 
-  const section = el("div", { class: "panel-section", dataset: { testid: "map-tree" } });
+  const section = el("div", { class: "panel-section map-tree-panel", dataset: { testid: "map-tree" } });
   section.append(el("h3", { text: "맵 트리" }));
 
   const allMapIds = new Set(Object.keys(project.maps));
@@ -91,6 +94,7 @@ function renderNode(spec: RenderNodeSpec): void {
   const isStart = context.startMapId === node.mapId;
   const hasChildren = node.children.length > 0;
   const isCollapsed = collapsedMapIds.has(node.mapId);
+  const icon = depth === 0 ? "folder" : (map?.name ?? "").toLowerCase().startsWith("area") ? "map-area" : "map-node";
   const actionContext: MapActionContext = {
     canDelete: Object.keys(project.maps).length > 1,
     mapId: node.mapId,
@@ -99,6 +103,7 @@ function renderNode(spec: RenderNodeSpec): void {
   const item = el("div", {
     class: [
       "map-item",
+      depth === 0 ? "map-root" : "map-node",
       node.mapId === context.activeId ? "active" : "",
       hasChildren ? "has-children" : "",
     ].filter(Boolean).join(" "),
@@ -107,7 +112,7 @@ function renderNode(spec: RenderNodeSpec): void {
       "aria-selected": String(node.mapId === context.activeId),
       draggable: depth > 0 ? "true" : "false",
       role: "treeitem",
-      style: `padding-left:${8 + depth * 14}px;`,
+      style: `--map-depth:${depth}; padding-left:${6 + depth * 18}px;`,
       tabindex: "0",
     },
     dataset: { testid: `map-tree-node-${node.mapId}` },
@@ -165,7 +170,7 @@ function renderNode(spec: RenderNodeSpec): void {
   item.append(
     treeToggle(node.mapId, hasChildren, isCollapsed),
     el("span", {
-      class: "map-tree-icon rm-tool-icon rm-tool-icon-folder",
+      class: `map-tree-icon rm-tool-icon rm-tool-icon-${icon}`,
       attrs: { "aria-hidden": "true" },
     }),
     el("span", { class: "map-tree-name", text: map?.name || "(이름 없음)" })
@@ -258,8 +263,8 @@ function selectMap(mapId: MapId): void {
   editorState.set({ currentMapId: mapId, selectedEventId: null, selectedEventPageId: null });
 }
 
-function addChildAndSelect(parentId: MapId): void {
-  const id = addChildMap(parentId, "새 맵");
+function addChildAndSelect(parentId: MapId, name = "새 맵"): void {
+  const id = addChildMap(parentId, name);
   if (!id) return;
   collapsedMapIds.delete(parentId);
   selectMap(id);
@@ -281,11 +286,15 @@ function deleteAndSelectNext(mapId: MapId): void {
   }
 }
 
-function saveMapScreenshot(mapId: MapId): void {
+function openMapProperties(mapId: MapId, mapName: string): void {
   selectMap(mapId);
-  window.setTimeout(() => {
-    document.querySelector<HTMLButtonElement>('[data-testid="editor-map-screenshot-button"]')?.click();
-  }, 0);
+  openEventSubdialog({
+    render: (body) => renderMapProps(body),
+    testId: `map-properties-modal-${mapId}`,
+    title: "Map Properties...",
+    subtitle: mapName,
+    width: "narrow",
+  });
 }
 
 function openMapActions(context: MapActionContext, point: MapContextMenuPoint): void {
@@ -302,49 +311,71 @@ function openMapActions(context: MapActionContext, point: MapContextMenuPoint): 
 function mapContextMenuItems(context: MapActionContext): readonly MapContextMenuItem[] {
   return [
     {
-      action: () => undefined,
-      disabled: true,
+      action: () => openMapProperties(context.mapId, context.mapName),
       icon: "map-settings",
       id: "settings",
-      label: "맵 설정",
+      label: "Map Properties...",
       testId: `map-settings-${context.mapId}`,
     },
     {
-      action: () => addChildAndSelect(context.mapId),
+      action: () => addChildAndSelect(context.mapId, "New Map"),
       icon: "map-child",
       id: "add-child",
-      label: "새 하위 맵",
+      label: "New Map",
+      separatorBefore: true,
       testId: `map-menu-add-child-${context.mapId}`,
+    },
+    {
+      action: () => addChildAndSelect(context.mapId, "New Area"),
+      icon: "map-area",
+      id: "add-area",
+      label: "New Area...",
+      testId: `map-menu-add-area-${context.mapId}`,
+    },
+    {
+      action: () => undefined,
+      disabled: true,
+      icon: "map-dungeon",
+      id: "generate-dungeon",
+      label: "Generate Dungeon",
+      testId: `map-generate-dungeon-${context.mapId}`,
     },
     {
       action: () => duplicateAndSelect(context.mapId),
       icon: "copy",
       id: "duplicate",
-      label: "복제",
+      label: "Copy",
+      separatorBefore: true,
+      shortcut: "Ctrl+C",
       testId: `map-duplicate-${context.mapId}`,
     },
     {
-      action: () => setStartMap(context.mapId),
-      icon: "map-start",
-      id: "set-start",
-      label: "시작 맵으로 지정",
-      testId: `map-menu-set-start-${context.mapId}`,
-    },
-    {
-      action: () => saveMapScreenshot(context.mapId),
-      icon: "map-screenshot",
-      id: "screenshot",
-      label: "스크린샷 저장",
-      testId: `map-screenshot-${context.mapId}`,
+      action: () => undefined,
+      disabled: true,
+      icon: "paste",
+      id: "paste",
+      label: "Paste",
+      shortcut: "Ctrl+V",
+      testId: `map-paste-${context.mapId}`,
     },
     {
       action: () => deleteAndSelectNext(context.mapId),
       disabled: !context.canDelete,
       icon: "trash",
       id: "delete",
-      label: "맵 삭제",
+      label: "Delete",
       separatorBefore: true,
+      shortcut: "Del",
       testId: `map-menu-delete-${context.mapId}`,
+    },
+    {
+      action: () => openMapShiftDialog(context.mapId, context.mapName),
+      icon: "map-shift",
+      id: "shift",
+      label: "Shift...",
+      separatorBefore: true,
+      shortcut: "Ctrl+H",
+      testId: `map-shift-${context.mapId}`,
     },
   ];
 }

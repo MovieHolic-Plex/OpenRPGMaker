@@ -1,0 +1,181 @@
+{
+  "desktop": {
+    "title": {
+      "body": {
+        "width": 1176,
+        "height": 850,
+        "left": 52,
+        "top": 38
+      },
+      "viewport": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "stage": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "title": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "canvas": null,
+      "canvasLogical": null,
+      "mainMenu": null,
+      "menuButtonCount": 0,
+      "mainMenuVisible": false,
+      "scale": "3.669x3.533"
+    },
+    "play": {
+      "body": {
+        "width": 1176,
+        "height": 850,
+        "left": 52,
+        "top": 38
+      },
+      "viewport": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "stage": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "title": null,
+      "canvas": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "canvasLogical": {
+        "width": 320,
+        "height": 240
+      },
+      "mainMenu": null,
+      "menuButtonCount": 0,
+      "mainMenuVisible": false,
+      "scale": "3.669x3.533"
+    },
+    "menu": {
+      "body": {
+        "width": 1176,
+        "height": 850,
+        "left": 52,
+        "top": 38
+      },
+      "viewport": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "stage": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "title": null,
+      "canvas": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "canvasLogical": {
+        "width": 320,
+        "height": 240
+      },
+      "mainMenu": {
+        "width": 1174,
+        "height": 848,
+        "left": 53,
+        "top": 39
+      },
+      "menuButtonCount": 0,
+      "mainMenuVisible": true,
+      "scale": "3.669x3.533"
+    }
+  },
+  "mobile": {
+    "title": {
+      "body": {
+        "width": 366,
+        "height": 794,
+        "left": 12,
+        "top": 38
+      },
+      "viewport": {
+        "width": 364,
+        "height": 792,
+        "left": 13,
+        "top": 39
+      },
+      "stage": {
+        "width": 364,
+        "height": 792,
+        "left": 13,
+        "top": 39
+      },
+      "title": {
+        "width": 364,
+        "height": 792,
+        "left": 13,
+        "top": 39
+      },
+      "canvas": null,
+      "canvasLogical": null,
+      "mainMenu": null,
+      "menuButtonCount": 0,
+      "mainMenuVisible": false,
+      "scale": "1.137x3.300"
+    },
+    "play": {
+      "body": {
+        "width": 366,
+        "height": 794,
+        "left": 12,
+        "top": 38
+      },
+      "viewport": {
+        "width": 364,
+        "height": 792,
+        "left": 13,
+        "top": 39
+      },
+      "stage": {
+        "width": 364,
+        "height": 792,
+        "left": 13,
+        "top": 39
+      },
+      "title": null,
+      "canvas": {
+        "width": 364,
+        "height": 792,
+        "left": 13,
+        "top": 39
+      },
+      "canvasLogical": {
+        "width": 320,
+        "height": 240
+      },
+      "mainMenu": null,
+      "menuButtonCount": 0,
+      "mainMenuVisible": false,
+      "scale": "1.137x3.300"
+    },
+    "menu": null
+  }
+}

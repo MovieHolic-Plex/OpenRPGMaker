@@ -1,0 +1,233 @@
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import type { Project } from "@/project/types";
+import {
+  createPlayerStatusMenuSnapshot,
+  type PlayerStatusMenuPartyRow,
+  type PlayerStatusMenuSnapshot,
+  type StatusMenuCommand,
+  type StatusMenuCommandId,
+} from "@/player/playerStatusMenuModel";
+import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
+import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
+import { applySystemGraphic } from "@/player/systemGraphics";
+import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
+import { el } from "@/util/dom";
+
+export {
+  createPlayerStatusMenuSnapshot,
+  STATUS_MENU_COMMAND_IDS,
+  statusMenuCommandLabel,
+} from "@/player/playerStatusMenuModel";
+export type { StatusMenuCommandId } from "@/player/playerStatusMenuModel";
+
+export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLElement {
+  const selectedCommand = options.selectedCommand ?? "items";
+  const mode = options.mode ?? "main";
+  const waitModeEnabled = options.waitModeEnabled ?? true;
+  const snapshot = createPlayerStatusMenuSnapshot(options.project, options.session, {
+    elapsedMs: options.elapsedMs,
+    waitModeEnabled,
+  });
+  const detail = createStatusMenuDetail({
+    project: options.project,
+    session: options.session,
+    selectedCommand,
+    slots: options.slots,
+    waitModeEnabled,
+    targetItemId: options.targetItemId,
+    equipmentActorId: options.equipmentActorId,
+    equipmentSlotId: options.equipmentSlotId,
+    formationActorId: options.formationActorId,
+    onSaveSlot: options.actions.onSaveSlot,
+    onSelectItemTarget: options.actions.onSelectItemTarget,
+    onUseItem: options.actions.onUseItem,
+    onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
+    onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
+    onEquipItem: options.actions.onEquipItem,
+    onToggleRow: options.actions.onToggleRow,
+    onSelectFormationActor: options.actions.onSelectFormationActor,
+    onMoveFormationActor: options.actions.onMoveFormationActor,
+  });
+  const panel = el("div", {
+    class: "main-menu rm2k3-status-menu system-panel",
+    attrs: {
+      "aria-label": "RPG Maker 2003 player status menu",
+      role: "dialog",
+    },
+    dataset: { testid: "main-menu", statusMenuScreen: mode },
+  });
+  applySystemGraphic(panel);
+
+  if (mode === "function") panel.classList.add("status-menu-function-screen");
+  panel.append(
+    renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
+    renderStatusMenuBody(options.project, snapshot, detail, options.selectedDetailActionIndex),
+    renderFooter(snapshot, options.message)
+  );
+  panel.append(statusMenuDebug(selectedCommand, mode));
+  return panel;
+}
+
+type CommandRailRenderOptions = {
+  readonly snapshot: PlayerStatusMenuSnapshot;
+  readonly selectedCommand: StatusMenuCommandId;
+  readonly actions: PlayerStatusMenuActions;
+};
+
+function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
+  const rail = el("nav", {
+    class: "status-menu-command-rail",
+    attrs: { role: "menu" },
+    dataset: { testid: "status-menu-command-rail" },
+  });
+  for (const command of options.snapshot.commands) {
+    const button = el("button", {
+      class: "status-menu-command",
+      text: command.label,
+      attrs: { role: "menuitem" },
+      dataset: { testid: `status-menu-command-${command.id}` },
+      on: { click: () => runCommand(command, options.actions) },
+    });
+    if (command.id === options.selectedCommand) button.classList.add("selected");
+    rail.append(button);
+  }
+  return rail;
+}
+
+function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions): void {
+  switch (command.id) {
+    case "wait":
+      actions.onToggleWait();
+      return;
+    case "to-title":
+      actions.onToTitle();
+      return;
+    case "items":
+    case "skills":
+    case "equipment":
+    case "save":
+    case "status":
+    case "row":
+    case "formation":
+      actions.onCommand(command.id);
+      return;
+    default:
+      assertNever(command.id);
+  }
+}
+
+function renderStatusMenuBody(
+  project: Project,
+  snapshot: PlayerStatusMenuSnapshot,
+  detail: StatusMenuDetail,
+  selectedDetailActionIndex?: number
+): HTMLElement {
+  return el("div", {
+    class: "status-menu-body",
+    children: [renderPartyPanel(project, snapshot), renderStatusMenuDetailPanel(project, detail, { selectedActionIndex: selectedDetailActionIndex })],
+    dataset: { testid: "status-menu-body" },
+  });
+}
+
+function renderPartyPanel(project: Project, snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  const party = el("section", {
+    class: "status-menu-party",
+    dataset: { testid: "status-menu-party" },
+  });
+  if (snapshot.emptyPartyLabel) {
+    party.append(el("div", {
+      class: "status-menu-empty",
+      text: snapshot.emptyPartyLabel,
+      dataset: { testid: "status-menu-empty" },
+    }));
+    return party;
+  }
+  snapshot.partyRows.forEach((row, index) => {
+    party.append(renderPartyRow(project, row, index));
+  });
+  return party;
+}
+
+function renderPartyRow(project: Project, row: PlayerStatusMenuPartyRow, index: number): HTMLElement {
+  const info = el("div", { class: "status-menu-party-info" });
+  info.append(
+    el("div", { class: "status-menu-actor-name", text: row.name }),
+    el("div", { class: "status-menu-actor-subline", text: `${row.levelLabel}  ${row.condition}` }),
+    el("div", { class: "status-menu-actor-vitals", text: row.hpLabel }),
+    el("div", { class: "status-menu-actor-vitals", text: row.mpLabel })
+  );
+  return el("article", {
+    class: "status-menu-party-row",
+    children: [renderFace(project, row, index), info],
+    dataset: { testid: `status-menu-party-row-${index}` },
+  });
+}
+
+function renderFace(project: Project, row: PlayerStatusMenuPartyRow, index: number): HTMLElement {
+  const url = resolveAssetResourceUrl(row.faceResourceId, { project });
+  if (!url) {
+    return el("div", {
+      class: "status-menu-face missing",
+      text: "Face",
+      attrs: { role: "img", "aria-label": `${row.name} face missing` },
+      dataset: { testid: `status-menu-face-${index}` },
+    });
+  }
+  return el("div", {
+    class: "status-menu-face actor-sheet-crop",
+    attrs: {
+      role: "img",
+      "aria-label": `${row.name} face`,
+      style: [
+        `--crop-url:url("${url}")`,
+        "--crop-width:44px",
+        "--crop-height:44px",
+        "--crop-sheet-width:176px",
+        "--crop-sheet-height:176px",
+        "--crop-x:0px",
+        "--crop-y:0px",
+      ].join(";"),
+    },
+    dataset: { testid: `status-menu-face-${index}` },
+  });
+}
+
+function renderFooter(
+  snapshot: PlayerStatusMenuSnapshot,
+  message: string | undefined
+): HTMLElement {
+  const footer = el("footer", { class: "status-menu-footer" });
+  footer.append(el("div", {
+    class: "status-menu-gold",
+    text: snapshot.goldLabel,
+    attrs: { title: snapshot.goldLabel },
+    dataset: { testid: "status-menu-gold" },
+  }));
+  if (message) {
+    footer.append(el("div", {
+      class: "status-menu-message",
+      text: message,
+      attrs: { role: "status" },
+      dataset: { testid: "status-menu-message" },
+    }));
+  } else {
+    footer.append(el("div", {
+      class: "status-menu-time",
+      text: snapshot.timeLabel,
+      dataset: { testid: "status-menu-time" },
+    }));
+  }
+  return footer;
+}
+
+function statusMenuDebug(selectedCommand: StatusMenuCommandId, mode: "function" | "main"): HTMLElement {
+  return el("script", {
+    text: JSON.stringify({ selectedCommand, mode }),
+    attrs: { type: "application/json" },
+    dataset: { testid: "status-menu-debug-json" },
+  });
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled status menu command: ${String(value)}`);
+}

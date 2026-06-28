@@ -1,23 +1,23 @@
 {
   "version": 3,
   "meta": {
-    "title": "T14 RM2K3 Sample",
+    "title": "T14 RM2K3 샘플",
     "author": "e2e",
     "terms": {
-      "gold": "G",
-      "level": "Level",
-      "hp": "HP",
-      "mp": "MP",
-      "attack": "Attack",
-      "skill": "Skill",
-      "item": "Item"
+      "gold": "골드",
+      "level": "레벨",
+      "hp": "체력",
+      "mp": "마력",
+      "attack": "공격",
+      "skill": "스킬",
+      "item": "아이템"
     }
   },
   "assets": {
     "sprites": {
       "sample_hero": {
         "id": "sample_hero",
-        "image": { "type": "bundled", "id": "tex_hero" },
+        "image": { "type": "bundled", "id": "tex_npc_villager" },
         "frames": 8,
         "frameWidth": 32,
         "frameHeight": 32
@@ -62,22 +62,22 @@
     }
   },
   "resourceProfiles": [
-    { "kind": "chipset", "name": "Default chipset", "tileWidth": 16, "tileHeight": 16, "assetId": "tex_tiles_default" },
-    { "kind": "charset", "name": "Hero charset", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_hero" },
-    { "kind": "charset", "name": "Town NPC charset", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_npc" },
-    { "kind": "battleCharset", "name": "Hero battle charset", "tileWidth": 48, "tileHeight": 48, "assetId": "sample_hero" },
-    { "kind": "monster", "name": "Slime sample monster", "assetId": "sample_monster" },
-    { "kind": "title", "name": "Sample title", "assetId": "sample_title" },
-    { "kind": "system", "name": "Sample system", "assetId": "sample_system" },
-    { "kind": "system2", "name": "Sample system2", "assetId": "sample_system2" },
-    { "kind": "picture", "name": "Gate picture", "assetId": "sample_picture_gate" },
-    { "kind": "music", "name": "Sample theme", "assetId": "sample_theme" },
-    { "kind": "sound", "name": "Sample switch sound", "assetId": "sample_switch_se" }
+    { "kind": "chipset", "name": "기본 칩셋", "tileWidth": 16, "tileHeight": 16, "assetId": "tex_tiles_default" },
+    { "kind": "charset", "name": "주인공 캐릭터칩", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_hero" },
+    { "kind": "charset", "name": "마을 NPC 캐릭터칩", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_npc" },
+    { "kind": "battleCharset", "name": "주인공 배틀 캐릭터칩", "tileWidth": 48, "tileHeight": 48, "assetId": "sample_hero" },
+    { "kind": "monster", "name": "슬라임 몬스터", "assetId": "sample_monster" },
+    { "kind": "title", "name": "샘플 타이틀", "assetId": "sample_title" },
+    { "kind": "system", "name": "샘플 시스템", "assetId": "sample_system" },
+    { "kind": "system2", "name": "샘플 전투 시스템", "assetId": "sample_system2" },
+    { "kind": "picture", "name": "문 그림", "assetId": "sample_picture_gate" },
+    { "kind": "music", "name": "샘플 테마", "assetId": "sample_theme" },
+    { "kind": "sound", "name": "스위치 효과음", "assetId": "sample_switch_se" }
   ],
   "tilesets": {
     "tiles_default": {
       "id": "tiles_default",
-      "name": "Default tileset",
+      "name": "기본 타일셋",
       "image": { "type": "bundled", "id": "tex_tiles_default" },
       "tileSize": 16,
       "tilesPerRow": 8,
@@ -97,18 +97,18 @@
     }
   },
   "switches": [
-    { "id": "sw_gate_open", "name": "Gate open" },
-    { "id": "sw_battle_won", "name": "Battle won" },
-    { "id": "sw_blessed", "name": "Blessed" }
+    { "id": "sw_gate_open", "name": "문 열림" },
+    { "id": "sw_battle_won", "name": "전투 승리" },
+    { "id": "sw_blessed", "name": "축복 받음" }
   ],
   "variables": [
-    { "id": "var_choice", "name": "Choice result" },
-    { "id": "var_blessing", "name": "Blessing count" }
+    { "id": "var_choice", "name": "선택 결과" },
+    { "id": "var_blessing", "name": "축복 횟수" }
   ],
   "commonEvents": [
     {
       "id": "ce_blessing",
-      "name": "Blessing",
+      "name": "축복",
       "trigger": "none",
       "commands": [
         { "kind": "setSwitch", "switchId": "sw_blessed", "value": true },
@@ -122,7 +122,7 @@
     "actors": [
       {
         "id": "actor_hero",
-        "name": "Mira",
+        "name": "미라",
         "classId": "class_guardian",
         "initialLevel": 1,
         "maxLevel": 50,
@@ -134,14 +134,14 @@
     "classes": [
       {
         "id": "class_guardian",
-        "name": "Guardian",
+        "name": "수호자",
         "skillIds": ["skill_spark"]
       }
     ],
     "skills": [
       {
         "id": "skill_spark",
-        "name": "Spark",
+        "name": "불꽃",
         "scope": "enemy",
         "power": 99,
         "animationId": "anim_spark"
@@ -150,7 +150,7 @@
     "items": [
       {
         "id": "item_potion",
-        "name": "Potion",
+        "name": "물약",
         "scope": "ally",
         "price": 10
       }
@@ -158,7 +158,7 @@
     "equipment": [
       {
         "id": "equip_bronze_sword",
-        "name": "Bronze Sword",
+        "name": "청동 검",
         "slot": "weapon",
         "price": 100
       }
@@ -166,7 +166,7 @@
     "enemies": [
       {
         "id": "enemy_slime",
-        "name": "Cave Slime",
+        "name": "동굴 슬라임",
         "monsterResourceId": "sample_monster",
         "skillIds": []
       }
@@ -174,7 +174,7 @@
     "troops": [
       {
         "id": "troop_slime",
-        "name": "Cave Slime Troop",
+        "name": "동굴 슬라임 무리",
         "enemyIds": ["enemy_slime"],
         "battleEventPages": []
       }
@@ -182,13 +182,13 @@
     "states": [
       {
         "id": "state_guard",
-        "name": "Guard"
+        "name": "방어"
       }
     ],
     "battleAnimations": [
       {
         "id": "anim_spark",
-        "name": "Spark",
+        "name": "불꽃",
         "resourceId": "sample_monster"
       }
     ]
@@ -209,7 +209,7 @@
   "maps": {
     "map_town": {
       "id": "map_town",
-      "name": "Sample Town",
+      "name": "샘플 마을",
       "width": 6,
       "height": 4,
       "tilesetId": "tiles_default",
@@ -237,7 +237,7 @@
           "pages": [
             {
               "id": "npc-before",
-              "name": "Before gate",
+              "name": "문 열기 전",
               "conditions": [],
               "graphic": { "sprite": { "type": "bundled", "id": "sample_npc" } },
               "trigger": { "kind": "action" },
@@ -246,20 +246,20 @@
               "commands": [
                 {
                   "kind": "choices",
-                  "prompt": "Open the switch puzzle?",
+                  "prompt": "스위치 퍼즐을 열까요?",
                   "options": [
                     {
-                      "text": "Yes",
+                      "text": "예",
                       "branch": [
                         { "kind": "setVariable", "variableId": "var_choice", "op": "=", "value": 1 },
-                        { "kind": "text", "speaker": "Guide", "body": "Find the switch east of town." }
+                        { "kind": "text", "speaker": "안내자", "body": "마을 동쪽의 스위치를 찾으세요." }
                       ]
                     },
                     {
-                      "text": "No",
+                      "text": "아니오",
                       "branch": [
                         { "kind": "setVariable", "variableId": "var_choice", "op": "=", "value": 0 },
-                        { "kind": "text", "speaker": "Guide", "body": "Come back when ready." }
+                        { "kind": "text", "speaker": "안내자", "body": "준비되면 다시 오세요." }
                       ]
                     }
                   ]
@@ -268,14 +268,14 @@
             },
             {
               "id": "npc-after",
-              "name": "After gate",
+              "name": "문 열린 뒤",
               "conditions": [{ "kind": "switch", "switchId": "sw_gate_open", "value": true }],
               "graphic": { "sprite": { "type": "bundled", "id": "sample_npc" } },
               "trigger": { "kind": "action" },
               "priority": "same",
               "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
               "commands": [
-                { "kind": "text", "speaker": "Guide", "body": "The dungeon path is open." }
+                { "kind": "text", "speaker": "안내자", "body": "던전으로 가는 길이 열렸습니다." }
               ]
             }
           ]
@@ -289,7 +289,7 @@
             { "kind": "setSwitch", "switchId": "sw_gate_open", "value": true },
             { "kind": "setVariable", "variableId": "var_choice", "op": "=", "value": 7 },
             { "kind": "callCommonEvent", "commonEventId": "ce_blessing" },
-            { "kind": "text", "speaker": "Switch", "body": "A gate opens in the hills." }
+            { "kind": "text", "speaker": "스위치", "body": "언덕의 문이 열렸습니다." }
           ]
         },
         {
@@ -298,7 +298,7 @@
           "y": 1,
           "trigger": { "kind": "action" },
           "commands": [
-            { "kind": "text", "speaker": "Crystal", "body": "Save here before entering the dungeon." }
+            { "kind": "text", "speaker": "수정", "body": "던전에 들어가기 전에 여기서 저장하세요." }
           ]
         },
         {
@@ -309,7 +309,7 @@
           "commands": [
             { "kind": "erasePicture", "pictureId": "pic_gate" },
             { "kind": "stopAudio" },
-            { "kind": "text", "speaker": "Switch", "body": "The air clears." }
+            { "kind": "text", "speaker": "스위치", "body": "공기가 맑아졌습니다." }
           ]
         },
         {
@@ -334,7 +334,7 @@
                 { "kind": "transfer", "mapId": "map_dungeon", "x": 0, "y": 0 }
               ],
               "else": [
-                { "kind": "text", "speaker": "Gate", "body": "The path is sealed." }
+                { "kind": "text", "speaker": "문", "body": "길이 봉인되어 있습니다." }
               ]
             }
           ]
@@ -343,7 +343,7 @@
     },
     "map_interior": {
       "id": "map_interior",
-      "name": "Sample Interior",
+      "name": "샘플 실내",
       "width": 3,
       "height": 3,
       "tilesetId": "tiles_default",
@@ -366,7 +366,7 @@
           "sprite": { "type": "bundled", "id": "sample_npc" },
           "trigger": { "kind": "action" },
           "commands": [
-            { "kind": "text", "speaker": "Host", "body": "This small interior proves map transfers." }
+            { "kind": "text", "speaker": "주인", "body": "이 작은 실내에서 맵 이동을 확인합니다." }
           ]
         },
         {
@@ -382,7 +382,7 @@
     },
     "map_dungeon": {
       "id": "map_dungeon",
-      "name": "Sample Dungeon",
+      "name": "샘플 던전",
       "width": 4,
       "height": 3,
       "tilesetId": "tiles_default",
@@ -407,7 +407,7 @@
           "pages": [
             {
               "id": "battle-before",
-              "name": "Fight",
+              "name": "전투",
               "conditions": [],
               "graphic": { "sprite": { "type": "bundled", "id": "sample_monster" } },
               "trigger": { "kind": "action" },
@@ -420,14 +420,14 @@
             },
             {
               "id": "battle-after",
-              "name": "Victory page",
+              "name": "승리 페이지",
               "conditions": [{ "kind": "switch", "switchId": "sw_battle_won", "value": true }],
               "graphic": { "sprite": { "type": "bundled", "id": "sample_npc" } },
               "trigger": { "kind": "action" },
               "priority": "same",
               "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
               "commands": [
-                { "kind": "text", "speaker": "Guide", "body": "The slime is gone. Use the portal." }
+                { "kind": "text", "speaker": "안내자", "body": "슬라임이 사라졌습니다. 포털을 이용하세요." }
               ]
             }
           ]
@@ -441,26 +441,26 @@
           "pages": [
             {
               "id": "ending-locked",
-              "name": "Locked",
+              "name": "잠김",
               "conditions": [],
               "graphic": {},
               "trigger": { "kind": "action" },
               "priority": "same",
               "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
               "commands": [
-                { "kind": "text", "speaker": "Portal", "body": "Win the battle first." }
+                { "kind": "text", "speaker": "포털", "body": "먼저 전투에서 승리하세요." }
               ]
             },
             {
               "id": "ending-open",
-              "name": "Ending",
+              "name": "엔딩",
               "conditions": [{ "kind": "switch", "switchId": "sw_battle_won", "value": true }],
               "graphic": {},
               "trigger": { "kind": "action" },
               "priority": "same",
               "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
               "commands": [
-                { "kind": "ending", "title": "The End", "message": "T14 sample complete." }
+                { "kind": "ending", "title": "끝", "message": "T14 샘플 완료." }
               ]
             }
           ]

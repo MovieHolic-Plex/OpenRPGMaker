@@ -1,0 +1,83 @@
+.database-modal-body .rm2k3-tileset-terrain-pane {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-tileset-edit-mode {
+  display: grid;
+  gap: 6px;
+}
+
+.database-modal-body .rm2k3-tileset-autotile {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 36px minmax(0, 1fr);
+}
+
+.database-modal-body .rm2k3-tileset-autotile legend {
+  grid-column: 1 / -1;
+}
+
+.database-modal-body .rm2k3-tileset-autotile .tileset-db-resource {
+  align-self: center;
+}
+
+.database-modal-body .rm2k3-tileset-terrain-list-wrap {
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-list {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  min-height: 258px;
+  overflow: auto;
+  padding: 2px;
+}
+
+.database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-row {
+  background: #ffffff;
+  color: #111111;
+  font: 400 12px/17px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  height: 19px;
+  min-height: 19px;
+  overflow: hidden;
+  padding: 1px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-row.active {
+  background: #2f8fff;
+  color: #ffffff;
+}
+
+@media (max-width: 1050px) {
+  .database-modal-body .rm2k3-tileset-workspace,
+  .database-modal-body .rm2k3-tileset-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-tileset-properties {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-tileset-layer-tabs {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .rm2k3-global-terrain-button {
+    grid-row: auto;
+  }
+
+  .database-modal-body .rm2k3-tileset-list-pane {
+    min-height: 180px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-edit-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

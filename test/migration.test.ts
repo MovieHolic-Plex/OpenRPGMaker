@@ -195,4 +195,38 @@ describe("deserialize — v2/v3 검증", () => {
     obj.mapTree.mapId = "nope";
     expect(() => deserialize(JSON.stringify(obj))).toThrow(/존재하지 않는 맵/);
   });
+
+  it("확장 이동 경로 명령 payload를 검증한다", () => {
+    const p = createBlankProject();
+    const obj = JSON.parse(serialize(p));
+    const map = obj.maps[obj.startMapId];
+    map.events.push({
+      id: "ev_route_shape",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [
+        {
+          kind: "moveEvent",
+          eventId: "ev_route_shape",
+          route: {
+            repeat: false,
+            moves: [
+              { kind: "moveDiagonal", horizontal: "right", vertical: "up" },
+              { kind: "turnRelative", turn: "leftOrRight90" },
+              { kind: "jump", dx: 2, dy: -1 },
+              { kind: "setSwitch", switchId: "sw_route", value: true },
+              { kind: "changeGraphic", spriteId: "npc_villager" },
+              { kind: "playSe", resourceId: "se_route_chime" },
+            ],
+          },
+        },
+      ],
+    });
+
+    expect(deserialize(JSON.stringify(obj)).maps[obj.startMapId].events.at(-1)?.commands[0]?.kind).toBe("moveEvent");
+
+    obj.maps[obj.startMapId].events.at(-1).commands[0].route.moves[0].horizontal = "north";
+    expect(() => deserialize(JSON.stringify(obj))).toThrow(/horizontal/);
+  });
 });

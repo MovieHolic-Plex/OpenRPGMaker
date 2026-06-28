@@ -1,4 +1,5 @@
 import { deserialize, serialize } from "@/project/io";
+import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 import {
   readStoredZipEntry,
@@ -26,7 +27,7 @@ export function projectPackageFileName(project: Project): string {
 }
 
 export function createProjectPackage(project: Project): Blob {
-  return writeStoredZip(createProjectPackageEntries(project));
+  return writeStoredZip(createProjectPackageEntries(projectWithoutEventDrafts(project)));
 }
 
 export async function readProjectPackage(file: Blob): Promise<Project> {

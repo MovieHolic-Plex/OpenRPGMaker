@@ -1,13 +1,13 @@
 import { TEX_NPC, TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTextureKey } from "@/editor/tilesetImage";
-import { isPassable } from "@/project/collision";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
+import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
-import { setMapTileOverride } from "@/project/session";
 import type { MapId, TilesetDef } from "@/project/types";
-import type { StepResult } from "@/player/interpreter";
+import { runCommands } from "@/player/playSceneInterpreter";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   initialRuntimeEventPositions,
@@ -22,9 +22,11 @@ interface RenderedTileImage {
 }
 
 interface RenderedEventSprite extends RenderedTileImage {
+  readonly y: number;
   play(key: string): this;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
+  destroy(): void;
 }
 
 interface RenderTilesSceneContext<
@@ -39,6 +41,7 @@ interface RenderTilesSceneContext<
     add(image: TImage | TSprite): unknown;
   };
   readonly eventSprites: {
+    values(): IterableIterator<TSprite>;
     clear(): void;
     set(eventId: string, marker: TSprite): unknown;
   };
@@ -61,7 +64,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId): void {
     console.warn(`[player] map not found: ${mapId}`);
     return;
   }
-  scene.map = structuredClone(map);
+  scene.map = mapWithCommittedEvents(map);
   scene.session.currentMapId = mapId;
   resetMapRuntime(scene);
   applyMapOverrides(scene);
@@ -75,6 +78,7 @@ export function renderTiles<
   TSprite extends RenderedEventSprite,
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
   scene.tileLayer.removeAll(true);
+  for (const sprite of scene.eventSprites.values()) sprite.destroy();
   scene.eventSprites.clear();
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
@@ -123,14 +127,12 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, view.page?.graphic.pattern);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
     const marker = scene.add.sprite(
-      view.x * TILE_SIZE + TILE_SIZE / 2,
-      view.y * TILE_SIZE + TILE_SIZE / 2,
+      characterSpriteX(view.x),
+      characterSpriteY(view.y),
       spriteTexture?.texture ?? TEX_NPC,
       spriteTexture?.frame ?? 0
     );
-    marker.setOrigin(0.5, 0.5);
-    marker.setDepth(view.priority === "above" ? 6 : view.priority === "below" ? 1 : 4);
-    scene.tileLayer.add(marker);
+    placeCharacterSprite(marker, view.priority);
     scene.eventSprites.set(event.id, marker);
   }
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
@@ -143,6 +145,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.parallelProcesses.clear();
   scene.autoStartedKeys.clear();
   scene.pageMoveRouteKeys.clear();
+  scene.pageMoveRouteEventIds.clear();
   scene.autonomousNPCs.clear();
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
@@ -177,6 +180,13 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     switches: scene.session.switches,
     variables: scene.session.variables,
     timers: scene.session.timers,
+    gold: scene.session.gold,
+    inventory: scene.session.inventory,
+    partyActorIds: scene.session.partyActorIds,
+    actorExperience: scene.session.actorExperience,
+    actorVitals: scene.session.actorVitals,
+    actorEquipment: scene.session.actorEquipment,
+    actorRows: scene.session.actorRows,
     events,
     battleResult: scene.session.battleResult,
   });
@@ -194,9 +204,21 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
   const events = activeRuntimeEvents(scene, "auto");
   for (const event of events) {
     const key = `${scene.getMapId()}:${event.event.id}:${event.pageId ?? "legacy"}`;
-    if (scene.autoStartedKeys.has(key)) continue;
+    if (scene.autoStartedKeys.has(key) || scene.running) continue;
     scene.autoStartedKeys.add(key);
     await scene.runEvent(event.event.id);
+  }
+  const project = store.getCurrent();
+  for (const commonEvent of project.commonEvents) {
+    if (commonEvent.trigger !== "auto") continue;
+    const key = `common:${commonEvent.id}`;
+    if (commonEvent.conditionSwitchId && !scene.session.switches[commonEvent.conditionSwitchId]) {
+      scene.autoStartedKeys.delete(key);
+      continue;
+    }
+    if (scene.autoStartedKeys.has(key) || scene.running) continue;
+    scene.autoStartedKeys.add(key);
+    await runCommands(scene, commonEvent.commands);
   }
 }
 
@@ -215,59 +237,4 @@ export function applyMapOverrides(scene: PlaySceneContext): void {
       scene.map.upperTiles[index] = overrides.upper[index];
     }
   }
-}
-
-export function applyChangeTileStep(
-  scene: PlaySceneContext,
-  step: Extract<StepResult, { kind: "changeTile" }>
-): void {
-  const targetMap = store.getCurrent().maps[step.mapId];
-  if (!targetMap) return;
-  const index = step.y * targetMap.width + step.x;
-  if (index < 0 || index >= targetMap.lowerTiles.length) return;
-  setMapTileOverride(scene.session, step.mapId, step.layer, index, step.tile);
-  if (step.mapId === scene.getMapId()) applyMapOverrides(scene);
-}
-
-export function transferTo(scene: PlaySceneContext, mapId: MapId, x: number, y: number): void {
-  const project = store.getCurrent();
-  const targetMap = project.maps[mapId];
-  if (!targetMap) {
-    console.warn(`[player] transfer target map missing: ${mapId}`);
-    return;
-  }
-  const destination = nearestPassableTile(project, targetMap, x, y);
-  scene.loadMap(mapId);
-  scene.tileX = destination.x;
-  scene.tileY = destination.y;
-  scene.session.x = destination.x;
-  scene.session.y = destination.y;
-  scene.player.setPosition(
-    destination.x * TILE_SIZE + TILE_SIZE / 2,
-    destination.y * TILE_SIZE + TILE_SIZE / 2
-  );
-  scene.moving = false;
-  scene.centerCamera();
-  void fireAutoTriggers(scene);
-}
-
-function nearestPassableTile(
-  project: ReturnType<typeof store.getCurrent>,
-  map: ReturnType<typeof store.getCurrent>["maps"][MapId],
-  x: number,
-  y: number
-): { x: number; y: number } {
-  let fx = Math.max(0, Math.min(map.width - 1, x));
-  let fy = Math.max(0, Math.min(map.height - 1, y));
-  if (isPassable(project, map, fx, fy)) return { x: fx, y: fy };
-  for (let radius = 0; radius < Math.max(map.width, map.height); radius++) {
-    for (let dy = -radius; dy <= radius; dy++) {
-      for (let dx = -radius; dx <= radius; dx++) {
-        if (isPassable(project, map, fx + dx, fy + dy)) {
-          return { x: fx + dx, y: fy + dy };
-        }
-      }
-    }
-  }
-  return { x: fx, y: fy };
 }

@@ -58,6 +58,7 @@ function renderToolBox(rerender: () => void): HTMLElement {
         class: mode.id === editMode ? "active" : "",
         text: mode.label,
         attrs: { type: "button", role: "tab", "aria-selected": String(mode.id === editMode) },
+        dataset: { testid: `tileset-edit-mode-${mode.id}` },
         on: { click: () => setMode(mode.id, rerender) },
       }),
     ),
@@ -84,13 +85,13 @@ function renderSelectedTilePanel(tileset: TilesetDef): HTMLElement {
 function renderSelectedTileModeFields(tileset: TilesetDef, meta: TileAiMetadata): HTMLElement[] {
   if (editMode === "terrain") {
     return [
-      numberControl("지형 태그", tileset.terrain[selectedTile] ?? 0, (value) => updateTerrain(tileset.id, value)),
+      numberControl("지형 태그", tileset.terrain[selectedTile] ?? 0, (value) => updateTerrain(tileset.id, value), "tileset-field-terrain-tag"),
     ];
   }
   if (editMode === "ai") {
     return [
-      textAreaControl("AI 라벨", meta.label, (value) => updateMetadata(tileset.id, { label: value })),
-      textAreaControl("AI 설명", meta.description, (value) => updateMetadata(tileset.id, { description: value })),
+      textAreaControl("AI 라벨", meta.label, (value) => updateMetadata(tileset.id, { label: value }), "tileset-field-ai-label"),
+      textAreaControl("AI 설명", meta.description, (value) => updateMetadata(tileset.id, { description: value }), "tileset-field-ai-description"),
     ];
   }
   return [];
@@ -130,6 +131,14 @@ function syncSelectedTileBadge(meta: TileAiMetadata): void {
   const cell = document.querySelector(`[data-testid="tileset-db-cell-${selectedTile}"]`);
   if (!cell) return;
   cell.textContent = meta.label.trim() || meta.description.trim() ? "AI" : "";
+}
+
+export function setTilesetMetadataEditMode(mode: TilesetEditMode, rerender: () => void): void {
+  setMode(mode, rerender);
+}
+
+export function getTilesetMetadataEditMode(): TilesetEditMode {
+  return editMode;
 }
 
 function setMode(mode: TilesetEditMode, rerender: () => void): void {

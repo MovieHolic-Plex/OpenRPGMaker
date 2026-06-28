@@ -1,5 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import type { Command } from "@/project/types";
+import { commandKindLabel } from "./options";
 
 export function renderEventEditorInline(
   host: HTMLElement,
@@ -16,7 +17,7 @@ export function renderEventEditorInline(
     host.append(
       el("button", {
         class: "btn",
-        text: "+ text",
+        text: `+ ${commandKindLabel("text")}`,
         on: {
           click: () => {
             working.push({ kind: "text", body: "" });
@@ -40,7 +41,8 @@ function renderInlineItem(
   const item = el("div", { class: "cmd-item" });
   if (!cmd) return item;
   item.append(
-    el("span", { class: "cmd-kind", text: cmd.kind }),
+    el("span", { class: "cmd-prefix", text: "@>" }),
+    el("span", { class: "cmd-kind", text: commandKindLabel(cmd.kind) }),
     el("button", {
       class: "btn danger",
       text: "✕",

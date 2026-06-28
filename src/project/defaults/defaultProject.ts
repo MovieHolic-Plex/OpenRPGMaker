@@ -1,5 +1,6 @@
 import type {
   CommonEvent,
+  GameEvent,
   GameMap,
   MapId,
   Project,
@@ -7,6 +8,7 @@ import type {
   VariableDef,
 } from "../types";
 import { SCHEMA_VERSION } from "../types";
+import { DEFAULT_ITEM_ID, DEFAULT_SPRITE_NPC } from "./constants";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -22,8 +24,8 @@ import {
   createLogCabinShowcaseMap,
   createRetroHouseShowcaseMap,
   createDbExtractedHouseTemplateMap,
+  createSmallHouseCityMap,
   createSmallHouseVariantMap,
-  createSmallHouseVariantMaps,
   createStarterMap,
   createTownArchitectureCityMap,
   createTownArchitectureTestMap,
@@ -34,7 +36,7 @@ import {
   singleNodeTree,
 } from "./defaultMaps";
 
-const HOUSE_TEMPLATE_GALLERY_TOWN_STYLES = ["l", "courtyard", "multi", "road"] as const satisfies readonly TownHouseShowcaseStyle[];
+const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 
 export function createBlankProject(): Project {
   return createProjectWithStarterMap(createStarterMap());
@@ -76,12 +78,25 @@ export function createSmallHouseVariantProject(selectedVariant: SmallHouseVarian
 
 export function createHouseTemplateGalleryProject(): Project {
   const project = createProjectWithMaps([
-    ...createSmallHouseVariantMaps(),
-    createDbExtractedHouseTemplateMap(),
-    ...HOUSE_TEMPLATE_GALLERY_TOWN_STYLES.map((style) => createTownHouseShowcaseMap(style)),
-    createTownArchitectureTestMap(),
+    createSmallHouseVariantMap(1),
+    createSmallHouseVariantMap(2),
+    createSmallHouseVariantMap(3),
+    createSmallHouseVariantMap(4),
+    createSmallHouseVariantMap(5),
+    createSmallHouseCityMap(),
   ], 0);
   project.startPos = smallHouseVariantStartPos(1);
+  return project;
+}
+
+export function createShopShowcaseProject(): Project {
+  const project = createProjectWithStarterMap(createStarterMap());
+  project.meta = { ...project.meta, title: "상점 데모" };
+  project.switches.push({ id: SHOP_SHOWCASE_GOLD_SWITCH_ID, name: "상점 데모 시작 자금" });
+  project.startPos = { x: 14, y: 12 };
+  const starter = project.maps[project.startMapId];
+  if (!starter) return project;
+  starter.events.push(createShopkeeperEvent(project.startPos.x, project.startPos.y + 1));
   return project;
 }
 
@@ -90,7 +105,7 @@ function smallHouseVariantStartPos(variant: SmallHouseVariantIndex): Project["st
     case 1:
       return { x: 15, y: 16 };
     case 2:
-      return { x: 12, y: 15 };
+      return { x: 13, y: 15 };
     case 3:
       return { x: 11, y: 16 };
     case 4:
@@ -106,6 +121,53 @@ function smallHouseVariantStartPos(variant: SmallHouseVariantIndex): Project["st
     case 9:
       return { x: 10, y: 17 };
   }
+}
+
+function createShopkeeperEvent(x: number, y: number): GameEvent {
+  return {
+    id: "ev_shopkeeper",
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_shopkeeper",
+        name: "도구 상인",
+        conditions: [],
+        graphic: {
+          sprite: { type: "bundled", id: DEFAULT_SPRITE_NPC },
+          direction: "down",
+          pattern: 0,
+        },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          {
+            kind: "fork",
+            condition: { kind: "switch", switchId: SHOP_SHOWCASE_GOLD_SWITCH_ID, value: true },
+            then: [],
+            else: [
+              { kind: "changeGold", op: "+=", amount: 150 },
+              { kind: "setSwitch", switchId: SHOP_SHOWCASE_GOLD_SWITCH_ID, value: true },
+            ],
+          },
+          {
+            kind: "shop",
+            itemIds: [DEFAULT_ITEM_ID, "item_ether", "item_antidote"],
+            allowSell: true,
+            quantityMode: "single",
+            shopType: "normal",
+            messageType: "welcome",
+            branchOnTransaction: false,
+            transactionBranch: [],
+          },
+        ],
+      },
+    ],
+  };
 }
 
 function createProjectWithStarterMap(starter: GameMap): Project {

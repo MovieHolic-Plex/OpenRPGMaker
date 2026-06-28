@@ -1,0 +1,71 @@
+{
+  "window": {
+    "left": 212,
+    "top": 6,
+    "width": 1476,
+    "height": 936,
+    "right": 1688,
+    "bottom": 942
+  },
+  "footer": {
+    "left": 214,
+    "top": 900,
+    "width": 1472,
+    "height": 40,
+    "right": 1686,
+    "bottom": 940
+  },
+  "conditions": {
+    "left": 225,
+    "top": 163,
+    "width": 538,
+    "height": 312,
+    "right": 763,
+    "bottom": 475
+  },
+  "bottomGrid": {
+    "left": 225,
+    "top": 481,
+    "width": 538,
+    "height": 318,
+    "right": 763,
+    "bottom": 799
+  },
+  "graphic": {
+    "left": 225,
+    "top": 481,
+    "width": 260,
+    "height": 130,
+    "right": 485,
+    "bottom": 611
+  },
+  "movementType": {
+    "left": 225,
+    "top": 614,
+    "width": 260,
+    "height": 148.59375,
+    "right": 485,
+    "bottom": 762.59375
+  },
+  "trigger": {
+    "left": 491,
+    "top": 481,
+    "width": 272,
+    "height": 60,
+    "right": 763,
+    "bottom": 541
+  },
+  "movementSpeed": {
+    "left": 491,
+    "top": 739,
+    "width": 272,
+    "height": 60,
+    "right": 763,
+    "bottom": 799
+  },
+  "movementTypeAboveFooter": true,
+  "movementSpeedAboveFooter": true,
+  "settingsScrolls": false,
+  "settingsScrollHeight": 757,
+  "settingsClientHeight": 757
+}

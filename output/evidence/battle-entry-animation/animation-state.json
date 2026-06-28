@@ -1,0 +1,9 @@
+{
+  "animationId": "anim_magic",
+  "animationResourceId": "easyrpg-battle-blow",
+  "currentFrame": "1",
+  "frameCount": "2",
+  "renderedFrameCount": "2",
+  "screenShake": "true",
+  "soundResourceIds": "easyrpg-sound-magic1"
+}

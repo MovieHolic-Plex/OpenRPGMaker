@@ -1,0 +1,114 @@
+[
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/elements.png",
+    "slug": "elements",
+    "testId": "db-tab-elements"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/terrain.png",
+    "slug": "terrain",
+    "testId": "db-tab-terrain"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/battle-commands.png",
+    "slug": "battle-commands",
+    "testId": "db-tab-battle-commands"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/terms.png",
+    "slug": "terms",
+    "testId": "db-tab-terms"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/switches.png",
+    "slug": "switches",
+    "testId": "db-tab-switches"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/variables.png",
+    "slug": "variables",
+    "testId": "db-tab-variables"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/system.png",
+    "slug": "system",
+    "testId": "db-tab-system"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T1-easy-tabs/tabs/common-events.png",
+    "slug": "common-events",
+    "testId": "db-tab-common-events"
+  }
+]

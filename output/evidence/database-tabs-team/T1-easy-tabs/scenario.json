@@ -1,0 +1,44 @@
+{
+  "name": "T1 easy Database tab persistence",
+  "route": "/?freshProject=1",
+  "tabIds": [
+    "db-tab-elements",
+    "db-tab-terrain",
+    "db-tab-battle-commands",
+    "db-tab-terms",
+    "db-tab-switches",
+    "db-tab-variables",
+    "db-tab-system",
+    "db-tab-common-events"
+  ],
+  "editedCanonicalPaths": [
+    "database.elements[0].name",
+    "database.terrains[0].damage",
+    "database.battleCommands[0].skillSubsetName",
+    "meta.terms.gold",
+    "switches[0].name",
+    "variables[0].name",
+    "system.titleScreen.title",
+    "commonEvents[0].name"
+  ],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    }
+  ],
+  "path": [
+    "open Database modal",
+    "edit one persisted field in every T1-owned top tab",
+    "apply changes",
+    "close and reopen Database",
+    "capture screenshots, metrics, state JSON, and export JSON"
+  ],
+  "acceptance": [
+    "all eight T1 tabs have screenshots under tabs/",
+    "exported project JSON contains each edited canonical path",
+    "close/reopen keeps every edited value visible or exported",
+    "visual QA references agy-vision.txt beside the packet"
+  ]
+}

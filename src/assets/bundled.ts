@@ -10,7 +10,6 @@ import { applyTransparentColorKey } from "@/assets/transparentColorKey";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
 
 export const TEX_TILESET = "tex_tiles_default";
-export const TEX_HERO = "tex_hero";
 export const TEX_NPC = "tex_npc_villager";
 export const TEX_DIALOGUE_FRAME = "tex_dialogue_frame";
 
@@ -39,13 +38,11 @@ export const SPRITE_FRAME_HEIGHT = 32;
 export { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 
 export const ASSET_TILESET = "assets/rm2k3-original-chipset.png";
-const ASSET_HERO = "assets/hero.png";
 const ASSET_NPC = "assets/npc_villager.png";
 const ASSET_DIALOGUE_FRAME = "assets/dialogue-frame.png";
 
 const CORE_BUNDLED_IMAGE_ASSETS = [
   { textureKey: TEX_TILESET, path: ASSET_TILESET, name: "RM2K3 Original ChipSet" },
-  { textureKey: TEX_HERO, path: ASSET_HERO, name: "Default Hero CharSet" },
   { textureKey: TEX_NPC, path: ASSET_NPC, name: "Default NPC CharSet" },
   { textureKey: TEX_DIALOGUE_FRAME, path: ASSET_DIALOGUE_FRAME, name: "Default Dialogue Frame" },
 ] as const satisfies readonly BundledImageAsset[];
@@ -93,10 +90,6 @@ export function loadBundledAssets(scene: Phaser.Scene): void {
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     scene.load.image(rawCharsetTextureKey(asset.textureKey), asset.path);
   }
-  scene.load.spritesheet(TEX_HERO, ASSET_HERO, {
-    frameWidth: SPRITE_FRAME_WIDTH,
-    frameHeight: SPRITE_FRAME_HEIGHT,
-  });
   scene.load.spritesheet(TEX_NPC, ASSET_NPC, {
     frameWidth: SPRITE_FRAME_WIDTH,
     frameHeight: SPRITE_FRAME_HEIGHT,
@@ -106,7 +99,6 @@ export function loadBundledAssets(scene: Phaser.Scene): void {
   scene.load.on("loaderror", (file: Phaser.Loader.File) => {
     if (
       file.key === TEX_TILESET ||
-      file.key === TEX_HERO ||
       file.key === TEX_NPC ||
       file.key === TEX_DIALOGUE_FRAME ||
       isExtraBundledLoadKey(file.key)

@@ -1,0 +1,50 @@
+﻿[
+    {
+        "file":  "src/main.ts",
+        "pureLoc":  60
+    },
+    {
+        "file":  "src/player/playSceneAutonomous.ts",
+        "pureLoc":  118
+    },
+    {
+        "file":  "src/player/playSceneAutonomousCommands.ts",
+        "pureLoc":  246
+    },
+    {
+        "file":  "src/player/playSceneAutonomousRouteDirection.ts",
+        "pureLoc":  67
+    },
+    {
+        "file":  "src/player/playSceneAutonomousRouteEffects.ts",
+        "pureLoc":  33
+    },
+    {
+        "file":  "src/styles.css",
+        "pureLoc":  6184
+    },
+    {
+        "file":  "src/styles.eventEditor.css",
+        "pureLoc":  674
+    },
+    {
+        "file":  "test/runtimeEventPageFixtures.ts",
+        "pureLoc":  187
+    },
+    {
+        "file":  "test/runtimeEventPageGraphics.test.ts",
+        "pureLoc":  105
+    },
+    {
+        "file":  "test/runtimeEventPageMovement.test.ts",
+        "pureLoc":  132
+    },
+    {
+        "file":  "test/runtimeMoveRouteCommands.test.ts",
+        "pureLoc":  197
+    },
+    {
+        "file":  "test/e2e/rm2k3-move-route-focused.spec.ts",
+        "pureLoc":  92
+    }
+]

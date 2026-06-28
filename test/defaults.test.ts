@@ -15,6 +15,7 @@ import {
 } from "@/project/defaults";
 import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE as PREVIEW_TILE_SIZE } from "@/assets/tilePreview";
 import { serialize } from "@/project/io";
 import { SCHEMA_VERSION } from "@/project/types";
@@ -34,6 +35,41 @@ const STARTER_VILLAGE_HOUSE_DOOR_APPROACHES = [
   { x: 7, y: 22 },
 ] as const;
 const STARTER_VILLAGE_FIRST_DOOR_APPROACH = STARTER_VILLAGE_HOUSE_DOOR_APPROACHES[0];
+const STARTER_VILLAGE_NPCS = [
+  {
+    id: "event_starter_mina",
+    x: 15,
+    y: 14,
+    spriteId: "tex_easyrpg_charset_people1",
+    pattern: charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 }),
+    faceResourceId: "easyrpg-faceset-people1",
+    faceIndex: 0,
+    speaker: "미나",
+    body: "어서 와요. 이 마을의 이벤트는 모두 이 에디터 안에서 만들어졌어요.",
+  },
+  {
+    id: "event_starter_rowen",
+    x: 13,
+    y: 16,
+    spriteId: "tex_easyrpg_charset_people2",
+    pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
+    faceResourceId: "easyrpg-faceset-people2",
+    faceIndex: 1,
+    speaker: "로웬",
+    body: "트리거를 Action Button으로 두면 말을 걸 때만 대화가 시작됩니다.",
+  },
+  {
+    id: "event_starter_sera",
+    x: 15,
+    y: 18,
+    spriteId: "tex_easyrpg_charset_actor2",
+    pattern: charsetFrameIndex({ characterIndex: 2, direction: "down", pattern: 1 }),
+    faceResourceId: "easyrpg-faceset-actor2",
+    faceIndex: 2,
+    speaker: "세라",
+    body: "페이스칩도 함께 표시되니 실제 RPG Maker식 NPC 대화처럼 확인할 수 있어요.",
+  },
+] as const;
 
 type PatternSubject = {
   readonly tiles: readonly number[];
@@ -105,9 +141,10 @@ describe("createBlankProject", () => {
     expect(Array.isArray(p.mapTree.children)).toBe(true);
   });
 
-  it("assets.sprites에 hero/npc가 있다", () => {
+  it("assets.sprites에 npc만 기본 스프라이트로 있다", () => {
     const p = createBlankProject();
-    expect(Object.keys(p.assets.sprites).length).toBeGreaterThan(0);
+    expect(p.assets.sprites.hero).toBeUndefined();
+    expect(p.assets.sprites.npc_villager).toBeDefined();
     expect(p.assets.uploaded).toBeDefined();
   });
 
@@ -245,6 +282,44 @@ describe("createStarterMap", () => {
       expect(tile).toBeDefined();
       expect(roadTiles.has(tile ?? TILE.EMPTY)).toBe(true);
       expect(m.upperTiles[point.y * m.width + point.x]).toBe(TILE.EMPTY);
+    }
+  });
+
+  it("ships three playable NPC events with EasyRPG charsets, face chips, and dialogue", () => {
+    const m = createStarterMap();
+    for (const expected of STARTER_VILLAGE_NPCS) {
+      const event = m.events.find((entry) => entry.id === expected.id);
+      expect(event).toBeDefined();
+      if (!event) throw new Error(`missing starter NPC ${expected.id}`);
+      expect(event.x).toBe(expected.x);
+      expect(event.y).toBe(expected.y);
+      expect(event.trigger.kind).toBe("action");
+      expect(m.upperTiles[event.y * m.width + event.x]).toBe(TILE.EMPTY);
+
+      const page = event.pages?.[0];
+      expect(page).toBeDefined();
+      if (!page) throw new Error(`missing starter NPC page ${expected.id}`);
+      expect(page.name).toBe(expected.speaker);
+      expect(page.graphic.sprite?.id).toBe(expected.spriteId);
+      expect(page.graphic.pattern).toBe(expected.pattern);
+      expect(page.trigger.kind).toBe("action");
+      expect(page.priority).toBe("same");
+      expect(page.overlapForbidden).toBe(true);
+
+      const faceCommand = page.commands.find((command) => command.kind === "changeFace");
+      if (!faceCommand || faceCommand.kind !== "changeFace") {
+        throw new Error(`missing face command for ${expected.id}`);
+      }
+      expect(faceCommand.resourceId).toBe(expected.faceResourceId);
+      expect(faceCommand.faceIndex).toBe(expected.faceIndex);
+      expect(faceCommand.position).toBe("left");
+
+      const textCommand = page.commands.find((command) => command.kind === "text");
+      if (!textCommand || textCommand.kind !== "text") {
+        throw new Error(`missing text command for ${expected.id}`);
+      }
+      expect(textCommand.speaker).toBe(expected.speaker);
+      expect(textCommand.body).toBe(expected.body);
     }
   });
 });

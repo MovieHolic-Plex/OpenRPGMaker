@@ -72,31 +72,31 @@ export function resourceReferenceMessage(resourceId: string): string | null {
         record.battleCharacterResourceId === resourceId
     )
   ) {
-    return "actor resource is in use.";
+    return "주인공이 이 리소스를 사용 중입니다.";
   }
   if (project.database.items.some((record) => record.imageResourceId === resourceId || record.iconResourceId === resourceId)) {
-    return "item resource is in use.";
+    return "아이템이 이 리소스를 사용 중입니다.";
   }
   if (
     project.database.equipment.some((record) => record.imageResourceId === resourceId || record.iconResourceId === resourceId)
   ) {
-    return "equipment resource is in use.";
+    return "장비가 이 리소스를 사용 중입니다.";
   }
-  if (project.database.enemies.some((record) => record.monsterResourceId === resourceId)) return "enemy resource is in use.";
+  if (project.database.enemies.some((record) => record.monsterResourceId === resourceId)) return "몬스터가 이 리소스를 사용 중입니다.";
   if (project.database.troops.some((record) => record.previewBackgroundResourceId === resourceId)) {
-    return "troop resource is in use.";
+    return "적 그룹이 이 리소스를 사용 중입니다.";
   }
   if (project.database.battleAnimations.some((record) => record.resourceId === resourceId)) {
-    return "battle animation resource is in use.";
+    return "전투 애니메이션이 이 리소스를 사용 중입니다.";
   }
   if (
     project.system.titleResourceId === resourceId ||
     project.system.systemResourceId === resourceId ||
     project.system.battleSystemResourceId === resourceId
   ) {
-    return "system resource is in use.";
+    return "시스템 설정이 이 리소스를 사용 중입니다.";
   }
-  if (commandsResourceReference(project, resourceId)) return "event command resource is in use.";
+  if (commandsResourceReference(project, resourceId)) return "이벤트 명령이 이 리소스를 사용 중입니다.";
   return null;
 }
 
@@ -198,5 +198,5 @@ export function isSkillScope(value: unknown): value is SkillRecord["scope"] {
 }
 
 export function isItemScope(value: unknown): value is ItemRecord["scope"] {
-  return value === "none" || value === "ally" || value === "enemy";
+  return value === "none" || value === "ally" || value === "allAllies" || value === "enemy";
 }

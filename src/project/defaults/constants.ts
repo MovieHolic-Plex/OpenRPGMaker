@@ -6,7 +6,6 @@ export const DEFAULT_TILESET_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town";
 export const LEGACY_RM_TILESET_ID = "tiles_default";
 export const LEGACY_RM_TILESET_NAME = "RM 기본 샘플 칩셋";
 export const LEGACY_RM_TILESET_TEXTURE_KEY = "tex_tiles_default";
-export const DEFAULT_SPRITE_HERO = "hero";
 export const DEFAULT_SPRITE_NPC = "npc_villager";
 export const DEFAULT_ACTOR_ID = "actor_hero";
 export const DEFAULT_CLASS_ID = "class_hero";

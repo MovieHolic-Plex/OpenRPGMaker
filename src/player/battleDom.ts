@@ -1,5 +1,8 @@
 import type { BattleBattlerSnapshot, BattleResult, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
+import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
+import { mountBattleAnimationPlayback } from "@/player/battleAnimationDom";
+import { battleField, battlePartyStatus } from "@/player/battleFieldDom";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
@@ -7,7 +10,7 @@ import type { ItemId, SkillId } from "@/project/types";
 export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
-  readonly onResult: (result: BattleResult) => void;
+  readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
 }
 
 export interface BattleDomController {
@@ -15,7 +18,7 @@ export interface BattleDomController {
   destroy(): void;
 }
 
-const ANIMATION_HOLD_MS = 180;
+const ANIMATION_HOLD_MS = 1_000;
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
   options.host.querySelector("[data-testid='battle-scene']")?.remove();
@@ -28,23 +31,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let resultSent = false;
   // 스킬/아이템 서브메뉴 상태. null 이면 주 명령 패널.
   let submenu: "skill" | "item" | null = null;
+  let activeAnimation: BattleAnimationPlayback | undefined;
 
   function render(): void {
     const snapshot = options.runtime.snapshot();
+    activeAnimation?.destroy();
+    activeAnimation = undefined;
     root.replaceChildren();
-    root.append(battleField(snapshot), commandPanel(snapshot));
-    if (snapshot.lastAnimation) {
-      const animation = document.createElement("div");
-      animation.className = "battle-animation";
-      animation.dataset.testid = "battle-animation";
-      animation.textContent = snapshot.lastAnimation.animationId;
-      root.append(animation);
+    root.append(battleField(snapshot), commandPanel(snapshot), battlePartyStatus(snapshot));
+    activeAnimation = mountBattleAnimationPlayback(snapshot);
+    if (activeAnimation) {
+      root.append(activeAnimation.element);
     }
     const result = snapshot.result;
     if (result && !resultSent) {
       resultSent = true;
       window.setTimeout(() => {
-        options.onResult(result);
+        options.onResult(result, snapshot);
       }, ANIMATION_HOLD_MS);
     }
   }
@@ -59,6 +62,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function runActorCommand(factory: () => void): void {
     factory();
+    advanceBattleRuntime(options.runtime);
     submenu = null;
     render();
   }
@@ -66,27 +70,32 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function commandPanel(snapshot: BattleSnapshot): HTMLElement {
     const panel = document.createElement("div");
     panel.className = "battle-command-panel";
+    panel.append(enemyNameList(snapshot.enemies));
     // 전투 종료/적 턴이면 명령 패널을 비운다.
     if (snapshot.phase !== "actorCommand") return panel;
 
     const target = firstAliveEnemy(snapshot);
     const actor = activeActor(snapshot);
+    const menu = document.createElement("div");
+    menu.className = "battle-command-menu";
 
     if (submenu === "skill") {
-      panel.append(...skillSubmenu(actor, target));
+      menu.append(...skillSubmenu(actor, target));
+      panel.append(menu);
       return panel;
     }
     if (submenu === "item") {
-      panel.append(...itemSubmenu(target));
+      menu.append(...itemSubmenu(target));
+      panel.append(menu);
       return panel;
     }
 
     // 주 명령: 공격 / 스킬 / 아이템 / 방어 / 도주 (RM2K3 전투 명령).
-    panel.append(commandButton("공격", "actor-command-attack", () => {
+    menu.append(commandButton("공격", "actor-command-attack", () => {
       if (!target) return;
       runActorCommand(() => options.runtime.performActorCommand({ kind: "attack", targetEnemyId: target.id }));
     }));
-    panel.append(commandButton("스킬", "actor-command-skill", () => {
+    menu.append(commandButton("스킬", "actor-command-skill", () => {
       // 스킬이 하나뿐이면 곧바로 시전(E2E 단일 클릭 호환). 여러 개면 서브메뉴를 연다.
       const skills = usableSkills(actor);
       if (skills.length === 1 && target) {
@@ -98,18 +107,33 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       submenu = "skill";
       render();
     }));
-    panel.append(commandButton("아이템", "actor-command-item", () => {
+    menu.append(commandButton("아이템", "actor-command-item", () => {
       if (battleItems().length === 0) return;
       submenu = "item";
       render();
     }));
-    panel.append(commandButton("방어", "actor-command-defend", () => {
+    menu.append(commandButton("방어", "actor-command-defend", () => {
       runActorCommand(() => options.runtime.performActorCommand({ kind: "defend" }));
     }));
-    panel.append(commandButton("도주", "actor-command-escape", () => {
+    menu.append(commandButton("도주", "actor-command-escape", () => {
       runActorCommand(() => options.runtime.performActorCommand({ kind: "escape" }));
     }));
+    panel.append(menu);
     return panel;
+  }
+
+  function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
+    const list = document.createElement("div");
+    list.className = "battle-enemy-list";
+    for (const enemy of enemies) {
+      const row = document.createElement("div");
+      row.className = "battle-enemy-list-row";
+      row.dataset.enemyId = enemy.id;
+      row.textContent = enemy.name;
+      if (enemy.defeated) row.classList.add("defeated");
+      list.append(row);
+    }
+    return list;
   }
 
   /** 액터가 사용 가능한 스킬 id 목록(DB 존재 + MP 는 여기서 단순히 스킵). */
@@ -179,113 +203,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   return {
     root,
     destroy(): void {
+      activeAnimation?.destroy();
       root.remove();
     },
   };
-}
-
-function battleField(snapshot: BattleSnapshot): HTMLElement {
-  const field = document.createElement("div");
-  field.className = "battle-field";
-  field.append(battleBackdrop(), battleTitle(snapshot.troopId), enemyGroup(snapshot.enemies), partyGroup(snapshot.actors));
-  return field;
-}
-
-function battleBackdrop(): HTMLElement {
-  const backdrop = document.createElement("div");
-  backdrop.className = "battle-backdrop";
-  backdrop.dataset.testid = "battle-backdrop";
-  const resourceId = store.getCurrent().system.battleSystemResourceId;
-  if (resourceId) {
-    backdrop.dataset.backdropResourceId = resourceId;
-    backdrop.textContent = `전투 배경 ${resourceId}`;
-  } else {
-    backdrop.textContent = "전투 배경";
-  }
-  return backdrop;
-}
-
-function battleTitle(troopId: string): HTMLElement {
-  const title = document.createElement("div");
-  title.className = "battle-title";
-  title.textContent = troopId;
-  return title;
-}
-
-function enemyGroup(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
-  const group = document.createElement("div");
-  group.className = "battle-enemy-group";
-  for (const enemy of enemies) {
-    group.append(enemyButton(enemy));
-  }
-  return group;
-}
-
-function enemyButton(enemy: BattleBattlerSnapshot): HTMLButtonElement {
-  const enemyNode = document.createElement("button");
-  enemyNode.type = "button";
-  enemyNode.className = "battle-enemy";
-  enemyNode.dataset.testid = enemy.id;
-  enemyNode.dataset.recordId = enemy.recordId;
-  const resourceId = monsterResourceId(enemy.recordId);
-  if (resourceId) {
-    enemyNode.dataset.monsterResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-    if (url) {
-      const image = document.createElement("img");
-      image.className = "battle-enemy-image";
-      image.alt = `${enemy.name} 몬스터`;
-      image.src = url;
-      enemyNode.append(image);
-    }
-  }
-  enemyNode.append(document.createTextNode(`${enemy.name} ${enemy.hp}/${enemy.maxHp}`));
-  enemyNode.disabled = enemy.defeated;
-  return enemyNode;
-}
-
-function partyGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement {
-  const group = document.createElement("div");
-  group.className = "battle-party";
-  group.dataset.testid = "battle-party";
-  for (const actor of actors) {
-    group.append(actorNode(actor));
-  }
-  return group;
-}
-
-function actorNode(actor: BattleBattlerSnapshot): HTMLElement {
-  const node = document.createElement("div");
-  node.className = "battle-actor";
-  node.dataset.testid = `battle-actor-${actor.recordId}`;
-  node.dataset.recordId = actor.recordId;
-  const resourceId = battleCharsetResourceId(actor.recordId);
-  if (resourceId) {
-    // RM2K3 사이드뷰: 주인공 전투 캐릭터 스프라이트를 렌더링한다.
-    node.dataset.battleCharsetResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-    if (url) {
-      const image = document.createElement("img");
-      image.className = "battle-actor-image";
-      image.alt = `${actor.name} 전투 캐릭터`;
-      image.src = url;
-      node.append(image);
-    }
-  }
-  const label = document.createElement("span");
-  label.className = "battle-actor-label";
-  label.textContent = `${actor.name} ${actor.hp}/${actor.maxHp}`;
-  node.append(label);
-  if (actor.defeated) node.classList.add("defeated");
-  return node;
-}
-
-function battleCharsetResourceId(recordId: string): string | undefined {
-  return store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.battleCharacterResourceId;
-}
-
-function monsterResourceId(recordId: string): string | undefined {
-  return store.getCurrent().database.enemies.find((enemy) => enemy.id === recordId)?.monsterResourceId;
 }
 
 function commandButton(label: string, testId: string, onClick: () => void): HTMLButtonElement {

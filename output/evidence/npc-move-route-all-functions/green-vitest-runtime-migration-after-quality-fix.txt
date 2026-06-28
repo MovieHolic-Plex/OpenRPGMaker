@@ -1,0 +1,13 @@
+
+> rpg-zzu@0.1.0 test
+> vitest run --configLoader runner --run test/runtimeEventPageControls.test.ts test/migration.test.ts
+
+
+ RUN  v4.1.9 C:/Users/hyeon/Downloads/rpg-zzu
+
+
+ Test Files  2 passed (2)
+      Tests  33 passed (33)
+   Start at  22:42:32
+   Duration  2.48s (transform 1.34s, setup 0ms, import 3.62s, tests 260ms, environment 0ms)
+

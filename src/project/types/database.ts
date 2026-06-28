@@ -1,6 +1,7 @@
 import type {
   ActorId,
   BattleAnimationId,
+  BattlerAnimationId,
   ClassId,
   EnemyId,
   EquipmentId,
@@ -73,6 +74,8 @@ export interface ActorLearnedSkill {
 export interface ClassRecord {
   id: ClassId;
   name: string;
+  options: ClassOptions;
+  animationId?: BattleAnimationId;
   skillIds: SkillId[];
   battleCommands: ClassBattleCommand[];
   learnedSkills: ActorLearnedSkill[];
@@ -83,6 +86,13 @@ export interface ClassRecord {
   elementRates: Record<string, ActorRateGrade>;
 }
 
+export interface ClassOptions {
+  dualWield: boolean;
+  autoBattle: boolean;
+  fixedEquipment: boolean;
+  mightyGuard: boolean;
+}
+
 export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "item" | "escape" | "event";
 
 export interface ClassBattleCommand {
@@ -90,6 +100,43 @@ export interface ClassBattleCommand {
   name: string;
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
+}
+
+export type DatabaseElementKind = "physical" | "magical";
+
+export interface DatabaseElementRecord {
+  id: string;
+  name: string;
+  kind: DatabaseElementKind;
+  rateLabels: ActorRateGrade[];
+  damageMultipliers: Record<ActorRateGrade, number>;
+}
+
+export type DatabaseTerrainCharacterDisplay = "normal" | "transparent";
+
+export interface DatabaseTerrainVehiclePassage {
+  boat: boolean;
+  ship: boolean;
+  airshipLand: boolean;
+}
+
+export interface DatabaseTerrainRecord {
+  id: string;
+  name: string;
+  damage: number;
+  encounterRatePercent: number;
+  battleBackgroundResourceId?: string;
+  footstepSoundResourceId?: string;
+  characterDisplay: DatabaseTerrainCharacterDisplay;
+  vehiclePassage: DatabaseTerrainVehiclePassage;
+}
+
+export interface DatabaseBattleCommandRecord {
+  id: string;
+  name: string;
+  kind: ClassBattleCommandKind;
+  skillSubsetName?: string;
+  skillId?: SkillId;
 }
 
 export interface ClassEquipmentPermissions {
@@ -129,15 +176,76 @@ export interface ItemRecord {
   name: string;
   imageResourceId?: string;
   iconResourceId?: string;
-  scope: "none" | "ally" | "enemy";
+  scope: ItemScope;
   price: number;
   skillId?: SkillId;
   description: string;
-  type: "normal" | "key" | "switch" | "skillBook";
+  type: ItemType;
   occasion: "always" | "battle" | "field" | "never";
   consumable: boolean;
   animationId?: BattleAnimationId;
   stateEffects: DatabaseStateEffect[];
+  consumptionLimit: ItemConsumptionLimit;
+  usableActorIds: ActorId[];
+  usableClassIds: ClassId[];
+  healStateIds: StateId[];
+  hpRecovery: SkillMpCost;
+  mpRecovery: SkillMpCost;
+  onlyUsableInMenu: boolean;
+  onlyEffectiveOnDeadActors: boolean;
+  learnedSkillId?: SkillId;
+  activateSkillId?: SkillId;
+  usageMessage: "normal" | "skill";
+  switchId?: string;
+  occasionField: boolean;
+  occasionBattle: boolean;
+  seedParameterBonuses: EquipmentStatBonuses;
+  equipmentProfile: ItemEquipmentProfile;
+}
+
+export type ItemScope = "none" | "ally" | "allAllies" | "enemy";
+export type ItemType =
+  | "normalGoods"
+  | "weapon"
+  | "shield"
+  | "body"
+  | "head"
+  | "accessory"
+  | "medicine"
+  | "book"
+  | "seed"
+  | "special"
+  | "switch";
+export type ItemConsumptionLimit = "noLimit" | 1 | 2 | 3 | 4 | 5;
+
+export interface ItemEquipmentProfile {
+  statBonuses: EquipmentStatBonuses;
+  equippableActorIds: ActorId[];
+  equippableClassIds: ClassId[];
+  twoHanded: boolean;
+  mpCost: number;
+  accuracy: number;
+  criticalRate: number;
+  attackElementIds: string[];
+  stateInflictIds: StateId[];
+  stateInflictionChance: number;
+  effectFlags: ItemEquipmentEffectFlags;
+  elementalDefenseIds: string[];
+  stateDefenseIds: StateId[];
+  stateDefenseMode: "resist" | "inflict";
+  stateResistanceChance: number;
+}
+
+export interface ItemEquipmentEffectFlags {
+  preemptive: boolean;
+  doubleAttack: boolean;
+  attackAll: boolean;
+  ignoreDodge: boolean;
+  preventCriticalHits: boolean;
+  increasePhysicalDodge: boolean;
+  halfMpCost: boolean;
+  negateTerrainDamage: boolean;
+  fixedEquipment: boolean;
 }
 
 export interface EquipmentRecord {
@@ -175,6 +283,11 @@ export interface EnemyRecord {
   id: EnemyId;
   name: string;
   monsterResourceId?: string;
+  graphicHue: number;
+  transparent: boolean;
+  flying: boolean;
+  criticalHit: EnemyCritical;
+  attackOptions: EnemyOptions;
   skillIds: SkillId[];
   stats: EnemyStats;
   rewards: EnemyRewards;
@@ -199,12 +312,28 @@ export interface EnemyRewards {
   dropRatePercent: number;
 }
 
+export interface EnemyCritical {
+  enabled: boolean;
+  oneIn: number;
+}
+
+export interface EnemyOptions {
+  normalAttacksMiss: boolean;
+}
+
 export type EnemyActionCondition = { kind: "always" } | { kind: "turn"; start: number; interval: number };
+
+export interface EnemyActionSwitchEffect {
+  enabled: boolean;
+  switchId?: string;
+}
 
 export interface EnemyActionPattern {
   skillId: SkillId;
   priority: number;
   condition: EnemyActionCondition;
+  switchOnAfterAction: EnemyActionSwitchEffect;
+  switchOffAfterAction: EnemyActionSwitchEffect;
 }
 
 export interface TroopMemberRecord {
@@ -252,6 +381,81 @@ export interface BattleAnimationRecord {
   id: BattleAnimationId;
   name: string;
   resourceId?: string;
+  sheet?: BattleAnimationSheet;
+  scope?: BattleAnimationScope;
+  position?: BattleAnimationPosition;
+  large?: boolean;
+  frames?: BattleAnimationFrame[];
+  timings?: BattleAnimationTiming[];
+}
+
+export type BattleAnimationScope = "singleTarget" | "allTargets" | "screen";
+
+export type BattleAnimationPosition = "head" | "center" | "feet" | "screen";
+
+export interface BattleAnimationSheet {
+  frameWidth: number;
+  frameHeight: number;
+  columns: number;
+}
+
+export interface BattleAnimationFrame {
+  cells: BattleAnimationCell[];
+}
+
+export interface BattleAnimationCell {
+  pattern: number;
+  x: number;
+  y: number;
+  zoom: number;
+  opacity: number;
+  visible: boolean;
+  tone?: BattleAnimationTone;
+}
+
+export interface BattleAnimationTone {
+  red: number;
+  green: number;
+  blue: number;
+  gray: number;
+}
+
+export interface BattleAnimationTiming {
+  frameIndex: number;
+  soundResourceId?: string;
+  flash?: BattleAnimationFlash;
+  screenShake?: BattleAnimationScreenShake;
+}
+
+export interface BattleAnimationFlash {
+  target: "target" | "screen";
+  color: BattleAnimationTone;
+  durationFrames: number;
+}
+
+export interface BattleAnimationScreenShake {
+  power: number;
+  speed: number;
+  durationFrames: number;
+}
+
+export interface BattlerAnimationRecord {
+  id: BattlerAnimationId;
+  name: string;
+  resourceId?: string;
+  poses: BattlerAnimationPose[];
+}
+
+export type BattlerAnimationPoseKind = "idle" | "ready" | "attack" | "defend" | "damage" | "victory" | "dead";
+
+export interface BattlerAnimationPose {
+  pose: BattlerAnimationPoseKind;
+  frames: BattlerAnimationPoseFrame[];
+}
+
+export interface BattlerAnimationPoseFrame {
+  pattern: number;
+  durationMs: number;
 }
 
 export interface DatabaseRecords {
@@ -266,10 +470,38 @@ export interface DatabaseRecords {
   battleAnimations: BattleAnimationRecord[];
 }
 
+export interface ProjectDatabaseRecords extends DatabaseRecords {
+  elements?: DatabaseElementRecord[];
+  terrains?: DatabaseTerrainRecord[];
+  battleCommands?: DatabaseBattleCommandRecord[];
+  battlerAnimations?: BattlerAnimationRecord[];
+}
+
+export interface TitleScreenLayout {
+  titleX: number;
+  titleY: number;
+  menuX: number;
+  menuY: number;
+}
+
+export interface TitleScreenMenuLabels {
+  newGame: string;
+  continueGame: string;
+  quit: string;
+}
+
+export interface TitleScreenSettings {
+  title: string;
+  backgroundResourceId?: string;
+  layout: TitleScreenLayout;
+  menuLabels: TitleScreenMenuLabels;
+}
+
 export interface SystemRecords {
   startActorIds: ActorId[];
   titleResourceId?: string;
   systemResourceId?: string;
   battleSystemResourceId?: string;
   initialTroopId?: TroopId;
+  titleScreen?: TitleScreenSettings;
 }

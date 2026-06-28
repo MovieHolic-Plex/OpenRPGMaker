@@ -1,0 +1,20 @@
+{
+  "before": {
+    "x": 62,
+    "y": 6,
+    "width": 1476,
+    "height": 936
+  },
+  "after": {
+    "x": 222,
+    "y": 96,
+    "width": 1476,
+    "height": 936
+  },
+  "moved": true,
+  "delta": {
+    "x": 160,
+    "y": 90
+  },
+  "conditionVisible": true
+}

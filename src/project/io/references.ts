@@ -11,6 +11,7 @@ import {
   collectResourceIds,
   validateActorResources,
   validateAnimationResource,
+  validateBattlerAnimationResources,
   validateEnemyResources,
   validateEquipmentResources,
   validateItemResources,
@@ -54,6 +55,11 @@ export function validateProjectReferences(project: Project): void {
   validateEnemyRecords(project, itemIds, skillIds, resourceIds);
   validateTroopRecords(project, enemyIds, context);
   for (const animation of project.database.battleAnimations) validateAnimationResource(animation, resourceIds);
+  for (const animation of project.database.battlerAnimations ?? []) validateBattlerAnimationResources(animation, resourceIds);
+  for (const terrain of project.database.terrains ?? []) {
+    validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds);
+    validateOptionalResource(`terrain ${terrain.id}: footstepSoundResourceId`, terrain.footstepSoundResourceId, resourceIds);
+  }
 
   requireExistingIds("system.startActorIds", project.system.startActorIds, actorIds);
   if (project.system.initialTroopId) assert(troopIds.has(project.system.initialTroopId), "system.initialTroopId does not exist.");

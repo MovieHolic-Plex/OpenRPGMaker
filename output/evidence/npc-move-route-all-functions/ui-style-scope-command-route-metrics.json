@@ -1,0 +1,29 @@
+{
+  "buttonCount": 42,
+  "controls": {
+    "bottom": 615.2916870117188,
+    "clientHeight": 190,
+    "clientWidth": 432,
+    "height": 190,
+    "right": 1348.8333740234375,
+    "scrollHeight": 476,
+    "scrollWidth": 432,
+    "width": 447,
+    "x": 901.8333740234375,
+    "y": 425.29168701171875
+  },
+  "controlsScrollHorizontally": false,
+  "controlsScrollVertically": true,
+  "wrap": {
+    "bottom": 615.2916870117188,
+    "clientHeight": 357,
+    "clientWidth": 447,
+    "height": 356.66668701171875,
+    "right": 1348.8333740234375,
+    "scrollHeight": 357,
+    "scrollWidth": 447,
+    "width": 447,
+    "x": 901.8333740234375,
+    "y": 258.625
+  }
+}

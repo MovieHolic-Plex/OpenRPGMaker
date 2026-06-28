@@ -10,6 +10,7 @@ export type EnemyId = string;
 export type TroopId = string;
 export type StateId = string;
 export type BattleAnimationId = string;
+export type BattlerAnimationId = string;
 
 export type Dir = "down" | "left" | "right" | "up";
 
@@ -142,6 +143,74 @@ export interface TilesetDef {
   terrain: number[];
   tileMeta?: TileAiMetadata[];
   tileGroups?: TileGroupMetadata[];
+  terrainTemplates?: TerrainTemplateMetadata[];
+}
+
+export interface TerrainTemplateMetadata {
+  id: string;
+  name: string;
+  sourceMapName: string;
+  buildPlan?: TerrainTemplateBuildPlan;
+  grammar?: readonly TerrainTemplateGrammarRule[];
+  rows: readonly TerrainTemplateRow[];
+  rules: readonly string[];
+}
+
+export interface TerrainTemplateBuildPlan {
+  fence: TerrainTemplateRect;
+  house: TerrainTemplateHouseBuildPlan;
+  roads: readonly TerrainTemplateRect[];
+}
+
+export interface TerrainTemplateHouseBuildPlan {
+  door: {
+    readonly bottomY: number;
+    readonly topY: number;
+    readonly x: number;
+  };
+  roof: TerrainTemplateSpan;
+  wall: TerrainTemplateWallSpan;
+  windows: readonly TerrainTemplatePoint[];
+}
+
+export interface TerrainTemplatePoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface TerrainTemplateRect extends TerrainTemplatePoint {
+  readonly height: number;
+  readonly width: number;
+}
+
+export interface TerrainTemplateSpan {
+  readonly origin: TerrainTemplatePoint;
+  readonly width: number;
+}
+
+export interface TerrainTemplateWallSpan extends TerrainTemplateSpan {
+  readonly rows: number;
+}
+
+export interface TerrainTemplateGrammarRule {
+  kind: "overlay" | "roof-row" | "wall-row";
+  role: string;
+  layer: TileGroupLayer;
+  left?: number;
+  middle?: number;
+  right?: number;
+  tiles?: readonly number[];
+  meaning: string;
+  mustTouch?: string;
+}
+
+export interface TerrainTemplateRow {
+  section: string;
+  coord: string;
+  lower: readonly number[];
+  upper: readonly number[];
+  stack: readonly number[];
+  meaning: string;
 }
 
 export interface SpriteDef {

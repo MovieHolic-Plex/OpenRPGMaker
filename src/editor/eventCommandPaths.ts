@@ -1,0 +1,3 @@
+export const SHOP_TRANSACTION_BRANCH_INDEX = -1;
+export const FORK_THEN_BRANCH_INDEX = -2;
+export const FORK_ELSE_BRANCH_INDEX = -3;

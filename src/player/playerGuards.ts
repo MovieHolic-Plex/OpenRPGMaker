@@ -3,6 +3,7 @@ import type { DialogueUI } from "@/player/dialogue";
 import type { PlayScene } from "@/player/PlayScene";
 
 export function isPlayScene(scene: Phaser.Scene): scene is PlayScene {
+  if (typeof scene !== "object" || scene === null) return false;
   return (
     typeof Reflect.get(scene, "applySession") === "function" &&
     typeof Reflect.get(scene, "getSession") === "function"

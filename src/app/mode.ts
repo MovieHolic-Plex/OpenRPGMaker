@@ -12,6 +12,7 @@ import {
   markModeSwitch,
   mountPerfMetrics,
 } from "@/app/perfMetrics";
+import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 
 export type Mode = "edit" | "play";
 
@@ -42,6 +43,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   root.append(topbar, main);
   elements = { root, topbar, main };
   mountPerfMetrics(root);
+  window.addEventListener(MAP_EDIT_HISTORY_EVENT, onMapEditHistoryChange);
 
   await store.load();
 
@@ -180,4 +182,8 @@ async function renderTopbar(): Promise<void> {
   if (!elements) return;
   const { renderTopbar: render } = await import("@/editor/panels/menu");
   render(elements.topbar);
+}
+
+function onMapEditHistoryChange(): void {
+  void renderTopbar();
 }

@@ -44,7 +44,6 @@ export const EDITOR_OVERLAP_PAIRS = [
   ["layer-selector", "tool-grid"],
   ["tool-grid", "tile-palette"],
   ["tile-palette", "map-tree"],
-  ["right-tab-database", "right-tab-resources"],
 ] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -205,26 +204,28 @@ export async function captureEditorViewport(capture: EditorViewportCapture): Pro
 }
 
 export async function openEveryDatabaseTab(page: Page): Promise<void> {
-  await page.getByTestId("right-tab-database").click();
+  await page.getByTestId("toolbar-database").click();
   for (const id of DATABASE_TABS) {
     await page.getByTestId(id).click();
     await expect(page.getByTestId("db-detail-form"), `${id} should render a detail form`).toBeVisible();
   }
+  await page.getByTestId("database-modal-close").click();
 }
 
 export async function importResource(page: Page): Promise<void> {
-  await page.getByTestId("right-tab-resources").click();
+  await page.getByTestId("toolbar-resource-manager").click();
   await page.getByTestId("resource-kind-select").selectOption("chipset");
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/chipset-valid-480x256.png");
   await expect(page.getByTestId("resource-profile-chipset").last()).toContainText("480x256");
   await expect(page.getByTestId("resource-tile-0").last()).toBeVisible();
+  await page.getByTestId("resource-modal-close").click();
 }
 
 export async function visitInterior(page: Page): Promise<void> {
   await page.getByTestId("event-interior-door").click();
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_interior");
   await page.getByTestId("event-interior-host").click();
-  await dismissDialogue(page, "This small interior proves map transfers.");
+  await dismissDialogue(page, "이 작은 실내에서 맵 이동을 확인합니다.");
   await page.getByTestId("event-interior-exit").click();
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_town");
 }

@@ -57,9 +57,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "inn":
     case "gameOver":
     case "returnToTitle":
+    case "displayTextSettings":
+      return;
+    case "changeFace":
+      validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);
       return;
     case "choices":
       for (const option of command.options) validateCommands(option.branch, context);
+      validateCommands(command.cancelBranch ?? [], context);
       return;
     case "fork":
       validateCondition(command.condition, context.switchIds, context.variableIds);
@@ -71,6 +76,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "setVariable":
       assert(context.variableIds.has(command.variableId), `setVariable: variableId가 존재하지 않습니다: ${command.variableId}`);
+      return;
+    case "inputNumber":
+      assert(context.variableIds.has(command.variableId), `inputNumber: variableId가 존재하지 않습니다: ${command.variableId}`);
       return;
     case "transfer":
       assert(context.mapIds.has(command.mapId), `transfer: mapId가 존재하지 않습니다: ${command.mapId}`);
@@ -149,4 +157,13 @@ export function validateCondition(
 
 function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {
   for (const id of ids) assert(knownIds.has(id), `${label}가 존재하지 않습니다: ${id}`);
+}
+
+function validateOptionalCommandResource(
+  label: string,
+  id: string,
+  knownResourceIds: ReadonlySet<string>
+): void {
+  if (id.trim().length === 0) return;
+  validateOptionalResource(label, id, knownResourceIds);
 }

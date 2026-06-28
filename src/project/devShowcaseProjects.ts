@@ -4,6 +4,7 @@ import {
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createRetroHouseShowcaseProject,
+  createShopShowcaseProject,
   createSmallHouseVariantProject,
   createTownArchitectureCityProject,
   createTownArchitectureTestProject,
@@ -15,6 +16,7 @@ import {
 import type { Project } from "./types";
 
 const DEV_FRESH_PROJECT_PARAM = "freshProject";
+const DEV_PROJECT_PARAM = "devProject";
 const DEV_LOG_CABIN_SHOWCASE_PARAM = "logCabinShowcase";
 const DEV_RETRO_HOUSE_SHOWCASE_PARAM = "retroHouseShowcase";
 const DEV_TOWN_HOUSE_SHOWCASE_PARAM = "townHouseShowcase";
@@ -24,13 +26,21 @@ const DEV_TOWN_ARCHITECTURE_TEST_PARAM = "townArchitectureTest";
 const DEV_DB_EXTRACTED_HOUSE_TEMPLATE_PARAM = "dbExtractedHouseTemplate";
 const DEV_SMALL_HOUSE_VARIANT_PARAM = "smallHouseVariant";
 const DEV_HOUSE_TEMPLATE_GALLERY_PARAM = "houseTemplateGallery";
+const DEV_SHOP_SHOWCASE_PARAM = "shopShowcase";
+const SUPABASE_CANONICAL_PROJECT_PARAM = "supabaseRecovered";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
   if (typeof window === "undefined") return null;
   if (!isLocalDevHost(window.location.hostname)) return null;
+  const e2eProject = createE2eProjectForLocation();
+  if (e2eProject) return e2eProject;
   const params = new URLSearchParams(window.location.search);
+  if (params.has(SUPABASE_CANONICAL_PROJECT_PARAM)) return null;
+  if (params.has(DEV_FRESH_PROJECT_PARAM)) return createBlankProject();
+  if (!params.has(DEV_PROJECT_PARAM)) return null;
   if (params.has(DEV_LOG_CABIN_SHOWCASE_PARAM)) return createLogCabinShowcaseProject();
   if (params.has(DEV_RETRO_HOUSE_SHOWCASE_PARAM)) return createRetroHouseShowcaseProject();
+  if (params.has(DEV_SHOP_SHOWCASE_PARAM)) return createShopShowcaseProject();
   if (params.has(DEV_TOWN_HOUSE_SHOWCASE_PARAM)) {
     return createTownHouseShowcaseProject(normalizeTownHouseShowcaseStyle(params.get(DEV_TOWN_HOUSE_SHOWCASE_PARAM)));
   }
@@ -44,8 +54,18 @@ export function createDevShowcaseProjectForLocation(): Project | null {
     return createSmallHouseVariantProject(normalizeSmallHouseVariant(params.get(DEV_SMALL_HOUSE_VARIANT_PARAM)));
   }
   if (params.has(DEV_DB_EXTRACTED_HOUSE_TEMPLATE_PARAM)) return createDbExtractedHouseTemplateProject();
-  if (params.has(DEV_FRESH_PROJECT_PARAM)) return createBlankProject();
   return null;
+}
+
+function createE2eProjectForLocation(): Project | null {
+  const seed = window.__RPG_ZZU_E2E_PROJECT__;
+  if (!isE2eProject(seed)) return null;
+  return structuredClone(seed);
+}
+
+function isE2eProject(value: unknown): value is Project {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  return "version" in value && "maps" in value && "startMapId" in value && "database" in value;
 }
 
 function normalizeTownHouseShowcaseStyle(value: string | null): TownHouseShowcaseStyle {

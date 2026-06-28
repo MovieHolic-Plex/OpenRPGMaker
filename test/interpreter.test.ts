@@ -1,4 +1,6 @@
 // test/interpreter.test.ts
+// SIZE_OK: Shared interpreter regressions reuse one command-drain harness so
+// message settings, facesets, and choices stay covered without duplicate setup.
 // 인터프리터 상태머신 검증. 일시정지/재개/분기/조건/세션 반영.
 
 import { describe, it, expect } from "vitest";
@@ -9,6 +11,7 @@ import type { PlaySessionLike } from "@/player/types";
 type Interpreter = ReturnType<typeof createInterpreter>;
 type InterpreterResult = ReturnType<Interpreter["start"]>;
 type TextResult = Extract<InterpreterResult, { kind: "text" }>;
+type ChoicesResult = Extract<InterpreterResult, { kind: "choices" }>;
 type WaitResult = Extract<InterpreterResult, { kind: "wait" }>;
 
 function mkSession(): PlaySessionLike {
@@ -17,11 +20,35 @@ function mkSession(): PlaySessionLike {
     switches: {},
     variables: {},
     timers: {},
+    gold: 0,
+    inventory: {},
+    partyActorIds: [],
+    actorVitals: {},
     currentMapId: "m1",
     x: 0,
     y: 0,
   };
 }
+
+it("소지금, 아이템, 파티 명령을 세션에 반영한다", () => {
+  const session = mkSession();
+  const commands: Command[] = [
+    { kind: "changeGold", op: "+=", amount: 50 },
+    { kind: "changeGold", op: "-=", amount: 20 },
+    { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 },
+    { kind: "changeItem", itemId: "item_potion", op: "-=", amount: 1 },
+    { kind: "changeParty", actorId: "actor_hero", action: "add" },
+    { kind: "changeParty", actorId: "actor_hero", action: "add" },
+    { kind: "changeParty", actorId: "actor_mage", action: "add" },
+    { kind: "changeParty", actorId: "actor_hero", action: "remove" },
+  ];
+
+  drain(createInterpreter(commands, session));
+
+  expect(session.gold).toBe(30);
+  expect(session.inventory.item_potion).toBe(2);
+  expect(session.partyActorIds).toEqual(["actor_mage"]);
+});
 
 function expectTextResult(result: InterpreterResult): TextResult {
   if (result.kind === "text") return result;
@@ -31,6 +58,11 @@ function expectTextResult(result: InterpreterResult): TextResult {
 function expectWaitResult(result: InterpreterResult): WaitResult {
   if (result.kind === "wait") return result;
   throw new Error(`expected interpreter result wait, got ${result.kind}`);
+}
+
+function expectChoicesResult(result: InterpreterResult): ChoicesResult {
+  if (result.kind === "choices") return result;
+  throw new Error(`expected interpreter result choices, got ${result.kind}`);
 }
 
 // 인터프리터를 끝까지 돌리며, text/choices/wait/transfer 응답을 시뮬레이션.
@@ -144,6 +176,135 @@ describe("choices 분기", () => {
     const it = createInterpreter(cmds, mkSession());
     const { texts } = drain(it, () => 0);
     expect(texts).toEqual(["시작", "안", "끝"]);
+  });
+
+  it("취소를 특정 선택지로 매핑한다", () => {
+    const cmds: Command[] = [
+      {
+        kind: "choices",
+        cancelBehavior: "choice2",
+        options: [
+          { text: "예", branch: [{ kind: "text", body: "예" }] },
+          { text: "아니오", branch: [{ kind: "text", body: "아니오" }] },
+        ],
+      },
+    ];
+    const interpreter = createInterpreter(cmds, mkSession());
+    const choices = expectChoicesResult(interpreter.start());
+    expect(choices.cancelBehavior).toBe("choice2");
+    expect(expectTextResult(interpreter.resume(1)).body).toBe("아니오");
+    expect(interpreter.resume(undefined).kind).toBe("done");
+  });
+
+  it("취소 분기를 실행한다", () => {
+    const cmds: Command[] = [
+      {
+        kind: "choices",
+        cancelBehavior: "branch",
+        cancelBranch: [{ kind: "text", body: "취소" }],
+        options: [{ text: "예", branch: [{ kind: "text", body: "예" }] }],
+      },
+      { kind: "text", body: "끝" },
+    ];
+    const { texts } = drain(createInterpreter(cmds, mkSession()), () => -1);
+    expect(texts).toEqual(["취소", "끝"]);
+  });
+});
+
+describe("common event recursion guard", () => {
+  it("stops recursive common-event calls at the 1000-frame guard and resumes the caller", () => {
+    const session = mkSession();
+    session.commonEvents = [
+      {
+        id: "loop",
+        commands: [
+          { kind: "setVariable", variableId: "calls", op: "+=", value: 1 },
+          { kind: "callCommonEvent", commonEventId: "loop" },
+        ],
+      },
+    ];
+    const commands: Command[] = [
+      { kind: "callCommonEvent", commonEventId: "loop" },
+      { kind: "text", body: "after guard" },
+    ];
+
+    const { texts } = drain(createInterpreter(commands, session));
+
+    expect(session.variables.calls).toBe(999);
+    expect(texts).toEqual(["after guard"]);
+  });
+});
+
+describe("문장 표시 옵션과 페이스셋 상태", () => {
+  it("Display Text Options는 다음 선택지에도 현재 창 설정을 전달한다", () => {
+    const cmds: Command[] = [
+      {
+        kind: "displayTextSettings",
+        format: "normal",
+        position: "bottom",
+        preventObscuringPlayer: true,
+        allowEventMovementDuringWait: false,
+      },
+      {
+        kind: "choices",
+        prompt: "어떻게 할까?",
+        options: [
+          { text: "예", branch: [{ kind: "text", body: "예" }] },
+          { text: "아니오", branch: [{ kind: "text", body: "아니오" }] },
+        ],
+      },
+    ];
+    const it = createInterpreter(cmds, mkSession());
+
+    const choices = expectChoicesResult(it.start());
+
+    expect(choices.settings).toEqual({
+      format: "normal",
+      position: "bottom",
+      preventObscuringPlayer: true,
+      allowEventMovementDuringWait: false,
+    });
+  });
+
+  it("Change Faceset의 좌우 반전 옵션은 다음 텍스트 얼굴 상태에 유지된다", () => {
+    const cmds: Command[] = [
+      {
+        kind: "changeFace",
+        resourceId: "easyrpg-faceset-actor1",
+        faceIndex: 0,
+        position: "left",
+        flipHorizontally: true,
+      },
+      { kind: "text", body: "얼굴 확인" },
+    ];
+    const it = createInterpreter(cmds, mkSession());
+
+    const text = expectTextResult(it.start());
+
+    expect(text.face).toEqual({
+      resourceId: "easyrpg-faceset-actor1",
+      faceIndex: 0,
+      position: "left",
+      flipHorizontally: true,
+    });
+  });
+
+  it("Faceset 상태는 독립된 이벤트 실행 사이에 누수되지 않는다", () => {
+    const session = mkSession();
+    const first = createInterpreter([
+      {
+        kind: "changeFace",
+        resourceId: "easyrpg-faceset-actor1",
+        faceIndex: 0,
+        position: "left",
+        flipHorizontally: false,
+      },
+      { kind: "text", body: "첫 이벤트" },
+    ], session);
+    expect(expectTextResult(first.start()).face?.resourceId).toBe("easyrpg-faceset-actor1");
+
+    const second = createInterpreter([{ kind: "text", body: "둘째 이벤트" }], session);
+    expect(expectTextResult(second.start()).face).toBeUndefined();
   });
 });
 
@@ -259,6 +420,21 @@ describe("setSwitch / setVariable — 세션 반영", () => {
     ];
     drain(createInterpreter(cmds, session));
     expect(session.variables["dst"]).toBe(7);
+  });
+
+  it("inputNumber 입력값을 지정한 변수에 저장하고 다음 명령으로 진행한다", () => {
+    const session = mkSession();
+    const interpreter = createInterpreter([
+      { kind: "inputNumber", variableId: "pin", digits: 4 },
+      { kind: "text", body: "done" },
+    ], session);
+
+    const input = interpreter.start();
+    expect(input).toMatchObject({ kind: "inputNumber", variableId: "pin", digits: 4 });
+    const next = interpreter.resume(1234);
+
+    expect(session.variables.pin).toBe(1234);
+    expect(expectTextResult(next).body).toBe("done");
   });
 });
 

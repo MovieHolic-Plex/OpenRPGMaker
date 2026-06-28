@@ -1,0 +1,99 @@
+﻿{
+    "generatedAt":  "2026-06-29T00:19:22.0544410+09:00",
+    "goal":  "NPC autonomous movement and Korean move route editor, with event editor desktop layout repair and review blocker cleanup",
+    "relevantFiles":  [
+                          "src/project/types/events.ts",
+                          "src/project/io/shapeCommandFields.ts",
+                          "src/player/PlayScene.ts",
+                          "src/player/playSceneTypes.ts",
+                          "src/player/playSceneMapRuntime.ts",
+                          "src/player/playSceneMapCommands.ts",
+                          "src/player/playScenePageMoveRoutes.ts",
+                          "src/player/playSceneAutonomous.ts",
+                          "src/player/playSceneAutonomousCommands.ts",
+                          "src/player/playSceneAutonomousSprites.ts",
+                          "src/player/playSceneAutonomousTypes.ts",
+                          "src/editor/panels/eventEditor/moveRouteCommandCatalog.ts",
+                          "src/editor/panels/eventEditor/moveRouteDialog.ts",
+                          "src/editor/panels/eventEditor/moveRouteDialogParts.ts",
+                          "src/editor/panels/eventEditor/commandBodyRoute.ts",
+                          "src/editor/panels/eventEditor/pageMovement.ts",
+                          "src/styles.css",
+                          "test/runtimeEventPageFixtures.ts",
+                          "test/runtimeEventPageGraphics.test.ts",
+                          "test/runtimeEventPageMovement.test.ts",
+                          "test/runtimeMoveRouteCommands.test.ts",
+                          "test/migration.test.ts",
+                          "test/e2e/rm2k3-move-route-focused.spec.ts"
+                      ],
+    "untrackedRelevantFiles":  [
+                                   "src/player/playSceneMapCommands.ts",
+                                   "src/player/playScenePageMoveRoutes.ts",
+                                   "src/player/playSceneAutonomous.ts",
+                                   "src/player/playSceneAutonomousCommands.ts",
+                                   "src/player/playSceneAutonomousSprites.ts",
+                                   "src/player/playSceneAutonomousTypes.ts",
+                                   "src/editor/panels/eventEditor/moveRouteCommandCatalog.ts",
+                                   "src/editor/panels/eventEditor/moveRouteDialog.ts",
+                                   "src/editor/panels/eventEditor/moveRouteDialogParts.ts",
+                                   "src/editor/panels/eventEditor/commandBodyRoute.ts",
+                                   "src/editor/panels/eventEditor/pageMovement.ts",
+                                   "test/runtimeEventPageFixtures.ts",
+                                   "test/runtimeEventPageGraphics.test.ts",
+                                   "test/runtimeEventPageMovement.test.ts",
+                                   "test/runtimeMoveRouteCommands.test.ts",
+                                   "test/e2e/rm2k3-move-route-focused.spec.ts"
+                               ],
+    "notes":  [
+                  "Repository contains many unrelated dirty files; this manifest intentionally bounds review to NPC/move-route/editor files.",
+                  "Focused route tests replace the oversized runtime manifest test and keep each new relevant test/helper below 250 pure LOC.",
+                  "Existing broader e2e event-pages and event-commands suites were still rerun green as regression coverage, but are not manifest-owned files for this focused task."
+              ],
+    "lineCounts":  [
+                       {
+                           "file":  "test\\runtimeEventPageFixtures.ts",
+                           "pureLoc":  187
+                       },
+                       {
+                           "file":  "test\\runtimeEventPageGraphics.test.ts",
+                           "pureLoc":  105
+                       },
+                       {
+                           "file":  "test\\runtimeEventPageMovement.test.ts",
+                           "pureLoc":  132
+                       },
+                       {
+                           "file":  "test\\runtimeMoveRouteCommands.test.ts",
+                           "pureLoc":  197
+                       },
+                       {
+                           "file":  "test\\e2e\\rm2k3-move-route-focused.spec.ts",
+                           "pureLoc":  92
+                       }
+                   ],
+    "evidence":  {
+                     "screenshots":  [
+                                         "ui-style-scope-event-editor-fixed-final.png",
+                                         "ui-style-scope-move-route-dialog-final.png",
+                                         "ui-style-scope-command-route-body.png",
+                                         "ui-fixed-runtime-moving-01.png",
+                                         "ui-fixed-runtime-moving-08.png",
+                                         "ui-fixed-runtime-moving-16.png"
+                                     ],
+                     "metrics":  [
+                                     "ui-style-scope-event-editor-fixed-final-metrics.json",
+                                     "ui-style-scope-move-route-dialog-final-metrics.json",
+                                     "runtime-route-summary.json",
+                                     "qa-runtime-route-analysis.json",
+                                     "line-count-after-review-blocker-fixes.json"
+                                 ],
+                     "greenLogs":  [
+                                       "typecheck-after-review-blocker-fixes.txt",
+                                       "green-vitest-runtime-split-after-review-blocker-fixes.txt",
+                                       "green-playwright-move-route-focused-after-review-blocker-fixes.txt",
+                                       "green-playwright-event-route-after-review-blocker-fixes.txt",
+                                       "green-playwright-command-route-after-review-blocker-fixes.txt",
+                                       "build-after-review-blocker-fixes.txt"
+                                   ]
+                 }
+}

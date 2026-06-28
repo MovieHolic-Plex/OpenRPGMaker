@@ -1,5 +1,5 @@
 import type { Project, ProjectV1, ProjectV2 } from "../types";
-import { normalizeDatabaseRecords } from "../databaseRecordModel";
+import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { assert, cloneJson, type JsonRecord, requireNumber, requireRecord, requireString } from "./guards";
 import { validateProjectReferences } from "./references";
 import {
@@ -67,6 +67,7 @@ export function validateProjectV3(data: JsonRecord): Project {
 
   const project = cloneJson<Project>(data);
   project.database = normalizeDatabaseRecords(project.database);
+  project.system = normalizeSystemRecords(project.system);
   validateProjectReferences(project);
   return project;
 }

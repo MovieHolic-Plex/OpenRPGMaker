@@ -14,6 +14,7 @@ export { createTownArchitectureCityMap } from "./townArchitectureCityMap";
 export { createTownArchitectureTestMap } from "./townArchitectureTestMap";
 export {
   createDbExtractedHouseTemplateMap,
+  createSmallHouseCityMap,
   createSmallHouseVariantMap,
   createSmallHouseVariantMaps,
   type SmallHouseVariantIndex,

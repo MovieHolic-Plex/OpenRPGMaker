@@ -1,0 +1,38 @@
+﻿[
+    {
+        "file":  "hero-01-battle.png",
+        "transparentPixels":  37000,
+        "opaqueMagentaPixels":  0,
+        "nearMagentaPixels":  0,
+        "cyanKeyLikePixels":  69,
+        "edgeOpaquePixels":  0,
+        "pass":  true
+    },
+    {
+        "file":  "hero-02-battle.png",
+        "transparentPixels":  37000,
+        "opaqueMagentaPixels":  0,
+        "nearMagentaPixels":  0,
+        "cyanKeyLikePixels":  0,
+        "edgeOpaquePixels":  0,
+        "pass":  true
+    },
+    {
+        "file":  "hero-03-battle.png",
+        "transparentPixels":  37000,
+        "opaqueMagentaPixels":  0,
+        "nearMagentaPixels":  0,
+        "cyanKeyLikePixels":  0,
+        "edgeOpaquePixels":  0,
+        "pass":  true
+    },
+    {
+        "file":  "hero-04-battle.png",
+        "transparentPixels":  37000,
+        "opaqueMagentaPixels":  0,
+        "nearMagentaPixels":  0,
+        "cyanKeyLikePixels":  0,
+        "edgeOpaquePixels":  0,
+        "pass":  true
+    }
+]

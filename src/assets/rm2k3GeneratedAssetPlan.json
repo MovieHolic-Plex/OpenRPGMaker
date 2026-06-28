@@ -53,18 +53,18 @@
         "width": 144,
         "height": 384
       },
-      "prompt": "Original young field scout side-view battle character poses, compact weapon-ready silhouette",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Battle charset extracted from bundled actor charset 1, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
       "status": "promoted",
-      "rawPath": ".omo/evidence/rm2k3-generated-assets-execution/raw/hero-01-battle-d5bf2077.png",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-01-battle-from-actor1.png",
       "promotedPath": "public/assets/generated/rm2k3/hero-01-battle.png",
       "resourceId": "generated-actor-hero-01-battle",
-      "sha256": "fdf99905596713891d20a2f405a787a8cbdb36b14f906684f3aabaf6c9e8eeab",
+      "sha256": "5748ad849d7c18cb31db0e3e6a1f20239e99b4bd45db1728ba8317eee49f8de1",
       "provenance": {
-        "generator": "agy",
-        "mode": "live",
-        "promptVersion": "rm2k3-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
       }
     },
     {
@@ -75,18 +75,18 @@
         "width": 96,
         "height": 96
       },
-      "prompt": "Original mossy cave slime monster, chunky readable silhouette, transparent background",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Original green-blue meadow slime monster generated from a magenta chroma-key source and promoted with alpha transparency",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject",
       "status": "promoted",
-      "rawPath": ".omo/evidence/rm2k3-generated-assets-execution/raw/monster-slime-01-5919b368.png",
+      "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
       "promotedPath": "public/assets/generated/rm2k3/monster-slime-01.png",
       "resourceId": "generated-enemy-slime-01",
-      "sha256": "63770010108a5a2eb7ccb3e4b20b4ac707fd4507f187ac00cf79d52b09aa18d9",
+      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
       "provenance": {
-        "generator": "agy",
+        "generator": "imagegen",
         "mode": "live",
-        "promptVersion": "rm2k3-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "promptVersion": "battle-magenta-v2",
+        "createdAt": "2026-06-26T15:57:00.000+09:00"
       }
     },
     {
@@ -141,18 +141,62 @@
         "width": 144,
         "height": 384
       },
-      "prompt": "Original wandering herbalist side-view battle character poses, staff-ready silhouette and satchel",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Battle charset extracted from bundled actor charset 2, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
       "status": "promoted",
-      "rawPath": ".omo/evidence/rm2k3-generated-assets-execution/raw/hero-02-battle-fallback.png",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-02-battle-from-actor2.png",
       "promotedPath": "public/assets/generated/rm2k3/hero-02-battle.png",
       "resourceId": "generated-actor-hero-02-battle",
-      "sha256": "396fca4996ba6df77853b69402bf707d897b617d3d225a1e63bddb4d51beab28",
+      "sha256": "7ee0ea5f875de899dc765e5e872a30d156bdbe535d0a71d541b175c58102fad8",
       "provenance": {
-        "generator": "agy",
+        "generator": "imagegen",
         "mode": "fake",
-        "promptVersion": "rm2k3-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-03-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "Battle charset extracted from bundled actor charset 3, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
+      "status": "promoted",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-03-battle-from-actor3.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-03-battle.png",
+      "resourceId": "generated-actor-hero-03-battle",
+      "sha256": "ff5d5bb0486080f627adb995bcb4bbc5861157dc896be2642cd984cc53494948",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-04-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "Battle charset extracted from bundled actor charset 4, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
+      "status": "promoted",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-04-battle-from-actor4.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-04-battle.png",
+      "resourceId": "generated-actor-hero-04-battle",
+      "sha256": "2ab49b10fe9dbf4af9f5d8bdbb74ca4fad640c536afa65625ca0731a85af39b7",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
       }
     },
     {
@@ -197,6 +241,28 @@
         "mode": "live",
         "promptVersion": "rm2k3-generated-assets-wave1-v1",
         "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "monster-dragon-01",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt": "Original compact crimson-and-charcoal dragon monster generated from a green chroma-key source and promoted with alpha transparency",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, green pixels in visible subject",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/battle-implementation-readiness/raw/monster-dragon-01-chroma-source.png",
+      "promotedPath": "public/assets/generated/rm2k3/monster-dragon-01.png",
+      "resourceId": "generated-enemy-dragon-01",
+      "sha256": "5c9a2bae2b82a18e518d1c42f558e8f5ecbb19e175816195461a8b75041e1041",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "live",
+        "promptVersion": "battle-green-dragon-v1",
+        "createdAt": "2026-06-27T15:04:22.000+09:00"
       }
     },
     {
@@ -383,18 +449,18 @@
         "width": 96,
         "height": 96
       },
-      "prompt": "Troop preview uses the original mossy cave slime monster member art without a flattened composite",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Troop preview reuses the generated green-blue slime monster promoted from the magenta chroma-key source",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject",
       "status": "promoted",
-      "rawPath": ".omo/evidence/rm2k3-generated-assets-execution/raw/troop-preview-slime-31c8a547.png",
+      "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
       "promotedPath": "public/assets/generated/rm2k3/troop-preview-slime.png",
       "resourceId": "generated-troop-preview-slime",
-      "sha256": "63770010108a5a2eb7ccb3e4b20b4ac707fd4507f187ac00cf79d52b09aa18d9",
+      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
       "provenance": {
-        "generator": "agy",
+        "generator": "imagegen",
         "mode": "live",
-        "promptVersion": "rm2k3-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "promptVersion": "battle-magenta-v2",
+        "createdAt": "2026-06-26T15:57:00.000+09:00"
       }
     }
   ]

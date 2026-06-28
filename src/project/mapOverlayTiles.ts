@@ -18,6 +18,10 @@ export function appendTileToStack(map: GameMap, layer: TileStackLayer, index: nu
   if (!isValidCellIndex(map, index) || tile < 0) return;
   const stacks = ensureStackStore(map, layer);
   const stack = stacks[index] ?? [];
+  if (stack.includes(tile)) {
+    stacks[index] = stack;
+    return;
+  }
   stack.push(tile);
   stacks[index] = stack;
 }

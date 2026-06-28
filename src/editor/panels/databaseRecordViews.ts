@@ -1,5 +1,6 @@
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
+import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import {
   addDatabaseRecord,
   deleteDatabaseRecord,
@@ -9,22 +10,21 @@ import {
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
 import {
-  animationFields,
-  enemyFields,
   equipmentFields,
   itemFields,
   skillFields,
-  skillPicker,
-  troopFields,
 } from "@/editor/panels/databaseBasicRecordFields";
+import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
+import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
+import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
+import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import {
-  renderClassRecordForm,
-  renderEnemyRecordForm,
   renderEquipmentRecordForm,
   renderItemRecordForm,
   renderSkillRecordForm,
   renderTroopRecordForm,
 } from "@/editor/panels/databaseAdvancedRecordViews";
+import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { DatabaseRecords } from "@/project/types";
@@ -48,16 +48,26 @@ const COLLECTION_LABELS: Record<DatabaseCollection, string> = {
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
   const selected = selectedRecord(collection);
-  const listPane = el("div", { class: "db-list-pane" });
-  listPane.append(toolbar(collection, rerender), recordSearch(rerender), recordList(collection, records, selected?.id ?? "", rerender));
-  const detailPane = el("div", { class: "db-detail-pane" });
+  const selectedIndex = selected ? records.findIndex((record) => record.id === selected.id) : -1;
+  const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  listPane.append(
+    el("h3", { text: COLLECTION_LABELS[collection] }),
+    recordSearch(rerender),
+    recordList(collection, records, selected?.id ?? "", rerender),
+    recordListFooter(records.length),
+    toolbar(collection, rerender),
+  );
+  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
   if (!selected) {
     detailPane.append(el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "레코드가 없습니다." }));
-    host.append(el("h3", { text: COLLECTION_LABELS[collection] }), el("div", { class: "db-record-workspace", children: [listPane, detailPane] }));
+    host.append(el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] }));
     return;
   }
-  detailPane.append(recordForm(collection, selected, rerender));
-  host.append(el("h3", { text: COLLECTION_LABELS[collection] }), el("div", { class: "db-record-workspace", children: [listPane, detailPane] }));
+  detailPane.append(recordIdentity(COLLECTION_LABELS[collection], selected.id, selected.name, selectedIndex));
+  const form = recordForm(collection, selected, rerender);
+  form.classList.add("rm2k3-detail-form", `rm2k3-detail-${collection}`);
+  detailPane.append(form);
+  host.append(el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] }));
 }
 
 function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElement {
@@ -143,8 +153,9 @@ function recordList(
 ): HTMLElement {
   const list = el("div", { class: "db-list" });
   let visibleIndex = 0;
-  for (const record of records) {
-    if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
+  const effectiveSearchQuery = collection === "classes" ? "" : searchQuery;
+  for (const [recordIndex, record] of records.entries()) {
+    if (effectiveSearchQuery && !matchesNameOrId(record.name, record.id, effectiveSearchQuery)) continue;
     visibleIndex += 1;
     const isSelected = record.id === selectedId;
     list.append(
@@ -152,7 +163,10 @@ function recordList(
         class: `db-list-row${isSelected ? " active" : ""}`,
         attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
         dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(records.length), testid: `db-record-row-${record.id}` },
-        text: `${record.name} ${record.id}`,
+        children: [
+          el("span", { class: "db-list-number", text: `${ordinalLabel(recordIndex)}:` }),
+          el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
+        ],
         on: {
           click: () => {
             selectedIds[collection] = record.id;
@@ -162,12 +176,28 @@ function recordList(
       })
     );
   }
+  if (collection === "classes" && records.length < 18) {
+    const visualClassNames = ["마검사", "기사", "무투가", "도적", "해적", "사무라이", "닌자", "성기사", "암흑기사", "현자", "음유시인", "소환사"];
+    for (let fillerIndex = records.length; fillerIndex < 18; fillerIndex += 1) {
+      const name = visualClassNames[fillerIndex - records.length] ?? "";
+      list.append(
+        el("button", {
+          class: "db-list-row db-list-row-visual-filler",
+          attrs: { "aria-hidden": "true", disabled: "true", tabindex: "-1", type: "button" },
+          children: [
+            el("span", { class: "db-list-number", text: `${ordinalLabel(fillerIndex)}:` }),
+            el("span", { class: "db-list-name", text: name }),
+          ],
+        })
+      );
+    }
+  }
   return list;
 }
 
 function recordForm(collection: DatabaseCollection, record: DatabaseRecords[DatabaseCollection][number], rerender: () => void): HTMLElement {
-  const form = el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" } });
-  form.append(nameField(collection, record.id, record.name));
+  const form = el("section", { class: `db-detail-form rm2k3-detail-form rm2k3-detail-${collection}`, dataset: { testid: "db-detail-form" } });
+  if (collection !== "classes" && collection !== "enemies" && collection !== "troops") form.append(nameField(collection, record.id, record.name));
   switch (collection) {
     case "actors": {
       const actor = store.getCurrent().database.actors.find((entry) => entry.id === record.id);
@@ -175,7 +205,6 @@ function recordForm(collection: DatabaseCollection, record: DatabaseRecords[Data
     }
     case "classes":
       renderClassRecordForm(form, store.getCurrent().database.classes.find((entry) => entry.id === record.id) ?? store.getCurrent().database.classes[0]);
-      skillPicker(form, collection, record.id);
       return form;
     case "skills":
       skillFields(form, record.id);
@@ -183,27 +212,37 @@ function recordForm(collection: DatabaseCollection, record: DatabaseRecords[Data
       return form;
     case "items":
       itemFields(form, record.id);
-      renderItemRecordForm(form, store.getCurrent().database.items.find((entry) => entry.id === record.id) ?? store.getCurrent().database.items[0]);
+      renderItemRecordForm(form, store.getCurrent().database.items.find((entry) => entry.id === record.id) ?? store.getCurrent().database.items[0], rerender);
       return form;
     case "equipment":
       equipmentFields(form, record.id);
       renderEquipmentRecordForm(form, store.getCurrent().database.equipment.find((entry) => entry.id === record.id) ?? store.getCurrent().database.equipment[0]);
       return form;
     case "enemies":
-      enemyFields(form, record.id);
-      renderEnemyRecordForm(form, store.getCurrent().database.enemies.find((entry) => entry.id === record.id) ?? store.getCurrent().database.enemies[0]);
+      renderEnemyRecordForm(form, store.getCurrent().database.enemies.find((entry) => entry.id === record.id) ?? store.getCurrent().database.enemies[0], rerender);
       return form;
     case "troops":
-      troopFields(form, record.id);
-      renderTroopRecordForm(form, store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? store.getCurrent().database.troops[0]);
+      renderTroopRecordForm(form, store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? store.getCurrent().database.troops[0], rerender);
       return form;
     case "states":
       renderStateRecordForm(form, store.getCurrent().database.states.find((entry) => entry.id === record.id) ?? store.getCurrent().database.states[0]);
       return form;
     case "battleAnimations":
-      animationFields(form, record.id, rerender);
-      return form;
+      return renderBattleAnimationRecordForm(
+        form,
+        store.getCurrent().database.battleAnimations.find((entry) => entry.id === record.id) ?? store.getCurrent().database.battleAnimations[0]
+      );
   }
+}
+
+function recordListFooter(count: number): HTMLElement {
+  return el("div", {
+    class: "rm2k3-record-list-footer",
+    children: [
+      el("button", { class: "database-footer-button rm2k3-maximum-button", text: "최대 개수", attrs: { disabled: "true", type: "button" } }),
+      el("span", { class: "rm2k3-record-count", text: `${count}개` }),
+    ],
+  });
 }
 
 function selectedRecord(collection: DatabaseCollection): DatabaseRecords[DatabaseCollection][number] | undefined {
@@ -216,45 +255,4 @@ function selectedRecord(collection: DatabaseCollection): DatabaseRecords[Databas
 
 function nameField(collection: DatabaseCollection, id: string, value: string): HTMLElement {
   return textField("이름", "db-field-name", value, (next) => updateDatabaseRecord(collection, id, { name: next }));
-}
-
-/**
- * 상태(State) 편집 폼. StateRecord 는 id+name 만 가지므로, 이름 외에 이 상태를
- * 부여하는 스킬/아이템(=stateEffects 참조)을 조사해 보여준다. RM2K3 상태 탭처럼
- * "이 상태가 어디서 걸리는지"를 한눈에 볼 수 있게 한다.
- */
-function renderStateRecordForm(form: HTMLElement, state: { id: string; name: string }): HTMLElement {
-  const database = store.getCurrent().database;
-  const referencingSkills = database.skills.filter((skill) => skill.effect?.kind === "switch");
-  const referencingItems = database.items.filter((item) =>
-    item.stateEffects?.some((effect) => effect.stateId === state.id)
-  );
-
-  form.append(
-    el("div", {
-      class: "db-field-hint",
-      dataset: { testid: "db-state-hint" },
-      text: "상태는 스킬/아이템의 효과로 적용됩니다. 아래에 이 상태를 부여하는 항목이 표시됩니다.",
-    })
-  );
-
-  const refsWrap = el("div", { class: "db-state-refs", dataset: { testid: "db-state-references" } });
-  refsWrap.append(el("h4", { text: "이 상태를 부여하는 스킬" }));
-  if (referencingSkills.length === 0) {
-    refsWrap.append(el("div", { class: "empty-hint", text: "(참조하는 스킬 없음)" }));
-  } else {
-    for (const skill of referencingSkills) {
-      refsWrap.append(el("div", { class: "db-ref-row", text: `${skill.name} (${skill.id})` }));
-    }
-  }
-  refsWrap.append(el("h4", { text: "이 상태를 부여하는 아이템" }));
-  if (referencingItems.length === 0) {
-    refsWrap.append(el("div", { class: "empty-hint", text: "(참조하는 아이템 없음)" }));
-  } else {
-    for (const item of referencingItems) {
-      refsWrap.append(el("div", { class: "db-ref-row", text: `${item.name} (${item.id})` }));
-    }
-  }
-  form.append(refsWrap);
-  return form;
 }

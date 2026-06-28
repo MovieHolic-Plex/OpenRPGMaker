@@ -1,0 +1,167 @@
+{
+  "phase": "green",
+  "baseline": "compared against red evidence in output/evidence/database-desktop-layout-fix/red",
+  "screenshotStats": [
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-actors.png",
+      "bytes": 232803,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-classes.png",
+      "bytes": 216411,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-skills.png",
+      "bytes": 208297,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-items.png",
+      "bytes": 215817,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-equipment.png",
+      "bytes": 209865,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-equipment-bottom.png",
+      "bytes": 207618,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-enemies.png",
+      "bytes": 107715,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-troops.png",
+      "bytes": 100135,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-troops-bottom.png",
+      "bytes": 100135,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-elements.png",
+      "bytes": 225665,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-states.png",
+      "bytes": 221854,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-animations.png",
+      "bytes": 206641,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-battler-animations.png",
+      "bytes": 207470,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-battle-screen.png",
+      "bytes": 203077,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-battle-commands.png",
+      "bytes": 198894,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-terrain.png",
+      "bytes": 199808,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-tilesets.png",
+      "bytes": 287745,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-tilesets-bottom.png",
+      "bytes": 286850,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-common-events.png",
+      "bytes": 197064,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-system.png",
+      "bytes": 203293,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-terms.png",
+      "bytes": 191501,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-switches.png",
+      "bytes": 196902,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    },
+    {
+      "path": "output/evidence/database-desktop-layout-fix/tabs/desktop-variables.png",
+      "bytes": 196120,
+      "width": 1365,
+      "height": 900,
+      "nonEmptyBySize": true
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import systemShellProject from "../fixtures/projects/system-shell-v3.json" with { type: "json" };
+import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -38,31 +39,7 @@ function isAudioState(value: unknown): value is AudioState {
 }
 
 async function seedProject(page: Page): Promise<void> {
-  await page.goto("/");
-  await page.evaluate(async (seed) => {
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("rpg-zzu", 1);
-      request.onupgradeneeded = () => {
-        const database = request.result;
-        if (!database.objectStoreNames.contains("projects")) database.createObjectStore("projects");
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const tx = db.transaction("projects", "readwrite");
-        tx.objectStore("projects").put(seed, "current");
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    } finally {
-      db.close();
-    }
-    localStorage.clear();
-  }, systemShellProject);
-  await page.reload();
-  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  await seedProjectFromSupabaseCanonical(page, systemShellProject);
 }
 
 async function runtimeState(page: Page): Promise<RuntimeState> {
@@ -117,7 +94,7 @@ test("system shell supports title, menu, saves, audio, pictures, game over, and 
   await page.keyboard.press("Escape");
   await page.getByTestId("event-audio-picture").click();
   await expect.poll(async () => (await audioState(page)).bgm?.resourceId).toBe("bgm_theme");
-  await expect(page.locator('[data-testid="picture-layer"]')).toContainText("pic_1");
+  await expect(page.locator('[data-testid="picture-layer"]')).toContainText("Gate Picture");
 
   await page.getByTestId("event-game-over").click();
   await expect(page.locator('[data-testid="game-over-screen"]')).toBeVisible();

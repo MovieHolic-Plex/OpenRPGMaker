@@ -32,7 +32,7 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
   document.body.append(backdrop);
   clearChildren(body);
   options.render(body, close);
-  focusFirstControl(backdrop);
+  if (!backdrop.contains(document.activeElement)) focusFirstControl(backdrop);
 }
 
 function renderHeader(options: EventSubdialogOptions, close: () => void): HTMLElement {

@@ -1,0 +1,66 @@
+{
+  "bottom": {
+    "bottom": 807.3333740234375,
+    "clientHeight": 108,
+    "clientWidth": 1475,
+    "height": 108,
+    "right": 1687.3334197998047,
+    "scrollHeight": 108,
+    "scrollWidth": 1475,
+    "width": 1474.666748046875,
+    "x": 212.6666717529297,
+    "y": 699.3333740234375
+  },
+  "dialog": {
+    "bottom": 857.3333549499512,
+    "clientHeight": 799,
+    "clientWidth": 1475,
+    "height": 798.6666870117188,
+    "right": 1687.3334197998047,
+    "scrollHeight": 799,
+    "scrollWidth": 1475,
+    "width": 1474.666748046875,
+    "x": 212.6666717529297,
+    "y": 58.66666793823242
+  },
+  "footer": {
+    "bottom": 857.3333740234375,
+    "clientHeight": 42,
+    "clientWidth": 1475,
+    "height": 42,
+    "right": 1687.3334197998047,
+    "scrollHeight": 42,
+    "scrollWidth": 1475,
+    "width": 1474.666748046875,
+    "x": 212.6666717529297,
+    "y": 815.3333740234375
+  },
+  "grid": {
+    "bottom": 691.3333587646484,
+    "clientHeight": 539,
+    "clientWidth": 821,
+    "height": 542.6666870117188,
+    "right": 1687.3333740234375,
+    "scrollHeight": 539,
+    "scrollWidth": 821,
+    "width": 824.6666870117188,
+    "x": 862.6666870117188,
+    "y": 148.6666717529297
+  },
+  "list": {
+    "bottom": 679.3333587646484,
+    "clientHeight": 491,
+    "clientWidth": 597,
+    "height": 494.66668701171875,
+    "right": 840.6666717529297,
+    "scrollHeight": 1036,
+    "scrollWidth": 597,
+    "width": 616,
+    "x": 224.6666717529297,
+    "y": 184.6666717529297
+  },
+  "viewport": {
+    "height": 1040,
+    "width": 1900
+  }
+}

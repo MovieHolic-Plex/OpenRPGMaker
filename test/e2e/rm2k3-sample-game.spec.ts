@@ -29,16 +29,7 @@ async function importProjectViaBrowser(page: Page, path: string): Promise<void> 
   await importJsonThroughChooser(page, path);
 }
 
-async function importExportedJsonViaBrowser(page: Page, project: Project): Promise<void> {
-  const exportedPath = ".omo/evidence/rm2k3-fidelity-overhaul/14-sample-game/exported-rm2k3-sample-v3.json";
-  // evidence 디렉토리 보장. @types/node 없이 require를 쓰기 위해 ts-expect-error.
-  try {
-    // @ts-expect-error — node require, 런타임에 존재
-    const nodeRequire: NodeRequire = require;
-    nodeRequire("fs").mkdirSync(nodeRequire("path").dirname(exportedPath), { recursive: true });
-  } catch {
-    /* 디렉토리가 이미 있거나 생성 불가해도 writeFile이 처리 */
-  }
+async function importExportedJsonViaBrowser(page: Page, project: Project, exportedPath: string): Promise<void> {
   await writeFile(exportedPath, serialize(project), "utf8");
   await importJsonThroughChooser(page, exportedPath);
 }
@@ -97,7 +88,7 @@ async function visitInterior(page: Page, interiorScreenshotPath?: string): Promi
   await page.getByTestId("event-interior-door").click();
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_interior");
   await page.getByTestId("event-interior-host").click();
-  await dismissDialogue(page, "This small interior proves map transfers.");
+  await dismissDialogue(page, "이 작은 실내에서 맵 이동을 확인합니다.");
   if (interiorScreenshotPath) await page.screenshot({ path: interiorScreenshotPath, fullPage: true });
   await page.getByTestId("event-interior-exit").click();
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_town");
@@ -118,11 +109,11 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await page.setViewportSize({ width: 1280, height: 800 });
   await importProjectViaBrowser(page, "test/fixtures/projects/rm2k3-sample-v3.json");
 
-  await expect(page.getByTestId("map-tree-node-map_town")).toContainText("Sample Town");
-  await expect(page.getByTestId("map-tree-node-map_interior")).toContainText("Sample Interior");
-  await expect(page.getByTestId("map-tree-node-map_dungeon")).toContainText("Sample Dungeon");
+  await expect(page.getByTestId("map-tree-node-map_town")).toContainText("샘플 마을");
+  await expect(page.getByTestId("map-tree-node-map_interior")).toContainText("샘플 실내");
+  await expect(page.getByTestId("map-tree-node-map_dungeon")).toContainText("샘플 던전");
 
-  await page.getByTestId("right-tab-resources").click();
+  await page.getByTestId("toolbar-resource-manager").click();
   await expect(page.getByTestId("resource-profile-chipset")).toContainText("tex_tiles_default");
   await expect(page.getByTestId("resource-profile-charset").first()).toContainText("sample_hero");
   await expect(page.getByTestId("resource-profile-battleCharset")).toContainText("sample_hero");
@@ -130,32 +121,34 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/charset-valid-288x256.png");
   await expect(page.getByTestId("resource-profile-charset").last()).toContainText("288x256");
   await page.screenshot({ path: testInfo.outputPath("00-editor-resource-authoring.png"), fullPage: true });
+  await page.getByTestId("resource-modal-close").click();
 
-  await page.getByTestId("right-tab-database").click();
+  await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-tab-skills").click();
   await page.getByTestId("db-add-record").click();
-  await page.getByTestId("db-field-name").fill("T14 Editor Spark");
+  await page.getByTestId("db-field-name").fill("QA 불꽃");
   await page.getByTestId("db-field-power").fill("17");
   await page.getByTestId("db-tab-enemies").click();
   await page.getByTestId("db-add-record").click();
-  await page.getByTestId("db-field-name").fill("T14 Editor Slime");
-  await page.getByTestId("db-picker-skill").selectOption({ label: "T14 Editor Spark" });
+  await page.getByTestId("db-field-name").fill("QA 슬라임");
+  await page.getByTestId("db-picker-skill").selectOption({ label: "QA 불꽃" });
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-add-record").click();
-  await page.getByTestId("db-field-name").fill("T14 Editor Troop");
-  await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "T14 Editor Slime" });
+  await page.getByTestId("db-field-name").fill("QA 적 그룹");
+  await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "QA 슬라임" });
   await page.getByTestId("db-tab-actors").click();
-  await page.getByRole("button", { name: /Mira actor_hero/ }).click();
-  await expect(page.getByTestId("db-field-name")).toHaveValue("Mira");
+  await page.getByRole("button", { name: /미라/ }).click();
+  await expect(page.getByTestId("db-field-name")).toHaveValue("미라");
   await page.getByTestId("db-tab-troops").click();
-  await page.getByRole("button", { name: /Cave Slime Troop troop_slime/ }).click();
-  await expect(page.getByTestId("db-field-name")).toHaveValue("Cave Slime Troop");
+  await page.getByRole("button", { name: /동굴 슬라임 무리/ }).click();
+  await expect(page.getByTestId("db-field-name")).toHaveValue("동굴 슬라임 무리");
   await page.getByTestId("db-tab-common-events").click();
   await expect(page.getByTestId("db-detail-form")).toContainText("ce_blessing");
-  await expect(page.getByTestId("db-detail-form")).toContainText("setSwitch");
+  await expect(page.getByTestId("db-detail-form")).toContainText("스위치 조작");
+  await page.getByTestId("database-modal-close").click();
 
   const exported = await exportedProject(page);
-  expect(exported.meta.title).toBe("T14 RM2K3 Sample");
+  expect(exported.meta.title).toBe("T14 RM2K3 샘플");
   expect(Object.keys(exported.maps)).toEqual(["map_town", "map_interior", "map_dungeon"]);
   expect(exported.mapTree.children.map((node) => node.mapId)).toEqual(["map_interior", "map_dungeon"]);
   expect(exported.commonEvents.some((record) => record.id === "ce_blessing")).toBe(true);
@@ -164,18 +157,18 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   expect(exported.maps.map_town?.events.find((event) => event.id === "town-npc")?.pages?.length).toBe(2);
   expect(exported.maps.map_dungeon?.events.find((event) => event.id === "battle-start")?.pages?.length).toBe(2);
   expect(exported.resourceProfiles.some((profile) => profile.imageWidth === 288 && profile.imageHeight === 256)).toBe(true);
-  expect(exported.database.skills.some((record) => record.name === "T14 Editor Spark")).toBe(true);
-  expect(exported.database.enemies.some((record) => record.name === "T14 Editor Slime")).toBe(true);
-  expect(exported.database.troops.some((record) => record.name === "T14 Editor Troop")).toBe(true);
+  expect(exported.database.skills.some((record) => record.name === "QA 불꽃")).toBe(true);
+  expect(exported.database.enemies.some((record) => record.name === "QA 슬라임")).toBe(true);
+  expect(exported.database.troops.some((record) => record.name === "QA 적 그룹")).toBe(true);
   await testInfo.attach("exported-sample.json", { body: serialize(exported), contentType: "application/json" });
-  await importExportedJsonViaBrowser(page, deserialize(serialize(exported)));
+  await importExportedJsonViaBrowser(page, deserialize(serialize(exported)), testInfo.outputPath("exported-rm2k3-sample-v3.json"));
   await page.getByTestId("toolbar-save").click();
   await expect(page.getByTestId("toast")).toContainText("저장됨");
   await page.reload();
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
-  await expect(page.getByTestId("map-tree-node-map_town")).toContainText("Sample Town");
-  await expect(page.getByTestId("map-tree-node-map_interior")).toContainText("Sample Interior");
-  await expect(page.getByTestId("map-tree-node-map_dungeon")).toContainText("Sample Dungeon");
+  await expect(page.getByTestId("map-tree-node-map_town")).toContainText("샘플 마을");
+  await expect(page.getByTestId("map-tree-node-map_interior")).toContainText("샘플 실내");
+  await expect(page.getByTestId("map-tree-node-map_dungeon")).toContainText("샘플 던전");
 
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("title-screen")).toBeVisible();
@@ -186,27 +179,30 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
 
   await expect(page.getByTestId("event-town-npc")).toHaveAttribute("data-page-id", "npc-before");
   await page.getByTestId("event-town-npc").click();
-  await page.getByRole("button", { name: /Yes/ }).click();
-  await dismissDialogue(page, "Find the switch east of town.");
+  await page.getByRole("button", { name: /예/ }).click();
+  await dismissDialogue(page, "마을 동쪽의 스위치를 찾으세요.");
   await expect.poll(async () => (await runtimeState(page)).variables.var_choice).toBe(1);
 
   await page.getByTestId("event-switch-puzzle").click();
-  await dismissDialogue(page, "A gate opens in the hills.");
+  await dismissDialogue(page, "언덕의 문이 열렸습니다.");
   await expect.poll(async () => (await runtimeState(page)).switches.sw_gate_open).toBe(true);
   await expect.poll(async () => (await runtimeState(page)).switches.sw_blessed).toBe(true);
   await expect.poll(async () => (await runtimeState(page)).variables.var_blessing).toBe(3);
-  await expect(page.getByTestId("picture-layer")).toContainText("pic_gate:sample_picture_gate");
+  await expect(page.getByTestId("picture-layer")).toContainText("문 그림");
+  await expect(page.getByTestId("picture-layer")).not.toContainText("pic_gate");
+  await expect(page.getByTestId("audio-indicator")).toContainText("샘플 테마");
+  await expect(page.getByTestId("audio-indicator")).not.toContainText("sample_theme");
   await expect(page.getByTestId("audio-state-json")).toContainText("sample_theme");
   await expect(page.getByTestId("event-town-npc")).toHaveAttribute("data-page-id", "npc-after");
   await page.getByTestId("event-clear-effects").click();
-  await dismissDialogue(page, "The air clears.");
+  await dismissDialogue(page, "공기가 맑아졌습니다.");
   await page.screenshot({ path: testInfo.outputPath("02-town-after-puzzle.png"), fullPage: true });
 
   await visitInterior(page, testInfo.outputPath("03-interior-visit.png"));
   await page.screenshot({ path: testInfo.outputPath("04-town-after-interior.png"), fullPage: true });
 
   await page.getByTestId("event-save-point").click();
-  await dismissDialogue(page, "Save here before entering the dungeon.");
+  await dismissDialogue(page, "던전에 들어가기 전에 여기서 저장하세요.");
   await openMenu(page);
   await page.getByTestId("save-slot-1").click();
   await expect(page.getByTestId("main-menu")).toContainText("1번 저장 칸에 저장했습니다");
@@ -225,10 +221,10 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await enterDungeon(page);
   await winBattle(page);
   await page.getByTestId("event-battle-start").click();
-  await dismissDialogue(page, "The slime is gone. Use the portal.");
+  await dismissDialogue(page, "슬라임이 사라졌습니다. 포털을 이용하세요.");
   await page.getByTestId("event-ending-portal").click();
   await expect(page.getByTestId("ending-screen")).toBeVisible();
-  await expect(page.getByTestId("ending-screen")).toContainText("T14 sample complete.");
+  await expect(page.getByTestId("ending-screen")).toContainText("T14 샘플 완료.");
   await page.screenshot({ path: testInfo.outputPath("07-ending-screen.png"), fullPage: true });
 });
 

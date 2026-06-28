@@ -1,0 +1,25 @@
+{
+  "name": "T4 party-class actor/class persistence",
+  "route": "/?freshProject=1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    }
+  ],
+  "path": [
+    "open Database modal",
+    "edit actor identity, graphics, class, equipment, options, skills, rates, parameter curve, and exp curve",
+    "edit class identity, animation, command, options, skill, rates, equipment permission, parameter curve, and exp curve",
+    "apply changes, close and reopen Database, recapture Actors and Classes screenshots",
+    "assert exported project JSON contains the edited canonical actor/class paths"
+  ],
+  "acceptance": [
+    "actors tab writes Project.database.actors[] fields",
+    "classes tab writes Project.database.classes[] fields",
+    "actor and class curve edits export as 99-entry curve arrays",
+    "class/equipment/skill/state/animation references remain canonical ids",
+    "screenshots and tab metrics are captured under the T4 evidence packet"
+  ]
+}

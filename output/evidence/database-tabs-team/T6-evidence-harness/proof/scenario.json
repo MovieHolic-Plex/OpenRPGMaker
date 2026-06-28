@@ -1,0 +1,21 @@
+{
+  "name": "T6 all-tab harness proof",
+  "route": "/?freshProject=1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    }
+  ],
+  "path": [
+    "open Database modal",
+    "switch every top tab",
+    "capture shell metrics, screenshots, and export JSON"
+  ],
+  "acceptance": [
+    "all 20 Database top tabs become active through the shared helper",
+    "project export JSON is saved beside screenshots",
+    "visual QA contract records GOOD when the proof packet is complete"
+  ]
+}

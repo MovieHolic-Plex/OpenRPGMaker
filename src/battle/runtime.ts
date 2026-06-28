@@ -1,9 +1,15 @@
-import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
-import { parameterValueAtLevel } from "@/project/actorModel";
+// SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
+// assembly together so battle-event regressions can verify one state machine.
+import type { ActorId, ItemId, SkillId } from "@/project/types";
+import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
+import { actorBattlers, average, battlerSnapshot, enemyBattlers, type MutableBattler } from "@/battle/battleBattlers";
+import { applySkillLike } from "@/battle/battleDamage";
+import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
+import { collectBattleRewards } from "@/battle/battleRewards";
+import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import type {
   ActorCommand,
   BattleAnimationSnapshot,
-  BattleBattlerSnapshot,
   BattlePhase,
   BattleResult,
   BattleRuntime,
@@ -21,113 +27,51 @@ export type {
   BattleSnapshot,
 } from "@/battle/types";
 
-interface MutableBattler {
-  readonly id: string;
-  readonly recordId: ActorId | EnemyId;
-  readonly name: string;
-  readonly maxHp: number;
-  readonly maxMp: number;
-  readonly attackPower: number;
-  readonly defense: number;
-  readonly mind: number;
-  readonly agility: number;
-  readonly chargeRate: number;
-  readonly skillIds: readonly SkillId[];
-  hp: number;
-  mp: number;
-  gauge: number;
-  stateIds: string[];
-  defending: boolean;
-}
-
-type ReadyBattler =
-  | { readonly kind: "actor"; readonly battler: MutableBattler; readonly timeMs: number }
-  | { readonly kind: "enemy"; readonly battler: MutableBattler; readonly timeMs: number };
-
 const FALLBACK_SKILL_POWER = 12;
-// ATB 게이지 충전 계수. agility 가 높을수록 게이지가 빨리 찬다(RM2K3 민첩성 기반 턴 순서).
-// 기본 주인공(레벨1 민첩성 43)이 초당 게이지 약 10%(=1초에 한 번 행동)가 되도록 맞췄다.
-const CHARGE_PER_AGILITY = 0.1 / 43;
-const CHARGE_FLOOR = 0.02;
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
 
-  const actors = options.project.session.partyActorIds.map((actorId) => {
-    const actor = options.project.database.actors.find((record) => record.id === actorId);
-    if (!actor) throw new Error(`Missing actor: ${actorId}`);
-    const level = actor.initialLevel;
-    const maxHp = parameterValueAtLevel(actor.parameterCurves.maxHp, level);
-    const maxMp = parameterValueAtLevel(actor.parameterCurves.maxMp, level);
-    const attack = parameterValueAtLevel(actor.parameterCurves.attack, level);
-    const defense = parameterValueAtLevel(actor.parameterCurves.defense, level);
-    const mind = parameterValueAtLevel(actor.parameterCurves.mind, level);
-    const agility = parameterValueAtLevel(actor.parameterCurves.agility, level);
-    return {
-      id: actor.id,
-      recordId: actor.id,
-      name: actor.name,
-      maxHp,
-      hp: maxHp,
-      maxMp,
-      mp: maxMp,
-      attackPower: attack,
-      defense,
-      mind,
-      agility,
-      chargeRate: chargeRateFor(agility),
-      gauge: 0,
-      stateIds: [],
-      defending: false,
-      skillIds: (actor.learnedSkills ?? []).map((entry) => entry.skillId),
-    };
-  });
+  const actors = actorBattlers(options.project);
+  const enemies = enemyBattlers(options.project, troopRecord);
+  let backdropResourceId = troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
 
-  // troop는 enemyIds(플랫) 또는 members(위치/숨김 포함) 중 하나로 적을 지정한다.
-  // RM2K3 에디터는 members를 사용하지만, 일부 레거시/fixture는 enemyIds를 쓴다.
-  const enemyIds = troopRecord.enemyIds ?? (troopRecord.members ?? []).map((member) => member.enemyId);
-  const enemies = enemyIds.map((enemyId, index) => {
-    const enemy = options.project.database.enemies.find((record) => record.id === enemyId);
-    if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
-    const stats = enemy.stats;
-    return {
-      id: `enemy-${index + 1}`,
-      recordId: enemy.id,
-      name: enemy.name,
-      maxHp: stats.maxHp,
-      hp: stats.maxHp,
-      maxMp: stats.maxMp,
-      mp: stats.maxMp,
-      attackPower: stats.attack,
-      defense: stats.defense,
-      mind: stats.mind,
-      agility: stats.agility,
-      chargeRate: chargeRateFor(stats.agility),
-      gauge: 0,
-      stateIds: [],
-      defending: false,
-      skillIds: enemy.skillIds,
-    };
-  });
-
-  const inventory = { ...options.project.session.inventory };
   let phase: BattlePhase = "charging";
   let activeActorId: ActorId | undefined;
   let lastAnimation: BattleAnimationSnapshot | undefined;
   let result: BattleResult | undefined;
   let escaped = false;
+  let turn = 0;
+  let currentActorCommandKind: ActorCommand["kind"] | undefined;
   const rewards: { exp: number; gold: number; items: ItemId[] } = { exp: 0, gold: 0, items: [] };
+  const battleEventState: BattleEventRuntimeState = {
+    switches: { ...options.project.session.switches },
+    variables: { ...options.project.session.variables },
+    inventory: { ...options.project.session.inventory },
+  };
+  const battleEvents = createBattleEventRuntime({
+    troopRecord,
+    actors,
+    enemies,
+    stateIds: options.project.database.states.map((state) => state.id),
+    state: battleEventState,
+    revealEnemy: revealEnemyTarget,
+    changeBattleback: (resourceId) => {
+      backdropResourceId = resourceId;
+    },
+  });
 
   function tick(deltaMs: number): void {
     if (phase !== "charging" || result) return;
-    const ready = nextReadyBattler(deltaMs);
+    const enemiesInBattle = visibleEnemies();
+    const ready = nextReadyBattler(actors, enemiesInBattle, deltaMs);
     if (!ready) {
-      chargeAll(deltaMs);
+      chargeBattlers(actors, enemiesInBattle, deltaMs);
       return;
     }
-    chargeAll(ready.timeMs);
+    chargeBattlers(actors, enemiesInBattle, ready.timeMs);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       phase = "actorCommand";
@@ -142,14 +86,25 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor) return;
 
+    currentActorCommandKind = command.kind;
     switch (command.kind) {
       case "attack": {
-        const target = enemies.find((entry) => entry.id === command.targetEnemyId);
-        if (!target || target.hp <= 0) return;
+        const target = visibleEnemies().find((entry) => entry.id === command.targetEnemyId);
+        if (!target || target.hp <= 0) {
+          currentActorCommandKind = undefined;
+          return;
+        }
         applySkillLike(actor, target, { power: actor.attackPower, statistic: "attack", effect: "damage" });
         break;
       }
       case "skill": {
+        const skill = lookupSkill(command.skillId);
+        if (skill?.scope === "allEnemies") {
+          for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
+            applySkill(actor, target, command.skillId);
+          }
+          break;
+        }
         const target = resolveSkillTarget(command.skillId, command.targetEnemyId, actor);
         applySkill(actor, target, command.skillId);
         break;
@@ -167,7 +122,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!options.canEscape) break;
         // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
         const actorAgi = average(actors.filter((a) => a.hp > 0).map((a) => a.agility));
-        const enemyAgi = average(enemies.filter((e) => e.hp > 0).map((e) => e.agility));
+        const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
         const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
         if (Math.random() < chance) {
           escaped = true;
@@ -175,15 +130,34 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         break;
       }
     }
-    actor.gauge = 0;
-    activeActorId = undefined;
     if (escaped) {
+      actor.gauge = 0;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
       result = "escape";
       phase = "resolved";
       return;
     }
-    phase = result ? "resolved" : "charging";
+    applyTroopEvents();
     resolveOutcome();
+    if (result) {
+      actor.gauge = 0;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      phase = "resolved";
+      return;
+    }
+    if (battleEvents.consumeExtraActorAction(actor.recordId)) {
+      actor.gauge = 100;
+      activeActorId = actor.recordId;
+      currentActorCommandKind = undefined;
+      phase = "actorCommand";
+      return;
+    }
+    actor.gauge = 0;
+    activeActorId = undefined;
+    currentActorCommandKind = undefined;
+    phase = "charging";
   }
 
   function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, actor: MutableBattler): MutableBattler {
@@ -193,59 +167,28 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const scope = record?.scope;
     if (effect && (effect.kind === "healing" || effect.kind === "support")) return actor;
     if (scope === "self" || scope === "ally") return actor;
-    return enemies.find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
-      ?? enemies.find((entry) => entry.hp > 0)
+    return visibleEnemies().find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
+      ?? visibleEnemies().find((entry) => entry.hp > 0)
       ?? actor;
   }
 
   function snapshot(): BattleSnapshot {
+    const enemiesInBattle = visibleEnemies();
     return {
       phase,
       activeActorId,
-      actors: actors.map(toSnapshot),
-      enemies: enemies.map(toSnapshot),
+      actors: actors.map(battlerSnapshot),
+      enemies: enemiesInBattle.map(battlerSnapshot),
       lastAnimation,
       result,
       rewards,
       canEscape: options.canEscape,
       canLose: options.canLose,
       troopId: options.troopId,
+      backdropResourceId,
+      turn,
+      eventState: battleEvents.snapshot(),
     };
-  }
-
-  function nextReadyBattler(deltaMs: number): ReadyBattler | undefined {
-    const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler));
-    const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler));
-    const ordered = [...readyActors, ...readyEnemies].sort((left, right) => {
-      const delta = left.timeMs - right.timeMs;
-      if (delta !== 0) return delta;
-      if (left.kind === right.kind) return 0;
-      return left.kind === "actor" ? -1 : 1;
-    });
-    const first = ordered[0];
-    return first && first.timeMs <= deltaMs ? first : undefined;
-  }
-
-  function readyActor(battler: MutableBattler): ReadyBattler {
-    return { kind: "actor", battler, timeMs: timeToReady(battler) };
-  }
-
-  function readyEnemy(battler: MutableBattler): ReadyBattler {
-    return { kind: "enemy", battler, timeMs: timeToReady(battler) };
-  }
-
-  function timeToReady(battler: MutableBattler): number {
-    return Math.max(0, (100 - battler.gauge) / battler.chargeRate);
-  }
-
-  function chargeAll(deltaMs: number): void {
-    for (const actor of actors) charge(actor, deltaMs);
-    for (const enemy of enemies) charge(enemy, deltaMs);
-  }
-
-  function charge(battler: MutableBattler, deltaMs: number): void {
-    if (battler.hp <= 0) return;
-    battler.gauge = Math.min(100, battler.gauge + battler.chargeRate * deltaMs);
   }
 
   function performEnemyTurn(enemy: MutableBattler): void {
@@ -258,6 +201,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applySkillLike(enemy, target, { power: enemy.attackPower, statistic: "attack", effect: "damage" });
     }
     enemy.gauge = 0;
+    turn += 1;
+    applyTroopEvents();
     resolveOutcome();
     phase = result ? "resolved" : "charging";
   }
@@ -275,10 +220,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
     const item = options.project.database.items.find((record) => record.id === itemId);
     if (!item?.skillId) return;
-    const count = inventory[itemId] ?? 0;
+    const count = battleEventState.inventory[itemId] ?? 0;
     if (count <= 0) return;
-    inventory[itemId] = count - 1;
+    battleEventState.inventory[itemId] = count - 1;
     applySkill(user, target, item.skillId);
+    if (item.animationId) {
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
+    }
   }
 
   function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId): void {
@@ -292,7 +240,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       : "attack";
     applySkillLike(user, target, { power, statistic, effect: effectKind });
     if (skill?.animationId) {
-      lastAnimation = { animationId: skill.animationId, targetId: target.id };
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
     }
     if (skill?.effect?.kind === "switch" && skill.effect.switchId) {
       // 전투 내 스위치 토글은 플레이 세션으로 전파하지 않고 배틀 stateIds 에 기록만.
@@ -300,57 +248,36 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applySkillLike(
-    user: MutableBattler,
-    target: MutableBattler,
-    spec: { power: number; statistic: "attack" | "mind"; effect: "damage" | "healing" | "support" | "switch" }
-  ): void {
-    const stat = spec.statistic === "mind" ? user.mind : user.attackPower;
-    if (spec.effect === "healing") {
-      const amount = computeMagnitude(spec.power, user, target, "heal");
-      target.hp = Math.min(target.maxHp, target.hp + amount);
+  function applyTroopEvents(): void {
+    const eventResult = battleEvents.applyTroopEvents({ turn, activeActorId, currentActorCommandKind });
+    if (!eventResult.forceEscape) return;
+    escaped = true;
+    result = "escape";
+    phase = "resolved";
+  }
+
+  function revealEnemyTarget(target: string): void {
+    if (target === "all") {
+      for (const enemy of enemies) {
+        if (!enemy.hidden) continue;
+        enemy.hidden = false;
+        enemy.gauge = 0;
+      }
       return;
     }
-    if (spec.effect === "support" || spec.effect === "switch") {
-      return; // 순수 서포트: 데미지 없음.
-    }
-    // damage
-    const amount = computeMagnitude(spec.power, user, target, "damage", stat);
-    applyDamage(target, amount);
-    applyTroopEvents(target);
+    const enemy = enemies.find((entry) => entry.id === target || entry.recordId === target);
+    if (!enemy?.hidden) return;
+    enemy.hidden = false;
+    enemy.gauge = 0;
   }
 
-  /** 공격/스킬 위력 → 실제 수치. 방어력/방어 상태/분산 반영. */
-  function computeMagnitude(
-    power: number,
-    user: MutableBattler,
-    target: MutableBattler,
-    mode: "damage" | "heal",
-    sourceStat = user.attackPower
-  ): number {
-    // RM2K3 근사: 데미지 = power + sourceStat/2 − target.defense/2 (최소 1).
-    let magnitude = power + Math.floor(sourceStat / 2);
-    if (mode === "damage") {
-      magnitude -= Math.floor(target.defense / 2);
-      if (target.defending) magnitude = Math.floor(magnitude / 2);
-    }
-    return Math.max(1, magnitude);
-  }
-
-  function applyDamage(target: MutableBattler, amount: number): void {
-    target.hp = Math.max(0, target.hp - amount);
-  }
-
-  function applyTroopEvents(target: MutableBattler): void {
-    if (troopRecord.battleEventPages.length === 0) return;
-    const state = options.project.database.states[0];
-    if (state && !target.stateIds.includes(state.id)) {
-      target.stateIds = [...target.stateIds, state.id];
-    }
+  function visibleEnemies(): readonly MutableBattler[] {
+    return enemies.filter((enemy) => !enemy.hidden);
   }
 
   function resolveOutcome(): void {
-    if (enemies.every((enemy) => enemy.hp <= 0)) {
+    if (result) return;
+    if (visibleEnemies().every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
       accumulateRewards();
@@ -363,46 +290,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function accumulateRewards(): void {
-    rewards.exp = enemies.reduce((sum, enemy) => {
-      const record = options.project.database.enemies.find((item) => item.id === enemy.recordId);
-      return sum + (record?.rewards.exp ?? 0);
-    }, 0);
-    rewards.gold = enemies.reduce((sum, enemy) => {
-      const record = options.project.database.enemies.find((item) => item.id === enemy.recordId);
-      return sum + (record?.rewards.gold ?? 0);
-    }, 0);
-    rewards.items = enemies.flatMap((enemy) => {
-      const record = options.project.database.enemies.find((item) => item.id === enemy.recordId);
-      if (record?.rewards.dropItemId && record.rewards.dropRatePercent > 0 && Math.random() * 100 < record.rewards.dropRatePercent) {
-        return [record.rewards.dropItemId];
-      }
-      return [];
-    });
+    const collected = collectBattleRewards(options.project, enemies);
+    rewards.exp = collected.exp;
+    rewards.gold = collected.gold;
+    rewards.items = [...collected.items];
   }
 
   return { tick, performActorCommand, snapshot };
-}
-
-function chargeRateFor(agility: number): number {
-  // agility 43(기본 주인공 레벨1) ≈ 0.1, agility 10(기본 적) ≈ 0.0233.
-  return Math.max(CHARGE_FLOOR, agility * CHARGE_PER_AGILITY);
-}
-
-function average(values: readonly number[]): number {
-  if (values.length === 0) return 0;
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
-
-function toSnapshot(battler: MutableBattler): BattleBattlerSnapshot {
-  return {
-    id: battler.id,
-    recordId: battler.recordId,
-    name: battler.name,
-    hp: battler.hp,
-    maxHp: battler.maxHp,
-    gauge: battler.gauge,
-    defeated: battler.hp <= 0,
-    stateIds: battler.stateIds,
-    skillIds: battler.skillIds,
-  };
 }

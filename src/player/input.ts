@@ -3,7 +3,6 @@
 // 눌림 상태(지속)와 "방금 누름"(엣지)을 구분.
 
 import type Phaser from "phaser";
-import { getLoadedPhaser } from "@/app/phaserRuntime";
 
 export type Dir = "down" | "left" | "right" | "up";
 
@@ -13,8 +12,46 @@ export interface InputState {
   confirmPressed: boolean; // 이번 프레임에 confirm(대사 진행) 엣지
 }
 
+export class RuntimeKeyHoldTracker {
+  private readonly actionKeys = new Set<string>();
+  private readonly directions = new Set<Dir>();
+  private pendingActionEdge = false;
+
+  keyDown(key: string): void {
+    const actionKey = normalizedActionKey(key);
+    if (actionKey) {
+      if (!this.actionKeys.has(actionKey)) {
+        this.pendingActionEdge = true;
+      }
+      this.actionKeys.add(actionKey);
+    }
+    const dir = directionForRuntimeKey(key);
+    if (dir) this.directions.add(dir);
+  }
+
+  keyUp(key: string): void {
+    const actionKey = normalizedActionKey(key);
+    if (actionKey) this.actionKeys.delete(actionKey);
+    const dir = directionForRuntimeKey(key);
+    if (dir) this.directions.delete(dir);
+  }
+
+  consumeActionEdge(): boolean {
+    const edge = this.pendingActionEdge;
+    this.pendingActionEdge = false;
+    return edge;
+  }
+
+  clearPendingActionEdge(): void {
+    this.pendingActionEdge = false;
+  }
+
+  heldDirections(): readonly Dir[] {
+    return [...this.directions];
+  }
+}
+
 export class Input {
-  private readonly PhaserRuntime = getLoadedPhaser();
   private keys: Partial<Record<string, Phaser.Input.Keyboard.Key>> = {};
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
   private priority: Dir[] = []; // 눌린 순서
@@ -25,12 +62,18 @@ export class Input {
   // Phaser의 JustDown(폴링)은 headless/프레임 타이밍에 따라 keydown↔update
   // 정렬이 어긋나 엣지를 놓칠 수 있다. keydown 리스너로 직접 엣지를 잡아
   // 큐에 담고 update에서 소비하면 타이밍에 강해진다.
-  private pendingActionEdge = false;
+  private readonly runtimeKeys = new RuntimeKeyHoldTracker();
   // 자동화용 주입 방향(실제 키보드와 병합).
   private injectedDir: Dir | null = null;
 
   // 활성/비활성 토글(인터프리터 실행 중엔 입력 차단).
   private enabled = true;
+  private readonly onDocumentKeyDown = (event: KeyboardEvent): void => {
+    this.captureRuntimeKeyDown(event);
+  };
+  private readonly onDocumentKeyUp = (event: KeyboardEvent): void => {
+    this.captureRuntimeKeyUp(event);
+  };
 
   constructor(scene: Phaser.Scene) {
     const kb = scene.input.keyboard;
@@ -40,18 +83,30 @@ export class Input {
       string,
       Phaser.Input.Keyboard.Key
     >;
-    // action/confirm 키의 keydown을 이벤트로 직접 잡는다.
-    // JustDown 폴링의 프레임 정렬 문제를 회피하기 위함.
-    const actionCodes = new Set([
-      this.PhaserRuntime.Input.Keyboard.KeyCodes.SPACE,
-      this.PhaserRuntime.Input.Keyboard.KeyCodes.ENTER,
-      this.PhaserRuntime.Input.Keyboard.KeyCodes.E,
-    ]);
     kb.on("keydown", (event: KeyboardEvent) => {
-      if (actionCodes.has(event.keyCode)) {
-        this.pendingActionEdge = true;
-      }
+      this.captureRuntimeKeyDown(event);
     });
+    kb.on("keyup", (event: KeyboardEvent) => {
+      this.captureRuntimeKeyUp(event);
+    });
+    document.addEventListener("keydown", this.onDocumentKeyDown);
+    document.addEventListener("keyup", this.onDocumentKeyUp);
+    scene.events.once("destroy", () => {
+      document.removeEventListener("keydown", this.onDocumentKeyDown);
+      document.removeEventListener("keyup", this.onDocumentKeyUp);
+    });
+    scene.events.once("shutdown", () => {
+      document.removeEventListener("keydown", this.onDocumentKeyDown);
+      document.removeEventListener("keyup", this.onDocumentKeyUp);
+    });
+  }
+
+  private captureRuntimeKeyDown(event: KeyboardEvent): void {
+    this.runtimeKeys.keyDown(event.key);
+  }
+
+  private captureRuntimeKeyUp(event: KeyboardEvent): void {
+    this.runtimeKeys.keyUp(event.key);
   }
 
   setEnabled(v: boolean): void {
@@ -64,7 +119,7 @@ export class Input {
   // 매 프레임 호출. 엣지 이벤트 갱신.
   update(): InputState {
     if (!this.enabled) {
-      this.pendingActionEdge = false;
+      this.runtimeKeys.clearPendingActionEdge();
       return { dir: null, actionPressed: false, confirmPressed: false };
     }
 
@@ -74,6 +129,9 @@ export class Input {
     if (this.isDown("down")) downSet.add("down");
     if (this.isDown("left")) downSet.add("left");
     if (this.isDown("right")) downSet.add("right");
+    for (const dir of this.runtimeKeys.heldDirections()) {
+      downSet.add(dir);
+    }
     // 자동화 주입 방향 병합.
     if (this.injectedDir) downSet.add(this.injectedDir);
 
@@ -87,8 +145,7 @@ export class Input {
 
     // action/confirm 엣지: 이벤트 기반(keydown 리스너) 큐에서 소비.
     // JustDown(폴링)은 headless/프레임 타이밍에 취약하므로 직접 잡은 엣지를 쓴다.
-    const actionEdge = this.pendingActionEdge;
-    this.pendingActionEdge = false;
+    const actionEdge = this.runtimeKeys.consumeActionEdge();
 
     const state: InputState = {
       dir,
@@ -106,7 +163,7 @@ export class Input {
     this.confirmConsumed = false;
     // 소비되지 않은 action 엣지도 인터프리터 진입/종료 시점에 비운다.
     // (confirm 소비 후 남은 actionEdge가 다음 프레임에 중복 트리거되는 것 방지)
-    this.pendingActionEdge = false;
+    this.runtimeKeys.clearPendingActionEdge();
   }
 
   // 테스트/자동화용 입력 주입. headless 환경에서는 window keydown이
@@ -114,7 +171,8 @@ export class Input {
   // 테스트는 이 메서드로 action 엣지를 직접 주입할 수 있다.
   // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 이 경로를 쓰지 않는다.
   injectActionEdge(): void {
-    this.pendingActionEdge = true;
+    this.runtimeKeys.keyDown("Enter");
+    this.runtimeKeys.keyUp("Enter");
   }
 
   // 방향 지속 입력 주입(자동화용). dir을 눌린 상태로 설정한다.
@@ -142,4 +200,29 @@ export class Input {
   private keyDown(name: string): boolean {
     return this.keys[name]?.isDown ?? false;
   }
+}
+
+export function directionForRuntimeKey(key: string): Dir | null {
+  switch (key.toLowerCase()) {
+    case "arrowdown":
+    case "s":
+      return "down";
+    case "arrowleft":
+    case "a":
+      return "left";
+    case "arrowright":
+    case "d":
+      return "right";
+    case "arrowup":
+    case "w":
+      return "up";
+    default:
+      return null;
+  }
+}
+
+function normalizedActionKey(key: string): string | null {
+  const normalized = key.toLowerCase();
+  if (key === " " || normalized === "space" || normalized === "enter" || normalized === "e" || normalized === "z") return normalized;
+  return null;
 }

@@ -1,12 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { createActorRecord, normalizeActorRecord, parameterValueAtLevel, totalExpForLevel } from "@/project/actorModel";
-import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_SKILL_ID, DEFAULT_SPRITE_HERO } from "@/project/defaults";
+import {
+  ACTOR_STATE_RATE_PERCENTAGES,
+  createActorRecord,
+  normalizeActorRecord,
+  parameterValueAtLevel,
+  stateRatePercentage,
+  totalExpForLevel,
+} from "@/project/actorModel";
+import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_SKILL_ID, DEFAULT_SPRITE_NPC } from "@/project/defaults";
 
 describe("RM2K3 actor model", () => {
   it("creates full RM2K3 actor defaults when a new actor is added", () => {
     const actor = createActorRecord("actor_test", DEFAULT_CLASS_ID, {
-      characterResourceId: DEFAULT_SPRITE_HERO,
-      battleCharacterResourceId: DEFAULT_SPRITE_HERO,
+      characterResourceId: DEFAULT_SPRITE_NPC,
+      battleCharacterResourceId: DEFAULT_SPRITE_NPC,
       defaultEquipmentId: DEFAULT_EQUIPMENT_ID,
       defaultSkillId: DEFAULT_SKILL_ID,
       unarmedAnimationId: DEFAULT_ANIMATION_ID,
@@ -46,5 +53,13 @@ describe("RM2K3 actor model", () => {
     expect(totalExpForLevel(actor.expCurve, 1)).toBe(0);
     expect(totalExpForLevel(actor.expCurve, 2)).toBeGreaterThan(actor.expCurve.base);
     expect(totalExpForLevel(actor.expCurve, 99)).toBeGreaterThan(totalExpForLevel(actor.expCurve, 50));
+  });
+
+  it("maps RM2K3 state rate grades to descending manual probabilities", () => {
+    expect(ACTOR_STATE_RATE_PERCENTAGES).toEqual({ A: 100, B: 80, C: 60, D: 30, E: 0 });
+    expect(stateRatePercentage("A")).toBeGreaterThan(stateRatePercentage("B"));
+    expect(stateRatePercentage("B")).toBeGreaterThan(stateRatePercentage("C"));
+    expect(stateRatePercentage("C")).toBeGreaterThan(stateRatePercentage("D"));
+    expect(stateRatePercentage("D")).toBeGreaterThan(stateRatePercentage("E"));
   });
 });

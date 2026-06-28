@@ -1,11 +1,9 @@
 import { renderResourceManager } from "@/editor/panels/resourceManager";
-import { hideRightPanel, showRightPanel } from "@/editor/panels/editor";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 export function openResourceModal(): void {
   document.querySelector("[data-testid='resource-modal']")?.remove();
-  // 우측 패널이 같은 testId 컨트롤을 렌더하므로 충돌 방지를 위해 숨긴다.
-  hideRightPanel();
 
   const body = el("div", { class: "database-modal-body" });
   const closeButton = el("button", {
@@ -36,7 +34,6 @@ export function openResourceModal(): void {
   const close = (): void => {
     backdrop.remove();
     document.removeEventListener("keydown", onKeyDown);
-    showRightPanel();
   };
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") close();
@@ -45,6 +42,25 @@ export function openResourceModal(): void {
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
+  const footer = el("footer", {
+    class: "resource-modal-footer",
+    children: [
+      el("span", { class: "resource-footer-status", text: "사용 중인 리소스는 삭제할 수 없습니다." }),
+      el("div", {
+        class: "resource-footer-actions",
+        children: [
+          el("button", { class: "resource-footer-button", text: "닫기", attrs: { type: "button" }, on: { click: close } }),
+          el("button", {
+            class: "resource-footer-button",
+            text: "도움말",
+            attrs: { type: "button" },
+            on: { click: () => toast("리소스 종류를 선택하고 PNG 파일을 가져옵니다.", "ok") },
+          }),
+        ],
+      }),
+    ],
+  });
+  backdrop.querySelector(".resource-modal-window")?.append(footer);
   document.addEventListener("keydown", onKeyDown);
   document.body.append(backdrop);
   renderResourceManager(body);

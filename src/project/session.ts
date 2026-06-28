@@ -3,9 +3,11 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { Command, MapId, Project, Condition } from "./types";
+import type { ActorInitialEquipment, Command, MapId, Project, Condition, MessageWindowSettings } from "./types";
 import type { PlaySessionLike } from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
+import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
+import type { ActorVitals } from "@/project/sessionVitals";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -28,6 +30,15 @@ export type PictureState = {
   readonly y: number;
 };
 
+export type ActorRowPosition = "front" | "back";
+
+export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
+  format: "normal",
+  position: "bottom",
+  preventObscuringPlayer: true,
+  allowEventMovementDuringWait: false,
+};
+
 export interface PlaySession {
   // 스위치 런타임 값(switchId → bool).
   switches: Record<string, boolean>;
@@ -35,6 +46,13 @@ export interface PlaySession {
   variables: Record<string, number>;
   // 타이머(id → 남은 초).
   timers: Record<string, number>;
+  gold: number;
+  inventory: Record<string, number>;
+  partyActorIds: string[];
+  actorExperience: Record<string, number>;
+  actorVitals: Record<string, ActorVitals>;
+  actorEquipment: Record<string, ActorInitialEquipment>;
+  actorRows: Record<string, ActorRowPosition>;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;
@@ -47,6 +65,7 @@ export interface PlaySession {
   commonEvents?: { id: string; commands: Command[] }[];
   audio: AudioCommandState;
   pictures: Record<string, PictureState>;
+  messageWindowSettings?: MessageWindowSettings;
 }
 
 // Project로부터 새 세션 시작.
@@ -68,6 +87,13 @@ export function startSession(project: Project): PlaySession {
     switches,
     variables,
     timers: {},
+    gold: 0,
+    inventory: { ...project.session.inventory },
+    partyActorIds: [...project.session.partyActorIds],
+    actorExperience: initialActorExperience(project),
+    actorVitals: initialActorVitals(project),
+    actorEquipment: initialActorEquipment(project),
+    actorRows: initialActorRows(project),
     currentMapId: project.startMapId,
     x: project.startPos.x,
     y: project.startPos.y,
@@ -75,7 +101,32 @@ export function startSession(project: Project): PlaySession {
     flags: { ...project.flags },
     audio: {},
     pictures: {},
+    messageWindowSettings: { ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
   };
+}
+
+function initialActorExperience(project: Project): Record<string, number> {
+  const experience: Record<string, number> = {};
+  for (const actorId of project.session.partyActorIds) {
+    experience[actorId] = 0;
+  }
+  return experience;
+}
+
+function initialActorEquipment(project: Project): Record<string, ActorInitialEquipment> {
+  const equipment: Record<string, ActorInitialEquipment> = {};
+  for (const actor of project.database.actors) {
+    equipment[actor.id] = { ...actor.initialEquipment };
+  }
+  return equipment;
+}
+
+function initialActorRows(project: Project): Record<string, ActorRowPosition> {
+  const rows: Record<string, ActorRowPosition> = {};
+  for (const actorId of project.session.partyActorIds) {
+    rows[actorId] = "front";
+  }
+  return rows;
 }
 
 // 스위치 조회(없으면 false).
@@ -114,6 +165,51 @@ export function setTimer(session: PlaySessionLike, id: string, seconds: number):
 }
 export function getTimer(session: PlaySessionLike, id: string): number {
   return session.timers[id] ?? 0;
+}
+
+export function changeGold(session: PlaySessionLike, op: "=" | "+=" | "-=", amount: number): void {
+  const next = applyAmount(session.gold, op, amount);
+  session.gold = Math.max(0, next);
+}
+
+export function changeItem(
+  session: PlaySessionLike,
+  itemId: string,
+  op: "=" | "+=" | "-=",
+  amount: number
+): void {
+  const current = session.inventory[itemId] ?? 0;
+  const next = Math.max(0, applyAmount(current, op, amount));
+  if (next === 0) {
+    delete session.inventory[itemId];
+    return;
+  }
+  session.inventory[itemId] = next;
+}
+
+export function changeParty(
+  session: PlaySessionLike,
+  actorId: string,
+  action: "add" | "remove",
+  project?: Project
+): void {
+  if (action === "add") {
+    if (!session.partyActorIds.includes(actorId)) session.partyActorIds.push(actorId);
+    if (project) syncActorVitals(project, session.actorVitals, actorId);
+    return;
+  }
+  session.partyActorIds = session.partyActorIds.filter((id) => id !== actorId);
+}
+
+function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): number {
+  switch (op) {
+    case "=":
+      return amount;
+    case "+=":
+      return current + amount;
+    case "-=":
+      return current - amount;
+  }
 }
 
 // 맵 타일 오버라이드(changeTile 런타임 반영).

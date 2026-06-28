@@ -1,0 +1,27 @@
+{
+  "name": "RPG ZZU",
+  "short_name": "RPG ZZU",
+  "description": "브라우저에서 실행되는 RPG ZZU 게임 제작 워크벤치",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ece7da",
+  "theme_color": "#0a246a",
+  "lang": "ko",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "/icons/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

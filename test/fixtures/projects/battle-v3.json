@@ -17,7 +17,7 @@
     "sprites": {
       "hero": {
         "id": "hero",
-        "image": { "type": "bundled", "id": "tex_hero" },
+        "image": { "type": "bundled", "id": "tex_npc_villager" },
         "frames": 8,
         "frameWidth": 32,
         "frameHeight": 32
@@ -42,31 +42,31 @@
   "resourceProfiles": [
     {
       "kind": "charset",
-      "name": "Hero",
+      "name": "주인공",
       "tileWidth": 24,
       "tileHeight": 32,
       "assetId": "hero"
     },
     {
       "kind": "battleCharset",
-      "name": "Hero Battle",
+      "name": "주인공 전투",
       "tileWidth": 48,
       "tileHeight": 48,
       "assetId": "hero"
     },
     {
       "kind": "monster",
-      "name": "Slime",
+      "name": "슬라임",
       "assetId": "slime"
     },
     {
       "kind": "monster",
-      "name": "Dragon",
+      "name": "드래곤",
       "assetId": "dragon"
     },
     {
       "kind": "chipset",
-      "name": "Default chipset",
+      "name": "기본 칩셋",
       "tileWidth": 16,
       "tileHeight": 16,
       "assetId": "tex_tiles_default"
@@ -75,7 +75,7 @@
   "tilesets": {
     "tiles_default": {
       "id": "tiles_default",
-      "name": "Default tileset",
+      "name": "기본 타일셋",
       "image": { "type": "bundled", "id": "tex_tiles_default" },
       "tileSize": 16,
       "tilesPerRow": 8,
@@ -101,7 +101,7 @@
     "actors": [
       {
         "id": "actor_hero",
-        "name": "Hero",
+        "name": "주인공",
         "classId": "class_fighter",
         "initialLevel": 1,
         "maxLevel": 50,
@@ -113,21 +113,21 @@
     "classes": [
       {
         "id": "class_fighter",
-        "name": "Fighter",
+        "name": "전사",
         "skillIds": ["skill_fire"]
       }
     ],
     "skills": [
       {
         "id": "skill_fire",
-        "name": "Fire",
+        "name": "화염",
         "scope": "enemy",
         "power": 20,
-        "animationId": "anim_fire"
+        "animationId": "anim_magic"
       },
       {
         "id": "skill_claw",
-        "name": "Claw",
+        "name": "할퀴기",
         "scope": "enemy",
         "power": 80,
         "animationId": "anim_hit"
@@ -136,7 +136,7 @@
     "items": [
       {
         "id": "item_bomb",
-        "name": "Bomb",
+        "name": "폭탄",
         "scope": "enemy",
         "price": 50,
         "skillId": "skill_fire"
@@ -145,7 +145,7 @@
     "equipment": [
       {
         "id": "equip_sword",
-        "name": "Sword",
+        "name": "검",
         "slot": "weapon",
         "price": 100
       }
@@ -153,8 +153,8 @@
     "enemies": [
       {
         "id": "enemy_slime",
-        "name": "Slime",
-        "monsterResourceId": "slime",
+        "name": "슬라임",
+        "monsterResourceId": "generated-enemy-slime-01",
         "stats": {
           "maxHp": 10,
           "maxMp": 1,
@@ -168,8 +168,8 @@
       },
       {
         "id": "enemy_dragon",
-        "name": "Dragon",
-        "monsterResourceId": "dragon",
+        "name": "드래곤",
+        "monsterResourceId": "generated-enemy-dragon-01",
         "stats": {
           "maxHp": 70,
           "maxMp": 10,
@@ -185,12 +185,12 @@
     "troops": [
       {
         "id": "troop_slime",
-        "name": "Slime Troop",
+        "name": "슬라임 무리",
         "enemyIds": ["enemy_slime"],
         "battleEventPages": [
           {
             "id": "troop_state_page",
-            "name": "Apply burn",
+            "name": "화상 적용",
             "conditions": [],
             "graphic": {},
             "trigger": { "kind": "auto" },
@@ -202,7 +202,7 @@
       },
       {
         "id": "troop_dragon",
-        "name": "Dragon Troop",
+        "name": "드래곤 무리",
         "enemyIds": ["enemy_dragon"],
         "battleEventPages": []
       }
@@ -210,18 +210,69 @@
     "states": [
       {
         "id": "state_burn",
-        "name": "Burn"
+        "name": "화상"
       }
     ],
     "battleAnimations": [
       {
-        "id": "anim_fire",
-        "name": "Fire",
-        "resourceId": "slime"
+        "id": "anim_magic",
+        "name": "마법",
+        "resourceId": "easyrpg-battle-blow",
+        "sheet": {
+          "frameWidth": 96,
+          "frameHeight": 96,
+          "columns": 5
+        },
+        "scope": "singleTarget",
+        "position": "center",
+        "large": false,
+        "frames": [
+          {
+            "cells": [
+              {
+                "pattern": 0,
+                "x": 0,
+                "y": 0,
+                "zoom": 100,
+                "opacity": 255,
+                "visible": true
+              }
+            ]
+          },
+          {
+            "cells": [
+              {
+                "pattern": 1,
+                "x": 0,
+                "y": -8,
+                "zoom": 110,
+                "opacity": 220,
+                "visible": true
+              }
+            ]
+          }
+        ],
+        "timings": [
+          {
+            "frameIndex": 0,
+            "soundResourceId": "easyrpg-sound-magic1",
+            "flash": {
+              "target": "target",
+              "color": {
+                "red": 160,
+                "green": 160,
+                "blue": 255,
+                "gray": 0
+              },
+              "durationFrames": 8
+            },
+            "screenShake": true
+          }
+        ]
       },
       {
         "id": "anim_hit",
-        "name": "Hit",
+        "name": "타격",
         "resourceId": "dragon"
       }
     ]

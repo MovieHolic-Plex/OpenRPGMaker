@@ -1,0 +1,186 @@
+@media (min-width: 901px) {
+  .database-modal-window {
+    height: min(820px, calc(100vh - 24px));
+  }
+
+  .database-modal-body {
+    display: grid;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-body {
+    height: auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .db-body:has(.tileset-db-workspace) {
+    height: auto;
+  }
+
+  .database-modal-body .db-record-workspace {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  }
+
+  .database-modal-body .db-list {
+    align-content: start;
+    grid-auto-rows: max-content;
+    margin-bottom: var(--space-2);
+    max-height: none;
+    min-height: 0;
+  }
+
+  .database-modal-body .db-list-row {
+    align-items: center;
+    display: grid;
+    gap: 4px;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-list-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-detail-pane {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-detail-form {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-backdrop:has(.rm2k3-record-enemies),
+  .database-modal-backdrop:has(.rm2k3-record-troops) {
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+  }
+
+  .database-modal-window:has(.rm2k3-record-enemies),
+  .database-modal-window:has(.rm2k3-record-troops) {
+    height: min(820px, calc(100vh - 24px));
+    max-width: calc(100vw - 24px);
+    width: min(1256px, calc(100vw - 24px));
+  }
+
+  .database-modal-backdrop:has(.db-elements-classic) {
+    padding: var(--space-3);
+  }
+
+  .database-modal-window:has(.db-elements-classic) {
+    height: min(820px, calc(100vh - 24px));
+    max-width: calc(100vw - 24px);
+    width: min(1040px, calc(100vw - 24px));
+  }
+
+  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-body,
+  .database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
+    display: grid;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs,
+  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
+    grid-template-columns: 220px 220px 220px 1fr;
+    height: auto;
+    margin: 0 2px -1px;
+    padding: 0 0 0 1px;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tab,
+  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tab {
+    font-size: 12px;
+    height: 18px;
+    line-height: 17px;
+    min-height: 18px;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-tabs,
+  .database-modal-body:has(.rm2k3-record-troops) .db-tabs {
+    background: #d8d0be;
+    border-bottom: 1px solid #8f8a80;
+    flex-wrap: nowrap;
+    height: auto;
+    margin: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 6px 6px 0;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-tab,
+  .database-modal-body:has(.rm2k3-record-troops) .db-tab {
+    background: #d8d0be;
+    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    color: var(--text-primary);
+    font-size: 12px;
+    height: 24px;
+    margin-right: 2px;
+    min-width: 58px;
+    padding: 0 9px;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-tab.active,
+  .database-modal-body:has(.rm2k3-record-troops) .db-tab.active {
+    background: var(--surface-panel);
+    border-bottom-color: var(--surface-panel);
+    border-color: #8f8a80 #ffffff var(--surface-panel) #8f8a80;
+    box-shadow: none;
+    color: var(--text-primary);
+    margin-bottom: -1px;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-manual-source,
+  .database-modal-body:has(.rm2k3-record-enemies) .db-workbench-status,
+  .database-modal-body:has(.rm2k3-record-troops) .db-manual-source,
+  .database-modal-body:has(.rm2k3-record-troops) .db-workbench-status,
+  .database-modal-body:has(.db-elements-classic) .db-manual-source,
+  .database-modal-body:has(.db-elements-classic) .db-workbench-status {
+    display: block;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-body,
+  .database-modal-body:has(.rm2k3-record-troops) .db-body {
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+    grid-template-columns: 214px 214px minmax(520px, 1fr);
+  }
+
+  .database-modal-body .db-elements-classic,
+  .database-modal-body .db-elements-classic-inner {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .db-elements-classic-inner {
+    grid-template-columns: 180px minmax(360px, 396px) minmax(360px, 1fr);
+  }
+}

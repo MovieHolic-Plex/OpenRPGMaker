@@ -165,8 +165,8 @@ describe("generated item and equipment image resources", () => {
     updateDatabaseRecord("equipment", equipmentId, { iconResourceId: "ref_equipment_icon" });
 
     // When/Then: resource reference checks block referenced generated art but not unrelated ids.
-    expect(resourceReferenceMessage("ref_item_image")).toContain("item");
-    expect(resourceReferenceMessage("ref_equipment_icon")).toContain("equipment");
+    expect(resourceReferenceMessage("ref_item_image")).toContain("아이템");
+    expect(resourceReferenceMessage("ref_equipment_icon")).toContain("장비");
     expect(resourceReferenceMessage("unrelated_generated")).toBeNull();
   });
 

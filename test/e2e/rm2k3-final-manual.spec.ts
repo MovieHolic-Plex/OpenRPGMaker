@@ -24,6 +24,11 @@ test("final manual QA covers RM2K3 editor surfaces and sample game end to end", 
   await captureEditorViewport({ page, testInfo, name: "desktop-editor", overlapPairs: EDITOR_OVERLAP_PAIRS });
 
   await openEveryDatabaseTab(page);
+  await page.getByTestId("toolbar-database").click();
+  await page.getByTestId("db-tab-actors").click();
+  await expect(page.getByTestId("database-modal")).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("database-modal-actors.png"), fullPage: true });
+  await page.getByTestId("database-modal-close").click();
   await importResource(page);
   await page.screenshot({ path: testInfo.outputPath("desktop-database-resources.png"), fullPage: true });
 
@@ -40,18 +45,21 @@ test("final manual QA covers RM2K3 editor surfaces and sample game end to end", 
   await expectPlayCanvasLogicalSurface(page, testInfo);
 
   await page.getByTestId("event-town-npc").click();
-  await page.getByRole("button", { name: /Yes/ }).click();
-  await dismissDialogue(page, "Find the switch east of town.");
+  await page.getByRole("button", { name: /예/ }).click();
+  await dismissDialogue(page, "마을 동쪽의 스위치를 찾으세요.");
   await page.getByTestId("event-switch-puzzle").click();
-  await dismissDialogue(page, "A gate opens in the hills.");
+  await dismissDialogue(page, "언덕의 문이 열렸습니다.");
   await expect.poll(async () => (await runtimeState(page)).switches.sw_gate_open).toBe(true);
   await expect.poll(async () => (await runtimeState(page)).switches.sw_blessed).toBe(true);
-  await expect(page.getByTestId("picture-layer")).toContainText("pic_gate:sample_picture_gate");
+  await expect(page.getByTestId("picture-layer")).toContainText("문 그림");
+  await expect(page.getByTestId("picture-layer")).not.toContainText("pic_gate");
+  await expect(page.getByTestId("audio-indicator")).toContainText("샘플 테마");
+  await expect(page.getByTestId("audio-indicator")).not.toContainText("sample_theme");
   await page.screenshot({ path: testInfo.outputPath("town-puzzle-complete.png"), fullPage: true });
 
   await visitInterior(page);
   await page.getByTestId("event-save-point").click();
-  await dismissDialogue(page, "Save here before entering the dungeon.");
+  await dismissDialogue(page, "던전에 들어가기 전에 여기서 저장하세요.");
   await openMenu(page);
   await page.getByTestId("save-slot-1").click();
   await expect(page.getByTestId("main-menu")).toContainText("1번 저장 칸에 저장했습니다");
@@ -68,9 +76,9 @@ test("final manual QA covers RM2K3 editor surfaces and sample game end to end", 
   await enterDungeon(page);
   await winBattle(page);
   await page.getByTestId("event-battle-start").click();
-  await dismissDialogue(page, "The slime is gone. Use the portal.");
+  await dismissDialogue(page, "슬라임이 사라졌습니다. 포털을 이용하세요.");
   await page.getByTestId("event-ending-portal").click();
   await expect(page.getByTestId("ending-screen")).toBeVisible();
-  await expect(page.getByTestId("ending-screen")).toContainText("T14 sample complete.");
+  await expect(page.getByTestId("ending-screen")).toContainText("T14 샘플 완료.");
   await page.screenshot({ path: testInfo.outputPath("ending-screen.png"), fullPage: true });
 });

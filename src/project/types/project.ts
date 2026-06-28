@@ -12,7 +12,7 @@ import type {
   TilesetId,
   VariableDef,
 } from "./base";
-import type { DatabaseRecords, SystemRecords } from "./database";
+import type { ProjectDatabaseRecords, SystemRecords } from "./database";
 import type {
   CommandV1,
   CommonEvent,
@@ -64,7 +64,7 @@ export interface Project {
   switches: SwitchDef[];
   variables: VariableDef[];
   commonEvents: CommonEvent[];
-  database: DatabaseRecords;
+  database: ProjectDatabaseRecords;
   system: SystemRecords;
   session: ProjectSession;
   maps: Record<MapId, GameMap>;

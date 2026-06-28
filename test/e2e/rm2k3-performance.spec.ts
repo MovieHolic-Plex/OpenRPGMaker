@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import systemShellProject from "../fixtures/projects/system-shell-v3.json" with { type: "json" };
+import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 type PerfMetricsRecord = Record<string, unknown>;
 
@@ -16,31 +17,7 @@ function modeSwitchMs(metrics: PerfMetricsRecord): readonly unknown[] {
 }
 
 async function seedProject(page: Page): Promise<void> {
-  await page.goto("/");
-  await page.evaluate(async (seed) => {
-    const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("rpg-zzu", 1);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("projects")) db.createObjectStore("projects");
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const transaction = database.transaction("projects", "readwrite");
-        transaction.objectStore("projects").put(seed, "current");
-        transaction.oncomplete = () => resolve();
-        transaction.onerror = () => reject(transaction.error);
-      });
-    } finally {
-      database.close();
-    }
-    localStorage.clear();
-  }, systemShellProject);
-  await page.reload();
-  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  await seedProjectFromSupabaseCanonical(page, systemShellProject);
 }
 
 async function perfMetrics(page: Page): Promise<PerfMetricsRecord> {

@@ -1,0 +1,38 @@
+Command:
+powershell.exe -NoProfile
+$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+agy --dangerously-skip-permissions --print-timeout 90s --print "Analyze this UI screenshot: C:\Users\hyeon\Downloads\rpg-zzu\output\evidence\database-tabs-team\T4-party-class\tabs\classes.png. Report overlaps, clipped text, blank regions, layout problems, visual hierarchy issues, and likely interaction affordances. Keep it concise."
+
+Result:
+agy 1.0.13 completed through a real PTY.
+
+Concise analysis of the Database Classes screenshot:
+
+1. Overlaps and clipped text
+- Cramped tab bar: the second row of tabs is crowded and labels run close together.
+- Stat curve label: Lv8:88 sits tightly near the top edge of the red bar chart, creating minor visual clutter but no longer overlaps the graph body.
+- Rating dropdowns have tight padding around A/C/B grade content, but labels remain readable.
+- Top application menu text appears clipped by the outer app frame; this is outside the T4 Database tab content pane.
+
+2. Layout and structure observations
+- Double-row tab layout duplicates several names, including common events, system, and terms.
+- Some panel bottom edges do not align horizontally.
+
+3. Blank regions
+- Unused grey space remains below the equipment and attribute effectiveness sections.
+- The left class list has blank white space below the final visible entry.
+
+4. Visual hierarchy
+- The Windows classic style uses uniform grey panels and borders.
+- The screen is dense and presents many inputs and graphs simultaneously.
+
+5. Interaction affordances
+- Top tabs and left class list are selectable navigation.
+- Text inputs and dropdowns are available for class name, commands, animations, ratings, and equipment.
+- Checkboxes toggle class options.
+- Parameter and experience graphs likely open detailed curve editors.
+- OK, Cancel, Apply, and Help buttons are visible action controls.
+
+T4 interpretation:
+- No blocking T4-owned clipped text or field overlap remained after the final CSS fixes.
+- Remaining agy observations are inherited Database shell density, deliberate RM2K3 classic styling, or non-blocking spacing in fixed-size panels.

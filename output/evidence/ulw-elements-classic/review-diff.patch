@@ -1,0 +1,321 @@
+diff --git a/src/editor/panels/database.ts b/src/editor/panels/database.ts
+index 740ba5a..d83e250 100644
+--- a/src/editor/panels/database.ts
++++ b/src/editor/panels/database.ts
+@@ -1,44 +1,92 @@
+-import { clearChildren, el } from "@/util/dom";
+ import type { DatabaseCollection } from "@/editor/databaseActions";
++import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
++import { databaseManualTopic } from "@/editor/panels/databaseManualLinks";
++import { activeTabSummary } from "@/editor/panels/databasePanelSummary";
+ import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
+-import { databaseWorkbenchStatusText, type DatabaseWorkbenchSummary } from "@/editor/panels/databaseWorkbench";
++import { databaseWorkbenchStatusText } from "@/editor/panels/databaseWorkbench";
++import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+ import {
+-  renderCommonEventsTab,
+   renderSwitchesTab,
+-  renderSystemTab,
+   renderTermsTab,
+   renderVariablesTab,
+ } from "@/editor/panels/databaseUtilityViews";
++import {
++  renderBattleCommandsTab,
++  renderBattleScreenTab,
++  renderBattlerAnimationsTab,
++  renderElementsTab,
++  renderTerrainTab,
++} from "@/editor/panels/databaseUtilityRecordViews";
+ import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
++import { clearChildren, el } from "@/util/dom";
+ 
+ export type DatabaseTab =
+   | DatabaseCollection
+   | "animations"
++  | "battleCommands"
++  | "battleScreen"
++  | "battlerAnimations"
+   | "commonEvents"
++  | "elements"
+   | "system"
+   | "terms"
++  | "terrain"
+   | "switches"
+   | "tilesets"
+   | "variables";
+ 
+ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
+-  { id: "actors", label: "주인공", testid: "db-tab-actors" },
+-  { id: "classes", label: "직업", testid: "db-tab-classes" },
+-  { id: "skills", label: "스킬", testid: "db-tab-skills" },
+-  { id: "items", label: "아이템", testid: "db-tab-items" },
+-  { id: "equipment", label: "장비", testid: "db-tab-equipment" },
+-  { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
+-  { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
+-  { id: "states", label: "상태", testid: "db-tab-states" },
+-  { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
+-  { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
+-  { id: "commonEvents", label: "공통 이벤트", testid: "db-tab-common-events" },
+-  { id: "system", label: "시스템", testid: "db-tab-system" },
+-  { id: "terms", label: "용어", testid: "db-tab-terms" },
+-  { id: "switches", label: "스위치", testid: "db-tab-switches" },
+-  { id: "variables", label: "변수", testid: "db-tab-variables" },
++  { id: "elements", label: "Elements", testid: "db-tab-elements" },
++  { id: "terrain", label: "Terrain", testid: "db-tab-terrain" },
++  { id: "battleScreen", label: "Battle Screen", testid: "db-tab-battle-screen" },
++  { id: "battleCommands", label: "Battle Commands", testid: "db-tab-battle-commands" },
++  { id: "battlerAnimations", label: "Animations 2", testid: "db-tab-battler-animations" },
++  { id: "actors", label: "Actors", testid: "db-tab-actors" },
++  { id: "classes", label: "Classes", testid: "db-tab-classes" },
++  { id: "skills", label: "Skills", testid: "db-tab-skills" },
++  { id: "items", label: "Items", testid: "db-tab-items" },
++  { id: "equipment", label: "Equipment", testid: "db-tab-equipment" },
++  { id: "enemies", label: "Enemies", testid: "db-tab-enemies" },
++  { id: "troops", label: "Troops", testid: "db-tab-troops" },
++  { id: "states", label: "States", testid: "db-tab-states" },
++  { id: "animations", label: "Animations", testid: "db-tab-animations" },
++  { id: "tilesets", label: "Tilesets", testid: "db-tab-tilesets" },
++  { id: "commonEvents", label: "Common Events", testid: "db-tab-common-events" },
++  { id: "system", label: "System", testid: "db-tab-system" },
++  { id: "terms", label: "Terms", testid: "db-tab-terms" },
++  { id: "switches", label: "Switches", testid: "db-tab-switches" },
++  { id: "variables", label: "Variables", testid: "db-tab-variables" },
++];
++
++const tabOrder: readonly DatabaseTab[] = [
++  "actors",
++  "classes",
++  "skills",
++  "items",
++  "equipment",
++  "enemies",
++  "troops",
++  "elements",
++  "states",
++  "animations",
++  "battlerAnimations",
++  "battleScreen",
++  "battleCommands",
++  "terrain",
++  "tilesets",
++  "commonEvents",
++  "system",
++  "terms",
++  "switches",
++  "variables",
+ ];
+ 
++const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map((id) => {
++  const tab = tabs.find((candidate) => candidate.id === id);
++  if (!tab) throw new Error(`Missing database tab metadata: ${id}`);
++  return tab;
++});
++
+ const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+ 
+ let activeTab: DatabaseTab = readStoredActiveTab();
+@@ -46,8 +94,18 @@ let activeTab: DatabaseTab = readStoredActiveTab();
+ export function renderDatabasePanel(container: HTMLElement): void {
+   clearChildren(container);
+   const activeTabMeta = tabMeta(activeTab);
++  const groupTabs = el("div", {
++    class: "db-classic-group-tabs",
++    dataset: { testid: "db-classic-group-tabs" },
++    children: [
++      classicGroupTab("Terms"),
++      classicGroupTab("System"),
++      classicGroupTab("System 2"),
++      classicGroupTab("Common Events"),
++    ],
++  });
+   const header = el("div", { class: "db-tabs" });
+-  for (const tab of tabs) {
++  for (const tab of orderedTabs) {
+     header.append(
+       el("button", {
+         class: `db-tab${activeTab === tab.id ? " active" : ""}`,
+@@ -59,19 +117,36 @@ export function renderDatabasePanel(container: HTMLElement): void {
+             renderDatabasePanel(container);
+           },
+         },
+-      })
++      }),
+     );
+   }
+ 
+   const body = el("div", { class: "db-body" });
+   renderActiveTab(body, container);
++  const manualTopic = databaseManualTopic(activeTab);
++  const manualSource = el("div", {
++    class: "db-manual-source",
++    children: [
++      el("span", { text: "RM2003 manual" }),
++      el("a", {
++        attrs: { href: manualTopic.url, rel: "noreferrer", target: "_blank" },
++        dataset: { testid: "db-manual-source-link" },
++        text: manualTopic.label,
++      }),
++      el("code", { dataset: { testid: "db-manual-source-url" }, text: manualTopic.url }),
++    ],
++  });
+   const status = el("div", {
+-    class: "db-workbench-status",
+     attrs: { "aria-live": "polite" },
++    class: "db-workbench-status",
+     dataset: { testid: "db-workbench-status" },
+     text: databaseWorkbenchStatusText(activeTabSummary(activeTabMeta, body)),
+   });
+-  container.append(header, status, body);
++  container.append(groupTabs, header, manualSource, status, body);
++}
++
++function classicGroupTab(label: string): HTMLElement {
++  return el("span", { class: "db-classic-group-tab", text: label });
+ }
+ 
+ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
+@@ -89,6 +164,21 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
+     case "animations":
+       renderRecordTab(body, "battleAnimations", () => renderDatabasePanel(container));
+       return;
++    case "elements":
++      renderElementsTab(body);
++      return;
++    case "terrain":
++      renderTerrainTab(body);
++      return;
++    case "battleScreen":
++      renderBattleScreenTab(body);
++      return;
++    case "battleCommands":
++      renderBattleCommandsTab(body);
++      return;
++    case "battlerAnimations":
++      renderBattlerAnimationsTab(body);
++      return;
+     case "switches":
+       renderSwitchesTab(body, () => renderDatabasePanel(container));
+       return;
+@@ -117,51 +207,7 @@ function setActiveTab(tab: DatabaseTab): void {
+ }
+ 
+ function tabMeta(tabId: DatabaseTab): { readonly id: DatabaseTab; readonly label: string } {
+-  return tabs.find((tab) => tab.id === tabId) ?? tabs[0];
+-}
+-
+-function activeTabSummary(tab: { readonly id: DatabaseTab; readonly label: string }, body: HTMLElement): DatabaseWorkbenchSummary {
+-  const activeRow = recordCollectionForTab(tab.id) ? body.querySelector<HTMLElement>(".db-list-row.active") : null;
+-  return {
+-    recordId: activeRow?.dataset.recordId,
+-    recordName: activeRow?.dataset.recordName,
+-    selectedIndex: numericDataset(activeRow, "recordIndex"),
+-    tabId: tab.id,
+-    tabLabel: tab.label,
+-    totalCount: numericDataset(activeRow, "recordTotal"),
+-  };
+-}
+-
+-function numericDataset(node: HTMLElement | null, key: string): number | undefined {
+-  if (!node) return undefined;
+-  const value = node.dataset[key];
+-  if (!value) return undefined;
+-  const parsed = Number(value);
+-  return Number.isFinite(parsed) ? parsed : undefined;
+-}
+-
+-function recordCollectionForTab(tab: DatabaseTab): DatabaseCollection | undefined {
+-  switch (tab) {
+-    case "actors":
+-    case "classes":
+-    case "skills":
+-    case "items":
+-    case "equipment":
+-    case "enemies":
+-    case "troops":
+-    case "states":
+-      return tab;
+-    case "animations":
+-      return "battleAnimations";
+-    case "commonEvents":
+-    case "switches":
+-    case "system":
+-    case "terms":
+-    case "tilesets":
+-    case "variables":
+-      return undefined;
+-  }
+-  return undefined;
++  return orderedTabs.find((tab) => tab.id === tabId) ?? orderedTabs[0];
+ }
+ 
+ function readStoredActiveTab(): DatabaseTab {
+@@ -171,5 +217,5 @@ function readStoredActiveTab(): DatabaseTab {
+ }
+ 
+ function isDatabaseTab(value: string | null): value is DatabaseTab {
+-  return tabs.some((tab) => tab.id === value);
++  return orderedTabs.some((tab) => tab.id === value);
+ }
+diff --git a/src/editor/panels/databaseModal.ts b/src/editor/panels/databaseModal.ts
+index d978aa3..1ad30ee 100644
+--- a/src/editor/panels/databaseModal.ts
++++ b/src/editor/panels/databaseModal.ts
+@@ -1,6 +1,5 @@
+ import { renderDatabasePanel } from "@/editor/panels/database";
+ import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
+-import { hideRightPanel, showRightPanel } from "@/editor/panels/editor";
+ import { store } from "@/project/store";
+ import { el } from "@/util/dom";
+ import { toast } from "@/util/toast";
+@@ -15,8 +14,6 @@ let modalDragState: ModalDragState | null = null;
+ 
+ export function openDatabaseModal(): void {
+   document.querySelector("[data-testid='database-modal']")?.remove();
+-  // 우측 패널이 같은 testId 컨트롤을 렌더하므로 충돌 방지를 위해 숨긴다.
+-  hideRightPanel();
+ 
+   const body = el("div", { class: "database-modal-body" });
+   const maximizeButton = el("button", {
+@@ -37,7 +34,7 @@ export function openDatabaseModal(): void {
+   });
+   const header = el("header", {
+     class: "database-modal-header",
+-    children: [el("h2", { text: "데이터베이스" }), windowControls],
++    children: [el("h2", { text: "Database" }), windowControls],
+   });
+   const backdrop = el("div", {
+     class: "database-modal-backdrop",
+@@ -56,7 +53,6 @@ export function openDatabaseModal(): void {
+     backdrop.remove();
+     document.removeEventListener("keydown", onKeyDown);
+     stopModalDrag();
+-    showRightPanel();
+   };
+   const onKeyDown = (event: KeyboardEvent): void => {
+     if (event.key === "Escape") close();
+@@ -88,14 +84,14 @@ export function openDatabaseModal(): void {
+       }),
+       el("button", {
+         class: "database-footer-button",
+-        text: "취소",
++        text: "Cancel",
+         attrs: { type: "button" },
+         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.cancel },
+         on: { click: close },
+       }),
+       el("button", {
+         class: "database-footer-button",
+-        text: "적용",
++        text: "Apply",
+         attrs: { type: "button" },
+         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.apply },
+         on: {
+@@ -107,7 +103,7 @@ export function openDatabaseModal(): void {
+       }),
+       el("button", {
+         class: "database-footer-button",
+-        text: "도움말",
++        text: "Help",
+         attrs: { type: "button" },
+         on: { click: () => toast("데이터베이스에서 레코드와 시스템 설정을 조정합니다.", "ok") },
+       }),

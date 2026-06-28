@@ -122,9 +122,7 @@ function addSecondVillageHouseDoor(map: GameMap): void {
     x: SECOND_VILLAGE_HOUSE_DOOR.x,
     y: SECOND_VILLAGE_HOUSE_DOOR.y,
     trigger: { kind: "action" },
-    commands: [
-      { kind: "text", speaker: "Door", body: "A wooden house door. Animation: 27 -> 15 -> 3." },
-    ],
+    commands: [],
     pages: [
       {
         id: "page_closed",
@@ -138,9 +136,7 @@ function addSecondVillageHouseDoor(map: GameMap): void {
         trigger: { kind: "action" },
         priority: "same",
         movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [
-          { kind: "text", speaker: "Door", body: "This door should open as 27 -> 15 -> 3." },
-        ],
+        commands: [],
       },
     ],
   };

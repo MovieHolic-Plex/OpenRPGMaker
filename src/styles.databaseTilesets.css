@@ -1,0 +1,252 @@
+.database-modal-body .rm2k3-tileset-workspace {
+  background: #ece9df;
+  gap: 8px;
+  grid-template-columns: 184px minmax(0, 1fr);
+  min-height: 0;
+  padding: 6px;
+}
+
+.tileset-modal-backdrop {
+  z-index: 950;
+}
+
+.database-modal-body .rm2k3-tileset-list-pane {
+  display: grid;
+  grid-template-rows: 20px minmax(0, 1fr) 26px;
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-tileset-list-pane .tileset-db-panel-title {
+  background: #0a4fa3;
+  color: #ffffff;
+  font: 700 13px/20px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+  text-align: center;
+}
+
+.database-modal-body .rm2k3-tileset-list-pane .tileset-db-listbox {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.database-modal-body .rm2k3-tileset-list-pane .tileset-db-list-row {
+  font: 400 12px/17px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  height: 19px;
+  min-height: 19px;
+  overflow: hidden;
+  padding: 1px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .rm2k3-tileset-list-pane .tileset-db-list-row.active {
+  background: #2f8fff;
+  color: #ffffff;
+}
+
+.database-modal-body .rm2k3-maximum-button {
+  align-self: end;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.database-modal-body .rm2k3-tileset-editor {
+  display: grid;
+  gap: 6px;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-tileset-properties {
+  align-items: end;
+  background: #ece9df;
+  border: 0;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(150px, 0.34fr) minmax(240px, 0.66fr) minmax(96px, auto) minmax(86px, auto);
+  padding: 0;
+}
+
+.database-modal-body .rm2k3-tileset-properties .rm2k3-db-fieldset {
+  padding: 8px 7px 5px;
+}
+
+.database-modal-body .rm2k3-tileset-name-field .db-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-body .rm2k3-tileset-name-field .db-field > span {
+  display: none;
+}
+
+.database-modal-body .rm2k3-tileset-name-field input {
+  width: 100%;
+}
+
+.database-modal-body .rm2k3-tileset-graphic-field {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) 24px;
+}
+
+.database-modal-body .rm2k3-tileset-graphic-value {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  color: #111111;
+  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  min-height: 20px;
+  overflow: hidden;
+  padding: 1px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .rm2k3-browse-button {
+  min-width: 24px;
+  padding: 0;
+  width: 24px;
+}
+
+.database-modal-body .rm2k3-tileset-layer-tabs {
+  align-self: end;
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+.database-modal-body .rm2k3-global-terrain-button {
+  grid-row: 1;
+  min-height: 24px;
+  min-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .rm2k3-global-terrain-button.primary {
+  min-width: 86px;
+}
+
+.database-modal-body .rm2k3-tileset-main {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(460px, 1fr) minmax(188px, 0.34fr);
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-edit-area {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 156px minmax(320px, 1fr);
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-edit-sidebar {
+  gap: 6px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-tools {
+  background: #ece9df;
+  border-color: #808080 #ffffff #ffffff #808080;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr;
+  padding: 10px 7px 7px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-tools::before {
+  color: #111111;
+  content: "편집 도구";
+  font: 400 11px/1 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin-top: -16px;
+  padding: 0 4px;
+  width: max-content;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-tools button,
+.database-modal-body .rm2k3-tileset-terrain-pane .database-footer-button {
+  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  min-height: 24px;
+}
+
+.database-modal-body .rm2k3-tileset-terrain-pane .database-footer-button {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .rm2k3-tileset-terrain-pane .database-footer-button:disabled,
+.database-modal-body .rm2k3-tileset-terrain-pane .database-footer-button.disabled {
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.database-modal-body .rm2k3-browse-button:disabled,
+.database-modal-body .rm2k3-maximum-button:disabled,
+.database-modal-body .rm2k3-tileset-layer-tabs button:disabled {
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-tools button.active,
+.database-modal-body .rm2k3-tileset-edit-mode .database-footer-button.active {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-selected-tile {
+  background: #ece9df;
+  border-color: #808080 #ffffff #ffffff #808080;
+  padding: 7px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-preview-wrap {
+  grid-template-rows: auto minmax(356px, 1fr);
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-preview-header {
+  min-height: 24px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-preview-title {
+  color: #111111;
+  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-preview {
+  background: #b8b4aa;
+  max-height: none;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-cell {
+  align-items: start;
+  appearance: none;
+  background: transparent;
+  border-radius: 0;
+  color: #ffffff;
+  font: 700 11px/1 "Cascadia Mono", Consolas, monospace;
+  justify-content: center;
+  text-shadow: 1px 1px 0 #000000;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-cell.mark-o {
+  background: transparent;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-cell.mark-x {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-db-cell.mark-star {
+  background: rgba(24, 70, 160, 0.22);
+}

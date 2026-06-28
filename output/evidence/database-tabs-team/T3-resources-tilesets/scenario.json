@@ -1,0 +1,26 @@
+{
+  "acceptance": [
+    "battle animation UI tab aliases database.battleAnimations and persists sheet/resource/display edits",
+    "battlerAnimations tab persists to database.battlerAnimations separately from effect animations",
+    "tilesets tab persists name, terrain, and tile AI metadata to Project.tilesets",
+    "all three assigned top tabs have browser screenshots, metrics, export JSON, and visual QA files"
+  ],
+  "name": "database-tabs-team-t3-resources-tilesets",
+  "path": [
+    "open editor with fresh project",
+    "open Database modal",
+    "edit battle animation fields on the animations tab",
+    "edit battler animation fields on the battlerAnimations tab",
+    "edit tileset name, terrain tag, and tile AI metadata on the tilesets tab",
+    "apply changes and close/reopen Database",
+    "capture screenshots and exported project JSON for assigned tabs"
+  ],
+  "route": "/?freshProject=1",
+  "viewports": [
+    {
+      "height": 800,
+      "name": "desktop",
+      "width": 1280
+    }
+  ]
+}

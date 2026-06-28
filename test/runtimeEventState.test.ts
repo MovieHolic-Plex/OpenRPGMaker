@@ -43,6 +43,10 @@ function session(): PlaySessionLike {
     switches: {},
     variables: {},
     timers: {},
+    gold: 0,
+    inventory: {},
+    partyActorIds: [],
+    actorVitals: {},
     currentMapId: "map_runtime",
     x: 0,
     y: 0,
@@ -50,6 +54,7 @@ function session(): PlaySessionLike {
 }
 
 type MockTileImage = {
+  y: number;
   setOrigin(x: number, y: number): void;
   setDepth(depth: number): void;
 };
@@ -58,10 +63,12 @@ type MockSprite = MockTileImage & {
   play(key: string): MockSprite;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
+  destroy(): void;
 };
 
 function mockTileImage(): MockTileImage {
   return {
+    y: 0,
     setOrigin: () => undefined,
     setDepth: () => undefined,
   };
@@ -70,11 +77,15 @@ function mockTileImage(): MockTileImage {
 function mockSprite(): MockSprite {
   let sprite: MockSprite;
   sprite = {
+    y: 0,
     play: () => sprite,
     setOrigin: () => undefined,
     setDepth: () => undefined,
-    setPosition: () => undefined,
+    setPosition: (_x, y) => {
+      sprite.y = y;
+    },
     setFrame: () => undefined,
+    destroy: () => undefined,
   };
   return sprite;
 }

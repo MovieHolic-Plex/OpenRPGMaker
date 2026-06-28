@@ -1,6 +1,9 @@
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { selectWithOptions, selectedOptionValue } from "./dom";
+import { innBody, shopBody } from "./commandBodyCommerce";
+import { battleProcessingBody, changeGoldBody, changeItemBody, changePartyBody } from "./commandBodyDatabase";
+import { moveEventBody } from "./commandBodyRoute";
 import { LAYER_OPTIONS } from "./options";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "./types";
@@ -20,6 +23,18 @@ export function renderAdvancedCommandBody(
       return changeTileBody(context, cmd);
     case "callCommonEvent":
       return callCommonEventBody(context, cmd);
+    case "battleProcessing":
+      return battleProcessingBody(context, cmd);
+    case "shop":
+      return shopBody(context, cmd);
+    case "inn":
+      return innBody(context, cmd);
+    case "changeGold":
+      return changeGoldBody(context, cmd);
+    case "changeItem":
+      return changeItemBody(context, cmd);
+    case "changeParty":
+      return changePartyBody(context, cmd);
     default:
       return undefined;
   }
@@ -67,27 +82,6 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
     });
   });
   return ms;
-}
-
-function moveEventBody(context: CommandEditContext, cmd: Extract<Command, { kind: "moveEvent" }>): HTMLElement {
-  const wrap = el("span", {});
-  const eventIdIn = el("input", {
-    attrs: { type: "text", placeholder: "이벤트 ID(비우면 현재 이벤트)" },
-    value: cmd.eventId,
-  }) as HTMLInputElement;
-  const repeat = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
-  repeat.checked = cmd.route.repeat;
-  const apply = () => {
-    context.actions.replaceCommand(context.path, {
-      kind: "moveEvent",
-      eventId: eventIdIn.value,
-      route: { moves: cmd.route.moves, repeat: repeat.checked },
-    });
-  };
-  eventIdIn.addEventListener("change", apply);
-  repeat.addEventListener("change", apply);
-  wrap.append(eventIdIn, el("label", { text: "반복" }), repeat);
-  return wrap;
 }
 
 function changeTileBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeTile" }>): HTMLElement {

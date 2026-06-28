@@ -1,7 +1,9 @@
 import { el } from "@/util/dom";
+import { numberedName } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS } from "./options";
+import { openSwitchVariablePicker } from "./recordPickerDialog";
 import type { Condition } from "@/project/types";
 
 export function databasePicker(
@@ -13,12 +15,19 @@ export function databasePicker(
   const sel = el("select") as HTMLSelectElement;
   sel.append(el("option", { text: "(선택)", attrs: { value: "" } }));
   const list = kind === "switch" ? project.switches : project.variables;
-  for (const item of list) {
-    sel.append(el("option", { text: item.name, attrs: { value: item.id } }));
+  for (const [index, item] of list.entries()) {
+    sel.append(el("option", { text: numberedName(index, item.name), attrs: { value: item.id } }));
   }
   sel.value = currentId;
   sel.addEventListener("change", () => onChange(sel.value));
-  return sel;
+  const pickerButton = el("button", {
+    class: "btn small",
+    text: "...",
+    attrs: { type: "button", title: kind === "switch" ? "스위치 선택" : "변수 선택" },
+    dataset: { testid: `event-${kind}-picker-open` },
+    on: { click: () => openSwitchVariablePicker({ kind, currentId: sel.value, onSelect: onChange }) },
+  });
+  return el("span", { class: "event-record-select", children: [sel, pickerButton] });
 }
 
 export function conditionForm(cond: Condition, onChange: (condition: Condition) => void): HTMLElement {

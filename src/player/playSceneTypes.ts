@@ -4,6 +4,7 @@ import type { Input, Dir } from "@/player/input";
 import type { RuntimeEventPositions } from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { RuntimeDomOverlay } from "@/player/runtimeDom";
+import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
 import type { GameMap, MapId, MoveCommand, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 
@@ -16,6 +17,7 @@ export const DIRECTION_ROW: Record<Dir, number> = {
 
 export type ParallelProcess = {
   pageId: string;
+  currentEventId?: string;
   interpreter: Interpreter;
   waitMs: number;
   started: boolean;
@@ -26,6 +28,16 @@ export type AutonomousMover = {
   step: number;
   timer: number;
   repeat: boolean;
+  strategy: "sequence" | "random" | "approach";
+  facing: Dir;
+  directionFix: boolean;
+  through: boolean;
+  animationEnabled: boolean;
+  opacity: number;
+  speedRank: number;
+  frequencyRank: number;
+  moveIntervalMs: number;
+  moveDurationMs: number;
   activeMove: AutonomousMoveTween | null;
 };
 
@@ -47,6 +59,7 @@ export type RuntimeTimer = {
 export interface PlaySceneContext extends Phaser.Scene {
   tileLayer: Phaser.GameObjects.Container;
   player: Phaser.GameObjects.Sprite;
+  playerSprite: PlayerSpriteResource;
   input_: Input;
   session: PlaySession;
   map: GameMap;
@@ -58,6 +71,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   parallelProcesses: Map<string, ParallelProcess>;
   autoStartedKeys: Set<string>;
   pageMoveRouteKeys: Set<string>;
+  pageMoveRouteEventIds: Set<string>;
   missingResources: Set<string>;
   tileX: number;
   tileY: number;
@@ -99,11 +113,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;
   clearRuntimeOverlay(testId: string): void;
-  registerAutonomousMover(
-    eventId: string,
-    moves: MoveCommand[],
-    repeat: boolean
-  ): void;
+  registerAutonomousMover(eventId: string, moves: MoveCommand[], repeat: boolean): void;
   registerPageMoveRoutes(): void;
   updateParallelEvents(deltaMs: number): void;
   updateAutonomousNPCs(deltaMs: number): void;

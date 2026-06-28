@@ -94,6 +94,7 @@ export function renderAiQuestionPanel(tileset: TilesetDef, rerender: () => void,
   });
   return el("fieldset", {
     class: "tileset-db-group tileset-ai-question",
+    dataset: { testid: "tileset-ai-question-panel" },
     children: [
       el("legend", { text: "AI 메타" }),
       el("div", {

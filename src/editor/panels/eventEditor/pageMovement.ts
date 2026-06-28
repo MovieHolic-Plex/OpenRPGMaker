@@ -1,0 +1,157 @@
+import { updateEventPage } from "@/editor/eventPages";
+import { el } from "@/util/dom";
+import { selectedOptionValue, selectWithOptions } from "./dom";
+import { openPageMoveRouteDialog } from "./moveRouteDialog";
+import type { EventPage, EventPageMovement, MapId, MoveCommand } from "@/project/types";
+
+const MOVEMENT_TYPE_OPTIONS = [
+  { value: "fixed", label: "정지" },
+  { value: "random", label: "무작위" },
+  { value: "approach", label: "접근" },
+  { value: "custom", label: "사용자 지정" },
+] as const;
+
+export function renderPageMovement(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+  const movement = page.movement;
+  const type = selectWithOptions(MOVEMENT_TYPE_OPTIONS, movement.type, "event-page-movement-type");
+  const frequency = frequencySelect(movement.frequency);
+  const isCustom = movement.type === "custom";
+  const hasAutonomousMovement = movement.type !== "fixed";
+  frequency.disabled = !hasAutonomousMovement;
+  const applyBasics = () => replaceMovement(mapId, eventId, page, {
+    type: selectedOptionValue(type, MOVEMENT_TYPE_OPTIONS, movement.type),
+    speed: movement.speed,
+    frequency: parseInt(frequency.value, 10) || 1,
+    route: movement.route ?? { moves: [], repeat: true },
+  });
+  type.addEventListener("change", applyBasics);
+  frequency.addEventListener("change", applyBasics);
+  const customRoute = el("button", {
+    class: "btn event-page-custom-route",
+    text: "사용자 지정 이동 경로 설정",
+    attrs: isCustom ? { type: "button" } : { type: "button", disabled: "" },
+    dataset: { testid: "event-page-custom-route" },
+    on: {
+      click: () => openPageMoveRouteDialog({
+        movement: {
+          ...movement,
+          type: "custom",
+          frequency: parseInt(frequency.value, 10) || movement.frequency,
+          route: movement.route ?? { moves: [], repeat: true },
+        },
+        onApply: (nextMovement) => replaceMovement(mapId, eventId, page, nextMovement),
+      }),
+    },
+  });
+  const wrap = el("div", { class: "event-page-movement", dataset: { testid: "event-page-movement" } });
+  wrap.append(
+    el("div", {
+      class: "event-page-movement-basics",
+      children: [
+        type,
+        compactLabel("빈도:", frequency, !hasAutonomousMovement),
+        customRoute,
+      ],
+    })
+  );
+  if (isCustom) {
+    wrap.append(el("div", { class: "event-page-movement-route", children: [routeSummary(movement)] }));
+  }
+  return wrap;
+}
+
+function compactLabel(text: string, control: HTMLElement, disabled = false): HTMLElement {
+  return el("label", {
+    class: "event-page-movement-label" + (disabled ? " disabled" : ""),
+    children: [el("span", { text }), control],
+  });
+}
+
+function frequencySelect(value: number): HTMLSelectElement {
+  const select = el("select", { dataset: { testid: "event-page-movement-frequency" } });
+  for (let frequency = 1; frequency <= 8; frequency += 1) {
+    select.append(el("option", { attrs: { value: String(frequency) }, text: String(frequency) }));
+  }
+  select.value = String(value);
+  return select;
+}
+
+function replaceMovement(mapId: MapId, eventId: string, page: EventPage, movement: EventPageMovement): void {
+  updateEventPage(mapId, eventId, page.id, { movement });
+}
+
+function routeSummary(movement: EventPageMovement): HTMLElement {
+  return el("div", {
+    class: "empty-hint",
+    text: (movement.route?.moves ?? []).map(moveLabel).join(" -> ") || "(이동 경로 없음)",
+    dataset: { testid: "event-page-movement-route-summary" },
+  });
+}
+
+function moveLabel(command: MoveCommand): string {
+  switch (command.kind) {
+    case "move":
+      return `${dirLabel(command.dir)} 이동`;
+    case "moveDiagonal":
+      return `${dirLabel(command.horizontal)} ${dirLabel(command.vertical)} 이동`;
+    case "moveRandom":
+      return "무작위 이동";
+    case "moveTowardPlayer":
+      return "플레이어 쪽 이동";
+    case "moveAwayFromPlayer":
+      return "플레이어에게서 멀어짐";
+    case "stepForward":
+      return "한 걸음 전진";
+    case "jump":
+      return "점프";
+    case "land":
+      return "착지";
+    case "turn":
+      return `${dirLabel(command.dir)} 향함`;
+    case "turnRelative":
+      return "회전";
+    case "turnRandom":
+      return "무작위로 향함";
+    case "turnTowardPlayer":
+      return "플레이어 쪽으로 향함";
+    case "turnAwayFromPlayer":
+      return "플레이어 반대로 향함";
+    case "setDirectionFix":
+      return `방향 고정 ${onOff(command.enabled)}`;
+    case "setThrough":
+      return `통과 ${onOff(command.enabled)}`;
+    case "setAnimation":
+      return `애니메이션 ${onOff(command.enabled)}`;
+    case "changeOpacity":
+      return command.delta < 0 ? "불투명도 감소" : "불투명도 증가";
+    case "setSwitch":
+      return `스위치 ${command.switchId} ${onOff(command.value)}`;
+    case "changeSpeed":
+      return command.delta < 0 ? "속도 감소" : "속도 증가";
+    case "changeFrequency":
+      return command.delta < 0 ? "빈도 감소" : "빈도 증가";
+    case "changeGraphic":
+      return `그래픽 ${command.spriteId}`;
+    case "playSe":
+      return `효과음 ${command.resourceId}`;
+    case "wait":
+      return "대기";
+  }
+}
+
+function dirLabel(dir: "left" | "right" | "up" | "down"): string {
+  switch (dir) {
+    case "up":
+      return "위";
+    case "down":
+      return "아래";
+    case "left":
+      return "왼쪽";
+    case "right":
+      return "오른쪽";
+  }
+}
+
+function onOff(value: boolean): string {
+  return value ? "ON" : "OFF";
+}

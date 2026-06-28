@@ -1,0 +1,60 @@
+{
+  "sourceProject": ".omo/recovered/supabase-rpg-zzu-house-template-gallery.json",
+  "sourceMap": {
+    "id": "map_da1c222b-ea4c-475c-9b2b-be3aa779a4de",
+    "name": "small_house_01 도시 8채",
+    "size": "50x50"
+  },
+  "targetMap": {
+    "id": "map_existing_city_transfer_target",
+    "name": "small_house_01 도시 8채 이동 타겟",
+    "size": "50x50"
+  },
+  "transfer": {
+    "sourceEventId": "city-transfer-to-city-target",
+    "requestedTarget": {
+      "mapId": "map_existing_city_transfer_target",
+      "x": 23,
+      "y": 20
+    },
+    "resolvedTarget": {
+      "x": 23,
+      "y": 20
+    }
+  },
+  "before": {
+    "mapId": "map_da1c222b-ea4c-475c-9b2b-be3aa779a4de",
+    "player": {
+      "x": 24,
+      "y": 25
+    },
+    "transferEvent": {
+      "x": 25,
+      "y": 25,
+      "pageId": "city-transfer-to-city-target-page",
+      "priority": "below",
+      "trigger": "playerTouch"
+    }
+  },
+  "after": {
+    "mapId": "map_existing_city_transfer_target",
+    "player": {
+      "x": 23,
+      "y": 20
+    },
+    "returnEvent": {
+      "x": 22,
+      "y": 20,
+      "pageId": "city-target-return-to-city-page",
+      "priority": "below",
+      "trigger": "playerTouch"
+    }
+  },
+  "returned": {
+    "mapId": "map_da1c222b-ea4c-475c-9b2b-be3aa779a4de",
+    "player": {
+      "x": 18,
+      "y": 20
+    }
+  }
+}

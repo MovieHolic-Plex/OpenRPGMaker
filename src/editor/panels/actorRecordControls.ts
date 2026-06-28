@@ -15,17 +15,40 @@ import { el } from "@/util/dom";
 type GraphicPreviewKind = "battleCharset" | "charset" | "faceset";
 
 export function actorPanel(title: string, className: string, children: HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: `actor-panel ${className}`, children: [el("legend", { text: title }), ...children] });
+  return el("fieldset", {
+    class: `actor-panel ${className}`,
+    dataset: { testid: `actor-panel-${className}` },
+    children: [el("legend", { text: title }), ...children],
+  });
 }
 
 export function graphicPreview(label: string, resourceId: string, kind: GraphicPreviewKind): HTMLElement {
   const url = resolveAssetResourceUrl(resourceId === "(없음)" ? undefined : resourceId, { project: store.getCurrent() });
-  const visual = url
+  const visual = url && !isGeneratedActorPreviewResource(resourceId)
     ? previewVisual(label, url, kind)
-    : el("strong", { text: resourceId });
+    : neutralActorResourceSlot(resourceId);
   return el("div", {
     class: "actor-graphic-preview",
     children: [el("span", { text: label }), visual],
+  });
+}
+
+function isGeneratedActorPreviewResource(resourceId: string): boolean {
+  return resourceId.startsWith("generated-");
+}
+
+function neutralActorResourceSlot(resourceId: string): HTMLElement {
+  const isGenerated = isGeneratedActorPreviewResource(resourceId);
+  const label = isGenerated ? "설정..." : resourceId;
+  const labelNode = isGenerated
+    ? el("button", { class: "actor-resource-set-button", attrs: { type: "button", "aria-label": "배우 리소스 선택" }, text: label })
+    : el("strong", { text: label });
+  return el("div", {
+    class: `actor-neutral-resource-slot${isGenerated ? " generated" : ""}`,
+    children: [
+      el("span", { class: "actor-neutral-resource-icon" }),
+      labelNode,
+    ],
   });
 }
 

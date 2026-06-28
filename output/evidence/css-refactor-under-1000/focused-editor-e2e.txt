@@ -1,0 +1,156 @@
+
+Running 13 tests using 1 worker
+
+  x   1 [chromium] › test\e2e\rm2k3-editor-fidelity-shell.spec.ts:3:1 › editor exposes RM2003-style chrome and bitmap chipset palette (30.6s)
+  ok  2 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:55:1 › editor sidebars avoid document overflow and keep key controls clickable (2.8s)
+  ok  3 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:83:1 › chipset palette exposes category-only vertical scrolling (1.4s)
+  ok  4 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:113:1 › chipset palette keeps its scroll position when selecting a visible scrolled tile (1.4s)
+  ok  5 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:141:1 › chipset palette routes vertical wheel scrolling while hovering tiles (642ms)
+  ok  6 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:171:1 › left sidebar keeps an RM2000-style compact palette over map tree (600ms)
+  ok  7 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:239:1 › quick tile picker filters AI-labeled tiles without horizontal scrolling (2.6s)
+  ok  8 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:276:1 › left sidebar tool buttons use visible pixel icons with accessible names (1.4s)
+  x   9 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:301:1 › map tree uses an RM2K3-style tree box with context menu actions (5.9s)
+  ok 10 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:335:1 › map tree context menu is accessible from mouse, keyboard, and action button (4.2s)
+  x  11 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:389:1 › right click picks the tile under the cursor and layer mode is visually distinct (14.4s)
+  ok 12 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:408:1 › middle mouse drag pans the map without changing the selected layer (2.6s)
+  x  13 [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:432:1 › selected tile is previewed on map hover before placement (8.5s)
+
+
+  1) [chromium] › test\e2e\rm2k3-editor-fidelity-shell.spec.ts:3:1 › editor exposes RM2003-style chrome and bitmap chipset palette 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('chipset-tile-360')
+
+
+      46 |   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("#0 호수 외곽");
+      47 |   await page.getByTestId("chipset-band-a2").click();
+    > 48 |   await page.getByTestId("chipset-tile-360").click();
+         |                                              ^
+      49 |   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("#360 흙길 중심");
+      50 |   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("하층 / 통행 가능 / 지형 0");
+      51 |   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("매핑 확정");
+        at C:\Users\hyeon\Downloads\rpg-zzu\test\e2e\rm2k3-editor-fidelity-shell.spec.ts:48:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\rm2k3-editor-fidelity-shel-0c31c--and-bitmap-chipset-palette-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\rm2k3-editor-fidelity-shel-0c31c--and-bitmap-chipset-palette-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\rm2k3-editor-fidelity-shel-0c31c--and-bitmap-chipset-palette-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\rm2k3-editor-fidelity-shel-0c31c--and-bitmap-chipset-palette-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:301:1 › map tree uses an RM2K3-style tree box with context menu actions 
+
+    Error: expect(locator).toBeHidden() failed
+
+    Locator:  getByTestId('map-tree').locator('[data-testid^=\'map-add-child-\']').first()
+    Expected: hidden
+    Received: visible
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeHidden" with timeout 5000ms
+      - waiting for getByTestId('map-tree').locator('[data-testid^=\'map-add-child-\']').first()
+        13 × locator resolved to <button type="button" title="하위 맵 추가" aria-label="하위 맵 추가" class="map-tree-action" data-testid="map-add-child-map_0c4a1454-7887-4c51-a504-7cc23ca5fde4">…</button>
+           - unexpected value "visible"
+
+
+      305 |   const mapTree = page.getByTestId("map-tree");
+      306 |   await expect(mapTree).toHaveClass(/map-tree-panel/);
+    > 307 |   await expect(mapTree.locator("[data-testid^='map-add-child-']").first()).toBeHidden();
+          |                                                                            ^
+      308 |   await expect(mapTree.locator("[data-testid^='map-set-start-']").first()).toBeHidden();
+      309 |   await expect(mapTree.locator("[data-testid^='map-delete-']").first()).toBeHidden();
+      310 |   await expect(mapTree.locator(".rm-tool-icon-folder")).toBeVisible();
+        at C:\Users\hyeon\Downloads\rpg-zzu\test\e2e\rpg-zzu-editor-layout.spec.ts:307:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\rpg-zzu-editor-layout-map--75928-x-with-context-menu-actions-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\rpg-zzu-editor-layout-map--75928-x-with-context-menu-actions-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\rpg-zzu-editor-layout-map--75928-x-with-context-menu-actions-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\rpg-zzu-editor-layout-map--75928-x-with-context-menu-actions-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:389:1 › right click picks the tile under the cursor and layer mode is visually distinct 
+
+    Error: missing matching canvas point
+
+      50 |     }
+      51 |   }
+    > 52 |   throw new Error("missing matching canvas point");
+         |         ^
+      53 | }
+      54 |
+      55 | test("editor sidebars avoid document overflow and keep key controls clickable", async ({ page }) => {
+        at findCanvasPointByCursor (C:\Users\hyeon\Downloads\rpg-zzu\test\e2e\rpg-zzu-editor-layout.spec.ts:52:9)
+        at C:\Users\hyeon\Downloads\rpg-zzu\test\e2e\rpg-zzu-editor-layout.spec.ts:396:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\rpg-zzu-editor-layout-righ-b9dcb-r-mode-is-visually-distinct-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\rpg-zzu-editor-layout-righ-b9dcb-r-mode-is-visually-distinct-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\rpg-zzu-editor-layout-righ-b9dcb-r-mode-is-visually-distinct-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\rpg-zzu-editor-layout-righ-b9dcb-r-mode-is-visually-distinct-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:432:1 › selected tile is previewed on map hover before placement 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 24
+    Received:   0
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      455 |   await page.mouse.move(target.x, target.y, { steps: 6 });
+      456 |   await page.waitForTimeout(50);
+    > 457 |   await expect.poll(async () => byteDistance(before, await page.screenshot({ clip }))).toBeGreaterThan(24);
+          |                                                                                        ^
+      458 | });
+      459 |
+        at C:\Users\hyeon\Downloads\rpg-zzu\test\e2e\rpg-zzu-editor-layout.spec.ts:457:88
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\rpg-zzu-editor-layout-sele-231a0--map-hover-before-placement-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\rpg-zzu-editor-layout-sele-231a0--map-hover-before-placement-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\rpg-zzu-editor-layout-sele-231a0--map-hover-before-placement-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\rpg-zzu-editor-layout-sele-231a0--map-hover-before-placement-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › test\e2e\rm2k3-editor-fidelity-shell.spec.ts:3:1 › editor exposes RM2003-style chrome and bitmap chipset palette 
+    [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:301:1 › map tree uses an RM2K3-style tree box with context menu actions 
+    [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:389:1 › right click picks the tile under the cursor and layer mode is visually distinct 
+    [chromium] › test\e2e\rpg-zzu-editor-layout.spec.ts:432:1 › selected tile is previewed on map hover before placement 
+  9 passed (1.4m)
+exit=1

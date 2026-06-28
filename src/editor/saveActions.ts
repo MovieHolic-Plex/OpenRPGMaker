@@ -4,7 +4,6 @@
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 
-/** 현재 프로젝트를 IndexedDB에 저장하고 토스트로 알린다. Ctrl+S 진입점. */
 export async function saveProjectNow(): Promise<boolean> {
   try {
     await store.flush();

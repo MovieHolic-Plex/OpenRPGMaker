@@ -18,8 +18,11 @@ type DebugState = {
   };
   editor: {
     currentMapId: string | null;
+    paintShape: "pen" | "rect" | "round";
     selection: { mapId: string; x: number; y: number; width: number; height: number } | null;
     clipboard: { layer: "lower" | "upper"; width: number; height: number; tiles: number[] } | null;
+    tool: string;
+    zoom: number;
   };
 };
 
@@ -66,7 +69,7 @@ async function findVisibleMapPoint(page: Page, marginTiles = 2): Promise<CanvasP
 async function clickMapCenter(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const point = await findVisibleMapPoint(page);
-  await canvas.click({ position: point });
+  await canvas.dblclick({ position: point });
 }
 
 async function clickMapOffset(page: Page, dxTiles: number, dyTiles: number): Promise<void> {
@@ -78,6 +81,20 @@ async function clickMapOffset(page: Page, dxTiles: number, dyTiles: number): Pro
       y: point.y + dyTiles * 32,
     },
   });
+}
+
+async function dragMapFromVisiblePoint(page: Page, dxTiles: number, dyTiles: number): Promise<void> {
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const state = await debugState(page);
+  const tileStep = 16 * state.editor.zoom;
+  const point = await findVisibleMapPoint(page, 4);
+  const start = { x: Math.floor(box.x + point.x), y: Math.floor(box.y + point.y) };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x + dxTiles * tileStep, start.y + dyTiles * tileStep, { steps: 6 });
+  await page.mouse.up();
 }
 
 function countTiles(tiles: number[], tile: number): number {
@@ -189,4 +206,53 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
   }).toBe(persistedPassability);
 
   await page.screenshot({ path: testInfo.outputPath("map-selection-copy-paste.png"), fullPage: true });
+});
+
+test("requested map toolbar controls drive select area, zoom, pen, rectangle, round terrain, fill, and undo", async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&requestedToolbar=1");
+
+  await expect(page.getByTestId("toolbar-undo")).toBeVisible();
+  await expect(page.getByTestId("toolbar-select-area")).toBeVisible();
+  await expect(page.getByTestId("toolbar-map-zoom")).toBeVisible();
+  await expect(page.getByTestId("toolbar-pen")).toBeVisible();
+  await expect(page.getByTestId("toolbar-rect-terrain")).toBeVisible();
+  await expect(page.getByTestId("toolbar-round-terrain")).toBeVisible();
+  await expect(page.getByTestId("toolbar-fill")).toBeVisible();
+
+  const beforeZoom = (await debugState(page)).editor.zoom;
+  await page.getByTestId("toolbar-map-zoom").click();
+  await expect.poll(async () => (await debugState(page)).editor.zoom).not.toBe(beforeZoom);
+
+  await page.getByTestId("toolbar-select-area").click();
+  await dragMapFromVisiblePoint(page, 2, 1);
+  await expect.poll(async () => {
+    const selection = (await debugState(page)).editor.selection;
+    return selection ? `${selection.width}x${selection.height}` : "none";
+  }).toBe("3x2");
+
+  await page.getByTestId(`chipset-tile-${PAINT_TILE}`).click();
+  await page.getByTestId("toolbar-rect-terrain").click();
+  const beforeRectCount = countTiles(currentMap(await debugState(page)).lowerTiles, PAINT_TILE);
+  await dragMapFromVisiblePoint(page, 2, 1);
+  await expect.poll(async () => countTiles(currentMap(await debugState(page)).lowerTiles, PAINT_TILE)).toBeGreaterThanOrEqual(beforeRectCount + 6);
+
+  await page.getByTestId("toolbar-undo").click();
+  await expect.poll(async () => countTiles(currentMap(await debugState(page)).lowerTiles, PAINT_TILE)).toBe(beforeRectCount);
+
+  await page.getByTestId(`chipset-tile-${FILL_TILE}`).click();
+  await page.getByTestId("toolbar-round-terrain").click();
+  const beforeRoundCount = countTiles(currentMap(await debugState(page)).lowerTiles, FILL_TILE);
+  await dragMapFromVisiblePoint(page, 4, 2);
+  await expect.poll(async () => countTiles(currentMap(await debugState(page)).lowerTiles, FILL_TILE)).toBeGreaterThan(beforeRoundCount);
+
+  await page.getByTestId("toolbar-pen").click();
+  await expect.poll(async () => (await debugState(page)).editor.paintShape).toBe("pen");
+  await expect.poll(async () => (await debugState(page)).editor.tool).toBe("paint");
+
+  await page.getByTestId("toolbar-fill").click();
+  await expect.poll(async () => (await debugState(page)).editor.tool).toBe("fill");
+
+  await page.screenshot({ path: testInfo.outputPath("requested-toolbar-tools.png"), fullPage: true });
 });

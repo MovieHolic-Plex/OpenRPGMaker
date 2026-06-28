@@ -1,9 +1,11 @@
 import type { AssetSet, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
+import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses } from "@/project/tilesetHarness";
-import { bundledAssetRef, DEFAULT_SPRITE_FRAME_HEIGHT, DEFAULT_SPRITE_FRAME_WIDTH, DEFAULT_SPRITE_HERO, DEFAULT_SPRITE_NPC, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_NAME, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
+import { bundledAssetRef, DEFAULT_SPRITE_FRAME_HEIGHT, DEFAULT_SPRITE_FRAME_WIDTH, DEFAULT_SPRITE_NPC, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_NAME, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
+import { SMALL_HOUSE_01_TERRAIN_TEMPLATE } from "./smallHouse01TerrainTemplate";
 
 function passable(): PassFlag {
   return { up: true, down: true, left: true, right: true };
@@ -55,6 +57,7 @@ function makeBundledTileset(id: string, name: string, textureKey: string): Tiles
       description: "",
     })),
     tileGroups: [],
+    ...(id === DEFAULT_TILESET_ID ? { terrainTemplates: [SMALL_HOUSE_01_TERRAIN_TEMPLATE] } : {}),
   };
   applyCombinedTownHarness(tileset);
   return tileset;
@@ -106,7 +109,6 @@ export function defaultSprites(): Record<string, SpriteDef> {
     frameHeight: DEFAULT_SPRITE_FRAME_HEIGHT,
   });
   return {
-    [DEFAULT_SPRITE_HERO]: makeSprite(DEFAULT_SPRITE_HERO),
     [DEFAULT_SPRITE_NPC]: makeSprite(DEFAULT_SPRITE_NPC),
   };
 }
@@ -147,13 +149,6 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       imageHeight: 256,
       assetId: LEGACY_RM_TILESET_TEXTURE_KEY,
     },
-    {
-      kind: "charset",
-      name: "기본 캐릭터셋",
-      tileWidth: 24,
-      tileHeight: 32,
-      assetId: DEFAULT_SPRITE_HERO,
-    },
     ...BUNDLED_EASYRPG_CHARSET_ASSETS.map((asset) => ({
       kind: "charset" as const,
       name: asset.name,
@@ -164,21 +159,23 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       assetId: asset.textureKey,
     })),
     {
-      kind: "battleCharset",
-      name: "기본 전투 캐릭터셋",
-      tileWidth: 48,
-      tileHeight: 48,
-      assetId: DEFAULT_SPRITE_HERO,
-    },
-    {
       kind: "monster",
       name: "기본 몬스터",
       assetId: DEFAULT_SPRITE_NPC,
     },
   ];
+  for (const asset of CC0_ICON_ASSETS) {
+    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    profiles.push({
+      kind: "picture",
+      name: asset.name,
+      imageWidth: 16,
+      imageHeight: 16,
+      assetId: asset.id,
+    });
+  }
   for (const asset of EASYRPG_RTP_ASSETS) {
     const kind = resourceKindForEasyRpgCategory(asset.category);
-    if (kind === null) continue;
     if (profiles.some((profile) => profile.assetId === asset.id)) continue;
     profiles.push({
       kind,
@@ -206,8 +203,7 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   return changed;
 }
 
-function resourceKindForEasyRpgCategory(category: (typeof EASYRPG_RTP_ASSETS)[number]["category"]): ResourceKind | null {
-  if (category === "music" || category === "sound") return null;
+function resourceKindForEasyRpgCategory(category: (typeof EASYRPG_RTP_ASSETS)[number]["category"]): ResourceKind {
   return category;
 }
 

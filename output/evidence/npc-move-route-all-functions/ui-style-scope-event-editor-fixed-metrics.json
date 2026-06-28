@@ -1,0 +1,210 @@
+{
+  "viewport": {
+    "width": 1900,
+    "height": 1000
+  },
+  "modal": {
+    "left": 0,
+    "top": 0,
+    "width": 1900,
+    "height": 1000,
+    "right": 1900,
+    "bottom": 1000
+  },
+  "window": {
+    "left": 212,
+    "top": 6,
+    "width": 1476,
+    "height": 936,
+    "right": 1688,
+    "bottom": 942
+  },
+  "header": {
+    "left": 214,
+    "top": 8,
+    "width": 1472,
+    "height": 31,
+    "right": 1686,
+    "bottom": 39
+  },
+  "body": {
+    "left": 214,
+    "top": 39,
+    "width": 1472,
+    "height": 861,
+    "right": 1686,
+    "bottom": 900
+  },
+  "settings": {
+    "left": 225,
+    "top": 136,
+    "width": 540,
+    "height": 757,
+    "right": 765,
+    "bottom": 893
+  },
+  "commands": {
+    "left": 773,
+    "top": 136,
+    "width": 902,
+    "height": 757,
+    "right": 1675,
+    "bottom": 893
+  },
+  "footer": {
+    "left": 214,
+    "top": 900,
+    "width": 1472,
+    "height": 40,
+    "right": 1686,
+    "bottom": 940
+  },
+  "buttons": [
+    {
+      "text": "OK",
+      "left": 1192,
+      "top": 907,
+      "width": 112,
+      "height": 27,
+      "right": 1304,
+      "bottom": 934
+    },
+    {
+      "text": "Cancel",
+      "left": 1316,
+      "top": 907,
+      "width": 112,
+      "height": 27,
+      "right": 1428,
+      "bottom": 934
+    },
+    {
+      "text": "Apply",
+      "left": 1440,
+      "top": 907,
+      "width": 112,
+      "height": 27,
+      "right": 1552,
+      "bottom": 934
+    },
+    {
+      "text": "Help",
+      "left": 1564,
+      "top": 907,
+      "width": 112,
+      "height": 27,
+      "right": 1676,
+      "bottom": 934
+    }
+  ],
+  "settingsScrolls": true,
+  "commandsScrolls": false,
+  "bodyOverflowX": "hidden",
+  "bodyOverflowY": "hidden",
+  "windowOverflowX": "hidden",
+  "windowOverflowY": "hidden",
+  "overlapCount": 33,
+  "overlaps": [
+    {
+      "a": "btn active",
+      "b": "event-rm2k3-fieldset",
+      "area": 56
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 260
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-switch-condition-input",
+      "area": 14560
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "btn small",
+      "area": 462
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-switch-condition-value",
+      "area": 15600
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 260
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 14560
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 260
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-variable-condition-input",
+      "area": 14560
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "btn small",
+      "area": 462
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-variable-condition-op",
+      "area": 15600
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-variable-condition-value",
+      "area": 14560
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 260
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-item-condition-input",
+      "area": 14560
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-item-condition-present",
+      "area": 15600
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 260
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-actor-condition-input",
+      "area": 14560
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": "event-page-actor-condition-present",
+      "area": 15600
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 260
+    },
+    {
+      "a": "event-rm2k3-fieldset",
+      "b": null,
+      "area": 14560
+    }
+  ],
+  "title": "이벤트 에디터 - ID:0004"
+}

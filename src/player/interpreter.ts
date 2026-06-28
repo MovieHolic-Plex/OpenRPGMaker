@@ -1,4 +1,4 @@
-import type { Command } from "@/project/types";
+import type { Command, Project } from "@/project/types";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
 import { advanceCompletedFrame, topFrame } from "@/player/interpreter/stack";
@@ -15,12 +15,14 @@ export type { Interpreter, ResumeValue, StepResult } from "@/player/interpreter/
 
 export function createInterpreter(
   commands: Command[],
-  session: PlaySessionLike
+  session: PlaySessionLike,
+  project?: Project
 ): Interpreter {
   const state: InterpreterState = {
     stack: [{ commands, pc: 0 }],
     session,
-    maxStackDepth: 32,
+    maxStackDepth: 1000,
+    project,
   };
   let done = false;
   let pending: PendingStep | "none" = "none";

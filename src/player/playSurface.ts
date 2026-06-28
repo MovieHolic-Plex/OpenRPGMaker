@@ -2,13 +2,12 @@ import { el } from "@/util/dom";
 
 const PLAY_WIDTH = 320;
 const PLAY_HEIGHT = 240;
-const PLAY_MARGIN = 16;
-const MAX_PLAY_SCALE = 6;
 
 export type PlaySurface = {
   readonly viewport: HTMLElement;
   readonly stage: HTMLElement;
   readonly phaserContainer: HTMLElement;
+  readonly sync: () => void;
   readonly cleanup: () => void;
 };
 
@@ -28,23 +27,27 @@ export function createPlaySurface(): PlaySurface {
   stage.append(phaserContainer);
   viewport.append(stage);
 
-  const resizeObserver = new ResizeObserver(() => syncPlayScale(viewport, stage));
+  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport));
   resizeObserver.observe(viewport);
-  syncPlayScale(viewport, stage);
+  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport));
 
   return {
     viewport,
     stage,
     phaserContainer,
-    cleanup: () => resizeObserver.disconnect(),
+    sync: () => syncPlaySurfaceMetrics(viewport),
+    cleanup: () => {
+      cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
+    },
   };
 }
 
-function syncPlayScale(viewport: HTMLElement, stage: HTMLElement): void {
+function syncPlaySurfaceMetrics(viewport: HTMLElement): void {
   const bounds = viewport.getBoundingClientRect();
-  const widthScale = Math.floor(Math.max(PLAY_WIDTH, bounds.width - PLAY_MARGIN) / PLAY_WIDTH);
-  const heightScale = Math.floor(Math.max(PLAY_HEIGHT, bounds.height - PLAY_MARGIN) / PLAY_HEIGHT);
-  const scale = Math.max(1, Math.min(MAX_PLAY_SCALE, widthScale, heightScale));
-  stage.style.setProperty("--play-scale", String(scale));
-  viewport.dataset.scale = String(scale);
+  const scaleX = bounds.width / PLAY_WIDTH;
+  const scaleY = bounds.height / PLAY_HEIGHT;
+  viewport.style.setProperty("--play-scale-x", String(scaleX));
+  viewport.style.setProperty("--play-scale-y", String(scaleY));
+  viewport.dataset.scale = `${scaleX.toFixed(3)}x${scaleY.toFixed(3)}`;
 }

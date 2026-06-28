@@ -1,7 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { setMapTileset } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
+import { resourceReferenceMessage } from "@/editor/databaseReferences";
 import { store } from "@/project/store";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -12,14 +12,36 @@ import {
   validateResourceDimensions,
 } from "@/project/resourceProfiles";
 import type { PassFlag, ResourceKind, TilesetDef, UploadedAsset } from "@/project/types";
+import { renderResourceWorkbench, type ResourceCategory } from "./resourceManagerViews";
+import { resourceKindFromUpload } from "./resourceManagerUtils";
 
 type TilesetEnsureResult = {
   readonly id: TilesetDef["id"];
   readonly created: boolean;
 };
 
+const RESOURCE_CATEGORIES = [
+  { kind: "backdrop", label: "전투 배경" },
+  { kind: "battle", label: "전투 애니메이션" },
+  { kind: "battleCharset", label: "전투 캐릭터셋" },
+  { kind: "battleWeapon", label: "전투 무기" },
+  { kind: "charset", label: "캐릭터셋" },
+  { kind: "chipset", label: "칩셋" },
+  { kind: "faceset", label: "얼굴 그래픽" },
+  { kind: "gameOver", label: "게임 오버" },
+  { kind: "monster", label: "몬스터" },
+  { kind: "music", label: "음악 (BGM)" },
+  { kind: "picture", label: "그림" },
+  { kind: "sound", label: "효과음 (SE)" },
+  { kind: "system", label: "시스템" },
+  { kind: "system2", label: "시스템 2" },
+  { kind: "title", label: "타이틀" },
+] as const satisfies readonly ResourceCategory[];
+
+let selectedResourceKind: ResourceKind = "backdrop";
+
 function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
-  const kind = toResourceKind(asset.kind);
+  const kind = resourceKindFromUpload(asset.kind);
   const spec = getResourceProfileSpec(kind ?? "chipset");
   const tileSize = spec.tileWidth ?? asset.meta.tileSize ?? 16;
   const width = asset.meta.width ?? asset.meta.frameWidth ?? tileSize;
@@ -51,14 +73,16 @@ export function renderResourceManager(container: HTMLElement): void {
   clearChildren(container);
   const project = store.getCurrent();
   const uploaded = Object.values(project.assets.uploaded);
-
-  container.append(el("h3", { text: "리소스 관리자" }));
-
-  const importRow = el("div", { class: "rm-import-row" });
   const kindSel = el("select", { dataset: { testid: "resource-kind-select" } }) as HTMLSelectElement;
+  kindSel.className = "rm-hidden-kind-select";
   for (const spec of RESOURCE_PROFILE_SPECS.filter((profile) => profile.media === "image")) {
     kindSel.append(el("option", { text: spec.label, attrs: { value: spec.kind } }));
   }
+  kindSel.value = selectedResourceKind;
+  kindSel.addEventListener("change", () => {
+    selectedResourceKind = kindSel.value as ResourceKind;
+    renderResourceManager(container);
+  });
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
@@ -68,28 +92,33 @@ export function renderResourceManager(container: HTMLElement): void {
   fileInput.addEventListener("change", () => {
     const file = fileInput.files?.[0];
     if (!file) return;
-    importImageResource(file, kindSel.value as ResourceKind, container);
+    selectedResourceKind = kindSel.value as ResourceKind;
+    importImageResource(file, selectedResourceKind, container);
     fileInput.value = "";
   });
 
-  importRow.append(
-    el("label", { text: "종류" }),
-    kindSel,
-    el("button", {
-      class: "btn primary",
-      text: "+ 가져오기",
-      dataset: { testid: "resource-import-button" },
-      on: { click: () => fileInput.click() },
-    })
-  );
-  container.append(importRow, fileInput);
-
-  renderProfiles(container);
-  renderUploadedAssets(container, uploaded);
+  renderResourceWorkbench(container, {
+    categories: RESOURCE_CATEGORIES,
+    selectedKind: selectedResourceKind,
+    profiles: project.resourceProfiles,
+    uploaded,
+    kindSelect: kindSel,
+    fileInput,
+    actions: {
+      addTileset: addTilesetFromUpload,
+      applyTileset: applyTilesetToCurrentMap,
+      deleteAsset: deleteUploadedAsset,
+    },
+    onSelectKind: (kind) => {
+      selectedResourceKind = kind;
+      renderResourceManager(container);
+    },
+    onImport: () => fileInput.click(),
+  });
   container.append(
     el("div", {
       class: "empty-hint",
-      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG RTP 이미지, hero, npc_villager.`,
+      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG RTP 이미지, npc_villager.`,
     })
   );
 }
@@ -106,7 +135,7 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
   }
 
   if (file.type !== "image/png" && file.type !== "image/jpeg") {
-    toast("PNG/JPEG image MIME only.", "error");
+    toast("PNG/JPEG 이미지 MIME만 사용할 수 있습니다.", "error");
     return;
   }
 
@@ -114,7 +143,7 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
   reader.onload = () => {
     const dataUrl = String(reader.result);
     if (!dataUrl.startsWith("data:image/png;") && !dataUrl.startsWith("data:image/jpeg;")) {
-      toast("PNG/JPEG image data only.", "error");
+      toast("PNG/JPEG 이미지 데이터만 사용할 수 있습니다.", "error");
       return;
     }
     const probe = new Image();
@@ -162,106 +191,40 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
   reader.readAsDataURL(file);
 }
 
-function renderProfiles(container: HTMLElement): void {
-  const project = store.getCurrent();
-  const profiles = project.resourceProfiles;
-  container.append(el("h3", { text: `프로필 (${profiles.length})` }));
-  for (const profile of profiles) {
-    const spec = getResourceProfileSpec(profile.kind);
-    const text = [
-      spec.label,
-      profile.name,
-      profile.imageWidth && profile.imageHeight ? `${profile.imageWidth}x${profile.imageHeight}` : undefined,
-      profile.tileWidth && profile.tileHeight ? `${profile.tileWidth}x${profile.tileHeight}` : undefined,
-      profile.assetId,
-    ]
-      .filter(Boolean)
-      .join(" · ");
-    const row = el("div", {
-      class: "rm-profile-row",
-      dataset: { testid: `resource-profile-${profile.kind}` },
-      text,
-    });
-    const previewUrl = resolveAssetResourceUrl(profile.assetId, { project });
-    if (previewUrl && profile.kind !== "chipset") {
-      const thumb = el("img", { attrs: { alt: `${profile.name} 미리보기`, src: previewUrl } }) as HTMLImageElement;
-      thumb.className = "rm-profile-thumb";
-      row.prepend(thumb);
-    }
-    if (profile.kind === "chipset") {
-      row.append(makePreviewGrid(profile.imageWidth ?? 0, profile.imageHeight ?? 0, profile.tileWidth ?? 16));
-    }
-    container.append(row);
-  }
+function addTilesetFromUpload(asset: UploadedAsset): void {
+  const result = ensureTilesetFromUpload(asset);
+  toast(result.created ? `타일셋 추가됨: ${asset.name}` : `이미 추가된 타일셋: ${asset.name}`, "ok");
 }
 
-function renderUploadedAssets(container: HTMLElement, uploaded: UploadedAsset[]): void {
-  container.append(el("h3", { text: `업로드 (${uploaded.length})` }));
-  if (uploaded.length === 0) {
-    container.append(el("div", { class: "empty-hint", text: "아직 업로드한 리소스가 없습니다." }));
+function applyTilesetToCurrentMap(asset: UploadedAsset): void {
+  const result = ensureTilesetFromUpload(asset);
+  setMapTileset(currentMapId(), result.id);
+  toast(`현재 맵 칩셋 적용: ${asset.name}`, "ok");
+}
+
+function deleteUploadedAsset(asset: UploadedAsset): void {
+  const blocker = uploadedResourceDeleteBlocker(asset.id);
+  if (blocker) {
+    toast(blocker, "error");
+    return;
   }
-  for (const asset of uploaded) {
-    const row = el("div", { class: "rm-asset-row" });
-    const preview = el("img", { attrs: { src: asset.dataUrl, alt: asset.name } }) as HTMLImageElement;
-    preview.className = "rm-preview";
-    row.append(preview);
-    const info = el("div", { class: "rm-asset-info" });
-    const dims = asset.meta.width && asset.meta.height ? `${asset.meta.width}x${asset.meta.height}px` : "?";
-    const kind = toResourceKind(asset.kind);
-    const kindLabel = kind ? getResourceProfileSpec(kind).label : asset.kind;
-    info.append(
-      el("div", { class: "rm-asset-name", text: asset.name }),
-      el("div", { class: "rm-asset-kind", text: `${kindLabel} · ${asset.id.slice(0, 12)}` }),
-      el("div", { class: "rm-asset-dims", text: dims })
-    );
-    row.append(info);
-    if (asset.kind === "chipset" || asset.kind === "tileset") {
-      const actions = el("div", { class: "rm-asset-actions" });
-      actions.append(
-        el("button", {
-          class: "btn",
-          text: "타일셋 추가",
-          dataset: { testid: `resource-add-tileset-${asset.id}` },
-          on: {
-            click: () => {
-              const result = ensureTilesetFromUpload(asset);
-              toast(result.created ? `타일셋 추가됨: ${asset.name}` : `이미 추가된 타일셋: ${asset.name}`, "ok");
-            },
-          },
-        })
-      );
-      actions.append(
-        el("button", {
-          class: "btn primary",
-          text: "현재 맵에 적용",
-          dataset: { testid: `resource-apply-tileset-${asset.id}` },
-          on: {
-            click: () => {
-              const result = ensureTilesetFromUpload(asset);
-              setMapTileset(currentMapId(), result.id);
-              toast(`현재 맵 칩셋 적용: ${asset.name}`, "ok");
-            },
-          },
-        })
-      );
-      row.append(actions);
-    }
-    row.append(
-      el("button", {
-        class: "btn danger",
-        text: "삭제",
-        on: {
-          click: () => {
-            store.update((project) => {
-              delete project.assets.uploaded[asset.id];
-              project.resourceProfiles = project.resourceProfiles.filter((profile) => profile.assetId !== asset.id);
-            });
-          },
-        },
-      })
-    );
-    container.append(row);
+  store.update((project) => {
+    delete project.assets.uploaded[asset.id];
+    project.resourceProfiles = project.resourceProfiles.filter((profile) => profile.assetId !== asset.id);
+  });
+  toast(`업로드 리소스 삭제됨: ${asset.name}`, "ok");
+}
+
+function uploadedResourceDeleteBlocker(assetId: UploadedAsset["id"]): string | null {
+  const project = store.getCurrent();
+  const databaseBlocker = resourceReferenceMessage(assetId);
+  if (databaseBlocker) return databaseBlocker;
+  const tileset = Object.values(project.tilesets).find((candidate) => candidate.image.type === "uploaded" && candidate.image.id === assetId);
+  if (!tileset) return null;
+  if (Object.values(project.maps).some((map) => map.tilesetId === tileset.id)) {
+    return "현재 맵 또는 다른 맵이 이 타일셋 리소스를 사용 중입니다.";
   }
+  return "타일셋 목록이 이 업로드 리소스를 사용 중입니다.";
 }
 
 function ensureTilesetFromUpload(asset: UploadedAsset): TilesetEnsureResult {
@@ -285,19 +248,4 @@ function uploadedTilesetIdForAsset(assetId: UploadedAsset["id"]): TilesetDef["id
 function currentMapId(): string {
   const project = store.getCurrent();
   return editorState.get().currentMapId ?? project.startMapId;
-}
-
-function makePreviewGrid(width: number, height: number, tileSize: number): HTMLElement {
-  const grid = el("div", { class: "rm-tile-grid" });
-  const count = width > 0 && height > 0 ? Math.min(16, (width / tileSize) * (height / tileSize)) : 4;
-  for (let index = 0; index < count; index++) {
-    grid.append(el("div", { class: "rm-tile-cell", text: String(index), dataset: { testid: `resource-tile-${index}` } }));
-  }
-  return grid;
-}
-
-function toResourceKind(kind: UploadedAsset["kind"]): ResourceKind | null {
-  if (kind === "tileset") return "chipset";
-  if (kind === "sprite") return "charset";
-  return kind;
 }

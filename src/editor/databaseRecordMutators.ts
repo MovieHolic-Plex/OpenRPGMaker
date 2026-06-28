@@ -8,17 +8,22 @@ import {
   normalizeTroopRecord,
 } from "@/project/databaseRecordModel";
 import type {
+  ClassRecord,
   DatabaseRecords,
+  EnemyRecord,
+  EquipmentRecord,
   ItemRecord,
   SkillRecord,
+  TroopRecord,
 } from "@/project/types";
-import type { DatabasePatch } from "@/editor/databaseActions";
 
-export function updateClassRecord(database: DatabaseRecords, id: string, patch: DatabasePatch): void {
+export function updateClassRecord(database: DatabaseRecords, id: string, patch: Partial<ClassRecord>): void {
   const index = database.classes.findIndex((entry) => entry.id === id);
   if (index < 0) return;
   const record = { ...database.classes[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+  if ("options" in patch && patch.options !== undefined) record.options = patch.options;
+  if ("animationId" in patch) record.animationId = patch.animationId;
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("battleCommands" in patch && patch.battleCommands !== undefined) record.battleCommands = patch.battleCommands;
   if ("learnedSkills" in patch && patch.learnedSkills !== undefined) record.learnedSkills = patch.learnedSkills;
@@ -30,7 +35,7 @@ export function updateClassRecord(database: DatabaseRecords, id: string, patch: 
   database.classes[index] = normalizeClassRecord(record);
 }
 
-export function updateSkillRecord(database: DatabaseRecords, id: string, patch: DatabasePatch): void {
+export function updateSkillRecord(database: DatabaseRecords, id: string, patch: Partial<SkillRecord>): void {
   const index = database.skills.findIndex((entry) => entry.id === id);
   if (index < 0) return;
   const record = { ...database.skills[index] };
@@ -48,7 +53,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   database.skills[index] = normalizeSkillRecord(record);
 }
 
-export function updateItemRecord(database: DatabaseRecords, id: string, patch: DatabasePatch): void {
+export function updateItemRecord(database: DatabaseRecords, id: string, patch: Partial<ItemRecord>): void {
   const index = database.items.findIndex((entry) => entry.id === id);
   if (index < 0) return;
   const record = { ...database.items[index] };
@@ -64,10 +69,26 @@ export function updateItemRecord(database: DatabaseRecords, id: string, patch: D
   if ("consumable" in patch && patch.consumable !== undefined) record.consumable = patch.consumable;
   if ("animationId" in patch) record.animationId = patch.animationId;
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
+  if ("consumptionLimit" in patch && patch.consumptionLimit !== undefined) record.consumptionLimit = patch.consumptionLimit;
+  if ("usableActorIds" in patch && patch.usableActorIds !== undefined) record.usableActorIds = patch.usableActorIds;
+  if ("usableClassIds" in patch && patch.usableClassIds !== undefined) record.usableClassIds = patch.usableClassIds;
+  if ("healStateIds" in patch && patch.healStateIds !== undefined) record.healStateIds = patch.healStateIds;
+  if ("hpRecovery" in patch && patch.hpRecovery !== undefined) record.hpRecovery = patch.hpRecovery;
+  if ("mpRecovery" in patch && patch.mpRecovery !== undefined) record.mpRecovery = patch.mpRecovery;
+  if ("onlyUsableInMenu" in patch && patch.onlyUsableInMenu !== undefined) record.onlyUsableInMenu = patch.onlyUsableInMenu;
+  if ("onlyEffectiveOnDeadActors" in patch && patch.onlyEffectiveOnDeadActors !== undefined) record.onlyEffectiveOnDeadActors = patch.onlyEffectiveOnDeadActors;
+  if ("learnedSkillId" in patch) record.learnedSkillId = patch.learnedSkillId;
+  if ("activateSkillId" in patch) record.activateSkillId = patch.activateSkillId;
+  if ("usageMessage" in patch && patch.usageMessage !== undefined) record.usageMessage = patch.usageMessage;
+  if ("switchId" in patch) record.switchId = patch.switchId;
+  if ("occasionField" in patch && patch.occasionField !== undefined) record.occasionField = patch.occasionField;
+  if ("occasionBattle" in patch && patch.occasionBattle !== undefined) record.occasionBattle = patch.occasionBattle;
+  if ("seedParameterBonuses" in patch && patch.seedParameterBonuses !== undefined) record.seedParameterBonuses = patch.seedParameterBonuses;
+  if ("equipmentProfile" in patch && patch.equipmentProfile !== undefined) record.equipmentProfile = patch.equipmentProfile;
   database.items[index] = normalizeItemRecord(record);
 }
 
-export function updateEquipmentRecord(database: DatabaseRecords, id: string, patch: DatabasePatch): void {
+export function updateEquipmentRecord(database: DatabaseRecords, id: string, patch: Partial<EquipmentRecord>): void {
   const index = database.equipment.findIndex((entry) => entry.id === id);
   if (index < 0) return;
   const record = { ...database.equipment[index] };
@@ -88,13 +109,22 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   database.equipment[index] = normalizeEquipmentRecord(record);
 }
 
-export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: DatabasePatch): void {
+export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: Partial<EnemyRecord>): void {
   const index = database.enemies.findIndex((entry) => entry.id === id);
   if (index < 0) return;
   const record = { ...database.enemies[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
+  if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;
+  if ("transparent" in patch && patch.transparent !== undefined) record.transparent = patch.transparent;
+  if ("flying" in patch && patch.flying !== undefined) record.flying = patch.flying;
+  if ("criticalHit" in patch && patch.criticalHit !== undefined) {
+    record.criticalHit = patch.criticalHit;
+  }
+  if ("attackOptions" in patch && patch.attackOptions !== undefined) {
+    record.attackOptions = patch.attackOptions;
+  }
   if ("stats" in patch && patch.stats !== undefined) record.stats = patch.stats;
   if ("rewards" in patch && patch.rewards !== undefined) record.rewards = patch.rewards;
   if ("actions" in patch && patch.actions !== undefined) record.actions = patch.actions;
@@ -103,7 +133,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   database.enemies[index] = normalizeEnemyRecord(record);
 }
 
-export function updateTroopRecord(database: DatabaseRecords, id: string, patch: DatabasePatch): void {
+export function updateTroopRecord(database: DatabaseRecords, id: string, patch: Partial<TroopRecord>): void {
   const index = database.troops.findIndex((entry) => entry.id === id);
   if (index < 0) return;
   const record = { ...database.troops[index] };
@@ -121,5 +151,17 @@ function isSkillType(value: unknown): value is SkillRecord["type"] {
 }
 
 function isItemType(value: unknown): value is ItemRecord["type"] {
-  return value === "normal" || value === "key" || value === "switch" || value === "skillBook";
+  return (
+    value === "normalGoods" ||
+    value === "weapon" ||
+    value === "shield" ||
+    value === "body" ||
+    value === "head" ||
+    value === "accessory" ||
+    value === "medicine" ||
+    value === "book" ||
+    value === "seed" ||
+    value === "special" ||
+    value === "switch"
+  );
 }

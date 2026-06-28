@@ -1,0 +1,6 @@
+
+Running 2 tests using 1 worker
+
+[1/2] [chromium] › test\e2e\rm2k3-database-elements-classic.spec.ts:4:1 › RM2003 Elements tab uses the classic single-record editor shape
+[2/2] [chromium] › test\e2e\rm2k3-database-utility-tabs.spec.ts:6:1 › RM2K3 database modal exposes manual parity surface tabs
+  2 passed (1.7m)

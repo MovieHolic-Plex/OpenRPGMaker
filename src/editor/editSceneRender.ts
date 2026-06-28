@@ -1,11 +1,18 @@
 import type Phaser from "phaser";
-import { BUNDLED_EASYRPG_CHARSET_ASSETS, TILE_SIZE } from "@/assets/bundled";
-import { editorState } from "@/editor/editorState";
+import { TILE_SIZE } from "@/assets/bundled";
+import { editorState, type Layer } from "@/editor/editorState";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
-import type { EventPageGraphic, GameMap, GameEvent, MapId } from "@/project/types";
+import type { GameMap, MapId } from "@/project/types";
+export { editorEventMarkerTexture, eventMarkerTileScale } from "@/editor/editSceneEventMarkers";
+
+const DEFAULT_GRID_COLOR = 0xffffff;
+const DEFAULT_GRID_ALPHA = 0.08;
+const EVENT_GRID_COLOR = 0x000000;
+const EVENT_GRID_ALPHA = 0.45;
 
 type CameraFocus = {
   readonly x: number;
@@ -29,6 +36,7 @@ export function renderEditScene(context: EditSceneRenderContext): void {
   const map = store.getCurrent().maps[context.mapId];
   if (!map) return;
   const mapOnlyCapture = isMapOnlyCaptureMode();
+  const state = editorState.get();
 
   context.tileLayer.removeAll(true);
   context.overlayLayer.removeAll(true);
@@ -37,10 +45,10 @@ export function renderEditScene(context: EditSceneRenderContext): void {
   if (context.resetCamera) applyCameraView(context.scene, map);
   renderTiles(context, map, mapOnlyCapture);
   if (mapOnlyCapture) return;
-  if (editorState.get().tool === "collision") renderCollisionOverlay(context, map);
-  renderGrid(context.gridGraphics, map);
+  if (state.tool === "collision") renderCollisionOverlay(context, map);
+  renderGrid(context.gridGraphics, map, state.layer);
   renderStartPosition(context);
-  renderEventMarkers(context, map);
+  renderEventMarkers(context, map, state.layer);
   renderSelection(context);
 }
 
@@ -127,8 +135,10 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
   context.overlayLayer.add(collG);
 }
 
-function renderGrid(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap): void {
-  gridGraphics.lineStyle(1, 0xffffff, 0.08);
+function renderGrid(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, activeLayer: Layer): void {
+  const color = activeLayer === "event" ? EVENT_GRID_COLOR : DEFAULT_GRID_COLOR;
+  const alpha = activeLayer === "event" ? EVENT_GRID_ALPHA : DEFAULT_GRID_ALPHA;
+  gridGraphics.lineStyle(1, color, alpha);
   for (let x = 0; x <= map.width; x++) {
     gridGraphics.moveTo(x * TILE_SIZE, 0);
     gridGraphics.lineTo(x * TILE_SIZE, map.height * TILE_SIZE);
@@ -153,37 +163,6 @@ function renderStartPosition(context: EditSceneRenderContext): void {
   );
   s.setStrokeStyle(2, 0x69db7c);
   context.overlayLayer.add(s);
-}
-
-function renderEventMarkers(context: EditSceneRenderContext, map: GameMap): void {
-  const selectedId = editorState.get().selectedEventId;
-  for (const ev of map.events) {
-    const cx = ev.x * TILE_SIZE + TILE_SIZE / 2;
-    const cy = ev.y * TILE_SIZE + TILE_SIZE;
-    const graphic = eventGraphic(ev);
-    const sprite = graphic?.sprite;
-    const marker = sprite && isBundledCharset(sprite.id)
-      ? context.scene.add.image(cx, cy, sprite.id, graphic.pattern ?? 0).setOrigin(0.5, 1)
-      : context.scene.add.text(cx, cy - TILE_SIZE / 2, "E", {
-        fontSize: `${TILE_SIZE - 6}px`,
-        color: "#ffe066",
-        backgroundColor: "#1f2937",
-      }).setOrigin(0.5);
-    context.overlayLayer.add(marker);
-    if (ev.id === selectedId) {
-      const ring = context.scene.add.rectangle(cx, ev.y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE, TILE_SIZE, 0xf5d04a, 0);
-      ring.setStrokeStyle(2, 0xf5d04a);
-      context.overlayLayer.add(ring);
-    }
-  }
-}
-
-function eventGraphic(event: GameEvent): EventPageGraphic | undefined {
-  return event.pages?.[0]?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
-}
-
-function isBundledCharset(textureKey: string): boolean {
-  return BUNDLED_EASYRPG_CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
 }
 
 function renderSelection(context: EditSceneRenderContext): void {

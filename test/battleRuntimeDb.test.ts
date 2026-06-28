@@ -24,6 +24,28 @@ describe("database-driven battle runtime", () => {
     expect(runtime.snapshot().actors[0]?.maxHp).toBe(514);
   });
 
+  it("normalizes legacy actor and enemy records before creating battlers", () => {
+    const project = battleProject();
+    const actor = project.database.actors[0];
+    const enemy = project.database.enemies[0];
+    if (!actor || !enemy) throw new Error("expected battle fixture records");
+    delete (actor as Partial<typeof actor>).parameterCurves;
+    delete (enemy as Partial<typeof enemy>).stats;
+
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+    });
+
+    expect(runtime.snapshot().actors[0]?.maxHp).toBeGreaterThan(0);
+    expect(runtime.snapshot().enemies[0]?.maxHp).toBeGreaterThan(0);
+    runtime.tick(1_000);
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    expect(runtime.snapshot().result).toBe("victory");
+  });
+
   it("reads enemy HP/attack from enemy stats, not hardcoded constants", () => {
     const runtime = createBattleRuntime({
       project: battleProject(),
@@ -115,5 +137,65 @@ describe("database-driven battle runtime", () => {
     expect(after).toBeGreaterThanOrEqual(before ?? 0);
     // 적은 힐에 피해를 입지 않는다.
     expect(runtime.snapshot().enemies[0]?.hp).toBe(runtime.snapshot().enemies[0]?.maxHp);
+  });
+
+  it("resolves skill battle animation metadata for runtime playback", () => {
+    const project = battleProject();
+    project.database.skills[0] = {
+      ...project.database.skills[0],
+      animationId: "anim_magic",
+    };
+    project.database.battleAnimations = [
+      {
+        id: "anim_magic",
+        name: "마법 광선",
+        resourceId: "easyrpg-battle-blow",
+        scope: "singleTarget",
+        position: "center",
+        sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
+        frames: [
+          {
+            cells: [{ pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }],
+          },
+          {
+            cells: [{ pattern: 1, x: 0, y: -8, zoom: 110, opacity: 220, visible: true }],
+          },
+        ],
+        timings: [
+          {
+            frameIndex: 0,
+            soundResourceId: "easyrpg-sound-magic1",
+            flash: {
+              target: "target",
+              color: { red: 160, green: 160, blue: 255, gray: 0 },
+              durationFrames: 8,
+            },
+          },
+        ],
+      },
+    ];
+
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+    });
+
+    runtime.tick(1_000);
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_fire", targetEnemyId: "enemy-1" });
+
+    expect(runtime.snapshot().lastAnimation).toMatchObject({
+      animationId: "anim_magic",
+      name: "마법 광선",
+      resourceId: "easyrpg-battle-blow",
+      targetId: "enemy-1",
+      scope: "singleTarget",
+      position: "center",
+      soundResourceIds: ["easyrpg-sound-magic1"],
+      flashTargets: ["target"],
+      screenShake: false,
+      frameCount: 2,
+    });
   });
 });

@@ -1,12 +1,12 @@
 # RPG ZZU Design System
 
-> **Status note:** This document describes the editor chrome **as actually shipped** in code (single theme: RM2K3 retro light). It was reconciled with `src/styles.css` and `src/editor/` after the v3 editor-experience pass. When the code changes, update this file — it is the source of truth for designers and contributors, not an aspirational target.
+> **Status note:** This document describes the editor chrome **as actually shipped** in code (single theme: RM2K3 retro light). It was reconciled with `src/styles.css`, the Database tileset stylesheets, and `src/editor/` after the v3 editor-experience pass. When the code changes, update this file — it is the source of truth for designers and contributors, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
 RPG ZZU is a compact game-making workbench: dense, precise, and readable under repeated use. It aims to feel like a practical RPG Maker 2003-era editor brought into a browser — not a landing page, not a toy, and not a clone of proprietary RPG Maker art, logos, icons, or exact chrome. The signature is a pixel-true canvas surrounded by restrained utility panels: the work surface is crisp and game-like, while the editor chrome is quiet, stable, and optimized for scanning.
 
-The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls wrap Phaser-rendered edit/play surfaces. No framework, no CSS-in-JS — all chrome styles live in one `src/styles.css`.
+The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls wrap Phaser-rendered edit/play surfaces. No framework, no CSS-in-JS. General chrome styles live in `src/styles.css`; Database tileset chrome is split into `src/styles.databaseTilesets.css` and `src/styles.databaseTilesetsTerrain.css` so the large tileset editor stays readable and under the module-size ceiling.
 
 ## 2. Color
 
@@ -63,6 +63,102 @@ These map to the primary set and exist so domain-specific CSS reads semantically
 | `--border-strong` | `#5f5b52` | Active canvas/modal borders |
 | `--accent-primary` | `#2e6f9e` | (legacy surface-system accent) |
 
+### Event command list tokens
+
+The event-command contents list intentionally follows the RM2K3 command editor rather than the rest of the form chrome. These tokens sit on top of the RM2K3 retro light theme and are used only for command rows, command insert rows, and command-type coloring.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--rm2k3-command-blue` | `#004bff` | Default command prefix and command text (`@>` lines, labels, and flow commands) |
+| `--rm2k3-command-orange` | `#f07f00` | Party, battle, shop, item, gold, and skill-affecting command summaries |
+| `--rm2k3-command-teal` | `#008c8c` | Picture and audio command summaries |
+| `--rm2k3-command-row-alt` | `#e8f2f7` | Alternating pale row stripe inside the command contents field |
+| `--rm2k3-command-selected` | `#0080ff` | Selected/focused command row fill |
+
+### Database state editor tokens
+
+The Database > States editor uses RM2K3-style colored A-E rate grades and a small status-animation preview swatch. Keep these scoped to the States editor rather than reusing them for general status semantics.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--rm2k3-state-rate-a` | `#df4057` | A-grade state rate marker |
+| `--rm2k3-state-rate-b` | `#d36b20` | B-grade state rate marker |
+| `--rm2k3-state-rate-c` | `#209842` | C-grade state rate marker |
+| `--rm2k3-state-rate-d` | `#4437b6` | D-grade state rate marker |
+| `--rm2k3-state-rate-e` | `#a020a8` | E-grade state rate marker |
+| `--rm2k3-state-preview-a` | `#87c7cd` | State animation preview checker tone |
+| `--rm2k3-state-preview-b` | `#bde5e2` | State animation preview checker highlight |
+| `--rm2k3-state-preview-c` | `#9bd5d4` | State animation preview checker base |
+
+### Database battle animation editor tokens
+
+The Database > Battle Animations editor follows the RM2003 animation editor composition: a black target stage, green center guides, red cell selection, and teal pattern strip. Keep these scoped to the animation editor.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--rm2k3-animation-stage` | `#000000` | Battle animation target preview well |
+| `--rm2k3-animation-strip-bg` | `#87b5b5` | Bottom animation-pattern strip background |
+| `--rm2k3-animation-grid` | `#009020` | Preview crosshair guide lines |
+| `--rm2k3-animation-selection` | `#ff1010` | Selected animation cell outline |
+
+### Runtime shop tokens
+
+The Shop Processing play overlay follows the blue RM-era shop windows rather than the editor's light chrome. These tokens are scoped to `.runtime-shop-*` UI only.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--rm2k3-shop-blue-hi` | `#1d57c9` | Top edge of runtime shop panels |
+| `--rm2k3-shop-blue` | `#1944ac` | Primary runtime shop panel fill |
+| `--rm2k3-shop-blue-deep` | `#173282` | Lower/deeper runtime shop panel fill |
+| `--rm2k3-shop-highlight` | `#2b65db` | Selected runtime shop row/menu option |
+| `--rm2k3-shop-highlight-deep` | `#12318a` | Selected row/menu depth |
+| `--rm2k3-shop-highlight-ring` | `rgba(255, 255, 255, 0.45)` | Selected row inner highlight |
+| `--rm2k3-shop-panel-shade` | `rgba(0, 0, 0, 0.08)` | Subtle lower panel shading |
+| `--rm2k3-shop-cyan` | `#8ee8ff` | Bright shop panel bevel |
+| `--rm2k3-shop-shadow` | `#061034` | Deep shop panel bevel and text shadow |
+| `--rm2k3-shop-text` | `#e8f4ff` | Runtime shop text |
+| `--rm2k3-shop-muted` | `#a9b9dd` | Runtime shop secondary text |
+| `--rm2k3-shop-font-size` | `8px` | Runtime shop bitmap-scale type |
+| `--rm2k3-shop-gap` | `3px` | Panel separation inside the 320x240 game stage |
+| `--rm2k3-shop-top-height` | `28px` | Top message/status band height |
+| `--rm2k3-shop-menu-height` | `74px` | Bottom menu/prompt band height |
+| `--rm2k3-shop-side-width` | `132px` | Right-side party/stat/gold panel width |
+| `--rm2k3-shop-row-height` | `13px` | Menu and item row height |
+| `--rm2k3-shop-party-height` | `48px` | Party preview panel height |
+| `--rm2k3-shop-owned-height` | `48px` | Owned/equipped panel height |
+| `--rm2k3-shop-sprite-*` | component colors | CSS pixel party sprites in shop preview |
+
+### Runtime title-screen tokens
+
+The game title screen follows the blue RM-era opening screen style and is scoped to `.rm-title-screen` / `.rm-title-menu` UI only.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--rm2k3-title-blue-hi` | `#153f9f` | Title background top tone |
+| `--rm2k3-title-blue` | `#092c78` | Primary title background |
+| `--rm2k3-title-blue-deep` | `#061a4a` | Title background lower tone |
+| `--rm2k3-title-window` | `#1746b7` | Menu window fill |
+| `--rm2k3-title-highlight` | `#2d63d8` | Selected menu row/window highlight |
+| `--rm2k3-title-text` | `#f4f8ff` | Title/menu text |
+| `--rm2k3-title-shadow` | `#061034` | Title/menu text shadow and bevel depth |
+
+### Runtime battle tokens
+
+The side-view battle overlay follows the blue RM-era game window style rather than the editor's light chrome. These tokens are scoped to `.battle-*` UI only.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--rm2k3-battle-blue-hi` | `#2659c8` | Top edge of runtime battle windows |
+| `--rm2k3-battle-blue` | `#123996` | Primary runtime battle window fill |
+| `--rm2k3-battle-blue-deep` | `#0a1f5e` | Lower/deeper runtime battle window fill |
+| `--rm2k3-battle-window-light` | `#8fb7ff` | Bright bevel edge for command/status windows |
+| `--rm2k3-battle-window-shadow` | `#041139` | Dark bevel edge and text shadow |
+| `--rm2k3-battle-text` | `#f5f8ff` | Runtime battle text |
+| `--rm2k3-battle-muted` | `#b9c7ef` | Disabled/secondary battle text |
+| `--rm2k3-battle-backdrop-top` | `#7990b6` | Fallback battleback sky tone |
+| `--rm2k3-battle-backdrop-mid` | `#9b9a82` | Fallback battleback horizon tone |
+| `--rm2k3-battle-backdrop-ground` | `#5d684b` | Fallback battleback ground tone |
+
 > If you add chrome color, **define a token in `:root` and use it** — do not reference an undefined `var(--x)`. Undefined-variable usages silently produce broken color and were a recurring source of visual bugs.
 
 ### Rules
@@ -82,7 +178,7 @@ There are **no typography utility classes**; sizes are set per-component with li
 | Panel title | `11px` | 700 | Section headers (`.panel-section h3`) |
 | Control | `13px` | 600 | Buttons (`.btn`), tabs |
 | Body | `13px` | 400 | Form labels, cells |
-| Body/sm | `12px` | 400 | Status, metadata, right-tabs |
+| Body/sm | `12px` | 400 | Status, metadata, modal tabs |
 | Pixel label | `11px` | 600 | Canvas badges, tile index |
 | Mono | `12px` | 500 | IDs, coordinates, summaries (`var(--mono)`/`--font-mono`) |
 
@@ -115,10 +211,10 @@ All spacing derives from 4px.
 
 - Root layout: `topbar / body / statusbar` (column).
 - **Topbar**: a stacked RM2K3 chrome — an `rm2k3-menu-bar` (22px) plus one or two `rm2k3-toolbar-row`s. It is **multi-row**, not a single 40px bar.
-- **Body**: left sidebar, center Phaser surface, right inspector; left sidebar is resizable, right inspector is flex-driven.
+- **Body**: left sidebar and center Phaser surface; left sidebar is resizable and the canvas owns the remaining width.
 - **Left sidebar**: `268px` default and min, `380px` max (`editor.ts` resizer clamps). Holds tool palette, tile/chipset palette, layer selector, and map tree. Collapsible via the toolbar.
 - **Center work area**: fills remaining width, centers the Phaser canvas in a recessed well. Canvas controls must not change canvas dimensions.
-- **Right inspector**: `min-width: 240px`, `max-width: 420px`; width is flex-driven (no fixed default). Holds the **two** right-dock tabs: Resources and Database.
+- **Database and Resources**: opened from the topbar as modal work windows, not docked side panels.
 - **Statusbar**: `22px` (`.editor-statusbar`). Shows layer, tile coordinate, current map, zoom, autosave/validation state.
 
 ### Compact / mobile
@@ -147,12 +243,15 @@ All spacing derives from 4px.
 - **Overlays**: collision, event, start position, hover preview — tokenized, visually distinct.
 - **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). No fractional scaling.
 
-### Right inspector
+### Database & resource modals
 
-- **Two dock tabs**: Resources (소재) and Database (DB), rendered as `right-tab-resources` / `right-tab-database`. Map properties and Event editing are **not** right-dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
-- Database and Resources are also available as full modals (`databaseModal`, `resourceModal`); the right dock is suppressed while a modal is open.
+- **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
+- Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
 - **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`).
 - **Event editor**: tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
+- **Event editor top/page controls**: dense RM2K3 modal chrome uses `--rm2k3-event-page-*` tokens for Name width, page button height, tab width, icon size, and condition-row control widths. Keep these controls compact enough for scanning; avoid display-scale button typography inside the modal. The event editor scopes its local `--rm2k3-chrome`/`--rm2k3-face` overrides to a brighter classic-gray range (`#eeeeee`/`#f4f4f4`) so fieldsets and page tabs match the RM2003 event editor reference without changing every other modal.
+- **Event editor sizing**: the event editor is a desktop-default work window, not a responsive mobile form. Keep the modal at the `--rm2k3-event-editor-desktop-*` dimensions and let the backdrop scroll on small viewports; do not collapse the Name/page strip, settings column, or command contents into a one-column responsive layout.
+- **Event move-route dialog**: custom autonomous movement opens a separate `Move Route` subdialog, styled as a desktop RM-era work window. Keep its command list, options, frequency radios, and three-column command grid fixed for desktop scanning; unsupported movement commands should render disabled rather than pretending to save runtime behavior.
 
 ### Database panels
 
@@ -160,17 +259,20 @@ All spacing derives from 4px.
 - Switches and variables display stable IDs plus editable names; names are labels, IDs are references.
 - Tileset editing shows passability/priority/terrain and a source-image preview without altering original pixels.
 - State and Animation tabs show reference panels / pixel previews rather than bare stubs.
+- Troops (`적 그룹`) uses a classic RM2003-style two-column composition: fixed left record rail, top name/configuration strip, large battle placement preview, member/terrain controls under the preview, and battle event pages in the right editor column. Its dedicated surface lives in `src/editor/panels/databaseTroopRecordView.ts` with `src/styles.databaseTroops.css`.
 
 ### Resource panels
 
 - Resource previews use a recessed neutral background when alpha matters.
 - Imported tilesets/sprites show dimensions, frame/tile size, source type, and validation warnings.
 - Deletion is disabled for bundled defaults and confirm-gated for uploaded assets referenced by maps/events.
+- The Resource Manager modal follows the classic RM2K3 resource window composition: left category list, center resource list, right command/format/preview rail, and bottom close/help controls.
+- Resource Manager clone metrics live as local `--rm-resource-*` CSS variables on `.resource-modal-window`; use those variables for pane widths, row height, command button height, preview height, and footer button width rather than scattering one-off dimensions.
 
 ### Play presentation
 
 - Play viewport is `320×240` logical pixels (`PLAY_WIDTH`/`PLAY_HEIGHT`), scaled only by integer factors with nearest-neighbor.
-- Centered in a neutral well; letterbox with the recessed surface, never stretched.
+- The editor's map canvas may remain pixel-grid constrained, but the test-play window runtime surface fills the available modal body with nearest-neighbor scaling instead of leaving letterbox gutters.
 - Dialogue/choice overlays align to the 320×240 grid (DOM for accessibility, visually pixel-aligned).
 - Character sprites use a `24×32` logical frame convention for charsets (`CHARSET_FRAME_*`); generic sprites may be `32×32`.
 
@@ -212,7 +314,7 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 - Canvas: `edit-canvas`, `editor-canvas-scroll-shell`, `play-canvas`
 - Tiles: `tile-palette`, `quick-tile-grid`, `tool-*`, `layer-*`, `toolbar-zoom-*`
 - Map tree: `map-tree`, `map-tree-node-${mapId}`
-- Right dock: `right-tab-resources`, `right-tab-database`
+- Topbar modals: `toolbar-resource-manager`, `toolbar-database`, `resource-modal`, `database-modal`
 - Database: `db-tab-*` (per collection), `db-detail-form`, `db-field-*`, `db-picker-*`
 - Battle: `battle-scene`, `battle-party`, `battle-actor-${recordId}`, `actor-command-*` (attack/skill/item/defend/escape), `battle-enemy`
 

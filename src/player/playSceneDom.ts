@@ -16,6 +16,7 @@ function isDialogueUi(value: unknown): value is DialogueUI {
   return (
     typeof Reflect.get(value, "showText") === "function" &&
     typeof Reflect.get(value, "showChoices") === "function" &&
+    typeof Reflect.get(value, "showNumberInput") === "function" &&
     typeof Reflect.get(value, "hide") === "function"
   );
 }

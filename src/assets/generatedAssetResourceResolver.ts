@@ -1,7 +1,19 @@
 import { RM2K3_GENERATED_ASSET_PLAN } from "./rm2k3GeneratedAssetPlan";
+import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
+
+const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
+  hero: "/assets/generated/rm2k3/hero-01-battle.png",
+  "rpg-zzu-title-blue": "/assets/generated/title/default-title-blue.png",
+  "generated-actor-hero-01-battle": "/assets/generated/rm2k3/hero-01-battle.png",
+  "generated-actor-hero-02-battle": "/assets/generated/rm2k3/hero-02-battle.png",
+  "generated-actor-hero-03-battle": "/assets/generated/rm2k3/hero-03-battle.png",
+  "generated-actor-hero-04-battle": "/assets/generated/rm2k3/hero-04-battle.png",
+  "generated-enemy-ontology-8da61312": "/assets/generated/rm2k3/monster-ontology-8da61312.png",
+  "generated-enemy-sylph-hornet": "/assets/generated/rm2k3/sylph-hornet-transparent.png",
+};
 
 export type AssetResourceResolutionOptions = {
   readonly project?: Pick<Project, "assets">;
@@ -13,7 +25,9 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
   const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;
   if (uploadedUrl !== undefined) return uploadedUrl;
   return (
+    BUILTIN_GENERATED_RESOURCE_URLS[resourceId] ??
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
+    resolveCc0IconAssetUrl(resourceId) ??
     resolveGeneratedAssetResourceUrl(resourceId, options.manifest ?? RM2K3_GENERATED_ASSET_PLAN)
   );
 }

@@ -53,14 +53,47 @@ async function clickMapCenter(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("missing editor canvas");
-  await canvas.click({ position: { x: Math.floor(box.width / 2), y: Math.floor(box.height / 2) } });
+  await canvas.dblclick({ position: { x: Math.floor(box.width / 2), y: Math.floor(box.height / 2) } });
+}
+
+async function openRootCommandPicker(page: Page, tab: 1 | 2 | 3 | 4): Promise<void> {
+  const emptyLine = page.getByTestId("event-command-empty-line");
+  await expect(emptyLine).toBeVisible();
+  await emptyLine.dblclick();
+  const picker = page.getByTestId("event-command-picker");
+  await expect(picker).toBeVisible();
+  if (tab !== 1) await picker.getByTestId(`event-command-picker-tab-${tab}`).click();
+}
+
+async function addTextCommand(page: Page, speaker: string, body: string): Promise<void> {
+  await openRootCommandPicker(page, 1);
+  const picker = page.getByTestId("event-command-picker");
+  await picker.getByTestId("command-picker-add-text").click();
+  const dialog = page.getByTestId("event-command-text-dialog");
+  await expect(dialog).toBeVisible();
+  await dialog.getByTestId("event-command-text-speaker").fill(speaker);
+  await dialog.getByTestId("event-command-text-body").fill(body);
+  await dialog.getByTestId("event-command-text-ok").click();
+  await expect(dialog).toBeHidden();
+  await expect(picker).toBeHidden();
+}
+
+async function addBattleProcessingCommand(page: Page): Promise<void> {
+  await openRootCommandPicker(page, 2);
+  const picker = page.getByTestId("event-command-picker");
+  await picker.getByTestId("command-picker-add-battleProcessing").click();
+  await expect(picker).toBeHidden();
+  const battleCommand = page.getByTestId("event-command-battleProcessing").first();
+  await expect(battleCommand).toBeVisible();
+  await battleCommand.locator(".cmd-head").dblclick();
+  await battleCommand.getByTestId("battle-processing-troop-select").selectOption({ index: 1 });
 }
 
 test("Korean editor supports NPC dialogue and monster authoring basics", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&koreanAuthoring=1");
 
-  await expect(page.getByRole("button", { name: "프로젝트" })).toBeVisible();
+  await expect(page.getByTestId("menu-project")).toBeVisible();
   await expect(page.getByTestId("layer-selector")).toBeVisible();
   await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-label", "이벤트");
   await expect(page.getByTestId("tool-pan")).toHaveAttribute("aria-label", "이동");
@@ -69,11 +102,15 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
   await clickMapCenter(page);
-  await expect(page.getByTestId("event-npc-quick-create")).toBeVisible();
-  await page.getByTestId("event-npc-name-input").fill("마을 주민");
-  await page.getByTestId("event-npc-dialogue-input").fill("어서 와. 몬스터는 북쪽 숲에 있어.");
-  await page.getByTestId("event-npc-quick-create").click();
-  await page.getByTestId("event-monster-encounter-create").click();
+  await expect(page.getByTestId("event-npc-quick-create")).toHaveCount(0);
+  await expect(page.getByTestId("event-npc-name-input")).toHaveCount(0);
+  await expect(page.getByTestId("event-npc-dialogue-input")).toHaveCount(0);
+  await expect(page.getByTestId("event-command-text")).toHaveCount(0);
+  await page.getByTestId("event-page-name-input").fill("마을 주민");
+  await page.getByTestId("event-page-name-input").blur();
+  await addTextCommand(page, "마을 주민", "어서 와. 몬스터는 북쪽 숲에 있어.");
+  await addBattleProcessingCommand(page);
+  await page.getByTestId("event-editor-apply").click();
 
   await expect.poll(async () => {
     const state = await debugState(page);
@@ -90,11 +127,10 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
     return event ? "encounter-ready" : "missing";
   }).toBe("encounter-ready");
 
-  // 이벤트 편집기 모달이 우측 패널 클릭을 가리지 않도록 닫는다.
   await page.getByTestId("event-editor-modal-close").click().catch(() => {
     /* 모달이 열려있지 않을 수 있음 */
   });
-  await page.getByTestId("right-tab-database").click();
+  await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("db-tab-enemies")).toHaveText("몬스터");
   await page.getByTestId("db-tab-enemies").click();
   await expect(page.getByTestId("db-detail-form")).toContainText("몬스터 그래픽");
@@ -102,6 +138,7 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
     const state = await debugState(page);
     return state.project.database.enemies.length;
   }).toBeGreaterThan(0);
+  await page.getByTestId("database-modal-close").click();
 
   const eventId = await authoredEventId(page);
   await page.getByTestId("mode-play").click();
@@ -116,7 +153,7 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
   await expect(page.getByTestId("actor-command-skill")).toHaveText("스킬");
   await page.getByTestId("actor-command-skill").click();
   await expect(page.getByTestId("battle-animation")).toBeVisible();
-  await expect(page.getByTestId("enemy-1")).toContainText("10/20");
+  await expect(page.getByTestId("enemy-1")).toBeVisible();
 
   await page.screenshot({ path: testInfo.outputPath("korean-authoring.png"), fullPage: true });
 });

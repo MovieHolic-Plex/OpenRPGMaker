@@ -1,4 +1,10 @@
 import { editorState } from "@/editor/editorState";
+import {
+  beginExistingEventDraft,
+  createEventDraft,
+  discardEventDraft,
+  saveEventDraft,
+} from "@/editor/eventDraftActions";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -13,33 +19,41 @@ type OpenEventEditorRequest = {
 
 export function openEventEditorModal(mapId: MapId, eventId: string): void {
   closeExistingEventEditorModal();
-  const request: OpenEventEditorRequest = { mapId, eventId };
+  if (!beginExistingEventDraft(mapId, eventId)) return;
+  openDraftEventEditorModal({ mapId, eventId });
+}
+
+export function openNewEventEditorModal(mapId: MapId, x: number, y: number): string {
+  closeExistingEventEditorModal();
+  const eventId = createEventDraft(mapId, x, y);
+  if (!eventId) return "";
+  openDraftEventEditorModal({ mapId, eventId });
+  return eventId;
+}
+
+function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const backdrop = el("div", {
     class: "event-editor-modal-backdrop",
-    dataset: { testid: EVENT_EDITOR_MODAL_TEST_ID, mapId, eventId },
+    dataset: { testid: EVENT_EDITOR_MODAL_TEST_ID, mapId: request.mapId, eventId: request.eventId },
   });
   const windowEl = el("section", {
     class: "event-editor-modal-window",
-    attrs: { role: "dialog", "aria-modal": "true", "aria-label": "Event Editor" },
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": "이벤트 에디터" },
   });
-  // body를 두 영역으로 분리:
-  //  - stableBody: 카탈로그(명령 추가 버튼) 등 클릭 연속성이 중요한 정적 UI.
-  //    store 변경 시에도 재생성하지 않아 빠른 연타 클릭이 detach되지 않는다.
-  //  - dynamicBody: 페이지 탭/명령 리스트 등 상태 반영이 필요한 영역.
   const body = el("div", { class: "event-editor-modal-body" });
   const stableBody = el("div", { class: "event-editor-modal-stable" });
   const dynamicBody = el("div", { class: "event-editor-modal-dynamic" });
-  body.append(stableBody, dynamicBody);
+  body.append(dynamicBody, stableBody);
   const close = createCloseHandler(backdrop);
-  windowEl.append(renderModalHeader(request, close), body);
+  const header = renderModalHeader(request.mapId, request.eventId, close);
+  attachWindowDrag(header, windowEl);
+  windowEl.append(header, body, renderModalFooter(request, close));
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
   });
   let stableRendered = false;
   const refresh = () => {
-    // 정적 영역은 최초 1회만 렌더링. store 변경에도 카탈로그 버튼을 보존하여
-    // 연속 클릭(명령 연타) 중 버튼이 detach되는 것을 막는다.
     if (!stableRendered) {
       clearChildren(stableBody);
       renderEventEditorStable(stableBody, request.mapId, request.eventId);
@@ -53,7 +67,9 @@ export function openEventEditorModal(mapId: MapId, eventId: string): void {
   backdrop.addEventListener("keydown", (event) => {
     if (event.key === "Escape") close();
   });
-  backdrop.addEventListener("rpgzzu:event-editor-close", () => {
+  backdrop.addEventListener("rpgzzu:event-editor-close", (event) => {
+    const saved = event instanceof CustomEvent && event.detail?.saved === true;
+    if (!saved) discardEventDraft(request.mapId, request.eventId);
     unsubscribeStore();
     unsubscribeEditor();
   });
@@ -75,37 +91,131 @@ function closeExistingEventEditorModal(): void {
   }
 }
 
-function renderModalHeader(request: OpenEventEditorRequest, close: () => void): HTMLElement {
-  const project = store.getCurrent();
-  const map = project.maps[request.mapId];
-  const eventName = map?.events.find((event) => event.id === request.eventId)?.id ?? request.eventId;
-  const header = el("div", { class: "event-editor-modal-header" });
-  header.append(
-    el("div", {
-      children: [
-        el("h2", { text: "Event Editor" }),
-        el("p", { text: `${map?.name ?? request.mapId} / ${eventName}` }),
-      ],
-    }),
-    el("button", {
-      class: "btn event-editor-modal-close",
-      text: "x",
-      attrs: { type: "button", title: "Close" },
-      dataset: { testid: "event-editor-modal-close" },
-      on: { click: close },
-    })
-  );
-  return header;
+function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HTMLElement {
+  return el("div", {
+    class: "event-editor-modal-header",
+    dataset: { testid: "event-editor-titlebar" },
+    children: [
+      el("div", { children: [el("h2", { text: `이벤트 에디터 - ID:${displayEventNumber(mapId, eventId)}` })] }),
+      el("button", {
+        class: "btn event-editor-modal-close",
+        text: "X",
+        attrs: { type: "button", title: "닫기" },
+        dataset: { testid: "event-editor-modal-close" },
+        on: { click: close },
+      }),
+    ],
+  });
 }
 
-function createCloseHandler(backdrop: HTMLElement): () => void {
-  return () => {
-    backdrop.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close"));
+type DragState = {
+  readonly pointerId: number;
+  readonly startPointerX: number;
+  readonly startPointerY: number;
+  readonly startX: number;
+  readonly startY: number;
+  readonly startTranslateX: number;
+  readonly startTranslateY: number;
+};
+
+function attachWindowDrag(handle: HTMLElement, windowEl: HTMLElement): void {
+  let translateX = 0;
+  let translateY = 0;
+  let drag: DragState | null = null;
+
+  handle.addEventListener("pointerdown", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a")) return;
+    const rect = windowEl.getBoundingClientRect();
+    drag = {
+      pointerId: event.pointerId,
+      startPointerX: event.clientX,
+      startPointerY: event.clientY,
+      startX: rect.left,
+      startY: rect.top,
+      startTranslateX: translateX,
+      startTranslateY: translateY,
+    };
+    windowEl.classList.add("dragging");
+    handle.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+
+  handle.addEventListener("pointermove", (event) => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    const rect = windowEl.getBoundingClientRect();
+    const nextX = clamp(drag.startX + event.clientX - drag.startPointerX, 0, window.innerWidth - Math.min(rect.width, 160));
+    const nextY = clamp(drag.startY + event.clientY - drag.startPointerY, 0, window.innerHeight - handle.offsetHeight);
+    translateX = drag.startTranslateX + nextX - drag.startX;
+    translateY = drag.startTranslateY + nextY - drag.startY;
+    windowEl.style.transform = `translate(${Math.round(translateX)}px, ${Math.round(translateY)}px)`;
+  });
+
+  const stopDrag = (event: PointerEvent): void => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    drag = null;
+    windowEl.classList.remove("dragging");
+    if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
+  };
+
+  handle.addEventListener("pointerup", stopDrag);
+  handle.addEventListener("pointercancel", stopDrag);
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
+function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
+  return el("div", {
+    class: "event-editor-modal-footer",
+    children: [
+      footerButton("OK", "event-editor-ok", () => {
+        saveEventDraft(request.mapId, request.eventId);
+        close(true);
+      }),
+      footerButton("Cancel", "event-editor-cancel", close),
+      footerButton("Apply", "event-editor-apply", () => {
+        saveEventDraft(request.mapId, request.eventId);
+        beginExistingEventDraft(request.mapId, request.eventId);
+      }),
+      footerButton("Help", "event-editor-help"),
+    ],
+  });
+}
+
+function footerButton(text: string, testId: string, onClick?: () => void): HTMLButtonElement {
+  const props = {
+    class: "btn event-editor-footer-button",
+    text,
+    attrs: { type: "button" },
+    dataset: { testid: testId },
+    on: onClick ? { click: onClick } : undefined,
+  };
+  return el("button", props) as HTMLButtonElement;
+}
+
+function createCloseHandler(backdrop: HTMLElement): (saved?: boolean) => void {
+  return (saved = false) => {
+    backdrop.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close", { detail: { saved } }));
     backdrop.remove();
   };
 }
 
 function focusFirstDialogControl(root: HTMLElement): void {
-  const first = root.querySelector("button, input, select, textarea");
-  if (first instanceof HTMLElement) first.focus();
+  const first = root.querySelector<HTMLElement>(
+    ".event-editor-modal-body input:not(:disabled), " +
+      ".event-editor-modal-body select:not(:disabled), " +
+      ".event-editor-modal-body textarea:not(:disabled), " +
+      ".event-editor-modal-body button:not(:disabled), " +
+      "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)"
+  );
+  if (first instanceof HTMLElement) first.focus({ preventScroll: true });
+  root.scrollTo({ left: 0, top: 0 });
+}
+
+function displayEventNumber(mapId: MapId, eventId: string): string {
+  const events = store.getCurrent().maps[mapId]?.events ?? [];
+  const index = events.findIndex((event) => event.id === eventId);
+  return String(index >= 0 ? index + 1 : 1).padStart(4, "0");
 }

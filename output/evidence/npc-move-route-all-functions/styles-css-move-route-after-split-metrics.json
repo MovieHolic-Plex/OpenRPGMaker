@@ -1,0 +1,28 @@
+{
+  "buttons": 42,
+  "dialog": {
+    "bottom": 1000,
+    "h": 1000,
+    "w": 1900,
+    "x": 0,
+    "y": 0
+  },
+  "dialogZ": "55",
+  "list": {
+    "bottom": 679,
+    "h": 495,
+    "w": 615,
+    "x": 225,
+    "y": 185
+  },
+  "listScrolls": false,
+  "rows": 1,
+  "window": {
+    "bottom": 868,
+    "h": 860,
+    "w": 1500,
+    "x": 200,
+    "y": 8
+  },
+  "windowRows": "42px 816.667px"
+}

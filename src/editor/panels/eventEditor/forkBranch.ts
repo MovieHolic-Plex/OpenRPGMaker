@@ -1,7 +1,7 @@
 import { newCommand } from "@/editor/eventActions";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindSelect, selectedOptionValue } from "./dom";
-import { COMMAND_KIND_OPTIONS } from "./options";
+import { COMMAND_KIND_OPTIONS, commandKindLabel } from "./options";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
 
@@ -43,7 +43,7 @@ function renderForkBranchItem(working: Command[], index: number, commit: () => v
   const command = working[index];
   const item = el("div", { class: "cmd-item" });
   if (!command) return item;
-  item.append(el("span", { class: "cmd-kind", text: command.kind }));
+  item.append(el("span", { class: "cmd-kind", text: commandKindLabel(command.kind) }));
   if (command.kind === "text") {
     const body = el("textarea", {}) as HTMLTextAreaElement;
     body.value = command.body;

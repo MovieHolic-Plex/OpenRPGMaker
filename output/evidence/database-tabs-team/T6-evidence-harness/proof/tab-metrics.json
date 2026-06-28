@@ -1,0 +1,282 @@
+[
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/actors.png",
+    "slug": "actors",
+    "testId": "db-tab-actors"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/classes.png",
+    "slug": "classes",
+    "testId": "db-tab-classes"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/skills.png",
+    "slug": "skills",
+    "testId": "db-tab-skills"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/items.png",
+    "slug": "items",
+    "testId": "db-tab-items"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/equipment.png",
+    "slug": "equipment",
+    "testId": "db-tab-equipment"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/enemies.png",
+    "slug": "enemies",
+    "testId": "db-tab-enemies"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/troops.png",
+    "slug": "troops",
+    "testId": "db-tab-troops"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/elements.png",
+    "slug": "elements",
+    "testId": "db-tab-elements"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/states.png",
+    "slug": "states",
+    "testId": "db-tab-states"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/animations.png",
+    "slug": "animations",
+    "testId": "db-tab-animations"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/battler-animations.png",
+    "slug": "battler-animations",
+    "testId": "db-tab-battler-animations"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/battle-screen.png",
+    "slug": "battle-screen",
+    "testId": "db-tab-battle-screen"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/battle-commands.png",
+    "slug": "battle-commands",
+    "testId": "db-tab-battle-commands"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/terrain.png",
+    "slug": "terrain",
+    "testId": "db-tab-terrain"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/tilesets.png",
+    "slug": "tilesets",
+    "testId": "db-tab-tilesets"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/common-events.png",
+    "slug": "common-events",
+    "testId": "db-tab-common-events"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/system.png",
+    "slug": "system",
+    "testId": "db-tab-system"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/terms.png",
+    "slug": "terms",
+    "testId": "db-tab-terms"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/switches.png",
+    "slug": "switches",
+    "testId": "db-tab-switches"
+  },
+  {
+    "metrics": {
+      "bodyTop": 85,
+      "manualTop": 49,
+      "modalBodyScrollTop": 0,
+      "modalHeight": 800,
+      "modalWidth": 1280,
+      "statusTop": 67,
+      "tabsTop": 23
+    },
+    "screenshot": "output/evidence/database-tabs-team/T6-evidence-harness/proof/tabs/variables.png",
+    "slug": "variables",
+    "testId": "db-tab-variables"
+  }
+]

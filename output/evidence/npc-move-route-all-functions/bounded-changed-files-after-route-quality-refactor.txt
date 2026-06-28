@@ -1,0 +1,25 @@
+﻿ M src/player/PlayScene.ts
+ M src/player/playSceneMapRuntime.ts
+ M src/player/playSceneTypes.ts
+ M src/project/io/shapeCommandFields.ts
+ M src/project/types/events.ts
+ M src/styles.css
+ M test/migration.test.ts
+?? src/editor/panels/eventEditor/commandBodyRoute.ts
+?? src/editor/panels/eventEditor/moveRouteCommandCatalog.ts
+?? src/editor/panels/eventEditor/moveRouteDialog.ts
+?? src/editor/panels/eventEditor/moveRouteDialogParts.ts
+?? src/editor/panels/eventEditor/pageMovement.ts
+?? src/player/playSceneAutonomous.ts
+?? src/player/playSceneAutonomousCommands.ts
+?? src/player/playSceneAutonomousRouteDirection.ts
+?? src/player/playSceneAutonomousRouteEffects.ts
+?? src/player/playSceneAutonomousSprites.ts
+?? src/player/playSceneAutonomousTypes.ts
+?? src/player/playSceneMapCommands.ts
+?? src/player/playScenePageMoveRoutes.ts
+?? test/e2e/rm2k3-move-route-focused.spec.ts
+?? test/runtimeEventPageFixtures.ts
+?? test/runtimeEventPageGraphics.test.ts
+?? test/runtimeEventPageMovement.test.ts
+?? test/runtimeMoveRouteCommands.test.ts

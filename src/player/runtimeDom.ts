@@ -1,7 +1,9 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
-import type { AudioCommandState, PictureState } from "@/project/session";
+import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
+import type { ActorVitals } from "@/project/sessionVitals";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
+import { resourceDisplayName } from "@/player/resourceDisplay";
 
 export interface RuntimeEventSnapshot {
   readonly x: number;
@@ -19,6 +21,13 @@ export interface RuntimeStateSnapshot {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
   readonly timers: Record<string, number>;
+  readonly gold: number;
+  readonly inventory: Record<string, number>;
+  readonly partyActorIds: readonly string[];
+  readonly actorExperience: Record<string, number>;
+  readonly actorVitals: Record<string, ActorVitals>;
+  readonly actorEquipment: PlaySession["actorEquipment"];
+  readonly actorRows: PlaySession["actorRows"];
   readonly events: Record<string, RuntimeEventSnapshot>;
   readonly battleResult?: BattleResult;
 }
@@ -141,7 +150,7 @@ export class RuntimeDomOverlay {
       const item = document.createElement("div");
       item.className = "picture-layer-item";
       item.dataset.pictureId = picture.pictureId;
-      item.textContent = `${picture.pictureId}:${picture.resourceId}`;
+      item.textContent = resourceDisplayName(picture.resourceId, picture.pictureId);
       item.style.left = `${picture.x}px`;
       item.style.top = `${picture.y}px`;
       layer.append(item);

@@ -22,10 +22,12 @@ export const resourceKinds = new Set([
 
 export const commandKinds = new Set([
   "text",
+  "changeFace",
   "choices",
   "fork",
   "wait",
   "inputWait",
+  "inputNumber",
   "label",
   "gotoLabel",
   "setSwitch",
@@ -37,16 +39,21 @@ export const commandKinds = new Set([
   "callCommonEvent",
   "battleProcessing",
   "learnSkill",
+  "changeGold",
+  "changeItem",
+  "changeParty",
   "showPicture",
   "erasePicture",
   "playAudio",
   "stopAudio",
+  "displayTextSettings",
   "shop",
   "inn",
   "gameOver",
   "ending",
   "returnToTitle",
   "setFlag",
+  "m2Command",
 ]);
 
 export function deepClone<T>(value: T): T {

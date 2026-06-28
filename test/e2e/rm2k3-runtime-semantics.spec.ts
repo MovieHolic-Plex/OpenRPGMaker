@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { Project } from "@/project/types";
+import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 type SeedProject = Project;
 type DebugState = {
@@ -16,30 +17,7 @@ async function debugState(page: Page): Promise<DebugState> {
 }
 
 async function seedProject(page: Page, project: SeedProject): Promise<void> {
-  await page.goto("/");
-  await page.evaluate(async (seed) => {
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("rpg-zzu", 1);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("projects")) db.createObjectStore("projects");
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const tx = db.transaction("projects", "readwrite");
-        tx.objectStore("projects").put(seed, "current");
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    } finally {
-      db.close();
-    }
-  }, project);
-  await page.reload();
-  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  await seedProjectFromSupabaseCanonical(page, project);
 }
 
 async function tapKey(page: Page, key: string, holdMs = 80): Promise<void> {

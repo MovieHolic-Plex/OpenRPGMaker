@@ -1,6 +1,5 @@
 import { renderDatabasePanel } from "@/editor/panels/database";
 import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
-import { hideRightPanel, showRightPanel } from "@/editor/panels/editor";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -15,8 +14,6 @@ let modalDragState: ModalDragState | null = null;
 
 export function openDatabaseModal(): void {
   document.querySelector("[data-testid='database-modal']")?.remove();
-  // 우측 패널이 같은 testId 컨트롤을 렌더하므로 충돌 방지를 위해 숨긴다.
-  hideRightPanel();
 
   const body = el("div", { class: "database-modal-body" });
   const maximizeButton = el("button", {
@@ -56,7 +53,6 @@ export function openDatabaseModal(): void {
     backdrop.remove();
     document.removeEventListener("keydown", onKeyDown);
     stopModalDrag();
-    showRightPanel();
   };
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") close();

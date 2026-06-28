@@ -1,0 +1,10 @@
+
+> rpg-zzu@0.1.0 test:e2e
+> playwright test test/e2e/rm2k3-move-route-focused.spec.ts
+
+
+Running 1 test using 1 worker
+
+  ok 1 [chromium] › test\e2e\rm2k3-move-route-focused.spec.ts:43:1 › custom page movement route dialog adds every Korean command button and persists the route (8.1s)
+
+  1 passed (9.1s)

@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/assets/generated/rm2k3/hero-01-battle.png",
+    "width": 144,
+    "height": 384,
+    "transparent": 40838,
+    "visible": 14458,
+    "visibleKeyPixels": 0
+  },
+  {
+    "path": "/assets/generated/rm2k3/hero-02-battle.png",
+    "width": 144,
+    "height": 384,
+    "transparent": 42042,
+    "visible": 13254,
+    "visibleKeyPixels": 0
+  },
+  {
+    "path": "/assets/generated/rm2k3/hero-03-battle.png",
+    "width": 144,
+    "height": 384,
+    "transparent": 38766,
+    "visible": 16530,
+    "visibleKeyPixels": 0
+  },
+  {
+    "path": "/assets/generated/rm2k3/hero-04-battle.png",
+    "width": 144,
+    "height": 384,
+    "transparent": 40072,
+    "visible": 15224,
+    "visibleKeyPixels": 0
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "mapId": "map_battle",
+  "inputEnabled": true,
+  "running": false,
+  "player": {
+    "x": 0,
+    "y": 0
+  },
+  "switches": {},
+  "variables": {},
+  "timers": {},
+  "gold": 12,
+  "inventory": {
+    "item_bomb": 1
+  },
+  "partyActorIds": [
+    "actor_zack",
+    "actor_albert",
+    "actor_burns",
+    "actor_klaus"
+  ],
+  "actorExperience": {
+    "actor_zack": 28,
+    "actor_albert": 28,
+    "actor_burns": 28,
+    "actor_klaus": 28
+  },
+  "actorVitals": {
+    "actor_zack": {
+      "hp": 385,
+      "mp": 43,
+      "maxHp": 385,
+      "maxMp": 43
+    },
+    "actor_albert": {
+      "hp": 362,
+      "mp": 43,
+      "maxHp": 362,
+      "maxMp": 43
+    },
+    "actor_burns": {
+      "hp": 339,
+      "mp": 43,
+      "maxHp": 339,
+      "maxMp": 43
+    },
+    "actor_klaus": {
+      "hp": 316,
+      "mp": 43,
+      "maxHp": 316,
+      "maxMp": 43
+    }
+  },
+  "actorEquipment": {
+    "actor_zack": {},
+    "actor_albert": {},
+    "actor_burns": {},
+    "actor_klaus": {}
+  },
+  "actorRows": {
+    "actor_zack": "front",
+    "actor_albert": "front",
+    "actor_burns": "front",
+    "actor_klaus": "front"
+  },
+  "events": {
+    "battle-start": {
+      "x": 1,
+      "y": 0,
+      "priority": "same",
+      "trigger": "action"
+    }
+  },
+  "battleResult": "victory"
+}

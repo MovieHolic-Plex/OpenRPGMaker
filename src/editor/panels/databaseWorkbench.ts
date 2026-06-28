@@ -18,7 +18,7 @@ export function databaseWorkbenchStatusText(summary: DatabaseWorkbenchSummary): 
   if (!summary.recordId || !summary.recordName || !summary.selectedIndex || !summary.totalCount) {
     return `${base} | 레코드 없음`;
   }
-  return `${base} | 선택 ${summary.recordName} [${summary.recordId}] | ${summary.selectedIndex} / ${summary.totalCount}`;
+  return `${base} | 선택 ${summary.recordName} | ${summary.selectedIndex} / ${summary.totalCount}`;
 }
 
 export function databaseFooterStatusText(): string {

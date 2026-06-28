@@ -1,0 +1,38 @@
+{
+  "name": "rm2k3-battle-transparency",
+  "route": "http://127.0.0.1:5173/",
+  "viewports": [
+    { "name": "desktop", "width": 1280, "height": 800 }
+  ],
+  "path": [
+    "audit actor battle charset PNG files for opaque chroma-key pixels",
+    "convert chroma-key-like actor pixels to transparent alpha",
+    "rebuild actor palette variants without cyan key-like Burns colors",
+    "replace actor battle charsets with clean transparent 48x48 procedural pixel sprites",
+    "enter play mode in a real browser",
+    "start the seeded battle",
+    "capture desktop battle screenshot",
+    "capture enlarged Burns crop",
+    "play to victory and capture runtime state"
+  ],
+  "acceptance": [
+    "hero-01 through hero-04 battle PNGs have zero opaque magenta pixels",
+    "hero-02 through hero-04 have zero cyan key-like pixels",
+    "all actor battle frames have zero opaque edge pixels",
+    "desktop screenshot shows no colored transparency boxes around actors",
+    "Burns no longer uses the problematic cyan/teal body palette",
+    "battle still reaches victory and rewards experience"
+  ],
+  "artifacts": [
+    "red-alpha-audit.json",
+    "green-alpha-audit.json",
+    "green-alpha-audit-2.json",
+    "clean-procedural-sprite-audit.json",
+    "desktop-reference-entry.png",
+    "desktop-burns-transparent-crop.png",
+    "desktop-reference-state.json",
+    "runtime-after.json",
+    "browser-run.mjs",
+    "visual-qa.md"
+  ]
+}

@@ -13,6 +13,7 @@ export type MapContextMenuItem = {
   readonly id: string;
   readonly label: string;
   readonly separatorBefore?: boolean;
+  readonly shortcut?: string;
   readonly testId: string;
 };
 
@@ -31,7 +32,7 @@ export function openMapContextMenu(request: MapContextMenuRequest): void {
   const menu = el("div", {
     class: "map-context-menu",
     attrs: {
-      "aria-label": `${request.mapName} 맵 액션`,
+      "aria-label": `${request.mapName} map actions`,
       role: "menu",
       tabindex: "-1",
     },
@@ -92,6 +93,7 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
     class: classes,
     attrs: {
       "aria-disabled": String(Boolean(item.disabled)),
+      "aria-label": item.shortcut ? `${item.label} ${item.shortcut}` : item.label,
       role: "menuitem",
       tabindex: "-1",
       title: item.label,
@@ -100,6 +102,7 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
     children: [
       el("span", { class: `rm-tool-icon rm-tool-icon-${item.icon}`, attrs: { "aria-hidden": "true" } }),
       el("span", { class: "map-context-menu-label", text: item.label }),
+      el("span", { class: "map-context-menu-shortcut", text: item.shortcut ?? "" }),
     ],
     dataset: { testid: item.testId },
     on: {

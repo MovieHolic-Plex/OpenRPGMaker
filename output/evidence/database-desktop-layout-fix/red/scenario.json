@@ -1,0 +1,17 @@
+{
+  "name": "database-desktop-layout-fix",
+  "phase": "red",
+  "route": "/?freshProject=1&qa=database-desktop-layout-fix&phase=red",
+  "viewport": {
+    "name": "desktop",
+    "width": 1365,
+    "height": 900
+  },
+  "path": [
+    "open fresh project in Chromium",
+    "hover and focus Database toolbar action",
+    "open Database modal from the toolbar",
+    "direct-click all 20 Database tabs at 1365x900",
+    "capture modal screenshots, bottom-scroll evidence for wide/tall tabs, console output, and DOM metrics"
+  ]
+}

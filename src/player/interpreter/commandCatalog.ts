@@ -1,5 +1,15 @@
 import type { Command } from "@/project/types";
-import { evalCondition, setSwitch, setTimer, setVariable } from "@/project/session";
+import {
+  changeGold,
+  changeItem,
+  changeParty,
+  DEFAULT_MESSAGE_WINDOW_SETTINGS,
+  evalCondition,
+  setSwitch,
+  setTimer,
+  setVariable,
+} from "@/project/session";
+import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { gotoLabel, pushFrame } from "@/player/interpreter/stack";
 
@@ -23,19 +33,75 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
   return resumeNext(frame);
 }
 
+function executeM2Command(
+  state: InterpreterState,
+  frame: Frame,
+  command: Extract<Command, { kind: "m2Command" }>
+): CommandExecution {
+  const entry = m2CommandById(command.commandId);
+  if (!entry) {
+    console.warn(`[interpreter] M2 command is unclassified: ${command.commandId}`);
+    return resumeNext(frame);
+  }
+
+  if (entry.existingKind === "displayTextSettings") {
+    state.session.messageWindowSettings = {
+      format: "normal",
+      position: "bottom",
+      preventObscuringPlayer: true,
+      allowEventMovementDuringWait: false,
+    };
+    return resumeNext(frame);
+  }
+
+  switch (entry.runtimeClassification) {
+    case "editor-only":
+      console.warn(`[interpreter] M2 editor-only command skipped: ${entry.label}`);
+      return resumeNext(frame);
+    case "shell":
+    case "battle-only":
+    case "disabled":
+    case "missing-runtime":
+    case "internal-non-pdf":
+      console.warn(`[interpreter] M2 command cannot run in map interpreter (${entry.runtimeClassification}): ${entry.label}`);
+      return resumeNext(frame);
+    case "runtime":
+      console.warn(`[interpreter] M2 runtime command should use native command kind: ${entry.label}`);
+      return resumeNext(frame);
+  }
+}
+
 export function executeCommand(
   state: InterpreterState,
   frame: Frame,
   command: Command
 ): CommandExecution {
   switch (command.kind) {
+    case "changeFace":
+      state.currentFace = command.resourceId
+        ? {
+            resourceId: command.resourceId,
+            faceIndex: command.faceIndex,
+            position: command.position,
+            flipHorizontally: command.flipHorizontally,
+          }
+        : undefined;
+      return resumeNext(frame);
     case "text":
-      return pause("text", { kind: "text", speaker: command.speaker, body: command.body });
+      return pause("text", {
+        kind: "text",
+        speaker: command.speaker,
+        body: command.body,
+        face: state.currentFace,
+        settings: state.session.messageWindowSettings,
+      });
     case "choices":
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
         options: command.options.map((option) => ({ text: option.text })),
+        settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+        cancelBehavior: command.cancelBehavior,
       });
     case "fork": {
       const branch = evalCondition(state.session, command.condition) ? command.then : command.else ?? [];
@@ -59,6 +125,13 @@ export function executeCommand(
       return resumeNext(frame);
     case "inputWait":
       return pause("inputWait", { kind: "inputWait" });
+    case "inputNumber":
+      return pause("inputNumber", {
+        kind: "inputNumber",
+        variableId: command.variableId,
+        digits: command.digits,
+        settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+      });
     case "label":
       return resumeNext(frame);
     case "gotoLabel":
@@ -108,8 +181,25 @@ export function executeCommand(
       return pause("playAudio", { kind: "playAudio", resourceId: command.resourceId, loop: command.loop });
     case "stopAudio":
       return pause("stopAudio", { kind: "stopAudio" });
+    case "displayTextSettings": {
+      state.session.messageWindowSettings = {
+        format: command.format,
+        position: command.position,
+        preventObscuringPlayer: command.preventObscuringPlayer,
+        allowEventMovementDuringWait: command.allowEventMovementDuringWait,
+      };
+      return resumeNext(frame);
+    }
     case "shop":
-      return pause("shop", { kind: "shop", itemIds: command.itemIds });
+      return pause("shop", {
+        kind: "shop",
+        itemIds: command.itemIds,
+        allowSell: command.allowSell,
+        quantityMode: command.quantityMode,
+        shopType: command.shopType,
+        messageType: command.messageType,
+        branchOnTransaction: command.branchOnTransaction,
+      });
     case "inn":
       return pause("inn", { kind: "inn", price: command.price });
     case "gameOver":
@@ -126,9 +216,20 @@ export function executeCommand(
       return callCommonEvent(state, frame, command.commonEventId);
     case "learnSkill":
       return resumeNext(frame);
+    case "changeGold":
+      changeGold(state.session, command.op, command.amount);
+      return resumeNext(frame);
+    case "changeItem":
+      changeItem(state.session, command.itemId, command.op, command.amount);
+      return resumeNext(frame);
+    case "changeParty":
+      changeParty(state.session, command.actorId, command.action, state.project);
+      return resumeNext(frame);
     case "setFlag":
       state.session.flags[command.flag] = command.value;
       return resumeNext(frame);
+    case "m2Command":
+      return executeM2Command(state, frame, command);
     default:
       console.warn("[interpreter] 알 수 없는 command kind, 이벤트 중단");
       return { kind: "done" };

@@ -1,0 +1,14 @@
+﻿{
+  "generatedAt": "2026-06-28T15:56:24.842Z",
+  "files": [
+    "src/player/playSceneAutonomous.ts",
+    "src/player/playSceneAutonomousCommands.ts",
+    "src/player/playSceneAutonomousRouteDirection.ts",
+    "src/player/playSceneAutonomousRouteEffects.ts",
+    "test/e2e/rm2k3-move-route-focused.spec.ts"
+  ],
+  "longParameterFunctions": [],
+  "explicitAssertions": [],
+  "oldUtilityReferences": [],
+  "result": "pass"
+}

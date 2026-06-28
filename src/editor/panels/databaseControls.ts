@@ -95,6 +95,8 @@ function literalLabel(value: string): string {
       return "자기 자신";
     case "ally":
       return "아군";
+    case "allAllies":
+      return "아군 전체";
     case "enemy":
       return "적";
     case "allEnemies":
@@ -111,6 +113,78 @@ function literalLabel(value: string): string {
       return "투구";
     case "accessory":
       return "장신구";
+    case "normal":
+    case "normalGoods":
+      return "일반 물품";
+    case "switch":
+      return "스위치";
+    case "medicine":
+      return "약";
+    case "book":
+    case "skillBook":
+      return "책";
+    case "seed":
+      return "씨앗";
+    case "special":
+      return "특수";
+    case "body":
+      return "갑옷";
+    case "noLimit":
+      return "제한 없음";
+    case "always":
+      return "항상";
+    case "battle":
+      return "전투 중";
+    case "field":
+      return "필드";
+    case "never":
+      return "사용 불가";
+    case "teleport":
+      return "장소 이동";
+    case "escape":
+      return "도주";
+    case "singleTarget":
+      return "단일 대상";
+    case "allTargets":
+      return "전체 대상";
+    case "screen":
+      return "화면";
+    case "head":
+      return "머리";
+    case "center":
+      return "중앙";
+    case "feet":
+      return "발";
+    case "attack":
+      return "공격";
+    case "skill":
+      return "스킬";
+    case "skillSubset":
+      return "스킬 계열";
+    case "defend":
+      return "방어";
+    case "item":
+      return "아이템";
+    case "event":
+      return "이벤트";
+    case "physical":
+      return "물리";
+    case "magical":
+      return "마법";
+    case "damage":
+      return "피해";
+    case "healing":
+      return "회복";
+    case "support":
+      return "보조";
+    case "hp":
+      return "HP";
+    case "mp":
+      return "MP";
+    case "mind":
+      return "정신력";
+    case "transparent":
+      return "투명";
     default:
       return value;
   }

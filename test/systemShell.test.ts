@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 import {
   applySaveSnapshot,
   createSaveSnapshot,
@@ -18,6 +19,7 @@ import {
   showPictureState,
   startSession,
 } from "@/project/session";
+import { createPlayerStatusMenuSnapshot, renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -145,7 +147,95 @@ describe("T12 shell state", () => {
   });
 });
 
+describe("T12 RM2K3 player status menu", () => {
+  it("keeps the X-key status menu model stable for an empty party", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    session.partyActorIds = [];
+    session.actorVitals = {};
+
+    const snapshot = createPlayerStatusMenuSnapshot(project, session);
+
+    expect(snapshot.commandLabels).toEqual([
+      "아이템",
+      "스킬",
+      "장비",
+      "저장",
+      "상태",
+      "열",
+      "진형",
+      "대기 ON",
+      "타이틀",
+    ]);
+    expect(snapshot.goldLabel).toBe("돈 0G");
+    expect(snapshot.partyRows).toEqual([]);
+    expect(snapshot.emptyPartyLabel).toBe("파티원이 없습니다");
+  });
+
+  it("renders Korean command details and clear footer labels for an empty party", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      session.partyActorIds = [];
+      session.actorVitals = {};
+
+      const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots: [
+          { kind: "empty", slot: 1 },
+          { kind: "empty", slot: 2 },
+          { kind: "empty", slot: 3 },
+        ],
+        actions: {
+          onCommand: () => undefined,
+          onSaveSlot: () => undefined,
+          onLoadSlot: () => undefined,
+          onSelectItemTarget: () => undefined,
+          onToggleWait: () => undefined,
+          onToTitle: () => undefined,
+          onUseItem: () => undefined,
+          onSelectEquipmentActor: () => undefined,
+          onSelectEquipmentSlot: () => undefined,
+          onEquipItem: () => undefined,
+          onToggleRow: () => undefined,
+          onSelectFormationActor: () => undefined,
+          onMoveFormationActor: () => undefined,
+        },
+      }));
+
+      expect(menu.className).toContain("rm2k3-status-menu");
+      expect(findByTestId(menu, "status-menu-command-rail")?.textContent).toContain("아이템");
+      expect(findByTestId(menu, "status-menu-command-save")?.textContent).toBe("저장");
+      expect(findByTestId(menu, "status-menu-gold")?.textContent).toBe("돈 0G");
+      expect(findByTestId(menu, "status-menu-slots")).toBeNull();
+      expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("0:00");
+      expect(findByTestId(menu, "status-menu-empty")?.textContent).toBe("파티원이 없습니다");
+      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("아이템");
+      expect(findByTestId(menu, "status-menu-detail")?.textContent).toContain("아이템이 없습니다");
+    } finally {
+      restoreDom();
+    }
+  });
+});
+
 describe("T12 audio and picture session state", () => {
+  it("starts play sessions from legacy actors that do not yet store parameter curves", () => {
+    const project = createBlankProject();
+    const actor = project.database.actors[0];
+    if (!actor) throw new Error("expected default actor");
+    const legacyActor: Omit<typeof actor, "parameterCurves"> & {
+      parameterCurves?: typeof actor.parameterCurves;
+    } = actor;
+    delete legacyActor.parameterCurves;
+
+    const session = startSession(project);
+
+    expect(session.actorVitals[actor.id]?.maxHp).toBeGreaterThan(0);
+    expect(session.actorVitals[actor.id]?.maxMp).toBeGreaterThan(0);
+  });
+
   it("tracks browser-safe audio command state without requiring playback", () => {
     const session = startSession(createBlankProject());
 

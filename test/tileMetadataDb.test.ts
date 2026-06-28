@@ -1,126 +1,93 @@
-import "fake-indexeddb/auto";
-import { beforeEach, describe, expect, it } from "vitest";
-import { applyAiMappingAnswerForTest } from "@/editor/panels/tilesetAiQuestionEditor";
-import { resolveTilesetTileContext } from "@/editor/panels/tilesetTileContext";
-import { bundledEasyRpgTilesetId } from "@/assets/bundled";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createHouseTemplateGalleryProject } from "@/project/defaults";
+import { serialize } from "@/project/io";
+import { store } from "@/project/store";
 import {
-  createBlankProject,
-  DEFAULT_TILESET_ID,
-  LEGACY_RM_TILESET_ID,
-  LEGACY_RM_TILESET_TEXTURE_KEY,
-} from "@/project/defaults";
-import { clearTileMetadataSqlite, loadProjectFromSqlite, saveProjectToSqlite } from "@/project/tileMetadataDb";
-import type { TilesetDef } from "@/project/types";
+  loadProjectFromSupabaseCanonicalStore,
+  recordAiAnalysisRun,
+  saveProjectToSupabaseCanonicalStore,
+} from "@/project/tileMetadataDb";
 
-describe("tileset metadata SQLite store", () => {
-  beforeEach(async () => {
-    await clearTileMetadataSqlite();
+type FetchCall = {
+  readonly init: RequestInit | undefined;
+  readonly input: RequestInfo | URL;
+};
+
+const TEST_ENV = {
+  VITE_SUPABASE_ANON_KEY: "test-anon-key",
+  VITE_SUPABASE_PROJECT_ID: "rpg-zzu-house-template-gallery",
+  VITE_SUPABASE_URL: "http://dbserver:8100",
+} as const;
+
+describe("canonical project persistence", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
-  it("uses bundled default metadata only for the default bundled tileset", () => {
-    const project = createBlankProject();
-    const defaultBundled = project.tilesets[DEFAULT_TILESET_ID];
-    const bundled = project.tilesets[LEGACY_RM_TILESET_ID];
-    const uploaded: TilesetDef = {
-      ...defaultBundled,
-      id: "uploaded_tiles",
-      image: { type: "uploaded", id: "custom-chipset" },
-      tileMeta: undefined,
-      tileGroups: undefined,
-    };
-    const legacyRm: TilesetDef = {
-      ...defaultBundled,
-      id: LEGACY_RM_TILESET_ID,
-      image: { type: "bundled", id: LEGACY_RM_TILESET_TEXTURE_KEY },
-    };
+  it("loads project snapshots through Supabase instead of browser IndexedDB", async () => {
+    const source = createHouseTemplateGalleryProject();
+    stubSupabaseEnv();
+    vi.stubGlobal("indexedDB", failingIndexedDb());
+    vi.stubGlobal("fetch", (async () => (
+      new Response(JSON.stringify([{ current_json: JSON.parse(serialize(source)) }]), { status: 200 })
+    )) satisfies typeof fetch);
 
-    expect(resolveTilesetTileContext(defaultBundled, 102)).toMatchObject({
-      currentLabel: "통나무 집 벽 확장",
-      metadataSource: "bundled-default",
-    });
-    expect(resolveTilesetTileContext(bundled ?? legacyRm, 102).metadataSource).toBe("bundled-default");
-    expect(resolveTilesetTileContext(uploaded, 102)).toMatchObject({
-      currentLabel: "Tile 102",
-      metadataSource: "unknown",
-    });
-    expect(resolveTilesetTileContext(project.tilesets[bundledEasyRpgTilesetId("tex_easyrpg_chipset_retro_exterior")], 102)).toMatchObject({
-      currentLabel: "Tile 102",
-      metadataSource: "unknown",
-    });
-  });
-
-  it("does not overwrite user-locked metadata with an AI answer", () => {
-    const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID];
-    tileset.tileMeta = [];
-    tileset.tileMeta[102] = {
-      label: "나무집 벽 좌상단",
-      description: "사용자가 확정한 메타",
-      source: "user",
-      userLocked: true,
-    };
-
-    applyAiMappingAnswerForTest(tileset, [102], JSON.stringify({
-      confidence: "high",
-      tiles: [{
-        tile: 102,
-        label: "AI 성벽",
-        description: "잘못된 추측",
-        terrainTag: 0,
-        defaultLayer: "upper",
-        role: "edge",
-        repeatability: "fixed",
-        placementRules: "덮어쓰면 안 됨",
-      }],
-    }));
-
-    expect(tileset.tileMeta[102]).toMatchObject({
-      label: "나무집 벽 좌상단",
-      description: "사용자가 확정한 메타",
-      source: "user",
-      userLocked: true,
-    });
-  });
-
-  it("restores tile metadata and groups from SQLite", async () => {
-    const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID];
-    tileset.tileMeta = [];
-    tileset.tileMeta[102] = {
-      label: "나무집 벽 좌상단",
-      description: "확장 가능한 나무집 벽의 좌상단",
-      defaultLayer: "upper",
-      repeatability: "fixed",
-      role: "edge",
-      source: "ai",
-      terrainTag: 0,
-    };
-    tileset.tileGroups = [{
-      id: "ai-house-wall",
-      name: "나무집 벽 3x3",
-      role: "building",
-      defaultLayer: "upper",
-      tileIds: [102, 103, 104],
-      description: "나무집 벽 묶음",
-      placementRules: "모서리는 고정, 변은 반복",
-      confidence: "high",
-      source: "ai",
-    }];
-
-    await saveProjectToSqlite(project);
-    const restored = await loadProjectFromSqlite();
+    const restored = await loadProjectFromSupabaseCanonicalStore();
 
     expect(restored.found).toBe(true);
-    expect(restored.project?.tilesets[DEFAULT_TILESET_ID].tileMeta?.[102]).toMatchObject({
-      label: "나무집 벽 좌상단",
-      source: "ai",
-      repeatability: "fixed",
+    expect(restored.project?.startMapId).toBe(source.startMapId);
+  });
+
+  it("saves Supabase canonical project snapshots", async () => {
+    const project = createHouseTemplateGalleryProject();
+    const calls: FetchCall[] = [];
+    stubSupabaseEnv();
+    vi.stubGlobal("indexedDB", failingIndexedDb());
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      return new Response(null, { status: 201 });
+    }) satisfies typeof fetch);
+
+    await saveProjectToSupabaseCanonicalStore(project);
+
+    expect(String(calls[0]?.input)).toContain("/rest/v1/projects?");
+    expect(calls[0]?.init?.method).toBe("POST");
+  });
+
+  it("store flush and AI analysis logging do not touch IndexedDB", async () => {
+    const calls: FetchCall[] = [];
+    stubSupabaseEnv();
+    vi.stubGlobal("indexedDB", failingIndexedDb());
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      return new Response(null, { status: 201 });
+    }) satisfies typeof fetch);
+    store.replace(createHouseTemplateGalleryProject());
+
+    await store.flush();
+    await recordAiAnalysisRun({
+      tilesetId: "easyrpg_chipset_combined_town",
+      selectedTiles: [240],
+      promptContext: { prompt: "classify" },
+      result: { ok: true },
     });
-    expect(restored.project?.tilesets[DEFAULT_TILESET_ID].tileGroups?.[0]).toMatchObject({
-      id: "ai-house-wall",
-      name: "나무집 벽 3x3",
-      source: "ai",
-      tileIds: [102, 103, 104],
-    });
+
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?"))).toBe(true);
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/ai_analysis_runs?"))).toBe(true);
   });
 });
+
+function stubSupabaseEnv(): void {
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", TEST_ENV.VITE_SUPABASE_ANON_KEY);
+  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", TEST_ENV.VITE_SUPABASE_PROJECT_ID);
+  vi.stubEnv("VITE_SUPABASE_URL", TEST_ENV.VITE_SUPABASE_URL);
+}
+
+function failingIndexedDb(): object {
+  return new Proxy({}, {
+    get() {
+      throw new Error("IndexedDB must not be used for canonical project persistence");
+    },
+  });
+}

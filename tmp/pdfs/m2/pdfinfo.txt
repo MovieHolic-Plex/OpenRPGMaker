@@ -1,0 +1,19 @@
+﻿Title:           file:///C:/Users/hyeon/AppData/Local/Temp/~hh70C3.htm
+Author:          hyeonseok oh
+Producer:        Microsoft: Print To PDF
+CreationDate:    Sat Jun 27 04:31:53 2026 ���ѹα� ǥ�ؽ�
+ModDate:         Sat Jun 27 04:31:53 2026 ���ѹα� ǥ�ؽ�
+Custom Metadata: no
+Metadata Stream: no
+Tagged:          no
+UserProperties:  no
+Suspects:        no
+Form:            none
+JavaScript:      no
+Pages:           70
+Encrypted:       no
+Page size:       594.75 x 841.5 pts (A4)
+Page rot:        0
+File size:       4540249 bytes
+Optimized:       no
+PDF version:     1.7

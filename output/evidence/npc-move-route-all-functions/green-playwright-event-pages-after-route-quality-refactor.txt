@@ -1,0 +1,11 @@
+
+> rpg-zzu@0.1.0 test:e2e
+> playwright test test/e2e/rm2k3-event-pages.spec.ts
+
+
+Running 2 tests using 1 worker
+
+  ok 1 [chromium] › test\e2e\rm2k3-event-pages.spec.ts:282:1 › event editor manages RM2K3-style pages with conditions and page-owned text (27.6s)
+  ok 2 [chromium] › test\e2e\rm2k3-event-pages.spec.ts:463:1 › play mode resolves the highest matching event page (18.0s)
+
+  2 passed (1.4m)

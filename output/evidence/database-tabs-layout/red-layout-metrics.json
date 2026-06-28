@@ -1,0 +1,4022 @@
+[
+  {
+    "id": "actors",
+    "label": "주인공",
+    "file": "01-actors.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 23,
+      "y": 59,
+      "width": 52,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 59,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-actors",
+    "visibleText": "주인공0001:주인공0002:수호자0003:마도사0004:정찰병0005:성직자0006:궁수최대 개수6개+ 추가복제삭제주인공번호0001:IDactor_hero이름주인공이름이름칭호초기 레벨최대 레벨크리티컬확률 분모그래픽얼굴얼굴캐릭터셋캐릭터셋투명애니메이션설정...애니메이션직업직업(없음)전사수호자마도사정찰병성직자궁수적용능력치 곡선최대 HPNow:514최대 MPNow:43공격력Now:45방어력Now:59정신력Now:45민첩성Now:43"
+  },
+  {
+    "id": "classes",
+    "label": "직업",
+    "file": "02-classes.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 74,
+      "width": 974,
+      "height": 26,
+      "top": 74,
+      "bottom": 100
+    },
+    "manual": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "status": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "body": {
+      "x": 16,
+      "y": 96,
+      "width": 974,
+      "height": 451,
+      "top": 96,
+      "bottom": 547
+    },
+    "activeTab": {
+      "x": 78,
+      "y": 80,
+      "width": 44,
+      "height": 21,
+      "top": 80,
+      "bottom": 101
+    },
+    "tabRows": 3,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 79,
+        "width": 56,
+        "height": 21
+      },
+      {
+        "text": "직업",
+        "x": 78,
+        "y": 80,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "스킬",
+        "x": 121,
+        "y": 79,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "아이템",
+        "x": 164,
+        "y": 79,
+        "width": 56,
+        "height": 21
+      },
+      {
+        "text": "장비",
+        "x": 219,
+        "y": 79,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "몬스터",
+        "x": 262,
+        "y": 79,
+        "width": 56,
+        "height": 21
+      },
+      {
+        "text": "적 그룹",
+        "x": 317,
+        "y": 79,
+        "width": 60,
+        "height": 21
+      },
+      {
+        "text": "속성",
+        "x": 376,
+        "y": 79,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "상태",
+        "x": 419,
+        "y": 79,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 462,
+        "y": 79,
+        "width": 108,
+        "height": 21
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 569,
+        "y": 79,
+        "width": 90,
+        "height": 21
+      },
+      {
+        "text": "전투 화면",
+        "x": 658,
+        "y": 79,
+        "width": 72,
+        "height": 21
+      },
+      {
+        "text": "전투 명령",
+        "x": 729,
+        "y": 79,
+        "width": 72,
+        "height": 21
+      },
+      {
+        "text": "지형",
+        "x": 800,
+        "y": 79,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "타일셋",
+        "x": 843,
+        "y": 79,
+        "width": 56,
+        "height": 21
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 898,
+        "y": 79,
+        "width": 84,
+        "height": 21
+      },
+      {
+        "text": "시스템",
+        "x": 23,
+        "y": 100,
+        "width": 56,
+        "height": 21
+      },
+      {
+        "text": "용어",
+        "x": 78,
+        "y": 100,
+        "width": 44,
+        "height": 21
+      },
+      {
+        "text": "스위치",
+        "x": 121,
+        "y": 100,
+        "width": 56,
+        "height": 21
+      },
+      {
+        "text": "변수",
+        "x": 176,
+        "y": 100,
+        "width": 44,
+        "height": 21
+      }
+    ],
+    "bodyScrollWidth": 972,
+    "bodyClientWidth": 972,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-classes",
+    "visibleText": "직업0001:전사0002:수호자0003:마도사0004:정찰병0005:성직자0006:궁수0007:마검사0008:기사0009:무투가0010:도적0011:해적0012:사무라이0013:닌자0014:성기사0015:암흑기사0016:현자0017:음유시인0018:소환사최대 개수6개+ 추가복제삭제직업번호0001:IDclass_hero이름전사이름직업명애니메이션전투 애니메이션(없음)타격검격화살마법 충격회복 빛독침능력치 곡선최대 HPLv1:20최대"
+  },
+  {
+    "id": "skills",
+    "label": "스킬",
+    "file": "03-skills.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 113,
+      "y": 59,
+      "width": 40,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 59,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-skills",
+    "visibleText": "스킬0001:공격0002:검격0003:마법탄0004:화염0005:치유0006:독침0007:수면 안개0008:집중0009:약화0010:회복약 효과0011:마력약 효과최대 개수11개+ 추가복제삭제스킬번호0001:IDskill_attack이름공격이름범위자기 자신아군적적 전체위력애니메이션(없음)타격검격화살마법 충격회복 빛독침설명종류일반 물품장소 이동도주스위치소모와 명중MPMP %성공률분산"
+  },
+  {
+    "id": "items",
+    "label": "아이템",
+    "file": "04-items.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 152,
+      "y": 59,
+      "width": 52,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 59,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-items",
+    "visibleText": "아이템0001:회복약0002:마력약0003:해독초0004:각성초0005:독침0006:낡은 열쇠0007:상급 회복약0008:엘릭서0009:만능약0010:각성 가루0011:투척 단검0012:독병0013:귀환 주문서0014:검술 교본0015:마법 입문서0016:수호 부적0017:가죽 수선 도구0018:신비한 천0019:여행자 표식0020:행운의 부적최대 개수20개+ 추가복제삭제아이템번호0001:IDitem_potion이름회복약이름가"
+  },
+  {
+    "id": "equipment",
+    "label": "장비",
+    "file": "05-equipment.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 203,
+      "y": 59,
+      "width": 40,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 59,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-equipment",
+    "visibleText": "장비0001:청동 검0002:수습 지팡이0003:정찰 단검0004:참나무 방패0005:가죽 갑옷0006:견습 로브0007:여행자 모자0008:집중 부적최대 개수8개+ 추가복제삭제장비번호0001:IDequip_sword이름청동 검이름가격부위무기방패갑옷투구장신구스킬(없음)공격검격마법탄화염치유독침수면 안개집중약화회복약 효과마력약 효과장비 그래픽이미지이미지아이콘아이콘설명능력치공격력방어력직업(없음)전사수호자마도사정찰병성직자궁수사용 스킬"
+  },
+  {
+    "id": "enemies",
+    "label": "몬스터",
+    "file": "06-enemies.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 74,
+      "width": 1224,
+      "height": 26,
+      "top": 74,
+      "bottom": 100
+    },
+    "manual": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "status": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "body": {
+      "x": 16,
+      "y": 96,
+      "width": 1224,
+      "height": 666,
+      "top": 96,
+      "bottom": 762
+    },
+    "activeTab": {
+      "x": 265,
+      "y": 75,
+      "width": 58,
+      "height": 21,
+      "top": 75,
+      "bottom": 96
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 16,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "직업",
+        "x": 73,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "스킬",
+        "x": 118,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "아이템",
+        "x": 163,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "장비",
+        "x": 220,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "몬스터",
+        "x": 265,
+        "y": 75,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "적 그룹",
+        "x": 322,
+        "y": 74,
+        "width": 62,
+        "height": 21
+      },
+      {
+        "text": "속성",
+        "x": 383,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "상태",
+        "x": 428,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 473,
+        "y": 74,
+        "width": 110,
+        "height": 21
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 582,
+        "y": 74,
+        "width": 92,
+        "height": 21
+      },
+      {
+        "text": "전투 화면",
+        "x": 673,
+        "y": 74,
+        "width": 74,
+        "height": 21
+      },
+      {
+        "text": "전투 명령",
+        "x": 746,
+        "y": 74,
+        "width": 74,
+        "height": 21
+      },
+      {
+        "text": "지형",
+        "x": 819,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "타일셋",
+        "x": 864,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 921,
+        "y": 74,
+        "width": 86,
+        "height": 21
+      },
+      {
+        "text": "시스템",
+        "x": 1006,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "용어",
+        "x": 1063,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "스위치",
+        "x": 1108,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "변수",
+        "x": 1165,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      }
+    ],
+    "bodyScrollWidth": 1222,
+    "bodyClientWidth": 1222,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-enemies",
+    "visibleText": "몬스터0001:말벌0002:초원 슬라임0003:동굴 박쥐0004:돌 골렘0005:붉은 드래곤0006:좀비0007:사마귀0008:오크0009:실프0010:레모라0011:스피릿0012:게0013:잭 오 랜턴0014:타란툴라0015:카벙클0016:구울0017:스펙터0018:말0019:케트 시0020:캇파0021:코카트리스0022:지네0023:기생체0024:하피0025:뱀0026:샐러맨더0027:네펜데스0028:전갈0029:유니콘최대"
+  },
+  {
+    "id": "troops",
+    "label": "적 그룹",
+    "file": "07-troops.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 74,
+      "width": 1224,
+      "height": 26,
+      "top": 74,
+      "bottom": 100
+    },
+    "manual": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "status": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "body": {
+      "x": 16,
+      "y": 96,
+      "width": 1224,
+      "height": 608,
+      "top": 96,
+      "bottom": 704
+    },
+    "activeTab": {
+      "x": 322,
+      "y": 75,
+      "width": 62,
+      "height": 21,
+      "top": 75,
+      "bottom": 96
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 16,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "직업",
+        "x": 73,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "스킬",
+        "x": 118,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "아이템",
+        "x": 163,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "장비",
+        "x": 220,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "몬스터",
+        "x": 265,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "적 그룹",
+        "x": 322,
+        "y": 75,
+        "width": 62,
+        "height": 21
+      },
+      {
+        "text": "속성",
+        "x": 383,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "상태",
+        "x": 428,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 473,
+        "y": 74,
+        "width": 110,
+        "height": 21
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 582,
+        "y": 74,
+        "width": 92,
+        "height": 21
+      },
+      {
+        "text": "전투 화면",
+        "x": 673,
+        "y": 74,
+        "width": 74,
+        "height": 21
+      },
+      {
+        "text": "전투 명령",
+        "x": 746,
+        "y": 74,
+        "width": 74,
+        "height": 21
+      },
+      {
+        "text": "지형",
+        "x": 819,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "타일셋",
+        "x": 864,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 921,
+        "y": 74,
+        "width": 86,
+        "height": 21
+      },
+      {
+        "text": "시스템",
+        "x": 1006,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "용어",
+        "x": 1063,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      },
+      {
+        "text": "스위치",
+        "x": 1108,
+        "y": 74,
+        "width": 58,
+        "height": 21
+      },
+      {
+        "text": "변수",
+        "x": 1165,
+        "y": 74,
+        "width": 46,
+        "height": 21
+      }
+    ],
+    "bodyScrollWidth": 1222,
+    "bodyClientWidth": 1222,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-troops",
+    "visibleText": "적 그룹0001:말벌 정찰대0002:초원 슬라임 둘0003:동굴 박쥐 떼0004:숲의 말벌과 박쥐0005:버려진 골렘 경비0006:붉은 드래곤최대 개수6개+ 추가복제삭제적 그룹번호0001:IDtroop_slime이름말벌 정찰대이름이름이름 생성전투 테스트배경 변경설정수동자동말벌 정찰대 / 말벌 / easyrpg-backdrop-sky1추가삭제지우기정렬적(없음)말벌초원 슬라임동굴 박쥐돌 골렘붉은 드래곤좀비사마귀오크실프레모라스피릿게"
+  },
+  {
+    "id": "elements",
+    "label": "속성",
+    "file": "08-elements.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 14,
+      "y": 41,
+      "width": 1252,
+      "height": 26,
+      "top": 41,
+      "bottom": 67
+    },
+    "manual": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "status": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "body": {
+      "x": 14,
+      "y": 67,
+      "width": 1252,
+      "height": 686,
+      "top": 67,
+      "bottom": 753
+    },
+    "activeTab": {
+      "x": 346,
+      "y": 47,
+      "width": 40,
+      "height": 20,
+      "top": 47,
+      "bottom": 67
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 21,
+        "y": 46,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 72,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 111,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 150,
+        "y": 46,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 201,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 240,
+        "y": 46,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 291,
+        "y": 46,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 346,
+        "y": 47,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 385,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 424,
+        "y": 46,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 527,
+        "y": 46,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 612,
+        "y": 46,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 679,
+        "y": 46,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 745,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 784,
+        "y": 46,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 835,
+        "y": 46,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 914,
+        "y": 46,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 965,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1004,
+        "y": 46,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1055,
+        "y": 46,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-detail-form db-elements-classic",
+    "visibleText": "속성0001:Sword0002:Spear0003:Hit0004:Bow0005:Fire0006:Ice0007:Thunder0008:Water0009:Earth0010:Wind0011:Holy0012:Dark0013:ATK0014:DEF0015:INT0016:AGI0017:Absorb최대 수이름속성 유형물리마법대미지 배율A%B%C%D%E%"
+  },
+  {
+    "id": "states",
+    "label": "상태",
+    "file": "09-states.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 387,
+      "y": 59,
+      "width": 40,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 59,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-states",
+    "visibleText": "상태0001:독0002:수면0003:공격 상승0004:방어 하락최대 개수4개+ 추가복제삭제상태번호0001:IDstate_poison이름독이름기본 설정해제 조건색상우선도제한명중률 보정성공률특수100% 회피마법 반사장비 고정상태 유효도ABCDE회복 방법자연 회복회복 확률피격 회복행동 제한능력치스킬 제한고정 항목HP전투 중맵 이동MP전투 중맵 이동애니메이션상태번호참조스킬(참조하는 스킬 없음)아이템해독초 (item_antidote)독"
+  },
+  {
+    "id": "animations",
+    "label": "전투 애니메이션",
+    "file": "10-animations.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 426,
+      "y": 59,
+      "width": 104,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 59,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-record-workspace rm2k3-record-workspace rm2k3-record-battleAnimations",
+    "visibleText": "전투 애니메이션0001:타격0002:검격0003:화살0004:마법 충격0005:회복 빛0006:독침최대 개수6개+ 추가복제삭제전투 애니메이션번호0001:IDanim_hit이름타격이름애니메이션 그래픽대상최대 수...설정범위단일 대상전체 대상화면위치머리중앙발화면대형프레임 폭프레임 높이열프레임 #↑ 이전< 1>< 2>< 3>↓ 다음마지막 프레임 복제셀 일괄...셀 복사/지우기▶ 재생보간격자 사용시트96x96열5셀1SE 및 플래시 타"
+  },
+  {
+    "id": "battlerAnimations",
+    "label": "애니메이션 2",
+    "file": "11-battlerAnimations.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 529,
+      "y": 59,
+      "width": 86,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 59,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "배틀러 애니메이션배틀러 애니메이션편집 위치RM2003 데이터베이스 > 애니메이션 2레코드2개분리 대상전투 효과 애니메이션포즈 세트0001영웅 배틀 포즈0002수호자 배틀 포즈RM2003 포즈 범위대기서기/대기 포즈행동공격/스킬/아이템 포즈피해피격/전투불능/회피 포즈"
+  },
+  {
+    "id": "battleScreen",
+    "label": "전투 화면",
+    "file": "12-battleScreen.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 614,
+      "y": 59,
+      "width": 68,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 59,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "전투 화면전투 화면편집 위치RM2003 데이터베이스 > 전투 화면전투 시스템easyrpg-system2-system2-c초기 적 그룹troop_slime미리보기 레코드0001말벌 정찰대 / 적 1개0002초원 슬라임 둘 / 적 2개0003동굴 박쥐 떼 / 적 3개0004숲의 말벌과 박쥐 / 적 3개0005버려진 골렘 경비 / 적 3개0006붉은 드래곤 / 적 1개RM2003 배치 규칙적x/y/숨김 멤버는 적 그룹에서 편집배경적"
+  },
+  {
+    "id": "battleCommands",
+    "label": "전투 명령",
+    "file": "13-battleCommands.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 681,
+      "y": 59,
+      "width": 68,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 59,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "전투 명령전투 명령편집 위치RM2003 데이터베이스 > 전투 명령레코드4개저장 위치database.battleCommands전체 명령 목록0001종류공격스킬스킬 계열방어아이템도주이벤트스킬 묶음스킬0002종류공격스킬스킬 계열방어아이템도주이벤트스킬 묶음스킬0003종류공격스킬스킬 계열방어아이템도주이벤트스킬 묶음스킬0004종류공격스킬스킬 계열방어아이템도주이벤트스킬 묶음스킬직업 연결직업 수6개직업별classes[].battleComma"
+  },
+  {
+    "id": "terrain",
+    "label": "지형",
+    "file": "14-terrain.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 747,
+      "y": 59,
+      "width": 40,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 59,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "지형지형편집 위치RM2003 데이터베이스 > 지형레코드3개저장 위치database.terrains지형 레코드0001대미지조우율전투 배경발소리표시일반투명보트선박비공정0002대미지조우율전투 배경발소리표시일반투명보트선박비공정0003대미지조우율전투 배경발소리표시일반투명보트선박비공정전투와 이동전투 배경easyrpg-backdrop-sky1발소리(미설정)탈것보트 불가 / 선박 불가 / 비공정 착륙캐릭터normal"
+  },
+  {
+    "id": "tilesets",
+    "label": "타일셋",
+    "file": "15-tilesets.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 623,
+      "top": 120,
+      "bottom": 743
+    },
+    "activeTab": {
+      "x": 786,
+      "y": 59,
+      "width": 52,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 59,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "db-detail-form tileset-db-workspace compact rm2k3-tileset-workspace",
+    "visibleText": "타일셋0001:EasyRPG RTP Combined Town ChipSet0002:RM 기본 샘플 칩셋0003:EasyRPG RTP Dungeon ChipSet0004:EasyRPG RTP Interior ChipSet0005:EasyRPG RTP Ship ChipSet0006:EasyRPG RTP World ChipSet0007:EasyRPG RTP retro Dungeon ChipSet0008:EasyRPG RTP retr"
+  },
+  {
+    "id": "commonEvents",
+    "label": "공용 이벤트",
+    "file": "16-commonEvents.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 837,
+      "y": 59,
+      "width": 80,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 59,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "공통 이벤트+ 공통 이벤트 추가0001:0002:0003:0004:0005:0006:0007:0008:0009:0010:기본 설정이름트리거조건 스위치이벤트 명령@>"
+  },
+  {
+    "id": "system",
+    "label": "시스템",
+    "file": "17-system.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 916,
+      "y": 59,
+      "width": 52,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 59,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "시스템초기 파티멤버 1주인공멤버 2수호자멤버 3마도사멤버 4정찰병리소스타이틀 리소스시스템 리소스전투 시스템 리소스시작 설정시작 파티(없음)주인공수호자마도사정찰병성직자궁수초기 적 그룹(없음)말벌 정찰대초원 슬라임 둘동굴 박쥐 떼숲의 말벌과 박쥐버려진 골렘 경비붉은 드래곤게임 시작화면게임 타이틀배경 리소스타이틀 X타이틀 Y선택지 X선택지 Y선택지 1선택지 2선택지 3그래픽 미리보기타이틀rpg-zzu-title-blue시작화면rpg"
+  },
+  {
+    "id": "terms",
+    "label": "용어",
+    "file": "18-terms.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 967,
+      "y": 59,
+      "width": 40,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 59,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "용어기본 용어돈레벨HPMP명령 용어공격스킬아이템"
+  },
+  {
+    "id": "switches",
+    "label": "스위치",
+    "file": "19-switches.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 1006,
+      "y": 59,
+      "width": 52,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 59,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "스위치스위치 목록스위치 범위 이름 변경범위 적용0001:0002:0003:0004:0005:0006:0007:0008:0009:0010:"
+  },
+  {
+    "id": "variables",
+    "label": "변수",
+    "file": "20-variables.png",
+    "modal": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800,
+      "top": 0,
+      "bottom": 800
+    },
+    "tabs": {
+      "x": 16,
+      "y": 53,
+      "width": 1252,
+      "height": 26,
+      "top": 53,
+      "bottom": 79
+    },
+    "manual": {
+      "x": 16,
+      "y": 79,
+      "width": 1252,
+      "height": 20,
+      "top": 79,
+      "bottom": 99
+    },
+    "status": {
+      "x": 16,
+      "y": 99,
+      "width": 1252,
+      "height": 21,
+      "top": 99,
+      "bottom": 120
+    },
+    "body": {
+      "x": 16,
+      "y": 120,
+      "width": 1252,
+      "height": 654,
+      "top": 120,
+      "bottom": 774
+    },
+    "activeTab": {
+      "x": 1057,
+      "y": 59,
+      "width": 40,
+      "height": 20,
+      "top": 59,
+      "bottom": 79
+    },
+    "tabRows": 2,
+    "tabRects": [
+      {
+        "text": "주인공",
+        "x": 23,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "직업",
+        "x": 74,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스킬",
+        "x": 113,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "아이템",
+        "x": 152,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "장비",
+        "x": 203,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "몬스터",
+        "x": 242,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "적 그룹",
+        "x": 293,
+        "y": 58,
+        "width": 56,
+        "height": 20
+      },
+      {
+        "text": "속성",
+        "x": 348,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "상태",
+        "x": 387,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "전투 애니메이션",
+        "x": 426,
+        "y": 58,
+        "width": 104,
+        "height": 20
+      },
+      {
+        "text": "애니메이션 2",
+        "x": 529,
+        "y": 58,
+        "width": 86,
+        "height": 20
+      },
+      {
+        "text": "전투 화면",
+        "x": 614,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "전투 명령",
+        "x": 681,
+        "y": 58,
+        "width": 68,
+        "height": 20
+      },
+      {
+        "text": "지형",
+        "x": 747,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "타일셋",
+        "x": 786,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "공용 이벤트",
+        "x": 837,
+        "y": 58,
+        "width": 80,
+        "height": 20
+      },
+      {
+        "text": "시스템",
+        "x": 916,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "용어",
+        "x": 967,
+        "y": 58,
+        "width": 40,
+        "height": 20
+      },
+      {
+        "text": "스위치",
+        "x": 1006,
+        "y": 58,
+        "width": 52,
+        "height": 20
+      },
+      {
+        "text": "변수",
+        "x": 1057,
+        "y": 59,
+        "width": 40,
+        "height": 20
+      }
+    ],
+    "bodyScrollWidth": 1250,
+    "bodyClientWidth": 1250,
+    "horizontalOverflow": 0,
+    "bodyClass": "",
+    "visibleText": "변수변수 목록변수 범위 이름 변경범위 적용0001:0002:0003:0004:0005:0006:0007:0008:0009:0010:"
+  }
+]

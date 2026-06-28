@@ -1,12 +1,8 @@
-import {
-  SPRITE_COLS,
-  TILE_SIZE,
-} from "@/assets/bundled";
 import { canMove } from "@/project/collision";
 import { store } from "@/project/store";
+import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import type { Dir } from "@/player/input";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { DIRECTION_ROW } from "@/player/playSceneTypes";
 import { findBlockingRuntimeEventAt, findRuntimeEventAt } from "@/player/runtimeEventState";
 
 export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void {
@@ -15,14 +11,20 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   if (scene.moving) {
     updatePlayerMovement(scene, deltaMs);
   } else {
-    scene.player.setFrame(DIRECTION_ROW[scene.facing] * SPRITE_COLS);
+    scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
   if (input.actionPressed && !scene.moving) handleAction(scene);
   scene.input_.resetEdges();
-  scene.updateAutonomousNPCs(deltaMs);
-  scene.updateParallelEvents(deltaMs);
+  if (canUpdateWaitingEvents(scene)) {
+    scene.updateAutonomousNPCs(deltaMs);
+    scene.updateParallelEvents(deltaMs);
+  }
   scene.updateTimers(deltaMs);
   scene.syncRuntimeState();
+}
+
+function canUpdateWaitingEvents(scene: PlaySceneContext): boolean {
+  return !scene.running || scene.session.messageWindowSettings?.allowEventMovementDuringWait === true;
 }
 
 function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
@@ -38,14 +40,15 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   }
   const px = linear(scene.movingFrom.x, scene.movingTo.x, scene.moveProgress);
   const py = linear(scene.movingFrom.y, scene.movingTo.y, scene.moveProgress);
-  scene.player.x = px * TILE_SIZE + TILE_SIZE / 2;
-  scene.player.y = py * TILE_SIZE + TILE_SIZE / 2;
+  scene.player.x = characterSpriteX(px);
+  scene.player.y = characterSpriteY(py);
+  updateCharacterDepth(scene.player, "same");
   scene.walkTimer += deltaMs;
   if (scene.walkTimer > 90) {
     scene.walkTimer = 0;
-    scene.walkFrame = (scene.walkFrame + 1) % SPRITE_COLS;
+    scene.walkFrame = (scene.walkFrame + 1) % scene.playerSprite.walkFrameCount;
   }
-  scene.player.setFrame(DIRECTION_ROW[scene.facing] * SPRITE_COLS + scene.walkFrame);
+  scene.player.setFrame(scene.playerSprite.walkFrameFor(scene.facing, scene.walkFrame));
 }
 
 function tryStartMove(scene: PlaySceneContext, dir: Dir): void {
@@ -64,6 +67,8 @@ function tryStartMove(scene: PlaySceneContext, dir: Dir): void {
   scene.movingTo = { x: nx, y: ny };
   scene.moving = true;
   scene.moveProgress = 0;
+  scene.walkFrame = 0;
+  scene.walkTimer = 0;
   scene.lastActionTargetKey = "";
 }
 

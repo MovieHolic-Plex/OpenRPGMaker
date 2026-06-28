@@ -19,7 +19,7 @@ export type GeneratedAssetDimensions = {
 };
 
 export type GeneratedAssetProvenance = {
-  readonly generator: "agy";
+  readonly generator: "agy" | "imagegen";
   readonly mode: "dry-run" | "fake" | "live";
   readonly promptVersion: string;
   readonly createdAt: string;
@@ -185,7 +185,9 @@ function validateProvenance(entry: GeneratedAssetManifestEntryInput, entryId: st
   const provenance = entry.provenance;
   if (provenance === undefined) return [issue(entryId, "provenance", "provenance is required")];
   const issues: ManifestIssue[] = [];
-  if (provenance.generator !== "agy") issues.push(issue(entryId, "provenance.generator", "generator must be agy"));
+  if (!isProvenanceGenerator(provenance.generator)) {
+    issues.push(issue(entryId, "provenance.generator", "generator must be agy or imagegen"));
+  }
   if (provenance.mode !== "dry-run" && provenance.mode !== "fake" && provenance.mode !== "live") {
     issues.push(issue(entryId, "provenance.mode", "mode must be dry-run, fake, or live"));
   }
@@ -208,7 +210,7 @@ function parseEntry(entry: GeneratedAssetManifestEntryInput): { readonly ok: tru
     !validText(entry.negativePrompt) ||
     !isGenerationStatus(entry.status) ||
     !validText(entry.resourceId) ||
-    provenance?.generator !== "agy" ||
+    !isProvenanceGenerator(provenance?.generator) ||
     !isProvenanceMode(provenance.mode) ||
     !validText(provenance.promptVersion) ||
     !validText(provenance.createdAt)
@@ -230,7 +232,7 @@ function parseEntry(entry: GeneratedAssetManifestEntryInput): { readonly ok: tru
       resourceId: entry.resourceId,
       sha256: entry.sha256 ?? null,
       provenance: {
-        generator: "agy",
+        generator: provenance.generator,
         mode: provenance.mode,
         promptVersion: provenance.promptVersion,
         createdAt: provenance.createdAt,
@@ -241,6 +243,10 @@ function parseEntry(entry: GeneratedAssetManifestEntryInput): { readonly ok: tru
 
 function isGeneratedAssetTarget(value: string | undefined): value is GeneratedAssetTarget {
   return value !== undefined && GENERATED_ASSET_TARGETS.some((target) => target === value);
+}
+
+function isProvenanceGenerator(value: string | undefined): value is GeneratedAssetProvenance["generator"] {
+  return value === "agy" || value === "imagegen";
 }
 
 function isGenerationStatus(value: string | undefined): value is GenerationStatus {

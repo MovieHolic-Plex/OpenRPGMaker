@@ -22,7 +22,7 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   const state = editorState.get();
   if (state.selectedTile < 0 || (state.tool !== "paint" && state.tool !== "fill")) return;
   if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
-  const size = state.tool === "fill" ? 1 : state.brushSize;
+  const size = state.tool === "paint" && state.paintShape === "pen" ? state.brushSize : 1;
   const offset = Math.floor(size / 2);
   for (let y = spec.centerY - offset; y <= spec.centerY + offset; y++) {
     for (let x = spec.centerX - offset; x <= spec.centerX + offset; x++) {

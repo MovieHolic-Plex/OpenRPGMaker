@@ -1,0 +1,17 @@
+{
+  "testId": "play-canvas",
+  "hasCanvas": true,
+  "logical": {
+    "width": 320,
+    "height": 240
+  },
+  "display": {
+    "width": 640,
+    "height": 480
+  },
+  "screenshotProbe": {
+    "measurable": true,
+    "bytes": 2880,
+    "likelyNonblank": true
+  }
+}

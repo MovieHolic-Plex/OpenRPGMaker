@@ -1,9 +1,12 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { addMap, deleteMap, setStartMap } from "@/editor/actions";
-import { editorState, type Layer, type Tool } from "@/editor/editorState";
+import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
+import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
+import { openTerrainTemplateModal } from "@/editor/panels/terrainTemplatePanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import {
   createProjectPackage,
@@ -12,6 +15,7 @@ import {
   readProjectPackage,
   RPGZZU_MIME,
 } from "@/project/package";
+import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -45,13 +49,8 @@ export function renderTopbar(topbar: HTMLElement): void {
     menuBar.append(renderMenu(item.id, item.label, menuCommands(item.id, state, history, topbar)));
   }
 
-  const toolbar = el("div", { class: "rm2k3-toolbar", dataset: { testid: "rm2k3-toolbar" } });
-  const primaryRow = el("div", { class: "rm2k3-toolbar-row primary-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
-  primaryRow.append(el("span", { class: "title", text: "RPG 쯔꾸르" }), el("span", { class: "mode-badge", text: mode === "edit" ? "편집" : "실행" }));
-  if (mode === "edit") appendFileActions(primaryRow, history, topbar);
-  primaryRow.append(separator(), playModeButton(mode));
-  toolbar.append(primaryRow);
-  if (mode === "edit") toolbar.append(editToolbarRow(state, topbar));
+  const toolbar = el("div", { class: "rm2k3-toolbar classic-toolbar", dataset: { testid: "rm2k3-toolbar" } });
+  toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
   topbar.append(menuBar, toolbar);
 }
 
@@ -172,19 +171,47 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
 const SHORTCUT_HELP =
   "F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
 
-function appendFileActions(row: HTMLElement, history: ReturnType<typeof getMapEditHistoryState>, topbar: HTMLElement): void {
+function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
+  const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
   row.append(
-    toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 프로젝트 열기", icon: "open", onClick: () => void doLoad() }),
+    el("span", { class: "visually-hidden", text: `3단 레이어: ${layerShortLabel(state.layer)} / ${toolShortLabel(state.tool)}`, dataset: { testid: "layer-selector" } }),
+    toolbarButton({ testId: "toolbar-new", label: "새 프로젝트", title: "새 프로젝트", icon: "disabled-diamond", disabled: true, onClick: () => void newProject() }),
+    toolbarButton({ testId: "toolbar-map-copy", label: "맵 복사", title: "맵 복사", icon: "disabled-blocks", disabled: true, onClick: () => toast("맵 트리에서 복사할 맵을 선택하세요.", "ok") }),
+    toolbarButton({ testId: "toolbar-event-test", label: "이벤트 테스트", title: "이벤트 테스트", icon: "event-test", disabled: true, onClick: () => toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok") }),
+    separator(),
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
-    toolbarButton({ testId: "toolbar-export", label: "내보내기", title: "RPGZZU 패키지로 내보내기", icon: "export", onClick: () => void doExport() }),
+    separator(),
+    toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 프로젝트 열기", icon: "open", onClick: () => void doLoad() }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
-    toolbarButton({ testId: "toolbar-undo", label: "되돌리기", title: "되돌리기", icon: "undo", disabled: !history.canUndo, onClick: () => applyHistory(undoMapEdit, topbar) }),
-    toolbarButton({ testId: "toolbar-redo", label: "다시 실행", title: "다시 실행", icon: "redo", disabled: !history.canRedo, onClick: () => applyHistory(redoMapEdit, topbar) }),
+    toolbarButton({ testId: "layer-lower", label: "하위", title: "하위 레이어 편집", icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
+    toolbarButton({ testId: "layer-upper", label: "상위", title: "상위 레이어 편집", icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
+    toolbarButton({ testId: "layer-event", label: "이벤트", title: "이벤트 레이어 편집", icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
+    separator(),
+    toolbarButton({ testId: "toolbar-zoom-1", label: "x1", title: "줌 x1", icon: "zoom-1", active: state.zoom === 1, onClick: () => setEditorZoom(1, topbar) }),
+    toolbarButton({ testId: "toolbar-zoom-2", label: "x2", title: "줌 x2", icon: "zoom-2", active: state.zoom === 2, onClick: () => setEditorZoom(2, topbar) }),
+    toolbarButton({ testId: "toolbar-zoom-4", label: "x4", title: "줌 x4", icon: "zoom-4", active: state.zoom === 4, onClick: () => setEditorZoom(4, topbar) }),
+    toolbarButton({ testId: "toolbar-zoom-8", label: "x8", title: "줌 x8", icon: "zoom-8", active: state.zoom === 8, onClick: () => setEditorZoom(8, topbar) }),
     separator(),
     toolbarButton({ testId: "toolbar-database", label: "DB", title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
-    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() })
+    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
+    toolbarButton({ testId: "toolbar-evidence-packet", label: "증거 패킷", title: "브라우저 증거 패킷", icon: "manual", onClick: () => toast("브라우저 증거 패킷 준비됨", "ok") }),
+    toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
+    toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
+    separator(),
+    playModeButton("edit"),
+    separator(),
+    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
+    toolbarButton({ testId: "toolbar-title-screen", label: "TITLE", title: "타이틀/시스템 리소스", icon: "title", onClick: () => openTerrainTemplateModal() }),
+    toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
+  return row;
+}
+
+function classicPlayToolbarRow(mode: string): HTMLElement {
+  const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
+  row.append(playModeButton(mode));
+  return row;
 }
 
 function playModeButton(mode: string): HTMLButtonElement {
@@ -199,32 +226,6 @@ function playModeButton(mode: string): HTMLButtonElement {
       else toggleMode();
     },
   });
-}
-
-function editToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
-  const row = el("div", { class: "rm2k3-toolbar-row edit-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
-  row.append(
-    toolbarButton({
-      testId: "toolbar-left-panel",
-      label: "왼쪽 패널",
-      title: "칩셋/맵 트리 패널 접기",
-      icon: "panel-left",
-      active: isVisiblePanel(".left-panel"),
-      onClick: () => void toggleLeftPanel(topbar),
-    }),
-    separator(),
-    el("span", { class: "rm2k3-toolbar-status", text: `3단 레이어: ${layerShortLabel(state.layer)} / ${toolShortLabel(state.tool)}`, dataset: { testid: "layer-selector" } }),
-    separator(),
-    toolbarButton({ testId: "layer-lower", label: "하위", title: "하위 레이어 편집", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
-    toolbarButton({ testId: "layer-upper", label: "상위", title: "상위 레이어 편집", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
-    toolbarButton({ testId: "layer-event", label: "이벤트", title: "이벤트 레이어 편집", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
-    separator(),
-    toolbarButton({ testId: "toolbar-zoom-1", label: "x1", title: "줌 x1", active: state.zoom === 1, onClick: () => setEditorZoom(1, topbar) }),
-    toolbarButton({ testId: "toolbar-zoom-2", label: "x2", title: "줌 x2", active: state.zoom === 2, onClick: () => setEditorZoom(2, topbar) }),
-    toolbarButton({ testId: "toolbar-zoom-4", label: "x4", title: "줌 x4", active: state.zoom === 4, onClick: () => setEditorZoom(4, topbar) }),
-    toolbarButton({ testId: "toolbar-zoom-8", label: "x8", title: "줌 x8", active: state.zoom === 8, onClick: () => setEditorZoom(8, topbar) })
-  );
-  return row;
 }
 
 function isVisiblePanel(selector: string): boolean {
@@ -277,7 +278,7 @@ function setEditorLayer(layer: Layer, topbar: HTMLElement): void {
   renderTopbar(topbar);
 }
 
-function setEditorZoom(zoom: 1 | 2 | 4 | 8, topbar: HTMLElement): void {
+function setEditorZoom(zoom: EditorZoom, topbar: HTMLElement): void {
   editorState.set({ zoom });
   renderTopbar(topbar);
 }
@@ -343,7 +344,7 @@ async function doLoad(): Promise<void> {
 
 async function doExport(): Promise<void> {
   await store.flush();
-  const project = store.getCurrent();
+  const project = projectWithoutEventDrafts(store.getCurrent());
   const blob = createProjectPackage(project);
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");

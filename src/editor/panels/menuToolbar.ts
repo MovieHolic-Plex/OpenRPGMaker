@@ -8,6 +8,9 @@ export type ToolbarIcon =
   | "export"
   | "database"
   | "resources"
+  | "disabled-diamond"
+  | "disabled-blocks"
+  | "event-test"
   | "panel-left"
   | "panel-right"
   | "lower"
@@ -15,14 +18,23 @@ export type ToolbarIcon =
   | "event"
   | "pencil"
   | "bucket"
+  | "select"
+  | "rectangle"
+  | "round-terrain"
   | "hand"
   | "undo"
   | "redo"
+  | "zoom"
   | "zoom-1"
   | "zoom-2"
   | "zoom-4"
   | "zoom-8"
-  | "play";
+  | "play"
+  | "sound"
+  | "search"
+  | "window"
+  | "title"
+  | "manual";
 
 export interface ToolbarButtonSpec {
   readonly testId: string;
@@ -50,7 +62,10 @@ export function toolbarButton(spec: ToolbarButtonSpec): HTMLButtonElement {
       ...(spec.disabled ? { disabled: "true" } : {}),
     },
     children: spec.icon
-      ? [el("span", { class: `rm-tool-icon rm-tool-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } })]
+      ? [
+          el("span", { class: `rm-tool-icon rm-tool-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "visually-hidden", text: spec.label }),
+        ]
       : undefined,
     dataset: { testid: spec.testId },
     on: { click: spec.onClick },

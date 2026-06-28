@@ -2,30 +2,80 @@ import { el } from "@/util/dom";
 import {
   addEventPage,
   addEventPageCommand,
-  copyEventPage,
+  copyEventPageToClipboard,
   deleteEventPage,
-  moveEventPage,
-  setEventPageTextCommand,
+  hasCopiedEventPage,
+  pasteEventPage,
   triggerFromKind,
   updateEventPage,
 } from "@/editor/eventPages";
 import { newCommand } from "@/editor/eventActions";
 import { editorState } from "@/editor/editorState";
-import { field, selectedOptionValue, selectWithOptions } from "./dom";
+import { selectedOptionValue, selectWithOptions } from "./dom";
+import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
+import { renderPageConditions } from "./pageConditions";
+import { renderPageMovement } from "./pageMovement";
 import {
-  BOOLEAN_OPTIONS,
+  type EventEditorTriggerKind,
   EVENT_PRIORITY_OPTIONS,
   PAGE_COMMAND_BUTTONS,
   TRIGGER_OPTIONS,
+  commandKindLabel,
 } from "./options";
-import type { EventPage, EventPageCondition, GameEvent, MapId } from "@/project/types";
+import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
+
+export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+  const name = el("input", {
+    attrs: { type: "text" },
+    value: page.name,
+    dataset: { testid: "event-page-name-input" },
+  }) as HTMLInputElement;
+  name.addEventListener("change", () => updateEventPage(mapId, eventId, page.id, { name: name.value }));
+  return el("label", {
+    class: "event-editor-name-field",
+    dataset: { testid: "event-classic-name" },
+    children: [el("span", { text: "Name" }), name],
+  });
+}
 
 export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("div", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
   const pages = ev.pages ?? [];
+  wrap.append(
+    el("span", {
+      class: "event-classic-marker",
+      attrs: { "aria-hidden": "true" },
+      dataset: { testid: "event-classic-page-controls" },
+    }),
+    el("div", {
+      class: "event-page-action-buttons",
+      children: [
+        pageButton("New Page", "event-page-add", "페이지 추가", "new", () => addEventPage(mapId, ev.id)),
+        pageButton("Copy Page", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
+        pageButton(
+          "Paste Page",
+          "event-page-paste",
+          hasCopiedEventPage() ? "페이지 붙여넣기" : "아직 복사 버퍼가 없습니다.",
+          "paste",
+          () => pasteEventPage(mapId, ev.id),
+          !hasCopiedEventPage()
+        ),
+        pageButton("Delete Page", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id), pages.length <= 1),
+      ],
+    })
+  );
+  return wrap;
+}
+
+export function renderClassicPageTabStrip(ev: GameEvent, activePage: EventPage): HTMLElement {
+  const pages = ev.pages ?? [];
+  const pageButtons = el("div", {
+    class: "event-page-number-tabs",
+    dataset: { testid: "event-classic-page-tabs" },
+  });
   pages.forEach((page, index) => {
-    wrap.append(
+    pageButtons.append(
       el("button", {
         class: "btn" + (page.id === activePage.id ? " active" : ""),
         text: String(index + 1),
@@ -35,44 +85,28 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
       })
     );
   });
-  wrap.append(
-    el("button", {
-      class: "btn",
-      text: "+",
-      dataset: { testid: "event-page-add" },
-      attrs: { title: "페이지 추가" },
-      on: { click: () => addEventPage(mapId, ev.id) },
-    }),
-    el("button", {
-      class: "btn",
-      text: "복사",
-      dataset: { testid: "event-page-copy" },
-      attrs: { title: "페이지 복사" },
-      on: { click: () => copyEventPage(mapId, ev.id, activePage.id) },
-    }),
-    el("button", {
-      class: "btn",
-      text: "↑",
-      dataset: { testid: "event-page-move-up" },
-      attrs: { title: "앞 페이지로 이동" },
-      on: { click: () => moveEventPage(mapId, ev.id, activePage.id, -1) },
-    }),
-    el("button", {
-      class: "btn",
-      text: "↓",
-      dataset: { testid: "event-page-move-down" },
-      attrs: { title: "뒤 페이지로 이동" },
-      on: { click: () => moveEventPage(mapId, ev.id, activePage.id, 1) },
-    }),
-    el("button", {
-      class: "btn danger",
-      text: "×",
-      dataset: { testid: "event-page-delete" },
-      attrs: { title: "페이지 삭제" },
-      on: { click: () => deleteEventPage(mapId, ev.id, activePage.id) },
-    })
-  );
-  return wrap;
+  return pageButtons;
+}
+
+function pageButton(
+  text: string,
+  testId: string,
+  title: string,
+  icon: "new" | "copy" | "paste" | "delete",
+  onClick?: () => void,
+  disabled = false
+): HTMLButtonElement {
+  const attrs: Record<string, string> = disabled ? { title, disabled: "" } : { title };
+  return el("button", {
+    class: `btn event-page-action-button ${disabled ? "disabled" : ""}`,
+    children: [
+      el("span", { class: `event-page-button-icon event-page-button-icon-${icon}`, attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "event-page-button-label", text }),
+    ],
+    dataset: { testid: testId },
+    attrs,
+    on: onClick ? { click: onClick } : undefined,
+  }) as HTMLButtonElement;
 }
 
 export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
@@ -80,7 +114,7 @@ export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: Ev
     class: "panel-section page-command-catalog",
     dataset: { testid: "page-command-catalog" },
   });
-  wrap.append(el("h3", { text: "페이지 명령" }));
+  wrap.append(el("h3", { text: "명령 삽입" }));
   const row = el("div", { class: "command-catalog-row" });
   for (const button of PAGE_COMMAND_BUTTONS) {
     row.append(
@@ -94,41 +128,29 @@ export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: Ev
       })
     );
   }
-  wrap.append(row);
-  // summary는 카탈로그와 분리되어 dynamic 영역에서 별도 렌더링한다
-  // (renderPageCommandSummary). 카탈로그가 정적(stable) 영역에 있어도
-  // summary는 매 store 변경 시 최신 commands를 반영한다.
-  wrap.append(renderPageCommandSummary(page));
+  wrap.append(row, renderPageCommandSummary(page));
   return wrap;
 }
 
-// 페이지 명령 요약 — 카탈로그와 분리하여 dynamic 영역에서 개별 렌더링 가능.
 export function renderPageCommandSummary(page: EventPage): HTMLElement {
   return el("div", {
     class: "empty-hint",
-    text: page.commands.map((command) => command.kind).join(" -> "),
+    text: page.commands.map((command) => commandLabel(command.kind)).join(" -> "),
     dataset: { testid: "page-command-summary" },
   });
 }
 
+function commandLabel(kind: Command["kind"]): string {
+  return commandKindLabel(kind);
+}
+
 export function renderEventPageProps(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const wrap = el("div", { class: "event-page-props", dataset: { testid: "event-page-props" } });
-  wrap.append(el("h3", { text: "페이지" }));
-
-  const name = el("input", {
-    attrs: { type: "text" },
-    value: page.name,
-    dataset: { testid: "event-page-name-input" },
-  }) as HTMLInputElement;
-  name.addEventListener("change", () => updateEventPage(mapId, eventId, page.id, { name: name.value }));
-  wrap.append(field("이름", name));
-
-  const trigger = selectWithOptions(TRIGGER_OPTIONS, page.trigger.kind, "event-page-trigger-select");
+  const trigger = selectWithOptions(TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger), "event-page-trigger-select");
   trigger.addEventListener("change", () => {
-    const kind = selectedOptionValue(trigger, TRIGGER_OPTIONS, page.trigger.kind);
+    const kind = selectedOptionValue(trigger, TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger));
     updateEventPage(mapId, eventId, page.id, { trigger: triggerFromKind(kind) });
   });
-  wrap.append(field("트리거", trigger));
 
   const priority = selectWithOptions(EVENT_PRIORITY_OPTIONS, page.priority, "event-page-priority-select");
   priority.addEventListener("change", () => {
@@ -136,19 +158,115 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       priority: selectedOptionValue(priority, EVENT_PRIORITY_OPTIONS, page.priority),
     });
   });
-  wrap.append(field("우선순위", priority));
 
-  wrap.append(field("그래픽", graphicControl(mapId, eventId, page)));
+  const overlap = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
+  overlap.disabled = true;
 
-  wrap.append(field("스위치 조건", switchConditionInputs(mapId, eventId, page)));
-  wrap.append(field("텍스트 명령", textCommandInputs(mapId, eventId, page)));
+  wrap.append(
+    rm2k3Fieldset(
+      "조건",
+      el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page) }),
+      "event-classic-conditions"
+    ),
+    el("div", {
+      class: "event-page-bottom-grid",
+      children: [
+        el("div", {
+          class: "event-page-bottom-left",
+          dataset: { testid: "event-page-bottom-left" },
+          children: [
+            rm2k3Fieldset("그래픽", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+            rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
+          ],
+        }),
+        el("div", {
+          class: "event-page-bottom-right",
+          dataset: { testid: "event-page-bottom-right" },
+          children: [
+            rm2k3Fieldset("트리거", trigger, "event-classic-trigger"),
+            renderEventPageSafetyWarning(page),
+            rm2k3Fieldset("우선순위", el("div", {
+              class: "event-priority-block",
+              children: [
+                priority,
+                el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
+              ],
+            })),
+            rm2k3Fieldset("애니메이션 유형", disabledSelect(), "event-classic-animation-type"),
+            rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
+          ],
+        }),
+      ],
+    })
+  );
   return wrap;
+}
+
+function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
+  const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
+  const hasGateCondition = page.conditions.some((condition) => condition.kind === "switch" || condition.kind === "variable");
+  return el("div", {
+    class: "event-page-safety-warning" + (riskyTrigger && !hasGateCondition ? "" : " hidden"),
+    text: "조건 없는 자동/병렬 이벤트는 반복 실행될 수 있습니다.",
+    dataset: { testid: "event-page-safety-warning" },
+  });
+}
+
+function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HTMLElement {
+  const fieldset = el("fieldset", {
+    class: "event-rm2k3-fieldset",
+    dataset: testId ? { testid: testId } : undefined,
+  });
+  fieldset.append(el("legend", { text: title }), content);
+  return fieldset;
+}
+
+function disabledSelect(): HTMLSelectElement {
+  const select = el("select", {
+    attrs: { disabled: "" },
+    dataset: { testid: "event-page-animation-type" },
+  }) as HTMLSelectElement;
+  select.append(el("option", { text: "보통" }));
+  return select;
+}
+
+function movementSpeedSelect(mapId: MapId, eventId: string, page: EventPage): HTMLSelectElement {
+  const select = el("select", { dataset: { testid: "event-page-movement-speed-select" } }) as HTMLSelectElement;
+  for (let speed = 1; speed <= 6; speed += 1) {
+    select.append(el("option", { attrs: { value: String(speed) }, text: movementSpeedLabel(speed) }));
+  }
+  select.value = String(page.movement.speed);
+  select.addEventListener("change", () => {
+    updateEventPage(mapId, eventId, page.id, {
+      movement: { ...page.movement, speed: parseInt(select.value, 10) || page.movement.speed },
+    });
+  });
+  return select;
+}
+
+function movementSpeedLabel(speed: number): string {
+  switch (speed) {
+    case 1:
+      return "1: x8 느림";
+    case 2:
+      return "2: x4 느림";
+    case 3:
+      return "3: x2 느림";
+    case 4:
+      return "4: 보통";
+    case 5:
+      return "5: x2 빠름";
+    case 6:
+      return "6: x4 빠름";
+    default:
+      return String(speed);
+  }
 }
 
 function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const control = el("div", { class: "event-graphic-control", dataset: { testid: "event-page-graphic-control" } });
   const spriteInput = el("input", {
-    attrs: { type: "text", placeholder: "Graphic ID, e.g. tex_easyrpg_charset_people1" },
+    attrs: { type: "text", placeholder: "그래픽 ID" },
     value: page.graphic.sprite?.id ?? "",
     dataset: { testid: "event-page-sprite-input" },
   });
@@ -158,11 +276,17 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
       graphic: id ? { ...page.graphic, sprite: { type: "bundled", id } } : graphicWithoutSprite(page),
     });
   });
+  const transparent = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
+  transparent.checked = page.graphic.transparent ?? false;
+  transparent.addEventListener("change", () => {
+    updateEventPage(mapId, eventId, page.id, { graphic: { ...page.graphic, transparent: transparent.checked } });
+  });
   control.append(
-    el("div", { class: "event-graphic-summary", text: page.graphic.sprite?.id ?? "(none)" }),
+    renderEventGraphicPreview(page.graphic),
+    el("label", { class: "event-graphic-transparent", children: [transparent, el("span", { text: "투명" })] }),
     el("button", {
       class: "btn",
-      text: "Set...",
+      text: "설정",
       dataset: { testid: "event-page-graphic-set" },
       on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
     }),
@@ -175,51 +299,15 @@ function graphicWithoutSprite(page: EventPage): EventPage["graphic"] {
   return page.graphic.transparent === undefined ? {} : { transparent: page.graphic.transparent };
 }
 
-function switchConditionInputs(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
-  const switchCondition = page.conditions.find((condition) => condition.kind === "switch");
-  const switchInput = el("input", {
-    attrs: { type: "text", placeholder: "스위치 ID" },
-    value: switchCondition?.kind === "switch" ? switchCondition.switchId : "",
-    dataset: { testid: "event-page-switch-condition-input" },
-  }) as HTMLInputElement;
-  const switchValue = selectWithOptions(
-    BOOLEAN_OPTIONS,
-    switchCondition?.kind === "switch" ? String(switchCondition.value) : "true",
-    "event-page-switch-condition-value"
-  );
-  const applySwitchCondition = () => {
-    const next: EventPageCondition[] = page.conditions.filter((condition) => condition.kind !== "switch");
-    const switchId = switchInput.value.trim();
-    if (switchId) {
-      next.push({ kind: "switch", switchId, value: switchValue.value === "true" });
-    }
-    updateEventPage(mapId, eventId, page.id, { conditions: next });
-  };
-  switchInput.addEventListener("change", applySwitchCondition);
-  switchValue.addEventListener("change", applySwitchCondition);
-  const conditionRow = el("div", {});
-  conditionRow.append(switchInput, switchValue);
-  return conditionRow;
-}
-
-function textCommandInputs(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
-  const firstText = page.commands.find((command) => command.kind === "text");
-  const speaker = el("input", {
-    attrs: { type: "text", placeholder: "화자" },
-    value: firstText?.kind === "text" ? firstText.speaker ?? "" : "",
-    dataset: { testid: "event-page-speaker-input" },
-  }) as HTMLInputElement;
-  const body = el("textarea", {
-    attrs: { placeholder: "대화 내용" },
-    dataset: { testid: "event-page-textarea" },
-  }) as HTMLTextAreaElement;
-  body.value = firstText?.kind === "text" ? firstText.body : "";
-  const applyText = () => {
-    setEventPageTextCommand(mapId, eventId, page.id, speaker.value.trim() || undefined, body.value);
-  };
-  speaker.addEventListener("change", applyText);
-  body.addEventListener("change", applyText);
-  const textBox = el("div", {});
-  textBox.append(speaker, body);
-  return textBox;
+function eventEditorTriggerKind(trigger: Trigger): EventEditorTriggerKind {
+  switch (trigger.kind) {
+    case "touch":
+      return "playerTouch";
+    case "action":
+    case "playerTouch":
+    case "eventTouch":
+    case "auto":
+    case "parallel":
+      return trigger.kind;
+  }
 }

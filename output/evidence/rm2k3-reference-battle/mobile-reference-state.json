@@ -1,0 +1,208 @@
+{
+  "actors": [
+    {
+      "left": 198.3203125,
+      "right": 254.3203125,
+      "top": 297,
+      "bottom": 353,
+      "width": 56,
+      "height": 56,
+      "resourceId": "generated-actor-hero-01-battle",
+      "facing": "left",
+      "name": "Zack"
+    },
+    {
+      "left": 300.1015625,
+      "right": 356.1015625,
+      "top": 315,
+      "bottom": 371,
+      "width": 56,
+      "height": 56,
+      "resourceId": "generated-actor-hero-02-battle",
+      "facing": "left",
+      "name": "Albert"
+    },
+    {
+      "left": 190.3203125,
+      "right": 246.3203125,
+      "top": 572,
+      "bottom": 628,
+      "width": 56,
+      "height": 56,
+      "resourceId": "generated-actor-hero-03-battle",
+      "facing": "left",
+      "name": "Burns"
+    },
+    {
+      "left": 294.1015625,
+      "right": 350.1015625,
+      "top": 592,
+      "bottom": 648,
+      "width": 56,
+      "height": 56,
+      "resourceId": "generated-actor-hero-04-battle",
+      "facing": "left",
+      "name": "Klaus"
+    }
+  ],
+  "enemies": [
+    {
+      "left": 33.109375,
+      "right": 109.109375,
+      "top": 175,
+      "bottom": 287,
+      "width": 76,
+      "height": 112,
+      "resourceId": "generated-enemy-sylph-hornet",
+      "facing": "right"
+    },
+    {
+      "left": 111.328125,
+      "right": 187.328125,
+      "top": 175,
+      "bottom": 287,
+      "width": 76,
+      "height": 112,
+      "resourceId": "generated-enemy-sylph-hornet",
+      "facing": "right"
+    },
+    {
+      "left": 33.109375,
+      "right": 109.109375,
+      "top": 445,
+      "bottom": 557,
+      "width": 76,
+      "height": 112,
+      "resourceId": "generated-enemy-slime-01",
+      "facing": "right"
+    },
+    {
+      "left": 111.328125,
+      "right": 187.328125,
+      "top": 445,
+      "bottom": 557,
+      "width": 76,
+      "height": 112,
+      "resourceId": "generated-enemy-ontology-8da61312",
+      "facing": "right"
+    }
+  ],
+  "enemyList": [
+    "Sylph",
+    "Sylph",
+    "Slime",
+    "Slime"
+  ],
+  "icons": [
+    {
+      "left": 62.109375,
+      "right": 80.109375,
+      "top": 171.32000732421875,
+      "bottom": 189.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 140.328125,
+      "right": 158.328125,
+      "top": 171.32000732421875,
+      "bottom": 189.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 62.109375,
+      "right": 80.109375,
+      "top": 441.32000732421875,
+      "bottom": 459.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 140.328125,
+      "right": 158.328125,
+      "top": 441.32000732421875,
+      "bottom": 459.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 217.3203125,
+      "right": 235.3203125,
+      "top": 285.32000732421875,
+      "bottom": 303.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 308.1015625,
+      "right": 326.1015625,
+      "top": 303.32000732421875,
+      "bottom": 321.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 330.1015625,
+      "right": 348.1015625,
+      "top": 303.32000732421875,
+      "bottom": 321.32000732421875,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 209.3203125,
+      "right": 227.3203125,
+      "top": 560.3200073242188,
+      "bottom": 578.3200073242188,
+      "width": 18,
+      "height": 18
+    },
+    {
+      "left": 313.1015625,
+      "right": 331.1015625,
+      "top": 580.3200073242188,
+      "bottom": 598.3200073242188,
+      "width": 18,
+      "height": 18
+    }
+  ],
+  "actorRows": [
+    "Zack정상385T",
+    "Albert정상362T",
+    "Burns정상339T",
+    "Klaus정상316T"
+  ],
+  "scene": {
+    "left": 23,
+    "right": 367,
+    "top": 49,
+    "bottom": 821,
+    "width": 344,
+    "height": 772
+  },
+  "field": {
+    "left": 26,
+    "right": 364,
+    "top": 52,
+    "bottom": 656,
+    "width": 338,
+    "height": 604
+  },
+  "leftHud": {
+    "left": 26,
+    "right": 147.6796875,
+    "top": 664,
+    "bottom": 818,
+    "width": 121.6796875,
+    "height": 154
+  },
+  "rightHud": {
+    "left": 155.6796875,
+    "right": 364,
+    "top": 664,
+    "bottom": 818,
+    "width": 208.3203125,
+    "height": 154
+  }
+}

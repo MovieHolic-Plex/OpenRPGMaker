@@ -1,0 +1,13 @@
+{
+  "route": "http://127.0.0.1:5187/?supabaseRecovered=1&supabaseRootCacheEvidence=1",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    "store loads Supabase canonical project",
+    "25 generated resources exist in current_json.assets.uploaded as dataUrl",
+    "browser Cache API stores the same 25 resources",
+    "resource manager opens without local-file dependency"
+  ]
+}

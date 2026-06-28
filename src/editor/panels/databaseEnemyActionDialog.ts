@@ -1,0 +1,193 @@
+import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { selectField } from "@/editor/panels/databaseControls";
+import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/databaseEnemyRecordSupport";
+import { store } from "@/project/store";
+import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord } from "@/project/types";
+import { el } from "@/util/dom";
+
+let actionClipboard: EnemyActionPattern | undefined;
+
+export function openActionDialog(record: EnemyRecord, index: number, action: EnemyActionPattern, rerender: () => void): void {
+  let nextAction: EnemyActionPattern = { ...action, condition: { ...action.condition } };
+  const rating = numberInput("db-enemy-action-rating", 1, 100, nextAction.priority);
+  const conditionType = conditionSelect(nextAction.condition.kind);
+  const start = numberInput("db-enemy-action-turn-start", 1, 999, nextAction.condition.kind === "turn" ? nextAction.condition.start : 1);
+  const interval = numberInput("db-enemy-action-turn-interval", 1, 999, nextAction.condition.kind === "turn" ? nextAction.condition.interval : 1);
+  const skill = skillSelect(nextAction.skillId, (skillId) => {
+    nextAction = { ...nextAction, skillId };
+  });
+  const switchOn = switchEffectField("db-enemy-action-switch-on", nextAction.switchOnAfterAction, (effect) => {
+    nextAction = { ...nextAction, switchOnAfterAction: effect };
+  });
+  const switchOff = switchEffectField("db-enemy-action-switch-off", nextAction.switchOffAfterAction, (effect) => {
+    nextAction = { ...nextAction, switchOffAfterAction: effect };
+  });
+  const syncAction = (): void => {
+    const condition: EnemyActionCondition = conditionType.value === "turn"
+      ? { kind: "turn", start: Number(start.value), interval: Number(interval.value) }
+      : { kind: "always" };
+    nextAction = { ...nextAction, priority: Number(rating.value), condition };
+  };
+  for (const input of [rating, conditionType, start, interval]) input.addEventListener("input", syncAction);
+  openDialog("db-enemy-action-dialog", "공격 패턴", [
+    panel("조건", [conditionHeader(conditionType, rating), conditionDetail(start, interval)]),
+    panel("행동 후 스위치 ON", [switchOn]),
+    panel("행동 후 스위치 OFF", [switchOff]),
+    panel("행동", [basicActionMode(skill)]),
+  ], [
+    { label: "OK", testid: "db-enemy-action-ok", action: () => {
+      syncAction();
+      updateDatabaseRecord("enemies", record.id, { actions: replaceAction(currentEnemy(record).actions, index, nextAction) });
+      rerender();
+    } },
+    { label: "Cancel", testid: "db-enemy-action-cancel" },
+  ]);
+}
+
+export function openActionContextMenu(record: EnemyRecord, index: number, action: EnemyActionPattern, event: MouseEvent, rerender: () => void): void {
+  event.preventDefault();
+  document.querySelector(".db-enemy-context-menu")?.remove();
+  document.querySelectorAll(".db-enemy-action-context-target").forEach((node) => node.classList.remove("db-enemy-action-context-target"));
+  (event.currentTarget as HTMLElement | null)?.classList.add("db-enemy-action-context-target");
+  const menu = el("div", {
+    class: "db-enemy-context-menu",
+    dataset: { testid: "db-enemy-action-context-menu" },
+    children: contextMenuActions(record, index, action, rerender),
+  });
+  const close = (): void => {
+    menu.remove();
+    document.querySelectorAll(".db-enemy-action-context-target").forEach((node) => node.classList.remove("db-enemy-action-context-target"));
+  };
+  menu.addEventListener("click", close);
+  setTimeout(() => document.addEventListener("click", close, { once: true }), 0);
+  document.body.append(menu);
+  const rect = menu.getBoundingClientRect();
+  menu.style.left = `${Math.max(0, Math.min(event.clientX, window.innerWidth - rect.width - 4))}px`;
+  menu.style.top = `${Math.max(0, Math.min(event.clientY, window.innerHeight - rect.height - 4))}px`;
+}
+
+function contextMenuActions(record: EnemyRecord, index: number, action: EnemyActionPattern, rerender: () => void): HTMLElement[] {
+  return [
+    contextMenuButton("edit", "편집...", "Enter", "db-enemy-action-context-edit", () => openActionDialog(record, index, action, rerender)),
+    contextMenuButton("cut", "잘라내기", "Ctrl+X", "db-enemy-action-context-cut", () => {
+      actionClipboard = cloneAction(action);
+      updateDatabaseRecord("enemies", record.id, { actions: removeAction(currentEnemy(record).actions, index) });
+      rerender();
+    }),
+    contextMenuButton("copy", "복사", "Ctrl+C", "db-enemy-action-context-copy", () => {
+      actionClipboard = cloneAction(action);
+    }),
+    contextMenuButton("paste", "붙여넣기", "Ctrl+V", "db-enemy-action-context-paste", () => {
+      if (!actionClipboard) return;
+      updateDatabaseRecord("enemies", record.id, { actions: insertAction(currentEnemy(record).actions, index + 1, cloneAction(actionClipboard)) });
+      rerender();
+    }, !actionClipboard),
+    contextMenuButton("delete", "삭제", "Del", "db-enemy-action-context-delete", () => {
+      updateDatabaseRecord("enemies", record.id, { actions: removeAction(currentEnemy(record).actions, index) });
+      rerender();
+    }),
+  ];
+}
+
+function conditionSelect(value: EnemyActionCondition["kind"]): HTMLSelectElement {
+  const select = el("select", { dataset: { testid: "db-enemy-action-condition-type" } }) as HTMLSelectElement;
+  select.append(el("option", { text: "항상", attrs: { value: "always" } }), el("option", { text: "턴", attrs: { value: "turn" } }));
+  select.value = value;
+  return select;
+}
+
+function conditionHeader(conditionType: HTMLSelectElement, rating: HTMLInputElement): HTMLElement {
+  return el("div", {
+    class: "db-enemy-action-condition-grid",
+    children: [el("label", { class: "db-field", children: [el("span", { text: "종류" }), conditionType] }), numberFieldNode("우선도", rating)],
+  });
+}
+
+function conditionDetail(start: HTMLInputElement, interval: HTMLInputElement): HTMLElement {
+  return el("div", { class: "db-enemy-condition-detail", children: [numberFieldNode("시작", start), numberFieldNode("간격", interval)] });
+}
+
+function skillSelect(value: string, onChange: (value: string) => void): HTMLElement {
+  return selectField("스킬", "db-picker-enemy-action-skill", value, store.getCurrent().database.skills, onChange);
+}
+
+function switchEffectField(testid: string, effect: EnemyActionSwitchEffect, onChange: (effect: EnemyActionSwitchEffect) => void): HTMLElement {
+  const checkbox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `${testid}-enabled` } }) as HTMLInputElement;
+  checkbox.checked = effect.enabled;
+  const select = el("select", { dataset: { testid: `${testid}-id` } }) as HTMLSelectElement;
+  for (const option of switchOptions()) select.append(el("option", { text: option.name, attrs: { value: option.id } }));
+  select.value = effect.switchId ?? switchOptions()[0]?.id ?? "";
+  const sync = (): void => onChange({ enabled: checkbox.checked, switchId: select.value || undefined });
+  checkbox.addEventListener("change", sync);
+  select.addEventListener("change", sync);
+  return el("div", {
+    class: "db-enemy-switch-effect",
+    children: [el("label", { class: "actor-check", children: [checkbox, el("span", { text: "사용" })] }), select, el("button", { class: "btn small", text: "...", attrs: { type: "button" }, dataset: { testid: `${testid}-picker` } })],
+  });
+}
+
+function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
+  const switches = store.getCurrent().switches;
+  if (switches.length > 0) return switches.map((entry, index) => ({ id: entry.id, name: `${String(index + 1).padStart(4, "0")}:${entry.name}` }));
+  return [{ id: "switch_original", name: "0001:오리지널" }];
+}
+
+function basicActionMode(skill: HTMLElement): HTMLElement {
+  return el("div", {
+    class: "db-enemy-behaviour-mode",
+    children: [radioRow("기본 행동", true, skill), radioRow("스킬", false, disabledSelect()), radioRow("변신", false, disabledSelect())],
+  });
+}
+
+function radioRow(label: string, checked: boolean, control: HTMLElement): HTMLElement {
+  const radio = el("input", { attrs: { type: "radio", name: "db-enemy-action-behaviour" } }) as HTMLInputElement;
+  radio.checked = checked;
+  if (!checked) radio.disabled = true;
+  return el("div", { class: "db-enemy-behaviour-row", children: [el("label", { class: "actor-check", children: [radio, el("span", { text: label })] }), control] });
+}
+
+function disabledSelect(): HTMLElement {
+  const select = el("select") as HTMLSelectElement;
+  select.disabled = true;
+  return select;
+}
+
+function numberInput(testid: string, min: number, max: number, value: number): HTMLInputElement {
+  return el("input", { attrs: { type: "number", min: String(min), max: String(max) }, value, dataset: { testid } }) as HTMLInputElement;
+}
+
+function numberFieldNode(label: string, input: HTMLInputElement): HTMLElement {
+  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
+}
+
+function removeAction(actions: readonly EnemyActionPattern[], index: number): EnemyActionPattern[] {
+  return actions.filter((_, actionIndex) => actionIndex !== index);
+}
+
+function insertAction(actions: readonly EnemyActionPattern[], index: number, action: EnemyActionPattern): EnemyActionPattern[] {
+  const next = [...actions];
+  next.splice(index, 0, action);
+  return next;
+}
+
+function cloneAction(action: EnemyActionPattern): EnemyActionPattern {
+  return {
+    ...action,
+    condition: { ...action.condition },
+    switchOnAfterAction: { ...action.switchOnAfterAction },
+    switchOffAfterAction: { ...action.switchOffAfterAction },
+  };
+}
+
+function contextMenuButton(icon: string, label: string, shortcut: string, testid: string, action: () => void, disabled = false): HTMLElement {
+  const button = el("button", {
+    attrs: { type: "button" },
+    dataset: { testid },
+    children: [el("span", { class: `db-enemy-menu-icon ${icon}` }), el("span", { text: label }), el("kbd", { text: shortcut })],
+    on: { click: () => {
+      if (!disabled) action();
+    } },
+  }) as HTMLButtonElement;
+  button.disabled = disabled;
+  return button;
+}

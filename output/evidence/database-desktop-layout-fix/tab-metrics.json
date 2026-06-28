@@ -1,0 +1,3573 @@
+[
+  {
+    "slug": "actors",
+    "testId": "db-tab-actors",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-actors.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "actors",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 178,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 352,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 177,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 360,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 177,
+          "scrollWidth": 177,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 360,
+            "y": 166,
+            "width": 832,
+            "height": 644,
+            "left": 360,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 830,
+          "scrollWidth": 830,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 369,
+            "y": 262,
+            "width": 814,
+            "height": 539,
+            "left": 369,
+            "top": 262,
+            "right": 1183,
+            "bottom": 801
+          },
+          "clientHeight": 539,
+          "scrollHeight": 539,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 814,
+          "scrollWidth": 814,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 369,
+            "y": 262,
+            "width": 814,
+            "height": 539,
+            "left": 369,
+            "top": 262,
+            "right": 1183,
+            "bottom": 801
+          },
+          "clientHeight": 539,
+          "scrollHeight": 539,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 814,
+          "scrollWidth": 814,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "classes",
+    "testId": "db-tab-classes",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-classes.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "classes",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 248,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 422,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 538,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 2045,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 2045,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "skills",
+    "testId": "db-tab-skills",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-skills.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "skills",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 248,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 422,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 776,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 776,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "items",
+    "testId": "db-tab-items",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-items.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "items",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 248,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 422,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 598,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 525,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 525,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "equipment",
+    "testId": "db-tab-equipment",
+    "recordRail": true,
+    "wide": true,
+    "captureBottom": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-equipment.png",
+    "bottomScreenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-equipment-bottom.png",
+    "metrics": {
+      "tab": "equipment",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 248,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 422,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1485,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1485,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": {
+      "before": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1485,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1485,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ],
+      "after": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1485,
+          "scrollTop": 960,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1485,
+          "scrollTop": 960,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    }
+  },
+  {
+    "slug": "enemies",
+    "testId": "db-tab-enemies",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-enemies.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "enemies",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 57,
+        "y": 157,
+        "width": 1252,
+        "height": 651,
+        "left": 57,
+        "top": 157,
+        "right": 1309,
+        "bottom": 808
+      },
+      "footer": {
+        "x": 57,
+        "y": 808,
+        "width": 1252,
+        "height": 50,
+        "left": 57,
+        "top": 808,
+        "right": 1309,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1250,
+      "bodyScrollWidth": 1250,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 74,
+        "y": 168,
+        "width": 265,
+        "height": 631,
+        "left": 74,
+        "top": 168,
+        "right": 339,
+        "bottom": 799
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 57,
+            "y": 66,
+            "width": 1252,
+            "height": 742,
+            "left": 57,
+            "top": 66,
+            "right": 1309,
+            "bottom": 808
+          },
+          "clientHeight": 742,
+          "scrollHeight": 742,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1252,
+          "scrollWidth": 1252,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 57,
+            "y": 157,
+            "width": 1252,
+            "height": 651,
+            "left": 57,
+            "top": 157,
+            "right": 1309,
+            "bottom": 808
+          },
+          "clientHeight": 649,
+          "scrollHeight": 649,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1250,
+          "scrollWidth": 1250,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 74,
+            "y": 197,
+            "width": 265,
+            "height": 520,
+            "left": 74,
+            "top": 197,
+            "right": 339,
+            "bottom": 717
+          },
+          "clientHeight": 518,
+          "scrollHeight": 609,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 263,
+          "scrollWidth": 263,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 355,
+            "y": 168,
+            "width": 937,
+            "height": 631,
+            "left": 355,
+            "top": 168,
+            "right": 1292,
+            "bottom": 799
+          },
+          "clientHeight": 631,
+          "scrollHeight": 631,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 937,
+          "scrollWidth": 937,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 355,
+            "y": 168,
+            "width": 937,
+            "height": 631,
+            "left": 355,
+            "top": 168,
+            "right": 1292,
+            "bottom": 799
+          },
+          "clientHeight": 631,
+          "scrollHeight": 684,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 937,
+          "scrollWidth": 968,
+          "scrollableX": true
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 355,
+            "y": 168,
+            "width": 937,
+            "height": 631,
+            "left": 355,
+            "top": 168,
+            "right": 1292,
+            "bottom": 799
+          },
+          "clientHeight": 631,
+          "scrollHeight": 684,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 937,
+          "scrollWidth": 968,
+          "scrollableX": true
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "troops",
+    "testId": "db-tab-troops",
+    "recordRail": true,
+    "wide": true,
+    "captureBottom": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-troops.png",
+    "bottomScreenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-troops-bottom.png",
+    "metrics": {
+      "tab": "troops",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 57,
+        "y": 157,
+        "width": 1252,
+        "height": 662,
+        "left": 57,
+        "top": 157,
+        "right": 1309,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 57,
+        "y": 819,
+        "width": 1252,
+        "height": 39,
+        "left": 57,
+        "top": 819,
+        "right": 1309,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1250,
+      "bodyScrollWidth": 1250,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 68,
+        "y": 168,
+        "width": 242,
+        "height": 642,
+        "left": 68,
+        "top": 168,
+        "right": 310,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 57,
+            "y": 66,
+            "width": 1252,
+            "height": 753,
+            "left": 57,
+            "top": 66,
+            "right": 1309,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1252,
+          "scrollWidth": 1252,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 57,
+            "y": 157,
+            "width": 1252,
+            "height": 662,
+            "left": 57,
+            "top": 157,
+            "right": 1309,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1250,
+          "scrollWidth": 1250,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 68,
+            "y": 198,
+            "width": 242,
+            "height": 520,
+            "left": 68,
+            "top": 198,
+            "right": 310,
+            "bottom": 718
+          },
+          "clientHeight": 518,
+          "scrollHeight": 518,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 240,
+          "scrollWidth": 240,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 642,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 974,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 570,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 738
+          },
+          "clientHeight": 570,
+          "scrollHeight": 570,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 1048,
+          "scrollableX": true
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 570,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 738
+          },
+          "clientHeight": 570,
+          "scrollHeight": 570,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 1048,
+          "scrollableX": true
+        }
+      ]
+    },
+    "scrollAfterBottom": {
+      "before": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 57,
+            "y": 66,
+            "width": 1252,
+            "height": 753,
+            "left": 57,
+            "top": 66,
+            "right": 1309,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1252,
+          "scrollWidth": 1252,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 57,
+            "y": 157,
+            "width": 1252,
+            "height": 662,
+            "left": 57,
+            "top": 157,
+            "right": 1309,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1250,
+          "scrollWidth": 1250,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 68,
+            "y": 198,
+            "width": 242,
+            "height": 520,
+            "left": 68,
+            "top": 198,
+            "right": 310,
+            "bottom": 718
+          },
+          "clientHeight": 518,
+          "scrollHeight": 518,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 240,
+          "scrollWidth": 240,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 642,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 974,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 570,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 738
+          },
+          "clientHeight": 570,
+          "scrollHeight": 570,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 1048,
+          "scrollableX": true
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 570,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 738
+          },
+          "clientHeight": 570,
+          "scrollHeight": 570,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 1048,
+          "scrollableX": true
+        }
+      ],
+      "after": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 57,
+            "y": 66,
+            "width": 1252,
+            "height": 753,
+            "left": 57,
+            "top": 66,
+            "right": 1309,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1252,
+          "scrollWidth": 1252,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 57,
+            "y": 157,
+            "width": 1252,
+            "height": 662,
+            "left": 57,
+            "top": 157,
+            "right": 1309,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1250,
+          "scrollWidth": 1250,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 68,
+            "y": 198,
+            "width": 242,
+            "height": 520,
+            "left": 68,
+            "top": 198,
+            "right": 310,
+            "bottom": 718
+          },
+          "clientHeight": 518,
+          "scrollHeight": 518,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 240,
+          "scrollWidth": 240,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 642,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 974,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 570,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 738
+          },
+          "clientHeight": 570,
+          "scrollHeight": 570,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 1048,
+          "scrollableX": true
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 324,
+            "y": 168,
+            "width": 974,
+            "height": 570,
+            "left": 324,
+            "top": 168,
+            "right": 1298,
+            "bottom": 738
+          },
+          "clientHeight": 570,
+          "scrollHeight": 570,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 974,
+          "scrollWidth": 1048,
+          "scrollableX": true
+        }
+      ]
+    }
+  },
+  {
+    "slug": "elements",
+    "testId": "db-tab-elements",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-elements.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "elements",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 672,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 176,
+            "y": 170,
+            "width": 1014,
+            "height": 642,
+            "left": 176,
+            "top": 170,
+            "right": 1190,
+            "bottom": 812
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1014,
+          "scrollWidth": 1014,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "states",
+    "testId": "db-tab-states",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-states.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "states",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 248,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 422,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 553,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 553,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "animations",
+    "testId": "db-tab-animations",
+    "recordRail": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-animations.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "animations",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": {
+        "x": 174,
+        "y": 166,
+        "width": 248,
+        "height": 644,
+        "left": 174,
+        "top": 166,
+        "right": 422,
+        "bottom": 810
+      },
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-list-pane .db-list",
+          "rect": {
+            "x": 183,
+            "y": 225,
+            "width": 230,
+            "height": 490,
+            "left": 183,
+            "top": 225,
+            "right": 413,
+            "bottom": 715
+          },
+          "clientHeight": 490,
+          "scrollHeight": 490,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 230,
+          "scrollWidth": 230,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-record-detail-pane",
+          "rect": {
+            "x": 430,
+            "y": 166,
+            "width": 762,
+            "height": 644,
+            "left": 430,
+            "top": 166,
+            "right": 1192,
+            "bottom": 810
+          },
+          "clientHeight": 642,
+          "scrollHeight": 642,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 760,
+          "scrollWidth": 760,
+          "scrollableX": false
+        },
+        {
+          "selector": ".rm2k3-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1071,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 439,
+            "y": 266,
+            "width": 744,
+            "height": 527,
+            "left": 439,
+            "top": 266,
+            "right": 1183,
+            "bottom": 793
+          },
+          "clientHeight": 525,
+          "scrollHeight": 1071,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 742,
+          "scrollWidth": 742,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "battler-animations",
+    "testId": "db-tab-battler-animations",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-battler-animations.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "battler-animations",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 525,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 716
+          },
+          "clientHeight": 523,
+          "scrollHeight": 523,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "battle-screen",
+    "testId": "db-tab-battle-screen",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-battle-screen.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "battle-screen",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 389,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 580
+          },
+          "clientHeight": 387,
+          "scrollHeight": 387,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "battle-commands",
+    "testId": "db-tab-battle-commands",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-battle-commands.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "battle-commands",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 974,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 925,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 1116
+          },
+          "clientHeight": 923,
+          "scrollHeight": 923,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "terrain",
+    "testId": "db-tab-terrain",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-terrain.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "terrain",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 1301,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 1252,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 1443
+          },
+          "clientHeight": 1250,
+          "scrollHeight": 1250,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "tilesets",
+    "testId": "db-tab-tilesets",
+    "wide": true,
+    "captureBottom": true,
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-tilesets.png",
+    "bottomScreenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-tilesets-bottom.png",
+    "metrics": {
+      "tab": "tilesets",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 711,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 170,
+            "width": 1018,
+            "height": 632,
+            "left": 174,
+            "top": 170,
+            "right": 1192,
+            "bottom": 802
+          },
+          "clientHeight": 630,
+          "scrollHeight": 698,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": {
+      "before": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 711,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 170,
+            "width": 1018,
+            "height": 632,
+            "left": 174,
+            "top": 170,
+            "right": 1192,
+            "bottom": 802
+          },
+          "clientHeight": 630,
+          "scrollHeight": 698,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ],
+      "after": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 711,
+          "scrollTop": 51,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 119,
+            "width": 1018,
+            "height": 632,
+            "left": 174,
+            "top": 119,
+            "right": 1192,
+            "bottom": 751
+          },
+          "clientHeight": 630,
+          "scrollHeight": 698,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    }
+  },
+  {
+    "slug": "common-events",
+    "testId": "db-tab-common-events",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-common-events.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "common-events",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 676,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 627,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 818
+          },
+          "clientHeight": 625,
+          "scrollHeight": 625,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "system",
+    "testId": "db-tab-system",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-system.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "system",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 1731,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 1682,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 1873
+          },
+          "clientHeight": 1680,
+          "scrollHeight": 1680,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "terms",
+    "testId": "db-tab-terms",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-terms.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "terms",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 660,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 390,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 581
+          },
+          "clientHeight": 388,
+          "scrollHeight": 388,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "switches",
+    "testId": "db-tab-switches",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-switches.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "switches",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 809,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 760,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 951
+          },
+          "clientHeight": 758,
+          "scrollHeight": 758,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  },
+  {
+    "slug": "variables",
+    "testId": "db-tab-variables",
+    "active": true,
+    "screenshot": "output/evidence/database-desktop-layout-fix/tabs/desktop-variables.png",
+    "bottomScreenshot": null,
+    "metrics": {
+      "tab": "variables",
+      "viewport": {
+        "name": "desktop",
+        "width": 1365,
+        "height": 900
+      },
+      "modal": {
+        "x": 0,
+        "y": 0,
+        "width": 1365,
+        "height": 900,
+        "left": 0,
+        "top": 0,
+        "right": 1365,
+        "bottom": 900
+      },
+      "body": {
+        "x": 165,
+        "y": 158,
+        "width": 1036,
+        "height": 661,
+        "left": 165,
+        "top": 158,
+        "right": 1201,
+        "bottom": 819
+      },
+      "footer": {
+        "x": 165,
+        "y": 819,
+        "width": 1036,
+        "height": 39,
+        "left": 165,
+        "top": 819,
+        "right": 1201,
+        "bottom": 858
+      },
+      "bodyClientWidth": 1034,
+      "bodyScrollWidth": 1034,
+      "horizontalBodyOverflow": false,
+      "recordRail": null,
+      "clippedRecordNames": [],
+      "clippedRecordButtons": [],
+      "toolbarOverlaps": [],
+      "hiddenBehindFooter": [],
+      "scrollContainers": [
+        {
+          "selector": ".database-modal-body",
+          "rect": {
+            "x": 165,
+            "y": 66,
+            "width": 1036,
+            "height": 753,
+            "left": 165,
+            "top": 66,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 753,
+          "scrollHeight": 753,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1036,
+          "scrollWidth": 1036,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-body",
+          "rect": {
+            "x": 165,
+            "y": 158,
+            "width": 1036,
+            "height": 661,
+            "left": 165,
+            "top": 158,
+            "right": 1201,
+            "bottom": 819
+          },
+          "clientHeight": 660,
+          "scrollHeight": 809,
+          "scrollTop": 0,
+          "scrollableY": true,
+          "clientWidth": 1034,
+          "scrollWidth": 1034,
+          "scrollableX": false
+        },
+        {
+          "selector": ".db-detail-form",
+          "rect": {
+            "x": 174,
+            "y": 191,
+            "width": 1018,
+            "height": 760,
+            "left": 174,
+            "top": 191,
+            "right": 1192,
+            "bottom": 951
+          },
+          "clientHeight": 758,
+          "scrollHeight": 758,
+          "scrollTop": 0,
+          "scrollableY": false,
+          "clientWidth": 1016,
+          "scrollWidth": 1016,
+          "scrollableX": false
+        }
+      ]
+    },
+    "scrollAfterBottom": null
+  }
+]

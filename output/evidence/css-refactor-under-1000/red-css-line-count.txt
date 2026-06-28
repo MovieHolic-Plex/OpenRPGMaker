@@ -1,0 +1,13 @@
+ 11239 total
+  6953 src/styles.css
+   958 src/styles.databaseEnemies.css
+   772 src/styles.eventEditor.css
+   581 src/styles.databaseTroops.css
+   372 src/styles.resourceManager.css
+   354 src/styles.databaseElements.css
+   293 src/styles.databaseActors.css
+   283 src/styles.dialogue.css
+   252 src/styles.databaseTilesets.css
+   186 src/styles.databaseDesktop.css
+   152 src/styles.databaseStates.css
+    83 src/styles.databaseTilesetsTerrain.css

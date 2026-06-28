@@ -1,0 +1,139 @@
+{
+  "qualityGate": {
+    "codeReview": {
+      "by": "lazycodex-code-reviewer",
+      "recommendation": "APPROVE",
+      "codeQualityStatus": "CLEAR",
+      "reportPath": "output/evidence/rm2k3-playable-battle-exp/code-review.md",
+      "evidence": "Reviewed reward mutation, battle result callback, runtime/save exposure, hero asset resolution, and responsive battle layout; no blocking code-quality issues remain.",
+      "blockers": []
+    },
+    "manualQa": {
+      "by": "lazycodex-qa-executor",
+      "status": "passed",
+      "evidence": "Executed browser battle entry, skill animation, victory reward, mobile layout, typecheck, Vitest, and Playwright regression gates with artifact-backed outcomes.",
+      "surfaceEvidence": [
+        {
+          "id": "surface-browser-desktop",
+          "criterionRef": "C001",
+          "surface": "browser",
+          "invocation": "node output/evidence/rm2k3-playable-battle-exp/browser-run.mjs",
+          "verdict": "passed",
+          "artifactRefs": ["artifact-desktop-battle", "artifact-skill-animation"]
+        },
+        {
+          "id": "surface-browser-mobile",
+          "criterionRef": "C002",
+          "surface": "browser",
+          "invocation": "node output/evidence/rm2k3-playable-battle-exp/browser-run.mjs mobile viewport 390x844",
+          "verdict": "passed",
+          "artifactRefs": ["artifact-mobile-battle"]
+        },
+        {
+          "id": "surface-data-exp",
+          "criterionRef": "C001",
+          "surface": "data",
+          "invocation": "compare runtime-before.json and runtime-after.json",
+          "verdict": "passed",
+          "artifactRefs": ["artifact-runtime-before", "artifact-runtime-after"]
+        },
+        {
+          "id": "surface-cli-regression",
+          "criterionRef": "C003",
+          "surface": "cli",
+          "invocation": "npx vitest run test/battleRewardsToSession.test.ts test/battleRuntime.test.ts test/io.test.ts --configLoader runner; npm run typecheck -- --pretty false; npx playwright test test/e2e/rm2k3-battle.spec.ts --project=chromium",
+          "verdict": "passed",
+          "artifactRefs": ["artifact-visual-qa"]
+        }
+      ],
+      "adversarialCases": [
+        {
+          "id": "adv-non-victory-rewards",
+          "criterionRef": "C001",
+          "scenario": "Battle result is escape instead of victory.",
+          "expectedBehavior": "Session EXP, gold, and inventory rewards are not applied.",
+          "verdict": "passed",
+          "artifactRefs": ["artifact-visual-qa"]
+        },
+        {
+          "id": "adv-mobile-command-clipping",
+          "criterionRef": "C002",
+          "scenario": "Mobile viewport 390x844 with five Korean battle commands.",
+          "expectedBehavior": "All five command buttons stay inside the viewport and actor name remains readable.",
+          "verdict": "passed",
+          "artifactRefs": ["artifact-mobile-layout", "artifact-mobile-battle"]
+        }
+      ],
+      "artifactRefs": [
+        {
+          "id": "artifact-visual-qa",
+          "kind": "log",
+          "description": "Browser evidence QA summary and command gate results.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/visual-qa.md"
+        },
+        {
+          "id": "artifact-desktop-battle",
+          "kind": "screenshot",
+          "description": "Desktop battle entry screenshot with visible hero, enemy, and commands.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/desktop-battle-entry.png"
+        },
+        {
+          "id": "artifact-skill-animation",
+          "kind": "screenshot",
+          "description": "Desktop skill animation screenshot.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/desktop-skill-animation.png"
+        },
+        {
+          "id": "artifact-mobile-battle",
+          "kind": "screenshot",
+          "description": "Mobile battle entry screenshot with visible hero, enemy, and commands.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/mobile-battle-entry.png"
+        },
+        {
+          "id": "artifact-mobile-layout",
+          "kind": "data-diff",
+          "description": "Mobile command button bounds proving no clipped commands.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/mobile-command-layout.json"
+        },
+        {
+          "id": "artifact-runtime-before",
+          "kind": "data-diff",
+          "description": "Runtime state before victory with zero hero EXP.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/runtime-before.json"
+        },
+        {
+          "id": "artifact-runtime-after",
+          "kind": "data-diff",
+          "description": "Runtime state after victory with increased hero EXP and gold.",
+          "path": "output/evidence/rm2k3-playable-battle-exp/runtime-after.json"
+        }
+      ]
+    },
+    "gateReview": {
+      "by": "lazycodex-gate-reviewer",
+      "recommendation": "APPROVE",
+      "reportPath": "output/evidence/rm2k3-playable-battle-exp/gate-review.md",
+      "evidence": "Rechecked browser screenshots, runtime JSON, animation metadata, mobile command bounds, and regression commands; gate is approved.",
+      "blockers": []
+    },
+    "iteration": {
+      "fullRerun": true,
+      "status": "passed",
+      "rerunCommands": [
+        "node output/evidence/rm2k3-playable-battle-exp/browser-run.mjs",
+        "npx vitest run test/battleRewardsToSession.test.ts test/battleRuntime.test.ts test/io.test.ts --configLoader runner",
+        "npm run typecheck -- --pretty false",
+        "npx playwright test test/e2e/rm2k3-battle.spec.ts --project=chromium"
+      ],
+      "evidence": "All focused browser, unit, type, and Playwright regression gates passed after the mobile actor-label fix."
+    },
+    "criteriaCoverage": {
+      "totalCriteria": 3,
+      "passCount": 3,
+      "originalIntent": "User wanted an RPG Maker 2003-feeling playable battle with a visible hero and real EXP gain, verified through browser screenshots.",
+      "desiredOutcome": "The player can enter battle, see hero and enemy, trigger a skill animation, win, and observe session EXP increase.",
+      "userOutcomeReview": "All requested outcomes are covered by browser screenshots, runtime state JSON, and regression commands.",
+      "adversarialClassesCovered": ["missing_actor_sprite", "mobile_label_wrapping", "reward_applied_without_victory", "missing_troop_regression"]
+    }
+  }
+}

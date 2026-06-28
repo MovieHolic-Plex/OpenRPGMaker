@@ -1,0 +1,128 @@
+{
+  "equipment": {
+    "id": "equip_sword",
+    "name": "QA 부적검",
+    "imageResourceId": "cc0-jetrel-bronze-sword",
+    "iconResourceId": "cc0-jetrel-bronze-sword",
+    "slot": "weapon",
+    "price": 100,
+    "description": "QA equipment proof",
+    "statBonuses": {
+      "attack": 13,
+      "defense": 4,
+      "mind": 0,
+      "agility": 0
+    },
+    "equippableActorIds": [
+      "actor_hero",
+      "actor_guardian"
+    ],
+    "equippableClassIds": [
+      "class_hero",
+      "class_guardian"
+    ],
+    "cursed": false,
+    "twoHanded": true,
+    "usableAsItemSkillId": "skill_attack",
+    "stateInflictIds": [
+      "state_poison"
+    ]
+  },
+  "item": {
+    "id": "item_potion",
+    "name": "QA 만능약",
+    "imageResourceId": "cc0-jetrel-potion-red",
+    "iconResourceId": "cc0-jetrel-potion-red",
+    "scope": "allAllies",
+    "price": 50,
+    "skillId": "skill_item_potion",
+    "description": "아군 하나의 HP를 조금 회복합니다.",
+    "type": "medicine",
+    "occasion": "always",
+    "consumable": true,
+    "animationId": "anim_heal",
+    "stateEffects": [],
+    "consumptionLimit": 2,
+    "usableActorIds": [],
+    "usableClassIds": [],
+    "healStateIds": [
+      "state_poison"
+    ],
+    "hpRecovery": {
+      "flat": 0,
+      "percentMax": 15
+    },
+    "mpRecovery": {
+      "flat": 8,
+      "percentMax": 0
+    },
+    "onlyUsableInMenu": false,
+    "onlyEffectiveOnDeadActors": false,
+    "usageMessage": "normal",
+    "occasionField": false,
+    "occasionBattle": false,
+    "seedParameterBonuses": {
+      "attack": 0,
+      "defense": 0,
+      "mind": 0,
+      "agility": 0
+    },
+    "equipmentProfile": {
+      "statBonuses": {
+        "attack": 0,
+        "defense": 0,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [],
+      "twoHanded": false,
+      "mpCost": 0,
+      "accuracy": 90,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    }
+  },
+  "skill": {
+    "id": "skill_attack",
+    "name": "QA 포커스",
+    "scope": "ally",
+    "power": 44,
+    "animationId": "anim_heal",
+    "description": "QA support proof",
+    "type": "normal",
+    "mpCost": {
+      "flat": 6,
+      "percentMax": 0
+    },
+    "successRate": 88,
+    "variance": 20,
+    "hitRate": 92,
+    "effect": {
+      "kind": "healing",
+      "statistic": "mind",
+      "affects": "mp"
+    }
+  },
+  "state": {
+    "id": "state_poison",
+    "name": "QA 독 상태"
+  }
+}

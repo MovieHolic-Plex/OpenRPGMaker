@@ -15,11 +15,16 @@ export function validateDatabase(value: unknown): void {
   ]) {
     requireArray(`database.${key}`, database[key]);
   }
+  if (database.elements !== undefined) requireArray("database.elements", database.elements);
+  if (database.terrains !== undefined) requireArray("database.terrains", database.terrains);
+  if (database.battleCommands !== undefined) requireArray("database.battleCommands", database.battleCommands);
+  if (database.battlerAnimations !== undefined) requireArray("database.battlerAnimations", database.battlerAnimations);
 }
 
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
+  if (system.titleScreen !== undefined) requireRecord("system.titleScreen", system.titleScreen);
 }
 
 export function validateSession(value: unknown): void {

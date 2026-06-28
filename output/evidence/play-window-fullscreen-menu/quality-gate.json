@@ -1,0 +1,121 @@
+{
+  "codeReview": {
+    "by": "lazycodex-code-reviewer",
+    "recommendation": "APPROVE",
+    "codeQualityStatus": "CLEAR",
+    "reportPath": "output/evidence/play-window-fullscreen-menu/visual-qa.md",
+    "evidence": "Focused review found the play window sizing, menu removal, and keyboard menu behavior aligned with the requested RPG Maker-style flow.",
+    "blockers": []
+  },
+  "manualQa": {
+    "by": "lazycodex-qa-executor",
+    "status": "passed",
+    "evidence": "Browser evidence captured desktop and mobile play surfaces filling the play window, with the top-right menu button absent and X opening the runtime menu.",
+    "surfaceEvidence": [
+      {
+        "id": "browser-play-fill",
+        "criterionRef": "C001",
+        "surface": "browser",
+        "invocation": "node output/evidence/play-window-fullscreen-menu/capture.mjs",
+        "verdict": "passed",
+        "artifactRefs": ["desktop-play-filled", "mobile-play-filled"]
+      },
+      {
+        "id": "browser-keyboard-menu",
+        "criterionRef": "C002",
+        "surface": "browser",
+        "invocation": "node output/evidence/play-window-fullscreen-menu/capture.mjs",
+        "verdict": "passed",
+        "artifactRefs": ["desktop-keyboard-menu"]
+      },
+      {
+        "id": "cli-regression-tests",
+        "criterionRef": "C003",
+        "surface": "cli",
+        "invocation": "npm run test:e2e -- test/e2e/rm2k3-play-runtime-surface.spec.ts --project=chromium; npm run test:e2e -- test/e2e/rm2k3-keyboard-runtime-menu.spec.ts --project=chromium; npx playwright test test/e2e/rm2k3-player-status-menu.spec.ts --project=chromium -g \"Korean command panels\" --timeout=60000",
+        "verdict": "passed",
+        "artifactRefs": ["visual-qa-report"]
+      }
+    ],
+    "adversarialCases": [
+      {
+        "id": "no-onscreen-menu-button",
+        "criterionRef": "C002",
+        "scenario": "A play session starts without the top-right on-screen menu button.",
+        "expectedBehavior": "The runtime state reports zero main-menu-button elements and X/Esc remains the menu path.",
+        "verdict": "passed",
+        "artifactRefs": ["runtime-state"]
+      },
+      {
+        "id": "small-map-cover",
+        "criterionRef": "C001",
+        "scenario": "A small map is rendered inside a much larger test-play window.",
+        "expectedBehavior": "The map content is camera-scaled to cover the logical play stage instead of leaving unused black margins around the viewport.",
+        "verdict": "passed",
+        "artifactRefs": ["desktop-play-filled"]
+      }
+    ],
+    "artifactRefs": [
+      {
+        "id": "desktop-play-filled",
+        "kind": "screenshot",
+        "description": "Desktop play screenshot with the map filling the play window.",
+        "path": "output/evidence/play-window-fullscreen-menu/desktop-play-filled.png"
+      },
+      {
+        "id": "mobile-play-filled",
+        "kind": "screenshot",
+        "description": "Mobile play screenshot with the play surface filled.",
+        "path": "output/evidence/play-window-fullscreen-menu/mobile-play-filled.png"
+      },
+      {
+        "id": "desktop-keyboard-menu",
+        "kind": "screenshot",
+        "description": "Desktop screenshot after opening the menu with the X key.",
+        "path": "output/evidence/play-window-fullscreen-menu/desktop-keyboard-menu.png"
+      },
+      {
+        "id": "runtime-state",
+        "kind": "log",
+        "description": "Runtime JSON proving menu button absence and filled menu geometry.",
+        "path": "output/evidence/play-window-fullscreen-menu/runtime-state.json"
+      },
+      {
+        "id": "visual-qa-report",
+        "kind": "log",
+        "description": "Browser evidence QA report and verification summary.",
+        "path": "output/evidence/play-window-fullscreen-menu/visual-qa.md"
+      }
+    ]
+  },
+  "gateReview": {
+    "by": "lazycodex-gate-reviewer",
+    "recommendation": "APPROVE",
+    "reportPath": "output/evidence/play-window-fullscreen-menu/visual-qa.md",
+    "evidence": "Evidence packet includes screenshots, runtime state, and focused Playwright regression coverage for all requested outcomes.",
+    "blockers": []
+  },
+  "iteration": {
+    "fullRerun": true,
+    "status": "passed",
+    "rerunCommands": [
+      "npm run test:e2e -- test/e2e/rm2k3-play-runtime-surface.spec.ts --project=chromium",
+      "npm run test:e2e -- test/e2e/rm2k3-keyboard-runtime-menu.spec.ts --project=chromium",
+      "npx playwright test test/e2e/rm2k3-player-status-menu.spec.ts --project=chromium -g \"Korean command panels\" --timeout=60000",
+      "node output/evidence/play-window-fullscreen-menu/capture.mjs"
+    ],
+    "evidence": "All focused e2e tests and browser evidence capture passed after the implementation."
+  },
+  "criteriaCoverage": {
+    "totalCriteria": 3,
+    "passCount": 3,
+    "originalIntent": "During play, the RPG Maker-style play window must always appear filled, with no top-right menu button.",
+    "desiredOutcome": "The play surface and the actual map content fill the test-play window, and X/Esc remains the menu access path.",
+    "userOutcomeReview": "Screenshots and runtime state match the requested 쯔꾸르 play behavior.",
+    "adversarialClassesCovered": [
+      "small map in large play window",
+      "removed on-screen menu button",
+      "keyboard menu access regression"
+    ]
+  }
+}

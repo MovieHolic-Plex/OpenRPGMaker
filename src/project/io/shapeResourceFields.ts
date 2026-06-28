@@ -135,6 +135,47 @@ export function validateTileset(id: string, value: unknown): void {
       }
     }
   }
+  if (tileset.terrainTemplates !== undefined) {
+    for (const [index, template] of requireArray(`tileset ${id}.terrainTemplates`, tileset.terrainTemplates).entries()) {
+      const record = requireRecord(`tileset ${id}.terrainTemplates[${index}]`, template);
+      requireString(`tileset ${id}.terrainTemplates[${index}].id`, record.id);
+      requireString(`tileset ${id}.terrainTemplates[${index}].name`, record.name);
+      requireString(`tileset ${id}.terrainTemplates[${index}].sourceMapName`, record.sourceMapName);
+      if (record.grammar !== undefined) {
+        for (const [grammarIndex, grammar] of requireArray(`tileset ${id}.terrainTemplates[${index}].grammar`, record.grammar).entries()) {
+          const grammarRecord = requireRecord(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}]`, grammar);
+          const kind = requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].kind`, grammarRecord.kind);
+          assert(kind === "overlay" || kind === "roof-row" || kind === "wall-row", `tileset ${id}: terrainTemplates[${index}] grammar.kind invalid`);
+          requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].role`, grammarRecord.role);
+          requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].layer`, grammarRecord.layer);
+          requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].meaning`, grammarRecord.meaning);
+          if (grammarRecord.left !== undefined) requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].left`, grammarRecord.left);
+          if (grammarRecord.middle !== undefined) requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].middle`, grammarRecord.middle);
+          if (grammarRecord.right !== undefined) requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].right`, grammarRecord.right);
+          if (grammarRecord.mustTouch !== undefined) requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].mustTouch`, grammarRecord.mustTouch);
+          if (grammarRecord.tiles !== undefined) {
+            for (const tile of requireArray(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].tiles`, grammarRecord.tiles)) {
+              requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].tiles[]`, tile);
+            }
+          }
+        }
+      }
+      for (const [rowIndex, row] of requireArray(`tileset ${id}.terrainTemplates[${index}].rows`, record.rows).entries()) {
+        const rowRecord = requireRecord(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}]`, row);
+        requireString(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].section`, rowRecord.section);
+        requireString(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].coord`, rowRecord.coord);
+        requireString(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].meaning`, rowRecord.meaning);
+        for (const layer of ["lower", "upper", "stack"] as const) {
+          for (const tile of requireArray(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].${layer}`, rowRecord[layer])) {
+            requireNumber(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].${layer}[]`, tile);
+          }
+        }
+      }
+      for (const rule of requireArray(`tileset ${id}.terrainTemplates[${index}].rules`, record.rules)) {
+        requireString(`tileset ${id}.terrainTemplates[${index}].rules[]`, rule);
+      }
+    }
+  }
 }
 
 export function validateSwitches(value: unknown): void {

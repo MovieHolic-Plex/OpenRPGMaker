@@ -9,6 +9,7 @@ import {
   type DatabaseCollection,
 } from "@/editor/databaseActions";
 import { createBlankProject, DEFAULT_ANIMATION_ID, DEFAULT_ENEMY_ID, DEFAULT_ITEM_ID, DEFAULT_SKILL_ID, DEFAULT_TROOP_ID } from "@/project/defaults";
+import { normalizeEnemyRecord } from "@/project/databaseRecordModel";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 import invalidReferenceProject from "./fixtures/projects/invalid-db-reference-v3.json";
@@ -93,7 +94,7 @@ describe("Database actions", () => {
     });
     updateDatabaseRecord("items", itemId, {
       description: "Battle-ready potion.",
-      type: "normal",
+      type: "medicine",
       occasion: "always",
       consumable: true,
       animationId: project.database.battleAnimations[0]?.id,
@@ -110,7 +111,13 @@ describe("Database actions", () => {
     updateDatabaseRecord("enemies", enemyId, {
       stats: { maxHp: 999999, maxMp: -5, attack: 12, defense: 13, mind: 14, agility: 15 },
       rewards: { exp: -10, gold: 9999999, dropItemId: itemId, dropRatePercent: 150 },
-      actions: [{ skillId, priority: 99, condition: { kind: "turn", start: 0, interval: 0 } }],
+      actions: [{
+        skillId,
+        priority: 99,
+        condition: { kind: "turn", start: 0, interval: 0 },
+        switchOnAfterAction: { enabled: false },
+        switchOffAfterAction: { enabled: false },
+      }],
       stateRates: { state_death: "E" },
       elementRates: { fire: "B" },
     });
@@ -138,11 +145,73 @@ describe("Database actions", () => {
     expect(equipment?.statBonuses.attack).toBe(9999);
     expect(equipment?.statBonuses.defense).toBe(0);
     expect(enemy?.stats.maxHp).toBe(99999);
-    expect(enemy?.stats.maxMp).toBe(1);
+    expect(enemy?.stats.maxMp).toBe(0);
     expect(enemy?.rewards).toEqual({ exp: 0, gold: 999999, dropItemId: itemId, dropRatePercent: 100 });
-    expect(enemy?.actions).toEqual([{ skillId, priority: 10, condition: { kind: "turn", start: 1, interval: 1 } }]);
+    expect(enemy?.actions).toEqual([{
+      skillId,
+      priority: 99,
+      condition: { kind: "turn", start: 1, interval: 1 },
+      switchOnAfterAction: { enabled: false, switchId: undefined },
+      switchOffAfterAction: { enabled: false, switchId: undefined },
+    }]);
     expect(troop?.members).toEqual([{ enemyId, x: 0, y: 240, hidden: true }]);
     expect(troop?.autoAlign).toBe(false);
+  });
+
+  it("normalizes enemy compatibility aliases to one canonical value", () => {
+    const enemy = normalizeEnemyRecord({
+      id: "enemy_alias",
+      name: "Alias Test",
+      criticalHit: { enabled: false, oneIn: 30 },
+      critical: { enabled: true, oneIn: 7 },
+      attackOptions: { normalAttacksMiss: false },
+      options: { normalAttacksMiss: true },
+    } as Parameters<typeof normalizeEnemyRecord>[0] & {
+      critical: { enabled: boolean; oneIn: number };
+      options: { normalAttacksMiss: boolean };
+    });
+
+    expect(enemy.criticalHit).toEqual({ enabled: true, oneIn: 7 });
+    expect(enemy.attackOptions).toEqual({ normalAttacksMiss: true });
+    expect("critical" in enemy).toBe(false);
+    expect("options" in enemy).toBe(false);
+  });
+
+  it("persists BM88 class options, animation, curves, rates, commands, and learned skills", () => {
+    const project = store.getCurrent();
+    const classId = project.database.classes[0]?.id ?? "";
+    const skillId = project.database.skills[0]?.id ?? "";
+    const animationId = project.database.battleAnimations[0]?.id;
+
+    updateDatabaseRecord("classes", classId, {
+      options: { dualWield: true, autoBattle: true, fixedEquipment: true, mightyGuard: true },
+      animationId,
+      battleCommands: [
+        { id: "cmd_attack", name: "공격", kind: "attack" },
+        { id: "cmd_skill", name: "기술", kind: "skill" },
+        { id: "cmd_defend", name: "방어", kind: "defend" },
+        { id: "cmd_item", name: "아이템", kind: "item" },
+        { id: "cmd_escape", name: "도주", kind: "escape" },
+        { id: "cmd_change", name: "교체", kind: "event" },
+      ],
+      learnedSkills: [{ level: 12, skillId }],
+      stateRates: { state_death: "A", state_poison: "E" },
+      elementRates: { fire: "B", ice: "D" },
+      expCurve: { base: 1, extra: 40, acceleration: 40 },
+    });
+
+    const restored = deserialize(serialize(store.getCurrent()));
+    const klass = restored.database.classes.find((record) => record.id === classId);
+
+    expect(klass?.options).toEqual({ dualWield: true, autoBattle: true, fixedEquipment: true, mightyGuard: true });
+    expect(klass?.animationId).toBe(animationId);
+    expect(klass?.battleCommands).toHaveLength(6);
+    expect(klass?.battleCommands.at(-1)).toMatchObject({ id: "cmd_change", name: "교체", kind: "event" });
+    expect(klass?.learnedSkills).toEqual([{ level: 12, skillId }]);
+    expect(klass?.stateRates).toMatchObject({ state_death: "A", state_poison: "E" });
+    expect(klass?.elementRates).toMatchObject({ fire: "B", ice: "D" });
+    expect(klass?.parameterCurves.maxHp).toHaveLength(99);
+    expect(klass?.expCurve).toEqual({ base: 1, extra: 40, acceleration: 40 });
   });
 
   it("blocks deleting an enemy while a troop references it", () => {

@@ -1,0 +1,28 @@
+{
+  "name": "battle-entry-animation",
+  "route": "/?freshProject=1 with e2e battle-v3 fixture injected via window.__RPG_ZZU_E2E_PROJECT__",
+  "viewports": [
+    { "name": "desktop", "width": 1280, "height": 800 },
+    { "name": "mobile", "width": 390, "height": 844 }
+  ],
+  "path": [
+    "seed battle-v3 project fixture in a real browser",
+    "open test play",
+    "start a new game",
+    "click the battle processing event",
+    "verify battle scene and player battle commands",
+    "use the actor skill command",
+    "verify battle animation attributes and visible animation frame",
+    "wait for victory and map restoration",
+    "repeat battle entry capture on a mobile viewport"
+  ],
+  "acceptance": [
+    "battle-scene becomes visible after the event",
+    "actor command buttons include attack and skill",
+    "skill use creates battle-animation with expected animation metadata",
+    "animation screenshot is nonblank and visibly framed over the battle scene",
+    "runtime state reports victory after the battle resolves",
+    "play canvas is visible again after victory",
+    "mobile battle entry screenshot is nonblank"
+  ]
+}

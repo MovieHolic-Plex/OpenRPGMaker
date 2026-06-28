@@ -3,6 +3,7 @@ import { el } from "@/util/dom";
 import { commandKindSelect, selectedOptionValue } from "./dom";
 import { renderAdvancedCommandBody } from "./commandBodyAdvanced";
 import { renderCoreCommandBody } from "./commandBodyCore";
+import { renderM2CommandBody } from "./commandBodyM2";
 import { COMMAND_KIND_OPTIONS } from "./options";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "./types";
@@ -18,7 +19,7 @@ export function renderCommandBody(context: CommandEditContext, cmd: Command): HT
   });
   wrap.append(kindSel);
 
-  const body = renderCoreCommandBody(context, cmd) ?? renderAdvancedCommandBody(context, cmd);
+  const body = renderCoreCommandBody(context, cmd) ?? renderAdvancedCommandBody(context, cmd) ?? renderM2CommandBody(context, cmd);
   if (body) wrap.append(body);
   return wrap;
 }

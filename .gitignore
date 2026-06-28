@@ -1,7 +1,9 @@
 node_modules/
 dist/
 .vite/
-.omo/
+.omo/*
+!.omo/rules/
+!.omo/rules/**
 artifacts/
 test-results/
 qa-screenshots/

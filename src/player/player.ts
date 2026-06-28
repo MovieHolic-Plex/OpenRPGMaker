@@ -5,23 +5,29 @@ import { startSession, type PlaySession } from "@/project/session";
 import { el, clearChildren } from "@/util/dom";
 import {
   applySaveSnapshot,
-  createSaveSnapshot,
-  listSaveSlots,
   readSaveSlot,
-  saveToSlot,
   type SaveSlotIndex,
-  type SaveSlotReadResult,
 } from "@/player/saveSlots";
-import { applySystemGraphic, applyTitleGraphic } from "@/player/systemGraphics";
 import { createDialogueUI } from "@/player/dialogue";
 import { markPlayRender } from "@/app/perfMetrics";
 import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
 import { createPlaySurface } from "@/player/playSurface";
+import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
+import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
+import {
+  moveTitleSelection,
+  type RuntimeMenuKey,
+} from "@/player/runtimeKeyboardMenu";
+import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice";
+import { renderTitleScreen } from "@/player/titleScreen";
 
 let teardownShell: (() => void) | null = null;
 
 export type RenderPlayerOptions = { readonly trackGlobalGame?: boolean };
+
+const MENU_CLOSE_JUICE_MS = 250;
+const TITLE_CONFIRM_JUICE_MS = 260;
 
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
   teardownShell?.();
@@ -29,7 +35,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   let game: Phaser.Game | null = null;
   let startRun = 0;
+  let playStartedAt = 0;
+  let titleMenuIndex = 0;
+  let titleConfirming = false;
   let cleanupPlaySurface: (() => void) | null = null;
+  let playStage: HTMLElement | null = null;
   const layout = el("div", { class: "player-layout system-shell" });
   main.append(layout);
 
@@ -37,6 +47,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     startRun += 1;
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
+    playStage = null;
+    playStartedAt = 0;
+    statusMenu.reset();
     if (game) {
       if (options.trackGlobalGame === false) {
         game.destroy(true);
@@ -53,49 +66,16 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     return isPlayScene(scene) ? scene : undefined;
   };
 
-  const renderSlotMessage = (message: string): HTMLElement =>
-    el("div", {
-      class: "system-shell-message",
-      text: message,
-      attrs: { role: "status" },
-    });
-
-  const renderSlotButton = (
-    slot: SaveSlotReadResult,
-    label: string,
-    testId: string,
-    onClick: () => void
-  ): HTMLButtonElement => {
-    const text = slot.kind === "present"
-      ? `${label}: ${slot.snapshot.projectTitle}`
-      : slot.kind === "corrupt"
-        ? `${label}: 손상됨`
-        : `${label}: 비어 있음`;
-    const button = el("button", {
-      class: "system-shell-button",
-      text,
-      dataset: { testid: testId },
-      on: { click: onClick },
-    });
-    if (slot.kind === "corrupt") {
-      button.classList.add("is-corrupt");
-    }
-    return button;
-  };
-
   const startGame = (session?: PlaySession): void => {
     stopGame();
     const run = ++startRun;
     const startedAt = performance.now();
+    playStartedAt = startedAt;
     clearChildren(layout);
     const surface = createPlaySurface();
-    const menuButton = el("button", {
-      class: "main-menu-button",
-      text: "메뉴",
-      dataset: { testid: "main-menu-button" },
-      on: { click: () => renderMenu() },
-    });
-    layout.append(surface.viewport, menuButton);
+    playStage = surface.stage;
+    layout.append(surface.viewport);
+    surface.sync();
     cleanupPlaySurface = surface.cleanup;
     void startPlayGame(surface.phaserContainer, session, {
       trackGlobalGame: options.trackGlobalGame,
@@ -109,6 +89,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", surface.stage);
       game.registry.set("returnToTitle", () => renderTitle());
+      const scene = nextGame.scene.getScene("PlayScene");
+      if (isPlayScene(scene)) scene.refreshRuntimeSurfaces();
       markPlayRender(startedAt);
     });
   };
@@ -128,44 +110,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     closeMenu();
   };
 
-  const saveSlot = (slot: SaveSlotIndex): void => {
-    const scene = activeScene();
-    if (!scene) return;
-    saveToSlot(window.localStorage, slot, createSaveSnapshot(store.getCurrent(), scene.getSession()));
-    renderMenu(`${slot}번 저장 칸에 저장했습니다`);
-  };
-
   const renderLoad = (fromTitle: boolean, message?: string): void => {
     if (fromTitle) {
       stopGame();
       clearChildren(layout);
     }
-    const slots = listSaveSlots(window.localStorage);
-    const panel = el("div", {
-      class: "title-screen system-panel",
-      dataset: { testid: "title-screen" },
+    const panel = renderPlayerLoadPanel({
+      fromTitle,
+      message,
+      onBack: () => (fromTitle ? renderTitle() : closeMenu()),
+      onLoadSlot: (slot) => loadSlot(slot, fromTitle),
     });
-    applyTitleGraphic(panel);
-    applySystemGraphic(panel);
-    panel.append(el("h2", { text: "불러오기" }));
-    if (message) panel.append(renderSlotMessage(message));
-    for (const slot of slots) {
-      if (slot.kind === "corrupt") {
-        panel.append(el("div", {
-          class: "system-shell-corrupt",
-          text: `${slot.slot}번 저장 칸 손상: ${slot.message}`,
-          dataset: { testid: `save-slot-corrupt-${slot.slot}` },
-        }));
-      }
-      panel.append(renderSlotButton(slot, `${slot.slot}번 저장`, `save-slot-${slot.slot}`, () => {
-        loadSlot(slot.slot, fromTitle);
-      }));
-    }
-    panel.append(el("button", {
-      class: "system-shell-button",
-      text: fromTitle ? "뒤로" : "닫기",
-      on: { click: () => (fromTitle ? renderTitle() : closeMenu()) },
-    }));
     if (fromTitle) {
       layout.append(panel);
     } else {
@@ -176,82 +131,101 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const replaceMenu = (panel: HTMLElement): void => {
     layout.querySelector("[data-testid='main-menu']")?.remove();
     panel.dataset.testid = "main-menu";
-    layout.append(panel);
+    (playStage ?? layout).append(panel);
   };
 
   const closeMenu = (): void => {
     layout.querySelector("[data-testid='main-menu']")?.remove();
   };
 
-  const renderMenu = (message?: string): void => {
-    const project = store.getCurrent();
-    const slots = listSaveSlots(window.localStorage);
-    const panel = el("div", {
-      class: "main-menu system-panel",
-      dataset: { testid: "main-menu" },
-    });
-    applySystemGraphic(panel);
-    panel.append(el("h2", { text: "메뉴" }));
-    panel.append(el("div", {
-      class: "system-shell-meta",
-      text: `${project.meta.terms.gold ?? "G"} 0`,
-    }));
-    if (message) panel.append(renderSlotMessage(message));
-    panel.append(el("div", { class: "menu-section-title", text: "파티" }));
-    panel.append(el("div", { class: "menu-section", text: "상태 / 아이템 / 스킬" }));
-    for (const slot of slots) {
-      panel.append(renderSlotButton(slot, `${slot.slot}번 저장`, `save-slot-${slot.slot}`, () => {
-        saveSlot(slot.slot);
-      }));
-      panel.append(renderSlotButton(slot, `${slot.slot}번 불러오기`, `load-slot-${slot.slot}`, () => {
-        loadSlot(slot.slot, false);
-      }));
-    }
-    panel.append(el("button", {
-      class: "system-shell-button",
-      text: "닫기",
-      on: { click: closeMenu },
-    }));
-    replaceMenu(panel);
+  const closeMenuWithJuice = (): void => {
+    const menu = layout.querySelector<HTMLElement>("[data-testid='main-menu']");
+    if (!menu) return;
+    emitRuntimeJuice({ event: "menu-close", target: menu });
+    window.setTimeout(() => {
+      if (menu.isConnected) menu.remove();
+    }, MENU_CLOSE_JUICE_MS);
   };
 
-  const toggleMenu = (): void => {
-    if (!game) return;
-    renderMenu();
+  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
+    emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']") });
+  };
+
+  const statusMenu = createPlayerStatusMenuController({
+    layout,
+    getActiveScene: activeScene,
+    getPlayStage: () => playStage,
+    getPlayStartedAt: () => playStartedAt,
+    closeMenu,
+    closeMenuWithJuice,
+    renderTitle: () => renderTitle(),
+    emitMenuJuice,
+    menuCloseJuiceMs: MENU_CLOSE_JUICE_MS,
+    loadSlot,
+  });
+
+  const handleTitleKey = (key: RuntimeMenuKey): boolean => {
+    if (game || !layout.querySelector("[data-testid='title-screen']")) return false;
+    if (titleConfirming) return true;
+    if (key === "ArrowDown" || key === "ArrowUp") {
+      titleMenuIndex = moveTitleSelection(titleMenuIndex, key);
+      renderTitle({ emitEnterJuice: false });
+      emitTitleJuice("title-select");
+      return true;
+    }
+    if (key !== "Enter" && key !== " " && key !== "e") return false;
+    confirmTitleThen(() => {
+      if (titleMenuIndex === 0) startGame(startSession(store.getCurrent()));
+      if (titleMenuIndex === 1) renderLoad(true);
+      if (titleMenuIndex === 2) renderTitle({ emitEnterJuice: true });
+    });
+    return true;
   };
 
   const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== "Escape") return;
-    event.preventDefault();
-    toggleMenu();
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    if (!isRuntimeMenuKey(key)) return;
+    if (handleTitleKey(key) || statusMenu.handleKey(key)) {
+      event.preventDefault();
+      return;
+    }
+    if (key === "x" || key === "Escape") {
+      event.preventDefault();
+      statusMenu.toggleMenu();
+    }
   };
 
-  const renderTitle = (): void => {
+  const renderTitle = (titleOptions: { readonly emitEnterJuice?: boolean } = {}): void => {
+    titleConfirming = false;
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const title = el("div", {
-      class: "title-screen system-panel",
-      dataset: { testid: "title-screen" },
-    });
-    applyTitleGraphic(title);
-    applySystemGraphic(title);
-    title.append(
-      el("h1", { text: project.meta.title }),
-      el("button", {
-        class: "system-shell-button primary",
-        text: "새 게임",
-        dataset: { testid: "title-new-game" },
-        on: { click: () => startGame(startSession(project)) },
-      }),
-      el("button", {
-        class: "system-shell-button",
-        text: "불러오기",
-        dataset: { testid: "title-load-game" },
-        on: { click: () => renderLoad(true) },
-      })
-    );
-    layout.append(title);
+    const surface = createPlaySurface();
+    clearChildren(surface.stage);
+    playStage = surface.stage;
+    cleanupPlaySurface = surface.cleanup;
+    surface.stage.append(renderTitleScreen(project, {
+      onNewGame: () => confirmTitleThen(() => startGame(startSession(project))),
+      onContinue: () => confirmTitleThen(() => renderLoad(true)),
+      onQuit: () => confirmTitleThen(() => renderTitle({ emitEnterJuice: true })),
+    }, titleMenuIndex));
+    layout.append(surface.viewport);
+    surface.sync();
+    if (titleOptions.emitEnterJuice ?? true) emitTitleJuice("title-enter");
+  };
+
+  const emitTitleJuice = (event: RuntimeJuiceEvent): void => {
+    emitRuntimeJuice({ event, target: layout.querySelector<HTMLElement>("[data-testid='title-screen']") });
+  };
+
+  const confirmTitleThen = (callback: () => void): void => {
+    if (titleConfirming) return;
+    titleConfirming = true;
+    emitTitleJuice("title-confirm");
+    window.setTimeout(() => {
+      titleConfirming = false;
+      callback();
+    }, TITLE_CONFIRM_JUICE_MS);
   };
 
   document.addEventListener("keydown", onKeyDown);
@@ -266,5 +240,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 export function teardownPlayer(): void {
   teardownShell?.();
   teardownShell = null;
-  delete (window as unknown as { __rpgzzuInput?: unknown }).__rpgzzuInput;
+  delete window.__rpgzzuInput;
+}
+
+function isRuntimeMenuKey(key: string): key is RuntimeMenuKey {
+  return key === "ArrowDown" ||
+    key === "ArrowUp" ||
+    key === "Enter" ||
+    key === " " ||
+    key === "e" ||
+    key === "x" ||
+    key === "Escape";
 }

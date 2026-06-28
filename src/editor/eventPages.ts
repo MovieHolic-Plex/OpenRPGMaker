@@ -1,9 +1,15 @@
 import { editorState } from "@/editor/editorState";
+import {
+  FORK_ELSE_BRANCH_INDEX,
+  FORK_THEN_BRANCH_INDEX,
+  SHOP_TRANSACTION_BRANCH_INDEX,
+} from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
 
 type PagePatch = Partial<Omit<EventPage, "id">>;
+let copiedEventPage: EventPage | null = null;
 
 export function createDefaultEventPage(
   event: Pick<GameEvent, "id" | "sprite" | "trigger" | "condition" | "moveRoute" | "commands">,
@@ -11,7 +17,7 @@ export function createDefaultEventPage(
 ): EventPage {
   return {
     id: genId("page"),
-    name: `Page ${pageNumber}`,
+    name: `페이지 ${pageNumber}`,
     conditions: event.condition ? [event.condition] : [],
     graphic: event.sprite ? { sprite: event.sprite } : {},
     trigger: event.trigger,
@@ -46,7 +52,7 @@ export function addEventPage(mapId: MapId, eventId: string): string {
       {
         id: event.id,
         trigger: { kind: "action" },
-        commands: [{ kind: "text", body: "..." }],
+        commands: [],
       },
       event.pages.length + 1
     );
@@ -66,12 +72,42 @@ export function copyEventPage(mapId: MapId, eventId: string, pageId: string): st
     if (!event || !source) return;
     const copy = structuredClone(source);
     copy.id = genId("page");
-    copy.name = `${source.name} Copy`;
+    copy.name = `${source.name} 복사본`;
     event.pages = [...(event.pages ?? []), copy];
     copiedId = copy.id;
   });
   if (copiedId) editorState.set({ selectedEventPageId: copiedId });
   return copiedId;
+}
+
+export function copyEventPageToClipboard(mapId: MapId, eventId: string, pageId: string): boolean {
+  const source = store.getCurrent().maps[mapId]?.events
+    .find((item) => item.id === eventId)
+    ?.pages?.find((page) => page.id === pageId);
+  copiedEventPage = source ? structuredClone(source) : null;
+  if (copiedEventPage) editorState.set({ selectedEventPageId: pageId });
+  return copiedEventPage !== null;
+}
+
+export function hasCopiedEventPage(): boolean {
+  return copiedEventPage !== null;
+}
+
+export function pasteEventPage(mapId: MapId, eventId: string): string {
+  const source = copiedEventPage;
+  if (!source) return "";
+  let pastedId = "";
+  store.update((project) => {
+    const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+    if (!event) return;
+    const pasted = structuredClone(source);
+    pasted.id = genId("page");
+    pasted.name = `${source.name} 복사본`;
+    event.pages = [...(event.pages ?? []), pasted];
+    pastedId = pasted.id;
+  });
+  if (pastedId) editorState.set({ selectedEventPageId: pastedId });
+  return pastedId;
 }
 
 export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): void {
@@ -160,6 +196,22 @@ export function addEventPageCommandAt(
   });
 }
 
+export function insertEventPageCommandAt(
+  mapId: MapId,
+  eventId: string,
+  pageId: string,
+  path: readonly number[],
+  command: Command
+): void {
+  store.update((project) => {
+    const index = path[path.length - 1];
+    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
+    if (!list || index === undefined) return;
+    const clamped = Math.max(0, Math.min(list.length, index));
+    list.splice(clamped, 0, structuredClone(command));
+  });
+}
+
 export function replaceEventPageCommandAt(
   mapId: MapId,
   eventId: string,
@@ -209,11 +261,6 @@ export function moveEventPageCommandAt(
   });
 }
 
-/**
- * 드래그-앤-드롭 재정렬용: 한 컨테이너 안에서 sourcePath 의 명령을 toIndex 위치로 옮긴다.
- * store 변경 1회로 처리해 DOM 이 중간에 재렌더되는 문제를 피한다.
- * toIndex 는 소스를 제거하기 전 기준이 아닌, 제거 후 기준의 목표 위치다.
- */
 export function moveEventPageCommandToIndex(
   mapId: MapId,
   eventId: string,
@@ -240,12 +287,7 @@ export function triggerFromKind(kind: Trigger["kind"]): Trigger {
   return { kind };
 }
 
-function resolvePageCommandList(
-  events: GameEvent[] | undefined,
-  eventId: string,
-  pageId: string,
-  containerPath: readonly number[]
-): Command[] | null {
+function resolvePageCommandList(events: GameEvent[] | undefined, eventId: string, pageId: string, containerPath: readonly number[]): Command[] | null {
   const page = events?.find((event) => event.id === eventId)?.pages?.find((item) => item.id === pageId);
   if (!page) return null;
   return resolveCommandList(page.commands, containerPath);
@@ -255,12 +297,32 @@ function resolveCommandList(commands: Command[], containerPath: readonly number[
   let list: Command[] = commands;
   for (let i = 0; i < containerPath.length - 1; i += 2) {
     const cmdIdx = containerPath[i];
-    const optIdx = containerPath[i + 1];
+    const branchIdx = containerPath[i + 1];
     const cmd = list[cmdIdx];
-    if (!cmd || cmd.kind !== "choices" || optIdx === undefined) return null;
-    const opt = cmd.options[optIdx];
-    if (!opt) return null;
-    list = opt.branch;
+    if (!cmd || branchIdx === undefined) return null;
+    if (cmd.kind === "choices") {
+      const opt = cmd.options[branchIdx];
+      if (!opt) return null;
+      list = opt.branch;
+      continue;
+    }
+    if (cmd.kind === "fork") {
+      if (branchIdx === FORK_THEN_BRANCH_INDEX) {
+        list = cmd.then;
+        continue;
+      }
+      if (branchIdx === FORK_ELSE_BRANCH_INDEX) {
+        cmd.else ??= [];
+        list = cmd.else;
+        continue;
+      }
+      return null;
+    }
+    if (cmd.kind === "shop" && branchIdx === SHOP_TRANSACTION_BRANCH_INDEX && cmd.transactionBranch) {
+      list = cmd.transactionBranch;
+      continue;
+    }
+    return null;
   }
   return list;
 }

@@ -1,27 +1,46 @@
-import { clearChildren, el } from "@/util/dom";
 import type { DatabaseCollection } from "@/editor/databaseActions";
+import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
+import { databaseManualTopic } from "@/editor/panels/databaseManualLinks";
+import { activeTabSummary } from "@/editor/panels/databasePanelSummary";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
-import { databaseWorkbenchStatusText, type DatabaseWorkbenchSummary } from "@/editor/panels/databaseWorkbench";
+import { databaseWorkbenchStatusText } from "@/editor/panels/databaseWorkbench";
+import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
-  renderCommonEventsTab,
   renderSwitchesTab,
-  renderSystemTab,
   renderTermsTab,
   renderVariablesTab,
 } from "@/editor/panels/databaseUtilityViews";
+import {
+  renderBattleCommandsTab,
+  renderBattleScreenTab,
+  renderBattlerAnimationsTab,
+  renderElementsTab,
+  renderTerrainTab,
+} from "@/editor/panels/databaseUtilityRecordViews";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
   | DatabaseCollection
   | "animations"
+  | "battleCommands"
+  | "battleScreen"
+  | "battlerAnimations"
   | "commonEvents"
+  | "elements"
   | "system"
   | "terms"
+  | "terrain"
   | "switches"
   | "tilesets"
   | "variables";
 
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
+  { id: "elements", label: "속성", testid: "db-tab-elements" },
+  { id: "terrain", label: "지형", testid: "db-tab-terrain" },
+  { id: "battleScreen", label: "전투 화면", testid: "db-tab-battle-screen" },
+  { id: "battleCommands", label: "전투 명령", testid: "db-tab-battle-commands" },
+  { id: "battlerAnimations", label: "애니메이션 2", testid: "db-tab-battler-animations" },
   { id: "actors", label: "주인공", testid: "db-tab-actors" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
@@ -32,12 +51,41 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
-  { id: "commonEvents", label: "공통 이벤트", testid: "db-tab-common-events" },
+  { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },
   { id: "switches", label: "스위치", testid: "db-tab-switches" },
   { id: "variables", label: "변수", testid: "db-tab-variables" },
 ];
+
+const tabOrder: readonly DatabaseTab[] = [
+  "actors",
+  "classes",
+  "skills",
+  "items",
+  "equipment",
+  "enemies",
+  "troops",
+  "elements",
+  "states",
+  "animations",
+  "battlerAnimations",
+  "battleScreen",
+  "battleCommands",
+  "terrain",
+  "tilesets",
+  "commonEvents",
+  "system",
+  "terms",
+  "switches",
+  "variables",
+];
+
+const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map((id) => {
+  const tab = tabs.find((candidate) => candidate.id === id);
+  if (!tab) throw new Error(`Missing database tab metadata: ${id}`);
+  return tab;
+});
 
 const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
 
@@ -46,8 +94,18 @@ let activeTab: DatabaseTab = readStoredActiveTab();
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   const activeTabMeta = tabMeta(activeTab);
+  const groupTabs = el("div", {
+    class: "db-classic-group-tabs",
+    dataset: { testid: "db-classic-group-tabs" },
+    children: [
+      classicGroupTab("용어"),
+      classicGroupTab("시스템"),
+      classicGroupTab("시스템 2"),
+      classicGroupTab("공용 이벤트"),
+    ],
+  });
   const header = el("div", { class: "db-tabs" });
-  for (const tab of tabs) {
+  for (const tab of orderedTabs) {
     header.append(
       el("button", {
         class: `db-tab${activeTab === tab.id ? " active" : ""}`,
@@ -59,19 +117,36 @@ export function renderDatabasePanel(container: HTMLElement): void {
             renderDatabasePanel(container);
           },
         },
-      })
+      }),
     );
   }
 
   const body = el("div", { class: "db-body" });
   renderActiveTab(body, container);
+  const manualTopic = databaseManualTopic(activeTab);
+  const manualSource = el("div", {
+    class: "db-manual-source",
+    children: [
+      el("span", { text: "RM2003 manual" }),
+      el("a", {
+        attrs: { href: manualTopic.url, rel: "noreferrer", target: "_blank" },
+        dataset: { testid: "db-manual-source-link" },
+        text: manualTopic.label,
+      }),
+      el("code", { dataset: { testid: "db-manual-source-url" }, text: manualTopic.url }),
+    ],
+  });
   const status = el("div", {
-    class: "db-workbench-status",
     attrs: { "aria-live": "polite" },
+    class: "db-workbench-status",
     dataset: { testid: "db-workbench-status" },
     text: databaseWorkbenchStatusText(activeTabSummary(activeTabMeta, body)),
   });
-  container.append(header, status, body);
+  container.append(groupTabs, header, manualSource, status, body);
+}
+
+function classicGroupTab(label: string): HTMLElement {
+  return el("span", { class: "db-classic-group-tab", text: label });
 }
 
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
@@ -88,6 +163,21 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       return;
     case "animations":
       renderRecordTab(body, "battleAnimations", () => renderDatabasePanel(container));
+      return;
+    case "elements":
+      renderElementsTab(body);
+      return;
+    case "terrain":
+      renderTerrainTab(body);
+      return;
+    case "battleScreen":
+      renderBattleScreenTab(body);
+      return;
+    case "battleCommands":
+      renderBattleCommandsTab(body);
+      return;
+    case "battlerAnimations":
+      renderBattlerAnimationsTab(body);
       return;
     case "switches":
       renderSwitchesTab(body, () => renderDatabasePanel(container));
@@ -117,51 +207,7 @@ function setActiveTab(tab: DatabaseTab): void {
 }
 
 function tabMeta(tabId: DatabaseTab): { readonly id: DatabaseTab; readonly label: string } {
-  return tabs.find((tab) => tab.id === tabId) ?? tabs[0];
-}
-
-function activeTabSummary(tab: { readonly id: DatabaseTab; readonly label: string }, body: HTMLElement): DatabaseWorkbenchSummary {
-  const activeRow = recordCollectionForTab(tab.id) ? body.querySelector<HTMLElement>(".db-list-row.active") : null;
-  return {
-    recordId: activeRow?.dataset.recordId,
-    recordName: activeRow?.dataset.recordName,
-    selectedIndex: numericDataset(activeRow, "recordIndex"),
-    tabId: tab.id,
-    tabLabel: tab.label,
-    totalCount: numericDataset(activeRow, "recordTotal"),
-  };
-}
-
-function numericDataset(node: HTMLElement | null, key: string): number | undefined {
-  if (!node) return undefined;
-  const value = node.dataset[key];
-  if (!value) return undefined;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-function recordCollectionForTab(tab: DatabaseTab): DatabaseCollection | undefined {
-  switch (tab) {
-    case "actors":
-    case "classes":
-    case "skills":
-    case "items":
-    case "equipment":
-    case "enemies":
-    case "troops":
-    case "states":
-      return tab;
-    case "animations":
-      return "battleAnimations";
-    case "commonEvents":
-    case "switches":
-    case "system":
-    case "terms":
-    case "tilesets":
-    case "variables":
-      return undefined;
-  }
-  return undefined;
+  return orderedTabs.find((tab) => tab.id === tabId) ?? orderedTabs[0];
 }
 
 function readStoredActiveTab(): DatabaseTab {
@@ -171,5 +217,5 @@ function readStoredActiveTab(): DatabaseTab {
 }
 
 function isDatabaseTab(value: string | null): value is DatabaseTab {
-  return tabs.some((tab) => tab.id === value);
+  return orderedTabs.some((tab) => tab.id === value);
 }

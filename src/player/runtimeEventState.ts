@@ -1,6 +1,20 @@
 import { resolveEventPage } from "@/project/io";
-import type { AssetRef, EventPage, EventPriority, GameEvent, Trigger } from "@/project/types";
+import type {
+  AssetRef,
+  EventAnimationType,
+  EventPage,
+  EventPageMovement,
+  EventPriority,
+  GameEvent,
+  Trigger,
+} from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
+
+const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
+  type: "fixed",
+  speed: 3,
+  frequency: 3,
+};
 
 export interface RuntimeEventPosition {
   readonly x: number;
@@ -18,6 +32,9 @@ export interface RuntimeEventView {
   readonly trigger: Trigger;
   readonly priority: EventPriority;
   readonly overlapForbidden: boolean;
+  readonly transparent: boolean;
+  readonly animationType: EventAnimationType;
+  readonly movement: EventPageMovement;
   readonly sprite: AssetRef | undefined;
 }
 
@@ -45,6 +62,7 @@ export function runtimeEventView(
 ): RuntimeEventView {
   const page = resolveEventPage(event, session);
   const position = positions[event.id] ?? { x: event.x, y: event.y };
+  const transparent = page?.graphic.transparent === true;
   return {
     event,
     page,
@@ -54,8 +72,17 @@ export function runtimeEventView(
     trigger: page?.trigger ?? event.trigger,
     priority: page?.priority ?? "same",
     overlapForbidden: page?.overlapForbidden ?? true,
-    sprite: page?.graphic.sprite ?? event.sprite,
+    transparent,
+    animationType: page?.animationType ?? "normal",
+    movement: page?.movement ?? legacyMovement(event),
+    sprite: transparent ? undefined : page?.graphic.sprite ?? event.sprite,
   };
+}
+
+function legacyMovement(event: GameEvent): EventPageMovement {
+  return event.moveRoute
+    ? { ...DEFAULT_PAGE_MOVEMENT, type: "custom", route: event.moveRoute }
+    : DEFAULT_PAGE_MOVEMENT;
 }
 
 export function findRuntimeEventAt(

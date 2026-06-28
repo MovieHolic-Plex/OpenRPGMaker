@@ -1,0 +1,46 @@
+{
+  "commandCount": 5,
+  "clippedCommands": 0,
+  "commands": [
+    {
+      "text": "공격",
+      "left": 36,
+      "right": 130.9140625,
+      "top": 702,
+      "bottom": 722.796875,
+      "viewportWidth": 390
+    },
+    {
+      "text": "스킬",
+      "left": 36,
+      "right": 130.9140625,
+      "top": 722.796875,
+      "bottom": 743.59375,
+      "viewportWidth": 390
+    },
+    {
+      "text": "아이템",
+      "left": 36,
+      "right": 130.9140625,
+      "top": 743.59375,
+      "bottom": 764.3984375,
+      "viewportWidth": 390
+    },
+    {
+      "text": "방어",
+      "left": 36,
+      "right": 130.9140625,
+      "top": 764.3984375,
+      "bottom": 785.1953125,
+      "viewportWidth": 390
+    },
+    {
+      "text": "도주",
+      "left": 36,
+      "right": 130.9140625,
+      "top": 785.1953125,
+      "bottom": 805.9921875,
+      "viewportWidth": 390
+    }
+  ]
+}

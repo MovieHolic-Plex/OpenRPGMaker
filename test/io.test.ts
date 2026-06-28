@@ -83,6 +83,97 @@ describe("deserialize 거부", () => {
     expect(() => deserialize(JSON.stringify(obj))).toThrow(/알 수 없는 kind/);
   });
 
+  it("changeFace 필드와 리소스 참조를 검증", () => {
+    const p = createBlankProject();
+    const obj = JSON.parse(serialize(p));
+    const mapId = obj.startMapId;
+    obj.maps[mapId].events = [
+      {
+        id: "ev1",
+        x: 1,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [
+          {
+            kind: "changeFace",
+            resourceId: "missing-face",
+            faceIndex: 0,
+            position: "left",
+            flipHorizontally: false,
+          },
+        ],
+      },
+    ];
+    expect(() => deserialize(JSON.stringify(obj))).toThrow(/resourceId/);
+
+    obj.maps[mapId].events[0].commands[0].resourceId = "easyrpg-faceset-actor1";
+    expect(deserialize(JSON.stringify(obj)).maps[mapId].events[0].commands[0]).toMatchObject({
+      kind: "changeFace",
+      resourceId: "easyrpg-faceset-actor1",
+    });
+
+    obj.maps[mapId].events[0].commands[0].position = "middle";
+    expect(() => deserialize(JSON.stringify(obj))).toThrow(/position/);
+  });
+
+  it("displayTextSettings와 choices 취소 정책을 검증", () => {
+    const p = createBlankProject();
+    const obj = JSON.parse(serialize(p));
+    const mapId = obj.startMapId;
+    obj.maps[mapId].events = [
+      {
+        id: "ev1",
+        x: 1,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [
+          {
+            kind: "displayTextSettings",
+            format: "glass",
+            position: "bottom",
+            preventObscuringPlayer: true,
+            allowEventMovementDuringWait: false,
+          },
+        ],
+      },
+    ];
+    expect(() => deserialize(JSON.stringify(obj))).toThrow(/format/);
+
+    obj.maps[mapId].events[0].commands = [
+      {
+        kind: "choices",
+        prompt: "계속?",
+        cancelBehavior: "escape",
+        options: [{ text: "예", branch: [] }],
+      },
+    ];
+    expect(() => deserialize(JSON.stringify(obj))).toThrow(/cancelBehavior/);
+  });
+
+  it("inputNumber 자릿수와 대상 변수를 검증한다", () => {
+    const p = createBlankProject();
+    p.variables.push({ id: "var_pin", name: "PIN" });
+    const obj = JSON.parse(serialize(p));
+    const mapId = obj.startMapId;
+    obj.maps[mapId].events = [
+      {
+        id: "ev1",
+        x: 1,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [{ kind: "inputNumber", variableId: "var_pin", digits: 6 }],
+      },
+    ];
+    expect(deserialize(JSON.stringify(obj)).maps[mapId].events[0].commands[0]).toMatchObject({
+      kind: "inputNumber",
+      variableId: "var_pin",
+      digits: 6,
+    });
+
+    obj.maps[mapId].events[0].commands[0].digits = 7;
+    expect(() => deserialize(JSON.stringify(obj))).toThrow(/digits/);
+  });
+
   it("startMapId가 maps에 없으면 거부", () => {
     const p = createBlankProject();
     const obj = JSON.parse(serialize(p));

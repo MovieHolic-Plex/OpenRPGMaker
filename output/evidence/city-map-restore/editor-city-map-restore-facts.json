@@ -1,0 +1,40 @@
+{
+  "url": "http://127.0.0.1:5173/?supabaseRecovered=1&cityRestoreEvidence=1",
+  "title": "RPG ZZU",
+  "visibility": {
+    "small_house_01 변형 1": 9,
+    "small_house_01 변형 2": 8,
+    "small_house_01 변형 3": 8,
+    "small_house_01 변형 4": 8,
+    "small_house_01 변형 5": 8,
+    "small_house_01 도시 8채": 8,
+    "Battle Start": 8
+  },
+  "bodyContainsCity": true,
+  "bodyTextSample": "프로젝트\n맵\n도구\n게임\n도움말\n3단 레이어: 하위 / 펜\n새 프로젝트\n맵 복사\n이벤트 테스트\n저장\n열기\n가져오기\n하위\n상위\n이벤트\nx1\nx2\nx4\nx8\nDB\n소재\n증거 패킷\n음악\n찾기\n실행\n왼쪽 패널\nTITLE\n도움말\n맵 칩셋\nRM 기본 샘플 칩셋\nEasyRPG RTP Ship ChipSet\nEasyRPG RTP World ChipSet\nEasyRPG RTP Dungeon ChipSet\nEasyRPG RTP Interior ChipSet\nEasyRPG RTP retro House ChipSet\nEasyRPG RTP retro World ChipSet\nEasyRPG RTP Combined Town ChipSet\nEasyRPG RTP retro Dungeon ChipSet\nEasyRPG RTP retro Exterior ChipSet\n#\nEasyRPG RTP Combined Town ChipSet\nsmall_house_01 변형 1\n★\nsmall_house_01 변형 2\nsmall_house_01 변형 3\nsmall_house_01 변형 4\nsmall_house_01 변형 5\nsmall_house_01 도시 8채\nBattle Start\n확대\n1x\n2x\n3x\n4x\n6x\n8x\n맵 저장\n하위 레이어 편집 모드\n맵: small_house_01 변형 1\n타일: 0 호수 외곽\n도구: 펜\n줌: 2x",
+  "canvases": [
+    {
+      "width": 1024,
+      "height": 768,
+      "clientWidth": 1024,
+      "clientHeight": 768,
+      "nonTransparent": null,
+      "avg": null
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "log",
+      "text": "%c %c %c %c %c Phaser v3.90.0 (WebGL | Web Audio) %c https://phaser.io/v390 background: #ff0000 background: #ffff00 background: #00ff00 background: #00ffff color: #ffffff; background: #000000 background: transparent"
+    }
+  ],
+  "pageErrors": []
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "testid": "battle-actor-actor_hero",
+    "recordId": "actor_hero",
+    "resourceId": "generated-actor-hero-01-battle",
+    "hasSprite": true,
+    "rect": {
+      "x": 800,
+      "y": 196,
+      "width": 76,
+      "height": 76
+    },
+    "transform": "matrix(-1, 0, 0, 1, 0, 0)",
+    "backgroundImage": "url(\"http://127.0.0.1:5173/assets/generated/rm2k3/hero-01-battle.png\")"
+  },
+  {
+    "testid": "battle-actor-actor_guardian",
+    "recordId": "actor_guardian",
+    "resourceId": "generated-actor-hero-02-battle",
+    "hasSprite": true,
+    "rect": {
+      "x": 934,
+      "y": 214,
+      "width": 76,
+      "height": 76
+    },
+    "transform": "matrix(-1, 0, 0, 1, 0, 0)",
+    "backgroundImage": "url(\"http://127.0.0.1:5173/assets/generated/rm2k3/hero-02-battle.png\")"
+  },
+  {
+    "testid": "battle-actor-actor_mage",
+    "recordId": "actor_mage",
+    "resourceId": "generated-actor-hero-03-battle",
+    "hasSprite": true,
+    "rect": {
+      "x": 792,
+      "y": 334,
+      "width": 76,
+      "height": 76
+    },
+    "transform": "matrix(-1, 0, 0, 1, 0, 0)",
+    "backgroundImage": "url(\"http://127.0.0.1:5173/assets/generated/rm2k3/hero-03-battle.png\")"
+  },
+  {
+    "testid": "battle-actor-actor_scout",
+    "recordId": "actor_scout",
+    "resourceId": "generated-actor-hero-04-battle",
+    "hasSprite": true,
+    "rect": {
+      "x": 928,
+      "y": 354,
+      "width": 76,
+      "height": 76
+    },
+    "transform": "matrix(-1, 0, 0, 1, 0, 0)",
+    "backgroundImage": "url(\"http://127.0.0.1:5173/assets/generated/rm2k3/hero-04-battle.png\")"
+  }
+]

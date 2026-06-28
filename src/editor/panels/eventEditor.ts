@@ -1,39 +1,38 @@
 import { editorState } from "@/editor/editorState";
 import { ensureEventPages } from "@/editor/eventPages";
+import { committedEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
-import { isEventEditorModalOpenFor, openEventEditorModal } from "./eventEditor/modal";
+import { openEventEditorModal } from "./eventEditor/modal";
 
 export { renderEventEditorInline } from "./eventEditor/inline";
 
-let lastAutoOpenedEventKey = "";
-
 export function renderEventEditor(container: HTMLElement): void {
   const section = el("div", { class: "panel-section event-editor event-editor-sidebar" });
-  section.append(el("h3", { text: "Event" }));
+  section.append(el("h3", { text: "이벤트" }));
 
   const state = editorState.get();
   const mapId: MapId = state.currentMapId ?? store.getCurrent().startMapId;
   const map = store.getCurrent().maps[mapId];
   if (!map) {
-    section.append(el("div", { class: "empty-hint", text: "Map not found." }));
+    section.append(el("div", { class: "empty-hint", text: "맵을 찾을 수 없습니다." }));
     container.append(section);
     return;
   }
 
+  const events = committedEvents(map.events);
   const selectedEvent = state.selectedEventId
-    ? map.events.find((event) => event.id === state.selectedEventId)
+    ? events.find((event) => event.id === state.selectedEventId)
     : undefined;
 
-  section.append(renderMapEventList(mapId, map.events, state.selectedEventId));
+  section.append(renderMapEventList(mapId, events, state.selectedEventId));
 
   if (!selectedEvent) {
-    lastAutoOpenedEventKey = "";
     section.append(
       el("div", {
         class: "empty-hint",
-        text: "Use the Event tool, then click a map tile to create or edit an event.",
+        text: "이벤트 도구를 선택한 뒤 맵 타일을 클릭하면 이벤트를 만들거나 편집할 수 있습니다.",
       })
     );
     container.append(section);
@@ -41,7 +40,6 @@ export function renderEventEditor(container: HTMLElement): void {
   }
 
   if (!selectedEvent.pages?.length) ensureEventPages(mapId, selectedEvent.id);
-  maybeAutoOpenEventEditor(mapId, selectedEvent);
   section.append(renderSelectedEventSummary(mapId, selectedEvent));
   container.append(section);
 }
@@ -54,10 +52,10 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
   });
   summary.append(
     el("div", { class: "event-editor-launch-title", text: event.id }),
-    el("div", { class: "event-editor-launch-meta", text: `Position ${event.x},${event.y} / ${pageCount} page(s)` }),
+    el("div", { class: "event-editor-launch-meta", text: `위치 ${event.x},${event.y} / ${pageCount} 페이지` }),
     el("button", {
       class: "btn primary",
-      text: "Open Event Editor",
+      text: "이벤트 편집 열기",
       dataset: { testid: "event-editor-open" },
       on: { click: () => openEventEditorModal(mapId, event.id) },
     })
@@ -67,15 +65,15 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
 
 function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selectedEventId: string | null): HTMLElement {
   const list = el("div", { class: "event-list", dataset: { testid: "event-list" } });
-  list.append(el("div", { class: "event-list-title", text: "Map Event List" }));
+  list.append(el("div", { class: "event-list-title", text: "맵 이벤트 목록" }));
   if (events.length === 0) {
-    list.append(el("div", { class: "event-list-empty", text: "No events on this map." }));
+    list.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다." }));
     return list;
   }
   for (const event of events) {
     const row = el("button", {
       class: "event-list-row" + (event.id === selectedEventId ? " active" : ""),
-      attrs: { type: "button", title: "Select event. Double-click to edit." },
+      attrs: { type: "button", title: "이벤트 선택. 두 번 클릭하면 편집합니다." },
       dataset: { testid: `event-list-row-${event.id}` },
       on: {
         click: () => selectEvent(event),
@@ -103,17 +101,4 @@ function selectEvent(event: GameEvent): void {
 function latestPageId(event: GameEvent): string | null {
   const pages = event.pages ?? [];
   return pages[pages.length - 1]?.id ?? null;
-}
-
-function maybeAutoOpenEventEditor(mapId: MapId, event: GameEvent): void {
-  const eventKey = `${mapId}:${event.id}`;
-  if (lastAutoOpenedEventKey === eventKey || isEventEditorModalOpenFor(mapId, event.id)) return;
-  lastAutoOpenedEventKey = eventKey;
-  queueMicrotask(() => {
-    const state = editorState.get();
-    const currentMapId = state.currentMapId ?? store.getCurrent().startMapId;
-    if (currentMapId === mapId && state.selectedEventId === event.id) {
-      openEventEditorModal(mapId, event.id);
-    }
-  });
 }

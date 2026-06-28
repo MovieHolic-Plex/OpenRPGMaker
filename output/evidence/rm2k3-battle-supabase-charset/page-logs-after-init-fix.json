@@ -1,0 +1,17 @@
+{
+  "logs": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "pageerror",
+      "text": "hero-01-battle:prompt:prompt cannot reference easyrpg rtp\nhero-01-battle:path:public/assets/easyrpg/charset/Actor1.png is not an allowed generated PNG path\nhero-02-battle:prompt:prompt cannot reference easyrpg rtp\nhero-02-battle:path:public/assets/easyrpg/charset/Actor2.png is not an allowed generated PNG path\nhero-03-battle:prompt:prompt cannot reference easyrpg rtp\nhero-03-battle:path:public/assets/easyrpg/charset/Actor3.png is not an allowed generated PNG path\nhero-04-battle:prompt:prompt cannot reference easyrpg rtp\nhero-04-battle:path:public/assets/easyrpg/charset/Actor4.png is not an allowed generated PNG path"
+    }
+  ],
+  "testIds": []
+}

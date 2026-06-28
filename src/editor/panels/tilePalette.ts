@@ -95,7 +95,7 @@ export function renderTilePalette(container: HTMLElement): void {
           el("span", { class: `rm-tool-icon rm-tool-icon-${t.icon}`, attrs: { "aria-hidden": "true" } }),
         ],
         dataset: { testid: `tool-${t.id}` },
-        on: { click: () => editorState.set({ tool: t.id }) },
+        on: { click: () => editorState.set(t.id === "paint" ? { tool: t.id, paintShape: "pen" } : { tool: t.id }) },
       })
     );
   }
@@ -259,7 +259,7 @@ function makeQuickTilePicker(
   const matches = quickTileIndexes(tileset).slice(0, 96);
   for (const index of matches) {
     const tileLayer = tileset.priority[index] ?? "lower";
-    grid.append(makeQuickTileCell(index, selectedTile === index, tileLayer === layer, tileLayer));
+    grid.append(makeQuickTileCell(index, selectedTile === index, tileLayer === layer));
   }
   if (matches.length === 0) {
     grid.append(el("div", { class: "empty-hint quick-tile-empty", text: "검색 결과 없음" }));
@@ -317,8 +317,7 @@ function matchesCategory(
 function makeQuickTileCell(
   index: number,
   active: boolean,
-  currentLayer: boolean,
-  tileLayer: Exclude<Layer, "event">
+  currentLayer: boolean
 ): HTMLButtonElement {
   const name = `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`;
   return el("button", {
@@ -334,23 +333,27 @@ function makeQuickTileCell(
       pointerdown: (event) => event.preventDefault(),
       click: (event) => {
         event.preventDefault();
-        selectTile(index, tileLayer);
+        selectPaletteTile(index);
       },
     },
   });
 }
 
-function selectTile(index: number, tileLayer: Exclude<Layer, "event">): void {
+export function selectPaletteTile(index: number): void {
   preservePaletteViewport(() => {
     const existingIndex = recentTiles.indexOf(index);
     if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);
     recentTiles.unshift(index);
     if (recentTiles.length > 18) recentTiles.length = 18;
-    editorState.set({ layer: tileLayer, selectedTile: index, tool: "paint" });
+    editorState.set({ selectedTile: index });
   });
 }
 
 function preservePaletteViewport(action: () => void): void {
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    action();
+    return;
+  }
   const container = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   const palette = container?.querySelector<HTMLElement>('[data-testid="tile-palette"]') ?? null;
   const scroll = container ? readPaletteScroll(container) : null;
@@ -627,7 +630,7 @@ function makeChipsetSheet(
   const overlay = el("div", { class: "chipset-grid", dataset: { testid: "chipset-sheet" } });
   for (const index of tileIndexes) {
     const tileLayer = tileset.priority[index] ?? "lower";
-    overlay.append(makeChipsetCell(index, selectedTile === index, tileLayer === layer, tileLayer));
+    overlay.append(makeChipsetCell(index, selectedTile === index, tileLayer === layer));
   }
   sheet.append(overlay);
   return sheet;
@@ -683,8 +686,7 @@ function canScrollVertically(node: HTMLElement, deltaY: number): boolean {
 function makeChipsetCell(
   index: number,
   active: boolean,
-  currentLayer: boolean,
-  tileLayer: Exclude<Layer, "event">
+  currentLayer: boolean
 ): HTMLButtonElement {
   const name = `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`;
   const cell = el("button", {
@@ -697,7 +699,7 @@ function makeChipsetCell(
     dataset: { testid: `chipset-tile-${index}` },
     on: {
       pointerdown: (event) => event.preventDefault(),
-      click: () => selectTile(index, tileLayer),
+      click: () => selectPaletteTile(index),
     },
   });
   return cell;

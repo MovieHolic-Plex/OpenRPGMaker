@@ -16,6 +16,8 @@ import { genId } from "@/util/id";
 import type {
   ActorRecord,
   BattleAnimationRecord,
+  BattleAnimationPosition,
+  BattleAnimationScope,
   ClassRecord,
   DatabaseRecords,
   EnemyRecord,
@@ -88,7 +90,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
       case "actors": {
         const record = project.database.actors.find((entry) => entry.id === id);
         if (!record) return;
-        const actorPatch = normalizeActorPatch(patch);
+        const actorPatch = normalizeActorPatch(patch as Partial<ActorRecord>);
         if ("name" in actorPatch && actorPatch.name !== undefined) record.name = actorPatch.name;
         if ("nickname" in actorPatch && actorPatch.nickname !== undefined) record.nickname = actorPatch.nickname;
         if ("classId" in actorPatch && actorPatch.classId !== undefined) record.classId = actorPatch.classId;
@@ -114,27 +116,27 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         return;
       }
       case "classes": {
-        updateClassRecord(project.database, id, patch);
+        updateClassRecord(project.database, id, patch as Partial<ClassRecord>);
         return;
       }
       case "skills": {
-        updateSkillRecord(project.database, id, patch);
+        updateSkillRecord(project.database, id, patch as Partial<SkillRecord>);
         return;
       }
       case "items": {
-        updateItemRecord(project.database, id, patch);
+        updateItemRecord(project.database, id, patch as Partial<ItemRecord>);
         return;
       }
       case "equipment": {
-        updateEquipmentRecord(project.database, id, patch);
+        updateEquipmentRecord(project.database, id, patch as Partial<EquipmentRecord>);
         return;
       }
       case "enemies": {
-        updateEnemyRecord(project.database, id, patch);
+        updateEnemyRecord(project.database, id, patch as Partial<EnemyRecord>);
         return;
       }
       case "troops": {
-        updateTroopRecord(project.database, id, patch);
+        updateTroopRecord(project.database, id, patch as Partial<TroopRecord>);
         return;
       }
       case "states": {
@@ -147,6 +149,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if (!record) return;
         if ("name" in patch && patch.name !== undefined) record.name = patch.name;
         if ("resourceId" in patch) record.resourceId = patch.resourceId;
+        if ("sheet" in patch && patch.sheet !== undefined) record.sheet = patch.sheet;
+        if ("scope" in patch && isBattleAnimationScope(patch.scope)) record.scope = patch.scope;
+        if ("position" in patch && isBattleAnimationPosition(patch.position)) record.position = patch.position;
+        if ("large" in patch && patch.large !== undefined) record.large = patch.large;
         return;
       }
     }
@@ -249,4 +255,12 @@ function bulkRename(start: number, count: number, prefix: string, kind: "switch"
       addVariable(label);
     }
   }
+}
+
+function isBattleAnimationScope(value: unknown): value is BattleAnimationScope {
+  return value === "singleTarget" || value === "allTargets" || value === "screen";
+}
+
+function isBattleAnimationPosition(value: unknown): value is BattleAnimationPosition {
+  return value === "head" || value === "center" || value === "feet" || value === "screen";
 }

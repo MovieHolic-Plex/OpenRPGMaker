@@ -1,4 +1,4 @@
-import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
+import { DEFAULT_ELEMENT_RATE_LABELS, stateRatePercentage } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
   actorPanel,
@@ -41,8 +41,10 @@ export function battlePanel(actor: ActorRecord, rerender: () => void): HTMLEleme
 
 export function ratesPanel(actor: ActorRecord): HTMLElement {
   const stateRows = [{ id: "state_death", name: "전투불능" }, ...store.getCurrent().database.states].map((state) =>
-    rateRow(state.name, actor.stateRates[state.id] ?? "C", (grade) =>
-      updateDatabaseRecord("actors", actor.id, { stateRates: { ...actor.stateRates, [state.id]: grade } })
+    stateRateRow(state.id, state.name, actor.stateRates[state.id] ?? "C", (grade) =>
+      updateDatabaseRecord("actors", actor.id, {
+        stateRates: { ...actor.stateRates, [state.id]: grade },
+      })
     )
   );
   const elementRows = DEFAULT_ELEMENT_RATE_LABELS.map((element) =>
@@ -51,6 +53,11 @@ export function ratesPanel(actor: ActorRecord): HTMLElement {
     )
   );
   return actorPanel("저항", "actor-rates", [
+    el("p", {
+      class: "actor-rate-manual-note",
+      dataset: { testid: "db-actor-state-rate-manual-note" },
+      text: "States Page 기준: 주인공의 A-E 상태 저항 등급은 상태 발생 확률로 해석되며 A에서 E로 갈수록 낮아집니다.",
+    }),
     el("div", {
       class: "actor-rate-columns",
       children: [rateList("상태 저항", stateRows), rateList("속성 방어", elementRows)],
@@ -149,5 +156,22 @@ function rateRow(label: string, value: ActorRateGrade, onChange: (value: ActorRa
   return el("label", {
     class: "actor-rate-row",
     children: [el("span", { text: label }), gradeSelect(value, onChange)],
+  });
+}
+
+function stateRateRow(id: string, label: string, value: ActorRateGrade, onChange: (value: ActorRateGrade) => void): HTMLElement {
+  const labelNode = el("span", { text: `${label} ${stateRatePercentage(value)}%` });
+  const select = gradeSelect(value, (grade) => {
+    labelNode.textContent = `${label} ${stateRatePercentage(grade)}%`;
+    onChange(grade);
+  });
+  select.dataset.testid = `db-picker-actor-state-rate-${id}`;
+  return el("label", {
+    class: "actor-rate-row actor-state-rate-row",
+    dataset: { testid: `db-actor-state-rate-${id}` },
+    children: [
+      labelNode,
+      select,
+    ],
   });
 }

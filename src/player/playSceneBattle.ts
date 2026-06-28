@@ -1,7 +1,9 @@
 import type { BattleResult } from "@/battle/runtime";
+import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { StepResult } from "@/player/interpreter";
 import { mountBattleScene } from "@/player/battleDom";
+import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
@@ -24,12 +26,13 @@ export function playBattle(
     canEscape: step.canEscape,
     canLose: step.canLose,
   });
-  runtime.tick(1_000);
+  advanceBattleRuntime(runtime);
   return new Promise<BattleResult>((resolve) => {
     const battleScene = mountBattleScene({
       host,
       runtime,
-      onResult: (result) => {
+      onResult: (result, snapshot) => {
+        applyBattleRewardsToSession(scene.session, { result, rewards: snapshot.rewards });
         battleScene.destroy();
         resolve(result);
       },

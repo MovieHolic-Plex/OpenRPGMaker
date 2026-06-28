@@ -1,0 +1,42 @@
+﻿[
+    {
+        "file":  "src/player/playSceneAutonomous.ts",
+        "total":  121,
+        "pure":  115
+    },
+    {
+        "file":  "src/player/playSceneAutonomousCommands.ts",
+        "total":  265,
+        "pure":  245
+    },
+    {
+        "file":  "src/player/playScenePageMoveRoutes.ts",
+        "total":  105,
+        "pure":  96
+    },
+    {
+        "file":  "src/player/playSceneSchedulers.ts",
+        "total":  211,
+        "pure":  202
+    },
+    {
+        "file":  "src/editor/panels/eventEditor/moveRouteDialog.ts",
+        "total":  196,
+        "pure":  188
+    },
+    {
+        "file":  "src/editor/panels/eventEditor/moveRouteDialogParts.ts",
+        "total":  129,
+        "pure":  120
+    },
+    {
+        "file":  "src/editor/panels/eventEditor/moveRouteCommandCatalog.ts",
+        "total":  222,
+        "pure":  213
+    },
+    {
+        "file":  "src/project/io/shapeCommandFields.ts",
+        "total":  187,
+        "pure":  174
+    }
+]

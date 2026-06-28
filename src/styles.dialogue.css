@@ -1,0 +1,283 @@
+:root {
+  --runtime-dialogue-bg: rgba(31, 83, 190, 0.86);
+  --runtime-dialogue-bg-2: rgba(8, 36, 130, 0.9);
+  --runtime-dialogue-border: #f2fbff;
+  --runtime-dialogue-border-mid: #8eb6ff;
+  --runtime-dialogue-shadow: #061a55;
+  --runtime-dialogue-text: #f4fbff;
+  --runtime-dialogue-muted: #d7ecff;
+  --runtime-dialogue-font: "GulimChe", "DotumChe", "MS Gothic", "DotGothic16", "DungGeunMo", "Galmuri11", sans-serif;
+  --runtime-dialogue-panel-height: 34%;
+  --runtime-dialogue-face-size: 216px;
+}
+
+.dialogue-overlay {
+  align-items: stretch;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  left: 0;
+  padding: 0 4px 4px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.dialogue-overlay.position-top {
+  bottom: auto;
+  height: var(--runtime-dialogue-panel-height);
+  padding: 6px 6px 0;
+  top: 0;
+  transform: none;
+}
+
+.dialogue-overlay.position-center {
+  bottom: auto;
+  min-height: var(--runtime-dialogue-panel-height);
+  padding: 0 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dialogue-overlay.position-bottom {
+  bottom: 0;
+  height: var(--runtime-dialogue-panel-height);
+  padding: 0 6px 6px;
+  top: auto;
+  transform: none;
+}
+
+.dialogue-box {
+  background:
+    linear-gradient(180deg, var(--runtime-dialogue-bg) 0%, rgba(15, 57, 162, 0.88) 58%, var(--runtime-dialogue-bg-2) 100%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0 2px, rgba(255, 255, 255, 0) 2px 6px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 4px);
+  border: 4px solid var(--runtime-dialogue-border);
+  box-shadow:
+    inset 0 0 0 2px var(--runtime-dialogue-border-mid),
+    inset 0 0 0 5px rgba(7, 24, 90, 0.48),
+    0 2px 0 var(--runtime-dialogue-shadow),
+    0 4px 0 rgba(0, 0, 0, 0.62);
+  cursor: pointer;
+  image-rendering: pixelated;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 14px 16px;
+  pointer-events: auto;
+  position: relative;
+  width: 100%;
+}
+
+.dialogue-box.transparent {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.dialogue-box.transparent::after,
+.dialogue-box.transparent::before {
+  display: none;
+}
+
+.dialogue-box::after {
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid var(--runtime-dialogue-border);
+  bottom: -10px;
+  content: "";
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.55));
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.dialogue-box::before {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid rgba(12, 38, 126, 0.92);
+  bottom: -6px;
+  content: "";
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.dialogue-box .speaker {
+  color: var(--runtime-dialogue-muted);
+  font-family: var(--runtime-dialogue-font);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.dialogue-content {
+  align-items: start;
+  display: grid;
+  flex: 1;
+  gap: 18px;
+  min-height: 0;
+}
+
+.dialogue-content:has(.dialogue-face) {
+  grid-template-columns: var(--runtime-dialogue-face-size) minmax(0, 1fr);
+}
+
+.dialogue-content.face-right:has(.dialogue-face) {
+  grid-template-columns: minmax(0, 1fr) var(--runtime-dialogue-face-size);
+}
+
+.dialogue-content.face-right .dialogue-face {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dialogue-content.face-right .dialogue-text-column {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.dialogue-text-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dialogue-face {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--runtime-dialogue-border) var(--runtime-dialogue-border-mid) var(--runtime-dialogue-border-mid) var(--runtime-dialogue-border);
+  border-style: solid;
+  border-width: 3px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.46);
+  image-rendering: pixelated;
+  align-self: center;
+}
+
+.dialogue-face.flipped {
+  transform: scaleX(-1);
+}
+
+.dialogue-face.missing {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--runtime-dialogue-text);
+  display: flex;
+  font-size: 12px;
+  height: var(--runtime-dialogue-face-size);
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+  width: var(--runtime-dialogue-face-size);
+}
+
+.dialogue-box .body {
+  color: var(--runtime-dialogue-text);
+  font-family: var(--runtime-dialogue-font);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.28;
+  min-height: var(--runtime-dialogue-face-size);
+  overflow: auto;
+  overflow-wrap: anywhere;
+  text-shadow:
+    1px 1px 0 rgba(0, 0, 0, 0.88),
+    2px 2px 0 rgba(0, 0, 0, 0.42);
+  white-space: pre-wrap;
+}
+
+.dialogue-box .continue-hint {
+  color: transparent;
+  font-size: 0;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.choices .choice-btn {
+  background: linear-gradient(180deg, rgba(24, 70, 175, 0.9), rgba(12, 38, 126, 0.92));
+  border: 3px solid var(--runtime-dialogue-border);
+  border-radius: 2px;
+  color: var(--runtime-dialogue-text);
+  cursor: pointer;
+  font-family: var(--runtime-dialogue-font);
+  font-size: 24px;
+  font-weight: 700;
+  padding: 12px 16px;
+  text-align: left;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.choices .choice-btn:hover {
+  background: rgba(245, 208, 74, 0.18);
+  border-color: #f5d04a;
+}
+
+.number-input-box {
+  align-items: center;
+  cursor: default;
+  gap: 8px;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.number-input-title {
+  color: var(--runtime-dialogue-muted);
+  font-family: var(--runtime-dialogue-font);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.82);
+}
+
+.number-input-field {
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid var(--runtime-dialogue-border);
+  color: #061034;
+  font-family: var(--runtime-dialogue-font);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  max-width: 120px;
+  padding: 5px 8px;
+  text-align: center;
+  width: 100%;
+}
+
+.number-input-field:focus {
+  outline: 2px solid var(--runtime-dialogue-shadow);
+  outline-offset: 2px;
+}
+
+.number-input-ok {
+  background: rgba(8, 10, 14, 0.88);
+  border: 2px solid var(--runtime-dialogue-border);
+  color: var(--runtime-dialogue-text);
+  cursor: pointer;
+  font-family: var(--runtime-dialogue-font);
+  font-size: 20px;
+  font-weight: 700;
+  min-width: 56px;
+  padding: 4px 10px;
+}
+
+.number-input-ok:hover {
+  background: rgba(255, 255, 255, 0.16);
+}

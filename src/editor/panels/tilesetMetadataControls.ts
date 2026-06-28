@@ -7,14 +7,16 @@ export function renderDbGroup(title: string, child: HTMLElement): HTMLElement {
   return el("fieldset", { class: "tileset-db-group", children: [el("legend", { text: title }), child] });
 }
 
-export function numberControl(label: string, value: number, onInput: (value: number) => void): HTMLElement {
+export function numberControl(label: string, value: number, onInput: (value: number) => void, testid?: string): HTMLElement {
   const input = el("input", { attrs: { type: "number", min: "0", max: "99" }, value });
+  if (testid) input.dataset.testid = testid;
   input.addEventListener("input", () => onInput(Number(input.value)));
   return field(label, input);
 }
 
-export function textAreaControl(label: string, value: string, onInput: (value: string) => void): HTMLElement {
+export function textAreaControl(label: string, value: string, onInput: (value: string) => void, testid?: string): HTMLElement {
   const input = el("textarea", { text: value });
+  if (testid) input.dataset.testid = testid;
   input.addEventListener("input", () => onInput(input.value));
   return field(label, input);
 }

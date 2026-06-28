@@ -1,15 +1,28 @@
 import type {
   ActorRecord,
   BattleAnimationRecord,
+  BattlerAnimationRecord,
   EnemyRecord,
   EquipmentRecord,
   ItemRecord,
   Project,
   SystemRecords,
 } from "../types";
+import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { assert } from "./guards";
+
+const BUILTIN_GENERATED_RESOURCE_IDS = [
+  "hero",
+  "rpg-zzu-title-blue",
+  "generated-actor-hero-01-battle",
+  "generated-actor-hero-02-battle",
+  "generated-actor-hero-03-battle",
+  "generated-actor-hero-04-battle",
+  "generated-enemy-ontology-8da61312",
+  "generated-enemy-sylph-hornet",
+] as const;
 
 export function collectResourceIds(project: Project): Set<string> {
   const ids = new Set<string>();
@@ -20,10 +33,12 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const asset of RM2K3_GENERATED_ASSET_PLAN.assets) {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
+  for (const id of BUILTIN_GENERATED_RESOURCE_IDS) ids.add(id);
   for (const asset of EASYRPG_RTP_ASSETS) {
     ids.add(asset.id);
     if ("textureKey" in asset) ids.add(asset.textureKey);
   }
+  for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
   return ids;
 }
 
@@ -49,12 +64,18 @@ export function validateEnemyResources(enemy: EnemyRecord, resourceIds: Readonly
 
 export function validateAnimationResource(animation: BattleAnimationRecord, resourceIds: ReadonlySet<string>): void {
   validateOptionalResource(`animation ${animation.id}: resourceId`, animation.resourceId, resourceIds);
+  for (const timing of animation.timings ?? []) validateOptionalResource(`animation ${animation.id}: timing soundResourceId`, timing.soundResourceId, resourceIds);
+}
+
+export function validateBattlerAnimationResources(animation: BattlerAnimationRecord, resourceIds: ReadonlySet<string>): void {
+  validateOptionalResource(`battler animation ${animation.id}: resourceId`, animation.resourceId, resourceIds);
 }
 
 export function validateSystemResources(system: SystemRecords, resourceIds: ReadonlySet<string>): void {
   validateOptionalResource("system.titleResourceId", system.titleResourceId, resourceIds);
   validateOptionalResource("system.systemResourceId", system.systemResourceId, resourceIds);
   validateOptionalResource("system.battleSystemResourceId", system.battleSystemResourceId, resourceIds);
+  validateOptionalResource("system.titleScreen.backgroundResourceId", system.titleScreen?.backgroundResourceId, resourceIds);
 }
 
 export function validateOptionalResource(

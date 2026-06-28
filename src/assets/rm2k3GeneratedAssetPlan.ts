@@ -1,11 +1,11 @@
 import planInput from "./rm2k3GeneratedAssetPlan.json" with { type: "json" };
 import { validateGeneratedAssetManifest, type GeneratedAssetManifest } from "./generatedAssetManifest";
 
-export const RM2K3_GENERATED_ASSET_PLAN = parsePlan();
-
 class GeneratedAssetPlanError extends Error {
   readonly name = "GeneratedAssetPlanError";
 }
+
+export const RM2K3_GENERATED_ASSET_PLAN = parsePlan();
 
 function parsePlan(): GeneratedAssetManifest {
   const result = validateGeneratedAssetManifest(planInput);

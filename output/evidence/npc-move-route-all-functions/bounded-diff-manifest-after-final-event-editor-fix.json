@@ -1,0 +1,53 @@
+﻿{
+    "generatedAt":  "2026-06-28T23:49:06.5354457+09:00",
+    "goal":  "NPC autonomous movement and Korean move route editor, including final event editor desktop layout repair",
+    "relevantFiles":  [
+                          "src/project/types/events.ts",
+                          "src/project/io/shapeCommandFields.ts",
+                          "src/player/PlayScene.ts",
+                          "src/player/playSceneTypes.ts",
+                          "src/player/playSceneMapRuntime.ts",
+                          "src/player/playScenePageMoveRoutes.ts",
+                          "src/player/playSceneAutonomous.ts",
+                          "src/player/playSceneAutonomousCommands.ts",
+                          "src/player/playSceneAutonomousSprites.ts",
+                          "src/player/playSceneAutonomousTypes.ts",
+                          "src/editor/panels/eventEditor/moveRouteCommandCatalog.ts",
+                          "src/editor/panels/eventEditor/moveRouteDialog.ts",
+                          "src/editor/panels/eventEditor/moveRouteDialogParts.ts",
+                          "src/editor/panels/eventEditor/commandBodyRoute.ts",
+                          "src/editor/panels/eventEditor/pageMovement.ts",
+                          "src/styles.css",
+                          "test/runtimeEventPageControls.test.ts",
+                          "test/migration.test.ts",
+                          "test/e2e/rm2k3-event-pages.spec.ts",
+                          "test/e2e/rm2k3-event-commands.spec.ts"
+                      ],
+    "notes":  [
+                  "Repository contains many unrelated dirty files; this manifest intentionally bounds review to move-route/NPC/editor files.",
+                  "Tracked diff patch omits brand-new untracked files from git diff output, but relevant untracked paths are listed here and are readable in the workspace."
+              ],
+    "evidence":  {
+                     "screenshots":  [
+                                         "ui-style-scope-event-editor-fixed-final.png",
+                                         "ui-style-scope-move-route-dialog-final.png",
+                                         "ui-style-scope-command-route-body.png",
+                                         "ui-fixed-runtime-moving-01.png",
+                                         "ui-fixed-runtime-moving-08.png",
+                                         "ui-fixed-runtime-moving-16.png"
+                                     ],
+                     "metrics":  [
+                                     "ui-style-scope-event-editor-fixed-final-metrics.json",
+                                     "ui-style-scope-move-route-dialog-final-metrics.json",
+                                     "runtime-route-summary.json",
+                                     "qa-runtime-route-analysis.json"
+                                 ],
+                     "greenLogs":  [
+                                       "typecheck-after-final-event-editor-fix.txt",
+                                       "green-vitest-runtime-migration-after-final-event-editor-fix.txt",
+                                       "green-playwright-event-route-after-style-scope-fix.txt",
+                                       "green-playwright-command-route-after-final-event-editor-fix.txt",
+                                       "build-after-final-event-editor-fix.txt"
+                                   ]
+                 }
+}

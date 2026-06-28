@@ -1,10 +1,11 @@
-import { SCHEMA_VERSION, type Project } from "@/project/types";
+import { SCHEMA_VERSION, type ActorInitialEquipment, type Project } from "@/project/types";
 import {
   startSession,
   type AudioCommandState,
   type PictureState,
   type PlaySession,
 } from "@/project/session";
+import type { ActorVitals } from "@/project/sessionVitals";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -26,6 +27,10 @@ export type SaveSnapshot = {
     readonly switches: Record<string, boolean>;
     readonly variables: Record<string, number>;
     readonly timers: Record<string, number>;
+    readonly inventory?: Record<string, number>;
+    readonly partyActorIds?: readonly string[];
+    readonly actorExperience?: Record<string, number>;
+    readonly actorVitals?: Record<string, ActorVitals>;
     readonly currentMapId: string;
     readonly x: number;
     readonly y: number;
@@ -34,6 +39,8 @@ export type SaveSnapshot = {
     readonly battleResult?: PlaySession["battleResult"];
     readonly audio: AudioCommandState;
     readonly pictures: Record<string, PictureState>;
+    readonly actorEquipment?: Record<string, ActorInitialEquipment>;
+    readonly actorRows?: Record<string, "front" | "back">;
   };
 };
 
@@ -55,6 +62,10 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       switches: structuredClone(session.switches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
+      inventory: structuredClone(session.inventory),
+      partyActorIds: structuredClone(session.partyActorIds),
+      actorExperience: structuredClone(session.actorExperience),
+      actorVitals: structuredClone(session.actorVitals),
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -63,6 +74,8 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),
       pictures: structuredClone(session.pictures),
+      actorEquipment: structuredClone(session.actorEquipment),
+      actorRows: structuredClone(session.actorRows),
     },
   };
 }
@@ -103,6 +116,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.switches = structuredClone(snapshot.session.switches);
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
+  if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
+  if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
+  if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
+  if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
   session.y = snapshot.session.y;
@@ -111,6 +128,8 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.battleResult = snapshot.session.battleResult;
   session.audio = structuredClone(snapshot.session.audio);
   session.pictures = structuredClone(snapshot.session.pictures);
+  if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
+  if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
   return session;
 }
 
@@ -159,6 +178,10 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       switches: session.switches,
       variables: session.variables,
       timers: session.timers,
+      inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
+      partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
+      actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
+      actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -167,8 +190,43 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       battleResult,
       audio: audio.value,
       pictures: parsePictures(session.pictures),
+      actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
+      actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
     },
   };
+}
+
+function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((equipment) => {
+    if (!isRecord(equipment)) return false;
+    return ["weapon", "shield", "armor", "helmet", "accessory"].every((slot) => {
+      const item = equipment[slot];
+      return item === undefined || typeof item === "string";
+    });
+  });
+}
+
+function isActorRowsRecord(value: unknown): value is Record<string, "front" | "back"> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((row) => row === "front" || row === "back");
+}
+
+function isActorVitalsRecord(value: unknown): value is Record<string, ActorVitals> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((vitals) => {
+    if (!isRecord(vitals)) return false;
+    return (
+      typeof vitals.hp === "number" &&
+      typeof vitals.mp === "number" &&
+      typeof vitals.maxHp === "number" &&
+      typeof vitals.maxMp === "number"
+    );
+  });
+}
+
+function isStringArray(value: unknown): value is readonly string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
 function parseBattleResult(value: unknown): PlaySession["battleResult"] | "invalid" {

@@ -22,7 +22,7 @@ export const TILESET_EDIT_MODES: readonly ModeGuide[] = [
   },
   {
     id: "group",
-    label: "묶음",
+    label: "그룹",
   },
 ] as const;
 

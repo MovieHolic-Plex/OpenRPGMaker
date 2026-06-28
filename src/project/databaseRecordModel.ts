@@ -5,11 +5,17 @@ import {
   clampLevel,
   normalizeActorRecord,
 } from "@/project/actorModel";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorParameterKey, ActorRateGrade, ClassBattleCommand, ClassRecord, DatabaseRecords, DatabaseStateEffect, EnemyActionCondition, EnemyActionPattern, EnemyRecord, EnemyRewards, EnemyStats, EquipmentRecord, EquipmentStatBonuses, ItemRecord, SkillEffect, SkillMpCost, SkillRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from "@/project/databaseAnimationRecordModel";
+import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, ClassBattleCommand, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
 
-const PARAMETER_KEYS: readonly ActorParameterKey[] = ["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const;
+export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
-export function normalizeDatabaseRecords(database: DatabaseRecords): DatabaseRecords {
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains">>;
+
+export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
     ...database,
     actors: database.actors.map((actor) => normalizeActorRecord(actor)),
@@ -19,6 +25,45 @@ export function normalizeDatabaseRecords(database: DatabaseRecords): DatabaseRec
     equipment: database.equipment.map(normalizeEquipmentRecord),
     enemies: database.enemies.map(normalizeEnemyRecord),
     troops: database.troops.map(normalizeTroopRecord),
+    battleAnimations: database.battleAnimations.map(normalizeBattleAnimationRecord),
+    elements: normalizeElementRecords(database.elements),
+    terrains: normalizeTerrainRecords(database.terrains),
+    battleCommands: normalizeGlobalBattleCommands(database.battleCommands),
+    battlerAnimations: (database.battlerAnimations ?? []).map(normalizeBattlerAnimationRecord),
+  };
+}
+
+export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
+  const titleResourceId = cleanOptionalId(system.titleResourceId);
+  return {
+    startActorIds: cleanIds(system.startActorIds),
+    titleResourceId,
+    systemResourceId: cleanOptionalId(system.systemResourceId),
+    battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
+    initialTroopId: cleanOptionalId(system.initialTroopId),
+    titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+  };
+}
+
+function normalizeTitleScreenSettings(
+  settings: Partial<TitleScreenSettings> | undefined,
+  titleResourceId: string | undefined,
+): TitleScreenSettings {
+  const defaults = defaultTitleScreenSettings();
+  return {
+    title: textOrDefault(settings?.title, defaults.title),
+    backgroundResourceId: cleanOptionalId(settings?.backgroundResourceId) ?? titleResourceId ?? defaults.backgroundResourceId,
+    layout: {
+      titleX: clampInteger(settings?.layout?.titleX ?? defaults.layout.titleX, 0, 320),
+      titleY: clampInteger(settings?.layout?.titleY ?? defaults.layout.titleY, 0, 240),
+      menuX: clampInteger(settings?.layout?.menuX ?? defaults.layout.menuX, 0, 320),
+      menuY: clampInteger(settings?.layout?.menuY ?? defaults.layout.menuY, 0, 240),
+    },
+    menuLabels: {
+      newGame: textOrDefault(settings?.menuLabels?.newGame, defaults.menuLabels.newGame),
+      continueGame: textOrDefault(settings?.menuLabels?.continueGame, defaults.menuLabels.continueGame),
+      quit: textOrDefault(settings?.menuLabels?.quit, defaults.menuLabels.quit),
+    },
   };
 }
 
@@ -27,6 +72,8 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
   return {
     id: record.id,
     name: record.name,
+    options: normalizeClassOptions(record.options),
+    animationId: cleanOptionalId(record.animationId),
     skillIds: learnedSkills.map((skill) => skill.skillId),
     battleCommands: normalizeBattleCommands(record.battleCommands),
     learnedSkills,
@@ -39,6 +86,15 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     expCurve: normalizeExpCurve(record.expCurve),
     stateRates: normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
+  };
+}
+
+function normalizeClassOptions(options: Partial<ClassRecord["options"]> | undefined): ClassRecord["options"] {
+  return {
+    dualWield: options?.dualWield ?? false,
+    autoBattle: options?.autoBattle ?? false,
+    fixedEquipment: options?.fixedEquipment ?? false,
+    mightyGuard: options?.mightyGuard ?? false,
   };
 }
 
@@ -69,11 +125,27 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     price: clampInteger(record.price ?? 0, 0, 999999),
     skillId: cleanOptionalId(record.skillId),
     description: record.description ?? "",
-    type: record.type ?? "normal",
+    type: normalizeItemType(record.type),
     occasion: record.occasion ?? "always",
     consumable: record.consumable ?? true,
     animationId: cleanOptionalId(record.animationId),
     stateEffects: normalizeStateEffects(record.stateEffects),
+    consumptionLimit: normalizeConsumptionLimit(record.consumptionLimit),
+    usableActorIds: cleanIds(record.usableActorIds),
+    usableClassIds: cleanIds(record.usableClassIds),
+    healStateIds: cleanIds(record.healStateIds),
+    hpRecovery: normalizeRecovery(record.hpRecovery),
+    mpRecovery: normalizeRecovery(record.mpRecovery),
+    onlyUsableInMenu: record.onlyUsableInMenu ?? false,
+    onlyEffectiveOnDeadActors: record.onlyEffectiveOnDeadActors ?? false,
+    learnedSkillId: cleanOptionalId(record.learnedSkillId),
+    activateSkillId: cleanOptionalId(record.activateSkillId),
+    usageMessage: record.usageMessage === "skill" ? "skill" : "normal",
+    switchId: cleanOptionalId(record.switchId),
+    occasionField: record.occasionField ?? (record.occasion === "field" || record.occasion === "always"),
+    occasionBattle: record.occasionBattle ?? (record.occasion === "battle" || record.occasion === "always"),
+    seedParameterBonuses: normalizeSeedBonuses(record.seedParameterBonuses),
+    equipmentProfile: normalizeItemEquipmentProfile(record.equipmentProfile),
   };
 }
 
@@ -94,34 +166,6 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     twoHanded: record.twoHanded ?? false,
     usableAsItemSkillId: cleanOptionalId(record.usableAsItemSkillId),
     stateInflictIds: cleanIds(record.stateInflictIds),
-  };
-}
-
-export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">): EnemyRecord {
-  const actions = normalizeEnemyActions(record.actions, record.skillIds);
-  return {
-    id: record.id,
-    name: record.name,
-    monsterResourceId: cleanOptionalId(record.monsterResourceId),
-    skillIds: actions.map((action) => action.skillId),
-    stats: normalizeEnemyStats(record.stats),
-    rewards: normalizeRewards(record.rewards),
-    actions,
-    stateRates: normalizeRates(record.stateRates),
-    elementRates: defaultElementRates(record.elementRates),
-  };
-}
-
-export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">): TroopRecord {
-  const members = normalizeMembers(record.members, record.enemyIds);
-  return {
-    id: record.id,
-    name: record.name,
-    enemyIds: members.map((member) => member.enemyId),
-    members,
-    autoAlign: record.autoAlign ?? true,
-    previewBackgroundResourceId: cleanOptionalId(record.previewBackgroundResourceId),
-    battleEventPages: record.battleEventPages ?? [],
   };
 }
 
@@ -146,9 +190,14 @@ function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | 
 }
 
 function normalizeParameterCurves(curves: Partial<ActorParameterCurves> | undefined): ActorParameterCurves {
-  const normalized = {} as ActorParameterCurves;
-  for (const key of PARAMETER_KEYS) normalized[key] = normalizeCurve(curves?.[key]);
-  return normalized;
+  return {
+    maxHp: normalizeCurve(curves?.maxHp),
+    maxMp: normalizeCurve(curves?.maxMp),
+    attack: normalizeCurve(curves?.attack),
+    defense: normalizeCurve(curves?.defense),
+    mind: normalizeCurve(curves?.mind),
+    agility: normalizeCurve(curves?.agility),
+  };
 }
 
 function normalizeCurve(curve: readonly number[] | undefined): number[] {
@@ -166,6 +215,10 @@ function normalizeExpCurve(curve: Partial<ActorExperienceCurve> | undefined): Ac
 
 function normalizeMpCost(cost: Partial<SkillMpCost> | undefined): SkillMpCost {
   return { flat: clampInteger(cost?.flat ?? 0, 0, 9999), percentMax: clampInteger(cost?.percentMax ?? 0, 0, 100) };
+}
+
+function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost {
+  return { flat: clampInteger(cost?.flat ?? 0, 0, 999), percentMax: clampInteger(cost?.percentMax ?? 0, 0, 100) };
 }
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
@@ -187,54 +240,56 @@ function normalizeStatBonuses(bonuses: Partial<EquipmentStatBonuses> | undefined
   };
 }
 
-function normalizeEnemyStats(stats: Partial<EnemyStats> | undefined): EnemyStats {
+function normalizeSeedBonuses(bonuses: Partial<EquipmentStatBonuses> | undefined): EquipmentStatBonuses {
   return {
-    maxHp: clampInteger(stats?.maxHp ?? 10, 1, 99999),
-    maxMp: clampInteger(stats?.maxMp ?? 1, 1, 9999),
-    attack: clampInteger(stats?.attack ?? 10, 1, 9999),
-    defense: clampInteger(stats?.defense ?? 10, 1, 9999),
-    mind: clampInteger(stats?.mind ?? 10, 1, 9999),
-    agility: clampInteger(stats?.agility ?? 10, 1, 9999),
+    attack: clampInteger(bonuses?.attack ?? 0, -50, 50),
+    defense: clampInteger(bonuses?.defense ?? 0, -50, 50),
+    mind: clampInteger(bonuses?.mind ?? 0, -50, 50),
+    agility: clampInteger(bonuses?.agility ?? 0, -50, 50),
   };
 }
 
-function normalizeRewards(rewards: Partial<EnemyRewards> | undefined): EnemyRewards {
+function normalizeItemEquipmentProfile(profile: Partial<ItemEquipmentProfile> | undefined): ItemEquipmentProfile {
   return {
-    exp: clampInteger(rewards?.exp ?? 0, 0, 999999),
-    gold: clampInteger(rewards?.gold ?? 0, 0, 999999),
-    dropItemId: cleanOptionalId(rewards?.dropItemId),
-    dropRatePercent: clampInteger(rewards?.dropRatePercent ?? 0, 0, 100),
+    statBonuses: normalizeItemEquipmentBonuses(profile?.statBonuses),
+    equippableActorIds: cleanIds(profile?.equippableActorIds),
+    equippableClassIds: cleanIds(profile?.equippableClassIds),
+    twoHanded: profile?.twoHanded ?? false,
+    mpCost: clampInteger(profile?.mpCost ?? 0, 0, 999),
+    accuracy: clampInteger(profile?.accuracy ?? 90, 0, 100),
+    criticalRate: clampInteger(profile?.criticalRate ?? 0, 0, 100),
+    attackElementIds: cleanIds(profile?.attackElementIds),
+    stateInflictIds: cleanIds(profile?.stateInflictIds),
+    stateInflictionChance: clampInteger(profile?.stateInflictionChance ?? 100, 0, 100),
+    effectFlags: normalizeItemEquipmentEffectFlags(profile?.effectFlags),
+    elementalDefenseIds: cleanIds(profile?.elementalDefenseIds),
+    stateDefenseIds: cleanIds(profile?.stateDefenseIds),
+    stateDefenseMode: profile?.stateDefenseMode === "inflict" ? "inflict" : "resist",
+    stateResistanceChance: clampInteger(profile?.stateResistanceChance ?? 0, 0, 100),
   };
 }
 
-function normalizeEnemyActions(actions: readonly Partial<EnemyActionPattern>[] | undefined, legacy: readonly string[] = []): EnemyActionPattern[] {
-  const source = actions ?? legacy.map((skillId) => ({ skillId, priority: 5, condition: { kind: "always" } as EnemyActionCondition }));
-  return source
-    .filter((action): action is EnemyActionPattern => typeof action.skillId === "string" && action.skillId.length > 0)
-    .map((action) => ({
-      skillId: action.skillId,
-      priority: clampInteger(action.priority ?? 5, 1, 10),
-      condition: normalizeActionCondition(action.condition),
-    }));
+function normalizeItemEquipmentBonuses(bonuses: Partial<EquipmentStatBonuses> | undefined): EquipmentStatBonuses {
+  return {
+    attack: clampInteger(bonuses?.attack ?? 0, -500, 500),
+    defense: clampInteger(bonuses?.defense ?? 0, -500, 500),
+    mind: clampInteger(bonuses?.mind ?? 0, -500, 500),
+    agility: clampInteger(bonuses?.agility ?? 0, -500, 500),
+  };
 }
 
-function normalizeActionCondition(condition: EnemyActionCondition | undefined): EnemyActionCondition {
-  if (condition?.kind === "turn") {
-    return { kind: "turn", start: clampInteger(condition.start, 1, 999), interval: clampInteger(condition.interval, 1, 999) };
-  }
-  return { kind: "always" };
-}
-
-function normalizeMembers(members: readonly Partial<TroopMemberRecord>[] | undefined, legacy: readonly string[] = []): TroopMemberRecord[] {
-  const source = members ?? legacy.map((enemyId, index) => ({ enemyId, x: 104 + index * 56, y: 96 }));
-  return source
-    .filter((member): member is TroopMemberRecord => typeof member.enemyId === "string" && member.enemyId.length > 0)
-    .map((member) => ({
-      enemyId: member.enemyId,
-      x: clampInteger(member.x ?? 160, 0, 320),
-      y: clampInteger(member.y ?? 120, 0, 240),
-      hidden: member.hidden ?? false,
-    }));
+function normalizeItemEquipmentEffectFlags(flags: Partial<ItemEquipmentEffectFlags> | undefined): ItemEquipmentEffectFlags {
+  return {
+    preemptive: flags?.preemptive ?? false,
+    doubleAttack: flags?.doubleAttack ?? false,
+    attackAll: flags?.attackAll ?? false,
+    ignoreDodge: flags?.ignoreDodge ?? false,
+    preventCriticalHits: flags?.preventCriticalHits ?? false,
+    increasePhysicalDodge: flags?.increasePhysicalDodge ?? false,
+    halfMpCost: flags?.halfMpCost ?? false,
+    negateTerrainDamage: flags?.negateTerrainDamage ?? false,
+    fixedEquipment: flags?.fixedEquipment ?? false,
+  };
 }
 
 function defaultElementRates(overrides: Record<string, ActorRateGrade> | undefined): Record<string, ActorRateGrade> {
@@ -259,12 +314,46 @@ function cleanOptionalId(value: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function textOrDefault(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : fallback;
+}
+
 function isSkillScope(value: unknown): value is SkillRecord["scope"] {
   return value === "self" || value === "ally" || value === "enemy" || value === "allEnemies";
 }
 
 function isItemScope(value: unknown): value is ItemRecord["scope"] {
-  return value === "none" || value === "ally" || value === "enemy";
+  return value === "none" || value === "ally" || value === "allAllies" || value === "enemy";
+}
+
+function normalizeItemType(value: unknown): ItemRecord["type"] {
+  if (
+    value === "normalGoods" ||
+    value === "weapon" ||
+    value === "shield" ||
+    value === "body" ||
+    value === "head" ||
+    value === "accessory" ||
+    value === "medicine" ||
+    value === "book" ||
+    value === "seed" ||
+    value === "special" ||
+    value === "switch"
+  ) {
+    return value;
+  }
+  if (value === "key") return "normalGoods";
+  if (value === "skillBook") return "book";
+  if (value === "normal") return "medicine";
+  return "normalGoods";
+}
+
+function normalizeConsumptionLimit(value: unknown): ItemConsumptionLimit {
+  if (value === "noLimit") return "noLimit";
+  const numeric = typeof value === "number" ? value : Number(value);
+  if (numeric === 1 || numeric === 2 || numeric === 3 || numeric === 4 || numeric === 5) return numeric;
+  return "noLimit";
 }
 
 function clampInteger(value: number, min: number, max: number): number {

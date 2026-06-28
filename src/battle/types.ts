@@ -1,4 +1,14 @@
-import type { ActorId, BattleAnimationId, EnemyId, ItemId, Project, SkillId, TroopId } from "@/project/types";
+import type {
+  ActorId,
+  BattleAnimationId,
+  BattleAnimationPosition,
+  BattleAnimationScope,
+  EnemyId,
+  ItemId,
+  Project,
+  SkillId,
+  TroopId,
+} from "@/project/types";
 
 export type BattlePhase = "charging" | "actorCommand" | "resolved";
 export type BattleResult = "victory" | "defeat" | "escape";
@@ -23,6 +33,8 @@ export interface BattleBattlerSnapshot {
   readonly name: string;
   readonly hp: number;
   readonly maxHp: number;
+  readonly mp: number;
+  readonly maxMp: number;
   readonly gauge: number;
   readonly defeated: boolean;
   readonly stateIds: readonly string[];
@@ -32,12 +44,26 @@ export interface BattleBattlerSnapshot {
 export interface BattleAnimationSnapshot {
   readonly animationId: BattleAnimationId;
   readonly targetId: string;
+  readonly name?: string;
+  readonly resourceId?: string;
+  readonly scope?: BattleAnimationScope;
+  readonly position?: BattleAnimationPosition;
+  readonly soundResourceIds: readonly string[];
+  readonly flashTargets: readonly ("target" | "screen")[];
+  readonly screenShake: boolean;
+  readonly frameCount: number;
 }
 
 export interface BattleRewardsSnapshot {
   readonly exp: number;
   readonly gold: number;
   readonly items: readonly ItemId[];
+}
+
+export interface BattleEventStateSnapshot {
+  readonly switches: Readonly<Record<string, boolean>>;
+  readonly variables: Readonly<Record<string, number>>;
+  readonly inventory: Readonly<Record<string, number>>;
 }
 
 export interface BattleSnapshot {
@@ -51,6 +77,9 @@ export interface BattleSnapshot {
   readonly canEscape: boolean;
   readonly canLose: boolean;
   readonly troopId: TroopId;
+  readonly backdropResourceId?: string;
+  readonly turn: number;
+  readonly eventState: BattleEventStateSnapshot;
 }
 
 export interface BattleRuntime {

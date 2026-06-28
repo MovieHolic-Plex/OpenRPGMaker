@@ -1,0 +1,15 @@
+{
+  "hasSprite": true,
+  "hasImage": false,
+  "text": "",
+  "rect": {
+    "width": 72,
+    "height": 72,
+    "left": 260,
+    "top": 600
+  },
+  "backgroundImage": "url(\"http://127.0.0.1:5173/assets/generated/rm2k3/hero-01-battle.png\")",
+  "backgroundPosition": "0px 0px",
+  "backgroundSize": "216px 576px",
+  "imageSrc": null
+}

@@ -7,7 +7,7 @@ import { el } from "@/util/dom";
 export function skillFields(form: HTMLElement, id: string): void {
   const skill = store.getCurrent().database.skills.find((record) => record.id === id);
   if (!skill) return;
-  form.append(selectLiteral("대상", "db-field-scope", skill.scope, ["self", "ally", "enemy", "allEnemies"], (value) =>
+  form.append(selectLiteral("범위", "db-field-scope", skill.scope, ["self", "ally", "enemy", "allEnemies"], (value) =>
     updateDatabaseRecord("skills", id, { scope: value })
   ));
   form.append(numberField("위력", "db-field-power", skill.power, (value) => updateDatabaseRecord("skills", id, { power: value })));
@@ -20,7 +20,7 @@ export function itemFields(form: HTMLElement, id: string): void {
   const item = store.getCurrent().database.items.find((record) => record.id === id);
   if (!item) return;
   form.append(numberField("가격", "db-field-price", item.price, (value) => updateDatabaseRecord("items", id, { price: value })));
-  form.append(selectLiteral("대상", "db-field-scope", item.scope, ["none", "ally", "enemy"], (value) =>
+  form.append(selectLiteral("범위", "db-field-scope", item.scope, ["none", "ally", "allAllies", "enemy"], (value) =>
     updateDatabaseRecord("items", id, { scope: value })
   ));
   skillPicker(form, "items", id);
@@ -42,7 +42,6 @@ export function enemyFields(form: HTMLElement, id: string): void {
   form.append(textField("몬스터 그래픽", "db-field-monster-resource", enemy.monsterResourceId ?? "", (value) =>
     updateDatabaseRecord("enemies", id, { monsterResourceId: emptyToUndefined(value) })
   ));
-  // 적이 사용할 스킬 선택(RM2K3 적 행동 설정). skillPicker는 store의 skills로 옵션을 채운다.
   skillPicker(form, "enemies", id);
 }
 
@@ -60,7 +59,6 @@ export function animationFields(form: HTMLElement, id: string, rerender: () => v
     updateDatabaseRecord("battleAnimations", id, { resourceId: emptyToUndefined(value) });
     rerender();
   }));
-  // 실제 픽셀 아트 미리보기(없으면 안내).
   const previewWrap = el("div", { class: "db-preview db-animation-preview", dataset: { testid: "db-animation-preview" } });
   const resourceId = animation.resourceId;
   const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
@@ -72,7 +70,6 @@ export function animationFields(form: HTMLElement, id: string, rerender: () => v
     previewWrap.append(el("div", { class: "empty-hint", text: `미리보기 리소스: ${resourceId ?? "없음"}` }));
   }
   form.append(previewWrap);
-  // 이 애니메이션을 사용하는 스킬/아이템 참조 표시.
   const referencingSkills = project.database.skills.filter((skill) => skill.animationId === animation.id);
   if (referencingSkills.length > 0) {
     const refs = el("div", { class: "db-refs", dataset: { testid: "db-animation-references" } });

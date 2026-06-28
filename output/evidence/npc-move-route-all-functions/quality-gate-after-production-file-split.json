@@ -1,0 +1,42 @@
+﻿{
+    "generatedAt":  "2026-06-29T00:31:16.0326177+09:00",
+    "verdict":  "PASS",
+    "boundedManifest":  "bounded-diff-manifest-after-production-file-split.json",
+    "checks":  [
+                   {
+                       "status":  "PASS",
+                       "evidence":  "line-count-after-production-file-split.json",
+                       "name":  "production file size split"
+                   },
+                   {
+                       "status":  "PASS",
+                       "evidence":  "typecheck-after-production-file-split.txt",
+                       "name":  "typecheck"
+                   },
+                   {
+                       "status":  "PASS",
+                       "evidence":  "green-vitest-after-production-file-split.txt",
+                       "name":  "vitest runtime split"
+                   },
+                   {
+                       "status":  "PASS",
+                       "evidence":  "green-playwright-focused-after-production-file-split.txt",
+                       "name":  "playwright focused move route"
+                   },
+                   {
+                       "status":  "PASS",
+                       "evidence":  "green-playwright-event-route-after-review-blocker-fixes.txt",
+                       "name":  "playwright event pages regression"
+                   },
+                   {
+                       "status":  "PASS",
+                       "evidence":  "green-playwright-command-route-after-review-blocker-fixes.txt",
+                       "name":  "playwright event commands regression"
+                   },
+                   {
+                       "status":  "PASS",
+                       "evidence":  "build-after-production-file-split.txt",
+                       "name":  "build"
+                   }
+               ]
+}

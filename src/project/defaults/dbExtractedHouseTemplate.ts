@@ -1,9 +1,10 @@
 import { genId } from "@/util/id";
 import { appendTileToStack } from "@/project/mapOverlayTiles";
 import type { GameMap } from "../types";
+import type { TerrainTemplateBuildPlan, TerrainTemplateHouseBuildPlan } from "../types/base";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "./roadAutotile";
-import { shapeSandEdges } from "./sandAutotile";
+import { SMALL_HOUSE_01_TERRAIN_TEMPLATE } from "./smallHouse01TerrainTemplate";
 
 type TilePattern = readonly (readonly number[])[];
 type TileLayerName = "lower" | "upper";
@@ -30,14 +31,55 @@ type LowerRectInput = {
   readonly width: number;
 };
 type PlasterHouseInput = {
-  readonly bodyRows: number;
   readonly origin: TilePoint;
+  readonly wallRows: number;
   readonly width: number;
 };
 type HouseInput = {
   readonly material: SmallHouseMaterial;
-  readonly bodyRows: number;
   readonly origin: TilePoint;
+  readonly wallRows: number;
+  readonly width: number;
+};
+type RoofFootprint = {
+  readonly origin: TilePoint;
+  readonly width: number;
+};
+type WallFootprint = {
+  readonly origin: TilePoint;
+  readonly rows: number;
+  readonly width: number;
+};
+type HouseBodyPlan = {
+  readonly roof: RoofFootprint;
+  readonly wall: WallFootprint;
+  readonly windows: readonly TilePoint[];
+};
+type LShapedHouseBuildPlan = {
+  readonly fence: TerrainTemplateBuildPlan["fence"];
+  readonly lowerHouse: TerrainTemplateHouseBuildPlan;
+  readonly roads: readonly RoadRect[];
+  readonly upperHouse: HouseBodyPlan;
+};
+type ComplexHouseBuildPlan = {
+  readonly door: TerrainTemplateHouseBuildPlan["door"];
+  readonly fence: TerrainTemplateBuildPlan["fence"];
+  readonly houses: readonly HouseBodyPlan[];
+  readonly roads: readonly RoadRect[];
+};
+type CityHousePlan = {
+  readonly bodies: readonly HouseBodyPlan[];
+  readonly door: TerrainTemplateHouseBuildPlan["door"];
+  readonly windows: readonly TilePoint[];
+};
+type CityBuildPlan = {
+  readonly houses: readonly CityHousePlan[];
+  readonly roads: readonly RoadRect[];
+  readonly treeOrigins: readonly TilePoint[];
+};
+type BlankHouseMapInput = {
+  readonly height: number;
+  readonly name: string;
   readonly width: number;
 };
 export type SmallHouseVariantIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -64,18 +106,310 @@ const SMALL_HOUSE_VARIANT_MAP_SIZE = {
   height: 18,
   width: 21,
 } as const;
+const SMALL_HOUSE_CITY_MAP_SIZE = {
+  height: 50,
+  width: 50,
+} as const;
 const SMALL_HOUSE_VARIANT_INDICES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const satisfies readonly SmallHouseVariantIndex[];
-const ROOF_CAP_LEFT = 374;
+const WIDE_SMALL_HOUSE_TEMPLATE_BUILD_PLAN = {
+  fence: { x: 2, y: 2, width: 17, height: 15 },
+  house: {
+    roof: { origin: { x: 5, y: 4 }, width: 13 },
+    wall: { origin: { x: 5, y: 8 }, width: 13, rows: 3 },
+    door: { x: 11, topY: 9, bottomY: 10 },
+    windows: [
+      { x: 8, y: 9 },
+      { x: 14, y: 9 },
+    ],
+  },
+  roads: [
+    { x: 11, y: 11, width: 2, height: 6 },
+    { x: 8, y: 15, width: 6, height: 2 },
+  ],
+} as const satisfies TerrainTemplateBuildPlan;
+const L_SHAPED_SMALL_HOUSE_TEMPLATE_BUILD_PLAN = {
+  fence: { x: 2, y: 2, width: 17, height: 15 },
+  upperHouse: {
+    roof: { origin: { x: 4, y: 3 }, width: 11 },
+    wall: { origin: { x: 4, y: 7 }, width: 11, rows: 3 },
+    windows: [
+      { x: 7, y: 8 },
+    ],
+  },
+  lowerHouse: {
+    roof: { origin: { x: 10, y: 6 }, width: 8 },
+    wall: { origin: { x: 10, y: 10 }, width: 8, rows: 3 },
+    door: { x: 13, topY: 11, bottomY: 12 },
+    windows: [
+      { x: 11, y: 11 },
+      { x: 16, y: 11 },
+    ],
+  },
+  roads: [
+    { x: 13, y: 13, width: 2, height: 4 },
+    { x: 10, y: 15, width: 6, height: 2 },
+  ],
+} as const satisfies LShapedHouseBuildPlan;
+const COMPLEX_SMALL_HOUSE_TEMPLATE_BUILD_PLAN = {
+  fence: { x: 1, y: 1, width: 19, height: 16 },
+  houses: [
+    {
+      roof: { origin: { x: 3, y: 2 }, width: 15 },
+      wall: { origin: { x: 3, y: 6 }, width: 15, rows: 3 },
+      windows: [],
+    },
+    {
+      roof: { origin: { x: 3, y: 5 }, width: 8 },
+      wall: { origin: { x: 3, y: 9 }, width: 8, rows: 3 },
+      windows: [
+        { x: 5, y: 10 },
+      ],
+    },
+    {
+      roof: { origin: { x: 10, y: 7 }, width: 8 },
+      wall: { origin: { x: 10, y: 11 }, width: 8, rows: 3 },
+      windows: [
+        { x: 11, y: 12 },
+        { x: 16, y: 12 },
+      ],
+    },
+  ],
+  door: { x: 13, topY: 12, bottomY: 13 },
+  roads: [
+    { x: 13, y: 14, width: 2, height: 3 },
+    { x: 8, y: 16, width: 7, height: 1 },
+  ],
+} as const satisfies ComplexHouseBuildPlan;
+const SMALL_HOUSE_CITY_BUILD_PLAN = {
+  houses: [
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 3, y: 3 }, width: 13 },
+          wall: { origin: { x: 3, y: 7 }, width: 13, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 8, topY: 8, bottomY: 9 },
+      windows: [
+        { x: 5, y: 8 },
+        { x: 12, y: 8 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 20, y: 3 }, width: 11 },
+          wall: { origin: { x: 20, y: 7 }, width: 11, rows: 3 },
+          windows: [],
+        },
+        {
+          roof: { origin: { x: 23, y: 6 }, width: 7 },
+          wall: { origin: { x: 23, y: 10 }, width: 7, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 26, topY: 11, bottomY: 12 },
+      windows: [
+        { x: 22, y: 8 },
+        { x: 28, y: 8 },
+        { x: 24, y: 11 },
+        { x: 28, y: 11 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 36, y: 4 }, width: 9 },
+          wall: { origin: { x: 36, y: 8 }, width: 9, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 40, topY: 9, bottomY: 10 },
+      windows: [
+        { x: 38, y: 9 },
+        { x: 43, y: 9 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 4, y: 17 }, width: 13 },
+          wall: { origin: { x: 4, y: 21 }, width: 13, rows: 3 },
+          windows: [],
+        },
+        {
+          roof: { origin: { x: 10, y: 20 }, width: 8 },
+          wall: { origin: { x: 10, y: 24 }, width: 8, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 13, topY: 25, bottomY: 26 },
+      windows: [
+        { x: 7, y: 22 },
+        { x: 15, y: 22 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 24, y: 17 }, width: 9 },
+          wall: { origin: { x: 24, y: 21 }, width: 9, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 28, topY: 22, bottomY: 23 },
+      windows: [
+        { x: 25, y: 22 },
+        { x: 31, y: 22 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 38, y: 19 }, width: 10 },
+          wall: { origin: { x: 38, y: 23 }, width: 10, rows: 3 },
+          windows: [],
+        },
+        {
+          roof: { origin: { x: 36, y: 22 }, width: 7 },
+          wall: { origin: { x: 36, y: 26 }, width: 7, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 39, topY: 27, bottomY: 28 },
+      windows: [
+        { x: 40, y: 24 },
+        { x: 45, y: 24 },
+        { x: 42, y: 27 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 6, y: 34 }, width: 14 },
+          wall: { origin: { x: 6, y: 38 }, width: 14, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 12, topY: 39, bottomY: 40 },
+      windows: [
+        { x: 8, y: 39 },
+        { x: 16, y: 39 },
+      ],
+    },
+    {
+      bodies: [
+        {
+          roof: { origin: { x: 27, y: 33 }, width: 13 },
+          wall: { origin: { x: 27, y: 37 }, width: 13, rows: 3 },
+          windows: [],
+        },
+        {
+          roof: { origin: { x: 32, y: 36 }, width: 10 },
+          wall: { origin: { x: 32, y: 40 }, width: 10, rows: 3 },
+          windows: [],
+        },
+      ],
+      door: { x: 36, topY: 41, bottomY: 42 },
+      windows: [
+        { x: 29, y: 38 },
+        { x: 37, y: 38 },
+        { x: 34, y: 41 },
+        { x: 39, y: 41 },
+      ],
+    },
+  ],
+  roads: [
+    { x: 8, y: 10, width: 2, height: 5 },
+    { x: 26, y: 13, width: 2, height: 3 },
+    { x: 40, y: 11, width: 2, height: 4 },
+    { x: 13, y: 27, width: 2, height: 5 },
+    { x: 28, y: 24, width: 2, height: 8 },
+    { x: 39, y: 29, width: 2, height: 3 },
+    { x: 12, y: 41, width: 2, height: 4 },
+    { x: 36, y: 43, width: 2, height: 3 },
+    { x: 7, y: 14, width: 35, height: 2 },
+    { x: 10, y: 30, width: 34, height: 2 },
+    { x: 12, y: 44, width: 26, height: 2 },
+    { x: 21, y: 14, width: 2, height: 32 },
+    { x: 34, y: 14, width: 2, height: 18 },
+  ],
+  treeOrigins: [
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+    { x: 17, y: 1 },
+    { x: 18, y: 1 },
+    { x: 32, y: 1 },
+    { x: 33, y: 1 },
+    { x: 46, y: 1 },
+    { x: 47, y: 1 },
+    { x: 1, y: 2 },
+    { x: 17, y: 2 },
+    { x: 32, y: 2 },
+    { x: 46, y: 2 },
+    { x: 1, y: 3 },
+    { x: 17, y: 3 },
+    { x: 32, y: 3 },
+    { x: 46, y: 3 },
+    { x: 1, y: 5 },
+    { x: 17, y: 5 },
+    { x: 32, y: 5 },
+    { x: 46, y: 5 },
+    { x: 1, y: 7 },
+    { x: 17, y: 7 },
+    { x: 32, y: 7 },
+    { x: 46, y: 7 },
+    { x: 1, y: 18 },
+    { x: 2, y: 18 },
+    { x: 1, y: 19 },
+    { x: 1, y: 20 },
+    { x: 1, y: 22 },
+    { x: 1, y: 24 },
+    { x: 1, y: 26 },
+    { x: 1, y: 28 },
+    { x: 1, y: 34 },
+    { x: 2, y: 34 },
+    { x: 24, y: 34 },
+    { x: 46, y: 32 },
+    { x: 46, y: 34 },
+    { x: 1, y: 35 },
+    { x: 1, y: 36 },
+    { x: 24, y: 36 },
+    { x: 46, y: 36 },
+    { x: 1, y: 38 },
+    { x: 24, y: 38 },
+    { x: 46, y: 38 },
+    { x: 1, y: 40 },
+    { x: 24, y: 40 },
+    { x: 46, y: 40 },
+    { x: 1, y: 42 },
+    { x: 24, y: 42 },
+    { x: 46, y: 42 },
+    { x: 46, y: 45 },
+    { x: 1, y: 46 },
+    { x: 24, y: 46 },
+    { x: 46, y: 46 },
+    { x: 47, y: 46 },
+  ],
+} as const satisfies CityBuildPlan;
 const ROOF_BODY = 375;
 const ROOF_CAP_RIGHT = 377;
 const ROOF_FACE_LEFT = 404;
 const ROOF_FACE_MID = 405;
+const LEFT_DIAGONAL_ROOF_TOP = 354;
+const LEFT_DIAGONAL_ROOF_MID = 376;
+const LEFT_DIAGONAL_ROOF_BOTTOM = 384;
+const RIGHT_DIAGONAL_ROOF_TOP = 355;
+const RIGHT_DIAGONAL_ROOF_MID = 377;
+const RIGHT_DIAGONAL_ROOF_BOTTOM = 385;
 const DOOR_TOP = 116;
 const DOOR_BOTTOM = 146;
 const TREE_TOP_LEFT = 262;
 const TREE_TOP_RIGHT = 263;
 const TREE_BOTTOM_LEFT = 292;
 const TREE_BOTTOM_RIGHT = 293;
+const TREE_STACK_TILES = new Set([TREE_TOP_LEFT, TREE_TOP_RIGHT, TREE_BOTTOM_LEFT, TREE_BOTTOM_RIGHT]);
 // 패턴이 upper 레이어에 찍은 울타리(378~439 계열)/창문(85,87) 오버레이는
 // RM2K3 정석에 따라 upper에 유지한다 (chipsetMapping.isUpperChipsetTile과 일관).
 // 강등 대상이 없으므로 normalize는 사실상 no-op이 된다.
@@ -152,10 +486,10 @@ export function createSmallHouseVariantMap(variant: SmallHouseVariantIndex): Gam
       buildWideFrontPathVariant(map);
       break;
     case 4:
-      buildPondGardenVariant(map);
+      buildConnectedLHouseVariant(map);
       break;
     case 5:
-      buildOrchardFenceVariant(map);
+      buildComplexSteppedHouseVariant(map);
       break;
     case 6:
       buildPlazaTwoStoryVariant(map);
@@ -170,6 +504,17 @@ export function createSmallHouseVariantMap(variant: SmallHouseVariantIndex): Gam
       buildTStemStoneHouseVariant(map);
       break;
   }
+  normalizeHouseLayerContract(map);
+  return map;
+}
+
+export function createSmallHouseCityMap(): GameMap {
+  const map = createBlankHouseMap({
+    height: SMALL_HOUSE_CITY_MAP_SIZE.height,
+    name: "small_house_01 도시 8채",
+    width: SMALL_HOUSE_CITY_MAP_SIZE.width,
+  });
+  buildSmallHouseCity(map);
   normalizeHouseLayerContract(map);
   return map;
 }
@@ -201,17 +546,25 @@ function remapPattern(pattern: TilePattern, swaps: ReadonlyMap<number, number>):
 }
 
 function createVariantBlankMap(name: string): GameMap {
-  const tileCount = SMALL_HOUSE_VARIANT_MAP_SIZE.width * SMALL_HOUSE_VARIANT_MAP_SIZE.height;
+  return createBlankHouseMap({
+    height: SMALL_HOUSE_VARIANT_MAP_SIZE.height,
+    name,
+    width: SMALL_HOUSE_VARIANT_MAP_SIZE.width,
+  });
+}
+
+function createBlankHouseMap(input: BlankHouseMapInput): GameMap {
+  const tileCount = input.width * input.height;
   return {
     events: [],
-    height: SMALL_HOUSE_VARIANT_MAP_SIZE.height,
+    height: input.height,
     id: genId("map"),
     lowerTiles: new Array<number>(tileCount).fill(TILE.GRASS),
-    name,
+    name: input.name,
     tileSize: DEFAULT_TILE_SIZE,
     tilesetId: DEFAULT_TILESET_ID,
     upperTiles: new Array<number>(tileCount).fill(TILE.EMPTY),
-    width: SMALL_HOUSE_VARIANT_MAP_SIZE.width,
+    width: input.width,
   };
 }
 
@@ -230,53 +583,28 @@ function buildOpenYardVariant(map: GameMap): void {
 }
 
 function buildSideGardenVariant(map: GameMap): void {
-  stampDbExtractedHouseTemplate(map, { x: 1, y: 2 });
-  eraseRect(map, { x: 5, y: 5 }, 10, 8);
-  stampPlasterHouse(map, { origin: { x: 8, y: 4 }, width: 7, bodyRows: 5 });
-  setTile(map, { layer: "lower", tile: DOOR_TOP, x: 11, y: 10 });
-  setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: 11, y: 11 });
-  setTile(map, { layer: "upper", tile: 87, x: 9, y: 8 });
-  setTile(map, { layer: "upper", tile: 87, x: 13, y: 8 });
-  setTile(map, { layer: "upper", tile: 87, x: 13, y: 10 });
-  paintLowerRect(map, { origin: { x: 11, y: 12 }, width: 2, height: 5, tile: TILE.PATH });
-  paintLowerRect(map, { origin: { x: 13, y: 14 }, width: 4, height: 2, tile: TILE.PATH });
-  paintLowerRect(map, { origin: { x: 2, y: 14 }, width: 6, height: 2, tile: TILE.DARK_GRASS });
-  placeUpperTiles(map, [
-    { tile: TILE.FLOWERS, x: 3, y: 14 },
-    { tile: TILE.FLOWERS, x: 5, y: 15 },
-    { tile: TILE.FLOWERS, x: 7, y: 14 },
-    { tile: TILE.TREE, x: 18, y: 2 },
-    { tile: TILE.TREE, x: 18, y: 14 },
-  ]);
+  const buildPlan = SMALL_HOUSE_01_TERRAIN_TEMPLATE.buildPlan;
+  const housePlan = buildPlan.house;
+
+  placeFenceFromTemplate(map, buildPlan);
+  stampPlasterHouseFromTemplate(map, housePlan);
+  stampOpeningsFromTemplate(map, housePlan);
+  paintAutoRoad(map, buildPlan.roads);
 }
 
 function buildWideFrontPathVariant(map: GameMap): void {
-  stampDbExtractedHouseTemplate(map, { x: 3, y: 0 });
-  eraseRect(map, { x: 5, y: 3 }, 12, 8);
-  stampPlasterHouse(map, { origin: { x: 5, y: 4 }, width: 12, bodyRows: 4 });
-  setTile(map, { layer: "lower", tile: DOOR_TOP, x: 11, y: 9 });
-  setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: 11, y: 10 });
-  setTile(map, { layer: "upper", tile: 87, x: 7, y: 8 });
-  setTile(map, { layer: "upper", tile: 87, x: 9, y: 8 });
-  setTile(map, { layer: "upper", tile: 87, x: 14, y: 8 });
-  paintLowerRect(map, { origin: { x: 11, y: 11 }, width: 1, height: 7, tile: TILE.PATH });
-  paintLowerRect(map, { origin: { x: 9, y: 15 }, width: 5, height: 2, tile: TILE.PATH });
-  paintLowerRect(map, { origin: { x: 1, y: 2 }, width: 3, height: 11, tile: TILE.DARK_GRASS });
-  placeUpperTiles(map, [
-    { tile: TILE.FLOWERS, x: 1, y: 2 },
-    { tile: TILE.FLOWERS, x: 2, y: 4 },
-    { tile: TILE.FLOWERS, x: 1, y: 8 },
-    { tile: TILE.TREE, x: 2, y: 12 },
-    { tile: 378, x: 6, y: 14 },
-    { tile: 379, x: 7, y: 14 },
-    { tile: 379, x: 8, y: 14 },
-    { tile: 380, x: 9, y: 14 },
-  ]);
+  const buildPlan = WIDE_SMALL_HOUSE_TEMPLATE_BUILD_PLAN;
+  const housePlan = buildPlan.house;
+
+  placeFenceFromTemplate(map, buildPlan);
+  stampPlasterHouseFromTemplate(map, housePlan);
+  stampOpeningsFromTemplate(map, housePlan);
+  paintAutoRoad(map, buildPlan.roads);
 }
 
 function stampHouse(map: GameMap, input: HouseInput): void {
   const wall = HOUSE_WALL_TILES[input.material];
-  stampUpperRun(map, input.origin, input.width, [ROOF_CAP_LEFT, ROOF_BODY, ROOF_CAP_RIGHT]);
+  stampUpperRun(map, input.origin, input.width, [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT]);
   stampUpperRun(map, { x: input.origin.x, y: input.origin.y + 1 }, input.width, [
     ROOF_BODY,
     ROOF_BODY,
@@ -288,9 +616,10 @@ function stampHouse(map: GameMap, input: HouseInput): void {
     ROOF_BODY,
   ]);
   stampLowerRun(map, { x: input.origin.x, y: input.origin.y + 3 }, input.width, [ROOF_FACE_LEFT, ROOF_FACE_MID, ROOF_FACE_MID]);
-  for (let row = 0; row < input.bodyRows; row += 1) {
+  for (let row = 0; row < input.wallRows; row += 1) {
     const y = input.origin.y + 4 + row;
-    stampLowerRun(map, { x: input.origin.x, y }, input.width, row === input.bodyRows - 1 ? wall.bottom : wall.body);
+    const rowTiles = wallTilesForRow(wall, row, input.wallRows);
+    stampLowerRun(map, { x: input.origin.x, y }, input.width, rowTiles);
   }
 }
 
@@ -298,13 +627,99 @@ function stampPlasterHouse(map: GameMap, input: PlasterHouseInput): void {
   stampHouse(map, { ...input, material: "plaster" });
 }
 
-function eraseRect(map: GameMap, origin: TilePoint, width: number, height: number): void {
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      setTile(map, { layer: "lower", tile: TILE.GRASS, x: origin.x + x, y: origin.y + y });
-      setTile(map, { layer: "upper", tile: TILE.EMPTY, x: origin.x + x, y: origin.y + y });
+function placeFenceFromTemplate(map: GameMap, buildPlan: TerrainTemplateBuildPlan): void {
+  placeFenceRect(map, { origin: buildPlan.fence, width: buildPlan.fence.width, height: buildPlan.fence.height });
+}
+
+function stampPlasterHouseFromTemplate(map: GameMap, housePlan: TerrainTemplateHouseBuildPlan): void {
+  stampPlasterHouseBodyFromTemplate(map, housePlan);
+}
+
+function stampOpeningsFromTemplate(map: GameMap, housePlan: TerrainTemplateHouseBuildPlan): void {
+  setTile(map, { layer: "lower", tile: DOOR_TOP, x: housePlan.door.x, y: housePlan.door.topY });
+  setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: housePlan.door.x, y: housePlan.door.bottomY });
+  stampWindowsFromTemplate(map, housePlan.windows);
+}
+
+function stampPlasterHouseBodyFromTemplate(map: GameMap, housePlan: HouseBodyPlan): void {
+  stampRoofFromFootprint(map, housePlan.roof);
+  stampWallFromFootprint(map, HOUSE_WALL_TILES.plaster, housePlan.wall);
+}
+
+function stampWindowsFromTemplate(map: GameMap, windows: readonly TilePoint[]): void {
+  for (const window of windows) setTile(map, { layer: "upper", tile: HOUSE_WALL_TILES.plaster.window, x: window.x, y: window.y });
+}
+
+function stampVisibleWindowsFromTemplate(map: GameMap, windows: readonly TilePoint[]): void {
+  for (const window of windows) {
+    if (isVisibleWallMiddle(map, window)) {
+      setTile(map, { layer: "upper", tile: HOUSE_WALL_TILES.plaster.window, x: window.x, y: window.y });
     }
   }
+}
+
+function isVisibleWallMiddle(map: GameMap, point: TilePoint): boolean {
+  if (!isInside(map, point.x, point.y)) return false;
+  const index = point.y * map.width + point.x;
+  const lowerTile = map.lowerTiles[index] ?? TILE.EMPTY;
+  const upperTile = map.upperTiles[index] ?? TILE.EMPTY;
+  return upperTile === TILE.EMPTY && lowerTile === HOUSE_WALL_TILES.plaster.body[1];
+}
+
+function stampRoofFromFootprint(map: GameMap, roof: RoofFootprint): void {
+  const innerOrigin = { x: roof.origin.x + 1, y: roof.origin.y };
+  const innerWidth = roof.width - 2;
+  stampUpperRun(map, innerOrigin, innerWidth, [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT]);
+  stampUpperRun(map, { x: innerOrigin.x, y: roof.origin.y + 1 }, innerWidth, [ROOF_BODY, ROOF_BODY, ROOF_BODY]);
+  stampUpperRun(map, { x: innerOrigin.x, y: roof.origin.y + 2 }, innerWidth, [ROOF_BODY, ROOF_BODY, ROOF_BODY]);
+  stampLowerRun(map, { x: roof.origin.x, y: roof.origin.y + 3 }, roof.width, [ROOF_FACE_MID, ROOF_FACE_MID, ROOF_FACE_MID]);
+  stampDiagonalRoofEnds(map, roof);
+}
+
+function stampDiagonalRoofEnds(map: GameMap, roof: RoofFootprint): void {
+  const leftX = roof.origin.x;
+  const rightX = roof.origin.x + roof.width - 1;
+  const topY = roof.origin.y;
+  const midY = roof.origin.y + 1;
+  const lowerMidY = roof.origin.y + 2;
+  const bottomY = roof.origin.y + 3;
+
+  setGrassUnderFreeStandingRoofEdge(map, { x: leftX, y: topY });
+  setGrassUnderFreeStandingRoofEdge(map, { x: leftX, y: midY });
+  setGrassUnderFreeStandingRoofEdge(map, { x: leftX, y: lowerMidY });
+  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_TOP, x: leftX, y: topY });
+  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_MID, x: leftX, y: midY });
+  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_MID, x: leftX, y: lowerMidY });
+  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_BOTTOM, x: leftX, y: bottomY });
+
+  setGrassUnderFreeStandingRoofEdge(map, { x: rightX, y: topY });
+  setGrassUnderFreeStandingRoofEdge(map, { x: rightX, y: midY });
+  setGrassUnderFreeStandingRoofEdge(map, { x: rightX, y: lowerMidY });
+  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_TOP, x: rightX, y: topY });
+  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_MID, x: rightX, y: midY });
+  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_MID, x: rightX, y: lowerMidY });
+  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_BOTTOM, x: rightX, y: bottomY });
+}
+
+function setGrassUnderFreeStandingRoofEdge(map: GameMap, point: TilePoint): void {
+  if (!isInside(map, point.x, point.y)) return;
+  const index = point.y * map.width + point.x;
+  const lowerTile = map.lowerTiles[index] ?? TILE.GRASS;
+  if (lowerTile === TILE.GRASS) setTile(map, { layer: "lower", tile: TILE.GRASS, x: point.x, y: point.y });
+}
+
+function stampWallFromFootprint(map: GameMap, wall: HouseWallTileSet, footprint: WallFootprint): void {
+  for (let row = 0; row < footprint.rows; row += 1) {
+    const y = footprint.origin.y + row;
+    const rowTiles = wallTilesForRow(wall, row, footprint.rows);
+    stampLowerRun(map, { x: footprint.origin.x, y }, footprint.width, rowTiles);
+  }
+}
+
+function wallTilesForRow(wall: HouseWallTileSet, row: number, wallRows: number): readonly [number, number, number] {
+  if (row === 0) return wall.top;
+  if (row === wallRows - 1) return wall.bottom;
+  return wall.body;
 }
 
 function stampLowerRun(map: GameMap, origin: TilePoint, width: number, tiles: readonly [number, number, number]): void {
@@ -336,6 +751,21 @@ function paintLowerRect(map: GameMap, input: LowerRectInput): void {
 function paintAutoRoad(map: GameMap, rects: readonly RoadRect[]): void {
   for (const rect of rects) paintRoadRect(map, rect);
   shapeRoadEdges(map, rects);
+  clearObjectsOnRoadRects(map, rects);
+}
+
+function clearObjectsOnRoadRects(map: GameMap, rects: readonly RoadRect[]): void {
+  for (const rect of rects) {
+    for (let y = rect.y; y < rect.y + rect.height; y += 1) {
+      for (let x = rect.x; x < rect.x + rect.width; x += 1) {
+        if (!isInside(map, x, y)) continue;
+        const index = y * map.width + x;
+        map.upperTiles[index] = TILE.EMPTY;
+        delete map.lowerTileStacks?.[index];
+        delete map.upperTileStacks?.[index];
+      }
+    }
+  }
 }
 
 function placeUpperTiles(map: GameMap, placements: readonly Omit<TilePlacement, "layer">[]): void {
@@ -384,6 +814,31 @@ function placeTwoByTwoTree(map: GameMap, origin: TilePoint): void {
   stackTile(map, "lower", origin.x + 1, origin.y + 1, TREE_BOTTOM_RIGHT);
 }
 
+function placeTwoByTwoTreeIfClear(map: GameMap, origin: TilePoint): void {
+  const occupiedPoints = [
+    origin,
+    { x: origin.x + 1, y: origin.y },
+    { x: origin.x, y: origin.y + 1 },
+    { x: origin.x + 1, y: origin.y + 1 },
+  ] as const satisfies readonly TilePoint[];
+  if (occupiedPoints.every((point) => canStackTreeOnPoint(map, point))) placeTwoByTwoTree(map, origin);
+}
+
+function canStackTreeOnPoint(map: GameMap, point: TilePoint): boolean {
+  if (!isInside(map, point.x, point.y)) return false;
+  const index = point.y * map.width + point.x;
+  return (
+    map.lowerTiles[index] === TILE.GRASS &&
+    map.upperTiles[index] === TILE.EMPTY &&
+    isTreeStackOrEmpty(map.lowerTileStacks?.[index]) &&
+    isTreeStackOrEmpty(map.upperTileStacks?.[index])
+  );
+}
+
+function isTreeStackOrEmpty(stack: readonly number[] | undefined): boolean {
+  return stack === undefined || stack.every((tile) => TREE_STACK_TILES.has(tile));
+}
+
 function stackTile(map: GameMap, layer: TileLayerName, x: number, y: number, tile: number): void {
   if (!isInside(map, x, y)) return;
   appendTileToStack(map, layer, y * map.width + x, tile);
@@ -399,8 +854,6 @@ const FENCE_TOP_RIGHT = 380;
 const FENCE_SIDE_RAIL = 408;
 const FENCE_BOTTOM_LEFT = 438;
 const FENCE_BOTTOM_RIGHT = 410;
-const SAND_BODY = 424;
-const WATER_BODY = 120;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
 const MARKET_AWNING_TOP = [411, 412, 413] as const;
@@ -431,53 +884,43 @@ function placeFenceRect(map: GameMap, input: FenceRectInput): void {
   setTile(map, { layer: "upper", tile: FENCE_BOTTOM_RIGHT, x: lastX, y: lastY });
 }
 
-function buildPondGardenVariant(map: GameMap): void {
-  stampSmallHouse(map, { x: 4, y: 0 }, "wood");
-  paintLowerRect(map, { origin: { x: 0, y: 0 }, width: 4, height: 15, tile: SAND_BODY });
-  paintLowerRect(map, { origin: { x: 1, y: 2 }, width: 2, height: 11, tile: WATER_BODY });
-  shapeSandEdges(map);
-  paintAutoRoad(map, [
-    { x: 15, y: 9, width: 3, height: 8 },
-    { x: 5, y: 16, width: 12, height: 2 },
-  ]);
-  paintLowerRect(map, { origin: { x: 0, y: 15 }, width: 5, height: 3, tile: TILE.DARK_GRASS });
-  placeUpperTiles(map, [
-    { tile: TILE.FLOWERS, x: 1, y: 16 },
-    { tile: TILE.FLOWERS, x: 3, y: 17 },
-    { tile: TILE.FLOWERS, x: 9, y: 15 },
-    { tile: TILE.TREE, x: 0, y: 15 },
-    { tile: TILE.TREE, x: 18, y: 15 },
-  ]);
-  placeTwoByTwoTree(map, { x: 1, y: 13 });
+function buildConnectedLHouseVariant(map: GameMap): void {
+  const buildPlan = L_SHAPED_SMALL_HOUSE_TEMPLATE_BUILD_PLAN;
+
+  placeFenceRect(map, { origin: buildPlan.fence, width: buildPlan.fence.width, height: buildPlan.fence.height });
+  stampPlasterHouseBodyFromTemplate(map, buildPlan.upperHouse);
+  stampPlasterHouseBodyFromTemplate(map, buildPlan.lowerHouse);
+  stampWindowsFromTemplate(map, buildPlan.upperHouse.windows);
+  stampOpeningsFromTemplate(map, buildPlan.lowerHouse);
+  paintAutoRoad(map, buildPlan.roads);
 }
 
-function buildOrchardFenceVariant(map: GameMap): void {
-  stampSmallHouse(map, { x: 0, y: 2 }, "stone");
-  placeFenceRect(map, { origin: { x: 16, y: 3 }, width: 4, height: 13 });
-  placeUpperTiles(map, [
-    { tile: TILE.TREE, x: 17, y: 5 },
-    { tile: TILE.TREE, x: 19, y: 5 },
-    { tile: TILE.TREE, x: 17, y: 8 },
-    { tile: TILE.TREE, x: 19, y: 8 },
-    { tile: TILE.TREE, x: 18, y: 11 },
-    { tile: TILE.FLOWERS, x: 18, y: 7 },
-    { tile: TILE.FLOWERS, x: 17, y: 12 },
-  ]);
-  placeTwoByTwoTree(map, { x: 16, y: 13 });
-  paintAutoRoad(map, [
-    { x: 11, y: 11, width: 3, height: 6 },
-    { x: 0, y: 16, width: 16, height: 2 },
-  ]);
-  placeUpperTiles(map, [
-    { tile: TILE.FLOWERS, x: 1, y: 16 },
-    { tile: TILE.FLOWERS, x: 4, y: 17 },
-    { tile: TILE.TREE, x: 0, y: 0 },
-    { tile: TILE.TREE, x: 15, y: 0 },
-  ]);
+function buildComplexSteppedHouseVariant(map: GameMap): void {
+  const buildPlan = COMPLEX_SMALL_HOUSE_TEMPLATE_BUILD_PLAN;
+
+  placeFenceRect(map, { origin: buildPlan.fence, width: buildPlan.fence.width, height: buildPlan.fence.height });
+  for (const house of buildPlan.houses) {
+    stampPlasterHouseBodyFromTemplate(map, house);
+    stampWindowsFromTemplate(map, house.windows);
+  }
+  setTile(map, { layer: "lower", tile: DOOR_TOP, x: buildPlan.door.x, y: buildPlan.door.topY });
+  setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: buildPlan.door.x, y: buildPlan.door.bottomY });
+  paintAutoRoad(map, buildPlan.roads);
+}
+
+function buildSmallHouseCity(map: GameMap): void {
+  for (const housePlan of SMALL_HOUSE_CITY_BUILD_PLAN.houses) {
+    for (const body of housePlan.bodies) stampPlasterHouseBodyFromTemplate(map, body);
+    setTile(map, { layer: "lower", tile: DOOR_TOP, x: housePlan.door.x, y: housePlan.door.topY });
+    setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: housePlan.door.x, y: housePlan.door.bottomY });
+    stampVisibleWindowsFromTemplate(map, housePlan.windows);
+  }
+  paintAutoRoad(map, SMALL_HOUSE_CITY_BUILD_PLAN.roads);
+  for (const treeOrigin of SMALL_HOUSE_CITY_BUILD_PLAN.treeOrigins) placeTwoByTwoTreeIfClear(map, treeOrigin);
 }
 
 function buildPlazaTwoStoryVariant(map: GameMap): void {
-  stampPlasterHouse(map, { origin: { x: 4, y: 1 }, width: 10, bodyRows: 6 });
+  stampPlasterHouse(map, { origin: { x: 4, y: 1 }, width: 10, wallRows: 6 });
   setTile(map, { layer: "lower", tile: DOOR_TOP, x: 8, y: 10 });
   setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: 8, y: 11 });
   setTile(map, { layer: "upper", tile: 87, x: 6, y: 7 });
@@ -508,13 +951,13 @@ function buildPlazaTwoStoryVariant(map: GameMap): void {
 
 function buildTStemHouseMaterialVariant(map: GameMap, material: SmallHouseMaterial): void {
   const wall = HOUSE_WALL_TILES[material];
-  stampHouse(map, { material, origin: { x: 2, y: 1 }, width: 17, bodyRows: 4 });
-  stampHouse(map, { material, origin: { x: 7, y: 5 }, width: 7, bodyRows: 5 });
-  stampUpperRun(map, { x: 2, y: 1 }, 18, [ROOF_CAP_LEFT, ROOF_BODY, ROOF_CAP_RIGHT]);
+  stampHouse(map, { material, origin: { x: 2, y: 1 }, width: 17, wallRows: 4 });
+  stampHouse(map, { material, origin: { x: 7, y: 5 }, width: 7, wallRows: 5 });
+  stampUpperRun(map, { x: 2, y: 1 }, 18, [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT]);
   stampUpperRun(map, { x: 2, y: 2 }, 18, [ROOF_BODY, ROOF_BODY, ROOF_BODY]);
   stampUpperRun(map, { x: 2, y: 3 }, 18, [ROOF_BODY, ROOF_BODY, ROOF_BODY]);
   stampLowerRun(map, { x: 2, y: 4 }, 18, [ROOF_FACE_LEFT, ROOF_FACE_MID, ROOF_FACE_MID]);
-  stampUpperRun(map, { x: 7, y: 5 }, 8, [ROOF_CAP_LEFT, ROOF_BODY, ROOF_CAP_RIGHT]);
+  stampUpperRun(map, { x: 7, y: 5 }, 8, [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT]);
   stampUpperRun(map, { x: 7, y: 6 }, 8, [ROOF_BODY, ROOF_BODY, ROOF_BODY]);
   stampUpperRun(map, { x: 7, y: 7 }, 8, [ROOF_BODY, ROOF_BODY, ROOF_BODY]);
   stampLowerRun(map, { x: 7, y: 8 }, 8, [ROOF_FACE_LEFT, ROOF_FACE_MID, ROOF_FACE_MID]);

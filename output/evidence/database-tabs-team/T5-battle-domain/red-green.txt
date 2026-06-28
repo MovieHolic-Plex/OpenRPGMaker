@@ -1,0 +1,28 @@
+RED:
+Command:
+npx playwright test test/e2e/rm2k3-database-battle-domain.spec.ts --project=chromium
+
+Outcome:
+Failed as expected after tightening the enemy path. The missing behavior was battleScreen editing:
+locator.fill timed out waiting for getByTestId('db-field-battle-system-resource') in test/e2e/rm2k3-database-battle-domain.spec.ts.
+
+GREEN:
+Command:
+npx playwright test test/e2e/rm2k3-database-battle-domain.spec.ts --project=chromium
+
+Outcome:
+1 passed. The browser edited enemies, troops, and battleScreen, applied changes, reopened the Database modal, exported canonical project JSON, and captured runtime state from system.initialTroopId.
+
+Focused units:
+Command:
+npm run test -- --run test/battleRuntimeDb.test.ts test/databaseActions.test.ts
+
+Outcome:
+2 test files passed, 19 tests passed.
+
+Typecheck:
+Command:
+npm run typecheck
+
+Outcome:
+T5-owned errors are cleared. Full typecheck is currently blocked by test/e2e/rm2k3-database-t3-evidence.spec.ts, which reports missing node:path types / helper export imports outside the T5 battle-domain files.

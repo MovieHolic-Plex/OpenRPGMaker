@@ -1,69 +1,136 @@
-import { newCommand } from "@/editor/eventActions";
+import { newCommand, newM2Command } from "@/editor/eventActions";
+import {
+  isM2CatalogEntrySelectableInMap,
+  M2_COMMAND_CATALOG,
+  type M2CommandCatalogEntry,
+  type M2CommandPickerPage,
+} from "@/editor/eventCommands/m2Catalog";
 import type { Command } from "@/project/types";
-import { el } from "@/util/dom";
-import { COMMAND_KIND_OPTIONS } from "./options";
+import { clearChildren, el } from "@/util/dom";
 import { openEventSubdialog } from "./subdialog";
 
 type CommandKind = Command["kind"];
 
-type CommandGroup = {
-  readonly title: string;
-  readonly kinds: readonly CommandKind[];
+type CommandEntry = {
+  readonly label: string;
+  readonly kind?: CommandKind;
+  readonly commandId: string;
+  readonly testId: string;
+  readonly selectable: boolean;
 };
 
-const COMMAND_GROUPS = [
-  { title: "Message", kinds: ["text", "choices", "inputWait", "wait"] },
-  { title: "Flow", kinds: ["fork", "label", "gotoLabel", "callCommonEvent"] },
-  { title: "State", kinds: ["setSwitch", "setVariable", "timer", "setFlag"] },
-  { title: "Map", kinds: ["transfer", "moveEvent", "changeTile", "showPicture", "erasePicture"] },
-  { title: "Audio", kinds: ["playAudio", "stopAudio"] },
-  { title: "Scene", kinds: ["battleProcessing", "shop", "inn", "learnSkill", "gameOver", "returnToTitle"] },
-] as const satisfies readonly CommandGroup[];
+type CommandPage = {
+  readonly page: M2CommandPickerPage;
+  readonly entries: readonly CommandEntry[];
+};
+
+const PICKER_PAGES: readonly M2CommandPickerPage[] = [1, 2, 3, 4];
+
+const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
+  page,
+  entries: M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page).map(commandEntryFromCatalog),
+}));
+
+function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
+  return {
+    label: entry.pickerLabel,
+    kind: entry.existingKind,
+    commandId: entry.id,
+    testId: entry.existingKind ? `command-picker-add-${entry.existingKind}` : entry.testId,
+    selectable: isM2CatalogEntrySelectableInMap(entry),
+  };
+}
 
 type EventCommandPickerRequest = {
   readonly title: string;
-  readonly onSelect: (command: Command) => void;
+  readonly onSelect: (command: Command, closePicker: () => void) => EventCommandPickerSelectResult;
 };
+
+type EventCommandPickerSelectResult = { readonly closePicker: false } | void;
 
 export function openEventCommandPicker(request: EventCommandPickerRequest): void {
   openEventSubdialog({
     title: request.title,
-    subtitle: "Insert an event command into the current page.",
     testId: "event-command-picker",
-    width: "wide",
+    width: "narrow",
     render: (body, close) => {
-      const grid = el("div", { class: "event-command-picker-grid" });
-      for (const group of COMMAND_GROUPS) {
-        grid.append(renderGroup(group, request.onSelect, close));
+      let activePage: CommandPage["page"] = 1;
+      const tabs = el("div", { class: "event-command-picker-tabs", attrs: { role: "tablist" } });
+      const commandArea = el("div", { class: "event-command-picker-panel" });
+      const renderActivePage = () => {
+        clearChildren(commandArea);
+        for (const button of tabs.querySelectorAll<HTMLButtonElement>("button")) {
+          button.setAttribute("aria-selected", button.dataset.page === String(activePage) ? "true" : "false");
+        }
+        const page = COMMAND_PAGES.find((candidate) => candidate.page === activePage) ?? COMMAND_PAGES[0];
+        commandArea.append(renderCommandGrid(page, request.onSelect, close));
+      };
+      for (const page of COMMAND_PAGES) {
+        tabs.append(
+          el("button", {
+            class: "event-command-picker-tab",
+            text: String(page.page),
+            attrs: { type: "button", role: "tab", "aria-selected": page.page === activePage ? "true" : "false" },
+            dataset: { testid: `event-command-picker-tab-${page.page}`, page: String(page.page) },
+            on: {
+              click: () => {
+                activePage = page.page;
+                renderActivePage();
+              },
+            },
+          })
+        );
       }
-      body.append(grid);
+      body.append(tabs, commandArea, renderFooter(close));
+      renderActivePage();
     },
   });
 }
 
-function renderGroup(group: CommandGroup, onSelect: (command: Command) => void, close: () => void): HTMLElement {
-  const section = el("section", { class: "event-command-picker-group" });
-  section.append(el("h4", { text: group.title }));
-  const buttons = el("div", { class: "event-command-picker-buttons" });
-  for (const kind of group.kinds) {
-    buttons.append(
-      el("button", {
-        class: "btn",
-        text: commandLabel(kind),
-        dataset: { testid: `command-picker-add-${kind}` },
-        on: {
-          click: () => {
-            onSelect(newCommand(kind));
-            close();
-          },
-        },
-      })
-    );
+function renderCommandGrid(page: CommandPage, onSelect: EventCommandPickerRequest["onSelect"], close: () => void): HTMLElement {
+  const grid = el("div", {
+    class: page.page === 4 ? "event-command-picker-grid single-column" : "event-command-picker-grid",
+  });
+  for (const entry of page.entries) {
+    const button = el("button", {
+      class: entry.selectable ? "event-command-picker-command" : "event-command-picker-command disabled",
+      text: entry.label,
+      attrs: { type: "button" },
+    });
+    button.dataset.testid = entry.testId;
+    if (entry.selectable) {
+      button.addEventListener("click", () => {
+        const result = onSelect(createCommandFromEntry(entry), close);
+        if (!result || result.closePicker !== false) close();
+      });
+    } else {
+      button.disabled = true;
+      button.setAttribute("aria-disabled", "true");
+    }
+    grid.append(button);
   }
-  section.append(buttons);
-  return section;
+  return grid;
+}
+
+function createCommandFromEntry(entry: CommandEntry): Command {
+  return entry.kind ? newCommand(entry.kind) : newM2Command(entry.commandId);
+}
+
+function renderFooter(close: () => void): HTMLElement {
+  return el("div", {
+    class: "event-command-picker-footer",
+    children: [
+      el("button", {
+        class: "event-command-picker-cancel",
+        text: "취소",
+        attrs: { type: "button" },
+        dataset: { testid: "event-command-picker-cancel" },
+        on: { click: close },
+      }),
+    ],
+  });
 }
 
 export function commandLabel(kind: CommandKind): string {
-  return COMMAND_KIND_OPTIONS.find((option) => option.value === kind)?.label ?? kind;
+  return M2_COMMAND_CATALOG.find((entry) => entry.existingKind === kind)?.label ?? kind;
 }

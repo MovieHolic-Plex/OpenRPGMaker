@@ -1,135 +1,117 @@
 import { deleteSwitch, deleteVariable, renameSwitch, renameVariable } from "@/editor/actions";
 import { bulkRenameSwitches, bulkRenameVariables } from "@/editor/databaseActions";
 import {
-  emptyToUndefined,
   matchesNameOrId,
-  selectRecord,
-  selectTextLiteral,
   textControl,
 } from "@/editor/panels/databaseControls";
-import { renderEventEditorInline } from "@/editor/panels/eventEditor";
+import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
-import { genId } from "@/util/id";
-import type { Command, CommonEvent } from "@/project/types";
 
 let switchSearch = "";
+let selectedSwitchId = "";
 let variableSearch = "";
+let selectedVariableId = "";
 let utilitySearchTimer: number | null = null;
 
+type UtilityNamedRowsOptions = {
+  readonly query: string;
+  readonly records: readonly { readonly id: string; readonly name: string }[];
+  readonly selectedId: string;
+  readonly setSelectedId: (id: string) => void;
+};
+
+type UtilityNamedRowOptions = {
+  readonly id: string;
+  readonly index: number;
+  readonly name: string;
+  readonly ordinal: string;
+  readonly selected: boolean;
+  readonly setSelectedId: (id: string) => void;
+  readonly total: number;
+};
+
+type UtilityDetailOptions = {
+  readonly label: string;
+  readonly onDelete: (id: string) => void;
+  readonly onName: (id: string, value: string) => void;
+  readonly record?: { readonly id: string; readonly name: string };
+  readonly rerender: () => void;
+};
+
+type TermFieldOptions = {
+  readonly key: "attack" | "gold" | "hp" | "item" | "level" | "mp" | "skill";
+  readonly label: string;
+  readonly testid?: string;
+  readonly value: string;
+};
+
 export function renderSwitchesTab(host: HTMLElement, rerender: () => void): void {
-  host.append(el("h3", { text: "스위치" }), utilityShell());
-  const form = host.querySelector("[data-testid='db-detail-form']");
-  if (!(form instanceof HTMLElement)) return;
+  host.append(el("h3", { text: "스위치" }), utilityShell("스위치 목록"));
+  const form = detailForm(host);
+  if (!form) return;
+  const records = store.getCurrent().switches;
+  selectedSwitchId = selectedRecordId(records, selectedSwitchId);
   form.append(rangeControls("스위치 범위 이름 변경", "switch", rerender));
   form.append(searchInput("스위치 검색", switchSearch, (value) => {
     switchSearch = value;
     rerender();
   }));
-  for (const record of store.getCurrent().switches) {
-    if (switchSearch && !matchesNameOrId(record.name, record.id, switchSearch)) continue;
-    form.append(namedRow(record.id, record.name, (value) => renameSwitch(record.id, value), () => {
-      deleteSwitch(record.id);
-      rerender();
-    }));
-  }
+  form.append(numberedRows({ records, query: switchSearch, selectedId: selectedSwitchId, setSelectedId: (id) => {
+    selectedSwitchId = id;
+    rerender();
+  } }));
+  form.append(utilityDetail({ label: "스위치 이름", record: records.find((record) => record.id === selectedSwitchId), onName: renameSwitch, onDelete: deleteSwitch, rerender }));
 }
 
 export function renderVariablesTab(host: HTMLElement, rerender: () => void): void {
-  host.append(el("h3", { text: "변수" }), utilityShell());
-  const form = host.querySelector("[data-testid='db-detail-form']");
-  if (!(form instanceof HTMLElement)) return;
+  host.append(el("h3", { text: "변수" }), utilityShell("변수 목록"));
+  const form = detailForm(host);
+  if (!form) return;
+  const records = store.getCurrent().variables;
+  selectedVariableId = selectedRecordId(records, selectedVariableId);
   form.append(rangeControls("변수 범위 이름 변경", "variable", rerender));
   form.append(searchInput("변수 검색", variableSearch, (value) => {
     variableSearch = value;
     rerender();
   }));
-  for (const record of store.getCurrent().variables) {
-    if (variableSearch && !matchesNameOrId(record.name, record.id, variableSearch)) continue;
-    form.append(namedRow(record.id, record.name, (value) => renameVariable(record.id, value), () => {
-      deleteVariable(record.id);
-      rerender();
-    }));
-  }
-}
-
-export function renderCommonEventsTab(host: HTMLElement, rerender: () => void): void {
-  host.append(el("h3", { text: "공통 이벤트" }), utilityShell());
-  const form = host.querySelector("[data-testid='db-detail-form']");
-  if (!(form instanceof HTMLElement)) return;
-  form.append(
-    el("button", {
-      class: "btn small",
-      text: "+ 공통 이벤트 추가",
-      on: {
-        click: () => {
-          store.update((project) => {
-            project.commonEvents.push({
-              id: genId("ce"),
-              name: "새 공통 이벤트",
-              trigger: "none",
-              commands: [{ kind: "text", body: "" }],
-            });
-          });
-          rerender();
-        },
-      },
-    })
-  );
-  for (const commonEvent of store.getCurrent().commonEvents) form.append(commonEventEditor(commonEvent, rerender));
-}
-
-export function renderSystemTab(host: HTMLElement): void {
-  const project = store.getCurrent();
-  const form = el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" } });
-  form.append(
-    textControl("타이틀 리소스", project.system.titleResourceId ?? "", (value) => {
-      store.update((draft) => {
-        draft.system.titleResourceId = emptyToUndefined(value);
-      });
-    }, "db-field-title-resource"),
-    textControl("시스템 리소스", project.system.systemResourceId ?? "", (value) => {
-      store.update((draft) => {
-        draft.system.systemResourceId = emptyToUndefined(value);
-      });
-    }),
-    textControl("전투 시스템 리소스", project.system.battleSystemResourceId ?? "", (value) => {
-      store.update((draft) => {
-        draft.system.battleSystemResourceId = emptyToUndefined(value);
-      });
-    }),
-    selectRecord("시작 파티", project.system.startActorIds[0] ?? "", project.database.actors, (value) => {
-      store.update((draft) => {
-        draft.system.startActorIds = value ? [value] : [];
-        draft.session.partyActorIds = value ? [value] : [];
-      });
-    }),
-    selectRecord("초기 적 그룹", project.system.initialTroopId ?? "", project.database.troops, (value) => {
-      store.update((draft) => {
-        draft.system.initialTroopId = emptyToUndefined(value);
-      });
-    })
-  );
-  host.append(el("h3", { text: "시스템" }), form);
+  form.append(numberedRows({ records, query: variableSearch, selectedId: selectedVariableId, setSelectedId: (id) => {
+    selectedVariableId = id;
+    rerender();
+  } }));
+  form.append(utilityDetail({ label: "변수 이름", record: records.find((record) => record.id === selectedVariableId), onName: renameVariable, onDelete: deleteVariable, rerender }));
 }
 
 export function renderTermsTab(host: HTMLElement): void {
   const terms = store.getCurrent().meta.terms;
-  const form = el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: "db-detail-form db-terms-form", dataset: { testid: "db-detail-form" } });
   form.append(
-    termField("돈", "gold", terms.gold, "db-field-gold"),
-    termField("레벨", "level", terms.level ?? "레벨"),
-    termField("HP", "hp", terms.hp ?? "HP"),
-    termField("MP", "mp", terms.mp ?? "MP"),
-    termField("공격", "attack", terms.attack ?? "공격"),
-    termField("스킬", "skill", terms.skill ?? "스킬", "db-field-skill-term"),
-    termField("아이템", "item", terms.item ?? "아이템")
+    rm2k3Fieldset("기본 용어", [
+      termField({ label: "돈", key: "gold", value: terms.gold, testid: "db-field-gold" }),
+      termField({ label: "레벨", key: "level", value: terms.level ?? "레벨" }),
+      termField({ label: "HP", key: "hp", value: terms.hp ?? "HP" }),
+      termField({ label: "MP", key: "mp", value: terms.mp ?? "MP" }),
+    ]),
+    rm2k3Fieldset("명령 용어", [
+      termField({ label: "공격", key: "attack", value: terms.attack ?? "공격" }),
+      termField({ label: "스킬", key: "skill", value: terms.skill ?? "스킬", testid: "db-field-skill-term" }),
+      termField({ label: "아이템", key: "item", value: terms.item ?? "아이템" }),
+    ]),
   );
   host.append(el("h3", { text: "용어" }), form);
 }
 
-function utilityShell(): HTMLElement {
-  return el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" } });
+function detailForm(host: HTMLElement): HTMLElement | null {
+  const form = host.querySelector("[data-testid='db-detail-form']");
+  return form instanceof HTMLElement ? form : null;
+}
+
+function utilityShell(title: string): HTMLElement {
+  return el("section", {
+    class: "db-detail-form db-utility-form",
+    dataset: { testid: "db-detail-form" },
+    children: [el("div", { class: "db-utility-heading", text: title })],
+  });
 }
 
 function rangeControls(label: string, kind: "switch" | "variable", rerender: () => void): HTMLElement {
@@ -150,51 +132,60 @@ function rangeControls(label: string, kind: "switch" | "variable", rerender: () 
   return el("div", { class: "db-range", children: [el("span", { text: label }), start, count, prefix, button] });
 }
 
-function commonEventEditor(commonEvent: CommonEvent, rerender: () => void): HTMLElement {
-  const block = el("section", { class: "db-subpanel" });
-  block.append(namedRow(commonEvent.id, commonEvent.name, (value) => {
-    store.update((project) => {
-      const target = project.commonEvents.find((record) => record.id === commonEvent.id);
-      if (target) target.name = value;
-    });
-  }, () => {
-    store.update((project) => {
-      project.commonEvents = project.commonEvents.filter((record) => record.id !== commonEvent.id);
-    });
-    rerender();
-  }));
-  const trigger = selectTextLiteral("트리거", commonEvent.trigger, ["none", "auto", "parallel"], (value) => {
-    store.update((project) => {
-      const target = project.commonEvents.find((record) => record.id === commonEvent.id);
-      if (target) target.trigger = value;
-    });
-  });
-  block.append(trigger, selectRecord("조건 스위치", commonEvent.conditionSwitchId ?? "", store.getCurrent().switches, (value) => {
-    store.update((project) => {
-      const target = project.commonEvents.find((record) => record.id === commonEvent.id);
-      if (target) target.conditionSwitchId = emptyToUndefined(value);
-    });
-  }));
-  const commands = el("div", { class: "cmd-list" });
-  renderEventEditorInline(commands, commonEvent.commands, (next: Command[]) => {
-    store.update((project) => {
-      const target = project.commonEvents.find((record) => record.id === commonEvent.id);
-      if (target) target.commands = structuredClone(next);
-    });
-  });
-  block.append(el("label", { class: "db-field", children: [el("span", { text: "명령" }), commands] }));
-  return block;
+function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
+  const list = el("div", { class: "db-utility-list" });
+  let visibleCount = 0;
+  for (const [index, record] of options.records.entries()) {
+    if (options.query && !matchesNameOrId(record.name, record.id, options.query)) continue;
+    visibleCount += 1;
+    list.append(namedRow({
+      index,
+      ordinal: ordinalLabel(index),
+      id: record.id,
+      name: record.name,
+      selected: record.id === options.selectedId,
+      setSelectedId: options.setSelectedId,
+      total: options.records.length,
+    }));
+  }
+  if (list.childElementCount === 0) {
+    list.classList.add("empty");
+    for (let index = 0; index < 30; index += 1) list.append(emptyNumberedRow(ordinalLabel(index)));
+    return list;
+  }
+  if (!options.query) {
+    const minimumVisibleRows = 30;
+    for (let index = visibleCount; index < minimumVisibleRows; index += 1) {
+      list.append(emptyNumberedRow(ordinalLabel(index)));
+    }
+  }
+  return list;
 }
 
-function namedRow(id: string, name: string, onName: (value: string) => void, onDelete: () => void): HTMLElement {
-  const input = el("input", { attrs: { type: "text" }, value: name });
-  input.addEventListener("input", () => onName(input.value));
-  return el("div", {
-    class: "db-row",
+function namedRow(options: UtilityNamedRowOptions): HTMLElement {
+  return el("button", {
+    class: `db-row db-utility-row${options.selected ? " active" : ""}`,
+    attrs: { type: "button" },
+    dataset: {
+      recordId: options.id,
+      recordIndex: String(options.index + 1),
+      recordName: options.name,
+      recordTotal: String(options.total),
+    },
+    on: { click: () => options.setSelectedId(options.id) },
     children: [
-      el("span", { class: "db-id", text: id.slice(0, 12) }),
-      input,
-      el("button", { class: "btn danger small", text: "삭제", on: { click: onDelete } }),
+      el("span", { class: "db-id", text: `${options.ordinal}:` }),
+      el("span", { class: "db-list-name", text: options.name }),
+    ],
+  });
+}
+
+function emptyNumberedRow(ordinal: string): HTMLElement {
+  return el("div", {
+    class: "db-row db-empty-row",
+    children: [
+      el("span", { class: "db-id", text: `${ordinal}:` }),
+      el("span", { class: "db-list-name", text: "" }),
     ],
   });
 }
@@ -217,10 +208,48 @@ function searchInput(placeholder: string, value: string, onInput: (value: string
   return el("div", { class: "db-search", children: [input] });
 }
 
-function termField(label: string, key: "attack" | "gold" | "hp" | "item" | "level" | "mp" | "skill", value: string, testid?: string): HTMLElement {
-  return textControl(label, value, (next) => {
+function selectedRecordId(records: readonly { readonly id: string }[], currentId: string): string {
+  if (records.some((record) => record.id === currentId)) return currentId;
+  return records[0]?.id ?? "";
+}
+
+function utilityDetail(options: UtilityDetailOptions): HTMLElement {
+  if (!options.record) {
+    return el("div", { class: "db-utility-detail", children: [el("span", { text: "선택된 항목 없음" })] });
+  }
+  const record = options.record;
+  const input = el("input", {
+    attrs: { type: "text" },
+    dataset: { testid: "db-utility-selected-name" },
+    value: record.name,
+  });
+  input.addEventListener("input", () => options.onName(record.id, input.value));
+  return el("div", {
+    class: "db-utility-detail",
+    children: [
+      el("label", { children: [el("span", { text: options.label }), input] }),
+      el("button", {
+        class: "btn danger small",
+        text: "삭제",
+        on: {
+          click: () => {
+            options.onDelete(record.id);
+            options.rerender();
+          },
+        },
+      }),
+    ],
+  });
+}
+
+function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
+  return el("fieldset", { class: "rm2k3-db-fieldset", children: [el("legend", { text: title }), ...children] });
+}
+
+function termField(options: TermFieldOptions): HTMLElement {
+  return textControl(options.label, options.value, (next) => {
     store.update((project) => {
-      project.meta.terms[key] = next;
+      project.meta.terms[options.key] = next;
     });
-  }, testid);
+  }, options.testid);
 }

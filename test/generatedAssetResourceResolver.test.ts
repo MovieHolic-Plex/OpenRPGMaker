@@ -4,6 +4,7 @@ import {
   resolveEasyRpgRuntimeAssetUrl,
   resolveGeneratedAssetResourceUrl,
 } from "@/assets/generatedAssetResourceResolver";
+import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { createBlankProject } from "@/project/defaults";
 import type { GeneratedAssetManifest } from "@/assets/generatedAssetManifest";
 
@@ -75,6 +76,15 @@ describe("generatedAssetResourceResolver", () => {
 
     // Then: the URL is rooted for the browser and does not include the public/ filesystem prefix.
     expect(url).toBe("/assets/generated/rm2k3/hero-01-face.png");
+  });
+
+  it("resolves the generated dragon monster registered in the runtime manifest", () => {
+    // Given: the project runtime manifest includes the generated dragon enemy art.
+    // When: the dragon resource id is resolved through the generated asset resolver.
+    const url = resolveGeneratedAssetResourceUrl("generated-enemy-dragon-01", RM2K3_GENERATED_ASSET_PLAN);
+
+    // Then: battle previews can load the promoted monster PNG from public assets.
+    expect(url).toBe("/assets/generated/rm2k3/monster-dragon-01.png");
   });
 
   it("resolves uploaded resources from the supplied project before generated manifest lookup", () => {

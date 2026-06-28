@@ -1,0 +1,61 @@
+{
+  "viewport": {
+    "width": 1366,
+    "height": 768
+  },
+  "body": {
+    "scrollWidth": 1366,
+    "clientWidth": 1366
+  },
+  "elements": {
+    "rm2k3-toolbar": {
+      "visible": true,
+      "x": 0,
+      "y": 22,
+      "width": 1366,
+      "height": 27
+    },
+    "rm2k3-menu-bar": {
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "width": 1366,
+      "height": 22
+    },
+    "toolbar-database": {
+      "visible": true,
+      "x": 403,
+      "y": 25,
+      "width": 26,
+      "height": 22
+    },
+    "toolbar-resource-manager": {
+      "visible": true,
+      "x": 431,
+      "y": 25,
+      "width": 26,
+      "height": 22
+    },
+    "left-palette-root": {
+      "visible": true,
+      "x": 2,
+      "y": 52,
+      "width": 263,
+      "height": 544
+    },
+    "map-tree": {
+      "visible": true,
+      "x": 5,
+      "y": 601,
+      "width": 257,
+      "height": 64
+    },
+    "edit-canvas": {
+      "visible": true,
+      "x": 289,
+      "y": 80,
+      "width": 1024,
+      "height": 768
+    }
+  }
+}

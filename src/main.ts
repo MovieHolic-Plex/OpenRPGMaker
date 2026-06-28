@@ -1,7 +1,19 @@
 // 앱 진입점: store 로드 + 에디터 부팅.
 
 import "./styles.css";
+import "./styles.dialogue.css";
+import "./styles.databaseActors.css";
+import "./styles.databaseEnemies.css";
+import "./styles.databaseElements.css";
+import "./styles.databaseStates.css";
+import "./styles.databaseTroops.css";
+import "./styles.databaseTilesets.css";
+import "./styles.databaseTilesetsTerrain.css";
+import "./styles.databaseDesktop.css";
+import "./styles.resourceManager.css";
+import "./styles.eventEditor.css";
 import { bootApp } from "@/app/mode";
+import { registerPwa } from "@/pwa";
 
 // 개발/테스트 플래그를 URL 파라미터에서 body class로 변환.
 // 각 플래그는 대응하는 CSS 모드(palette compact scroll 등)를 토글한다.
@@ -27,4 +39,33 @@ if (!app) {
   throw new Error("#app 요소를 찾을 수 없습니다.");
 }
 
-void bootApp(app);
+registerPwa();
+void bootApp(app).then(openClassicEventEditorCaptureIfRequested);
+
+async function openClassicEventEditorCaptureIfRequested(): Promise<void> {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("classicCapture") !== "2") return;
+
+  const [{ editorState }, { store }, { addEvent }, { addEventPage, ensureEventPages }, { openEventEditorModal }] =
+    await Promise.all([
+      import("@/editor/editorState"),
+      import("@/project/store"),
+      import("@/editor/eventActions"),
+      import("@/editor/eventPages"),
+      import("@/editor/panels/eventEditor/modal"),
+    ]);
+  const mapId = editorState.get().currentMapId ?? store.getCurrent().startMapId;
+  const map = store.getCurrent().maps[mapId];
+  if (!map) return;
+
+  const eventId = map.events[0]?.id ?? addEvent(mapId, 2, 2);
+  ensureEventPages(mapId, eventId);
+  let pages = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId)?.pages ?? [];
+  while (pages.length < 3) {
+    addEventPage(mapId, eventId);
+    pages = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId)?.pages ?? [];
+  }
+  editorState.set({ selectedEventId: eventId, selectedEventPageId: pages[2]?.id ?? pages[pages.length - 1]?.id ?? null });
+  openEventEditorModal(mapId, eventId);
+}

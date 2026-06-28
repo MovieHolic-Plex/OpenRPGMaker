@@ -17,7 +17,7 @@ export function makeV1(): ProjectV1 {
       sprites: {
         hero: {
           id: "hero",
-          image: { type: "bundled", id: "tex_hero" },
+          image: { type: "bundled", id: "tex_npc_villager" },
           frames: 8,
           frameWidth: 32,
           frameHeight: 32,

@@ -3,8 +3,6 @@ import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
   loadBundledAssets,
   registerBundledFrames,
-  TEX_HERO,
-  TILE_SIZE,
 } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
 import { store } from "@/project/store";
@@ -15,12 +13,15 @@ import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { GameMap, MapId, MoveCommand, Trigger } from "@/project/types";
 import type { RuntimeEventPositions, RuntimeEventView } from "@/player/runtimeEventState";
 import {
-  DIRECTION_ROW,
   type AutonomousMover,
   type ParallelProcess,
   type PlaySceneContext,
   type RuntimeTimer,
 } from "@/player/playSceneTypes";
+import {
+  resolvePlayerSpriteResource,
+  type PlayerSpriteResource,
+} from "@/player/playerSpriteResources";
 import {
   loadMap as loadSceneMap,
   renderTiles as renderSceneTiles,
@@ -28,30 +29,36 @@ import {
   syncRuntimeState as syncSceneRuntimeState,
   refreshRuntimeSurfaces as refreshSceneRuntimeSurfaces,
   fireAutoTriggers as fireSceneAutoTriggers,
+} from "@/player/playSceneMapRuntime";
+import {
   applyChangeTileStep as applySceneChangeTileStep,
   transferTo as transferSceneTo,
-} from "@/player/playSceneMapRuntime";
+} from "@/player/playSceneMapCommands";
 import { updatePlayScene } from "@/player/playSceneMovement";
+import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import {
   registerAutonomousMover as registerSceneAutonomousMover,
-  registerPageMoveRoutes as registerScenePageMoveRoutes,
   updateParallelEvents as updateSceneParallelEvents,
-  updateAutonomousNPCs as updateSceneAutonomousNpcs,
   updateTimers as updateSceneTimers,
 } from "@/player/playSceneSchedulers";
+import { registerPageMoveRoutes as registerScenePageMoveRoutes } from "@/player/playScenePageMoveRoutes";
+import { updateAutonomousNPCs as updateSceneAutonomousNpcs } from "@/player/playSceneAutonomous";
 import {
   showRuntimeOverlay as showSceneRuntimeOverlay,
   clearRuntimeOverlay as clearSceneRuntimeOverlay,
   showGameOverScreen as showSceneGameOverScreen,
   returnToTitle as returnSceneToTitle,
 } from "@/player/playSceneOverlays";
+import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
+import { centerRuntimeCamera } from "@/player/playSceneCamera";
 
 const PhaserRuntime = getLoadedPhaser();
 
 export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare tileLayer: Phaser.GameObjects.Container;
   declare player: Phaser.GameObjects.Sprite;
+  declare playerSprite: PlayerSpriteResource;
   declare input_: Input;
   declare session: PlaySession;
   declare map: GameMap;
@@ -63,6 +70,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   parallelProcesses: Map<string, ParallelProcess> = new Map();
   autoStartedKeys: Set<string> = new Set();
   pageMoveRouteKeys: Set<string> = new Set();
+  pageMoveRouteEventIds: Set<string> = new Set();
   missingResources: Set<string> = new Set();
   tileX = 0;
   tileY = 0;
@@ -97,16 +105,17 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     });
     const project = store.getCurrent();
     this.session = this.initialSession(project);
+    this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId);
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
-      this.tileX * TILE_SIZE + TILE_SIZE / 2,
-      this.tileY * TILE_SIZE + TILE_SIZE / 2,
-      TEX_HERO,
-      DIRECTION_ROW.down
+      characterSpriteX(this.tileX),
+      characterSpriteY(this.tileY),
+      this.playerSprite.texture,
+      this.playerSprite.idleFrameFor("down")
     );
-    this.player.setOrigin(0.5, 0.5);
+    placeCharacterSprite(this.player, "same");
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     this.centerCamera();
     // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
@@ -117,11 +126,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // Phaser keyboard 매니저에 도달하지 않아 실제 키보드 입력이 잡히지 않는다.
     // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
     // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 쓰이지 않는다.
-    const w = window as unknown as { __rpgzzuInput?: { action: () => void; dir: (d: string | null) => void } };
-    w.__rpgzzuInput = {
-      action: () => this.input_?.injectActionEdge(),
-      dir: (d) => this.input_?.injectDirection(d as "down" | "left" | "right" | "up" | null),
-    };
+    installPlaySceneTestHooks(this, this.input_, this.session, () => this.syncRuntimeState());
   }
 
   update(_time: number, deltaMs: number): void {
@@ -153,7 +158,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   centerCamera(): void {
-    this.cameras.main.centerOn(this.player.x, this.player.y);
+    centerRuntimeCamera(this.cameras.main, this.map, this.player);
   }
 
   setInputEnabled(enabled: boolean): void {
@@ -219,13 +224,15 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   applySession(session: PlaySession): void {
     this.session = structuredClone(session);
+    const project = store.getCurrent();
+    this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId);
     this.tileX = this.session.x;
     this.tileY = this.session.y;
-    this.player.setPosition(
-      this.tileX * TILE_SIZE + TILE_SIZE / 2,
-      this.tileY * TILE_SIZE + TILE_SIZE / 2
-    );
+    this.player.setTexture(this.playerSprite.texture);
+    this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
+    this.player.setPosition(characterSpriteX(this.tileX), characterSpriteY(this.tileY));
+    placeCharacterSprite(this.player, "same");
     this.runtimeTimers.clear();
     this.moving = false;
     this.centerCamera();

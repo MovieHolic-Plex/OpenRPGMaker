@@ -10,12 +10,17 @@ describe("generatedAssetManifest", () => {
     if (result.ok) {
       expect(result.manifest.assets.filter((entry) => entry.target === "actorFace")).toHaveLength(2);
       expect(result.manifest.assets.filter((entry) => entry.target === "actorCharset")).toHaveLength(2);
-      expect(result.manifest.assets.filter((entry) => entry.target === "actorBattleCharset")).toHaveLength(2);
-      expect(result.manifest.assets.filter((entry) => entry.target === "enemyMonster")).toHaveLength(3);
+      expect(result.manifest.assets.filter((entry) => entry.target === "actorBattleCharset")).toHaveLength(4);
+      expect(result.manifest.assets.filter((entry) => entry.target === "enemyMonster")).toHaveLength(4);
       expect(result.manifest.assets.filter((entry) => entry.target === "itemImage" || entry.target === "itemIcon")).toHaveLength(4);
       expect(result.manifest.assets.filter((entry) => entry.target === "equipmentImage" || entry.target === "equipmentIcon")).toHaveLength(4);
       expect(result.manifest.assets.filter((entry) => entry.target === "troopPreview")).toHaveLength(1);
-      expect(result.manifest.assets.every((entry) => entry.prompt.length > 0 && entry.provenance.generator === "agy")).toBe(true);
+      expect(
+        result.manifest.assets.every(
+          (entry) => entry.prompt.length > 0 && (entry.provenance.generator === "agy" || entry.provenance.generator === "imagegen")
+        )
+      ).toBe(true);
+      expect(result.manifest.assets.some((entry) => entry.provenance.generator === "imagegen")).toBe(true);
     }
   });
 
@@ -50,5 +55,32 @@ describe("generatedAssetManifest", () => {
       expect(result.issues.map((issue) => issue.field)).toContain("expectedDimensions");
       expect(result.issues.map((issue) => issue.field)).toContain("path");
     }
+  });
+
+  it("keeps promoted battle-generated magenta assets registered in the manifest", () => {
+    const result = validateGeneratedAssetManifest(RM2K3_GENERATED_ASSET_PLAN);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const magentaAssets = result.manifest.assets.filter((asset) => asset.provenance.promptVersion === "battle-magenta-v2");
+    expect(magentaAssets.map((asset) => asset.id).sort()).toEqual(["monster-slime-01", "troop-preview-slime"]);
+    expect(magentaAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/rm2k3/") === true)).toBe(true);
+    expect(magentaAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
+  });
+
+  it("keeps promoted battle charsets extracted from bundled actor charsets registered in the manifest", () => {
+    const result = validateGeneratedAssetManifest(RM2K3_GENERATED_ASSET_PLAN);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const extractedAssets = result.manifest.assets.filter((asset) => asset.provenance.promptVersion === "bundled-charset-extract-v1");
+    expect(extractedAssets.map((asset) => asset.id).sort()).toEqual([
+      "hero-01-battle",
+      "hero-02-battle",
+      "hero-03-battle",
+      "hero-04-battle",
+    ]);
+    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/rm2k3/") === true)).toBe(true);
+    expect(extractedAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
   });
 });

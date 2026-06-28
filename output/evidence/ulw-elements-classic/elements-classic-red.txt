@@ -1,0 +1,44 @@
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] › test\e2e\rm2k3-database-elements-classic.spec.ts:4:1 › RM2003 Elements tab uses the classic single-record editor shape
+  1) [chromium] › test\e2e\rm2k3-database-elements-classic.spec.ts:4:1 › RM2003 Elements tab uses the classic single-record editor shape 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('db-elements-classic')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('db-elements-classic')
+
+
+       9 |   await page.getByTestId("db-tab-elements").click();
+      10 |
+    > 11 |   await expect(page.getByTestId("db-elements-classic")).toBeVisible();
+         |                                                         ^
+      12 |   await expect(page.getByTestId("db-elements-list-title")).toHaveText("Elements");
+      13 |   await expect(page.getByTestId("db-elements-list")).toContainText("0001:Sword");
+      14 |   await expect(page.getByTestId("db-elements-list")).toContainText("0006:Ice");
+        at C:\Users\hyeon\Downloads\rpg-zzu\test\e2e\rm2k3-database-elements-classic.spec.ts:11:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\rm2k3-database-elements-cl-4e850--single-record-editor-shape-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\rm2k3-database-elements-cl-4e850--single-record-editor-shape-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\rm2k3-database-elements-cl-4e850--single-record-editor-shape-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\rm2k3-database-elements-cl-4e850--single-record-editor-shape-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [chromium] › test\e2e\rm2k3-database-elements-classic.spec.ts:4:1 › RM2003 Elements tab uses the classic single-record editor shape 

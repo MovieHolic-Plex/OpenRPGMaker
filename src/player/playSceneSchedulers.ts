@@ -1,6 +1,3 @@
-import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
-import { canMove } from "@/project/collision";
 import {
   clearAudioState,
   erasePictureState,
@@ -8,51 +5,53 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
-import type { Command, MoveCommand } from "@/project/types";
-import {
-  NPC_MOVE_DURATION_MS,
-  charsetIdleFrameIndex,
-  charsetWalkFrameIndex,
-  charsetWalkStepFromElapsedMs,
-  isEasyRpgCharsetTextureKey,
-} from "@/player/charsetMotion";
-import type { Dir } from "@/player/input";
+import type { Command, CommonEvent, MoveCommand } from "@/project/types";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
+import { commerceOverlayText } from "@/player/playSceneCommerce";
 import type { AutonomousMover, PlaySceneContext, ParallelProcess } from "@/player/playSceneTypes";
 import { assertNever } from "@/player/playSceneTypes";
-import {
-  moveRuntimeEventPosition,
-  runtimeEventView,
-} from "@/player/runtimeEventState";
+import { resourceDisplayName } from "@/player/resourceDisplay";
+import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+
+type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs">;
 
 export function registerAutonomousMover(
-  scene: PlaySceneContext,
+  scene: AutonomousMoverSceneContext,
   eventId: string,
   moves: MoveCommand[],
-  repeat: boolean
+  repeat: boolean,
+  timing?: Pick<AutonomousMover, "moveDurationMs" | "moveIntervalMs" | "strategy">
 ): void {
   if (!scene.map.events.some((event) => event.id === eventId)) {
     console.warn(`[player] moveEvent target event missing: ${eventId}`);
     return;
   }
-  scene.autonomousNPCs.set(eventId, { moves, step: 0, timer: 0, repeat, activeMove: null });
-}
-
-export function registerPageMoveRoutes(scene: PlaySceneContext): void {
-  for (const event of scene.map.events) {
-    const view = runtimeEventView(event, scene.session, scene.eventPositions);
-    const route = view.page?.movement.route;
-    if (!route || view.page.movement.type !== "custom") continue;
-    const key = `${view.event.id}:${view.page.id}`;
-    if (scene.pageMoveRouteKeys.has(key)) continue;
-    scene.pageMoveRouteKeys.add(key);
-    scene.registerAutonomousMover(view.event.id, route.moves, route.repeat);
-  }
+  scene.autonomousNPCs.set(eventId, {
+    moves,
+    step: 0,
+    timer: 0,
+    repeat,
+    strategy: timing?.strategy ?? "sequence",
+    facing: "down",
+    directionFix: false,
+    through: false,
+    animationEnabled: true,
+    opacity: 255,
+    speedRank: 3,
+    frequencyRank: 3,
+    moveDurationMs: timing?.moveDurationMs ?? npcMoveDurationMs(3),
+    moveIntervalMs: timing?.moveIntervalMs ?? npcMoveIntervalMs(3),
+    activeMove: null,
+  });
 }
 
 export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): void {
   const activeEvents = scene.activeRuntimeEvents("parallel");
-  const activeKeys = new Set(activeEvents.map((event) => `${event.event.id}:${event.pageId ?? "legacy"}`));
+  const activeCommonEvents = activeParallelCommonEvents(scene);
+  const activeKeys = new Set([
+    ...activeEvents.map((event) => `${event.event.id}:${event.pageId ?? "legacy"}`),
+    ...activeCommonEvents.map((event) => `common:${event.id}`),
+  ]);
   for (const key of scene.parallelProcesses.keys()) {
     if (!activeKeys.has(key)) scene.parallelProcesses.delete(key);
   }
@@ -68,6 +67,26 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     process.started = true;
     consumeParallelSteps(scene, key, process, result);
   }
+  for (const commonEvent of activeCommonEvents) {
+    const key = `common:${commonEvent.id}`;
+    const process = scene.parallelProcesses.get(key) ?? createCommonParallelProcess(scene, commonEvent);
+    if (process.waitMs > 0) {
+      process.waitMs = Math.max(0, process.waitMs - deltaMs);
+      if (process.waitMs > 0) continue;
+    }
+    const result = process.started ? process.interpreter.resume(undefined) : process.interpreter.start();
+    process.started = true;
+    consumeParallelSteps(scene, key, process, result);
+  }
+}
+
+function activeParallelCommonEvents(scene: PlaySceneContext): CommonEvent[] {
+  const project = store.getCurrent();
+  return project.commonEvents.filter((event) => {
+    if (event.trigger !== "parallel") return false;
+    if (!event.conditionSwitchId) return true;
+    return scene.session.switches[event.conditionSwitchId] === true;
+  });
 }
 
 function createParallelProcess(
@@ -77,11 +96,25 @@ function createParallelProcess(
 ): ParallelProcess {
   const process = {
     pageId,
-    interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session),
+    currentEventId: event.event.id,
+    interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent()),
     waitMs: 0,
     started: false,
   };
   scene.parallelProcesses.set(`${event.event.id}:${pageId}`, process);
+  return process;
+}
+
+function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent): ParallelProcess {
+  scene.session.commonEvents = store.getCurrent().commonEvents;
+  const project = store.getCurrent();
+  const process = {
+    pageId: event.id,
+    interpreter: createInterpreter(event.commands, scene.session, project),
+    waitMs: 0,
+    started: false,
+  };
+  scene.parallelProcesses.set(`common:${event.id}`, process);
   return process;
 }
 
@@ -99,7 +132,7 @@ function consumeParallelSteps(
       process.waitMs = result.ms;
       return;
     }
-    if (applyNonBlockingStep(scene, result)) {
+    if (applyNonBlockingStep(scene, result, process.currentEventId)) {
       result = process.interpreter.resume(undefined);
       scene.refreshRuntimeSurfaces();
       continue;
@@ -110,13 +143,13 @@ function consumeParallelSteps(
   if (result.kind === "done") scene.parallelProcesses.delete(key);
 }
 
-export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult): boolean {
+export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, currentEventId?: string): boolean {
   switch (step.kind) {
     case "changeTile":
       scene.applyChangeTileStep(step);
       return true;
     case "moveEvent":
-      scene.registerAutonomousMover(step.eventId, step.moves, step.repeat);
+      scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
       return true;
     case "transfer":
       scene.transferTo(step.mapId, step.x, step.y);
@@ -126,7 +159,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult):
       return true;
     case "showPicture":
       showPictureState(scene.session, step);
-      scene.showRuntimeOverlay("picture-overlay", step.pictureId || step.resourceId);
+      scene.showRuntimeOverlay("picture-overlay", resourceDisplayName(step.resourceId, step.pictureId || step.resourceId));
       return true;
     case "erasePicture":
       erasePictureState(scene.session, step.pictureId);
@@ -134,17 +167,17 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult):
       return true;
     case "playAudio":
       setAudioState(scene.session, step);
-      scene.showRuntimeOverlay("audio-indicator", step.resourceId || "audio");
+      scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       return true;
     case "stopAudio":
       clearAudioState(scene.session);
       scene.clearRuntimeOverlay("audio-indicator");
       return true;
     case "shop":
-      scene.showRuntimeOverlay("shop-scene", step.itemIds.join(",") || "shop");
+      scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
       return true;
     case "inn":
-      scene.showRuntimeOverlay("inn-scene", String(step.price));
+      scene.showRuntimeOverlay("inn-scene", commerceOverlayText(step));
       return true;
     case "gameOver":
       scene.showGameOverScreen();
@@ -157,147 +190,10 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult):
     case "choices":
     case "wait":
     case "inputWait":
+    case "inputNumber":
       return false;
     default:
       return assertNever(step);
-  }
-}
-
-export function updateAutonomousNPCs(scene: PlaySceneContext, deltaMs: number): void {
-  const project = store.getCurrent();
-  for (const [eventId, mover] of scene.autonomousNPCs) {
-    if (mover.activeMove) {
-      updateActiveNpcMove(scene, eventId, mover, deltaMs);
-      continue;
-    }
-    if (mover.moves.length === 0) continue;
-    mover.timer += Math.max(0, deltaMs);
-    if (mover.timer < NPC_MOVE_DURATION_MS) continue;
-    mover.timer = 0;
-    const command = mover.moves[mover.step % mover.moves.length];
-    mover.step += 1;
-    if (command.kind === "wait") {
-      completeRouteCommand(mover);
-      continue;
-    }
-    const event = scene.map.events.find((entry) => entry.id === eventId);
-    if (!event) {
-      completeRouteCommand(mover);
-      continue;
-    }
-    const view = runtimeEventView(event, scene.session, scene.eventPositions);
-    const baseFrame = view.page?.graphic.pattern ?? 0;
-    if (command.kind === "turn") {
-      setNpcIdleFrame(scene.eventSprites.get(eventId), baseFrame, command.dir);
-      completeRouteCommand(mover);
-      continue;
-    }
-    const position = scene.eventPositions[eventId] ?? { x: event.x, y: event.y };
-    const delta = commandDelta(command.dir);
-    const nx = position.x + delta.x;
-    const ny = position.y + delta.y;
-    if (nx === scene.tileX && ny === scene.tileY) {
-      fireEventTouch(scene, eventId, view.trigger.kind);
-      setNpcIdleFrame(scene.eventSprites.get(eventId), baseFrame, command.dir);
-      completeRouteCommand(mover);
-      continue;
-    }
-    if (canMove(project, scene.map, position.x, position.y, nx, ny)) {
-      moveRuntimeEventPosition(scene.eventPositions, eventId, nx, ny);
-      mover.activeMove = {
-        fromX: position.x,
-        fromY: position.y,
-        toX: nx,
-        toY: ny,
-        dir: command.dir,
-        baseFrame,
-        elapsedMs: 0,
-      };
-      const sprite = scene.eventSprites.get(eventId);
-      if (sprite) {
-        sprite.setPosition(tileCenter(position.x), tileCenter(position.y));
-        setNpcWalkFrame(sprite, baseFrame, command.dir, 0);
-      }
-      scene.runtimeDom.upsertEventMarker(runtimeEventView(event, scene.session, scene.eventPositions));
-    } else {
-      setNpcIdleFrame(scene.eventSprites.get(eventId), baseFrame, command.dir);
-    }
-    completeRouteCommand(mover);
-  }
-}
-
-function fireEventTouch(scene: PlaySceneContext, eventId: string, triggerKind: string): void {
-  if (triggerKind === "eventTouch") void scene.runEvent(eventId);
-}
-
-function updateActiveNpcMove(
-  scene: PlaySceneContext,
-  eventId: string,
-  mover: AutonomousMover,
-  deltaMs: number
-): void {
-  const move = mover.activeMove;
-  if (!move) return;
-  move.elapsedMs = Math.min(NPC_MOVE_DURATION_MS, move.elapsedMs + Math.max(0, deltaMs));
-  const progress = move.elapsedMs / NPC_MOVE_DURATION_MS;
-  const sprite = scene.eventSprites.get(eventId);
-  if (sprite) {
-    sprite.setPosition(
-      tileCenter(lerp(move.fromX, move.toX, progress)),
-      tileCenter(lerp(move.fromY, move.toY, progress))
-    );
-    setNpcWalkFrame(sprite, move.baseFrame, move.dir, move.elapsedMs);
-  }
-  if (move.elapsedMs < NPC_MOVE_DURATION_MS) return;
-  if (sprite) {
-    sprite.setPosition(tileCenter(move.toX), tileCenter(move.toY));
-    setNpcIdleFrame(sprite, move.baseFrame, move.dir);
-  }
-  mover.activeMove = null;
-  mover.timer = NPC_MOVE_DURATION_MS;
-}
-
-function completeRouteCommand(mover: AutonomousMover): void {
-  if (!mover.repeat && mover.step >= mover.moves.length) mover.moves = [];
-}
-
-function setNpcWalkFrame(
-  sprite: Phaser.GameObjects.Sprite | undefined,
-  baseFrame: number,
-  dir: Dir,
-  elapsedMs: number
-): void {
-  if (!sprite || !isEasyRpgCharsetTextureKey(sprite.texture.key)) return;
-  sprite.setFrame(charsetWalkFrameIndex(baseFrame, dir, charsetWalkStepFromElapsedMs(elapsedMs)));
-}
-
-function setNpcIdleFrame(
-  sprite: Phaser.GameObjects.Sprite | undefined,
-  baseFrame: number,
-  dir: Dir
-): void {
-  if (!sprite || !isEasyRpgCharsetTextureKey(sprite.texture.key)) return;
-  sprite.setFrame(charsetIdleFrameIndex(baseFrame, dir));
-}
-
-function lerp(from: number, to: number, progress: number): number {
-  return from + (to - from) * progress;
-}
-
-function tileCenter(tile: number): number {
-  return tile * TILE_SIZE + TILE_SIZE / 2;
-}
-
-function commandDelta(dir: "left" | "right" | "up" | "down"): { x: number; y: number } {
-  switch (dir) {
-    case "left":
-      return { x: -1, y: 0 };
-    case "right":
-      return { x: 1, y: 0 };
-    case "up":
-      return { x: 0, y: -1 };
-    case "down":
-      return { x: 0, y: 1 };
   }
 }
 

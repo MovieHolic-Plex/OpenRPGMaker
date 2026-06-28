@@ -1,0 +1,42 @@
+{
+  "verdict": "PASS",
+  "purpose": "Verify enemy fixed desktop modal sizing does not leak into sub-901px viewports after code review blocker fix.",
+  "checks": [
+    {
+      "width": 800,
+      "viewportWidth": 800,
+      "modalWidth": 800,
+      "left": 0,
+      "right": 800,
+      "overflowX": 0,
+      "pass": true
+    },
+    {
+      "width": 900,
+      "viewportWidth": 900,
+      "modalWidth": 900,
+      "left": 0,
+      "right": 900,
+      "overflowX": 0,
+      "pass": true
+    },
+    {
+      "width": 901,
+      "viewportWidth": 901,
+      "modalWidth": 901,
+      "left": 0,
+      "right": 901,
+      "overflowX": 0,
+      "pass": true
+    },
+    {
+      "width": 1365,
+      "viewportWidth": 1365,
+      "modalWidth": 1365,
+      "left": 0,
+      "right": 1365,
+      "overflowX": 0,
+      "pass": true
+    }
+  ]
+}

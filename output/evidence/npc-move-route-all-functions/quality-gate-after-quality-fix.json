@@ -1,0 +1,22 @@
+{
+  "codeReview": {
+    "status": "pass",
+    "artifact": ".omo/evidence/npc-move-route-final-code-review.md",
+    "summary": "Final code review approved the NPC Move Route implementation with no blockers."
+  },
+  "manualQa": {
+    "status": "pass",
+    "artifact": "output/evidence/npc-move-route-all-functions/manual-qa-matrix-after-quality-fix.md",
+    "summary": "Manual QA matrix covers page route UI, event-command route UI, runtime movement, side effects, import validation, typecheck, build, and browser evidence."
+  },
+  "criteriaCoverage": {
+    "status": "pass",
+    "originalIntent": "Korean movement type and move route settings create actually moving NPCs with complex route planning and every route command family working.",
+    "desiredOutcome": "Users can author page-owned and event-command routes in Korean UI; runtime NPCs move across map coordinates and execute side effects.",
+    "userOutcomeReview": "Evidence includes 16 runtime screenshots, coordinate summaries, audio state, saved route extraction, Playwright UI screenshots, and passing automated checks."
+  },
+  "iteration": {
+    "status": "pass",
+    "summary": "Prior review blockers for movement frequency, stale page-owned movers, and event-command route catalog drift were fixed and retested."
+  }
+}

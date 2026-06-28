@@ -7,10 +7,12 @@ import {
   TILE,
 } from "./constants";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "./roadAutotile";
+import { addStarterVillageNpcs } from "./starterVillageNpcs";
 export {
   createTownArchitectureCityMap,
   createTownArchitectureTestMap,
   createDbExtractedHouseTemplateMap,
+  createSmallHouseCityMap,
   createSmallHouseVariantMap,
   createSmallHouseVariantMaps,
   createTownCityShowcaseMap,
@@ -167,6 +169,7 @@ function decorateStarterVillage(map: GameMap): void {
     stampLower(map, origin, SMALL_LOG_CABIN_PATTERN);
   }
   clearUpperTilesOnRoad(map);
+  addStarterVillageNpcs(map);
 }
 
 function paintBoundary(map: GameMap): void {

@@ -1,0 +1,542 @@
+[
+  {
+    "id": "actors",
+    "label": "주인공",
+    "file": "green-01-actors.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "classes",
+    "label": "직업",
+    "file": "green-02-classes.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 53,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 79,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 99,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 120,
+      "height": 608,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "skills",
+    "label": "스킬",
+    "file": "green-03-skills.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "items",
+    "label": "아이템",
+    "file": "green-04-items.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "equipment",
+    "label": "장비",
+    "file": "green-05-equipment.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "enemies",
+    "label": "몬스터",
+    "file": "green-06-enemies.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 53,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 79,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 99,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 120,
+      "height": 617,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "troops",
+    "label": "적 그룹",
+    "file": "green-07-troops.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 53,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 79,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 99,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 120,
+      "height": 620,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "elements",
+    "label": "속성",
+    "file": "green-08-elements.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "states",
+    "label": "상태",
+    "file": "green-09-states.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "animations",
+    "label": "전투 애니메이션",
+    "file": "green-10-animations.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "battlerAnimations",
+    "label": "애니메이션 2",
+    "file": "green-11-battlerAnimations.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "battleScreen",
+    "label": "전투 화면",
+    "file": "green-12-battleScreen.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "battleCommands",
+    "label": "전투 명령",
+    "file": "green-13-battleCommands.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "terrain",
+    "label": "지형",
+    "file": "green-14-terrain.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "tilesets",
+    "label": "타일셋",
+    "file": "green-15-tilesets.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "commonEvents",
+    "label": "공용 이벤트",
+    "file": "green-16-commonEvents.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "system",
+    "label": "시스템",
+    "file": "green-17-system.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "terms",
+    "label": "용어",
+    "file": "green-18-terms.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "switches",
+    "label": "스위치",
+    "file": "green-19-switches.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  },
+  {
+    "id": "variables",
+    "label": "변수",
+    "file": "green-20-variables.png",
+    "modalBodyScrollTop": 0,
+    "tabs": {
+      "y": 52,
+      "height": 26,
+      "width": 1252
+    },
+    "manual": {
+      "y": 78,
+      "height": 20,
+      "width": 1252
+    },
+    "status": {
+      "y": 98,
+      "height": 21,
+      "width": 1252
+    },
+    "body": {
+      "y": 119,
+      "height": 621,
+      "width": 1252
+    },
+    "bodyScrollTop": 0
+  }
+]

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { EventPage, Project } from "@/project/types";
+import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -8,6 +9,9 @@ type RuntimeState = {
   readonly player: { readonly x: number; readonly y: number };
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
+  readonly gold: number;
+  readonly inventory: Record<string, number>;
+  readonly partyActorIds: string[];
   readonly events: Record<
     string,
     {
@@ -50,30 +54,7 @@ function eventPage(
 }
 
 async function seedProject(page: Page, project: Project): Promise<void> {
-  await page.goto("/");
-  await page.evaluate(async (seed) => {
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("rpg-zzu", 1);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("projects")) db.createObjectStore("projects");
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const tx = db.transaction("projects", "readwrite");
-        tx.objectStore("projects").put(seed, "current");
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    } finally {
-      db.close();
-    }
-  }, project);
-  await page.reload();
-  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  await seedProjectFromSupabaseCanonical(page, project);
 }
 
 async function runtimeState(page: Page): Promise<RuntimeState> {
@@ -120,13 +101,38 @@ function runtimeProject(): Project {
     },
     switches: [
       { id: "sw_auto", name: "Autorun complete" },
+      { id: "sw_common_auto", name: "Common autorun complete" },
       { id: "sw_page", name: "Page swap" },
     ],
     variables: [
       { id: "var_parallel", name: "Parallel ticks" },
+      { id: "var_common_parallel", name: "Common parallel ticks" },
       { id: "var_touch", name: "Touch count" },
     ],
-    commonEvents: [],
+    commonEvents: [
+      {
+        id: "ce_auto",
+        name: "공용 자동 실행",
+        trigger: "auto",
+        commands: [
+          { kind: "setSwitch", switchId: "sw_common_auto", value: true },
+          { kind: "changeGold", op: "+=", amount: 40 },
+          { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
+          { kind: "changeParty", actorId: "actor_hero", action: "add" },
+        ],
+      },
+      {
+        id: "ce_parallel",
+        name: "공용 병렬 처리",
+        trigger: "parallel",
+        commands: [
+          { kind: "label", name: "loop" },
+          { kind: "wait", ms: 200 },
+          { kind: "setVariable", variableId: "var_common_parallel", op: "+=", value: 1 },
+          { kind: "gotoLabel", name: "loop" },
+        ],
+      },
+    ],
     database: { actors: [], classes: [], skills: [], items: [], equipment: [], enemies: [], troops: [], states: [], battleAnimations: [] },
     system: { startActorIds: [] },
     session: { switches: {}, variables: {}, inventory: {}, partyActorIds: [] },
@@ -291,13 +297,19 @@ test("map runtime schedules events without mutating authoring project data", asy
   await page.getByTestId("play-canvas").locator("canvas").click();
   // auto 이벤트(autorun-1)가 맵 진입 즉시 실행되어 input을 잠근다.
   // 실행 중에는 inputEnabled가 false여야 한다(RM2K3 autorun 동작).
+  let state = await runtimeState(page);
   await expect.poll(async () => (await runtimeState(page)).switches.sw_auto).toBe(true);
+  await expect.poll(async () => (await runtimeState(page)).switches.sw_common_auto).toBe(true);
+  await expect.poll(async () => (await runtimeState(page)).gold).toBe(40);
+  state = await runtimeState(page);
+  expect(state.inventory.item_potion).toBe(2);
+  expect(state.partyActorIds).toContain("actor_hero");
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
 
   await tapKey(page, "ArrowRight");
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
   // (1,0)의 npc-1은 same priority + overlapForbidden이므로 우측 이동을 막는다.
-  let state = await runtimeState(page);
+  state = await runtimeState(page);
   expect(state.player).toEqual({ x: 0, y: 0 });
 
   await tapKey(page, "Space");
@@ -312,6 +324,7 @@ test("map runtime schedules events without mutating authoring project data", asy
   await expect.poll(async () => (await runtimeState(page)).player.y).toBe(1);
   await expect.poll(async () => (await runtimeState(page)).variables.var_touch).toBe(1);
   await expect.poll(async () => (await runtimeState(page)).variables.var_parallel).toBeGreaterThanOrEqual(2);
+  await expect.poll(async () => (await runtimeState(page)).variables.var_common_parallel).toBeGreaterThanOrEqual(2);
   await expect.poll(async () => (await runtimeState(page)).events["mover-1"]?.x).toBe(1);
 
   await tapKey(page, "ArrowDown");

@@ -3,13 +3,12 @@ import { createSmallHouseVariantMaps, createSmallHouseVariantProject, DEFAULT_TI
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 
 const FENCE_TILES = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
-const UPPER_ROOF_TILES = new Set([374, 375, 377]);
+const UPPER_ROOF_TILES = new Set([375, 377]);
 const WINDOW_TILES = new Set([85, 87]);
 const EXTRACTED_DOOR_TOP = 329;
 const EXTRACTED_DOOR_BOTTOM = 359;
 const FRAMED_DOOR_TOP = 116;
 const FRAMED_DOOR_BOTTOM = 146;
-const ROOF_FACE_LEFT = 404;
 const ROOF_FACE_MID = 405;
 const DIRT_ROAD_TILES = new Set<number>(Object.values(DIRT_ROAD_TILE));
 const WOOD_WALL_TILES = new Set([102, 103, 104, 132, 133, 134, 162, 163, 164]);
@@ -51,9 +50,9 @@ describe("small house variants", () => {
     expect(new Set(maps.map(mapSignature)).size).toBe(9);
     expect(new Set(maps.map(lowerDoorTopIndex)).size).toBe(7);
     expect(maps[1]?.lowerTiles[at(maps[1], 6, 10)]).toBe(TILE.GRASS);
-    expect(maps[1]?.upperTiles[at(maps[1], 8, 4)]).toBe(374);
-    expect(maps[2]?.lowerTiles[at(maps[2], 5, 8)]).toBe(45);
-    expect(maps[2]?.lowerTiles[at(maps[2], 16, 8)]).toBe(47);
+    expect(maps[1]?.upperTiles[at(maps[1], 8, 4)]).toBe(375);
+    expect(maps[2]?.lowerTiles[at(maps[2], 5, 8)]).toBe(15);
+    expect(maps[2]?.lowerTiles[at(maps[2], 17, 8)]).toBe(17);
 
     for (const map of maps) {
       expect(map.width).toBeGreaterThanOrEqual(16);
@@ -63,6 +62,7 @@ describe("small house variants", () => {
       // fence/window는 RM2K3 정석에 따라 upper 오버레이 (chipsetMapping.isUpperChipsetTile과 일관).
       expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(true);
       expect(map.upperTiles.some((tile) => WINDOW_TILES.has(tile))).toBe(true);
+      expect(map.upperTiles).not.toContain(374);
       expect(lowerVisualTiles(map).some((tile) => FENCE_TILES.has(tile))).toBe(false);
       expect(lowerVisualTiles(map).some((tile) => WINDOW_TILES.has(tile))).toBe(false);
       expect(hasLowerDoorPair(map)).toBe(true);
@@ -74,29 +74,62 @@ describe("small house variants", () => {
     }
   });
 
-  it("variant 4 stamps a wood-wall house by the pond garden", () => {
+  it("variant 4 stamps a connected L-shaped template house", () => {
     const map = createSmallHouseVariantMaps()[3];
     expect(map).toBeDefined();
     if (!map) return;
 
-    expect(map.lowerTiles.some((tile) => WOOD_WALL_TILES.has(tile))).toBe(true);
+    expect(map.lowerTiles.some((tile) => WOOD_WALL_TILES.has(tile))).toBe(false);
     expect(map.lowerTiles.some((tile) => STONE_WALL_TILES.has(tile))).toBe(false);
-    expect(map.lowerTiles.some((tile) => tile === WATER_TILE)).toBe(true);
-    expect(map.lowerTiles.some((tile) => SAND_TILES.has(tile))).toBe(true);
+    expect(map.lowerTiles.some((tile) => tile === WATER_TILE)).toBe(false);
+    expect(map.lowerTiles.some((tile) => SAND_TILES.has(tile))).toBe(false);
     expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(true);
     expect(hasLowerDoorPair(map)).toBe(true);
+    expect(map.upperTiles[at(map, 4, 3)]).toBe(354);
+    expect(map.upperTiles[at(map, 14, 3)]).toBe(355);
+    expect(map.upperTiles[at(map, 10, 6)]).toBe(354);
+    expect(map.upperTiles[at(map, 17, 6)]).toBe(355);
+    for (let x = 10; x <= 14; x += 1) expect(map.upperTiles[at(map, x, 6)]).not.toBe(TILE.EMPTY);
+    expect(map.lowerTiles[at(map, 13, 11)]).toBe(FRAMED_DOOR_TOP);
+    expect(map.lowerTiles[at(map, 13, 12)]).toBe(FRAMED_DOOR_BOTTOM);
+    expect(map.upperTiles[at(map, 7, 8)]).toBe(87);
+    expect(map.upperTiles[at(map, 11, 11)]).toBe(87);
+    expect(map.upperTiles[at(map, 16, 11)]).toBe(87);
+    expect(DIRT_ROAD_TILES.has(map.lowerTiles[at(map, 13, 13)] ?? TILE.EMPTY)).toBe(true);
+    expect(map.upperTiles[at(map, 13, 13)]).toBe(TILE.EMPTY);
   });
 
-  it("variant 5 stamps a stone-wall house inside the orchard fence", () => {
+  it("variant 5 stamps a complex connected template house without props", () => {
     const map = createSmallHouseVariantMaps()[4];
     expect(map).toBeDefined();
     if (!map) return;
 
-    expect(map.lowerTiles.some((tile) => STONE_WALL_TILES.has(tile))).toBe(true);
+    expect(map.lowerTiles.some((tile) => STONE_WALL_TILES.has(tile))).toBe(false);
     expect(map.lowerTiles.some((tile) => WOOD_WALL_TILES.has(tile))).toBe(false);
+    expect(map.lowerTiles.some((tile) => tile === WATER_TILE)).toBe(false);
+    expect(map.lowerTiles.some((tile) => SAND_TILES.has(tile))).toBe(false);
     expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(true);
-    expect(map.upperTiles.some((tile) => tile === TILE.TREE)).toBe(true);
+    expect(map.upperTiles.some((tile) => tile === TILE.TREE || tile === TILE.FLOWERS)).toBe(false);
     expect(hasLowerDoorPair(map)).toBe(true);
+    expect(map.upperTiles[at(map, 3, 2)]).toBe(354);
+    expect(map.upperTiles[at(map, 17, 2)]).toBe(355);
+    expect(map.upperTiles[at(map, 3, 5)]).toBe(354);
+    expect(map.upperTiles[at(map, 10, 5)]).toBe(355);
+    expect(map.upperTiles[at(map, 10, 7)]).toBe(354);
+    expect(map.upperTiles[at(map, 17, 7)]).toBe(355);
+    expect(map.lowerTiles[at(map, 3, 6)]).toBe(15);
+    expect(map.lowerTiles[at(map, 17, 6)]).toBe(17);
+    expect(map.lowerTiles[at(map, 3, 9)]).toBe(15);
+    expect(map.lowerTiles[at(map, 10, 9)]).toBe(17);
+    expect(map.lowerTiles[at(map, 10, 11)]).toBe(15);
+    expect(map.lowerTiles[at(map, 17, 11)]).toBe(17);
+    expect(map.upperTiles[at(map, 5, 10)]).toBe(87);
+    expect(map.upperTiles[at(map, 11, 12)]).toBe(87);
+    expect(map.upperTiles[at(map, 16, 12)]).toBe(87);
+    expect(map.lowerTiles[at(map, 13, 12)]).toBe(FRAMED_DOOR_TOP);
+    expect(map.lowerTiles[at(map, 13, 13)]).toBe(FRAMED_DOOR_BOTTOM);
+    expect(DIRT_ROAD_TILES.has(map.lowerTiles[at(map, 13, 14)] ?? TILE.EMPTY)).toBe(true);
+    expect(map.upperTiles[at(map, 13, 14)]).toBe(TILE.EMPTY);
   });
 
   it("variant 6 stamps a wide two-story plaster house on the plaza", () => {
@@ -175,32 +208,38 @@ describe("small house variants", () => {
     expect(map.upperTiles[at(map, 15, 6)]).toBe(85);
   });
 
-  it("locks variant 3 roof, door, and path anchors", () => {
+  it("locks variant 3 as a wider table-template house", () => {
     const map = createSmallHouseVariantMaps()[2];
     expect(map).toBeDefined();
     if (!map) return;
 
     expect(map.lowerTiles[at(map, 11, 9)]).toBe(FRAMED_DOOR_TOP);
     expect(map.lowerTiles[at(map, 11, 10)]).toBe(FRAMED_DOOR_BOTTOM);
-    expect(map.upperTiles[at(map, 11, 8)]).toBe(TILE.EMPTY);
-    expect(map.lowerTiles[at(map, 11, 11)]).toBe(TILE.PATH);
-    expect(map.lowerTiles[at(map, 10, 11)]).not.toBe(TILE.PATH);
-    expect(map.lowerTiles[at(map, 12, 11)]).not.toBe(TILE.PATH);
+    expect(map.upperTiles[at(map, 8, 9)]).toBe(87);
+    expect(map.upperTiles[at(map, 14, 9)]).toBe(87);
+    expect(DIRT_ROAD_TILES.has(map.lowerTiles[at(map, 11, 11)] ?? TILE.EMPTY)).toBe(true);
+    expect(DIRT_ROAD_TILES.has(map.lowerTiles[at(map, 12, 11)] ?? TILE.EMPTY)).toBe(true);
+    expect(map.upperTiles[at(map, 11, 11)]).toBe(TILE.EMPTY);
+    expect(map.upperTiles[at(map, 12, 11)]).toBe(TILE.EMPTY);
 
     for (let y = 4; y <= 6; y += 1) {
-      for (let x = 5; x <= 16; x += 1) {
+      for (let x = 6; x <= 16; x += 1) {
         expect(UPPER_ROOF_TILES.has(map.upperTiles[at(map, x, y)])).toBe(true);
         expect(map.lowerTiles[at(map, x, y)]).toBe(TILE.GRASS);
       }
     }
 
-    expect(map.upperTiles[at(map, 5, 5)]).toBe(375);
-    expect(map.upperTiles[at(map, 16, 5)]).toBe(375);
-    expect(map.upperTiles[at(map, 5, 6)]).toBe(375);
-    expect(map.upperTiles[at(map, 16, 6)]).toBe(375);
-    expect(map.lowerTiles[at(map, 5, 7)]).toBe(ROOF_FACE_LEFT);
+    expect(map.upperTiles[at(map, 5, 4)]).toBe(354);
+    expect(map.upperTiles[at(map, 17, 4)]).toBe(355);
+    expect(map.upperTiles[at(map, 6, 4)]).toBe(375);
+    expect(map.upperTiles[at(map, 16, 4)]).toBe(377);
+    expect(map.upperTiles[at(map, 5, 7)]).toBe(384);
+    expect(map.upperTiles[at(map, 17, 7)]).toBe(385);
+    expect(map.lowerTiles[at(map, 5, 7)]).toBe(ROOF_FACE_MID);
     expect(map.lowerTiles[at(map, 11, 7)]).toBe(ROOF_FACE_MID);
-    expect(map.lowerTiles[at(map, 16, 7)]).toBe(ROOF_FACE_MID);
+    expect(map.lowerTiles[at(map, 17, 7)]).toBe(ROOF_FACE_MID);
+    expect(map.lowerTiles[at(map, 5, 8)]).toBe(15);
+    expect(map.lowerTiles[at(map, 17, 8)]).toBe(17);
   });
 
   it("places three overlapping 2x2 trees on variant 1 with lower and upper tile stacks", () => {

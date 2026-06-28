@@ -27,6 +27,13 @@ export const ACTOR_PARAMETER_KEYS: readonly ActorParameterKey[] = [
 ] as const;
 
 export const ACTOR_RATE_GRADES: readonly ActorRateGrade[] = ["A", "B", "C", "D", "E"] as const;
+export const ACTOR_STATE_RATE_PERCENTAGES: Readonly<Record<ActorRateGrade, number>> = {
+  A: 100,
+  B: 80,
+  C: 60,
+  D: 30,
+  E: 0,
+};
 
 export const DEFAULT_ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string }[] = [
   { id: "sword", name: "Sword" },
@@ -120,7 +127,7 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     classId: actor.classId,
     initialLevel,
     maxLevel,
-    faceResourceId: actor.faceResourceId,
+    faceResourceId: actor.faceResourceId ?? defaultActorFaceResourceId(actor),
     characterResourceId: actor.characterResourceId,
     characterTransparent: actor.characterTransparent ?? false,
     battleCharacterResourceId: actor.battleCharacterResourceId,
@@ -154,6 +161,10 @@ export function totalExpForLevel(curve: ActorExperienceCurve, level: number): nu
     total += growth + Math.floor((currentLevel - 2) * curve.acceleration);
   }
   return total;
+}
+
+export function stateRatePercentage(grade: ActorRateGrade): number {
+  return ACTOR_STATE_RATE_PERCENTAGES[grade];
 }
 
 export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorRecord> {
@@ -253,6 +264,39 @@ function normalizeRates(rates: Record<string, ActorRateGrade>): Record<string, A
 
 function cleanOptionalId(value: string | undefined): string | undefined {
   return value && value.trim() ? value : undefined;
+}
+
+export function defaultActorFaceResourceId(actor: Pick<ActorRecord, "id" | "characterResourceId">): string | undefined {
+  switch (actor.characterResourceId) {
+    case "easyrpg-charset-actor1":
+      return "easyrpg-faceset-actor1";
+    case "easyrpg-charset-actor2":
+      return "easyrpg-faceset-actor2";
+    case "easyrpg-charset-actor3":
+      return "easyrpg-faceset-people1";
+    case "easyrpg-charset-actor4":
+      return "easyrpg-faceset-people2";
+    case "easyrpg-charset-people1":
+      return "easyrpg-faceset-people1";
+    case "easyrpg-charset-people2":
+      return "easyrpg-faceset-people2";
+    default:
+      break;
+  }
+  switch (actor.id) {
+    case "actor_hero":
+      return "easyrpg-faceset-actor1";
+    case "actor_guardian":
+      return "easyrpg-faceset-actor2";
+    case "actor_mage":
+    case "actor_cleric":
+      return "easyrpg-faceset-people1";
+    case "actor_scout":
+    case "actor_ranger":
+      return "easyrpg-faceset-people2";
+    default:
+      return undefined;
+  }
 }
 
 function clampInteger(value: number, min: number, max: number): number {

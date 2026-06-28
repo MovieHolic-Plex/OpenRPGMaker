@@ -12,7 +12,7 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await expect(page.getByTestId("menu-help")).toContainText("도움말");
 
   await expect(page.getByTestId("rm2k3-toolbar")).toBeVisible();
-  await expect(page.getByTestId("toolbar-save")).toHaveAttribute("title", "프로젝트 저장");
+  await expect(page.getByTestId("toolbar-save")).toHaveAttribute("title", "프로젝트 저장 (Ctrl+S)");
   await expect(page.getByTestId("toolbar-database")).toHaveAttribute("title", "데이터베이스");
   await expect(page.getByTestId("toolbar-resource-manager")).toHaveAttribute("title", "소재 관리자");
   await expect(page.getByTestId("mode-play")).toHaveAttribute("title", "테스트 플레이");

@@ -3,6 +3,7 @@ import { addMap, moveMapInTree, paintTile, resizeMap } from "@/editor/actions";
 import { addEvent } from "@/editor/eventActions";
 import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
 import { recordProjectSnapshot, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { shiftMapContent } from "@/editor/mapShiftActions";
 import { setTerrainTag } from "@/editor/tilesetActions";
 import { editorState } from "@/editor/editorState";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
@@ -11,6 +12,7 @@ import { paintRoadRect, shapeRoadEdges, type RoadRect } from "@/project/defaults
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import { isHarnessStackableTile } from "@/project/tilesetHarness";
+import { tileStackAt } from "@/project/mapOverlayTiles";
 
 function resetEditorState(): void {
   editorState.set({
@@ -112,6 +114,22 @@ describe("map edit commands", () => {
     expect(updated.upperTileStacks?.[tileIndex]).toEqual([263, 319]);
   });
 
+  it("does not duplicate the same transparent tile in one stack cell", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const map = project.maps[mapId];
+    const tileIndex = 2 * map.width + 2;
+
+    paintTile(mapId, "upper", 2, 2, 263);
+    paintTile(mapId, "upper", 2, 2, 263);
+    paintTile(mapId, "lower", 2, 2, 85);
+    paintTile(mapId, "lower", 2, 2, 85);
+
+    const updated = store.getCurrent().maps[mapId];
+    expect(tileStackAt(updated, "upper", tileIndex)).toEqual([263]);
+    expect(tileStackAt(updated, "lower", tileIndex)).toEqual([85]);
+  });
+
   it("forces windows and fences onto the lower harness layer even from upper mode", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
@@ -170,6 +188,28 @@ describe("map edit commands", () => {
     expect(resized.lowerTileStacks?.[1 * resized.width + 1]).toEqual([263]);
     expect(resized.lowerTileStacks?.[2 * resized.width + 2]).toEqual([85]);
     expect(resized.upperTileStacks?.[5 * resized.width + 5]).toBeUndefined();
+  });
+
+  it("shifts map tile content and events by a signed offset", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const eventId = addEvent(mapId, 1, 1);
+
+    paintTile(mapId, "lower", 1, 1, TILE.WATER);
+    paintTile(mapId, "upper", 1, 1, TILE.WALL);
+
+    expect(shiftMapContent(mapId, { dx: 1, dy: 1 })).toBe(true);
+
+    const shifted = store.getCurrent().maps[mapId];
+    const edgeIndex = 0;
+    const newIndex = 2 * shifted.width + 2;
+    const event = shifted.events.find((item) => item.id === eventId);
+    expect(shifted.lowerTiles[edgeIndex]).toBe(TILE.GRASS);
+    expect(shifted.upperTiles[edgeIndex]).toBe(TILE.EMPTY);
+    expect(shifted.lowerTiles[newIndex]).toBe(TILE.WATER);
+    expect(shifted.upperTiles[newIndex]).toBe(TILE.WALL);
+    expect(event?.x).toBe(2);
+    expect(event?.y).toBe(2);
   });
 
   it("edits terrain tags and map tree parentage through store actions", () => {

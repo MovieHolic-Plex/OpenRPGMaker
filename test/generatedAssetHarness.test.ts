@@ -19,7 +19,7 @@ describe("generatedAssetHarness", () => {
     const validation = await validateGeneratedAssetBytes({ entry, path: plan[1]?.rawPath ?? "", bytes });
     const promotion = buildPromotionMetadata(entry, validation);
     const contactSheet = buildContactSheetMetadata(RM2K3_GENERATED_ASSET_PLAN);
-    const command = buildLiveAgyCommand(entry, "C:/tmp/hero.png");
+    const command = buildLiveAgyCommand(entry, "C:/tmp/generated.png");
 
     expect(plan[1]?.rawPath).toMatch(/hero-01-charset-[0-9a-f]{8}\.png$/);
     expect(command).toContain("agy");

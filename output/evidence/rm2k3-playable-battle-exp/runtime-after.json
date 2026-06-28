@@ -1,0 +1,45 @@
+{
+  "mapId": "map_battle",
+  "inputEnabled": true,
+  "running": false,
+  "player": {
+    "x": 0,
+    "y": 0
+  },
+  "switches": {},
+  "variables": {},
+  "timers": {},
+  "gold": 3,
+  "inventory": {
+    "item_bomb": 1
+  },
+  "partyActorIds": [
+    "actor_hero"
+  ],
+  "actorExperience": {
+    "actor_hero": 7
+  },
+  "actorVitals": {
+    "actor_hero": {
+      "hp": 514,
+      "mp": 43,
+      "maxHp": 514,
+      "maxMp": 43
+    }
+  },
+  "actorEquipment": {
+    "actor_hero": {}
+  },
+  "actorRows": {
+    "actor_hero": "front"
+  },
+  "events": {
+    "battle-start": {
+      "x": 1,
+      "y": 0,
+      "priority": "same",
+      "trigger": "action"
+    }
+  },
+  "battleResult": "victory"
+}

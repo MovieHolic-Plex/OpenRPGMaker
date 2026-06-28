@@ -44,19 +44,32 @@ async function downloadCurrentMapScreenshot(): Promise<void> {
     const screenshot = await createMapScreenshot(project, map);
     if (requestSeq !== mapScreenshotRequestSeq) return;
     await publishMapScreenshotResult(screenshot, map);
+    const copiedToClipboard = await copyMapScreenshotToClipboard(screenshot.blob);
     const url = URL.createObjectURL(screenshot.blob);
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = screenshot.fileName;
     anchor.click();
     URL.revokeObjectURL(url);
-    toast("맵 PNG를 저장했습니다", "ok");
+    toast(copiedToClipboard ? "맵 PNG를 저장하고 클립보드에 복사했습니다" : "맵 PNG를 저장했습니다", "ok");
   } catch (error) {
     if (requestSeq !== mapScreenshotRequestSeq) return;
     if (error instanceof MapScreenshotError) {
       toast(`맵 저장 실패: ${error.message}`, "error");
       return;
     }
+    throw error;
+  }
+}
+
+async function copyMapScreenshotToClipboard(blob: Blob): Promise<boolean> {
+  if (!navigator.clipboard || typeof ClipboardItem === "undefined") return false;
+  try {
+    const pngBlob = blob.type === "image/png" ? blob : blob.slice(0, blob.size, "image/png");
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob })]);
+    return true;
+  } catch (error) {
+    if (error instanceof DOMException || error instanceof TypeError) return false;
     throw error;
   }
 }

@@ -1,38 +1,19 @@
-import type {
-  ActorRecord,
-  BattleAnimationRecord,
-  ClassRecord,
-  DatabaseRecords,
-  EnemyRecord,
-  EquipmentRecord,
-  ItemRecord,
-  ProjectSession,
-  SkillRecord,
-  StateRecord,
-  SystemRecords,
-  Terms,
-  TroopRecord,
-} from "../types";
-import { createActorRecord } from "../actorModel";
+import type { ProjectDatabaseRecords, ProjectSession, SystemRecords, Terms, TitleScreenSettings } from "../types";
+import { defaultBattleRecords } from "./defaultDatabaseBattleRecords";
+import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import {
-  normalizeClassRecord,
-  normalizeEnemyRecord,
-  normalizeEquipmentRecord,
-  normalizeItemRecord,
-  normalizeSkillRecord,
-  normalizeTroopRecord,
-} from "../databaseRecordModel";
+  defaultBattleAnimationRecords,
+  defaultBattlerAnimationRecords,
+  defaultItemRecords,
+  defaultSkillRecords,
+  defaultStateRecords,
+} from "./defaultDatabaseStarterRecords";
 import {
-  DEFAULT_ACTOR_ID,
-  DEFAULT_ANIMATION_ID,
-  DEFAULT_CLASS_ID,
-  DEFAULT_ENEMY_ID,
-  DEFAULT_EQUIPMENT_ID,
-  DEFAULT_ITEM_ID,
-  DEFAULT_SKILL_ID,
-  DEFAULT_STATE_ID,
-  DEFAULT_TROOP_ID,
-} from "./constants";
+  defaultBattleCommandRecords,
+  defaultElementRecords,
+  defaultTerrainRecords,
+} from "./defaultDatabaseUtilityRecords";
+import { DEFAULT_TROOP_ID } from "./constants";
 
 export function defaultTerms(): Terms {
   return {
@@ -46,77 +27,53 @@ export function defaultTerms(): Terms {
   };
 }
 
-export function defaultDatabase(): DatabaseRecords {
-  const actors: ActorRecord[] = [
-    {
-      ...createActorRecord(DEFAULT_ACTOR_ID, DEFAULT_CLASS_ID, {
-        characterResourceId: "easyrpg-charset-actor1",
-        battleCharacterResourceId: "generated-actor-hero-01-battle",
-        defaultEquipmentId: DEFAULT_EQUIPMENT_ID,
-        defaultSkillId: DEFAULT_SKILL_ID,
-        unarmedAnimationId: DEFAULT_ANIMATION_ID,
-      }),
-      name: "주인공",
-      nickname: "없음",
-      faceResourceId: "easyrpg-faceset-actor1",
-      characterResourceId: "easyrpg-charset-actor1",
-      battleCharacterResourceId: "generated-actor-hero-01-battle",
-    },
-  ];
-  const classes: ClassRecord[] = [normalizeClassRecord({ id: DEFAULT_CLASS_ID, name: "전사", skillIds: [DEFAULT_SKILL_ID] })];
-  const skills: SkillRecord[] = [
-    normalizeSkillRecord({ id: DEFAULT_SKILL_ID, name: "공격", scope: "enemy", power: 10, animationId: DEFAULT_ANIMATION_ID }),
-  ];
-  const items: ItemRecord[] = [
-    normalizeItemRecord({
-      id: DEFAULT_ITEM_ID,
-      name: "회복약",
-      scope: "ally",
-      price: 50,
-      imageResourceId: "generated-item-potion-red-image",
-      iconResourceId: "generated-item-potion-red-icon",
-    }),
-  ];
-  const equipment: EquipmentRecord[] = [
-    normalizeEquipmentRecord({
-      id: DEFAULT_EQUIPMENT_ID,
-      name: "청동 검",
-      slot: "weapon",
-      price: 100,
-      imageResourceId: "easyrpg-battle-weapon-weapon",
-      iconResourceId: "easyrpg-battle-weapon-weapon",
-    }),
-  ];
-  const enemies: EnemyRecord[] = [
-    normalizeEnemyRecord({ id: DEFAULT_ENEMY_ID, name: "말벌", monsterResourceId: "easyrpg-monster-hornet", skillIds: [DEFAULT_SKILL_ID] }),
-  ];
-  const troops: TroopRecord[] = [
-    normalizeTroopRecord({ id: DEFAULT_TROOP_ID, name: "말벌 무리", enemyIds: [DEFAULT_ENEMY_ID], battleEventPages: [] }),
-  ];
-  const states: StateRecord[] = [{ id: DEFAULT_STATE_ID, name: "독" }];
-  const battleAnimations: BattleAnimationRecord[] = [
-    { id: DEFAULT_ANIMATION_ID, name: "타격", resourceId: "easyrpg-battle-blow" },
-  ];
+export function defaultDatabase(): ProjectDatabaseRecords {
+  const party = defaultPartyRecords();
+  const battle = defaultBattleRecords();
+
   return {
-    actors,
-    classes,
-    skills,
-    items,
-    equipment,
-    enemies,
-    troops,
-    states,
-    battleAnimations,
+    actors: party.actors,
+    classes: party.classes,
+    skills: defaultSkillRecords(),
+    items: defaultItemRecords(),
+    equipment: party.equipment,
+    enemies: battle.enemies,
+    troops: battle.troops,
+    states: defaultStateRecords(),
+    battleAnimations: defaultBattleAnimationRecords(),
+    elements: defaultElementRecords(),
+    terrains: defaultTerrainRecords(),
+    battleCommands: defaultBattleCommandRecords(),
+    battlerAnimations: defaultBattlerAnimationRecords(),
   };
 }
 
 export function defaultSystem(): SystemRecords {
   return {
-    startActorIds: [DEFAULT_ACTOR_ID],
-    titleResourceId: "easyrpg-title-title1",
+    startActorIds: defaultStarterActorIds(),
+    titleResourceId: "rpg-zzu-title-blue",
     systemResourceId: "easyrpg-system-system",
     battleSystemResourceId: "easyrpg-system2-system2-c",
     initialTroopId: DEFAULT_TROOP_ID,
+    titleScreen: defaultTitleScreenSettings(),
+  };
+}
+
+export function defaultTitleScreenSettings(): TitleScreenSettings {
+  return {
+    title: "새 프로젝트",
+    backgroundResourceId: "rpg-zzu-title-blue",
+    layout: {
+      titleX: 160,
+      titleY: 70,
+      menuX: 122,
+      menuY: 118,
+    },
+    menuLabels: {
+      newGame: "새 게임",
+      continueGame: "계속",
+      quit: "게임 중지",
+    },
   };
 }
 
@@ -125,6 +82,6 @@ export function defaultSession(): ProjectSession {
     switches: {},
     variables: {},
     inventory: {},
-    partyActorIds: [DEFAULT_ACTOR_ID],
+    partyActorIds: defaultStarterActorIds(),
   };
 }

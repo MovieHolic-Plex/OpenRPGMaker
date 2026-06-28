@@ -1,0 +1,18 @@
+{
+  "testId": "event-editor-modal",
+  "className": "event-editor-modal-backdrop",
+  "viewport": {
+    "width": 1366,
+    "height": 768
+  },
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1366,
+    "height": 768
+  },
+  "scrollWidth": 1366,
+  "clientWidth": 1366,
+  "noHorizontalOverflow": true,
+  "textSample": "이벤트 에디터 - ID:0004XNameNew PageCopy PagePaste PageDelete PageID 0004 (5, 13)생성 예정: 1 diff - event1조건스위치...참거짓is ON스위치is ON변수...>=<===!=이상아이템소지 중소지하지 않음보유주인공파티에 있음파티에 없음파티에 있음타이머 1초 이하타이머 2초 이하그래픽투명설정이동 유형정지무작위접근사용자 지정빈도:12345678사용자 지정 이동 경로 설정트리거Action ButtonPlayer TouchEvent TouchAutorunParallel Process조건 없는 자동/병렬 이벤트는 반복 실행될 수 있습니다.우선순위캐릭터 아래캐릭터와 같음캐릭터 위이벤트 겹침 금지애니메이션 유형보통이동 속도1: x8 느림2: x4 느림3: x2 느림4: 보통5: x2 빠름6: x4 빠름실행 내용@>명령 삽입문장선택지스위치변수분기타이머장소 이동이동그림소리전투돈아이템파티게임 오버OKCancelApplyHelp"
+}

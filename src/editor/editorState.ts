@@ -6,6 +6,7 @@
 import type { MapId } from "@/project/types";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
+export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
 export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
@@ -34,6 +35,7 @@ export interface EditorState {
   zoom: EditorZoom;
   selectedEventId: string | null;
   layer: Layer;
+  paintShape: PaintShape;
   selectedTile: number;
   brushSize: EditorBrushSize;
   selectedEventPageId: string | null;
@@ -49,6 +51,7 @@ class EditorStateStore {
     tool: "paint",
     zoom: 2,
     layer: "lower",
+    paintShape: "pen",
     selectedTile: 0,
     brushSize: 1,
     selectedEventId: null,

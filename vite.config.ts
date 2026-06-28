@@ -12,6 +12,9 @@ export default defineConfig({
     port: 5173,
     allowedHosts: ["mdc-server"],
     open: false,
+    watch: {
+      ignored: ["**/.omo/**"],
+    },
     proxy: {
       "/api/ai": {
         target: "https://yunwu.ai/v1",
