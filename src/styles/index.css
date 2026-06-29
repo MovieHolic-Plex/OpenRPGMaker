@@ -1,0 +1,22 @@
+/* CSS entrypoint: preserves the original cascade order while keeping each module under 1000 lines. */
+@import "./editor/core.css";
+@import "./editor/palette-player.css";
+@import "./editor/event-editor-legacy.css";
+@import "./database/core.css";
+@import "./database/tabs-a.css";
+@import "./database/tabs-b.css";
+@import "./map/resource-system.css";
+@import "./shell/rm2k3.css";
+@import "./editor/responsive-a.css";
+@import "./runtime/battle.css";
+@import "./dialogue.css";
+@import "./database/actors.css";
+@import "./database/enemies.css";
+@import "./database/elements.css";
+@import "./database/states.css";
+@import "./database/troops.css";
+@import "./database/tilesets.css";
+@import "./database/tilesets-terrain.css";
+@import "./database/desktop.css";
+@import "./resources/resource-manager.css";
+@import "./editor/event-editor.css";

@@ -102,9 +102,21 @@
 .rm-tool-icon-redo,
 .rm-tool-icon-database,
 .rm-tool-icon-resources,
+.rm-tool-icon-disabled-diamond,
+.rm-tool-icon-disabled-blocks,
+.rm-tool-icon-event-test,
 .rm-tool-icon-lower,
 .rm-tool-icon-upper,
 .rm-tool-icon-event,
+.rm-tool-icon-manual,
+.rm-tool-icon-sound,
+.rm-tool-icon-search,
+.rm-tool-icon-window,
+.rm-tool-icon-title,
+.rm-tool-icon-zoom-1,
+.rm-tool-icon-zoom-2,
+.rm-tool-icon-zoom-4,
+.rm-tool-icon-zoom-8,
 .rm-tool-icon-pencil,
 .rm-tool-icon-play,
 .rm-tool-icon-play-window {
@@ -131,12 +143,36 @@
 .rm-tool-icon-database::after,
 .rm-tool-icon-resources::before,
 .rm-tool-icon-resources::after,
+.rm-tool-icon-disabled-diamond::before,
+.rm-tool-icon-disabled-diamond::after,
+.rm-tool-icon-disabled-blocks::before,
+.rm-tool-icon-disabled-blocks::after,
+.rm-tool-icon-event-test::before,
+.rm-tool-icon-event-test::after,
 .rm-tool-icon-lower::before,
 .rm-tool-icon-lower::after,
 .rm-tool-icon-upper::before,
 .rm-tool-icon-upper::after,
 .rm-tool-icon-event::before,
 .rm-tool-icon-event::after,
+.rm-tool-icon-manual::before,
+.rm-tool-icon-manual::after,
+.rm-tool-icon-sound::before,
+.rm-tool-icon-sound::after,
+.rm-tool-icon-search::before,
+.rm-tool-icon-search::after,
+.rm-tool-icon-window::before,
+.rm-tool-icon-window::after,
+.rm-tool-icon-title::before,
+.rm-tool-icon-title::after,
+.rm-tool-icon-zoom-1::before,
+.rm-tool-icon-zoom-1::after,
+.rm-tool-icon-zoom-2::before,
+.rm-tool-icon-zoom-2::after,
+.rm-tool-icon-zoom-4::before,
+.rm-tool-icon-zoom-4::after,
+.rm-tool-icon-zoom-8::before,
+.rm-tool-icon-zoom-8::after,
 .rm-tool-icon-pencil::before,
 .rm-tool-icon-pencil::after,
 .rm-tool-icon-play::before,
@@ -182,6 +218,18 @@
   background-image: url("/ui/rm2k3-toolbar/resources.png");
 }
 
+.rm-tool-icon-disabled-diamond {
+  background-image: url("/ui/rm2k3-toolbar/disabled-diamond.png");
+}
+
+.rm-tool-icon-disabled-blocks {
+  background-image: url("/ui/rm2k3-toolbar/disabled-blocks.png");
+}
+
+.rm-tool-icon-event-test {
+  background-image: url("/ui/rm2k3-toolbar/event-test.png");
+}
+
 .rm-tool-icon-lower {
   background-image: url("/ui/rm2k3-toolbar/lower.png");
 }
@@ -192,6 +240,42 @@
 
 .rm-tool-icon-event {
   background-image: url("/ui/rm2k3-toolbar/event.png");
+}
+
+.rm-tool-icon-manual {
+  background-image: url("/ui/rm2k3-toolbar/manual.png");
+}
+
+.rm-tool-icon-sound {
+  background-image: url("/ui/rm2k3-toolbar/sound.png");
+}
+
+.rm-tool-icon-search {
+  background-image: url("/ui/rm2k3-toolbar/search.png");
+}
+
+.rm-tool-icon-window {
+  background-image: url("/ui/rm2k3-toolbar/window.png");
+}
+
+.rm-tool-icon-title {
+  background-image: url("/ui/rm2k3-toolbar/title.png");
+}
+
+.rm-tool-icon-zoom-1 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-1.png");
+}
+
+.rm-tool-icon-zoom-2 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-2.png");
+}
+
+.rm-tool-icon-zoom-4 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-4.png");
+}
+
+.rm-tool-icon-zoom-8 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-8.png");
 }
 
 .rm-tool-icon-pencil {

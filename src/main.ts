@@ -1,17 +1,6 @@
 // 앱 진입점: store 로드 + 에디터 부팅.
 
-import "./styles.css";
-import "./styles.dialogue.css";
-import "./styles.databaseActors.css";
-import "./styles.databaseEnemies.css";
-import "./styles.databaseElements.css";
-import "./styles.databaseStates.css";
-import "./styles.databaseTroops.css";
-import "./styles.databaseTilesets.css";
-import "./styles.databaseTilesetsTerrain.css";
-import "./styles.databaseDesktop.css";
-import "./styles.resourceManager.css";
-import "./styles.eventEditor.css";
+import "./styles/index.css";
 import { bootApp } from "@/app/mode";
 import { registerPwa } from "@/pwa";
 
