@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { isColorKeyedChipsetTextureKey } from "@/assets/bundled";
 import { applyTransparentColorKey } from "@/assets/transparentColorKey";
 import { charsetIdleFrameIndex, charsetWalkFrameIndex } from "@/player/charsetMotion";
 
@@ -21,11 +22,19 @@ describe("EasyRPG RTP runtime sprite rendering", () => {
   it("cycles moving NPC frames inside the same RPG Maker 2000 CharSet slot", () => {
     const baseFrame = 86;
 
-    expect(charsetWalkFrameIndex(baseFrame, "right", 0)).toBe(72);
-    expect(charsetWalkFrameIndex(baseFrame, "right", 1)).toBe(73);
-    expect(charsetWalkFrameIndex(baseFrame, "right", 2)).toBe(74);
-    expect(charsetWalkFrameIndex(baseFrame, "right", 3)).toBe(73);
-    expect(charsetWalkFrameIndex(baseFrame, "right", 4)).toBe(72);
-    expect(charsetIdleFrameIndex(baseFrame, "left")).toBe(61);
+    expect(charsetWalkFrameIndex(baseFrame, "right", 0)).toBe(60);
+    expect(charsetWalkFrameIndex(baseFrame, "right", 1)).toBe(61);
+    expect(charsetWalkFrameIndex(baseFrame, "right", 2)).toBe(62);
+    expect(charsetWalkFrameIndex(baseFrame, "right", 3)).toBe(61);
+    expect(charsetWalkFrameIndex(baseFrame, "right", 4)).toBe(60);
+    expect(charsetIdleFrameIndex(baseFrame, "left")).toBe(85);
+  });
+
+  it("applies transparent color keys only to object-heavy chipset sheets", () => {
+    expect(isColorKeyedChipsetTextureKey("tex_easyrpg_chipset_interior")).toBe(true);
+    expect(isColorKeyedChipsetTextureKey("tex_easyrpg_chipset_dungeon")).toBe(true);
+    expect(isColorKeyedChipsetTextureKey("tex_easyrpg_chipset_retro_dungeon")).toBe(true);
+    expect(isColorKeyedChipsetTextureKey("tex_easyrpg_chipset_combined_town")).toBe(false);
+    expect(isColorKeyedChipsetTextureKey("tex_easyrpg_chipset_retro_exterior")).toBe(false);
   });
 });

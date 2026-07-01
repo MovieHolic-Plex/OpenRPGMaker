@@ -11,7 +11,7 @@ describe("generatedAssetManifest", () => {
       expect(result.manifest.assets.filter((entry) => entry.target === "actorFace")).toHaveLength(2);
       expect(result.manifest.assets.filter((entry) => entry.target === "actorCharset")).toHaveLength(2);
       expect(result.manifest.assets.filter((entry) => entry.target === "actorBattleCharset")).toHaveLength(4);
-      expect(result.manifest.assets.filter((entry) => entry.target === "enemyMonster")).toHaveLength(4);
+      expect(result.manifest.assets.filter((entry) => entry.target === "enemyMonster")).toHaveLength(5);
       expect(result.manifest.assets.filter((entry) => entry.target === "itemImage" || entry.target === "itemIcon")).toHaveLength(4);
       expect(result.manifest.assets.filter((entry) => entry.target === "equipmentImage" || entry.target === "equipmentIcon")).toHaveLength(4);
       expect(result.manifest.assets.filter((entry) => entry.target === "troopPreview")).toHaveLength(1);

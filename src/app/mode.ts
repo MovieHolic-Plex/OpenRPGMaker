@@ -7,6 +7,7 @@ import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { store } from "@/project/store";
 import { ensurePhaser } from "@/app/phaserRuntime";
+import { PLAY_RESOLUTION } from "@/player/playResolution";
 import {
   markInitialEditRender,
   markModeSwitch,
@@ -43,7 +44,10 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   root.append(topbar, main);
   elements = { root, topbar, main };
   mountPerfMetrics(root);
-  window.addEventListener(MAP_EDIT_HISTORY_EVENT, onMapEditHistoryChange);
+  // Node 환경(테스트)에서는 window가 없으므로 가드 — 브라우저 전용 리스너.
+  if (typeof window !== "undefined") {
+    window.addEventListener(MAP_EDIT_HISTORY_EVENT, onMapEditHistoryChange);
+  }
 
   await store.load();
 
@@ -142,8 +146,8 @@ export async function startPlayGame(
     pixelArt: true,
     scale: {
       mode: PhaserRuntime.Scale.NONE,
-      width: 320,
-      height: 240,
+      width: PLAY_RESOLUTION.width,
+      height: PLAY_RESOLUTION.height,
       parent,
     },
     scene: [PlayScene],

@@ -375,6 +375,22 @@ export interface TroopRecord {
 export interface StateRecord {
   id: StateId;
   name: string;
+  // RM2K3 상태(State) 편집 가능 필드 — 사용자가 DB 탭에서 재정의한 값.
+  // 값을 설정하지 않으면 ontology 기본값(stateOntologyFor)이 사용된다.
+  removalCondition?: string;
+  restriction?: string;
+  priority?: number;
+  accuracyModifier?: number;
+  animationIndex?: number;
+  recoverNaturallyFromTurn?: number;
+  recoverNaturallyChance?: number;
+  recoverWhenHitChance?: number;
+  hpReleaseTurn?: number;
+  hpReleaseStep?: number;
+  mpReleaseTurn?: number;
+  mpReleaseStep?: number;
+  specialFlags?: readonly string[];
+  lockedParameters?: readonly string[];
 }
 
 export interface BattleAnimationRecord {

@@ -2,6 +2,9 @@ node_modules/
 dist/
 .vite/
 .omo/*
+!.omo/evidence/
+.omo/evidence/*
+!.omo/evidence/rm2003-database-plan/
 !.omo/rules/
 !.omo/rules/**
 artifacts/

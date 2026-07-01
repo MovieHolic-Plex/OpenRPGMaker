@@ -141,7 +141,22 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
       }
       case "states": {
         const record = project.database.states.find((entry) => entry.id === id);
-        if (record && "name" in patch && patch.name !== undefined) record.name = patch.name;
+        if (!record) return;
+        if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+        if ("removalCondition" in patch) record.removalCondition = patch.removalCondition;
+        if ("restriction" in patch) record.restriction = patch.restriction;
+        if ("priority" in patch && patch.priority !== undefined) record.priority = patch.priority;
+        if ("accuracyModifier" in patch && patch.accuracyModifier !== undefined) record.accuracyModifier = patch.accuracyModifier;
+        if ("animationIndex" in patch && patch.animationIndex !== undefined) record.animationIndex = patch.animationIndex;
+        if ("recoverNaturallyFromTurn" in patch && patch.recoverNaturallyFromTurn !== undefined) record.recoverNaturallyFromTurn = patch.recoverNaturallyFromTurn;
+        if ("recoverNaturallyChance" in patch && patch.recoverNaturallyChance !== undefined) record.recoverNaturallyChance = patch.recoverNaturallyChance;
+        if ("recoverWhenHitChance" in patch && patch.recoverWhenHitChance !== undefined) record.recoverWhenHitChance = patch.recoverWhenHitChance;
+        if ("hpReleaseTurn" in patch && patch.hpReleaseTurn !== undefined) record.hpReleaseTurn = patch.hpReleaseTurn;
+        if ("hpReleaseStep" in patch && patch.hpReleaseStep !== undefined) record.hpReleaseStep = patch.hpReleaseStep;
+        if ("mpReleaseTurn" in patch && patch.mpReleaseTurn !== undefined) record.mpReleaseTurn = patch.mpReleaseTurn;
+        if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
+        if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
+        if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
         return;
       }
       case "battleAnimations": {
@@ -153,6 +168,8 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("scope" in patch && isBattleAnimationScope(patch.scope)) record.scope = patch.scope;
         if ("position" in patch && isBattleAnimationPosition(patch.position)) record.position = patch.position;
         if ("large" in patch && patch.large !== undefined) record.large = patch.large;
+        if ("frames" in patch && patch.frames !== undefined) record.frames = patch.frames;
+        if ("timings" in patch && patch.timings !== undefined) record.timings = patch.timings;
         return;
       }
     }

@@ -1,9 +1,15 @@
-import { stateOntologyFor, type StateOntology, type StateRateGrade } from "@/project/ontology/databaseStateOntology";
+import { numberField, selectLiteral } from "@/editor/panels/databaseControls";
+import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
+import type { StateRateGrade } from "@/project/ontology/databaseStateOntology";
 import { store } from "@/project/store";
 import type { StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
 const RATE_GRADES: readonly StateRateGrade[] = ["A", "B", "C", "D", "E"];
+
+const REMOVAL_OPTIONS = ["전투 종료 후 유지", "전투 종료", "피격 또는 전투 종료", "즉시 해제", "턴 경과"] as const;
+const RESTRICTION_OPTIONS = ["없음", "행동 불가", "아군에게 공격 불가", "스킬 사용 불가", "물리 공격 불가"] as const;
 
 export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HTMLElement {
   const database = store.getCurrent().database;
@@ -11,7 +17,10 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
   const referencingItems = database.items.filter((item) =>
     item.stateEffects?.some((effect) => effect.stateId === state.id)
   );
-  const ontology = stateOntologyFor(state.id, state.name);
+  // 사용자 재정의(record)를 우선, 없으면 ontology 기본값으로 병합.
+  const ontology = resolvedStateValues(state.id, state.name, state);
+  const baseOntology = stateOntologyFor(state.id, state.name);
+  const update = (patch: Partial<StateRecord>) => updateDatabaseRecord("states", state.id, patch);
 
   form.append(
     el("div", {
@@ -19,18 +28,32 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
       dataset: { testid: "db-states-rm2k3-workbench" },
       children: [
         panel("기본 설정", [
-          readonlyControl("해제 조건", ontology.removalCondition, "db-state-removal-condition"),
+          selectLiteral("해제 조건", "db-state-removal-condition", ontology.removalCondition, REMOVAL_OPTIONS, (removalCondition) =>
+            update({ removalCondition })
+          ),
           colorControl(ontology),
-          readonlyControl("우선도", String(ontology.rating), "db-state-rating"),
-          readonlyControl("제한", ontology.restriction, "db-state-restriction"),
+          numberField("우선도", "db-state-rating", ontology.rating, (priority) => update({ priority })),
+          selectLiteral("제한", "db-state-restriction", ontology.restriction, RESTRICTION_OPTIONS, (restriction) =>
+            update({ restriction })
+          ),
         ]),
-        panel("명중률 보정", [readonlyControl("성공률", `${ontology.accuracyModifier}%`, "db-state-accuracy")]),
-        panel("특수", specialFlags(ontology)),
+        panel("명중률 보정", [
+          numberField("성공률", "db-state-accuracy", ontology.accuracyModifier, (accuracyModifier) =>
+            update({ accuracyModifier })
+          ),
+        ]),
+        panel("특수", specialFlags(baseOntology, state, update)),
         panel("상태 유효도", rateRows(ontology)),
         panel("회복 방법", [
-          readonlyControl("자연 회복", `${ontology.recoverNaturallyFromTurn}턴부터`, "db-state-recover-turn"),
-          readonlyControl("회복 확률", `${ontology.recoverNaturallyChance}%`, "db-state-recover-chance"),
-          readonlyControl("피격 회복", `${ontology.recoverWhenHitChance}%`, "db-state-hit-recover"),
+          numberField("자연 회복(턴부터)", "db-state-recover-turn", ontology.recoverNaturallyFromTurn, (recoverNaturallyFromTurn) =>
+            update({ recoverNaturallyFromTurn })
+          ),
+          numberField("회복 확률(%)", "db-state-recover-chance", ontology.recoverNaturallyChance, (recoverNaturallyChance) =>
+            update({ recoverNaturallyChance })
+          ),
+          numberField("피격 회복(%)", "db-state-hit-recover", ontology.recoverWhenHitChance, (recoverWhenHitChance) =>
+            update({ recoverWhenHitChance })
+          ),
         ]),
         panel("행동 제한", [
           readonlyControl("능력치", ontology.actorStatus, "db-state-actor-status"),
@@ -38,20 +61,36 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           readonlyControl("고정 항목", ontology.lockedParameters.join(", ") || "없음", "db-state-locked-params"),
         ]),
         panel("HP", [
-          readonlyControl("전투 중", ontology.hpTurn, "db-state-hp-turn"),
-          readonlyControl("맵 이동", ontology.hpMove, "db-state-hp-move"),
+          numberField("전투 중(턴당%)", "db-state-hp-turn", numericRelease(state.hpReleaseTurn, baseOntology.hpTurn), (hpReleaseTurn) =>
+            update({ hpReleaseTurn })
+          ),
+          numberField("맵 이동(걸음당)", "db-state-hp-move", numericRelease(state.hpReleaseStep, baseOntology.hpMove), (hpReleaseStep) =>
+            update({ hpReleaseStep })
+          ),
         ]),
         panel("MP", [
-          readonlyControl("전투 중", ontology.mpTurn, "db-state-mp-turn"),
-          readonlyControl("맵 이동", ontology.mpMove, "db-state-mp-move"),
+          numberField("전투 중(턴당%)", "db-state-mp-turn", numericRelease(state.mpReleaseTurn, baseOntology.mpTurn), (mpReleaseTurn) =>
+            update({ mpReleaseTurn })
+          ),
+          numberField("맵 이동(걸음당)", "db-state-mp-move", numericRelease(state.mpReleaseStep, baseOntology.mpMove), (mpReleaseStep) =>
+            update({ mpReleaseStep })
+          ),
         ]),
-        animationPanel(ontology),
+        animationPanel(state, ontology, update),
         referencePanel(referencingSkills.map((skill) => `${skill.name} (${skill.id})`), referencingItems.map((item) => `${item.name} (${item.id})`)),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),
   );
   return form;
+}
+
+// ontology의 텍스트 형태(예: "매 턴 최대 HP의 -6%")에서 부호가 붙은 수치를 추출하거나,
+// 이미 숫자로 저장된 값을 그대로 반환. 사용자가 아직 편집하지 않았다면 ontology에서 파생.
+function numericRelease(value: number | undefined, ontologyText: string): number {
+  if (value !== undefined) return value;
+  const match = ontologyText.match(/-?\d+/);
+  return match ? Number(match[0]) : 0;
 }
 
 function panel(title: string, children: readonly HTMLElement[]): HTMLElement {
@@ -71,7 +110,7 @@ function readonlyControl(label: string, value: string, testid: string): HTMLElem
   });
 }
 
-function colorControl(ontology: StateOntology): HTMLElement {
+function colorControl(ontology: ReturnType<typeof stateOntologyFor>): HTMLElement {
   return el("label", {
     class: "db-state-control db-state-color-control",
     children: [
@@ -82,18 +121,29 @@ function colorControl(ontology: StateOntology): HTMLElement {
   });
 }
 
-function specialFlags(ontology: StateOntology): HTMLElement[] {
-  const flags = ontology.specialFlags.length ? ontology.specialFlags : ["100% 회피", "마법 반사", "장비 고정"];
-  return flags.map((flag) => {
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.checked = ontology.specialFlags.includes(flag);
-    input.disabled = true;
+// 특수 플래그 — ontology에서 파생된 후보에 대해 현재 record의 선택 상태를 반영.
+const ALL_FLAGS = ["100% 회피", "마법 반사", "장비 고정", "회피 불가", "장비 고정 영향 없음"] as const;
+
+function specialFlags(
+  baseOntology: ReturnType<typeof stateOntologyFor>,
+  state: StateRecord,
+  update: (patch: Partial<StateRecord>) => void
+): HTMLElement[] {
+  const active = new Set(state.specialFlags ?? baseOntology.specialFlags);
+  return ALL_FLAGS.map((flag) => {
+    const input = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
+    input.checked = active.has(flag);
+    input.addEventListener("change", () => {
+      const next = new Set(active);
+      if (input.checked) next.add(flag);
+      else next.delete(flag);
+      update({ specialFlags: [...next] });
+    });
     return el("label", { class: "db-state-check", children: [input, el("span", { text: flag })] });
   });
 }
 
-function rateRows(ontology: StateOntology): HTMLElement[] {
+function rateRows(ontology: ReturnType<typeof stateOntologyFor>): HTMLElement[] {
   return RATE_GRADES.map((grade) =>
     el("div", {
       class: `db-state-rate-row grade-${grade.toLowerCase()}`,
@@ -103,10 +153,15 @@ function rateRows(ontology: StateOntology): HTMLElement[] {
   );
 }
 
-function animationPanel(ontology: StateOntology): HTMLElement {
+function animationPanel(
+  state: StateRecord,
+  ontology: ReturnType<typeof stateOntologyFor>,
+  update: (patch: Partial<StateRecord>) => void
+): HTMLElement {
+  const index = state.animationIndex ?? ontology.animationIndex;
   return panel("애니메이션", [
     el("div", { class: "db-state-animation-preview", text: "상태" }),
-    readonlyControl("번호", String(ontology.animationIndex), "db-state-animation-index"),
+    numberField("번호", "db-state-animation-index", index, (animationIndex) => update({ animationIndex })),
   ]);
 }
 

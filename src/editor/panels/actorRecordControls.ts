@@ -11,6 +11,7 @@ import { field } from "@/editor/panels/databaseControls";
 import { store } from "@/project/store";
 import type { ActorRateGrade } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 type GraphicPreviewKind = "battleCharset" | "charset" | "faceset";
 
@@ -41,7 +42,7 @@ function neutralActorResourceSlot(resourceId: string): HTMLElement {
   const isGenerated = isGeneratedActorPreviewResource(resourceId);
   const label = isGenerated ? "설정..." : resourceId;
   const labelNode = isGenerated
-    ? el("button", { class: "actor-resource-set-button", attrs: { type: "button", "aria-label": "배우 리소스 선택" }, text: label })
+    ? el("button", { class: "actor-resource-set-button", attrs: { type: "button", "aria-label": "배우 리소스 선택 (준비 중)" }, text: label, on: { click: () => toast("배우 리소스 선택은 준비 중입니다. 리소스 ID 필드에서 직접 지정하세요.", "info") } })
     : el("strong", { text: label });
   return el("div", {
     class: `actor-neutral-resource-slot${isGenerated ? " generated" : ""}`,

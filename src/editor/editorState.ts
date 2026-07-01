@@ -4,13 +4,20 @@
 // 상세 설계: docs/specs/2026-06-18-rm2k3-overhaul-design.md 3.1.
 
 import type { MapId } from "@/project/types";
+import type { StructureStampId } from "@/editor/structureStampTools";
+import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import type { TileStampId } from "@/editor/tileStampBrushes";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
 export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
+export type AutoConnectMode = boolean;
+export type ActiveStampId = TileStampId | null;
+export type ActiveStructureStampId = StructureStampId | null;
+export type ActivePaletteStamp = PaletteStamp | null;
 export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
-export const EDITOR_BRUSH_SIZES = [1, 3, 5] as const;
+export const EDITOR_BRUSH_SIZES = [1, 2, 3, 4] as const;
 export type EditorBrushSize = typeof EDITOR_BRUSH_SIZES[number];
 
 export interface TileSelection {
@@ -37,10 +44,18 @@ export interface EditorState {
   layer: Layer;
   paintShape: PaintShape;
   selectedTile: number;
+  autoConnectMode: AutoConnectMode;
+  activeStampId: ActiveStampId;
+  activeStructureStampId: ActiveStructureStampId;
+  activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
   selectedEventPageId: string | null;
   selection: TileSelection | null;
   clipboard: TileClipboard | null;
+  showGrid: boolean;
+  // 배틀 애니메이션 에디터 — 현재 편집 중인 애니메이션의 선택 프레임/셀 인덱스.
+  selectedAnimationFrameIndex: number;
+  selectedAnimationCellIndex: number;
 }
 
 type Listener = (s: EditorState) => void;
@@ -52,12 +67,19 @@ class EditorStateStore {
     zoom: 2,
     layer: "lower",
     paintShape: "pen",
-    selectedTile: 0,
+    selectedTile: 360,
+    autoConnectMode: true,
+    activeStampId: null,
+    activeStructureStampId: null,
+    activePaletteStamp: null,
     brushSize: 1,
     selectedEventId: null,
     selectedEventPageId: null,
     selection: null,
     clipboard: null,
+    showGrid: true,
+    selectedAnimationFrameIndex: 0,
+    selectedAnimationCellIndex: 0,
   };
   private listeners = new Set<Listener>();
 

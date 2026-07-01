@@ -295,10 +295,13 @@ describe("Database actions", () => {
     bulkRenameVariables(1, 2, "Puzzle");
 
     const project = store.getCurrent();
-    expect(project.switches.map((entry) => entry.name)).toEqual(["Gate 0001", "Gate 0002", "Gate 0003"]);
-    expect(project.variables.map((entry) => entry.name)).toEqual(["Puzzle 0001", "Puzzle 0002"]);
-    expect(new Set(project.switches.map((entry) => entry.id)).size).toBe(3);
-    expect(new Set(project.variables.map((entry) => entry.id)).size).toBe(2);
+    // 프로젝트는 RM2K3 관례대로 사전 시드된 1000개 슬롯을 가진다.
+    // bulkRename은 지정한 범위(1~3 / 1~2)만 이름을 바꾼다.
+    expect(project.switches.slice(0, 3).map((entry) => entry.name)).toEqual(["Gate 0001", "Gate 0002", "Gate 0003"]);
+    expect(project.variables.slice(0, 2).map((entry) => entry.name)).toEqual(["Puzzle 0001", "Puzzle 0002"]);
+    // 시드된 슬롯 전체의 id는 고유해야 한다.
+    expect(new Set(project.switches.map((entry) => entry.id)).size).toBe(project.switches.length);
+    expect(new Set(project.variables.map((entry) => entry.id)).size).toBe(project.variables.length);
   });
 
   it("rejects malformed v3 database references with an actionable message", () => {

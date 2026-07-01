@@ -5,6 +5,7 @@ import { charsetFrameSource, EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp"
 import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { classCurveCards } from "./databaseClassCurveEditors";
 import { renderClassExperiencePanel } from "./databaseClassExperienceCurveEditor";
 
@@ -110,7 +111,7 @@ function battleCommandControls(record: ClassRecord): HTMLElement[] {
     }
     return el("div", { class: "db-class-command-row", children: [name, kind] });
   });
-  return [el("button", { class: "db-class-set-button", text: "설정", attrs: { type: "button" } }), el("div", { class: "db-class-command-rows", children: rows })];
+  return [el("button", { class: "db-class-set-button", text: "설정", attrs: { type: "button", title: "명령 순서 편집 (준비 중)" }, on: { click: () => toast("전투 명령 순서 편집은 준비 중입니다. 각 행에서 직접 이름과 종류를 편집하세요.", "info") } }), el("div", { class: "db-class-command-rows", children: rows })];
 }
 
 function optionControls(record: ClassRecord): HTMLElement[] {

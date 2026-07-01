@@ -9,7 +9,7 @@ import { editorState } from "@/editor/editorState";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "@/project/defaults/roadAutotile";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import { isHarnessStackableTile } from "@/project/tilesetHarness";
 import { tileStackAt } from "@/project/mapOverlayTiles";
@@ -219,13 +219,13 @@ describe("map edit commands", () => {
     const grandChildMapId = addMap("Basement");
 
     moveMapInTree(grandChildMapId, childMapId);
-    setTerrainTag("tiles_default", TILE.WATER, 7);
+    setTerrainTag(DEFAULT_TILESET_ID, TILE.WATER, 7);
 
     const current = store.getCurrent();
     expect(current.mapTree.children.some((node) => node.mapId === childMapId)).toBe(true);
     const childNode = current.mapTree.children.find((node) => node.mapId === childMapId);
     expect(childNode?.children.some((node) => node.mapId === grandChildMapId)).toBe(true);
     expect(current.mapTree.mapId).toBe(rootMapId);
-    expect(current.tilesets.tiles_default.terrain[TILE.WATER]).toBe(7);
+    expect(current.tilesets[DEFAULT_TILESET_ID].terrain[TILE.WATER]).toBe(7);
   });
 });

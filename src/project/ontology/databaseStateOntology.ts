@@ -142,3 +142,48 @@ export function stateOntologyFor(id: StateId, name: string): StateOntology {
     summary: `${name || "새 상태"} 상태의 기본 온톨로지 템플릿입니다.`,
   };
 }
+
+// 편집 가능한 StateRecord 필드 타입 — 폼에서 사용자가 재정의할 수 있는 항목.
+export type EditableStateFields = {
+  removalCondition?: string;
+  restriction?: string;
+  priority?: number;
+  accuracyModifier?: number;
+  animationIndex?: number;
+  recoverNaturallyFromTurn?: number;
+  recoverNaturallyChance?: number;
+  recoverWhenHitChance?: number;
+  hpReleaseTurn?: number;
+  hpReleaseStep?: number;
+  mpReleaseTurn?: number;
+  mpReleaseStep?: number;
+  specialFlags?: readonly string[];
+  lockedParameters?: readonly string[];
+};
+
+// 뷰에서 사용자 재정의(record)를 우선하고, 없으면 ontology 기본값으로 병합.
+// record의 필드는 ontology와 다른 스키마(hpReleaseTurn 등)를 가지므로 매핑이 필요하다.
+export function resolvedStateValues(
+  id: StateId,
+  name: string,
+  record: Partial<EditableStateFields>
+): StateOntology {
+  const base = stateOntologyFor(id, name);
+  return {
+    ...base,
+    removalCondition: record.removalCondition ?? base.removalCondition,
+    restriction: record.restriction ?? base.restriction,
+    rating: record.priority ?? base.rating,
+    accuracyModifier: record.accuracyModifier ?? base.accuracyModifier,
+    animationIndex: record.animationIndex ?? base.animationIndex,
+    recoverNaturallyFromTurn: record.recoverNaturallyFromTurn ?? base.recoverNaturallyFromTurn,
+    recoverNaturallyChance: record.recoverNaturallyChance ?? base.recoverNaturallyChance,
+    recoverWhenHitChance: record.recoverWhenHitChance ?? base.recoverWhenHitChance,
+    specialFlags: record.specialFlags ?? base.specialFlags,
+    lockedParameters: record.lockedParameters ?? base.lockedParameters,
+    hpTurn: record.hpReleaseTurn !== undefined ? `${record.hpReleaseTurn}` : base.hpTurn,
+    hpMove: record.hpReleaseStep !== undefined ? `${record.hpReleaseStep}` : base.hpMove,
+    mpTurn: record.mpReleaseTurn !== undefined ? `${record.mpReleaseTurn}` : base.mpTurn,
+    mpMove: record.mpReleaseStep !== undefined ? `${record.mpReleaseStep}` : base.mpMove,
+  };
+}

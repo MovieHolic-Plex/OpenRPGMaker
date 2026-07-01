@@ -7,7 +7,7 @@ import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
-export { editorEventMarkerTexture, eventMarkerTileScale } from "@/editor/editSceneEventMarkers";
+export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
 const DEFAULT_GRID_COLOR = 0xffffff;
 const DEFAULT_GRID_ALPHA = 0.08;
@@ -46,7 +46,7 @@ export function renderEditScene(context: EditSceneRenderContext): void {
   renderTiles(context, map, mapOnlyCapture);
   if (mapOnlyCapture) return;
   if (state.tool === "collision") renderCollisionOverlay(context, map);
-  renderGrid(context.gridGraphics, map, state.layer);
+  if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
   renderStartPosition(context);
   renderEventMarkers(context, map, state.layer);
   renderSelection(context);

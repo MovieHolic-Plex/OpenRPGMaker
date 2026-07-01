@@ -1,6 +1,9 @@
+import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 let dialogId = 0;
+export const FACESET_FACE_COUNT = RESOURCE_SLICING.faceset.count;
 
 export function dialogForm(testId: string): HTMLFormElement {
   const form = document.createElement("form");
@@ -62,25 +65,32 @@ export function actionRow(okTestId: string, close: () => void): HTMLElement {
     children: [
       el("button", {
         class: "event-command-text-action primary",
-        text: "OK",
+        text: "확인",
         attrs: { type: "submit" },
         dataset: { testid: okTestId },
       }),
       el("button", {
         class: "event-command-text-action",
-        text: "Cancel",
+        text: "취소",
         attrs: { type: "button" },
         on: { click: close },
       }),
       el("button", {
         class: "event-command-text-action",
-        text: "Help",
+        text: "도움말",
         attrs: { type: "button" },
+        on: {
+          click: () =>
+            toast(
+              "메시지 명령: \\C[n] 색상, \\N[n] 배우 이름, \\V[n] 변수, \\G 골드, \\S[n] 속도, \\\\는 백슬래시. 줄바꿈으로 여러 줄 입력.",
+              "info"
+            ),
+        },
       }),
     ],
   });
 }
 
 export function clampFaceIndex(value: string): number {
-  return Math.max(0, Math.min(15, (parseInt(value, 10) || 1) - 1));
+  return Math.max(0, Math.min(FACESET_FACE_COUNT - 1, (parseInt(value, 10) || 1) - 1));
 }

@@ -1,33 +1,91 @@
 import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
+import type { PassFlag, TilesetDef } from "@/project/types";
+import { setTilePassageBulk, setTilePassageFlag, setTerrainTag } from "@/editor/tilesetActions";
 import { el } from "@/util/dom";
 
-export function renderTileMappingInspector(selectedTile: number): HTMLElement {
+// 타일 매핑 인스펙터 — 선택한 타일의 메타데이터(표시 전용)와
+// 통행(passability)/지형(terrain) 편집(저장 가능)을 함께 제공.
+// tilePalette.ts에서 현재 tileset을 넘겨받아 passability/terrain을 직접 편집한다.
+export function renderTileMappingInspector(selectedTile: number, tileset?: TilesetDef): HTMLElement {
   const tile = describeChipsetTile(selectedTile);
   const root = el("div", {
     class: "tile-mapping-inspector",
     dataset: { testid: "tile-mapping-inspector" },
   });
   root.append(el("div", { class: "tile-mapping-title", text: `#${tileDisplayLabelForIndex(tile.index)}` }));
-  root.append(el("div", { class: "tile-mapping-meta", text: `키: ${tile.key}` }));
-  root.append(el("div", { class: "tile-mapping-meta", text: `AI 라벨: ${tile.aiLabel}` }));
-  root.append(el("div", { class: "tile-mapping-meta", text: `열 ${tile.column}, 행 ${tile.row}` }));
-  root.append(
-    el("div", {
-      class: "tile-mapping-meta",
-      text: `${layerLabel(tile.layer)} / ${passageLabel(tile.passage)} / 지형 ${tile.terrainTag} / ${repeatRoleLabel(tile.repeatRole)} / ${usageLabel(tile.usage)}`,
-    })
-  );
-  root.append(el("div", { class: "tile-mapping-meta", text: `태그(AI): ${tile.tags.join(", ")}` }));
-  root.append(el("div", { class: "tile-mapping-meta", text: tile.confirmed ? "매핑 확정" : "매핑 미확정" }));
+
+  // AI 매핑 메타데이터 — 읽기 전용(AI가 생성한 의미론적 라벨).
+  const meta = el("div", { class: "tile-mapping-meta-group" });
+  meta.append(el("div", { class: "tile-mapping-meta", text: `키: ${tile.key}` }));
+  meta.append(el("div", { class: "tile-mapping-meta", text: `AI 라벨: ${tile.aiLabel}` }));
+  meta.append(el("div", { class: "tile-mapping-meta", text: `열 ${tile.column}, 행 ${tile.row}` }));
+  meta.append(el("div", { class: "tile-mapping-meta", text: `${repeatRoleLabel(tile.repeatRole)} / ${usageLabel(tile.usage)}` }));
+  meta.append(el("div", { class: "tile-mapping-meta", text: `태그(AI): ${tile.tags.join(", ")}` }));
+  meta.append(el("div", { class: "tile-mapping-meta", text: tile.confirmed ? "매핑 확정" : "매핑 미확정" }));
+  root.append(meta);
+
+  // 편집 가능 섹션 — tileset이 제공된 경우에만 노출.
+  if (tileset) {
+    root.append(passageEditor(tileset, selectedTile));
+    root.append(terrainEditor(tileset, selectedTile));
+  }
   return root;
 }
 
-function layerLabel(layer: "lower" | "upper"): string {
-  return layer === "lower" ? "하층" : "상층";
+// 통행(passability) 편집 — 4방향 체크박스. 타일셋의 passability[selectedTile]를 직접 수정.
+function passageEditor(tileset: TilesetDef, tileIndex: number): HTMLElement {
+  const current: PassFlag = tileset.passability[tileIndex] ?? { up: true, down: true, left: true, right: true };
+  const section = el("div", { class: "tile-mapping-passage", dataset: { testid: "tile-mapping-passage" } });
+  section.append(el("div", { class: "tile-mapping-section-title", text: "통행 설정" }));
+
+  const grid = el("div", { class: "tile-mapping-passage-grid" });
+  const directions: ReadonlyArray<{ key: keyof PassFlag; label: string; testid: string }> = [
+    { key: "up", label: "상", testid: "passage-up" },
+    { key: "left", label: "좌", testid: "passage-left" },
+    { key: "down", label: "하", testid: "passage-down" },
+    { key: "right", label: "우", testid: "passage-right" },
+  ];
+  for (const dir of directions) {
+    const input = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
+    input.checked = !!current[dir.key];
+    input.dataset.testid = dir.testid;
+    input.addEventListener("change", () => setTilePassageFlag(tileset.id, tileIndex, dir.key, input.checked));
+    grid.append(el("label", { class: "tile-mapping-passage-cell", children: [input, el("span", { text: dir.label })] }));
+  }
+  section.append(grid);
+
+  // 전체 통과 / 전체 막힘 단축 버튼.
+  const bulk = el("div", { class: "tile-mapping-passage-bulk" });
+  const openAll = el("button", { class: "btn btn-mini", text: "전체 통과", attrs: { type: "button" }, dataset: { testid: "passage-open-all" } });
+  openAll.addEventListener("click", () => setTilePassageBulk(tileset.id, tileIndex, true));
+  const closeAll = el("button", { class: "btn btn-mini", text: "전체 막힘", attrs: { type: "button" }, dataset: { testid: "passage-close-all" } });
+  closeAll.addEventListener("click", () => setTilePassageBulk(tileset.id, tileIndex, false));
+  bulk.append(openAll, closeAll);
+  section.append(bulk);
+  return section;
 }
 
-function passageLabel(passage: "passable" | "solid"): string {
-  return passage === "passable" ? "통행 가능" : "통행 불가";
+// 지형(terrain) 태그 편집 — 인라인 입력. tilePalette의 makeTerrainEditor와 동일 동작.
+function terrainEditor(tileset: TilesetDef, tileIndex: number): HTMLElement {
+  const section = el("div", { class: "tile-mapping-terrain", dataset: { testid: "tile-mapping-terrain" } });
+  section.append(el("div", { class: "tile-mapping-section-title", text: "지형 태그" }));
+  const current = tileset.terrain[tileIndex] ?? 0;
+  const input = el("input", {
+    attrs: { type: "number", min: "0", max: "99" },
+    value: String(current),
+    dataset: { testid: "inspector-terrain-tag-input" },
+  }) as HTMLInputElement;
+  const button = el("button", {
+    class: "btn btn-mini",
+    text: "적용",
+    dataset: { testid: "inspector-terrain-tag-apply" },
+    on: {
+      click: () => setTerrainTag(tileset.id, tileIndex, parseInt(input.value, 10) || 0),
+    },
+  });
+  const row = el("div", { class: "tile-mapping-terrain-row", children: [input, button] });
+  section.append(row);
+  return section;
 }
 
 function repeatRoleLabel(role: "body" | "variant" | "detail" | "edge" | "object" | "single"): string {

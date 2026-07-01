@@ -266,6 +266,28 @@
       }
     },
     {
+      "id": "monster-sylph-hornet",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt": "Original sylph hornet monster, wasp-like winged sprite, readable compact silhouette, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/rm2k3-generated-assets-execution/raw/monster-sylph-hornet-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/sylph-hornet-transparent.png",
+      "resourceId": "generated-enemy-sylph-hornet",
+      "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "rm2k3-generated-assets-wave1-v1",
+        "createdAt": "2026-06-29T09:06:00.000+09:00"
+      }
+    },
+    {
       "id": "potion-red-image",
       "target": "itemImage",
       "resourceKind": "picture",
