@@ -1,9 +1,0 @@
-{
-  "name": "browser-evidence-button",
-  "route": "/?freshProject=1&evidenceButton=1",
-  "acceptance": [
-    "browse real editor UI",
-    "click toolbar evidence button",
-    "capture desktop and mobile screenshots"
-  ]
-}

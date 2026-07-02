@@ -1,5 +1,0 @@
-Error: canvas play-canvas stayed blank or unmeasurable; last screenshot bytes=2884
-    at expectVisibleCanvasPixels (file:///C:/Users/hyeon/Downloads/rpg-zzu/output/evidence/css-refactor-under-1000/capture-css-refactor-evidence.mjs:290:9)
-    at async captureRuntimeTitleAndBattle (file:///C:/Users/hyeon/Downloads/rpg-zzu/output/evidence/css-refactor-under-1000/capture-css-refactor-evidence.mjs:254:3)
-    at async main (file:///C:/Users/hyeon/Downloads/rpg-zzu/output/evidence/css-refactor-under-1000/capture-css-refactor-evidence.mjs:66:5)
-exit=1
