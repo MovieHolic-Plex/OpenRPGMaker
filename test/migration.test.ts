@@ -216,7 +216,7 @@ describe("deserialize — v2/v3 검증", () => {
               { kind: "turnRelative", turn: "leftOrRight90" },
               { kind: "jump", dx: 2, dy: -1 },
               { kind: "setSwitch", switchId: "sw_route", value: true },
-              { kind: "changeGraphic", spriteId: "npc_villager" },
+              { kind: "changeGraphic", spriteId: "tex_easyrpg_charset_people1" },
               { kind: "playSe", resourceId: "se_route_chime" },
             ],
           },

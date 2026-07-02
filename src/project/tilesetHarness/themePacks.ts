@@ -10,6 +10,25 @@ export const INTERIOR_METADATA_PACK_VERSION = "1";
 export const INTERIOR_TEXTURE_KEY = "tex_easyrpg_chipset_interior";
 export const INTERIOR_HARNESS_PREFIX = "harness-interior-house-v1-";
 
+const INTERIOR_TRANSPARENT_PROP_TILES = [
+  24, 25, 26, 27, 28, 29,
+  54, 55, 56, 57, 58, 59,
+  84, 85, 86, 87, 88, 89,
+  114, 115, 117, 118, 119,
+  144, 145, 147, 148, 149,
+  174, 175, 176, 177, 178, 179,
+  204, 205, 206, 207, 208, 209,
+  234, 235, 236, 237, 238, 239,
+  259, 260, 261, 262, 263, 265, 266, 267, 268, 269,
+  288, 289, 290, 291, 292, 293, 294, 296, 297, 298, 299,
+  318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
+  348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 359,
+  378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389,
+  408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419,
+  438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449,
+  468, 469, 470, 471, 472, 473, 476, 477, 479,
+] as const;
+
 type PackHarnessGroup = Omit<TileGroupMetadata, "tileIds"> & {
   readonly passage: NonNullable<TileAiMetadata["passage"]>;
   readonly repeatability: NonNullable<TileAiMetadata["repeatability"]>;
@@ -37,8 +56,8 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
 export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "floor", "실내 바닥", "terrain", "lower", [270, 271, 300, 301], "passable", "repeat", "실내 방을 채우는 통행 가능한 바닥입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "wall", "실내 벽", "wall", "lower", [1, 2, 3, 31, 32, 33], "solid", "repeat", "방 외곽을 막는 실내 벽입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "room-trim", "실내 구조/가구", "building", "lower", [84, 85, 86, 114, 115, 116], "solid", "fixed", "방 가장자리와 가구 배치를 위한 비통행 실내 구조물입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "decor", "실내 장식", "prop", "mixed", [210, 211, 240, 241], "solid", "fixed", "실내 미리보기에 배치할 수 있는 장식 소품입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "room-trim", "실내 구조", "building", "lower", [116], "solid", "fixed", "방 가장자리와 고정 구조물 배치를 위한 비통행 실내 구조물입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "transparent-props", "실내 투명 배경 소품", "prop", "upper", INTERIOR_TRANSPARENT_PROP_TILES, "passable", "fixed", "분홍 투명 배경을 가진 실내 가구와 장식입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
 
 const THEME_PACKS: readonly ThemeMetadataPack[] = [

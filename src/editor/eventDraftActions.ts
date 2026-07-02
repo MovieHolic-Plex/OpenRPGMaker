@@ -17,6 +17,7 @@ export function createEventDraft(
   trigger: Trigger = { kind: "action" }
 ): string {
   let newId = "";
+  let selectedPageId: string | null = null;
   store.update((project) => {
     const map = project.maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
@@ -24,30 +25,39 @@ export function createEventDraft(
     event.draft = { kind: "new" };
     map.events.push(event);
     newId = event.id;
+    selectedPageId = event.pages?.[event.pages.length - 1]?.id ?? null;
   });
+  if (newId) {
+    editorState.set({ selectedEventId: newId, selectedEventPageId: selectedPageId });
+  }
   return newId;
 }
 
 export function beginExistingEventDraft(mapId: MapId, eventId: string): boolean {
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event || event.draft?.kind === "new") return false;
-  if (event.draft?.kind === "edit") return true;
+  if (event.draft?.kind === "edit") {
+    selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
+    return true;
+  }
   let opened = false;
   store.update((project) => {
     opened = beginEventEditDraft(project, mapId, eventId);
   });
+  if (opened) selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
   return opened;
 }
 
 export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null {
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event?.draft) return null;
+  const preferredPageId = editorState.get().selectedEventPageId;
   recordProjectSnapshot();
   let diff: EventDiff | null = null;
   store.update((project) => {
     diff = commitEventDraft(project, mapId, eventId);
   });
-  selectCommittedEvent(mapId, eventId);
+  selectEventPage(mapId, eventId, preferredPageId);
   return diff;
 }
 
@@ -62,19 +72,21 @@ export function discardEventDraft(mapId: MapId, eventId: string): boolean {
     editorState.set({ selectedEventId: null, selectedEventPageId: null });
     return discarded;
   }
-  selectCommittedEvent(mapId, eventId);
+  selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
   return discarded;
 }
 
-function selectCommittedEvent(mapId: MapId, eventId: string): void {
+function selectEventPage(mapId: MapId, eventId: string, preferredPageId: string | null): void {
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
+  const pageId = event ? selectedPageId(event, preferredPageId) : null;
   editorState.set({
     selectedEventId: event ? eventId : null,
-    selectedEventPageId: event ? latestPageId(event) : null,
+    selectedEventPageId: pageId,
   });
 }
 
-function latestPageId(event: GameEvent): string | null {
+function selectedPageId(event: GameEvent, preferredPageId: string | null): string | null {
   const pages = event.pages ?? [];
-  return pages[pages.length - 1]?.id ?? null;
+  if (preferredPageId && pages.some((page) => page.id === preferredPageId)) return preferredPageId;
+  return pages[0]?.id ?? null;
 }

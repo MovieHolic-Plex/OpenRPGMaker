@@ -20,7 +20,12 @@ export function renderTitleScreen(project: Project, actions: TitleScreenActions,
     dataset: { testid: "title-screen" },
   });
   applyTitleScreenBackground(title, backgroundResourceId);
-  title.append(renderTitle(settings), renderMenu(settings, actions, selectedIndex), titleSelectionDebug(selectedIndex));
+  title.append(
+    renderTitle(settings),
+    renderMenu(settings, actions, selectedIndex),
+    renderInputHint(),
+    titleSelectionDebug(selectedIndex)
+  );
   return title;
 }
 
@@ -37,7 +42,7 @@ function renderTitle(settings: TitleScreenSettings): HTMLElement {
 function renderMenu(settings: TitleScreenSettings, actions: TitleScreenActions, selectedIndex: number): HTMLElement {
   const menu = el("div", {
     class: "rm-title-menu",
-    attrs: { role: "menu", "aria-label": "게임 시작 메뉴" },
+    attrs: { "aria-label": "게임 시작 메뉴" },
   });
   menu.style.left = logicalX(settings.layout.menuX);
   menu.style.top = logicalY(settings.layout.menuY);
@@ -50,12 +55,22 @@ function renderMenu(settings: TitleScreenSettings, actions: TitleScreenActions, 
 }
 
 function titleButton(label: string, testId: string, selected: boolean, onClick: () => void): HTMLButtonElement {
+  const attrs: Record<string, string> = { type: "button" };
+  if (selected) attrs["aria-current"] = "true";
   return el("button", {
     class: `rm-title-menu-button ${selected ? "primary selected" : ""}`.trim(),
     text: label,
-    attrs: { role: "menuitem", type: "button" },
+    attrs,
     dataset: { testid: testId },
     on: { click: onClick },
+  });
+}
+
+function renderInputHint(): HTMLElement {
+  return el("div", {
+    class: "rm-title-input-hint",
+    text: "Enter 선택   Esc 취소",
+    dataset: { testid: "title-input-hint" },
   });
 }
 

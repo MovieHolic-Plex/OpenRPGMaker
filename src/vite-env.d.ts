@@ -40,8 +40,15 @@ type RpgZzuRuntimeJuiceLogEntry = {
   readonly durationMs: number;
 };
 
+type RpgZzuCameraDebug = {
+  readonly height: number;
+  readonly width: number;
+  readonly zoom: number;
+};
+
 interface Window {
   __RPG_ZZU_E2E_PROJECT__?: unknown;
+  __rpgzzuCamera?: () => RpgZzuCameraDebug;
   __rpgzzuJuiceLog?: () => readonly RpgZzuRuntimeJuiceLogEntry[];
   __rpgzzuInput?: {
     readonly action: () => void;

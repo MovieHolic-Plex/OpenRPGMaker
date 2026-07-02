@@ -1,0 +1,419 @@
+.rm-tool-icon-database::before {
+  background: #d6e5f2;
+  border: 1px solid #1f4b6e;
+  box-shadow: 0 4px 0 #b8c9d8, 0 8px 0 #9badbc;
+  height: 3px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+.rm-tool-icon-database::after {
+  background: #2e6f9e;
+  height: 2px;
+  left: 4px;
+  top: 13px;
+  width: 8px;
+}
+
+.rm-tool-icon-resources::before {
+  background: #f2f2f2;
+  border: 1px solid #333333;
+  box-shadow: inset 0 0 0 2px #7bc0c8;
+  height: 11px;
+  left: 2px;
+  top: 2px;
+  width: 12px;
+}
+
+.rm-tool-icon-resources::after {
+  background: #c43a3a;
+  box-shadow: 4px 0 0 #f5d04a, 8px 0 0 #2f8a43;
+  height: 3px;
+  left: 4px;
+  top: 5px;
+  width: 3px;
+}
+
+.rm-tool-icon-play::before {
+  border-bottom: 7px solid transparent;
+  border-left: 10px solid #d87b22;
+  border-top: 7px solid transparent;
+  filter: drop-shadow(1px 1px 0 #6f3c12);
+  left: 4px;
+  top: 1px;
+}
+
+.rm-tool-icon-zoom-1::before,
+.rm-tool-icon-zoom-2::before,
+.rm-tool-icon-zoom-4::before,
+.rm-tool-icon-zoom-8::before {
+  color: #45288f;
+  content: attr(class);
+  font: 700 13px/16px "Cascadia Mono", Consolas, monospace;
+  height: 16px;
+  left: 0;
+  overflow: hidden;
+  text-indent: -999px;
+  top: 0;
+  width: 16px;
+}
+
+.rm-tool-icon-zoom-1::after,
+.rm-tool-icon-zoom-2::after,
+.rm-tool-icon-zoom-4::after,
+.rm-tool-icon-zoom-8::after {
+  color: #45288f;
+  font: 700 13px/16px "Cascadia Mono", Consolas, monospace;
+  height: 16px;
+  left: 1px;
+  top: 0;
+  width: 16px;
+}
+
+.rm-tool-icon-zoom-1::after {
+  content: "1";
+}
+
+.rm-tool-icon-zoom-2::after {
+  content: "2";
+}
+
+.rm-tool-icon-zoom-4::after {
+  content: "4";
+}
+
+.rm-tool-icon-zoom-8::after {
+  content: "8";
+}
+
+.rm-tool-icon-pencil::before {
+  background: #f7d77a;
+  height: 12px;
+  left: 7px;
+  top: 2px;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+.rm-tool-icon-pencil::after {
+  background: #1b1b1b;
+  box-shadow: -2px -2px 0 #a13b32;
+  height: 3px;
+  left: 3px;
+  top: 11px;
+  transform: rotate(45deg);
+  width: 6px;
+}
+
+.rm-tool-icon-bucket::before {
+  background: #7f8790;
+  border: 1px solid #1b1b1b;
+  height: 7px;
+  left: 3px;
+  top: 4px;
+  transform: skewX(-14deg);
+  width: 9px;
+}
+
+.rm-tool-icon-bucket::after {
+  background: #2e6f9e;
+  box-shadow: 2px 2px 0 #2e6f9e, 5px 3px 0 #2e6f9e;
+  height: 3px;
+  left: 7px;
+  top: 11px;
+  width: 3px;
+}
+
+.rm-tool-icon-dropper::before {
+  background: #d9e8f6;
+  border: 1px solid #1b1b1b;
+  height: 11px;
+  left: 7px;
+  top: 2px;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+.rm-tool-icon-dropper::after {
+  background: #2e6f9e;
+  height: 3px;
+  left: 2px;
+  top: 12px;
+  width: 5px;
+}
+
+.rm-tool-icon-hand::before {
+  background: #f3c984;
+  box-shadow:
+    3px -3px 0 #f3c984,
+    6px -3px 0 #f3c984,
+    9px -1px 0 #f3c984,
+    2px 4px 0 #c88945,
+    5px 5px 0 #c88945;
+  height: 8px;
+  left: 2px;
+  top: 5px;
+  width: 10px;
+}
+
+.rm-tool-icon-hand::after {
+  border: 1px solid #1b1b1b;
+  height: 10px;
+  left: 1px;
+  top: 3px;
+  width: 12px;
+}
+
+.rm-tool-icon-select::before {
+  border: 1px dashed #1b1b1b;
+  height: 11px;
+  left: 2px;
+  top: 2px;
+  width: 11px;
+}
+
+.rm-tool-icon-select::after {
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid #ffffff;
+  border-top: 5px solid transparent;
+  filter: drop-shadow(1px 1px 0 #111111);
+  height: 0;
+  left: 7px;
+  top: 7px;
+  width: 0;
+}
+
+.rm-tool-icon-collision::before {
+  background: #a33a32;
+  box-shadow:
+    3px 3px 0 #a33a32,
+    6px 6px 0 #a33a32,
+    9px 9px 0 #a33a32,
+    9px 0 0 #a33a32,
+    6px 3px 0 #a33a32,
+    3px 6px 0 #a33a32,
+    0 9px 0 #a33a32;
+  height: 3px;
+  left: 2px;
+  top: 2px;
+  width: 3px;
+}
+
+.rm-tool-icon-collision::after {
+  border: 1px solid #1b1b1b;
+  height: 11px;
+  left: 1px;
+  top: 1px;
+  width: 11px;
+}
+
+.rm-tool-icon-event::before {
+  background: #7c4fd6;
+  border: 1px solid #1b1b1b;
+  height: 9px;
+  left: 4px;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 9px;
+}
+
+.rm-tool-icon-event::after {
+  background: #ffffff;
+  height: 3px;
+  left: 7px;
+  top: 7px;
+  width: 3px;
+}
+
+.rm-tool-icon-eraser::before {
+  background: #f4b6c8;
+  border: 1px solid #1b1b1b;
+  height: 7px;
+  left: 3px;
+  top: 5px;
+  transform: rotate(-25deg);
+  width: 11px;
+}
+
+.rm-tool-icon-eraser::after {
+  background: #ffffff;
+  height: 2px;
+  left: 2px;
+  top: 13px;
+  width: 12px;
+}
+
+.rm-tool-icon-lower::before {
+  background: #2f8a43;
+  border: 1px solid #11471f;
+  box-shadow: inset 0 0 0 2px #66b85b;
+  height: 11px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+.rm-tool-icon-lower::after {
+  background: #1d5f2b;
+  height: 2px;
+  left: 4px;
+  top: 11px;
+  width: 8px;
+}
+
+.rm-tool-icon-upper::before {
+  background: #5987ad;
+  border: 1px solid #1e354b;
+  box-shadow: 3px -3px 0 #d7e3e8, inset 0 0 0 2px #83b4cf;
+  height: 9px;
+  left: 2px;
+  top: 6px;
+  width: 10px;
+}
+
+.rm-tool-icon-upper::after {
+  background: #274c68;
+  height: 2px;
+  left: 5px;
+  top: 4px;
+  width: 7px;
+}
+
+.rm-tool-icon-undo::before,
+.rm-tool-icon-redo::before {
+  border-color: #1d3f79;
+  border-style: solid;
+  height: 8px;
+  top: 5px;
+  width: 9px;
+}
+
+.rm-tool-icon-undo::before {
+  border-width: 2px 0 0 2px;
+  left: 5px;
+}
+
+.rm-tool-icon-redo::before {
+  border-width: 2px 2px 0 0;
+  right: 5px;
+}
+
+.rm-tool-icon-undo::after,
+.rm-tool-icon-redo::after {
+  border-bottom: 4px solid transparent;
+  border-top: 4px solid transparent;
+  top: 2px;
+}
+
+.rm-tool-icon-undo::after {
+  border-right: 6px solid #1d3f79;
+  left: 1px;
+}
+
+.rm-tool-icon-redo::after {
+  border-left: 6px solid #1d3f79;
+  right: 1px;
+}
+
+.rm-tool-icon-copy::before,
+.rm-tool-icon-paste::before {
+  background: #f6f2dc;
+  border: 1px solid #2c2c2c;
+  height: 10px;
+  left: 5px;
+  top: 3px;
+  width: 8px;
+}
+
+.rm-tool-icon-copy::after {
+  background: #d8d0ad;
+  border: 1px solid #2c2c2c;
+  height: 10px;
+  left: 2px;
+  top: 6px;
+  width: 8px;
+}
+
+.rm-tool-icon-paste::after {
+  background: #875b2d;
+  border: 1px solid #2c2c2c;
+  box-shadow: inset 0 2px 0 #c58e48;
+  height: 4px;
+  left: 4px;
+  top: 1px;
+  width: 8px;
+}
+
+.rm-tool-icon-panel-left::before,
+.rm-tool-icon-panel-right::before {
+  background: #c8d0d8;
+  border: 1px solid #2f3b45;
+  height: 11px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+.rm-tool-icon-panel-left::after,
+.rm-tool-icon-panel-right::after {
+  background: #2f6f9f;
+  height: 9px;
+  top: 5px;
+  width: 4px;
+}
+
+.rm-tool-icon-panel-left::after {
+  left: 3px;
+}
+
+.rm-tool-icon-panel-right::after {
+  right: 3px;
+}
+
+.rm-tool-icon-play-window::before {
+  background: #f2f2f2;
+  border: 1px solid #2f3b45;
+  box-shadow: inset 0 2px 0 #7d9ab6;
+  height: 12px;
+  left: 1px;
+  top: 2px;
+  width: 14px;
+}
+
+.rm-tool-icon-play-window::after {
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid #d87b22;
+  border-top: 4px solid transparent;
+  left: 6px;
+  top: 6px;
+}
+
+.rm-tool-icon-folder::before {
+  background: #d8b35e;
+  border: 1px solid #5a421b;
+  box-shadow: inset 0 2px 0 #f0d48c;
+  height: 10px;
+  left: 2px;
+  top: 5px;
+  width: 12px;
+}
+
+.rm-tool-icon-folder::after {
+  background: #c79840;
+  border: 1px solid #5a421b;
+  border-bottom: 0;
+  height: 4px;
+  left: 3px;
+  top: 2px;
+  width: 6px;
+}
+
+.rm-tool-icon-map-child::before {
+  background: #d8b35e;
+  border: 1px solid #5a421b;
+  height: 9px;
+  left: 1px;
+  top: 5px;
+  width: 10px;
+}

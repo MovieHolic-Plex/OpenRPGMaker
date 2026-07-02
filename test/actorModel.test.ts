@@ -7,13 +7,13 @@ import {
   stateRatePercentage,
   totalExpForLevel,
 } from "@/project/actorModel";
-import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_SKILL_ID, DEFAULT_SPRITE_NPC } from "@/project/defaults";
+import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_SKILL_ID, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 
 describe("RM2K3 actor model", () => {
   it("creates full RM2K3 actor defaults when a new actor is added", () => {
     const actor = createActorRecord("actor_test", DEFAULT_CLASS_ID, {
-      characterResourceId: DEFAULT_SPRITE_NPC,
-      battleCharacterResourceId: DEFAULT_SPRITE_NPC,
+      characterResourceId: DEFAULT_EASYRPG_CHARSET_ID,
+      battleCharacterResourceId: DEFAULT_EASYRPG_CHARSET_ID,
       defaultEquipmentId: DEFAULT_EQUIPMENT_ID,
       defaultSkillId: DEFAULT_SKILL_ID,
       unarmedAnimationId: DEFAULT_ANIMATION_ID,
@@ -45,6 +45,32 @@ describe("RM2K3 actor model", () => {
     expect(actor.learnedSkills).toEqual([{ level: 1, skillId: DEFAULT_SKILL_ID }]);
     expect(actor.critical.chanceDenominator).toBe(30);
     expect(actor.options.dualWield).toBe(false);
+  });
+
+  it("restores the default hero charset for persisted actors missing a character resource", () => {
+    const actor = normalizeActorRecord({
+      id: "actor_hero",
+      name: "주인공",
+      classId: DEFAULT_CLASS_ID,
+      initialLevel: 1,
+      maxLevel: 99,
+    });
+
+    expect(actor.characterResourceId).toBe("easyrpg-charset-actor1");
+    expect(actor.faceResourceId).toBe("easyrpg-faceset-actor1");
+  });
+
+  it("does not synthesize non-hero character resources for persisted actors", () => {
+    const actor = normalizeActorRecord({
+      id: "actor_cleric",
+      name: "성직자",
+      classId: DEFAULT_CLASS_ID,
+      initialLevel: 1,
+      maxLevel: 99,
+    });
+
+    expect(actor.characterResourceId).toBeUndefined();
+    expect(actor.faceResourceId).toBe("easyrpg-faceset-people1");
   });
 
   it("calculates total EXP from the actor experience curve", () => {

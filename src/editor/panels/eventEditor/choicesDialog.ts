@@ -12,13 +12,15 @@ import {
 import { openEventSubdialog } from "./subdialog";
 
 type ChoicesCommand = Extract<Command, { kind: "choices" }>;
+const MAX_CHOICE_OPTIONS = 5;
+const CHOICE_OPTION_INDEXES = [0, 1, 2, 3, 4] as const;
 
 export function openChoicesDialog(
   initial: ChoicesCommand,
   onApply: (command: ChoicesCommand) => void
 ): void {
   openEventSubdialog({
-    title: "Show Choices",
+    title: "선택지 표시",
     testId: "event-command-choices-dialog",
     width: "wide",
     render: (body, close) => {
@@ -28,7 +30,7 @@ export function openChoicesDialog(
       prompt.type = "text";
       prompt.value = initial.prompt ?? "";
       prompt.dataset.testid = "choices-prompt";
-      const optionInputs = [0, 1, 2, 3].map((index) => {
+      const optionInputs = CHOICE_OPTION_INDEXES.map((index) => {
         const input = document.createElement("input");
         input.type = "text";
         input.value = initial.options[index]?.text ?? "";
@@ -41,6 +43,7 @@ export function openChoicesDialog(
         radioControl(cancelName, "choice2", (initial.cancelBehavior ?? "choice2") === "choice2", "choices-cancel-choice-2"),
         radioControl(cancelName, "choice3", initial.cancelBehavior === "choice3", "choices-cancel-choice-3"),
         radioControl(cancelName, "choice4", initial.cancelBehavior === "choice4", "choices-cancel-choice-4"),
+        radioControl(cancelName, "choice5", initial.cancelBehavior === "choice5", "choices-cancel-choice-5"),
         radioControl(cancelName, "branch", initial.cancelBehavior === "branch", "choices-cancel-branch"),
       ];
 
@@ -55,7 +58,7 @@ export function openChoicesDialog(
         onApply({
           kind: "choices",
           prompt: prompt.value.trim() || undefined,
-          options: options.length ? options : [{ text: "Yes", branch: [] }, { text: "No", branch: [] }],
+          options: options.length ? options : [{ text: "예", branch: [] }, { text: "아니오", branch: [] }],
           cancelBehavior: radioValue<ChoiceCancelBehavior>(cancelRadios, "choice2"),
           cancelBranch: initial.cancelBranch ?? [],
         });
@@ -66,17 +69,18 @@ export function openChoicesDialog(
         el("div", {
           class: "event-command-choices-grid",
           children: [
-            fieldset("Choices", [
-              labelledControl("Prompt", prompt),
-              ...optionInputs.map((input, index) => labelledControl(`Choice ${index + 1}`, input)),
+            fieldset("선택지", [
+              labelledControl("질문", prompt),
+              ...optionInputs.map((input, index) => labelledControl(`선택지 ${index + 1}`, input)),
             ]),
-            fieldset("When Cancel", [
-              labelledControl("Disallow", cancelRadios[0]),
-              labelledControl("Choice 1", cancelRadios[1]),
-              labelledControl("Choice 2", cancelRadios[2]),
-              labelledControl("Choice 3", cancelRadios[3]),
-              labelledControl("Choice 4", cancelRadios[4]),
-              labelledControl("Branch", cancelRadios[5]),
+            fieldset("취소할 때", [
+              labelledControl("취소 금지", cancelRadios[0]),
+              labelledControl("선택지 1", cancelRadios[1]),
+              labelledControl("선택지 2", cancelRadios[2]),
+              labelledControl("선택지 3", cancelRadios[3]),
+              labelledControl("선택지 4", cancelRadios[4]),
+              labelledControl("선택지 5", cancelRadios[5]),
+              labelledControl("취소 분기", cancelRadios[MAX_CHOICE_OPTIONS + 1]),
             ]),
           ],
         }),

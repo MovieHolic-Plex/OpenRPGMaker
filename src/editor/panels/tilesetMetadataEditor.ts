@@ -10,6 +10,7 @@ import {
 } from "@/editor/panels/tilesetMetadataControls";
 import { type TilesetEditMode, TILESET_EDIT_MODES } from "@/editor/panels/tilesetUsageGuide";
 import { store } from "@/project/store";
+import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
 import { nextPassageMark, passageMarkForTile, setPassageMark } from "@/project/tilesetPassage";
 import type { TileAiMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
@@ -77,8 +78,44 @@ function renderSelectedTilePanel(tileset: TilesetDef): HTMLElement {
           el("span", { text: `통행 ${passageText(tileset, selectedTile)}` }),
         ],
       }),
+      renderSelectedTileUsage(tileset),
       ...renderSelectedTileModeFields(tileset, meta),
     ],
+  });
+}
+
+function renderSelectedTileUsage(tileset: TilesetDef): HTMLElement {
+  const usage = summarizeTileUsage(tileset, selectedTile);
+  return el("section", {
+    class: "tileset-db-selected-tile tileset-selected-usage",
+    dataset: { testid: "tileset-selected-usage" },
+    children: [
+      el("div", { class: "tileset-selected-label", dataset: { testid: "tileset-selected-meaning" }, text: usage.label }),
+      renderTagRow(usage.tags),
+      el("div", { class: "tileset-selected-description", text: usage.description }),
+      el("div", {
+        class: "tileset-selected-groups",
+        children: usage.groups.length > 0
+          ? usage.groups.map((group) =>
+              el("div", {
+                class: "tileset-selected-group",
+                text: `${group.name} / ${group.role} / ${group.defaultLayer}`,
+              })
+            )
+          : [el("div", { class: "tileset-selected-group empty", text: "No semantic group" })],
+      }),
+      el("div", { class: "tileset-selected-rules", dataset: { testid: "tileset-selected-rules" }, text: usage.ruleText }),
+    ],
+  });
+}
+
+function renderTagRow(tags: readonly string[]): HTMLElement {
+  return el("div", {
+    class: "tileset-selected-tags",
+    dataset: { testid: "tileset-selected-tags" },
+    children: tags.length > 0
+      ? tags.map((tag) => el("span", { class: "tileset-meaning-tag", text: tag }))
+      : [el("span", { class: "tileset-meaning-tag empty", text: "untagged" })],
   });
 }
 

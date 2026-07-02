@@ -11,6 +11,45 @@
   min-width: 0;
 }
 
+.database-modal-body:has(.rm2k3-record-states) .rm2k3-record-identity {
+  display: none;
+}
+
+.database-modal-body .rm2k3-record-states .rm2k3-record-detail-pane {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.database-modal-body .rm2k3-detail-states {
+  display: grid;
+  gap: 10px;
+  grid-template-rows: 54px minmax(0, 1fr);
+}
+
+.database-modal-body .rm2k3-detail-states > .db-field:first-child {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--db-modern-line, #dedfdf);
+  border-radius: 5px;
+  display: grid;
+  gap: 12px;
+  grid-column: 1 / -1;
+  grid-template-columns: 42px minmax(0, 1fr);
+  margin: 0;
+  min-height: 54px;
+  padding: 10px 12px;
+  width: min(620px, 100%);
+}
+
+.database-modal-body .rm2k3-detail-states > .db-field:first-child > span {
+  color: #20242c;
+  font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-body .rm2k3-detail-states > .db-field:first-child > input {
+  height: 32px;
+  min-width: 240px;
+}
+
 .database-modal-body .db-state-rm2k3-workbench > .db-state-panel {
   gap: 4px;
   margin: 0;
@@ -57,6 +96,23 @@
   min-height: 20px;
   min-width: 0;
   padding: 1px 4px;
+  width: 100%;
+}
+
+.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(2) .db-state-control {
+  grid-template-columns: 60px minmax(58px, 1fr);
+}
+
+.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(6) .db-state-control {
+  grid-template-columns: 64px minmax(190px, 1fr);
+}
+
+.database-modal-body [data-testid="db-state-accuracy"] {
+  min-width: 54px;
+}
+
+.database-modal-body [data-testid="db-state-skill-limit"] {
+  min-width: 186px;
 }
 
 .database-modal-body .db-state-color-control {

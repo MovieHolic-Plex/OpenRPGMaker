@@ -52,7 +52,7 @@ function pageRecord(
     id,
     name: id,
     conditions: [],
-    graphic: { sprite: { type: "bundled", id: "npc_villager" } },
+    graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } },
     trigger,
     priority,
     movement,
@@ -190,9 +190,9 @@ function gateProject(): Project {
     meta: { title: "NPC Play Gate", author: "e2e", terms: { gold: "G" } },
     assets: {
       sprites: {
-        npc_villager: {
-          id: "npc_villager",
-          image: { type: "bundled", id: "tex_npc_villager" },
+        tex_easyrpg_charset_people1: {
+          id: "tex_easyrpg_charset_people1",
+          image: { type: "bundled", id: "tex_easyrpg_charset_people1" },
           frames: 8,
           frameWidth: 32,
           frameHeight: 32,

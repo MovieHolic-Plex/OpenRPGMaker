@@ -3,13 +3,18 @@ import { selectedOptionValue, selectWithOptions } from "./dom";
 import { choicesBody } from "./commandBodyChoices";
 import { inputNumberBody } from "./commandBodyInputNumber";
 import { labelBody } from "./commandBodyLabels";
+import { loopBody } from "./commandBodyLoop";
+import { setVariableBody } from "./commandBodyVariable";
 import { databasePicker, conditionForm } from "./conditionForm";
+import { renderFacesetPreview } from "./facesetPreview";
 import { renderForkBranch } from "./forkBranch";
+import { clampFaceIndex, FACESET_FACE_COUNT } from "./messageDialogControls";
 import {
   BOOLEAN_OPTIONS,
+  SELF_SWITCH_KEY_OPTIONS,
   TIMER_ACTION_OPTIONS,
+  TIMER_ID_OPTIONS,
   type SelectOption,
-  VARIABLE_OP_OPTIONS,
 } from "./options";
 import type { Command, MessageWindowFormat, MessageWindowPosition } from "@/project/types";
 import type { CommandEditContext } from "./types";
@@ -40,6 +45,8 @@ export function renderCoreCommandBody(
       return choicesBody(context, cmd);
     case "setFlag":
       return setFlagBody(context, cmd);
+    case "setSelfSwitch":
+      return setSelfSwitchBody(context, cmd);
     case "fork":
       return forkBody(context, cmd);
     case "setSwitch":
@@ -49,12 +56,16 @@ export function renderCoreCommandBody(
     case "timer":
       return timerBody(context, cmd);
     case "inputWait":
-      return el("div", { class: "empty-hint", text: "아무 입력 대기" });
+      return inputWaitBody(context, cmd);
     case "inputNumber":
       return inputNumberBody(context, cmd);
     case "label":
     case "gotoLabel":
       return labelBody(context, cmd);
+    case "loop":
+      return loopBody(context, cmd);
+    case "breakLoop":
+      return el("div", { class: "empty-hint", text: "현재 반복을 탈출합니다" });
     default:
       return undefined;
   }
@@ -76,20 +87,22 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     });
   };
   speaker.addEventListener("change", apply);
+  speaker.addEventListener("input", apply);
   body.addEventListener("change", apply);
+  body.addEventListener("input", apply);
   wrap.append(speaker, body);
   return wrap;
 }
 
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
-  const wrap = el("span", {});
+  const wrap = el("div", { class: "event-command-face-editor" });
   const resource = el("input", {
-    attrs: { type: "text", placeholder: "faceset resource ID" },
+    attrs: { type: "text", placeholder: "얼굴 그래픽 리소스 ID" },
     value: cmd.resourceId,
     dataset: { testid: "event-command-face-resource" },
   }) as HTMLInputElement;
   const faceIndex = el("input", {
-    attrs: { type: "number", min: "1", max: "16" },
+    attrs: { type: "number", min: "1", max: String(FACESET_FACE_COUNT) },
     value: String(cmd.faceIndex + 1),
     dataset: { testid: "event-command-face-index" },
   }) as HTMLInputElement;
@@ -102,7 +115,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     context.actions.replaceCommand(context.path, {
       kind: "changeFace",
       resourceId: resource.value.trim(),
-      faceIndex: Math.max(0, Math.min(15, (parseInt(faceIndex.value, 10) || 1) - 1)),
+      faceIndex: clampFaceIndex(faceIndex.value),
       position: position.value === "right" ? "right" : "left",
       flipHorizontally: flip.checked,
     });
@@ -111,7 +124,18 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   faceIndex.addEventListener("change", apply);
   position.addEventListener("change", apply);
   flip.addEventListener("change", apply);
-  wrap.append(resource, faceIndex, position, fieldControl("좌우 반전", flip));
+  wrap.append(
+    renderFacesetPreview({
+      resourceId: cmd.resourceId,
+      faceIndex: cmd.faceIndex,
+      position: cmd.position,
+      flipHorizontally: cmd.flipHorizontally,
+    }),
+    fieldControl("얼굴 그래픽", resource),
+    fieldControl("얼굴 번호", faceIndex),
+    fieldControl("표시 위치", position),
+    fieldControl("좌우 반전", flip)
+  );
   return wrap;
 }
 
@@ -178,6 +202,23 @@ function setFlagBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
   return wrap;
 }
 
+function setSelfSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSelfSwitch" }>): HTMLElement {
+  const wrap = el("span", {});
+  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cmd.key, "event-command-self-switch-key");
+  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.value), "event-command-self-switch-value");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "setSelfSwitch",
+      key: key.value as "A" | "B" | "C" | "D",
+      value: val.value === "true",
+    });
+  };
+  key.addEventListener("change", apply);
+  val.addEventListener("change", apply);
+  wrap.append(key, val);
+  return wrap;
+}
+
 function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fork" }>): HTMLElement {
   const wrap = el("div", {});
   wrap.append(conditionForm(cmd.condition, (condition) => {
@@ -198,57 +239,51 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
 
 function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSwitch" }>): HTMLElement {
   const wrap = el("span", {});
+  let currentSwitchId = cmd.switchId;
   const swSel = databasePicker("switch", cmd.switchId, (switchId) => {
+    currentSwitchId = switchId;
     context.actions.replaceCommand(context.path, { ...cmd, switchId });
   });
   const val = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.value));
   val.addEventListener("change", () => {
-    context.actions.replaceCommand(context.path, { ...cmd, value: val.value === "true" });
+    context.actions.replaceCommand(context.path, { ...cmd, switchId: currentSwitchId, value: val.value === "true" });
   });
   wrap.append(swSel, val);
   return wrap;
 }
 
-function setVariableBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setVariable" }>): HTMLElement {
-  const wrap = el("span", {});
-  const varSel = databasePicker("variable", cmd.variableId, (variableId) => {
-    context.actions.replaceCommand(context.path, { ...cmd, variableId });
+function inputWaitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "inputWait" }>): HTMLElement {
+  const wrap = el("div", {});
+  wrap.append(el("span", { class: "empty-hint", text: "아무 키 대기 (변수 미지정 시 키 코드 저장 안 함)" }));
+  let currentVariableId = cmd.variableId ?? "";
+  const variablePicker = databasePicker("variable", currentVariableId, (variableId) => {
+    currentVariableId = variableId;
+    context.actions.replaceCommand(context.path, { kind: "inputWait", variableId: currentVariableId });
   });
-  const op = selectWithOptions(VARIABLE_OP_OPTIONS, cmd.op);
-  const value = el("input", {
-    attrs: { type: "number" },
-    value: String(typeof cmd.value === "number" ? cmd.value : 0),
-  }) as HTMLInputElement;
-  const apply = () => {
-    context.actions.replaceCommand(context.path, {
-      kind: "setVariable",
-      variableId: cmd.variableId,
-      op: selectedOptionValue(op, VARIABLE_OP_OPTIONS, cmd.op),
-      value: parseInt(value.value, 10) || 0,
-    });
-  };
-  op.addEventListener("change", apply);
-  value.addEventListener("change", apply);
-  wrap.append(varSel, op, value);
+  wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "키 코드 저장 변수(선택)" }), variablePicker] }));
   return wrap;
 }
 
 function timerBody(context: CommandEditContext, cmd: Extract<Command, { kind: "timer" }>): HTMLElement {
   const wrap = el("span", {});
-  const action = selectWithOptions(TIMER_ACTION_OPTIONS, cmd.action);
+  const action = selectWithOptions(TIMER_ACTION_OPTIONS, cmd.action, "event-command-timer-action");
+  const timerId = selectWithOptions(TIMER_ID_OPTIONS, cmd.timerId ?? "timer1", "event-command-timer-id");
   const secs = el("input", {
     attrs: { type: "number", min: "0", placeholder: "초" },
     value: String(cmd.seconds ?? 60),
+    dataset: { testid: "event-command-timer-seconds" },
   }) as HTMLInputElement;
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "timer",
       action: selectedOptionValue(action, TIMER_ACTION_OPTIONS, cmd.action),
       seconds: parseInt(secs.value, 10) || 0,
+      timerId: selectedOptionValue(timerId, TIMER_ID_OPTIONS, cmd.timerId ?? "timer1"),
     });
   };
   action.addEventListener("change", apply);
+  timerId.addEventListener("change", apply);
   secs.addEventListener("change", apply);
-  wrap.append(action, secs);
+  wrap.append(action, timerId, secs);
   return wrap;
 }

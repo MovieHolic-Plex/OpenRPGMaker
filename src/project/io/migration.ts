@@ -117,6 +117,7 @@ export function migrateV2toV3(project: ProjectV2): Project {
         },
       ])
     ),
+    mapConnections: [],
     mapTree: deepClone(project.mapTree),
     startMapId: project.startMapId,
     startPos: { ...project.startPos },

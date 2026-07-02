@@ -3,10 +3,13 @@ import {
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
   type M2CommandCatalogEntry,
+  type M2CommandPickerGroup,
   type M2CommandPickerPage,
 } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/editor/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { commandKindLabel } from "./options";
 import { openEventSubdialog } from "./subdialog";
 
 type CommandKind = Command["kind"];
@@ -15,6 +18,8 @@ type CommandEntry = {
   readonly label: string;
   readonly kind?: CommandKind;
   readonly commandId: string;
+  readonly group: M2CommandPickerGroup;
+  readonly index: number;
   readonly testId: string;
   readonly selectable: boolean;
 };
@@ -25,10 +30,25 @@ type CommandPage = {
 };
 
 const PICKER_PAGES: readonly M2CommandPickerPage[] = [1, 2, 3, 4];
-
+const EXTRA_COMMAND_ENTRIES: readonly CommandEntry[] = [
+  {
+    label: "엔딩",
+    kind: "ending",
+    commandId: "ending",
+    group: "시스템/고급",
+    index: 109,
+    testId: "command-picker-add-ending",
+    selectable: true,
+  },
+];
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
-  entries: M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page).map(commandEntryFromCatalog),
+  entries: [
+    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && isM2CatalogEntrySelectableInMap(entry)).map(
+      commandEntryFromCatalog
+    ),
+    ...(page === 4 ? EXTRA_COMMAND_ENTRIES : []),
+  ],
 }));
 
 function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
@@ -36,6 +56,8 @@ function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
     label: entry.pickerLabel,
     kind: entry.existingKind,
     commandId: entry.id,
+    group: entry.pickerGroup,
+    index: entry.index,
     testId: entry.existingKind ? `command-picker-add-${entry.existingKind}` : entry.testId,
     selectable: isM2CatalogEntrySelectableInMap(entry),
   };
@@ -89,9 +111,19 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
 
 function renderCommandGrid(page: CommandPage, onSelect: EventCommandPickerRequest["onSelect"], close: () => void): HTMLElement {
   const grid = el("div", {
-    class: page.page === 4 ? "event-command-picker-grid single-column" : "event-command-picker-grid",
+    class: "event-command-picker-grid",
   });
-  for (const entry of page.entries) {
+  let currentGroup: M2CommandPickerGroup | undefined;
+  for (const entry of [...page.entries].sort(compareCommandEntries)) {
+    if (entry.group !== currentGroup) {
+      currentGroup = entry.group;
+      grid.append(
+        el("div", {
+          class: "event-command-picker-group-heading",
+          text: entry.group,
+        })
+      );
+    }
     const button = el("button", {
       class: entry.selectable ? "event-command-picker-command" : "event-command-picker-command disabled",
       text: entry.label,
@@ -110,6 +142,16 @@ function renderCommandGrid(page: CommandPage, onSelect: EventCommandPickerReques
     grid.append(button);
   }
   return grid;
+}
+
+function compareCommandEntries(a: CommandEntry, b: CommandEntry): number {
+  const groupDelta = groupOrder(a.group) - groupOrder(b.group);
+  return groupDelta === 0 ? a.index - b.index : groupDelta;
+}
+
+function groupOrder(group: M2CommandPickerGroup): number {
+  const index = M2_COMMAND_PICKER_GROUP_ORDER.indexOf(group);
+  return index >= 0 ? index : M2_COMMAND_PICKER_GROUP_ORDER.length;
 }
 
 function createCommandFromEntry(entry: CommandEntry): Command {
@@ -132,5 +174,5 @@ function renderFooter(close: () => void): HTMLElement {
 }
 
 export function commandLabel(kind: CommandKind): string {
-  return M2_COMMAND_CATALOG.find((entry) => entry.existingKind === kind)?.label ?? kind;
+  return M2_COMMAND_CATALOG.find((entry) => entry.existingKind === kind)?.label ?? commandKindLabel(kind);
 }

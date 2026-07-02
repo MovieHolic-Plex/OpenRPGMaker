@@ -1,15 +1,24 @@
 import { editorState } from "@/editor/editorState";
 import { ensureEventPages } from "@/editor/eventPages";
+import { handleEditorDeleteKey } from "@/editor/hotkeys";
 import { committedEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
-import type { GameEvent, MapId } from "@/project/types";
+import type { EventPageGraphic, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderEventGraphicIcon } from "./eventEditor/eventGraphicPreview";
 import { openEventEditorModal } from "./eventEditor/modal";
 
 export { renderEventEditorInline } from "./eventEditor/inline";
 
 export function renderEventEditor(container: HTMLElement): void {
-  const section = el("div", { class: "panel-section event-editor event-editor-sidebar" });
+  const section = el("div", {
+    class: "panel-section event-editor event-editor-sidebar",
+    on: {
+      keydown: (event) => {
+        if (event instanceof KeyboardEvent) handleEditorDeleteKey(event);
+      },
+    },
+  });
   section.append(el("h3", { text: "이벤트" }));
 
   const state = editorState.get();
@@ -46,12 +55,13 @@ export function renderEventEditor(container: HTMLElement): void {
 
 function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement {
   const pageCount = event.pages?.length ?? 0;
+  const displayName = eventDisplayName(event);
   const summary = el("div", {
     class: "event-editor-launch",
     dataset: { testid: "event-editor-launch" },
   });
   summary.append(
-    el("div", { class: "event-editor-launch-title", text: event.id }),
+    el("div", { class: "event-editor-launch-title", text: displayName }),
     el("div", { class: "event-editor-launch-meta", text: `위치 ${event.x},${event.y} / ${pageCount} 페이지` }),
     el("button", {
       class: "btn primary",
@@ -71,9 +81,11 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
     return list;
   }
   for (const event of events) {
+    const displayName = eventDisplayName(event);
+    const icon = renderEventGraphicIcon(eventListGraphic(event));
     const row = el("button", {
       class: "event-list-row" + (event.id === selectedEventId ? " active" : ""),
-      attrs: { type: "button", title: "이벤트 선택. 두 번 클릭하면 편집합니다." },
+      attrs: { type: "button", title: `${displayName} (${event.id}, ${event.x},${event.y})` },
       dataset: { testid: `event-list-row-${event.id}` },
       on: {
         click: () => selectEvent(event),
@@ -81,12 +93,31 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
       },
     });
     row.append(
-      el("span", { class: "event-list-id", text: event.id }),
-      el("span", { class: "event-list-meta", text: `${event.x},${event.y} / ${event.pages?.length ?? 0}p` })
+      el("span", { class: "event-list-icon", children: [icon] }),
+      el("span", { class: "event-list-name", text: displayName }),
+      el("span", { class: "event-list-meta", text: `${event.x},${event.y} · ${event.pages?.length ?? 0}p` })
     );
     list.append(row);
   }
   return list;
+}
+
+function eventDisplayName(event: GameEvent): string {
+  const pages = event.pages ?? [];
+  for (let index = pages.length - 1; index >= 0; index -= 1) {
+    const name = pages[index]?.name.trim();
+    if (name) return name;
+  }
+  return event.id;
+}
+
+function eventListGraphic(event: GameEvent): EventPageGraphic {
+  const pages = event.pages ?? [];
+  for (let index = pages.length - 1; index >= 0; index -= 1) {
+    const graphic = pages[index]?.graphic;
+    if (graphic?.sprite) return graphic;
+  }
+  return event.sprite ? { sprite: event.sprite } : {};
 }
 
 function selectEvent(event: GameEvent): void {
@@ -94,11 +125,11 @@ function selectEvent(event: GameEvent): void {
     tool: "event",
     layer: "event",
     selectedEventId: event.id,
-    selectedEventPageId: latestPageId(event),
+    selectedEventPageId: firstPageId(event),
   });
 }
 
-function latestPageId(event: GameEvent): string | null {
+function firstPageId(event: GameEvent): string | null {
   const pages = event.pages ?? [];
-  return pages[pages.length - 1]?.id ?? null;
+  return pages[0]?.id ?? null;
 }

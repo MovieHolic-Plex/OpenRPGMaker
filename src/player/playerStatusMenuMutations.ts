@@ -33,15 +33,14 @@ export function toggleStatusMenuActorRow(scene: PlayScene, actorId: string): str
   return `${session.actorRows[actorId] === "front" ? "전열" : "후열"}로 변경했습니다`;
 }
 
-export function moveStatusMenuFormationActor(scene: PlayScene, actorId: string, delta: -1 | 1): string {
+export function moveStatusMenuFormationActor(scene: PlayScene, actorId: string, targetIndex: number): string {
   const session = scene.getSession();
   const index = session.partyActorIds.indexOf(actorId);
-  const nextIndex = index + delta;
-  if (index < 0 || nextIndex < 0 || nextIndex >= session.partyActorIds.length) return "더 이상 이동할 수 없습니다";
+  if (index < 0 || targetIndex < 0 || targetIndex >= session.partyActorIds.length) return "더 이상 이동할 수 없습니다";
   const nextParty = [...session.partyActorIds];
   const [actor] = nextParty.splice(index, 1);
   if (!actor) return "더 이상 이동할 수 없습니다";
-  nextParty.splice(nextIndex, 0, actor);
+  nextParty.splice(targetIndex, 0, actor);
   session.partyActorIds = nextParty;
   scene.syncRuntimeState();
   return "진형을 변경했습니다";

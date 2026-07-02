@@ -42,18 +42,17 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
       ...classChoices(record),
     ]),
     panel("상태", stateChoices(record)),
-    selectField("스킬", "db-picker-skill", record.skillId ?? "", store.getCurrent().database.skills, (skillId) =>
-      updateDatabaseRecord("equipment", record.id, { skillId: emptyToUndefined(skillId) })
-    ),
-    selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) =>
-      updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) })
-    ),
-    checkboxField({
-      checked: record.cursed,
-      label: "저주",
-      onInput: (cursed) => updateDatabaseRecord("equipment", record.id, { cursed }),
-      testid: "db-field-equipment-cursed",
-    })
+    panel("사용 효과", [
+      selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) =>
+        updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) })
+      ),
+      checkboxField({
+        checked: record.cursed,
+        label: "저주",
+        onInput: (cursed) => updateDatabaseRecord("equipment", record.id, { cursed }),
+        testid: "db-field-equipment-cursed",
+      }),
+    ])
   );
 }
 

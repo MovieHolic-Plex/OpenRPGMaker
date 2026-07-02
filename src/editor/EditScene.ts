@@ -11,7 +11,12 @@ import {
 } from "@/assets/bundled";
 import { store } from "@/project/store";
 import { editorState, type PaintShape } from "@/editor/editorState";
+import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import {
+  renderEventLayerClickFeedback,
+  type EventLayerClickFeedback,
+} from "@/editor/editSceneEventMarkers";
 import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
 import { renderEditScene } from "@/editor/editSceneRender";
 import {
@@ -23,12 +28,19 @@ import {
 import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
 import { recordProjectSnapshot, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
+import { placeStructureStamp, previewStructureStampCells } from "@/editor/structureStampTools";
+import type { StructureStampId } from "@/editor/structureStampTools";
+import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
+import { compatibleStampIdForTile, tileStampById, tileStampsForTile, type TileStamp } from "@/editor/tileStampBrushes";
+import { visibleTilePickAt } from "@/editor/tilePicking";
 import { committedEvents } from "@/project/eventDrafts";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
+import { toast } from "@/util/toast";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -84,7 +96,13 @@ type DragOperation =
     readonly shape: Exclude<PaintShape, "pen">;
     readonly start: TilePoint;
     readonly tile: number;
-};
+    readonly autoConnect: boolean;
+  }
+  | {
+    readonly kind: "structure";
+    readonly mapId: MapId;
+    readonly stampId: StructureStampId;
+  };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
 
@@ -92,13 +110,16 @@ export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
+  private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
   private gridGraphics: Phaser.GameObjects.Graphics | null = null;
   private unsubStore: (() => void) | null = null;
   private unsubEditor: (() => void) | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
+  private eventLayerClickFeedback: EventLayerClickFeedback | null = null;
   private lastPointerTile: { x: number; y: number } | null = null;
+  private lastRenderedMapId: MapId | null = null;
   private lastRenderStateKey = "";
   private lastCameraViewKey = "";
   private isPanning = false;
@@ -152,6 +173,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    this.eventClickFeedbackLayer = this.add.container(0, 0);
+    this.eventClickFeedbackLayer.setDepth(12);
 
     this.bindInput();
     this.redraw();
@@ -188,7 +211,11 @@ export class EditScene extends PhaserRuntime.Scene {
       this.updatePointerStatus(ptr);
       this.updateHoverPreview(ptr);
       if (this.isRightClick(ptr)) {
-        this.pickTileAtPointer(ptr);
+        if (editorState.get().layer === "event") {
+          this.openEventLayerMenu(ptr);
+        } else {
+          this.pickTileAtPointer(ptr);
+        }
         return;
       }
       if (this.shouldPan(ptr)) {
@@ -346,6 +373,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private clearHoverPreview(): void {
+    this.lastPointerTile = null;
     this.hoverPreviewLayer?.removeAll(true);
   }
 
@@ -369,9 +397,27 @@ export class EditScene extends PhaserRuntime.Scene {
       selectTileRegion(mapId, { mapId, x: point.x, y: point.y, width: 1, height: 1 });
       return true;
     }
+    if (state.tool === "paint" && state.activeStructureStampId) {
+      const operation: Extract<DragOperation, { readonly kind: "structure" }> = {
+        kind: "structure",
+        mapId,
+        stampId: state.activeStructureStampId,
+      };
+      this.dragOperation = operation;
+      this.renderStructureDragPreview(operation, point);
+      return true;
+    }
     if (state.tool === "paint" && state.paintShape !== "pen" && state.selectedTile >= 0) {
       const layer: TileLayer = state.layer === "upper" ? "upper" : "lower";
-      const operation: Extract<DragOperation, { readonly kind: "shape" }> = { kind: "shape", layer, mapId, shape: state.paintShape, start: point, tile: state.selectedTile };
+      const operation: Extract<DragOperation, { readonly kind: "shape" }> = {
+        kind: "shape",
+        layer,
+        mapId,
+        shape: state.paintShape,
+        start: point,
+        tile: state.selectedTile,
+        autoConnect: state.autoConnectMode,
+      };
       this.dragOperation = operation;
       this.renderShapeDragPreview(operation, point);
       return true;
@@ -388,6 +434,10 @@ export class EditScene extends PhaserRuntime.Scene {
       this.updateSelectionDrag(operation, point);
       return;
     }
+    if (operation.kind === "structure") {
+      this.renderStructureDragPreview(operation, point);
+      return;
+    }
     this.renderShapeDragPreview(operation, point);
   }
 
@@ -397,6 +447,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const point = this.pointerToTile(ptr);
     if (operation.kind === "select") {
       this.updateSelectionDrag(operation, point);
+    } else if (operation.kind === "structure") {
+      this.commitStructureDrag(operation, point);
     } else {
       this.commitShapeDrag(operation, point);
     }
@@ -419,7 +471,34 @@ export class EditScene extends PhaserRuntime.Scene {
     if (cells.length === 0) return;
     recordProjectSnapshot();
     for (const cell of cells) {
-      paintTile(operation.mapId, operation.layer, cell.x, cell.y, operation.tile);
+      paintTile(operation.mapId, operation.layer, cell.x, cell.y, operation.tile, { autoConnect: operation.autoConnect });
+    }
+  }
+
+  private commitStructureDrag(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
+    const map = store.getCurrent().maps[operation.mapId];
+    if (!map || !this.isInsideMapPoint(point, map)) return;
+    recordProjectSnapshot();
+    placeStructureStamp(operation.mapId, { id: operation.stampId, origin: point });
+  }
+
+  private renderStructureDragPreview(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
+    const layer = this.hoverPreviewLayer;
+    if (!layer) return;
+    layer.removeAll(true);
+    const map = store.getCurrent().maps[operation.mapId];
+    if (!map || !this.isInsideMapPoint(point, map)) return;
+    const tileset = store.getCurrent().tilesets[map.tilesetId];
+    if (!tileset) return;
+    const cells = previewStructureStampCells(map, { id: operation.stampId, origin: point });
+    for (const cell of cells) {
+      const preview = createChipsetTileObject(this, map, tileset, cell.x, cell.y, cell.tile);
+      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
+      layer.add(preview);
+      const marker = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
+      marker.setOrigin(0, 0);
+      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
+      layer.add(marker);
     }
   }
 
@@ -456,7 +535,14 @@ export class EditScene extends PhaserRuntime.Scene {
 
     const tool = editorState.get().tool;
     const layer = editorState.get().layer;
-    const { brushSize, selectedTile } = editorState.get();
+    if (!canEditMap(mid) && this.toolCanMutateMap(tool)) {
+      this.isPainting = false;
+      this.lastPaintKey = "";
+      toast(mapEditLockNotice(mid), "error");
+      return;
+    }
+    const { activePaletteStamp, activeStampId, activeStructureStampId, autoConnectMode, brushSize, selectedTile } = editorState.get();
+    const tileset = this.currentTileset();
     const key = `${x},${y}`;
     const firstStrokeTile = this.lastPaintKey === "";
     if (layer !== "event" && key === this.lastPaintKey) return;
@@ -465,6 +551,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const tileLayer: "lower" | "upper" = layer === "upper" ? "upper" : "lower";
     const clickCount =
       layer === "event" ? this.eventLayerClickCount({ mapId: mid, ptr, x, y }) : this.pointerClickCount(ptr);
+    if (layer === "event") this.showEventLayerClickFeedback(mid, x, y);
 
     if (layer === "event" && clickCount >= 2 && this.openExistingEventAt(mid, x, y)) {
       return;
@@ -473,17 +560,34 @@ export class EditScene extends PhaserRuntime.Scene {
     switch (tool) {
       case "paint":
         recordProjectSnapshot();
-        this.applyBrush({
-          centerX: x,
-          centerY: y,
-          size: brushSize,
-          applyCell: (brushX, brushY) => paintTile(mid, tileLayer, brushX, brushY, selectedTile),
-        });
+        {
+          if (activePaletteStamp) {
+            this.applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y });
+            break;
+          }
+          if (activeStructureStampId) {
+            placeStructureStamp(mid, { id: activeStructureStampId, origin: { x, y } });
+            break;
+          }
+          const stamp = tileset
+            ? tileStampsForTile(selectedTile, tileset).find((candidate) => candidate.id === activeStampId) ?? null
+            : tileStampById(activeStampId);
+          if (stamp) {
+            this.applyStamp({ mapId: mid, layer: tileLayer, x, y, stamp, autoConnect: autoConnectMode });
+          } else {
+            this.applyBrush({
+              centerX: x,
+              centerY: y,
+              size: brushSize,
+              applyCell: (brushX, brushY) => paintTile(mid, tileLayer, brushX, brushY, selectedTile, { autoConnect: autoConnectMode }),
+            });
+          }
+        }
         break;
       case "fill":
         if (firstStrokeTile) {
           recordProjectSnapshot();
-          fillTile(mid, tileLayer, x, y, selectedTile);
+          fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
         }
         break;
       case "erase":
@@ -492,7 +596,7 @@ export class EditScene extends PhaserRuntime.Scene {
           centerX: x,
           centerY: y,
           size: brushSize,
-          applyCell: (brushX, brushY) => eraseTile(mid, tileLayer, brushX, brushY),
+          applyCell: (brushX, brushY) => eraseTile(mid, tileLayer, brushX, brushY, { autoConnect: autoConnectMode }),
         });
         break;
       case "collision":
@@ -537,17 +641,49 @@ export class EditScene extends PhaserRuntime.Scene {
       target.layer === "upper" ? topTileInStack(map, "lower", index) ?? map.lowerTiles[index] : tile;
     const selectedTile = tile >= 0 ? tile : fallbackTile;
     if (selectedTile < 0) return;
-    editorState.set({ selectedTile, layer: target.layer, tool: "paint" });
+    const tileset = this.tilesetForMap(target.mapId);
+    editorState.set({
+      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, selectedTile, tileset),
+      selectedTile,
+      layer: target.layer,
+      tool: "paint",
+    });
   }
 
   private pickTileAtPointer(ptr: Phaser.Input.Pointer): void {
     const mapId = this.mapId();
     if (!mapId) return;
     const { x, y } = this.pointerToTile(ptr);
-    const layer = editorState.get().layer === "upper" ? "upper" : "lower";
+    const map = store.getCurrent().maps[mapId];
+    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
+    const pick = visibleTilePickAt(map, y * map.width + x);
+    if (!pick) return;
     this.isPainting = false;
     this.lastPaintKey = "";
-    this.pickTileAt({ mapId, layer, x, y });
+    const tileset = this.tilesetForMap(mapId);
+    editorState.set({
+      activePaletteStamp: null,
+      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, pick.tile, tileset),
+      activeStructureStampId: null,
+      selectedTile: pick.tile,
+      layer: pick.layer,
+      tool: "paint",
+    });
+  }
+
+  private openEventLayerMenu(ptr: Phaser.Input.Pointer): void {
+    const mapId = this.mapId();
+    if (!mapId) return;
+    if (!canEditMap(mapId)) {
+      toast(mapEditLockNotice(mapId), "error");
+      return;
+    }
+    const { x, y } = this.pointerToTile(ptr);
+    const point = this.pointerScreenPosition(ptr);
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.lastPointerTile = { x, y };
+    openEventLayerContextMenu({ mapId, point, x, y });
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
@@ -613,6 +749,11 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     const mid = this.mapId();
     if (!mid) return;
+    if ((key === "z" || key === "y" || key === "v") && !canEditMap(mid)) {
+      event.preventDefault();
+      toast(mapEditLockNotice(mid), "error");
+      return;
+    }
     if (key === "z") {
       event.preventDefault();
       if (event.shiftKey) {
@@ -625,9 +766,20 @@ export class EditScene extends PhaserRuntime.Scene {
       redoMapEdit();
     } else if (key === "c") {
       event.preventDefault();
+      if (editorState.get().layer === "event") {
+        const t = this.lastPointerTile;
+        if (t) copyEventAt({ mapId: mid, x: t.x, y: t.y });
+        return;
+      }
       copySelection(mid);
     } else if (key === "v") {
       event.preventDefault();
+      if (editorState.get().layer === "event") {
+        const selection = editorState.get().selection;
+        const t = this.lastPointerTile ?? selection ?? { x: 0, y: 0 };
+        pasteEventAt({ mapId: mid, x: t.x, y: t.y });
+        return;
+      }
       const selection = editorState.get().selection;
       const target = this.lastPointerTile ?? selection ?? { x: 0, y: 0 };
       pasteClipboard(mid, target.x, target.y);
@@ -635,9 +787,10 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private pointerToTile(ptr: Phaser.Input.Pointer): { x: number; y: number } {
+    const world = ptr.positionToCamera(this.cameras.main) as { readonly x: number; readonly y: number };
     return {
-      x: Math.floor(ptr.worldX / TILE_SIZE),
-      y: Math.floor(ptr.worldY / TILE_SIZE),
+      x: Math.floor(world.x / TILE_SIZE),
+      y: Math.floor(world.y / TILE_SIZE),
     };
   }
 
@@ -659,6 +812,10 @@ export class EditScene extends PhaserRuntime.Scene {
     setTileToolStatus("cursor-upper", String(topTileInStack(map, "upper", index) ?? map.upperTiles[index]));
   }
 
+  private toolCanMutateMap(tool: string): boolean {
+    return tool === "paint" || tool === "fill" || tool === "erase" || tool === "collision" || tool === "event";
+  }
+
   private handleEventClick(mapId: MapId, x: number, y: number, openEditor = false): void {
     const map = store.getCurrent().maps[mapId];
     if (!map) return;
@@ -669,7 +826,6 @@ export class EditScene extends PhaserRuntime.Scene {
       if (openEditor) openEventEditorModal(mapId, existing.id);
     } else if (openEditor) {
       openNewEventEditorModal(mapId, x, y);
-      editorState.set({ selectedEventId: null, selectedEventPageId: null });
     }
   }
 
@@ -707,9 +863,28 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   // ── 렌더 ──
+  private currentTileset() {
+    const mapId = this.mapId();
+    return mapId ? this.tilesetForMap(mapId) : undefined;
+  }
+
+  private tilesetForMap(mapId: MapId) {
+    const project = store.getCurrent();
+    const map = project.maps[mapId];
+    return map ? project.tilesets[map.tilesetId] : undefined;
+  }
+
   private redraw(): void {
     const mid = this.mapId();
     if (!mid) return;
+    const mapChanged = this.lastRenderedMapId !== mid;
+    if (mapChanged) {
+      this.lastPointerTile = null;
+      this.clearHoverPreview();
+      this.lastPaintKey = "";
+      this.dragOperation = null;
+    }
+    this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
     const cameraViewKey = this.cameraViewKey(mid);
     const resetCamera = cameraViewKey !== this.lastCameraViewKey;
@@ -720,7 +895,32 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.gridGraphics;
     if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
     renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, resetCamera });
-    if (this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.renderEventLayerClickFeedback();
+    if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+  }
+
+  private applyStamp(input: {
+    readonly autoConnect: boolean;
+    readonly layer: TileLayer;
+    readonly mapId: MapId;
+    readonly stamp: TileStamp;
+    readonly x: number;
+    readonly y: number;
+  }): void {
+    for (const cell of input.stamp.cells) {
+      paintTile(input.mapId, input.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: input.autoConnect });
+    }
+  }
+
+  private applyPaletteStamp(input: {
+    readonly mapId: MapId;
+    readonly stamp: PaletteStamp;
+    readonly x: number;
+    readonly y: number;
+  }): void {
+    for (const cell of input.stamp.cells) {
+      paintTile(input.mapId, cell.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: false });
+    }
   }
 
   private redrawWhenViewStateChanges(): void {
@@ -744,6 +944,10 @@ export class EditScene extends PhaserRuntime.Scene {
       state.paintShape,
       state.layer,
       state.selectedTile,
+      state.autoConnectMode,
+      state.activePaletteStamp ? `${state.activePaletteStamp.source.startTile}:${state.activePaletteStamp.source.endTile}` : "none",
+      state.activeStampId ?? "none",
+      state.activeStructureStampId ?? "none",
       state.brushSize,
       state.selectedEventId ?? "none",
       selectionKey,
@@ -756,6 +960,28 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapKey = map ? `${map.width}x${map.height}` : "missing";
     const focus = typeof window === "undefined" ? "" : window.location.search;
     return [mapId, mapKey, state.zoom, focus].join("|");
+  }
+
+  private showEventLayerClickFeedback(mapId: MapId, x: number, y: number): void {
+    const map = store.getCurrent().maps[mapId];
+    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
+    const hasEvent = committedEvents(map.events).some((event) => event.x === x && event.y === y);
+    const mode = hasEvent ? "edit" : "create";
+    this.eventLayerClickFeedback = { mapId, x, y, mode };
+    setTileToolStatus(
+      "event-click-status",
+      hasEvent ? `이벤트 ${x},${y} · 더블클릭 편집` : `빈 타일 ${x},${y} · 더블클릭 생성`
+    );
+    this.renderEventLayerClickFeedback();
+  }
+
+  private renderEventLayerClickFeedback(): void {
+    const layer = this.eventClickFeedbackLayer;
+    if (!layer) return;
+    layer.removeAll(true);
+    const feedback = this.eventLayerClickFeedback;
+    if (!feedback || feedback.mapId !== this.mapId() || editorState.get().layer !== "event") return;
+    renderEventLayerClickFeedback({ scene: this, overlayLayer: layer }, feedback);
   }
 }
 

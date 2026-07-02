@@ -2,6 +2,7 @@ import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { editorState } from "@/editor/editorState";
+import { previewStructureStampCells } from "@/editor/structureStampTools";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
@@ -22,6 +23,33 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   const state = editorState.get();
   if (state.selectedTile < 0 || (state.tool !== "paint" && state.tool !== "fill")) return;
   if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
+  if (state.tool === "paint" && state.activePaletteStamp) {
+    for (const cell of state.activePaletteStamp.cells) {
+      const x = spec.centerX + cell.dx;
+      const y = spec.centerY + cell.dy;
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, cell.tile);
+      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
+      spec.layer.add(preview);
+      const marker = spec.scene.add.rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
+      marker.setOrigin(0, 0);
+      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
+      spec.layer.add(marker);
+    }
+    return;
+  }
+  if (state.tool === "paint" && state.activeStructureStampId) {
+    for (const cell of previewStructureStampCells(map, { id: state.activeStructureStampId, origin: { x: spec.centerX, y: spec.centerY } })) {
+      const preview = createChipsetTileObject(spec.scene, map, tileset, cell.x, cell.y, cell.tile);
+      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
+      spec.layer.add(preview);
+      const marker = spec.scene.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
+      marker.setOrigin(0, 0);
+      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
+      spec.layer.add(marker);
+    }
+    return;
+  }
   const size = state.tool === "paint" && state.paintShape === "pen" ? state.brushSize : 1;
   const offset = Math.floor(size / 2);
   for (let y = spec.centerY - offset; y <= spec.centerY + offset; y++) {

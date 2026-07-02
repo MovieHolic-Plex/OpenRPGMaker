@@ -89,7 +89,7 @@ test("held ArrowRight moves continuously before OS key repeat", async ({ page })
   expect(after.player.x).toBeGreaterThan(before.player.x);
 });
 
-test("starter NPC dialogue uses a large bottom percentage panel and does not reopen while confirm is held", async ({ page }) => {
+test("starter NPC dialogue uses a compact bottom panel and does not reopen while confirm is held", async ({ page }) => {
   await startFreshPlay(page);
 
   await page.getByTestId("event-event_starter_mina").click();
@@ -102,16 +102,16 @@ test("starter NPC dialogue uses a large bottom percentage panel and does not reo
   await writeFile(METRICS_PATH, `${JSON.stringify(metrics, null, 2)}\n`, "utf8");
 
   expect(metrics.structuralSimilarityScore).toBeGreaterThanOrEqual(90);
-  expect(metrics.boxHeightRatio).toBeGreaterThanOrEqual(0.28);
-  expect(metrics.boxHeightRatio).toBeLessThanOrEqual(0.34);
-  expect(metrics.containerBottom).toBeLessThanOrEqual(8);
+  expect(metrics.boxHeightRatio).toBeGreaterThanOrEqual(0.23);
+  expect(metrics.boxHeightRatio).toBeLessThanOrEqual(0.3);
+  expect(metrics.containerBottom).toBeLessThanOrEqual(28);
   expect(metrics.faceWidth).toBeGreaterThanOrEqual(150);
   expect(metrics.faceHeight).toBeGreaterThanOrEqual(150);
-  expect(metrics.faceHeightRatio).toBeGreaterThanOrEqual(0.6);
-  expect(metrics.bodyFontSize).toBe("32px");
-  expect(metrics.bodyFontSizePx).toBeGreaterThanOrEqual(32);
-  expect(metrics.speakerFontSize).toBe("24px");
-  expect(metrics.speakerFontSizePx).toBeGreaterThanOrEqual(24);
+  expect(metrics.faceHeightRatio).toBeGreaterThanOrEqual(0.68);
+  expect(metrics.bodyFontSize).toBe("7px");
+  expect(metrics.bodyFontSizePx).toBeGreaterThanOrEqual(7);
+  expect(metrics.speakerFontSize).toBe("7px");
+  expect(metrics.speakerFontSizePx).toBeGreaterThanOrEqual(7);
   expect(metrics.backgroundImage).toContain("rgba");
   expect(metrics.backgroundImage).toContain("repeating-linear-gradient");
   expect(metrics.minHeight).toBe("100%");
@@ -149,18 +149,17 @@ async function dialogueMetrics(page: Page): Promise<DialogueMetrics> {
     const paddingLeft = Number.parseFloat(style.paddingLeft);
     const boxHeightRatio = height / window.innerHeight;
     const faceHeightRatio = faceRect.height / height;
-    const bodyFontRatio = bodyFontSizePx / height;
     const speakerFontRatio = speakerFontSizePx / height;
     const paddingLeftRatio = paddingLeft / height;
     const closeness = (actual: number, target: number, tolerance: number): number =>
       Math.max(0, 1 - Math.abs(actual - target) / tolerance);
     const weightedScore =
-      closeness(boxHeightRatio, 0.31, 0.04) * 20 +
-      closeness(faceHeightRatio, 0.67, 0.1) * 25 +
-      closeness(bodyFontRatio, 0.13, 0.04) * 18 +
-      closeness(speakerFontRatio, 0.095, 0.035) * 12 +
-      closeness(borderTopWidth / height, 0.017, 0.012) * 10 +
-      closeness(paddingLeftRatio, 0.065, 0.04) * 5 +
+      closeness(boxHeightRatio, 0.294, 0.04) * 20 +
+      closeness(faceHeightRatio, 0.816, 0.12) * 25 +
+      closeness(bodyFontSizePx, 7, 1) * 18 +
+      closeness(speakerFontSizePx, 7, 1) * 12 +
+      closeness(borderTopWidth, 1, 0.75) * 10 +
+      closeness(paddingLeft, 8, 3) * 5 +
       (style.backgroundImage.includes("rgba") && style.backgroundImage.includes("repeating-linear-gradient") ? 10 : 0);
     return {
       backgroundImage: style.backgroundImage,

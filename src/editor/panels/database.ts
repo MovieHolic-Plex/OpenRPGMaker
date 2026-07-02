@@ -1,9 +1,6 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
-import { databaseManualTopic } from "@/editor/panels/databaseManualLinks";
-import { activeTabSummary } from "@/editor/panels/databasePanelSummary";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
-import { databaseWorkbenchStatusText } from "@/editor/panels/databaseWorkbench";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
   renderSwitchesTab,
@@ -91,9 +88,14 @@ const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
 
+export function setDatabaseActiveTab(tab: DatabaseTab): void {
+  activeTab = tab;
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
+}
+
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
-  const activeTabMeta = tabMeta(activeTab);
   const groupTabs = el("div", {
     class: "db-classic-group-tabs",
     dataset: { testid: "db-classic-group-tabs" },
@@ -113,7 +115,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
         dataset: { testid: tab.testid },
         on: {
           click: () => {
-            setActiveTab(tab.id);
+            setDatabaseActiveTab(tab.id);
             renderDatabasePanel(container);
           },
         },
@@ -123,26 +125,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
 
   const body = el("div", { class: "db-body" });
   renderActiveTab(body, container);
-  const manualTopic = databaseManualTopic(activeTab);
-  const manualSource = el("div", {
-    class: "db-manual-source",
-    children: [
-      el("span", { text: "RM2003 manual" }),
-      el("a", {
-        attrs: { href: manualTopic.url, rel: "noreferrer", target: "_blank" },
-        dataset: { testid: "db-manual-source-link" },
-        text: manualTopic.label,
-      }),
-      el("code", { dataset: { testid: "db-manual-source-url" }, text: manualTopic.url }),
-    ],
-  });
-  const status = el("div", {
-    attrs: { "aria-live": "polite" },
-    class: "db-workbench-status",
-    dataset: { testid: "db-workbench-status" },
-    text: databaseWorkbenchStatusText(activeTabSummary(activeTabMeta, body)),
-  });
-  container.append(groupTabs, header, manualSource, status, body);
+  container.append(groupTabs, header, body);
 }
 
 function classicGroupTab(label: string): HTMLElement {
@@ -198,16 +181,6 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       renderTermsTab(body);
       return;
   }
-}
-
-function setActiveTab(tab: DatabaseTab): void {
-  activeTab = tab;
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
-}
-
-function tabMeta(tabId: DatabaseTab): { readonly id: DatabaseTab; readonly label: string } {
-  return orderedTabs.find((tab) => tab.id === tabId) ?? orderedTabs[0];
 }
 
 function readStoredActiveTab(): DatabaseTab {

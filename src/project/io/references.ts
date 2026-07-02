@@ -65,8 +65,16 @@ export function validateProjectReferences(project: Project): void {
   if (project.system.initialTroopId) assert(troopIds.has(project.system.initialTroopId), "system.initialTroopId does not exist.");
   validateSystemResources(project.system, resourceIds);
   requireExistingIds("session.partyActorIds", project.session.partyActorIds, actorIds);
+  validateMapConnections(project, mapIds);
   validateCommonEvents(project, switchIds, context);
   validateMapRecords(project, switchIds, variableIds, resourceIds, context);
+}
+
+function validateMapConnections(project: Project, mapIds: ReadonlySet<string>): void {
+  for (const connection of project.mapConnections ?? []) {
+    assert(mapIds.has(connection.from.mapId), `mapConnection ${connection.id}: from.mapId does not exist.`);
+    assert(mapIds.has(connection.to.mapId), `mapConnection ${connection.id}: to.mapId does not exist.`);
+  }
 }
 
 function validateActorRecords(

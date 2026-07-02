@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
+  CHIPSET_SLICING,
   EASYRPG_CHARSET_ASSETS,
+  EASYRPG_RTP_CATEGORY_SLICING,
   EASYRPG_RTP_ASSETS,
+  FACESET_FACE_HEIGHT,
+  FACESET_FACE_WIDTH,
+  FACESET_SLICING,
   charsetFrameIndex,
   decodeCharsetFrameIndex,
 } from "@/assets/easyrpgRtp";
+import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { defaultResourceProfiles } from "@/project/defaults/defaultAssets";
 
 type FsLike = {
@@ -48,6 +54,16 @@ describe("EasyRPG RTP asset manifest", () => {
       ])
     );
     expect(EASYRPG_CHARSET_ASSETS.length).toBeGreaterThanOrEqual(17);
+  });
+
+  it("exports EasyRPG RTP category slicing from the shared resource ontology", () => {
+    expect(EASYRPG_RTP_CATEGORY_SLICING.chipset).toBe(RESOURCE_SLICING.chipset);
+    expect(EASYRPG_RTP_CATEGORY_SLICING.faceset).toBe(RESOURCE_SLICING.faceset);
+    expect(EASYRPG_RTP_CATEGORY_SLICING.title).toBe(RESOURCE_SLICING.title);
+    expect(CHIPSET_SLICING).toMatchObject({ cellWidth: 16, cellHeight: 16, columns: 30, rows: 16 });
+    expect(FACESET_SLICING).toMatchObject({ cellWidth: 48, cellHeight: 48, columns: 4, rows: 4 });
+    expect(FACESET_FACE_WIDTH).toBe(RESOURCE_SLICING.faceset.cellWidth);
+    expect(FACESET_FACE_HEIGHT).toBe(RESOURCE_SLICING.faceset.cellHeight);
   });
 
   it("keeps every generated EasyRPG RTP manifest entry available as a bundled file and resource profile", async () => {

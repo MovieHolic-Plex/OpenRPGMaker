@@ -111,6 +111,7 @@ export class Input {
 
   setEnabled(v: boolean): void {
     this.enabled = v;
+    this.runtimeKeys.clearPendingActionEdge();
     if (!v) {
       this.priority = [];
     }

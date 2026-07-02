@@ -1,5 +1,6 @@
 import { addChildMap, addMap, deleteMap, duplicateMap, moveMapInTree, setStartMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
+import { checkoutMapForEditing, statusForMap, type MapEditLockStatus } from "@/editor/mapEditLocks";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
 import { renderMapProps } from "@/editor/panels/mapProps";
@@ -19,6 +20,7 @@ type TreeActionSpec = {
   readonly disabled?: boolean;
   readonly icon: string;
   readonly label: string;
+  readonly text?: string;
   readonly testId: string;
 };
 
@@ -36,15 +38,20 @@ type MapActionContext = {
 };
 
 const collapsedMapIds = new Set<MapId>();
+let currentMapListContainer: HTMLElement | null = null;
 
 export function renderMapList(container: HTMLElement): void {
+  currentMapListContainer = container;
   clearChildren(container);
   const project = store.getCurrent();
   const state = editorState.get();
   const activeId = state.currentMapId ?? project.startMapId;
 
   const section = el("div", { class: "panel-section map-tree-panel", dataset: { testid: "map-tree" } });
-  section.append(el("h3", { text: "맵 트리" }));
+  const header = el("div", { class: "map-tree-header" });
+  header.append(el("h3", { text: `맵 트리 ${Object.keys(project.maps).length}` }));
+  header.append(makeMapTreeHeaderActions(activeId, project.mapTree));
+  section.append(header);
 
   const allMapIds = new Set(Object.keys(project.maps));
   renderNode({
@@ -53,36 +60,6 @@ export function renderMapList(container: HTMLElement): void {
     host: section,
     node: project.mapTree,
   });
-
-  section.append(
-    el("button", {
-      class: "btn map-tree-wide-action",
-      attrs: { "aria-label": "루트 맵 추가" },
-      children: [
-        el("span", { class: "rm-tool-icon rm-tool-icon-map-child", attrs: { "aria-hidden": "true" } }),
-        el("span", { text: "새 맵" }),
-      ],
-      dataset: { testid: "map-add" },
-      on: {
-        click: () => {
-          const id = addMap("새 맵");
-          editorState.set({ currentMapId: id, selectedEventId: null, selectedEventPageId: null });
-        },
-      },
-    }),
-    el("button", {
-      class: "btn map-tree-wide-action",
-      attrs: { "aria-label": "현재 맵을 시작 맵으로" },
-      children: [
-        el("span", { class: "rm-tool-icon rm-tool-icon-map-start", attrs: { "aria-hidden": "true" } }),
-        el("span", { text: "시작 위치" }),
-      ],
-      dataset: { testid: "map-set-start" },
-      on: {
-        click: () => setStartMap(activeId),
-      },
-    })
-  );
 
   container.append(section);
 }
@@ -94,7 +71,7 @@ function renderNode(spec: RenderNodeSpec): void {
   const isStart = context.startMapId === node.mapId;
   const hasChildren = node.children.length > 0;
   const isCollapsed = collapsedMapIds.has(node.mapId);
-  const icon = depth === 0 ? "folder" : (map?.name ?? "").toLowerCase().startsWith("area") ? "map-area" : "map-node";
+  const icon = mapTreeIcon(depth, map?.name ?? "", hasChildren);
   const actionContext: MapActionContext = {
     canDelete: Object.keys(project.maps).length > 1,
     mapId: node.mapId,
@@ -173,7 +150,8 @@ function renderNode(spec: RenderNodeSpec): void {
       class: `map-tree-icon rm-tool-icon rm-tool-icon-${icon}`,
       attrs: { "aria-hidden": "true" },
     }),
-    el("span", { class: "map-tree-name", text: map?.name || "(이름 없음)" })
+    el("span", { class: "map-tree-name", text: map?.name || "(이름 없음)" }),
+    mapLockBadge(node.mapId)
   );
 
   item.append(el("span", { class: "start-mark", text: isStart ? "★" : "", attrs: { "aria-hidden": "true" } }));
@@ -253,7 +231,7 @@ function treeToggle(mapId: MapId, hasChildren: boolean, isCollapsed: boolean): H
         } else {
           collapsedMapIds.add(mapId);
         }
-        renderMapList(document.querySelector<HTMLElement>('[data-testid="left-map-root"]') ?? document.createElement("div"));
+        rerenderMapList();
       },
     },
   }) as HTMLButtonElement;
@@ -261,6 +239,136 @@ function treeToggle(mapId: MapId, hasChildren: boolean, isCollapsed: boolean): H
 
 function selectMap(mapId: MapId): void {
   editorState.set({ currentMapId: mapId, selectedEventId: null, selectedEventPageId: null });
+  void checkoutMapForEditing(mapId, store.getCurrent().maps[mapId]?.name ?? mapId);
+}
+
+function makeMapTreeHeaderActions(activeId: MapId, root: MapTreeNode): HTMLElement {
+  const allCollapsed = areAllBranchesCollapsed(root);
+  return el("div", {
+    class: "map-tree-header-actions",
+    children: [
+      treeAction({
+        action: () => {
+          const id = addMap("새 맵");
+          selectMap(id);
+        },
+        icon: "map-child",
+        label: "루트 맵 추가",
+        testId: "map-add",
+      }),
+      treeAction({
+        action: () => addCategoryAndSelect(activeId),
+        icon: "folder",
+        label: "현재 맵 아래 카테고리 생성",
+        text: "분류",
+        testId: "map-add-category",
+      }),
+      treeAction({
+        action: () => setStartMap(activeId),
+        icon: "map-start",
+        label: "현재 맵을 시작 맵으로",
+        testId: "map-set-start",
+      }),
+      treeAction({
+        action: () => {
+          if (allCollapsed) expandAllMapTree(root);
+          else collapseAllMapTree(root);
+          rerenderMapList();
+        },
+        icon: allCollapsed ? "tree-open" : "tree-closed",
+        label: allCollapsed ? "전체 펼치기" : "전체 접기",
+        testId: "map-toggle-all",
+      }),
+    ],
+  });
+}
+
+function addCategoryAndSelect(parentId: MapId): void {
+  const id = addChildMap(parentId, "새 카테고리", { width: 8, height: 8 });
+  if (!id) return;
+  collapsedMapIds.delete(parentId);
+  selectMap(id);
+}
+
+function areAllBranchesCollapsed(root: MapTreeNode): boolean {
+  const branches = branchMapIds(root);
+  return branches.length > 0 && branches.every((mapId) => collapsedMapIds.has(mapId));
+}
+
+function collapseAllMapTree(root: MapTreeNode): void {
+  for (const mapId of branchMapIds(root)) collapsedMapIds.add(mapId);
+}
+
+function expandAllMapTree(root: MapTreeNode): void {
+  for (const mapId of branchMapIds(root)) collapsedMapIds.delete(mapId);
+}
+
+function branchMapIds(root: MapTreeNode): readonly MapId[] {
+  const ids: MapId[] = [];
+  collectBranchMapIds(root, ids);
+  return ids;
+}
+
+function collectBranchMapIds(node: MapTreeNode, ids: MapId[]): void {
+  if (node.children.length > 0) ids.push(node.mapId);
+  for (const child of node.children) collectBranchMapIds(child, ids);
+}
+
+function rerenderMapList(): void {
+  if (currentMapListContainer) renderMapList(currentMapListContainer);
+}
+
+function mapTreeIcon(depth: number, mapName: string, hasChildren: boolean): string {
+  if (depth === 0) return "folder";
+  const normalized = mapName.trim().toLowerCase();
+  if (hasChildren || normalized.includes("카테고리") || normalized.startsWith("area")) return "folder";
+  return "map-node";
+}
+
+function mapLockBadge(mapId: MapId): HTMLElement {
+  const lockStatus = statusForMap(mapId);
+  const label = mapLockBadgeLabel(lockStatus);
+  return el("span", {
+    class: `map-lock-badge ${lockStatus?.kind ?? "idle"}`,
+    text: label,
+    attrs: {
+      "aria-label": label ? `맵 편집 상태: ${label}` : "맵 편집 상태 없음",
+      title: mapLockBadgeTitle(lockStatus),
+    },
+    dataset: { testid: `map-lock-badge-${mapId}` },
+  });
+}
+
+function mapLockBadgeLabel(status: MapEditLockStatus | null): string {
+  if (!status) return "";
+  switch (status.kind) {
+    case "checking":
+      return "확인";
+    case "held":
+      return "편집";
+    case "locked":
+      return "잠김";
+    case "unavailable":
+      return "로컬";
+    case "idle":
+      return "";
+  }
+}
+
+function mapLockBadgeTitle(status: MapEditLockStatus | null): string {
+  if (!status) return "아직 잠금 상태를 확인하지 않았습니다.";
+  switch (status.kind) {
+    case "checking":
+      return "편집 권한 확인 중";
+    case "held":
+      return "이 브라우저가 이 맵을 편집 중";
+    case "locked":
+      return `${status.ownerLabel} 세션이 편집 중`;
+    case "unavailable":
+      return `잠금 확인 불가: ${status.message}`;
+    case "idle":
+      return "아직 잠금 상태를 확인하지 않았습니다.";
+  }
 }
 
 function addChildAndSelect(parentId: MapId, name = "새 맵"): void {
@@ -291,7 +399,7 @@ function openMapProperties(mapId: MapId, mapName: string): void {
   openEventSubdialog({
     render: (body) => renderMapProps(body),
     testId: `map-properties-modal-${mapId}`,
-    title: "Map Properties...",
+    title: "맵 설정",
     subtitle: mapName,
     width: "narrow",
   });
@@ -314,7 +422,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       action: () => openMapProperties(context.mapId, context.mapName),
       icon: "map-settings",
       id: "settings",
-      label: "Map Properties...",
+      label: "맵 설정",
       testId: `map-settings-${context.mapId}`,
     },
     {
@@ -439,7 +547,10 @@ function treeAction(spec: TreeActionSpec): HTMLButtonElement {
   const button = el("button", {
     class: "map-tree-action",
     attrs: { title: spec.label, "aria-label": spec.label, type: "button" },
-    children: [el("span", { class: `rm-tool-icon rm-tool-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } })],
+    children: [
+      el("span", { class: `rm-tool-icon rm-tool-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
+      ...(spec.text ? [el("span", { class: "map-tree-action-text", text: spec.text })] : []),
+    ],
     dataset: { testid: spec.testId },
     on: {
       click: (event) => {

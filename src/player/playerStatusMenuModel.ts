@@ -7,6 +7,7 @@ export const STATUS_MENU_COMMAND_IDS = [
   "skills",
   "equipment",
   "save",
+  "load",
   "status",
   "row",
   "formation",
@@ -58,10 +59,11 @@ export function createPlayerStatusMenuSnapshot(
     const actor = actorsById.get(actorId);
     if (!actor) return [];
     const vitals = session.actorVitals[actorId];
+    const level = session.actorLevels[actorId] ?? actor.initialLevel;
     return [{
       actorId,
       name: actor.name,
-      levelLabel: `${levelTerm} ${actor.initialLevel}`,
+      levelLabel: `${levelTerm} ${level}`,
       condition: "정상",
       faceResourceId: actor.faceResourceId ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
@@ -89,6 +91,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "skills": return "스킬";
     case "equipment": return "장비";
     case "save": return "저장";
+    case "load": return "로드";
     case "status": return "상태";
     case "row": return "열";
     case "formation": return "진형";

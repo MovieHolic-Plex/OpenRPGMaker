@@ -31,7 +31,7 @@ function makeRuntimeProject(): SeedProject {
     meta: { title: "Runtime Semantics", author: "e2e", terms: { gold: "G" } },
     assets: {
       sprites: {
-        npc_villager: { id: "npc_villager", image: { type: "bundled", id: "tex_npc_villager" }, frames: 8, frameWidth: 32, frameHeight: 32 },
+        tex_easyrpg_charset_people1: { id: "tex_easyrpg_charset_people1", image: { type: "bundled", id: "tex_easyrpg_charset_people1" }, frames: 8, frameWidth: 32, frameHeight: 32 },
       },
       uploaded: {},
     },
@@ -79,7 +79,7 @@ function makeRuntimeProject(): SeedProject {
             id: "ev_change",
             x: 0,
             y: 1,
-            sprite: { type: "bundled", id: "npc_villager" },
+            sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" },
             trigger: { kind: "action" },
             commands: [],
             pages: [
@@ -87,7 +87,7 @@ function makeRuntimeProject(): SeedProject {
                 id: "page_change",
                 name: "Change",
                 conditions: [],
-                graphic: { sprite: { type: "bundled", id: "npc_villager" } },
+                graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } },
                 trigger: { kind: "action" },
                 priority: "same",
                 movement: { type: "fixed", speed: 3, frequency: 3 },

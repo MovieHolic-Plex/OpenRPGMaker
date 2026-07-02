@@ -1,0 +1,985 @@
+@media (min-width: 901px) {
+  .database-modal-window:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-body {
+    min-height: 0;
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .database-modal-body .rm2k3-record-workspace,
+  .database-modal-body .rm2k3-record-detail-pane,
+  .database-modal-body .rm2k3-record-list-pane {
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-detail-form,
+  .database-modal-body .db-detail-form {
+    box-sizing: border-box;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 22px;
+    scrollbar-gutter: stable;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-classic-sheet {
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-editor-grid {
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-left-stack,
+  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-options {
+    min-height: 190px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-skill-list {
+    max-height: 190px;
+    min-height: 190px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rates {
+    max-height: 168px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+    grid-template-rows: 76px 168px 100px minmax(86px, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+    padding: 9px 10px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-rows {
+    max-height: 152px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table {
+    max-height: 220px;
+  }
+
+  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+    grid-template-rows: 82px 172px 106px minmax(62px, 1fr);
+  }
+
+  .database-modal-body .rm2k3-detail-skills,
+  .database-modal-body .rm2k3-detail-items,
+  .database-modal-body .rm2k3-detail-equipment {
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .rm2k3-detail-equipment .db-advanced-panel:has(.actor-check) {
+    max-height: 196px;
+    overflow: auto;
+    padding-bottom: 14px;
+  }
+
+  .database-modal-body .rm2k3-detail-equipment .actor-check {
+    min-height: 30px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 5px;
+    box-shadow: none;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane h3 {
+    background: transparent;
+    color: #1f1e1b;
+    font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 12px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line-soft, #e8e7e2);
+    border-radius: 4px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+    grid-template-rows: 76px 156px 96px minmax(130px, 1fr);
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
+    background: #ffffff;
+    border-color: var(--db-modern-line, #d7d7d3);
+    padding: 10px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) {
+    gap: 6px;
+    grid-template-rows: auto minmax(104px, 1fr) 24px 24px;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-enemy-graphic-stage {
+    min-height: 104px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) .actor-check {
+    min-height: 22px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7),
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+    overflow: auto;
+  }
+
+  .database-modal-body .db-enemy-rate-row {
+    min-height: 28px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main {
+    grid-template-columns: minmax(520px, 1fr) minmax(220px, 260px);
+  }
+
+  .database-modal-body .rm2k3-tileset-terrain-pane,
+  .database-modal-body .rm2k3-tileset-main > :last-child {
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 12px;
+  }
+
+  .database-modal-body .db-body:has(:is(.db-system-form, .animation-detail-form, .db-state-rm2k3-workbench, .tileset-db-workspace)) {
+    overflow: hidden;
+  }
+
+  .database-modal-body :is(.db-system-form, .db-terms-form, .db-utility-form, .animation-detail-form) {
+    box-sizing: border-box;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 24px;
+  }
+
+  .database-modal-body .db-system-form {
+    grid-auto-rows: max-content;
+  }
+
+  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) {
+    max-height: 286px;
+    overflow: auto;
+  }
+
+  .database-modal-body .animation-detail-form {
+    align-content: start;
+    display: grid;
+    gap: 12px;
+  }
+
+  .database-modal-body .db-animation-rm2003-editor {
+    display: grid;
+    gap: 10px;
+    grid-template-areas:
+      "top top top"
+      "frames stage timing"
+      "cells cells cells"
+      "strip strip strip";
+    grid-template-columns: minmax(190px, 0.42fr) minmax(420px, 1fr) minmax(300px, 0.72fr);
+    min-height: 0;
+  }
+
+  .database-modal-body .db-animation-top-grid {
+    display: grid;
+    gap: 10px;
+    grid-area: top;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-height: 0;
+  }
+
+  .database-modal-body .db-animation-panel {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 10px;
+  }
+
+  .database-modal-body .db-animation-panel legend {
+    color: #1f1e1b;
+    font: 700 14px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 8px;
+    padding: 0;
+  }
+
+  .database-modal-body .db-animation-top-grid > .field,
+  .database-modal-body .db-animation-panel .field {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(84px, 0.3fr) minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .database-modal-body .db-animation-top-grid :is(input, select),
+  .database-modal-body .db-animation-panel :is(input, select) {
+    background: #fbfbfa;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    box-sizing: border-box;
+    min-height: 30px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .database-modal-body .db-animation-setup-panel {
+    max-height: 156px;
+  }
+
+  .database-modal-body .db-animation-sheet-fields {
+    display: grid;
+    gap: 7px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .database-modal-body .db-animation-frame-list-panel { grid-area: frames; max-height: 242px; }
+  .database-modal-body .db-animation-stage-panel { grid-area: stage; max-height: 242px; }
+  .database-modal-body .db-animation-timing-panel { grid-area: timing; max-height: 242px; }
+  .database-modal-body [data-testid="db-animation-cell-table"] { grid-area: cells; max-height: 164px; }
+  .database-modal-body .db-animation-pattern-strip-panel { grid-area: strip; max-height: 96px; }
+
+  .database-modal-body [data-testid="db-animation-cell-table"] .db-animation-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .database-modal-body [data-testid="db-animation-cell-table"] :is(th, td) {
+    min-width: 70px;
+    overflow: hidden;
+    padding: 4px 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-detail-states > .db-state-rm2k3-workbench {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 20px;
+  }
+
+  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+    grid-template-rows: 84px 160px 132px minmax(78px, 1fr);
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4),
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(5) {
+    overflow: visible;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) {
+    grid-template-rows: auto minmax(96px, 1fr) 24px 24px;
+  }
+
+  .database-modal-body .db-enemy-graphic-stage {
+    min-height: 96px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+    padding-bottom: 22px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-preview-wrap {
+    max-height: 390px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-preview {
+    max-height: 368px;
+  }
+
+  .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body {
+    display: grid;
+    gap: 10px;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body > h3 {
+    color: #1f1e1b;
+    font: 700 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0;
+  }
+
+  .database-modal-body .db-parity-form {
+    align-content: start;
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 16px 16px 28px;
+  }
+
+  .database-modal-body .db-parity-form .rm2k3-db-fieldset {
+    align-content: start;
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: grid;
+    gap: 8px 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .database-modal-body .db-parity-form .rm2k3-db-fieldset:first-child,
+  .database-modal-body .db-parity-form .rm2k3-db-fieldset:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .db-parity-form .rm2k3-db-fieldset:nth-child(2) {
+    max-height: 338px;
+    overflow: auto;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .db-parity-form .rm2k3-db-fieldset legend {
+    background: #ffffff;
+    color: #1f1e1b;
+    font: 700 15px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    padding: 0 4px;
+  }
+
+  .database-modal-body .db-parity-form .db-readonly-row {
+    align-items: center;
+    box-sizing: border-box;
+    color: var(--db-modern-muted);
+    display: grid;
+    font: 500 13px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    gap: 8px;
+    grid-template-columns: minmax(72px, 0.28fr) minmax(0, 1fr);
+    margin: 0;
+    min-height: 32px;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-parity-form .db-readonly-row > span {
+    color: #33312d;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-parity-form :is(input, select, code) {
+    background: #fbfbfa;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--db-modern-text);
+    font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 30px;
+    min-width: 0;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+  .database-modal-body .db-parity-form code {
+    align-items: center;
+    display: flex;
+    font-family: var(--font-mono, "Cascadia Mono", Consolas, monospace);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-parity-form input[type="checkbox"] {
+    height: 16px;
+    min-height: 16px;
+    padding: 0;
+    width: 16px;
+  }
+
+  .database-modal-body .db-common-events-workspace {
+    background: transparent;
+    border: 0;
+    box-sizing: border-box;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(250px, 304px) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body .db-common-event-list-pane,
+  .database-modal-body .db-common-event-detail-pane {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-common-event-list-pane {
+    display: grid;
+    gap: 10px;
+    grid-template-rows: auto minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .database-modal-body .db-common-event-list-pane > .btn {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: #1f1d1a;
+    font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 34px;
+  }
+
+  .database-modal-body .db-common-event-list {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    display: block;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .db-common-event-list .db-list-row {
+    align-items: center;
+    background: #ffffff;
+    border: 0;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+    box-sizing: border-box;
+    color: #35332f;
+    display: grid;
+    font: 500 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    gap: 8px;
+    grid-template-columns: 54px minmax(0, 1fr) minmax(58px, auto);
+    min-height: 34px;
+    padding: 0 10px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .database-modal-body .db-common-event-list .db-list-row:hover {
+    background: #f5f7fb;
+  }
+
+  .database-modal-body .db-common-event-list .db-list-row.active {
+    background: linear-gradient(180deg, #0c75eb 0%, #075ed1 100%);
+    color: #ffffff;
+  }
+
+  .database-modal-body .db-common-event-list :is(.db-list-number, .db-list-name, .db-list-meta) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-common-event-detail-pane {
+    display: grid;
+    padding: 14px;
+  }
+
+  .database-modal-body .db-common-event-editor {
+    align-content: start;
+    display: grid;
+    gap: 10px;
+    grid-auto-rows: max-content;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 0 4px 22px 0;
+  }
+
+  .database-modal-body .db-common-event-editor .db-row,
+  .database-modal-body .db-common-event-editor .db-field {
+    align-items: center;
+    color: var(--db-modern-muted);
+    display: grid;
+    font: 500 13px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    gap: 10px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    margin: 0;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-common-event-editor .db-row {
+    grid-template-columns: 52px minmax(0, 1fr) minmax(72px, auto) 76px;
+  }
+
+  .database-modal-body .db-common-event-editor :is(input, select, button, .btn) {
+    box-sizing: border-box;
+    font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-common-event-editor :is(input, select) {
+    background: #fbfbfa;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--db-modern-text);
+    font-size: 14px;
+    min-height: 32px;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+  .database-modal-body .db-common-event-editor .btn {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: #1f1d1a;
+    min-height: 32px;
+  }
+
+  .database-modal-body .db-common-event-editor .btn.danger {
+    color: #a1282a;
+  }
+
+  .database-modal-body .db-common-event-editor .db-meta,
+  .database-modal-body .db-common-event-editor .db-id,
+  .database-modal-body .db-common-event-editor .db-field > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-common-event-editor .db-checkbox-field {
+    grid-template-columns: 156px 18px minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-common-event-editor input[type="checkbox"] {
+    height: 16px;
+    min-height: 16px;
+    padding: 0;
+    width: 16px;
+  }
+
+  .database-modal-body .db-common-event-editor .db-field:has(.cmd-list) {
+    align-items: stretch;
+    grid-template-columns: 72px minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .database-modal-body .db-common-event-editor .cmd-list {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    max-height: 420px;
+    min-height: 230px;
+    min-width: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-editor-grid {
+    grid-template-columns: minmax(340px, 480px) minmax(520px, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-left-stack,
+  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+    grid-template-columns: minmax(250px, 0.95fr) minmax(280px, 1fr);
+    grid-template-rows: 226px 112px 44px minmax(0, 136px);
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-battle > .actor-starting-equipment {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-battle > .field {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-battle > .actor-options {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-battle > .actor-skills {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-panel {
+    padding: 10px 12px 8px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-panel legend {
+    font-size: 15px;
+    margin: -1px 0 7px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-options {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-options-grid {
+    gap: 1px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-check {
+    font-size: 14px;
+    min-height: 25px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-skills {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-skill-header {
+    font-size: 14px;
+    min-height: 28px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-skill-list {
+    max-height: 238px;
+    min-height: 238px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-skill-row {
+    min-height: 32px;
+    padding: 2px 6px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rates {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    max-height: 136px;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 12px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rate-columns {
+    gap: 8px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rate-list {
+    max-height: 84px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rate-list > strong {
+    font-size: 14px;
+    min-height: 26px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rate-row {
+    font-size: 13px;
+    min-height: 28px;
+    padding: 2px 8px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+    grid-template-rows: 92px 248px 122px minmax(96px, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(2),
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(5) {
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(3) {
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-curves-grid {
+    gap: 8px 10px;
+    grid-auto-rows: minmax(60px, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-curve {
+    align-content: center;
+    box-sizing: border-box;
+    min-height: 60px;
+    padding: 8px 10px 7px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-curve strong,
+  .database-modal-body .rm2k3-record-classes .db-class-curve span {
+    line-height: 18px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-curve-graph {
+    height: 9px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-rows {
+    max-height: none;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 14px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane,
+  .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
+    background: #ffffff;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench {
+    background: #ffffff;
+    border: 0;
+    gap: 10px;
+    grid-template-rows: 96px 172px 132px minmax(194px, 1fr);
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(1),
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4) {
+    overflow: visible;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench .actor-check {
+    height: 26px;
+    min-height: 26px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7),
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+    overflow: auto;
+    padding-bottom: 14px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row {
+    border-bottom: 1px solid #ececec;
+    min-height: 32px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row span {
+    color: #30343b;
+    font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row select {
+    height: 28px;
+    min-height: 28px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-critical-row {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-enemy-critical-row .db-field {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-troops .db-troops-classic-workbench {
+    grid-template-rows: auto minmax(250px, 0.48fr) minmax(224px, 0.52fr);
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-troops .db-troop-preview-panel {
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-record-troops .db-troop-member-buttons {
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 4px;
+  }
+
+  .database-modal-body .rm2k3-record-troops .db-troop-member-list {
+    grid-template-rows: auto minmax(72px, 1fr) 94px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-troops .db-troop-member-list .db-troop-member-position-panel {
+    box-sizing: border-box;
+    max-height: 94px;
+    overflow: auto;
+    padding: 10px;
+  }
+
+  .database-modal-body .rm2k3-record-troops .db-troop-member-rows,
+  .database-modal-body .rm2k3-record-troops .db-troop-enemy-list {
+    min-height: 0;
+  }
+
+  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) {
+    box-sizing: border-box;
+    max-height: 100%;
+    overflow: auto;
+    padding-bottom: 28px;
+  }
+
+  .database-modal-body .rm2k3-detail-items > .db-items-rm2k3-workbench {
+    align-content: start;
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 22px;
+  }
+
+  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child {
+    display: grid;
+    gap: 8px 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child legend {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child :is(.field, .db-field) {
+    grid-template-columns: minmax(74px, 0.24fr) minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel {
+    margin-bottom: 0;
+  }
+
+  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:has(.actor-check) {
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 16px;
+  }
+
+  .database-modal-body .db-system-form {
+    padding-bottom: 96px;
+  }
+
+  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) {
+    display: grid;
+    gap: 8px 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) legend {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .db-system-form {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(5) {
+    gap: 8px;
+  }
+
+  .database-modal-body .db-system-form .db-system-preview-well {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .database-modal-body .db-system-form .db-system-preview-frame {
+    aspect-ratio: 16 / 9;
+    max-height: 96px;
+  }
+
+  .database-modal-body .db-system-form .db-system-preview-well code {
+    font-size: 12px;
+    min-height: 26px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

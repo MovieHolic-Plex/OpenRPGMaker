@@ -20,6 +20,7 @@ export type MockTileImage = {
 
 export type MockSprite = MockTileImage & {
   alpha: number;
+  frame: string | number | null;
   readonly texture: { key: string };
   play(key: string): MockSprite;
   setPosition(x: number, y: number): void;
@@ -85,14 +86,15 @@ export function mockTileImage(): MockTileImage {
   };
 }
 
-export function mockSprite(x = 0, y = 0): MockSprite {
+export function mockSprite(x = 0, y = 0, textureKey = "tex_easyrpg_charset_people1"): MockSprite {
   let sprite: MockSprite;
   sprite = {
     kind: "sprite",
     x,
     y,
     alpha: 1,
-    texture: { key: "npc_villager" },
+    frame: null,
+    texture: { key: textureKey },
     depth: null,
     origin: null,
     play: () => sprite,
@@ -106,12 +108,15 @@ export function mockSprite(x = 0, y = 0): MockSprite {
       sprite.x = nextX;
       sprite.y = nextY;
     },
-    setFrame: () => undefined,
+    setFrame(frame) {
+      sprite.frame = frame;
+    },
     setAlpha(alpha) {
       sprite.alpha = alpha;
     },
-    setTexture(texture) {
+    setTexture(texture, frame) {
       sprite.texture.key = texture;
+      if (frame !== undefined) sprite.frame = frame;
     },
     destroy: () => undefined,
   };

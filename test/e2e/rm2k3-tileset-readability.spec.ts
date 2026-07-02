@@ -35,6 +35,13 @@ test("RM2K3 tileset tab keeps Korean controls readable and mode buttons synced",
   await expect(page.getByTestId("tileset-rm2k3-mode-passage")).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("tileset-db-cell-0")).toHaveText(/^(O|X|★)$/);
 
+  await expect(page.getByTestId("tileset-generation-checker")).toContainText("Ready");
+  await expect(page.getByTestId("tileset-generation-check-city")).toContainText("OK");
+  await page.getByTestId("tileset-db-cell-360").click();
+  await expect(page.getByTestId("tileset-selected-tags")).toContainText("terrain");
+  await expect(page.getByTestId("tileset-selected-tags")).toContainText("passable");
+  await expect(page.getByTestId("tileset-selected-rules")).not.toContainText("No placement rule");
+
   await page.getByTestId("tileset-rm2k3-mode-four-way").click();
   await expect(page.getByTestId("tileset-settings-modal")).toBeVisible();
   await page.getByTestId("tileset-settings-close").click();

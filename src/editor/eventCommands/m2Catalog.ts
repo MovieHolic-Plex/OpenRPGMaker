@@ -2,10 +2,20 @@ import type { Command, M2CommandValue } from "@/project/types";
 import {
   EXISTING_KIND_BY_TITLE,
   KOREAN_LABEL_BY_TITLE,
+  MODERN_COMMAND_ROWS,
   NO_ELLIPSIS_TITLES,
   PDF_COMMAND_ROWS,
   type M2PdfCommandRow,
 } from "./m2CatalogData";
+import { modernFieldsFor } from "./m2ModernCatalog";
+import {
+  pickerGroupForM2Command,
+  pickerPageForM2Command,
+  type M2CommandPickerGroup,
+  type M2CommandPickerPage,
+} from "./m2PickerLayout";
+
+export type { M2CommandPickerGroup, M2CommandPickerPage } from "./m2PickerLayout";
 
 export type M2CommandSupportStatus =
   | "enabled-runtime"
@@ -26,8 +36,6 @@ export type M2RuntimeClassification =
 
 export type M2CommandFieldType = "text" | "number" | "boolean" | "textarea" | "select";
 
-export type M2CommandPickerPage = 1 | 2 | 3 | 4;
-
 export type M2CommandFieldOption = {
   readonly value: string;
   readonly label: string;
@@ -46,6 +54,7 @@ export type M2CommandCatalogEntry = M2PdfCommandRow & {
   readonly label: string;
   readonly pickerLabel: string;
   readonly pickerPage: M2CommandPickerPage;
+  readonly pickerGroup: M2CommandPickerGroup;
   readonly existingKind?: Command["kind"];
   readonly supportStatus: M2CommandSupportStatus;
   readonly runtimeClassification: M2RuntimeClassification;
@@ -68,7 +77,7 @@ const BOOLEAN_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "false", label: "OFF / 금지" },
 ];
 
-export const M2_COMMAND_CATALOG: readonly M2CommandCatalogEntry[] = PDF_COMMAND_ROWS.map(buildCatalogEntry);
+export const M2_COMMAND_CATALOG: readonly M2CommandCatalogEntry[] = [...PDF_COMMAND_ROWS, ...MODERN_COMMAND_ROWS].map(buildCatalogEntry);
 
 export function m2CommandById(commandId: string): M2CommandCatalogEntry | undefined {
   return M2_COMMAND_CATALOG.find((entry) => entry.id === commandId);
@@ -85,25 +94,36 @@ export function createDefaultM2Fields(entry: M2CommandCatalogEntry): Record<stri
 }
 
 export function isM2CatalogEntrySelectableInMap(entry: M2CommandCatalogEntry): boolean {
-  return entry.runtimeClassification === "runtime" || entry.runtimeClassification === "editor-only";
+  return (
+    entry.runtimeClassification === "runtime" ||
+    entry.runtimeClassification === "editor-only" ||
+    entry.runtimeClassification === "shell" ||
+    (entry.runtimeClassification === "disabled" && entry.bodyStrategy === "generic")
+  );
 }
 
 export function isM2CatalogEntrySelectableInBattleEvent(entry: M2CommandCatalogEntry): boolean {
-  return isM2CatalogEntrySelectableInMap(entry) || entry.runtimeClassification === "battle-only";
+  return (
+    entry.runtimeClassification === "runtime" ||
+    entry.runtimeClassification === "editor-only" ||
+    entry.runtimeClassification === "battle-only" ||
+    (entry.runtimeClassification === "disabled" && entry.bodyStrategy === "generic")
+  );
 }
 
 function buildCatalogEntry(row: M2PdfCommandRow): M2CommandCatalogEntry {
   const existingKind = EXISTING_KIND_BY_TITLE[row.title];
   const label = KOREAN_LABEL_BY_TITLE[row.title] ?? row.title;
   const supportStatus = supportStatusFor(row.title, existingKind, row.index);
-  const runtimeClassification = runtimeClassificationFor(row.title, supportStatus, existingKind);
+  const runtimeClassification = runtimeClassificationFor(supportStatus, existingKind);
   const fields = existingKind ? [] : genericFieldsFor(row.title);
   return {
     ...row,
     id: stableCommandId(row),
     label,
     pickerLabel: pickerLabelFor(row.title, label, fields),
-    pickerPage: pickerPageFor(row.index),
+    pickerPage: pickerPageForM2Command(row),
+    pickerGroup: pickerGroupForM2Command(row),
     existingKind,
     supportStatus,
     runtimeClassification,
@@ -121,13 +141,6 @@ function slug(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function pickerPageFor(index: number): M2CommandPickerPage {
-  if (index <= 30) return 1;
-  if (index <= 60) return 2;
-  if (index <= 90) return 3;
-  return 4;
-}
-
 function pickerLabelFor(title: string, label: string, fields: readonly M2CommandFieldSpec[]): string {
   if (NO_ELLIPSIS_TITLES.has(title)) return label;
   if (fields.length === 0 && title.startsWith("Open ")) return label;
@@ -139,20 +152,17 @@ function supportStatusFor(
   existingKind: Command["kind"] | undefined,
   index: number
 ): M2CommandSupportStatus {
-  if (existingKind && title !== "Change Skills") return "enabled-runtime";
+  if (existingKind) return "enabled-runtime";
+  if (index >= 200) return "enabled-runtime";
   if (index >= 98) return "battle-only";
   if (title.startsWith("Open ") || title === "Exit Game" || title.startsWith("Toggle ")) return "enabled-shell";
   if (SAFE_EDITOR_ONLY_TITLES.has(title)) return "enabled-editor-only";
   return "catalog-disabled";
 }
 
-function runtimeClassificationFor(
-  title: string,
-  supportStatus: M2CommandSupportStatus,
-  existingKind: Command["kind"] | undefined
-): M2RuntimeClassification {
-  if (existingKind && title !== "Change Skills") return "runtime";
-  if (title === "Change Skills") return "missing-runtime";
+function runtimeClassificationFor(supportStatus: M2CommandSupportStatus, existingKind: Command["kind"] | undefined): M2RuntimeClassification {
+  if (existingKind) return "runtime";
+  if (supportStatus === "enabled-runtime") return "runtime";
   if (supportStatus === "enabled-shell") return "shell";
   if (supportStatus === "battle-only") return "battle-only";
   if (supportStatus === "catalog-disabled") return "disabled";
@@ -161,6 +171,8 @@ function runtimeClassificationFor(
 }
 
 function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
+  const modernFields = modernFieldsFor(title);
+  if (modernFields) return modernFields;
   if (title === "Comment") {
     return [{ key: "comment", label: "내용", type: "textarea", defaultValue: "" }];
   }

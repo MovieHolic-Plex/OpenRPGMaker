@@ -23,6 +23,7 @@ export const COMMAND_LABELS = [
   ["skills", "스킬"],
   ["equipment", "장비"],
   ["save", "저장"],
+  ["load", "로드"],
   ["status", "상태"],
   ["row", "열"],
   ["formation", "진형"],
@@ -41,9 +42,29 @@ export async function startActualPlay(page: Page, project = seededStatusMenuProj
 
 export function seededStatusMenuProject(): Project {
   const project = createBlankProject();
-  project.session.inventory = { item_potion: 2, item_ether: 1, equip_scout_dagger: 1 };
+  project.session.inventory = {
+    item_potion: 2,
+    item_ether: 1,
+    item_antidote: 1,
+    item_wake_herb: 1,
+    item_warp_scroll: 1,
+    item_hi_potion: 1,
+    equip_scout_dagger: 1,
+    equip_iron_sword: 1,
+    equip_steel_sword: 1,
+    equip_short_sword: 2,
+  };
+  relabelItem(project, "item_warp_scroll", "귀환 두루마리", "마을로 이동");
+  relabelItem(project, "item_hi_potion", "상급 회복약", "HP를 크게 회복합니다.");
   for (const actor of project.database.actors) delete actor.faceResourceId;
   return project;
+}
+
+function relabelItem(project: Project, id: string, name: string, description: string): void {
+  const item = project.database.items.find((record) => record.id === id);
+  if (!item) return;
+  item.name = name;
+  item.description = description;
 }
 
 export async function seedDefaultProject(page: Page): Promise<void> {

@@ -8,37 +8,55 @@ export function newCommand(kind: Command["kind"]): Command {
     case "changeFace":
       return { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 0, position: "left", flipHorizontally: false };
     case "choices":
-      return { kind: "choices", prompt: "", options: [{ text: "Yes", branch: [] }, { text: "No", branch: [] }], cancelBehavior: "choice2" };
+      return { kind: "choices", prompt: "", options: [{ text: "예", branch: [] }, { text: "아니오", branch: [] }], cancelBehavior: "choice2" };
     case "fork":
       return { kind: "fork", condition: { kind: "switch", switchId: "", value: true }, then: [{ kind: "text", body: "" }] };
     case "wait":
       return { kind: "wait", ms: 500 };
     case "inputWait":
-      return { kind: "inputWait" };
+      return { kind: "inputWait", variableId: "" };
     case "inputNumber":
       return { kind: "inputNumber", variableId: "", digits: 1 };
     case "label":
       return { kind: "label", name: "L1" };
     case "gotoLabel":
       return { kind: "gotoLabel", name: "L1" };
+    case "loop":
+      return { kind: "loop", body: [{ kind: "text", body: "" }] };
+    case "breakLoop":
+      return { kind: "breakLoop" };
     case "setSwitch":
       return { kind: "setSwitch", switchId: "", value: true };
     case "setVariable":
       return { kind: "setVariable", variableId: "", op: "=", value: 0 };
     case "timer":
-      return { kind: "timer", action: "set", seconds: 60 };
+      return { kind: "timer", action: "set", seconds: 60, timerId: "timer1" };
     case "transfer":
-      return { kind: "transfer", mapId: "", x: 0, y: 0 };
+      return { kind: "transfer", mapId: "", x: 0, y: 0, direction: "retain", fade: "black" };
     case "moveEvent":
       return { kind: "moveEvent", eventId: "", route: { moves: [], repeat: false } };
     case "changeTile":
       return { kind: "changeTile", mapId: "", layer: "lower", x: 0, y: 0, tile: 0 };
     case "callCommonEvent":
       return { kind: "callCommonEvent", commonEventId: "" };
+    case "callMapEvent":
+      return { kind: "callMapEvent", eventId: "" };
     case "battleProcessing":
       return { kind: "battleProcessing", troopId: "", canEscape: true, canLose: false };
     case "learnSkill":
       return { kind: "learnSkill", actorId: "", skillId: "" };
+    case "changeExp":
+      return { kind: "changeExp", actorId: "", op: "+=", amount: 10 };
+    case "changeLevel":
+      return { kind: "changeLevel", actorId: "", op: "+=", amount: 1 };
+    case "changeEquipment":
+      return { kind: "changeEquipment", actorId: "", slot: "weapon", equipmentId: "" };
+    case "changeActorHp":
+      return { kind: "changeActorHp", actorId: "", op: "-=", amount: 10 };
+    case "changeActorMp":
+      return { kind: "changeActorMp", actorId: "", op: "-=", amount: 5 };
+    case "recoverAll":
+      return { kind: "recoverAll", actorId: "" };
     case "changeGold":
       return { kind: "changeGold", op: "+=", amount: 10 };
     case "changeItem":
@@ -82,6 +100,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "returnToTitle" };
     case "setFlag":
       return { kind: "setFlag", flag: "flag1", value: true };
+    case "setSelfSwitch":
+      return { kind: "setSelfSwitch", key: "A", value: true };
     case "m2Command":
       return newM2Command(M2_COMMAND_CATALOG[0]?.id ?? "m2-unknown");
     default: {

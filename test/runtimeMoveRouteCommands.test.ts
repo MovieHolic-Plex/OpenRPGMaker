@@ -33,7 +33,7 @@ describe("runtime move route commands", () => {
       { kind: "setSwitch", switchId: "sw_route_done", value: true },
       { kind: "changeSpeed", delta: 1 },
       { kind: "changeFrequency", delta: 1 },
-      { kind: "changeGraphic", spriteId: "npc_villager" },
+      { kind: "changeGraphic", spriteId: "tex_easyrpg_charset_people1" },
       { kind: "playSe", resourceId: "se_route_chime" },
       { kind: "moveRandom" },
       { kind: "turnRandom" },
@@ -89,7 +89,7 @@ describe("runtime move route commands", () => {
     expect(mover.animationEnabled).toBe(true);
     expect(mover.opacity).toBe(255);
     expect(sprite.alpha).toBe(1);
-    expect(sprite.texture.key).toBe("tex_npc_villager");
+    expect(sprite.texture.key).toBe("tex_easyrpg_charset_people1");
     expect(overlays["audio-indicator"]).toBe("se_route_chime");
     expect(markerUpdates.length).toBeGreaterThan(0);
   });

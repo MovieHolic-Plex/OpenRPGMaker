@@ -3,9 +3,10 @@
 // message settings, facesets, and choices stay covered without duplicate setup.
 // 인터프리터 상태머신 검증. 일시정지/재개/분기/조건/세션 반영.
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
-import type { Command } from "@/project/types";
+import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import type { Command, M2CommandFields } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
 
 type Interpreter = ReturnType<typeof createInterpreter>;
@@ -13,6 +14,30 @@ type InterpreterResult = ReturnType<Interpreter["start"]>;
 type TextResult = Extract<InterpreterResult, { kind: "text" }>;
 type ChoicesResult = Extract<InterpreterResult, { kind: "choices" }>;
 type WaitResult = Extract<InterpreterResult, { kind: "wait" }>;
+type M2RuntimeTestSession = PlaySessionLike & {
+  audio: Record<string, { readonly resourceId: string; readonly loop: boolean }>;
+  pictures: Record<string, { readonly pictureId: string; readonly resourceId: string; readonly x: number; readonly y: number }>;
+  m2Runtime?: {
+    screen?: Record<string, unknown>;
+    access?: Record<string, unknown>;
+    audio?: Record<string, unknown>;
+    actors?: Record<string, Record<string, unknown>>;
+    events?: Record<string, Record<string, unknown>>;
+    camera?: Record<string, unknown>;
+    screenEffects?: readonly Record<string, unknown>[];
+    pathfinding?: readonly Record<string, unknown>[];
+    waits?: readonly Record<string, unknown>[];
+    regions?: readonly Record<string, unknown>[];
+    quests?: Record<string, Record<string, unknown>>;
+    dialogue?: readonly Record<string, unknown>[];
+    cutscene?: Record<string, unknown>;
+    checkpoints?: readonly Record<string, unknown>[];
+    ui?: readonly Record<string, unknown>[];
+    debug?: readonly Record<string, unknown>[];
+    expressions?: readonly Record<string, unknown>[];
+    fallbacks?: readonly { readonly commandId: string; readonly label: string; readonly reason: string }[];
+  };
+};
 
 function mkSession(): PlaySessionLike {
   return {
@@ -23,11 +48,34 @@ function mkSession(): PlaySessionLike {
     gold: 0,
     inventory: {},
     partyActorIds: [],
+    actorExperience: {},
+    actorLevels: {},
+    actorEquipment: {},
     actorVitals: {},
     currentMapId: "m1",
     x: 0,
     y: 0,
   };
+}
+
+function mkM2Session(): M2RuntimeTestSession {
+  return {
+    ...mkSession(),
+    audio: {},
+    pictures: {},
+  };
+}
+
+function m2Command(title: string, fields: M2CommandFields = {}): Command {
+  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === title && candidate.index <= 97);
+  if (!entry) throw new Error(`missing M2 catalog entry for ${title}`);
+  return { kind: "m2Command", commandId: entry.id, fields };
+}
+
+function modernM2Command(title: string, fields: M2CommandFields = {}): Command {
+  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === title);
+  if (!entry) throw new Error(`missing modern M2 catalog entry for ${title}`);
+  return { kind: "m2Command", commandId: entry.id, fields };
 }
 
 it("소지금, 아이템, 파티 명령을 세션에 반영한다", () => {
@@ -50,6 +98,29 @@ it("소지금, 아이템, 파티 명령을 세션에 반영한다", () => {
   expect(session.partyActorIds).toEqual(["actor_mage"]);
 });
 
+it("배우 상태 명령을 세션에 반영한다", () => {
+  const session = mkSession();
+  session.partyActorIds = ["actor_hero", "actor_mage"];
+  session.actorVitals.actor_hero = { hp: 40, mp: 5, maxHp: 80, maxMp: 20 };
+  session.actorVitals.actor_mage = { hp: 10, mp: 1, maxHp: 50, maxMp: 30 };
+  const commands: Command[] = [
+    { kind: "changeActorHp", actorId: "actor_hero", op: "-=", amount: 15 },
+    { kind: "changeActorMp", actorId: "actor_hero", op: "+=", amount: 50 },
+    { kind: "changeExp", actorId: "actor_hero", op: "+=", amount: 12 },
+    { kind: "changeLevel", actorId: "actor_hero", op: "=", amount: 7 },
+    { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: "equip_sword" },
+    { kind: "recoverAll", actorId: "" },
+  ];
+
+  drain(createInterpreter(commands, session));
+
+  expect(session.actorVitals.actor_hero).toMatchObject({ hp: 80, mp: 20 });
+  expect(session.actorVitals.actor_mage).toMatchObject({ hp: 50, mp: 30 });
+  expect(session.actorExperience?.actor_hero).toBe(12);
+  expect(session.actorLevels?.actor_hero).toBe(7);
+  expect(session.actorEquipment?.actor_hero?.weapon).toBe("equip_sword");
+});
+
 function expectTextResult(result: InterpreterResult): TextResult {
   if (result.kind === "text") return result;
   throw new Error(`expected interpreter result text, got ${result.kind}`);
@@ -70,9 +141,9 @@ function expectChoicesResult(result: InterpreterResult): ChoicesResult {
 function drain(
   it: ReturnType<typeof createInterpreter>,
   onChoices?: (options: { text: string }[]) => number
-): { texts: string[]; transfers: { mapId: string; x: number; y: number }[]; flags: Record<string, boolean> } {
+): { texts: string[]; transfers: { mapId: string; x: number; y: number; fade?: string }[]; flags: Record<string, boolean> } {
   const texts: string[] = [];
-  const transfers: { mapId: string; x: number; y: number }[] = [];
+  const transfers: { mapId: string; x: number; y: number; fade?: string }[] = [];
   let r = it.start();
   let guard = 0;
   while (r.kind !== "done" && guard++ < 1000) {
@@ -85,10 +156,11 @@ function drain(
     } else if (r.kind === "wait") {
       r = it.resume(undefined);
     } else if (r.kind === "transfer") {
-      transfers.push({ mapId: r.mapId, x: r.x, y: r.y });
+      transfers.push({ mapId: r.mapId, x: r.x, y: r.y, fade: r.fade });
       r = it.resume(undefined);
     } else if (
       r.kind === "inputWait" ||
+      r.kind === "timer" ||
       r.kind === "changeTile" ||
       r.kind === "moveEvent" ||
       r.kind === "battleProcessing" ||
@@ -99,7 +171,9 @@ function drain(
       r.kind === "shop" ||
       r.kind === "inn" ||
       r.kind === "gameOver" ||
-      r.kind === "returnToTitle"
+      r.kind === "returnToTitle" ||
+      r.kind === "flashScreen" ||
+      r.kind === "shakeScreen"
     ) {
       r = it.resume(undefined);
     } else {
@@ -211,6 +285,27 @@ describe("choices 분기", () => {
   });
 });
 
+it("maps cancel to the fifth choice branch", () => {
+  const cmds: Command[] = [
+    {
+      kind: "choices",
+      cancelBehavior: "choice5",
+      options: [
+        { text: "1", branch: [{ kind: "text", body: "one" }] },
+        { text: "2", branch: [{ kind: "text", body: "two" }] },
+        { text: "3", branch: [{ kind: "text", body: "three" }] },
+        { text: "4", branch: [{ kind: "text", body: "four" }] },
+        { text: "5", branch: [{ kind: "text", body: "five" }] },
+      ],
+    },
+  ];
+  const interpreter = createInterpreter(cmds, mkSession());
+  const choices = expectChoicesResult(interpreter.start());
+  expect(choices.cancelBehavior).toBe("choice5");
+  expect(expectTextResult(interpreter.resume(4)).body).toBe("five");
+  expect(interpreter.resume(undefined).kind).toBe("done");
+});
+
 describe("common event recursion guard", () => {
   it("stops recursive common-event calls at the 1000-frame guard and resumes the caller", () => {
     const session = mkSession();
@@ -312,13 +407,13 @@ describe("transfer — 종료", () => {
   it("transfer는 요청 후 종료(이후 명령 무시)", () => {
     const cmds: Command[] = [
       { kind: "text", body: "이동 전" },
-      { kind: "transfer", mapId: "m2", x: 3, y: 4 },
+      { kind: "transfer", mapId: "m2", x: 3, y: 4, fade: "white" },
       { kind: "text", body: "이동 후(무시되어야 함)" },
     ];
     const it = createInterpreter(cmds, mkSession());
     const { texts, transfers } = drain(it);
     expect(texts).toEqual(["이동 전"]);
-    expect(transfers).toEqual([{ mapId: "m2", x: 3, y: 4 }]);
+    expect(transfers).toEqual([{ mapId: "m2", x: 3, y: 4, fade: "white" }]);
     expect(it.isDone()).toBe(true);
   });
 });
@@ -514,7 +609,7 @@ describe("label / gotoLabel — 루프", () => {
         r = it.resume(undefined);
       } else if (r.kind === "choices") {
         r = it.resume(0);
-      } else if (r.kind === "wait" || r.kind === "inputWait" || r.kind === "changeTile" || r.kind === "moveEvent") {
+      } else if (r.kind === "wait" || r.kind === "inputWait" || r.kind === "timer" || r.kind === "changeTile" || r.kind === "moveEvent") {
         r = it.resume(undefined);
       } else if (r.kind === "transfer") {
         r = it.resume(undefined);
@@ -649,6 +744,139 @@ describe("timer", () => {
       { kind: "timer", action: "set", seconds: 90 },
     ];
     drain(createInterpreter(cmds, session));
-    expect(session.timers["default"]).toBe(90);
+    expect(session.timers["timer1"]).toBe(90);
+  });
+
+  it("timer timerId로 타이머 1/2를 구분한다", () => {
+    const session = mkSession();
+    const cmds: Command[] = [
+      { kind: "timer", action: "set", seconds: 30, timerId: "timer1" },
+      { kind: "timer", action: "set", seconds: 60, timerId: "timer2" },
+    ];
+    drain(createInterpreter(cmds, session));
+    expect(session.timers["timer1"]).toBe(30);
+    expect(session.timers["timer2"]).toBe(60);
+  });
+});
+
+describe("M2 generic map runtime executor", () => {
+  it("does not emit catalog-disabled or missing-runtime skip warnings for non-battle rows", () => {
+    const session = mkM2Session();
+    const genericCommands = M2_COMMAND_CATALOG
+      .filter((entry) => entry.index <= 97 && entry.bodyStrategy === "generic")
+      .map((entry) => ({ kind: "m2Command", commandId: entry.id, fields: {} }) satisfies Command);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    drain(createInterpreter(genericCommands, session));
+
+    const messages = warn.mock.calls.map((call) => String(call[0]));
+    warn.mockRestore();
+    expect(genericCommands.length).toBeGreaterThan(0);
+    expect(messages.filter((message) => message.includes("catalog-disabled") || message.includes("missing-runtime"))).toEqual([]);
+    expect(messages.filter((message) => message.includes("M2 command cannot run in map interpreter"))).toEqual([]);
+  });
+
+  it("applies representative generic M2 picture, screen, audio, access, actor, map, and event effects", () => {
+    const session = mkM2Session();
+    session.currentMapId = "map_intro";
+    session.x = 4;
+    session.y = 5;
+    session.audio.bgm = { resourceId: "field-theme", loop: true };
+    const commands: Command[] = [
+      m2Command("Move Picture", { pictureId: "pic1", resourceId: "portrait", x: 8, y: 9 }),
+      m2Command("Tint Screen", { value: "warm", target: "screen" }),
+      m2Command("Shake Screen", { value: 30 }),
+      m2Command("Set Weather Effects", { value: "rain" }),
+      m2Command("Memorize Current BGM"),
+      m2Command("Play Memorized BGM"),
+      m2Command("Change Save Access", { enabled: false }),
+      m2Command("Change Menu Access", { enabled: false }),
+      m2Command("Change Actor Name", { target: "actor_hero", value: "Alex" }),
+      m2Command("Change Parameters", { target: "actor_hero", operation: "add", value: 3 }),
+      m2Command("Change State", { target: "actor_hero", operation: "add", value: "poison" }),
+      m2Command("Get Player Location", { variableId: "player" }),
+      m2Command("Set Event Location", { target: "event_guard", mapId: "map_intro", x: 6, y: 7 }),
+      m2Command("Break Loop"),
+    ];
+
+    drain(createInterpreter(commands, session));
+
+    expect(session.pictures.pic1).toEqual({ pictureId: "pic1", resourceId: "portrait", x: 8, y: 9 });
+    expect(session.m2Runtime?.screen).toMatchObject({ tint: "warm", shake: 30, weather: "rain" });
+    expect(session.m2Runtime?.access).toMatchObject({ save: false, menu: false });
+    expect(session.m2Runtime?.actors?.actor_hero).toMatchObject({ name: "Alex", parameters: 3, states: ["poison"] });
+    expect(session.variables.player_map).toBe(0);
+    expect(session.variables.player_x).toBe(4);
+    expect(session.variables.player_y).toBe(5);
+    expect(session.m2Runtime?.events?.event_guard).toMatchObject({ mapId: "map_intro", x: 6, y: 7 });
+    expect(session.m2Runtime?.audio).toMatchObject({ memorizedBgm: "field-theme", playedMemorizedBgm: "field-theme" });
+    expect(session.audio.bgm).toEqual({ resourceId: "field-theme", loop: true });
+    expect(session.m2Runtime?.fallbacks?.some((entry) => entry.commandId.includes("break-loop"))).toBe(true);
+  });
+
+  it("records modern event commands into explicit runtime buckets without unsafe script execution", () => {
+    const session = mkM2Session();
+    session.gold = 25;
+    const commands: Command[] = [
+      modernM2Command("Camera Control", { mode: "panTo", target: "player", x: 10, y: 12, zoom: 1.25, durationMs: 450 }),
+      modernM2Command("Screen Effect", { effect: "blur", value: "soft", durationMs: 300 }),
+      modernM2Command("Spawn Event", { prefabId: "npc_guard", eventId: "spawn_guard", mapId: "map_intro", x: 6, y: 7 }),
+      modernM2Command("Remove Event", { eventId: "spawn_guard" }),
+      modernM2Command("Pathfind Move", { target: "event_guard", x: 14, y: 2, speed: 4, wait: true }),
+      modernM2Command("Wait Until", { condition: "switchOn", target: "switch_gate", value: "true", timeoutMs: 1200 }),
+      modernM2Command("Region Trigger", { regionId: "town_square", eventId: "event_guide", action: "enter", switchId: "switch_square" }),
+      modernM2Command("Quest Objective", { questId: "quest_intro", objectiveId: "talk_to_elder", state: "complete", text: "장로와 대화" }),
+      modernM2Command("Advanced Dialogue", { speaker: "미나", portraitId: "face_mina", emotion: "happy", body: "숲으로 가자.", autoAdvance: false }),
+      modernM2Command("Sound Layer", { channel: "ambient", resourceId: "forest_wind", volume: 65, fadeMs: 500 }),
+      modernM2Command("Weighted Branch", { table: "rare=1\ncommon=9", resultVariableId: "loot_roll" }),
+      modernM2Command("Cutscene Control", { action: "lockPlayer", enabled: true }),
+      modernM2Command("Checkpoint Save", { slotId: "auto", label: "숲 입구", restoreOnGameOver: true }),
+      modernM2Command("UI Command", { surface: "toast", message: "지도 갱신", durationMs: 1800 }),
+      modernM2Command("Debug Log", { level: "info", message: "entered forest gate" }),
+      modernM2Command("Evaluate Expression", { expression: "gold + 10", resultVariableId: "calc_result" }),
+      modernM2Command("Data Query", { query: "gold", target: "", variableId: "gold_value" }),
+    ];
+
+    const random = vi.spyOn(Math, "random").mockReturnValue(0);
+    let texts: string[];
+    try {
+      ({ texts } = drain(createInterpreter(commands, session)));
+    } finally {
+      random.mockRestore();
+    }
+
+    expect(session.m2Runtime?.camera).toMatchObject({ mode: "panTo", target: "player", x: 10, y: 12, zoom: 1.25, durationMs: 450 });
+    expect(session.m2Runtime?.screenEffects).toEqual([{ effect: "blur", value: "soft", durationMs: 300 }]);
+    expect(session.m2Runtime?.events?.spawn_guard).toMatchObject({ prefabId: "npc_guard", removed: true, mapId: "map_intro", x: 6, y: 7 });
+    expect(session.m2Runtime?.pathfinding).toEqual([{ target: "event_guard", x: 14, y: 2, speed: 4, wait: true }]);
+    expect(session.m2Runtime?.waits).toEqual([{ condition: "switchOn", target: "switch_gate", value: "true", timeoutMs: 1200 }]);
+    expect(session.m2Runtime?.regions).toEqual([{ regionId: "town_square", eventId: "event_guide", action: "enter", switchId: "switch_square" }]);
+    expect(session.m2Runtime?.quests?.quest_intro).toMatchObject({ talk_to_elder: { state: "complete", text: "장로와 대화" } });
+    expect(session.m2Runtime?.dialogue).toEqual([{ speaker: "미나", portraitId: "face_mina", emotion: "happy", body: "숲으로 가자.", autoAdvance: false }]);
+    expect(session.m2Runtime?.audio).toMatchObject({ ambient: { resourceId: "forest_wind", volume: 65, fadeMs: 500 } });
+    expect(texts).toContain("숲으로 가자.");
+    expect(session.audio?.ambient).toEqual({ resourceId: "forest_wind", loop: true });
+    expect([0, 1]).toContain(session.variables.loot_roll);
+    expect(session.m2Runtime?.cutscene).toMatchObject({ lockPlayer: true });
+    expect(session.m2Runtime?.checkpoints).toEqual([{ slotId: "auto", label: "숲 입구", restoreOnGameOver: true }]);
+    expect(session.m2Runtime?.ui).toEqual([{ surface: "toast", message: "지도 갱신", durationMs: 1800 }]);
+    expect(session.m2Runtime?.debug).toEqual([{ level: "info", message: "entered forest gate" }]);
+    expect(session.flags).toMatchObject({
+      "camera:panTo": true,
+      "screen-effect:blur": true,
+      "event-removed:spawn_guard": true,
+      "m2-wait:switchOn:switch_gate": false,
+      "quest:quest_intro:talk_to_elder:complete": true,
+      "cutscene:lockPlayer": true,
+      "checkpoint:auto": true,
+      "ui:toast": true,
+      "debug:info": true,
+    });
+    expect(session.switches.switch_square).toBe(true);
+    expect(session.eventLocations?.event_guard).toEqual({ mapId: session.currentMapId, x: 14, y: 2 });
+    expect(session.eventLocations?.spawn_guard).toBeUndefined();
+    expect(session.m2Runtime?.expressions).toEqual([{ expression: "gold + 10", resultVariableId: "calc_result", evaluated: true }]);
+    expect(session.variables.calc_result).toBe(35);
+    expect(session.variables.gold_value).toBe(25);
   });
 });

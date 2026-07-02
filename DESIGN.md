@@ -1,22 +1,43 @@
 # RPG ZZU Design System
 
-> **Status note:** This document describes the editor chrome **as actually shipped** in code (single theme: RM2K3 retro light). It was reconciled with `src/styles.css`, the Database tileset stylesheets, and `src/editor/` after the v3 editor-experience pass. When the code changes, update this file — it is the source of truth for designers and contributors, not an aspirational target.
+> **Status note:** This document describes the editor chrome **as actually shipped** in code. The main editor shell now ships as a modern dark, Figma-like workbench, while runtime game surfaces and selected RM2K3-specific editors keep their retro/pixel presentation. It was reconciled with `src/styles/index.css`, `src/styles/shell/figma-editor.css`, and `src/editor/`. When the code changes, update this file — it is the source of truth for designers and contributors, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
-RPG ZZU is a compact game-making workbench: dense, precise, and readable under repeated use. It aims to feel like a practical RPG Maker 2003-era editor brought into a browser — not a landing page, not a toy, and not a clone of proprietary RPG Maker art, logos, icons, or exact chrome. The signature is a pixel-true canvas surrounded by restrained utility panels: the work surface is crisp and game-like, while the editor chrome is quiet, stable, and optimized for scanning.
+RPG ZZU is a compact game-making workbench: dense, precise, and readable under repeated use. It aims to feel like a modern browser-native RPG editor with RPG Maker 2003 literacy: dark utility chrome, crisp pixel canvas, and Korean-first tool labels. The signature is a pixel-true canvas surrounded by restrained utility panels: the work surface is crisp and game-like, while the editor chrome is quiet, stable, and optimized for scanning.
 
 The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls wrap Phaser-rendered edit/play surfaces. No framework, no CSS-in-JS. General chrome styles live in `src/styles.css`; Database tileset chrome is split into `src/styles.databaseTilesets.css` and `src/styles.databaseTilesetsTerrain.css` so the large tileset editor stays readable and under the module-size ceiling.
 
 ## 2. Color
 
-### Single active theme — RM2K3 retro light
+### Active editor shell — modern dark
 
-There is **one shipped theme** (the RM2K3 retro light palette). A modern-dark palette is also defined in the first `:root` block as a baseline, but the app renders the light theme. Dark mode is **not** wired (no `prefers-color-scheme` / `data-theme` toggle); do not assume dual values.
+There is **one shipped editor shell theme**: a modern dark workbench defined by `src/styles/shell/figma-editor.css`. The older RM2K3 light palette still exists underneath for legacy/component fallbacks, but the main editor topbar, toolbar, left panel, canvas well, status bar, and context menus are dark. There is no user theme toggle; do not assume dual values.
+
+### Modern editor shell tokens
+
+These tokens are defined in `src/styles/shell/figma-editor.css` and are the source of truth for the main editor shell.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--editor-shell-bg` | `#111318` | App/top menu background |
+| `--editor-toolbar-bg` | `#161920` | Main toolbar and status bar |
+| `--editor-canvas-bg` | `#0b0d12` | Canvas work well |
+| `--editor-panel-bg` | `#1c2028` | Left sidebar panels |
+| `--editor-panel-bg-2` | `#242933` | Secondary panel/list surfaces |
+| `--editor-popover-bg` | `rgba(34, 38, 47, 0.96)` | Context menus and menu popups |
+| `--editor-line` | `rgba(255,255,255,0.1)` | Subtle dividers |
+| `--editor-line-strong` | `rgba(255,255,255,0.16)` | Elevated borders |
+| `--editor-text` | `#edf1f7` | Primary shell text |
+| `--editor-text-muted` | `#a7afbd` | Secondary text and shortcuts |
+| `--editor-text-soft` | `#747d8c` | Disabled text |
+| `--editor-blue` | `#2f8cff` | Active/focus blue |
+| `--editor-blue-soft` | `rgba(47,140,255,0.22)` | Active/hover tint |
+| `--editor-yellow` | `#ffd447` | Start-position/star marker |
 
 ### Primary token set (what the UI is actually built from)
 
-These tokens are defined in `:root` and used throughout the chrome. This is the canonical set — extend it before introducing new color.
+These legacy tokens are still defined in `:root` and used by older chrome and RM-style surfaces. For the main editor shell, prefer the modern editor shell tokens above.
 
 | Token | Value (light) | Usage |
 |------|-------|-------|
@@ -130,17 +151,26 @@ The Shop Processing play overlay follows the blue RM-era shop windows rather tha
 
 ### Runtime title-screen tokens
 
-The game title screen follows the blue RM-era opening screen style and is scoped to `.rm-title-screen` / `.rm-title-menu` UI only.
+The default game title screen uses a bright RPG Maker-style pixel field/castle background with separate title ornaments, a classic blue RM-era menu window, a white selection cursor, and a small input hint panel layered on top. These tokens are scoped to `.rm-title-screen` / `.rm-title-menu` UI only.
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--rm2k3-title-blue-hi` | `#153f9f` | Title background top tone |
-| `--rm2k3-title-blue` | `#092c78` | Primary title background |
-| `--rm2k3-title-blue-deep` | `#061a4a` | Title background lower tone |
-| `--rm2k3-title-window` | `#1746b7` | Menu window fill |
-| `--rm2k3-title-highlight` | `#2d63d8` | Selected menu row/window highlight |
-| `--rm2k3-title-text` | `#f4f8ff` | Title/menu text |
-| `--rm2k3-title-shadow` | `#061034` | Title/menu text shadow and bevel depth |
+| `--rm2k3-title-sky-glow` | `rgba(255,255,255,0.22)` | Soft upper title-screen light wash |
+| `--rm2k3-title-vignette` | `rgba(15,77,146,0.12)` | Side vignette over bright title art |
+| `--rm2k3-title-window-hi` | `#356fd4` | Menu window top bevel tone |
+| `--rm2k3-title-window` | `#123c9a` | Primary menu window fill |
+| `--rm2k3-title-window-deep` | `#071e68` | Lower menu window fill |
+| `--rm2k3-title-window-edge` | `#f5fbff` | Bright menu bevel edge |
+| `--rm2k3-title-window-shadow` | `#061038` | Dark menu bevel edge and text outline |
+| `--rm2k3-title-window-mid` | `#7da7ff` | Inner blue bevel line |
+| `--rm2k3-title-highlight` | `#397ddd` | Selected/focused menu row top tone |
+| `--rm2k3-title-highlight-deep` | `#1b54bd` | Selected/focused menu row lower tone |
+| `--rm2k3-title-highlight-ring` | `rgba(255,255,255,0.86)` | Selected row inner highlight |
+| `--rm2k3-title-cursor` | `#ffffff` | White menu selection cursor |
+| `--rm2k3-title-ornament` | `rgba(255,251,236,0.96)` | Title divider ornament strokes |
+| `--rm2k3-title-ornament-shadow` | `rgba(13,57,136,0.58)` | Ornament pixel shadow |
+| `--rm2k3-title-text` | `#ffffff` | Title/menu text |
+| `--rm2k3-title-shadow` | `#06185c` | Title text outline and bevel depth |
 
 ### Runtime battle tokens
 
@@ -241,7 +271,7 @@ All spacing derives from 4px.
 - **Map editor**: Phaser canvas on a 16×16 logical grid; `image-rendering: pixelated`, nearest-neighbor.
 - **Grid**: grid lines are overlays (`--pixel-grid`), toggleable, default on in Edit mode.
 - **Overlays**: collision, event, start position, hover preview — tokenized, visually distinct.
-- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). No fractional scaling.
+- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). No fractional scaling. Toolbar zoom icons render as high-contrast `1x`/`2x`/`4x`/`8x` marks rather than tiny fraction artwork so they remain readable on the dark editor chrome.
 
 ### Database & resource modals
 
@@ -250,7 +280,8 @@ All spacing derives from 4px.
 - **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`).
 - **Event editor**: tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
 - **Event editor top/page controls**: dense RM2K3 modal chrome uses `--rm2k3-event-page-*` tokens for Name width, page button height, tab width, icon size, and condition-row control widths. Keep these controls compact enough for scanning; avoid display-scale button typography inside the modal. The event editor scopes its local `--rm2k3-chrome`/`--rm2k3-face` overrides to a brighter classic-gray range (`#eeeeee`/`#f4f4f4`) so fieldsets and page tabs match the RM2003 event editor reference without changing every other modal.
-- **Event editor sizing**: the event editor is a desktop-default work window, not a responsive mobile form. Keep the modal at the `--rm2k3-event-editor-desktop-*` dimensions and let the backdrop scroll on small viewports; do not collapse the Name/page strip, settings column, or command contents into a one-column responsive layout.
+- **Event editor sizing**: the event editor is a desktop-default work window at wide widths, but it must remain usable down to roughly `800px` viewport width. Above compact widths, keep the RM2K3 two-column composition. Around `900px` and below, the modal clamps to the viewport and compresses the left settings/conditions column while keeping the command contents as a second column; do not stack settings above commands unless the viewport is narrower than the supported editor width.
+- **Event editor resizing**: users can resize both the modal window and the settings/command split. The vertical separator between settings and command contents adjusts the left settings column; the bottom-right grip adjusts the whole event editor window. Keep both handles visible and keyboard-focusable, and keep resize behavior bounded to the viewport.
 - **Event move-route dialog**: custom autonomous movement opens a separate `Move Route` subdialog, styled as a desktop RM-era work window. Keep its command list, options, frequency radios, and three-column command grid fixed for desktop scanning; unsupported movement commands should render disabled rather than pretending to save runtime behavior.
 
 ### Database panels
@@ -271,8 +302,9 @@ All spacing derives from 4px.
 
 ### Play presentation
 
-- Play viewport is `320×240` logical pixels (`PLAY_WIDTH`/`PLAY_HEIGHT`), scaled only by integer factors with nearest-neighbor.
-- The editor's map canvas may remain pixel-grid constrained, but the test-play window runtime surface fills the available modal body with nearest-neighbor scaling instead of leaving letterbox gutters.
+- Play viewport is `320×240` logical pixels (`PLAY_RESOLUTION.width`/`PLAY_RESOLUTION.height`), then scaled by the largest whole-number factor that fits inside the test-play/player shell with nearest-neighbor rendering.
+- The test-play window uses the full available browser window; the runtime surface stays 4:3 and centered, appearing at `2x` (`640×480`) or larger when space allows without cropping or distortion.
+- The editor's map canvas may remain pixel-grid constrained.
 - Dialogue/choice overlays align to the 320×240 grid (DOM for accessibility, visually pixel-aligned).
 - Character sprites use a `24×32` logical frame convention for charsets (`CHARSET_FRAME_*`); generic sprites may be `32×32`.
 

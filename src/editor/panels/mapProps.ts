@@ -1,4 +1,4 @@
-import { resizeMap, renameMap, setStartMap, setStartPos } from "@/editor/actions";
+import { resizeMap, renameMap, setMapTileset, setStartMap, setStartPos } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -23,11 +23,37 @@ export function renderMapProps(container: HTMLElement): void {
     value: map.name,
     dataset: { testid: "map-name-input" },
   });
-  nameInput.addEventListener("change", () => {
+  const applyName = (): void => {
     renameMap(map.id, nameInput.value);
+  };
+  nameInput.addEventListener("change", () => {
+    applyName();
   });
   nameRow.append(nameInput);
   section.append(nameRow);
+
+  const tilesetRow = el("div", { class: "field" });
+  tilesetRow.append(el("label", { text: "칩셋" }));
+  const tilesetSelect = el("select", {
+    attrs: { "aria-label": `${map.name} 칩셋` },
+    dataset: { testid: "map-props-tileset-select" },
+  }) as HTMLSelectElement;
+  for (const tileset of Object.values(store.getCurrent().tilesets)) {
+    tilesetSelect.append(
+      el("option", {
+        text: tileset.name,
+        value: tileset.id,
+        attrs: { value: tileset.id },
+      })
+    );
+  }
+  tilesetSelect.value = map.tilesetId;
+  tilesetSelect.addEventListener("change", () => {
+    setMapTileset(map.id, tilesetSelect.value);
+    renderMapProps(container);
+  });
+  tilesetRow.append(tilesetSelect);
+  section.append(tilesetRow);
 
   const sizeRow = el("div", { class: "field" });
   sizeRow.append(el("label", { text: "크기 (가로 x 세로)" }));
@@ -47,6 +73,7 @@ export function renderMapProps(container: HTMLElement): void {
     dataset: { testid: "map-resize-apply" },
     on: {
       click: () => {
+        applyName();
         const w = Math.max(4, Math.min(128, parseInt(wInput.value, 10) || map.width));
         const h = Math.max(4, Math.min(128, parseInt(hInput.value, 10) || map.height));
         resizeMap(map.id, w, h);

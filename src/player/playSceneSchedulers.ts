@@ -12,8 +12,10 @@ import type { AutonomousMover, PlaySceneContext, ParallelProcess } from "@/playe
 import { assertNever } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
+import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 
-type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs">;
+type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
 export function registerAutonomousMover(
   scene: AutonomousMoverSceneContext,
@@ -22,7 +24,8 @@ export function registerAutonomousMover(
   repeat: boolean,
   timing?: Pick<AutonomousMover, "moveDurationMs" | "moveIntervalMs" | "strategy">
 ): void {
-  if (!scene.map.events.some((event) => event.id === eventId)) {
+  const project = store.getCurrent();
+  if (!runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).some((event) => event.event.id === eventId)) {
     console.warn(`[player] moveEvent target event missing: ${eventId}`);
     return;
   }
@@ -137,6 +140,14 @@ function consumeParallelSteps(
       scene.refreshRuntimeSurfaces();
       continue;
     }
+    // 병렬 이벤트는 블로킹 사용자 대기(text/inputWait/inputNumber/choices/화면효과)를
+    // 가질 수 없다. RM2K3 동작과 일관되게 이 명령들을 건너뛴다(영구 hang 방지).
+    if (isParallelBlockingStep(result)) {
+      console.warn(`[player] 병렬 이벤트 ${process.currentEventId ?? "?"}의 블로킹 명령(${result.kind})을 건너뜁니다`);
+      result = process.interpreter.skip();
+      scene.refreshRuntimeSurfaces();
+      continue;
+    }
     process.waitMs = 100;
     return;
   }
@@ -152,10 +163,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
       return true;
     case "transfer":
-      scene.transferTo(step.mapId, step.x, step.y);
+      void scene.transferTo(step);
       return true;
     case "battleProcessing":
       scene.showBattleScene(step.troopId);
+      return true;
+    case "timer":
+      applyTimerStep(scene, step);
       return true;
     case "showPicture":
       showPictureState(scene.session, step);
@@ -191,21 +205,27 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "wait":
     case "inputWait":
     case "inputNumber":
+    case "flashScreen":
+    case "shakeScreen":
       return false;
     default:
       return assertNever(step);
   }
 }
 
+// 병렬 이벤트가 처리할 수 없는(사용자 대기/일회성 화면효과) 단계인지.
+// 이들은 consumeParallelSteps 에서 skip 대상이 된다. wait/done 읔 제외.
+function isParallelBlockingStep(step: StepResult): boolean {
+  return (
+    step.kind === "text" ||
+    step.kind === "choices" ||
+    step.kind === "inputWait" ||
+    step.kind === "inputNumber" ||
+    step.kind === "flashScreen" ||
+    step.kind === "shakeScreen"
+  );
+}
+
 export function updateTimers(scene: PlaySceneContext, deltaMs: number): void {
-  for (const timer of scene.runtimeTimers.values()) {
-    if (!timer.active) continue;
-    timer.remaining = Math.max(0, timer.remaining - deltaMs / 1000);
-    if (timer.remaining === 0) timer.active = false;
-  }
-  for (const [id, seconds] of Object.entries(scene.session.timers)) {
-    if (!scene.runtimeTimers.has(id)) {
-      scene.runtimeTimers.set(id, { remaining: seconds, active: true });
-    }
-  }
+  updateRuntimeTimers(scene, deltaMs);
 }

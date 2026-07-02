@@ -53,7 +53,6 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
             updateItemType(record, type);
             rerender();
           }),
-          numberField("가격", "db-field-price", record.price, (price) => updateDatabaseRecord("items", record.id, { price })),
           consumptionLimitField(record),
         ]),
         ...typePanels(record),

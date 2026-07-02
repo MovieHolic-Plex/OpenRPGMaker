@@ -9,11 +9,12 @@ import {
   triggerFromKind,
   updateEventPage,
 } from "@/editor/eventPages";
-import { newCommand } from "@/editor/eventActions";
 import { editorState } from "@/editor/editorState";
 import { selectedOptionValue, selectWithOptions } from "./dom";
+import { openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
+import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
 import { renderPageMovement } from "./pageMovement";
 import {
@@ -51,17 +52,17 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
     el("div", {
       class: "event-page-action-buttons",
       children: [
-        pageButton("New Page", "event-page-add", "페이지 추가", "new", () => addEventPage(mapId, ev.id)),
-        pageButton("Copy Page", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
+        pageButton("새 페이지", "event-page-add", "페이지 추가", "new", () => addEventPage(mapId, ev.id)),
+        pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
         pageButton(
-          "Paste Page",
+          "붙여넣기",
           "event-page-paste",
           hasCopiedEventPage() ? "페이지 붙여넣기" : "아직 복사 버퍼가 없습니다.",
           "paste",
           () => pasteEventPage(mapId, ev.id),
           !hasCopiedEventPage()
         ),
-        pageButton("Delete Page", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id), pages.length <= 1),
+        pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id), pages.length <= 1),
       ],
     })
   );
@@ -123,7 +124,10 @@ export function renderPageCommandCatalog(mapId: MapId, eventId: string, page: Ev
         text: button.label,
         dataset: { testid: button.testId },
         on: {
-          click: () => addEventPageCommand(mapId, eventId, page.id, newCommand(button.kind)),
+          click: () =>
+            openNewEventCommandKindDialog(button.kind, (command) =>
+              addEventPageCommand(mapId, eventId, page.id, command)
+            ),
         },
       })
     );
@@ -192,7 +196,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
                 el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
               ],
             })),
-            rm2k3Fieldset("애니메이션 유형", disabledSelect(), "event-classic-animation-type"),
+            rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
             rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
           ],
         }),
@@ -219,15 +223,6 @@ function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HT
   });
   fieldset.append(el("legend", { text: title }), content);
   return fieldset;
-}
-
-function disabledSelect(): HTMLSelectElement {
-  const select = el("select", {
-    attrs: { disabled: "" },
-    dataset: { testid: "event-page-animation-type" },
-  }) as HTMLSelectElement;
-  select.append(el("option", { text: "보통" }));
-  return select;
 }
 
 function movementSpeedSelect(mapId: MapId, eventId: string, page: EventPage): HTMLSelectElement {
@@ -282,7 +277,7 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
     updateEventPage(mapId, eventId, page.id, { graphic: { ...page.graphic, transparent: transparent.checked } });
   });
   control.append(
-    renderEventGraphicPreview(page.graphic),
+    renderEventGraphicPreview(page.graphic, page.movement.type),
     el("label", { class: "event-graphic-transparent", children: [transparent, el("span", { text: "투명" })] }),
     el("button", {
       class: "btn",

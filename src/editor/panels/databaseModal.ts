@@ -1,4 +1,4 @@
-import { renderDatabasePanel } from "@/editor/panels/database";
+import { renderDatabasePanel, setDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
 import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -12,8 +12,9 @@ type ModalDragState = {
 
 let modalDragState: ModalDragState | null = null;
 
-export function openDatabaseModal(): void {
+export function openDatabaseModal(initialTab?: DatabaseTab): void {
   document.querySelector("[data-testid='database-modal']")?.remove();
+  if (initialTab) setDatabaseActiveTab(initialTab);
 
   const body = el("div", { class: "database-modal-body" });
   const maximizeButton = el("button", {
@@ -121,9 +122,33 @@ export function openDatabaseModal(): void {
 
 async function applyDatabaseChanges(status: HTMLElement): Promise<void> {
   try {
-    await store.flush();
-    status.textContent = "적용했습니다. 닫아도 안전합니다.";
-    toast("적용했습니다.", "ok");
+    const result = await store.flush();
+    switch (result.kind) {
+      case "saved":
+        status.textContent = "적용했습니다. DB에 저장했습니다. 닫아도 안전합니다.";
+        toast("DB에 저장했습니다.", "ok");
+        return;
+      case "saved-local":
+        status.textContent = "적용했습니다. 브라우저에 저장했습니다. 닫아도 안전합니다.";
+        toast("브라우저에 저장했습니다.", "ok");
+        return;
+      case "not-loaded":
+        status.textContent = "프로젝트를 아직 불러오는 중이라 저장하지 않았습니다.";
+        toast("아직 프로젝트를 불러오는 중입니다.", "error");
+        return;
+      case "conflict":
+        status.textContent = `${conflictMapNames(result.conflicts)} 맵이 다른 세션에서 먼저 바뀌어 저장하지 않았습니다.`;
+        toast("저장 충돌이 있습니다.", "error");
+        return;
+      case "not-configured":
+        status.textContent = "DB 저장 설정이 없습니다. Supabase 환경 설정을 확인하세요.";
+        toast("DB 저장 설정이 없습니다.", "error");
+        return;
+      case "disabled":
+        status.textContent = "DB 저장이 비활성화되어 저장하지 못했습니다.";
+        toast("DB 저장이 비활성화되어 있습니다.", "error");
+        return;
+    }
   } catch (error) {
     if (error instanceof Error) {
       status.textContent = "적용 실패. 메시지를 확인하세요.";
@@ -190,4 +215,8 @@ function stopModalDrag(): void {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+function conflictMapNames(conflicts: readonly { readonly name: string }[]): string {
+  return conflicts.map((conflict) => conflict.name).join(", ") || "현재";
 }

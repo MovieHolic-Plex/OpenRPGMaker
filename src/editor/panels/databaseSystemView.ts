@@ -1,7 +1,7 @@
 import {
   emptyToUndefined,
   numberField,
-  selectRecord,
+  selectField,
   textControl,
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -34,21 +34,21 @@ export function renderSystemTab(host: HTMLElement): void {
         store.update((draft) => {
           draft.system.systemResourceId = emptyToUndefined(value);
         });
-      }),
+      }, "db-field-system-resource"),
       textControl("전투 시스템 리소스", project.system.battleSystemResourceId ?? "", (value) => {
         store.update((draft) => {
           draft.system.battleSystemResourceId = emptyToUndefined(value);
         });
-      }),
+      }, "db-field-battle-system-resource"),
     ]),
     rm2k3Fieldset("시작 설정", [
-      selectRecord("시작 파티", project.system.startActorIds[0] ?? "", project.database.actors, (value) => {
+      selectField("시작 파티", "db-picker-system-start-actor", project.system.startActorIds[0] ?? "", project.database.actors, (value) => {
         store.update((draft) => {
           draft.system.startActorIds = value ? [value] : [];
           draft.session.partyActorIds = value ? [value] : [];
         });
       }),
-      selectRecord("초기 적 그룹", project.system.initialTroopId ?? "", project.database.troops, (value) => {
+      selectField("초기 적 그룹", "db-picker-system-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
         store.update((draft) => {
           draft.system.initialTroopId = emptyToUndefined(value);
         });
@@ -63,7 +63,6 @@ export function renderSystemTab(host: HTMLElement): void {
       textControl("배경 리소스", titleBackgroundResourceId ?? "", (value) => {
         const resourceId = emptyToUndefined(value);
         store.update((draft) => {
-          draft.system.titleResourceId = resourceId;
           draft.system.titleScreen ??= defaultTitleScreenSettings();
           draft.system.titleScreen.backgroundResourceId = resourceId;
         });

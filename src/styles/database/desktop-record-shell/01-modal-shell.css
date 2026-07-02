@@ -1,0 +1,322 @@
+@media (min-width: 901px) {
+  .database-modal-backdrop:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.08);
+    justify-content: center;
+    padding: var(--space-3);
+  }
+
+  .database-modal-window:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) {
+    background: #d8d4cb;
+    border-color: #ffffff #4f4f4f #4f4f4f #ffffff;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.32);
+    height: min(1024px, calc(100vh - 24px));
+    max-width: calc(100vw - 24px);
+    width: min(1530px, calc(100vw - 24px));
+  }
+
+  .database-modal-window:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-header {
+    background: linear-gradient(90deg, #174a9e 0%, #2d72d2 100%);
+    border-bottom: 1px solid #0f377d;
+    color: #ffffff;
+    min-height: 28px;
+    padding: 2px 8px;
+  }
+
+  .database-modal-window:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-header h2 {
+    color: #ffffff;
+    font: 700 14px/22px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.36);
+  }
+
+  .database-modal-window:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-body {
+    background: #d8d4cb;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tabs {
+    background: #d8d0be;
+    border-bottom: 1px solid #8f8a80;
+    flex-wrap: nowrap;
+    height: auto;
+    margin: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 3px 4px 0;
+  }
+
+  .database-modal-body:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tab {
+    background: #d8d0be;
+    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    color: var(--text-primary);
+    flex: 0 0 auto;
+    font-size: 12px;
+    height: 26px;
+    margin-right: 1px;
+    min-width: 46px;
+    padding: 0 4px;
+  }
+
+  .database-modal-body:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tab.active {
+    background: linear-gradient(#5e84dc, #315ebc);
+    border-bottom-color: #315ebc;
+    border-color: #dfe8ff #1f4695 #1f4695 #dfe8ff;
+    box-shadow: none;
+    color: #ffffff;
+    margin-bottom: -1px;
+  }
+
+  .database-modal-body:has(:is(
+    .rm2k3-record-actors,
+    .rm2k3-record-classes,
+    .rm2k3-record-skills,
+    .rm2k3-record-items,
+    .rm2k3-record-equipment,
+    .rm2k3-record-enemies,
+    .rm2k3-record-troops,
+    .rm2k3-record-states,
+    .rm2k3-record-battleAnimations,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-body {
+    background: #d8d4cb;
+    border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+    border-style: solid;
+    border-width: 1px;
+    height: auto;
+    margin: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) {
+    gap: 8px;
+    grid-template-columns: 258px minmax(0, 1fr);
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-list-pane {
+    background: #d8d4cb;
+    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: none;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    padding: 10px 10px 8px;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-list-pane h3 {
+    background: transparent;
+    border: 0;
+    color: #111111;
+    display: block;
+    font: 700 13px/1.2 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+    height: auto;
+    margin: 0 0 8px;
+    text-align: left;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list {
+    background: #f7f7f7;
+    border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+    border-style: solid;
+    border-width: 1px;
+    display: grid;
+    height: auto;
+    margin: 0 0 var(--space-2);
+    max-height: none;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list-row {
+    align-items: center;
+    background: #f7f7f7;
+    border: 0;
+    border-bottom: 1px solid #c9c6bd;
+    color: #111111;
+    display: grid;
+    font: 13px/1.35 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+    gap: 4px;
+    grid-template-columns: auto minmax(0, 1fr);
+    height: auto;
+    min-height: 24px;
+    padding: 2px 8px;
+    width: 100%;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list-row.active {
+    background: linear-gradient(#3c74d7, #255ab8);
+    color: #ffffff;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-toolbar {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    height: auto;
+    margin: 0;
+  }
+
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-detail-pane,
+  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-detail-form {
+    background: #d8d4cb;
+    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: none;
+    min-width: 0;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .database-modal-body .db-troops-classic-workbench {
+    max-width: 100%;
+  }
+}

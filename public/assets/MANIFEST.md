@@ -22,11 +22,6 @@ light from top-left.
   - v2 (2026-06-18): 전체 재생성. tree(명확한 갈색 trunk + 3단계 음영의 큰 둥근 canopy)와 stairs(깊이 있는 3-4단 계단, wall과 회색 톤 일치)를 풍부하게 개선. 진단 tree/stairs 각 9/10.
 - **정밀수정 시 참고**: 타일 경계 anti-aliasing 금지. 인덱스 순서 절대 변경 금지(코드가 `TILE` 상수로 매핑).
 
-## npc_villager.png
-- **용도**: 마을 주민 NPC. 행/열 순서 hero와 동일.
-- **버전 히스토리**:
-- **정밀수정 시 참고**: hero와 팔레트/비율 일치 유지.
-
 ## dialogue-frame.png
 - **치수**: 64×64 (9-slice용, 슬라이스 16px)
 - **용도**: 대사창 프레임 테두리. CSS `border-image`로 사용. 코너 장식 + 반복 가능한 가장자리 + 반투명 어두운 중앙.

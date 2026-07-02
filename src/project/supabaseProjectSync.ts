@@ -1,5 +1,5 @@
 import { deserialize, serialize } from "./io";
-import { defaultResourceProfiles } from "./defaults/defaultAssets";
+import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import {
   defaultBattleAnimationRecords,
@@ -8,33 +8,60 @@ import {
   defaultStateRecords,
 } from "./defaults/defaultDatabaseStarterRecords";
 import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
-import type { GameMap, Project, TerrainTemplateMetadata, TilesetDef } from "./types";
+import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
+import type { GameMap, MapTreeNode, Project, TerrainTemplateMetadata, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
 const DEFAULT_PROJECT_TITLE = "RPG Zzu";
-export const DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery";
-
-type SupabaseProjectConfig = {
-  readonly anonKey: string;
-  readonly projectId: string;
-  readonly url: string;
-};
+export { DEFAULT_SUPABASE_PROJECT_ID } from "./supabaseProjectConfig";
 
 type SupabaseProjectRow = {
   readonly current_json: unknown;
+  readonly current_sha256: string | null;
+};
+
+export type SupabaseProjectListConfig = Pick<SupabaseProjectConfig, "anonKey" | "url">;
+
+export type SupabaseProjectListItem = {
+  readonly projectId: string;
+  readonly title: string;
+};
+
+type SupabaseProjectListRow = {
+  readonly current_json: unknown;
+  readonly project_id: string;
+  readonly title: string | null;
 };
 
 type SupabaseChildTable = "ai_analysis_runs" | "maps" | "terrain_templates" | "tilesets";
+const MAP_PATCH_MAX_ATTEMPTS = 4;
 
-type SupabaseSaveResult =
+export type SupabaseMapSaveConflict = {
+  readonly mapId: string;
+  readonly name: string;
+};
+
+export type SupabaseSaveResult =
   | { readonly kind: "not-configured" }
-  | { readonly kind: "saved" };
+  | { readonly kind: "conflict"; readonly conflicts: readonly SupabaseMapSaveConflict[] }
+  | { readonly kind: "saved"; readonly project?: Project };
+
+export type SupabaseProjectMapPatchInput = {
+  readonly baseProject: Project;
+  readonly changedMapIds?: readonly string[];
+  readonly project: Project;
+};
 
 type SupabaseAiAnalysisRunInput = {
   readonly promptContext: unknown;
   readonly result: unknown;
   readonly selectedTiles: readonly number[];
   readonly tilesetId: string;
+};
+
+type SupabaseProjectSnapshot = {
+  readonly project: Project;
+  readonly sha256: string | null;
 };
 
 export class SupabaseProjectSyncError extends Error {
@@ -47,7 +74,27 @@ export class SupabaseProjectSyncError extends Error {
   }
 }
 
-export async function loadProjectFromSupabase(config = supabaseProjectConfigFromEnv()): Promise<Project | null> {
+export async function loadProjectFromSupabase(config = supabaseProjectConfig()): Promise<Project | null> {
+  return (await loadProjectSnapshotFromSupabase(config))?.project ?? null;
+}
+
+export async function listSupabaseProjects(config: SupabaseProjectListConfig): Promise<readonly SupabaseProjectListItem[]> {
+  const response = await fetch(supabaseProjectListUrl(config), {
+    headers: supabaseJsonHeaders(config, "read"),
+  });
+  if (!response.ok) {
+    throw new SupabaseProjectSyncError(await response.text(), response.status);
+  }
+  const rows = await parseProjectListRows(response);
+  return rows.map((row) => ({
+    projectId: row.project_id,
+    title: supabaseProjectListTitle(row),
+  }));
+}
+
+async function loadProjectSnapshotFromSupabase(
+  config = supabaseProjectConfig(),
+): Promise<SupabaseProjectSnapshot | null> {
   if (!config) return null;
   const response = await fetch(supabaseProjectUrl(config), {
     headers: supabaseJsonHeaders(config, "read"),
@@ -58,12 +105,16 @@ export async function loadProjectFromSupabase(config = supabaseProjectConfigFrom
   const rows = await parseProjectRows(response);
   const row = rows[0];
   if (!row) return null;
-  return deserialize(JSON.stringify(repairSupabaseCurrentJson(row.current_json)));
+  return {
+    project: deserialize(JSON.stringify(repairSupabaseCurrentJson(row.current_json))),
+    sha256: row.current_sha256,
+  };
 }
 
-export async function saveProjectToSupabase(project: Project, config = supabaseProjectConfigFromEnv()): Promise<SupabaseSaveResult> {
+export async function saveProjectToSupabase(project: Project, config = supabaseProjectConfig()): Promise<SupabaseSaveResult> {
   if (!config) return { kind: "not-configured" };
   const persistedProject = projectWithoutEventDrafts(project);
+  removeLegacySpriteReferences(persistedProject);
   const serialized = serialize(persistedProject);
   const response = await fetch(supabaseUpsertUrl(config), {
     method: "POST",
@@ -81,9 +132,42 @@ export async function saveProjectToSupabase(project: Project, config = supabaseP
   return { kind: "saved" };
 }
 
+export async function saveProjectMapPatchToSupabase(
+  input: SupabaseProjectMapPatchInput,
+  config = supabaseProjectConfig(),
+): Promise<SupabaseSaveResult> {
+  if (!config) return { kind: "not-configured" };
+  const persistedProject = projectWithoutEventDrafts(input.project);
+  const baseProject = projectWithoutEventDrafts(input.baseProject);
+  removeLegacySpriteReferences(persistedProject);
+  removeLegacySpriteReferences(baseProject);
+  const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(baseProject, persistedProject);
+  const changedMapTreeIds = changedMapTreeIdsBetween(baseProject.mapTree, persistedProject.mapTree);
+  for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
+    const latestSnapshot = await loadProjectSnapshotFromSupabase(config);
+    const latestProject = latestSnapshot?.project ?? baseProject;
+    const conflicts = mapSaveConflicts(baseProject, persistedProject, latestProject, changedMapIds);
+    if (conflicts.length > 0) return { kind: "conflict", conflicts };
+    const mergedProject = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
+    const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSnapshot?.sha256 ?? null);
+    if (!saved) continue;
+    try {
+      if (latestSnapshot?.sha256) {
+        await saveChangedMapRowsFromCanonical(config, mergedProject, changedMapIds);
+      } else {
+        await saveChangedMapRows(config, mergedProject, changedMapIds);
+      }
+    } catch (error) {
+      if (!isOptionalTableMissingError(error)) throw error;
+    }
+    return { kind: "saved", project: mergedProject };
+  }
+  throw new SupabaseProjectSyncError("Supabase project changed too often while saving map patch", 409);
+}
+
 export async function recordSupabaseAiAnalysisRun(
   input: SupabaseAiAnalysisRunInput,
-  config = supabaseProjectConfigFromEnv(),
+  config = supabaseProjectConfig(),
 ): Promise<SupabaseSaveResult> {
   if (!config) return { kind: "not-configured" };
   try {
@@ -97,24 +181,32 @@ export async function recordSupabaseAiAnalysisRun(
   return { kind: "saved" };
 }
 
-function supabaseProjectConfigFromEnv(): SupabaseProjectConfig | null {
-  const url = import.meta.env.VITE_SUPABASE_URL?.trim();
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID?.trim() || DEFAULT_SUPABASE_PROJECT_ID;
-  if (!url || !anonKey) return null;
-  return { anonKey, projectId, url: url.replace(/\/$/, "") };
-}
-
 function supabaseProjectUrl(config: SupabaseProjectConfig): string {
   const query = new URLSearchParams({
-    select: "current_json",
+    select: "current_json,current_sha256",
     project_id: `eq.${config.projectId}`,
+  });
+  return `${config.url}/rest/v1/projects?${query.toString()}`;
+}
+
+function supabaseProjectListUrl(config: SupabaseProjectListConfig): string {
+  const query = new URLSearchParams({
+    order: "project_id.asc",
+    select: "project_id,title,current_json",
   });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
 }
 
 function supabaseUpsertUrl(config: SupabaseProjectConfig): string {
   const query = new URLSearchParams({ on_conflict: "project_id" });
+  return `${config.url}/rest/v1/projects?${query.toString()}`;
+}
+
+function supabaseConditionalUpdateUrl(config: SupabaseProjectConfig, currentSha256: string): string {
+  const query = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    current_sha256: `eq.${currentSha256}`,
+  });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
 }
 
@@ -128,12 +220,24 @@ function supabaseTableDeleteUrl(config: SupabaseProjectConfig, table: SupabaseCh
   return `${config.url}/rest/v1/${table}?${query.toString()}`;
 }
 
-function supabaseJsonHeaders(config: SupabaseProjectConfig, mode: "read" | "write"): HeadersInit {
+function supabaseMapRowsDeleteUrl(config: SupabaseProjectConfig, mapIds: readonly string[]): string {
+  const query = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    map_id: `in.(${mapIds.map(supabaseListValue).join(",")})`,
+  });
+  return `${config.url}/rest/v1/maps?${query.toString()}`;
+}
+
+function supabaseJsonHeaders(
+  config: SupabaseProjectListConfig,
+  mode: "read" | "write",
+  returnMode: "minimal" | "representation" = "minimal",
+): HeadersInit {
   return {
     apikey: config.anonKey,
     Authorization: `Bearer ${config.anonKey}`,
     Accept: "application/json",
-    ...(mode === "write" ? { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" } : {}),
+    ...(mode === "write" ? { "Content-Type": "application/json", Prefer: `resolution=merge-duplicates,return=${returnMode}` } : {}),
     ...(mode === "read" ? { "Accept-Profile": SUPABASE_SCHEMA } : { "Content-Profile": SUPABASE_SCHEMA }),
   };
 }
@@ -145,8 +249,77 @@ async function parseProjectRows(response: Response): Promise<readonly SupabasePr
     if (!isRecord(entry) || !("current_json" in entry)) {
       throw new SupabaseProjectSyncError("Supabase project row is missing current_json");
     }
-    return { current_json: entry.current_json };
+    return {
+      current_json: entry.current_json,
+      current_sha256: typeof entry.current_sha256 === "string" ? entry.current_sha256 : null,
+    };
   });
+}
+
+async function parseProjectListRows(response: Response): Promise<readonly SupabaseProjectListRow[]> {
+  const parsed: unknown = await response.json();
+  if (!Array.isArray(parsed)) throw new SupabaseProjectSyncError("Supabase projects list response was not an array");
+  return parsed.map((entry) => {
+    if (!isRecord(entry) || typeof entry.project_id !== "string") {
+      throw new SupabaseProjectSyncError("Supabase projects list row is missing project_id");
+    }
+    return {
+      current_json: entry.current_json,
+      project_id: entry.project_id,
+      title: typeof entry.title === "string" ? entry.title : null,
+    };
+  });
+}
+
+function supabaseProjectListTitle(row: SupabaseProjectListRow): string {
+  const directTitle = trimmedOrUndefined(row.title);
+  if (directTitle) return directTitle;
+  if (isRecord(row.current_json) && isRecord(row.current_json.meta)) {
+    const metaTitle = trimmedOrUndefined(row.current_json.meta.title);
+    if (metaTitle) return metaTitle;
+  }
+  return row.project_id;
+}
+
+function trimmedOrUndefined(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
+}
+
+async function saveProjectSnapshotToSupabase(
+  config: SupabaseProjectConfig,
+  project: Project,
+  expectedCurrentSha256: string | null,
+): Promise<boolean> {
+  const serialized = serialize(project);
+  const payload = await projectUpsertPayload(config.projectId, project, serialized);
+  if (expectedCurrentSha256 === null) {
+    const response = await fetch(supabaseUpsertUrl(config), {
+      method: "POST",
+      headers: supabaseJsonHeaders(config, "write"),
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new SupabaseProjectSyncError(await response.text(), response.status);
+    }
+    return true;
+  }
+  const response = await fetch(supabaseConditionalUpdateUrl(config, expectedCurrentSha256), {
+    method: "PATCH",
+    headers: supabaseJsonHeaders(config, "write", "representation"),
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new SupabaseProjectSyncError(await response.text(), response.status);
+  }
+  return await responseUpdatedRows(response);
+}
+
+async function responseUpdatedRows(response: Response): Promise<boolean> {
+  const parsed: unknown = await response.json();
+  if (!Array.isArray(parsed)) {
+    throw new SupabaseProjectSyncError("Supabase conditional update response was not an array");
+  }
+  return parsed.length > 0;
 }
 
 async function projectUpsertPayload(projectId: string, project: Project, serialized: string): Promise<Record<string, unknown>> {
@@ -169,6 +342,43 @@ async function saveProjectChildRows(config: SupabaseProjectConfig, project: Proj
   await replaceRows(config, "terrain_templates", "project_id,tileset_id,template_id", terrainTemplateRows(config.projectId, project));
 }
 
+async function saveChangedMapRows(
+  config: SupabaseProjectConfig,
+  project: Project,
+  changedMapIds: readonly string[],
+): Promise<void> {
+  const mapRows = await Promise.all(
+    changedMapIds
+      .map((mapId) => project.maps[mapId])
+      .filter((map): map is GameMap => map !== undefined)
+      .map((map) => mapRow(config.projectId, map)),
+  );
+  const deletedMapIds = changedMapIds.filter((mapId) => project.maps[mapId] === undefined);
+  if (deletedMapIds.length > 0) await deleteMapRows(config, deletedMapIds);
+  await upsertRows(config, "maps", "project_id,map_id", mapRows);
+}
+
+async function saveChangedMapRowsFromCanonical(
+  config: SupabaseProjectConfig,
+  fallbackProject: Project,
+  changedMapIds: readonly string[],
+): Promise<void> {
+  let project = fallbackProject;
+  let beforeSha256: string | null = null;
+  for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
+    const beforeSnapshot = await loadProjectSnapshotFromSupabase(config);
+    if (beforeSnapshot) {
+      project = beforeSnapshot.project;
+      beforeSha256 = beforeSnapshot.sha256;
+    }
+    await saveChangedMapRows(config, project, changedMapIds);
+    const afterSnapshot = await loadProjectSnapshotFromSupabase(config);
+    if (!afterSnapshot || afterSnapshot.sha256 === beforeSha256) return;
+    project = afterSnapshot.project;
+    beforeSha256 = afterSnapshot.sha256;
+  }
+}
+
 async function replaceRows(
   config: SupabaseProjectConfig,
   table: SupabaseChildTable,
@@ -181,6 +391,16 @@ async function replaceRows(
 
 async function deleteProjectRows(config: SupabaseProjectConfig, table: SupabaseChildTable): Promise<void> {
   const response = await fetch(supabaseTableDeleteUrl(config, table), {
+    method: "DELETE",
+    headers: supabaseJsonHeaders(config, "write"),
+  });
+  if (!response.ok) {
+    throw new SupabaseProjectSyncError(await response.text(), response.status);
+  }
+}
+
+async function deleteMapRows(config: SupabaseProjectConfig, mapIds: readonly string[]): Promise<void> {
+  const response = await fetch(supabaseMapRowsDeleteUrl(config, mapIds), {
     method: "DELETE",
     headers: supabaseJsonHeaders(config, "write"),
   });
@@ -271,6 +491,152 @@ function terrainTemplateCount(project: Project): number {
   return Object.values(project.tilesets).reduce((count, tileset) => count + (tileset.terrainTemplates?.length ?? 0), 0);
 }
 
+function changedMapIdsBetween(baseProject: Project, project: Project): readonly string[] {
+  const mapIds = [...new Set([...Object.keys(baseProject.maps), ...Object.keys(project.maps)])]
+    .filter((mapId) => mapSnapshot(baseProject.maps[mapId]) !== mapSnapshot(project.maps[mapId]));
+  return [...new Set([...mapIds, ...changedMapTreeIdsBetween(baseProject.mapTree, project.mapTree)])];
+}
+
+function mapSaveConflicts(
+  baseProject: Project,
+  project: Project,
+  latestProject: Project,
+  changedMapIds: readonly string[],
+): readonly SupabaseMapSaveConflict[] {
+  return changedMapIds
+    .filter((mapId) => {
+      const baseSnapshot = mapSnapshot(baseProject.maps[mapId]);
+      const latestSnapshot = mapSnapshot(latestProject.maps[mapId]);
+      const localSnapshot = mapSnapshot(project.maps[mapId]);
+      return latestSnapshot !== baseSnapshot && latestSnapshot !== localSnapshot;
+    })
+    .map((mapId) => ({ mapId, name: mapConflictName(mapId, project, latestProject, baseProject) }));
+}
+
+function mergeProjectMaps(
+  latestProject: Project,
+  project: Project,
+  changedMapIds: readonly string[],
+  changedMapTreeIds: readonly string[],
+): Project {
+  const mergedMaps = { ...latestProject.maps };
+  for (const mapId of changedMapIds) {
+    const map = project.maps[mapId];
+    if (map) {
+      mergedMaps[mapId] = map;
+    } else {
+      delete mergedMaps[mapId];
+    }
+  }
+  return {
+    ...project,
+    maps: mergedMaps,
+    mapTree: mergeMapTree(latestProject.mapTree, project.mapTree, changedMapTreeIds),
+  };
+}
+
+function changedMapTreeIdsBetween(baseTree: MapTreeNode, tree: MapTreeNode): readonly string[] {
+  const baseLocations = mapTreeLocations(baseTree);
+  const locations = mapTreeLocations(tree);
+  return [...new Set([...baseLocations.keys(), ...locations.keys()])]
+    .filter((mapId) => baseLocations.get(mapId) !== locations.get(mapId));
+}
+
+function mapTreeLocations(tree: MapTreeNode): Map<string, string> {
+  const locations = new Map<string, string>();
+  visitMapTreeLocations(tree, null, 0, locations);
+  return locations;
+}
+
+function visitMapTreeLocations(
+  node: MapTreeNode,
+  parentId: string | null,
+  index: number,
+  locations: Map<string, string>,
+): void {
+  locations.set(node.mapId, `${parentId ?? ""}/${index}`);
+  node.children.forEach((child, childIndex) => visitMapTreeLocations(child, node.mapId, childIndex, locations));
+}
+
+function mergeMapTree(latestTree: MapTreeNode, tree: MapTreeNode, changedMapIds: readonly string[]): MapTreeNode {
+  return changedMapIds.reduce(
+    (mergedTree, mapId) => mergeMapTreeNode(mergedTree, latestTree, tree, mapId),
+    structuredClone(latestTree),
+  );
+}
+
+function mergeMapTreeNode(
+  mergedTree: MapTreeNode,
+  latestTree: MapTreeNode,
+  tree: MapTreeNode,
+  mapId: string,
+): MapTreeNode {
+  const localPlacement = findMapTreePlacement(tree, mapId);
+  const latestPlacement = findMapTreePlacement(latestTree, mapId);
+  const treeWithoutNode = removeMapTreeNode(mergedTree, mapId);
+  if (!localPlacement) return treeWithoutNode;
+  const node = latestPlacement
+    ? { ...structuredClone(latestPlacement.node), mapId }
+    : structuredClone(localPlacement.node);
+  return insertMapTreeNode(treeWithoutNode, localPlacement.parentId, localPlacement.index, node);
+}
+
+type MapTreePlacement = {
+  readonly index: number;
+  readonly node: MapTreeNode;
+  readonly parentId: string | null;
+};
+
+function findMapTreePlacement(
+  node: MapTreeNode,
+  mapId: string,
+  parentId: string | null = null,
+  index = 0,
+): MapTreePlacement | null {
+  if (node.mapId === mapId) return { index, node, parentId };
+  for (let childIndex = 0; childIndex < node.children.length; childIndex += 1) {
+    const child = node.children[childIndex];
+    if (!child) continue;
+    const found = findMapTreePlacement(child, mapId, node.mapId, childIndex);
+    if (found) return found;
+  }
+  return null;
+}
+
+function removeMapTreeNode(node: MapTreeNode, mapId: string): MapTreeNode {
+  if (node.mapId === mapId) {
+    return { ...node, children: node.children.filter((child) => child.mapId !== mapId).map((child) => removeMapTreeNode(child, mapId)) };
+  }
+  return {
+    ...node,
+    children: node.children
+      .filter((child) => child.mapId !== mapId)
+      .map((child) => removeMapTreeNode(child, mapId)),
+  };
+}
+
+function insertMapTreeNode(node: MapTreeNode, parentId: string | null, index: number, childNode: MapTreeNode): MapTreeNode {
+  if (parentId === null) return childNode;
+  if (node.mapId === parentId) {
+    const children = [...node.children];
+    children.splice(Math.min(index, children.length), 0, childNode);
+    return { ...node, children };
+  }
+  return { ...node, children: node.children.map((child) => insertMapTreeNode(child, parentId, index, childNode)) };
+}
+
+function mapSnapshot(map: GameMap | undefined): string {
+  return map ? JSON.stringify(map) : "";
+}
+
+function mapConflictName(mapId: string, project: Project, latestProject: Project, baseProject: Project): string {
+  return project.maps[mapId]?.name ?? latestProject.maps[mapId]?.name ?? baseProject.maps[mapId]?.name ?? mapId;
+}
+
+function supabaseListValue(value: string): string {
+  return `"${value.replaceAll("\"", "\\\"")}"`;
+}
+
 function isOptionalTableMissingError(error: unknown): boolean {
   return error instanceof SupabaseProjectSyncError && error.status === 404 && error.message.includes("PGRST205");
 }
@@ -289,8 +655,19 @@ function repairSupabaseCurrentJson(value: unknown): unknown {
     appendMissingRecords(database, "battleAnimations", defaultBattleAnimationRecords());
     appendMissingRecords(database, "battlerAnimations", defaultBattlerAnimationRecords());
   }
+  pruneInvalidVillageInfoDocuments(value);
+  removeLegacySpriteReferences(value);
   appendMissingResourceProfiles(value, defaultResourceProfiles());
   return value;
+}
+
+function pruneInvalidVillageInfoDocuments(project: Record<string, unknown>): void {
+  if (!isRecord(project.maps) || !Array.isArray(project.villageInfoDocuments)) return;
+  const mapIds = new Set(Object.keys(project.maps));
+  project.villageInfoDocuments = project.villageInfoDocuments.filter((entry) => {
+    if (!isRecord(entry)) return true;
+    return typeof entry.mapId !== "string" || mapIds.has(entry.mapId);
+  });
 }
 
 function appendMissingRecords<T extends { readonly id: string }>(container: Record<string, unknown>, key: string, defaults: readonly T[]): void {

@@ -1,4 +1,5 @@
 import type { AssetRef } from "../types";
+import { BUILTIN_SPRITE_SLICING, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 
 export const DEFAULT_TILESET_ID = "easyrpg_chipset_combined_town";
 export const DEFAULT_TILESET_NAME = "EasyRPG RTP Combined Town ChipSet";
@@ -6,7 +7,7 @@ export const DEFAULT_TILESET_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town";
 export const LEGACY_RM_TILESET_ID = "tiles_default";
 export const LEGACY_RM_TILESET_NAME = "RM 기본 샘플 칩셋";
 export const LEGACY_RM_TILESET_TEXTURE_KEY = "tex_tiles_default";
-export const DEFAULT_SPRITE_NPC = "npc_villager";
+export const DEFAULT_EASYRPG_CHARSET_ID = "tex_easyrpg_charset_people1";
 export const DEFAULT_ACTOR_ID = "actor_hero";
 export const DEFAULT_CLASS_ID = "class_hero";
 export const DEFAULT_SKILL_ID = "skill_attack";
@@ -17,11 +18,11 @@ export const DEFAULT_TROOP_ID = "troop_slime";
 export const DEFAULT_STATE_ID = "state_poison";
 export const DEFAULT_ANIMATION_ID = "anim_hit";
 
-export const DEFAULT_TILE_SIZE = 16;
-export const DEFAULT_TILES_PER_ROW = 30;
-export const DEFAULT_TILE_COUNT = 480;
-export const DEFAULT_SPRITE_FRAME_WIDTH = 32;
-export const DEFAULT_SPRITE_FRAME_HEIGHT = 32;
+export const DEFAULT_TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
+export const DEFAULT_TILES_PER_ROW = RESOURCE_SLICING.chipset.columns;
+export const DEFAULT_TILE_COUNT = RESOURCE_SLICING.chipset.count;
+export const DEFAULT_SPRITE_FRAME_WIDTH = BUILTIN_SPRITE_SLICING.cellWidth;
+export const DEFAULT_SPRITE_FRAME_HEIGHT = BUILTIN_SPRITE_SLICING.cellHeight;
 
 export const TILE = {
   GRASS: 240,

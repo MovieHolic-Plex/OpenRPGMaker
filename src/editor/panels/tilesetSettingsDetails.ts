@@ -1,4 +1,5 @@
 import { textControl } from "@/editor/panels/databaseControls";
+import { renderTilesetCheckerSummary } from "@/editor/panels/tilesetCheckerSummary";
 import {
   getTilesetMetadataEditMode,
   renderTilesetMetadataEditor,
@@ -113,6 +114,7 @@ function renderTerrainPanel(tileset: TilesetDef, rerender: () => void): HTMLElem
   return el("aside", {
     class: "rm2k3-tileset-terrain-pane",
     children: [
+      renderTilesetCheckerSummary(tileset),
       el("fieldset", {
         class: "rm2k3-db-fieldset rm2k3-tileset-edit-mode",
         dataset: { testid: "tileset-rm2k3-edit-mode" },

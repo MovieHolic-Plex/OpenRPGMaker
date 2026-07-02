@@ -1,0 +1,432 @@
+:root {
+  --rm2k3-troop-modal-width: 1456px;
+  --rm2k3-troop-modal-height: 738px;
+  --rm2k3-troop-list-width: 242px;
+  --rm2k3-troop-preview-width: 482px;
+  --rm2k3-troop-preview-height-classic: 364px;
+  --rm2k3-troop-event-width: 668px;
+}
+
+.database-modal-backdrop:has(.rm2k3-record-troops) {
+  align-items: flex-start;
+  background: rgba(0, 0, 0, 0.08);
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.database-modal-window:has(.rm2k3-record-troops) {
+  background: #e8e8e8;
+  border-color: #ffffff #707070 #707070 #ffffff;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: 1px 1px 0 #303030;
+  color: #000000;
+  height: var(--rm2k3-troop-modal-height);
+  width: var(--rm2k3-troop-modal-width);
+}
+
+.database-modal-window:has(.rm2k3-record-troops) .database-modal-header {
+  background: linear-gradient(180deg, #f6e4b8 0%, #d8b675 100%);
+  border-bottom: 1px solid #8b6f3c;
+  color: #000000;
+  min-height: 24px;
+  padding: 2px 4px 1px;
+}
+
+.database-modal-window:has(.rm2k3-record-troops) .database-modal-header h2 {
+  color: #000000;
+  font: 400 12px/18px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  text-shadow: none;
+}
+
+.database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
+  background: #e8e8e8;
+  display: grid;
+  grid-template-rows: 39px 21px 1fr;
+  overflow: hidden;
+  padding: 10px 14px 0;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
+  display: grid;
+  grid-template-columns: 220px 227px 239px 284px;
+  height: 20px;
+  margin: 0;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tab,
+.database-modal-body:has(.rm2k3-record-troops) .db-tab {
+  background: #e8e8e8;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  border-radius: 0;
+  border-style: solid;
+  border-width: 1px;
+  color: #000000;
+  font: 12px/18px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  height: 21px;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .db-tabs {
+  align-content: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  height: 21px;
+  margin: -1px 0 0;
+  max-height: none;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .db-tab {
+  flex: 0 0 auto;
+  min-width: 46px;
+  padding: 0 10px;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .db-tab.active {
+  background: linear-gradient(#5e84dc, #315ebc);
+  border-bottom-color: #315ebc;
+  border-color: #dfe8ff #1f4695 #1f4695 #dfe8ff;
+  box-shadow: none;
+  color: #ffffff;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .rm2k3-record-identity {
+  display: none;
+}
+
+.database-modal-body:has(.rm2k3-record-troops) .db-body {
+  background: #e8e8e8;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  height: 608px;
+  margin: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px 10px 8px;
+}
+
+.database-modal-body .rm2k3-record-troops {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 242px minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane {
+  background: #e8e8e8;
+  border: 0;
+  box-shadow: none;
+  display: grid;
+  grid-template-rows: 30px 1fr 31px 28px;
+  min-width: 0;
+  padding: 0;
+}
+
+.database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane h3 {
+  align-items: center;
+  background: #1f65b5;
+  border: 1px solid #7c7c7c;
+  color: #ffffff;
+  display: grid;
+  font: 700 20px/27px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  height: 30px;
+  justify-items: center;
+  margin: 0;
+}
+
+.database-modal-body .rm2k3-record-troops .rm2k3-record-count {
+  display: none;
+}
+
+.database-modal-body .rm2k3-record-troops .db-list {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  display: block;
+  height: 520px;
+  margin: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+.database-modal-body .rm2k3-record-troops .db-list-row {
+  align-items: center;
+  background: #ffffff;
+  border: 0;
+  color: #000000;
+  display: flex;
+  font: 19px/21px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  height: 21px;
+  margin: 0;
+  padding: 0 4px;
+  width: 100%;
+}
+
+.database-modal-body .rm2k3-record-troops .db-list-row.active {
+  background: #0a87d8;
+  color: #ffffff;
+}
+
+.database-modal-body .rm2k3-record-troops .db-list-number,
+.database-modal-body .rm2k3-record-troops .db-list-name {
+  color: inherit;
+  font: inherit;
+}
+
+.database-modal-body .rm2k3-record-troops .rm2k3-record-list-footer {
+  align-items: end;
+  display: grid;
+  height: 31px;
+  padding: 4px 0 0;
+}
+
+.database-modal-body .rm2k3-record-troops .rm2k3-maximum-button,
+.database-modal-body .rm2k3-record-troops .db-toolbar .btn,
+.database-modal-body .db-troops-classic-workbench button {
+  background: #e8e8e8;
+  border-color: #ffffff #707070 #707070 #ffffff;
+  border-radius: 0;
+  border-style: solid;
+  border-width: 1px;
+  color: #000000;
+  font: 15px/22px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  min-height: 24px;
+  padding: 0 8px;
+}
+
+.database-modal-body .rm2k3-record-troops .db-toolbar {
+  align-items: end;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, 1fr);
+  height: 28px;
+  margin: 0;
+}
+
+.database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane,
+.database-modal-body .rm2k3-record-troops .rm2k3-detail-form {
+  background: #e8e8e8;
+  border: 0;
+  box-shadow: none;
+  display: block;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-body .db-troops-classic-workbench {
+  display: grid;
+  gap: 8px 14px;
+  grid-template-areas:
+    "top top"
+    "preview events"
+    "members events";
+  grid-template-columns: 482px 552px;
+  grid-template-rows: 58px 286px 210px;
+  height: 100%;
+  min-width: 0;
+  width: 1048px;
+}
+
+.database-modal-body .db-troop-top-controls {
+  align-items: start;
+  border-bottom: 1px solid #a8a8a8;
+  display: grid;
+  gap: 4px;
+  grid-area: top;
+  grid-template-columns: 244px 154px 142px 168px 236px;
+  height: 58px;
+  padding-bottom: 8px;
+}
+
+.database-modal-body .db-troop-classic-panel {
+  align-content: start;
+  background: #e8e8e8;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: none;
+  color: #000000;
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  padding: 8px 8px 6px;
+}
+
+.database-modal-body .db-troop-classic-panel legend,
+.database-modal-body .db-troop-event-panel h3 {
+  background: #e8e8e8;
+  color: #000000;
+  font: 16px/1 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.database-modal-body .db-troop-top-controls > .db-troop-classic-panel:first-child {
+  grid-template-columns: minmax(0, 1fr);
+  height: 48px;
+  padding: 7px 9px 5px;
+}
+
+.database-modal-body .db-troop-top-controls > .db-troop-classic-panel:first-child .db-field > span {
+  display: none;
+}
+
+.database-modal-body .db-troop-top-controls > .db-troop-classic-panel:last-child {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  height: 48px;
+  padding-left: 12px;
+}
+
+.database-modal-body .db-troops-classic-workbench input,
+.database-modal-body .db-troops-classic-workbench select {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-radius: 0;
+  border-style: solid;
+  border-width: 1px;
+  color: #000000;
+  font: 15px/20px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  height: 25px;
+  min-height: 0;
+  min-width: 0;
+  padding: 1px 4px;
+}
+
+.database-modal-body .db-troops-classic-workbench input[type="checkbox"],
+.database-modal-body .db-troops-classic-workbench input[type="radio"] {
+  height: 16px;
+  margin: 0 4px 0 0;
+  padding: 0;
+  width: 16px;
+}
+
+.database-modal-body .db-troops-classic-workbench .db-field {
+  align-content: start;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-body .db-troops-classic-workbench .db-field > span,
+.database-modal-body .db-troops-classic-workbench .actor-check,
+.database-modal-body .db-troop-radio,
+.database-modal-body .db-troop-terrain-row {
+  color: #000000;
+  font: 15px/19px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.database-modal-body .db-troop-preview-panel {
+  grid-area: preview;
+  min-width: 0;
+}
+
+.database-modal-body .rm2k3-detail-troops .db-troop-battle-preview-stage {
+  background:
+    linear-gradient(180deg, #80b8e8 0 18%, #4a8fc1 19% 25%, #55a13d 26% 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 45%);
+  background-position: center;
+  background-size: cover;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  height: 254px;
+  overflow: hidden;
+  position: relative;
+}
+
+.database-modal-body .db-troop-battle-preview-stage::before {
+  background: linear-gradient(90deg, transparent, rgba(71, 62, 142, 0.28), transparent);
+  content: "";
+  height: 28px;
+  left: 45%;
+  position: absolute;
+  right: 8%;
+  top: 24px;
+}
+
+.database-modal-body .db-troop-member-sprite {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  min-height: 0;
+  outline: 0;
+  padding: 0;
+  position: absolute;
+  transform: translate(-50%, -70%);
+}
+
+.database-modal-body .db-troop-member-sprite.active {
+  filter: drop-shadow(0 0 0 #ffffff) drop-shadow(0 0 4px #fff45f);
+}
+
+.database-modal-body .db-troop-member-sprite.hidden-member {
+  filter: grayscale(1);
+  opacity: 0.42;
+}
+
+.database-modal-body .db-troop-empty-member {
+  background: #cfe8f8;
+  bottom: 14px;
+  display: grid;
+  font: 15px/1 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  height: 72px;
+  left: 0;
+  place-items: center;
+  position: absolute;
+  width: 72px;
+}
+
+.database-modal-body .db-troop-preview-caption {
+  background: #ffffff;
+  border-color: #808080 #ffffff #ffffff #808080;
+  border-style: solid;
+  border-width: 1px;
+  font: 13px/20px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+  height: 24px;
+  margin-top: 6px;
+  overflow: hidden;
+  padding: 1px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .db-troop-member-editor {
+  display: grid;
+  gap: 10px;
+  grid-area: members;
+  grid-template-columns: 100px 1fr;
+  min-height: 0;
+}
+
+.database-modal-body .db-troop-member-buttons {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+
+.database-modal-body .db-troop-member-list {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 170px 170px;
+  grid-template-rows: 27px 86px 88px;
+  min-width: 0;
+}
+
+.database-modal-body .db-troop-member-list .db-troop-enemy-list {
+  grid-column: 1;
+  grid-row: 2;
+  max-height: 86px;
+}

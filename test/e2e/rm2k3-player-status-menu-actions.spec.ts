@@ -13,13 +13,14 @@ test("fullscreen item target, equipment, row, and formation actions mutate runti
   const before = await runtimeState(page);
   const firstActorId = before.partyActorIds[0];
   const secondActorId = before.partyActorIds[1];
-  if (!firstActorId || !secondActorId) throw new Error("missing party actors");
+  const fourthActorId = before.partyActorIds[3];
+  if (!firstActorId || !secondActorId || !fourthActorId) throw new Error("missing party actors");
   await lowerActorHp(page, secondActorId);
 
   await page.keyboard.press("X");
   await page.getByTestId("status-menu-command-items").click();
-  await page.getByTestId("status-menu-use-item_potion").click();
-  await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택");
+  await page.getByTestId("status-menu-item-item_potion").click();
+  await expect(page.getByTestId("status-menu-classic-actor-targets")).toBeVisible();
   await page.getByTestId(`status-menu-item-target-${secondActorId}`).click();
   await expect(page.getByTestId("status-menu-message")).toContainText("테스트 회복약을 사용했습니다");
   await expect.poll(async () => (await runtimeState(page)).actorVitals[secondActorId]?.hp).toBe(30 + recoveryAmount);
@@ -30,7 +31,8 @@ test("fullscreen item target, equipment, row, and formation actions mutate runti
   await page.getByTestId("status-menu-command-equipment").click();
   await page.getByTestId(`status-menu-equipment-actor-${firstActorId}`).click();
   await page.getByTestId("status-menu-equipment-slot-weapon").click();
-  await page.getByTestId("status-menu-equip-equip_scout_dagger").click();
+  await page.getByTestId("status-menu-equipment-item-equip_scout_dagger").scrollIntoViewIfNeeded();
+  await page.getByTestId("status-menu-equipment-item-equip_scout_dagger").click();
   const afterEquip = await runtimeState(page);
   expect(afterEquip.actorEquipment[firstActorId]?.weapon).toBe("equip_scout_dagger");
   expect(afterEquip.inventory.equip_scout_dagger).toBeUndefined();
@@ -38,14 +40,16 @@ test("fullscreen item target, equipment, row, and formation actions mutate runti
 
   await page.keyboard.press("X");
   await page.getByTestId("status-menu-command-row").click();
-  await page.getByTestId(`status-menu-row-toggle-${firstActorId}`).click();
+  await page.getByTestId(`status-menu-row-${firstActorId}`).click();
   expect((await runtimeState(page)).actorRows[firstActorId]).toBe("back");
 
   await page.keyboard.press("X");
   await page.getByTestId("status-menu-command-formation").click();
-  await page.getByTestId(`status-menu-formation-actor-${secondActorId}`).click();
-  await page.getByTestId("status-menu-formation-move-up").click();
-  expect((await runtimeState(page)).partyActorIds[0]).toBe(secondActorId);
+  await page.getByTestId(`status-menu-formation-actor-${firstActorId}`).click();
+  await page.getByTestId(`status-menu-formation-actor-${fourthActorId}`).click();
+  const afterFormation = await runtimeState(page);
+  expect(afterFormation.partyActorIds[0]).toBe(secondActorId);
+  expect(afterFormation.partyActorIds[3]).toBe(firstActorId);
   await page.getByTestId("main-menu").screenshot({ path: C002_SCREENSHOT });
 });
 
@@ -59,9 +63,9 @@ test("uses a DB-edited recovery item from the status menu", async ({ page }, tes
   await page.keyboard.press("X");
   await expect(page.getByTestId("main-menu")).toBeVisible();
   await page.getByTestId("status-menu-command-items").click();
-  await expect(page.getByTestId("status-menu-detail")).toContainText("테스트 회복약");
-  await page.getByTestId("status-menu-use-item_potion").click();
-  await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택");
+  await expect(page.getByTestId("status-menu-fullscreen-items")).toContainText("테스트 회복약");
+  await page.getByTestId("status-menu-item-item_potion").click();
+  await expect(page.getByTestId("status-menu-classic-actor-targets")).toBeVisible();
   await page.getByTestId(`status-menu-item-target-${actorId}`).click();
 
   await expect(page.getByTestId("status-menu-message")).toContainText("테스트 회복약을 사용했습니다");

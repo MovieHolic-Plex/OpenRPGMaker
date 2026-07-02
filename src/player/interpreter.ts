@@ -16,12 +16,15 @@ export type { Interpreter, ResumeValue, StepResult } from "@/player/interpreter/
 export function createInterpreter(
   commands: Command[],
   session: PlaySessionLike,
-  project?: Project
+  project?: Project,
+  options?: { maxLoopIterations?: number; currentEventId?: string }
 ): Interpreter {
   const state: InterpreterState = {
     stack: [{ commands, pc: 0 }],
     session,
     maxStackDepth: 1000,
+    maxLoopIterations: options?.maxLoopIterations ?? 100000,
+    currentEventId: options?.currentEventId,
     project,
   };
   let done = false;
@@ -66,6 +69,14 @@ export function createInterpreter(
       if (done) return { kind: "done" };
       const result = advanceResume(state, pending, value);
       if (result === "done") return finish();
+      pending = "none";
+      return run();
+    },
+    skip(): StepResult {
+      if (done) return { kind: "done" };
+      // pending(블로킹 단계)을 무시하고 현재 프레임의 pc 만 전진시킨다.
+      const frame = topFrame(state.stack);
+      if (frame) frame.pc += 1;
       pending = "none";
       return run();
     },

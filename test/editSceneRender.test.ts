@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type Phaser from "phaser";
 import { editorState, type Layer } from "@/editor/editorState";
-import { editorEventMarkerTexture, eventMarkerTileScale, renderEditScene } from "@/editor/editSceneRender";
-import { createBlankProject, DEFAULT_SPRITE_NPC } from "@/project/defaults";
+import {
+  editorEventMarkerTexture,
+  eventMarkerTileScale,
+  renderEditScene,
+  renderEventLayerClickFeedback,
+} from "@/editor/editSceneRender";
+import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
 
 type MockStroke = {
@@ -129,8 +134,8 @@ function mockScene(): Phaser.Scene {
           y,
           texture,
           frame,
-          width: texture === "tex_npc_villager" ? 32 : 16,
-          height: texture === "tex_npc_villager" ? 32 : 16,
+          width: texture === "tex_easyrpg_charset_people1" ? 32 : 16,
+          height: texture === "tex_easyrpg_charset_people1" ? 32 : 16,
         }),
       circle: (x: number, y: number, radius: number, fillColor?: number, fillAlpha?: number) =>
         mockObject({ kind: "circle", x, y, width: radius * 2, height: radius * 2, fillColor, fillAlpha }),
@@ -162,7 +167,7 @@ function renderSelectedNpcEvent(layer: Layer): RenderedScene {
           id: "page_npc",
           name: "NPC",
           conditions: [],
-          graphic: { sprite: { type: "bundled", id: DEFAULT_SPRITE_NPC } },
+          graphic: { sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID } },
           trigger: { kind: "action" },
           priority: "same",
           movement: { type: "fixed", speed: 3, frequency: 3 },
@@ -212,10 +217,9 @@ describe("edit scene event rendering", () => {
         object.x === 40 &&
         object.y === 40 &&
         object.width === 12 &&
-        object.height === 12 &&
-        object.fillColor === 0xff007a
+        object.height === 12
     );
-    const sprite = objects.find((object) => object.kind === "image" && object.texture === "tex_npc_villager");
+    const sprite = objects.find((object) => object.kind === "image" && object.texture === "tex_easyrpg_charset_people1");
     const ring = result.overlayObjects.find(
       (object) =>
         object.kind === "rectangle" &&
@@ -228,8 +232,62 @@ describe("edit scene event rendering", () => {
 
     expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0x000000, alpha: 0.45 });
     expect(marker?.stroke).toMatchObject({ lineWidth: 2, color: 0xffffff, alpha: 0.95 });
-    expect(sprite).toMatchObject({ x: 40, y: 40, texture: "tex_npc_villager", frame: 0 });
+    expect(sprite).toMatchObject({ x: 40, y: 40, texture: "tex_easyrpg_charset_people1", frame: 0 });
     expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
+  });
+
+  it("renders blank event edit markers without chroma-key magenta fill", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 4;
+    map.height = 4;
+    map.lowerTiles = new Array<number>(16).fill(-1);
+    map.upperTiles = new Array<number>(16).fill(-1);
+    map.events = [
+      {
+        id: "ev_blank",
+        x: 1,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          {
+            id: "page_blank",
+            name: "Blank",
+            conditions: [],
+            graphic: {},
+            trigger: { kind: "action" },
+            priority: "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            commands: [],
+          },
+        ],
+      },
+    ];
+    store.replace(project);
+    editorState.set({
+      currentMapId: map.id,
+      layer: "event",
+      selectedEventId: "ev_blank",
+      selectedEventPageId: null,
+      selection: null,
+      tool: "select",
+    });
+
+    const overlayObjects: MockObject[] = [];
+    renderEditScene({
+      scene: mockScene(),
+      tileLayer: mockContainer(),
+      overlayLayer: mockContainer(overlayObjects),
+      gridGraphics: mockGridGraphics(),
+      mapId: map.id,
+    });
+
+    const marker = flattenObjects(overlayObjects).find(
+      (object) => object.kind === "rectangle" && object.x === 24 && object.y === 24 && object.width === 12 && object.height === 12
+    );
+
+    expect(marker).toMatchObject({ fillColor: 0x1f2937, fillAlpha: 0.34 });
   });
 
   it.each<Layer>(["lower", "upper"])(
@@ -240,7 +298,7 @@ describe("edit scene event rendering", () => {
       const badge = result.overlayObjects.find((object) => object.kind === "container" && object.x === 40 && object.y === 40);
       const badgeBack = objects.find((object) => object.kind === "circle" && object.fillColor === 0x1f2937);
       const badgeText = objects.find((object) => object.kind === "text" && object.text === "E");
-      const sprite = objects.find((object) => object.kind === "image" && object.texture === "tex_npc_villager");
+      const sprite = objects.find((object) => object.kind === "image" && object.texture === "tex_easyrpg_charset_people1");
       const ring = objects.find(
         (object) =>
           object.kind === "rectangle" &&
@@ -262,15 +320,38 @@ describe("edit scene event rendering", () => {
 
   it("resolves the generated default NPC to its bundled texture", () => {
     const texture = editorEventMarkerTexture(createBlankProject(), {
-      sprite: { type: "bundled", id: DEFAULT_SPRITE_NPC },
+      sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID },
     });
 
-    expect(texture).toEqual({ texture: "tex_npc_villager", frame: 0 });
+    expect(texture).toEqual({ texture: "tex_easyrpg_charset_people1", frame: 0 });
   });
 
   it("scales event sprites into the one-tile event box", () => {
     expect(eventMarkerTileScale(32, 32)).toBe(0.4375);
     expect(eventMarkerTileScale(24, 32)).toBe(0.4375);
     expect(eventMarkerTileScale(12, 12)).toBe(1);
+  });
+
+  it("renders a visible clicked-cell marker for the event layer", () => {
+    const overlayObjects: MockObject[] = [];
+    renderEventLayerClickFeedback(
+      { scene: mockScene(), overlayLayer: mockContainer(overlayObjects) },
+      { mapId: "map_1", x: 1, y: 2, mode: "create" }
+    );
+
+    const objects = flattenObjects(overlayObjects);
+    const marker = objects.find(
+      (object) =>
+        object.kind === "rectangle" &&
+        object.x === 16 &&
+        object.y === 32 &&
+        object.width === 16 &&
+        object.height === 16
+    );
+    const label = objects.find((object) => object.kind === "text" && object.text === "새 이벤트 위치 1,2");
+
+    expect(marker).toMatchObject({ fillColor: 0xd9e8f6, fillAlpha: 0.55, origin: [0, 0] });
+    expect(marker?.stroke).toMatchObject({ lineWidth: 2, color: 0x0a246a, alpha: 0.95 });
+    expect(label).toMatchObject({ x: 18, y: 18 });
   });
 });

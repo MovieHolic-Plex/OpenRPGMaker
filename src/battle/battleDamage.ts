@@ -4,32 +4,70 @@ export interface SkillLikeEffect {
   readonly power: number;
   readonly statistic: "attack" | "mind";
   readonly effect: "damage" | "healing" | "support" | "switch";
+  // 명중률(0~100). 기본 100. 데미지 적용 전에 롤하여 빗나가면 0.
+  readonly hitRate?: number;
+  // 데미지 분산(0~100). ±variance% 범위 랜덤. 기본 0(고정).
+  readonly variance?: number;
+  // 크리티컬 발동 확률(0~100). 기본 0(발생 안 함).
+  readonly criticalRate?: number;
+  // 크리티컬 배율. 기본 3(RM2K3).
+  readonly criticalMultiplier?: number;
+  // 속성 상성 배율. 기본 1.0. 1.5=약점, 0.5=내성 등.
+  readonly elementMultiplier?: number;
 }
 
-export function applySkillLike(user: MutableBattler, target: MutableBattler, spec: SkillLikeEffect): void {
+export type SkillApplyResult = { hit: boolean; amount: number; critical: boolean };
+
+export function applySkillLike(user: MutableBattler, target: MutableBattler, spec: SkillLikeEffect): SkillApplyResult {
   const stat = spec.statistic === "mind" ? user.mind : user.attackPower;
   if (spec.effect === "healing") {
-    const amount = computeMagnitude(spec.power, user, target, "heal");
-    target.hp = Math.min(target.maxHp, target.hp + amount);
-    return;
+    const result = computeMagnitude(spec.power, target, "heal", stat, spec);
+    target.hp = Math.min(target.maxHp, target.hp + result.amount);
+    return { hit: true, amount: result.amount, critical: false };
   }
-  if (spec.effect === "support" || spec.effect === "switch") return;
-  applyDamage(target, computeMagnitude(spec.power, user, target, "damage", stat));
+  if (spec.effect === "support" || spec.effect === "switch") return { hit: true, amount: 0, critical: false };
+  // 명중 판정(데미지 효과만). hitRate 기본 100.
+  const hitRate = spec.hitRate ?? 100;
+  if (Math.random() * 100 >= hitRate) {
+    return { hit: false, amount: 0, critical: false };
+  }
+  const magnitude = computeMagnitude(spec.power, target, "damage", stat, spec);
+  applyDamage(target, magnitude.amount);
+  return { hit: true, amount: magnitude.amount, critical: magnitude.critical };
 }
 
 function computeMagnitude(
   power: number,
-  user: MutableBattler,
   target: MutableBattler,
   mode: "damage" | "heal",
-  sourceStat = user.attackPower
-): number {
+  sourceStat: number,
+  spec: SkillLikeEffect
+): { amount: number; critical: boolean } {
   let magnitude = power + Math.floor(sourceStat / 2);
-  if (mode === "damage") {
-    magnitude -= Math.floor(target.defense / 2);
-    if (target.defending) magnitude = Math.floor(magnitude / 2);
+  if (mode === "heal") {
+    return { amount: applyVariance(magnitude, spec), critical: false };
   }
-  return Math.max(1, magnitude);
+  // 속성 상성 배율(기본 1.0)
+  magnitude = Math.round(magnitude * (spec.elementMultiplier ?? 1));
+  // 분산(±variance%)
+  magnitude = applyVariance(magnitude, spec);
+  // 크리티컬(확률×배율)
+  const criticalRate = spec.criticalRate ?? 0;
+  const critical = criticalRate > 0 && Math.random() * 100 < criticalRate;
+  if (critical) {
+    magnitude = Math.round(magnitude * (spec.criticalMultiplier ?? 3));
+  }
+  // 방어 반감 + 대상 방어력
+  magnitude -= Math.floor(target.defense / 2);
+  if (target.defending) magnitude = Math.floor(magnitude / 2);
+  return { amount: Math.max(1, magnitude), critical };
+}
+
+function applyVariance(magnitude: number, spec: SkillLikeEffect): number {
+  const variance = spec.variance ?? 0;
+  if (variance <= 0) return magnitude;
+  const factor = 1 + (Math.random() * 2 - 1) * (variance / 100);
+  return Math.max(1, Math.round(magnitude * factor));
 }
 
 function applyDamage(target: MutableBattler, amount: number): void {

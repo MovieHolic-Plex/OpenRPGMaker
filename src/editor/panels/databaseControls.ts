@@ -108,9 +108,10 @@ function literalLabel(value: string): string {
     case "shield":
       return "방패";
     case "armor":
+    case "body":
       return "갑옷";
     case "helmet":
-      return "투구";
+      return "머리";
     case "accessory":
       return "장신구";
     case "normal":
@@ -127,14 +128,16 @@ function literalLabel(value: string): string {
       return "씨앗";
     case "special":
       return "특수";
-    case "body":
-      return "갑옷";
     case "noLimit":
       return "제한 없음";
     case "always":
       return "항상";
     case "battle":
       return "전투 중";
+    case "turn":
+      return "턴";
+    case "moment":
+      return "순간";
     case "field":
       return "필드";
     case "never":
@@ -142,7 +145,7 @@ function literalLabel(value: string): string {
     case "teleport":
       return "장소 이동";
     case "escape":
-      return "도주";
+      return "탈출";
     case "singleTarget":
       return "단일 대상";
     case "allTargets":
@@ -185,6 +188,14 @@ function literalLabel(value: string): string {
       return "정신력";
     case "transparent":
       return "투명";
+    case "variable":
+      return "변수";
+    case "enemyHp":
+      return "적 HP";
+    case "actorHp":
+      return "배우 HP";
+    case "actorCommand":
+      return "배우 명령";
     default:
       return value;
   }

@@ -1,4 +1,5 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { ACTOR_PARAMETER_KEYS, parameterValueAtLevel } from "@/project/actorModel";
 import { actorCurveCards, actorExperiencePanel } from "@/editor/panels/actorRecordCurveEditors";
 import { battlePanel, ratesPanel } from "@/editor/panels/actorRecordBattlePanels";
 import {
@@ -27,9 +28,9 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
         el("div", {
           class: "actor-editor-grid",
           children: [
-            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor), graphicsPanel(actor)] }),
-            el("div", { class: "actor-column actor-center-stack", children: [classPanel(actor), curvesPanel(actor), experiencePanel(actor)] }),
-            el("div", { class: "actor-column actor-right-stack", children: [battlePanel(actor, rerender), ratesPanel(actor)] }),
+            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor), classPanel(actor), graphicsPanel(actor), baseStatsPanel(actor)] }),
+            el("div", { class: "actor-column actor-center-stack", children: [curvesPanel(actor), experiencePanel(actor)] }),
+            el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(), battlePanel(actor, rerender), ratesPanel(actor)] }),
           ],
         }),
       ],
@@ -76,6 +77,45 @@ function classPanel(actor: ActorRecord): HTMLElement {
       ],
     }),
   ]);
+}
+
+function baseStatsPanel(actor: ActorRecord): HTMLElement {
+  const labels: Record<(typeof ACTOR_PARAMETER_KEYS)[number], string> = {
+    maxHp: "최대 HP",
+    maxMp: "최대 MP",
+    attack: "공격력",
+    defense: "방어력",
+    mind: "마법력",
+    agility: "민첩성",
+  };
+  return actorPanel("기본 능력치", "actor-basic-stats", [
+    el("div", {
+      class: "actor-basic-stat-grid",
+      children: ACTOR_PARAMETER_KEYS.map((key) =>
+        el("div", {
+          class: "actor-basic-stat-row",
+          children: [
+            el("span", { text: `${labels[key]}:` }),
+            el("strong", { text: String(parameterValueAtLevel(actor.parameterCurves[key], actor.initialLevel)) }),
+          ],
+        })
+      ),
+    }),
+  ]);
+}
+
+function inspectorTabs(): HTMLElement {
+  return el("div", {
+    class: "actor-inspector-tabs",
+    dataset: { testid: "db-actor-inspector-tabs" },
+    children: ["특성", "장비", "성장 곡선", "능력치 보정", "공격 속성", "노트"].map((label, index) =>
+      el("button", {
+        class: `actor-inspector-tab${index === 0 ? " active" : ""}`,
+        text: label,
+        attrs: { type: "button", "aria-pressed": String(index === 0) },
+      })
+    ),
+  });
 }
 
 function graphicsPanel(actor: ActorRecord): HTMLElement {

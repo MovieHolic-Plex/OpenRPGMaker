@@ -13,6 +13,9 @@ import type {
   EquipmentId,
   SkillId,
 } from "@/project/types";
+import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
+
+export { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 
 export const ACTOR_LEVEL_MIN = 1;
 export const ACTOR_LEVEL_MAX = 99;
@@ -48,6 +51,15 @@ export const DEFAULT_ELEMENT_RATE_LABELS: readonly { readonly id: string; readon
   { id: "wind", name: "Wind" },
   { id: "holy", name: "Holy" },
 ] as const;
+
+export function defaultActorCharacterResourceId(actor: Pick<ActorRecord, "id">): string | undefined {
+  switch (actor.id) {
+    case "actor_hero":
+      return "easyrpg-charset-actor1";
+    default:
+      return undefined;
+  }
+}
 
 type ActorResourceDefaults = {
   readonly characterResourceId?: string;
@@ -120,6 +132,7 @@ export function createActorRecord(id: string, classId: ClassId, defaults: ActorR
 export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
   const initialLevel = clampLevel(actor.initialLevel);
   const maxLevel = Math.max(initialLevel, clampLevel(actor.maxLevel));
+  const characterResourceId = cleanOptionalId(actor.characterResourceId) ?? defaultActorCharacterResourceId(actor);
   return {
     id: actor.id,
     name: actor.name,
@@ -127,10 +140,10 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     classId: actor.classId,
     initialLevel,
     maxLevel,
-    faceResourceId: actor.faceResourceId ?? defaultActorFaceResourceId(actor),
-    characterResourceId: actor.characterResourceId,
+    faceResourceId: cleanOptionalId(actor.faceResourceId) ?? defaultActorFaceResourceId({ ...actor, characterResourceId }),
+    characterResourceId,
     characterTransparent: actor.characterTransparent ?? false,
-    battleCharacterResourceId: actor.battleCharacterResourceId,
+    battleCharacterResourceId: cleanOptionalId(actor.battleCharacterResourceId),
     critical: normalizeCritical(actor.critical),
     parameterCurves: normalizeParameterCurves(actor.parameterCurves),
     expCurve: normalizeExpCurve(actor.expCurve),
@@ -264,39 +277,6 @@ function normalizeRates(rates: Record<string, ActorRateGrade>): Record<string, A
 
 function cleanOptionalId(value: string | undefined): string | undefined {
   return value && value.trim() ? value : undefined;
-}
-
-export function defaultActorFaceResourceId(actor: Pick<ActorRecord, "id" | "characterResourceId">): string | undefined {
-  switch (actor.characterResourceId) {
-    case "easyrpg-charset-actor1":
-      return "easyrpg-faceset-actor1";
-    case "easyrpg-charset-actor2":
-      return "easyrpg-faceset-actor2";
-    case "easyrpg-charset-actor3":
-      return "easyrpg-faceset-people1";
-    case "easyrpg-charset-actor4":
-      return "easyrpg-faceset-people2";
-    case "easyrpg-charset-people1":
-      return "easyrpg-faceset-people1";
-    case "easyrpg-charset-people2":
-      return "easyrpg-faceset-people2";
-    default:
-      break;
-  }
-  switch (actor.id) {
-    case "actor_hero":
-      return "easyrpg-faceset-actor1";
-    case "actor_guardian":
-      return "easyrpg-faceset-actor2";
-    case "actor_mage":
-    case "actor_cleric":
-      return "easyrpg-faceset-people1";
-    case "actor_scout":
-    case "actor_ranger":
-      return "easyrpg-faceset-people2";
-    default:
-      return undefined;
-  }
 }
 
 function clampInteger(value: number, min: number, max: number): number {

@@ -1,0 +1,5 @@
+.runtime-shop-overlay,
+.runtime-commerce-overlay {
+  pointer-events: auto;
+  z-index: 45;
+}

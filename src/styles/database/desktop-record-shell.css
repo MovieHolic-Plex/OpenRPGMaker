@@ -1,0 +1,10 @@
+/* Desktop database shell cascade: keep import order stable. */
+@import "./desktop-record-shell/01-modal-shell.css";
+@import "./desktop-record-shell/02-class-layout.css";
+@import "./desktop-record-shell/03-class-panels.css";
+@import "./desktop-record-shell/04-modern-records.css";
+@import "./desktop-record-shell/05-dense-workbenches.css";
+@import "./desktop-record-shell/06-states.css";
+@import "./desktop-record-shell/07-utility-tabs.css";
+@import "./desktop-record-shell/08-elements.css";
+@import "./desktop-record-shell/09-final-readability-fixes.css";

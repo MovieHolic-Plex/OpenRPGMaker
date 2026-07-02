@@ -1,4 +1,4 @@
-import {
+﻿import {
   databaseWorkbenchStatusText,
   type DatabaseWorkbenchSummary,
 } from "@/editor/panels/databaseWorkbench";

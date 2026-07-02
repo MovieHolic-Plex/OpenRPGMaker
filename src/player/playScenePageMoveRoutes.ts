@@ -1,6 +1,8 @@
 import type { EventPageMovement, MoveCommand } from "@/project/types";
+import { store } from "@/project/store";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
-import { runtimeEventView } from "@/player/runtimeEventState";
+import { routeForLivingMovement } from "@/player/npcLivingTravel";
+import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 
 type PageMoveRouteSceneContext = Pick<
   PlaySceneContext,
@@ -23,12 +25,12 @@ const DIRECTIONAL_MOVES: MoveCommand[] = [
 export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   const activeKeys = new Set<string>();
   const activePageRouteEventIds = new Set<string>();
-  for (const event of scene.map.events) {
-    const view = runtimeEventView(event, scene.session, scene.eventPositions);
+  const project = store.getCurrent();
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     const movement = view.movement;
-    const route = routeForPageMovement(movement);
+    const route = routeForPageMovement(movement) ?? routeForLivingMovement({ project, map: scene.map, session: scene.session, view });
     if (!route) continue;
-    const key = `${view.event.id}:${view.pageId ?? "legacy"}`;
+    const key = "key" in route ? route.key : `${view.event.id}:${view.pageId ?? "legacy"}`;
     activeKeys.add(key);
     activePageRouteEventIds.add(view.event.id);
     if (scene.pageMoveRouteKeys.has(key) && scene.pageMoveRouteEventIds.has(view.event.id)) {
@@ -75,6 +77,8 @@ function routeForPageMovement(
       return movement.route
         ? { moves: [...movement.route.moves], repeat: movement.route.repeat, strategy: "sequence" }
         : null;
+    case "living":
+      return null;
   }
 }
 

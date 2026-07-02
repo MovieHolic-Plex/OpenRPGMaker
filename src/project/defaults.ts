@@ -7,9 +7,9 @@ export {
   DEFAULT_ITEM_ID,
   DEFAULT_SKILL_ID,
   DEFAULT_SOLID_TILES,
+  DEFAULT_EASYRPG_CHARSET_ID,
   DEFAULT_SPRITE_FRAME_HEIGHT,
   DEFAULT_SPRITE_FRAME_WIDTH,
-  DEFAULT_SPRITE_NPC,
   DEFAULT_STATE_ID,
   DEFAULT_TILE_COUNT,
   DEFAULT_TILE_SIZE,
@@ -31,7 +31,10 @@ export {
   defaultTileset,
   ensureBundledResourceProfiles,
   ensureBundledTilesets,
+  removeLegacyRmTileset,
 } from "./defaults/defaultAssets";
+export { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
+export { createStarterHouseInteriorMap } from "./defaults/starterHouseTransfer";
 export {
   defaultDatabase,
   defaultSession,
@@ -59,6 +62,7 @@ export {
   createDbExtractedHouseTemplateProject,
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
+  createMarketTownProject,
   createRetroHouseShowcaseProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
@@ -66,4 +70,5 @@ export {
   createTownArchitectureTestProject,
   createTownCityShowcaseProject,
   createTownHouseShowcaseProject,
+  ensureSwitchVariableSlots,
 } from "./defaults/defaultProject";

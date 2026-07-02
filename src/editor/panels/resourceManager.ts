@@ -118,7 +118,7 @@ export function renderResourceManager(container: HTMLElement): void {
   container.append(
     el("div", {
       class: "empty-hint",
-      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG RTP 이미지, npc_villager.`,
+      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG RTP ChipSet/CharSet 이미지.`,
     })
   );
 }

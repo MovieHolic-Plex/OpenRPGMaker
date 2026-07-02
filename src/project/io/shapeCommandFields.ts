@@ -44,8 +44,33 @@ function validateCommandShape(label: string, value: unknown): void {
       validateCommandArray(`${label}.then`, command.then);
       if (command.else !== undefined) validateCommandArray(`${label}.else`, command.else);
       return;
+    case "setVariable":
+      requireString(`${label}.variableId`, command.variableId);
+      requireString(`${label}.op`, command.op);
+      validateVariableOperand(`${label}.value`, command.value);
+      return;
+    case "transfer":
+      if (command.direction !== undefined) requireTransferDirection(`${label}.direction`, command.direction);
+      if (command.fade !== undefined) requireTransferFade(`${label}.fade`, command.fade);
+      return;
     case "moveEvent":
       validateMoveRoute(`${label}.route`, command.route);
+      return;
+    case "changeExp":
+    case "changeLevel":
+    case "changeActorHp":
+    case "changeActorMp":
+      requireString(`${label}.actorId`, command.actorId);
+      requireActorAmountOp(`${label}.op`, command.op);
+      requireNumber(`${label}.amount`, command.amount);
+      return;
+    case "changeEquipment":
+      requireString(`${label}.actorId`, command.actorId);
+      requireEquipmentSlot(`${label}.slot`, command.slot);
+      requireString(`${label}.equipmentId`, command.equipmentId);
+      return;
+    case "recoverAll":
+      if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
       return;
     default:
       return;
@@ -78,7 +103,32 @@ function requireChoiceCancelBehavior(label: string, value: unknown): void {
     behavior === "choice2" ||
     behavior === "choice3" ||
     behavior === "choice4" ||
+    behavior === "choice5" ||
     behavior === "branch"
+  ) return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireActorAmountOp(label: string, value: unknown): void {
+  const op = requireString(label, value);
+  if (op === "=" || op === "+=" || op === "-=") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireTransferFade(label: string, value: unknown): void {
+  const fade = requireString(label, value);
+  if (fade === "black" || fade === "white" || fade === "none") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireEquipmentSlot(label: string, value: unknown): void {
+  const slot = requireString(label, value);
+  if (
+    slot === "weapon" ||
+    slot === "shield" ||
+    slot === "armor" ||
+    slot === "helmet" ||
+    slot === "accessory"
   ) return;
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
@@ -144,6 +194,12 @@ function validateMoveCommandShape(label: string, value: unknown): void {
     case "changeGraphic":
       requireString(`${label}.spriteId`, command.spriteId);
       return;
+    case "npcTransfer":
+      requireString(`${label}.mapId`, command.mapId);
+      requireNumber(`${label}.x`, command.x);
+      requireNumber(`${label}.y`, command.y);
+      if (command.direction !== undefined) requireDir(`${label}.direction`, command.direction);
+      return;
     case "playSe":
       requireString(`${label}.resourceId`, command.resourceId);
       return;
@@ -166,6 +222,21 @@ function requireDir(label: string, value: unknown): void {
   const dir = requireString(label, value);
   if (dir === "left" || dir === "right" || dir === "up" || dir === "down") return;
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireTransferDirection(label: string, value: unknown): void {
+  const direction = requireString(label, value);
+  if (direction === "retain" || direction === "left" || direction === "right" || direction === "up" || direction === "down") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function validateVariableOperand(label: string, value: unknown): void {
+  if (typeof value === "number") return;
+  const operand = requireRecord(label, value);
+  if (requireString(`${label}.kind`, operand.kind) !== "var") {
+    throw new ProjectFormatError(`${label}: 알 수 없는 변수 피연산자입니다.`);
+  }
+  requireString(`${label}.id`, operand.id);
 }
 
 function requireHorizontalDir(label: string, value: unknown): void {

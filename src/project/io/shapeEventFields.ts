@@ -73,11 +73,39 @@ function validatePageShape(label: string, value: unknown): void {
   validateTrigger(`${label}.trigger`, page.trigger);
   requireString(`${label}.priority`, page.priority);
   const movement = requireRecord(`${label}.movement`, page.movement);
-  requireString(`${label}.movement.type`, movement.type);
+  const movementType = requireString(`${label}.movement.type`, movement.type);
+  assert(
+    movementType === "fixed" ||
+      movementType === "random" ||
+      movementType === "approach" ||
+      movementType === "custom" ||
+      movementType === "living",
+    `${label}.movement.type이 잘못되었습니다.`
+  );
   requireNumber(`${label}.movement.speed`, movement.speed);
   requireNumber(`${label}.movement.frequency`, movement.frequency);
   if (movement.route !== undefined) validateMoveRoute(`${label}.movement.route`, movement.route);
+  if (movement.living !== undefined) validateLivingMovement(`${label}.movement.living`, movement.living);
   validateCommandArray(`${label}.commands`, page.commands);
+}
+
+function validateLivingMovement(label: string, value: unknown): void {
+  const living = requireRecord(label, value);
+  requireBoolean(`${label}.repeat`, living.repeat);
+  for (const [index, destinationValue] of requireArray(`${label}.destinations`, living.destinations).entries()) {
+    const destination = requireRecord(`${label}.destinations[${index}]`, destinationValue);
+    requireString(`${label}.destinations[${index}].mapId`, destination.mapId);
+    requireNumber(`${label}.destinations[${index}].x`, destination.x);
+    requireNumber(`${label}.destinations[${index}].y`, destination.y);
+    if (destination.direction !== undefined) {
+      const direction = requireString(`${label}.destinations[${index}].direction`, destination.direction);
+      assert(
+        direction === "left" || direction === "right" || direction === "up" || direction === "down",
+        `${label}.destinations[${index}].direction이 잘못되었습니다.`
+      );
+    }
+    if (destination.switchId !== undefined) requireString(`${label}.destinations[${index}].switchId`, destination.switchId);
+  }
 }
 
 function validatePageConditionShape(label: string, value: unknown): void {
@@ -95,6 +123,10 @@ function validatePageConditionShape(label: string, value: unknown): void {
     case "item":
       requireString(`${label}.itemId`, condition.itemId);
       requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "timer":
+      requireString(`${label}.timerId`, condition.timerId);
+      requireNumber(`${label}.seconds`, condition.seconds);
       return;
     default:
       throw new ProjectFormatError(`${label}: 알 수 없는 page condition kind: ${kind}`);

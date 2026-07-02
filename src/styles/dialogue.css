@@ -6,9 +6,10 @@
   --runtime-dialogue-shadow: #061a55;
   --runtime-dialogue-text: #f4fbff;
   --runtime-dialogue-muted: #d7ecff;
-  --runtime-dialogue-font: "GulimChe", "DotumChe", "MS Gothic", "DotGothic16", "DungGeunMo", "Galmuri11", sans-serif;
-  --runtime-dialogue-panel-height: 34%;
-  --runtime-dialogue-face-size: 216px;
+  --runtime-dialogue-font: "DungGeunMo", "Galmuri11", "DotGothic16", "GulimChe", "DotumChe", "MS Gothic", sans-serif;
+  --runtime-dialogue-panel-height: 27%;
+  --runtime-choice-panel-height: 26%;
+  --runtime-dialogue-face-size: 48px;
 }
 
 .dialogue-overlay {
@@ -48,24 +49,36 @@
   transform: none;
 }
 
+.dialogue-overlay.choices-active {
+  align-items: stretch;
+  gap: 0;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+.dialogue-overlay.choices-active.position-bottom {
+  height: var(--runtime-choice-panel-height);
+  min-height: var(--runtime-choice-panel-height);
+  padding: 0 4px 4px;
+}
+
 .dialogue-box {
   background:
     linear-gradient(180deg, var(--runtime-dialogue-bg) 0%, rgba(15, 57, 162, 0.88) 58%, var(--runtime-dialogue-bg-2) 100%),
     repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0 2px, rgba(255, 255, 255, 0) 2px 6px),
     repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 4px);
-  border: 4px solid var(--runtime-dialogue-border);
+  border: 1px solid rgba(242, 251, 255, 0.92);
   box-shadow:
-    inset 0 0 0 2px var(--runtime-dialogue-border-mid),
-    inset 0 0 0 5px rgba(7, 24, 90, 0.48),
-    0 2px 0 var(--runtime-dialogue-shadow),
-    0 4px 0 rgba(0, 0, 0, 0.62);
+    inset 0 0 0 1px rgba(142, 182, 255, 0.82),
+    inset 0 0 0 2px rgba(7, 24, 90, 0.38),
+    0 1px 0 rgba(6, 26, 85, 0.78);
   cursor: pointer;
   image-rendering: pixelated;
   margin: 0;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 14px 16px;
+  padding: 4px 8px;
   pointer-events: auto;
   position: relative;
   width: 100%;
@@ -77,50 +90,145 @@
   box-shadow: none;
 }
 
+.dialogue-box.choices-prompt {
+  align-self: flex-end;
+  cursor: default;
+  flex: 0 0 auto;
+  min-height: 0;
+  max-width: min(280px, calc(100vw - 16px));
+  min-width: 168px;
+  padding: 5px 8px;
+  pointer-events: none;
+  width: auto;
+}
+
+.dialogue-box.choices-prompt .body {
+  font-size: 12px;
+  line-height: 1.15;
+  min-height: 0;
+  overflow: visible;
+}
+
+.dialogue-overlay.choices-active .dialogue-box.choices {
+  border: 0;
+  box-shadow: none;
+  cursor: default;
+  min-height: 100%;
+  overflow: hidden;
+  padding: 3px 8px;
+}
+
+.dialogue-box.choices::after,
+.dialogue-box.choices::before {
+  display: none;
+}
+
+.dialogue-overlay.choices-active .choice-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.dialogue-overlay.choices-active .choice-list .choice-btn {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: var(--runtime-dialogue-text);
+  display: block;
+  font-size: 8px;
+  line-height: 1;
+  margin: 0;
+  min-height: 10px;
+  padding: 0 8px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  width: 100%;
+}
+
+.dialogue-overlay.choices-active .choice-list .choice-btn.selected,
+.dialogue-overlay.choices-active .choice-list .choice-btn:hover,
+.dialogue-overlay.choices-active .choice-list .choice-btn:focus-visible {
+  background: linear-gradient(180deg, rgba(53, 113, 226, 0.9), rgba(22, 65, 170, 0.92));
+  box-shadow: none;
+  outline: 0;
+}
+
+.dialogue-overlay.choices-active .choice-prompt-row {
+  border-bottom: 1px solid rgba(242, 251, 255, 0.44);
+  color: var(--runtime-dialogue-muted);
+  font-family: var(--runtime-dialogue-font);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  overflow-wrap: anywhere;
+  padding: 2px 4px 4px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+}
+
+.dialogue-overlay.choices-compact {
+  bottom: 0;
+  gap: 0;
+}
+
+.dialogue-overlay.choices-compact .dialogue-box.choices-prompt {
+  padding: 5px 8px;
+}
+
+.dialogue-overlay.choices-compact .dialogue-box.choices-prompt .body {
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.dialogue-overlay.choices-compact .choice-list {
+  gap: 0;
+}
+
+.dialogue-overlay.choices-compact .choice-list .choice-btn {
+  font-size: 6px;
+  line-height: 0.95;
+  min-height: 7px;
+  padding: 0 8px;
+}
+
+.dialogue-overlay.choices-compact .choice-prompt-row {
+  font-size: 6px;
+  line-height: 0.95;
+  margin-bottom: 0;
+  padding: 0 4px 2px;
+}
+
 .dialogue-box.transparent::after,
 .dialogue-box.transparent::before {
   display: none;
 }
 
-.dialogue-box::after {
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 8px solid var(--runtime-dialogue-border);
-  bottom: -10px;
-  content: "";
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.55));
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-}
-
+.dialogue-box::after,
 .dialogue-box::before {
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 6px solid rgba(12, 38, 126, 0.92);
-  bottom: -6px;
-  content: "";
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-  z-index: 1;
+  display: none;
 }
 
 .dialogue-box .speaker {
   color: var(--runtime-dialogue-muted);
   font-family: var(--runtime-dialogue-font);
-  font-size: 24px;
+  font-size: 7px;
   font-weight: 700;
-  line-height: 1;
-  margin-bottom: 8px;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
+  margin-bottom: 2px;
+  text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.88);
 }
 
 .dialogue-content {
   align-items: start;
   display: grid;
   flex: 1;
-  gap: 18px;
+  gap: 6px;
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
   min-height: 0;
 }
 
@@ -145,17 +253,21 @@
 .dialogue-text-column {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  min-height: 0;
   min-width: 0;
+  overflow: hidden;
 }
 
 .dialogue-face {
   background-color: rgba(255, 255, 255, 0.12);
   border-color: var(--runtime-dialogue-border) var(--runtime-dialogue-border-mid) var(--runtime-dialogue-border-mid) var(--runtime-dialogue-border);
   border-style: solid;
-  border-width: 3px;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.46);
+  border-width: 1px;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.42);
   image-rendering: pixelated;
-  align-self: center;
+  align-self: start;
+  overflow: hidden;
 }
 
 .dialogue-face.flipped {
@@ -178,16 +290,15 @@
 .dialogue-box .body {
   color: var(--runtime-dialogue-text);
   font-family: var(--runtime-dialogue-font);
-  font-size: 32px;
+  font-size: 7px;
+  flex: 1 1 auto;
   font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.28;
-  min-height: var(--runtime-dialogue-face-size);
+  line-height: 1.25;
+  min-height: 0;
   overflow: auto;
   overflow-wrap: anywhere;
-  text-shadow:
-    1px 1px 0 rgba(0, 0, 0, 0.88),
-    2px 2px 0 rgba(0, 0, 0, 0.42);
+  text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.88);
   white-space: pre-wrap;
 }
 
@@ -225,7 +336,7 @@
 }
 
 .choices .choice-btn:hover {
-  background: rgba(245, 208, 74, 0.18);
+  background: rgba(245, 208, 74, 0.2);
   border-color: #f5d04a;
 }
 

@@ -61,7 +61,7 @@ top-down view, consistent palette across all assets, 32px per unit
 ```
 public/assets/
   tiles_default.png      # 타일셋: 8종을 한 행(8×1)으로 나열, 타일당 32px → 256×32
-  npc_villager.png       # NPC: 동일 레이아웃
+  easyrpg/charset/People1.png # NPC: EasyRPG RTP CharSet
   dialogue-frame.png     # 대사창 프레임 (선택, 9-slice 가능한 테두리 텍스처)
   MANIFEST.md            # 에셋별 생성 프롬프트·버전·수정 히스토리
 ```
@@ -110,7 +110,7 @@ public/assets/
   ```ts
   // preload에서 파일 로드
   this.load.image(TEX_TILESET, "assets/tiles_default.png");
-  this.load.image(TEX_NPC, "assets/npc_villager.png");
+  this.load.image(DEFAULT_EASYRPG_CHARSET_ID, "assets/easyrpg/charset/People1.png");
   this.load.image(TEX_DIALOGUE_FRAME, "assets/dialogue-frame.png");
   ```
 - **유지**: 타일 프레임 등록(`tile_0`..`tile_7`) 로직 — 텍스처 소스만 파일로 바뀌고 프레임 등록은 동일.

@@ -3,9 +3,10 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorInitialEquipment, Command, MapId, Project, Condition, MessageWindowSettings } from "./types";
-import type { PlaySessionLike } from "@/player/types";
+import type { ActorId, ActorInitialEquipment, Command, MapId, Project, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
+import { compareVariableValue } from "@/project/conditionEvaluation";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 
@@ -42,6 +43,8 @@ export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
 export interface PlaySession {
   // 스위치 런타임 값(switchId → bool).
   switches: Record<string, boolean>;
+  // 셀프 스위치 런타임 값(eventId → (A/B/C/D → bool)).
+  selfSwitches: Record<string, Partial<Record<string, boolean>>>;
   // 변수 런타임 값(variableId → number).
   variables: Record<string, number>;
   // 타이머(id → 남은 초).
@@ -49,8 +52,12 @@ export interface PlaySession {
   gold: number;
   inventory: Record<string, number>;
   partyActorIds: string[];
+  actorSkillIds: Record<ActorId, SkillId[]>;
   actorExperience: Record<string, number>;
+  actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
+  eventLocations: Record<string, RuntimeEventLocation>;
+  npcTravelStates: Record<string, RuntimeNpcTravelState>;
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
   // 현재 위치(맵 진입/transfer 시 갱신).
@@ -66,6 +73,9 @@ export interface PlaySession {
   audio: AudioCommandState;
   pictures: Record<string, PictureState>;
   messageWindowSettings?: MessageWindowSettings;
+  m2Runtime?: M2RuntimeState;
+  // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
+  playTimeSeconds: number;
 }
 
 // Project로부터 새 세션 시작.
@@ -85,13 +95,18 @@ export function startSession(project: Project): PlaySession {
   }
   return {
     switches,
+    selfSwitches: {},
     variables,
-    timers: {},
+    timers: { ...(project.session.timers ?? {}) },
     gold: 0,
     inventory: { ...project.session.inventory },
     partyActorIds: [...project.session.partyActorIds],
+    actorSkillIds: {},
     actorExperience: initialActorExperience(project),
+    actorLevels: initialActorLevels(project),
     actorVitals: initialActorVitals(project),
+    eventLocations: {},
+    npcTravelStates: {},
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),
     currentMapId: project.startMapId,
@@ -102,6 +117,7 @@ export function startSession(project: Project): PlaySession {
     audio: {},
     pictures: {},
     messageWindowSettings: { ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
+    playTimeSeconds: 0,
   };
 }
 
@@ -111,6 +127,14 @@ function initialActorExperience(project: Project): Record<string, number> {
     experience[actorId] = 0;
   }
   return experience;
+}
+
+function initialActorLevels(project: Project): Record<string, number> {
+  const levels: Record<string, number> = {};
+  for (const actor of project.database.actors) {
+    levels[actor.id] = actor.initialLevel;
+  }
+  return levels;
 }
 
 function initialActorEquipment(project: Project): Record<string, ActorInitialEquipment> {
@@ -201,6 +225,12 @@ export function changeParty(
   session.partyActorIds = session.partyActorIds.filter((id) => id !== actorId);
 }
 
+export function learnSkill(session: PlaySessionLike, actorId: ActorId, skillId: SkillId): void {
+  session.actorSkillIds ??= {};
+  const learned = session.actorSkillIds[actorId] ?? [];
+  if (!learned.includes(skillId)) session.actorSkillIds[actorId] = [...learned, skillId];
+}
+
 function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): number {
   switch (op) {
     case "=":
@@ -263,17 +293,31 @@ export function erasePictureState(session: PlaySession, pictureId: string): void
 }
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
-export function evalCondition(session: PlaySessionLike, condition: Condition | undefined): boolean {
+// eventId 는 셀프 스위치 조건에서 "이 이벤트 자신"을 가리킬 때 사용(현재 실행 중인 이벤트).
+export function evalCondition(session: PlaySessionLike, condition: Condition | undefined, eventId?: string): boolean {
   if (!condition) return true;
-  if (condition.kind === "switch") {
-    return getSwitch(session, condition.switchId) === condition.value;
-  }
-  // variable
-  const v = getVariable(session, condition.variableId);
-  switch (condition.op) {
-    case ">=": return v >= condition.value;
-    case "<=": return v <= condition.value;
-    case "==": return v === condition.value;
-    case "!=": return v !== condition.value;
+  switch (condition.kind) {
+    case "switch":
+      return getSwitch(session, condition.switchId) === condition.value;
+    case "variable": {
+      const v = getVariable(session, condition.variableId);
+      return compareVariableValue(v, condition.op, condition.value);
+    }
+    case "selfSwitch": {
+      // 이 이벤트의 셀프 스위치 상태. eventId 미전달 시 항상 false.
+      const selfSwitches = session.selfSwitches ?? {};
+      const own = eventId ? selfSwitches[eventId] : undefined;
+      return (own?.[condition.key] ?? false) === condition.value;
+    }
+    case "actor":
+      return session.partyActorIds.includes(condition.actorId) === condition.present;
+    case "item":
+      return ((session.inventory[condition.itemId] ?? 0) > 0) === condition.present;
+    case "gold":
+      return compareVariableValue(session.gold, condition.op, condition.amount);
+    case "timer": {
+      const remaining = session.timers[condition.timerId] ?? 0;
+      return remaining <= condition.seconds;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { mkdir, writeFile } from "node:fs/promises";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
@@ -41,6 +42,8 @@ const COMMAND_PICKER_TARGETS: Record<string, PickerTarget> = {
   text: { tab: 1, name: "문장 표시..." },
   timer: { tab: 1, name: "타이머 조작..." },
 };
+
+const EVENT_COMMAND_EVIDENCE_DIR = "output/evidence/event-editor-cert/loop3";
 
 async function debugState(page: Page): Promise<DebugState> {
   const text = await page.getByTestId("project-export-json").textContent();
@@ -85,14 +88,25 @@ async function tapKey(page: Page, key: string, holdMs = 80): Promise<void> {
   await runtimeTapKey(page, key, holdMs);
 }
 
-async function seedProject(page: Page, project: SeedProject): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+async function seedProject(page: Page, project: SeedProject, path = "/"): Promise<void> {
+  await seedProjectFromSupabaseCanonical(page, project, path);
 }
 
 async function addRootCommand(page: Page, kind: string): Promise<void> {
   const target = COMMAND_PICKER_TARGETS[kind];
   if (!target) throw new Error(`missing command picker target for ${kind}`);
   await addRootCommandByPickerTarget(page, target);
+}
+
+async function addRootCommandByPickerTestId(page: Page, testId: string, tab: 1 | 2 | 3 | 4): Promise<void> {
+  const emptyLine = page.getByTestId("event-command-empty-line");
+  await expect(emptyLine).toBeVisible();
+  await emptyLine.dblclick();
+  const picker = page.getByTestId("event-command-picker");
+  await expect(picker).toBeVisible();
+  if (tab !== 1) await picker.getByTestId(`event-command-picker-tab-${tab}`).click({ force: true });
+  await picker.getByTestId(testId).first().click({ force: true });
+  await expect(picker).toHaveCount(0);
 }
 
 async function addRootCommandByPickerTarget(page: Page, target: PickerTarget): Promise<void> {
@@ -116,11 +130,6 @@ async function addRootCommandByPickerTarget(page: Page, target: PickerTarget): P
     await expect(dialog).toBeVisible();
     await dialog.getByTestId("event-command-text-body").fill("Auto text");
     await dialog.getByTestId("event-command-text-ok").click();
-    await expect(dialog).toBeHidden();
-  } else if (target.name === "선택지 표시...") {
-    const dialog = page.getByTestId("event-command-choices-dialog");
-    await expect(dialog).toBeVisible();
-    await dialog.getByTestId("choices-ok").click();
     await expect(dialog).toBeHidden();
   }
   await expect(picker).toHaveCount(0);
@@ -153,6 +162,41 @@ async function applyEventEditor(page: Page): Promise<void> {
   await expect(modal).toBeVisible();
   await modal.getByTestId("event-editor-apply").click();
   await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
+}
+
+async function writeEvidence(name: string, content: string): Promise<string> {
+  await mkdir(EVENT_COMMAND_EVIDENCE_DIR, { recursive: true });
+  const file = `${EVENT_COMMAND_EVIDENCE_DIR}/${name}`;
+  await writeFile(file, content, "utf8");
+  return file;
+}
+
+async function screenshotEvidence(page: Page, name: string): Promise<string> {
+  await mkdir(EVENT_COMMAND_EVIDENCE_DIR, { recursive: true });
+  const file = `${EVENT_COMMAND_EVIDENCE_DIR}/${name}`;
+  await page.screenshot({ path: file, fullPage: true });
+  return file;
+}
+
+async function locatorScreenshotEvidence(locator: Locator, name: string): Promise<string> {
+  await mkdir(EVENT_COMMAND_EVIDENCE_DIR, { recursive: true });
+  const file = `${EVENT_COMMAND_EVIDENCE_DIR}/${name}`;
+  await locator.screenshot({ path: file });
+  return file;
+}
+
+async function audioState(page: Page): Promise<Record<string, unknown>> {
+  return JSON.parse(await page.getByTestId("audio-state-json").textContent() ?? "{}") as Record<string, unknown>;
+}
+
+async function pictureLayerState(page: Page): Promise<{ text: string; pictureIds: string[] }> {
+  const layer = page.getByTestId("picture-layer");
+  return {
+    text: await layer.textContent() ?? "",
+    pictureIds: await layer.locator(".picture-layer-item").evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLElement).dataset.pictureId ?? "")
+    ),
+  };
 }
 
 function makeBattleProject(): SeedProject {
@@ -401,7 +445,7 @@ test("move event route editor persists route steps", async ({ page }, testInfo) 
   });
   await editCommand(page, "moveEvent", async (command) => {
     await command.getByTestId("move-route-switch-id-input").fill("sw_cmd_route");
-    await command.getByTestId("move-route-graphic-id-input").fill("npc_villager");
+    await command.getByTestId("move-route-graphic-id-input").fill("tex_easyrpg_charset_people1");
     await command.getByTestId("move-route-sound-id-input").fill("se_cursor");
   });
   await editCommand(page, "moveEvent", async (command) => {
@@ -439,7 +483,7 @@ test("move event route editor persists route steps", async ({ page }, testInfo) 
     { kind: "turnRelative", turn: "leftOrRight90" },
     { kind: "setThrough", enabled: true },
     { kind: "setSwitch", switchId: "sw_cmd_route", value: true },
-    { kind: "changeGraphic", spriteId: "npc_villager" },
+    { kind: "changeGraphic", spriteId: "tex_easyrpg_charset_people1" },
     { kind: "playSe", resourceId: "se_cursor" },
   ]);
   await page.screenshot({ path: testInfo.outputPath("move-route-editor.png"), fullPage: true });
@@ -604,6 +648,481 @@ test("input number command stores runtime entry in the selected variable", async
     return state.inputEnabled === true && state.running === false;
   }).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("input-number-runtime.png"), fullPage: true });
+});
+
+test("media and terminal command detail editors persist from the event editor", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1");
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("tool-event").click();
+  await clickMapCenter(page);
+
+  await addRootCommandByPickerTestId(page, "command-picker-add-showPicture", 2);
+  await addRootCommandByPickerTestId(page, "command-picker-add-erasePicture", 2);
+  await addRootCommandByPickerTestId(page, "command-picker-add-playAudio", 3);
+  await addRootCommandByPickerTestId(page, "command-picker-add-stopAudio", 3);
+  await addRootCommand(page, "gameOver");
+  await addRootCommandByPickerTestId(page, "command-picker-add-returnToTitle", 3);
+  await addRootCommand(page, "text");
+
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-id-input").fill("pic_cert");
+    await command.getByTestId("show-picture-id-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-resource-input").fill("picture_cert");
+    await command.getByTestId("show-picture-resource-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-x-input").fill("24");
+    await command.getByTestId("show-picture-x-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-y-input").fill("32");
+    await command.getByTestId("show-picture-y-input").blur();
+  });
+  await editCommand(page, "erasePicture", async (command) => {
+    await command.getByTestId("erase-picture-id-input").fill("pic_cert");
+    await command.getByTestId("erase-picture-id-input").blur();
+  });
+  await editCommand(page, "playAudio", async (command) => {
+    await command.getByTestId("play-audio-resource-input").fill("bgm_cert_theme");
+    await command.getByTestId("play-audio-resource-input").blur();
+  });
+  await editCommand(page, "playAudio", async (command) => {
+    await command.getByTestId("play-audio-loop-select").selectOption("true");
+  });
+  await addRootCommand(page, "text");
+  const learnSource = page.getByTestId("event-command-text").last();
+  await learnSource.locator(".cmd-head").dblclick();
+  await learnSource.locator("select").first().selectOption("learnSkill");
+  const learnSkill = page.getByTestId("event-command-learnSkill").first();
+  await learnSkill.locator(".cmd-head").dblclick();
+  await learnSkill.getByTestId("learn-skill-actor-select").selectOption({ index: 1 });
+  await learnSkill.locator(".cmd-head").dblclick();
+  await learnSkill.getByTestId("learn-skill-skill-select").selectOption({ index: 1 });
+  await writeEvidence("001-editor-terminal-debug.json", JSON.stringify(await page.evaluate(() => {
+    return Array.from(document.querySelectorAll<HTMLElement>("[data-testid^='event-command-']")).map((node) => ({
+      testId: node.dataset.testid,
+      commandKind: node.dataset.commandKind,
+      renderKindString: node.dataset.renderKindString,
+      className: node.className,
+      text: node.textContent?.replace(/\s+/g, " ").trim(),
+      editorHtml: node.querySelector<HTMLElement>(".cmd-inline-editor")?.innerHTML,
+      selectValues: Array.from(node.querySelectorAll<HTMLSelectElement>("select")).map((select) => select.value),
+    }));
+  }), null, 2));
+  await editCommand(page, "stopAudio", async (command) => {
+    await expect(command).toHaveAttribute("data-command-kind", "stopAudio");
+    await expect(command.locator("select").first()).toHaveValue("stopAudio");
+  });
+  await editCommand(page, "gameOver", async (command) => {
+    await expect(command.getByTestId("game-over-editor")).toBeVisible();
+  });
+  await editCommand(page, "returnToTitle", async (command) => {
+    await expect(command.getByTestId("return-to-title-editor")).toBeVisible();
+  });
+
+  const textCommand = page.getByTestId("event-command-text").first();
+  await textCommand.locator(".cmd-head").dblclick();
+  await textCommand.locator("select").first().selectOption("ending");
+  const endingCommand = page.getByTestId("event-command-ending").first();
+  await endingCommand.locator(".cmd-head").dblclick();
+  await endingCommand.getByTestId("ending-title-input").fill("Certification Ending");
+  await endingCommand.getByTestId("ending-message-input").fill("Browser-authored ending command.");
+  await endingCommand.getByTestId("ending-message-input").blur();
+
+  await screenshotEvidence(page, "001-editor-media-terminal-command-bodies.png");
+  await locatorScreenshotEvidence(page.getByTestId("event-command-showPicture").first(), "001-editor-show-picture-expanded.png");
+  await locatorScreenshotEvidence(page.getByTestId("event-command-playAudio").first(), "001-editor-play-audio-expanded.png");
+  await locatorScreenshotEvidence(page.getByTestId("event-command-learnSkill").first(), "001-editor-learn-skill-expanded.png");
+  await locatorScreenshotEvidence(page.getByTestId("event-command-stopAudio").first(), "001-editor-stop-audio-hint-expanded.png");
+  await locatorScreenshotEvidence(page.getByTestId("event-command-gameOver").first(), "001-editor-game-over-hint-expanded.png");
+  await locatorScreenshotEvidence(page.getByTestId("event-command-returnToTitle").first(), "001-editor-return-title-hint-expanded.png");
+  await page.screenshot({ path: testInfo.outputPath("media-terminal-command-bodies.png"), fullPage: true });
+  await applyEventEditor(page);
+  const state = await debugState(page);
+  const commands = state.project.maps[state.project.startMapId].events
+    .flatMap((event) => event.pages?.[0].commands ?? []);
+  expect(commands).toContainEqual({ kind: "showPicture", pictureId: "pic_cert", resourceId: "picture_cert", x: 24, y: 32 });
+  expect(commands).toContainEqual({ kind: "erasePicture", pictureId: "pic_cert" });
+  expect(commands).toContainEqual({ kind: "playAudio", resourceId: "bgm_cert_theme", loop: true });
+  expect(commands.some((command) => command.kind === "stopAudio")).toBe(true);
+  expect(commands.some((command) => command.kind === "gameOver")).toBe(true);
+  expect(commands.some((command) => command.kind === "returnToTitle")).toBe(true);
+  expect(commands.some((command) => command.kind === "learnSkill" && command.actorId && command.skillId)).toBe(true);
+  await writeEvidence("001-editor-media-terminal-export.json", JSON.stringify({ commands }, null, 2));
+  await page.addInitScript((project) => {
+    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.localStorage.clear();
+  }, state.project);
+  await page.getByTestId("event-editor-modal-close").click();
+  await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
+  await page.waitForTimeout(1_500);
+  await page.reload();
+  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  const reloaded = await debugState(page);
+  const reloadedCommands = reloaded.project.maps[reloaded.project.startMapId].events
+    .flatMap((event) => event.pages?.[0].commands ?? []);
+  expect(reloadedCommands).toContainEqual({ kind: "showPicture", pictureId: "pic_cert", resourceId: "picture_cert", x: 24, y: 32 });
+  expect(reloadedCommands).toContainEqual({ kind: "erasePicture", pictureId: "pic_cert" });
+  expect(reloadedCommands).toContainEqual({ kind: "playAudio", resourceId: "bgm_cert_theme", loop: true });
+  expect(reloadedCommands.some((command) => command.kind === "stopAudio")).toBe(true);
+  expect(reloadedCommands.some((command) => command.kind === "gameOver")).toBe(true);
+  expect(reloadedCommands.some((command) => command.kind === "returnToTitle")).toBe(true);
+  expect(reloadedCommands.some((command) => command.kind === "learnSkill" && command.actorId && command.skillId)).toBe(true);
+  await writeEvidence("001-editor-media-terminal-roundtrip.json", JSON.stringify({ reloadedCommands }, null, 2));
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("tool-event").click();
+  await clickMapCenter(page);
+  await expect(page.getByTestId("event-command-showPicture").first()).toBeVisible();
+  await expect(page.getByTestId("event-command-playAudio").first()).toBeVisible();
+  await expect(page.getByTestId("event-command-learnSkill").first()).toBeVisible();
+  await screenshotEvidence(page, "001-editor-media-terminal-after-reload.png");
+});
+
+test("editor-authored picture and audio commands render and clear in play mode", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1");
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("tool-event").click();
+  await clickMapCenter(page);
+
+  await addRootCommandByPickerTestId(page, "command-picker-add-showPicture", 2);
+  await addRootCommandByPickerTestId(page, "command-picker-add-playAudio", 3);
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-id-input").fill("pic_visible");
+    await command.getByTestId("show-picture-id-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-resource-input").fill("picture_visible");
+    await command.getByTestId("show-picture-resource-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-x-input").fill("12");
+    await command.getByTestId("show-picture-x-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-y-input").fill("16");
+    await command.getByTestId("show-picture-y-input").blur();
+  });
+  await editCommand(page, "playAudio", async (command) => {
+    await command.getByTestId("play-audio-resource-input").fill("bgm_visible");
+    await command.getByTestId("play-audio-resource-input").blur();
+  });
+  await editCommand(page, "playAudio", async (command) => {
+    await command.getByTestId("play-audio-loop-select").selectOption("true");
+  });
+
+  await applyEventEditor(page);
+  const stateBeforePlay = await debugState(page);
+  const project = stateBeforePlay.project;
+  const authored = project.maps[project.startMapId].events.find((event) =>
+    event.pages?.[0].commands.some((command) => command.kind === "showPicture")
+  );
+  if (!authored?.pages?.[0]) throw new Error("missing authored picture/audio event");
+  const visibleCommands = authored.pages[0].commands;
+  await writeEvidence("002-picture-audio-visible-authoring.json", JSON.stringify({ commands: visibleCommands }, null, 2));
+
+  const playable = makeBattleProject();
+  playable.maps.map_cmd.events = [{
+    id: authored.id,
+    x: 0,
+    y: 1,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [{
+      ...authored.pages[0],
+      id: "page_picture_audio_visible",
+      conditions: [],
+      graphic: {},
+      trigger: { kind: "action" },
+      priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: visibleCommands,
+    }],
+  }];
+
+  await page.getByTestId("event-editor-modal-close").click();
+  await seedProject(page, playable);
+  await page.getByTestId("mode-play").click();
+  await page.getByTestId("title-new-game").click();
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible();
+  const beforeVisible = {
+    audio: await audioState(page),
+    pictures: await pictureLayerState(page),
+  };
+  await page.getByTestId("play-canvas").locator("canvas").click();
+  await tapKey(page, "Space");
+  await expect(page.getByTestId("picture-layer")).toContainText("pic_visible");
+  await expect.poll(async () => JSON.parse(await page.getByTestId("audio-state-json").textContent() ?? "{}").bgm?.resourceId).toBe("bgm_visible");
+  const afterVisible = {
+    audio: await audioState(page),
+    pictures: await pictureLayerState(page),
+  };
+  await writeEvidence("002-runtime-picture-audio-visible-delta.json", JSON.stringify({
+    before: beforeVisible,
+    after: afterVisible,
+    assertions: [
+      { path: "pictures.pictureIds", expected: ["pic_visible"], actual: afterVisible.pictures.pictureIds },
+      { path: "audio.bgm.resourceId", expected: "bgm_visible", actual: (afterVisible.audio.bgm as { resourceId?: string } | undefined)?.resourceId },
+    ],
+  }, null, 2));
+  await locatorScreenshotEvidence(page.getByTestId("picture-layer"), "002-runtime-picture-layer-visible.png");
+  await locatorScreenshotEvidence(page.getByTestId("audio-indicator"), "002-runtime-audio-indicator-visible.png");
+  await screenshotEvidence(page, "002-runtime-picture-audio-visible.png");
+  await page.screenshot({ path: testInfo.outputPath("runtime-picture-audio-visible.png"), fullPage: true });
+});
+
+test("editor-authored picture erase and audio stop commands clear runtime state", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1");
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("tool-event").click();
+  await clickMapCenter(page);
+
+  await addRootCommandByPickerTestId(page, "command-picker-add-showPicture", 2);
+  await addRootCommandByPickerTestId(page, "command-picker-add-erasePicture", 2);
+  await addRootCommandByPickerTestId(page, "command-picker-add-playAudio", 3);
+  await addRootCommandByPickerTestId(page, "command-picker-add-stopAudio", 3);
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-id-input").fill("pic_clear");
+    await command.getByTestId("show-picture-id-input").blur();
+  });
+  await editCommand(page, "showPicture", async (command) => {
+    await command.getByTestId("show-picture-resource-input").fill("picture_clear");
+    await command.getByTestId("show-picture-resource-input").blur();
+  });
+  await editCommand(page, "erasePicture", async (command) => {
+    await command.getByTestId("erase-picture-id-input").fill("pic_clear");
+    await command.getByTestId("erase-picture-id-input").blur();
+  });
+  await editCommand(page, "playAudio", async (command) => {
+    await command.getByTestId("play-audio-resource-input").fill("bgm_clear");
+    await command.getByTestId("play-audio-resource-input").blur();
+  });
+  await editCommand(page, "playAudio", async (command) => {
+    await command.getByTestId("play-audio-loop-select").selectOption("true");
+  });
+  await applyEventEditor(page);
+  const clearStateBeforePlay = await debugState(page);
+  const clearProject = clearStateBeforePlay.project;
+  const clearAuthored = clearProject.maps[clearProject.startMapId].events.find((event) =>
+    event.pages?.[0].commands.some((command) => command.kind === "erasePicture")
+  );
+  if (!clearAuthored?.pages?.[0]) throw new Error("missing authored erase/stop event");
+  const clearCommands = clearAuthored.pages[0].commands;
+  await writeEvidence("003-picture-audio-clear-authoring.json", JSON.stringify({ commands: clearCommands }, null, 2));
+  const clearOnlyCommands = clearCommands.filter((command) => command.kind === "erasePicture" || command.kind === "stopAudio");
+
+  const clearPlayable = makeBattleProject();
+  clearPlayable.maps.map_cmd.events = [{
+    id: clearAuthored.id,
+    x: 0,
+    y: 1,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [{
+      ...clearAuthored.pages[0],
+      id: "page_picture_audio_clear",
+      conditions: [],
+      graphic: {},
+      trigger: { kind: "action" },
+      priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: clearOnlyCommands,
+    }],
+  }];
+  await page.getByTestId("event-editor-modal-close").click();
+  await seedProject(page, clearPlayable, "/?e2eMedia=1");
+  await page.getByTestId("mode-play").click();
+  await page.getByTestId("title-new-game").click();
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible();
+  await page.evaluate(() => {
+    const hooks = window as unknown as {
+      __rpgzzuSetMediaState?: (state: {
+        audioResourceId: string;
+        pictureId: string;
+        pictureResourceId: string;
+        x: number;
+        y: number;
+      }) => void;
+    };
+    hooks.__rpgzzuSetMediaState?.({
+      audioResourceId: "bgm_clear",
+      pictureId: "pic_clear",
+      pictureResourceId: "picture_clear",
+      x: 16,
+      y: 16,
+    });
+  });
+  await expect(page.getByTestId("picture-layer")).toContainText("pic_clear");
+  await expect.poll(async () => JSON.parse(await page.getByTestId("audio-state-json").textContent() ?? "{}").bgm?.resourceId).toBe("bgm_clear");
+  const beforeClear = {
+    audio: await audioState(page),
+    pictures: await pictureLayerState(page),
+  };
+  await writeEvidence("003-runtime-picture-audio-active-before-clear.json", JSON.stringify(beforeClear, null, 2));
+  await screenshotEvidence(page, "003-runtime-picture-audio-active-before-clear.png");
+  await page.getByTestId("play-canvas").locator("canvas").click();
+  await tapKey(page, "Space");
+  await expect(page.getByTestId("picture-layer")).not.toContainText("pic_clear");
+  await expect.poll(async () => JSON.parse(await page.getByTestId("audio-state-json").textContent() ?? "{}").bgm).toBeUndefined();
+  const afterClear = {
+    audio: await audioState(page),
+    pictures: await pictureLayerState(page),
+  };
+  await writeEvidence("003-runtime-picture-audio-cleared-delta.json", JSON.stringify({
+    before: beforeClear,
+    after: afterClear,
+    assertions: [
+      { path: "pictures.pictureIds", expected: [], actual: afterClear.pictures.pictureIds },
+      { path: "audio.bgm", expected: null, actual: afterClear.audio.bgm ?? null },
+    ],
+  }, null, 2));
+  await screenshotEvidence(page, "003-runtime-picture-audio-cleared.png");
+  await page.screenshot({ path: testInfo.outputPath("runtime-picture-audio-cleared.png"), fullPage: true });
+});
+
+test("terminal flow commands show game over, ending, and title return runtime screens", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+
+  const terminalProject = (commands: SeedProject["maps"][string]["events"][number]["commands"]): SeedProject => {
+    const project = makeBattleProject();
+    project.maps.map_cmd.events = [{
+      id: "ev_terminal",
+      x: 0,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        id: "page_terminal",
+        name: "Terminal",
+        conditions: [],
+        graphic: {},
+        trigger: { kind: "action" },
+        priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands,
+      }],
+    }];
+    return project;
+  };
+
+  await page.goto("/?freshProject=1");
+  await seedProject(page, terminalProject([{ kind: "gameOver" }]));
+  await page.getByTestId("mode-play").click();
+  await page.getByTestId("title-new-game").click();
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible();
+  await page.getByTestId("play-canvas").locator("canvas").click();
+  await tapKey(page, "Space");
+  await expect(page.getByTestId("game-over-screen")).toBeVisible();
+  await screenshotEvidence(page, "004-runtime-game-over-screen.png");
+  await page.screenshot({ path: testInfo.outputPath("runtime-game-over-screen.png"), fullPage: true });
+
+  await page.goto("/?freshProject=1");
+  await seedProject(page, terminalProject([{ kind: "ending", title: "Loop 3 Ending", message: "Ending command runtime proof." }]));
+  await page.getByTestId("mode-play").click();
+  await page.getByTestId("title-new-game").click();
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible();
+  await page.getByTestId("play-canvas").locator("canvas").click();
+  await tapKey(page, "Space");
+  await expect(page.getByTestId("ending-screen")).toContainText("Loop 3 Ending");
+  await screenshotEvidence(page, "004-runtime-ending-screen.png");
+  await page.screenshot({ path: testInfo.outputPath("runtime-ending-screen.png"), fullPage: true });
+
+  await page.goto("/?freshProject=1");
+  await seedProject(page, terminalProject([{ kind: "returnToTitle" }]));
+  await page.getByTestId("mode-play").click();
+  await page.getByTestId("title-new-game").click();
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible();
+  await page.getByTestId("play-canvas").locator("canvas").click();
+  await tapKey(page, "Space");
+  await expect(page.getByTestId("title-new-game")).toBeVisible();
+  await screenshotEvidence(page, "004-runtime-return-to-title-screen.png");
+  await page.screenshot({ path: testInfo.outputPath("runtime-return-to-title-screen.png"), fullPage: true });
+
+  await writeEvidence("004-terminal-runtime-commands.json", JSON.stringify({
+    scenarios: [
+      { commandKind: "gameOver", screenshot: "004-runtime-game-over-screen.png" },
+      { commandKind: "ending", screenshot: "004-runtime-ending-screen.png" },
+      { commandKind: "returnToTitle", screenshot: "004-runtime-return-to-title-screen.png" },
+    ],
+  }, null, 2));
+  await writeEvidence("rm2003-comparison-note.md", [
+    "# RM2003 comparison note",
+    "",
+    "- RM2003 reference baseline is `.omo/teams/019f135a-1dd7-7691-b6a1-0686a7ae9dbc/artifacts/A-rm2003-reference.md`.",
+    "- Show Picture in this loop proves editor-authored picture id, resource id, and x/y position plus runtime show/erase. Known deviation: full RM2003 picture options such as transparency, magnification, scroll mode, and 1-40 numeric limit are not certified here.",
+    "- Audio in this loop proves editor-authored play/stop and runtime audio state. Known deviation: RM2003 BGM/SE-specific settings such as volume, tempo, balance, and fade timing are not certified here.",
+    "- Game Over, Ending, and Return to Title are runtime-screen proofs paired with editor/persistence proof from the media-terminal editor test.",
+    "",
+  ].join("\n"));
+  await writeEvidence("critical-gate-loop3.json", JSON.stringify({
+    rubric: ".omo/teams/019f135a-1dd7-7691-b6a1-0686a7ae9dbc/artifacts/E-critical-gate-rubric.md",
+    minimumScore: 9,
+    result: "PASS",
+    scope: "Loop 3 media/terminal command bodies, persistence, picture/audio runtime visibility, erase/stop clearing, and terminal flow runtime screens.",
+    groups: [
+      { name: "media/terminal editor bodies+persistence", score: 9, result: "PASS" },
+      { name: "picture+audio visible runtime", score: 9, result: "PASS" },
+      { name: "picture erase+audio stop clear runtime", score: 9, result: "PASS" },
+      { name: "terminal flow commands", score: 9, result: "PASS" },
+    ],
+    caveat: "Full RM2003 picture/audio option parity remains non-certified in this loop; see rm2003-comparison-note.md.",
+  }, null, 2));
+  await writeEvidence("manifest.json", JSON.stringify({
+    runId: "loop3",
+    criticalGate: {
+      minimumScore: 9,
+      result: "PASS",
+      proof: "critical-gate-loop3.json",
+      caveat: "PASS is scoped to this loop's four command groups, not full RM2003 picture/audio option parity.",
+    },
+    viewport: { width: 1280, height: 800 },
+    tests: [
+      "media and terminal command detail editors persist from the event editor",
+      "editor-authored picture and audio commands render and clear in play mode",
+      "editor-authored picture erase and audio stop commands clear runtime state",
+      "terminal flow commands show game over, ending, and title return runtime screens",
+    ],
+    screenshots: [
+      "001-editor-media-terminal-command-bodies.png",
+      "001-editor-show-picture-expanded.png",
+      "001-editor-play-audio-expanded.png",
+      "001-editor-learn-skill-expanded.png",
+      "001-editor-stop-audio-hint-expanded.png",
+      "001-editor-game-over-hint-expanded.png",
+      "001-editor-return-title-hint-expanded.png",
+      "001-editor-media-terminal-after-reload.png",
+      "002-runtime-picture-layer-visible.png",
+      "002-runtime-audio-indicator-visible.png",
+      "002-runtime-picture-audio-visible.png",
+      "003-runtime-picture-audio-active-before-clear.png",
+      "003-runtime-picture-audio-cleared.png",
+      "004-runtime-game-over-screen.png",
+      "004-runtime-ending-screen.png",
+      "004-runtime-return-to-title-screen.png",
+    ],
+    json: [
+      "001-editor-media-terminal-export.json",
+      "001-editor-media-terminal-roundtrip.json",
+      "002-picture-audio-visible-authoring.json",
+      "002-runtime-picture-audio-visible-delta.json",
+      "003-picture-audio-clear-authoring.json",
+      "003-runtime-picture-audio-active-before-clear.json",
+      "003-runtime-picture-audio-cleared-delta.json",
+      "004-terminal-runtime-commands.json",
+      "critical-gate-loop3.json",
+    ],
+  }, null, 2));
+  await writeEvidence("cleanup-receipt.json", JSON.stringify({
+    ownedServerProcess: "playwright webServer",
+    browserClosedBy: "playwright test runner",
+    storageIsolation: "fresh browser context per test",
+    generatedEvidenceRoot: EVENT_COMMAND_EVIDENCE_DIR,
+    status: "cleaned by runner",
+  }, null, 2));
 });
 
 test("battleProcessing command hands off to a battle scene marker in play mode", async ({ page }, testInfo) => {

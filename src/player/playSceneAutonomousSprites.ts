@@ -30,8 +30,8 @@ export function setNpcIdleFrame(
 ): void {
   if (!animationEnabled) return;
   if (animationType === "fixedGraphic") return;
-  if (!sprite || !isEasyRpgCharsetTextureKey(sprite.texture.key)) return;
-  sprite.setFrame(charsetIdleFrameIndex(baseFrame, dir));
+  if (!sprite) return;
+  if (isEasyRpgCharsetTextureKey(sprite.texture.key)) sprite.setFrame(charsetIdleFrameIndex(baseFrame, dir));
 }
 
 export function applySpriteAlpha(sprite: AutonomousNpcSprite | undefined, opacity: number): void {

@@ -1,0 +1,416 @@
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  margin-top: 4px;
+}
+.ts-cell {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  font-size: 10px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+.ts-cell:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.tileset-summary {
+  display: grid;
+  gap: var(--space-2);
+}
+.tileset-settings-open {
+  justify-self: start;
+}
+
+.tileset-db-workspace {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 184px minmax(0, 1fr) 170px;
+  min-height: 440px;
+  padding: 4px;
+}
+
+.tileset-db-workspace.compact {
+  grid-template-columns: 184px minmax(0, 1fr);
+}
+
+.tileset-db-list,
+.tileset-db-editor,
+.tileset-db-terrain {
+  min-width: 0;
+}
+
+.tileset-db-panel-title {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.tileset-db-listbox,
+.tileset-db-terrain-list,
+.tileset-db-preview {
+  background: #fffdf7;
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.tileset-db-listbox {
+  display: grid;
+  min-height: 430px;
+  align-content: start;
+}
+
+.tileset-db-list-row {
+  background: transparent;
+  border: 0;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 400 12px/1.2 inherit;
+  min-height: 21px;
+  padding: 2px 6px;
+  text-align: left;
+}
+
+.tileset-db-list-row:hover {
+  background: #e5eef8;
+}
+
+.tileset-db-list-row.active {
+  background: #1f65b5;
+  color: #ffffff;
+}
+
+.tileset-db-editor {
+  display: grid;
+  gap: 4px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.tileset-db-editor.simplified {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.tileset-db-resource,
+.tileset-db-preview-meta,
+.tileset-db-stats {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.tileset-db-resource {
+  align-self: center;
+  background: var(--surface-panel);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  min-height: 22px;
+  overflow: hidden;
+  padding: 2px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileset-db-properties > .tileset-db-resource:nth-of-type(2) {
+  display: none;
+}
+
+.tileset-db-properties {
+  background: var(--surface-workbench);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  padding: 6px;
+}
+
+.tileset-db-editor.simplified .tileset-db-properties {
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.tileset-db-editor.simplified .tileset-db-properties .db-field {
+  grid-column: 1 / -1;
+}
+
+.tileset-db-properties .db-field {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 52px minmax(0, 1fr);
+  margin: 0;
+}
+
+.tileset-db-properties .db-field label {
+  align-self: center;
+  color: var(--text-primary);
+  font-size: 12px;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: none;
+}
+
+.tileset-db-group {
+  border: 1px solid #8f8a80;
+  margin: 0;
+  padding: 7px 6px 6px;
+}
+
+.tileset-db-group legend {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.tileset-db-preview-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.tileset-db-preview-title {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.tileset-db-preview-scale {
+  display: flex;
+  gap: 2px;
+}
+
+.tileset-db-preview-scale button {
+  background: #d8d0be;
+  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 600 11px/1.1 inherit;
+  min-height: 20px;
+  min-width: 42px;
+  padding: 0 6px;
+}
+
+.tileset-db-preview-scale button.scroll {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  min-width: 24px;
+  padding: 0 5px;
+}
+
+.tileset-db-preview-scale button.active {
+  background: var(--surface-panel);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+}
+
+.tileset-db-layer-tabs,
+.tileset-db-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.tileset-db-layer-tabs {
+  align-items: end;
+  border-bottom: 1px solid #8f8a80;
+}
+
+.tileset-db-layer-tabs button,
+.tileset-db-tools button {
+  background: #d8d0be;
+  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 600 12px/1.1 inherit;
+  min-height: 22px;
+  min-width: 56px;
+  padding: 0 7px;
+}
+
+.tileset-db-layer-tabs button.active,
+.tileset-db-tools button.active {
+  background: var(--surface-panel);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+}
+
+.tileset-db-edit-area {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 140px minmax(360px, 1fr);
+  min-height: 0;
+}
+
+.tileset-db-edit-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.tileset-db-tools {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 3px;
+}
+
+.tileset-db-tools button {
+  min-width: 0;
+  width: 100%;
+}
+
+.tileset-db-tools button.disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.tileset-db-selected-tile {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 5px;
+  padding: 6px;
+}
+
+.tileset-db-selected-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.tileset-db-selected-header strong {
+  color: var(--text-primary);
+  font-size: 12px;
+  min-width: 0;
+}
+
+.tileset-db-selected-header span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.tileset-db-group-editor {
+  display: grid;
+  gap: 5px;
+}
+
+.tileset-db-group-editor .db-field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.tileset-db-group-editor .db-field span {
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+.tileset-db-group-editor input,
+.tileset-db-group-editor select,
+.tileset-db-group-editor textarea {
+  background: var(--surface-panel);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  font: inherit;
+  min-height: 22px;
+  min-width: 0;
+  padding: 2px 4px;
+}
+
+.tileset-db-group-editor textarea {
+  min-height: 38px;
+  resize: vertical;
+}
+
+.tileset-db-group-list {
+  display: grid;
+  gap: 3px;
+  max-height: 90px;
+  overflow: auto;
+}
+
+.tileset-db-group-row {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 11px;
+  min-height: 22px;
+  overflow: hidden;
+  padding: 2px 4px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileset-db-group-row:hover,
+.tileset-db-group-row:focus-visible {
+  background: var(--surface-selected);
+  outline: 1px solid var(--accent-primary);
+}
+
+.tileset-db-selected-row {
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+.tileset-db-selected-help {
+  color: var(--text-secondary);
+  font-size: 11px;
+
+  line-height: 1.35;
+}
+
+.tileset-db-selected-tile .db-field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.tileset-db-selected-tile .db-field span {
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+.tileset-db-selected-tile input,
+.tileset-db-selected-tile textarea {
+  background: var(--surface-panel);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  font: 400 11px/1.25 inherit;
+  min-width: 0;
+  padding: 3px 4px;
+  resize: vertical;
+}
+
+.tileset-db-selected-tile textarea {
+  min-height: 42px;
+}
+
+.tileset-db-autotile {
+  display: grid;
+  gap: 6px;
+}

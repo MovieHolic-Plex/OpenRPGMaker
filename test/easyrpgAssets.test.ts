@@ -4,10 +4,22 @@ import {
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   bundledEasyRpgTilesetId,
 } from "@/assets/bundled";
+import { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 import { EASYRPG_CHIPSET_ASSETS } from "@/assets/easyrpgRtp";
+import { inspectPngBytes } from "@/assets/pngInspection";
 import { createBlankProject } from "@/project/defaults";
 import { ensureBundledResourceProfiles } from "@/project/defaults/defaultAssets";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+
+type BinaryFsReader = {
+  readonly existsSync: (path: URL) => boolean;
+  readonly readFileSync: (path: URL) => Uint8Array;
+};
+
+const loadBinaryFs = async (): Promise<BinaryFsReader> => {
+  const moduleName = "node:fs";
+  return (await import(moduleName)) as BinaryFsReader;
+};
 
 describe("bundled EasyRPG RTP assets", () => {
   it("exposes vendored chipsets and object charsets as AI-addressable resource profiles", () => {
@@ -72,5 +84,29 @@ describe("bundled EasyRPG RTP assets", () => {
       imageWidth: 480,
       imageHeight: 256,
     });
+  });
+
+  it("ships color-keyed EasyRPG chipsets with baked transparency for DOM previews", async () => {
+    const { existsSync, readFileSync } = await loadBinaryFs();
+    const colorKeyedAssets = BUNDLED_EASYRPG_CHIPSET_ASSETS.filter((asset) =>
+      isColorKeyedChipsetTextureKey(asset.textureKey),
+    );
+
+    expect(colorKeyedAssets.map((asset) => asset.textureKey)).toEqual([
+      "tex_easyrpg_chipset_dungeon",
+      "tex_easyrpg_chipset_interior",
+      "tex_easyrpg_chipset_retro_dungeon",
+    ]);
+
+    for (const asset of colorKeyedAssets) {
+      const imageUrl = new URL(`../public/${asset.path}`, import.meta.url);
+
+      expect(existsSync(imageUrl), `${asset.name} PNG is missing at ${asset.path}`).toBe(true);
+      const inspection = await inspectPngBytes(readFileSync(imageUrl));
+      expect(inspection.ok ? inspection.inspection.transparentPixels : 0, `${asset.name} has no transparent pixels`).toBeGreaterThan(
+        0,
+      );
+      expect(inspection.ok ? inspection.inspection.opaqueColorKeyPixels : -1, `${asset.name} still has opaque color-key pixels`).toBe(0);
+    }
   });
 });

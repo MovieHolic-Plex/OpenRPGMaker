@@ -1,0 +1,485 @@
+/* Shared RM2K3 icon primitives and toolbar PNG bindings. */
+.rm-tool-icon-map-child::after {
+  background: #216c33;
+  box-shadow: 0 4px 0 #216c33, -2px 2px 0 #216c33, 2px 2px 0 #216c33;
+  height: 2px;
+  left: 11px;
+  top: 7px;
+  width: 2px;
+}
+
+.rm-tool-icon-map-start::before {
+  background: #f5d04a;
+  clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
+  height: 14px;
+  left: 1px;
+  top: 1px;
+  width: 14px;
+}
+
+.rm-tool-icon-map-start::after {
+  background: #7c5e22;
+  height: 2px;
+  left: 5px;
+  top: 13px;
+  width: 6px;
+}
+
+.rm-tool-icon-trash::before {
+  background: #d8d0be;
+  border: 1px solid #2f2f2f;
+  box-shadow: inset 3px 0 0 #9d988c, inset 6px 0 0 #d8d0be;
+  height: 10px;
+  left: 4px;
+  top: 5px;
+  width: 8px;
+}
+
+.rm-tool-icon-trash::after {
+  background: #5f5b52;
+  box-shadow: 3px -2px 0 #5f5b52;
+  height: 2px;
+  left: 3px;
+  top: 2px;
+  width: 10px;
+}
+
+.rm-tool-icon-map-menu::before {
+  background: #5f5b52;
+  box-shadow: 0 5px 0 #5f5b52, 0 10px 0 #5f5b52;
+  height: 2px;
+  left: 7px;
+  top: 2px;
+  width: 2px;
+}
+
+.rm-tool-icon-map-menu::after {
+  background: transparent;
+}
+
+.rm-tool-icon-map-settings::before {
+  background: #c8d0d8;
+  border: 1px solid #2f3b45;
+  box-shadow: inset 0 2px 0 #f6f2dc;
+  height: 11px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+.rm-tool-icon-map-settings::after {
+  background: #2e6f9e;
+  box-shadow: 4px 0 0 #2e6f9e, 8px 0 0 #2e6f9e;
+  height: 2px;
+  left: 4px;
+  top: 7px;
+  width: 2px;
+}
+
+.rm-tool-icon-map-screenshot::before {
+  background: #f6f2dc;
+  border: 1px solid #2f3b45;
+  height: 10px;
+  left: 2px;
+  top: 4px;
+  width: 12px;
+}
+
+.rm-tool-icon-map-screenshot::after {
+  background: #4c7a43;
+  border: 1px solid #2f3b45;
+  height: 4px;
+  left: 5px;
+  top: 7px;
+  width: 6px;
+}
+
+.rm-tool-icon-terrain-template::before {
+  background: #6fa047;
+  border: 1px solid #2f3b45;
+  box-shadow:
+    4px 0 0 #d8c36a,
+    8px 0 0 #6fa047,
+    0 4px 0 #b89558,
+    4px 4px 0 #6fa047,
+    8px 4px 0 #d8c36a,
+    0 8px 0 #6fa047,
+    4px 8px 0 #b89558,
+    8px 8px 0 #6fa047;
+  height: 3px;
+  left: 2px;
+  top: 2px;
+  width: 3px;
+}
+
+.rm-tool-icon-terrain-template::after {
+  background: #2f3b45;
+  height: 2px;
+  left: 11px;
+  top: 11px;
+  width: 3px;
+}
+
+.rm-tool-icon-new,
+.rm-tool-icon-open,
+.rm-tool-icon-save,
+.rm-tool-icon-import,
+.rm-tool-icon-export,
+.rm-tool-icon-undo,
+.rm-tool-icon-redo,
+.rm-tool-icon-database,
+.rm-tool-icon-resources,
+.rm-tool-icon-disabled-diamond,
+.rm-tool-icon-disabled-blocks,
+.rm-tool-icon-event-test,
+.rm-tool-icon-lower,
+.rm-tool-icon-upper,
+.rm-tool-icon-event,
+.rm-tool-icon-manual,
+.rm-tool-icon-sound,
+.rm-tool-icon-search,
+.rm-tool-icon-window,
+.rm-tool-icon-title,
+.rm-tool-icon-zoom-1,
+.rm-tool-icon-zoom-2,
+.rm-tool-icon-zoom-4,
+.rm-tool-icon-zoom-8,
+.rm-tool-icon-pencil,
+.rm-tool-icon-play,
+.rm-tool-icon-play-window {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+}
+
+.rm-tool-icon-new::before,
+.rm-tool-icon-new::after,
+.rm-tool-icon-open::before,
+.rm-tool-icon-open::after,
+.rm-tool-icon-save::before,
+.rm-tool-icon-save::after,
+.rm-tool-icon-import::before,
+.rm-tool-icon-import::after,
+.rm-tool-icon-export::before,
+.rm-tool-icon-export::after,
+.rm-tool-icon-undo::before,
+.rm-tool-icon-undo::after,
+.rm-tool-icon-redo::before,
+.rm-tool-icon-redo::after,
+.rm-tool-icon-database::before,
+.rm-tool-icon-database::after,
+.rm-tool-icon-resources::before,
+.rm-tool-icon-resources::after,
+.rm-tool-icon-disabled-diamond::before,
+.rm-tool-icon-disabled-diamond::after,
+.rm-tool-icon-disabled-blocks::before,
+.rm-tool-icon-disabled-blocks::after,
+.rm-tool-icon-event-test::before,
+.rm-tool-icon-event-test::after,
+.rm-tool-icon-lower::before,
+.rm-tool-icon-lower::after,
+.rm-tool-icon-upper::before,
+.rm-tool-icon-upper::after,
+.rm-tool-icon-event::before,
+.rm-tool-icon-event::after,
+.rm-tool-icon-manual::before,
+.rm-tool-icon-manual::after,
+.rm-tool-icon-sound::before,
+.rm-tool-icon-sound::after,
+.rm-tool-icon-search::before,
+.rm-tool-icon-search::after,
+.rm-tool-icon-window::before,
+.rm-tool-icon-window::after,
+.rm-tool-icon-title::before,
+.rm-tool-icon-title::after,
+.rm-tool-icon-zoom-1::before,
+.rm-tool-icon-zoom-1::after,
+.rm-tool-icon-zoom-2::before,
+.rm-tool-icon-zoom-2::after,
+.rm-tool-icon-zoom-4::before,
+.rm-tool-icon-zoom-4::after,
+.rm-tool-icon-zoom-8::before,
+.rm-tool-icon-zoom-8::after,
+.rm-tool-icon-pencil::before,
+.rm-tool-icon-pencil::after,
+.rm-tool-icon-play::before,
+.rm-tool-icon-play::after,
+.rm-tool-icon-play-window::before,
+.rm-tool-icon-play-window::after {
+  display: none;
+}
+
+.rm-tool-icon-new {
+  background-image: url("/ui/rm2k3-toolbar/new.png");
+}
+
+.rm-tool-icon-open {
+  background-image: url("/ui/rm2k3-toolbar/open.png");
+}
+
+.rm-tool-icon-save {
+  background-image: url("/ui/rm2k3-toolbar/save.png");
+}
+
+.rm-tool-icon-import {
+  background-image: url("/ui/rm2k3-toolbar/import.png");
+}
+
+.rm-tool-icon-export {
+  background-image: url("/ui/rm2k3-toolbar/export.png");
+}
+
+.rm-tool-icon-undo {
+  background-image: url("/ui/rm2k3-toolbar/undo.png");
+}
+
+.rm-tool-icon-redo {
+  background-image: url("/ui/rm2k3-toolbar/redo.png");
+}
+
+.rm-tool-icon-database {
+  background-image: url("/ui/rm2k3-toolbar/database.png");
+}
+
+.rm-tool-icon-resources {
+  background-image: url("/ui/rm2k3-toolbar/resources.png");
+}
+
+.rm-tool-icon-disabled-diamond {
+  background-image: url("/ui/rm2k3-toolbar/disabled-diamond.png");
+}
+
+.rm-tool-icon-disabled-blocks {
+  background-image: url("/ui/rm2k3-toolbar/disabled-blocks.png");
+}
+
+.rm-tool-icon-event-test {
+  background-image: url("/ui/rm2k3-toolbar/event-test.png");
+}
+
+.rm-tool-icon-lower {
+  background-image: url("/ui/rm2k3-toolbar/lower.png");
+}
+
+.rm-tool-icon-upper {
+  background-image: url("/ui/rm2k3-toolbar/upper.png");
+}
+
+.rm-tool-icon-event {
+  background-image: url("/ui/rm2k3-toolbar/event.png");
+}
+
+.rm-tool-icon-manual {
+  background-image: url("/ui/rm2k3-toolbar/manual.png");
+}
+
+.rm-tool-icon-sound {
+  background-image: url("/ui/rm2k3-toolbar/sound.png");
+}
+
+.rm-tool-icon-search {
+  background-image: url("/ui/rm2k3-toolbar/search.png");
+}
+
+.rm-tool-icon-window {
+  background-image: url("/ui/rm2k3-toolbar/window.png");
+}
+
+.rm-tool-icon-title {
+  background-image: url("/ui/rm2k3-toolbar/title.png");
+}
+
+.rm-tool-icon-zoom-1 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-1.png");
+}
+
+.rm-tool-icon-zoom-2 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-2.png");
+}
+
+.rm-tool-icon-zoom-4 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-4.png");
+}
+
+.rm-tool-icon-zoom-8 {
+  background-image: url("/ui/rm2k3-toolbar/zoom-8.png");
+}
+
+.rm-tool-icon-pencil {
+  background-image: url("/ui/rm2k3-toolbar/pencil.png");
+}
+
+.rm-tool-icon-play,
+.rm-tool-icon-play-window {
+  background-image: url("/ui/rm2k3-toolbar/play.png");
+}
+
+.rm-tool-icon-select::before {
+  background: #edf1f7;
+  clip-path: polygon(0 0, 0 15px, 5px 11px, 8px 16px, 11px 14px, 8px 9px, 14px 9px);
+  height: 16px;
+  left: 1px;
+  top: 0;
+  width: 14px;
+}
+
+.rm-tool-icon-eraser::before {
+  background: #f2f4f8;
+  border: 1px solid #2b313a;
+  height: 7px;
+  left: 2px;
+  top: 6px;
+  transform: rotate(-35deg);
+  width: 13px;
+}
+
+.rm-tool-icon-eraser::after {
+  background: #9aa6b6;
+  height: 2px;
+  left: 8px;
+  top: 9px;
+  transform: rotate(-35deg);
+  width: 5px;
+}
+
+.rm-tool-icon-bucket::before {
+  background: #eef2f7;
+  border: 1px solid #2b313a;
+  height: 9px;
+  left: 3px;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 9px;
+}
+
+.rm-tool-icon-bucket::after {
+  background: #d7e1ec;
+  border-radius: 50%;
+  height: 4px;
+  left: 10px;
+  top: 11px;
+  width: 4px;
+}
+
+.rm-tool-icon-rectangle::before {
+  background: transparent;
+  border: 2px solid #edf1f7;
+  border-radius: 2px;
+  height: 10px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+.rm-tool-icon-grid::before {
+  background:
+    linear-gradient(#edf1f7, #edf1f7) 0 0 / 16px 1px,
+    linear-gradient(#edf1f7, #edf1f7) 0 7px / 16px 1px,
+    linear-gradient(#edf1f7, #edf1f7) 0 15px / 16px 1px,
+    linear-gradient(90deg, #edf1f7, #edf1f7) 0 0 / 1px 16px,
+    linear-gradient(90deg, #edf1f7, #edf1f7) 7px 0 / 1px 16px,
+    linear-gradient(90deg, #edf1f7, #edf1f7) 15px 0 / 1px 16px;
+  background-repeat: no-repeat;
+  height: 16px;
+  left: 0;
+  top: 0;
+  width: 16px;
+}
+
+.rm-tool-icon-pin::before {
+  background: transparent;
+  border: 2px solid #edf1f7;
+  border-radius: 50%;
+  height: 8px;
+  left: 3px;
+  top: 1px;
+  width: 8px;
+}
+
+.rm-tool-icon-pin::after {
+  background: #edf1f7;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  height: 7px;
+  left: 5px;
+  top: 8px;
+  width: 6px;
+}
+
+.rm-tool-icon-link::before,
+.rm-tool-icon-link::after {
+  background: transparent;
+  border: 2px solid #edf1f7;
+  border-radius: 5px;
+  height: 6px;
+  width: 10px;
+}
+
+.rm-tool-icon-link::before {
+  left: 0;
+  top: 5px;
+  transform: rotate(-35deg);
+}
+
+.rm-tool-icon-link::after {
+  left: 6px;
+  top: 5px;
+  transform: rotate(-35deg);
+}
+
+.rm-tool-icon-layers::before {
+  background: #edf1f7;
+  clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
+  height: 14px;
+  left: 1px;
+  top: 0;
+  width: 14px;
+}
+
+.rm-tool-icon-layers::after {
+  background: #aeb8c6;
+  clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
+  height: 14px;
+  left: 1px;
+  top: 5px;
+  width: 14px;
+}
+
+.rm-tool-icon-settings::before {
+  background: #edf1f7;
+  border-radius: 50%;
+  box-shadow:
+    0 -6px 0 -2px #edf1f7,
+    0 6px 0 -2px #edf1f7,
+    6px 0 0 -2px #edf1f7,
+    -6px 0 0 -2px #edf1f7;
+  height: 10px;
+  left: 3px;
+  top: 3px;
+  width: 10px;
+}
+
+.rm-tool-icon-settings::after {
+  background: #151a22;
+  border-radius: 50%;
+  height: 4px;
+  left: 6px;
+  top: 6px;
+  width: 4px;
+}
+
+.rm-tool-icon-close::before,
+.rm-tool-icon-close::after {
+  background: #edf1f7;
+  height: 14px;
+  left: 7px;
+  top: 1px;
+  width: 2px;
+}
+
+.rm-tool-icon-close::before {
+  transform: rotate(45deg);
+}
+
+.rm-tool-icon-close::after {
+  transform: rotate(-45deg);
+}

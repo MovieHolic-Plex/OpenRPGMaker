@@ -5,7 +5,9 @@ import type {
   EventPage,
   EventPageMovement,
   EventPriority,
+  GameMap,
   GameEvent,
+  Project,
   Trigger,
 } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
@@ -61,7 +63,8 @@ export function runtimeEventView(
   positions: RuntimeEventPositions
 ): RuntimeEventView {
   const page = resolveEventPage(event, session);
-  const position = positions[event.id] ?? { x: event.x, y: event.y };
+  const location = session.eventLocations?.[event.id];
+  const position = location ? { x: location.x, y: location.y } : positions[event.id] ?? { x: event.x, y: event.y };
   const transparent = page?.graphic.transparent === true;
   return {
     event,
@@ -77,6 +80,32 @@ export function runtimeEventView(
     movement: page?.movement ?? legacyMovement(event),
     sprite: transparent ? undefined : page?.graphic.sprite ?? event.sprite,
   };
+}
+
+export function runtimeEventViewsForMap(
+  project: Pick<Project, "maps">,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions
+): RuntimeEventView[] {
+  const views: RuntimeEventView[] = [];
+  const included = new Set<string>();
+  for (const event of map.events) {
+    const location = session.eventLocations?.[event.id];
+    if (location && location.mapId !== map.id) continue;
+    views.push(runtimeEventView(event, session, positions));
+    included.add(event.id);
+  }
+  for (const sourceMap of Object.values(project.maps)) {
+    if (sourceMap.id === map.id) continue;
+    for (const event of sourceMap.events) {
+      if (included.has(event.id)) continue;
+      if (session.eventLocations?.[event.id]?.mapId !== map.id) continue;
+      views.push(runtimeEventView(event, session, positions));
+      included.add(event.id);
+    }
+  }
+  return views;
 }
 
 function legacyMovement(event: GameEvent): EventPageMovement {
@@ -98,6 +127,19 @@ export function findRuntimeEventAt(
     .find((event) => event.x === x && event.y === y && matchesTrigger(event.trigger.kind, triggerKind));
 }
 
+export function findRuntimeEventAtInMap(
+  project: Pick<Project, "maps">,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions,
+  x: number,
+  y: number,
+  triggerKind: Trigger["kind"] | readonly Trigger["kind"][]
+): RuntimeEventView | undefined {
+  return runtimeEventViewsForMap(project, map, session, positions)
+    .find((event) => event.x === x && event.y === y && matchesTrigger(event.trigger.kind, triggerKind));
+}
+
 export function findBlockingRuntimeEventAt(
   events: readonly GameEvent[],
   session: PlaySessionLike,
@@ -107,6 +149,18 @@ export function findBlockingRuntimeEventAt(
 ): RuntimeEventView | undefined {
   return events
     .map((event) => runtimeEventView(event, session, positions))
+    .find((event) => event.x === x && event.y === y && event.priority === "same" && event.overlapForbidden);
+}
+
+export function findBlockingRuntimeEventAtInMap(
+  project: Pick<Project, "maps">,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions,
+  x: number,
+  y: number
+): RuntimeEventView | undefined {
+  return runtimeEventViewsForMap(project, map, session, positions)
     .find((event) => event.x === x && event.y === y && event.priority === "same" && event.overlapForbidden);
 }
 

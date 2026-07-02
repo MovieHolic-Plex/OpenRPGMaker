@@ -104,7 +104,7 @@
     "checklist": [
       {
         "id": "runtimePresentation-play-surface",
-        "requirement": "Play mode presents a 320x240 logical surface with integer nearest-neighbor scaling; editor canvases may remain modern and resizable.",
+        "requirement": "Play mode presents a 320x240 logical surface scaled by the smallest whole-number factor that covers the player shell with nearest-neighbor scaling; editor canvases may remain modern and resizable.",
         "status": "done"
       },
       {

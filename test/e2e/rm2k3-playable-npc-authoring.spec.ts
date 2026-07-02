@@ -119,9 +119,9 @@ function baseProject(): Project {
     meta: { title: "Playable NPC Authoring", author: "e2e", terms: { gold: "G" } },
     assets: {
       sprites: {
-        npc_villager: {
-          id: "npc_villager",
-          image: { type: "bundled", id: "tex_npc_villager" },
+        tex_easyrpg_charset_people1: {
+          id: "tex_easyrpg_charset_people1",
+          image: { type: "bundled", id: "tex_easyrpg_charset_people1" },
           frames: 8,
           frameWidth: 32,
           frameHeight: 32,
@@ -181,7 +181,7 @@ function baseProject(): Project {
 
 function npcPage(page: AuthoredPage): boolean {
   return page.name === NPC_NAME &&
-    page.graphic.sprite?.id === "npc_villager" &&
+    page.graphic.sprite?.id === "tex_easyrpg_charset_people1" &&
     page.trigger.kind === "action" &&
     page.priority === "same" &&
     page.commands.some((command) => command.kind === "text" && command.speaker === NPC_NAME && command.body === NPC_BODY);
@@ -217,7 +217,7 @@ test("event tool creates an RM2003-style NPC event that persists and plays", asy
 
   await page.getByTestId("event-page-name-input").fill(NPC_NAME);
   await page.getByTestId("event-page-name-input").blur();
-  await page.getByTestId("event-page-sprite-input").fill("npc_villager");
+  await page.getByTestId("event-page-sprite-input").fill("tex_easyrpg_charset_people1");
   await page.getByTestId("event-page-sprite-input").blur();
   await addTextCommand(page, NPC_NAME, NPC_BODY);
 
@@ -242,7 +242,7 @@ test("event tool creates an RM2003-style NPC event that persists and plays", asy
 
   await page.getByTestId("event-editor-open").click();
   await expect(page.getByTestId("event-page-name-input")).toHaveValue(NPC_NAME);
-  await expect(page.getByTestId("event-page-sprite-input")).toHaveValue("npc_villager");
+  await expect(page.getByTestId("event-page-sprite-input")).toHaveValue("tex_easyrpg_charset_people1");
   await expect(page.getByTestId("event-command-text")).toContainText(NPC_BODY);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();

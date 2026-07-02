@@ -1,4 +1,5 @@
 import { editorState } from "@/editor/editorState";
+import { deleteEditorEvent } from "@/editor/eventDeletion";
 import {
   beginExistingEventDraft,
   createEventDraft,
@@ -9,6 +10,7 @@ import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
+import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 
@@ -47,7 +49,9 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const close = createCloseHandler(backdrop);
   const header = renderModalHeader(request.mapId, request.eventId, close);
   attachWindowDrag(header, windowEl);
-  windowEl.append(header, body, renderModalFooter(request, close));
+  const resizeHandle = renderModalResizeHandle();
+  attachWindowResize(resizeHandle, windowEl);
+  windowEl.append(header, body, renderModalFooter(request, close), resizeHandle);
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
@@ -64,9 +68,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   };
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);
-  backdrop.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") close();
-  });
+  backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, close));
   backdrop.addEventListener("rpgzzu:event-editor-close", (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     if (!saved) discardEventDraft(request.mapId, request.eventId);
@@ -86,8 +88,8 @@ export function isEventEditorModalOpenFor(mapId: MapId, eventId: string): boolea
 function closeExistingEventEditorModal(): void {
   const existing = document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
   if (existing instanceof HTMLElement) {
-    existing.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close"));
     existing.remove();
+    existing.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close"));
   }
 }
 
@@ -96,13 +98,24 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
     class: "event-editor-modal-header",
     dataset: { testid: "event-editor-titlebar" },
     children: [
-      el("div", { children: [el("h2", { text: `이벤트 에디터 - ID:${displayEventNumber(mapId, eventId)}` })] }),
+      el("div", {
+        class: "event-editor-window-title",
+        children: [el("h2", { text: `이벤트 에디터 · ID:${displayEventNumber(mapId, eventId)}` })],
+      }),
+      el("div", {
+        class: "event-editor-window-controls",
+        attrs: { "aria-hidden": "true" },
+        children: [
+          el("button", { class: "event-editor-window-control", text: "−", attrs: { type: "button", tabindex: "-1", title: "최소화" } }),
+          el("button", { class: "event-editor-window-control", text: "□", attrs: { type: "button", tabindex: "-1", title: "최대화" } }),
+        ],
+      }),
       el("button", {
-        class: "btn event-editor-modal-close",
-        text: "X",
+        class: "event-editor-window-control event-editor-modal-close",
+        text: "×",
         attrs: { type: "button", title: "닫기" },
         dataset: { testid: "event-editor-modal-close" },
-        on: { click: close },
+        on: { click: () => close() },
       }),
     ],
   });
@@ -170,35 +183,81 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
   return el("div", {
     class: "event-editor-modal-footer",
     children: [
-      footerButton("OK", "event-editor-ok", () => {
-        saveEventDraft(request.mapId, request.eventId);
-        close(true);
+      el("button", {
+        class: "event-editor-footer-settings",
+        text: "⚙",
+        attrs: { type: "button", title: "설정", "aria-label": "설정" },
       }),
-      footerButton("Cancel", "event-editor-cancel", close),
-      footerButton("Apply", "event-editor-apply", () => {
-        saveEventDraft(request.mapId, request.eventId);
-        beginExistingEventDraft(request.mapId, request.eventId);
+      el("div", {
+        class: "event-editor-footer-actions",
+        children: [
+          footerButton("확인", "event-editor-ok", () => {
+            saveEventDraft(request.mapId, request.eventId);
+            close(true);
+          }, true),
+          footerButton("취소", "event-editor-cancel", () => close()),
+          footerButton("적용", "event-editor-apply", () => {
+            saveEventDraft(request.mapId, request.eventId);
+            beginExistingEventDraft(request.mapId, request.eventId);
+          }),
+          footerButton("도움말", "event-editor-help"),
+        ],
       }),
-      footerButton("Help", "event-editor-help"),
     ],
   });
 }
 
-function footerButton(text: string, testId: string, onClick?: () => void): HTMLButtonElement {
+function footerButton(text: string, testId: string, onClick?: () => void, primary = false): HTMLButtonElement {
   const props = {
-    class: "btn event-editor-footer-button",
+    class: "btn event-editor-footer-button" + (primary ? " primary" : ""),
     text,
-    attrs: { type: "button" },
+    attrs: { type: "button", "aria-label": footerButtonAccessibleName(text) },
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,
   };
   return el("button", props) as HTMLButtonElement;
 }
 
+function handleModalKeyDown(
+  event: KeyboardEvent,
+  request: OpenEventEditorRequest,
+  close: (saved?: boolean) => void
+): void {
+  if (event.key === "Escape") {
+    close();
+    return;
+  }
+  if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
+  if (isTextEditingTarget(event.target)) return;
+  event.preventDefault();
+  if (deleteEditorEvent(request.mapId, request.eventId)) close(true);
+}
+
+function isTextEditingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
+}
+
+function footerButtonAccessibleName(text: string): string {
+  switch (text) {
+    case "확인":
+      return "확인 OK";
+    case "취소":
+      return "취소 Cancel";
+    case "적용":
+      return "적용 Apply";
+    case "도움말":
+      return "도움말 Help";
+    default:
+      return text;
+  }
+}
+
 function createCloseHandler(backdrop: HTMLElement): (saved?: boolean) => void {
   return (saved = false) => {
-    backdrop.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close", { detail: { saved } }));
     backdrop.remove();
+    backdrop.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close", { detail: { saved: saved === true } }));
   };
 }
 

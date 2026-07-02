@@ -1,0 +1,234 @@
+import type { M2CommandFieldOption, M2CommandFieldSpec } from "./m2Catalog";
+
+const CAMERA_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "panTo", label: "좌표로 이동" },
+  { value: "follow", label: "대상 추적" },
+  { value: "zoom", label: "줌 변경" },
+  { value: "lock", label: "고정" },
+];
+
+const MODERN_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "player", label: "주인공" },
+  { value: "this-event", label: "이 이벤트" },
+  { value: "screen", label: "화면" },
+];
+
+const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "fadeIn", label: "페이드 인" },
+  { value: "fadeOut", label: "페이드 아웃" },
+  { value: "flash", label: "플래시" },
+  { value: "tint", label: "색조" },
+  { value: "blur", label: "블러" },
+  { value: "weather", label: "날씨" },
+];
+
+const WAIT_CONDITION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "switchOn", label: "스위치 ON" },
+  { value: "switchOff", label: "스위치 OFF" },
+  { value: "variable", label: "변수 조건" },
+  { value: "region", label: "지역 진입" },
+  { value: "eventIdle", label: "이벤트 이동 완료" },
+];
+
+const REGION_ACTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "enter", label: "진입" },
+  { value: "exit", label: "이탈" },
+  { value: "stay", label: "체류" },
+];
+
+const QUEST_STATE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "start", label: "시작" },
+  { value: "update", label: "갱신" },
+  { value: "complete", label: "완료" },
+  { value: "fail", label: "실패" },
+];
+
+const EMOTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "neutral", label: "기본" },
+  { value: "happy", label: "기쁨" },
+  { value: "sad", label: "슬픔" },
+  { value: "angry", label: "분노" },
+  { value: "surprised", label: "놀람" },
+];
+
+const SOUND_CHANNEL_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "bgm", label: "BGM" },
+  { value: "bgs", label: "BGS" },
+  { value: "me", label: "ME" },
+  { value: "se", label: "SE" },
+  { value: "ambient", label: "앰비언트" },
+];
+
+const CUTSCENE_ACTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "lockPlayer", label: "조작 잠금" },
+  { value: "hideHud", label: "HUD 숨김" },
+  { value: "skipPoint", label: "스킵 지점" },
+];
+
+const UI_SURFACE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "toast", label: "토스트" },
+  { value: "hud", label: "HUD" },
+  { value: "banner", label: "배너" },
+  { value: "menuPrompt", label: "메뉴 프롬프트" },
+];
+
+const DEBUG_LEVEL_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "info", label: "정보" },
+  { value: "warn", label: "경고" },
+  { value: "error", label: "오류" },
+];
+
+const DATA_QUERY_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "gold", label: "소지금" },
+  { value: "itemCount", label: "아이템 수" },
+  { value: "playerX", label: "주인공 X" },
+  { value: "playerY", label: "주인공 Y" },
+  { value: "switch", label: "스위치" },
+  { value: "variable", label: "변수" },
+];
+
+const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "white", label: "흰색" },
+  { value: "red", label: "빨강" },
+  { value: "green", label: "초록" },
+  { value: "blue", label: "파랑" },
+  { value: "yellow", label: "노랑" },
+  { value: "purple", label: "보라" },
+  { value: "black", label: "검정" },
+];
+
+const SHAKE_INTENSITY_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "1", label: "약하게" },
+  { value: "3", label: "보통" },
+  { value: "6", label: "강하게" },
+  { value: "10", label: "매우 강하게" },
+];
+
+export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | undefined {
+  switch (title) {
+    case "Camera Control":
+      return [
+        { key: "mode", label: "동작", type: "select", defaultValue: "panTo", options: CAMERA_MODE_OPTIONS },
+        { key: "target", label: "대상", type: "select", defaultValue: "player", options: MODERN_TARGET_OPTIONS },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+        { key: "zoom", label: "줌", type: "number", defaultValue: 1 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+      ];
+    case "Screen Effect":
+      return [
+        { key: "effect", label: "효과", type: "select", defaultValue: "fadeIn", options: SCREEN_EFFECT_OPTIONS },
+        { key: "value", label: "값", type: "text", defaultValue: "" },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+      ];
+    case "Spawn Event":
+      return [
+        { key: "prefabId", label: "프리팹 ID", type: "text", defaultValue: "" },
+        { key: "eventId", label: "이벤트 ID", type: "text", defaultValue: "" },
+        { key: "mapId", label: "맵", type: "text", defaultValue: "" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+      ];
+    case "Remove Event":
+      return [{ key: "eventId", label: "이벤트", type: "text", defaultValue: "" }];
+    case "Pathfind Move":
+      return [
+        { key: "target", label: "대상", type: "text", defaultValue: "this-event" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+        { key: "speed", label: "속도", type: "number", defaultValue: 4 },
+        { key: "wait", label: "완료까지 대기", type: "boolean", defaultValue: true },
+      ];
+    case "Wait Until":
+      return [
+        { key: "condition", label: "조건", type: "select", defaultValue: "switchOn", options: WAIT_CONDITION_OPTIONS },
+        { key: "target", label: "대상", type: "text", defaultValue: "" },
+        { key: "value", label: "값", type: "text", defaultValue: "" },
+        { key: "timeoutMs", label: "최대 대기(ms)", type: "number", defaultValue: 0 },
+      ];
+    case "Region Trigger":
+      return [
+        { key: "regionId", label: "지역 ID", type: "text", defaultValue: "" },
+        { key: "eventId", label: "이벤트", type: "text", defaultValue: "" },
+        { key: "action", label: "동작", type: "select", defaultValue: "enter", options: REGION_ACTION_OPTIONS },
+        { key: "switchId", label: "스위치", type: "text", defaultValue: "" },
+      ];
+    case "Quest Objective":
+      return [
+        { key: "questId", label: "퀘스트 ID", type: "text", defaultValue: "" },
+        { key: "objectiveId", label: "목표 ID", type: "text", defaultValue: "" },
+        { key: "state", label: "상태", type: "select", defaultValue: "start", options: QUEST_STATE_OPTIONS },
+        { key: "text", label: "내용", type: "textarea", defaultValue: "" },
+      ];
+    case "Advanced Dialogue":
+      return [
+        { key: "speaker", label: "화자", type: "text", defaultValue: "" },
+        { key: "portraitId", label: "초상화", type: "text", defaultValue: "" },
+        { key: "emotion", label: "감정", type: "select", defaultValue: "neutral", options: EMOTION_OPTIONS },
+        { key: "body", label: "대사", type: "textarea", defaultValue: "" },
+        { key: "autoAdvance", label: "자동 넘김", type: "boolean", defaultValue: false },
+      ];
+    case "Sound Layer":
+      return [
+        { key: "channel", label: "채널", type: "select", defaultValue: "bgm", options: SOUND_CHANNEL_OPTIONS },
+        { key: "resourceId", label: "리소스", type: "text", defaultValue: "" },
+        { key: "volume", label: "볼륨", type: "number", defaultValue: 100 },
+        { key: "fadeMs", label: "페이드(ms)", type: "number", defaultValue: 0 },
+      ];
+    case "Weighted Branch":
+      return [
+        { key: "table", label: "가중치 표", type: "textarea", defaultValue: "success=1\nfailure=1" },
+        { key: "resultVariableId", label: "결과 변수", type: "text", defaultValue: "" },
+      ];
+    case "Cutscene Control":
+      return [
+        { key: "action", label: "동작", type: "select", defaultValue: "lockPlayer", options: CUTSCENE_ACTION_OPTIONS },
+        { key: "enabled", label: "상태", type: "boolean", defaultValue: true },
+      ];
+    case "Checkpoint Save":
+      return [
+        { key: "slotId", label: "슬롯", type: "text", defaultValue: "auto" },
+        { key: "label", label: "이름", type: "text", defaultValue: "" },
+        { key: "restoreOnGameOver", label: "게임오버 시 복귀", type: "boolean", defaultValue: true },
+      ];
+    case "UI Command":
+      return [
+        { key: "surface", label: "표시 위치", type: "select", defaultValue: "toast", options: UI_SURFACE_OPTIONS },
+        { key: "message", label: "메시지", type: "textarea", defaultValue: "" },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 1600 },
+      ];
+    case "Debug Log":
+      return [
+        { key: "level", label: "수준", type: "select", defaultValue: "info", options: DEBUG_LEVEL_OPTIONS },
+        { key: "message", label: "메시지", type: "textarea", defaultValue: "" },
+      ];
+    case "Evaluate Expression":
+      return [
+        { key: "expression", label: "식", type: "textarea", defaultValue: "" },
+        { key: "resultVariableId", label: "결과 변수", type: "text", defaultValue: "" },
+      ];
+    case "Flash Screen":
+      return [
+        { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+      ];
+    case "Shake Screen":
+      return [
+        { key: "intensity", label: "강도", type: "select", defaultValue: "3", options: SHAKE_INTENSITY_OPTIONS },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 400 },
+      ];
+    case "Tint Screen":
+      return [
+        { key: "color", label: "색상", type: "select", defaultValue: "neutral", options: SCREEN_COLOR_OPTIONS },
+        { key: "value", label: "색(R,G,B 또는 hex)", type: "text", defaultValue: "" },
+      ];
+    case "Data Query":
+      return [
+        { key: "query", label: "조회", type: "select", defaultValue: "gold", options: DATA_QUERY_OPTIONS },
+        { key: "target", label: "대상", type: "text", defaultValue: "" },
+        { key: "variableId", label: "결과 변수", type: "text", defaultValue: "" },
+      ];
+    default:
+      return undefined;
+  }
+}

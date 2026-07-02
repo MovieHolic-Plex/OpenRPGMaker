@@ -16,6 +16,7 @@ export type AutonomousNpcSceneContext = Pick<
   readonly runtimeDom: Pick<PlaySceneContext["runtimeDom"], "upsertEventMarker">;
   readonly showRuntimeOverlay?: PlaySceneContext["showRuntimeOverlay"];
   readonly refreshRuntimeSurfaces?: PlaySceneContext["refreshRuntimeSurfaces"];
+  readonly syncRuntimeState?: PlaySceneContext["syncRuntimeState"];
 };
 
 export type AutonomousNpcSprite = CharacterSprite & {

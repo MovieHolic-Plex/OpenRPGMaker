@@ -4,11 +4,11 @@ import { editorState, type Layer } from "@/editor/editorState";
 import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { committedEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
-import type { EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
+import type { EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 
 const SELECTED_EVENT_RING_COLOR = 0x69db7c;
-const EVENT_TILE_FILL_COLOR = 0xff007a;
-const EVENT_TILE_FILL_ALPHA = 1;
+const EVENT_TILE_FILL_COLOR = 0x1f2937;
+const EVENT_TILE_FILL_ALPHA = 0.34;
 const EVENT_TILE_SPRITE_FILL_ALPHA = 0;
 const EVENT_TILE_STROKE_COLOR = 0xffffff;
 const EVENT_TILE_STROKE_ALPHA = 0.95;
@@ -17,6 +17,12 @@ const EVENT_BADGE_FILL_ALPHA = 0.38;
 const EVENT_BADGE_STROKE_COLOR = 0xcbd5e1;
 const EVENT_BADGE_STROKE_ALPHA = 0.72;
 const EVENT_BADGE_ALPHA = 0.86;
+const EVENT_CLICK_FILL_COLOR = 0xd9e8f6;
+const EVENT_CLICK_FILL_ALPHA = 0.55;
+const EVENT_CLICK_STROKE_COLOR = 0x0a246a;
+const EVENT_CLICK_STROKE_ALPHA = 0.95;
+const EVENT_CLICK_TEXT_COLOR = "#ffffff";
+const EVENT_CLICK_TEXT_BACKGROUND = "#0a246a";
 
 type EventMarkerPosition = {
   readonly x: number;
@@ -27,6 +33,13 @@ export interface EventMarkerRenderContext {
   readonly scene: Phaser.Scene;
   readonly overlayLayer: Phaser.GameObjects.Container;
 }
+
+export type EventLayerClickFeedback = {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly mode: "create" | "edit";
+};
 
 export function editorEventMarkerTexture(project: Project, graphic: EventPageGraphic | undefined): EventSpriteTexture | null {
   if (graphic?.transparent === true) return null;
@@ -56,6 +69,36 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
     }
     if (event.id === selectedId) addSelectedEventRing(context, position);
   }
+}
+
+export function renderEventLayerClickFeedback(
+  context: EventMarkerRenderContext,
+  feedback: EventLayerClickFeedback
+): void {
+  const worldX = feedback.x * TILE_SIZE;
+  const worldY = feedback.y * TILE_SIZE;
+  const marker = context.scene.add.rectangle(
+    worldX,
+    worldY,
+    TILE_SIZE,
+    TILE_SIZE,
+    EVENT_CLICK_FILL_COLOR,
+    EVENT_CLICK_FILL_ALPHA
+  );
+  marker.setOrigin(0, 0);
+  marker.setStrokeStyle(2, EVENT_CLICK_STROKE_COLOR, EVENT_CLICK_STROKE_ALPHA);
+  context.overlayLayer.add(marker);
+
+  const labelY = Math.max(0, worldY - 14);
+  const action = feedback.mode === "edit" ? "편집 위치" : "새 이벤트 위치";
+  const label = context.scene.add.text(worldX + 2, labelY, `${action} ${feedback.x},${feedback.y}`, {
+    backgroundColor: EVENT_CLICK_TEXT_BACKGROUND,
+    color: EVENT_CLICK_TEXT_COLOR,
+    fontFamily: "\"Cascadia Mono\", \"JetBrains Mono\", Consolas, monospace",
+    fontSize: "10px",
+    padding: { left: 3, right: 3, top: 1, bottom: 1 },
+  });
+  context.overlayLayer.add(label);
 }
 
 function addSelectedEventRing(context: EventMarkerRenderContext, position: EventMarkerPosition): void {

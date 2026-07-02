@@ -144,7 +144,12 @@ function commandReferences(command: Command, collection: DatabaseCollection, id:
     case "choices":
       return command.options.some((option) => commandListReferences(option.branch, collection, id));
     case "fork":
-      return commandListReferences(command.then, collection, id) || commandListReferences(command.else ?? [], collection, id);
+      return (
+        commandListReferences(command.then, collection, id) ||
+        commandListReferences(command.else ?? [], collection, id)
+      );
+    case "loop":
+      return commandListReferences(command.body, collection, id);
     case "shop":
       return collection === "items" && command.itemIds.includes(id);
     case "learnSkill":
@@ -168,6 +173,76 @@ function commandResourceReferences(command: Command, resourceId: string): boolea
     default:
       return false;
   }
+}
+
+// 스위치/변수 삭제 시 참조 경고. DatabaseCollection(switches/variables 제외)과 별도.
+// 이벤트 명령, fork 조건, 페이지 출현 조건, 배틀 이벤트 조건을 모두 순회한다.
+export function switchVariableReferenceMessage(kind: "switch" | "variable", id: string): string | null {
+  const project = store.getCurrent();
+  const used = switchVariableReferencedInProject(project, kind, id);
+  if (used) return kind === "switch" ? "이벤트/조건이 이 스위치를 사용 중입니다." : "이벤트/조건이 이 변수를 사용 중입니다.";
+  return null;
+}
+
+function switchVariableReferencedInProject(project: Project, kind: "switch" | "variable", id: string): boolean {
+  const commonEvents = project.commonEvents.some((event) => commandListReferencesSwitchVariable(event.commands, kind, id));
+  const mapEvents = Object.values(project.maps).some((map) =>
+    map.events.some((event) =>
+      conditionReferencesSwitchVariable(event.condition, kind, id) ||
+      commandListReferencesSwitchVariable(event.commands, kind, id) ||
+      (event.pages ?? []).some(
+        (page) =>
+          page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
+          commandListReferencesSwitchVariable(page.commands, kind, id)
+      )
+    )
+  );
+  const troopEvents = project.database.troops.some((troop) =>
+    troop.battleEventPages.some(
+      (page) =>
+        page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
+        commandListReferencesSwitchVariable(page.commands, kind, id)
+    )
+  );
+  return commonEvents || mapEvents || troopEvents;
+}
+
+function commandListReferencesSwitchVariable(commands: readonly Command[], kind: "switch" | "variable", id: string): boolean {
+  return commands.some((command) => commandReferencesSwitchVariable(command, kind, id));
+}
+
+function commandReferencesSwitchVariable(command: Command, kind: "switch" | "variable", id: string): boolean {
+  switch (command.kind) {
+    case "choices":
+      return command.options.some((option) => commandListReferencesSwitchVariable(option.branch, kind, id));
+    case "fork":
+      return (
+        conditionReferencesSwitchVariable(command.condition, kind, id) ||
+        commandListReferencesSwitchVariable(command.then, kind, id) ||
+        commandListReferencesSwitchVariable(command.else ?? [], kind, id)
+      );
+    case "loop":
+      return commandListReferencesSwitchVariable(command.body, kind, id);
+    case "setSwitch":
+      return kind === "switch" && command.switchId === id;
+    case "setVariable":
+      return kind === "variable" && command.variableId === id;
+    default:
+      return false;
+  }
+}
+
+// 조건이 스위치/변수 id를 참조하는지 검사. Condition/EventPageCondition/BattleEventCondition
+// 모두 허용(구조적 kind 검사). switch/variable 외 조건은 false.
+function conditionReferencesSwitchVariable(
+  condition: { kind: string } | undefined,
+  kind: "switch" | "variable",
+  id: string
+): boolean {
+  if (!condition) return false;
+  if (condition.kind === "switch") return kind === "switch" && (condition as unknown as { switchId: string }).switchId === id;
+  if (condition.kind === "variable") return kind === "variable" && (condition as unknown as { variableId: string }).variableId === id;
+  return false;
 }
 
 export function databaseRecordPrefix(collection: DatabaseCollection): string {

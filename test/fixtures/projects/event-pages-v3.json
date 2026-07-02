@@ -11,14 +11,14 @@
     "sprites": {
       "hero": {
         "id": "hero",
-        "image": { "type": "bundled", "id": "tex_npc_villager" },
+        "image": { "type": "bundled", "id": "tex_easyrpg_charset_people1" },
         "frames": 8,
         "frameWidth": 32,
         "frameHeight": 32
       },
-      "npc_villager": {
-        "id": "npc_villager",
-        "image": { "type": "bundled", "id": "tex_npc_villager" },
+      "tex_easyrpg_charset_people1": {
+        "id": "tex_easyrpg_charset_people1",
+        "image": { "type": "bundled", "id": "tex_easyrpg_charset_people1" },
         "frames": 8,
         "frameWidth": 32,
         "frameHeight": 32
@@ -32,7 +32,7 @@
       "name": "Default charset",
       "tileWidth": 24,
       "tileHeight": 32,
-      "assetId": "npc_villager"
+      "assetId": "tex_easyrpg_charset_people1"
     },
     {
       "kind": "chipset",
@@ -91,7 +91,7 @@
     "skills": [{ "id": "skill_fire", "name": "Fire", "scope": "enemy", "power": 10 }],
     "items": [{ "id": "item_potion", "name": "Potion", "scope": "ally", "price": 50 }],
     "equipment": [{ "id": "equip_sword", "name": "Sword", "slot": "weapon", "price": 100 }],
-    "enemies": [{ "id": "enemy_slime", "name": "Slime", "monsterResourceId": "npc_villager", "skillIds": ["skill_fire"] }],
+    "enemies": [{ "id": "enemy_slime", "name": "Slime", "monsterResourceId": "tex_easyrpg_charset_people1", "skillIds": ["skill_fire"] }],
     "troops": [
       {
         "id": "troop_slime",
@@ -101,7 +101,7 @@
       }
     ],
     "states": [{ "id": "state_poison", "name": "Poison" }],
-    "battleAnimations": [{ "id": "anim_hit", "name": "Hit", "resourceId": "npc_villager" }]
+    "battleAnimations": [{ "id": "anim_hit", "name": "Hit", "resourceId": "tex_easyrpg_charset_people1" }]
   },
   "system": {
     "startActorIds": ["actor_hero"],
@@ -138,7 +138,7 @@
               "id": "page_1",
               "name": "Base page",
               "conditions": [],
-              "graphic": { "sprite": { "type": "bundled", "id": "npc_villager" } },
+              "graphic": { "sprite": { "type": "bundled", "id": "tex_easyrpg_charset_people1" } },
               "trigger": { "kind": "action" },
               "priority": "same",
               "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
@@ -148,7 +148,7 @@
               "id": "page_2",
               "name": "Switch page",
               "conditions": [{ "kind": "switch", "switchId": "sw_page", "value": true }],
-              "graphic": { "sprite": { "type": "bundled", "id": "npc_villager" } },
+              "graphic": { "sprite": { "type": "bundled", "id": "tex_easyrpg_charset_people1" } },
               "trigger": { "kind": "action" },
               "priority": "same",
               "movement": { "type": "fixed", "speed": 3, "frequency": 3 },

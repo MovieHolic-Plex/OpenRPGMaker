@@ -5,19 +5,30 @@ export type RgbaColor = {
   readonly a: number;
 };
 
+export type RgbColor = Omit<RgbaColor, "a">;
+
 export function applyTransparentColorKey(pixels: Uint8ClampedArray): RgbaColor {
   const key = readTopLeftPixel(pixels);
-  if (pixels.length < 4) return key;
+  applyTransparentColorKeys(pixels, [key]);
+  return key;
+}
+
+export function applyTransparentColorKeys(pixels: Uint8ClampedArray, keys: readonly RgbColor[]): void {
+  if (pixels.length < 4) return;
   for (let offset = 0; offset <= pixels.length - 4; offset += 4) {
-    if (
-      pixels[offset] === key.r &&
-      pixels[offset + 1] === key.g &&
-      pixels[offset + 2] === key.b
-    ) {
+    if (isTransparentKeyPixel(pixels, offset, keys)) {
       pixels[offset + 3] = 0;
     }
   }
-  return key;
+}
+
+function isTransparentKeyPixel(pixels: Uint8ClampedArray, offset: number, keys: readonly RgbColor[]): boolean {
+  return keys.some(
+    (key) =>
+      pixels[offset] === key.r &&
+      pixels[offset + 1] === key.g &&
+      pixels[offset + 2] === key.b
+  );
 }
 
 function readTopLeftPixel(pixels: Uint8ClampedArray): RgbaColor {

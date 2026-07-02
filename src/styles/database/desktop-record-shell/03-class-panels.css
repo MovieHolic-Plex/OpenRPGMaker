@@ -1,0 +1,212 @@
+@media (min-width: 901px) {
+  .database-modal-body .rm2k3-record-classes .rm2k3-record-detail-pane {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-classes .rm2k3-record-identity {
+    display: none;
+  }
+
+  .database-modal-body .rm2k3-record-classes .rm2k3-detail-form {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+    display: grid;
+    gap: 8px;
+    grid-template-areas:
+      "name animation skills"
+      "curves commands skills"
+      "exp commands options"
+      "state element equipment";
+    grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1fr) minmax(270px, 0.82fr);
+    grid-template-rows: 84px 190px 118px minmax(119px, 1fr);
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line);
+    box-shadow: none;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(1) { grid-area: name; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(2) { grid-area: animation; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(3) { grid-area: curves; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(4) { grid-area: exp; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(5) { grid-area: commands; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(6) { grid-area: options; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(7) { grid-area: skills; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(8) { grid-area: state; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(9) { grid-area: element; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(10) { grid-area: equipment; }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel legend {
+    color: #111111;
+    font: 700 14px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 7px;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench .db-field {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 78px minmax(0, 1fr);
+    margin: 0 0 6px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench :is(input, select) {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-sprite-preview {
+    align-items: center;
+    background: #fbfbfa;
+    border: 1px solid var(--db-modern-line);
+    display: grid;
+    height: 34px;
+    justify-items: center;
+    margin-bottom: 6px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-curves-grid {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-curve {
+    background: #fbfbfa;
+    border: 1px solid var(--db-modern-line);
+    color: var(--db-modern-text);
+    min-height: 38px;
+    padding: 4px 8px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-rows {
+    display: grid;
+    gap: 5px;
+    max-height: 176px;
+    overflow: auto;
+    padding-right: 2px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-row {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) 128px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-set-button {
+    background: #f3f0e8;
+    border: 1px solid var(--db-modern-line);
+    color: #24231f;
+    margin: 0 0 6px;
+    min-height: 28px;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-record-classes .actor-check {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    margin: 0 0 5px;
+    min-height: 26px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .actor-check input {
+    flex: 0 0 auto;
+    height: 18px;
+    width: 18px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table {
+    border: 1px solid var(--db-modern-line);
+    max-height: 264px;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table-head,
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table-row {
+    align-items: center;
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 62px minmax(0, 1fr);
+    min-height: 28px;
+    padding: 2px 7px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table-head {
+    background: #ffffff;
+    border-bottom: 1px solid var(--db-modern-line);
+    color: #3a3834;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table-row {
+    background: #fbfbfa;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-skill-table-row-empty {
+    min-height: 24px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-rate-row {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 54px minmax(0, 1fr);
+    min-height: 28px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-rate-row + .db-class-rate-row {
+    border-top: 1px solid var(--db-modern-line-soft);
+    padding-top: 4px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-rate-row span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(8),
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(9) {
+    max-height: 100%;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(3),
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(4),
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(5),
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(7),
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(10) {
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(6) {
+    display: grid;
+    gap: 4px 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(6) legend {
+    grid-column: 1 / -1;
+  }
+}

@@ -6,6 +6,23 @@ import {
   type PlaySession,
 } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
+import {
+  isActorEquipmentRecord,
+  isActorRowsRecord,
+  isActorSkillIdsRecord,
+  isActorVitalsRecord,
+  isBooleanRecord,
+  isNumberRecord,
+  isPictureRecord,
+  isRecord,
+  isRuntimeEventLocationRecord,
+  isRuntimeNpcTravelStateRecord,
+  isSelfSwitchesRecord,
+  isStringArray,
+  parseAudioState,
+  parseMapOverrides,
+  parsePictures,
+} from "@/player/saveSlotValidation";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -23,14 +40,22 @@ export type SaveSnapshot = {
   readonly schemaVersion: typeof SCHEMA_VERSION;
   readonly projectTitle: string;
   readonly savedAt: string;
+  readonly mapName?: string;
+  readonly playTimeSeconds?: number;
   readonly session: {
     readonly switches: Record<string, boolean>;
+    readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
     readonly variables: Record<string, number>;
     readonly timers: Record<string, number>;
+    readonly gold: number;
     readonly inventory?: Record<string, number>;
     readonly partyActorIds?: readonly string[];
+    readonly actorSkillIds?: PlaySession["actorSkillIds"];
     readonly actorExperience?: Record<string, number>;
+    readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
+    readonly eventLocations?: PlaySession["eventLocations"];
+    readonly npcTravelStates?: PlaySession["npcTravelStates"];
     readonly currentMapId: string;
     readonly x: number;
     readonly y: number;
@@ -41,6 +66,7 @@ export type SaveSnapshot = {
     readonly pictures: Record<string, PictureState>;
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
+    readonly playTimeSeconds?: number;
   };
 };
 
@@ -58,14 +84,22 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
     schemaVersion: SCHEMA_VERSION,
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
+    mapName: project.maps[session.currentMapId]?.name ?? "",
+    playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
     session: {
       switches: structuredClone(session.switches),
+      selfSwitches: structuredClone(session.selfSwitches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
+      gold: session.gold,
       inventory: structuredClone(session.inventory),
       partyActorIds: structuredClone(session.partyActorIds),
+      actorSkillIds: structuredClone(session.actorSkillIds),
       actorExperience: structuredClone(session.actorExperience),
+      actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
+      eventLocations: structuredClone(session.eventLocations),
+      npcTravelStates: structuredClone(session.npcTravelStates),
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -76,6 +110,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       pictures: structuredClone(session.pictures),
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
+      playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
     },
   };
 }
@@ -114,12 +149,18 @@ export function getSaveSlotStatus(
 export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): PlaySession {
   const session = startSession(project);
   session.switches = structuredClone(snapshot.session.switches);
+  session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
+  session.gold = snapshot.session.gold;
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
+  if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
+  if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
+  if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
+  if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
   session.y = snapshot.session.y;
@@ -130,6 +171,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.pictures = structuredClone(snapshot.session.pictures);
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
+  if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   return session;
 }
 
@@ -148,6 +190,8 @@ function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadRes
       schemaVersion: SCHEMA_VERSION,
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
+      mapName: typeof value.mapName === "string" ? value.mapName : undefined,
+      playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
       session: parsed.session,
     },
   };
@@ -161,6 +205,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isBooleanRecord(session.switches)) return { ok: false, message: "Invalid switches" };
   if (!isNumberRecord(session.variables)) return { ok: false, message: "Invalid variables" };
   if (!isNumberRecord(session.timers)) return { ok: false, message: "Invalid timers" };
+  if (typeof session.gold !== "number" || !Number.isFinite(session.gold)) return { ok: false, message: "Invalid gold" };
   if (typeof session.currentMapId !== "string") return { ok: false, message: "Invalid map" };
   if (typeof session.x !== "number") return { ok: false, message: "Invalid x" };
   if (typeof session.y !== "number") return { ok: false, message: "Invalid y" };
@@ -176,12 +221,18 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
     ok: true,
     session: {
       switches: session.switches,
+      selfSwitches: isSelfSwitchesRecord(session.selfSwitches) ? session.selfSwitches : undefined,
       variables: session.variables,
       timers: session.timers,
+      gold: session.gold,
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
+      actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
+      actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
+      eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
+      npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -192,129 +243,15 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       pictures: parsePictures(session.pictures),
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
+      playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
     },
   };
-}
-
-function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((equipment) => {
-    if (!isRecord(equipment)) return false;
-    return ["weapon", "shield", "armor", "helmet", "accessory"].every((slot) => {
-      const item = equipment[slot];
-      return item === undefined || typeof item === "string";
-    });
-  });
-}
-
-function isActorRowsRecord(value: unknown): value is Record<string, "front" | "back"> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((row) => row === "front" || row === "back");
-}
-
-function isActorVitalsRecord(value: unknown): value is Record<string, ActorVitals> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((vitals) => {
-    if (!isRecord(vitals)) return false;
-    return (
-      typeof vitals.hp === "number" &&
-      typeof vitals.mp === "number" &&
-      typeof vitals.maxHp === "number" &&
-      typeof vitals.maxMp === "number"
-    );
-  });
-}
-
-function isStringArray(value: unknown): value is readonly string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
 function parseBattleResult(value: unknown): PlaySession["battleResult"] | "invalid" {
   if (value === undefined) return undefined;
   if (value === "victory" || value === "defeat" || value === "escape") return value;
   return "invalid";
-}
-
-function parseMapOverrides(value: Record<string, unknown>): PlaySession["mapOverrides"] {
-  const parsed: PlaySession["mapOverrides"] = {};
-  for (const [mapId, layers] of Object.entries(value)) {
-    if (!isRecord(layers)) continue;
-    const lower = isNumberRecord(layers.lower) ? layers.lower : {};
-    const upper = isNumberRecord(layers.upper) ? layers.upper : {};
-    parsed[mapId] = { lower, upper };
-  }
-  return parsed;
-}
-
-type ParsedAudioState =
-  | { readonly ok: true; readonly value: AudioCommandState }
-  | { readonly ok: false; readonly message: string };
-
-type ParsedAudioTrack =
-  | { readonly ok: true; readonly value: AudioCommandState["bgm"] }
-  | { readonly ok: false };
-
-function parseAudioState(value: Record<string, unknown>): ParsedAudioState {
-  const bgm = parseAudioTrack(value.bgm);
-  if (!bgm.ok) return { ok: false, message: "Invalid bgm audio" };
-  const bgs = parseAudioTrack(value.bgs);
-  if (!bgs.ok) return { ok: false, message: "Invalid bgs audio" };
-  const me = parseAudioTrack(value.me);
-  if (!me.ok) return { ok: false, message: "Invalid me audio" };
-  const se = parseAudioTrack(value.se);
-  if (!se.ok) return { ok: false, message: "Invalid se audio" };
-  return {
-    ok: true,
-    value: {
-      bgm: bgm.value,
-      bgs: bgs.value,
-      me: me.value,
-      se: se.value,
-    },
-  };
-}
-
-function parseAudioTrack(value: unknown): ParsedAudioTrack {
-  if (value === undefined) return { ok: true, value: undefined };
-  if (!isRecord(value)) return { ok: false };
-  if (typeof value.resourceId !== "string") return { ok: false };
-  if (typeof value.loop !== "boolean") return { ok: false };
-  return { ok: true, value: { resourceId: value.resourceId, loop: value.loop } };
-}
-
-function parsePictures(value: Record<string, PictureState>): Record<string, PictureState> {
-  const pictures: Record<string, PictureState> = {};
-  for (const [pictureId, picture] of Object.entries(value)) {
-    pictures[pictureId] = picture;
-  }
-  return pictures;
-}
-
-function isPictureRecord(value: unknown): value is Record<string, PictureState> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((picture) => {
-    if (!isRecord(picture)) return false;
-    return (
-      typeof picture.pictureId === "string" &&
-      typeof picture.resourceId === "string" &&
-      typeof picture.x === "number" &&
-      typeof picture.y === "number"
-    );
-  });
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isBooleanRecord(value: unknown): value is Record<string, boolean> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((item) => typeof item === "boolean");
-}
-
-function isNumberRecord(value: unknown): value is Record<number, number> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((item) => typeof item === "number");
 }
 
 function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {

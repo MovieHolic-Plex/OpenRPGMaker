@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  generatedAssetPromotedPathToUrl,
   resolveAssetResourceUrl,
   resolveEasyRpgRuntimeAssetUrl,
   resolveGeneratedAssetResourceUrl,
@@ -105,6 +106,24 @@ describe("generatedAssetResourceResolver", () => {
     expect(url).toBe("data:image/png;base64,uploaded");
   });
 
+  it("rejects uploaded resource URLs that are not local data URLs", () => {
+    // Given: a project upload crafted to load an external URL.
+    const project = createBlankProject();
+    project.assets.uploaded["remote-title"] = {
+      id: "remote-title",
+      name: "Remote title",
+      kind: "picture",
+      dataUrl: "https://example.invalid/title.png",
+      meta: { width: 320, height: 240 },
+    };
+
+    // When: the upload is resolved for a runtime surface.
+    const url = resolveAssetResourceUrl("remote-title", { project });
+
+    // Then: no external URL is exposed to CSS, img, audio, or canvas call sites.
+    expect(url).toBeNull();
+  });
+
   it("resolves EasyRPG runtime package ids and texture keys to public asset URLs", () => {
     // Given: a vendored EasyRPG RTP replacement asset id and its Phaser texture key.
     // When/Then: both identifiers resolve to the same browser-readable package asset.
@@ -112,6 +131,36 @@ describe("generatedAssetResourceResolver", () => {
     expect(resolveEasyRpgRuntimeAssetUrl("easyrpg-chipset-exterior")).toBe("/assets/easyrpg/chipset/Exterior.png");
     expect(resolveAssetResourceUrl("easyrpg-charset-actor1")).toBe("/assets/easyrpg/charset/Actor1.png");
     expect(resolveAssetResourceUrl("tex_easyrpg_charset_actor1")).toBe("/assets/easyrpg/charset/Actor1.png");
+  });
+
+  it("keeps packaged EasyRPG resources from being shadowed by project uploads", () => {
+    const project = createBlankProject();
+    project.assets.uploaded["easyrpg-title-title1"] = {
+      id: "easyrpg-title-title1",
+      name: "Stale uploaded placeholder",
+      kind: "picture",
+      dataUrl: "data:image/png;base64,uploaded",
+      meta: { width: 1, height: 1 },
+    };
+
+    const url = resolveAssetResourceUrl("easyrpg-title-title1", { project });
+
+    expect(url).toBe("/assets/easyrpg/title/Title1.png");
+  });
+
+  it("maps the legacy sample title placeholder to the packaged EasyRPG title image", () => {
+    const project = createBlankProject();
+    project.assets.uploaded.sample_title = {
+      id: "sample_title",
+      name: "Legacy sample title placeholder",
+      kind: "title",
+      dataUrl: "data:image/png;base64,uploaded",
+      meta: { width: 1, height: 1 },
+    };
+
+    const url = resolveAssetResourceUrl("sample_title", { project });
+
+    expect(url).toBe("/assets/easyrpg/title/Title1.png");
   });
 
   it("returns null for unknown or planned generated resource ids", () => {
@@ -129,5 +178,12 @@ describe("generatedAssetResourceResolver", () => {
 
     // Then: the resolver rejects the path instead of exposing it to previews.
     expect(url).toBeNull();
+  });
+
+  it("rejects promoted generated paths with traversal segments", () => {
+    // Given/When/Then: generated runtime URLs stay inside public/assets/generated.
+    expect(generatedAssetPromotedPathToUrl("public/assets/generated/rm2k3/title.png")).toBe("/assets/generated/rm2k3/title.png");
+    expect(generatedAssetPromotedPathToUrl("public/assets/generated/../../x.png")).toBeNull();
+    expect(generatedAssetPromotedPathToUrl("public/assets/generated/%2e%2e/x.png")).toBeNull();
   });
 });

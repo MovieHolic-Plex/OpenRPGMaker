@@ -6,7 +6,7 @@ This contract defines the target shape for later implementation waves. It is a f
 
 ## Runtime Presentation
 
-- Play mode uses a 320x240 logical surface with integer nearest-neighbor scaling. The editor can remain modern and resizable, but runtime screenshots, browser QA, and sample-game acceptance must verify the retro play surface.
+- Play mode uses a 320x240 logical surface with nearest-neighbor scaling. Test-play/player shells use the smallest whole-number scale that covers the available window while preserving 4:3 pixels, cropping overflow instead of leaving gutters. The editor can remain modern and resizable, but runtime screenshots, browser QA, and sample-game acceptance must verify the retro play surface.
 - Map rendering uses RM2K3-shaped 16x16 tile resources. Lower tiles, upper tiles, event graphics, pictures, screen effects, menu, save, title, game-over, and battle transitions render through runtime/session state.
 - Runtime presentation must not mutate authoring `Project` data. Switches, variables, timers, map overrides, transfer position, picture state, audio state, battle result, and save-slot data live in session or save state.
 - Editor topology must expose lower, upper, and event layers; map tree; chipset palette; database; resources; edit/play switching; and project export surfaces.

@@ -1,0 +1,254 @@
+.left-panel-stack .compact-field .btn {
+  height: 22px;
+  padding: 0 6px;
+}
+
+.left-panel-stack .tile-mapping-inspector {
+  display: none;
+}
+
+.left-panel-stack[data-testid="left-map-root"] {
+  background: var(--surface-workbench);
+  color: var(--text-primary);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .panel-section {
+  margin-bottom: 0;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .panel-section h3 {
+  border-bottom: 1px solid #aaa59b;
+  margin-bottom: 3px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item {
+  align-items: center;
+  border-radius: 0;
+  color: var(--text-primary);
+  font-size: 12px;
+  gap: 3px;
+  grid-template-columns: 14px 14px minmax(0, 1fr) 36px 14px 18px 18px 18px 46px 18px;
+  min-height: 20px;
+  padding-bottom: 1px !important;
+  padding-top: 1px !important;
+  display: grid;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item:hover {
+  background: #e5eef8;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item.active {
+  background: var(--surface-selected);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-lock-badge {
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font: 700 10px/14px var(--font-mono);
+  min-height: 16px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-lock-badge.held {
+  background: rgba(31, 111, 56, 0.12);
+  border-color: rgba(31, 111, 56, 0.45);
+  color: var(--status-success);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-lock-badge.checking {
+  background: rgba(124, 94, 34, 0.12);
+  border-color: rgba(124, 94, 34, 0.4);
+  color: var(--accent-secondary);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-lock-badge.locked {
+  background: rgba(157, 31, 31, 0.1);
+  border-color: rgba(157, 31, 31, 0.42);
+  color: var(--status-error);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-lock-badge.unavailable {
+  background: var(--surface-recessed);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .start-mark {
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+  text-align: center;
+  width: 14px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-icon {
+  font-size: 10px;
+  width: 12px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-toggle {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  height: 18px;
+  justify-content: center;
+  padding: 0;
+  width: 14px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-toggle:hover:not(:disabled),
+.left-panel-stack[data-testid="left-map-root"] .map-tree-toggle:focus-visible {
+  background: var(--surface-workbench);
+  border-color: var(--border-default);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-toggle:active:not(:disabled) {
+  background: var(--surface-recessed);
+  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  transform: translateY(1px);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-toggle:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item[draggable="true"] .map-tree-name::after {
+  color: #6d665c;
+  content: " :::";
+  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item.dragging {
+  opacity: 0.72;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item.drop-target {
+  background: #c7dcf4;
+  outline: 1px dotted #1d3f6e;
+  outline-offset: -2px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-action {
+  align-items: center;
+  appearance: none;
+  background: #e5dfd0;
+  border: 1px solid #aaa397;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-flex;
+  height: 20px;
+  justify-content: center;
+  padding: 0;
+  width: 20px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-action:hover {
+  background: var(--surface-workbench);
+  outline: none;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-action:focus-visible {
+  background: var(--surface-workbench);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-action:active:not(:disabled) {
+  background: var(--surface-recessed);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  transform: translateY(1px);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-tree-action:disabled {
+  cursor: default;
+  filter: grayscale(0.75);
+  opacity: 0.35;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-parent-sel {
+  display: none;
+  font-size: 10px;
+  height: 20px;
+  max-width: 46px;
+  padding: 0 1px;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item:hover .map-parent-sel,
+.left-panel-stack[data-testid="left-map-root"] .map-item:focus-within .map-parent-sel {
+  display: inline-block;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .del {
+  color: var(--status-error);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .btn,
+.left-panel-stack[data-testid="left-map-root"] .map-tree-wide-action {
+  align-items: center;
+  display: inline-flex;
+  font-size: 11px;
+  gap: 2px;
+  height: 22px;
+  justify-content: center;
+  margin-top: 2px;
+  padding: 0 5px;
+}
+
+.map-context-menu {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  color: var(--text-primary);
+  display: grid;
+  gap: 1px;
+  min-width: 226px;
+  padding: 3px;
+  position: fixed;
+  z-index: 80;
+}
+
+.map-context-menu-item {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: 600 12px/1.25 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  column-gap: 7px;
+  grid-template-columns: 16px minmax(0, 1fr) max-content;
+  min-height: 26px;
+  padding: 3px 8px 3px 5px;
+  text-align: left;
+}
+
+.map-context-menu-shortcut {
+  color: var(--text-secondary);
+  font: 600 11px/1.2 var(--mono);
+  justify-self: end;
+  white-space: nowrap;
+}

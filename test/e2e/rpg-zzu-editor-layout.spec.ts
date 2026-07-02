@@ -80,6 +80,44 @@ test("editor sidebars avoid document overflow and keep key controls clickable", 
   await expectNoDocumentHorizontalOverflow(page);
 });
 
+test("title resources and terrain template toolbar buttons open separate surfaces", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 820 });
+  await page.goto("/?freshProject=1&toolbarSurfaceSplit=1");
+
+  await page.getByTestId("toolbar-title-screen").click();
+  await expect(page.getByTestId("database-modal")).toBeVisible();
+  await expect(page.getByTestId("db-tab-system")).toHaveClass(/active/);
+  await expect(page.getByTestId("db-field-title-resource")).toBeVisible();
+  await expect(page.getByTestId("terrain-template-modal")).toHaveCount(0);
+  await page.getByTestId("database-modal-close").click();
+
+  await page.getByTestId("toolbar-terrain-template").click();
+  await expect(page.getByTestId("terrain-template-modal")).toBeVisible();
+  await expect(page.getByTestId("database-modal")).toHaveCount(0);
+  const terrainTemplateStyles = await page.getByTestId("terrain-template-modal").evaluate((node) => {
+    const layout = node.querySelector(".terrain-template-layout");
+    const chip = node.querySelector(".terrain-template-tile-chip");
+    const swatch = node.querySelector(".terrain-template-tile-swatch");
+    if (!(layout instanceof HTMLElement) || !(chip instanceof HTMLElement) || !(swatch instanceof HTMLElement)) return null;
+    const chipBox = chip.getBoundingClientRect();
+    const swatchBox = swatch.getBoundingClientRect();
+    return {
+      chipDisplay: getComputedStyle(chip).display,
+      chipHeight: chipBox.height,
+      layoutDisplay: getComputedStyle(layout).display,
+      swatchHeight: swatchBox.height,
+      swatchWidth: swatchBox.width,
+    };
+  });
+  expect(terrainTemplateStyles).toEqual({
+    chipDisplay: "grid",
+    chipHeight: 32,
+    layoutDisplay: "grid",
+    swatchHeight: 32,
+    swatchWidth: 32,
+  });
+});
+
 test("chipset palette exposes category-only vertical scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&paletteVerticalCategoryScroll=1");
@@ -388,7 +426,7 @@ test("map tree context menu is accessible from mouse, keyboard, and action butto
 
 test("right click picks the tile under the cursor and layer mode is visually distinct", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/?logCabinShowcase=1&focusX=4&focusY=1&rightClickEyedropper=1");
+  await page.goto("/?devProject=1&logCabinShowcase=1&focusX=4&focusY=1&rightClickEyedropper=1");
 
   await page.getByTestId("layer-upper").click();
   await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
@@ -403,6 +441,21 @@ test("right click picks the tile under the cursor and layer mode is visually dis
   await page.getByTestId("layer-lower").click();
   await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-pressed", "true");
   await expect.poll(async () => byteDistance(upperLayerView, await page.screenshot({ clip }))).toBeGreaterThan(24);
+});
+
+test("right click picks the visible upper tile even when lower layer is active", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?devProject=1&logCabinShowcase=1&focusX=4&focusY=1&rightClickVisibleTop=1");
+
+  await page.getByTestId("layer-lower").click();
+  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-pressed", "true");
+  const target = await findCanvasPointByCursor(page, ({ lower, upper }) => upper !== "-1" && upper !== "" && upper !== lower);
+
+  const upperTile = await page.getByTestId("cursor-upper").textContent() ?? "";
+  await page.mouse.click(target.x, target.y, { button: "right" });
+
+  await expect(page.getByTestId("selected-tile-status")).toContainText(upperTile);
+  await expect(page.getByTestId("editor-statusbar")).toContainText(upperTile);
 });
 
 test("middle mouse drag pans the map without changing the selected layer", async ({ page }) => {

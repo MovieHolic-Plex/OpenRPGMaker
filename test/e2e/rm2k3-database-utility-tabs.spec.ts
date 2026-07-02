@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+﻿import { expect, test } from "@playwright/test";
 import { exportedProject } from "./rm2k3-database-helpers";
 
 test.setTimeout(60_000);
@@ -51,8 +51,8 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
   await expect(page.getByTestId("db-detail-form")).toContainText("database.battleCommands");
   await expect(page.getByTestId("db-field-battle-command-name-0")).toHaveValue("공격");
   await page.getByTestId("db-field-battle-command-name-1").focus();
-  await expect(page.getByTestId("db-workbench-status")).toContainText("스킬 [cmd_skill]");
-  await expect(page.getByTestId("db-workbench-status")).toContainText("2 / 4");
+  await expect(page.getByTestId("db-workbench-status")).toHaveCount(0);
+  await expect(page.getByTestId("db-field-battle-command-name-1")).toBeFocused();
   await page.getByTestId("db-field-battle-command-name-0").fill("Fight");
   await page.getByTestId("db-field-battle-command-kind-0").selectOption("skillSubset");
   await page.getByTestId("db-field-battle-command-subset-0").fill("Sword Arts");

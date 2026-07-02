@@ -1,0 +1,29 @@
+.runtime-timer-hud {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 29;
+  min-width: 86px;
+  padding: 4px 7px;
+  border: 1px solid rgba(248, 251, 255, 0.82);
+  background: rgba(6, 18, 40, 0.86);
+  color: #f8fbff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.15;
+  pointer-events: none;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+}
+
+.dialogue-overlay.position-top:not(:empty) ~ .runtime-timer-hud {
+  bottom: 14px;
+  top: auto;
+}
+
+.dialogue-overlay.position-bottom:not(:empty) ~ .runtime-timer-hud,
+.dialogue-overlay.position-center:not(:empty) ~ .runtime-timer-hud {
+  bottom: auto;
+  top: 14px;
+}

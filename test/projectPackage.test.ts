@@ -1,4 +1,5 @@
 import { createBlankProject } from "@/project/defaults";
+import { serialize } from "@/project/io";
 import {
   createProjectPackage,
   projectPackageFileName,
@@ -24,6 +25,6 @@ describe("project package", () => {
     expect(names).toContain("data/tilesets.json");
     expect(names).toContain("metadata/ai-tile-labels.json");
     expect(names).toContain(`maps/${project.startMapId}.json`);
-    expect(restored).toEqual(project);
+    expect(serialize(restored)).toBe(serialize(project));
   }, 15_000);
 });

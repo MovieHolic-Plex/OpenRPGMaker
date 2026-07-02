@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createSmallHouseVariantMaps, createSmallHouseVariantProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { stampDbExtractedHouse } from "@/project/defaults/dbExtractedHouseTemplate";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
+import type { GameMap } from "@/project/types";
+import { genId } from "@/util/id";
 
 const FENCE_TILES = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
 const UPPER_ROOF_TILES = new Set([375, 377]);
@@ -15,6 +18,7 @@ const WOOD_WALL_TILES = new Set([102, 103, 104, 132, 133, 134, 162, 163, 164]);
 const STONE_WALL_TILES = new Set([12, 13, 14, 42, 43, 44, 72, 73, 74]);
 const WATER_TILE = 120;
 const SAND_TILES = new Set([423, 424, 393, 394, 395, 453, 454, 455]);
+const TOWN_GRASS = 270;
 
 function mapSignature(map: ReturnType<typeof createSmallHouseVariantMaps>[number]): string {
   return `${map.width}x${map.height}:${map.lowerTiles.join(",")}:${map.upperTiles.join(",")}`;
@@ -40,7 +44,43 @@ function hasLowerDoorPair(map: ReturnType<typeof createSmallHouseVariantMaps>[nu
   return bottom === FRAMED_DOOR_BOTTOM || bottom === EXTRACTED_DOOR_BOTTOM;
 }
 
+function createBlankTemplateApiMap(): GameMap {
+  const width = 20;
+  const height = 20;
+  return {
+    events: [],
+    height,
+    id: genId("map"),
+    lowerTiles: new Array<number>(width * height).fill(TOWN_GRASS),
+    name: "template api test",
+    tileSize: 16,
+    tilesetId: DEFAULT_TILESET_ID,
+    upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
+    width,
+  };
+}
+
 describe("small house variants", () => {
+  it("stamps the canonical DB template API with lower doors, upper windows, and remapped walls", () => {
+    const map = createBlankTemplateApiMap();
+
+    stampDbExtractedHouse(map, {
+      material: "stone",
+      origin: { x: 2, y: 2 },
+      preserveExistingGround: true,
+    });
+
+    expect(map.lowerTiles[at(map, 2, 2)]).toBe(TOWN_GRASS);
+    expect(map.upperTiles[at(map, 6, 5)]).toBe(354);
+    expect(map.upperTiles[at(map, 15, 5)]).toBe(355);
+    expect(map.lowerTiles[at(map, 11, 8)]).toBe(12);
+    expect(map.upperTiles[at(map, 12, 9)]).toBe(85);
+    expect(map.lowerTiles[at(map, 14, 9)]).toBe(EXTRACTED_DOOR_TOP);
+    expect(map.lowerTiles[at(map, 14, 10)]).toBe(EXTRACTED_DOOR_BOTTOM);
+    expect(map.upperTiles).not.toContain(EXTRACTED_DOOR_TOP);
+    expect(map.upperTiles).not.toContain(EXTRACTED_DOOR_BOTTOM);
+  });
+
   it("creates seven distinct maps while preserving the small_house_01 layer contract", () => {
     const maps = createSmallHouseVariantMaps();
 
@@ -242,19 +282,21 @@ describe("small house variants", () => {
     expect(map.lowerTiles[at(map, 17, 8)]).toBe(17);
   });
 
-  it("places three overlapping 2x2 trees on variant 1 with lower and upper tile stacks", () => {
+  it("flattens overlapping 2x2 trees on variant 1 into one tile per layer", () => {
     const map = createSmallHouseVariantMaps()[0];
     expect(map).toBeDefined();
     if (!map) return;
 
     expect(map.upperTiles[at(map, 4, 3)]).toBe(TILE.EMPTY);
     expect(map.upperTiles[at(map, 18, 6)]).toBe(TILE.EMPTY);
-    expect(map.upperTileStacks?.[at(map, 0, 3)]).toEqual([262]);
-    expect(map.lowerTileStacks?.[at(map, 0, 4)]).toEqual([292]);
-    expect(map.upperTileStacks?.[at(map, 0, 4)]).toEqual([262]);
-    expect(map.lowerTileStacks?.[at(map, 0, 5)]).toEqual([292]);
-    expect(map.upperTileStacks?.[at(map, 0, 5)]).toEqual([262]);
-    expect(map.lowerTileStacks?.[at(map, 0, 6)]).toEqual([292]);
+    expect(map.upperTiles[at(map, 0, 3)]).toBe(262);
+    expect(map.lowerTiles[at(map, 0, 4)]).toBe(292);
+    expect(map.upperTiles[at(map, 0, 4)]).toBe(262);
+    expect(map.lowerTiles[at(map, 0, 5)]).toBe(292);
+    expect(map.upperTiles[at(map, 0, 5)]).toBe(262);
+    expect(map.lowerTiles[at(map, 0, 6)]).toBe(292);
+    expect(map.lowerTileStacks).toBeUndefined();
+    expect(map.upperTileStacks).toBeUndefined();
   });
 
   it("lays variant 1 yard path with dirt road autotile edges", () => {

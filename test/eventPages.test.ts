@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { addSwitch } from "@/editor/actions";
+import { CHOICE_CANCEL_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { addEvent } from "@/editor/eventActions";
 import {
   addEventPageCommandAt,
@@ -119,6 +120,43 @@ describe("event pages", () => {
       condition: { kind: "switch", switchId: "quest_done", value: true },
       then: [{ kind: "text", body: "new true" }],
       else: [{ kind: "text", body: "old false" }, { kind: "text", body: "second false" }],
+    });
+  });
+
+  it("edits commands inside choice cancel branches like regular event branches", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const pageId = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId)?.pages?.[0]?.id;
+    if (!pageId) throw new Error("page missing");
+
+    addEventPageCommandAt(mapId, eventId, pageId, [], {
+      kind: "choices",
+      prompt: "계속할까요?",
+      options: [
+        { text: "예", branch: [{ kind: "text", body: "yes" }] },
+        { text: "아니오", branch: [] },
+      ],
+      cancelBehavior: "branch",
+      cancelBranch: [{ kind: "text", body: "old cancel" }],
+    });
+
+    replaceEventPageCommandAt(mapId, eventId, pageId, [0, CHOICE_CANCEL_BRANCH_INDEX, 0], { kind: "text", body: "new cancel" });
+    addEventPageCommandAt(mapId, eventId, pageId, [0, CHOICE_CANCEL_BRANCH_INDEX], { kind: "setSwitch", switchId: "cancelled", value: true });
+
+    const command = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId)?.pages?.[0]?.commands[0];
+    expect(command).toEqual({
+      kind: "choices",
+      prompt: "계속할까요?",
+      options: [
+        { text: "예", branch: [{ kind: "text", body: "yes" }] },
+        { text: "아니오", branch: [] },
+      ],
+      cancelBehavior: "branch",
+      cancelBranch: [
+        { kind: "text", body: "new cancel" },
+        { kind: "setSwitch", switchId: "cancelled", value: true },
+      ],
     });
   });
 });

@@ -1,4 +1,4 @@
-import type { MoveCommand } from "@/project/types";
+import type { Dir, MapId, MoveCommand } from "@/project/types";
 
 export type MoveRouteButton = {
   readonly label: string;
@@ -10,6 +10,10 @@ export type MoveRouteCommandContext = {
   readonly switchId: string;
   readonly spriteId: string;
   readonly soundId: string;
+  readonly npcTargetMapId: MapId;
+  readonly npcTargetX: number;
+  readonly npcTargetY: number;
+  readonly npcTargetDirection: Dir;
 };
 
 export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = [
@@ -115,6 +119,13 @@ export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = 
       kind: "playSe",
       resourceId: context.soundId,
     })),
+    contextCommandButton("NPC 맵 이동...", "npc-transfer", (context) => ({
+      kind: "npcTransfer",
+      mapId: context.npcTargetMapId,
+      x: context.npcTargetX,
+      y: context.npcTargetY,
+      direction: context.npcTargetDirection,
+    })),
   ],
 ];
 
@@ -162,6 +173,8 @@ export function moveCommandLabel(command: MoveCommand): string {
       return command.delta < 0 ? "빈도 감소" : "빈도 증가";
     case "changeGraphic":
       return `그래픽 ${command.spriteId}`;
+    case "npcTransfer":
+      return `NPC 맵 이동 ${command.mapId} (${command.x}, ${command.y})`;
     case "playSe":
       return `효과음 ${command.resourceId}`;
     case "wait":
@@ -185,6 +198,7 @@ function contextCommandButton(
       const command = createCommand(context);
       if (command.kind === "setSwitch" && command.switchId.trim().length === 0) return null;
       if (command.kind === "changeGraphic" && command.spriteId.trim().length === 0) return null;
+      if (command.kind === "npcTransfer" && command.mapId.trim().length === 0) return null;
       if (command.kind === "playSe" && command.resourceId.trim().length === 0) return null;
       return command;
     },

@@ -27,6 +27,13 @@ async function runtimeState(page: Page): Promise<RuntimeState> {
   return parsed;
 }
 
+async function startPlayFromEditor(page: Page): Promise<void> {
+  await page.getByTestId("mode-play").click();
+  await expect(page.getByTestId("test-play-window")).toBeVisible();
+  await page.getByTestId("title-new-game").click();
+  await expect(page.getByTestId("play-canvas")).toBeVisible();
+}
+
 function isRuntimeState(value: unknown): value is RuntimeState {
   if (typeof value !== "object" || value === null) return false;
   if (!("mapId" in value) || typeof value.mapId !== "string") return false;
@@ -37,15 +44,15 @@ function isRuntimeState(value: unknown): value is RuntimeState {
 test("side-view battleProcessing plays through victory and restores the map", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page);
-  await page.click('[data-testid="mode-play"]');
-  await page.getByTestId("title-new-game").click();
-  await expect(page.getByTestId("play-canvas")).toBeVisible();
+  await startPlayFromEditor(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
   await page.click('[data-testid="event-battle-start"]');
 
   await expect(page.getByTestId("battle-scene")).toBeVisible();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-system-resource", "tex_tiles_default");
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "command");
   await expect(page.getByTestId("battle-backdrop")).toHaveAttribute("data-backdrop-resource-id", "tex_tiles_default");
+  await expect(page.getByTestId("battle-message-window")).toBeHidden();
   await expect(page.getByTestId("battle-party")).toBeVisible();
   await expect(page.getByTestId("battle-actor-actor_hero")).toHaveAttribute("data-battle-charset-resource-id", "hero");
   await expect(page.getByTestId("actor-command-attack")).toBeVisible();
@@ -53,9 +60,12 @@ test("side-view battleProcessing plays through victory and restores the map", as
   await expect(page.getByTestId("enemy-1")).toHaveAttribute("data-monster-resource-id", "generated-enemy-slime-01");
   await page.screenshot({ path: testInfo.outputPath("battle-surface.png"), fullPage: true });
   await page.getByTestId("actor-command-defend").click();
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "acting");
   await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 2_000 });
   await page.screenshot({ path: testInfo.outputPath("battle-after-defend.png"), fullPage: true });
   await page.getByTestId("actor-command-skill").click();
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
+  await page.getByTestId("battle-target-enemy-1").click();
   const battleAnimation = page.getByTestId("battle-animation");
   await expect(battleAnimation).toBeVisible();
   const animationState = await battleAnimation.evaluate((node) => ({
@@ -81,6 +91,8 @@ test("side-view battleProcessing plays through victory and restores the map", as
   expect(animationState.soundResourceIds).toMatch(/easyrpg-sound-magic1/);
   expect(animationState.visibleRenderedCells).toBeGreaterThan(0);
   await page.screenshot({ path: testInfo.outputPath("battle-magic-animation.png"), fullPage: true });
+  await expect(page.getByTestId("battle-result-panel")).toBeVisible();
+  await expect(page.getByTestId("battle-result-panel")).toHaveAttribute("data-battle-result", "victory");
   await expect.poll(async () => (await runtimeState(page)).battleResult).toBe("victory");
   await expect(page.getByTestId("battle-scene")).toBeHidden();
   await expect(page.getByTestId("play-canvas")).toBeVisible();
@@ -95,8 +107,7 @@ test("generated dragon monster resource appears in a playable battle", async ({ 
     slime.name = "Dragon Slime";
     slime.monsterResourceId = "generated-enemy-dragon-01";
   });
-  await page.click('[data-testid="mode-play"]');
-  await page.getByTestId("title-new-game").click();
+  await startPlayFromEditor(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
   await page.click('[data-testid="event-battle-start"]');
 
@@ -130,8 +141,7 @@ test("battle event Enemy Encounter reveals a hidden dragon and changes battlebac
       },
     ];
   });
-  await page.click('[data-testid="mode-play"]');
-  await page.getByTestId("title-new-game").click();
+  await startPlayFromEditor(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
   await page.click('[data-testid="event-battle-start"]');
 
@@ -156,7 +166,7 @@ test("battle event Enemy Encounter reveals a hidden dragon and changes battlebac
 
 test("missing troop import prevents battle start with a visible error", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
+  await page.goto("/?freshProject=1");
   const chooser = page.waitForEvent("filechooser");
   await page.getByTestId("toolbar-import").click();
   const fileChooser = await chooser;

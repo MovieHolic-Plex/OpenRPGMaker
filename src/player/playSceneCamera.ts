@@ -9,8 +9,14 @@ export function centerRuntimeCamera(
 ): void {
   const mapWidth = Math.max(TILE_SIZE, map.width * TILE_SIZE);
   const mapHeight = Math.max(TILE_SIZE, map.height * TILE_SIZE);
-  const coverZoom = Math.max(1, camera.width / mapWidth, camera.height / mapHeight);
-  camera.setBounds(0, 0, mapWidth, mapHeight);
-  camera.setZoom(coverZoom);
+  const paddingX = Math.max(0, (camera.width - mapWidth) / 2);
+  const paddingY = Math.max(0, (camera.height - mapHeight) / 2);
+  camera.setZoom(1);
+  camera.setBounds(
+    -paddingX,
+    -paddingY,
+    Math.max(camera.width, mapWidth),
+    Math.max(camera.height, mapHeight)
+  );
   camera.centerOn(player.x, player.y);
 }

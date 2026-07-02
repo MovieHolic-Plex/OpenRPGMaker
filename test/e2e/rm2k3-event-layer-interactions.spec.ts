@@ -11,11 +11,22 @@ type ExportedGraphic = {
 };
 
 type ExportedPage = {
+  readonly commands: readonly ExportedCommand[];
   readonly graphic: ExportedGraphic;
+};
+
+type ExportedCommand = {
+  readonly commandId?: string;
+  readonly fields?: Record<string, string | number | boolean>;
+  readonly kind: string;
+  readonly mapId?: string;
+  readonly x?: number;
+  readonly y?: number;
 };
 
 type ExportedEvent = {
   readonly id: string;
+  readonly commands: readonly ExportedCommand[];
   readonly x: number;
   readonly y: number;
   readonly pages?: readonly ExportedPage[];
@@ -30,6 +41,7 @@ type ExportedMap = {
 type DebugState = {
   readonly project: {
     readonly startMapId: string;
+    readonly startPos: { readonly x: number; readonly y: number };
     readonly maps: Record<string, ExportedMap>;
   };
 };
@@ -59,6 +71,30 @@ async function clickMapTile(page: Page, x: number, y: number): Promise<void> {
 
 async function doubleClickMapTile(page: Page, x: number, y: number): Promise<void> {
   await interactWithMapTile({ page, x, y, clickCount: 2 });
+}
+
+async function rightClickMapTile(page: Page, x: number, y: number): Promise<void> {
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const state = await debugState(page);
+  const map = state.project.maps[state.project.startMapId];
+  if (!map) throw new Error("missing current map");
+  const tileSize = 16 * 2;
+  const mapLeft = Math.floor((box.width - map.width * tileSize) / 2);
+  const mapTop = Math.floor((box.height - map.height * tileSize) / 2);
+  await canvas.click({
+    button: "right",
+    position: {
+      x: mapLeft + x * tileSize + tileSize / 2,
+      y: mapTop + y * tileSize + tileSize / 2,
+    },
+  });
+}
+
+async function eventAt(page: Page, x: number, y: number): Promise<ExportedEvent | undefined> {
+  const state = await debugState(page);
+  return state.project.maps[state.project.startMapId]?.events.find((event) => event.x === x && event.y === y);
 }
 
 async function interactWithMapTile(interaction: MapTileInteraction): Promise<void> {
@@ -213,6 +249,85 @@ test("event layer canvas selects on first click and opens the editor on double c
   await page.screenshot({ path: testInfo.outputPath("event-double-click-modal.png"), fullPage: true });
 });
 
+test("event layer canvas opens the RPG Maker context menu on right click", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await seedProject(page, projectWithPlacedEvent());
+
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("tool-event").click();
+  await rightClickMapTile(page, 3, 1);
+
+  await expect(page.getByTestId("map-context-menu-map_layer")).toBeVisible();
+  await expect(page.getByTestId("event-layer-create-event")).toContainText("이벤트 생성...");
+  await expect(page.getByTestId("event-layer-cut")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("event-layer-cut")).toContainText("잘라내기");
+  await expect(page.getByTestId("event-layer-copy")).toContainText("복사");
+  await expect(page.getByTestId("event-layer-paste")).toContainText("붙여넣기");
+  await expect(page.getByTestId("event-layer-delete")).toContainText("삭제");
+  await expect(page.getByTestId("event-layer-create-transfer-event")).toContainText("장소 이동 이벤트 생성...");
+  await expect(page.getByTestId("event-layer-set-player-start")).toContainText("주인공 시작 위치 설정");
+  await expect(page.getByTestId("event-layer-set-vehicle-start")).toContainText("탈것 시작 위치 설정...");
+  await page.screenshot({ path: testInfo.outputPath("event-layer-context-menu.png"), fullPage: true });
+  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-context-menu.png", fullPage: true });
+
+  await page.getByTestId("event-layer-set-player-start").click();
+  await expect.poll(async () => (await debugState(page)).project.startPos).toEqual({ x: 3, y: 1 });
+
+  await rightClickMapTile(page, 2, 2);
+  await expect(page.getByTestId("event-layer-copy")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("event-layer-cut")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("event-layer-delete")).toHaveAttribute("aria-disabled", "false");
+  await page.getByTestId("event-layer-copy").click();
+
+  await rightClickMapTile(page, 3, 1);
+  await expect(page.getByTestId("event-layer-paste")).toHaveAttribute("aria-disabled", "false");
+  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-context-menu-paste-enabled.png", fullPage: true });
+  await page.getByTestId("event-layer-paste").click();
+  await expect.poll(async () => eventAt(page, 3, 1)).not.toBeUndefined();
+
+  await rightClickMapTile(page, 3, 1);
+  await page.getByTestId("event-layer-cut").click();
+  await expect.poll(async () => eventAt(page, 3, 1)).toBeUndefined();
+
+  await rightClickMapTile(page, 4, 1);
+  await page.getByTestId("event-layer-paste").click();
+  await expect.poll(async () => eventAt(page, 4, 1)).not.toBeUndefined();
+  await rightClickMapTile(page, 4, 1);
+  await page.getByTestId("event-layer-delete").click();
+  await expect.poll(async () => eventAt(page, 4, 1)).toBeUndefined();
+
+  await rightClickMapTile(page, 0, 0);
+  await page.getByTestId("event-layer-create-event").click();
+  await expect(page.getByTestId("event-editor-modal")).toBeVisible();
+  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-create-event-modal.png", fullPage: true });
+  await page.getByTestId("event-editor-cancel").click();
+  await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
+
+  await rightClickMapTile(page, 0, 1);
+  await page.getByTestId("event-layer-create-transfer-event").click();
+  await expect(page.getByTestId("event-editor-modal")).toBeVisible();
+  await expect(page.getByTestId("event-editor-modal")).toContainText("장소 이동");
+  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-transfer-event-modal.png", fullPage: true });
+  await page.getByTestId("event-editor-ok").click();
+  await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
+  const transferEvent = await eventAt(page, 0, 1);
+  expect(transferEvent?.pages?.[0]?.commands[0]).toMatchObject({ kind: "transfer", mapId: "map_layer", x: 0, y: 1 });
+
+  await rightClickMapTile(page, 0, 2);
+  await page.getByTestId("event-layer-set-vehicle-start").click();
+  await expect(page.getByTestId("event-editor-modal")).toBeVisible();
+  await expect(page.getByTestId("event-editor-modal")).toContainText("탈것 위치 설정");
+  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-vehicle-start-modal.png", fullPage: true });
+  await page.getByTestId("event-editor-ok").click();
+  await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
+  const vehicleEvent = await eventAt(page, 0, 2);
+  expect(vehicleEvent?.pages?.[0]?.commands[0]).toMatchObject({
+    commandId: "m2-039-set-vehicle-location",
+    fields: { target: "boat", mapId: "map_layer", x: 0, y: 2 },
+    kind: "m2Command",
+  });
+});
+
 test("NPC graphic slot selection stays staged until the event editor is applied", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page, projectWithPlacedEvent());
@@ -245,11 +360,16 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
 
   await page.getByTestId("npc-direction-up").click();
   await expect(page.getByTestId("npc-frame-preview")).toHaveAttribute("data-direction", "up");
+  await expect(page.getByTestId("npc-character-slot-0")).toHaveAttribute("data-direction", "up");
+
+  await page.getByTestId("npc-pattern-0").click();
+  await expect(page.getByTestId("npc-frame-preview")).toHaveAttribute("data-pattern", "0");
+  await expect(page.getByTestId("npc-character-slot-0")).toHaveAttribute("data-pattern", "0");
 
   await page.getByTestId("npc-character-slot-0").click();
 
-  await expect(page.getByTestId("npc-frame-preview")).toHaveAttribute("data-direction", "down");
-  await expect(page.getByTestId("npc-frame-preview")).toHaveAttribute("data-pattern", "1");
+  await expect(page.getByTestId("npc-frame-preview")).toHaveAttribute("data-direction", "up");
+  await expect(page.getByTestId("npc-frame-preview")).toHaveAttribute("data-pattern", "0");
   await expect(page.getByTestId("event-graphic-confirm")).toBeVisible();
   expect(eventGraphic(await debugState(page), "ev_layer")).toEqual({});
 
@@ -259,14 +379,14 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
   expect(eventGraphic(await debugState(page), "ev_layer")).toEqual({});
   await expect(page.getByTestId("event-editor-diff")).toContainText("변경 예정");
   await expect(page.getByTestId("event-page-sprite-input")).toHaveValue("tex_easyrpg_charset_actor1");
-  await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-direction", "down");
-  await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-pattern", "25");
+  await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-direction", "up");
+  await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-pattern", "0");
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveCSS("background-image", /data:image\/png/);
   await page.getByTestId("event-editor-apply").click();
   const savedGraphic = eventGraphic(await debugState(page), "ev_layer");
-  expect(savedGraphic.direction).toBe("down");
+  expect(savedGraphic.direction).toBe("up");
   expect(savedGraphic.sprite?.id).toBe("tex_easyrpg_charset_actor1");
-  expect(savedGraphic.pattern).toBe(25);
-  expect(eventGraphic(await debugState(page), "ev_layer").direction).toBe("down");
+  expect(savedGraphic.pattern).toBe(0);
+  expect(eventGraphic(await debugState(page), "ev_layer").direction).toBe("up");
   await page.screenshot({ path: testInfo.outputPath("npc-slot-saved-after-confirm.png"), fullPage: true });
 });

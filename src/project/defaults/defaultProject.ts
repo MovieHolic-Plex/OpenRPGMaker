@@ -8,7 +8,7 @@ import type {
   VariableDef,
 } from "../types";
 import { SCHEMA_VERSION } from "../types";
-import { DEFAULT_ITEM_ID, DEFAULT_SPRITE_NPC } from "./constants";
+import { DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -20,6 +20,7 @@ import {
   defaultSystem,
   defaultTerms,
 } from "./defaultDatabase";
+import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
 import {
   createLogCabinShowcaseMap,
   createRetroHouseShowcaseMap,
@@ -31,6 +32,8 @@ import {
   createTownArchitectureTestMap,
   createTownCityShowcaseMap,
   createTownHouseShowcaseMap,
+  createMarketTownMap,
+  marketTownStartPos,
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
   singleNodeTree,
@@ -39,7 +42,9 @@ import {
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 
 export function createBlankProject(): Project {
-  return createProjectWithStarterMap(createStarterMap());
+  const project = createProjectWithMaps(createAdventureMaps(), 0);
+  configureAdventureProject(project);
+  return project;
 }
 
 export function createLogCabinShowcaseProject(): Project {
@@ -64,6 +69,13 @@ export function createTownArchitectureTestProject(): Project {
 
 export function createTownArchitectureCityProject(): Project {
   return createProjectWithStarterMap(createTownArchitectureCityMap());
+}
+
+export function createMarketTownProject(): Project {
+  const project = createProjectWithStarterMap(createMarketTownMap());
+  // 시장 광장 입구에서 시작하도록 시작 위치 조정.
+  project.startPos = marketTownStartPos();
+  return project;
 }
 
 export function createDbExtractedHouseTemplateProject(): Project {
@@ -136,7 +148,7 @@ function createShopkeeperEvent(x: number, y: number): GameEvent {
         name: "도구 상인",
         conditions: [],
         graphic: {
-          sprite: { type: "bundled", id: DEFAULT_SPRITE_NPC },
+          sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID },
           direction: "down",
           pattern: 0,
         },
@@ -181,7 +193,7 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
   const variables: VariableDef[] = [];
   const commonEvents: CommonEvent[] = [];
   const maps = Object.fromEntries(starters.map((map) => [map.id, map])) as Record<MapId, GameMap>;
-  return {
+  const project: Project = {
     version: SCHEMA_VERSION,
     meta: { title: "새 프로젝트", author: "", terms: defaultTerms() },
     assets: defaultAssetSet(),
@@ -194,6 +206,7 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
     system: defaultSystem(),
     session: defaultSession(),
     maps,
+    mapConnections: [],
     mapTree: {
       mapId: startMapId,
       children: starters.filter((map) => map.id !== startMapId).map((map) => singleNodeTree(map.id)),
@@ -205,4 +218,59 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
     },
     flags: {},
   };
+  ensureSwitchVariableSlots(project);
+  return project;
+}
+
+const DEFAULT_SWITCH_VARIABLE_SLOT_COUNT = 1000;
+
+export function ensureSwitchVariableSlots(project: Project): boolean {
+  const switchesChanged = ensureDefinitionSlots({
+    defs: project.switches,
+    session: project.session.switches,
+    prefix: "sw",
+    defaultValue: false,
+  });
+  const variablesChanged = ensureDefinitionSlots({
+    defs: project.variables,
+    session: project.session.variables,
+    prefix: "var",
+    defaultValue: 0,
+  });
+  return switchesChanged || variablesChanged;
+}
+
+function ensureDefinitionSlots<TValue>(options: {
+  readonly defs: { id: string; name: string }[];
+  readonly session: Record<string, TValue>;
+  readonly prefix: "sw" | "var";
+  readonly defaultValue: TValue;
+}): boolean {
+  const { defs, session, prefix, defaultValue } = options;
+  let changed = false;
+  const ids = new Set(defs.map((entry) => entry.id));
+  for (const id of Object.keys(session).sort()) {
+    if (ids.has(id)) continue;
+    defs.push({ id, name: "" });
+    ids.add(id);
+    changed = true;
+  }
+
+  let slot = 1;
+  while (defs.length < DEFAULT_SWITCH_VARIABLE_SLOT_COUNT) {
+    const id = `${prefix}_${String(slot).padStart(4, "0")}`;
+    slot += 1;
+    if (ids.has(id)) continue;
+    defs.push({ id, name: "" });
+    ids.add(id);
+    changed = true;
+  }
+
+  for (const { id } of defs) {
+    if (Object.prototype.hasOwnProperty.call(session, id)) continue;
+    session[id] = defaultValue;
+    changed = true;
+  }
+
+  return changed;
 }

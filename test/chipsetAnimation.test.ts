@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { chipsetAnimationKey, TEX_TILESET } from "@/assets/bundled";
 import {
   animationFrameForTile,
   animationKeyForTile,
@@ -23,5 +24,14 @@ describe("chipset water animation mapping", () => {
     expect(animationFrameForTile(90, 667)).toBe(92);
     expect(animationFrameForTile(90, 1000)).toBe(90);
     expect(animationFrameForTile(7, 667)).toBe(7);
+  });
+
+  it("scopes non-legacy animation keys to the active chipset texture", () => {
+    const key = animationKeyForTile(120);
+    expect(key).toBeTruthy();
+    expect(chipsetAnimationKey(TEX_TILESET, key!)).toBe(key);
+    expect(chipsetAnimationKey("tex_easyrpg_chipset_combined_town", key!)).toBe(
+      `tex_easyrpg_chipset_combined_town:${key}`
+    );
   });
 });

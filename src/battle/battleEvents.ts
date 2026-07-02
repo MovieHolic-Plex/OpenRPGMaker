@@ -1,6 +1,7 @@
-import { parseM2BattleCommand } from "@/battle/battleM2Commands";
+import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import type { BattleEventStateSnapshot } from "@/battle/types";
+import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { ActorId, Command, Condition, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
@@ -8,6 +9,9 @@ export type BattleEventRuntimeState = {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
   readonly inventory: Record<string, number>;
+  readonly partyActorIds?: readonly string[];
+  readonly gold?: number;
+  readonly timers?: Record<string, number>;
 };
 
 export type BattleEventContext = {
@@ -79,6 +83,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     switch (condition.kind) {
       case "switch":
       case "variable":
+      case "selfSwitch":
+      case "actor":
+      case "item":
+      case "gold":
+      case "timer":
         return evaluateCondition(condition);
       case "turn":
         return condition.interval <= 0
@@ -133,7 +142,14 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return firstOption ? executeBattleEventCommands(firstOption.branch, context) : false;
       }
       case "m2Command":
-        return executeM2BattleCommand(command, context);
+        return executeM2Command(command, {
+          actors: options.actors,
+          enemies: options.enemies,
+          context,
+          revealEnemy: options.revealEnemy,
+          changeBattleback: options.changeBattleback,
+          addExtraActorAction,
+        });
       case "wait":
       case "inputWait":
       case "label":
@@ -162,45 +178,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return false;
   }
 
-  function executeM2BattleCommand(command: Extract<Command, { kind: "m2Command" }>, context: BattleEventContext): boolean {
-    const parsed = parseM2BattleCommand(command);
-    if (!parsed) return false;
-    switch (parsed.kind) {
-      case "changeEnemyHp":
-        for (const enemy of resolveEnemyTargets(parsed.target)) {
-          enemy.hp = applyM2NumberOperation(enemy.hp, parsed.operation, parsed.value, enemy.maxHp);
-        }
-        return false;
-      case "enemyEncounter":
-        options.revealEnemy?.(parsed.target);
-        return false;
-      case "changeBattleback": {
-        const resourceId = parsed.resourceId.trim();
-        if (resourceId) options.changeBattleback?.(resourceId);
-        return false;
-      }
-      case "forceEscape":
-        return true;
-      case "actionTimes": {
-        const actor = resolveActorTarget(parsed.target, context);
-        if (!actor || parsed.amount <= 0) return false;
-        extraActorActions[actor.recordId] = (extraActorActions[actor.recordId] ?? 0) + parsed.amount;
-        return false;
-      }
-    }
-  }
-
-  function resolveEnemyTargets(target: string): readonly MutableBattler[] {
-    if (target === "all") return options.enemies;
-    const exact = options.enemies.find((enemy) => enemy.id === target || enemy.recordId === target);
-    if (exact) return [exact];
-    const firstAlive = options.enemies.find((enemy) => enemy.hp > 0);
-    return firstAlive ? [firstAlive] : [];
-  }
-
-  function resolveActorTarget(target: string, context: BattleEventContext): MutableBattler | undefined {
-    if (target) return options.actors.find((actor) => actor.id === target || actor.recordId === target);
-    return context.activeActorId ? options.actors.find((actor) => actor.recordId === context.activeActorId) : undefined;
+  function addExtraActorAction(actorId: string, amount: number): void {
+    extraActorActions[actorId] = (extraActorActions[actorId] ?? 0) + amount;
   }
 
   function evaluateCondition(condition: Condition): boolean {
@@ -209,16 +188,20 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return (options.state.switches[condition.switchId] ?? false) === condition.value;
       case "variable": {
         const current = options.state.variables[condition.variableId] ?? 0;
-        switch (condition.op) {
-          case ">=":
-            return current >= condition.value;
-          case "<=":
-            return current <= condition.value;
-          case "==":
-            return current === condition.value;
-          case "!=":
-            return current !== condition.value;
-        }
+        return compareVariableValue(current, condition.op, condition.value);
+      }
+      case "selfSwitch":
+        // 배틀 이벤트에는 셀프 스위치 컨텍스트가 없으므로 항상 false(OFF) 취급.
+        return condition.value === false;
+      case "actor":
+        return (options.state.partyActorIds ?? []).includes(condition.actorId) === condition.present;
+      case "item":
+        return ((options.state.inventory[condition.itemId] ?? 0) > 0) === condition.present;
+      case "gold":
+        return compareVariableValue(options.state.gold ?? 0, condition.op, condition.amount);
+      case "timer": {
+        const remaining = (options.state.timers ?? {})[condition.timerId] ?? 0;
+        return remaining <= condition.seconds;
       }
     }
   }
@@ -243,17 +226,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     }
   }
 
-  function applyM2NumberOperation(current: number, operation: "set" | "add" | "remove", value: number, max: number): number {
-    switch (operation) {
-      case "set":
-        return clamp(value, max);
-      case "add":
-        return clamp(current + value, max);
-      case "remove":
-        return clamp(current - value, max);
-    }
-  }
-
   function percentInRange(current: number, max: number, range: { readonly minPercent: number; readonly maxPercent: number }): boolean {
     const percent = max <= 0 ? 0 : current / max * 100;
     return percent >= range.minPercent && percent <= range.maxPercent;
@@ -268,8 +240,4 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   return { applyTroopEvents, consumeExtraActorAction, snapshot };
-}
-
-function clamp(value: number, max: number): number {
-  return Math.min(max, Math.max(0, Math.trunc(value)));
 }

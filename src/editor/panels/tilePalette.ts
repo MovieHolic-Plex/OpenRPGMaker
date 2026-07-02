@@ -1,16 +1,26 @@
 import { el, clearChildren } from "@/util/dom";
-import { EDITOR_BRUSH_SIZES, editorState } from "@/editor/editorState";
-import type { EditorBrushSize, Tool, Layer } from "@/editor/editorState";
+import { editorState } from "@/editor/editorState";
+import type { Tool, Layer } from "@/editor/editorState";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
+import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { setTerrainTag } from "@/editor/tilesetActions";
-import { setMapTileset } from "@/editor/actions";
 import { TILE_SIZE } from "@/assets/bundled";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
+import {
+  favoriteTilesSnapshot,
+  selectUsedLocation,
+  similarTilesForTile,
+  usedLocationsForTile,
+} from "@/editor/panels/tileBrushTools";
+import { createPaletteStampFromDrag, paletteStampIncludesTile } from "@/editor/tilePaletteStamp";
+import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import { compatibleStampIdForTile, isAutoConnectCandidate, tileStampsForTile } from "@/editor/tileStampBrushes";
+import type { TileStampId } from "@/editor/tileStampBrushes";
 
 type PaletteIcon =
   | "pencil"
@@ -37,15 +47,16 @@ const TOOLS: { readonly id: Tool; readonly label: string; readonly hint: string;
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 const CHIPSET_SHEET_CELL_SIZE = "var(--chipset-cell)";
-const CHIPSET_BANDS = [
-  { id: "a1", icon: "terrain", label: "지형", row: 0, title: "풀, 흙, 절벽, 기본 바닥 타일" },
-  { id: "a2", icon: "water-road", label: "물·길", row: 4, title: "물 애니메이션, 호수 외곽, 흙길과 길 모서리" },
-  { id: "a3", icon: "building", label: "건물", row: 8, title: "지붕, 벽, 문, 집 구성 타일" },
-  { id: "b", icon: "props", label: "소품", row: 12, title: "울타리, 나무, 표지판, 장식 오브젝트" },
+const CURATED_TOWN_PALETTE_INDEXES = [
+  240, 303, 421, 424, 342, 343, 306, 366, 374, 375,
+  270, 120, 93, 123, 153, 246, 129, 376, 390, 391,
+  392, 420, 422, 260, 262, 263, 288,
+  289, 290, 292, 293, 348, 351, 291, 321, 325,
+  355, 356, 378, 379, 380, 408, 409, 410, 438,
+  439, 327, 328, 357, 358, 329, 359, 465, 85,
+  87, 414, 415, 416, 444, 445, 446, 474, 475,
+  476, 389, 418, 419, 448, 449, 477, 478, 479,
 ] as const;
-
-type ChipsetBandId = (typeof CHIPSET_BANDS)[number]["id"];
-
 type TileCategoryId = "recent" | "terrain" | "water" | "house" | "fence" | "decor" | "all";
 
 type TileCategory = {
@@ -67,8 +78,9 @@ let activeTileCategory: TileCategoryId = "house";
 let tileSearchQuery = "";
 let showQuickTileNumbers = false;
 let advancedTileToolsExpanded = false;
-let activeChipsetBand: ChipsetBandId = "a1";
 let resetChipsetScroll = false;
+let paletteDragStartTile: number | null = null;
+let paletteDragHandled = false;
 const recentTiles: number[] = [];
 
 type PaletteScroll = {
@@ -100,8 +112,6 @@ export function renderTilePalette(container: HTMLElement): void {
     );
   }
   toolSection.append(toolGrid);
-  toolSection.append(makeBrushControls(state.brushSize, state.layer === "event"));
-  toolSection.append(makeTileToolStatus(state.selectedTile, state.brushSize));
   toolSection.append(makeEditCommandRow());
   container.append(toolSection);
 
@@ -117,8 +127,6 @@ export function renderTilePalette(container: HTMLElement): void {
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
   const tileSection = el("div", { class: "panel-section" });
-  tileSection.append(el("h3", { text: "칩셋" }));
-
   if (!map) {
     tileSection.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
     container.append(tileSection);
@@ -131,21 +139,28 @@ export function renderTilePalette(container: HTMLElement): void {
     return;
   }
 
-  const palette = makeChipsetSheet(state.selectedTile, state.layer, tileset, activeChipsetBand);
-  tileSection.append(makeMapTilesetPicker(map.id, map.tilesetId, Object.values(project.tilesets)));
-  tileSection.append(makePaletteOptions());
-  if (advancedTileToolsExpanded) {
-    tileSection.append(makeQuickTilePicker(state.selectedTile, state.layer, tileset));
-  }
-  tileSection.append(makeChipsetBandNav());
+  const palette = makeChipsetSheet(state.selectedTile, state.layer, tileset, state.activePaletteStamp);
+  tileSection.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+  tileSection.append(makePaletteStampStatus(state.activePaletteStamp));
+  tileSection.append(el("h3", { class: "tile-palette-title", text: "타일 팔레트" }));
   tileSection.append(palette);
   // 타일 매핑 인스펙터는 항상 표시 — RM2K3에서 현재 타일의 메타데이터
   // (이름/키/AI 라벨/레이어/통행/지형)를 보여주는 표준 패널이다.
-  if (state.selectedTile >= 0) {
-    tileSection.append(renderTileMappingInspector(state.selectedTile));
-  }
-  if (advancedTileToolsExpanded && state.selectedTile >= 0) {
-    tileSection.append(makeTerrainEditor(tileset.id, state.selectedTile, tileset.terrain[state.selectedTile] ?? 0));
+  if (advancedTileToolsExpanded) {
+    if (state.selectedTile >= 0) {
+      tileSection.append(makeTileBrushAssistPanel({
+        activeStampId: state.activeStampId,
+        autoConnectMode: state.autoConnectMode,
+        mapId: map.id,
+        selectedTile: state.selectedTile,
+        tileset,
+      }));
+    }
+    tileSection.append(makeQuickTilePicker(state.selectedTile, state.layer, tileset));
+    if (state.selectedTile >= 0) {
+      tileSection.append(renderTileMappingInspector(state.selectedTile, tileset));
+      tileSection.append(makeTerrainEditor(tileset.id, state.selectedTile, tileset.terrain[state.selectedTile] ?? 0));
+    }
   }
   container.append(tileSection);
 
@@ -158,48 +173,178 @@ export function renderTilePalette(container: HTMLElement): void {
   restorePaletteScroll(container, palette, previousPaletteScroll);
 }
 
-function makePaletteOptions(): HTMLElement {
-  const row = el("div", { class: "palette-option-row" });
+type TileBrushAssistModel = {
+  readonly activeStampId: TileStampId | null;
+  readonly autoConnectMode: boolean;
+  readonly mapId: string;
+  readonly selectedTile: number;
+  readonly tileset: TilesetDef;
+};
+
+function makePaletteStampStatus(stamp: PaletteStamp | null): HTMLElement {
+  const row = el("div", {
+    class: "tile-brush-row palette-stamp-status" + (stamp ? "" : " hidden"),
+    dataset: { testid: "palette-stamp-status" },
+  });
+  row.append(el("span", { class: "tile-brush-label", text: "Drag" }));
+  if (!stamp) return row;
   row.append(
     el("button", {
-      class: "btn palette-option-button" + (advancedTileToolsExpanded ? " active" : ""),
-      children: [
-        el("span", { class: "tile-palette-icon tile-palette-icon-advanced", attrs: { "aria-hidden": "true" } }),
-      ],
+      class: "btn palette-stamp-clear",
+      text: `${stamp.width}x${stamp.height}`,
       attrs: {
-        title: advancedTileToolsExpanded ? "고급 타일 도구 닫기" : "고급 타일 도구 열기",
-        "aria-label": advancedTileToolsExpanded ? "고급 타일 도구 닫기" : "고급 타일 도구 열기",
-        "aria-expanded": String(advancedTileToolsExpanded),
-        "aria-controls": "quick-tile-picker",
+        title: "Clear dragged palette stamp",
+        "aria-label": "Clear dragged palette stamp",
       },
-      dataset: { testid: "quick-tile-toggle" },
+      dataset: { testid: "palette-stamp-clear" },
       on: {
         click: () => {
-          advancedTileToolsExpanded = !advancedTileToolsExpanded;
-          renderPalettePreservingViewport();
-        },
-      },
-    })
-  );
-  row.append(
-    el("button", {
-      class: "btn palette-option-button" + (showQuickTileNumbers ? " active" : ""),
-      text: showQuickTileNumbers ? "# on" : "#",
-      attrs: {
-        title: "타일 번호 표시",
-        "aria-label": "타일 번호 표시",
-        "aria-pressed": String(showQuickTileNumbers),
-      },
-      dataset: { testid: "tile-number-toggle" },
-      on: {
-        click: () => {
-          showQuickTileNumbers = !showQuickTileNumbers;
+          editorState.set({ activePaletteStamp: null });
           renderPalettePreservingViewport();
         },
       },
     })
   );
   return row;
+}
+
+function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLElement {
+  const project = store.getCurrent();
+  const map = project.maps[model.mapId];
+  const stamps = tileStampsForTile(model.selectedTile, model.tileset);
+  const favorites = favoriteTilesSnapshot().filter((tile) => tile >= 0 && tile < model.tileset.count);
+  const similar = similarTilesForTile({ tileset: model.tileset, tile: model.selectedTile, limit: 8 });
+  const used = map ? usedLocationsForTile({ map, tile: model.selectedTile, limit: 6 }) : [];
+  const panel = el("div", { class: "tile-brush-assist", dataset: { testid: "tile-brush-assist" } });
+  panel.append(
+    el("div", {
+      class: "tile-brush-row tile-brush-mode-row",
+      children: [
+        el("span", { class: "tile-brush-label", text: "연결" }),
+        el("span", {
+          class: "tile-brush-chip" + (model.autoConnectMode && isAutoConnectCandidate(model.selectedTile, model.tileset) ? " active" : ""),
+          text: model.autoConnectMode && isAutoConnectCandidate(model.selectedTile, model.tileset) ? "Auto" : "Manual",
+          dataset: { testid: "auto-connect-mode-label" },
+        }),
+      ],
+    })
+  );
+  panel.append(makeStampPicker(stamps, model.activeStampId));
+  panel.append(makeTileStrip("즐겨", favorites, "favorite-tile-grid", "favorite-tile"));
+  panel.append(makeTileStrip("유사", similar, "similar-tile-grid", "similar-tile"));
+  panel.append(makeUsedLocations(model.mapId, used));
+  panel.append(makeCurrentNeighborhoodSummary());
+  return panel;
+}
+
+function makeStampPicker(stamps: ReturnType<typeof tileStampsForTile>, activeStampId: TileStampId | null): HTMLElement {
+  const row = el("div", { class: "tile-brush-row" });
+  row.append(el("span", { class: "tile-brush-label", text: "스탬프" }));
+  const picker = el("div", { class: "stamp-picker", dataset: { testid: "stamp-picker" } });
+  if (stamps.length === 0) {
+    picker.append(el("span", { class: "tile-brush-empty", text: "없음" }));
+  }
+  for (const stamp of stamps) {
+    picker.append(
+      el("button", {
+        class: "btn stamp-button" + (activeStampId === stamp.id ? " active" : ""),
+        text: stamp.label,
+        attrs: {
+          title: stamp.description,
+          "aria-label": stamp.description,
+          "aria-pressed": String(activeStampId === stamp.id),
+        },
+        dataset: { testid: `stamp-${stamp.id}` },
+        on: {
+          click: () => {
+            editorState.set({ activeStampId: editorState.get().activeStampId === stamp.id ? null : stamp.id });
+          },
+        },
+      })
+    );
+  }
+  row.append(picker);
+  return row;
+}
+
+function makeTileStrip(label: string, tiles: readonly number[], testId: string, itemPrefix: string): HTMLElement {
+  if (tiles.length === 0 && testId === "favorite-tile-grid") {
+    return el("div", { class: "tile-brush-row hidden", dataset: { testid: testId } });
+  }
+  const row = el("div", { class: "tile-brush-row" });
+  row.append(el("span", { class: "tile-brush-label", text: label }));
+  const strip = el("div", { class: "tile-brush-strip", dataset: { testid: testId } });
+  if (tiles.length === 0) {
+    strip.append(el("span", { class: "tile-brush-empty", text: "없음" }));
+  }
+  for (const tile of tiles) {
+    strip.append(
+      el("button", {
+        class: "quick-tile-cell tile-brush-mini-cell",
+        attrs: {
+          title: tileDisplayLabelForIndex(tile),
+          "aria-label": tileDisplayLabelForIndex(tile),
+          style: tilePreviewStyle(tile, CHIPSET_CELL_SIZE),
+        },
+        dataset: { testid: `${itemPrefix}-${tile}` },
+        on: {
+          pointerdown: (event) => event.preventDefault(),
+          click: (event) => {
+            event.preventDefault();
+            selectPaletteTile(tile);
+          },
+        },
+      })
+    );
+  }
+  row.append(strip);
+  return row;
+}
+
+function makeUsedLocations(mapId: string, locations: ReturnType<typeof usedLocationsForTile>): HTMLElement {
+  if (locations.length === 0) {
+    return el("div", { class: "tile-brush-row hidden", dataset: { testid: "used-location-list" } });
+  }
+  const row = el("div", { class: "tile-brush-row" });
+  row.append(el("span", { class: "tile-brush-label", text: "사용" }));
+  const list = el("div", { class: "used-location-list", dataset: { testid: "used-location-list" } });
+  if (locations.length === 0) {
+    list.append(el("span", { class: "tile-brush-empty", text: "0" }));
+  }
+  for (const location of locations) {
+    const label = `${location.layer === "lower" ? "L" : "U"} ${location.x},${location.y}`;
+    list.append(
+      el("button", {
+        class: "btn used-location-button",
+        text: label,
+        attrs: { title: "현재 맵에서 이 타일을 쓰는 위치", "aria-label": label },
+        dataset: { testid: `used-location-${location.layer}-${location.x}-${location.y}` },
+        on: {
+          click: () => {
+            selectUsedLocation({ mapId, ...location });
+            renderPalettePreservingViewport();
+          },
+        },
+      })
+    );
+  }
+  row.append(list);
+  return row;
+}
+
+function makeCurrentNeighborhoodSummary(): HTMLElement {
+  const selection = editorState.get().selection;
+  if (!selection) {
+    return el("div", { class: "tile-brush-neighborhood hidden", dataset: { testid: "current-neighborhood-summary" } });
+  }
+  const text = selection ? `${selection.x},${selection.y} / ${selection.width}x${selection.height}` : "-";
+  return el("div", {
+    class: "tile-brush-neighborhood",
+    children: [
+      el("span", { class: "tile-brush-label", text: "주변" }),
+      el("span", { class: "tile-brush-neighborhood-value", text, dataset: { testid: "current-neighborhood-summary" } }),
+    ],
+  });
 }
 
 function makeQuickTilePicker(
@@ -345,7 +490,14 @@ export function selectPaletteTile(index: number): void {
     if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);
     recentTiles.unshift(index);
     if (recentTiles.length > 18) recentTiles.length = 18;
-    editorState.set({ selectedTile: index });
+    const activeStampId = editorState.get().activeStampId;
+    const nextActiveStampId = compatibleStampIdForTile(activeStampId, index, currentTilesetForPalette());
+    editorState.set({
+      activePaletteStamp: null,
+      activeStampId: nextActiveStampId,
+      activeStructureStampId: null,
+      selectedTile: index,
+    });
   });
 }
 
@@ -401,30 +553,6 @@ function applyPaletteScroll(container: HTMLElement, palette: HTMLElement, scroll
   container.scrollTop = scroll.containerTop;
 }
 
-function makeChipsetBandNav(): HTMLElement {
-  const row = el("div", { class: "chipset-band-nav" });
-  for (const band of CHIPSET_BANDS) {
-    row.append(
-      el("button", {
-        class: "btn chipset-band-button" + (activeChipsetBand === band.id ? " active" : ""),
-        children: [
-          el("span", { class: `tile-palette-icon tile-palette-icon-${band.icon}`, attrs: { "aria-hidden": "true" } }),
-        ],
-        attrs: { title: `${band.label}: ${band.title}`, "aria-label": band.label, "aria-pressed": String(activeChipsetBand === band.id) },
-        dataset: { testid: `chipset-band-${band.id}` },
-        on: {
-          click: () => {
-            activeChipsetBand = band.id;
-            resetChipsetScroll = true;
-            renderPalettePreservingViewport();
-          },
-        },
-      })
-    );
-  }
-  return row;
-}
-
 function makeEditCommandRow(): HTMLElement {
   const row = el("div", { class: "tool-command-row" });
   const commands = [
@@ -457,76 +585,11 @@ function makeEditCommandRow(): HTMLElement {
   return row;
 }
 
-function makeBrushControls(activeSize: EditorBrushSize, disabled: boolean): HTMLElement {
-  const group = el("div", { class: "brush-control", dataset: { testid: "brush-size-control" } });
-  group.append(el("span", { class: "brush-control-label", text: "브러시" }));
-  for (const size of EDITOR_BRUSH_SIZES) {
-    const button = el("button", {
-      class: "btn brush-size-btn" + (activeSize === size ? " active" : ""),
-      text: `${size}x${size}`,
-      attrs: { title: `커서 주변 ${size}x${size} 타일을 칠합니다`, "aria-pressed": String(activeSize === size) },
-      dataset: { testid: `brush-size-${size}` },
-      on: { click: () => editorState.set({ brushSize: size }) },
-    });
-    button.disabled = disabled;
-    group.append(button);
-  }
-  return group;
-}
-
-function makeTileToolStatus(selectedTile: number, brushSize: EditorBrushSize): HTMLElement {
-  const status = el("div", { class: "tile-tool-status", dataset: { testid: "tile-tool-status" } });
-  status.append(makeSelectedTilePreview(selectedTile));
-  const grid = el("div", { class: "tile-tool-status-grid" });
-  grid.append(makeStatusCell("타일", selectedTileLabel(selectedTile), "selected-tile-status"));
-  grid.append(makeStatusCell("브러시", `${brushSize}x${brushSize}`, "brush-size-status"));
-  grid.append(makeStatusCell("XY", "-", "cursor-position"));
-  grid.append(makeStatusCell("하층", "-", "cursor-lower"));
-  grid.append(makeStatusCell("상층", "-", "cursor-upper"));
-  grid.append(makeStatusCell("이동", "드래그 / Space", "map-move-hint"));
-  status.append(grid);
-  return status;
-}
-
-function makeSelectedTilePreview(selectedTile: number): HTMLElement {
-  const preview = el("div", {
-    class: "selected-tile-preview",
-    attrs: {
-      title: selectedTileLabel(selectedTile),
-      style: selectedTilePreviewStyle(selectedTile),
-    },
-    dataset: { testid: "selected-tile-preview" },
-  });
-  return preview;
-}
-
-function selectedTilePreviewStyle(selectedTile: number): string {
-  if (selectedTile < 0) return "";
-  const tileset = currentTilesetForPalette();
-  if (!tileset || selectedTile >= tileset.count) return "";
-  return tilePreviewStyle(selectedTile, CHIPSET_CELL_SIZE);
-}
-
 function tilePreviewStyle(selectedTile: number, previewSize: number | string): string {
   if (selectedTile < 0) return "";
   const tileset = currentTilesetForPalette();
   if (!tileset || selectedTile >= tileset.count) return "";
   return tilesetTileBackgroundStyle(tileset, selectedTile, previewSize);
-}
-
-function selectedTileLabel(selectedTile: number): string {
-  if (selectedTile < 0) return "없음";
-  return tileDisplayLabelForIndex(selectedTile);
-}
-
-function makeStatusCell(label: string, value: string, testId: string): HTMLElement {
-  return el("div", {
-    class: "tile-tool-status-cell",
-    children: [
-      el("span", { class: "tile-tool-status-label", text: label }),
-      el("span", { class: "tile-tool-status-value", text: value, dataset: { testid: testId } }),
-    ],
-  });
 }
 
 function currentMapId(): string {
@@ -539,39 +602,6 @@ function currentTilesetForPalette(): TilesetDef | undefined {
   const map = project.maps[currentMapId()];
   if (!map) return undefined;
   return project.tilesets[map.tilesetId];
-}
-
-function makeMapTilesetPicker(
-  mapId: string,
-  selectedTilesetId: string,
-  tilesets: readonly TilesetDef[]
-): HTMLElement {
-  const select = el("select", {
-    attrs: { "aria-label": "맵 칩셋" },
-    dataset: { testid: "map-tileset-select" },
-    on: {
-      change: (event) => {
-        const target = event.currentTarget;
-        if (!(target instanceof HTMLSelectElement)) return;
-        setMapTileset(mapId, target.value);
-      },
-    },
-  });
-  for (const tileset of tilesets) {
-    select.append(el("option", {
-      text: tileset.name,
-      value: tileset.id,
-      attrs: { value: tileset.id },
-    }));
-  }
-  select.value = selectedTilesetId;
-  return el("div", {
-    class: "field compact-field",
-    children: [
-      el("label", { text: "맵 칩셋" }),
-      select,
-    ],
-  });
 }
 
 function makeTerrainEditor(tilesetId: string, selectedTile: number, terrain: number): HTMLElement {
@@ -598,10 +628,10 @@ function makeChipsetSheet(
   selectedTile: number,
   layer: Exclude<Layer, "event">,
   tileset: TilesetDef,
-  activeBand: ChipsetBandId
+  activePaletteStamp: PaletteStamp | null
 ): HTMLElement {
   const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
-  const tileIndexes = chipsetBandTileIndexes(activeBand, tileset);
+  const tileIndexes = displayPaletteTileIndexes(tileset);
   const sheet = el("div", {
     class: "chipset-sheet tile-palette chipset-sheet-filtered",
     dataset: { testid: "tile-palette" },
@@ -630,43 +660,24 @@ function makeChipsetSheet(
   const overlay = el("div", { class: "chipset-grid", dataset: { testid: "chipset-sheet" } });
   for (const index of tileIndexes) {
     const tileLayer = tileset.priority[index] ?? "lower";
-    overlay.append(makeChipsetCell(index, selectedTile === index, tileLayer === layer));
+    overlay.append(makeChipsetCell({
+      active: selectedTile === index,
+      currentLayer: tileLayer === layer,
+      inPaletteStamp: paletteStampIncludesTile(activePaletteStamp, index, tileset.tilesPerRow),
+      index,
+      tileset,
+    }));
   }
   sheet.append(overlay);
   return sheet;
 }
 
-function chipsetBandTileIndexes(bandId: ChipsetBandId, tileset: TilesetDef): readonly number[] {
-  return Array.from({ length: tileset.count }, (_, index) => index).filter((index) => {
-    const tile = describeChipsetTile(index);
-    const layer = tileset.priority[index] ?? "lower";
-    if (bandId === "a1") return matchesChipsetTerrain(tile.tags, tile.usage, layer);
-    if (bandId === "a2") return matchesChipsetWaterOrRoad(tile.tags);
-    if (bandId === "a3") return matchesChipsetBuilding(tile.tags);
-    return matchesChipsetProp(tile.tags, tile.usage, layer);
-  });
-}
-
-function matchesChipsetTerrain(tags: readonly string[], usage: string, layer: "lower" | "upper"): boolean {
-  if (layer !== "lower") return false;
-  if (tags.some((tag) => ["water", "lake", "shore", "path", "road", "house", "building", "roof", "wall"].includes(tag))) {
-    return false;
-  }
-  return ["terrain", "edge", "detail"].includes(usage);
-}
-
-function matchesChipsetWaterOrRoad(tags: readonly string[]): boolean {
-  return tags.some((tag) => ["water", "lake", "shore", "waterfall", "path", "road", "dirt"].includes(tag));
-}
-
-function matchesChipsetBuilding(tags: readonly string[]): boolean {
-  return tags.some((tag) => ["house", "building", "roof", "wall", "door", "castle"].includes(tag));
-}
-
-function matchesChipsetProp(tags: readonly string[], usage: string, layer: "lower" | "upper"): boolean {
-  if (matchesChipsetWaterOrRoad(tags) || matchesChipsetBuilding(tags)) return false;
-  if (tags.includes("fence") || tags.includes("tree") || tags.includes("prop") || tags.includes("sign")) return true;
-  return usage === "decoration" || layer === "upper";
+function displayPaletteTileIndexes(tileset: TilesetDef): readonly number[] {
+  const curated = CURATED_TOWN_PALETTE_INDEXES.filter((index) => index < tileset.count);
+  const curatedSet = new Set<number>(curated);
+  const remaining = Array.from({ length: tileset.count }, (_, index) => index)
+    .filter((index) => !curatedSet.has(index));
+  return [...curated, ...remaining];
 }
 
 function scrollWheelTarget(sheet: HTMLElement, deltaY: number): HTMLElement | null {
@@ -683,14 +694,19 @@ function canScrollVertically(node: HTMLElement, deltaY: number): boolean {
   return deltaY > 0 ? node.scrollTop < maxScrollTop : node.scrollTop > 0;
 }
 
-function makeChipsetCell(
-  index: number,
-  active: boolean,
-  currentLayer: boolean
-): HTMLButtonElement {
-  const name = `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`;
+type ChipsetCellModel = {
+  readonly active: boolean;
+  readonly currentLayer: boolean;
+  readonly inPaletteStamp: boolean;
+  readonly index: number;
+  readonly tileset: TilesetDef;
+};
+
+function makeChipsetCell(model: ChipsetCellModel): HTMLButtonElement {
+  const index = model.index;
+  const name = tilePaletteAccessibleName(model.tileset, index);
   const cell = el("button", {
-    class: "chipset-tile" + (active ? " active" : "") + (currentLayer ? "" : " muted"),
+    class: "chipset-tile" + (model.active ? " active" : "") + (model.currentLayer ? "" : " muted") + (model.inPaletteStamp ? " stamp-source" : ""),
     attrs: {
       title: name,
       "aria-label": name,
@@ -698,9 +714,65 @@ function makeChipsetCell(
     },
     dataset: { testid: `chipset-tile-${index}` },
     on: {
-      pointerdown: (event) => event.preventDefault(),
-      click: () => selectPaletteTile(index),
+      pointercancel: () => {
+        paletteDragStartTile = null;
+      },
+      pointerdown: (event) => startPaletteStampDrag(index, event),
+      pointerup: (event) => finishPaletteStampDrag(index, model.tileset, event),
+      click: (event) => {
+        event.preventDefault();
+        if (paletteDragHandled) {
+          paletteDragHandled = false;
+          return;
+        }
+        selectPaletteTile(index);
+      },
     },
   });
   return cell;
+}
+
+function tilePaletteAccessibleName(tileset: TilesetDef, index: number): string {
+  const fallbackLabel = tileDisplayLabelForIndex(index);
+  const fallbackAiLabel = tileAiLabelForIndex(index);
+  const meta = tileset.tileMeta?.[index];
+  const group = tileset.tileGroups?.find((entry) => entry.tileIds.includes(index));
+  const semanticLabel = cleanTileText(meta?.label) || group?.name;
+  const label = semanticLabel ? `${index} ${semanticLabel}` : fallbackLabel;
+  const aiLabel = cleanTileText(meta?.description) || group?.description || fallbackAiLabel;
+  return `${label} / AI: ${aiLabel}`;
+}
+
+function cleanTileText(value: string | undefined): string {
+  return value?.trim() ?? "";
+}
+
+function startPaletteStampDrag(index: number, event: Event): void {
+  if (!isPrimaryButtonEvent(event)) return;
+  paletteDragStartTile = index;
+  paletteDragHandled = false;
+  event.preventDefault();
+}
+
+function finishPaletteStampDrag(index: number, tileset: TilesetDef, event: Event): void {
+  if (!isPrimaryButtonEvent(event)) return;
+  const startTile = paletteDragStartTile;
+  paletteDragStartTile = null;
+  if (startTile === null || startTile === index) return;
+  const stamp = createPaletteStampFromDrag({ endTile: index, startTile, tileset });
+  paletteDragHandled = true;
+  editorState.set({
+    activePaletteStamp: stamp,
+    activeStampId: null,
+    activeStructureStampId: null,
+    paintShape: "pen",
+    tool: "paint",
+  });
+  event.preventDefault();
+  renderPalettePreservingViewport();
+}
+
+function isPrimaryButtonEvent(event: Event): boolean {
+  if (!("button" in event)) return true;
+  return typeof event.button === "number" && event.button === 0;
 }

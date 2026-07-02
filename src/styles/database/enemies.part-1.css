@@ -1,0 +1,413 @@
+:root {
+  --rm2k3-enemy-preview-bg: #0000ff;
+  --rm2k3-enemy-preview-text: #ffffff;
+  --rm2k3-enemy-table-bg: #ffffff;
+  --rm2k3-enemy-table-text: #000000;
+  --rm2k3-enemy-table-separator: #d2d2d2;
+  --rm2k3-enemy-menu-ink: var(--text-primary);
+  --rm2k3-enemy-menu-muted-ink: var(--text-muted);
+  --rm2k3-enemy-menu-danger-ink: var(--danger);
+  --rm2k3-enemy-panel-width: 154px;
+  --rm2k3-enemy-graphic-height: 132px;
+  --rm2k3-enemy-graphic-max: 104px;
+  --rm2k3-enemy-action-height: 206px;
+  --rm2k3-enemy-dialog-width: 420px;
+  --rm2k3-enemy-graphic-list-width: 176px;
+  --rm2k3-enemy-graphic-preview-width: 242px;
+}
+
+.database-modal-body .db-enemy-bm101-workbench {
+  display: grid;
+  gap: 6px;
+  grid-column: 1 / -1;
+  grid-template-areas:
+    "name name graphic graphic"
+    "stats rewards graphic graphic"
+    "critical options rates rates"
+    "state element actions actions";
+  grid-template-columns: var(--rm2k3-enemy-panel-width) var(--rm2k3-enemy-panel-width) minmax(150px, 1fr) minmax(150px, 1fr);
+}
+
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
+  background: var(--rm2k3-field);
+  border-color: var(--rm2k3-shadow) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-shadow);
+  border-style: solid;
+  border-width: 1px;
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  padding: 8px 6px 6px;
+}
+
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(1) { grid-area: name; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(2) { grid-area: stats; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) { grid-area: graphic; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4) { grid-area: rewards; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(5) { grid-area: critical; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(6) { grid-area: options; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7) { grid-area: state; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) { grid-area: element; }
+.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(9) { grid-area: actions; }
+
+.database-modal-body .db-enemy-bm101-workbench .db-field,
+.database-modal-body .db-enemy-dialog .db-field {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(58px, 0.75fr) minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-body .db-enemy-bm101-workbench input,
+.database-modal-body .db-enemy-bm101-workbench select,
+.db-enemy-dialog input,
+.db-enemy-dialog select {
+  background: var(--rm2k3-enemy-table-bg);
+  border-color: var(--rm2k3-shadow) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-shadow);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  font: 12px/1.2 "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
+  min-height: 20px;
+  min-width: 0;
+}
+
+.database-modal-body .db-enemy-graphic-preview {
+  align-items: end;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 56px;
+}
+
+.database-modal-body .db-enemy-graphic-stage,
+.db-enemy-graphic-dialog-preview .db-enemy-graphic-stage {
+  align-items: center;
+  background: var(--rm2k3-enemy-preview-bg);
+  border: 1px inset var(--rm2k3-shadow);
+  display: flex;
+  height: var(--rm2k3-enemy-graphic-height);
+  justify-content: center;
+  overflow: hidden;
+}
+
+.database-modal-body .db-enemy-graphic-stage img,
+.db-enemy-graphic-dialog-preview .db-enemy-graphic-stage img {
+  image-rendering: pixelated;
+  max-height: var(--rm2k3-enemy-graphic-max);
+  max-width: 132px;
+}
+
+.database-modal-body .db-enemy-graphic-stage img.flying,
+.db-enemy-graphic-dialog-preview .db-enemy-graphic-stage img.flying {
+  transform: translateY(-12px);
+}
+
+.database-modal-body .db-enemy-empty-graphic {
+  color: var(--rm2k3-enemy-preview-text);
+  font: 12px/1.2 var(--font-mono);
+}
+
+.database-modal-body .db-enemy-rate-row {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 26px minmax(0, 1fr);
+}
+
+.database-modal-body .db-enemy-rate-row span {
+  order: 2;
+}
+
+.database-modal-body .db-enemy-rate-row select {
+  font-weight: 700;
+  order: 1;
+}
+
+.database-modal-body .db-enemy-attack-patterns {
+  background: var(--rm2k3-enemy-table-bg);
+  border: 1px inset var(--rm2k3-shadow);
+  min-height: var(--rm2k3-enemy-action-height);
+  overflow: auto;
+}
+
+.database-modal-body .db-enemy-attack-patterns table {
+  border-collapse: collapse;
+  color: var(--rm2k3-enemy-table-text);
+  font: 12px/1.35 "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
+  width: 100%;
+}
+
+.database-modal-body .db-enemy-attack-patterns th {
+  background: var(--rm2k3-chrome);
+  border-bottom: 1px solid var(--rm2k3-shadow);
+  border-right: 1px solid var(--rm2k3-shadow);
+  font-weight: 400;
+  text-align: left;
+}
+
+.database-modal-body .db-enemy-attack-patterns td {
+  border-right: 1px solid var(--rm2k3-enemy-table-separator);
+  padding: 2px 4px;
+}
+
+.database-modal-body .db-enemy-attack-patterns tr:hover td {
+  background: var(--rm2k3-highlight);
+  color: var(--rm2k3-light);
+}
+
+.database-modal-body .db-enemy-attack-patterns tr.db-enemy-action-context-target td {
+  background: var(--rm2k3-highlight);
+  color: var(--rm2k3-light);
+}
+
+.db-enemy-dialog-backdrop {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  overflow: auto;
+  padding: 8px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.db-enemy-dialog {
+  background: var(--rm2k3-chrome);
+  border-color: var(--rm2k3-light) var(--rm2k3-shadow) var(--rm2k3-shadow) var(--rm2k3-light);
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: var(--shadow-popover);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 16px);
+  max-width: calc(100vw - 16px);
+  min-width: min(var(--rm2k3-enemy-dialog-width), calc(100vw - 16px));
+}
+
+.db-enemy-dialog header {
+  background: linear-gradient(90deg, var(--rm2k3-title-blue-deep), var(--rm2k3-title-blue-hi));
+  color: var(--rm2k3-light);
+  font: 700 12px/20px "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
+  padding: 0 6px;
+}
+
+.db-enemy-dialog main {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+  padding: 10px;
+}
+
+.db-enemy-dialog footer {
+  display: flex;
+  gap: 8px;
+  justify-content: end;
+  padding: 0 10px 10px;
+}
+
+.db-enemy-graphic-dialog-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: var(--rm2k3-enemy-graphic-list-width) var(--rm2k3-enemy-graphic-preview-width);
+}
+
+.db-enemy-graphic-list {
+  background: var(--rm2k3-enemy-table-bg);
+  border: 1px inset var(--rm2k3-shadow);
+  display: grid;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.db-enemy-graphic-list button {
+  background: transparent;
+  border: 0;
+  color: var(--rm2k3-enemy-table-text);
+  font: 12px/18px "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
+  text-align: left;
+}
+
+.db-enemy-graphic-list button.active,
+.db-enemy-graphic-list button:hover {
+  background: var(--rm2k3-highlight);
+  color: var(--rm2k3-light);
+}
+
+.db-enemy-hue-field {
+  display: grid;
+  gap: 4px;
+}
+
+.db-enemy-switch-effect {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) 28px;
+}
+
+.db-enemy-switch-effect .actor-check {
+  min-width: 48px;
+}
+
+.db-enemy-switch-effect select {
+  min-width: 0;
+  width: 100%;
+}
+
+.db-enemy-action-condition-grid {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 96px;
+}
+
+.db-enemy-condition-detail {
+  border: 1px inset var(--rm2k3-shadow);
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  min-height: 42px;
+  padding: 6px;
+}
+
+.db-enemy-behaviour-mode {
+  display: grid;
+  gap: 4px;
+}
+
+.db-enemy-behaviour-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+
+.db-enemy-behaviour-row select,
+.db-enemy-behaviour-row .db-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.db-enemy-context-menu {
+  background: var(--rm2k3-chrome);
+  border-color: var(--rm2k3-light) var(--rm2k3-shadow) var(--rm2k3-shadow) var(--rm2k3-light);
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: var(--shadow-popover);
+  min-width: 124px;
+  padding: 2px;
+  position: fixed;
+  z-index: 1100;
+}
+
+.db-enemy-context-menu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-primary);
+  display: grid;
+  font: 12px/18px "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
+  gap: 6px;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  padding: 1px 18px 1px 4px;
+  text-align: left;
+  width: 100%;
+}
+
+.db-enemy-context-menu button:hover:not(:disabled) {
+  background: var(--rm2k3-highlight);
+  color: var(--rm2k3-light);
+}
+
+.db-enemy-context-menu button:disabled {
+  color: var(--text-muted);
+}
+
+.db-enemy-context-menu kbd {
+  font: inherit;
+}
+
+.db-enemy-menu-icon {
+  display: inline-block;
+  height: 12px;
+  position: relative;
+  width: 12px;
+}
+
+.db-enemy-menu-icon.edit {
+  border: 1px solid var(--rm2k3-enemy-menu-ink);
+}
+
+.db-enemy-menu-icon.edit::after {
+  background: var(--rm2k3-enemy-menu-ink);
+  content: "";
+  height: 7px;
+  left: 5px;
+  position: absolute;
+  top: 2px;
+  transform: rotate(45deg);
+  width: 2px;
+}
+
+.db-enemy-menu-icon.cut::before,
+.db-enemy-menu-icon.cut::after {
+  background: var(--rm2k3-enemy-menu-ink);
+  content: "";
+  height: 12px;
+  left: 5px;
+  position: absolute;
+  top: 0;
+  transform: rotate(45deg);
+  width: 2px;
+}
+
+.db-enemy-menu-icon.cut::after {
+  transform: rotate(-45deg);
+}
+
+.db-enemy-menu-icon.copy {
+  border: 1px solid var(--rm2k3-enemy-menu-ink);
+  box-shadow: -3px -3px 0 -1px var(--rm2k3-chrome), -3px -3px 0 0 var(--rm2k3-enemy-menu-ink);
+}
+
+.db-enemy-menu-icon.paste {
+  border: 1px solid var(--rm2k3-enemy-menu-muted-ink);
+  opacity: 0.45;
+}
+
+.db-enemy-menu-icon.delete::before,
+.db-enemy-menu-icon.delete::after {
+  background: var(--rm2k3-enemy-menu-danger-ink);
+  content: "";
+  height: 13px;
+  left: 5px;
+  position: absolute;
+  top: -1px;
+  transform: rotate(45deg);
+  width: 2px;
+}
+
+.db-enemy-menu-icon.delete::after {
+  transform: rotate(-45deg);
+}
+
+@media (max-width: 480px) {
+  .db-enemy-dialog {
+    width: calc(100vw - 16px);
+  }
+
+  .db-enemy-graphic-dialog-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .db-enemy-behaviour-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .db-enemy-action-condition-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

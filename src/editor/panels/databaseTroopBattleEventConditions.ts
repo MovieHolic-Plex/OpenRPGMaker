@@ -1,0 +1,181 @@
+import { numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { updateTroopBattleEventPage } from "@/editor/panels/databaseTroopBattleEventActions";
+import { store } from "@/project/store";
+import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
+
+export type TroopEventConditionKind = "none" | "switch" | "variable" | "turn" | "enemyHp" | "actorHp" | "actorCommand";
+
+export const TROOP_EVENT_CONDITION_KINDS = [
+  "none",
+  "switch",
+  "variable",
+  "turn",
+  "enemyHp",
+  "actorHp",
+  "actorCommand",
+] as const;
+
+export function battleEventConditionControls(
+  record: TroopRecord,
+  page: BattleEventPageRecord,
+  kind: TroopEventConditionKind
+): HTMLElement[] {
+  const condition = page.conditions[0];
+  switch (kind) {
+    case "switch":
+      return switchControls(record, page, condition);
+    case "variable":
+      return variableControls(record, page, condition);
+    case "turn":
+      return turnControls(record, page, condition);
+    case "enemyHp":
+      return enemyHpControls(record, page, condition);
+    case "actorHp":
+      return actorHpControls(record, page, condition);
+    case "actorCommand":
+      return actorCommandControls(record, page, condition);
+    case "none":
+      return [];
+  }
+}
+
+export function initialBattleEventConditions(kind: TroopEventConditionKind): BattleEventCondition[] {
+  const project = store.getCurrent();
+  switch (kind) {
+    case "switch":
+      return [{ kind: "switch", switchId: "0001", value: true }];
+    case "variable":
+      return [{ kind: "variable", variableId: "0001", op: ">=", value: 0 }];
+    case "turn":
+      return [{ kind: "turn", start: 1, interval: 1 }];
+    case "enemyHp":
+      return [{ kind: "enemyHp", enemyId: project.database.enemies[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
+    case "actorHp":
+      return [{ kind: "actorHp", actorId: project.database.actors[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
+    case "actorCommand":
+      return [{ kind: "actorCommand", actorId: project.database.actors[0]?.id ?? "", commandId: "defend" }];
+    case "none":
+      return [];
+  }
+}
+
+export function kindOfBattleEventCondition(condition: BattleEventCondition | undefined): TroopEventConditionKind {
+  if (!condition) return "none";
+  if (condition.kind === "actorTurn" || condition.kind === "enemyTurn") return "turn";
+  switch (condition.kind) {
+    case "switch":
+    case "variable":
+    case "turn":
+    case "enemyHp":
+    case "actorHp":
+    case "actorCommand":
+      return condition.kind;
+    // selfSwitch/gold/timer/actor/item 은 배틀 조건 UI가 전용 폼이 없으므로
+    // 가장 가까운 기본 폼(switch)으로 매핑한다.
+    default:
+      return "switch";
+  }
+}
+
+function switchControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "switch" ? condition : { kind: "switch" as const, switchId: "", value: true };
+  return [textField("스위치", "db-field-troop-event-condition-switch", current.switchId, (switchId) =>
+    setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "switch" ? stored : current), switchId })))];
+}
+
+function variableControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "variable" ? condition : { kind: "variable" as const, variableId: "", op: ">=" as const, value: 0 };
+  return [
+    textField("변수", "db-field-troop-event-condition-variable", current.variableId, (variableId) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "variable" ? stored : current), variableId }))),
+    numberField("값", "db-field-troop-event-condition-variable-value", current.value, (value) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "variable" ? stored : current), value }))),
+  ];
+}
+
+function turnControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "turn" ? condition : { kind: "turn" as const, start: 1, interval: 1 };
+  return [
+    numberField("시작", "db-field-troop-event-condition-turn-start", current.start, (start) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "turn" ? stored : current), start }))),
+    numberField("간격", "db-field-troop-event-condition-turn-interval", current.interval, (interval) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "turn" ? stored : current), interval }))),
+  ];
+}
+
+function enemyHpControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "enemyHp"
+    ? condition
+    : { kind: "enemyHp" as const, enemyId: record.enemyIds[0] ?? "", minPercent: 0, maxPercent: 100 };
+  return [
+    selectField("적 HP", "db-field-troop-event-condition-enemy-hp-target", current.enemyId, store.getCurrent().database.enemies, (enemyId) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), enemyId }))),
+    numberField("최소 %", "db-field-troop-event-condition-enemy-hp-min", current.minPercent, (minPercent) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), minPercent }))),
+    numberField("최대 %", "db-field-troop-event-condition-enemy-hp-max", current.maxPercent, (maxPercent) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), maxPercent }))),
+  ];
+}
+
+function actorHpControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+  const current = condition?.kind === "actorHp" ? condition : { kind: "actorHp" as const, actorId, minPercent: 0, maxPercent: 100 };
+  return [
+    selectField("배우 HP", "db-field-troop-event-condition-actor-hp-target", current.actorId, store.getCurrent().database.actors, (nextActorId) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorHp" ? stored : current), actorId: nextActorId }))),
+    numberField("최소 %", "db-field-troop-event-condition-actor-hp-min", current.minPercent, (minPercent) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorHp" ? stored : current), minPercent }))),
+    numberField("최대 %", "db-field-troop-event-condition-actor-hp-max", current.maxPercent, (maxPercent) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorHp" ? stored : current), maxPercent }))),
+  ];
+}
+
+function actorCommandControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+  const current = condition?.kind === "actorCommand" ? condition : { kind: "actorCommand" as const, actorId, commandId: "defend" };
+  return [
+    selectField("배우", "db-field-troop-event-condition-actor-command-actor", current.actorId, store.getCurrent().database.actors, (nextActorId) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorCommand" ? stored : current), actorId: nextActorId }))),
+    actorCommandField(record, page, current),
+  ];
+}
+
+function actorCommandField(record: TroopRecord, page: BattleEventPageRecord, current: Extract<BattleEventCondition, { kind: "actorCommand" }>): HTMLElement {
+  const select = document.createElement("select");
+  select.dataset.testid = "db-field-troop-event-condition-actor-command-command";
+  for (const commandId of ["attack", "skill", "defend", "item", "escape", "event"] as const) {
+    const option = document.createElement("option");
+    option.value = commandId;
+    option.textContent = commandId;
+    select.append(option);
+  }
+  select.value = current.commandId;
+  select.addEventListener("change", () =>
+    setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorCommand" ? stored : current), commandId: select.value }))
+  );
+  return labelField("명령", select);
+}
+
+function setFreshCondition(
+  record: TroopRecord,
+  page: BattleEventPageRecord,
+  update: (condition: BattleEventCondition | undefined) => BattleEventCondition
+): void {
+  updateTroopBattleEventPage(record, page, { conditions: [update(currentCondition(record, page))] });
+}
+
+function currentCondition(record: TroopRecord, page: BattleEventPageRecord): BattleEventCondition | undefined {
+  return store.getCurrent().database.troops
+    .find((entry) => entry.id === record.id)
+    ?.battleEventPages.find((entry) => entry.id === page.id)
+    ?.conditions[0];
+}
+
+function labelField(label: string, control: HTMLElement): HTMLElement {
+  const wrap = document.createElement("label");
+  wrap.className = "db-field";
+  const text = document.createElement("span");
+  text.textContent = label;
+  wrap.append(text, control);
+  return wrap;
+}

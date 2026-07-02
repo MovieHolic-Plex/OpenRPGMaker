@@ -19,6 +19,8 @@ export interface MutableBattler {
   readonly agility: number;
   readonly chargeRate: number;
   readonly skillIds: readonly SkillId[];
+  readonly battleX?: number;
+  readonly battleY?: number;
   hidden: boolean;
   hp: number;
   mp: number;
@@ -28,7 +30,7 @@ export interface MutableBattler {
 }
 
 export function actorBattlers(project: Project): MutableBattler[] {
-  return project.session.partyActorIds.map((actorId) => {
+  return project.session.partyActorIds.map((actorId, index) => {
     const actor = project.database.actors.find((record) => record.id === actorId);
     if (!actor) throw new Error(`Missing actor: ${actorId}`);
     const normalizedActor = normalizeActorRecord(actor);
@@ -52,6 +54,8 @@ export function actorBattlers(project: Project): MutableBattler[] {
       mind,
       agility,
       chargeRate: chargeRateFor(agility),
+      battleX: 248 + (index % 2) * 32,
+      battleY: 70 + index * 24,
       gauge: 0,
       stateIds: [],
       defending: false,
@@ -84,6 +88,8 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       mind: stats.mind,
       agility: stats.agility,
       chargeRate: chargeRateFor(stats.agility),
+      battleX: member.x,
+      battleY: member.y,
       gauge: 0,
       stateIds: [],
       defending: false,
@@ -108,7 +114,10 @@ export function battlerSnapshot(battler: MutableBattler): BattleBattlerSnapshot 
     mp: battler.mp,
     maxMp: battler.maxMp,
     gauge: battler.gauge,
+    battleX: battler.battleX,
+    battleY: battler.battleY,
     defeated: battler.hp <= 0,
+    defending: battler.defending,
     stateIds: battler.stateIds,
     skillIds: battler.skillIds,
   };

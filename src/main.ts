@@ -2,7 +2,11 @@
 
 import "./styles/index.css";
 import { bootApp } from "@/app/mode";
-import { registerPwa } from "@/pwa";
+import { editorState } from "@/editor/editorState";
+import { addEvent } from "@/editor/eventActions";
+import { addEventPage, ensureEventPages } from "@/editor/eventPages";
+import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { store } from "@/project/store";
 
 // 개발/테스트 플래그를 URL 파라미터에서 body class로 변환.
 // 각 플래그는 대응하는 CSS 모드(palette compact scroll 등)를 토글한다.
@@ -28,22 +32,25 @@ if (!app) {
   throw new Error("#app 요소를 찾을 수 없습니다.");
 }
 
-registerPwa();
+void registerPwaIfEnabled();
 void bootApp(app).then(openClassicEventEditorCaptureIfRequested);
+
+async function registerPwaIfEnabled(): Promise<void> {
+  if (!shouldLoadPwaModule()) return;
+  const { registerPwa } = await import("@/pwa");
+  registerPwa();
+}
+
+function shouldLoadPwaModule(): boolean {
+  if (import.meta.env.PROD) return true;
+  return new URLSearchParams(window.location.search).has("enablePwa");
+}
 
 async function openClassicEventEditorCaptureIfRequested(): Promise<void> {
   if (typeof window === "undefined" || typeof document === "undefined") return;
   const params = new URLSearchParams(window.location.search);
   if (params.get("classicCapture") !== "2") return;
 
-  const [{ editorState }, { store }, { addEvent }, { addEventPage, ensureEventPages }, { openEventEditorModal }] =
-    await Promise.all([
-      import("@/editor/editorState"),
-      import("@/project/store"),
-      import("@/editor/eventActions"),
-      import("@/editor/eventPages"),
-      import("@/editor/panels/eventEditor/modal"),
-    ]);
   const mapId = editorState.get().currentMapId ?? store.getCurrent().startMapId;
   const map = store.getCurrent().maps[mapId];
   if (!map) return;

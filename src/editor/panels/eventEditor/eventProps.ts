@@ -1,5 +1,5 @@
-import { deleteEvent, updateEvent } from "@/editor/eventActions";
-import { editorState } from "@/editor/editorState";
+import { updateEvent } from "@/editor/eventActions";
+import { deleteEditorEvent } from "@/editor/eventDeletion";
 import { el } from "@/util/dom";
 import { field, selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, TRIGGER_OPTIONS } from "./options";
@@ -19,8 +19,7 @@ export function renderEventProps(mapId: MapId, ev: GameEvent): HTMLElement {
       text: "이벤트 삭제",
       on: {
         click: () => {
-          deleteEvent(mapId, ev.id);
-          editorState.set({ selectedEventId: null });
+          deleteEditorEvent(mapId, ev.id);
         },
       },
     })
@@ -40,7 +39,7 @@ function triggerInput(mapId: MapId, ev: GameEvent): HTMLElement {
 
 function spriteInput(mapId: MapId, ev: GameEvent): HTMLElement {
   const sprite = el("input", {
-    attrs: { type: "text", placeholder: "예: npc_villager" },
+    attrs: { type: "text", placeholder: "예: tex_easyrpg_charset_people1" },
     value: ev.sprite?.id ?? "",
   }) as HTMLInputElement;
   sprite.addEventListener("change", () => {

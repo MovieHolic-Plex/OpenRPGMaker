@@ -1,4 +1,3 @@
-import { newCommand } from "@/editor/eventActions";
 import { editorState } from "@/editor/editorState";
 import {
   addEventPageCommand,
@@ -14,14 +13,10 @@ import { eventDraftDiffById, type EventDiff } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { openEventCommandPicker } from "./commandPicker";
-import {
-  openChoicesDialog,
-  openDisplayOptionsDialog,
-  openFacesetDialog,
-} from "./messageCommandDialogs";
-import { openTextCommandDialog } from "./textCommandDialog";
+import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   renderClassicPageTabStrip,
   renderEventNameControl,
@@ -58,7 +53,7 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
     fresh.addEventListener("click", () => {
       const pageId = activePageIdOf(mapId, eventId);
       if (!pageId) return;
-      addEventPageCommand(mapId, eventId, pageId, newCommand(kind));
+      openNewEventCommandKindDialog(kind, (command) => addEventPageCommand(mapId, eventId, pageId, command));
     });
     btn.replaceWith(fresh);
   }
@@ -87,7 +82,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   }
   const pages = ev.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
-  const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[pages.length - 1];
+  const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
   if (!activePage) {
     section.append(el("div", { class: "empty-hint", text: "이벤트 페이지가 없습니다." }));
     container.append(section);
@@ -97,6 +92,16 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const actions = pageCommandActions(mapId, ev.id, activePage.id);
   const settingsColumn = el("div", { class: "event-editor-settings-column" });
   const commandsColumn = el("div", { class: "event-editor-commands-column" });
+  const columnResizer = el("div", {
+    class: "event-editor-column-resizer",
+    attrs: {
+      role: "separator",
+      "aria-label": "설정과 실행 내용 사이즈 조절",
+      "aria-orientation": "vertical",
+      tabindex: "0",
+    },
+    dataset: { testid: "event-editor-column-resizer" },
+  });
   const cmdList = el("div", { class: "cmd-list" });
   renderCommandList(cmdList, activePage.commands, [], actions);
   cmdList.querySelector(".empty-hint")?.remove();
@@ -110,6 +115,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   });
   settingsColumn.append(renderClassicPageTabStrip(ev, activePage), renderEventPageProps(mapId, ev.id, activePage));
   commandsColumn.append(
+    renderCommandToolbar(cmdList, actions),
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
       dataset: { testid: "event-classic-contents" },
@@ -119,6 +125,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       ],
     })
   );
+
+  const workbench = el("div", {
+    class: "event-editor-workbench",
+    children: [settingsColumn, columnResizer, commandsColumn],
+  });
+  applyStoredSettingsColumnWidth(workbench);
+  attachColumnResize(columnResizer, workbench);
 
   section.append(
     el("div", {
@@ -133,7 +146,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       text: `ID ${displayEventNumber(mapId, eventId)} (${ev.x}, ${ev.y})`,
     }),
     renderEventDiffSummary(mapId, eventId),
-    el("div", { class: "event-editor-workbench", children: [settingsColumn, commandsColumn] })
+    workbench
   );
   container.append(section);
 }
@@ -166,8 +179,51 @@ function activePageIdOf(mapId: MapId, eventId: string): string | null {
   const pages = ev.pages ?? [];
   if (!pages.length) return null;
   const selectedPageId = editorState.get().selectedEventPageId;
-  const active = pages.find((page) => page.id === selectedPageId) ?? pages[pages.length - 1];
+  const active = pages.find((page) => page.id === selectedPageId) ?? pages[0];
   return active.id;
+}
+
+function renderCommandToolbar(cmdList: HTMLElement, actions: CommandListActions): HTMLElement {
+  const selectedPath = (): number[] | null => {
+    const selected = cmdList.querySelector<HTMLElement>(".cmd-item.selected");
+    if (!selected?.dataset.cmdPath) return null;
+    try {
+      const path = JSON.parse(selected.dataset.cmdPath);
+      return Array.isArray(path) && path.every((part) => Number.isInteger(part)) ? path : null;
+    } catch {
+      return null;
+    }
+  };
+  const runForSelected = (run: (path: number[]) => void): void => {
+    const path = selectedPath();
+    if (path) run(path);
+  };
+  return el("div", {
+    class: "event-editor-command-toolbar",
+    attrs: { "aria-label": "실행 내용 도구" },
+    children: [
+      toolbarButton("↶", "되돌리기", undefined, true),
+      toolbarButton("↷", "다시 실행", undefined, true),
+      toolbarButton("↑", "위로 이동", () => runForSelected((path) => actions.moveCommand(path, -1))),
+      toolbarButton("↓", "아래로 이동", () => runForSelected((path) => actions.moveCommand(path, 1))),
+      toolbarButton("▣", "복사", undefined, true),
+      toolbarButton("✂", "잘라내기", () => runForSelected((path) => actions.deleteCommand(path))),
+      toolbarButton("+", "명령 추가", () =>
+        cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
+          new MouseEvent("dblclick", { bubbles: true, cancelable: true })
+        )
+      ),
+    ],
+  });
+}
+
+function toolbarButton(text: string, title: string, onClick?: () => void, disabled = false): HTMLButtonElement {
+  return el("button", {
+    class: "event-editor-command-tool",
+    text,
+    attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
+    on: onClick ? { click: onClick } : undefined,
+  }) as HTMLButtonElement;
 }
 
 function commandKindForTestId(testId: string): Command["kind"] | null {
@@ -186,6 +242,7 @@ function commandKindForTestId(testId: string): Command["kind"] | null {
     "command-add-item": "changeItem",
     "command-add-party": "changeParty",
     "command-add-game-over": "gameOver",
+    "command-add-ending": "ending",
   };
   return map[testId] ?? null;
 }
@@ -208,36 +265,11 @@ function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {
     openEventCommandPicker({
       title: "이벤트 명령",
       onSelect: (command, closePicker) => {
-        if (command.kind === "text") {
-          openTextCommandDialog(command, (textCommand) => {
-            actions.addCommand([], textCommand);
-            closePicker();
-          });
-          return { closePicker: false };
-        }
-        if (command.kind === "displayTextSettings") {
-          openDisplayOptionsDialog(command, (settingsCommand) => {
-            actions.addCommand([], settingsCommand);
-            closePicker();
-          });
-          return { closePicker: false };
-        }
-        if (command.kind === "changeFace") {
-          openFacesetDialog(command, (faceCommand) => {
-            actions.addCommand([], faceCommand);
-            closePicker();
-          });
-          return { closePicker: false };
-        }
-        if (command.kind === "choices") {
-          openChoicesDialog(command, (choicesCommand) => {
-            actions.addCommand([], choicesCommand);
-            closePicker();
-          });
-          return { closePicker: false };
-        }
-        actions.addCommand([], command);
-        return undefined;
+        openNewEventCommandDialog(command, (editedCommand) => {
+          actions.addCommand([], editedCommand);
+          closePicker();
+        });
+        return { closePicker: false };
       },
     });
   };

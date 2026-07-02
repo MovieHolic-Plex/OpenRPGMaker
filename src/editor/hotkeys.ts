@@ -10,6 +10,7 @@
 // 텍스트 입력 모달/폼이 포커스를 가지면 단축키가 텍스트를 가로채지 않도록
 // shouldIgnoreEditorShortcut() 로 가드한다.
 
+import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
 
 /**
@@ -58,6 +59,8 @@ export function applyLayer(layer: Layer): void {
 export function handleEditorKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
   if (event.ctrlKey || event.metaKey || event.altKey) return false;
+
+  if (handleEditorDeleteKey(event)) return true;
 
   // F5/F6/F7: 레이어 (하위/상위/이벤트).
   if (event.code === "F5") {
@@ -109,6 +112,16 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   }
 
   return false;
+}
+
+export function handleEditorDeleteKey(event: KeyboardEvent): boolean {
+  if (shouldIgnoreEditorShortcut(event)) return false;
+  if (event.ctrlKey || event.metaKey || event.altKey) return false;
+  if (event.key !== "Delete") return false;
+  if (editorState.get().layer !== "event") return false;
+  if (!deleteSelectedEditorEvent()) return false;
+  event.preventDefault();
+  return true;
 }
 
 /** 현재 줌에서 한 단계 위/아래로. 허용 줌 레벨 범위 안에서만. */

@@ -1,4 +1,4 @@
-import type { PassFlag, Project, TileAiMetadata, TilesetDef } from "@/project/types";
+import type { PassFlag, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { DEFAULT_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 import { DIRT_ROAD_TILE, TERRAIN_TAG, describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import {
@@ -10,6 +10,11 @@ import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
 
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
+type RuntimeHarnessGroup = {
+  readonly defaultLayer: TileGroupMetadata["defaultLayer"];
+  readonly tileIds: readonly number[];
+  readonly stackable?: boolean;
+};
 
 export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boolean {
   return tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY;
@@ -45,13 +50,13 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
   return changed;
 }
 
-export function harnessLayerForTile(tileset: Pick<TilesetDef, "id" | "image">, tile: number): "lower" | "upper" | null {
+export function harnessLayerForTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, tile: number): "lower" | "upper" | null {
   const group = groupForTile(tileset, tile);
   if (!group || group.defaultLayer === "mixed" || group.defaultLayer === "event") return null;
   return group.defaultLayer;
 }
 
-export function isHarnessStackableTile(tileset: Pick<TilesetDef, "id" | "image">, tile: number): boolean {
+export function isHarnessStackableTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, tile: number): boolean {
   return groupForTile(tileset, tile)?.stackable === true;
 }
 
@@ -144,9 +149,11 @@ function ensureTileMetaLength(tileset: TilesetDef): void {
   while (tileset.tileMeta.length < tileset.count) tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
 }
 
-function groupForTile(tileset: Pick<TilesetDef, "id" | "image">, tile: number): CombinedTownHarnessGroup | null {
-  if (!isCombinedTownTileset(tileset)) return null;
-  return COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.tileIds.includes(tile)) ?? null;
+function groupForTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, tile: number): RuntimeHarnessGroup | null {
+  if (isCombinedTownTileset(tileset)) {
+    return COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.tileIds.includes(tile)) ?? null;
+  }
+  return tileset.tileGroups?.find((group) => group.tileIds.includes(tile)) ?? null;
 }
 
 // harness 그룹 → 런타임 priority 결정.

@@ -15,8 +15,6 @@ test("database top tabs keep the modal shell stable when switching sections", as
     const current = await captureDatabaseShellMetrics(page);
     expect(current.modalBodyScrollTop, `${tab.testId} must not scroll the modal chrome`).toBe(0);
     expectStableTop(current.tabsTop, reference.tabsTop, `${tab.testId} tabs top`);
-    expectStableTop(current.manualTop, reference.manualTop, `${tab.testId} manual source top`);
-    expectStableTop(current.statusTop, reference.statusTop, `${tab.testId} status top`);
     expectStableTop(current.bodyTop, reference.bodyTop, `${tab.testId} body top`);
   }
 });

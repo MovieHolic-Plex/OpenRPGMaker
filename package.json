@@ -14,6 +14,8 @@
     "ontology:evaluate": "node scripts/ontology-query.mjs evaluate",
     "ontology:docs": "node scripts/ontology-query.mjs docs --write docs/ontology/development-ontology.md",
     "ontology:check": "node scripts/ontology-check.mjs",
+    "openwiki:cpen": "node scripts/openwiki-cpen.mjs",
+    "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",
     "test": "vitest run --configLoader runner",
     "test:e2e": "playwright test",
     "test:watch": "vitest --configLoader runner"

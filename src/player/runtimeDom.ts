@@ -2,7 +2,9 @@ import { TILE_SIZE } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
+import type { M2RuntimeState } from "@/player/types";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
+import type { RuntimeMoverSnapshot } from "@/player/runtimeMoverSnapshots";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 
 export interface RuntimeEventSnapshot {
@@ -21,14 +23,24 @@ export interface RuntimeStateSnapshot {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
   readonly timers: Record<string, number>;
+  readonly timerActive: Record<string, boolean>;
+  readonly flags: Record<string, boolean>;
+  readonly mapOverrides: PlaySession["mapOverrides"];
   readonly gold: number;
   readonly inventory: Record<string, number>;
   readonly partyActorIds: readonly string[];
+  readonly actorSkillIds: PlaySession["actorSkillIds"];
   readonly actorExperience: Record<string, number>;
+  readonly actorLevels: Record<string, number>;
   readonly actorVitals: Record<string, ActorVitals>;
+  readonly eventLocations: PlaySession["eventLocations"];
   readonly actorEquipment: PlaySession["actorEquipment"];
   readonly actorRows: PlaySession["actorRows"];
+  readonly audio: AudioCommandState;
+  readonly pictures: Record<string, PictureState>;
+  readonly m2Runtime?: M2RuntimeState;
   readonly events: Record<string, RuntimeEventSnapshot>;
+  readonly movers: Record<string, RuntimeMoverSnapshot>;
   readonly battleResult?: BattleResult;
 }
 
@@ -118,6 +130,7 @@ export class RuntimeDomOverlay {
       host.append(node);
     }
     node.textContent = JSON.stringify(snapshot);
+    this.syncTimerHud(snapshot.timers, snapshot.timerActive);
   }
 
   syncAudioState(audio: AudioCommandState): void {
@@ -156,4 +169,29 @@ export class RuntimeDomOverlay {
       layer.append(item);
     }
   }
+
+  private syncTimerHud(timers: Record<string, number>, active: Record<string, boolean>): void {
+    const host = this.host();
+    if (!host) return;
+    const entries = Object.entries(timers).filter(([id, seconds]) => seconds > 0 || active[id] === true);
+    const existing = host.querySelector("[data-testid='runtime-timer-hud']");
+    if (entries.length === 0) {
+      existing?.remove();
+      return;
+    }
+    const node = existing instanceof HTMLElement ? existing : document.createElement("div");
+    if (!existing) {
+      node.className = "runtime-timer-hud";
+      node.dataset.testid = "runtime-timer-hud";
+      host.append(node);
+    }
+    node.textContent = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
+  }
+}
+
+function formatTimer(seconds: number): string {
+  const safeSeconds = Math.max(0, Math.floor(seconds));
+  const mins = Math.floor(safeSeconds / 60);
+  const secs = safeSeconds % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }

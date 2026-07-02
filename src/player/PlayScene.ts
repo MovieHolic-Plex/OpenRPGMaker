@@ -16,6 +16,7 @@ import {
   type AutonomousMover,
   type ParallelProcess,
   type PlaySceneContext,
+  type TransferRequest,
   type RuntimeTimer,
 } from "@/player/playSceneTypes";
 import {
@@ -32,9 +33,11 @@ import {
 } from "@/player/playSceneMapRuntime";
 import {
   applyChangeTileStep as applySceneChangeTileStep,
+  flashCamera,
+  shakeCamera,
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
-import { updatePlayScene } from "@/player/playSceneMovement";
+import { resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import {
@@ -139,6 +142,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   loadMap(mapId: MapId): void {
     loadSceneMap(this, mapId);
+    resetEncounterCounter();
   }
 
   renderTiles(): void {
@@ -214,8 +218,16 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateSceneTimers(this, deltaMs);
   }
 
-  transferTo(mapId: MapId, x: number, y: number): void {
-    transferSceneTo(this, mapId, x, y);
+  transferTo(request: TransferRequest): Promise<void> {
+    return transferSceneTo(this, request);
+  }
+
+  flashScreen(step: Extract<StepResult, { kind: "flashScreen" }>): Promise<void> {
+    return flashCamera(this, step);
+  }
+
+  shakeScreen(step: Extract<StepResult, { kind: "shakeScreen" }>): Promise<void> {
+    return shakeCamera(this, step);
   }
 
   getSession(): PlaySession {

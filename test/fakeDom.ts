@@ -36,17 +36,33 @@ export class FakeNode {
     const index = this.childNodes.indexOf(child);
     if (index >= 0) this.childNodes.splice(index, 1);
   }
+
+  remove(): void {
+    this.parentNode?.removeChild(this);
+    this.parentNode = null;
+  }
+
+  contains(node: unknown): boolean {
+    if (node === this) return true;
+    return this.childNodes.some((child) => child.contains(node));
+  }
 }
 
 export class FakeElement extends FakeNode {
+  checked = false;
   className = "";
   dataset: Record<string, string> = {};
   disabled = false;
+  hidden = false;
   innerHTML = "";
-  style: Record<string, string> = {};
+  max = "";
+  min = "";
+  style: Record<string, string> & { setProperty: (name: string, value: string) => void } = createFakeStyle();
+  type = "";
   value = "";
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;
+  private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
     add: (...tokens: string[]): void => {
       const classes = new Set(this.className.split(/\s+/).filter(Boolean));
@@ -65,12 +81,45 @@ export class FakeElement extends FakeNode {
     this.attrs[name] = value;
   }
 
-  addEventListener(): void {
-    return;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject | null): void {
+    if (listener === null) return;
+    const listeners = this.listeners[type] ?? [];
+    listeners.push(listener);
+    this.listeners[type] = listeners;
+  }
+
+  dispatchEvent(event: Event): boolean {
+    for (const listener of this.listeners[event.type] ?? []) {
+      if (typeof listener === "function") {
+        listener(event);
+        continue;
+      }
+      listener.handleEvent(event);
+    }
+    return true;
+  }
+
+  focus(): void {
+    const doc = globalThis.document as unknown as { activeElement?: FakeElement };
+    doc.activeElement = this;
+  }
+
+  querySelector(selector: string): FakeElement | null {
+    const tags = selector.split(",").map((part) => part.trim().toUpperCase());
+    return findFirstByTag(this, tags);
   }
 }
 
+function createFakeStyle(): Record<string, string> & { setProperty: (name: string, value: string) => void } {
+  const style = {} as Record<string, string> & { setProperty: (name: string, value: string) => void };
+  style.setProperty = (name: string, value: string): void => {
+    style[name] = value;
+  };
+  return style;
+}
+
 export function installFakeDom(): () => void {
+  const body = new FakeElement("body");
   const previous = {
     document: globalThis.document,
     Node: globalThis.Node,
@@ -81,6 +130,8 @@ export function installFakeDom(): () => void {
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
   defineDomGlobal("document", {
+    activeElement: null,
+    body,
     createElement: (tagName: string) => new FakeElement(tagName),
     createTextNode: (text: string) => {
       const node = new FakeNode();
@@ -106,6 +157,15 @@ export function findByTestId(root: FakeNode, testId: string): FakeElement | null
   if (root instanceof FakeElement && root.dataset.testid === testId) return root;
   for (const child of root.childNodes) {
     const match = findByTestId(child, testId);
+    if (match) return match;
+  }
+  return null;
+}
+
+function findFirstByTag(root: FakeNode, tags: readonly string[]): FakeElement | null {
+  if (root instanceof FakeElement && tags.includes(root.tagName)) return root;
+  for (const child of root.childNodes) {
+    const match = findFirstByTag(child, tags);
     if (match) return match;
   }
   return null;

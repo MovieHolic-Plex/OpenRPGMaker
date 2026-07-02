@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+test.setTimeout(60_000);
+
 async function clickMapCenter(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
@@ -61,53 +63,59 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
   await expect(picker).toBeVisible();
   await expect(picker.getByRole("heading", { name: "이벤트 명령" })).toBeVisible();
   await expect(picker.getByTestId("event-command-picker-tab-1")).toHaveAttribute("aria-selected", "true");
+  await expect(picker.locator(".event-command-picker-group-heading")).toHaveText([
+    "대화/입력",
+    "조건/흐름",
+    "맵/이동",
+    "보상/상점",
+    "소리",
+  ]);
   await expect(picker.getByRole("button", { name: "문장 표시..." })).toBeVisible();
   await expect(picker.getByRole("button", { name: "문장 표시 설정..." })).toBeEnabled();
   await expect(picker.getByRole("button", { name: "스위치 조작..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "조건 분기..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "장소 이동..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "BGM 재생..." })).toBeVisible();
+  await expect(picker.locator(".event-command-picker-command")).toHaveCount(21);
+  await expect(picker.getByRole("button", { name: "경험치 변경..." })).toHaveCount(0);
 
   await picker.getByTestId("event-command-picker-tab-2").click();
+  await expect(picker.getByRole("button", { name: "경험치 변경..." })).toBeVisible();
   await expect(picker.getByRole("button", { name: "전투 처리..." })).toBeVisible();
-  await expect(picker.getByRole("button", { name: "장소 이동..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "장소 이동..." })).toHaveCount(0);
 
   await picker.getByTestId("event-command-picker-tab-3").click();
-  await expect(picker.getByRole("button", { name: "BGM 재생..." })).toBeVisible();
-  await expect(picker.getByRole("button", { name: "조건 분기..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "그림 표시..." })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "화면 색조 변경..." })).toBeVisible();
 
   await picker.getByTestId("event-command-picker-tab-4").click();
-  await expect(picker.getByRole("button", { name: "주인공 직업 변경..." })).toBeVisible();
-  await expect(picker.getByRole("button", { name: "로드 메뉴 열기" })).toBeDisabled();
-  await expect(picker.getByRole("button", { name: "적 HP 변경..." })).toBeDisabled();
+  await expect
+    .poll(async () =>
+      picker.locator(".event-command-picker-grid").evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length)
+    )
+    .toBe(2);
+  const commandGrid = picker.locator(".event-command-picker-grid");
+  await expect(commandGrid.locator(".event-command-picker-command:disabled")).toHaveCount(0);
+  await expect(picker.getByRole("button", { name: "저장 메뉴 열기" })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "로드 메뉴 열기" })).toBeEnabled();
+  await expect(picker.getByRole("button", { name: "적 HP 변경..." })).toHaveCount(0);
 
   await picker.getByTestId("event-command-picker-tab-1").click();
-  await picker.getByTestId("command-picker-add-text").click();
-  await expect(picker).toBeVisible();
-  const showTextDialog = page.getByTestId("event-command-text-dialog");
-  await expect(showTextDialog).toBeVisible();
-  await expect(showTextDialog.getByTestId("event-command-text-body")).toBeVisible();
-  await expect(showTextDialog.getByTestId("event-command-text-body")).toBeFocused();
-  await expect(showTextDialog.getByTestId("event-command-text-line-guide")).toContainText("최대 4줄");
-  await expect(showTextDialog.getByTestId("event-command-text-line-count")).toContainText("1/4줄");
-  await expect(showTextDialog.getByRole("button", { name: "OK" })).toBeVisible();
-  await expect(showTextDialog.getByRole("button", { name: "Cancel" })).toBeVisible();
-  await expect(showTextDialog.getByRole("button", { name: "Help" })).toBeVisible();
-  await showTextDialog.getByTestId("event-command-text-help").click();
-  await expect(showTextDialog.getByTestId("event-command-text-control-help")).toContainText("\\v[n]");
-  await showTextDialog.getByTestId("event-command-text-body").fill("1\n2\n3\n4\n5");
-  await expect(showTextDialog.getByTestId("event-command-text-ok")).toBeDisabled();
-  await expect(showTextDialog.getByTestId("event-command-text-line-count")).toContainText("최대 4줄");
-  await showTextDialog.getByTestId("event-command-text-cancel").click();
-  await expect(showTextDialog).toBeHidden();
-  await expect(picker).toBeVisible();
-
-  await picker.getByTestId("command-picker-add-text").click();
-  await expect(showTextDialog).toBeVisible();
-  await showTextDialog.getByTestId("event-command-text-body").fill("테스트 대사");
-  await showTextDialog.getByTestId("event-command-text-ok").click();
-  await expect(showTextDialog).toBeHidden();
-  await expect(picker).toBeHidden();
-  await expect(editor.locator('[data-testid="event-command-text"]').filter({ hasText: "테스트 대사" })).toBeVisible();
-
   await page.screenshot({ path: testInfo.outputPath("rm2k3-event-command-picker.png"), fullPage: true });
+  await picker.getByTestId("command-picker-add-text").click();
+  await expect(picker).toBeVisible();
+  const commandDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(commandDialog).toBeVisible();
+  await expect(commandDialog).toContainText("문장 표시");
+  await expect(commandDialog.locator("textarea")).toBeVisible();
+  await expect(commandDialog.getByRole("button", { name: "확인" })).toBeVisible();
+  await expect(commandDialog.getByRole("button", { name: "취소" })).toBeVisible();
+  await commandDialog.locator("textarea").fill("취소될 대사");
+  await commandDialog.getByTestId("event-command-edit-cancel").click();
+  await expect(commandDialog).toBeHidden();
+  await expect(picker).toBeVisible();
+  await picker.getByTestId("event-command-picker-cancel").click();
+  await expect(picker).toBeHidden();
 });
 
 test("event editor modal matches the RPG Maker reference window proportions", async ({ page }, testInfo) => {
@@ -131,7 +139,9 @@ test("event editor modal matches the RPG Maker reference window proportions", as
   await page.screenshot({ path: testInfo.outputPath("event-editor-reference-proportions.png"), fullPage: true });
 });
 
-test("event editor keeps the desktop contents column at compact desktop widths", async ({ page }, testInfo) => {
+test("event editor clamps to the viewport while keeping desktop columns at compact desktop widths", async ({
+  page,
+}, testInfo) => {
   await page.setViewportSize({ width: 1024, height: 926 });
   await page.goto("/?freshProject=1");
 
@@ -145,10 +155,11 @@ test("event editor keeps the desktop contents column at compact desktop widths",
   }
 
   expect(windowBox.x).toBeGreaterThanOrEqual(0);
-  expect(windowBox.width).toBeGreaterThan(1400);
+  expect(windowBox.width).toBeLessThanOrEqual(1024);
+  expect(windowBox.width).toBeGreaterThan(1000);
   expect(contentsBox.x).toBeGreaterThan(settingsBox.x + settingsBox.width);
   expect(Math.abs(contentsBox.y - settingsBox.y)).toBeLessThan(2);
-  expect(contentsBox.width).toBeGreaterThan(600);
+  expect(contentsBox.width).toBeGreaterThan(420);
   expect(contentsBox.height).toBeGreaterThan(620);
   await expect
     .poll(async () =>
@@ -158,9 +169,98 @@ test("event editor keeps the desktop contents column at compact desktop widths",
         scrollWidth: node.scrollWidth,
       }))
     )
-    .toEqual({ clientWidth: 1024, scrollLeft: 0, scrollWidth: 1488 });
+    .toEqual({ clientWidth: 1024, scrollLeft: 0, scrollWidth: 1024 });
 
   await page.screenshot({ path: testInfo.outputPath("event-editor-compact-desktop-columns.png"), fullPage: true });
+});
+
+test("event editor keeps two columns at an 800px viewport by compressing the settings column", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1024, height: 926 });
+  await page.goto("/?freshProject=1");
+
+  const editor = await openEventEditor(page);
+  await page.setViewportSize({ width: 800, height: 926 });
+
+  const settingsBox = await editor.locator(".event-editor-settings-column").boundingBox();
+  const contentsBox = await editor.locator(".event-contents-fieldset").boundingBox();
+  const windowBox = await editor.locator(".event-editor-modal-window").boundingBox();
+  const nameBox = await editor.getByTestId("event-page-name-input").boundingBox();
+  const pageTabsBox = await editor.locator(".event-page-tabs").boundingBox();
+  if (settingsBox === null || contentsBox === null || windowBox === null || nameBox === null || pageTabsBox === null) {
+    throw new Error("missing event editor responsive layout boxes");
+  }
+
+  expect(windowBox.x).toBeGreaterThanOrEqual(0);
+  expect(windowBox.width).toBeLessThanOrEqual(800);
+  expect(nameBox.y).toBeLessThan(pageTabsBox.y);
+  expect(contentsBox.x).toBeGreaterThan(settingsBox.x + settingsBox.width);
+  expect(Math.abs(contentsBox.y - settingsBox.y)).toBeLessThan(2);
+  expect(settingsBox.width).toBeLessThan(380);
+  expect(contentsBox.width).toBeGreaterThan(390);
+  expect(contentsBox.height).toBeGreaterThan(620);
+  await expect
+    .poll(async () =>
+      editor.evaluate((node) => ({
+        clientWidth: node.clientWidth,
+        scrollLeft: node.scrollLeft,
+        scrollWidth: node.scrollWidth,
+      }))
+    )
+    .toEqual({ clientWidth: 800, scrollLeft: 0, scrollWidth: 800 });
+
+  await page.screenshot({ path: testInfo.outputPath("event-editor-800px-two-columns.png"), fullPage: true });
+});
+
+test("event editor supports resizing the split columns and modal window", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1024, height: 926 });
+  await page.goto("/?freshProject=1");
+
+  const editor = await openEventEditor(page);
+  await page.setViewportSize({ width: 800, height: 926 });
+
+  const settings = editor.locator(".event-editor-settings-column");
+  const contents = editor.locator(".event-contents-fieldset");
+  const splitter = editor.getByTestId("event-editor-column-resizer");
+  const windowNode = editor.locator(".event-editor-modal-window");
+  const windowHandle = editor.getByTestId("event-editor-modal-resize-handle");
+
+  const initialSettingsBox = await settings.boundingBox();
+  const initialContentsBox = await contents.boundingBox();
+  const splitterBox = await splitter.boundingBox();
+  if (initialSettingsBox === null || initialContentsBox === null || splitterBox === null) {
+    throw new Error("missing event editor split resize boxes");
+  }
+
+  await page.mouse.move(splitterBox.x + splitterBox.width / 2, splitterBox.y + 80);
+  await page.mouse.down();
+  await page.mouse.move(splitterBox.x - 48, splitterBox.y + 80);
+  await page.mouse.up();
+
+  const resizedSettingsBox = await settings.boundingBox();
+  const resizedContentsBox = await contents.boundingBox();
+  if (resizedSettingsBox === null || resizedContentsBox === null) {
+    throw new Error("missing event editor resized split boxes");
+  }
+  expect(resizedSettingsBox.width).toBeLessThan(initialSettingsBox.width - 20);
+  expect(resizedContentsBox.width).toBeGreaterThan(initialContentsBox.width + 20);
+
+  const initialWindowBox = await windowNode.boundingBox();
+  const handleBox = await windowHandle.boundingBox();
+  if (initialWindowBox === null || handleBox === null) throw new Error("missing event editor window resize boxes");
+
+  await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handleBox.x - 96, handleBox.y - 96);
+  await page.mouse.up();
+
+  const resizedWindowBox = await windowNode.boundingBox();
+  if (resizedWindowBox === null) throw new Error("missing resized event editor window box");
+  expect(resizedWindowBox.width).toBeLessThan(initialWindowBox.width - 20);
+  expect(resizedWindowBox.height).toBeLessThan(initialWindowBox.height - 40);
+
+  await page.screenshot({ path: testInfo.outputPath("event-editor-resizable-window-and-columns.png"), fullPage: true });
 });
 
 test("event command context menu, switch picker, and trigger safety warning work in the editor", async ({ page }, testInfo) => {
@@ -173,18 +273,32 @@ test("event command context menu, switch picker, and trigger safety warning work
   let picker = page.getByTestId("event-command-picker");
   await expect(picker).toBeVisible();
   await picker.getByTestId("command-picker-add-text").click();
-  const textDialog = page.getByTestId("event-command-text-dialog");
-  await textDialog.getByTestId("event-command-text-body").fill("context menu seed");
-  await textDialog.getByTestId("event-command-text-ok").click();
+  const commandDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(commandDialog).toBeVisible();
+  await commandDialog.locator("textarea").fill("context menu seed");
+  await commandDialog.getByTestId("event-command-edit-ok").click();
   await expect(editor.locator('[data-testid="event-command-text"]').filter({ hasText: "context menu seed" })).toBeVisible();
 
   const textCommand = editor.locator('[data-testid="event-command-text"]').filter({ hasText: "context menu seed" });
   await textCommand.locator(".cmd-head").click({ button: "right" });
   const contextMenu = page.getByTestId("event-command-context-menu");
   await expect(contextMenu).toBeVisible();
-  await expect(contextMenu.getByTestId("event-command-menu-insert")).toBeVisible();
-  await expect(contextMenu.getByTestId("event-command-menu-copy")).toBeVisible();
+  await expect(contextMenu.getByTestId("event-command-menu-insert")).toContainText("삽입...");
+  await expect(contextMenu.getByTestId("event-command-menu-insert")).toContainText("Enter");
+  await expect(contextMenu.getByTestId("event-command-menu-edit")).toContainText("Space");
+  await expect(contextMenu.getByTestId("event-command-menu-copy")).toContainText("Ctrl+C");
+  await expect(contextMenu.getByTestId("event-command-menu-paste")).toBeDisabled();
+  await expect(contextMenu.getByTestId("event-command-menu-edit")).toBeFocused();
   await page.screenshot({ path: testInfo.outputPath("event-editor-context-menu-open.png"), fullPage: true });
+
+  await page.keyboard.press("Space");
+  await expect(contextMenu).toBeHidden();
+  await expect(commandDialog).toBeVisible();
+  await expect(commandDialog).toContainText("문장 표시");
+  await commandDialog.getByTestId("event-command-edit-cancel").click();
+  await expect(commandDialog).toBeHidden();
+
+  await textCommand.locator(".cmd-head").click({ button: "right" });
   await contextMenu.getByTestId("event-command-menu-copy").click();
 
   await textCommand.locator(".cmd-head").click({ button: "right" });
@@ -192,20 +306,27 @@ test("event command context menu, switch picker, and trigger safety warning work
   picker = page.getByTestId("event-command-picker");
   await expect(picker).toBeVisible();
   await picker.getByTestId("command-picker-add-setSwitch").click();
+  await expect(editor.getByTestId("event-command-setSwitch")).toHaveCount(0);
+  await expect(commandDialog).toBeVisible();
+  await expect(commandDialog).toContainText("스위치 조작");
+  await commandDialog.getByTestId("event-command-edit-ok").click();
   await expect(picker).toBeHidden();
 
   const switchCommand = editor.getByTestId("event-command-setSwitch");
   await expect(switchCommand).toBeVisible();
   await switchCommand.locator(".cmd-head").dblclick();
-  await switchCommand.getByTestId("event-switch-picker-open").click();
+  await expect(commandDialog).toBeVisible();
+  await commandDialog.getByTestId("event-switch-picker-open").click();
   const recordPicker = page.getByTestId("event-record-picker");
   await expect(recordPicker).toBeVisible();
   await recordPicker.getByTestId("event-record-picker-add").click();
-  await expect(recordPicker.getByTestId("event-record-picker-row-1")).toContainText("0001");
+  const selectedSwitchRow = recordPicker.locator(".event-record-picker-row[aria-selected='true']");
+  await expect(selectedSwitchRow).toContainText("새 스위치");
   await page.screenshot({ path: testInfo.outputPath("event-editor-switch-picker-open.png"), fullPage: true });
-  await recordPicker.getByTestId("event-record-picker-row-1").click();
+  await selectedSwitchRow.click();
   await recordPicker.getByTestId("event-record-picker-ok").click();
   await expect(recordPicker).toBeHidden();
+  await commandDialog.getByTestId("event-command-edit-ok").click();
 
   await editor.getByTestId("event-page-trigger-select").selectOption("auto");
   await expect(editor.getByTestId("event-page-safety-warning")).toBeVisible();

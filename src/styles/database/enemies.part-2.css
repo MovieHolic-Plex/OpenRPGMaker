@@ -1,0 +1,386 @@
+@media (min-width: 901px) {
+  .database-modal-backdrop:has(.rm2k3-record-enemies) {
+    align-items: center;
+    background: rgba(12, 15, 20, 0.08);
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .database-modal-window:has(.rm2k3-record-enemies) {
+    background: #ffffff;
+    border: 1px solid #d7d9dd;
+    border-radius: 7px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+    color: var(--text-primary);
+    height: min(900px, calc(100vh - 24px));
+    width: min(1584px, calc(100vw - 24px));
+  }
+
+  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e4e8;
+    color: var(--text-primary);
+    min-height: 48px;
+    padding: 0 18px;
+  }
+
+  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-header h2 {
+    color: var(--text-primary);
+    font: 700 19px/48px "Malgun Gothic", "Segoe UI", sans-serif;
+    text-shadow: none;
+  }
+
+  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-body {
+    background: #ffffff;
+    display: grid;
+    grid-template-rows: 56px minmax(0, 1fr);
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs,
+  .database-modal-body:has(.rm2k3-record-enemies) .rm2k3-record-identity {
+    display: none;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-tabs {
+    align-items: end;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e4e8;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    height: 56px;
+    margin: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 20px;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-tab {
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: #20242c;
+    flex: 0 0 auto;
+    font: 700 14px/53px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: 56px;
+    letter-spacing: 0;
+    min-width: 0;
+    padding: 0 12px;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-tab.active {
+    background: transparent;
+    border-bottom-color: #0b73df;
+    box-shadow: none;
+    color: #0b64d8;
+  }
+
+  .database-modal-body:has(.rm2k3-record-enemies) .db-body {
+    background: #f7f7f5;
+    border: 0;
+    display: grid;
+    height: auto;
+    margin: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 14px 16px 10px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane,
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+    background: #ffffff;
+    border: 1px solid #dedfdf;
+    border-radius: 6px;
+    box-shadow: none;
+    min-width: 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    padding: 16px 14px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane h3 {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: #20242c;
+    display: flex;
+    font: 700 16px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: auto;
+    justify-content: flex-start;
+    margin: 0 0 10px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-count {
+    color: #3f4652;
+    display: block;
+    font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    margin: 10px 0 8px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-search {
+    margin: 0 0 10px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-search input {
+    background: #ffffff;
+    border: 1px solid #d8dadd;
+    border-radius: 4px;
+    color: #20242c;
+    font: 400 15px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: 38px;
+    padding: 0 12px;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list {
+    background: #ffffff;
+    border: 0;
+    display: grid;
+    gap: 2px;
+    height: auto;
+    margin: 0;
+    max-height: none;
+    min-height: 0;
+    overflow: auto;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list-row {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 4px;
+    color: #20242c;
+    display: flex;
+    font: 400 15px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: 36px;
+    margin: 0;
+    padding: 0 10px 0 26px;
+    position: relative;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list-row.active {
+    background: linear-gradient(180deg, #0f7cea 0%, #076ad1 100%);
+    border-color: #086bd2;
+    color: #ffffff;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list-row.active::before {
+    background: #ffffff;
+    border-radius: 2px;
+    content: "";
+    height: 22px;
+    left: 10px;
+    position: absolute;
+    top: 6px;
+    width: 3px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list-row-visual-filler:disabled {
+    background: #ffffff;
+    color: #20242c;
+    opacity: 1;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-list-number,
+  .database-modal-body .rm2k3-record-enemies .db-list-name {
+    color: inherit;
+    font: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-footer {
+    display: grid;
+    margin: 12px 0 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-maximum-button {
+    background: #f6f6f4;
+    border: 1px solid #dedfdf;
+    border-radius: 4px;
+    color: #9a9a9a;
+    font: 700 14px/34px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: 36px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-toolbar {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 8px 0 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-toolbar .btn {
+    background: #ffffff;
+    border: 1px solid #d8dadd;
+    border-radius: 4px;
+    color: #20242c;
+    font: 700 14px/34px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 8px;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .db-toolbar .btn.danger {
+    color: #d92d20;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane,
+  .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
+    background: #ffffff;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+    padding: 10px;
+  }
+
+  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+    display: grid;
+    gap: 10px;
+    grid-column: 1 / -1;
+    grid-template-areas:
+      "name graphic actions"
+      "stats graphic actions"
+      "rewards critical actions"
+      "state element options";
+    grid-template-columns: minmax(300px, 0.85fr) minmax(300px, 0.82fr) minmax(300px, 1fr);
+    grid-template-rows: 96px 190px 126px minmax(80px, 1fr);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
+    align-content: start;
+    background: #ffffff;
+    border: 1px solid #dedfdf;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #20242c;
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel legend {
+    background: #ffffff;
+    color: #171a20;
+    float: left;
+    font: 700 15px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    letter-spacing: 0;
+    margin: 0 0 2px;
+    padding: 0;
+    width: 100%;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel legend + * {
+    clear: both;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench .db-field {
+    align-items: center;
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 78px minmax(0, 1fr);
+    margin: 0;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench .db-field > span,
+  .database-modal-body .db-enemy-bm101-workbench .actor-check {
+    align-items: center;
+    color: #30343b;
+    display: inline-flex;
+    font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
+    letter-spacing: 0;
+    min-height: 26px;
+    text-transform: none;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench input,
+  .database-modal-body .db-enemy-bm101-workbench select {
+    background: #ffffff;
+    border: 1px solid #d8dadd;
+    border-radius: 4px;
+    color: #20242c;
+    font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
+    height: 28px;
+    min-height: 28px;
+    min-width: 0;
+    padding: 3px 8px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench input[type="checkbox"] {
+    accent-color: #0b73df;
+    height: 18px;
+    margin: 0 8px 0 0;
+    min-height: 18px;
+    padding: 0;
+    width: 18px;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(1) {
+    grid-area: name;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(2) {
+    grid-area: stats;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) {
+    grid-area: graphic;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4) {
+    grid-area: rewards;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(5) {
+    grid-area: critical;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(6) {
+    grid-area: options;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7) {
+    grid-area: state;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+    grid-area: element;
+  }
+
+  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(9) {
+    grid-area: actions;
+  }
+}

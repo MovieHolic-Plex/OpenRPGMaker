@@ -1,5 +1,4 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
-import { formationDetail } from "@/player/playerStatusMenuFormationDetail";
 import { canEquip } from "@/player/playerEquipmentRules";
 import type { PlaySession } from "@/project/session";
 import type {
@@ -9,49 +8,9 @@ import type {
   Project,
   SkillRecord,
 } from "@/project/types";
-import type { StatusMenuCommandId } from "@/player/playerStatusMenuModel";
+import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
-export type StatusMenuDetailEntry = {
-  readonly label: string;
-  readonly value: string;
-  readonly description?: string;
-  readonly face?: {
-    readonly resourceId?: string;
-    readonly alt: string;
-    readonly testId: string;
-  };
-  readonly testId?: string;
-  readonly onActivate?: () => void;
-  readonly disabled?: boolean;
-};
-
-export type StatusMenuDetail = {
-  readonly title: string;
-  readonly entries: readonly StatusMenuDetailEntry[];
-  readonly emptyLabel?: string;
-  readonly hint?: string;
-};
-
-export type StatusMenuDetailOptions = {
-  readonly project: Project;
-  readonly session: PlaySession;
-  readonly selectedCommand: StatusMenuCommandId;
-  readonly slots: readonly SaveSlotReadResult[];
-  readonly waitModeEnabled: boolean;
-  readonly targetItemId?: string;
-  readonly equipmentActorId?: string;
-  readonly equipmentSlotId?: keyof ActorInitialEquipment;
-  readonly formationActorId?: string;
-  readonly onSaveSlot?: (slot: SaveSlotIndex) => void;
-  readonly onSelectItemTarget?: (itemId: string) => void;
-  readonly onUseItem?: (itemId: string, actorId?: string) => void;
-  readonly onSelectEquipmentActor?: (actorId: string) => void;
-  readonly onSelectEquipmentSlot?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
-  readonly onEquipItem?: (actorId: string, equipmentId: string) => void;
-  readonly onToggleRow?: (actorId: string) => void;
-  readonly onSelectFormationActor?: (actorId: string) => void;
-  readonly onMoveFormationActor?: (actorId: string, delta: -1 | 1) => void;
-};
+export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
 const EQUIPMENT_SLOTS = [
   { id: "weapon", label: "무기" },
@@ -67,6 +26,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "skills": return skillDetail(options.project, options.session);
     case "equipment": return equipmentDetail(options);
     case "save": return saveDetail(options.slots, options.onSaveSlot);
+    case "load": return { title: "로드", entries: [], hint: "저장된 진행 상황을 불러옵니다." };
     case "status": return statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -112,7 +72,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 
 function skillDetail(project: Project, session: PlaySession): StatusMenuDetail {
   const entries = partyActors(project, session).map((actor) => {
-    const skills = learnedSkills(project, actor);
+    const skills = learnedSkills(project, session, actor);
     return {
       label: actor.name,
       value: skills.length > 0 ? skills.map((skill) => skill.name).join(", ") : "스킬 없음",
@@ -186,11 +146,12 @@ function statusDetail(project: Project, session: PlaySession): StatusMenuDetail 
   const entries = partyActors(project, session).map((actor) => {
     const vitals = session.actorVitals[actor.id];
     const className = project.database.classes.find((record) => record.id === actor.classId)?.name ?? "직업 없음";
+    const level = actorLevel(session, actor);
     return {
       label: actor.name,
       value: vitals
-        ? `${className} L${actor.initialLevel} / HP ${vitals.hp}/${vitals.maxHp} / MP ${vitals.mp}/${vitals.maxMp} / 정상`
-        : `${className} L${actor.initialLevel} / HP 0/0 / MP 0/0 / 정상`,
+        ? `${className} L${level} / HP ${vitals.hp}/${vitals.maxHp} / MP ${vitals.mp}/${vitals.maxMp} / 정상`
+        : `${className} L${level} / HP 0/0 / MP 0/0 / 정상`,
     };
   });
   return { title: "상태", entries, emptyLabel: "상태를 볼 파티원이 없습니다" };
@@ -205,6 +166,21 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     onActivate: options.onToggleRow ? () => options.onToggleRow?.(actor.id) : undefined,
   }));
   return { title: "열", entries, emptyLabel: "열을 바꿀 파티원이 없습니다" };
+}
+
+function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const entries = partyActors(options.project, options.session).map((actor, index) => ({
+    label: `${index + 1}. ${actor.name}`,
+    value: options.project.database.classes.find((record) => record.id === actor.classId)?.name ?? "Class none",
+    description: "Open Formation for the RPG 2003 order-change screen.",
+    testId: `status-menu-formation-actor-${actor.id}`,
+  }));
+  return {
+    title: "Formation",
+    entries,
+    emptyLabel: "No party members to reorder.",
+    hint: "Choose Formation to move party members by selecting a member, then the target position.",
+  };
 }
 
 function waitDetail(waitModeEnabled: boolean): StatusMenuDetail {
@@ -226,12 +202,18 @@ function partyActors(project: Project, session: PlaySession): readonly ActorReco
   });
 }
 
-function learnedSkills(project: Project, actor: ActorRecord): readonly SkillRecord[] {
+function learnedSkills(project: Project, session: PlaySession, actor: ActorRecord): readonly SkillRecord[] {
   const skillIds = new Set<string>();
   const classRecord = project.database.classes.find((record) => record.id === actor.classId);
-  for (const learned of classRecord?.learnedSkills ?? []) if (learned.level <= actor.initialLevel) skillIds.add(learned.skillId);
-  for (const learned of actor.learnedSkills) if (learned.level <= actor.initialLevel) skillIds.add(learned.skillId);
+  const level = actorLevel(session, actor);
+  for (const learned of classRecord?.learnedSkills ?? []) if (learned.level <= level) skillIds.add(learned.skillId);
+  for (const learned of actor.learnedSkills) if (learned.level <= level) skillIds.add(learned.skillId);
+  for (const skillId of session.actorSkillIds[actor.id] ?? []) skillIds.add(skillId);
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
+}
+
+function actorLevel(session: PlaySession, actor: ActorRecord): number {
+  return session.actorLevels[actor.id] ?? actor.initialLevel;
 }
 
 function actorEquipment(session: PlaySession, actorId: string): ActorInitialEquipment {

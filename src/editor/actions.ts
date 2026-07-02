@@ -4,9 +4,15 @@
 // EditScene/패널은 이 액션들만 호출 — 직접 Project를 쓰지 않는다(단일 진실 원천).
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §3.
 
+import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { switchVariableReferenceMessage } from "@/editor/databaseReferences";
+import { editorState } from "@/editor/editorState";
+import type { DeleteResult } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
+import { toast } from "@/util/toast";
 import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 export { eraseTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
@@ -72,6 +78,7 @@ export function deleteMap(mapId: MapId): void {
 }
 
 export function renameMap(mapId: MapId, name: string): void {
+  if (!allowMapMutation(mapId)) return;
   store.update((p) => {
     const m = p.maps[mapId];
     if (m) m.name = name;
@@ -79,6 +86,7 @@ export function renameMap(mapId: MapId, name: string): void {
 }
 
 export function resizeMap(mapId: MapId, width: number, height: number): void {
+  if (!allowMapMutation(mapId)) return;
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
@@ -137,13 +145,25 @@ export function setStartPos(x: number, y: number): void {
 
 // 맵의 타일셋 변경(chipset 분리).
 export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
+  if (!allowMapMutation(mapId)) return;
   store.update((p) => {
     const m = p.maps[mapId];
-    if (m && p.tilesets[tilesetId]) {
+    const tileset = p.tilesets[tilesetId];
+    if (m && tileset) {
       m.tilesetId = tilesetId;
-      m.tileSize = p.tilesets[tilesetId].tileSize;
+      m.tileSize = tileset.tileSize;
+      const state = editorState.get();
+      if (state.currentMapId === mapId && state.selectedTile >= tileset.count) {
+        editorState.set({ activePaletteStamp: null, activeStampId: null, selectedTile: 0 });
+      }
     }
   });
+}
+
+function allowMapMutation(mapId: MapId): boolean {
+  if (canEditMap(mapId)) return true;
+  toast(mapEditLockNotice(mapId), "error");
+  return false;
 }
 
 // ── Map Tree 조작 ──
@@ -157,41 +177,62 @@ export function moveMapInTree(mapId: MapId, newParentId: MapId): void {
 
 // ── Database: Switches/Variables/Common Events CRUD ──
 export function addSwitch(name: string): string {
+  recordProjectSnapshot();
   let id = "";
   store.update((p) => {
-    id = genId("sw");
+    id = nextNumberedId("sw", p.switches);
     p.switches.push({ id, name: name || "새 스위치" });
   });
   return id;
 }
 export function renameSwitch(id: string, name: string): void {
+  recordProjectSnapshot();
   store.update((p) => {
     const s = p.switches.find((x) => x.id === id);
     if (s) s.name = name;
   });
 }
-export function deleteSwitch(id: string): void {
+export function deleteSwitch(id: string): DeleteResult {
+  const message = switchVariableReferenceMessage("switch", id);
+  if (message) return { ok: false, message };
+  recordProjectSnapshot();
   store.update((p) => {
     p.switches = p.switches.filter((s) => s.id !== id);
   });
+  return { ok: true };
 }
 
 export function addVariable(name: string): string {
+  recordProjectSnapshot();
   let id = "";
   store.update((p) => {
-    id = genId("var");
+    id = nextNumberedId("var", p.variables);
     p.variables.push({ id, name: name || "새 변수" });
   });
   return id;
 }
 export function renameVariable(id: string, name: string): void {
+  recordProjectSnapshot();
   store.update((p) => {
     const v = p.variables.find((x) => x.id === id);
     if (v) v.name = name;
   });
 }
-export function deleteVariable(id: string): void {
+export function deleteVariable(id: string): DeleteResult {
+  const message = switchVariableReferenceMessage("variable", id);
+  if (message) return { ok: false, message };
+  recordProjectSnapshot();
   store.update((p) => {
     p.variables = p.variables.filter((v) => v.id !== id);
   });
+  return { ok: true };
+}
+
+function nextNumberedId(prefix: "sw" | "var", records: readonly { readonly id: string }[]): string {
+  const existingIds = new Set(records.map((record) => record.id));
+  for (let index = records.length + 1; index < records.length + 10000; index += 1) {
+    const id = `${prefix}_${String(index).padStart(4, "0")}`;
+    if (!existingIds.has(id)) return id;
+  }
+  return genId(prefix);
 }

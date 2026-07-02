@@ -1,5 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import {
+  CHOICE_CANCEL_BRANCH_INDEX,
   FORK_ELSE_BRANCH_INDEX,
   FORK_THEN_BRANCH_INDEX,
   SHOP_TRANSACTION_BRANCH_INDEX,
@@ -301,6 +302,11 @@ function resolveCommandList(commands: Command[], containerPath: readonly number[
     const cmd = list[cmdIdx];
     if (!cmd || branchIdx === undefined) return null;
     if (cmd.kind === "choices") {
+      if (branchIdx === CHOICE_CANCEL_BRANCH_INDEX) {
+        cmd.cancelBranch ??= [];
+        list = cmd.cancelBranch;
+        continue;
+      }
       const opt = cmd.options[branchIdx];
       if (!opt) return null;
       list = opt.branch;

@@ -9,6 +9,7 @@ import {
 } from "@/player/playerStatusMenuModel";
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
+import { renderStatusMenuFunctionScene } from "@/player/playerStatusMenuFunctionScene";
 import { applySystemGraphic } from "@/player/systemGraphics";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
@@ -28,26 +29,6 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     elapsedMs: options.elapsedMs,
     waitModeEnabled,
   });
-  const detail = createStatusMenuDetail({
-    project: options.project,
-    session: options.session,
-    selectedCommand,
-    slots: options.slots,
-    waitModeEnabled,
-    targetItemId: options.targetItemId,
-    equipmentActorId: options.equipmentActorId,
-    equipmentSlotId: options.equipmentSlotId,
-    formationActorId: options.formationActorId,
-    onSaveSlot: options.actions.onSaveSlot,
-    onSelectItemTarget: options.actions.onSelectItemTarget,
-    onUseItem: options.actions.onUseItem,
-    onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
-    onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
-    onEquipItem: options.actions.onEquipItem,
-    onToggleRow: options.actions.onToggleRow,
-    onSelectFormationActor: options.actions.onSelectFormationActor,
-    onMoveFormationActor: options.actions.onMoveFormationActor,
-  });
   const panel = el("div", {
     class: "main-menu rm2k3-status-menu system-panel",
     attrs: {
@@ -58,12 +39,58 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   });
   applySystemGraphic(panel);
 
-  if (mode === "function") panel.classList.add("status-menu-function-screen");
-  panel.append(
-    renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
-    renderStatusMenuBody(options.project, snapshot, detail, options.selectedDetailActionIndex),
-    renderFooter(snapshot, options.message)
-  );
+  if (mode === "function") {
+    panel.classList.add("status-menu-function-screen");
+    panel.style.backgroundColor = "#03123d";
+    panel.style.backgroundImage = "linear-gradient(180deg, #06357e 0%, #041f5c 44%, #03123d 100%)";
+    panel.style.borderImageSource = "none";
+    panel.style.borderImageSlice = "";
+    panel.append(renderStatusMenuFunctionScene({
+      project: options.project,
+      session: options.session,
+      commandId: selectedCommand,
+      slots: options.slots,
+      selectedActionIndex: options.selectedDetailActionIndex,
+      targetItemId: options.targetItemId,
+      skillActorId: options.skillActorId,
+      selectedSkillId: options.selectedSkillId,
+      equipmentActorId: options.equipmentActorId,
+      equipmentSlotId: options.equipmentSlotId,
+      formationActorId: options.formationActorId,
+      actions: options.actions,
+    }), renderFooter(snapshot, options.message));
+  } else {
+    const detail = createStatusMenuDetail({
+      project: options.project,
+      session: options.session,
+      selectedCommand,
+      slots: options.slots,
+      waitModeEnabled,
+      targetItemId: options.targetItemId,
+      equipmentActorId: options.equipmentActorId,
+      equipmentSlotId: options.equipmentSlotId,
+      formationActorId: options.formationActorId,
+      onSaveSlot: options.actions.onSaveSlot,
+      onSelectItemTarget: options.actions.onSelectItemTarget,
+      onUseItem: options.actions.onUseItem,
+      onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
+      onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
+      onEquipItem: options.actions.onEquipItem,
+      onToggleRow: options.actions.onToggleRow,
+      onSelectFormationActor: options.actions.onSelectFormationActor,
+      onMoveFormationActor: options.actions.onMoveFormationActor,
+    });
+    panel.append(
+      renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
+      renderStatusMenuBody({
+        project: options.project,
+        snapshot,
+        detail,
+        selectedDetailActionIndex: options.selectedDetailActionIndex,
+      }),
+      renderFooter(snapshot, options.message)
+    );
+  }
   panel.append(statusMenuDebug(selectedCommand, mode));
   return panel;
 }
@@ -106,6 +133,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "skills":
     case "equipment":
     case "save":
+    case "load":
     case "status":
     case "row":
     case "formation":
@@ -116,15 +144,18 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
   }
 }
 
-function renderStatusMenuBody(
-  project: Project,
-  snapshot: PlayerStatusMenuSnapshot,
-  detail: StatusMenuDetail,
-  selectedDetailActionIndex?: number
-): HTMLElement {
+function renderStatusMenuBody(options: {
+  readonly project: Project;
+  readonly snapshot: PlayerStatusMenuSnapshot;
+  readonly detail: StatusMenuDetail;
+  readonly selectedDetailActionIndex?: number;
+}): HTMLElement {
   return el("div", {
     class: "status-menu-body",
-    children: [renderPartyPanel(project, snapshot), renderStatusMenuDetailPanel(project, detail, { selectedActionIndex: selectedDetailActionIndex })],
+    children: [
+      renderPartyPanel(options.project, options.snapshot),
+      renderStatusMenuDetailPanel(options.project, options.detail, { selectedActionIndex: options.selectedDetailActionIndex }),
+    ],
     dataset: { testid: "status-menu-body" },
   });
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { renderTiles } from "@/player/playSceneMapRuntime";
@@ -27,7 +27,7 @@ describe("runtime event page graphics", () => {
           priority: "above",
           trigger: { kind: "eventTouch" },
           graphic: {
-            sprite: { type: "bundled", id: "npc_villager" },
+            sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" },
             transparent: true,
           },
           movement: {
@@ -65,12 +65,28 @@ describe("runtime event page graphics", () => {
     expect(scene.missingResources.has("tex_tiles_default")).toBe(false);
   });
 
+  it("renders missing event graphics with the EasyRPG People1 fallback texture", () => {
+    const scene = renderSceneWith({
+      graphic: {
+        sprite: { type: "bundled", id: "missing-event-character" },
+      },
+    });
+
+    renderTiles(scene);
+
+    const sprite = scene.eventSprites.get("npc");
+    expect(sprite?.texture).toMatchObject({ key: DEFAULT_EASYRPG_CHARSET_ID });
+    expect(scene.missingResources.has("missing-event-character")).toBe(true);
+  });
+
   it("renders character sprites on the root display list with lower-screen sprites above upper-screen sprites", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
+    map.lowerTiles.fill(-1);
+    map.upperTiles.fill(-1);
     map.events = [
-      event("upper", 1, 1, [pageWith({ graphic: { sprite: { type: "bundled", id: "npc_villager" } } })]),
-      event("lower", 1, 2, [pageWith({ graphic: { sprite: { type: "bundled", id: "npc_villager" } } })]),
+      event("upper", 1, 1, [pageWith({ graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } } })]),
+      event("lower", 1, 2, [pageWith({ graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } } })]),
     ];
     store.replace(project);
     const tileLayerChildren: unknown[] = [];

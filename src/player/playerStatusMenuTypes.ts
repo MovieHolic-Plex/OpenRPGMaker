@@ -9,12 +9,14 @@ export type PlayerStatusMenuActions = {
   readonly onLoadSlot: (slot: SaveSlotIndex) => void;
   readonly onSelectItemTarget: (itemId: string) => void;
   readonly onUseItem: (itemId: string, actorId?: string) => void;
+  readonly onSelectSkillActor: (actorId: string) => void;
+  readonly onSelectSkill: (skillId: string) => void;
   readonly onSelectEquipmentActor: (actorId: string) => void;
   readonly onSelectEquipmentSlot: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onEquipItem: (actorId: string, equipmentId: string) => void;
   readonly onToggleRow: (actorId: string) => void;
   readonly onSelectFormationActor: (actorId: string) => void;
-  readonly onMoveFormationActor: (actorId: string, delta: -1 | 1) => void;
+  readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
   readonly onToggleWait: () => void;
   readonly onToTitle: () => void;
 };
@@ -29,6 +31,8 @@ export type PlayerStatusMenuOptions = {
   readonly mode?: "main" | "function";
   readonly selectedDetailActionIndex?: number;
   readonly targetItemId?: string;
+  readonly skillActorId?: string;
+  readonly selectedSkillId?: string;
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;

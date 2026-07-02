@@ -1,7 +1,5 @@
 import { el } from "@/util/dom";
-
-const PLAY_WIDTH = 320;
-const PLAY_HEIGHT = 240;
+import { PLAY_RESOLUTION } from "@/player/playResolution";
 
 export type PlaySurface = {
   readonly viewport: HTMLElement;
@@ -45,9 +43,12 @@ export function createPlaySurface(): PlaySurface {
 
 function syncPlaySurfaceMetrics(viewport: HTMLElement): void {
   const bounds = viewport.getBoundingClientRect();
-  const scaleX = bounds.width / PLAY_WIDTH;
-  const scaleY = bounds.height / PLAY_HEIGHT;
-  viewport.style.setProperty("--play-scale-x", String(scaleX));
-  viewport.style.setProperty("--play-scale-y", String(scaleY));
-  viewport.dataset.scale = `${scaleX.toFixed(3)}x${scaleY.toFixed(3)}`;
+  const containScale = Math.min(bounds.width / PLAY_RESOLUTION.width, bounds.height / PLAY_RESOLUTION.height);
+  const inFullscreenTestPlay = viewport.closest("[data-testid='test-play-window'][data-window-mode='fullscreen']") !== null;
+  const containedScale = containScale >= 1 ? Math.max(1, Math.floor(containScale)) : containScale;
+  const scale = inFullscreenTestPlay ? containedScale : Math.min(2, containedScale);
+  viewport.style.setProperty("--play-scale", String(scale));
+  viewport.style.setProperty("--play-scale-x", String(scale));
+  viewport.style.setProperty("--play-scale-y", String(scale));
+  viewport.dataset.scale = scale.toFixed(3);
 }

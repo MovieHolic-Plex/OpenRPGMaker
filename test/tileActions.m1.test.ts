@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { eraseTile, fillTile, paintTile, toggleCollision } from "@/editor/actions";
-import { topTileInStack } from "@/project/mapOverlayTiles";
+import { replaceTileStack } from "@/project/mapOverlayTiles";
 import { createBlankProject, TILE } from "@/project/defaults";
+import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 
@@ -19,8 +20,7 @@ function at(map: GameMap, x: number, y: number): number {
 
 function upperAt(map: GameMap, x: number, y: number): number {
   const i = y * map.width + x;
-  // 스택 오버레이 타일(FLOWERS 등)은 upperTileStacks에 쌓이므로 top을 우선 본다.
-  return topTileInStack(map, "upper", i) ?? map.upperTiles[i];
+  return map.upperTiles[i];
 }
 
 beforeEach(() => {
@@ -49,6 +49,81 @@ describe("paintTile — layer routing", () => {
     expect(() => paintTile(mapId, "lower", -1, -1, TILE.WATER)).not.toThrow();
     expect(() => paintTile(mapId, "lower", 9999, 9999, TILE.WATER)).not.toThrow();
     expect(currentMap().lowerTiles).toEqual(before);
+  });
+
+  it("실내 투명 배경 가구를 lower로 칠해도 바닥을 보존하고 upper에 배치한다", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    project.maps[mapId].tilesetId = "easyrpg_chipset_interior";
+
+    paintTile(mapId, "lower", 3, 3, 270);
+    paintTile(mapId, "lower", 3, 3, 115);
+    paintTile(mapId, "lower", 4, 3, 270);
+    paintTile(mapId, "lower", 4, 3, 268);
+
+    const map = currentMap();
+    expect(at(map, 3, 3)).toBe(270);
+    expect(upperAt(map, 3, 3)).toBe(115);
+    expect(at(map, 4, 3)).toBe(270);
+    expect(upperAt(map, 4, 3)).toBe(268);
+  });
+
+  it("투명 소품을 칠해도 스택을 만들지 않고 대상 레이어의 단일 타일로 교체한다", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    project.maps[mapId].tilesetId = "easyrpg_chipset_interior";
+
+    paintTile(mapId, "lower", 3, 3, 270);
+    paintTile(mapId, "lower", 3, 3, 115);
+    paintTile(mapId, "lower", 3, 3, 268);
+
+    const map = currentMap();
+    const index = 3 + 3 * map.width;
+    expect(at(map, 3, 3)).toBe(270);
+    expect(upperAt(map, 3, 3)).toBe(268);
+    expect(map.upperTileStacks?.[index]).toBeUndefined();
+  });
+
+  it("기본 선택 타일 360을 칠해도 흙길 오토타일로 연결된다", () => {
+    const mapId = store.getCurrent().startMapId;
+
+    paintTile(mapId, "lower", 1, 1, TILE.PATH);
+    paintTile(mapId, "lower", 2, 1, TILE.PATH);
+    paintTile(mapId, "lower", 1, 2, TILE.PATH);
+    paintTile(mapId, "lower", 2, 2, TILE.PATH);
+
+    const map = currentMap();
+    expect(at(map, 1, 1)).toBe(DIRT_ROAD_TILE.CORNER_NORTH_WEST);
+    expect(at(map, 2, 1)).toBe(DIRT_ROAD_TILE.CORNER_NORTH_EAST);
+    expect(at(map, 1, 2)).toBe(DIRT_ROAD_TILE.CORNER_SOUTH_WEST);
+    expect(at(map, 2, 2)).toBe(DIRT_ROAD_TILE.CORNER_SOUTH_EAST);
+  });
+
+  it("기본 선택 모래 타일을 칠해도 모래 지형 오토타일로 연결된다", () => {
+    const mapId = store.getCurrent().startMapId;
+
+    paintTile(mapId, "lower", 1, 1, TILE.SAND);
+    paintTile(mapId, "lower", 2, 1, TILE.SAND);
+    paintTile(mapId, "lower", 1, 2, TILE.SAND);
+    paintTile(mapId, "lower", 2, 2, TILE.SAND);
+
+    const map = currentMap();
+    expect(at(map, 1, 1)).toBe(SAND_TILE.CORNER_NORTH_WEST);
+    expect(at(map, 2, 1)).toBe(SAND_TILE.CORNER_NORTH_EAST);
+    expect(at(map, 1, 2)).toBe(SAND_TILE.CORNER_SOUTH_WEST);
+    expect(at(map, 2, 2)).toBe(SAND_TILE.CORNER_SOUTH_EAST);
+  });
+
+  it("물을 모래 옆에 칠하면 인접 모래 지형도 다시 오토타일된다", () => {
+    const mapId = store.getCurrent().startMapId;
+
+    paintTile(mapId, "lower", 1, 1, TILE.SAND);
+    paintTile(mapId, "lower", 2, 1, TILE.SAND);
+    paintTile(mapId, "lower", 1, 2, TILE.SAND);
+    paintTile(mapId, "lower", 2, 2, TILE.SAND);
+    paintTile(mapId, "lower", 0, 1, TILE.WATER);
+
+    expect(at(currentMap(), 1, 1)).toBe(SAND_TILE.EDGE_NORTH);
   });
 });
 
@@ -124,6 +199,19 @@ describe("eraseTile", () => {
     eraseTile(mapId, "upper", 5, 5);
     expect(upperAt(currentMap(), 5, 5)).toBe(TILE.EMPTY);
     expect(at(currentMap(), 5, 5)).toBe(TILE.WATER);
+  });
+
+  it("선택 레이어의 기본 타일과 스택을 한 번에 지운다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = currentMap();
+    const index = 7 + 6 * map.width;
+    map.lowerTiles[index] = TILE.GRASS;
+    replaceTileStack(map, "lower", index, [TILE.FLOWERS]);
+
+    eraseTile(mapId, "lower", 7, 6);
+
+    expect(at(currentMap(), 7, 6)).toBe(TILE.EMPTY);
+    expect(currentMap().lowerTileStacks?.[index]).toBeUndefined();
   });
 });
 

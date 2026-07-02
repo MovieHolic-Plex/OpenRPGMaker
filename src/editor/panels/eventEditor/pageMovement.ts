@@ -2,6 +2,7 @@ import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { openPageMoveRouteDialog } from "./moveRouteDialog";
+import { renderPageLivingMovement } from "./pageNpcLiving";
 import type { EventPage, EventPageMovement, MapId, MoveCommand } from "@/project/types";
 
 const MOVEMENT_TYPE_OPTIONS = [
@@ -9,6 +10,7 @@ const MOVEMENT_TYPE_OPTIONS = [
   { value: "random", label: "무작위" },
   { value: "approach", label: "접근" },
   { value: "custom", label: "사용자 지정" },
+  { value: "living", label: "생활 이동" },
 ] as const;
 
 export function renderPageMovement(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
@@ -19,10 +21,9 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
   const hasAutonomousMovement = movement.type !== "fixed";
   frequency.disabled = !hasAutonomousMovement;
   const applyBasics = () => replaceMovement(mapId, eventId, page, {
-    type: selectedOptionValue(type, MOVEMENT_TYPE_OPTIONS, movement.type),
+    ...movementForType(movement, selectedOptionValue(type, MOVEMENT_TYPE_OPTIONS, movement.type), mapId),
     speed: movement.speed,
     frequency: parseInt(frequency.value, 10) || 1,
-    route: movement.route ?? { moves: [], repeat: true },
   });
   type.addEventListener("change", applyBasics);
   frequency.addEventListener("change", applyBasics);
@@ -57,7 +58,27 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
   if (isCustom) {
     wrap.append(el("div", { class: "event-page-movement-route", children: [routeSummary(movement)] }));
   }
+  if (movement.type === "living") {
+    wrap.append(renderPageLivingMovement(mapId, eventId, page));
+  }
   return wrap;
+}
+
+function movementForType(movement: EventPageMovement, type: EventPageMovement["type"], mapId: MapId): EventPageMovement {
+  if (type === "custom") {
+    return { ...movement, type, route: movement.route ?? { moves: [], repeat: true } };
+  }
+  if (type === "living") {
+    return {
+      ...movement,
+      type,
+      living: movement.living ?? {
+        destinations: [{ mapId, x: 0, y: 0, direction: "down" }],
+        repeat: false,
+      },
+    };
+  }
+  return { ...movement, type };
 }
 
 function compactLabel(text: string, control: HTMLElement, disabled = false): HTMLElement {
@@ -132,6 +153,8 @@ function moveLabel(command: MoveCommand): string {
       return command.delta < 0 ? "빈도 감소" : "빈도 증가";
     case "changeGraphic":
       return `그래픽 ${command.spriteId}`;
+    case "npcTransfer":
+      return `NPC 맵 이동 ${command.mapId} (${command.x}, ${command.y})`;
     case "playSe":
       return `효과음 ${command.resourceId}`;
     case "wait":

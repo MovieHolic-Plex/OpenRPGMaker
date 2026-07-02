@@ -5,6 +5,7 @@ type DebugState = {
     startMapId: string;
     startPos: { x: number; y: number };
     maps: Record<string, {
+      name: string;
       width: number;
       height: number;
       tilesetId: string;
@@ -108,6 +109,38 @@ function countStackTiles(stacks: Record<string, number[]> | undefined, tile: num
 const FILL_TILE = 6;
 const PAINT_TILE = 7;
 const UPPER_TILE = 374;
+
+test("map chipset picker changes only the active map", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1&mapTilesetIsolation=1");
+
+  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  const before = await debugState(page);
+  const startMapId = before.project.startMapId;
+  const startMapName = before.project.maps[startMapId].name;
+  await expect(page.getByLabel(`${startMapName} 칩셋`)).toBeVisible();
+
+  await page.getByTestId("map-add").click();
+  const addedState = await debugState(page);
+  const addedMapId = addedState.editor.currentMapId;
+  if (!addedMapId || addedMapId === startMapId) throw new Error("new map was not selected");
+  const addedMapName = addedState.project.maps[addedMapId].name;
+  await expect(page.getByLabel(`${addedMapName} 칩셋`)).toBeVisible();
+  await page.getByTestId("map-tileset-select").selectOption("easyrpg_chipset_interior");
+  await expect.poll(async () => (await debugState(page)).project.maps[addedMapId].tilesetId).toBe("easyrpg_chipset_interior");
+
+  await page.getByTestId(`map-tree-node-${startMapId}`).click();
+  await expect(page.getByLabel(`${startMapName} 칩셋`)).toBeVisible();
+  await page.getByTestId("map-tileset-select").selectOption("easyrpg_chipset_dungeon");
+  await expect.poll(async () => (await debugState(page)).project.maps[startMapId].tilesetId).toBe("easyrpg_chipset_dungeon");
+
+  const afterStartMapChange = await debugState(page);
+  expect(afterStartMapChange.project.maps[addedMapId].tilesetId).toBe("easyrpg_chipset_interior");
+
+  await page.getByTestId(`map-tree-node-${addedMapId}`).click();
+  await expect(page.getByLabel(`${addedMapName} 칩셋`)).toBeVisible();
+  await expect(page.getByTestId("map-tileset-select")).toHaveValue("easyrpg_chipset_interior");
+});
 
 test("map editor paints, fills, selects, copies, pastes, edits passability, and persists after reload", async ({ page }, testInfo) => {
   test.setTimeout(60_000);

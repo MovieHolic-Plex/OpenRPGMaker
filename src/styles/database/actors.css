@@ -1,19 +1,19 @@
 .db-classic-group-tabs {
   display: grid;
-  grid-template-columns: 220px 220px 220px 1fr;
+  grid-template-columns: 172px 172px 172px 1fr;
   gap: 1px;
-  margin: 0 2px -1px;
+  margin: 0 1px -1px;
   padding: 0 0 0 1px;
   font-size: 12px;
 }
 
 .db-classic-group-tab {
-  min-height: 18px;
+  min-height: 16px;
   border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
   border-bottom-color: var(--rm2k3-surface-raised, #f4f4f4);
   background: var(--rm2k3-surface, #ece9d8);
   color: var(--rm2k3-text, #111);
-  line-height: 17px;
+  line-height: 15px;
   text-align: center;
 }
 
@@ -124,7 +124,12 @@
   font-size: 12px;
 }
 
-.actor-classic-sheet .actor-sheet-crop,
+.actor-classic-sheet .actor-sheet-crop {
+  width: var(--crop-width);
+  height: var(--crop-height);
+  overflow: hidden;
+}
+
 .actor-classic-sheet .actor-neutral-resource-slot {
   width: 48px;
   height: 48px;
@@ -268,7 +273,7 @@
 
 .actor-classic-sheet .actor-skill-row,
 .actor-classic-sheet .actor-skill-header {
-  grid-template-columns: 48px minmax(0, 1fr) 46px;
+  grid-template-columns: 52px minmax(96px, 1fr) max-content;
 }
 
 .actor-classic-sheet .actor-skill-row {
@@ -289,5 +294,781 @@
 
   .actor-classic-sheet .actor-panel {
     padding-inline: 4px;
+  }
+}
+
+.database-modal-body:has(.rm2k3-record-actors) .rm2k3-record-identity {
+  display: none;
+}
+
+.database-modal-body .rm2k3-record-workspace.rm2k3-record-actors {
+  gap: 8px;
+  grid-template-columns: 258px minmax(0, 1fr);
+}
+
+.rm2k3-record-actors .rm2k3-record-list-pane {
+  background: #d8d4cb;
+  padding: 10px 10px 8px;
+}
+
+.rm2k3-record-actors .rm2k3-record-list-pane h3 {
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.rm2k3-record-actors .db-list {
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+  margin: 0;
+  min-height: 420px;
+}
+
+.rm2k3-record-actors .db-list-row {
+  background: #f7f7f7;
+  border: 0;
+  border-bottom: 1px solid #c9c6bd;
+  font-size: 13px;
+  min-height: 24px;
+  padding: 2px 8px;
+}
+
+.rm2k3-record-actors .db-list-row.active {
+  background: linear-gradient(#3c74d7, #255ab8);
+  color: #ffffff;
+}
+
+.rm2k3-record-actors .db-list-number {
+  min-width: 34px;
+  text-align: right;
+}
+
+.rm2k3-record-actors .rm2k3-record-detail-pane {
+  background: #d8d4cb;
+  min-height: 0;
+  padding: 10px;
+}
+
+.rm2k3-record-actors .actor-detail-form,
+.rm2k3-record-actors .actor-classic-sheet {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rm2k3-record-actors .actor-editor-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-areas:
+    "basic inspector"
+    "curves inspector";
+  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.rm2k3-record-actors .actor-left-stack {
+  grid-area: basic;
+}
+
+.rm2k3-record-actors .actor-center-stack {
+  grid-area: curves;
+  min-height: 0;
+}
+
+.rm2k3-record-actors .actor-right-stack {
+  display: grid;
+  gap: 8px;
+  grid-area: inspector;
+  grid-template-columns: minmax(210px, .85fr) minmax(230px, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.rm2k3-record-actors .actor-inspector-tabs {
+  display: flex;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.rm2k3-record-actors .actor-inspector-tab {
+  background: #d8d4cb;
+  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-style: solid;
+  border-width: 1px;
+  color: #111111;
+  font: 600 13px/1.2 inherit;
+  height: 32px;
+  min-width: 70px;
+  padding: 0 12px;
+}
+
+.rm2k3-record-actors .actor-inspector-tab.active {
+  background: #e5e1d7;
+  border-bottom-color: #e5e1d7;
+}
+
+.rm2k3-record-actors .actor-panel {
+  background: #d8d4cb;
+  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  padding: 9px 10px 8px;
+}
+
+.rm2k3-record-actors .actor-identity,
+.rm2k3-record-actors .actor-class,
+.rm2k3-record-actors .actor-graphic,
+.rm2k3-record-actors .actor-basic-stats {
+  min-height: 0;
+}
+
+.rm2k3-record-actors .actor-basic-stat-grid {
+  display: grid;
+  gap: 4px 14px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.rm2k3-record-actors .actor-basic-stat-row {
+  display: flex;
+  font-size: 13px;
+  justify-content: space-between;
+}
+
+.rm2k3-record-actors .actor-sheet-crop {
+  height: var(--crop-height);
+  width: var(--crop-width);
+}
+
+.rm2k3-record-actors .actor-neutral-resource-slot {
+  height: 64px;
+  width: 64px;
+}
+
+.rm2k3-record-actors .actor-parameter-curves,
+.rm2k3-record-actors .actor-experience {
+  min-height: 0;
+}
+
+.rm2k3-record-actors .actor-starting-equipment {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.rm2k3-record-actors .actor-right-stack > .field {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.rm2k3-record-actors .actor-options {
+  grid-column: 1;
+  grid-row: 4;
+}
+
+.rm2k3-record-actors .actor-rates {
+  grid-column: 1 / -1;
+  grid-row: 5;
+}
+
+.rm2k3-record-actors .actor-skills {
+  grid-column: 2;
+  grid-row: 2 / span 3;
+}
+
+.rm2k3-record-actors .actor-curve {
+  background: #fbfaf4;
+  color: #111111;
+}
+
+.rm2k3-record-actors .actor-skill-list {
+  min-height: 170px;
+}
+
+@media (max-width: 1120px) {
+  .database-modal-body .rm2k3-record-workspace.rm2k3-record-actors {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .rm2k3-record-actors .actor-editor-grid {
+    grid-template-columns: 288px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 901px) {
+  .rm2k3-record-actors .rm2k3-record-list-pane {
+    background: #ffffff;
+    border: 1px solid #dddcd7;
+    border-radius: 5px;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    padding: 16px 16px 14px;
+  }
+
+  .rm2k3-record-actors .rm2k3-record-list-pane h3 {
+    color: #1f1e1b;
+    font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 12px;
+  }
+
+  .rm2k3-record-actors .db-search {
+    margin: 0 0 8px;
+  }
+
+  .rm2k3-record-actors .db-search input {
+    background: #fbfbfa;
+    border: 1px solid #d9d8d3;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #202020;
+    font: 400 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    height: 38px;
+    padding: 5px 8px;
+    width: 100%;
+  }
+
+  .rm2k3-record-actors .db-list {
+    background: #ffffff;
+    border: 1px solid #ecebe6;
+    border-radius: 4px;
+    min-height: 0;
+  }
+
+  .rm2k3-record-actors .db-list-row {
+    background: #ffffff;
+    border: 0;
+    border-bottom: 1px solid #ecebe6;
+    color: #35332f;
+    font: 500 16px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 36px;
+    padding: 0 14px;
+  }
+
+  .rm2k3-record-actors .db-list-row:hover {
+    background: #f5f7fb;
+  }
+
+  .rm2k3-record-actors .db-list-row.active {
+    background: linear-gradient(180deg, #0c75eb 0%, #075ed1 100%);
+    color: #ffffff;
+  }
+
+  .rm2k3-record-actors .db-list-number {
+    font-variant-numeric: tabular-nums;
+    min-width: 48px;
+    text-align: right;
+  }
+
+  .rm2k3-record-actors .rm2k3-record-list-footer {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .rm2k3-record-actors .rm2k3-maximum-button {
+    background: #f8f8f6;
+    border: 1px solid #dddcd7;
+    border-radius: 4px;
+    color: #8a847a;
+    font-size: 14px;
+    min-height: 36px;
+  }
+
+  .rm2k3-record-actors .rm2k3-record-count {
+    color: #141414;
+    font: 500 15px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  }
+
+  .rm2k3-record-actors .db-toolbar {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 8px;
+  }
+
+  .rm2k3-record-actors .db-toolbar .btn {
+    background: #ffffff;
+    border: 1px solid #d9d8d3;
+    border-radius: 4px;
+    color: #1f1d1a;
+    font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 32px;
+  }
+
+  .rm2k3-record-actors .db-toolbar .btn.danger {
+    color: #a1282a;
+  }
+
+  .rm2k3-record-actors .rm2k3-record-detail-pane {
+    background: #ffffff;
+    border: 1px solid #dddcd7;
+    border-radius: 5px;
+    padding: 14px;
+  }
+
+  .rm2k3-record-actors .actor-classic-sheet {
+    background: #ffffff;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .rm2k3-record-actors .actor-editor-grid {
+    gap: 14px;
+    grid-template-areas:
+      "basic inspector";
+    grid-template-columns: minmax(360px, 500px) minmax(520px, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    overflow: auto;
+  }
+
+  .rm2k3-record-actors .actor-left-stack,
+  .rm2k3-record-actors .actor-center-stack,
+  .rm2k3-record-actors .actor-right-stack {
+    min-height: 0;
+  }
+
+  .rm2k3-record-actors .actor-left-stack {
+    max-height: 100%;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .rm2k3-record-actors .actor-left-stack > .actor-panel {
+    flex: 0 0 auto;
+  }
+
+  .rm2k3-record-actors .actor-center-stack {
+    display: none;
+  }
+
+  .rm2k3-record-actors .actor-right-stack {
+    grid-template-columns: minmax(250px, 0.95fr) minmax(280px, 1fr);
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  }
+
+  .rm2k3-record-actors .actor-panel {
+    background: #ffffff;
+    border: 1px solid #e1e0db;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: 16px 16px 14px;
+  }
+
+  .rm2k3-record-actors .actor-identity,
+  .rm2k3-record-actors .actor-class,
+  .rm2k3-record-actors .actor-graphic,
+  .rm2k3-record-actors .actor-basic-stats {
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .rm2k3-record-actors .actor-identity {
+    border-bottom: 0;
+    padding-bottom: 8px;
+  }
+
+  .rm2k3-record-actors .actor-class {
+    border-bottom: 0;
+    border-top: 0;
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  .rm2k3-record-actors .actor-graphic {
+    border-bottom: 0;
+    border-top: 0;
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  .rm2k3-record-actors .actor-basic-stats {
+    border-top: 1px solid #deddd8;
+    padding-top: 12px;
+  }
+
+  .rm2k3-record-actors .actor-panel legend {
+    color: #111111;
+    float: left;
+    font: 700 17px/1.1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: -6px 0 12px;
+    padding: 0;
+    width: 100%;
+  }
+
+  .rm2k3-record-actors .actor-panel legend + * {
+    clear: both;
+  }
+
+  .rm2k3-record-actors .actor-classic-sheet label,
+  .rm2k3-record-actors .actor-classic-sheet .field {
+    color: #5a554d;
+    font: 500 16px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    gap: 12px;
+    grid-template-columns: 92px minmax(0, 1fr);
+    margin: 0 0 7px;
+  }
+
+  .rm2k3-record-actors .actor-classic-sheet input,
+  .rm2k3-record-actors .actor-classic-sheet select {
+    background: #fbfbfa;
+    border: 1px solid #d6d5d0;
+    border-radius: 4px;
+    color: #161616;
+    font: 400 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    height: 32px;
+    padding: 3px 8px;
+  }
+
+  .rm2k3-record-actors .actor-classic-sheet input[type="checkbox"] {
+    accent-color: #2f67c9;
+    height: 18px;
+    width: 18px;
+  }
+
+  .rm2k3-record-actors .actor-level-row {
+    gap: 12px;
+  }
+
+  .rm2k3-record-actors .actor-level-row .field {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+
+  .rm2k3-record-actors .actor-check {
+    align-items: center;
+    color: #4f4a43;
+    font-size: 15px;
+    gap: 10px;
+    min-height: 30px;
+  }
+
+  .rm2k3-record-actors .actor-class-row {
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 86px;
+  }
+
+  .rm2k3-record-actors .actor-classic-sheet .btn.small,
+  .rm2k3-record-actors .actor-resource-set-button {
+    background: #ffffff;
+    border: 1px solid #d9d8d3;
+    border-radius: 4px;
+    color: #6b655d;
+    font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    height: 32px;
+  }
+
+  .rm2k3-record-actors .actor-graphic-preview {
+    background: #ffffff;
+    border: 0;
+    border-bottom: 1px solid #e5e4df;
+    gap: 14px;
+    grid-template-columns: 86px minmax(0, 1fr);
+    margin-bottom: 7px;
+    min-height: 72px;
+    padding: 6px 0;
+  }
+
+  .rm2k3-record-actors .actor-graphic-preview > span {
+    color: #59544d;
+    font-size: 15px;
+  }
+
+  .rm2k3-record-actors .actor-neutral-resource-slot {
+    background: #ffffff;
+    border: 1px solid #d9d8d3;
+    height: 68px;
+    width: 86px;
+  }
+
+  .rm2k3-record-actors .actor-sheet-crop {
+    background-image: var(--crop-url);
+    background-position: var(--crop-x) var(--crop-y);
+    background-repeat: no-repeat;
+    background-size: var(--crop-sheet-width) var(--crop-sheet-height);
+    image-rendering: pixelated;
+  }
+
+  .rm2k3-record-actors .actor-basic-stat-grid {
+    gap: 9px 24px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rm2k3-record-actors .actor-basic-stat-row {
+    color: #2d2b27;
+    font: 500 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  }
+
+  .rm2k3-record-actors .actor-basic-stat-row strong {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+  }
+
+  .rm2k3-record-actors .actor-inspector-tabs {
+    display: none;
+  }
+
+  .rm2k3-record-actors .actor-inspector-tab {
+    background: #eeeae2;
+    border: 1px solid #d8d4ca;
+    border-bottom: 0;
+    color: #22211f;
+    font: 600 15px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    height: 48px;
+    min-width: 92px;
+    padding: 0 14px;
+  }
+
+  .rm2k3-record-actors .actor-inspector-tab.active {
+    background: #ffffff;
+    border-color: #d8d4ca;
+  }
+
+  .rm2k3-record-actors .actor-starting-equipment {
+    background: #ffffff;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rm2k3-record-actors .actor-options {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    min-height: 260px;
+  }
+
+  .rm2k3-record-actors .actor-skills {
+    background: #ffffff;
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+
+  .rm2k3-record-actors .actor-skill-header {
+    background: #ffffff;
+    border: 1px solid #deddd8;
+    color: #3a3834;
+    font: 600 16px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    grid-template-columns: 80px minmax(0, 1fr) 58px;
+    min-height: 34px;
+    padding: 0 8px;
+  }
+
+  .rm2k3-record-actors .actor-skill-list {
+    background: #fbfbfa;
+    border: 1px solid #deddd8;
+    border-top: 0;
+    max-height: 248px;
+    min-height: 248px;
+  }
+
+  .rm2k3-record-actors .actor-skill-row {
+    align-items: center;
+    border-bottom: 1px solid #e2ddd3;
+    gap: 8px;
+    grid-template-columns: 80px minmax(0, 1fr) 58px;
+    min-height: 40px;
+    padding: 4px 8px;
+  }
+
+  .rm2k3-record-actors .actor-rates {
+    background: #ffffff;
+    grid-column: 1 / -1;
+    grid-row: 4;
+    max-height: 190px;
+    overflow: hidden;
+  }
+
+  .rm2k3-record-actors .actor-rate-columns {
+    clear: both;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .rm2k3-record-actors .actor-rate-list {
+    background: #ffffff;
+    border: 1px solid #deddd8;
+    max-height: 118px;
+  }
+
+  .rm2k3-record-actors .actor-rate-list > strong {
+    background: #ffffff;
+    border-bottom: 1px solid #deddd8;
+    color: #2f2c28;
+    font: 700 16px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 32px;
+    padding: 0 10px;
+  }
+
+  .rm2k3-record-actors .actor-rate-row {
+    align-items: center;
+    border-bottom: 1px solid #e2ddd3;
+    color: #4d4942;
+    font-size: 15px;
+    grid-template-columns: minmax(0, 1fr) 64px;
+    min-height: 34px;
+    padding: 3px 10px;
+  }
+
+  .rm2k3-record-actors .actor-curve {
+    background: #fbfaf4;
+    border: 1px solid #c4beb2;
+    color: #1c1b18;
+    min-height: 72px;
+  }
+
+  .rm2k3-record-actors .actor-exp-row {
+    font-size: 15px;
+    grid-template-columns: minmax(0, 1fr) auto 78px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel {
+    column-gap: 14px;
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr);
+    row-gap: 6px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > legend {
+    grid-column: 1 / -1;
+    margin-bottom: 2px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > .actor-graphic-preview {
+    align-items: center;
+    border-bottom: 0;
+    display: grid;
+    gap: 4px;
+    grid-column: 1;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    margin: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > .actor-graphic-preview > span {
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > .db-field {
+    align-self: center;
+    grid-column: 2;
+    grid-template-columns: 94px minmax(0, 1fr);
+    margin: 0;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > .db-field > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > .actor-graphic-preview > span {
+    display: none;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-graphic.actor-panel > .actor-check {
+    grid-column: 1 / -1;
+    height: 28px;
+    margin: 0;
+    min-height: 28px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-neutral-resource-slot {
+    height: 48px;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-neutral-resource-slot strong,
+  .database-modal-body .rm2k3-record-actors .actor-resource-set-button {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-left-stack {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-basic-stats {
+    margin-bottom: 0;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-panel {
+    padding: 12px 14px 10px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-panel legend {
+    margin: -2px 0 8px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-classic-sheet label,
+  .database-modal-body .rm2k3-record-actors .actor-classic-sheet .field {
+    margin-bottom: 5px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-classic-sheet input,
+  .database-modal-body .rm2k3-record-actors .actor-classic-sheet select {
+    height: 30px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-identity.actor-panel {
+    display: grid;
+    gap: 6px 12px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-identity.actor-panel > legend,
+  .database-modal-body .rm2k3-record-actors .actor-identity.actor-panel > .field,
+  .database-modal-body .rm2k3-record-actors .actor-identity.actor-panel > .actor-level-row {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-identity.actor-panel > .field:last-child {
+    grid-column: 2;
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-identity.actor-panel > .actor-check {
+    grid-column: 1;
+    margin: 0;
+    min-height: 30px;
+  }
+}
+
+@media (min-width: 901px) {
+  .database-modal-body .rm2k3-record-actors .actor-detail-form,
+  .database-modal-body .rm2k3-record-actors .actor-classic-sheet {
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-editor-grid {
+    height: auto;
+    min-height: 820px;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+    grid-template-rows: auto auto auto auto auto;
+    overflow: visible;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rates {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rate-list {
+    max-height: 194px;
+    overflow: auto;
+    padding-bottom: 2px;
+  }
+
+  .database-modal-body .rm2k3-record-actors .actor-rate-row {
+    box-sizing: border-box;
+    line-height: 1.25;
+    min-height: 32px;
+    overflow: visible;
+    padding: 4px 8px;
   }
 }

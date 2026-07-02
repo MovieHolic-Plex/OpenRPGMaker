@@ -4,6 +4,8 @@ import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
 import type { GameMap, TerrainTemplateGrammarRule, TerrainTemplateMetadata, TerrainTemplateRow, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderTerrainTemplateAgentNotice } from "./terrainTemplateAgentNotice";
+import { bindTerrainTemplateScrollbar } from "./terrainTemplateScrollbar";
 
 export function openTerrainTemplateModal(): void {
   document.querySelector("[data-testid='terrain-template-modal']")?.remove();
@@ -15,6 +17,12 @@ export function openTerrainTemplateModal(): void {
     dataset: { testid: "terrain-template-modal-close" },
   });
   const body = el("div", { class: "database-modal-body terrain-template-modal-body" });
+  const scrollThumb = el("div", { class: "terrain-template-scrollbar-thumb" });
+  const scrollbar = el("div", {
+    class: "terrain-template-scrollbar",
+    attrs: { "aria-hidden": "true" },
+    children: [scrollThumb],
+  });
 
   const backdrop = el("div", {
     class: "database-modal-backdrop",
@@ -30,12 +38,15 @@ export function openTerrainTemplateModal(): void {
             children: [el("h2", { text: "지형 템플릿" }), closeButton],
           }),
           body,
+          scrollbar,
         ],
       }),
     ],
   });
 
+  let releaseScrollbar = (): void => {};
   const close = (): void => {
+    releaseScrollbar();
     backdrop.remove();
     document.removeEventListener("keydown", onKeyDown);
   };
@@ -55,6 +66,7 @@ export function openTerrainTemplateModal(): void {
     if (context) body.append(renderTemplate(template, context.map, context.tileset));
     else body.append(renderTemplateWithoutMap(template));
   }
+  releaseScrollbar = bindTerrainTemplateScrollbar(body, scrollThumb);
   closeButton.focus();
 }
 
@@ -74,6 +86,7 @@ function renderTemplate(template: TerrainTemplateMetadata, map: GameMap, tileset
   return el("div", {
     class: "terrain-template-panel",
     children: [
+      renderTerrainTemplateAgentNotice(),
       el("div", {
         class: "terrain-template-layout",
         children: [
@@ -112,6 +125,7 @@ function renderTemplateWithoutMap(template: TerrainTemplateMetadata): HTMLElemen
   return el("div", {
     class: "terrain-template-panel",
     children: [
+      renderTerrainTemplateAgentNotice(),
       el("p", { class: "terrain-template-summary", text: `${template.name} / ${template.sourceMapName}` }),
       renderTemplateRules(template.rules),
       renderJsonDetails(template),

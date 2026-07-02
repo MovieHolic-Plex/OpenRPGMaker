@@ -32,7 +32,12 @@ export function renderStatusMenuDetailPanel(
   let enabledActionIndex = 0;
   for (const entry of detail.entries) {
     const actionIndex = entry.onActivate && !entry.disabled ? enabledActionIndex : undefined;
-    list.append(renderDetailEntry(project, entry, actionIndex === options.selectedActionIndex, actionIndex));
+    list.append(renderDetailEntry({
+      project,
+      entry,
+      selected: actionIndex === options.selectedActionIndex,
+      actionIndex,
+    }));
     if (actionIndex !== undefined) enabledActionIndex += 1;
   }
   panel.append(list);
@@ -40,12 +45,13 @@ export function renderStatusMenuDetailPanel(
   return panel;
 }
 
-function renderDetailEntry(
-  project: Project,
-  entry: StatusMenuDetailEntry,
-  selected: boolean,
-  actionIndex?: number
-): HTMLElement {
+function renderDetailEntry(options: {
+  readonly project: Project;
+  readonly entry: StatusMenuDetailEntry;
+  readonly selected: boolean;
+  readonly actionIndex?: number;
+}): HTMLElement {
+  const { project, entry, selected, actionIndex } = options;
   const row = entry.onActivate
     ? el("button", {
         class: "status-menu-detail-row status-menu-detail-action",

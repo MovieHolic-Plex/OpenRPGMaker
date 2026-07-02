@@ -1,6 +1,6 @@
-// player/dialogue.ts
-// DOM 대사창/선택지 오버레이. 인터프리터의 text/choices 요청을 화면에 표시.
-// 사용자 입력(클릭/엔터 → 진행, 선택지 클릭 → 인덱스)을 콜백으로 전달.
+﻿// player/dialogue.ts
+// DOM dialogue and choices overlay used by the runtime interpreter.
+// It resolves text advancement and choice selection through promises.
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
@@ -28,12 +28,12 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
 };
 
 export interface DialogueUI {
-  // 대사창 표시. advance() 호출 시 resolve되는 Promise를 반환.
+  // Show a dialogue window until the player advances it.
   showText(request: DialogueTextRequest): Promise<void>;
-  // 선택지 표시. 사용자가 고른 인덱스로 resolve.
+  // Show choices and resolve with the selected option index.
   showChoices(request: DialogueChoicesRequest): Promise<number>;
   showNumberInput(request: DialogueNumberInputRequest): Promise<number>;
-  // 숨김.
+  // Hide any active dialogue overlay.
   hide(): void;
 }
 
@@ -45,7 +45,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
     clearChildren(overlay);
     resetOverlay(overlay);
     return new Promise<void>((resolve) => {
-      const box = el("div", { class: "dialogue-box", dataset: { testid: "dialogue-box" } });
+      const box = dialogueBox("", "dialogue-box");
       applyTextSettings(overlay, box, request);
       const content = el("div", {
         class: `dialogue-content${request.face?.position === "right" ? " face-right" : ""}`,
@@ -61,11 +61,11 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       box.append(content);
       const hint = el("div", {
         class: "continue-hint",
-        text: "▼ 클릭/엔터",
+        text: "click/enter",
       });
       box.append(hint);
 
-      // 타이핑 효과.
+      // Typewriter effect.
       let i = 0;
       let typing = true;
       const full = request.body;
@@ -82,7 +82,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
 
       const advance = () => {
         if (typing) {
-          // 타이핑 스킵 → 전문 표시.
+          // Skip the typewriter and show the full line.
           clearTimeout(timer);
           bodyEl.textContent = full;
           typing = false;
@@ -116,11 +116,17 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       clearChildren(overlay);
       resetOverlay(overlay);
       const position = applyOverlayPosition(overlay, request);
+      overlay.classList.add("choices-active");
+      if (request.options.length >= 4) overlay.classList.add("choices-compact");
+      const choicesWindow = dialogueBox("choices", "dialogue-box");
+      applyTextSettings(overlay, choicesWindow, request, position);
+      const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
       if (request.prompt) {
-        const pbox = el("div", { class: "dialogue-box", dataset: { testid: "dialogue-box" } });
-        applyTextSettings(overlay, pbox, request, position);
-        pbox.append(el("div", { class: "body", text: request.prompt }));
-        overlay.append(pbox);
+        const promptEl = el("div", {
+          class: "choice-prompt-row",
+          text: request.prompt,
+        });
+        choicesEl.append(promptEl);
       }
 
       let onKey: (event: KeyboardEvent) => void;
@@ -129,6 +135,16 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
         clearChildren(overlay);
         resetOverlay(overlay);
         resolve(index);
+      };
+      let selectedIndex = 0;
+      const buttons: HTMLButtonElement[] = [];
+      const setSelected = (nextIndex: number): void => {
+        selectedIndex = nextIndex;
+        buttons.forEach((button, buttonIndex) => {
+          const selected = buttonIndex === selectedIndex;
+          button.classList.toggle("selected", selected);
+          button.setAttribute("aria-selected", selected ? "true" : "false");
+        });
       };
       onKey = (e: KeyboardEvent) => {
         const n = parseInt(e.key, 10);
@@ -143,23 +159,44 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
             e.preventDefault();
             finish(cancelIndex);
           }
+          return;
+        }
+        if (normalizedDialogueKey(e.key) === "arrowup") {
+          e.preventDefault();
+          setSelected((selectedIndex + request.options.length - 1) % request.options.length);
+          return;
+        }
+        if (normalizedDialogueKey(e.key) === "arrowdown") {
+          e.preventDefault();
+          setSelected((selectedIndex + 1) % request.options.length);
+          return;
+        }
+        if (normalizedDialogueKey(e.key) === "enter" || normalizedDialogueKey(e.key) === " ") {
+          e.preventDefault();
+          finish(selectedIndex);
         }
       };
 
-      const choicesEl = el("div", { class: "choices", dataset: { testid: "runtime-choices" } });
       request.options.forEach((opt, idx) => {
         const btn = el("button", {
           class: "choice-btn",
-          text: `▶ ${opt.text}`,
+          text: opt.text,
+          attrs: { role: "option", type: "button" },
           dataset: { testid: `runtime-choice-${idx}` },
         });
+        btn.addEventListener("mouseenter", () => setSelected(idx));
+        btn.addEventListener("focus", () => setSelected(idx));
         btn.addEventListener("click", () => finish(idx));
+        buttons.push(btn);
         choicesEl.append(btn);
       });
+      choicesEl.setAttribute("role", "listbox");
+      setSelected(0);
 
       document.addEventListener("keydown", onKey);
 
-      overlay.append(choicesEl);
+      choicesWindow.append(choicesEl);
+      overlay.append(choicesWindow);
     });
   }
 
@@ -174,6 +211,13 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
     showNumberInput: (request) => showNumberInput(overlay, request, { applyTextSettings, resetOverlay }),
     hide,
   };
+}
+
+function dialogueBox(extraClass: string, testId: string): HTMLElement {
+  return el("div", {
+    class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
+    dataset: { testid: testId },
+  });
 }
 
 export function isDialogueAdvanceKey(key: string): boolean {
@@ -249,7 +293,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
   const index = Math.max(0, Math.min(15, face.faceIndex));
   const col = index % 4;
   const row = Math.floor(index / 4);
-  const scale = 4.5;
+  const scale = 1;
   const style = [
     `--crop-url:url("${url}")`,
     `--crop-width:${48 * scale}px`,
@@ -263,7 +307,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
   return el("div", {
     class: `dialogue-face actor-sheet-crop${face.flipHorizontally ? " flipped" : ""}`,
     attrs: {
-      "aria-label": `얼굴 그래픽 ${face.resourceId} ${index + 1}`,
+      "aria-label": `face ${face.resourceId} ${index + 1}`,
       role: "img",
       style: style.join(";"),
     },

@@ -2,6 +2,7 @@ import type {
   ActorId,
   AssetRef,
   Dir,
+  EquipmentId,
   FlagName,
   ItemId,
   MapId,
@@ -17,19 +18,24 @@ export type Trigger =
   | { kind: "auto" }
   | { kind: "parallel" };
 
+export type SelfSwitchKey = "A" | "B" | "C" | "D";
+
+// 조건 분기(fork)에서 사용하는 조건. 페이지 출현 조건(EventPageCondition)의 상위 집합.
 export type Condition =
   | { kind: "switch"; switchId: string; value: boolean }
   | {
       kind: "variable";
       variableId: string;
-      op: ">=" | "<=" | "==" | "!=";
+      op: "==" | ">=" | "<=" | ">" | "<" | "!=";
       value: number;
-    };
-
-export type EventPageCondition =
-  | Condition
+    }
+  | { kind: "selfSwitch"; key: SelfSwitchKey; value: boolean }
   | { kind: "actor"; actorId: ActorId; present: boolean }
-  | { kind: "item"; itemId: ItemId; present: boolean };
+  | { kind: "item"; itemId: ItemId; present: boolean }
+  | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
+  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number };
+
+export type EventPageCondition = Condition;
 
 export interface ConditionV1 {
   kind: "flag";
@@ -40,6 +46,10 @@ export interface ConditionV1 {
 export interface MoveRoute {
   moves: MoveCommand[];
   repeat: boolean;
+  // 완료까지 인터프리터를 블로킹할지(기본 false: fire-and-forget).
+  wait?: boolean;
+  // 이동 불가 시 경로를 건너뛸지.
+  skippable?: boolean;
 }
 
 export type MoveCommand =
@@ -64,6 +74,7 @@ export type MoveCommand =
   | { kind: "changeSpeed"; delta: number }
   | { kind: "changeFrequency"; delta: number }
   | { kind: "changeGraphic"; spriteId: string }
+  | { kind: "npcTransfer"; mapId: MapId; x: number; y: number; direction?: Dir }
   | { kind: "playSe"; resourceId: string }
   | { kind: "wait" };
 
@@ -72,9 +83,13 @@ export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
 export type ShopType = "normal" | "buyOnly" | "sellOnly";
 export type ShopMessageType = "welcome" | "business" | "direct";
+export type TransferDirection = "retain" | Dir;
+export type TransferFade = "black" | "white" | "none";
+export type ActorAmountOp = "=" | "+=" | "-=";
+export type ActorEquipmentSlot = "weapon" | "shield" | "armor" | "helmet" | "accessory";
 export type MessageWindowFormat = "normal" | "transparent";
 export type MessageWindowPosition = "top" | "center" | "bottom";
-export type ChoiceCancelBehavior = "disallow" | "choice1" | "choice2" | "choice3" | "choice4" | "branch";
+export type ChoiceCancelBehavior = "disallow" | "choice1" | "choice2" | "choice3" | "choice4" | "choice5" | "branch";
 export type MessageWindowSettings = {
   readonly format: MessageWindowFormat;
   readonly position: MessageWindowPosition;
@@ -100,10 +115,12 @@ export type Command =
     }
   | { kind: "fork"; condition: Condition; then: Command[]; else?: Command[] }
   | { kind: "wait"; ms: number }
-  | { kind: "inputWait" }
+  | { kind: "inputWait"; variableId?: string }
   | { kind: "inputNumber"; variableId: string; digits: number }
   | { kind: "label"; name: string }
   | { kind: "gotoLabel"; name: string }
+  | { kind: "loop"; body: Command[] }
+  | { kind: "breakLoop" }
   | { kind: "setSwitch"; switchId: string; value: boolean }
   | {
       kind: "setVariable";
@@ -111,8 +128,8 @@ export type Command =
       op: "=" | "+=" | "-=" | "*=" | "/=";
       value: VariableOperand;
     }
-  | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number }
+  | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | {
       kind: "changeTile";
@@ -123,8 +140,15 @@ export type Command =
       tile: number;
     }
   | { kind: "callCommonEvent"; commonEventId: string }
+  | { kind: "callMapEvent"; eventId: string }
   | { kind: "battleProcessing"; troopId: TroopId; canEscape: boolean; canLose: boolean }
   | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId }
+  | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "changeLevel"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "changeEquipment"; actorId: ActorId; slot: ActorEquipmentSlot; equipmentId: EquipmentId }
+  | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "recoverAll"; actorId?: ActorId }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
@@ -148,10 +172,11 @@ export type Command =
   | { kind: "ending"; title: string; message: string }
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
+  | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }
   | { kind: "m2Command"; commandId: string; fields: M2CommandFields };
 
 export type EventPriority = "below" | "same" | "above";
-export type AutonomousMovement = "fixed" | "random" | "approach" | "custom";
+export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living";
 export type EventAnimationType =
   | "normal"
   | "step"
@@ -167,11 +192,25 @@ export interface EventPageGraphic {
   transparent?: boolean;
 }
 
+export interface NpcLivingDestination {
+  mapId: MapId;
+  x: number;
+  y: number;
+  direction?: Dir;
+  switchId?: string;
+}
+
+export interface NpcLivingMovement {
+  destinations: NpcLivingDestination[];
+  repeat: boolean;
+}
+
 export interface EventPageMovement {
   type: AutonomousMovement;
   speed: number;
   frequency: number;
   route?: MoveRoute;
+  living?: NpcLivingMovement;
 }
 
 export interface EventPage {

@@ -8,7 +8,7 @@ import { SMALL_HOUSE_01_TERRAIN_TEMPLATE } from "./smallHouse01TerrainTemplate";
 
 type TilePattern = readonly (readonly number[])[];
 type TileLayerName = "lower" | "upper";
-type TilePoint = {
+export type TilePoint = {
   readonly x: number;
   readonly y: number;
 };
@@ -17,6 +17,7 @@ type StampInput = {
   readonly map: GameMap;
   readonly origin: TilePoint;
   readonly pattern: TilePattern;
+  readonly skipTiles?: ReadonlySet<number>;
 };
 type TilePlacement = {
   readonly layer: TileLayerName;
@@ -84,6 +85,11 @@ type BlankHouseMapInput = {
 };
 export type SmallHouseVariantIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type SmallHouseMaterial = "plaster" | "wood" | "stone";
+export type DbExtractedHouseStampInput = {
+  readonly material?: SmallHouseMaterial;
+  readonly origin: TilePoint;
+  readonly preserveExistingGround?: boolean;
+};
 
 type HouseWallTileSet = {
   readonly top: readonly [number, number, number];
@@ -414,6 +420,7 @@ const TREE_STACK_TILES = new Set([TREE_TOP_LEFT, TREE_TOP_RIGHT, TREE_BOTTOM_LEF
 // RM2K3 정석에 따라 upper에 유지한다 (chipsetMapping.isUpperChipsetTile과 일관).
 // 강등 대상이 없으므로 normalize는 사실상 no-op이 된다.
 const LOWER_TRANSPARENT_HOUSE_TILES = new Set<number>();
+const DB_EXTRACTED_HOUSE_GROUND_TILES = new Set<number>([TILE.GRASS]);
 
 const DB_EXTRACTED_HOUSE_LOWER_PATTERN = [
   [240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240],
@@ -520,14 +527,29 @@ export function createSmallHouseCityMap(): GameMap {
 }
 
 export function stampDbExtractedHouseTemplate(map: GameMap, origin: TilePoint): void {
-  stampPattern({ layer: "lower", map, origin, pattern: DB_EXTRACTED_HOUSE_LOWER_PATTERN });
-  stampPattern({ layer: "upper", map, origin, pattern: DB_EXTRACTED_HOUSE_UPPER_PATTERN });
+  stampDbExtractedHouse(map, { origin });
 }
 
 export function stampSmallHouse(map: GameMap, origin: TilePoint, material: SmallHouseMaterial): void {
-  const swaps = wallTileSwaps(material);
-  stampPattern({ layer: "lower", map, origin, pattern: remapPattern(DB_EXTRACTED_HOUSE_LOWER_PATTERN, swaps) });
-  stampPattern({ layer: "upper", map, origin, pattern: remapPattern(DB_EXTRACTED_HOUSE_UPPER_PATTERN, swaps) });
+  stampDbExtractedHouse(map, { material, origin });
+}
+
+export function stampDbExtractedHouse(map: GameMap, input: DbExtractedHouseStampInput): void {
+  const swaps = wallTileSwaps(input.material ?? "plaster");
+  const lowerPattern = remapPattern(DB_EXTRACTED_HOUSE_LOWER_PATTERN, swaps);
+  const upperPattern = remapPattern(DB_EXTRACTED_HOUSE_UPPER_PATTERN, swaps);
+  if (input.preserveExistingGround === true) {
+    stampPattern({
+      layer: "lower",
+      map,
+      origin: input.origin,
+      pattern: lowerPattern,
+      skipTiles: DB_EXTRACTED_HOUSE_GROUND_TILES,
+    });
+  } else {
+    stampPattern({ layer: "lower", map, origin: input.origin, pattern: lowerPattern });
+  }
+  stampPattern({ layer: "upper", map, origin: input.origin, pattern: upperPattern });
 }
 
 function wallTileSwaps(material: SmallHouseMaterial): ReadonlyMap<number, number> {
@@ -778,7 +800,7 @@ function stampPattern(input: StampInput): void {
     if (!row) continue;
     for (let x = 0; x < row.length; x += 1) {
       const tile = row[x];
-      if (tile !== undefined && tile >= 0) {
+      if (tile !== undefined && tile >= 0 && input.skipTiles?.has(tile) !== true) {
         setTile(input.map, { layer: input.layer, tile, x: input.origin.x + x, y: input.origin.y + y });
       }
     }

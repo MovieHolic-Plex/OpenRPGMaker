@@ -3,16 +3,17 @@ import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/play
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import {
   applyFacing,
-  canNpcMove,
   executeInstantCommand,
   movementDeltaForCommand,
   nextMoveCommand,
 } from "@/player/playSceneAutonomousCommands";
+import { canNpcMove } from "@/player/playSceneAutonomousMapActions";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import {
   moveRuntimeEventPosition,
   runtimeEventView,
+  runtimeEventViewsForMap,
 } from "@/player/runtimeEventState";
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: number): void {
@@ -26,12 +27,12 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     mover.timer += Math.max(0, deltaMs);
     if (mover.timer < mover.moveIntervalMs) continue;
     mover.timer = 0;
-    const event = scene.map.events.find((entry) => entry.id === eventId);
-    if (!event) {
+    const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
+      .find((entry) => entry.event.id === eventId);
+    if (!view) {
       completeRouteCommand(mover);
       continue;
     }
-    const view = runtimeEventView(event, scene.session, scene.eventPositions);
     const command = nextMoveCommand(mover);
     mover.step += 1;
     const baseFrame = view.page?.graphic.pattern ?? 0;
@@ -48,7 +49,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       completeRouteCommand(mover);
       continue;
     }
-    const position = scene.eventPositions[eventId] ?? { x: event.x, y: event.y };
+    const position = { x: view.x, y: view.y };
     const nx = position.x + movement.x;
     const ny = position.y + movement.y;
     const frameDir = applyFacing(mover, movement.face);
@@ -59,7 +60,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       continue;
     }
     if (canNpcMove({ project, scene, mover, from: position, to: { x: nx, y: ny } }, movement)) {
-      moveRuntimeEventPosition(scene.eventPositions, eventId, nx, ny);
+      moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
       mover.activeMove = { fromX: position.x, fromY: position.y, toX: nx, toY: ny, dir: frameDir, baseFrame, elapsedMs: 0 };
       if (sprite) {
         sprite.setPosition(characterSpriteX(position.x), characterSpriteY(position.y));
@@ -67,12 +68,27 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
         applySpriteAlpha(sprite, mover.opacity);
         setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
       }
-      scene.runtimeDom.upsertEventMarker(runtimeEventView(event, scene.session, scene.eventPositions));
+      scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
     } else {
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     }
     completeRouteCommand(mover);
   }
+}
+
+function moveAutonomousRuntimePosition(
+  scene: AutonomousNpcSceneContext,
+  eventId: string,
+  x: number,
+  y: number,
+  direction: AutonomousMover["facing"]
+): void {
+  const location = scene.session.eventLocations?.[eventId];
+  if (location?.mapId === scene.map.id) {
+    scene.session.eventLocations[eventId] = { ...location, x, y, direction };
+    return;
+  }
+  moveRuntimeEventPosition(scene.eventPositions, eventId, x, y);
 }
 
 function fireEventTouch(scene: AutonomousNpcSceneContext, eventId: string, triggerKind: string): void {
@@ -92,8 +108,8 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   move.elapsedMs = Math.min(mover.moveDurationMs, move.elapsedMs + Math.max(0, deltaMs));
   const progress = move.elapsedMs / mover.moveDurationMs;
   const sprite = scene.eventSprites.get(eventId);
-  const event = scene.map.events.find((entry) => entry.id === eventId);
-  const view = event ? runtimeEventView(event, scene.session, scene.eventPositions) : undefined;
+  const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
+    .find((entry) => entry.event.id === eventId);
   const animationType = view?.animationType ?? "normal";
   const priority = view?.priority ?? "same";
   if (sprite) {
@@ -114,6 +130,7 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   }
   mover.activeMove = null;
   mover.timer = 0;
+  scene.syncRuntimeState?.();
 }
 
 function completeRouteCommand(mover: AutonomousMover): void {

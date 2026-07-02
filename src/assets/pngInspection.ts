@@ -6,6 +6,8 @@ export type PngInspection = {
   readonly height: number;
   readonly mode: "rgb" | "rgba";
   readonly byteSize: number;
+  readonly transparentPixels: number;
+  readonly opaqueColorKeyPixels: number;
   readonly nonblank: boolean;
 };
 
@@ -39,6 +41,8 @@ export async function inspectPngBytes(bytes: Uint8Array): Promise<PngInspectionR
       height: header.header.height,
       mode: header.header.colorType === 6 ? "rgba" : "rgb",
       byteSize: bytes.byteLength,
+      transparentPixels: countTransparentPixels(pixels.rgba),
+      opaqueColorKeyPixels: countOpaqueColorKeyPixels(pixels.rgba),
       nonblank: hasVisibleVariation(pixels.rgba),
     },
   };
@@ -173,6 +177,31 @@ function hasVisibleVariation(rgba: Uint8Array): boolean {
     if ((rgba[offset] ?? 0) !== firstR || (rgba[offset + 1] ?? 0) !== firstG || (rgba[offset + 2] ?? 0) !== firstB || alpha !== firstA) return true;
   }
   return false;
+}
+
+function countTransparentPixels(rgba: Uint8Array): number {
+  let total = 0;
+  for (let offset = 3; offset < rgba.byteLength; offset += 4) {
+    if (rgba[offset] === 0) total += 1;
+  }
+  return total;
+}
+
+function countOpaqueColorKeyPixels(rgba: Uint8Array): number {
+  let total = 0;
+  for (let offset = 0; offset <= rgba.byteLength - 4; offset += 4) {
+    const red = rgba[offset] ?? 0;
+    const green = rgba[offset + 1] ?? 0;
+    const blue = rgba[offset + 2] ?? 0;
+    const alpha = rgba[offset + 3] ?? 0;
+    if (alpha > 0 && isColorKey(red, green, blue)) total += 1;
+  }
+  return total;
+}
+
+function isColorKey(red: number, green: number, blue: number): boolean {
+  if (red === 255 && green === 0 && blue === 255) return true;
+  return red === 255 && green === 103 && blue === 139;
 }
 
 function joinBytes(chunks: readonly Uint8Array[]): Uint8Array {

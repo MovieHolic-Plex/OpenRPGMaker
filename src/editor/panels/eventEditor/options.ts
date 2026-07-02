@@ -1,4 +1,4 @@
-import type { Command, Condition, EventPage, Trigger } from "@/project/types";
+import type { Command, Condition, EventAnimationType, EventPage, Trigger } from "@/project/types";
 
 export type SelectOption<T extends string> = {
   readonly value: T;
@@ -13,11 +13,11 @@ export type PageCommandButton = {
 };
 
 export const TRIGGER_OPTIONS = [
-  { value: "action", label: "Action Button" },
-  { value: "playerTouch", label: "Player Touch" },
-  { value: "eventTouch", label: "Event Touch" },
-  { value: "auto", label: "Autorun" },
-  { value: "parallel", label: "Parallel Process" },
+  { value: "action", label: "결정키로 시작" },
+  { value: "playerTouch", label: "플레이어가 접촉" },
+  { value: "eventTouch", label: "이벤트가 접촉" },
+  { value: "auto", label: "자동 실행" },
+  { value: "parallel", label: "병렬 처리" },
 ] as const satisfies readonly SelectOption<EventEditorTriggerKind>[];
 
 export const COMMAND_KIND_OPTIONS = [
@@ -33,12 +33,21 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "inputWait", label: "키 입력 대기" },
   { value: "label", label: "라벨" },
   { value: "gotoLabel", label: "라벨 이동" },
+  { value: "loop", label: "반복" },
+  { value: "breakLoop", label: "반복 탈출" },
   { value: "transfer", label: "장소 이동" },
   { value: "moveEvent", label: "이벤트 이동" },
   { value: "changeTile", label: "지형 변경" },
   { value: "callCommonEvent", label: "공통 이벤트 호출" },
+  { value: "callMapEvent", label: "맵 이벤트 호출" },
   { value: "battleProcessing", label: "전투 처리" },
   { value: "learnSkill", label: "특수기 습득" },
+  { value: "changeExp", label: "경험치 변경" },
+  { value: "changeLevel", label: "레벨 변경" },
+  { value: "changeEquipment", label: "장비 변경" },
+  { value: "changeActorHp", label: "HP 변경" },
+  { value: "changeActorMp", label: "MP 변경" },
+  { value: "recoverAll", label: "모두 회복" },
   { value: "changeGold", label: "소지금 변경" },
   { value: "changeItem", label: "아이템 변경" },
   { value: "changeParty", label: "파티 변경" },
@@ -53,8 +62,16 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "returnToTitle", label: "타이틀로 돌아가기" },
   { value: "wait", label: "대기" },
   { value: "setFlag", label: "플래그 설정" },
-  { value: "m2Command", label: "M2 PDF 명령" },
+  { value: "setSelfSwitch", label: "셀프 스위치 설정" },
+  { value: "m2Command", label: "M2/현대 명령" },
 ] as const satisfies readonly SelectOption<Command["kind"]>[];
+
+export const SELF_SWITCH_KEY_OPTIONS = [
+  { value: "A", label: "A" },
+  { value: "B", label: "B" },
+  { value: "C", label: "C" },
+  { value: "D", label: "D" },
+] as const satisfies readonly SelectOption<"A" | "B" | "C" | "D">[];
 
 export function commandKindLabel(kind: Command["kind"]): string {
   return COMMAND_KIND_OPTIONS.find((option) => option.value === kind)?.label ?? kind;
@@ -75,6 +92,7 @@ export const PAGE_COMMAND_BUTTONS = [
   { kind: "changeGold", testId: "command-add-gold", label: "돈" },
   { kind: "changeItem", testId: "command-add-item", label: "아이템" },
   { kind: "changeParty", testId: "command-add-party", label: "파티" },
+  { kind: "ending", testId: "command-add-ending", label: "엔딩" },
   { kind: "gameOver", testId: "command-add-game-over", label: "게임 오버" },
 ] as const satisfies readonly PageCommandButton[];
 
@@ -83,6 +101,15 @@ export const EVENT_PRIORITY_OPTIONS = [
   { value: "same", label: "캐릭터와 같음" },
   { value: "above", label: "캐릭터 위" },
 ] as const satisfies readonly SelectOption<EventPage["priority"]>[];
+
+export const EVENT_ANIMATION_TYPE_OPTIONS = [
+  { value: "normal", label: "보통" },
+  { value: "step", label: "정지 시 애니메이션" },
+  { value: "fixedDirection", label: "방향 고정" },
+  { value: "fixedDirectionStep", label: "방향 고정 + 정지 애니메이션" },
+  { value: "fixedGraphic", label: "그래픽 고정" },
+  { value: "fourFrame", label: "4프레임 애니메이션" },
+] as const satisfies readonly SelectOption<EventAnimationType>[];
 
 export const BOOLEAN_OPTIONS = [
   { value: "true", label: "참" },
@@ -103,11 +130,18 @@ export const TIMER_ACTION_OPTIONS = [
   { value: "stop", label: "정지" },
 ] as const satisfies readonly SelectOption<Extract<Command, { kind: "timer" }>["action"]>[];
 
+export const TIMER_ID_OPTIONS = [
+  { value: "timer1", label: "타이머 1" },
+  { value: "timer2", label: "타이머 2" },
+] as const satisfies readonly SelectOption<NonNullable<Extract<Command, { kind: "timer" }>["timerId"]>>[];
+
 export const CONDITION_OP_OPTIONS = [
-  { value: ">=", label: ">=" },
-  { value: "<=", label: "<=" },
-  { value: "==", label: "==" },
-  { value: "!=", label: "!=" },
+  { value: "==", label: "같음" },
+  { value: ">=", label: "이상" },
+  { value: "<=", label: "이하" },
+  { value: ">", label: "초과" },
+  { value: "<", label: "미만" },
+  { value: "!=", label: "다름" },
 ] as const satisfies readonly SelectOption<Extract<Condition, { kind: "variable" }>["op"]>[];
 
 export const LAYER_OPTIONS = [

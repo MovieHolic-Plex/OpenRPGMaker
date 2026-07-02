@@ -1,0 +1,55 @@
+@media (min-width: 981px) {
+  .database-modal-body .db-elements-classic,
+  .database-modal-body .db-elements-classic-inner {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .db-elements-classic-inner {
+    gap: 14px;
+    grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-elements-editor {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
+    grid-template-rows: 88px 160px minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-elements-editor .db-elements-fieldset:nth-child(3) {
+    grid-column: 2;
+    grid-row: 1 / 4;
+  }
+
+  .database-modal-body .db-elements-list-pane,
+  .database-modal-body .db-elements-editor {
+    background: #ffffff;
+    border: 1px solid #dedfdf;
+    border-radius: 6px;
+  }
+
+  .database-modal-body .db-elements-list-title {
+    background: transparent;
+    color: #20242c;
+    font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    justify-content: flex-start;
+  }
+
+  .database-modal-body .db-elements-row,
+  .database-modal-body button.db-elements-row {
+    border: 1px solid #ececec;
+    border-radius: 4px;
+    font: 400 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px 0 26px;
+  }
+
+  .database-modal-body .db-elements-row.is-selected,
+  .database-modal-body button.db-elements-row.is-selected {
+    background: linear-gradient(180deg, #1473df 0%, #0965cf 100%);
+    border-color: #0965cf;
+    color: #ffffff;
+  }
+}

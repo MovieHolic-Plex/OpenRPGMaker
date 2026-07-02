@@ -35,8 +35,13 @@ export function applySystemGraphic(node: HTMLElement): void {
   if (dataUrl) {
     node.style.borderImageSource = `url("${dataUrl}")`;
     node.style.borderImageSlice = "1";
-    node.style.backgroundImage = `linear-gradient(rgba(20, 28, 44, 0.94), rgba(20, 28, 44, 0.94)), url("${dataUrl}")`;
   }
+  node.style.backgroundImage = [
+    "linear-gradient(180deg,",
+    "var(--rm2k3-title-window-hi) 0%,",
+    "var(--rm2k3-title-window) 46%,",
+    "var(--rm2k3-title-window-deep) 100%)",
+  ].join(" ");
 }
 
 export function applyBattleSystemGraphic(node: HTMLElement): void {

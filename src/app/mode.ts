@@ -5,7 +5,7 @@
 import type Phaser from "phaser";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { store } from "@/project/store";
+import { DbConnectionRequiredError, store } from "@/project/store";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import {
@@ -14,6 +14,7 @@ import {
   mountPerfMetrics,
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
+import { editorState } from "@/editor/editorState";
 
 export type Mode = "edit" | "play";
 
@@ -49,16 +50,61 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     window.addEventListener(MAP_EDIT_HISTORY_EVENT, onMapEditHistoryChange);
   }
 
-  await store.load();
+  try {
+    await store.load();
+  } catch (error) {
+    renderDbRequiredScreen(error);
+    if (!(error instanceof DbConnectionRequiredError)) {
+      console.error("[app] Project load failed before editor boot:", error);
+    }
+    return;
+  }
 
   // 최초 편집 맵 = 시작 맵.
+  await finishEditorBoot(startedAt);
+}
+
+async function finishEditorBoot(startedAt: number): Promise<void> {
   const project = store.getCurrent();
-  const { editorState } = await import("@/editor/editorState");
   editorState.set({ currentMapId: project.startMapId });
 
   await renderTopbar();
   await enterMode("edit");
   markInitialEditRender(startedAt);
+}
+
+function renderDbRequiredScreen(error: unknown): void {
+  if (!elements) return;
+  elements.topbar.textContent = "RPG ZZU - DB 연결 필요";
+  while (elements.main.firstChild) {
+    elements.main.removeChild(elements.main.firstChild);
+  }
+  const panel = document.createElement("section");
+  panel.className = "db-required-panel";
+  panel.dataset.testid = "db-required-panel";
+  const title = document.createElement("h1");
+  title.textContent = "DB 연결이 필요합니다";
+  const body = document.createElement("p");
+  body.textContent = error instanceof Error ? error.message : "프로젝트를 열려면 Supabase DB 연결과 프로젝트 선택이 필요합니다.";
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "btn primary";
+  action.dataset.testid = "db-required-open-settings";
+  action.textContent = "DB 연결 열기";
+  action.addEventListener("click", () => openRequiredDbSettings());
+  panel.append(title, body, action);
+  elements.main.append(panel);
+  openRequiredDbSettings();
+}
+
+function openRequiredDbSettings(): void {
+  void import("@/editor/panels/dbConnectionSettings").then(({ openDbConnectionSettings }) => {
+    openDbConnectionSettings(() => {
+      if (store.isLoaded()) {
+        void finishEditorBoot(performance.now());
+      }
+    }, { autoLoadProjects: true, required: true });
+  });
 }
 
 // 모드 진입. 이전 모드 정리 후 새 모드 부팅.

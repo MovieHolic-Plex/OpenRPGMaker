@@ -5,7 +5,7 @@ import { startSession } from "@/project/session";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 describe("player status menu", () => {
-  it("keeps the command rail visible while a command detail is active", () => {
+  it("opens command functions as full-screen scenes", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -22,6 +22,8 @@ describe("player status menu", () => {
             onLoadSlot: () => undefined,
             onSelectItemTarget: () => undefined,
             onUseItem: () => undefined,
+            onSelectSkillActor: () => undefined,
+            onSelectSkill: () => undefined,
             onSelectEquipmentActor: () => undefined,
             onSelectEquipmentSlot: () => undefined,
             onEquipItem: () => undefined,
@@ -36,11 +38,11 @@ describe("player status menu", () => {
 
       const commandRail = findByTestId(menu, "status-menu-command-rail");
       const skillsCommand = findByTestId(menu, "status-menu-command-skills");
-      const detail = findByTestId(menu, "status-menu-detail");
+      const scene = findByTestId(menu, "status-menu-fullscreen-skills");
 
-      expect(commandRail).not.toBeNull();
-      expect(skillsCommand?.classList.contains("selected")).toBe(true);
-      expect(detail?.textContent).toContain("스킬");
+      expect(commandRail).toBeNull();
+      expect(skillsCommand).toBeNull();
+      expect(scene?.textContent).toContain("스킬");
     } finally {
       restoreDom();
     }

@@ -5,7 +5,7 @@ import type { RuntimeEventPositions } from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
-import type { GameMap, MapId, MoveCommand, Trigger } from "@/project/types";
+import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
@@ -56,6 +56,14 @@ export type RuntimeTimer = {
   active: boolean;
 };
 
+export type TransferRequest = {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: TransferDirection;
+  readonly fade?: TransferFade;
+};
+
 export interface PlaySceneContext extends Phaser.Scene {
   tileLayer: Phaser.GameObjects.Container;
   player: Phaser.GameObjects.Sprite;
@@ -103,7 +111,9 @@ export interface PlaySceneContext extends Phaser.Scene {
     y: number;
     tile: number;
   }): void;
-  transferTo(mapId: MapId, x: number, y: number): void;
+  transferTo(request: TransferRequest): Promise<void>;
+  flashScreen(step: { red: number; green: number; blue: number; durationMs: number }): Promise<void>;
+  shakeScreen(step: { intensity: number; durationMs: number }): Promise<void>;
   playBattle(step: {
     kind: "battleProcessing";
     troopId: string;

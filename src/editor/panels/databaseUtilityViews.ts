@@ -1,5 +1,5 @@
 import { deleteSwitch, deleteVariable, renameSwitch, renameVariable } from "@/editor/actions";
-import { bulkRenameSwitches, bulkRenameVariables } from "@/editor/databaseActions";
+import { bulkRenameSwitches, bulkRenameVariables, type DeleteResult } from "@/editor/databaseActions";
 import {
   matchesNameOrId,
   textControl,
@@ -7,6 +7,7 @@ import {
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 let switchSearch = "";
 let selectedSwitchId = "";
@@ -33,7 +34,7 @@ type UtilityNamedRowOptions = {
 
 type UtilityDetailOptions = {
   readonly label: string;
-  readonly onDelete: (id: string) => void;
+  readonly onDelete: (id: string) => DeleteResult;
   readonly onName: (id: string, value: string) => void;
   readonly record?: { readonly id: string; readonly name: string };
   readonly rerender: () => void;
@@ -123,8 +124,14 @@ function rangeControls(label: string, kind: "switch" | "variable", rerender: () 
     text: "범위 적용",
     on: {
       click: () => {
-        if (kind === "switch") bulkRenameSwitches(Number(start.value), Number(count.value), prefix.value);
-        else bulkRenameVariables(Number(start.value), Number(count.value), prefix.value);
+        const startNumber = Number(start.value);
+        if (kind === "switch") {
+          bulkRenameSwitches(startNumber, Number(count.value), prefix.value);
+          selectedSwitchId = store.getCurrent().switches[startNumber - 1]?.id ?? selectedSwitchId;
+        } else {
+          bulkRenameVariables(startNumber, Number(count.value), prefix.value);
+          selectedVariableId = store.getCurrent().variables[startNumber - 1]?.id ?? selectedVariableId;
+        }
         rerender();
       },
     },
@@ -233,7 +240,11 @@ function utilityDetail(options: UtilityDetailOptions): HTMLElement {
         text: "삭제",
         on: {
           click: () => {
-            options.onDelete(record.id);
+            const result = options.onDelete(record.id);
+            if (!result.ok) {
+              toast(result.message, "error");
+              return;
+            }
             options.rerender();
           },
         },

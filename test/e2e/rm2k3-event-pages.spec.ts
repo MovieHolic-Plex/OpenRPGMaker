@@ -315,7 +315,7 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
   await routeDialog.getByTestId("event-page-move-route-frequency-5").check();
   await routeDialog.getByTestId("event-page-move-route-repeat").check();
   await routeDialog.getByTestId("event-page-move-route-switch-id").fill("sw_page");
-  await routeDialog.getByTestId("event-page-move-route-graphic-id").fill("npc_villager");
+  await routeDialog.getByTestId("event-page-move-route-graphic-id").fill("tex_easyrpg_charset_people1");
   await routeDialog.getByTestId("event-page-move-route-sound-id").fill("se_cursor");
   const addRouteCommand = async (id: string) => {
     const button = routeDialog.getByTestId(`event-page-move-route-add-${id}`);
@@ -376,7 +376,7 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
   await routeDialog.getByTestId("event-page-move-route-ok").click();
   await expect(routeDialog).toBeHidden();
   await expect(page.getByTestId("event-page-movement-route-summary")).toContainText("오른쪽 이동");
-  await page.getByTestId("event-page-sprite-input").fill("npc_villager");
+  await page.getByTestId("event-page-sprite-input").fill("tex_easyrpg_charset_people1");
   await page.getByTestId("event-page-sprite-input").blur();
   await page.getByTestId("event-page-switch-condition-input").fill("sw_page");
   await page.getByTestId("event-page-switch-condition-input").blur();
@@ -443,7 +443,7 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
     item.conditions.some((condition) => condition.kind === "variable" && condition.variableId === "var_rank" && condition.value === 3) &&
     item.conditions.some((condition) => condition.kind === "actor" && condition.actorId === "actor_hero" && condition.present === true) &&
     item.conditions.some((condition) => condition.kind === "item" && condition.itemId === "item_key" && condition.present === true) &&
-    item.graphic.sprite?.id === "npc_villager" &&
+    item.graphic.sprite?.id === "tex_easyrpg_charset_people1" &&
     item.priority === "above" &&
     item.movement?.type === "custom" &&
     item.movement?.speed === 4 &&
@@ -452,7 +452,7 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
     item.movement?.route?.moves.some((move) => move.kind === "move" && move.dir === "right") &&
     item.movement?.route?.moves.some((move) => move.kind === "moveDiagonal") &&
     item.movement?.route?.moves.some((move) => move.kind === "setSwitch" && move.switchId === "sw_page") &&
-    item.movement?.route?.moves.some((move) => move.kind === "changeGraphic" && move.spriteId === "npc_villager") &&
+    item.movement?.route?.moves.some((move) => move.kind === "changeGraphic" && move.spriteId === "tex_easyrpg_charset_people1") &&
     item.movement?.route?.moves.some((move) => move.kind === "playSe" && move.resourceId === "se_cursor") &&
     item.movement?.route?.moves.some((move) => move.kind === "wait") &&
     item.commands.some((command) => command.body === "Page two")

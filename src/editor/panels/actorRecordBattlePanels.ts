@@ -43,13 +43,13 @@ export function ratesPanel(actor: ActorRecord): HTMLElement {
   const stateRows = [{ id: "state_death", name: "전투불능" }, ...store.getCurrent().database.states].map((state) =>
     stateRateRow(state.id, state.name, actor.stateRates[state.id] ?? "C", (grade) =>
       updateDatabaseRecord("actors", actor.id, {
-        stateRates: { ...actor.stateRates, [state.id]: grade },
+        stateRates: { ...currentActor(actor).stateRates, [state.id]: grade },
       })
     )
   );
   const elementRows = DEFAULT_ELEMENT_RATE_LABELS.map((element) =>
     rateRow(element.name, actor.elementRates[element.id] ?? "C", (grade) =>
-      updateDatabaseRecord("actors", actor.id, { elementRates: { ...actor.elementRates, [element.id]: grade } })
+      updateDatabaseRecord("actors", actor.id, { elementRates: { ...currentActor(actor).elementRates, [element.id]: grade } })
     )
   );
   return actorPanel("저항", "actor-rates", [
@@ -71,7 +71,7 @@ function equipmentPanel(actor: ActorRecord): HTMLElement {
     const options = equipment.filter((entry) => entry.slot === slot.slot);
     return selectRecord(slot.label, `db-picker-actor-equipment-${slot.key}`, actor.initialEquipment[slot.key] ?? "", options, (id) =>
       updateDatabaseRecord("actors", actor.id, {
-        initialEquipment: { ...actor.initialEquipment, [slot.key]: emptyToUndefined(id) },
+        initialEquipment: { ...currentActor(actor).initialEquipment, [slot.key]: emptyToUndefined(id) },
       })
     );
   }));
@@ -83,7 +83,7 @@ function optionsPanel(actor: ActorRecord): HTMLElement {
       class: "actor-options-grid",
       children: OPTION_LABELS.map((option) =>
         checkboxControl(option.label, `db-field-actor-option-${option.key}`, actor.options[option.key], (enabled) =>
-          updateDatabaseRecord("actors", actor.id, { options: { ...actor.options, [option.key]: enabled } })
+          updateDatabaseRecord("actors", actor.id, { options: { ...currentActor(actor).options, [option.key]: enabled } })
         )
       ),
     }),
@@ -97,14 +97,14 @@ function learnedSkillsPanel(actor: ActorRecord, rerender: () => void): HTMLEleme
       class: "actor-skill-row",
       children: [
         numberInput(`db-field-actor-skill-level-${index}`, learned.level, (level) => {
-          const learnedSkills = actor.learnedSkills.map((entry, entryIndex) =>
+          const learnedSkills = currentActor(actor).learnedSkills.map((entry, entryIndex) =>
             entryIndex === index ? { ...entry, level } : entry
           );
           updateDatabaseRecord("actors", actor.id, { learnedSkills });
           rerender();
         }),
         selectInput(`db-picker-actor-skill-${index}`, learned.skillId, skills, (skillId) => {
-          const learnedSkills = actor.learnedSkills.map((entry, entryIndex) =>
+          const learnedSkills = currentActor(actor).learnedSkills.map((entry, entryIndex) =>
             entryIndex === index ? { ...entry, skillId } : entry
           );
           updateDatabaseRecord("actors", actor.id, { learnedSkills });
@@ -117,7 +117,7 @@ function learnedSkillsPanel(actor: ActorRecord, rerender: () => void): HTMLEleme
           on: {
             click: () => {
               updateDatabaseRecord("actors", actor.id, {
-                learnedSkills: actor.learnedSkills.filter((_, entryIndex) => entryIndex !== index),
+                learnedSkills: currentActor(actor).learnedSkills.filter((_, entryIndex) => entryIndex !== index),
               });
               rerender();
             },
@@ -139,7 +139,7 @@ function learnedSkillsPanel(actor: ActorRecord, rerender: () => void): HTMLEleme
           const skillId = skills[0]?.id;
           if (!skillId) return;
           updateDatabaseRecord("actors", actor.id, {
-            learnedSkills: [...actor.learnedSkills, { level: actor.initialLevel, skillId }],
+            learnedSkills: [...currentActor(actor).learnedSkills, { level: currentActor(actor).initialLevel, skillId }],
           });
           rerender();
         },
@@ -157,6 +157,10 @@ function rateRow(label: string, value: ActorRateGrade, onChange: (value: ActorRa
     class: "actor-rate-row",
     children: [el("span", { text: label }), gradeSelect(value, onChange)],
   });
+}
+
+function currentActor(actor: ActorRecord): ActorRecord {
+  return store.getCurrent().database.actors.find((record) => record.id === actor.id) ?? actor;
 }
 
 function stateRateRow(id: string, label: string, value: ActorRateGrade, onChange: (value: ActorRateGrade) => void): HTMLElement {

@@ -1,4 +1,5 @@
 import { clearChildren, el } from "@/util/dom";
+import { store } from "@/project/store";
 import type { EventPageMovement, MoveCommand } from "@/project/types";
 import { openEventSubdialog } from "./subdialog";
 import {
@@ -33,8 +34,12 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
   let selectedIndex = moves.length > 0 ? moves.length - 1 : -1;
   let frequency = clampFrequency(request.movement.frequency);
   let switchId = "sw_route_seen";
-  let spriteId = "npc_villager";
+  let spriteId = "tex_easyrpg_charset_people1";
   let soundId = "se_route_chime";
+  let npcTargetMapId = inferNpcTargetMapId(moves);
+  let npcTargetX = inferNpcTargetX(moves);
+  let npcTargetY = inferNpcTargetY(moves);
+  let npcTargetDirection = inferNpcTargetDirection(moves);
 
   const commandList = el("div", {
     class: "event-page-move-route-command-list",
@@ -95,6 +100,22 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
             onSoundId: (next) => {
               soundId = next;
             },
+            npcTargetMapId,
+            npcTargetX,
+            npcTargetY,
+            npcTargetDirection,
+            onNpcTargetMapId: (next) => {
+              npcTargetMapId = next;
+            },
+            onNpcTargetX: (next) => {
+              npcTargetX = next;
+            },
+            onNpcTargetY: (next) => {
+              npcTargetY = next;
+            },
+            onNpcTargetDirection: (next) => {
+              npcTargetDirection = next;
+            },
           }
         ),
         el("div", {
@@ -104,7 +125,7 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
               class: "event-page-move-route-list-panel",
               children: [el("legend", { text: "이동 명령" }), commandList],
             }),
-            renderCommandGrid(appendCommand, () => ({ switchId, spriteId, soundId })),
+            renderCommandGrid(appendCommand, () => ({ switchId, spriteId, soundId, npcTargetMapId, npcTargetX, npcTargetY, npcTargetDirection })),
           ],
         }),
         el("div", {
@@ -193,4 +214,29 @@ function renderCommandList(
 function clampFrequency(value: number): number {
   if (!Number.isFinite(value)) return 3;
   return Math.min(8, Math.max(1, Math.trunc(value)));
+}
+
+function inferNpcTargetMapId(moves: readonly MoveCommand[]): string {
+  const transfer = latestNpcTransfer(moves);
+  return transfer?.mapId ?? Object.keys(store.getCurrent().maps)[0] ?? "";
+}
+
+function inferNpcTargetX(moves: readonly MoveCommand[]): number {
+  return latestNpcTransfer(moves)?.x ?? 0;
+}
+
+function inferNpcTargetY(moves: readonly MoveCommand[]): number {
+  return latestNpcTransfer(moves)?.y ?? 0;
+}
+
+function inferNpcTargetDirection(moves: readonly MoveCommand[]): "down" | "left" | "right" | "up" {
+  return latestNpcTransfer(moves)?.direction ?? "down";
+}
+
+function latestNpcTransfer(moves: readonly MoveCommand[]): Extract<MoveCommand, { kind: "npcTransfer" }> | undefined {
+  for (let index = moves.length - 1; index >= 0; index -= 1) {
+    const move = moves[index];
+    if (move?.kind === "npcTransfer") return move;
+  }
+  return undefined;
 }

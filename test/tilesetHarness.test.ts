@@ -36,7 +36,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(tileset.priority[85]).toBe("lower");
     expect(tileset.priority[378]).toBe("lower");
     expect(tileset.priority[374]).toBe("upper");
-    expect(tileset.passability[374]).toEqual({ up: true, down: true, left: true, right: true });
+    expect(tileset.passability[374]).toEqual({ up: false, down: false, left: false, right: false });
   });
 
   it("keeps uploaded or unknown tilesets from inheriting Combined Town number meaning", () => {
@@ -129,6 +129,25 @@ describe("EasyRPG theme metadata packs", () => {
     expect(dungeon.tileMeta?.[1]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "solid" });
     expect(interior.tileMeta?.[270]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "passable" });
     expect(interior.tileMeta?.[1]).toMatchObject({ source: "bundled-default", confidence: "high", passage: "solid" });
+  });
+
+  it("routes transparent-background interior furniture to the upper layer", () => {
+    const interior = createBlankProject().tilesets.easyrpg_chipset_interior;
+
+    expect(harnessLayerForTile(interior, 115)).toBe("upper");
+    expect(harnessLayerForTile(interior, 268)).toBe("upper");
+    expect(interior.priority[115]).toBe("upper");
+    expect(interior.priority[268]).toBe("upper");
+    expect(interior.tileMeta?.[115]).toMatchObject({
+      defaultLayer: "upper",
+      role: "prop",
+      source: "bundled-default",
+    });
+    expect(interior.tileMeta?.[268]).toMatchObject({
+      defaultLayer: "upper",
+      role: "prop",
+      source: "bundled-default",
+    });
   });
 
   it("applies packs only to exact bundled texture ids", () => {

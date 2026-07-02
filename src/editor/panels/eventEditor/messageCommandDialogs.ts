@@ -3,12 +3,14 @@ import type {
   MessageWindowFormat,
   MessageWindowPosition,
 } from "@/project/types";
-import { el } from "@/util/dom";
+import { clearChildren, el } from "@/util/dom";
+import { renderFacesetPreview } from "./facesetPreview";
 import {
   actionRow,
   checkboxControl,
   clampFaceIndex,
   dialogForm,
+  FACESET_FACE_COUNT,
   fieldset,
   labelledControl,
   nextGroupName,
@@ -28,7 +30,7 @@ export function openDisplayOptionsDialog(
   onApply: (command: DisplayTextSettingsCommand) => void
 ): void {
   openEventSubdialog({
-    title: "Display Text Options",
+    title: "문장 표시 설정",
     testId: "event-command-display-options-dialog",
     width: "wide",
     render: (body, close) => {
@@ -77,18 +79,18 @@ export function openDisplayOptionsDialog(
       });
 
       form.append(
-        fieldset("Windowskin Opacity", [
-          labelledControl("Normal", normal),
-          labelledControl("Transparent", transparent),
+        fieldset("윈도우 표시 형식", [
+          labelledControl("일반", normal),
+          labelledControl("투명", transparent),
         ]),
-        fieldset("Window Position", [
-          labelledControl("Top", top),
-          labelledControl("Middle", center),
-          labelledControl("Bottom", bottom),
+        fieldset("윈도우 위치", [
+          labelledControl("상단", top),
+          labelledControl("중앙", center),
+          labelledControl("하단", bottom),
         ]),
-        fieldset("Options", [
-          labelledControl("Prevent the window from obscuring the player", prevent),
-          labelledControl("Allow other events to move", allowMovement),
+        fieldset("옵션", [
+          labelledControl("플레이어를 가리지 않음", prevent),
+          labelledControl("대기 중 다른 이벤트 이동 허용", allowMovement),
         ]),
         actionRow("display-options-ok", close)
       );
@@ -102,7 +104,7 @@ export function openFacesetDialog(
   onApply: (command: ChangeFaceCommand) => void
 ): void {
   openEventSubdialog({
-    title: "Change Faceset",
+    title: "얼굴 그래픽 변경",
     testId: "event-command-faceset-dialog",
     width: "wide",
     render: (body, close) => {
@@ -116,7 +118,7 @@ export function openFacesetDialog(
       const faceIndex = document.createElement("input");
       faceIndex.type = "number";
       faceIndex.min = "1";
-      faceIndex.max = "16";
+      faceIndex.max = String(FACESET_FACE_COUNT);
       faceIndex.value = String(initial.faceIndex + 1);
       faceIndex.dataset.testid = "faceset-index";
       const left = radioControl(positionName, "left", initial.position === "left", "faceset-position-left");
@@ -126,6 +128,18 @@ export function openFacesetDialog(
         class: "event-command-faceset-preview",
         dataset: { testid: "faceset-preview" },
       });
+      const selectedPosition = (): "left" | "right" => radioValue<"left" | "right">([left, right], "left");
+      const refreshPreview = () => {
+        clearChildren(preview);
+        preview.append(
+          renderFacesetPreview({
+            resourceId: resource.value.trim(),
+            faceIndex: clampFaceIndex(faceIndex.value),
+            position: selectedPosition(),
+            flipHorizontally: flip.checked,
+          })
+        );
+      };
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -133,43 +147,49 @@ export function openFacesetDialog(
           kind: "changeFace",
           resourceId: resource.value.trim(),
           faceIndex: clampFaceIndex(faceIndex.value),
-          position: radioValue<"left" | "right">([left, right], "left"),
+          position: selectedPosition(),
           flipHorizontally: flip.checked,
         });
         close();
       });
+      resource.addEventListener("input", refreshPreview);
+      faceIndex.addEventListener("input", refreshPreview);
+      left.addEventListener("change", refreshPreview);
+      right.addEventListener("change", refreshPreview);
+      flip.addEventListener("change", refreshPreview);
+      refreshPreview();
 
       form.append(
         el("div", {
           class: "event-command-faceset-grid",
           children: [
-            fieldset("Faceset", [
+            fieldset("얼굴 그래픽", [
               preview,
-              labelledControl("Resource", resource),
-              labelledControl("Face", faceIndex),
+              labelledControl("리소스", resource),
+              labelledControl("얼굴", faceIndex),
               el("button", {
                 class: "event-command-text-action",
-                text: "Set",
+                text: "설정",
                 attrs: { type: "button" },
                 dataset: { testid: "faceset-set" },
                 on: { click: () => resource.focus() },
               }),
               el("button", {
                 class: "event-command-text-action",
-                text: "Remove",
+                text: "해제",
                 attrs: { type: "button" },
                 dataset: { testid: "faceset-remove" },
-                on: { click: () => { resource.value = ""; } },
+                on: { click: () => { resource.value = ""; refreshPreview(); } },
               }),
             ]),
             el("div", {
               class: "event-command-faceset-side",
               children: [
-                fieldset("Display Position", [
-                  labelledControl("Left", left),
-                  labelledControl("Right", right),
+                fieldset("표시 위치", [
+                  labelledControl("왼쪽", left),
+                  labelledControl("오른쪽", right),
                 ]),
-                fieldset("Options", [labelledControl("Flip Horizontally", flip)]),
+                fieldset("옵션", [labelledControl("좌우 반전", flip)]),
               ],
             }),
           ],

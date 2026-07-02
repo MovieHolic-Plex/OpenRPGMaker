@@ -1,6 +1,11 @@
-import { TEX_NPC, TILE_SIZE } from "@/assets/bundled";
+import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTextureKey } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
+import {
+  isLakeAutotileTile,
+  lakeAutotileQuarterSources,
+  type LakeAutotileQuarter,
+} from "@/project/defaults/lakeAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
@@ -9,9 +14,13 @@ import { runCommands } from "@/player/playSceneInterpreter";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { syncScreenEffects } from "@/player/playSceneScreenEffects";
+import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
+import { runtimeTimerActivity } from "@/player/playSceneTimers";
+import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import {
   initialRuntimeEventPositions,
-  runtimeEventView,
+  runtimeEventViewsForMap,
   type RuntimeEventView,
 } from "@/player/runtimeEventState";
 import type { RuntimeEventSnapshot } from "@/player/runtimeDom";
@@ -106,7 +115,12 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
 ): void {
   if (tile < 0) return;
   const textureKey = tilesetTextureKey(tileset);
-  const animationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
+  if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
+    renderLakeAutotile(scene, textureKey, x, y);
+    return;
+  }
+  const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
+  const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
     : scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`);
@@ -114,11 +128,37 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   scene.tileLayer.add(image);
 }
 
+function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  textureKey: string,
+  x: number,
+  y: number
+): void {
+  for (const part of lakeAutotileQuarterSources(scene.map, x, y)) {
+    const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
+    const frameName = quarterFrameName(part.tile, part.quarter);
+    const image = animationKey
+      ? scene.add.sprite(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName).play(animationKey)
+      : scene.add.image(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName);
+    image.setOrigin(0, 0);
+    scene.tileLayer.add(image);
+  }
+}
+
+function quarterFrameName(tile: number, quarter: LakeAutotileQuarter): string {
+  return `tile_${tile}_${quarter}`;
+}
+
+function quarterAnimationKey(textureKey: string, tile: number, quarter: LakeAutotileQuarter): string | null {
+  const animationKey = animationKeyForTile(tile);
+  return animationKey ? chipsetAnimationKey(textureKey, `${animationKey}_${quarter}`) : null;
+}
+
 function renderEvents<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>
 ): void {
-  for (const event of scene.map.events) {
-    const view = runtimeEventView(event, scene.session, scene.eventPositions);
+  for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
+    const event = view.event;
     scene.runtimeDom.upsertEventMarker(view, (eventId) => {
       void scene.runEvent(eventId);
     });
@@ -129,7 +169,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const marker = scene.add.sprite(
       characterSpriteX(view.x),
       characterSpriteY(view.y),
-      spriteTexture?.texture ?? TEX_NPC,
+      spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
       spriteTexture?.frame ?? 0
     );
     placeCharacterSprite(marker, view.priority);
@@ -155,16 +195,14 @@ export function activeRuntimeEvents(
   scene: PlaySceneContext,
   triggerKind: "action" | "touch" | "playerTouch" | "eventTouch" | "auto" | "parallel"
 ): RuntimeEventView[] {
-  return scene.map.events
-    .map((event) => runtimeEventView(event, scene.session, scene.eventPositions))
+  return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
     .filter((event) => event.trigger.kind === triggerKind);
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
   const events: Record<string, RuntimeEventSnapshot> = {};
-  for (const event of scene.map.events) {
-    const view = runtimeEventView(event, scene.session, scene.eventPositions);
-    events[event.id] = {
+  for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
+    events[view.event.id] = {
       x: view.x,
       y: view.y,
       pageId: view.pageId,
@@ -180,14 +218,24 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     switches: scene.session.switches,
     variables: scene.session.variables,
     timers: scene.session.timers,
+    timerActive: runtimeTimerActivity(scene.runtimeTimers),
+    flags: scene.session.flags,
+    mapOverrides: scene.session.mapOverrides,
     gold: scene.session.gold,
     inventory: scene.session.inventory,
     partyActorIds: scene.session.partyActorIds,
+    actorSkillIds: scene.session.actorSkillIds,
     actorExperience: scene.session.actorExperience,
+    actorLevels: scene.session.actorLevels,
     actorVitals: scene.session.actorVitals,
+    eventLocations: scene.session.eventLocations,
     actorEquipment: scene.session.actorEquipment,
     actorRows: scene.session.actorRows,
+    audio: scene.session.audio,
+    pictures: scene.session.pictures,
+    m2Runtime: scene.session.m2Runtime,
     events,
+    movers: runtimeMoverSnapshots(scene.autonomousNPCs),
     battleResult: scene.session.battleResult,
   });
   scene.runtimeDom.syncAudioState(scene.session.audio);
@@ -197,6 +245,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
 export function refreshRuntimeSurfaces(scene: PlaySceneContext): void {
   scene.renderTiles();
   scene.registerPageMoveRoutes();
+  syncScreenEffects(scene);
   void fireAutoTriggers(scene);
 }
 

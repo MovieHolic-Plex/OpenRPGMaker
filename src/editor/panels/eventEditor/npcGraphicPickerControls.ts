@@ -22,7 +22,7 @@ export type GraphicRadioGroup<TValue extends string | number> = {
   readonly setValue: (value: TValue) => void;
 };
 
-const TILESET_LABELS = ["*Tileset 1", "*Tileset 2", "*Tileset 3"] as const;
+const TILESET_LABELS = ["*타일셋 1", "*타일셋 2", "*타일셋 3"] as const;
 
 export function renderGraphicResourceList(
   assets: readonly EasyRpgCharsetAsset[],
@@ -32,7 +32,7 @@ export function renderGraphicResourceList(
   root.className = "event-graphic-resource-list";
   root.dataset.testid = "event-graphic-resource-list";
   root.setAttribute("role", "listbox");
-  root.setAttribute("aria-label", "Graphic resources");
+  root.setAttribute("aria-label", "그래픽 리소스");
 
   for (const label of TILESET_LABELS) {
     const row = document.createElement("div");
@@ -64,11 +64,11 @@ export function renderDirectionRadioGroup(
   current: CharsetDirection,
   onChange: (direction: CharsetDirection) => void
 ): GraphicRadioGroup<CharsetDirection> {
-  return renderGraphicRadioGroup("Direction", "event-graphic-direction-group", [
-    { label: "Up", testId: "npc-direction-up", value: "up" },
-    { label: "Left", testId: "npc-direction-left", value: "left" },
-    { label: "Right", testId: "npc-direction-right", value: "right" },
-    { label: "Down", testId: "npc-direction-down", value: "down" },
+  return renderGraphicRadioGroup("방향", "event-graphic-direction-group", [
+    { label: "위", testId: "npc-direction-up", value: "up" },
+    { label: "왼쪽", testId: "npc-direction-left", value: "left" },
+    { label: "오른쪽", testId: "npc-direction-right", value: "right" },
+    { label: "아래", testId: "npc-direction-down", value: "down" },
   ], current, onChange);
 }
 
@@ -76,10 +76,10 @@ export function renderPatternRadioGroup(
   current: number,
   onChange: (pattern: number) => void
 ): GraphicRadioGroup<number> {
-  return renderGraphicRadioGroup("Pattern", "event-graphic-pattern-group", [
-    { label: "LEFT", testId: "npc-pattern-0", value: 0 },
-    { label: "MIDDLE", testId: "npc-pattern-1", value: 1 },
-    { label: "RIGHT", testId: "npc-pattern-2", value: 2 },
+  return renderGraphicRadioGroup("패턴", "event-graphic-pattern-group", [
+    { label: "왼쪽", testId: "npc-pattern-0", value: 0 },
+    { label: "가운데", testId: "npc-pattern-1", value: 1 },
+    { label: "오른쪽", testId: "npc-pattern-2", value: 2 },
   ], current, onChange);
 }
 
@@ -115,8 +115,8 @@ export function renderNpcGraphicPickerFooter(
   footer.className = "event-graphic-picker-footer";
   footer.dataset.testid = "event-graphic-dialog-footer";
   footer.append(
-    footerButton("OK", "event-graphic-confirm", "primary", onConfirm),
-    footerButton("Cancel", "event-graphic-cancel", "", onCancel)
+    footerButton("확인", "event-graphic-confirm", "primary", onConfirm),
+    footerButton("취소", "event-graphic-cancel", "", onCancel)
   );
   return footer;
 }

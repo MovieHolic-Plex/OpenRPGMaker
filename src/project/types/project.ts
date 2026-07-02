@@ -10,6 +10,7 @@ import type {
   Terms,
   TilesetDef,
   TilesetId,
+  TroopId,
   VariableDef,
 } from "./base";
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
@@ -33,6 +34,10 @@ export interface GameMap {
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];
+  // 랜덤 인카운트율. 0=발생 안 함. 클수록 자주(스텝당 발생 확률 가중치).
+  encounterRate?: number;
+  // 인카운트로 등장할 적 그룹 목록. encounterRate > 0 일 때만 사용.
+  troopIds?: TroopId[];
 }
 
 export interface MapTreeNode {
@@ -42,9 +47,12 @@ export interface MapTreeNode {
 
 export interface ProjectSession {
   switches: Record<string, boolean>;
+  selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
   variables: Record<string, number>;
+  timers?: Record<string, number>;
   inventory: Record<string, number>;
   partyActorIds: ActorId[];
+  gold?: number;
 }
 
 export interface SaveSlot {
@@ -53,6 +61,29 @@ export interface SaveSlot {
   session: ProjectSession;
   mapId: MapId;
   player: { x: number; y: number; direction: Dir };
+}
+
+export interface MapConnectionEndpoint {
+  mapId: MapId;
+  x: number;
+  y: number;
+  direction?: Dir;
+}
+
+export interface MapConnection {
+  id: string;
+  name?: string;
+  from: MapConnectionEndpoint;
+  to: MapConnectionEndpoint;
+  playerEnabled: boolean;
+  npcEnabled: boolean;
+}
+
+export interface VillageInfoDocument {
+  id: string;
+  mapId: MapId;
+  title: string;
+  markdown: string;
 }
 
 export interface Project {
@@ -68,6 +99,8 @@ export interface Project {
   system: SystemRecords;
   session: ProjectSession;
   maps: Record<MapId, GameMap>;
+  mapConnections?: MapConnection[];
+  villageInfoDocuments?: VillageInfoDocument[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

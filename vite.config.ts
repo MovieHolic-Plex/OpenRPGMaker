@@ -9,11 +9,12 @@ export default defineConfig({
     extensions: [".ts", ".js"],
   },
   server: {
+    host: "::",
     port: 5173,
     allowedHosts: ["mdc-server"],
     open: false,
     watch: {
-      ignored: ["**/.omo/**"],
+      ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
     },
     proxy: {
       "/api/ai": {

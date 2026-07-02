@@ -1,4 +1,6 @@
-/* CSS entrypoint: preserves the original cascade order while keeping each module under 1000 lines. */
+/* CSS entrypoint: preserves cascade order while moving shared primitives out of screen files. */
+@layer tokens, base, components, shell, editor, database, map, runtime, resources, overrides;
+
 @import "./editor/core.css";
 @import "./editor/palette-player.css";
 @import "./editor/event-editor-legacy.css";
@@ -6,9 +8,14 @@
 @import "./database/tabs-a.css";
 @import "./database/tabs-b.css";
 @import "./map/resource-system.css";
+@import "./components/icons.css";
 @import "./shell/rm2k3.css";
 @import "./editor/responsive-a.css";
+@import "./editor/terrain-template.css";
 @import "./runtime/battle.css";
+@import "./runtime/commerce.css";
+@import "./runtime/title.css";
+@import "./runtime/timer.css";
 @import "./dialogue.css";
 @import "./database/actors.css";
 @import "./database/enemies.css";
@@ -18,5 +25,8 @@
 @import "./database/tilesets.css";
 @import "./database/tilesets-terrain.css";
 @import "./database/desktop.css";
+@import "./database/desktop-record-shell.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
+@import "./shell/figma-editor.css";
+@import "./editor/village-info.css";

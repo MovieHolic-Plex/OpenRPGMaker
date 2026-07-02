@@ -24,7 +24,10 @@ import { renderTitleScreen } from "@/player/titleScreen";
 
 let teardownShell: (() => void) | null = null;
 
-export type RenderPlayerOptions = { readonly trackGlobalGame?: boolean };
+export type RenderPlayerOptions = {
+  readonly onExit?: () => void;
+  readonly trackGlobalGame?: boolean;
+};
 
 const MENU_CLOSE_JUICE_MS = 250;
 const TITLE_CONFIRM_JUICE_MS = 260;
@@ -177,14 +180,18 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     confirmTitleThen(() => {
       if (titleMenuIndex === 0) startGame(startSession(store.getCurrent()));
       if (titleMenuIndex === 1) renderLoad(true);
-      if (titleMenuIndex === 2) renderTitle({ emitEnterJuice: true });
+      if (titleMenuIndex === 2) exitPlayer();
     });
     return true;
   };
 
+  const isDialogueSurfaceActive = (): boolean =>
+    Boolean(playStage?.querySelector("[data-testid='dialogue-box'], [data-testid='runtime-choices'], [data-testid='runtime-input-number']"));
+
   const onKeyDown = (event: KeyboardEvent): void => {
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     if (!isRuntimeMenuKey(key)) return;
+    if (isDialogueSurfaceActive()) return;
     if (handleTitleKey(key) || statusMenu.handleKey(key)) {
       event.preventDefault();
       return;
@@ -207,7 +214,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.stage.append(renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => startGame(startSession(project))),
       onContinue: () => confirmTitleThen(() => renderLoad(true)),
-      onQuit: () => confirmTitleThen(() => renderTitle({ emitEnterJuice: true })),
+      onQuit: () => confirmTitleThen(exitPlayer),
     }, titleMenuIndex));
     layout.append(surface.viewport);
     surface.sync();
@@ -226,6 +233,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       titleConfirming = false;
       callback();
     }, TITLE_CONFIRM_JUICE_MS);
+  };
+
+  const exitPlayer = (): void => {
+    if (options.onExit) {
+      options.onExit();
+      return;
+    }
+    renderTitle({ emitEnterJuice: true });
   };
 
   document.addEventListener("keydown", onKeyDown);

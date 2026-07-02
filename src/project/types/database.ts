@@ -158,6 +158,8 @@ export interface SkillRecord {
   variance: number;
   hitRate: number;
   effect: SkillEffect;
+  // 속성 ID. DatabaseElementRecord.id 와 매칭. 없으면 비속성(상성 배율 1.0).
+  elementId?: string;
 }
 
 export interface SkillMpCost {

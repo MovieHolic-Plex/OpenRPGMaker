@@ -27,7 +27,18 @@ export function validateEventPages(pages: readonly EventPage[], context: Referen
   for (const page of pages) {
     validateOptionalResource(`page ${page.id}: graphic.sprite`, page.graphic.sprite?.id, context.resourceIds);
     for (const condition of page.conditions) validatePageCondition(condition, context);
+    validateLivingMovementReferences(page, context);
     validateCommands(page.commands, context);
+  }
+}
+
+function validateLivingMovementReferences(page: EventPage, context: ReferenceContext): void {
+  if (page.movement.type !== "living") return;
+  for (const destination of page.movement.living?.destinations ?? []) {
+    assert(context.mapIds.has(destination.mapId), `page ${page.id}: living destination mapId does not exist: ${destination.mapId}`);
+    if (destination.switchId) {
+      assert(context.switchIds.has(destination.switchId), `page ${page.id}: living destination switchId does not exist: ${destination.switchId}`);
+    }
   }
 }
 
@@ -76,6 +87,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "setVariable":
       assert(context.variableIds.has(command.variableId), `setVariable: variableId가 존재하지 않습니다: ${command.variableId}`);
+      if (typeof command.value !== "number") {
+        assert(context.variableIds.has(command.value.id), `setVariable: operand variableId가 존재하지 않습니다: ${command.value.id}`);
+      }
       return;
     case "inputNumber":
       assert(context.variableIds.has(command.variableId), `inputNumber: variableId가 존재하지 않습니다: ${command.variableId}`);
@@ -95,6 +109,29 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "learnSkill":
       assert(context.actorIds.has(command.actorId), `learnSkill: actorId가 존재하지 않습니다: ${command.actorId}`);
       assert(context.skillIds.has(command.skillId), `learnSkill: skillId가 존재하지 않습니다: ${command.skillId}`);
+      return;
+    case "changeExp":
+      assert(context.actorIds.has(command.actorId), `changeExp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      return;
+    case "changeLevel":
+      assert(context.actorIds.has(command.actorId), `changeLevel: actorId가 존재하지 않습니다: ${command.actorId}`);
+      return;
+    case "changeEquipment":
+      assert(context.actorIds.has(command.actorId), `changeEquipment: actorId가 존재하지 않습니다: ${command.actorId}`);
+      if (command.equipmentId.trim().length > 0) {
+        assert(context.equipmentIds.has(command.equipmentId), `changeEquipment: equipmentId가 존재하지 않습니다: ${command.equipmentId}`);
+      }
+      return;
+    case "changeActorHp":
+      assert(context.actorIds.has(command.actorId), `changeActorHp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      return;
+    case "changeActorMp":
+      assert(context.actorIds.has(command.actorId), `changeActorMp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      return;
+    case "recoverAll":
+      if ((command.actorId ?? "").trim().length > 0) {
+        assert(context.actorIds.has(command.actorId ?? ""), `recoverAll: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
+      }
       return;
     case "showPicture":
       assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
@@ -119,6 +156,8 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
       return;
     case "item":
       assert(context.itemIds.has(condition.itemId), `page condition: itemId가 존재하지 않습니다: ${condition.itemId}`);
+      return;
+    case "timer":
       return;
   }
 }
@@ -152,7 +191,10 @@ export function validateCondition(
     assert(switchIds.has(condition.switchId), `condition: switchId가 존재하지 않습니다: ${condition.switchId}`);
     return;
   }
-  assert(variableIds.has(condition.variableId), `condition: variableId가 존재하지 않습니다: ${condition.variableId}`);
+  if (condition.kind === "variable") {
+    assert(variableIds.has(condition.variableId), `condition: variableId가 존재하지 않습니다: ${condition.variableId}`);
+  }
+  // selfSwitch/actor/item/gold/timer 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
 }
 
 function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {

@@ -4,9 +4,11 @@ import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/ed
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openTerrainTemplateModal } from "@/editor/panels/terrainTemplatePanel";
+import { openVillageInfoModal } from "@/editor/panels/villageInfoModal";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import {
   createProjectPackage,
@@ -127,7 +129,7 @@ function menuCommands(
     case "project":
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
-        item("열기", "menu-project-load", () => void doLoad()),
+        item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
         item("내보내기...", "menu-project-export", () => void doExport()),
@@ -150,6 +152,7 @@ function menuCommands(
         { kind: "separator" },
         item("데이터베이스...", "menu-tools-database", () => openDatabaseModal()),
         item("리소스 관리자...", "menu-tools-resources", () => openResourceModal()),
+        item("마을 정보...", "menu-tools-village-info", () => openVillageInfoModal()),
       ];
     case "game":
       return [
@@ -181,7 +184,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     separator(),
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
     separator(),
-    toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 프로젝트 열기", icon: "open", onClick: () => void doLoad() }),
+    toolbarButton({ testId: "toolbar-load", label: "열기", title: "Supabase 프로젝트 열기", icon: "open", onClick: () => doLoad(topbar) }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
     toolbarButton({ testId: "layer-lower", label: "하위", title: "하위 레이어 편집", icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
@@ -195,6 +198,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     separator(),
     toolbarButton({ testId: "toolbar-database", label: "DB", title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
     toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
+    toolbarButton({ testId: "toolbar-village-info", label: "마을 정보", title: "마을 정보 문서", icon: "manual", onClick: () => openVillageInfoModal() }),
     toolbarButton({ testId: "toolbar-evidence-packet", label: "증거 패킷", title: "브라우저 증거 패킷", icon: "manual", onClick: () => toast("브라우저 증거 패킷 준비됨", "ok") }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
@@ -328,18 +332,10 @@ async function openTestPlayWindow(): Promise<void> {
   window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
 }
 
-async function doLoad(): Promise<void> {
-  try {
-    const project = await store.load();
-    editorState.set({ currentMapId: project.startMapId, selectedEventId: null });
-    toast("불러옴", "ok");
-  } catch (error) {
-    if (error instanceof Error) {
-      toast(`불러오기 실패: ${error.message}`, "error");
-      return;
-    }
-    throw error;
-  }
+function doLoad(topbar: HTMLElement): void {
+  openDbConnectionSettings(() => renderTopbar(topbar), {
+    autoLoadProjects: true,
+  });
 }
 
 async function doExport(): Promise<void> {

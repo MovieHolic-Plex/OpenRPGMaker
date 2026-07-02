@@ -119,7 +119,9 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
 function positionMenu(menu: HTMLElement, point: MapContextMenuPoint): void {
   const margin = 4;
   const left = Math.max(margin, Math.min(point.x, window.innerWidth - menu.offsetWidth - margin));
-  const top = Math.max(margin, Math.min(point.y, window.innerHeight - menu.offsetHeight - margin));
+  const statusBar = document.querySelector<HTMLElement>('[data-testid="editor-statusbar"]');
+  const bottomEdge = statusBar?.getBoundingClientRect().top ?? window.innerHeight;
+  const top = Math.max(margin, Math.min(point.y, bottomEdge - menu.offsetHeight - margin));
   menu.style.left = `${Math.round(left)}px`;
   menu.style.top = `${Math.round(top)}px`;
 }

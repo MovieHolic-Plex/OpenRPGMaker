@@ -12,7 +12,7 @@ import type {
   Trigger,
   Condition,
 } from "@/project/types";
-import { DEFAULT_SPRITE_NPC } from "@/project/defaults";
+import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 export { newCommand, newM2Command } from "@/editor/eventCommandFactory";
 
 const SHOP_TRANSACTION_BRANCH_INDEX = -1;
@@ -29,7 +29,7 @@ export function createDefaultGameEvent(
     id: eventId,
     x,
     y,
-    sprite: { type: "bundled", id: DEFAULT_SPRITE_NPC },
+    sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID },
     trigger,
     commands,
   };

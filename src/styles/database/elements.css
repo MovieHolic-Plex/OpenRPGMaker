@@ -1,155 +1,192 @@
 .database-modal-body .db-body:has(.db-elements-classic) {
+  background: #f7f7f5;
+  border: 0;
+  display: grid;
+  min-height: 0;
   overflow: hidden;
-  padding: 8px 10px 10px;
-}
-
-.database-modal-body:has(.db-elements-classic) .db-manual-source,
-.database-modal-body:has(.db-elements-classic) .db-workbench-status {
-  display: none;
+  padding: 14px 16px 10px;
 }
 
 .database-modal-backdrop:has(.db-elements-classic) {
-  padding: 0;
+  align-items: center;
+  background: rgba(18, 20, 24, 0.08);
+  justify-content: center;
+  padding: 12px;
 }
 
 .database-modal-window:has(.db-elements-classic) {
-  height: 100vh;
-  width: 100vw;
+  background: #ffffff;
+  border: 1px solid #d8dadd;
+  border-radius: 7px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+  height: min(900px, calc(100vh - 24px));
+  width: min(1584px, calc(100vw - 24px));
 }
 
 .database-modal-body .db-elements-classic {
-  background: #eeeeee;
+  background: transparent;
   border: 0;
-  min-height: 650px;
+  height: 100%;
+  min-height: 0;
   padding: 0;
 }
 
 .db-elements-classic-inner {
-  background: #eeeeee;
-  color: #111111;
+  color: #20242c;
   display: grid;
-  font: 400 12px/1.2 Tahoma, "MS Sans Serif", Arial, sans-serif;
-  gap: 12px;
-  grid-template-columns: 180px 396px minmax(420px, 1fr);
-  min-height: 650px;
+  font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 14px;
+  grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.db-elements-list-pane,
+.db-elements-editor {
+  background: #ffffff;
+  border: 1px solid #dedfdf;
+  border-radius: 6px;
+  min-height: 0;
+  min-width: 0;
 }
 
 .db-elements-list-pane {
   display: grid;
-  grid-template-rows: 29px minmax(0, 1fr) 40px;
-  min-width: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 16px 14px 12px;
 }
 
 .db-elements-list-title {
-  align-items: center;
-  background: #286ab4;
-  color: #ffffff;
-  display: flex;
-  font-size: 20px;
-  height: 29px;
-  justify-content: center;
-  padding: 0 8px;
+  color: #20242c;
+  font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin-bottom: 10px;
 }
 
 .db-elements-list {
   background: #ffffff;
-  border-color: #8d8d8d #ffffff #ffffff #8d8d8d;
-  border-style: solid;
-  border-width: 1px;
-  overflow: hidden;
-  padding: 5px 0 0;
+  border: 0;
+  display: grid;
+  gap: 2px;
+  overflow: auto;
+  padding: 0;
 }
 
 .db-elements-row {
-  background: transparent;
-  border: 0;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 4px;
   box-shadow: none;
-  color: #111111;
-  display: block;
-  font: 400 20px/21px Tahoma, "MS Sans Serif", Arial, sans-serif;
-  height: 21px;
-  min-height: 21px;
+  color: #2f333a;
+  display: flex;
+  font: 400 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  height: 36px;
+  min-height: 36px;
   overflow: hidden;
-  padding: 0 4px;
+  padding: 0 10px 0 26px;
+  position: relative;
   text-align: left;
+  text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
 }
 
 .database-modal-body button.db-elements-row {
   background: #ffffff;
-  border: 0;
-  color: #111111;
+  border: 1px solid #ececec;
+  color: #2f333a;
 }
 
-.db-elements-row.is-selected {
-  background: #0078d7;
-  color: #ffffff;
-  outline: 1px dotted #f0a000;
-  outline-offset: -1px;
-}
-
+.db-elements-row.is-selected,
 .database-modal-body button.db-elements-row.is-selected {
-  background: #0078d7;
+  background: linear-gradient(180deg, #1473df 0%, #0965cf 100%);
+  border-color: #0965cf;
   color: #ffffff;
+}
+
+.db-elements-row.is-selected::before {
+  background: #ffffff;
+  border-radius: 2px;
+  content: "";
+  height: 22px;
+  left: 10px;
+  position: absolute;
+  top: 6px;
+  width: 3px;
 }
 
 .db-elements-maximum {
   align-self: end;
-  background: #eeeeee;
-  border-color: #ffffff #7f7f7f #7f7f7f #ffffff;
-  border-style: solid;
-  border-width: 2px;
-  color: #111111;
-  font: 400 20px/28px Tahoma, "MS Sans Serif", Arial, sans-serif;
-  height: 34px;
-  padding: 0 5px;
+  background: #f6f4ef;
+  border: 1px solid #e3e0d8;
+  border-radius: 4px;
+  color: #8a8d92;
+  font: 500 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  height: 36px;
+  margin-top: 12px;
+  padding: 0 10px;
   text-align: center;
 }
 
 .db-elements-editor {
   display: grid;
-  gap: 14px;
-  grid-template-rows: 56px 82px 236px minmax(0, 1fr);
-  min-width: 0;
+  gap: 12px;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
+  grid-template-rows: 88px 160px minmax(0, 1fr);
+  padding: 12px;
+}
+
+.db-elements-editor .db-elements-fieldset:nth-child(3) {
+  grid-column: 2;
+  grid-row: 1 / 4;
 }
 
 .db-elements-fieldset {
-  background: #eeeeee;
-  border-color: #9a9a9a #ffffff #ffffff #9a9a9a;
-  border-style: solid;
-  border-width: 2px;
+  align-content: start;
+  background: #ffffff;
+  border: 1px solid #dedfdf;
+  border-radius: 5px;
+  display: grid;
+  gap: 8px;
   margin: 0;
+  min-height: 0;
   min-width: 0;
-  padding: 13px 10px 10px;
-  position: relative;
+  padding: 12px;
 }
 
 .db-elements-fieldset legend {
-  background: #eeeeee;
-  color: #111111;
-  font: 400 20px/20px Tahoma, "MS Sans Serif", Arial, sans-serif;
-  padding: 0 2px;
+  background: #ffffff;
+  color: #20242c;
+  float: left;
+  font: 700 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin-bottom: 2px;
+  padding: 0 4px;
+  width: 100%;
 }
 
-.db-elements-name-input {
+.db-elements-name-input,
+.db-elements-damage-input {
   background: #ffffff;
-  border-color: #7f7f7f #ffffff #ffffff #7f7f7f;
-  border-style: solid;
-  border-width: 2px;
-  color: #111111;
-  font: 400 20px/24px Tahoma, "MS Sans Serif", Arial, sans-serif;
-  height: 30px;
-  padding: 0 6px;
-  width: 145px;
+  border: 1px solid #d8dadd;
+  border-radius: 4px;
+  color: #20242c;
+  font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  height: 32px;
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.database-modal-body .db-elements-classic .db-elements-name-input {
+  width: 100%;
 }
 
 .db-elements-radio-row {
   align-items: center;
+  color: #30343b;
   display: flex;
-  font: 400 20px/25px Tahoma, "MS Sans Serif", Arial, sans-serif;
-  gap: 10px;
-  height: 25px;
+  font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 8px;
+  height: 28px;
   letter-spacing: 0;
   margin: 0;
   text-transform: none;
@@ -163,63 +200,53 @@
 
 .db-elements-damage-row {
   align-items: center;
+  border-bottom: 1px solid #ececec;
   display: grid;
-  grid-template-columns: 25px 96px 24px;
-  height: 41px;
+  grid-template-columns: 28px minmax(0, 112px) 24px;
+  height: 38px;
   letter-spacing: 0;
   margin: 0;
   text-transform: none;
 }
 
+.db-elements-damage-row:last-child {
+  border-bottom: 0;
+}
+
 .db-elements-grade {
-  font: 700 18px/22px Tahoma, "MS Sans Serif", Arial, sans-serif;
+  font: 700 14px/20px "Segoe UI", system-ui, sans-serif;
   text-align: center;
 }
 
 .db-elements-grade.grade-a {
-  color: #df2e5c;
+  color: #df4057;
 }
 
 .db-elements-grade.grade-b {
-  color: #d04a21;
+  color: #d36b20;
 }
 
 .db-elements-grade.grade-c {
-  color: #188b33;
+  color: #209842;
 }
 
 .db-elements-grade.grade-d {
-  color: #3b32a5;
+  color: #4437b6;
 }
 
 .db-elements-grade.grade-e {
-  color: #b025b5;
+  color: #a020a8;
 }
 
-.db-elements-damage-input {
-  background: #ffffff;
-  border-color: #7f7f7f #ffffff #ffffff #7f7f7f;
-  border-style: solid;
-  border-width: 2px;
-  color: #111111;
-  font: 400 20px/24px Tahoma, "MS Sans Serif", Arial, sans-serif;
-  height: 30px;
-  padding: 0 4px;
-  width: 70px;
-}
-
-.database-modal-body .db-elements-classic .db-elements-name-input {
-  width: 145px;
-}
-
+.db-elements-damage-input,
 .database-modal-body .db-elements-classic .db-elements-damage-input {
-  width: 70px;
+  width: 112px;
 }
 
 .database-modal-body .db-elements-classic .db-elements-radio-row,
 .database-modal-body .db-elements-classic .db-elements-damage-row {
-  color: #111111;
-  font-size: 20px;
+  color: #30343b;
+  font-size: 14px;
   letter-spacing: 0;
   margin: 0;
   text-transform: none;
@@ -234,19 +261,13 @@
 }
 
 .db-elements-percent {
-  font: 400 20px/24px Tahoma, "MS Sans Serif", Arial, sans-serif;
+  color: #555b64;
+  font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .db-elements-lower-blank,
 .db-elements-right-blank {
-  background: #eeeeee;
-  border-color: #9a9a9a #ffffff #ffffff #9a9a9a;
-  border-style: solid;
-  border-width: 2px;
-}
-
-.db-elements-right-blank {
-  min-width: 0;
+  display: none;
 }
 
 @media (max-width: 900px) {
@@ -255,100 +276,42 @@
   }
 
   .db-elements-classic-inner {
-    grid-template-columns: 180px 396px minmax(320px, 1fr);
-    min-width: 920px;
+    grid-template-columns: minmax(230px, 285px) minmax(380px, 1fr);
+    min-width: 680px;
+  }
+
+  .db-elements-editor {
+    grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1.1fr);
   }
 }
 
 @media (max-width: 600px) {
-  .database-modal-body .db-body:has(.db-elements-classic) {
-    overflow: hidden;
-    padding: 4px;
+  .database-modal-backdrop:has(.db-elements-classic) {
+    padding: 8px;
   }
 
-  .database-modal-body .db-elements-classic {
-    min-height: 620px;
+  .database-modal-body .db-body:has(.db-elements-classic) {
+    overflow: auto;
+    padding: 10px;
   }
 
   .db-elements-classic-inner {
-    gap: 4px;
-    grid-template-columns: 108px minmax(170px, 1fr) 61px;
-    min-height: 620px;
+    gap: 10px;
+    grid-template-columns: minmax(210px, 1fr);
     min-width: 0;
   }
 
   .db-elements-list-pane {
-    grid-template-rows: 26px minmax(0, 1fr) 36px;
-  }
-
-  .db-elements-list-title {
-    font-size: 16px;
-    height: 26px;
-  }
-
-  .db-elements-row {
-    font-size: 14px;
-    height: 19px;
-    line-height: 19px;
-    padding: 0 2px;
-  }
-
-  .db-elements-maximum {
-    font-size: 16px;
-    height: 32px;
-    line-height: 26px;
-    padding: 0 3px;
+    min-height: 300px;
   }
 
   .db-elements-editor {
-    gap: 10px;
-    grid-template-rows: 52px 76px 224px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 88px 112px minmax(250px, 1fr);
   }
 
-  .db-elements-fieldset {
-    padding: 12px 8px 8px;
-  }
-
-  .db-elements-fieldset legend {
-    font-size: 16px;
-    line-height: 18px;
-  }
-
-  .db-elements-name-input,
-  .database-modal-body .db-elements-classic .db-elements-name-input {
-    font-size: 14px;
-    height: 28px;
-    width: 110px;
-  }
-
-  .db-elements-radio-row,
-  .database-modal-body .db-elements-classic .db-elements-radio-row {
-    font-size: 15px;
-    gap: 7px;
-    height: 23px;
-  }
-
-  .db-elements-damage-row,
-  .database-modal-body .db-elements-classic .db-elements-damage-row {
-    grid-template-columns: 20px 58px 18px;
-    height: 40px;
-  }
-
-  .db-elements-grade {
-    font-size: 15px;
-    line-height: 20px;
-  }
-
-  .db-elements-damage-input,
-  .database-modal-body .db-elements-classic .db-elements-damage-input {
-    font-size: 13px;
-    height: 28px;
-    padding: 0 3px;
-    width: 56px;
-  }
-
-  .db-elements-percent {
-    font-size: 16px;
-    line-height: 20px;
+  .db-elements-editor .db-elements-fieldset:nth-child(3) {
+    grid-column: 1;
+    grid-row: auto;
   }
 }

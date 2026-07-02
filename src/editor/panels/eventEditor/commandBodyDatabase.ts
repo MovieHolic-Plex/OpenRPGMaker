@@ -1,7 +1,7 @@
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { selectWithOptions, selectedOptionValue } from "./dom";
-import type { Command } from "@/project/types";
+import type { ActorAmountOp, ActorEquipmentSlot, Command } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 const AMOUNT_OP_OPTIONS = [
@@ -14,6 +14,16 @@ const PARTY_ACTION_OPTIONS = [
   { value: "add", label: "파티에 추가" },
   { value: "remove", label: "파티에서 제거" },
 ] as const;
+
+const EQUIPMENT_SLOT_OPTIONS = [
+  { value: "weapon", label: "무기" },
+  { value: "shield", label: "방패" },
+  { value: "armor", label: "갑옷" },
+  { value: "helmet", label: "투구" },
+  { value: "accessory", label: "장식품" },
+] as const satisfies readonly { readonly value: ActorEquipmentSlot; readonly label: string }[];
+
+type ActorAmountCommand = Extract<Command, { kind: "changeExp" | "changeLevel" | "changeActorHp" | "changeActorMp" }>;
 
 export function battleProcessingBody(
   context: CommandEditContext,
@@ -93,6 +103,137 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
   const wrap = el("span", {});
   wrap.append(actor, action);
   return wrap;
+}
+
+export function changeExpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeExp" }>): HTMLElement {
+  return actorAmountBody(context, cmd);
+}
+
+export function changeLevelBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeLevel" }>): HTMLElement {
+  return actorAmountBody(context, cmd);
+}
+
+export function changeActorHpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeActorHp" }>): HTMLElement {
+  return actorAmountBody(context, cmd);
+}
+
+export function changeActorMpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeActorMp" }>): HTMLElement {
+  return actorAmountBody(context, cmd);
+}
+
+export function changeEquipmentBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "changeEquipment" }>
+): HTMLElement {
+  const project = store.getCurrent();
+  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", "change-equipment-actor-select");
+  const slot = selectWithOptions(EQUIPMENT_SLOT_OPTIONS, cmd.slot, "change-equipment-slot-select");
+  const equipment = recordSelect(project.database.equipment, cmd.equipmentId, "장비 해제", "change-equipment-equipment-select");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "changeEquipment",
+      actorId: actor.value,
+      slot: selectedOptionValue(slot, EQUIPMENT_SLOT_OPTIONS, cmd.slot),
+      equipmentId: equipment.value,
+    });
+  };
+  actor.addEventListener("change", apply);
+  slot.addEventListener("change", apply);
+  equipment.addEventListener("change", apply);
+  const wrap = el("span", {});
+  wrap.append(actor, slot, equipment);
+  return wrap;
+}
+
+export function recoverAllBody(context: CommandEditContext, cmd: Extract<Command, { kind: "recoverAll" }>): HTMLElement {
+  const project = store.getCurrent();
+  const actor = recordSelect(project.database.actors, cmd.actorId ?? "", "파티 전체", "recover-all-actor-select");
+  actor.addEventListener("change", () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "recoverAll",
+      actorId: actor.value,
+    });
+  });
+  return actor;
+}
+
+function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): HTMLElement {
+  const project = store.getCurrent();
+  const labels = actorAmountLabels(cmd.kind);
+  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", labels.actorTestId);
+  const op = selectWithOptions(AMOUNT_OP_OPTIONS, cmd.op, labels.opTestId);
+  const amount = numberInput(cmd.amount, labels.amountTitle, labels.amountTestId);
+  const apply = () => {
+    const next = actorAmountCommand(
+      cmd.kind,
+      actor.value,
+      selectedOptionValue(op, AMOUNT_OP_OPTIONS, cmd.op),
+      parseInt(amount.value, 10) || 0
+    );
+    context.actions.replaceCommand(context.path, next);
+  };
+  actor.addEventListener("change", apply);
+  op.addEventListener("change", apply);
+  amount.addEventListener("change", apply);
+  const wrap = el("span", {});
+  wrap.append(actor, op, amount);
+  return wrap;
+}
+
+function actorAmountCommand(
+  kind: ActorAmountCommand["kind"],
+  actorId: string,
+  op: ActorAmountOp,
+  amount: number
+): ActorAmountCommand {
+  switch (kind) {
+    case "changeExp":
+      return { kind, actorId, op, amount };
+    case "changeLevel":
+      return { kind, actorId, op, amount };
+    case "changeActorHp":
+      return { kind, actorId, op, amount };
+    case "changeActorMp":
+      return { kind, actorId, op, amount };
+  }
+}
+
+function actorAmountLabels(kind: ActorAmountCommand["kind"]): {
+  readonly actorTestId: string;
+  readonly opTestId: string;
+  readonly amountTestId: string;
+  readonly amountTitle: string;
+} {
+  switch (kind) {
+    case "changeExp":
+      return {
+        actorTestId: "change-exp-actor-select",
+        opTestId: "change-exp-op-select",
+        amountTestId: "change-exp-amount-input",
+        amountTitle: "경험치",
+      };
+    case "changeLevel":
+      return {
+        actorTestId: "change-level-actor-select",
+        opTestId: "change-level-op-select",
+        amountTestId: "change-level-amount-input",
+        amountTitle: "레벨",
+      };
+    case "changeActorHp":
+      return {
+        actorTestId: "change-actor-hp-actor-select",
+        opTestId: "change-actor-hp-op-select",
+        amountTestId: "change-actor-hp-amount-input",
+        amountTitle: "HP",
+      };
+    case "changeActorMp":
+      return {
+        actorTestId: "change-actor-mp-actor-select",
+        opTestId: "change-actor-mp-op-select",
+        amountTestId: "change-actor-mp-amount-input",
+        amountTitle: "MP",
+      };
+  }
 }
 
 function recordSelect(

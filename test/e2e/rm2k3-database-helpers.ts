@@ -31,11 +31,9 @@ export const DATABASE_TAB_SPECS = [
 
 export type DatabaseShellMetrics = {
   readonly bodyTop: number;
-  readonly manualTop: number;
   readonly modalBodyScrollTop: number;
   readonly modalHeight: number;
   readonly modalWidth: number;
-  readonly statusTop: number;
   readonly tabsTop: number;
 };
 
@@ -213,16 +211,12 @@ export async function captureDatabaseShellMetrics(page: Page): Promise<DatabaseS
     const modal = document.querySelector('[data-testid="database-modal"]');
     const modalBody = document.querySelector(".database-modal-body");
     const tabs = document.querySelector(".database-modal-body .db-tabs");
-    const manual = document.querySelector(".database-modal-body .db-manual-source");
-    const status = document.querySelector(".database-modal-body .db-workbench-status");
     const body = document.querySelector(".database-modal-body .db-body");
 
     if (
       !(modal instanceof HTMLElement) ||
       !(modalBody instanceof HTMLElement) ||
       !(tabs instanceof HTMLElement) ||
-      !(manual instanceof HTMLElement) ||
-      !(status instanceof HTMLElement) ||
       !(body instanceof HTMLElement)
     ) {
       throw new Error("Database shell is missing required layout elements");
@@ -232,11 +226,9 @@ export async function captureDatabaseShellMetrics(page: Page): Promise<DatabaseS
 
     return {
       bodyTop: Math.round(body.getBoundingClientRect().top),
-      manualTop: Math.round(manual.getBoundingClientRect().top),
       modalBodyScrollTop: Math.round(modalBody.scrollTop),
       modalHeight: Math.round(modalRect.height),
       modalWidth: Math.round(modalRect.width),
-      statusTop: Math.round(status.getBoundingClientRect().top),
       tabsTop: Math.round(tabs.getBoundingClientRect().top),
     };
   });

@@ -1,9 +1,9 @@
 import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/defaultProject";
-import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset } from "./defaults/defaultAssets";
+import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { loadBrowserProjectOverride, loadDevProjectOverride, saveBrowserProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
+import { loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import { createDevShowcaseProjectForLocation } from "./devShowcaseProjects";
 import {
   loadProjectFromSupabase,
@@ -26,9 +26,16 @@ export type ProjectFlushResult =
   | { readonly kind: "saved-local" };
 
 export type ProjectDbReconnectResult =
-  | { readonly kind: "connected"; readonly source: "remote" | "current-project" }
+  | { readonly kind: "connected"; readonly source: "remote" }
   | { readonly kind: "failed"; readonly message: string }
   | { readonly kind: "not-configured" };
+
+export class DbConnectionRequiredError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DbConnectionRequiredError";
+  }
+}
 
 class ProjectStore {
   private current: Project;
@@ -54,12 +61,19 @@ class ProjectStore {
       } else {
         const status = dbPersistenceStatus({ disabledReason: null });
         if (status.kind === "not-configured") {
-          this.current = loadBrowserProjectOverride() ?? createBlankProject();
           this.remotePersistenceEnabled = false;
           this.remotePersistenceDisabledReason = null;
+          this.persistedBaseline = null;
+          throw new DbConnectionRequiredError("DB URL and anon key are required before opening a project.");
         } else {
           const project = await loadProjectFromSupabase();
-          this.current = project ?? createBlankProject();
+          if (!project) {
+            this.remotePersistenceEnabled = true;
+            this.remotePersistenceDisabledReason = null;
+            this.persistedBaseline = null;
+            throw new DbConnectionRequiredError("No project row exists for the selected DB project ID.");
+          }
+          this.current = project;
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -68,6 +82,10 @@ class ProjectStore {
       await this.normalizeCurrentProject();
       this.refreshSupabaseResourceCache();
     } catch (error) {
+      if (error instanceof DbConnectionRequiredError) {
+        this.loaded = false;
+        throw error;
+      }
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = "load-failed";
       console.error("[store] Supabase canonical project load failed:", error);
@@ -97,9 +115,6 @@ class ProjectStore {
   }
 
   getDbPersistenceStatus(): DbPersistenceStatus {
-    if (!this.remotePersistenceEnabled && this.remotePersistenceDisabledReason === null) {
-      return { kind: "local", reason: "not-configured" };
-    }
     return dbPersistenceStatus({ disabledReason: this.remotePersistenceDisabledReason });
   }
 
@@ -121,11 +136,7 @@ class ProjectStore {
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       this.persistedBaseline = null;
-      const result = await this.persistCurrent();
-      if (result.kind === "saved") return { kind: "connected", source: "current-project" };
-      return result.kind === "not-configured"
-        ? { kind: "not-configured" }
-        : { kind: "failed", message: "현재 프로젝트를 DB에 저장하지 못했습니다." };
+      return { kind: "failed", message: "선택한 DB 프로젝트 ID에 프로젝트가 없습니다. 목록에서 기존 프로젝트를 선택하세요." };
     } catch (error) {
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = "load-failed";
@@ -136,6 +147,7 @@ class ProjectStore {
 
   replace(project: Project): void {
     ensureSwitchVariableSlots(project);
+    removeLegacySpriteReferences(project);
     this.current = project;
     this.emit();
     this.scheduleAutoSave();
@@ -146,6 +158,7 @@ class ProjectStore {
     mutator(draft);
     ensureProjectMapConnections(draft);
     ensureSwitchVariableSlots(draft);
+    removeLegacySpriteReferences(draft);
     this.current = draft;
     this.emit();
     this.scheduleAutoSave();
@@ -157,11 +170,8 @@ class ProjectStore {
       this.autoSaveTimer = null;
     }
     if (!this.loaded) return { kind: "not-loaded" };
-    // 원격 저장이 "설정 미구성"으로 비활성화된 경우:
-    //   - 브라우저(localStorage) 저장이 가능하면 saved-local로 저장한다.
-    //   - 브라우저 저장도 불가능하면(Node 환경 등) not-configured를 반환한다.
     if (!this.remotePersistenceEnabled && this.remotePersistenceDisabledReason === null) {
-      if (typeof window === "undefined") return { kind: "not-configured" };
+      return { kind: "not-configured" };
     }
     return await this.persistCurrent();
   }
@@ -199,11 +209,7 @@ class ProjectStore {
         saveDevProjectOverride(projectWithoutEventDrafts(this.current));
         return { kind: "saved-local" };
       }
-      if (saveBrowserProjectOverride(projectWithoutEventDrafts(this.current))) {
-        this.persistedBaseline = null;
-        return { kind: "saved-local" };
-      }
-      return { kind: "disabled" };
+      return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
     const persistedProject = projectWithoutEventDrafts(this.current);
     const result = this.persistedBaseline
@@ -228,6 +234,7 @@ class ProjectStore {
       ensureBundledTilesets(this.current),
       repairInteriorTransparentPropLayers(this.current),
       removeLegacyRmTileset(this.current),
+      removeLegacySpriteReferences(this.current),
       ensureBundledResourceProfiles(this.current),
       ensureDefaultDatabaseIconResources(this.current),
     ].some(Boolean);

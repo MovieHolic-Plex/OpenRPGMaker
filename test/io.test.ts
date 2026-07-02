@@ -10,7 +10,7 @@ describe("serialize → deserialize 왕복", () => {
   it("빈 프로젝트가 동일하게 복원된다", () => {
     const p = createBlankProject();
     const restored = deserialize(serialize(p));
-    expect(restored).toEqual(p);
+    expect(serialize(restored)).toBe(serialize(p));
   });
 
   it("중첩 choices 명령이 보존된다", () => {
@@ -148,6 +148,25 @@ describe("deserialize 거부", () => {
       },
     ];
     expect(() => deserialize(JSON.stringify(obj))).toThrow(/cancelBehavior/);
+
+    obj.maps[mapId].events[0].commands = [
+      {
+        kind: "choices",
+        prompt: "five?",
+        cancelBehavior: "choice5",
+        options: [
+          { text: "1", branch: [] },
+          { text: "2", branch: [] },
+          { text: "3", branch: [] },
+          { text: "4", branch: [] },
+          { text: "5", branch: [] },
+        ],
+      },
+    ];
+    expect(deserialize(JSON.stringify(obj)).maps[mapId].events[0].commands[0]).toMatchObject({
+      kind: "choices",
+      cancelBehavior: "choice5",
+    });
   });
 
   it("inputNumber 자릿수와 대상 변수를 검증한다", () => {

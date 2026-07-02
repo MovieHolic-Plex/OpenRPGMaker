@@ -1,9 +1,7 @@
-import { canMove, inBounds } from "@/project/collision";
 import type { Dir } from "@/player/input";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { MoveCommand } from "@/project/types";
-import type { Project } from "@/project/types/project";
 import type {
   AutonomousNpcSceneContext,
   AutonomousNpcSprite,
@@ -11,6 +9,7 @@ import type {
 } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha, setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
+import { applyNpcTransfer } from "@/player/playSceneAutonomousMapActions";
 import {
   facingForDelta,
   playerRelativeDirection,
@@ -38,14 +37,6 @@ export type NpcCommandTarget = {
   readonly view: RuntimeEventView;
   readonly baseFrame: number;
   readonly sprite: AutonomousNpcSprite | undefined;
-};
-
-export type NpcMoveCollision = {
-  readonly project: Project;
-  readonly scene: AutonomousNpcSceneContext;
-  readonly mover: AutonomousMover;
-  readonly from: { readonly x: number; readonly y: number };
-  readonly to: { readonly x: number; readonly y: number };
 };
 
 export function nextMoveCommand(mover: AutonomousMover): MoveCommand {
@@ -94,6 +85,7 @@ export function movementDeltaForCommand(
     case "changeSpeed":
     case "changeFrequency":
     case "changeGraphic":
+    case "npcTransfer":
     case "playSe":
     case "wait":
       return null;
@@ -165,6 +157,9 @@ export function executeInstantCommand(
     case "changeGraphic":
       applyMoveRouteGraphicChange(command.spriteId, target.view, target.sprite);
       return true;
+    case "npcTransfer":
+      applyNpcTransfer(routeContext, target, command);
+      return true;
     case "playSe":
       playMoveRouteSound(routeContext.scene, command.resourceId);
       return true;
@@ -184,31 +179,6 @@ export function executeInstantCommand(
 export function applyFacing(mover: AutonomousMover, dir: Dir): Dir {
   if (!mover.directionFix) mover.facing = dir;
   return mover.facing;
-}
-
-export function canNpcMove(
-  request: NpcMoveCollision,
-  movement: MovementDelta
-): boolean {
-  if (movement.jump || request.mover.through) return inBounds(request.scene.map, request.to.x, request.to.y);
-  if (movement.x !== 0 && movement.y !== 0) {
-    const hx = request.from.x + movement.x;
-    const vy = request.from.y + movement.y;
-    return (
-      (canMove(request.project, request.scene.map, request.from.x, request.from.y, hx, request.from.y) &&
-        canMove(request.project, request.scene.map, hx, request.from.y, request.to.x, request.to.y)) ||
-      (canMove(request.project, request.scene.map, request.from.x, request.from.y, request.from.x, vy) &&
-        canMove(request.project, request.scene.map, request.from.x, vy, request.to.x, request.to.y))
-    );
-  }
-  return canMove(
-    request.project,
-    request.scene.map,
-    request.from.x,
-    request.from.y,
-    request.to.x,
-    request.to.y
-  );
 }
 
 function applyRouteSwitch(scene: AutonomousNpcSceneContext, command: Extract<MoveCommand, { kind: "setSwitch" }>): void {

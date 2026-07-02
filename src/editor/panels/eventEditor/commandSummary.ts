@@ -1,93 +1,229 @@
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { numberedName } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
 import type { Command, VariableOperand } from "@/project/types";
 
+export type CommandSummaryTone = "plain" | "command" | "value";
+
+export type CommandSummaryPart = {
+  readonly text: string;
+  readonly tone: CommandSummaryTone;
+};
+
 export function commandSummary(cmd: Command): string {
+  return commandSummaryParts(cmd).map((part) => part.text).join("");
+}
+
+export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[] {
   switch (cmd.kind) {
     case "text":
-      return `문장 표시: ${oneLine(cmd.body || "...")}`;
+      return commandLine("문장 표시", textPart(oneLine(cmd.body || "...")));
     case "changeFace":
-      return `얼굴 그래픽 변경: ${cmd.resourceId || "(선택 없음)"} #${cmd.faceIndex + 1} ${cmd.position}${cmd.flipHorizontally ? " / 좌우 반전" : ""}`;
+      return commandLine(
+        "얼굴 그래픽 변경",
+        valuePart(cmd.resourceId || "(선택 없음)"),
+        plainPart(" #"),
+        valuePart(String(cmd.faceIndex + 1)),
+        plainPart(" "),
+        valuePart(facePositionLabel(cmd.position)),
+        ...(cmd.flipHorizontally ? [plainPart(" / "), valuePart("좌우 반전")] : [])
+      );
     case "displayTextSettings":
-      return `문장 표시 설정: ${messageWindowFormatLabel(cmd.format)} / ${messageWindowPositionLabel(cmd.position)}${cmd.allowEventMovementDuringWait ? " / 이동 허용" : ""}`;
+      return commandLine(
+        "문장 표시 설정",
+        valuePart(messageWindowFormatLabel(cmd.format)),
+        plainPart(" / "),
+        valuePart(messageWindowPositionLabel(cmd.position)),
+        ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
+      );
     case "choices":
-      return `선택지 표시: ${choiceSummary(cmd)}${cmd.cancelBehavior ? ` / 취소 ${cmd.cancelBehavior}` : ""}`;
+      return commandLine(
+        "선택지 표시",
+        valuePart(choiceSummary(cmd)),
+        ...(cmd.cancelBehavior ? [plainPart(" / 취소 "), valuePart(choiceCancelSummary(cmd.cancelBehavior))] : [])
+      );
     case "fork":
-      return `조건 분기: ${conditionSummary(cmd.condition)}`;
+      return commandLine("조건 분기", valuePart(conditionSummary(cmd.condition)));
     case "wait":
-      return `대기: ${(cmd.ms / 1000).toFixed(1)} 초`;
+      return commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초"));
     case "inputWait":
-      return "입력 대기";
+      return cmd.variableId
+        ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
+        : [commandPart("입력 대기")];
     case "inputNumber":
-      return `숫자 입력: ${recordName("variable", cmd.variableId)} / ${cmd.digits}자리`;
+      return commandLine("숫자 입력", valuePart(recordName("variable", cmd.variableId)), plainPart(" / "), valuePart(String(cmd.digits)), plainPart("자리"));
     case "label":
-      return `라벨: ${cmd.name}`;
+      return commandLine("라벨", valuePart(cmd.name));
     case "gotoLabel":
-      return `라벨로 점프: ${cmd.name}`;
+      return commandLine("라벨로 점프", valuePart(cmd.name));
+    case "loop":
+      return commandLine("반복", valuePart(String(cmd.body.length)), plainPart("개 명령"));
+    case "breakLoop":
+      return [commandPart("반복 탈출")];
     case "setSwitch":
-      return `스위치 조작: ${recordName("switch", cmd.switchId)} ${cmd.value ? "ON" : "OFF"}`;
+      return commandLine("스위치 조작", valuePart(recordName("switch", cmd.switchId)), plainPart(" "), valuePart(cmd.value ? "ON" : "OFF"));
     case "setVariable":
-      return `변수 조작: ${recordName("variable", cmd.variableId)} ${cmd.op} ${operandSummary(cmd.value)}`;
+      return commandLine(
+        "변수 조작",
+        valuePart(recordName("variable", cmd.variableId)),
+        plainPart(" "),
+        valuePart(cmd.op),
+        plainPart(" "),
+        valuePart(operandSummary(cmd.value))
+      );
     case "timer":
-      return `타이머 조작: ${cmd.action}${cmd.seconds !== undefined ? ` ${cmd.seconds}초` : ""}`;
+      return commandLine("타이머 조작", valuePart(cmd.action), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : []));
     case "transfer":
-      return `장소 이동: ${mapName(cmd.mapId)} (${cmd.x},${cmd.y})`;
+      if (cmd.direction && cmd.direction !== "retain") {
+        return commandLine(
+          "장소 이동",
+          valuePart(mapName(cmd.mapId)),
+          plainPart(" ("),
+          valuePart(`${cmd.x},${cmd.y}`),
+          plainPart(") / "),
+          valuePart(transferDirectionSummary(cmd.direction))
+        );
+      }
+      return commandLine("장소 이동", valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
     case "moveEvent":
-      return `이동 경로 설정: ${cmd.eventId || "이 이벤트"} (${cmd.route.moves.length}개)`;
+      return commandLine("이동 경로 설정", valuePart(cmd.eventId || "이 이벤트"), plainPart(" ("), valuePart(String(cmd.route.moves.length)), plainPart("개)"));
     case "changeTile":
-      return `타일 변경: ${mapName(cmd.mapId)} ${cmd.layer} (${cmd.x},${cmd.y}) = ${cmd.tile}`;
+      return commandLine(
+        "타일 변경",
+        valuePart(mapName(cmd.mapId)),
+        plainPart(" "),
+        valuePart(tileLayerSummary(cmd.layer)),
+        plainPart(" ("),
+        valuePart(`${cmd.x},${cmd.y}`),
+        plainPart(") = "),
+        valuePart(String(cmd.tile))
+      );
     case "callCommonEvent":
-      return `이벤트 호출: ${commonEventName(cmd.commonEventId)}`;
+      return commandLine("이벤트 호출", valuePart(commonEventName(cmd.commonEventId)));
+    case "callMapEvent":
+      return commandLine("맵 이벤트 호출", valuePart(cmd.eventId || "(이벤트 선택)"));
     case "battleProcessing":
-      return `전투 처리: ${cmd.canEscape ? "도망 가능" : "일반"}, [${troopName(cmd.troopId)}]`;
+      return commandLine("전투 처리", valuePart(cmd.canEscape ? "도망 가능" : "일반"), plainPart(", ["), valuePart(troopName(cmd.troopId)), plainPart("]"));
     case "learnSkill":
-      return `특수기 변경: ${actorName(cmd.actorId)} / ${skillName(cmd.skillId)}`;
+      return commandLine("특수기 변경", valuePart(actorName(cmd.actorId)), plainPart(" / "), valuePart(skillName(cmd.skillId)));
+    case "changeExp":
+      return commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+    case "changeLevel":
+      return commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+    case "changeEquipment":
+      return commandLine(
+        "장비 변경",
+        valuePart(actorName(cmd.actorId)),
+        plainPart(" / "),
+        valuePart(equipmentSlotLabel(cmd.slot)),
+        plainPart(" = "),
+        valuePart(equipmentName(cmd.equipmentId))
+      );
+    case "changeActorHp":
+      return commandLine("HP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+    case "changeActorMp":
+      return commandLine("MP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+    case "recoverAll":
+      return commandLine("모두 회복", valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체"));
     case "changeGold":
-      return `소지금 변경: ${cmd.op} ${cmd.amount}`;
+      return commandLine("소지금 변경", valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "changeItem":
-      return `아이템 변경: ${itemName(cmd.itemId)} ${cmd.op} ${cmd.amount}`;
+      return commandLine("아이템 변경", valuePart(itemName(cmd.itemId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "changeParty":
-      return `파티 멤버 변경: ${actorName(cmd.actorId)} ${cmd.action === "add" ? "추가" : "제외"}`;
+      return commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외"));
     case "showPicture":
-      return `그림 표시: ${cmd.pictureId} (${cmd.x},${cmd.y})`;
+      return commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
     case "erasePicture":
-      return `그림 삭제: ${cmd.pictureId}`;
+      return commandLine("그림 삭제", valuePart(cmd.pictureId));
     case "playAudio":
-      return `BGM 재생: ${cmd.resourceId || "(선택 없음)"}`;
+      return commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)"));
     case "stopAudio":
-      return "BGM 페이드아웃";
+      return commandLine("소리 정지", valuePart("설정 없음"));
     case "shop":
-      return `상점 처리: ${cmd.itemIds.length}개`;
+      return commandLine("상점 처리", valuePart(String(cmd.itemIds.length)), plainPart("개"));
     case "inn":
-      return `여관 처리: ${cmd.price}G`;
+      return commandLine("여관 처리", valuePart(String(cmd.price)), plainPart("G"));
     case "gameOver":
-      return "게임 오버";
+      return [commandPart("게임 오버")];
     case "ending":
-      return `엔딩: ${cmd.title}`;
+      return commandLine("엔딩", valuePart(cmd.title));
     case "returnToTitle":
-      return "타이틀 화면으로";
+      return [commandPart("타이틀 화면으로")];
     case "setFlag":
-      return `플래그 설정: ${cmd.flag} ${cmd.value ? "ON" : "OFF"}`;
+      return commandLine("플래그 설정", valuePart(cmd.flag), plainPart(" "), valuePart(cmd.value ? "ON" : "OFF"));
+    case "setSelfSwitch":
+      return commandLine("셀프 스위치 설정", valuePart(cmd.key), plainPart(" "), valuePart(cmd.value ? "ON" : "OFF"));
     case "m2Command":
-      return m2CommandSummary(cmd);
+      return m2CommandSummaryParts(cmd);
     default:
-      return "명령";
+      return [commandPart("명령")];
   }
 }
 
-function m2CommandSummary(cmd: Extract<Command, { kind: "m2Command" }>): string {
+function commandLine(label: string, ...parts: readonly CommandSummaryPart[]): readonly CommandSummaryPart[] {
+  return [commandPart(label), plainPart(": "), ...parts];
+}
+
+function transferDirectionSummary(direction: "retain" | "up" | "right" | "down" | "left"): string {
+  switch (direction) {
+    case "retain":
+      return "유지";
+    case "up":
+      return "위";
+    case "right":
+      return "오른쪽";
+    case "down":
+      return "아래";
+    case "left":
+      return "왼쪽";
+  }
+}
+
+function tileLayerSummary(layer: "lower" | "upper"): string {
+  return layer === "upper" ? "상위" : "하위";
+}
+
+function commandPart(text: string): CommandSummaryPart {
+  return { text, tone: "command" };
+}
+
+function plainPart(text: string): CommandSummaryPart {
+  return { text, tone: "plain" };
+}
+
+function textPart(text: string): CommandSummaryPart {
+  return { text, tone: "plain" };
+}
+
+function valuePart(text: string): CommandSummaryPart {
+  return { text, tone: "value" };
+}
+
+function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): readonly CommandSummaryPart[] {
   const entry = m2CommandById(cmd.commandId);
   const label = entry?.label ?? cmd.commandId;
   const fields = Object.entries(cmd.fields)
     .filter(([, value]) => String(value).length > 0)
     .slice(0, 3)
     .map(([key, value]) => `${key}: ${String(value)}`);
-  return fields.length > 0 ? `${label}: ${fields.join(", ")}` : label;
+  if (fields.length === 0) return [commandPart(label)];
+  return commandLine(label, valuePart(fields.join(", ")));
 }
 
 function choiceSummary(cmd: Extract<Command, { kind: "choices" }>): string {
   const options = cmd.options.map((option) => option.text).join(" / ");
   return cmd.prompt ? `${oneLine(cmd.prompt)} - ${options}` : options;
+}
+
+function choiceCancelSummary(behavior: Extract<Command, { kind: "choices" }>["cancelBehavior"]): string {
+  if (!behavior) return "";
+  if (behavior === "disallow") return "금지";
+  if (behavior === "branch") return "분기";
+  return `선택지 ${behavior.slice("choice".length)}`;
+}
+
+function facePositionLabel(position: Extract<Command, { kind: "changeFace" }>["position"]): string {
+  return position === "right" ? "오른쪽" : "왼쪽";
 }
 
 function oneLine(value: string): string {
@@ -114,8 +250,22 @@ function operandSummary(value: VariableOperand): string {
 }
 
 function conditionSummary(condition: Extract<Command, { kind: "fork" }>["condition"]): string {
-  if (condition.kind === "switch") return `${recordName("switch", condition.switchId)} ${condition.value ? "ON" : "OFF"}`;
-  return `${recordName("variable", condition.variableId)} ${condition.op} ${condition.value}`;
+  switch (condition.kind) {
+    case "switch":
+      return `${recordName("switch", condition.switchId)} ${condition.value ? "ON" : "OFF"}`;
+    case "variable":
+      return `${recordName("variable", condition.variableId)} ${condition.op} ${condition.value}`;
+    case "selfSwitch":
+      return `셀프 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
+    case "actor":
+      return `${actorName(condition.actorId)} ${condition.present ? "있음" : "없음"}`;
+    case "item":
+      return `${itemName(condition.itemId)} ${condition.present ? "소지" : "미소지"}`;
+    case "gold":
+      return `소지금 ${condition.op} ${condition.amount}`;
+    case "timer":
+      return `${condition.timerId} <= ${condition.seconds}초`;
+  }
 }
 
 function mapName(id: string): string {
@@ -148,10 +298,20 @@ function itemName(id: string): string {
   return id ? project.database.items.find((item) => item.id === id)?.name ?? id : "(아이템 선택)";
 }
 
+function equipmentName(id: string): string {
+  const project = store.getCurrent();
+  return id ? project.database.equipment.find((equipment) => equipment.id === id)?.name ?? id : "(장비 해제)";
+}
+
+function equipmentSlotLabel(slot: Extract<Command, { kind: "changeEquipment" }>["slot"]): string {
+  return { weapon: "무기", shield: "방패", armor: "갑옷", helmet: "머리", accessory: "장신구" }[slot];
+}
+
 function recordName(kind: "switch" | "variable", id: string): string {
   const project = store.getCurrent();
   const collection = kind === "switch" ? project.switches : project.variables;
   const index = collection.findIndex((record) => record.id === id);
-  const label = id ? collection[index]?.name ?? id : kind === "switch" ? "스위치 선택" : "변수 선택";
-  return index >= 0 ? `[${String(index + 1).padStart(4, "0")}: ${label}]` : `[${label}]`;
+  if (index >= 0) return `[${numberedName(index, collection[index]?.name ?? "")}]`;
+  const label = id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
+  return `[${label}]`;
 }

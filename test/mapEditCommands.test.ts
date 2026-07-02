@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { addMap, moveMapInTree, paintTile, resizeMap } from "@/editor/actions";
+import { addMap, moveMapInTree, paintTile, resizeMap, setMapTileset } from "@/editor/actions";
 import { addEvent } from "@/editor/eventActions";
 import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
 import { recordProjectSnapshot, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
@@ -12,7 +12,6 @@ import { paintRoadRect, shapeRoadEdges, type RoadRect } from "@/project/defaults
 import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import { isHarnessStackableTile } from "@/project/tilesetHarness";
-import { tileStackAt } from "@/project/mapOverlayTiles";
 
 function resetEditorState(): void {
   editorState.set({
@@ -75,7 +74,7 @@ describe("map edit commands", () => {
     expect(map.lowerTiles[1 * map.width + 1]).toBe(LAKE_AUTOTILE_TILE.BODY);
   });
 
-  it("keeps lower ground when painting transparent prop objects from lower mode", () => {
+  it("writes transparent prop objects as a single lower-layer tile from lower mode", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
@@ -88,19 +87,17 @@ describe("map edit commands", () => {
 
     for (const placement of propPlacements) {
       const tileIndex = placement.y * map.width + placement.x;
-      const lowerBefore = map.lowerTiles[tileIndex];
-
       expect(isHarnessStackableTile(project.tilesets[map.tilesetId], placement.tile)).toBe(true);
       paintTile(mapId, "lower", placement.x, placement.y, placement.tile);
 
       const updated = store.getCurrent().maps[mapId];
-      expect(updated.lowerTiles[tileIndex]).toBe(lowerBefore);
+      expect(updated.lowerTiles[tileIndex]).toBe(placement.tile);
       expect(updated.upperTiles[tileIndex]).toBe(TILE.EMPTY);
-      expect(updated.lowerTileStacks?.[tileIndex]).toEqual([placement.tile]);
+      expect(updated.lowerTileStacks?.[tileIndex]).toBeUndefined();
     }
   });
 
-  it("stacks mixed transparent prop objects on the selected upper layer", () => {
+  it("replaces mixed transparent prop objects on the selected upper layer", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
@@ -110,11 +107,11 @@ describe("map edit commands", () => {
     paintTile(mapId, "upper", 2, 2, 319);
 
     const updated = store.getCurrent().maps[mapId];
-    expect(updated.upperTiles[tileIndex]).toBe(TILE.EMPTY);
-    expect(updated.upperTileStacks?.[tileIndex]).toEqual([263, 319]);
+    expect(updated.upperTiles[tileIndex]).toBe(319);
+    expect(updated.upperTileStacks?.[tileIndex]).toBeUndefined();
   });
 
-  it("does not duplicate the same transparent tile in one stack cell", () => {
+  it("keeps one tile per layer when painting the same transparent tile repeatedly", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
@@ -126,8 +123,10 @@ describe("map edit commands", () => {
     paintTile(mapId, "lower", 2, 2, 85);
 
     const updated = store.getCurrent().maps[mapId];
-    expect(tileStackAt(updated, "upper", tileIndex)).toEqual([263]);
-    expect(tileStackAt(updated, "lower", tileIndex)).toEqual([85]);
+    expect(updated.upperTiles[tileIndex]).toBe(263);
+    expect(updated.lowerTiles[tileIndex]).toBe(85);
+    expect(updated.upperTileStacks?.[tileIndex]).toBeUndefined();
+    expect(updated.lowerTileStacks?.[tileIndex]).toBeUndefined();
   });
 
   it("forces windows and fences onto the lower harness layer even from upper mode", () => {
@@ -143,8 +142,10 @@ describe("map edit commands", () => {
     const updated = store.getCurrent().maps[mapId];
     expect(updated.upperTiles[windowIndex]).toBe(TILE.EMPTY);
     expect(updated.upperTiles[fenceIndex]).toBe(TILE.EMPTY);
-    expect(updated.lowerTileStacks?.[windowIndex]).toEqual([85]);
-    expect(updated.lowerTileStacks?.[fenceIndex]).toEqual([378]);
+    expect(updated.lowerTiles[windowIndex]).toBe(85);
+    expect(updated.lowerTiles[fenceIndex]).toBe(378);
+    expect(updated.lowerTileStacks?.[windowIndex]).toBeUndefined();
+    expect(updated.lowerTileStacks?.[fenceIndex]).toBeUndefined();
   });
 
   it("shapes painted road tiles with the bundled road autotile tool", () => {
@@ -185,8 +186,10 @@ describe("map edit commands", () => {
     const event = resized.events.find((item) => item.id === eventId);
     expect(event?.x).toBe(3);
     expect(event?.y).toBe(3);
-    expect(resized.lowerTileStacks?.[1 * resized.width + 1]).toEqual([263]);
-    expect(resized.lowerTileStacks?.[2 * resized.width + 2]).toEqual([85]);
+    expect(resized.lowerTiles[1 * resized.width + 1]).toBe(263);
+    expect(resized.lowerTiles[2 * resized.width + 2]).toBe(85);
+    expect(resized.lowerTileStacks?.[1 * resized.width + 1]).toBeUndefined();
+    expect(resized.lowerTileStacks?.[2 * resized.width + 2]).toBeUndefined();
     expect(resized.upperTileStacks?.[5 * resized.width + 5]).toBeUndefined();
   });
 
@@ -227,5 +230,31 @@ describe("map edit commands", () => {
     expect(childNode?.children.some((node) => node.mapId === grandChildMapId)).toBe(true);
     expect(current.mapTree.mapId).toBe(rootMapId);
     expect(current.tilesets[DEFAULT_TILESET_ID].terrain[TILE.WATER]).toBe(7);
+  });
+
+  it("keeps the selected tile inside the current map chipset when changing map tilesets", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const interiorTilesetId = "easyrpg_chipset_interior";
+    const interiorTileset = project.tilesets[interiorTilesetId];
+    if (!interiorTileset) throw new Error("expected bundled interior chipset");
+    editorState.set({
+      activePaletteStamp: {
+        cells: [{ dx: 0, dy: 0, layer: "lower", tile: interiorTileset.count + 12 }],
+        height: 1,
+        source: { endTile: interiorTileset.count + 12, startTile: interiorTileset.count + 12 },
+        width: 1,
+      },
+      activeStampId: "road-block",
+      currentMapId: mapId,
+      selectedTile: interiorTileset.count + 12,
+    });
+
+    setMapTileset(mapId, interiorTilesetId);
+
+    expect(store.getCurrent().maps[mapId].tilesetId).toBe(interiorTilesetId);
+    expect(editorState.get().selectedTile).toBe(0);
+    expect(editorState.get().activeStampId).toBeNull();
+    expect(editorState.get().activePaletteStamp).toBeNull();
   });
 });

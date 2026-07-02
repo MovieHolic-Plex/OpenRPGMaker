@@ -28,11 +28,6 @@ const DEFAULT_SELECTION = {
   direction: "down",
   pattern: 1,
 } as const satisfies CharsetFrameSelection;
-const FRONT_FACING_FRAME = {
-  direction: "down",
-  pattern: 1,
-} as const satisfies Pick<CharsetFrameSelection, "direction" | "pattern">;
-
 type NpcGraphicSelection = CharsetFrameSelection & {
   readonly asset: EasyRpgCharsetAsset;
 };
@@ -65,7 +60,7 @@ export function renderNpcGraphicPicker(
     button.dataset.slot = String(index);
     button.title = `캐릭터 슬롯 ${index + 1}`;
     button.addEventListener("click", () => {
-      applySelection({ ...selection, ...FRONT_FACING_FRAME, characterIndex: index });
+      applySelection({ ...selection, characterIndex: index });
     });
     slotButtons.push(button);
     slotGrid.append(button);
@@ -131,7 +126,7 @@ export function renderNpcGraphicPicker(
     for (const button of slotButtons) {
       const slot = Number(button.dataset.slot ?? "-1");
       button.classList.toggle("active", slot === selection.characterIndex);
-      applyPreviewStyle(button, { ...selection, characterIndex: slot, direction: "down", pattern: 1 }, SLOT_SCALE);
+      applyPreviewStyle(button, { ...selection, characterIndex: slot }, SLOT_SCALE);
     }
   }
 }

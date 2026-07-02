@@ -2,9 +2,10 @@
 // DOM Canvas용 타일 미리보기. Phaser(bundled.ts)와 시각적 일관을 맞춘다.
 // 같은 색/구조를 사용하지만 Canvas2D API로 다시 그린다.
 
+import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { TILE } from "@/project/defaults";
 
-export const TILE_SIZE = 16;
+export const TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
 export const TILES_PER_ROW = 8;
 const PREVIEW_COORD_UNITS = TILE_SIZE + TILE_SIZE;
 

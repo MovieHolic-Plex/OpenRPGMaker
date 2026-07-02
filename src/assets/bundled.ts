@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { BUILTIN_SPRITE_SLICING, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import {
   CHARSET_FRAME_COUNT,
   CHARSET_FRAME_HEIGHT,
@@ -6,11 +7,17 @@ import {
   CHARSET_SHEET_COLUMNS,
   EASYRPG_CHARSET_ASSETS,
 } from "@/assets/easyrpgRtp";
-import { applyTransparentColorKey } from "@/assets/transparentColorKey";
+import {
+  chipsetLoadTextureKey,
+  createTransparentColorKeyCanvas,
+  isColorKeyedChipsetTextureKey,
+  isTransparentColorKeySourceImage,
+  rawChipsetTextureKey,
+} from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
+export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
 export const TEX_TILESET = "tex_tiles_default";
-export const TEX_NPC = "tex_npc_villager";
 export const TEX_DIALOGUE_FRAME = "tex_dialogue_frame";
 
 export type BundledImageAsset = {
@@ -19,9 +26,9 @@ export type BundledImageAsset = {
   readonly name: string;
 };
 
-export const TILE_SIZE = 16;
-export const TILES_PER_ROW = 30;
-export const TILE_FRAME_COUNT = 480;
+export const TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
+export const TILES_PER_ROW = RESOURCE_SLICING.chipset.columns;
+export const TILE_FRAME_COUNT = RESOURCE_SLICING.chipset.count;
 const TILE_QUARTER_SIZE = TILE_SIZE / 2;
 const TILE_QUARTERS = [
   { name: "nw", dx: 0, dy: 0 },
@@ -30,20 +37,18 @@ const TILE_QUARTERS = [
   { name: "se", dx: TILE_QUARTER_SIZE, dy: TILE_QUARTER_SIZE },
 ] as const;
 
-export const SPRITE_FRAMES = 8;
-export const SPRITE_COLS = 2;
-export const SPRITE_ROWS = 4;
-export const SPRITE_FRAME_WIDTH = 32;
-export const SPRITE_FRAME_HEIGHT = 32;
+export const SPRITE_FRAMES = BUILTIN_SPRITE_SLICING.count;
+export const SPRITE_COLS = BUILTIN_SPRITE_SLICING.columns;
+export const SPRITE_ROWS = BUILTIN_SPRITE_SLICING.rows;
+export const SPRITE_FRAME_WIDTH = BUILTIN_SPRITE_SLICING.cellWidth;
+export const SPRITE_FRAME_HEIGHT = BUILTIN_SPRITE_SLICING.cellHeight;
 export { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 
 export const ASSET_TILESET = "assets/rm2k3-original-chipset.png";
-const ASSET_NPC = "assets/npc_villager.png";
 const ASSET_DIALOGUE_FRAME = "assets/dialogue-frame.png";
 
 const CORE_BUNDLED_IMAGE_ASSETS = [
   { textureKey: TEX_TILESET, path: ASSET_TILESET, name: "RM2K3 Original ChipSet" },
-  { textureKey: TEX_NPC, path: ASSET_NPC, name: "Default NPC CharSet" },
   { textureKey: TEX_DIALOGUE_FRAME, path: ASSET_DIALOGUE_FRAME, name: "Default Dialogue Frame" },
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -81,25 +86,19 @@ export function findBundledImageAsset(textureKey: string): BundledImageAsset | u
 }
 
 const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
-
 export function loadBundledAssets(scene: Phaser.Scene): void {
   scene.load.image(TEX_TILESET, ASSET_TILESET);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
-    scene.load.image(asset.textureKey, asset.path);
+    scene.load.image(chipsetLoadTextureKey(asset.textureKey), asset.path);
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     scene.load.image(rawCharsetTextureKey(asset.textureKey), asset.path);
   }
-  scene.load.spritesheet(TEX_NPC, ASSET_NPC, {
-    frameWidth: SPRITE_FRAME_WIDTH,
-    frameHeight: SPRITE_FRAME_HEIGHT,
-  });
   scene.load.image(TEX_DIALOGUE_FRAME, ASSET_DIALOGUE_FRAME);
 
   scene.load.on("loaderror", (file: Phaser.Loader.File) => {
     if (
       file.key === TEX_TILESET ||
-      file.key === TEX_NPC ||
       file.key === TEX_DIALOGUE_FRAME ||
       isExtraBundledLoadKey(file.key)
     ) {
@@ -119,14 +118,43 @@ export function registerBundledFrames(scene: Phaser.Scene): void {
   }
   registerTileFrames(scene, TEX_TILESET);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (isColorKeyedChipsetTextureKey(asset.textureKey)) {
+      registerTransparentChipsetTexture(scene, asset);
+    }
     if (!scene.textures.exists(asset.textureKey)) {
       console.error(`[assets] ${asset.textureKey} 가 로드되지 않았습니다. EasyRPG ChipSet 파일을 확인하세요.`);
       continue;
     }
     registerTileFrames(scene, asset.textureKey);
   }
-  registerTileAnimations(scene);
+  registerTileAnimations(scene, [
+    TEX_TILESET,
+    ...BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) => asset.textureKey),
+  ]);
   registerEasyRpgCharsetTextures(scene);
+}
+
+function registerTransparentChipsetTexture(scene: Phaser.Scene, asset: BundledImageAsset): void {
+  if (scene.textures.exists(asset.textureKey)) return;
+  const rawKey = rawChipsetTextureKey(asset.textureKey);
+  if (!scene.textures.exists(rawKey)) {
+    console.error(`[assets] ${rawKey} 가 로드되지 않았습니다. EasyRPG ChipSet 파일을 확인하세요.`);
+    return;
+  }
+  const source = scene.textures.get(rawKey).getSourceImage();
+  if (!isTransparentColorKeySourceImage(source)) {
+    console.error(`[assets] ${rawKey} 원본 이미지를 캔버스로 변환할 수 없습니다.`);
+    return;
+  }
+  const canvas = createTransparentColorKeyCanvas(asset.textureKey, source);
+  if (!canvas) {
+    console.error(`[assets] ${rawKey} 투명색 캔버스를 만들 수 없습니다.`);
+    return;
+  }
+  const texture = scene.textures.addCanvas(asset.textureKey, canvas);
+  if (!texture) {
+    console.error(`[assets] ${asset.textureKey} 텍스처 등록에 실패했습니다.`);
+  }
 }
 
 function registerEasyRpgCharsetTextures(scene: Phaser.Scene): void {
@@ -138,11 +166,11 @@ function registerEasyRpgCharsetTextures(scene: Phaser.Scene): void {
       continue;
     }
     const source = scene.textures.get(rawKey).getSourceImage();
-    if (!isCharsetSourceImage(source)) {
+    if (!isTransparentColorKeySourceImage(source)) {
       console.error(`[assets] ${rawKey} 원본 이미지를 캔버스로 변환할 수 없습니다.`);
       continue;
     }
-    const canvas = createTransparentCharsetCanvas(source);
+    const canvas = createTransparentColorKeyCanvas(asset.textureKey, source);
     if (!canvas) {
       console.error(`[assets] ${rawKey} 투명색 캔버스를 만들 수 없습니다.`);
       continue;
@@ -154,19 +182,6 @@ function registerEasyRpgCharsetTextures(scene: Phaser.Scene): void {
     }
     registerCharsetTextureFrames(texture);
   }
-}
-
-function createTransparentCharsetCanvas(source: HTMLImageElement | HTMLCanvasElement): HTMLCanvasElement | null {
-  const canvas = document.createElement("canvas");
-  canvas.width = sourceImageWidth(source);
-  canvas.height = sourceImageHeight(source);
-  const context = canvas.getContext("2d", { willReadFrequently: true });
-  if (!context) return null;
-  context.drawImage(source, 0, 0);
-  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-  applyTransparentColorKey(imageData.data);
-  context.putImageData(imageData, 0, 0);
-  return canvas;
 }
 
 function registerCharsetTextureFrames(texture: Phaser.Textures.Texture): void {
@@ -190,22 +205,11 @@ function rawCharsetTextureKey(textureKey: string): string {
 
 function isExtraBundledLoadKey(fileKey: string): boolean {
   return EXTRA_BUNDLED_IMAGE_ASSETS.some(
-    (asset) => asset.textureKey === fileKey || rawCharsetTextureKey(asset.textureKey) === fileKey
+    (asset) =>
+      asset.textureKey === fileKey ||
+      rawCharsetTextureKey(asset.textureKey) === fileKey ||
+      rawChipsetTextureKey(asset.textureKey) === fileKey
   );
-}
-
-function isCharsetSourceImage(
-  source: HTMLImageElement | HTMLCanvasElement | Phaser.GameObjects.RenderTexture
-): source is HTMLImageElement | HTMLCanvasElement {
-  return source instanceof HTMLImageElement || source instanceof HTMLCanvasElement;
-}
-
-function sourceImageWidth(source: HTMLImageElement | HTMLCanvasElement): number {
-  return source instanceof HTMLImageElement ? source.naturalWidth || source.width : source.width;
-}
-
-function sourceImageHeight(source: HTMLImageElement | HTMLCanvasElement): number {
-  return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
 function registerTileFrames(scene: Phaser.Scene, textureKey: string): void {
@@ -226,21 +230,33 @@ function registerTileFrames(scene: Phaser.Scene, textureKey: string): void {
   }
 }
 
-function registerTileAnimations(scene: Phaser.Scene): void {
+export function chipsetAnimationKey(textureKey: string, animationKey: string): string {
+  return textureKey === TEX_TILESET ? animationKey : `${textureKey}:${animationKey}`;
+}
+
+function registerTileAnimations(scene: Phaser.Scene, textureKeys: readonly string[]): void {
+  for (const textureKey of textureKeys) {
+    if (!scene.textures.exists(textureKey)) continue;
+    registerTileAnimationsForTexture(scene, textureKey);
+  }
+}
+
+function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: string): void {
   for (const strip of CHIPSET_ANIMATION_STRIPS) {
-    if (scene.anims.exists(strip.key)) continue;
+    const stripKey = chipsetAnimationKey(textureKey, strip.key);
+    if (scene.anims.exists(stripKey)) continue;
     scene.anims.create({
-      key: strip.key,
-      frames: strip.frames.map((frame) => ({ key: TEX_TILESET, frame: `tile_${frame}` })),
+      key: stripKey,
+      frames: strip.frames.map((frame) => ({ key: textureKey, frame: `tile_${frame}` })),
       frameRate: CHIPSET_ANIMATION_FPS,
       repeat: -1,
     });
     for (const quarter of TILE_QUARTERS) {
-      const key = `${strip.key}_${quarter.name}`;
+      const key = chipsetAnimationKey(textureKey, `${strip.key}_${quarter.name}`);
       if (scene.anims.exists(key)) continue;
       scene.anims.create({
         key,
-        frames: strip.frames.map((frame) => ({ key: TEX_TILESET, frame: `tile_${frame}_${quarter.name}` })),
+        frames: strip.frames.map((frame) => ({ key: textureKey, frame: `tile_${frame}_${quarter.name}` })),
         frameRate: CHIPSET_ANIMATION_FPS,
         repeat: -1,
       });

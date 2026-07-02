@@ -15,6 +15,17 @@ type SandNeighbors = {
 
 const SAND_SURFACE_TILE_SET = new Set<number>(CHIPSET_TILE_GROUPS.sandGround);
 const WATER_SURFACE_TILE_SET = new Set<number>(CHIPSET_TILE_GROUPS.water);
+const SAND_RECHECK_OFFSETS = [
+  { x: 0, y: 0 },
+  { x: 0, y: -1 },
+  { x: 0, y: 1 },
+  { x: -1, y: 0 },
+  { x: 1, y: 0 },
+] as const;
+
+export function isSandTile(tile: number): boolean {
+  return SAND_SURFACE_TILE_SET.has(tile);
+}
 
 export function shapeSandEdges(map: GameMap): void {
   for (let y = 0; y < map.height; y++) {
@@ -23,6 +34,20 @@ export function shapeSandEdges(map: GameMap): void {
       if (isSandSurface(map, point)) {
         setLower(map, point, tileForSandCell(sandNeighbors(map, point)));
       }
+    }
+  }
+}
+
+export function shapeSandAround(map: GameMap, points: readonly Point[]): void {
+  const visited = new Set<string>();
+  for (const point of points) {
+    for (const offset of SAND_RECHECK_OFFSETS) {
+      const candidate = { x: point.x + offset.x, y: point.y + offset.y };
+      const key = `${candidate.x},${candidate.y}`;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      if (!isSandSurface(map, candidate)) continue;
+      setLower(map, candidate, tileForSandCell(sandNeighbors(map, candidate)));
     }
   }
 }

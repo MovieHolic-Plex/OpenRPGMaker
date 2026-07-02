@@ -1,0 +1,43 @@
+
+.tileset-ai-question-tile-number {
+  background: rgba(20, 20, 18, 0.82);
+  bottom: 0;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  left: 0;
+  line-height: 1;
+  padding: 2px 3px;
+  position: absolute;
+}
+
+.tileset-ai-question-control span,
+.tileset-ai-inline-field span,
+.tileset-ai-lock-field span {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tileset-ai-question-control .tileset-ai-question-tile-number {
+  color: #ffffff;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.tileset-ai-question-control select,
+.tileset-ai-question-custom-answer,
+.tileset-ai-inline-field input,
+.tileset-ai-inline-field select {
+  background: var(--surface-panel);
+  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  font: 400 11px/1.25 inherit;
+  min-height: 22px;
+  min-width: 0;
+  padding: 2px 4px;
+  width: 100%;
+}

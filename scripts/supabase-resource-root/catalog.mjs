@@ -7,6 +7,70 @@ export const DEFAULT_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
 const GENERATED_PLAN_PATH = "src/assets/rm2k3GeneratedAssetPlan.json";
 
+export const RESOURCE_SLICING = {
+  chipset: {
+    kind: "grid",
+    unit: "tile",
+    cellWidth: 16,
+    cellHeight: 16,
+    columns: 30,
+    rows: 16,
+    count: 480,
+    sheetWidth: 480,
+    sheetHeight: 256,
+    subcell: { unit: "quarter-tile", cellWidth: 8, cellHeight: 8 },
+  },
+  charset: {
+    kind: "grid",
+    unit: "charset-frame",
+    cellWidth: 24,
+    cellHeight: 32,
+    columns: 12,
+    rows: 8,
+    count: 96,
+    sheetWidth: 288,
+    sheetHeight: 256,
+  },
+  battle: { kind: "whole-image", unit: "image" },
+  battleCharset: {
+    kind: "grid",
+    unit: "battle-character",
+    cellWidth: 48,
+    cellHeight: 48,
+  },
+  battleWeapon: {
+    kind: "grid",
+    unit: "battle-weapon",
+    cellWidth: 64,
+    cellHeight: 64,
+    columns: 3,
+    rows: 8,
+    count: 24,
+    sheetWidth: 192,
+    sheetHeight: 512,
+  },
+  backdrop: { kind: "whole-image", unit: "image" },
+  gameOver: { kind: "whole-image", unit: "image" },
+  monster: { kind: "whole-image", unit: "image" },
+  faceset: {
+    kind: "grid",
+    unit: "face",
+    cellWidth: 48,
+    cellHeight: 48,
+    columns: 4,
+    rows: 4,
+    count: 16,
+    sheetWidth: 192,
+    sheetHeight: 192,
+  },
+  picture: { kind: "whole-image", unit: "image" },
+  system: { kind: "whole-image", unit: "image" },
+  system2: { kind: "whole-image", unit: "image" },
+  title: { kind: "whole-image", unit: "image" },
+  music: { kind: "audio", unit: "audio" },
+  sound: { kind: "audio", unit: "audio" },
+};
+
 const BUILTIN_ROOT_FILES = [
   {
     resourceId: "hero",
@@ -70,9 +134,8 @@ export function pngDimensions(buffer) {
 }
 
 export function tileSizeForKind(kind) {
-  if (kind === "charset") return { tileWidth: 24, tileHeight: 32 };
-  if (kind === "faceset") return { tileWidth: 48, tileHeight: 48 };
-  if (kind === "battleCharset") return { tileWidth: 48, tileHeight: 48 };
+  const slicing = RESOURCE_SLICING[kind];
+  if (slicing?.kind === "grid") return { tileWidth: slicing.cellWidth, tileHeight: slicing.cellHeight };
   return {};
 }
 

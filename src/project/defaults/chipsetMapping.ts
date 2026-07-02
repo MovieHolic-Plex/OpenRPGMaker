@@ -345,6 +345,7 @@ export function isSolidChipsetTile(index: number): boolean {
     isWaterChipsetTile(index) ||
     hasTile(CHIPSET_TILE_GROUPS.treeObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.houseObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.roofObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.woodStructureObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.timberPostStructureObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.darkWallBody, index) ||

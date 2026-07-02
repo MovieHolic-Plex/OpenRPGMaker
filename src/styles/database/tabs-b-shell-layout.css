@@ -1,0 +1,269 @@
+:root {
+  --bg: #ece7da;
+  --bg-panel: #d4d0c8;
+  --bg-panel-2: #f0f0f0;
+  --bg-elev: #e5e5e5;
+  --border: #808080;
+  --border-soft: #b8b4aa;
+  --text: #111111;
+  --text-dim: #3c3c3c;
+  --text-muted: #666666;
+  --accent: #0a246a;
+  --accent-hover: #1e4f9a;
+  --accent-soft: rgba(10, 36, 106, 0.14);
+  --danger: #9d1f1f;
+  --ok: #1f6f38;
+  --gold: #7c5e22;
+  --surface-app: var(--bg);
+  --accent-secondary: var(--gold);
+  --accent-editor: #3a6b32;
+  --accent-blue: var(--accent);
+  --bg-recessed: #d8d0be;
+  --surface-button: var(--bg-panel-2);
+  --mono: var(--font-mono);
+  --status-warning: #b4761e;
+  --status-success: var(--ok);
+  --pixel-grid: rgba(0, 0, 0, 0.2);
+}
+.topbar {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+.topbar .title {
+  font-size: 12px;
+  letter-spacing: 0;
+  margin-right: var(--space-2);
+  min-width: 72px;
+}
+.topbar .mode-badge {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 0;
+  font-size: 10px;
+  letter-spacing: 0;
+  padding: 2px 6px;
+}
+.rm2k3-menu-bar {
+  align-items: center;
+  background: #efe9dc;
+  border-bottom: 1px solid #aaa59b;
+  display: flex;
+  height: 22px;
+  padding: 0 var(--space-1);
+  position: relative;
+  z-index: 60;
+}
+.rm2k3-menu-item {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text);
+  cursor: default;
+  font: 400 12px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  height: 20px;
+  padding: 1px 8px;
+}
+.rm2k3-menu-item:hover,
+.rm2k3-menu-item:focus-visible,
+.rm2k3-menu-item[aria-expanded="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+  outline: none;
+}
+.rm2k3-menu-popup {
+  background: #f8f5ec;
+  border: 1px solid;
+  border-color: #ffffff #6c6c6c #6c6c6c #ffffff;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.22);
+  display: none;
+  left: 0;
+  min-width: 168px;
+  padding: 2px;
+  position: fixed;
+  top: 0;
+  z-index: 80;
+}
+.rm2k3-menu-popup.open {
+  display: grid;
+}
+.rm2k3-menu-command {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  cursor: default;
+  font: 400 12px/1.25 system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height: 22px;
+  padding: 2px 22px 2px 18px;
+  text-align: left;
+  white-space: nowrap;
+}
+.rm2k3-menu-command:hover:not(:disabled),
+.rm2k3-menu-command:focus-visible:not(:disabled) {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  outline: none;
+}
+.rm2k3-menu-command:disabled {
+  color: #8f8a80;
+}
+.rm2k3-menu-separator {
+  border-top: 1px solid #aaa59b;
+  box-shadow: 0 1px 0 #ffffff;
+  height: 0;
+  margin: 3px 2px;
+}
+.rm2k3-toolbar {
+  background: var(--bg-panel);
+  border-top: 1px solid #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 27px;
+  padding: 1px 4px 2px;
+}
+.rm2k3-toolbar-row {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+  min-height: 23px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  width: 100%;
+}
+.rm2k3-toolbar-row.edit-row {
+  border-top: 1px solid #aaa59b;
+  padding-top: 2px;
+}
+.rm2k3-tool-button {
+  align-items: center;
+  appearance: none;
+  background: var(--bg-panel);
+  border: 1px solid;
+  border-color: #ffffff #6c6c6c #6c6c6c #ffffff;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  gap: 3px;
+  height: 22px;
+  justify-content: center;
+  min-width: 24px;
+  padding: 1px 5px;
+  position: relative;
+  transition: background 90ms ease-out, border-color 90ms ease-out, filter 90ms ease-out, transform 70ms ease-out;
+  user-select: none;
+}
+.rm2k3-tool-button.icon-only {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 22px;
+  padding: 1px 3px;
+}
+.rm2k3-tool-button:hover:not(:disabled) {
+  background: var(--surface-workbench);
+  outline: none;
+}
+.rm2k3-tool-button:focus-visible {
+  background: var(--surface-workbench);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -3px;
+}
+.rm2k3-tool-button:active:not(:disabled) {
+  background: var(--surface-recessed);
+  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+}
+.rm2k3-tool-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.rm2k3-tool-button.active,
+.rm2k3-tool-button[aria-pressed="true"] {
+  background: var(--surface-selected);
+  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  color: var(--text-primary);
+}
+.rm2k3-tool-button.primary {
+  background: var(--surface-selected);
+  border-color: #ffffff var(--border-strong) var(--border-strong) #ffffff;
+  color: var(--text-primary);
+}
+.rm2k3-tool-button.primary:hover:not(:disabled),
+.rm2k3-tool-button.primary:focus-visible {
+  background: #e7f1fb;
+}
+.rm2k3-tool-button.primary:active:not(:disabled) {
+  background: var(--surface-recessed);
+  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+}
+.rm2k3-tool-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  opacity: 0.45;
+}
+.rm2k3-toolbar-separator {
+  background: #8f8a80;
+  border-right: 1px solid #ffffff;
+  height: 20px;
+  margin: 0 2px;
+  width: 1px;
+}
+.rm2k3-toolbar-status {
+  align-items: center;
+  background: #f5f1e8;
+  border: 1px solid;
+  border-color: #ffffff #9d988c #9d988c #ffffff;
+  color: var(--text-primary);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 600 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  height: 22px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+button.btn {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  box-shadow: none;
+  color: var(--text-primary);
+  padding: 4px 8px;
+}
+button.btn:hover:not(:disabled) {
+  background: var(--surface-workbench);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+button.btn:active:not(:disabled) {
+  background: var(--surface-selected);
+  box-shadow: inset 0 0 0 1px rgba(46, 111, 158, 0.28);
+  transform: none;
+}
+button.btn.primary {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+.editor-layout .left-panel,
+.editor-layout .right-panel {
+  padding: var(--space-1);
+}
+.editor-layout .left-panel {
+  display: grid;
+  gap: 2px;
+  grid-template-rows: minmax(0, 1fr) 168px;
+  min-width: 252px;
+  overflow: hidden;
+  padding: 2px;
+  width: 252px;
+}
+.editor-layout .right-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  max-width: 420px;
+  overflow: hidden;
+}

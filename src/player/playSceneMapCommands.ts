@@ -1,11 +1,14 @@
 import { isPassable } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { MapId, TransferFade } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
-import type { PlaySceneContext } from "@/player/playSceneTypes";
+import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
+
+type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
+type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
 
 export function applyChangeTileStep(
   scene: PlaySceneContext,
@@ -19,27 +22,82 @@ export function applyChangeTileStep(
   if (step.mapId === scene.getMapId()) applyMapOverrides(scene);
 }
 
-export function transferTo(scene: PlaySceneContext, mapId: MapId, x: number, y: number): void {
+type FadeColor = {
+  readonly red: number;
+  readonly green: number;
+  readonly blue: number;
+};
+
+const TRANSFER_FADE_DURATION_MS = 500;
+
+export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
   const project = store.getCurrent();
-  const targetMap = project.maps[mapId];
+  const targetMap = project.maps[request.mapId];
   if (!targetMap) {
-    console.warn(`[player] transfer target map missing: ${mapId}`);
+    console.warn(`[player] transfer target map missing: ${request.mapId}`);
     return;
   }
-  const destination = nearestPassableTile(project, targetMap, x, y);
-  scene.loadMap(mapId);
+  const destination = nearestPassableTile(project, targetMap, request.x, request.y);
+  const fadeColor = transferFadeColor(request.fade ?? "black");
+  if (fadeColor) await fadeCamera(scene, "out", fadeColor);
+  scene.loadMap(request.mapId);
   scene.tileX = destination.x;
   scene.tileY = destination.y;
   scene.session.x = destination.x;
   scene.session.y = destination.y;
+  if (request.direction && request.direction !== "retain") scene.facing = request.direction;
+  scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   scene.player.setPosition(characterSpriteX(destination.x), characterSpriteY(destination.y));
   updateCharacterDepth(scene.player, "same");
   scene.moving = false;
   scene.centerCamera();
+  if (fadeColor) await fadeCamera(scene, "in", fadeColor);
   void fireAutoTriggers(scene);
 }
 
-function nearestPassableTile(
+function transferFadeColor(fade: TransferFade): FadeColor | null {
+  switch (fade) {
+    case "black":
+      return { red: 0, green: 0, blue: 0 };
+    case "white":
+      return { red: 255, green: 255, blue: 255 };
+    case "none":
+      return null;
+  }
+}
+
+function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: FadeColor): Promise<void> {
+  return new Promise((resolve) => {
+    const eventName = phase === "out" ? "camerafadeoutcomplete" : "camerafadeincomplete";
+    scene.cameras.main.once(eventName, () => resolve());
+    if (phase === "out") {
+      scene.cameras.main.fadeOut(TRANSFER_FADE_DURATION_MS, color.red, color.green, color.blue);
+      return;
+    }
+    scene.cameras.main.fadeIn(TRANSFER_FADE_DURATION_MS, color.red, color.green, color.blue);
+  });
+}
+
+// Flash Screen: 카메라 전체를 지정 색상으로 깜빡인다. fadeCamera 와 동일한
+// Promise 패턴을 따른다. Phaser cameras.main.flash(duration, r, g, b) 사용.
+export function flashCamera(scene: PlaySceneContext, step: FlashScreenStep): Promise<void> {
+  return new Promise((resolve) => {
+    scene.cameras.main.once("cameraflashcomplete", () => resolve());
+    scene.cameras.main.flash(step.durationMs, step.red, step.green, step.blue);
+  });
+}
+
+// Shake Screen: 카메라를 지정 시간 동안 흔든다. intensity 는 0~1 범위의 세기.
+// RM2K3 의 흔들림 강도(1~10)를 Phaser 의 0~1 비율로 정규화한다.
+export function shakeCamera(scene: PlaySceneContext, step: ShakeScreenStep): Promise<void> {
+  return new Promise((resolve) => {
+    scene.cameras.main.once("camerashakecomplete", () => resolve());
+    const intensity = Math.min(0.05, Math.max(0.001, step.intensity / 100));
+    scene.cameras.main.shake(step.durationMs, intensity);
+  });
+}
+
+export function nearestPassableTile(
   project: ReturnType<typeof store.getCurrent>,
   map: ReturnType<typeof store.getCurrent>["maps"][MapId],
   x: number,

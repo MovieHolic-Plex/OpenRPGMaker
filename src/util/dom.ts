@@ -9,7 +9,7 @@ export type ElProps = {
   // 이벤트 리스너.
   on?: Record<string, EventListener>;
   // 자식(문자열 또는 노드). 순서대로 append.
-  children?: (Node | string)[];
+  children?: readonly (Node | string)[];
   // 입력값(value).
   value?: string | number;
   // 선택 속성.

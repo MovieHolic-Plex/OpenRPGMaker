@@ -20,11 +20,7 @@ export function renderElementsTab(host: HTMLElement): void {
     class: "db-elements-classic-inner",
     dataset: { testid: "db-elements-classic" },
   });
-  classic.append(
-    renderElementsClassicList(elements, host),
-    renderElementsClassicEditor(elements[selectedElementIndex], selectedElementIndex),
-    el("div", { class: "db-elements-right-blank", attrs: { "aria-hidden": "true" } }),
-  );
+  classic.append(renderElementsClassicList(elements, host), renderElementsClassicEditor(elements[selectedElementIndex], selectedElementIndex));
   form.append(classic);
   host.append(form);
 }
@@ -35,7 +31,7 @@ function renderElementsClassicList(elements: readonly DatabaseElementRecord[], h
     list.append(
       el("button", {
         class: `db-elements-row${index === selectedElementIndex ? " is-selected" : ""}`,
-        text: `${ordinalLabel(index)}:${element.name}`,
+        text: `${ordinalLabel(index)}: ${element.name}`,
         attrs: { type: "button" },
         dataset: { testid: `db-elements-row-${index}` },
         on: {
@@ -56,7 +52,7 @@ function renderElementsClassicList(elements: readonly DatabaseElementRecord[], h
       list,
       el("button", {
         class: "db-elements-maximum",
-        text: "최대 수",
+        text: "최대 개수",
         attrs: { type: "button" },
         dataset: { testid: "db-elements-maximum-number" },
       }),
@@ -73,12 +69,7 @@ function renderElementsClassicEditor(element: DatabaseElementRecord | undefined,
   }
   return el("section", {
     class: "db-elements-editor",
-    children: [
-      renderElementNameGroup(element, index),
-      renderElementKindGroup(element, index),
-      renderElementDamageGroup(element, index),
-      el("div", { class: "db-elements-lower-blank", attrs: { "aria-hidden": "true" } }),
-    ],
+    children: [renderElementNameGroup(element, index), renderElementKindGroup(element, index), renderElementDamageGroup(element, index)],
   });
 }
 
@@ -113,7 +104,7 @@ function elementKindRadio(kind: DatabaseElementRecord["kind"], checked: boolean,
   const input = el("input", {
     attrs: { type: "radio", name: "db-elements-attribute-type", value: kind },
     dataset: { testid: `db-field-element-kind-${kind}` },
-  }) as HTMLInputElement;
+  });
   input.checked = checked;
   input.addEventListener("focus", () => selectUtilityRecord("elements", index));
   input.addEventListener("change", () => {

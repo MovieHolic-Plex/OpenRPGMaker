@@ -9,22 +9,30 @@ import { collectBattleRewards } from "@/battle/battleRewards";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import type {
   ActorCommand,
+  ActorCommandDraft,
+  BattleActionResultSnapshot,
   BattleAnimationSnapshot,
   BattlePhase,
   BattleResult,
   BattleRuntime,
   BattleRuntimeOptions,
   BattleSnapshot,
+  BattleTargetSelectionSnapshot,
+  TargetedActorCommand,
 } from "@/battle/types";
 
 export type {
   ActorCommand,
+  ActorCommandDraft,
+  BattleActionResultSnapshot,
   BattleBattlerSnapshot,
   BattlePhase,
   BattleResult,
   BattleRuntime,
   BattleRuntimeOptions,
   BattleSnapshot,
+  BattleTargetSelectionSnapshot,
+  TargetedActorCommand,
 } from "@/battle/types";
 
 const FALLBACK_SKILL_POWER = 12;
@@ -41,10 +49,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let phase: BattlePhase = "charging";
   let activeActorId: ActorId | undefined;
   let lastAnimation: BattleAnimationSnapshot | undefined;
+  let lastActionResult: BattleActionResultSnapshot | undefined;
   let result: BattleResult | undefined;
   let escaped = false;
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
+  let targetSelection: BattleTargetSelectionSnapshot | undefined;
   const rewards: { exp: number; gold: number; items: ItemId[] } = { exp: 0, gold: 0, items: [] };
   const battleEventState: BattleEventRuntimeState = {
     switches: { ...options.project.session.switches },
@@ -94,11 +104,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           currentActorCommandKind = undefined;
           return;
         }
-        applySkillLike(actor, target, { power: actor.attackPower, statistic: "attack", effect: "damage" });
+        const result = applySkillLike(actor, target, { power: actor.attackPower, statistic: "attack", effect: "damage", criticalRate: criticalRateFor(actor) });
+        lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
         break;
       }
       case "skill": {
         const skill = lookupSkill(command.skillId);
+        consumeSkillMp(actor, command.skillId);
         if (skill?.scope === "allEnemies") {
           for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
             applySkill(actor, target, command.skillId);
@@ -160,6 +172,81 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     phase = "charging";
   }
 
+  function beginActorCommand(command: ActorCommandDraft): void {
+    if (phase !== "actorCommand" || !activeActorId || result) return;
+    switch (command.kind) {
+      case "defend":
+      case "escape":
+        performActorCommand(command);
+        return;
+      case "attack":
+      case "skill":
+      case "item":
+        beginTargetSelection(command);
+        return;
+    }
+  }
+
+  function selectTargetEnemy(enemyId: string): void {
+    if (phase !== "targetSelect" || !targetSelection || result) return;
+    if (!targetSelection.targetEnemyIds.includes(enemyId)) return;
+    const command = concreteTargetCommand(targetSelection.command, enemyId);
+    targetSelection = undefined;
+    phase = "actorCommand";
+    performActorCommand(command);
+  }
+
+  // 대상을 "선택만" 변경(커서 이동). 확정하지 않는다. 키보드 X 등 커서 이동용.
+  function setSelectedTargetEnemy(enemyId: string): void {
+    if (phase !== "targetSelect" || !targetSelection || result) return;
+    if (!targetSelection.targetEnemyIds.includes(enemyId)) return;
+    targetSelection = { ...targetSelection, selectedEnemyId: enemyId };
+  }
+
+  function cancelTargetSelection(): void {
+    if (phase !== "targetSelect") return;
+    targetSelection = undefined;
+    phase = "actorCommand";
+  }
+
+  function beginTargetSelection(command: TargetedActorCommand): void {
+    if (!needsEnemyTarget(command)) {
+      const fallbackTargetId = visibleEnemies().find((entry) => entry.hp > 0)?.id ?? activeActorId ?? "";
+      performActorCommand(concreteTargetCommand(command, fallbackTargetId));
+      return;
+    }
+    const targetEnemyIds = selectableEnemyIds(command);
+    if (targetEnemyIds.length === 0) return;
+    targetSelection = {
+      command,
+      targetEnemyIds,
+      selectedEnemyId: targetEnemyIds[0],
+    };
+    phase = "targetSelect";
+  }
+
+  function selectableEnemyIds(command: TargetedActorCommand): readonly string[] {
+    if (!needsEnemyTarget(command)) return [];
+    return visibleEnemies()
+      .filter((entry) => entry.hp > 0)
+      .map((entry) => entry.id);
+  }
+
+  function needsEnemyTarget(command: TargetedActorCommand): boolean {
+    switch (command.kind) {
+      case "attack":
+        return true;
+      case "skill": {
+        const skill = lookupSkill(command.skillId);
+        return skill?.scope !== "self" && skill?.scope !== "ally";
+      }
+      case "item": {
+        const skill = lookupItemSkill(command.itemId);
+        return skill?.scope !== "self" && skill?.scope !== "ally";
+      }
+    }
+  }
+
   function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, actor: MutableBattler): MutableBattler {
     // 힐/서포트 스킬은 아군(자신)을, 공격 스킬은 지정 적을 대상으로 삼는다.
     const record = lookupSkill(skillOrItemId) ?? lookupItemSkill(skillOrItemId);
@@ -180,6 +267,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       actors: actors.map(battlerSnapshot),
       enemies: enemiesInBattle.map(battlerSnapshot),
       lastAnimation,
+      lastActionResult,
       result,
       rewards,
       canEscape: options.canEscape,
@@ -188,6 +276,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       backdropResourceId,
       turn,
       eventState: battleEvents.snapshot(),
+      targetSelection,
     };
   }
 
@@ -196,11 +285,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!target) return;
     const skillId = enemy.skillIds[0];
     if (skillId) {
+      consumeSkillMp(enemy, skillId);
       applySkill(enemy, target, skillId);
     } else {
-      applySkillLike(enemy, target, { power: enemy.attackPower, statistic: "attack", effect: "damage" });
+      const result = applySkillLike(enemy, target, { power: enemy.attackPower, statistic: "attack", effect: "damage", criticalRate: criticalRateFor(enemy) });
+      lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
     }
     enemy.gauge = 0;
+    // 적 턴이 끝나면 아군의 방어(defending) 상태를 해제한다.
+    // RM2K3: 방어는 다음 적 턴까지만 유효(1턴 가드).
+    for (const actor of actors) actor.defending = false;
     turn += 1;
     applyTroopEvents();
     resolveOutcome();
@@ -229,6 +323,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
+  // 스킬 MP 소비. flat + percentMax(최대 MP 기준 비율). 부족해도 일단 차감(최소 0).
+  // 호출부에서 applySkill(allEnemies 루프 등)과 분리해 1회만 차감하도록 직접 호출한다.
+  function consumeSkillMp(user: MutableBattler, skillId: SkillId): void {
+    const skill = lookupSkill(skillId);
+    if (!skill?.mpCost) return;
+    const flat = skill.mpCost.flat ?? 0;
+    const pct = skill.mpCost.percentMax ?? 0;
+    const cost = flat + Math.floor((user.maxMp * pct) / 100);
+    if (cost > 0) user.mp = Math.max(0, user.mp - cost);
+  }
+
   function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId): void {
     const skill = lookupSkill(skillId);
     const power = skill?.power ?? FALLBACK_SKILL_POWER;
@@ -238,7 +343,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const statistic: "attack" | "mind" = effect && (effect.kind === "damage" || effect.kind === "healing")
       ? effect.statistic
       : "attack";
-    applySkillLike(user, target, { power, statistic, effect: effectKind });
+    const result = applySkillLike(user, target, {
+      power,
+      statistic,
+      effect: effectKind,
+      hitRate: skill?.hitRate,
+      variance: skill?.variance,
+      criticalRate: criticalRateFor(user),
+      elementMultiplier: elementMultiplierFor(skill?.elementId, target),
+    });
+    lastActionResult = { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name };
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
     }
@@ -246,6 +360,41 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 전투 내 스위치 토글은 플레이 세션으로 전파하지 않고 배틀 stateIds 에 기록만.
       // (런타임-세션 연동은 별도 작업)
     }
+  }
+
+  // 사용자의 크리티컬 발동 확률(%)을 계산. actor 는 ActorCritical.chanceDenominator(1/N),
+  // enemy 는 EnemyCritical.oneIn(1/N). 데이터 없으면 0.
+  function criticalRateFor(user: MutableBattler): number {
+    const actor = options.project.database.actors.find((entry) => entry.id === user.recordId);
+    if (actor?.critical?.enabled && actor.critical.chanceDenominator > 0) {
+      return 100 / actor.critical.chanceDenominator;
+    }
+    const enemy = options.project.database.enemies.find((entry) => entry.id === user.recordId);
+    if (enemy?.criticalHit?.enabled && enemy.criticalHit.oneIn > 0) {
+      return 100 / enemy.criticalHit.oneIn;
+    }
+    return 0;
+  }
+
+  // 속성 상성 배율을 계산. skill.elementId 가 없거나 데이터가 없으면 1.0.
+  // target 의 elementRates(등급 A~E) → DatabaseElementRecord.damageMultipliers(배율) 조회.
+  function elementMultiplierFor(elementId: string | undefined, target: MutableBattler): number {
+    if (!elementId) return 1;
+    const element = options.project.database.elements?.find((entry) => entry.id === elementId);
+    if (!element?.damageMultipliers) return 1;
+    // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
+    const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);
+    const actor = options.project.database.actors.find((entry) => entry.id === target.recordId);
+    const rates = enemy?.elementRates ?? actor?.elementRates;
+    if (!rates) return 1;
+    const grade = rates[elementId];
+    if (!grade) return 1;
+    const multiplier = element.damageMultipliers[grade];
+    if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return 1;
+    // damageMultipliers 는 퍼센트 스케일(A=200,B=150,C=100,D=50,E=0)로 저장된다.
+    // 데미지 배율로 쓰려면 100으로 나눈다: C=1.0(중립), A=2.0(약점), D=0.5(내성), E=0(무효),
+    // 음수(-100 등)는 흡수(-1.0 = 회복)를 의미한다.
+    return multiplier / 100;
   }
 
   function applyTroopEvents(): void {
@@ -283,7 +432,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       accumulateRewards();
       return;
     }
-    if (actors.every((actor) => actor.hp <= 0) && options.canLose) {
+    if (actors.every((actor) => actor.hp <= 0)) {
       result = "defeat";
       phase = "resolved";
     }
@@ -296,5 +445,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.items = [...collected.items];
   }
 
-  return { tick, performActorCommand, snapshot };
+  return { tick, beginActorCommand, selectTargetEnemy, setSelectedTargetEnemy, cancelTargetSelection, performActorCommand, snapshot };
+}
+
+// 대상 선택 초안(TargetedActorCommand)과 선택된 적 id 를 확정된 명령(ActorCommand)으로 조립.
+// 모듈 스코프 순수 함수 — runtime 내부와 DOM(battleDom.ts 의 메시지 조립) 양쪽에서 공유.
+export function concreteTargetCommand(command: TargetedActorCommand, targetEnemyId: string): ActorCommand {
+  switch (command.kind) {
+    case "attack":
+      return { kind: "attack", targetEnemyId };
+    case "skill":
+      return { kind: "skill", skillId: command.skillId, targetEnemyId };
+    case "item":
+      return { kind: "item", itemId: command.itemId, targetEnemyId };
+  }
 }

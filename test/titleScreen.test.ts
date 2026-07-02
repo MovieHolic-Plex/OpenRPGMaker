@@ -35,10 +35,14 @@ describe("title screen", () => {
       const newGame = findByTestId(screen, "title-new-game");
       const continueGame = findByTestId(screen, "title-load-game");
       const quit = findByTestId(screen, "title-quit-game");
+      const hint = findByTestId(screen, "title-input-hint");
       expect(screen.textContent).toContain("용사의 밤");
       expect(newGame?.textContent).toBe("처음부터");
       expect(continueGame?.textContent).toBe("이어하기");
       expect(quit?.textContent).toBe("끝내기");
+      expect(hint?.textContent).toBe("Enter 선택   Esc 취소");
+      expect(newGame?.attrs["aria-current"]).toBe("true");
+      expect(continueGame?.attrs["aria-current"]).toBeUndefined();
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
       const title = screen.childNodes[0];
       const menu = screen.childNodes[1];
@@ -83,6 +87,33 @@ describe("title screen", () => {
       );
 
       expect(screen.style.backgroundImage).toContain("Title2.png");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("uses the 320x240 EasyRPG title background and centered menu by default", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      const title = screen.childNodes[0];
+      const menu = screen.childNodes[1];
+      if (!(title instanceof FakeElement) || !(menu instanceof FakeElement)) {
+        throw new Error("expected title screen children");
+      }
+      expect(screen.style.backgroundImage).toContain("Title1.png");
+      expect(title.style.left).toBe("50%");
+      expect(menu.style.left).toBe("50%");
+      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe("Enter 선택   Esc 취소");
     } finally {
       restoreDom();
     }

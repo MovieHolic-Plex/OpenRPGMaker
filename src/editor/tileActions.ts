@@ -1,32 +1,33 @@
 import { store } from "@/project/store";
 import { TILE } from "@/project/defaults";
+import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isRoadTile, shapeRoadAround, type RoadPoint } from "@/project/defaults/roadAutotile";
-import { appendTileToStack, popTileFromStack, topTileInStack } from "@/project/mapOverlayTiles";
-import { harnessLayerForTile, isHarnessStackableTile } from "@/project/tilesetHarness";
+import { isSandTile, shapeSandAround } from "@/project/defaults/sandAutotile";
+import { clearTileStack } from "@/project/mapOverlayTiles";
+import { harnessLayerForTile } from "@/project/tilesetHarness";
 import type { GameMap, MapId, PassFlag } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
 export type TileLayer = "lower" | "upper";
+export type TilePaintOptions = {
+  readonly autoConnect?: boolean;
+};
 type LowerTileEdit = {
   readonly layer: TileLayer;
   readonly points: readonly RoadPoint[];
   readonly previousTile: number | undefined;
   readonly nextTile: number;
-};
+} & Required<TilePaintOptions>;
 
-export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, tile: number): void {
+export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, tile: number, options: TilePaintOptions = {}): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
     const tileset = p.tilesets[m.tilesetId];
     const targetLayer = effectiveLayer(tileset, layer, tile);
-    if (tileset && isHarnessStackableTile(tileset, tile)) {
-      appendTileSafe(m, targetLayer, x, y, tile);
-      return;
-    }
     const previousTile = tileAt(m, targetLayer, x, y);
     setTileSafe(m, targetLayer, x, y, tile);
-    shapeRoadAfterLowerEdit(m, { layer: targetLayer, points: [{ x, y }], previousTile, nextTile: tile });
+    shapeTerrainAfterLowerEdit(m, { layer: targetLayer, points: [{ x, y }], previousTile, nextTile: tile, autoConnect: options.autoConnect ?? true });
   });
 }
 
@@ -38,8 +39,8 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
     const ts = p.tilesets[m.tilesetId];
     if (!ts) return;
     const i = y * m.width + x;
-    const upperTile = topTileInStack(m, "upper", i) ?? m.upperTiles[i];
-    const lowerTile = topTileInStack(m, "lower", i) ?? m.lowerTiles[i];
+    const upperTile = m.upperTiles[i];
+    const lowerTile = m.lowerTiles[i];
     const tileIdx = upperTile >= 0 ? upperTile : lowerTile;
     if (tileIdx < 0 || tileIdx >= ts.passability.length) return;
     const cur = ts.passability[tileIdx];
@@ -52,18 +53,17 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
   });
 }
 
-export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number): void {
+export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
-    if (popTileSafe(m, layer, x, y) !== undefined) return;
     const previousTile = tileAt(m, layer, x, y);
     setTileSafe(m, layer, x, y, TILE.EMPTY);
-    shapeRoadAfterLowerEdit(m, { layer, points: [{ x, y }], previousTile, nextTile: TILE.EMPTY });
+    shapeTerrainAfterLowerEdit(m, { layer, points: [{ x, y }], previousTile, nextTile: TILE.EMPTY, autoConnect: options.autoConnect ?? true });
   });
 }
 
-export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number): void {
+export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m || !inMap(m, x, y)) return;
@@ -72,8 +72,6 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     const targetArr = targetLayer === "lower" ? m.lowerTiles : m.upperTiles;
     const startIdx = y * m.width + x;
     const target = targetArr[startIdx];
-    const appendToStack = tileset ? isHarnessStackableTile(tileset, newTile) : false;
-    if (!appendToStack && target === newTile) return;
     const queue = [startIdx];
     const seen = new Set<number>([startIdx]);
     const changedPoints: RoadPoint[] = [];
@@ -82,8 +80,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       if (idx === undefined) break;
       const cx = idx % m.width;
       const cy = Math.floor(idx / m.width);
-      if (appendToStack) appendTileToStack(m, targetLayer, idx, newTile);
-      else setTileSafe(m, targetLayer, cx, cy, newTile);
+      setTileSafe(m, targetLayer, cx, cy, newTile);
       changedPoints.push({ x: cx, y: cy });
       const neighbors = [
         [cx - 1, cy],
@@ -100,9 +97,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
         queue.push(ni);
       }
     }
-    if (!appendToStack) {
-      shapeRoadAfterLowerEdit(m, { layer: targetLayer, points: changedPoints, previousTile: target, nextTile: newTile });
-    }
+    shapeTerrainAfterLowerEdit(m, { layer: targetLayer, points: changedPoints, previousTile: target, nextTile: newTile, autoConnect: options.autoConnect ?? true });
   });
 }
 
@@ -118,6 +113,7 @@ function inMap(m: GameMap, x: number, y: number): boolean {
 function setTileSafe(m: GameMap, layer: TileLayer, x: number, y: number, tile: number): void {
   if (!inMap(m, x, y)) return;
   const i = y * m.width + x;
+  clearTileStack(m, layer, i);
   if (layer === "lower") {
     m.lowerTiles[i] = tile;
   } else {
@@ -125,24 +121,27 @@ function setTileSafe(m: GameMap, layer: TileLayer, x: number, y: number, tile: n
   }
 }
 
-function appendTileSafe(m: GameMap, layer: TileLayer, x: number, y: number, tile: number): void {
-  if (!inMap(m, x, y)) return;
-  appendTileToStack(m, layer, y * m.width + x, tile);
-}
-
-function popTileSafe(m: GameMap, layer: TileLayer, x: number, y: number): number | undefined {
-  if (!inMap(m, x, y)) return undefined;
-  return popTileFromStack(m, layer, y * m.width + x);
-}
-
 function tileAt(m: GameMap, layer: TileLayer, x: number, y: number): number | undefined {
   if (!inMap(m, x, y)) return undefined;
   const i = y * m.width + x;
-  return topTileInStack(m, layer, i) ?? (layer === "lower" ? m.lowerTiles[i] : m.upperTiles[i]);
+  return layer === "lower" ? m.lowerTiles[i] : m.upperTiles[i];
 }
 
-function shapeRoadAfterLowerEdit(m: GameMap, edit: LowerTileEdit): void {
+function shapeTerrainAfterLowerEdit(m: GameMap, edit: LowerTileEdit): void {
+  if (!edit.autoConnect) return;
   if (edit.layer !== "lower") return;
-  if (!isRoadTile(edit.nextTile) && (edit.previousTile === undefined || !isRoadTile(edit.previousTile))) return;
-  shapeRoadAround(m, edit.points);
+  if (isRoadEdit(edit)) shapeRoadAround(m, edit.points);
+  if (isSandOrWaterEdit(edit)) shapeSandAround(m, edit.points);
+}
+
+function isRoadEdit(edit: LowerTileEdit): boolean {
+  return isRoadTile(edit.nextTile) || (edit.previousTile !== undefined && isRoadTile(edit.previousTile));
+}
+
+function isSandOrWaterEdit(edit: LowerTileEdit): boolean {
+  return isSandOrWaterTile(edit.nextTile) || (edit.previousTile !== undefined && isSandOrWaterTile(edit.previousTile));
+}
+
+function isSandOrWaterTile(tile: number): boolean {
+  return isSandTile(tile) || isLakeAutotileTile(tile);
 }

@@ -3,6 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 // SIZE_OK: This proof keeps editor-authoring helpers and screenshot assertions
 // together so the generated gameplay evidence remains reproducible.
 
+test.setTimeout(60_000);
+
 type EventCommand = {
   readonly kind: string;
   readonly body?: string;
@@ -46,7 +48,7 @@ const DISPLAY_OPTIONS_FACESET_BODY = "프레임이 있는 기본 대화창";
 const DISPLAY_OPTIONS_CHOICES_PROMPT = "선택지를 고르세요";
 const HERO_CHARSET_RESOURCE_ID = "easyrpg-charset-actor1";
 const HERO_CHARSET_TEXTURE_KEY = "tex_easyrpg_charset_actor1";
-const LEGACY_NPC_TEXTURE_KEY = "tex_npc_villager";
+const LEGACY_NPC_TEXTURE_KEY = "tex_easyrpg_charset_people1";
 
 type PlayerSpriteDebug = {
   readonly textureKey: string;
@@ -161,19 +163,32 @@ async function addFacesetViaDialog(page: Page): Promise<void> {
   await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 그래픽 변경");
 }
 
-async function addChoicesViaDialog(page: Page): Promise<void> {
+async function openChoicesInlineEditor(page: Page): Promise<void> {
+  const command = page.getByTestId("event-command-choices");
+  const editor = command.getByTestId("event-command-choices-inline-editor");
+  if (!(await editor.isVisible().catch(() => false))) {
+    await command.locator(".cmd-head").dblclick();
+  }
+  await expect(editor).toBeVisible();
+}
+
+async function fillChoiceInlineField(page: Page, testId: string, value: string): Promise<void> {
+  await openChoicesInlineEditor(page);
+  const input = page.getByTestId(testId);
+  await input.fill(value);
+  await input.blur();
+}
+
+async function addChoicesInline(page: Page): Promise<void> {
   await openRootCommandPicker(page);
   const picker = page.getByTestId("event-command-picker");
   await picker.getByTestId("command-picker-add-choices").click();
-  const dialog = page.getByTestId("event-command-choices-dialog");
-  await expect(dialog).toBeVisible();
-  await dialog.getByTestId("choices-prompt").fill(DISPLAY_OPTIONS_CHOICES_PROMPT);
-  await dialog.getByTestId("choices-option-1").fill("예");
-  await dialog.getByTestId("choices-option-2").fill("아니오");
-  await dialog.getByTestId("choices-cancel-choice-2").check();
-  await dialog.getByTestId("choices-ok").click();
-  await expect(dialog).toBeHidden();
   await expect(picker).toBeHidden();
+  await fillChoiceInlineField(page, "event-choice-prompt", DISPLAY_OPTIONS_CHOICES_PROMPT);
+  await fillChoiceInlineField(page, "event-choice-option-1", "예");
+  await fillChoiceInlineField(page, "event-choice-option-2", "아니오");
+  await openChoicesInlineEditor(page);
+  await page.getByTestId("event-choice-cancel-choice2").check();
   await expect(page.getByTestId("event-command-choices")).toContainText("예 / 아니오");
 }
 
@@ -368,7 +383,7 @@ async function expectFramedBottomDialogueWithFace(page: Page): Promise<void> {
   await expect(dialogue).not.toHaveClass(/transparent/);
   await expect(page.getByTestId("dialogue-face")).toBeVisible();
   await expectSpeakerInChatColumn(page);
-  await expectFaceCenteredAndTall(page);
+  await expectFaceVisibleAndContained(page);
   await expectBottomDialogueLayout(page);
 }
 
@@ -383,14 +398,16 @@ async function expectSpeakerInChatColumn(page: Page): Promise<void> {
   expect(speakerBox.y).toBeLessThanOrEqual(bodyBox.y);
 }
 
-async function expectFaceCenteredAndTall(page: Page): Promise<void> {
+async function expectFaceVisibleAndContained(page: Page): Promise<void> {
   const dialogueBox = await page.getByTestId("dialogue-box").boundingBox();
   const faceBox = await page.getByTestId("dialogue-face").boundingBox();
   if (!dialogueBox || !faceBox) throw new Error("missing dialogue face bounds");
-  const dialogueMiddleY = dialogueBox.y + dialogueBox.height / 2;
-  const faceMiddleY = faceBox.y + faceBox.height / 2;
-  expect(Math.abs(faceMiddleY - dialogueMiddleY)).toBeLessThanOrEqual(dialogueBox.height * 0.08);
-  expect(faceBox.height).toBeGreaterThan(dialogueBox.height * 0.72);
+  expect(faceBox.x).toBeGreaterThanOrEqual(dialogueBox.x);
+  expect(faceBox.y).toBeGreaterThanOrEqual(dialogueBox.y);
+  expect(faceBox.x + faceBox.width).toBeLessThanOrEqual(dialogueBox.x + dialogueBox.width);
+  expect(faceBox.y + faceBox.height).toBeLessThanOrEqual(dialogueBox.y + dialogueBox.height);
+  expect(faceBox.width).toBeGreaterThanOrEqual(dialogueBox.height * 0.45);
+  expect(faceBox.height).toBeGreaterThanOrEqual(dialogueBox.height * 0.45);
 }
 
 async function expectRuntimeChoices(page: Page): Promise<void> {
@@ -398,6 +415,23 @@ async function expectRuntimeChoices(page: Page): Promise<void> {
   await expect(page.getByTestId("runtime-choice-0")).toContainText("예");
   await expect(page.getByTestId("runtime-choice-1")).toContainText("아니오");
   await expect(page.getByTestId("dialogue-box")).toHaveAttribute("data-message-format", "normal");
+  const geometry = await page.evaluate(() => {
+    const rect = (selector: string): { readonly top: number; readonly bottom: number } => {
+      const node = document.querySelector(selector);
+      if (!(node instanceof HTMLElement)) return { top: 0, bottom: 0 };
+      const bounds = node.getBoundingClientRect();
+      return { top: bounds.top, bottom: bounds.bottom };
+    };
+    return {
+      choice1: rect('[data-testid="runtime-choice-1"]'),
+      choices: rect('[data-testid="runtime-choices"]'),
+      window: rect('[data-testid="dialogue-box"]'),
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(geometry.choices.top).toBeGreaterThanOrEqual(geometry.window.top);
+  expect(geometry.choices.bottom).toBeLessThanOrEqual(geometry.window.bottom);
+  expect(geometry.choice1.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
 }
 
 test("editor-authored face graphic and show text render together in actual play mode", async ({ page }) => {
@@ -462,7 +496,7 @@ test("display text options faceset and choices apply to real gameplay from the e
   await addDisplayOptionsViaDialog(page);
   await addFacesetViaDialog(page);
   await addTextCommand(page, DISPLAY_OPTIONS_FACESET_BODY);
-  await addChoicesViaDialog(page);
+  await addChoicesInline(page);
   await page.getByTestId("event-editor-apply").click();
 
   const eventId = await authoredDisplayOptionsFacesetChoicesEventId(page);

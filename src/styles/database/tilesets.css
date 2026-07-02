@@ -210,6 +210,50 @@
   padding: 7px;
 }
 
+.database-modal-body .rm2k3-tileset-main .tileset-selected-usage {
+  color: var(--text, #111111);
+  display: grid;
+  gap: 5px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-selected-label {
+  font: 700 12px/1.25 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  overflow-wrap: anywhere;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-selected-description,
+.database-modal-body .rm2k3-tileset-main .tileset-selected-rules,
+.database-modal-body .rm2k3-tileset-main .tileset-selected-group {
+  color: var(--text-dim, #3c3c3c);
+  font: 400 11px/1.35 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-selected-rules {
+  background: var(--bg-panel-2, #f0f0f0);
+  border: 1px solid var(--border-soft, #b8b4aa);
+  padding: 4px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-meaning-tag {
+  background: var(--accent-soft, rgba(10, 36, 106, 0.14));
+  border: 1px solid var(--border-soft, #b8b4aa);
+  color: var(--accent, #0a246a);
+  font: 700 10px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  padding: 0 3px;
+}
+
+.database-modal-body .rm2k3-tileset-main .tileset-meaning-tag.empty,
+.database-modal-body .rm2k3-tileset-main .tileset-selected-group.empty {
+  color: var(--text-muted, #666666);
+}
+
 .database-modal-body .rm2k3-tileset-main .tileset-db-preview-wrap {
   grid-template-rows: auto minmax(356px, 1fr);
 }
@@ -249,4 +293,196 @@
 
 .database-modal-body .rm2k3-tileset-main .tileset-db-cell.mark-star {
   background: rgba(24, 70, 160, 0.22);
+}
+
+@media (min-width: 901px) {
+  .database-modal-body .rm2k3-tileset-workspace {
+    background: transparent;
+    gap: 14px;
+    grid-template-columns: minmax(236px, 314px) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-tileset-list-pane {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 5px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    min-height: 0;
+    padding: 14px 16px;
+  }
+
+  .database-modal-body .rm2k3-tileset-list-pane .tileset-db-panel-title {
+    background: transparent;
+    color: #1f1e1b;
+    font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 12px;
+    text-align: left;
+  }
+
+  .database-modal-body .rm2k3-tileset-list-pane .tileset-db-listbox {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line-soft, #e8e7e2);
+    border-radius: 4px;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .rm2k3-tileset-list-pane .tileset-db-list-row {
+    align-items: center;
+    border-bottom: 1px solid var(--db-modern-line-soft, #e8e7e2);
+    color: #35332f;
+    display: block;
+    font: 500 13px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    height: auto;
+    min-height: 34px;
+    overflow: hidden;
+    padding: 8px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-tileset-list-pane .tileset-db-list-row.active {
+    background: linear-gradient(180deg, #0c75eb 0%, #075ed1 100%);
+    color: #ffffff;
+  }
+
+  .database-modal-body .rm2k3-maximum-button {
+    background: #f8f8f6;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    color: #8a847a;
+    font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin-top: 12px;
+    min-height: 36px;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-tileset-editor {
+    gap: 12px;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-tileset-properties {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 5px;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .database-modal-body .rm2k3-tileset-properties .rm2k3-db-fieldset {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+
+  .database-modal-body .rm2k3-tileset-name-field input,
+  .database-modal-body .rm2k3-tileset-graphic-value {
+    background: #fbfbfa;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #202020;
+    font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 30px;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-browse-button {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    min-height: 34px;
+    min-width: 34px;
+    padding: 0;
+    width: 34px;
+  }
+
+  .database-modal-body .rm2k3-global-terrain-button,
+  .database-modal-body .rm2k3-tileset-main .tileset-db-tools button,
+  .database-modal-body .rm2k3-tileset-terrain-pane .database-footer-button {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    color: #1f1d1a;
+    font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 32px;
+  }
+
+  .database-modal-body .rm2k3-global-terrain-button {
+    font-weight: 700;
+    min-height: 36px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main {
+    gap: 12px;
+    grid-template-columns: minmax(520px, 1fr) minmax(220px, 0.34fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-edit-area {
+    gap: 10px;
+    grid-template-columns: 150px minmax(320px, 1fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-tools,
+  .database-modal-body .rm2k3-tileset-main .tileset-db-selected-tile {
+    background: #ffffff;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    padding: 12px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-selected-description,
+  .database-modal-body .rm2k3-tileset-main .tileset-selected-rules,
+  .database-modal-body .rm2k3-tileset-main .tileset-selected-group {
+    font: 400 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-tools {
+    gap: 8px;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-tools::before {
+    color: #111111;
+    content: "편집 도구";
+    font: 700 14px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 2px;
+    padding: 0;
+    width: max-content;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-tools button.active,
+  .database-modal-body .rm2k3-tileset-edit-mode .database-footer-button.active {
+    background: #eef4ff;
+    border-color: #2f67c9;
+    color: #225bb5;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-preview-wrap {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-preview-title {
+    color: #111111;
+    font: 600 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-preview {
+    background: #f6f6f3;
+    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border-radius: 4px;
+    max-height: none;
+  }
 }

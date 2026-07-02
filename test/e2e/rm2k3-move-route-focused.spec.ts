@@ -49,7 +49,7 @@ test("custom page movement route dialog adds every Korean command button and per
   const dialog = page.getByTestId("event-page-move-route-dialog");
   await expect(dialog).toBeVisible();
   await page.getByTestId("event-page-move-route-switch-id").fill("sw_route_seen");
-  await page.getByTestId("event-page-move-route-graphic-id").fill("npc_villager");
+  await page.getByTestId("event-page-move-route-graphic-id").fill("tex_easyrpg_charset_people1");
   await page.getByTestId("event-page-move-route-sound-id").fill("se_route_chime");
 
   const buttons = dialog.locator(".event-page-move-route-command");
@@ -62,7 +62,7 @@ test("custom page movement route dialog adds every Korean command button and per
   const rows = dialog.locator(".event-page-move-route-list-row");
   await expect(rows).toHaveCount(43);
   await expect(dialog.getByTestId("event-page-move-route-command-list")).toContainText("sw_route_seen");
-  await expect(dialog.getByTestId("event-page-move-route-command-list")).toContainText("npc_villager");
+  await expect(dialog.getByTestId("event-page-move-route-command-list")).toContainText("tex_easyrpg_charset_people1");
   await expect(dialog.getByTestId("event-page-move-route-command-list")).toContainText("se_route_chime");
   await page.screenshot({ path: testInfo.outputPath("move-route-all-buttons.png"), fullPage: true });
 
@@ -98,6 +98,6 @@ test("custom page movement route dialog adds every Korean command button and per
     "playSe",
   ]));
   expect(moves.some((move) => move.kind === "setSwitch" && move.switchId === "sw_route_seen")).toBe(true);
-  expect(moves.some((move) => move.kind === "changeGraphic" && move.spriteId === "npc_villager")).toBe(true);
+  expect(moves.some((move) => move.kind === "changeGraphic" && move.spriteId === "tex_easyrpg_charset_people1")).toBe(true);
   expect(moves.some((move) => move.kind === "playSe" && move.resourceId === "se_route_chime")).toBe(true);
 });

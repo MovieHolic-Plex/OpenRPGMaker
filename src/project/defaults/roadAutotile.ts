@@ -53,6 +53,11 @@ export function isRoadTile(tile: number): boolean {
   return ROAD_SURFACE_TILE_SET.has(tile);
 }
 
+export function roadAutotileTileForCell(map: GameMap, point: Point): number | null {
+  if (lowerAt(map, point) !== DIRT_ROAD_TILE.BODY_ALT) return null;
+  return tileForRoadCell(roadNeighbors(map, point));
+}
+
 export function shapeRoadEdges(map: GameMap, rects: readonly RoadRect[]): void {
   for (const rect of rects) {
     forEachRoadPoint(rect, (point) => {

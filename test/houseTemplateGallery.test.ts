@@ -234,7 +234,7 @@ describe("house template gallery project", () => {
     expect(map.height).toBe(50);
     expect(map.upperTiles.every((tile) => !fenceTiles.has(tile))).toBe(true);
     expect(map.upperTiles.every((tile) => !propTiles.has(tile))).toBe(true);
-    expect(map.lowerTiles.every((tile) => !propTiles.has(tile))).toBe(true);
+    expect(Object.values(map.lowerTileStacks ?? {}).flat().length).toBe(0);
     expect(map.upperTiles).not.toContain(374);
     expect(map.upperTiles.filter((tile) => tile === 87)).toHaveLength(16);
     expect(map.lowerTiles.filter((tile) => tile === 116)).toHaveLength(8);
@@ -263,81 +263,23 @@ describe("house template gallery project", () => {
       if (map.upperTiles[index] !== 87) continue;
       expect(map.lowerTiles[index]).toBe(46);
     }
-    const expectedTreeOrigins = [
-      { x: 1, y: 1 },
-      { x: 2, y: 1 },
-      { x: 17, y: 1 },
-      { x: 18, y: 1 },
-      { x: 32, y: 1 },
-      { x: 33, y: 1 },
-      { x: 46, y: 1 },
-      { x: 47, y: 1 },
-      { x: 1, y: 2 },
-      { x: 17, y: 2 },
-      { x: 32, y: 2 },
-      { x: 46, y: 2 },
-      { x: 1, y: 3 },
-      { x: 17, y: 3 },
-      { x: 32, y: 3 },
-      { x: 46, y: 3 },
-      { x: 1, y: 5 },
-      { x: 17, y: 5 },
-      { x: 32, y: 5 },
-      { x: 46, y: 5 },
-      { x: 1, y: 7 },
-      { x: 17, y: 7 },
-      { x: 32, y: 7 },
-      { x: 46, y: 7 },
-      { x: 1, y: 18 },
-      { x: 2, y: 18 },
-      { x: 1, y: 19 },
-      { x: 1, y: 20 },
-      { x: 1, y: 22 },
-      { x: 1, y: 24 },
-      { x: 1, y: 26 },
-      { x: 1, y: 28 },
-      { x: 46, y: 32 },
-      { x: 1, y: 34 },
-      { x: 2, y: 34 },
-      { x: 24, y: 34 },
-      { x: 46, y: 34 },
-      { x: 1, y: 35 },
-      { x: 1, y: 36 },
-      { x: 24, y: 36 },
-      { x: 46, y: 36 },
-      { x: 1, y: 38 },
-      { x: 24, y: 38 },
-      { x: 46, y: 38 },
-      { x: 1, y: 40 },
-      { x: 24, y: 40 },
-      { x: 46, y: 40 },
-      { x: 1, y: 42 },
-      { x: 24, y: 42 },
-      { x: 46, y: 42 },
-      { x: 46, y: 45 },
-      { x: 1, y: 46 },
-      { x: 24, y: 46 },
-      { x: 46, y: 46 },
-      { x: 47, y: 46 },
-    ] as const;
-    const actualTreeOrigins = Object.entries(map.upperTileStacks ?? {})
-      .filter(([, stack]) => stack.includes(262))
-      .map(([index]) => ({ x: Number(index) % map.width, y: Math.floor(Number(index) / map.width) }));
-    expect(actualTreeOrigins).toEqual(expectedTreeOrigins);
-    expect(actualTreeOrigins.filter((point) => point.x <= 2 || point.x >= 46 || point.y <= 7 || point.y >= 34)).toHaveLength(expectedTreeOrigins.length);
-    expect(map.upperTileStacks?.[1 * map.width + 2]).toEqual([263, 262]);
-    expect(map.lowerTileStacks?.[2 * map.width + 2]).toEqual([293, 292]);
-    expect(map.upperTileStacks?.[2 * map.width + 2]).toEqual([263]);
-    for (const treeOrigin of expectedTreeOrigins) {
+    const actualTreeOrigins = map.upperTiles
+      .map((tile, index) => ({ index, tile }))
+      .filter((entry) => entry.tile === 262)
+      .map((entry) => ({ x: entry.index % map.width, y: Math.floor(entry.index / map.width) }));
+    expect(actualTreeOrigins.length).toBeGreaterThan(0);
+    expect(actualTreeOrigins.every((point) => point.x <= 2 || point.x >= 46 || point.y <= 7 || point.y >= 34)).toBe(true);
+    expect(map.lowerTileStacks).toBeUndefined();
+    expect(map.upperTileStacks).toBeUndefined();
+    for (const treeOrigin of actualTreeOrigins) {
       const upperLeftIndex = treeOrigin.y * map.width + treeOrigin.x;
       const upperRightIndex = treeOrigin.y * map.width + treeOrigin.x + 1;
       const lowerLeftIndex = (treeOrigin.y + 1) * map.width + treeOrigin.x;
       const lowerRightIndex = (treeOrigin.y + 1) * map.width + treeOrigin.x + 1;
-      expect(map.upperTileStacks?.[upperLeftIndex]).toContain(262);
-      expect(map.upperTileStacks?.[upperRightIndex]).toContain(263);
-      expect(map.lowerTileStacks?.[lowerLeftIndex]).toContain(292);
-      expect(map.lowerTileStacks?.[lowerRightIndex]).toContain(293);
-      expect([upperLeftIndex, upperRightIndex, lowerLeftIndex, lowerRightIndex].map((index) => map.lowerTiles[index])).toEqual([TILE.GRASS, TILE.GRASS, TILE.GRASS, TILE.GRASS]);
+      expect(map.upperTiles[upperLeftIndex]).toBe(262);
+      expect(map.upperTiles[upperRightIndex]).toBe(263);
+      expect(map.lowerTiles[lowerLeftIndex]).toBe(292);
+      expect(map.lowerTiles[lowerRightIndex]).toBe(293);
     }
     for (let index = 0; index < map.lowerTiles.length; index += 1) {
       if (!isRoadTile(map.lowerTiles[index] ?? TILE.EMPTY)) continue;

@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import {
   createBlankProject,
+  ensureSwitchVariableSlots,
   createBlankMap,
   createStarterMap,
   TILE,
@@ -11,7 +12,11 @@ import {
   DEFAULT_TILESET_NAME,
   DEFAULT_TILESET_TEXTURE_KEY,
   DEFAULT_TILE_SIZE,
+  DEFAULT_EASYRPG_CHARSET_ID,
   LEGACY_RM_TILESET_ID,
+  LEGACY_RM_TILESET_TEXTURE_KEY,
+  ensureBundledResourceProfiles,
+  removeLegacyRmTileset,
 } from "@/project/defaults";
 import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
@@ -121,6 +126,37 @@ describe("createBlankProject", () => {
     expect(p.tilesets[DEFAULT_TILESET_ID]).toBeDefined();
   });
 
+  it("ships stable numbered switch and variable slots alongside referenced game ids", () => {
+    const p = createBlankProject();
+
+    expect(p.switches.length).toBeGreaterThanOrEqual(1000);
+    expect(p.variables.length).toBeGreaterThanOrEqual(1000);
+    expect(p.switches[0]).toEqual({ id: "sw_0001", name: "" });
+    expect(p.variables[0]).toEqual({ id: "var_0001", name: "" });
+    expect(p.switches.some((entry) => entry.id === "sw_1000")).toBe(true);
+    expect(p.variables.some((entry) => entry.id === "var_1000")).toBe(true);
+    expect(p.session.switches.sw_0001).toBe(false);
+    expect(p.session.variables.var_0001).toBe(0);
+  });
+
+  it("keeps referenced switch and variable ids in the editable database before filling blank slots", () => {
+    const p = createBlankProject();
+    p.switches = [];
+    p.variables = [];
+    p.session.switches = { sw_legacy_gate: true };
+    p.session.variables = { var_legacy_score: 5 };
+
+    const changed = ensureSwitchVariableSlots(p);
+
+    expect(changed).toBe(true);
+    expect(p.switches).toHaveLength(1000);
+    expect(p.variables).toHaveLength(1000);
+    expect(p.switches[0]).toEqual({ id: "sw_legacy_gate", name: "" });
+    expect(p.variables[0]).toEqual({ id: "var_legacy_score", name: "" });
+    expect(p.session.switches.sw_0002).toBe(false);
+    expect(p.session.variables.var_0002).toBe(0);
+  });
+
   it("uses EasyRPG RTP Combined Town as the project-wide default chipset", () => {
     const p = createBlankProject();
     const defaultTileset = p.tilesets[DEFAULT_TILESET_ID];
@@ -132,7 +168,45 @@ describe("createBlankProject", () => {
     expect(p.maps[p.startMapId].tilesetId).toBe(DEFAULT_TILESET_ID);
     expect(chipsetProfiles[0]?.assetId).toBe(DEFAULT_TILESET_TEXTURE_KEY);
     expect(chipsetProfiles.filter((profile) => profile.assetId === DEFAULT_TILESET_TEXTURE_KEY)).toHaveLength(1);
-    expect(p.tilesets[LEGACY_RM_TILESET_ID]).toBeDefined();
+    expect(chipsetProfiles.some((profile) => profile.assetId === LEGACY_RM_TILESET_TEXTURE_KEY)).toBe(false);
+    expect(p.tilesets[LEGACY_RM_TILESET_ID]).toBeUndefined();
+  });
+
+  it("removes legacy RM sample tilesets and rewires old maps to bundled EasyRPG chipsets", () => {
+    const p = createBlankProject();
+    p.tilesets[LEGACY_RM_TILESET_ID] = {
+      ...p.tilesets[DEFAULT_TILESET_ID],
+      id: LEGACY_RM_TILESET_ID,
+      name: "기본 타일셋",
+      image: { type: "bundled", id: LEGACY_RM_TILESET_TEXTURE_KEY },
+    };
+    p.maps.map_town = { ...p.maps[p.startMapId], id: "map_town", name: "샘플 마을", tilesetId: LEGACY_RM_TILESET_ID };
+    p.maps.map_dungeon = { ...p.maps[p.startMapId], id: "map_dungeon", name: "샘플 던전", tilesetId: LEGACY_RM_TILESET_ID };
+    p.maps.map_interior = { ...p.maps[p.startMapId], id: "map_interior", name: "샘플 실내", tilesetId: LEGACY_RM_TILESET_ID };
+
+    expect(removeLegacyRmTileset(p)).toBe(true);
+
+    expect(p.tilesets[LEGACY_RM_TILESET_ID]).toBeUndefined();
+    expect(p.maps.map_town.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(p.maps.map_dungeon.tilesetId).toBe("easyrpg_chipset_dungeon");
+    expect(p.maps.map_interior.tilesetId).toBe("easyrpg_chipset_interior");
+  });
+
+  it("removes the legacy RM sample chipset resource profile", () => {
+    const p = createBlankProject();
+    p.resourceProfiles.push({
+      kind: "chipset",
+      name: "기본 타일셋",
+      tileWidth: 16,
+      tileHeight: 16,
+      imageWidth: 480,
+      imageHeight: 256,
+      assetId: LEGACY_RM_TILESET_TEXTURE_KEY,
+    });
+
+    expect(ensureBundledResourceProfiles(p)).toBe(true);
+
+    expect(p.resourceProfiles.some((profile) => profile.assetId === LEGACY_RM_TILESET_TEXTURE_KEY)).toBe(false);
   });
 
   it("Map Tree가 있고 루트가 startMapId", () => {
@@ -141,11 +215,29 @@ describe("createBlankProject", () => {
     expect(Array.isArray(p.mapTree.children)).toBe(true);
   });
 
-  it("assets.sprites에 npc만 기본 스프라이트로 있다", () => {
+  it("does not ship a legacy default NPC sprite in assets.sprites", () => {
     const p = createBlankProject();
     expect(p.assets.sprites.hero).toBeUndefined();
-    expect(p.assets.sprites.npc_villager).toBeDefined();
+    expect(p.assets.sprites).toEqual({});
     expect(p.assets.uploaded).toBeDefined();
+  });
+
+  it("keeps removed legacy character tokens out of the default project export", () => {
+    const p = createBlankProject();
+    const exported = serialize(p);
+    const forbiddenTokens = [
+      ["npc", "villager"].join("_"),
+      ["tex", "npc", "villager"].join("_"),
+      ["DEFAULT", "SPRITE", "NPC"].join("_"),
+      ["TEX", "NPC"].join("_"),
+    ];
+    const charsetProfiles = p.resourceProfiles.filter((profile) => profile.kind === "charset");
+
+    for (const token of forbiddenTokens) {
+      expect(exported.includes(token)).toBe(false);
+    }
+    expect(DEFAULT_EASYRPG_CHARSET_ID).toBe("tex_easyrpg_charset_people1");
+    expect(charsetProfiles.some((profile) => profile.assetId === DEFAULT_EASYRPG_CHARSET_ID)).toBe(true);
   });
 
   it("meta.terms가 있다", () => {
@@ -183,6 +275,13 @@ describe("createBlankProject", () => {
     expect(tileset.priority[85]).toBe("lower");
     expect(tileset.priority[378]).toBe("lower");
     expect(tileset.priority[374]).toBe("upper");
+    const passableRoofTiles = [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437].filter((tile) => !(
+      tileset.passability[tile]?.up === false &&
+      tileset.passability[tile]?.down === false &&
+      tileset.passability[tile]?.left === false &&
+      tileset.passability[tile]?.right === false
+    ));
+    expect(passableRoofTiles).toEqual([]);
     expect(tileLabelForIndex(TILE.PATH)).toBe("Dirt road");
   });
 

@@ -39,6 +39,13 @@ export function advanceResume(
       state.session.variables[command.variableId] = typeof value === "number" ? value : 0;
     }
     frame.pc += 1;
+  } else if (pending === "inputWait") {
+    // Key Input Processing: variableId 가 있으면 눌린 키 코드를 변수에 저장.
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "inputWait" && command.variableId) {
+      state.session.variables[command.variableId] = typeof value === "number" ? value : 0;
+    }
+    frame.pc += 1;
   } else {
     frame.pc += 1;
     if (pending === "transfer") return "done";

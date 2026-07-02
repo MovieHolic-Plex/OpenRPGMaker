@@ -20,6 +20,7 @@ export {
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
 } from "./townShowcaseMaps";
+export { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
 
 const STARTER_MAP_SIZE = 30;
 const LOG_CABIN_SHOWCASE_SIZE = 32;

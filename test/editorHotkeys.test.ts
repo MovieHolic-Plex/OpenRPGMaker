@@ -3,6 +3,7 @@ import { applyLayer, handleEditorKey } from "@/editor/hotkeys";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import type { GameEvent } from "@/project/types";
 
 // RM2K3 스타일 단축키 매핑 검증. 순수 editorState 변경 로직만 검증한다.
 // (shouldIgnoreEditorShortcut 의 DOM 가드는 jsdom 환경이 필요해 여기서는 제외.)
@@ -66,5 +67,32 @@ describe("editor keyboard shortcuts", () => {
   it("returns false for modifier-only and unmapped keys", () => {
     expect(handleEditorKey(keyEvent("z", { ctrl: true }))).toBe(false);
     expect(handleEditorKey(keyEvent("q"))).toBe(false);
+  });
+
+  it("deletes the selected event on the event layer", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const event: GameEvent = {
+      id: "event-delete-target",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+    };
+    map.events = [event];
+    store.replace(project);
+    editorState.set({
+      currentMapId: project.startMapId,
+      layer: "event",
+      selectedEventId: event.id,
+      selectedEventPageId: null,
+      tool: "event",
+    });
+
+    expect(handleEditorKey(keyEvent("Delete"))).toBe(true);
+
+    expect(store.getCurrent().maps[project.startMapId]?.events).toEqual([]);
+    expect(editorState.get().selectedEventId).toBeNull();
+    expect(editorState.get().selectedEventPageId).toBeNull();
   });
 });

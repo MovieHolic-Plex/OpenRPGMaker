@@ -13,15 +13,15 @@ type ShopTypeOption = { readonly value: ShopType; readonly label: string };
 type ShopMessageOption = { readonly value: ShopMessageType; readonly label: string };
 
 const SHOP_TYPE_OPTIONS: readonly ShopTypeOption[] = [
-  { value: "normal", label: "Normal" },
-  { value: "buyOnly", label: "Buy Only" },
-  { value: "sellOnly", label: "Sell Only" },
+  { value: "normal", label: "구매/판매" },
+  { value: "buyOnly", label: "구매 전용" },
+  { value: "sellOnly", label: "판매 전용" },
 ];
 
 const SHOP_MESSAGE_OPTIONS: readonly ShopMessageOption[] = [
-  { value: "welcome", label: "A:Welcome..." },
-  { value: "business", label: "B:What do you need?" },
-  { value: "direct", label: "C:Choose an item." },
+  { value: "welcome", label: "A: 어서 오세요" },
+  { value: "business", label: "B: 무엇이 필요하신가요?" },
+  { value: "direct", label: "C: 아이템을 선택하세요" },
 ];
 const SHOP_TRANSACTION_BRANCH_INDEX = -1;
 
@@ -76,7 +76,7 @@ function shopTopOptions(context: CommandEditContext, command: ShopCommand): HTML
 function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const groupName = `shop-type-${context.path.join("-") || "root"}`;
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-type" });
-  fieldset.append(el("legend", { text: "Type" }));
+  fieldset.append(el("legend", { text: "상점 종류" }));
   const current = shopTypeValue(command);
   for (const option of SHOP_TYPE_OPTIONS) {
     const radio = document.createElement("input");
@@ -107,7 +107,7 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option" });
-  fieldset.append(el("legend", { text: "Option" }), optionLabel(checkbox, "If Player bought or sold ..."));
+  fieldset.append(el("legend", { text: "분기" }), optionLabel(checkbox, "구매/판매했을 때 분기"));
   return fieldset;
 }
 
@@ -133,7 +133,7 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
   return el("div", {
     class: `shop-processing-branch-controls${hiddenClass}`,
     dataset: { testid: "shop-transaction-branch-controls" },
-    children: [el("span", { text: "If bought/sold branch" }), branchSel, add],
+    children: [el("span", { text: "구매/판매 분기" }), branchSel, add],
   });
 }
 
@@ -151,7 +151,7 @@ function shopMessageSelect(context: CommandEditContext, command: ShopCommand): H
     context.actions.replaceCommand(context.path, { ...command, messageType: selectedMessageType(select.value) });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-message" });
-  fieldset.append(el("legend", { text: "Message Type" }), select);
+  fieldset.append(el("legend", { text: "메시지 유형" }), select);
   return fieldset;
 }
 
@@ -162,14 +162,14 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   const availableItems = items.filter((item) => !command.itemIds.includes(item.id));
   const selectedList = itemSelect("shop-selected-items", selectedItems);
   const availableList = itemSelect("shop-available-items", availableItems);
-  const add = itemMoveButton("Add", "shop-add-item", () => {
+  const add = itemMoveButton("추가", "shop-add-item", () => {
     if (!availableList.value) return;
     context.actions.replaceCommand(context.path, {
       ...command,
       itemIds: addItemId(command.itemIds, availableList.value),
     });
   });
-  const remove = itemMoveButton("Remove", "shop-remove-item", () => {
+  const remove = itemMoveButton("제거", "shop-remove-item", () => {
     if (!selectedList.value) return;
     context.actions.replaceCommand(context.path, {
       ...command,
@@ -180,7 +180,7 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   remove.disabled = selectedItems.length === 0;
   const controls = el("div", { class: "shop-processing-item-controls", children: [add, remove] });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-items" });
-  fieldset.append(el("legend", { text: "Available Items" }));
+  fieldset.append(el("legend", { text: "판매 아이템" }));
   if (items.length === 0) {
     fieldset.append(el("div", { class: "commerce-command-empty", text: "등록된 아이템이 없습니다." }));
     return fieldset;
@@ -260,7 +260,7 @@ function selectedSummary(items: readonly ItemRecord[], itemIds: readonly string[
     .filter((name): name is string => Boolean(name));
   return el("div", {
     class: "commerce-command-summary",
-    text: selectedItems.length ? `Items: ${selectedItems.join(", ")}` : "Items: none",
+    text: selectedItems.length ? `선택한 아이템: ${selectedItems.join(", ")}` : "선택한 아이템: 없음",
     dataset: { testid: "shop-selection-summary" },
   });
 }

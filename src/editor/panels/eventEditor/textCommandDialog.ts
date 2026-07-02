@@ -64,22 +64,22 @@ export function openTextCommandDialog(initial: TextCommand, onApply: (command: T
       const helpPanel = controlCharacterHelp();
 
       const ok = document.createElement("button");
-      ok.type = "submit";
+      ok.type = "button";
       ok.className = "event-command-text-action primary";
-      ok.textContent = "OK";
+      ok.textContent = "확인";
       ok.dataset.testid = "event-command-text-ok";
 
       const cancel = document.createElement("button");
       cancel.type = "button";
       cancel.className = "event-command-text-action";
-      cancel.textContent = "Cancel";
+      cancel.textContent = "취소";
       cancel.dataset.testid = "event-command-text-cancel";
       cancel.addEventListener("click", close);
 
       const help = document.createElement("button");
       help.type = "button";
       help.className = "event-command-text-action";
-      help.textContent = "Help";
+      help.textContent = "도움말";
       help.dataset.testid = "event-command-text-help";
       help.addEventListener("click", () => {
         helpPanel.toggleAttribute("hidden");
@@ -95,8 +95,7 @@ export function openTextCommandDialog(initial: TextCommand, onApply: (command: T
       };
 
       text.addEventListener("input", updateValidation);
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
+      const applyText = () => {
         const validation = validateText(text.value);
         if (!validation.isValid) {
           updateValidation();
@@ -108,6 +107,12 @@ export function openTextCommandDialog(initial: TextCommand, onApply: (command: T
           body: text.value,
         });
         close();
+      };
+
+      ok.addEventListener("click", applyText);
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        applyText();
       });
 
       form.append(

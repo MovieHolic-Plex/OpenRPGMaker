@@ -8,21 +8,11 @@ import type {
   Project,
   SystemRecords,
 } from "../types";
+import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { assert } from "./guards";
-
-const BUILTIN_GENERATED_RESOURCE_IDS = [
-  "hero",
-  "rpg-zzu-title-blue",
-  "generated-actor-hero-01-battle",
-  "generated-actor-hero-02-battle",
-  "generated-actor-hero-03-battle",
-  "generated-actor-hero-04-battle",
-  "generated-enemy-ontology-8da61312",
-  "generated-enemy-sylph-hornet",
-] as const;
 
 export function collectResourceIds(project: Project): Set<string> {
   const ids = new Set<string>();
@@ -33,7 +23,7 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const asset of RM2K3_GENERATED_ASSET_PLAN.assets) {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
-  for (const id of BUILTIN_GENERATED_RESOURCE_IDS) ids.add(id);
+  for (const id of builtinGeneratedResourceIds()) ids.add(id);
   for (const asset of EASYRPG_RTP_ASSETS) {
     ids.add(asset.id);
     if ("textureKey" in asset) ids.add(asset.textureKey);

@@ -51,7 +51,7 @@ export function defaultDatabase(): ProjectDatabaseRecords {
 export function defaultSystem(): SystemRecords {
   return {
     startActorIds: defaultStarterActorIds(),
-    titleResourceId: "rpg-zzu-title-blue",
+    titleResourceId: "easyrpg-title-title1",
     systemResourceId: "easyrpg-system-system",
     battleSystemResourceId: "easyrpg-system2-system2-c",
     initialTroopId: DEFAULT_TROOP_ID,
@@ -62,17 +62,17 @@ export function defaultSystem(): SystemRecords {
 export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
-    backgroundResourceId: "rpg-zzu-title-blue",
+    backgroundResourceId: "easyrpg-title-title1",
     layout: {
       titleX: 160,
       titleY: 70,
-      menuX: 122,
+      menuX: 160,
       menuY: 118,
     },
     menuLabels: {
       newGame: "새 게임",
       continueGame: "계속",
-      quit: "게임 중지",
+      quit: "게임 종료",
     },
   };
 }
