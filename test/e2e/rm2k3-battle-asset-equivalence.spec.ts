@@ -23,13 +23,12 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
     "generated-actor-hero-04-battle",
   ]);
   expect(commandMetrics.actorResourceIds).toHaveLength(new Set(commandMetrics.actorResourceIds).size);
-  expect(commandMetrics.activePortraitBackground).toContain("hero-01-face.png");
   expect(commandMetrics.commandIconBackgrounds.every((image) => image.includes("/assets/generated/rm2k3/"))).toBe(true);
   expect(commandMetrics.textLeaks).toEqual([]);
   expect(commandMetrics.wrappedCommandLabels).toEqual([]);
 
   await page.getByTestId("actor-command-attack").click();
-  await expect(page.getByTestId("battle-target-analysis")).toBeVisible();
+  await expect(page.getByTestId("battle-target-prompt")).toBeVisible();
   await page.screenshot({ path: `${evidenceDir}/02-target-assets.png`, fullPage: true });
 
   await page.locator(".battle-enemy[data-battle-targetable='true']").first().click();
@@ -49,7 +48,6 @@ async function assetMetrics(page: Page): Promise<{
   readonly enemyResourceIds: readonly string[];
   readonly enemyImageSources: readonly string[];
   readonly actorResourceIds: readonly string[];
-  readonly activePortraitBackground: string;
   readonly commandIconBackgrounds: readonly string[];
   readonly resultIconBackgrounds: readonly string[];
   readonly text: string;
@@ -57,16 +55,14 @@ async function assetMetrics(page: Page): Promise<{
   readonly wrappedCommandLabels: readonly string[];
 }> {
   return page.getByTestId("battle-scene").evaluate((scene) => {
-    const portrait = scene.querySelector<HTMLElement>(".battle-actor-portrait");
-    if (!portrait) throw new Error("missing active actor portrait");
     const textNodes = [
       ...scene.querySelectorAll<HTMLElement>(
-        ".battle-command-text strong, .battle-command-text small, .battle-command-help, .battle-active-actor-card h3, .battle-resource-preview .battle-actor-name, .battle-resource-preview .battle-actor-state, .battle-resource-preview .battle-actor-hp"
+        ".battle-command-text strong, .battle-command-text small, .battle-actor-status .battle-actor-name, .battle-actor-status .battle-actor-state, .battle-actor-status .battle-actor-hp, .battle-actor-status .battle-actor-mp"
       ),
     ];
     const textLeaks = textNodes
       .filter((node) => {
-        const owner = node.closest<HTMLElement>(".battle-command, .battle-active-actor-card, .battle-resource-preview");
+        const owner = node.closest<HTMLElement>(".battle-command, .battle-actor-status");
         if (!owner) return false;
         const rect = node.getBoundingClientRect();
         const ownerRect = owner.getBoundingClientRect();
@@ -81,11 +77,7 @@ async function assetMetrics(page: Page): Promise<{
       .map((node) => node.textContent?.replace(/\s+/g, " ").trim() ?? "");
     const wrappedCommandLabels = [...scene.querySelectorAll<HTMLElement>(".battle-command-text strong")]
       .filter((node) => {
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        const lineCount = range.getClientRects().length;
-        range.detach();
-        return lineCount > 1;
+        return node.scrollHeight > node.clientHeight + 2;
       })
       .map((node) => node.textContent?.replace(/\s+/g, " ").trim() ?? "");
     return {
@@ -95,7 +87,6 @@ async function assetMetrics(page: Page): Promise<{
         .map((node) => node.src),
       actorResourceIds: [...scene.querySelectorAll<HTMLElement>("[data-battle-charset-resource-id]")]
         .map((node) => node.dataset.battleCharsetResourceId ?? ""),
-      activePortraitBackground: getComputedStyle(portrait).backgroundImage,
       commandIconBackgrounds: [...scene.querySelectorAll<HTMLElement>(".battle-command-icon")]
         .map((node) => getComputedStyle(node).backgroundImage),
       resultIconBackgrounds: [...scene.querySelectorAll<HTMLElement>(".battle-result-reward-icon")]

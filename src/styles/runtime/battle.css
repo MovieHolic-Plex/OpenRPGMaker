@@ -2497,3 +2497,271 @@
 .battle-result-progress {
   bottom: -34px !important;
 }
+
+.battle-scene {
+  --battle-hud-height: 72px;
+  gap: 2px !important;
+  grid-template-columns: minmax(0, 1fr) 92px 164px !important;
+  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
+}
+
+.battle-field {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  z-index: 1 !important;
+}
+
+.battle-enemy-list-panel {
+  display: none !important;
+}
+
+.battle-message-window {
+  bottom: auto !important;
+  display: grid !important;
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  left: auto !important;
+  min-height: 0 !important;
+  position: relative !important;
+  right: auto !important;
+  z-index: 8 !important;
+}
+
+.battle-command-panel {
+  align-content: stretch !important;
+  display: grid !important;
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  min-height: 0 !important;
+  padding: 3px !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 9 !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-command-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-prompt,
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu,
+.battle-scene[data-battle-phase="targetSelect"] .battle-key-prompts {
+  grid-row: auto !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu {
+  bottom: auto !important;
+  left: auto !important;
+  overflow: hidden !important;
+  position: relative !important;
+  right: auto !important;
+  width: 100% !important;
+}
+
+.battle-active-actor-card {
+  display: grid !important;
+  gap: 2px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  min-height: 0 !important;
+  padding: 1px 2px 2px !important;
+}
+
+.battle-active-actor-card h3 {
+  font-size: 6px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-actor-card-stats {
+  display: grid !important;
+  gap: 1px !important;
+}
+
+.battle-actor-card-stat {
+  display: grid !important;
+  gap: 2px !important;
+  grid-template-columns: 16px 28px minmax(0, 1fr) !important;
+  min-height: 0 !important;
+}
+
+.battle-command-menu {
+  align-self: stretch !important;
+  display: grid !important;
+  gap: 1px !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: repeat(5, minmax(0, 1fr)) !important;
+  min-height: 0 !important;
+}
+
+.battle-command {
+  gap: 0 !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  min-height: 10px !important;
+  padding: 1px 3px !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.battle-command-icon {
+  display: none !important;
+}
+
+.battle-command-text {
+  display: block !important;
+}
+
+.battle-command-text strong {
+  display: block;
+  font-size: 5.5px !important;
+  line-height: 1.05 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-command-text small {
+  display: block !important;
+  font-size: 3.2px !important;
+  line-height: 1 !important;
+  opacity: 0.8;
+}
+
+.battle-party {
+  display: grid !important;
+  gap: 1px !important;
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+  grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+  min-height: 0 !important;
+  padding: 3px !important;
+  position: relative !important;
+  z-index: 8 !important;
+}
+
+.battle-actor-status {
+  align-items: center;
+  display: grid !important;
+  gap: 1px 4px !important;
+  grid-template-columns: minmax(34px, 1fr) 38px 38px minmax(18px, 1fr) minmax(28px, 1fr) !important;
+  min-height: 0 !important;
+}
+
+.battle-actor-name,
+.battle-actor-state,
+.battle-actor-hp,
+.battle-actor-mp,
+.battle-atb-label {
+  font-size: 5px !important;
+  line-height: 1 !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu {
+  display: grid !important;
+  gap: 1px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu .battle-submenu-header {
+  display: none !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-command {
+  min-height: 16px !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-prompt {
+  font-size: 5px !important;
+  line-height: 1 !important;
+  min-height: 8px !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-key-prompts {
+  font-size: 4px !important;
+  gap: 4px !important;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-message-window,
+.battle-scene[data-battle-director-step="result"] .battle-command-panel,
+.battle-scene[data-battle-director-step="result"] .battle-party {
+  display: none !important;
+}
+
+.battle-result-panel {
+  box-sizing: border-box !important;
+  display: grid !important;
+  gap: 2px !important;
+  grid-template-rows: auto auto auto auto !important;
+  max-height: 86px !important;
+  overflow: hidden !important;
+  padding: 4px 6px !important;
+  width: 150px !important;
+}
+
+.battle-result-crest {
+  display: none !important;
+}
+
+.battle-result-title {
+  font-size: 10px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+.battle-result-cards {
+  display: grid !important;
+  gap: 2px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-rows: minmax(10px, auto) !important;
+}
+
+.battle-result-reward-card {
+  align-items: center !important;
+  align-content: center !important;
+  display: grid !important;
+  gap: 3px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: none !important;
+  justify-items: stretch !important;
+  min-height: 10px !important;
+  padding: 1px 4px !important;
+  text-align: left !important;
+}
+
+.battle-result-reward-icon {
+  display: none !important;
+}
+
+.battle-result-reward-label {
+  font-size: 5px !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.battle-result-reward-value {
+  font-size: 7px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.battle-result-confirm {
+  font-size: 5px !important;
+  line-height: 1 !important;
+  min-width: 0 !important;
+  padding: 2px 8px !important;
+}
+
+.battle-result-next-prompt {
+  font-size: 4px !important;
+  line-height: 1 !important;
+}

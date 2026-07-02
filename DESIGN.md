@@ -310,8 +310,9 @@ All spacing derives from 4px.
 
 ### Side-view battle (built)
 
-- `battle-scene` testid; enemy group (upper) + party (lower) + command panel.
-- **Commands**: 공격 / 스킬 / 아이템 / 방어 / 도주, with skill and item submenus. Actor battle sprites render from the actor's `battleCharacterResourceId`; enemy sprites from `monsterResourceId`.
+- `battle-scene` testid; battle field on top, then a compact bottom HUD with message window, command panel, and party status. Avoid extra analysis panels in the shipped play UI.
+- **Commands**: 공격 / 스킬 / 아이템 / 방어 / 도주, with skill and item submenus. The command panel should contain commands only; active actor stats live in party status. Actor battle sprites render from the actor's `battleCharacterResourceId`; enemy sprites from `monsterResourceId`.
+- Target selection keeps field brackets, a short target prompt, key hints, and clickable target rows. Victory/result uses a compact reward summary only.
 - Battle is database-driven: actor stats from parameter curves, enemy stats/rewards from records, skill effects (damage/healing/support/switch), agility-derived ATB charge, defense + defend halving.
 - Battle sprites must be original or permissively licensed. Do not reproduce RM2K3 battlers, animations, icons, or window graphics.
 

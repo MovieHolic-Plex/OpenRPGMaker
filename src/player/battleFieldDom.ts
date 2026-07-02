@@ -1,24 +1,13 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { store } from "@/project/store";
-import {
-  enemyWeaknesses,
-  predictAttackDamage,
-  predictEnemyDamageToParty,
-  predictEnemyIntent,
-} from "@/battle/battlePredict";
 
 export function battleField(snapshot: BattleSnapshot): HTMLElement {
   const field = document.createElement("div");
   field.className = "battle-field";
   field.append(
-    turnOrderRibbon(snapshot),
     battleBackdrop(snapshot.backdropResourceId),
     battleTitle(snapshot.troopId),
-    enemyIntentCard(snapshot),
-    weaknessChips(snapshot),
-    targetAnalysisPanel(snapshot),
-    expectedResultBanner(snapshot),
     enemyGroup(snapshot.enemies, snapshot),
     actorSpriteGroup(snapshot.actors)
   );
@@ -42,46 +31,6 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
     }
   }
   return backdrop;
-}
-
-function turnOrderRibbon(snapshot: BattleSnapshot): HTMLElement {
-  const ribbon = document.createElement("div");
-  ribbon.className = "battle-turn-ribbon";
-  ribbon.dataset.testid = "battle-turn-ribbon";
-
-  const label = document.createElement("div");
-  label.className = "battle-turn-label";
-  const title = document.createElement("strong");
-  title.textContent = "턴 순서";
-  const turn = document.createElement("span");
-  turn.textContent = `TURN ${String(Math.max(1, snapshot.turn + 1)).padStart(2, "0")}`;
-  label.append(title, turn);
-  ribbon.append(label);
-
-  const battlers = [...snapshot.enemies.filter((enemy) => !enemy.defeated), ...snapshot.actors.filter((actor) => !actor.defeated)]
-    .sort((a, b) => b.gauge - a.gauge || a.name.localeCompare(b.name))
-    .slice(0, 6);
-  const track = document.createElement("div");
-  track.className = "battle-turn-track";
-  battlers.forEach((battler, index) => {
-    const token = document.createElement("span");
-    token.className = "battle-turn-token";
-    token.dataset.recordId = battler.recordId;
-    token.dataset.kind = snapshot.enemies.some((enemy) => enemy.id === battler.id) ? "enemy" : "actor";
-    if (battler.recordId === snapshot.activeActorId) token.classList.add("active");
-    const image = battlerThumb(battler, token.dataset.kind);
-    if (image) token.append(image);
-    const order = document.createElement("span");
-    order.className = "battle-turn-order";
-    order.textContent = String(index + 1).padStart(2, "0");
-    token.append(order);
-    track.append(token);
-  });
-  const future = document.createElement("span");
-  future.className = "battle-turn-future";
-  track.append(future);
-  ribbon.append(track);
-  return ribbon;
 }
 
 function battleTitle(troopId: string): HTMLElement {
@@ -154,45 +103,10 @@ function partyStatusGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement
   const group = document.createElement("div");
   group.className = "battle-party";
   group.dataset.testid = "battle-party";
-  const preview = document.createElement("div");
-  preview.className = "battle-resource-preview";
-  preview.dataset.testid = "battle-resource-preview";
-  const heading = document.createElement("div");
-  heading.className = "battle-resource-heading";
-  heading.textContent = "자원 미리보기";
-  preview.append(heading);
   for (const actor of actors) {
-    preview.append(actorStatusRow(actor));
+    group.append(actorStatusRow(actor));
   }
-  const risk = document.createElement("div");
-  risk.className = `battle-risk-label battle-risk-${riskLevel(actors)}`;
-  risk.textContent = riskLabel(actors);
-  preview.append(risk);
-  group.append(preview);
   return group;
-}
-
-// 파티 전멸 위험도. 전투불능 비율과 남은 HP 비율로 판정한다.
-type RiskLevel = "low" | "moderate" | "high" | "critical";
-
-function riskLevel(actors: readonly BattleBattlerSnapshot[]): RiskLevel {
-  if (actors.length === 0) return "high";
-  const downed = actors.filter((actor) => actor.defeated).length;
-  const remaining = actors.filter((actor) => !actor.defeated);
-  if (remaining.length === 0) return "critical";
-  const avgHpRatio = remaining.reduce((sum, actor) => sum + actor.hp / Math.max(1, actor.maxHp), 0) / remaining.length;
-  if (downed >= Math.ceil(actors.length / 2)) return "high";
-  if (avgHpRatio < 0.34 || downed > 0) return "moderate";
-  return "low";
-}
-
-function riskLabel(actors: readonly BattleBattlerSnapshot[]): string {
-  switch (riskLevel(actors)) {
-    case "low": return "위험 낮음";
-    case "moderate": return "위험 보통";
-    case "high": return "위험 높음";
-    case "critical": return "전멸 위기";
-  }
 }
 
 function actorNode(actor: BattleBattlerSnapshot): HTMLElement {
@@ -235,155 +149,18 @@ function actorStatusRow(actor: BattleBattlerSnapshot): HTMLElement {
   const name = document.createElement("span");
   name.className = "battle-actor-name";
   name.textContent = actor.name;
-  const state = document.createElement("span");
-  state.className = "battle-actor-state";
-  state.textContent = actor.defeated ? "전투불능" : "정상";
   const hp = document.createElement("span");
   hp.className = "battle-actor-hp";
-  hp.textContent = String(actor.hp);
+  hp.textContent = `HP ${actor.hp}/${actor.maxHp}`;
+  const mp = document.createElement("span");
+  mp.className = "battle-actor-mp";
+  mp.textContent = `MP ${actor.mp}/${actor.maxMp}`;
   const gauge = document.createElement("span");
   gauge.className = "battle-actor-gauge";
   gauge.append(atbLabel(), atbBar(actor.gauge));
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
-  row.append(name, state, hp, hpGauge, gauge);
+  row.append(name, hp, mp, hpGauge, gauge);
   return row;
-}
-
-function enemyIntentCard(snapshot: BattleSnapshot): HTMLElement {
-  const enemy = focusEnemy(snapshot);
-  const card = document.createElement("div");
-  card.className = "battle-enemy-intent";
-  card.dataset.testid = "battle-enemy-intent";
-  const project = store.getCurrent();
-  const intent = enemy ? predictEnemyIntent(project, enemy) : undefined;
-  const next = document.createElement("div");
-  next.className = "battle-enemy-intent-line";
-  if (intent) {
-    next.append(labelText("다음 행동: "), emphasisText(intent.skillName, "green"));
-  } else {
-    next.append(labelText("다음 행동: "), emphasisText("통상 공격", "green"));
-  }
-  const damage = document.createElement("div");
-  damage.className = "battle-enemy-intent-line";
-  const firstActor = snapshot.actors.find((actor) => !actor.defeated) ?? snapshot.actors[0];
-  const predicted = enemy && firstActor ? predictEnemyDamageToParty(project, enemy, firstActor) : 0;
-  damage.append(labelText("예상 "), emphasisText(String(Math.max(0, predicted)), "orange"), labelText(" 피해"));
-  card.append(next, damage);
-  return card;
-}
-
-function weaknessChips(snapshot: BattleSnapshot): HTMLElement {
-  const chips = document.createElement("div");
-  chips.className = "battle-weakness-chips";
-  chips.dataset.testid = "battle-weakness-chips";
-  const enemy = focusEnemy(snapshot);
-  const project = store.getCurrent();
-  const weaknesses = enemy ? enemyWeaknesses(project, enemy.recordId) : [];
-  if (weaknesses.length === 0) {
-    const label = document.createElement("span");
-    label.className = "battle-weakness-label battle-weakness-label-none";
-    label.textContent = "알려진 약점 없음";
-    chips.append(label);
-    return chips;
-  }
-  for (const weakness of weaknesses) {
-    const label = document.createElement("span");
-    label.className = "battle-weakness-label";
-    label.textContent = `${weakness.name} 약점`;
-    const node = document.createElement("span");
-    node.className = `battle-weakness-chip battle-weakness-chip-weak battle-weakness-chip-grade-${weakness.grade.toLowerCase()}`;
-    node.textContent = weakness.name;
-    chips.append(label, node);
-  }
-  return chips;
-}
-
-function targetAnalysisPanel(snapshot: BattleSnapshot): HTMLElement {
-  const panel = document.createElement("div");
-  panel.className = "battle-target-analysis";
-  panel.dataset.testid = "battle-target-analysis";
-  const enemy = focusEnemy(snapshot);
-  const project = store.getCurrent();
-  const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId) ?? snapshot.actors[0];
-  const damage = enemy && actor ? predictAttackDamage(project, actor, enemy) : 0;
-  panel.append(
-    analysisLine("대상:", enemy?.name ?? "선택된 적 없음"),
-    analysisLine("예상 피해", String(Math.max(0, damage))),
-    analysisLine("현재 HP", enemy ? `${enemy.hp}/${enemy.maxHp}` : "-"),
-  );
-  return panel;
-}
-
-function expectedResultBanner(snapshot: BattleSnapshot): HTMLElement {
-  const banner = document.createElement("div");
-  banner.className = "battle-expected-result";
-  banner.dataset.testid = "battle-expected-result";
-  const enemy = focusEnemy(snapshot);
-  const project = store.getCurrent();
-  const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId) ?? snapshot.actors[0];
-  if (!enemy || !actor) {
-    banner.textContent = "대상을 선택하십시오.";
-    return banner;
-  }
-  const projected = predictAttackDamage(project, actor, enemy);
-  if (projected >= enemy.hp && enemy.hp > 0) {
-    const gold = enemyGold(project, enemy.recordId);
-    banner.textContent = `예상 결과: 처치 가능, 골드 +${gold}`;
-  } else if (enemy.hp <= 0) {
-    banner.textContent = `처치됨`;
-  } else {
-    banner.textContent = `예상 피해 ${Math.max(0, projected)} (적 HP ${enemy.hp})`;
-  }
-  return banner;
-}
-
-// 적 1마리의 골드 보상을 원본 레코드에서 가져온다.
-function enemyGold(project: ReturnType<typeof store.getCurrent>, enemyRecordId: string): number {
-  return project.database.enemies.find((entry) => entry.id === enemyRecordId)?.rewards.gold ?? 0;
-}
-
-function focusEnemy(snapshot: BattleSnapshot): BattleBattlerSnapshot | undefined {
-  return snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
-    ?? snapshot.enemies.find((enemy) => snapshot.targetSelection?.targetEnemyIds.includes(enemy.id))
-    ?? snapshot.enemies.find((enemy) => !enemy.defeated)
-    ?? snapshot.enemies[0];
-}
-
-function analysisLine(labelValue: string, value: string): HTMLElement {
-  const line = document.createElement("div");
-  line.className = "battle-analysis-line";
-  const label = document.createElement("span");
-  label.textContent = labelValue;
-  const strong = document.createElement("strong");
-  strong.textContent = value;
-  line.append(label, strong);
-  return line;
-}
-
-function labelText(value: string): Text {
-  return document.createTextNode(value);
-}
-
-function emphasisText(value: string, tone: "green" | "orange"): HTMLElement {
-  const node = document.createElement("strong");
-  node.className = `battle-emphasis battle-emphasis-${tone}`;
-  node.textContent = value;
-  return node;
-}
-
-function battlerThumb(battler: BattleBattlerSnapshot, kind: string | undefined): HTMLElement | undefined {
-  const resourceId = kind === "enemy" ? monsterResourceId(battler.recordId) : battleCharsetResourceId(battler.recordId);
-  if (!resourceId) return undefined;
-  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-  if (!url) return undefined;
-  const thumb = document.createElement("span");
-  thumb.className = "battle-turn-thumb";
-  thumb.style.backgroundImage = `url("${url}")`;
-  if (kind !== "enemy" && isGeneratedBattleActor(resourceId)) {
-    thumb.style.backgroundPosition = "0 0";
-    thumb.style.backgroundSize = "42px 112px";
-  }
-  return thumb;
 }
 
 function statBar(kind: "hp" | "mp" | "tp", value: number, max: number): HTMLElement {

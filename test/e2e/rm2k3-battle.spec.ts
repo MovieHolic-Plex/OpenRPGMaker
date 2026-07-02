@@ -52,7 +52,7 @@ test("side-view battleProcessing plays through victory and restores the map", as
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-system-resource", "tex_tiles_default");
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "command");
   await expect(page.getByTestId("battle-backdrop")).toHaveAttribute("data-backdrop-resource-id", "tex_tiles_default");
-  await expect(page.getByTestId("battle-message-window")).toBeHidden();
+  await expect(page.getByTestId("battle-message-window")).toBeVisible();
   await expect(page.getByTestId("battle-party")).toBeVisible();
   await expect(page.getByTestId("battle-actor-actor_hero")).toHaveAttribute("data-battle-charset-resource-id", "hero");
   await expect(page.getByTestId("actor-command-attack")).toBeVisible();

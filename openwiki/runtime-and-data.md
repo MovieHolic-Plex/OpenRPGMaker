@@ -17,6 +17,7 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 - Runtime-only fields should not enter persisted project JSON unless the schema explicitly supports them.
 - Schema changes must include migration, validation, fixtures, and save/load verification.
 - Battle rules belong in `src/battle`; scene or DOM code should render/bridge them rather than becoming the source of truth.
+- Battle DOM is intentionally presentation-only and compact: render the field, message window, command list, party status, target prompt/brackets, and result rewards without duplicating runtime predictions into extra analysis panels.
 
 - `PlayScene` is the play-mode scene entry point. It wires map loading, player input, runtime overlays, battle entry, and scene-level helpers, but it should not own game rules.
 - The interpreter is the command executor for in-play events. Keep command resolution, branching, pauses, and step results in the interpreter layer; let `PlayScene` only consume those results.

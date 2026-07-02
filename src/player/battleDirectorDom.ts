@@ -152,70 +152,12 @@ export function battleResultPanel(snapshot: BattleSnapshot): HTMLElement | undef
   button.className = "battle-result-confirm";
   button.textContent = "확인";
 
-  const progress = document.createElement("div");
-  progress.className = "battle-result-progress";
-  progress.dataset.testid = "battle-result-progress";
-  progress.append(partyStatusBlock(snapshot), nextObjectiveBlock(snapshot));
-
   const prompt = document.createElement("div");
   prompt.className = "battle-result-next-prompt";
   prompt.textContent = "클릭하여 계속";
 
-  panel.append(crest, title, cards, button, progress, prompt);
+  panel.append(crest, title, cards, button, prompt);
   return panel;
-}
-
-// 파티 생존 상황 블록. 가짜 "월드 상태" 대신 실제 전투 후 파티 상태를 표시.
-function partyStatusBlock(snapshot: BattleSnapshot): HTMLElement {
-  const block = document.createElement("section");
-  block.className = "battle-result-world-state";
-  const icon = document.createElement("span");
-  icon.className = "battle-result-progress-icon battle-result-progress-icon-world";
-  icon.setAttribute("aria-hidden", "true");
-  const body = document.createElement("div");
-  const title = document.createElement("strong");
-  title.textContent = "파티 상태";
-  const alive = snapshot.actors.filter((actor) => !actor.defeated).length;
-  const total = snapshot.actors.length;
-  const text = document.createElement("span");
-  text.textContent = `생존 ${alive}/${total}`;
-  const bar = document.createElement("span");
-  bar.className = "battle-result-progress-bar";
-  bar.style.setProperty("--battle-result-ratio", `${total > 0 ? Math.round((alive / total) * 100) : 0}%`);
-  body.append(title, text, bar);
-  block.append(icon, body);
-  return block;
-}
-
-// 다음 안내 블록. 결과(victory/defeat/escape)에 따른 실제 안내만 표시. 가짜 퀘스트 없음.
-function nextObjectiveBlock(snapshot: BattleSnapshot): HTMLElement {
-  const block = document.createElement("section");
-  block.className = "battle-result-next-objective";
-  block.dataset.testid = "battle-result-next-objective";
-  const icon = document.createElement("span");
-  icon.className = "battle-result-progress-icon battle-result-progress-icon-next";
-  icon.setAttribute("aria-hidden", "true");
-  const body = document.createElement("div");
-  const title = document.createElement("strong");
-  title.textContent = "다음";
-  const text = document.createElement("span");
-  text.textContent = nextObjectiveText(snapshot);
-  body.append(title, text);
-  block.append(icon, body);
-  return block;
-}
-
-function nextObjectiveText(snapshot: BattleSnapshot): string {
-  switch (snapshot.result) {
-    case "victory":
-      return "전리품을 확보했다";
-    case "defeat":
-      return "파티를 재정비하자";
-    case "escape":
-      return "안전하게 이탈했다";
-    default:
-      return "전투를 계속한다";
-  }
 }
 
 export function applyBattleDirectorState(

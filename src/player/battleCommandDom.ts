@@ -5,18 +5,10 @@ import type {
   BattleSnapshot,
   TargetedActorCommand,
 } from "@/battle/runtime";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
-import {
-  activeActor,
-  enemyWeaknesses,
-  escapeSuccessChance,
-  predictAttackDamage,
-  predictSkillDamageFor,
-  primaryAttackSkill,
-} from "@/battle/battlePredict";
+import { activeActor } from "@/battle/battlePredict";
 
 export type BattleCommandSubmenu = "skill" | "item" | null;
 
@@ -34,11 +26,9 @@ export interface BattleCommandPanelOptions {
 export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
   const panel = document.createElement("div");
   panel.className = "battle-command-panel";
-  panel.append(activeActorCard(snapshot));
 
   if (snapshot.phase === "targetSelect") {
     panel.append(targetPrompt(snapshot));
-    panel.append(commandGrid(snapshot, options, true));
     panel.append(targetSelectionMenu(snapshot, options));
     panel.append(keyPrompts());
     return panel;
@@ -46,27 +36,7 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   if (snapshot.phase !== "actorCommand") return panel;
 
   panel.append(commandGrid(snapshot, options, false));
-  panel.append(commandHelp(snapshot));
   return panel;
-}
-
-// 커맨드 도움말: 가짜 안내 대신 현재 대상 적의 실제 속성 약점을 알려준다.
-function commandHelp(snapshot: BattleSnapshot): HTMLElement {
-  const help = document.createElement("div");
-  help.className = "battle-command-help";
-  help.dataset.testid = "battle-command-help";
-  const project = store.getCurrent();
-  const enemy = snapshot.enemies.find((entry) => entry.id === snapshot.targetSelection?.selectedEnemyId)
-    ?? snapshot.enemies.find((entry) => !entry.defeated);
-  const weaknesses = enemy ? enemyWeaknesses(project, enemy.recordId) : [];
-  if (weaknesses.length > 0) {
-    help.textContent = `${weaknesses.map((weakness) => weakness.name).join(", ")} 속성 약점 적 발견`;
-  } else if (enemy) {
-    help.textContent = "통상 공격으로 대응 가능한 적";
-  } else {
-    help.textContent = "대상을 선택하십시오";
-  }
-  return help;
 }
 
 export function enemyListPanel(snapshot: BattleSnapshot): HTMLElement {
@@ -91,15 +61,10 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     return menu;
   }
 
-  const project = store.getCurrent();
-  const focusEnemy = snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
-    ?? snapshot.enemies.find((enemy) => !enemy.defeated);
-  const firstItem = battleItems()[0];
-
-  menu.append(commandButton("공격", "actor-command-attack", "sword", attackDetail(project, actor, focusEnemy), () => {
+  menu.append(commandButton("공격", "actor-command-attack", "sword", "", () => {
     options.beginTargetCommand({ kind: "attack" });
   }, targetMode));
-  menu.append(commandButton("스킬", "actor-command-skill", "fire", skillDetail(project, actor, focusEnemy), () => {
+  menu.append(commandButton("스킬", "actor-command-skill", "fire", actor ? `${usableSkills(actor).length}개` : "", () => {
     const skills = usableSkills(actor);
     if (skills.length === 1) {
       options.beginTargetCommand({ kind: "skill", skillId: skills[0] });
@@ -108,59 +73,18 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     options.setSubmenu("skill");
     options.render();
   }));
-  menu.append(commandButton("방어", "actor-command-defend", "shield", "받는 피해 절반", () => {
-    if (!targetMode) options.runActorCommand({ kind: "defend" });
-  }, targetMode));
-  if (firstItem) {
-    menu.append(commandButton("회복 아이템", "actor-command-recover", "cross", itemDetail(project, firstItem.itemId), () => {
-      if (!targetMode && firstItem) options.beginTargetCommand({ kind: "item", itemId: firstItem.itemId });
-    }, targetMode));
-  }
-  menu.append(commandButton("아이템", "actor-command-item", "bag", `보유 ${battleItems().length}종`, () => {
+  menu.append(commandButton("아이템", "actor-command-item", "bag", battleItems().length > 0 ? `${battleItems().length}종` : "없음", () => {
     if (targetMode || battleItems().length === 0) return;
     options.setSubmenu("item");
     options.render();
   }, targetMode));
-  menu.append(commandButton("도주", "actor-command-escape", "boot", escapeDetail(project, snapshot), () => {
+  menu.append(commandButton("방어", "actor-command-defend", "shield", "", () => {
+    if (!targetMode) options.runActorCommand({ kind: "defend" });
+  }, targetMode));
+  menu.append(commandButton("도주", "actor-command-escape", "boot", "", () => {
     if (!targetMode) options.runActorCommand({ kind: "escape" });
   }, targetMode));
   return menu;
-}
-
-// 통상 공격의 예측 피해(대상 적 기준). 대상이 없으면 보류 표시.
-function attackDetail(project: ReturnType<typeof store.getCurrent>, actor: BattleBattlerSnapshot | undefined, enemy: BattleBattlerSnapshot | undefined): string {
-  if (!actor || !enemy) return "대상을 선택";
-  const damage = predictAttackDamage(project, actor, enemy);
-  return `예상 ${Math.max(0, damage)} 피해`;
-}
-
-// 주 공격 스킬의 예측 피해(대상 적 기준). 약점이면 표시.
-function skillDetail(project: ReturnType<typeof store.getCurrent>, actor: BattleBattlerSnapshot | undefined, enemy: BattleBattlerSnapshot | undefined): string {
-  if (!actor) return "스킬 선택";
-  const skills = usableSkills(actor);
-  if (skills.length === 0) return "사용 가능 스킬 없음";
-  const skill = primaryAttackSkill(project, actor);
-  if (!skill || !enemy) return `${skills.length}개 스킬 보유`;
-  const predicted = predictSkillDamageFor(project, actor, skill, enemy);
-  const prefix = predicted.weak ? "약점 " : predicted.resistant ? "내성 " : "";
-  return `${prefix}예상 ${Math.max(0, predicted.amount)} 피해`;
-}
-
-// 회복 아이템의 예상 회복량.
-function itemDetail(project: ReturnType<typeof store.getCurrent>, itemId: ItemId): string {
-  const item = project.database.items.find((record) => record.id === itemId);
-  if (!item?.skillId) return "아이템 사용";
-  const skill = project.database.skills.find((record) => record.id === item.skillId);
-  if (!skill) return "아이템 사용";
-  if (skill.effect.kind === "healing") return `HP ${skill.power} 회복`;
-  return item.name;
-}
-
-// 도주 성공 확률(0~1 → 퍼센트).
-function escapeDetail(project: ReturnType<typeof store.getCurrent>, snapshot: BattleSnapshot): string {
-  const chance = escapeSuccessChance(project, snapshot);
-  if (chance <= 0) return "도주 불가";
-  return `성공률 ${Math.round(chance * 100)}%`;
 }
 
 function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
@@ -198,13 +122,9 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
-  const enemy = snapshot.enemies.find((entry) => entry.id === snapshot.targetSelection?.selectedEnemyId)
-    ?? snapshot.enemies.find((entry) => !entry.defeated);
   for (const skillId of usableSkills(actor)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
-    const detail = skill && actor && enemy
-      ? skillDetailFor(project, actor, skill, enemy)
-      : skill && actor ? mpDetail(project, skillId) : "스킬 사용";
+    const detail = skill ? skillDetailFor(project, skill) : "스킬";
     nodes.push(commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
     }));
@@ -213,21 +133,16 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   return nodes;
 }
 
-// 스킬 한 개의 예측 피해(대상 적) + MP 소비.
 function skillDetailFor(
   project: ReturnType<typeof store.getCurrent>,
-  actor: BattleBattlerSnapshot,
-  skill: { id: SkillId; name: string; power: number; effect: { kind: string }; elementId?: string },
-  enemy: BattleBattlerSnapshot
+  skill: { id: SkillId; power: number; effect: { kind: string } }
 ): string {
   const mp = mpDetail(project, skill.id);
   const fullSkill = project.database.skills.find((record) => record.id === skill.id);
   if (!fullSkill) return mp;
   if (fullSkill.effect.kind === "healing") return `HP ${fullSkill.power} 회복 ${mp}`;
   if (fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch") return `보조 ${mp}`;
-  const predicted = predictSkillDamageFor(project, actor, fullSkill, enemy);
-  const prefix = predicted.weak ? "약점 " : predicted.resistant ? "내성 " : "";
-  return `${prefix}${Math.max(0, predicted.amount)} 피해 ${mp}`;
+  return mp || "공격";
 }
 
 // MP 소비 표기. flat + percentMax.
@@ -304,85 +219,6 @@ function targetPrompt(snapshot: BattleSnapshot): HTMLElement {
   return prompt;
 }
 
-function activeActorCard(snapshot: BattleSnapshot): HTMLElement {
-  const actor = activeActor(snapshot) ?? snapshot.actors[0];
-  const card = document.createElement("section");
-  card.className = "battle-active-actor-card";
-  card.dataset.testid = "battle-active-actor-card";
-  if (!actor) {
-    card.textContent = "행동 대기";
-    return card;
-  }
-  const name = document.createElement("h3");
-  const project = store.getCurrent();
-  const actorRecord = project.database.actors.find((record) => record.id === actor.recordId);
-  name.textContent = actorRecord?.nickname ? `${actor.name} ${actorRecord.nickname}` : actor.name;
-  const portrait = document.createElement("div");
-  portrait.className = "battle-actor-portrait";
-  const portraitResource = actorPortraitResource(actor.recordId);
-  if (portraitResource) {
-    portrait.dataset.portraitKind = portraitResource.kind;
-    portrait.style.backgroundImage = `url("${portraitResource.url}")`;
-    portrait.style.backgroundPosition = portraitResource.kind === "singleFace" ? "50% 18%" : "0 0";
-    portrait.style.backgroundRepeat = "no-repeat";
-    portrait.style.backgroundSize = portraitResource.kind === "singleFace" ? "cover" : "400% 400%";
-  }
-  const stats = document.createElement("div");
-  stats.className = "battle-actor-card-stats";
-  stats.append(
-    statLine("HP", actor.hp, actor.maxHp, "hp"),
-    statLine("MP", actor.mp, actor.maxMp, "mp"),
-    statLine("TP", Math.round(actor.gauge), 100, "tp")
-  );
-  const desc = document.createElement("p");
-  desc.className = "battle-actor-card-desc";
-  const className = project.database.classes?.find((record) => record.id === actorRecord?.classId)?.name;
-  desc.textContent = className ? `클래스: ${className}` : `스킬 ${usableSkills(actor).length}개 보유`;
-  card.append(name, portrait, stats, desc);
-  return card;
-}
-
-type ActorPortraitResource = {
-  readonly url: string;
-  readonly kind: "singleFace" | "faceSheet";
-};
-
-function actorPortraitResource(actorId: string): ActorPortraitResource | null {
-  const project = store.getCurrent();
-  const actor = project.database.actors.find((record) => record.id === actorId);
-  const generatedFaceUrl = resolveAssetResourceUrl(generatedFaceResourceId(actor?.battleCharacterResourceId), { project });
-  if (generatedFaceUrl) return { url: generatedFaceUrl, kind: "faceSheet" };
-  const faceSheetUrl = resolveAssetResourceUrl(actor?.faceResourceId, { project });
-  if (faceSheetUrl) return { url: faceSheetUrl, kind: "faceSheet" };
-  const battleSpriteUrl = resolveAssetResourceUrl(actor?.battleCharacterResourceId, { project });
-  return battleSpriteUrl ? { url: battleSpriteUrl, kind: "singleFace" } : null;
-}
-
-function generatedFaceResourceId(battleCharacterResourceId: string | undefined): string | undefined {
-  switch (battleCharacterResourceId) {
-    case "generated-actor-hero-01-battle":
-      return "generated-actor-hero-01-face";
-    case "generated-actor-hero-02-battle":
-      return "generated-actor-hero-02-face";
-    default:
-      return undefined;
-  }
-}
-
-function statLine(labelText: string, value: number, max: number, kind: "hp" | "mp" | "tp"): HTMLElement {
-  const row = document.createElement("div");
-  row.className = "battle-actor-card-stat";
-  const label = document.createElement("span");
-  label.textContent = labelText;
-  const amount = document.createElement("span");
-  amount.textContent = `${value}/${max}`;
-  const bar = document.createElement("span");
-  bar.className = `battle-stat-bar battle-stat-bar-${kind}`;
-  bar.style.setProperty("--battle-stat", `${Math.max(0, Math.min(100, Math.round(value / Math.max(1, max) * 100)))}%`);
-  row.append(label, amount, bar);
-  return row;
-}
-
 function keyPrompts(): HTMLElement {
   const row = document.createElement("div");
   row.className = "battle-key-prompts";
@@ -418,9 +254,12 @@ function commandButton(
   text.className = "battle-command-text";
   const title = document.createElement("strong");
   title.textContent = label;
-  const small = document.createElement("small");
-  small.textContent = detail;
-  text.append(title, small);
+  text.append(title);
+  if (detail) {
+    const small = document.createElement("small");
+    small.textContent = detail;
+    text.append(small);
+  }
   button.append(iconNode, text);
   button.addEventListener("click", onClick);
   return button;

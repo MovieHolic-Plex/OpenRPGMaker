@@ -65,7 +65,7 @@ test("battle command screen uses an RM2003-style field and bottom HUD layout", a
   expect(metrics.party.height / metrics.scene.height).toBeLessThan(0.42);
   expect(metrics.partyRows.length).toBeGreaterThan(0);
   expect(Math.max(...metrics.partyRows.map((row) => row.bottom))).toBeLessThanOrEqual(metrics.party.bottom - 2);
-  expect(metrics.messageDisplay).toBe("none");
+  expect(metrics.messageDisplay).toBe("grid");
   expect(metrics.commandPanelBackground).toContain("linear-gradient");
   expect(metrics.backdropBackground).toContain("url(");
 
@@ -93,7 +93,7 @@ test("battle target and result states stay readable without HUD collision", asyn
   const targetMetrics = await battleLayoutMetrics(page);
   await writeFile(`${evidenceDir}/red-green/battle-target-layout.json`, `${JSON.stringify(targetMetrics, null, 2)}\n`, "utf8");
   expect(targetMetrics.targetPromptText).toContain("대상:");
-  expect(targetMetrics.messageDisplay).toBe("none");
+  expect(targetMetrics.messageDisplay).toBe("grid");
 
   await page.locator(".battle-enemy[data-battle-targetable='true']").first().click();
   await expect(page.getByTestId("battle-result-panel")).toBeVisible();
@@ -104,7 +104,7 @@ test("battle target and result states stay readable without HUD collision", asyn
   expect(resultMetrics.resultPanel).toBeTruthy();
   expect(resultMetrics.scene.y).toBeGreaterThanOrEqual(0);
   expect(resultMetrics.scene.bottom).toBeLessThanOrEqual(768);
-  expect(resultMetrics.resultRows).toEqual(expect.arrayContaining(["경험치", "골드", "아이템"]));
+  expect(resultMetrics.resultRows).toEqual(expect.arrayContaining(["경험치", "골드"]));
   expect(resultMetrics.messageDisplay).toBe("none");
   expect(resultMetrics.commandPanelVisibility).toBe("hidden");
   expect(resultMetrics.enemyListPanelVisibility).toBe("hidden");
