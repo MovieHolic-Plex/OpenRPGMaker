@@ -1,11 +1,6 @@
 import { newCommand } from "@/editor/eventActions";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import {
-  CHOICE_CANCEL_BRANCH_INDEX,
-  FORK_ELSE_BRANCH_INDEX,
-  FORK_THEN_BRANCH_INDEX,
-  SHOP_TRANSACTION_BRANCH_INDEX,
-} from "@/editor/eventCommandPaths";
+import { resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
@@ -144,45 +139,7 @@ function commitPendingControls(root: HTMLElement): void {
 }
 
 function commandContainer(rootCommand: Command, containerPath: readonly number[]): Command[] | null {
-  if (containerPath.length === 0) return null;
-  const rootBranch = containerPath[0];
-  if (rootBranch === undefined) return null;
-  let list = branchCommands(rootCommand, rootBranch);
-  if (!list) return null;
-  for (let index = 1; index < containerPath.length - 1; index += 2) {
-    const commandIndex = containerPath[index];
-    const branchIndex = containerPath[index + 1];
-    if (commandIndex === undefined || branchIndex === undefined) return null;
-    const command = list[commandIndex];
-    if (!command) return null;
-    list = branchCommands(command, branchIndex);
-    if (!list) return null;
-  }
-  return list;
-}
-
-function branchCommands(command: Command, branchIndex: number): Command[] | null {
-  switch (command.kind) {
-    case "choices":
-      if (branchIndex === CHOICE_CANCEL_BRANCH_INDEX) {
-        command.cancelBranch = command.cancelBranch ?? [];
-        return command.cancelBranch;
-      }
-      return command.options[branchIndex]?.branch ?? null;
-    case "fork":
-      if (branchIndex === FORK_THEN_BRANCH_INDEX) return command.then;
-      if (branchIndex === FORK_ELSE_BRANCH_INDEX) {
-        command.else = command.else ?? [];
-        return command.else;
-      }
-      return null;
-    case "shop":
-      if (branchIndex !== SHOP_TRANSACTION_BRANCH_INDEX) return null;
-      command.transactionBranch = command.transactionBranch ?? [];
-      return command.transactionBranch;
-    default:
-      return null;
-  }
+  return resolveRootCommandBranchList(rootCommand, containerPath, { missingBranches: "create" });
 }
 
 export function openNewEventCommandDialog(command: Command, onApply: (command: Command) => void): void {

@@ -1,10 +1,5 @@
 import { editorState } from "@/editor/editorState";
-import {
-  CHOICE_CANCEL_BRANCH_INDEX,
-  FORK_ELSE_BRANCH_INDEX,
-  FORK_THEN_BRANCH_INDEX,
-  SHOP_TRANSACTION_BRANCH_INDEX,
-} from "@/editor/eventCommandPaths";
+import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
@@ -291,44 +286,5 @@ export function triggerFromKind(kind: Trigger["kind"]): Trigger {
 function resolvePageCommandList(events: GameEvent[] | undefined, eventId: string, pageId: string, containerPath: readonly number[]): Command[] | null {
   const page = events?.find((event) => event.id === eventId)?.pages?.find((item) => item.id === pageId);
   if (!page) return null;
-  return resolveCommandList(page.commands, containerPath);
-}
-
-function resolveCommandList(commands: Command[], containerPath: readonly number[]): Command[] | null {
-  let list: Command[] = commands;
-  for (let i = 0; i < containerPath.length - 1; i += 2) {
-    const cmdIdx = containerPath[i];
-    const branchIdx = containerPath[i + 1];
-    const cmd = list[cmdIdx];
-    if (!cmd || branchIdx === undefined) return null;
-    if (cmd.kind === "choices") {
-      if (branchIdx === CHOICE_CANCEL_BRANCH_INDEX) {
-        cmd.cancelBranch ??= [];
-        list = cmd.cancelBranch;
-        continue;
-      }
-      const opt = cmd.options[branchIdx];
-      if (!opt) return null;
-      list = opt.branch;
-      continue;
-    }
-    if (cmd.kind === "fork") {
-      if (branchIdx === FORK_THEN_BRANCH_INDEX) {
-        list = cmd.then;
-        continue;
-      }
-      if (branchIdx === FORK_ELSE_BRANCH_INDEX) {
-        cmd.else ??= [];
-        list = cmd.else;
-        continue;
-      }
-      return null;
-    }
-    if (cmd.kind === "shop" && branchIdx === SHOP_TRANSACTION_BRANCH_INDEX && cmd.transactionBranch) {
-      list = cmd.transactionBranch;
-      continue;
-    }
-    return null;
-  }
-  return list;
+  return resolveCommandListAtPath(page.commands, containerPath, { missingBranches: "create" });
 }

@@ -13,9 +13,8 @@ import type {
   Condition,
 } from "@/project/types";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
+import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 export { newCommand, newM2Command } from "@/editor/eventCommandFactory";
-
-const SHOP_TRANSACTION_BRANCH_INDEX = -1;
 
 // ── 이벤트 CRUD ──
 export function createDefaultGameEvent(
@@ -105,31 +104,6 @@ export function updateEvent(
 // 짝수 위치(0,2,4)=해당 레벨의 command 인덱스, 마지막 인덱스까지가 대상.
 // 단, choices 내부를 가리키려면 그 choices 명령을 찾은 뒤 option.branch로 진입.
 
-function resolveList(
-  commands: Command[],
-  path: number[]
-): Command[] | null {
-  let list: Command[] = commands;
-  for (let i = 0; i < path.length - 1; i += 2) {
-    const cmdIdx = path[i];
-    const branchIdx = path[i + 1];
-    const cmd = list[cmdIdx];
-    if (!cmd) return null;
-    if (cmd.kind === "choices") {
-      const opt = cmd.options[branchIdx];
-      if (!opt) return null;
-      list = opt.branch;
-      continue;
-    }
-    if (cmd.kind === "shop" && branchIdx === SHOP_TRANSACTION_BRANCH_INDEX && cmd.transactionBranch) {
-      list = cmd.transactionBranch;
-      continue;
-    }
-    return null;
-  }
-  return list;
-}
-
 // 명령 추가: containerPath(리스트 경로, 빈 배열=루트 commands) 끝에 새 명령.
 export function addCommand(
   mapId: MapId,
@@ -143,7 +117,7 @@ export function addCommand(
     const list =
       containerPath.length === 0
         ? ev.commands
-        : resolveList(ev.commands, containerPath);
+        : resolveCommandListAtPath(ev.commands, containerPath, { missingBranches: "create" });
     if (!list) return;
     list.push(structuredClone(command));
   });
@@ -163,7 +137,7 @@ export function insertCommand(
     const list =
       container.length === 0
         ? ev.commands
-        : resolveList(ev.commands, container);
+        : resolveCommandListAtPath(ev.commands, container, { missingBranches: "create" });
     if (!list) return;
     list.splice(lastIdx, 0, structuredClone(command));
   });
@@ -182,7 +156,7 @@ export function deleteCommand(
     const list =
       container.length === 0
         ? ev.commands
-        : resolveList(ev.commands, container);
+        : resolveCommandListAtPath(ev.commands, container, { missingBranches: "create" });
     if (!list) return;
     list.splice(lastIdx, 1);
   });
@@ -202,7 +176,7 @@ export function replaceCommand(
     const list =
       container.length === 0
         ? ev.commands
-        : resolveList(ev.commands, container);
+        : resolveCommandListAtPath(ev.commands, container, { missingBranches: "create" });
     if (!list) return;
     list[lastIdx] = structuredClone(command);
   });
@@ -213,14 +187,7 @@ export function getCommand(
   event: GameEvent,
   path: number[]
 ): Command | null {
-  const lastIdx = path[path.length - 1];
-  const container = path.slice(0, -1);
-  const list =
-    container.length === 0
-      ? event.commands
-      : resolveList(event.commands, container);
-  if (!list) return null;
-  return list[lastIdx] ?? null;
+  return resolveCommandAtPath(event.commands, path);
 }
 
 // 빈 조건(사용 안 함) 헬퍼.

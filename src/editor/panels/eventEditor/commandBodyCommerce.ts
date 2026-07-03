@@ -1,4 +1,5 @@
 import { newCommand } from "@/editor/eventActions";
+import { SHOP_TRANSACTION_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import type { Command, ItemId, ShopMessageType, ShopType } from "@/project/types";
@@ -23,8 +24,6 @@ const SHOP_MESSAGE_OPTIONS: readonly ShopMessageOption[] = [
   { value: "business", label: "B: 무엇이 필요하신가요?" },
   { value: "direct", label: "C: 아이템을 선택하세요" },
 ];
-const SHOP_TRANSACTION_BRANCH_INDEX = -1;
-
 export function shopBody(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const project = store.getCurrent();
   const wrap = el("div", {
