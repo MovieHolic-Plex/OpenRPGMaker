@@ -2,6 +2,7 @@ import { renderDatabasePanel, setDatabaseActiveTab, type DatabaseTab } from "@/e
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
 import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
+import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import {
   createEditorModalDirtyCloseController,
@@ -15,6 +16,7 @@ import { toast } from "@/util/toast";
 export function openDatabaseModal(initialTab?: DatabaseTab): void {
   document.querySelector("[data-testid='database-modal']")?.remove();
   if (initialTab) setDatabaseActiveTab(initialTab);
+  resetDatabaseRecordViewSession();
   const dirtySession = createDatabaseModalDirtySession();
 
   const body = el("div", { class: "database-modal-body" });

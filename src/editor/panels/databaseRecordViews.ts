@@ -9,28 +9,18 @@ import {
   updateDatabaseRecord,
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
-import {
-  equipmentFields,
-  itemFields,
-  skillFields,
-} from "@/editor/panels/databaseBasicRecordFields";
+import { equipmentFields, itemFields, skillFields } from "@/editor/panels/databaseBasicRecordFields";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
-import {
-  renderEquipmentRecordForm,
-  renderItemRecordForm,
-  renderSkillRecordForm,
-  renderTroopRecordForm,
-} from "@/editor/panels/databaseAdvancedRecordViews";
+import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
+import { resetRecordViewSessionState, searchQueryForCollection, selectedRecordForSession, selectedRecordIdForSession, setSearchQueryForCollection, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { DatabaseRecords } from "@/project/types";
 
-const selectedIds: Partial<Record<DatabaseCollection, string>> = {};
-let searchQuery = "";
 let searchRerenderTimer: number | null = null;
 
 const COLLECTION_LABELS: Record<DatabaseCollection, string> = {
@@ -47,12 +37,12 @@ const COLLECTION_LABELS: Record<DatabaseCollection, string> = {
 
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
-  const selected = selectedRecord(collection);
+  const selected = selectedRecordForSession(collection, records);
   const selectedIndex = selected ? records.findIndex((record) => record.id === selected.id) : -1;
   const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
   listPane.append(
     el("h3", { text: COLLECTION_LABELS[collection] }),
-    recordSearch(rerender),
+    recordSearch(collection, rerender),
     recordList(collection, records, selected?.id ?? "", rerender),
     recordListFooter(records.length),
     toolbar(collection, rerender),
@@ -70,6 +60,13 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
   host.append(el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] }));
 }
 
+export function resetDatabaseRecordViewSession(): void {
+  resetRecordViewSessionState();
+  if (searchRerenderTimer === null) return;
+  window.clearTimeout(searchRerenderTimer);
+  searchRerenderTimer = null;
+}
+
 function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   const wrap = el("div", { class: "db-toolbar" });
   wrap.append(
@@ -79,7 +76,7 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       dataset: { testid: "db-add-record" },
       on: {
         click: () => {
-          selectedIds[collection] = addDatabaseRecord(collection);
+          setSelectedRecordId(collection, addDatabaseRecord(collection));
           rerender();
         },
       },
@@ -89,9 +86,9 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       text: "복제",
       on: {
         click: () => {
-          const selected = selectedIds[collection];
+          const selected = selectedRecordIdForSession(collection);
           if (!selected) return;
-          selectedIds[collection] = duplicateDatabaseRecord(collection, selected);
+          setSelectedRecordId(collection, duplicateDatabaseRecord(collection, selected));
           rerender();
         },
       },
@@ -102,14 +99,14 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       dataset: { testid: "db-delete-selected" },
       on: {
         click: () => {
-          const selected = selectedIds[collection];
+          const selected = selectedRecordIdForSession(collection);
           if (!selected) return;
           const result = deleteDatabaseRecord(collection, selected);
           if (!result.ok) {
             toast(result.message, "error");
             return;
           }
-          selectedIds[collection] = store.getCurrent().database[collection][0]?.id;
+          setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id);
           rerender();
         },
       },
@@ -118,14 +115,14 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
   return wrap;
 }
 
-function recordSearch(rerender: () => void): HTMLElement {
+function recordSearch(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   const input = el("input", {
     attrs: { type: "search", placeholder: "레코드 검색" },
-    value: searchQuery,
+    value: searchQueryForCollection(collection),
   });
   input.addEventListener("input", () => {
     const cursor = input.selectionStart ?? input.value.length;
-    searchQuery = input.value;
+    setSearchQueryForCollection(collection, input.value);
     if (searchRerenderTimer !== null) window.clearTimeout(searchRerenderTimer);
     searchRerenderTimer = window.setTimeout(() => {
       searchRerenderTimer = null;
@@ -153,7 +150,7 @@ function recordList(
 ): HTMLElement {
   const list = el("div", { class: "db-list" });
   let visibleIndex = 0;
-  const effectiveSearchQuery = collection === "classes" ? "" : searchQuery;
+  const effectiveSearchQuery = collection === "classes" ? "" : searchQueryForCollection(collection);
   for (const [recordIndex, record] of records.entries()) {
     if (effectiveSearchQuery && !matchesNameOrId(record.name, record.id, effectiveSearchQuery)) continue;
     visibleIndex += 1;
@@ -169,7 +166,7 @@ function recordList(
         ],
         on: {
           click: () => {
-            selectedIds[collection] = record.id;
+            setSelectedRecordId(collection, record.id);
             rerender();
           },
         },
@@ -243,14 +240,6 @@ function recordListFooter(count: number): HTMLElement {
       el("span", { class: "rm2k3-record-count", text: `${count}개` }),
     ],
   });
-}
-
-function selectedRecord(collection: DatabaseCollection): DatabaseRecords[DatabaseCollection][number] | undefined {
-  const records = store.getCurrent().database[collection];
-  const selected = selectedIds[collection];
-  const record = records.find((entry) => entry.id === selected) ?? records[0];
-  selectedIds[collection] = record?.id;
-  return record;
 }
 
 function nameField(collection: DatabaseCollection, id: string, value: string): HTMLElement {

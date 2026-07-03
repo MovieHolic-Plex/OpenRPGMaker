@@ -53,6 +53,12 @@ export class FakeNode {
     }
   }
 
+  replaceChildren(...children: FakeNode[]): void {
+    for (const child of this.childNodes) child.parentNode = null;
+    this.childNodes.length = 0;
+    this.append(...children);
+  }
+
   contains(node: unknown): boolean {
     if (node === this) return true;
     return this.childNodes.some((child) => child.contains(node));
