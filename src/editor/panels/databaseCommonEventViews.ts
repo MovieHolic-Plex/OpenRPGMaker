@@ -5,7 +5,7 @@ import {
   ordinalLabel,
 } from "@/editor/panels/databaseDisplay";
 import { emptyToUndefined } from "@/editor/panels/databaseControls";
-import { renderEventEditorInline } from "@/editor/panels/eventEditor";
+import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
 import { store } from "@/project/store";
 import type { Command, CommonEvent } from "@/project/types";
 import { el } from "@/util/dom";
@@ -140,15 +140,24 @@ function commonEventEditor(commonEvent: CommonEvent, index: number, rerender: ()
   block.append(commonEventNameRow(commonEvent, index, rerender));
   block.append(commonEventTriggerControl(commonEvent), commonEventConditionSwitchControl(commonEvent));
 
-  const commands = el("div", { class: "cmd-list" });
-  renderEventEditorInline(commands, commonEvent.commands, (next: Command[]) => {
-    store.update((project) => {
-      const target = project.commonEvents.find((record) => record.id === commonEvent.id);
-      if (target) target.commands = structuredClone(next);
-    });
+  const commands = el("div", { class: "cmd-list", dataset: { testid: "db-common-event-command-list" } });
+  renderDatabaseCommandListEditor(commands, {
+    commands: commonEvent.commands,
+    rerender,
+    replaceCommands: (next: Command[]) => updateCommonEventCommands(commonEvent.id, next),
   });
-  block.append(el("label", { class: "db-field", children: [el("span", { text: "명령" }), commands] }));
+  block.append(el("fieldset", {
+    class: "rm2k3-db-fieldset db-common-event-command-shell event-contents-fieldset",
+    children: [el("legend", { text: "이벤트 명령" }), commands],
+  }));
   return block;
+}
+
+function updateCommonEventCommands(commonEventId: string, commands: Command[]): void {
+  store.update((project) => {
+    const target = project.commonEvents.find((record) => record.id === commonEventId);
+    if (target) target.commands = structuredClone(commands);
+  });
 }
 
 function commonEventNameRow(commonEvent: CommonEvent, index: number, rerender: () => void): HTMLElement {
