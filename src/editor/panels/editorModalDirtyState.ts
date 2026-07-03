@@ -18,7 +18,7 @@ type EditorModalDirtyCloseOptions = {
 };
 
 type EditorModalBindableElement = {
-  readonly addEventListener: (type: string, listener: EventListenerOrEventListenerObject | null) => void;
+  readonly addEventListener: (type: string, listener: EventListenerOrEventListenerObject) => void;
 };
 
 export type EditorModalDirtyCloseController = {

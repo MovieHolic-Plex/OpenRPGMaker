@@ -1,20 +1,21 @@
 import { renderDatabasePanel, setDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
+import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
+import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
+import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
-import { store } from "@/project/store";
+import {
+  createEditorModalDirtyCloseController,
+  EDITOR_MODAL_DIRTY_DECISION,
+  type EditorModalCloseAttempt,
+  type EditorModalDirtyDecision,
+} from "@/editor/panels/editorModalDirtyState";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-
-type ModalDragState = {
-  readonly offsetX: number;
-  readonly offsetY: number;
-  readonly windowEl: HTMLElement;
-};
-
-let modalDragState: ModalDragState | null = null;
 
 export function openDatabaseModal(initialTab?: DatabaseTab): void {
   document.querySelector("[data-testid='database-modal']")?.remove();
   if (initialTab) setDatabaseActiveTab(initialTab);
+  const dirtySession = createDatabaseModalDirtySession();
 
   const body = el("div", { class: "database-modal-body" });
   const maximizeButton = el("button", {
@@ -52,43 +53,79 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
 
   const close = (): void => {
     backdrop.remove();
-    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("keydown", controller.handleKeyDown);
     stopModalDrag();
   };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
+  const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
+  const saveAndMarkClean = async (): Promise<boolean> => {
+    footerStatus.textContent = "변경 내용을 저장하는 중입니다.";
+    const saved = await applyDatabaseChanges(footerStatus);
+    if (saved) dirtySession.markClean();
+    return saved;
   };
+  const handleDirtyDecision = (decision: EditorModalDirtyDecision): void => {
+    switch (decision) {
+      case EDITOR_MODAL_DIRTY_DECISION.Save:
+        void saveAndMarkClean().then((saved) => {
+          if (saved) close();
+        });
+        return;
+      case EDITOR_MODAL_DIRTY_DECISION.Discard:
+        dirtySession.discard();
+        close();
+        return;
+      case EDITOR_MODAL_DIRTY_DECISION.KeepEditing:
+        hideDirtyPrompt();
+        closeButton.focus();
+        return;
+    }
+  };
+  const showDirtyPrompt = (attempt: EditorModalCloseAttempt): EditorModalDirtyDecision => {
+    dirtyPrompt.replaceChildren(renderDirtyPrompt(attempt, handleDirtyDecision));
+    return EDITOR_MODAL_DIRTY_DECISION.KeepEditing;
+  };
+  const controller = createEditorModalDirtyCloseController({
+    isDirty: dirtySession.isDirty,
+    promptUnsavedChanges: showDirtyPrompt,
+    save: () => {
+      void saveAndMarkClean();
+    },
+    discard: dirtySession.discard,
+    close,
+  });
 
-  closeButton.addEventListener("click", close);
+  controller.bindCloseButton(closeButton);
   maximizeButton.addEventListener("click", () => toggleMaximizedDatabaseModal(maximizeButton));
   header.addEventListener("dblclick", () => toggleMaximizedDatabaseModal(maximizeButton));
-  backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) close();
-  });
-  document.addEventListener("keydown", onKeyDown);
+  backdrop.addEventListener("mousedown", (event) => controller.handleBackdropMouseDown(event, backdrop));
+  document.addEventListener("keydown", controller.handleKeyDown);
   const footerStatus = el("div", {
     class: "database-footer-status",
     attrs: { "aria-live": "polite" },
     dataset: { testid: "db-footer-status" },
     text: databaseFooterStatusText(),
   });
+  const dirtyPrompt = el("div", {
+    class: "database-modal-dirty-prompt-region",
+    dataset: { testid: "database-dirty-prompt-region" },
+  });
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
       footerStatus,
+      dirtyPrompt,
       el("button", {
         class: "database-footer-button primary",
         text: "OK",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
-        on: { click: close },
+        on: { click: () => controller.requestClose("cancel") },
       }),
       el("button", {
         class: "database-footer-button",
         text: "취소",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.cancel },
-        on: { click: close },
       }),
       el("button", {
         class: "database-footer-button",
@@ -97,8 +134,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.apply },
         on: {
           click: () => {
-            footerStatus.textContent = "변경 내용을 저장하는 중입니다.";
-            void applyDatabaseChanges(footerStatus);
+            hideDirtyPrompt();
+            void saveAndMarkClean();
           },
         },
       }),
@@ -110,6 +147,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       }),
     ],
   });
+  controller.bindCancelButton(footer.querySelector(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.cancel}']`) ?? closeButton);
   const windowEl = backdrop.querySelector(".database-modal-window");
   if (windowEl instanceof HTMLElement) {
     header.addEventListener("mousedown", (event) => startModalDrag(windowEl, event));
@@ -120,42 +158,50 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   closeButton.focus();
 }
 
-async function applyDatabaseChanges(status: HTMLElement): Promise<void> {
-  try {
-    const result = await store.flush();
-    switch (result.kind) {
-      case "saved":
-        status.textContent = "적용했습니다. DB에 저장했습니다. 닫아도 안전합니다.";
-        toast("DB에 저장했습니다.", "ok");
-        return;
-      case "saved-local":
-        status.textContent = "적용했습니다. 브라우저에 저장했습니다. 닫아도 안전합니다.";
-        toast("브라우저에 저장했습니다.", "ok");
-        return;
-      case "not-loaded":
-        status.textContent = "프로젝트를 아직 불러오는 중이라 저장하지 않았습니다.";
-        toast("아직 프로젝트를 불러오는 중입니다.", "error");
-        return;
-      case "conflict":
-        status.textContent = `${conflictMapNames(result.conflicts)} 맵이 다른 세션에서 먼저 바뀌어 저장하지 않았습니다.`;
-        toast("저장 충돌이 있습니다.", "error");
-        return;
-      case "not-configured":
-        status.textContent = "DB 저장 설정이 없습니다. Supabase 환경 설정을 확인하세요.";
-        toast("DB 저장 설정이 없습니다.", "error");
-        return;
-      case "disabled":
-        status.textContent = "DB 저장이 비활성화되어 저장하지 못했습니다.";
-        toast("DB 저장이 비활성화되어 있습니다.", "error");
-        return;
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      status.textContent = "적용 실패. 메시지를 확인하세요.";
-      toast(`적용 실패: ${error.message}`, "error");
-      return;
-    }
-    throw error;
+function renderDirtyPrompt(
+  attempt: EditorModalCloseAttempt,
+  onDecision: (decision: EditorModalDirtyDecision) => void
+): HTMLElement {
+  return el("section", {
+    class: "database-modal-dirty-prompt",
+    attrs: { "aria-label": "저장하지 않은 데이터베이스 변경" },
+    dataset: { closeAttempt: attempt, testid: "database-dirty-prompt" },
+    children: [
+      el("strong", { text: "저장하지 않은 DB 변경이 있습니다." }),
+      el("span", { text: closeAttemptMessage(attempt) }),
+      dirtyPromptButton("저장", "database-dirty-save", EDITOR_MODAL_DIRTY_DECISION.Save, onDecision, "primary"),
+      dirtyPromptButton("버리기", "database-dirty-discard", EDITOR_MODAL_DIRTY_DECISION.Discard, onDecision),
+      dirtyPromptButton("계속 편집", "database-dirty-keep-editing", EDITOR_MODAL_DIRTY_DECISION.KeepEditing, onDecision),
+    ],
+  });
+}
+
+function dirtyPromptButton(
+  text: string,
+  testid: string,
+  decision: EditorModalDirtyDecision,
+  onDecision: (decision: EditorModalDirtyDecision) => void,
+  variant = ""
+): HTMLElement {
+  return el("button", {
+    class: `database-footer-button ${variant}`.trim(),
+    text,
+    attrs: { type: "button" },
+    dataset: { testid },
+    on: { click: () => onDecision(decision) },
+  });
+}
+
+function closeAttemptMessage(attempt: EditorModalCloseAttempt): string {
+  switch (attempt) {
+    case "cancel":
+      return "닫기 전에 저장하거나, 모달을 열 때의 DB 상태로 되돌릴 수 있습니다.";
+    case "escape":
+      return "Escape로 닫기 전에 변경 내용을 어떻게 처리할지 선택하세요.";
+    case "backdrop":
+      return "바깥 영역을 눌러 닫기 전에 변경 내용을 어떻게 처리할지 선택하세요.";
+    case "x":
+      return "닫기 버튼을 누르기 전에 변경 내용을 어떻게 처리할지 선택하세요.";
   }
 }
 
@@ -174,49 +220,4 @@ function toggleMaximizedDatabaseModal(button: HTMLButtonElement): void {
   button.textContent = isMaximized ? "▣" : "□";
   button.title = isMaximized ? "창 크기로 복원" : "전체 화면";
   button.setAttribute("aria-label", isMaximized ? "데이터베이스 창 크기로 복원" : "데이터베이스 전체 화면");
-}
-
-function startModalDrag(windowEl: HTMLElement, event: MouseEvent): void {
-  if (event.button !== 0 || windowEl.classList.contains("maximized")) return;
-  const target = event.target;
-  if (target instanceof HTMLButtonElement) return;
-  event.preventDefault();
-  const rect = windowEl.getBoundingClientRect();
-  windowEl.classList.add("floating");
-  windowEl.style.left = `${rect.left}px`;
-  windowEl.style.top = `${rect.top}px`;
-  windowEl.style.width = `${rect.width}px`;
-  windowEl.style.height = `${rect.height}px`;
-  modalDragState = {
-    offsetX: event.clientX - rect.left,
-    offsetY: event.clientY - rect.top,
-    windowEl,
-  };
-  document.body.classList.add("database-modal-dragging");
-  window.addEventListener("mousemove", handleModalDragMove);
-  window.addEventListener("mouseup", stopModalDrag);
-}
-
-function handleModalDragMove(event: MouseEvent): void {
-  if (!modalDragState) return;
-  const rect = modalDragState.windowEl.getBoundingClientRect();
-  const maxLeft = Math.max(window.innerWidth - rect.width - 4, 4);
-  const maxTop = Math.max(window.innerHeight - rect.height - 4, 4);
-  modalDragState.windowEl.style.left = `${clamp(event.clientX - modalDragState.offsetX, 4, maxLeft)}px`;
-  modalDragState.windowEl.style.top = `${clamp(event.clientY - modalDragState.offsetY, 4, maxTop)}px`;
-}
-
-function stopModalDrag(): void {
-  modalDragState = null;
-  document.body.classList.remove("database-modal-dragging");
-  window.removeEventListener("mousemove", handleModalDragMove);
-  window.removeEventListener("mouseup", stopModalDrag);
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-function conflictMapNames(conflicts: readonly { readonly name: string }[]): string {
-  return conflicts.map((conflict) => conflict.name).join(", ") || "현재";
 }
