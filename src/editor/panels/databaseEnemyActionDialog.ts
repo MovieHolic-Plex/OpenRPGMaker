@@ -1,5 +1,6 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectField } from "@/editor/panels/databaseControls";
+import { openSwitchVariablePicker } from "@/editor/panels/eventEditor/recordPickerDialog";
 import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/databaseEnemyRecordSupport";
 import { store } from "@/project/store";
 import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord } from "@/project/types";
@@ -112,24 +113,59 @@ function skillSelect(value: string, onChange: (value: string) => void): HTMLElem
 }
 
 function switchEffectField(testid: string, effect: EnemyActionSwitchEffect, onChange: (effect: EnemyActionSwitchEffect) => void): HTMLElement {
+  const options = switchOptions();
   const checkbox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `${testid}-enabled` } }) as HTMLInputElement;
   checkbox.checked = effect.enabled;
+  checkbox.disabled = options.length === 0;
   const select = el("select", { dataset: { testid: `${testid}-id` } }) as HTMLSelectElement;
-  for (const option of switchOptions()) select.append(el("option", { text: option.name, attrs: { value: option.id } }));
-  select.value = effect.switchId ?? switchOptions()[0]?.id ?? "";
+  for (const option of options) select.append(el("option", { text: option.name, attrs: { value: option.id } }));
+  if (effect.switchId && !options.some((option) => option.id === effect.switchId)) {
+    select.append(el("option", { text: `현재 값:${effect.switchId}`, attrs: { value: effect.switchId } }));
+  }
+  select.value = effect.switchId ?? options[0]?.id ?? "";
+  select.disabled = options.length === 0;
   const sync = (): void => onChange({ enabled: checkbox.checked, switchId: select.value || undefined });
+  const chooseSwitch = (switchId: string): void => {
+    select.value = switchId;
+    checkbox.checked = true;
+    sync();
+  };
   checkbox.addEventListener("change", sync);
   select.addEventListener("change", sync);
   return el("div", {
     class: "db-enemy-switch-effect",
-    children: [el("label", { class: "actor-check", children: [checkbox, el("span", { text: "사용" })] }), select, el("button", { class: "btn small", text: "...", attrs: { type: "button" }, dataset: { testid: `${testid}-picker` } })],
+    children: [
+      el("label", { class: "actor-check", children: [checkbox, el("span", { text: "사용" })] }),
+      select,
+      switchPickerButton(`${testid}-picker`, switchPickerLabel(testid), options.length > 0, select.value, chooseSwitch),
+    ],
   });
 }
 
+function switchPickerButton(testid: string, label: string, enabled: boolean, currentId: string, onSelect: (switchId: string) => void): HTMLButtonElement {
+  const explanation = enabled ? `${label} 목록 열기` : `${label}할 스위치가 없습니다.`;
+  const button = el("button", {
+    class: "btn small",
+    text: "...",
+    attrs: { type: "button", title: explanation, "aria-label": label, ...(enabled ? {} : { disabled: "true", "aria-disabled": "true" }) },
+    dataset: { testid },
+    on: {
+      click: () => {
+        if (!enabled) return;
+        openSwitchVariablePicker({ kind: "switch", currentId, onSelect });
+      },
+    },
+  }) as HTMLButtonElement;
+  button.disabled = !enabled;
+  return button;
+}
+
+function switchPickerLabel(testid: string): string {
+  return testid.includes("switch-on") ? "스위치 ON 선택" : "스위치 OFF 선택";
+}
+
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
-  const switches = store.getCurrent().switches;
-  if (switches.length > 0) return switches.map((entry, index) => ({ id: entry.id, name: `${String(index + 1).padStart(4, "0")}:${entry.name}` }));
-  return [{ id: "switch_original", name: "0001:오리지널" }];
+  return store.getCurrent().switches.map((entry, index) => ({ id: entry.id, name: `${String(index + 1).padStart(4, "0")}:${entry.name}` }));
 }
 
 function basicActionMode(skill: HTMLElement): HTMLElement {

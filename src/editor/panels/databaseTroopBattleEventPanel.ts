@@ -1,6 +1,7 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
 import { selectLiteral } from "@/editor/panels/databaseControls";
-import { battleEventCommandControls, battleEventCommandSummary } from "@/editor/panels/databaseTroopBattleEventCommands";
+import { battleEventCommandControls } from "@/editor/panels/databaseTroopBattleEventCommands";
 import {
   battleEventConditionControls,
   initialBattleEventConditions,
@@ -9,39 +10,51 @@ import {
 } from "@/editor/panels/databaseTroopBattleEventConditions";
 import { updateTroopBattleEventPage } from "@/editor/panels/databaseTroopBattleEventActions";
 import { store } from "@/project/store";
-import type { BattleEventPageRecord, TroopRecord } from "@/project/types";
+import type { Command } from "@/project/types";
+import type { BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 import { el } from "@/util/dom";
 
 const EVENT_SPANS = ["battle", "turn", "moment"] as const;
 const ENEMY_ENCOUNTER_ID = "m2-101-enemy-encounter";
 const CHANGE_BATTLEBACK_ID = "m2-102-change-battleback";
 const RESULT_SUMMARY_ID = "m2-109-result-summary";
+const activeBattleEventPageIds = new Map<string, string>();
 
 export function renderTroopBattleEventPanel(record: TroopRecord, rerender: () => void = () => undefined): HTMLElement {
-  const page = record.battleEventPages[0];
+  const page = selectedBattleEventPage(record);
   return el("section", {
     class: "db-troop-event-panel",
     children: [
       el("h3", { text: "전투 이벤트" }),
       eventToolbar(record, page, rerender),
       qualityStrip(page),
-      pageTabs(record, page),
-      commandArea(page),
+      pageTabs(record, page, rerender),
+      commandArea(record, page, rerender),
       conditionStrip(record, page, rerender),
       el("div", { class: "db-troop-event-details", children: page ? pageControls(record, page, rerender) : emptyPageControls() }),
     ],
   });
 }
 
+function selectedBattleEventPage(record: TroopRecord): BattleEventPageRecord | undefined {
+  const selectedId = activeBattleEventPageIds.get(record.id);
+  const selected = record.battleEventPages.find((page) => page.id === selectedId);
+  if (selected) return selected;
+  const first = record.battleEventPages[0];
+  if (!first) {
+    activeBattleEventPageIds.delete(record.id);
+    return undefined;
+  }
+  activeBattleEventPageIds.set(record.id, first.id);
+  return first;
+}
+
 function emptyPageControls(): HTMLElement[] {
-  return [
-    el("div", { class: "db-preview", text: "페이지: 0 / 조건: 없음" }),
-  ];
+  return [el("div", { class: "db-preview", text: "페이지: 0 / 조건: 없음" })];
 }
 
 function pageControls(record: TroopRecord, page: BattleEventPageRecord, rerender: () => void): HTMLElement[] {
-  const condition = page.conditions[0];
-  const conditionKind = kindOfBattleEventCondition(condition);
+  const conditionKind = kindOfBattleEventCondition(page.conditions[0]);
   return [
     selectLiteral("스팬", "db-field-troop-event-span", page.span, EVENT_SPANS, (span) => updateTroopBattleEventPage(record, page, { span })),
     ...battleEventConditionControls(record, page, conditionKind),
@@ -73,19 +86,28 @@ function qualityStrip(page: BattleEventPageRecord | undefined): HTMLElement {
   });
 }
 
-function pageTabs(record: TroopRecord, page: BattleEventPageRecord | undefined): HTMLElement {
+function pageTabs(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
   return el("div", {
     class: "db-troop-event-page-tabs",
     children: record.battleEventPages.length > 0
-      ? record.battleEventPages.map((entry, index) =>
-          el("button", {
-            class: `db-troop-event-page-tab${entry.id === page?.id ? " active" : ""}`,
-            attrs: { type: "button" },
-            text: String(index + 1),
-          })
-        )
-      : [el("button", { class: "db-troop-event-page-tab active", attrs: { type: "button" }, text: "1" })],
+      ? record.battleEventPages.map((entry, index) => pageTab(record, entry, index, entry.id === page?.id, rerender))
+      : [el("button", { class: "db-troop-event-page-tab active", attrs: { type: "button", disabled: "true" }, text: "1" })],
   });
+}
+
+function pageTab(record: TroopRecord, entry: BattleEventPageRecord, index: number, active: boolean, rerender: () => void): HTMLButtonElement {
+  return el("button", {
+    class: `db-troop-event-page-tab${active ? " active" : ""}`,
+    attrs: { type: "button", "aria-pressed": String(active) },
+    dataset: { testid: `db-troop-event-page-tab-${index + 1}` },
+    text: String(index + 1),
+    on: {
+      click: () => {
+        activeBattleEventPageIds.set(record.id, entry.id);
+        rerender();
+      },
+    },
+  }) as HTMLButtonElement;
 }
 
 function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
@@ -109,35 +131,43 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
   });
 }
 
-function commandArea(page: BattleEventPageRecord | undefined): HTMLElement {
+function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
+  if (!page) {
+    return el("div", {
+      class: "db-troop-event-command-area",
+      dataset: { testid: "db-troop-event-command-area" },
+      children: [el("div", { class: "db-troop-command-line", text: "@>" })],
+    });
+  }
+  const host = el("div", { class: "cmd-list", dataset: { testid: "db-troop-event-command-list" } });
+  renderDatabaseCommandListEditor(host, {
+    commands: page.commands,
+    rerender,
+    replaceCommands: (commands: Command[]) => updateTroopBattleEventPage(record, page, { commands }),
+  });
   return el("div", {
-    class: "db-troop-event-command-area",
+    class: "db-troop-event-command-area event-contents-fieldset",
     dataset: { testid: "db-troop-event-command-area" },
-    children: [
-      el("div", { class: "db-troop-command-line", text: "@>" }),
-      ...(page?.commands ?? []).map((command) => el("div", { class: "db-troop-command-line", text: battleEventCommandSummary(command) })),
-    ],
+    children: [host],
   });
 }
 
 function addPage(record: TroopRecord, rerender: () => void): void {
-  updateDatabaseRecord("troops", record.id, {
-    battleEventPages: [
-      ...record.battleEventPages,
-      {
-        id: `${record.id}_battle_event_${record.battleEventPages.length + 1}`,
-        name: `전투 이벤트 ${record.battleEventPages.length + 1}`,
-        conditions: [],
-        span: "battle",
-        commands: [],
-      },
-    ],
-  });
+  const currentRecord = currentTroop(record);
+  const page: BattleEventPageRecord = {
+    id: `${record.id}_battle_event_${currentRecord.battleEventPages.length + 1}`,
+    name: `전투 이벤트 ${currentRecord.battleEventPages.length + 1}`,
+    conditions: [],
+    span: "battle",
+    commands: [],
+  };
+  activeBattleEventPageIds.set(record.id, page.id);
+  updateDatabaseRecord("troops", record.id, { battleEventPages: [...currentRecord.battleEventPages, page] });
   rerender();
 }
 
 function applyPayoffTemplate(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): void {
-  const currentRecord = store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? record;
+  const currentRecord = currentTroop(record);
   const targetPage = page ?? {
     id: `${record.id}_battle_event_${currentRecord.battleEventPages.length + 1}`,
     name: "전투 보상 흐름",
@@ -146,10 +176,9 @@ function applyPayoffTemplate(record: TroopRecord, page: BattleEventPageRecord | 
     commands: [],
   };
   const commands = withTemplateCommands(targetPage.commands);
+  activeBattleEventPageIds.set(record.id, targetPage.id);
   if (!page) {
-    updateDatabaseRecord("troops", record.id, {
-      battleEventPages: [...currentRecord.battleEventPages, { ...targetPage, commands }],
-    });
+    updateDatabaseRecord("troops", record.id, { battleEventPages: [...currentRecord.battleEventPages, { ...targetPage, commands }] });
     rerender();
     return;
   }
@@ -158,27 +187,28 @@ function applyPayoffTemplate(record: TroopRecord, page: BattleEventPageRecord | 
 }
 
 function withTemplateCommands(commands: BattleEventPageRecord["commands"]): BattleEventPageRecord["commands"] {
-  const hasCommand = (commandId: string): boolean =>
-    commands.some((command) => command.kind === "m2Command" && command.commandId === commandId);
+  const hasCommand = (commandId: string): boolean => commands.some((command) => command.kind === "m2Command" && command.commandId === commandId);
   return [
     ...commands,
-    ...(hasCommand(ENEMY_ENCOUNTER_ID)
-      ? []
-      : [{ kind: "m2Command" as const, commandId: ENEMY_ENCOUNTER_ID, fields: { target: "enemy-1" } }]),
-    ...(hasCommand(CHANGE_BATTLEBACK_ID)
-      ? []
-      : [{ kind: "m2Command" as const, commandId: CHANGE_BATTLEBACK_ID, fields: { resourceId: "easyrpg-backdrop-dawn1" } }]),
-    ...(hasCommand(RESULT_SUMMARY_ID)
-      ? []
-      : [{ kind: "m2Command" as const, commandId: RESULT_SUMMARY_ID, fields: { label: "결과 요약" } }]),
+    ...(hasCommand(ENEMY_ENCOUNTER_ID) ? [] : [{ kind: "m2Command" as const, commandId: ENEMY_ENCOUNTER_ID, fields: { target: "enemy-1" } }]),
+    ...(hasCommand(CHANGE_BATTLEBACK_ID) ? [] : [{ kind: "m2Command" as const, commandId: CHANGE_BATTLEBACK_ID, fields: { resourceId: "easyrpg-backdrop-dawn1" } }]),
+    ...(hasCommand(RESULT_SUMMARY_ID) ? [] : [{ kind: "m2Command" as const, commandId: RESULT_SUMMARY_ID, fields: { label: "결과 요약" } }]),
   ];
 }
 
 function removePage(record: TroopRecord, pageId: string, rerender: () => void): void {
-  updateDatabaseRecord("troops", record.id, {
-    battleEventPages: record.battleEventPages.filter((page) => page.id !== pageId),
-  });
+  const currentRecord = currentTroop(record);
+  const removedIndex = currentRecord.battleEventPages.findIndex((page) => page.id === pageId);
+  const remaining = currentRecord.battleEventPages.filter((page) => page.id !== pageId);
+  const nextPage = remaining[Math.max(0, Math.min(removedIndex, remaining.length - 1))];
+  if (nextPage) activeBattleEventPageIds.set(record.id, nextPage.id);
+  else activeBattleEventPageIds.delete(record.id);
+  updateDatabaseRecord("troops", record.id, { battleEventPages: remaining });
   rerender();
+}
+
+function currentTroop(record: TroopRecord): TroopRecord {
+  return store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? record;
 }
 
 function button(label: string, testid: string, onClick: () => void, icon?: string): HTMLButtonElement {

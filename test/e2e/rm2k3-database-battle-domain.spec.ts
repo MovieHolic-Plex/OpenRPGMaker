@@ -134,6 +134,94 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
   });
 });
 
+
+test("T8 troop battle event pages edit active commands and enemy action pickers are live", async ({ page }) => {
+  const task8EvidenceDir = ".omo/evidence/task-8-playwright";
+  await writeDatabaseScenario(task8EvidenceDir, {
+    name: "T8 battle event tabs and enemy action controls",
+    route: "/?freshProject=1",
+    viewports: [{ name: "desktop", width: 1280, height: 840 }],
+    path: [
+      "open Database modal",
+      "create two Troop battle event pages",
+      "switch to page 2 and edit its command through the shared command editor",
+      "apply, close, reopen, and verify page 2 command persisted",
+      "open Enemy action dialog and use the switch picker button",
+    ],
+    acceptance: [
+      "troop battle event tabs are clickable and mark the active page",
+      "active page commands render with shared event command list controls",
+      "edited active page commands persist after Apply/reopen",
+      "enemy action switch picker buttons open a real record picker",
+    ],
+  });
+
+  await page.setViewportSize({ width: 1280, height: 840 });
+  await page.goto("/?freshProject=1");
+  await openDatabase(page);
+
+  await switchDatabaseTab(page, tabBySlug("troops"));
+  await page.getByTestId("db-troop-event-add-page").click();
+  await page.getByTestId("db-troop-event-add-page").click();
+  await expect(page.getByTestId("db-troop-event-page-tab-1")).toBeVisible();
+  await expect(page.getByTestId("db-troop-event-page-tab-2")).toBeVisible();
+  await page.getByTestId("db-troop-event-page-tab-2").click();
+  await expect(page.getByTestId("db-troop-event-page-tab-2")).toHaveClass(/active/);
+
+  await page.getByTestId("db-troop-event-add-change-enemy-hp").click();
+  const commandList = page.getByTestId("db-troop-event-command-list");
+  const battleCommand = commandList.getByTestId("event-command-m2Command").first();
+  await expect(battleCommand).toBeVisible();
+  await battleCommand.locator(".cmd-head").click({ button: "right" });
+  await page.getByTestId("event-command-menu-edit").click();
+  const commandDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(commandDialog).toBeVisible();
+  const targetSelect = commandDialog.getByTestId("m2-command-target-record-select");
+  await targetSelect.selectOption({ index: 1 });
+  const selectedTarget = await targetSelect.inputValue();
+  await commandDialog.getByTestId("m2-command-operation-option-select").selectOption("remove");
+  await commandDialog.getByTestId("m2-command-value-input").fill("37");
+  await commandDialog.getByTestId("event-command-edit-ok").click();
+  await expect(commandDialog).toBeHidden();
+
+  await applyDatabaseChanges(page);
+  await closeAndReopenDatabase(page);
+  await switchDatabaseTab(page, tabBySlug("troops"));
+  await page.getByTestId("db-troop-event-page-tab-2").click();
+  await expect(page.getByTestId("db-troop-event-command-list").getByTestId("event-command-m2Command")).toContainText("적 HP 변경");
+
+  let project = await exportedProject(page);
+  const troopPage = project.database.troops[0]?.battleEventPages?.[1];
+  expect(troopPage?.commands[0]).toMatchObject({
+    kind: "m2Command",
+    commandId: "m2-098-change-enemy-hp",
+    fields: { target: selectedTarget, operation: "remove", value: "37" },
+  });
+
+  await switchDatabaseTab(page, tabBySlug("enemies"));
+  await page.getByTestId("db-enemy-action-row-0").dblclick();
+  await expect(page.getByTestId("db-enemy-action-dialog")).toBeVisible();
+  const switchPicker = page.getByTestId("db-enemy-action-switch-on-picker");
+  await expect(switchPicker).toBeEnabled();
+  await expect(switchPicker).toHaveAttribute("aria-label", /스위치 ON 선택/u);
+  await switchPicker.click();
+  await expect(page.getByTestId("event-record-picker")).toBeVisible();
+  await page.getByTestId("event-record-picker-row-1").click();
+  await page.getByTestId("event-record-picker-ok").click();
+  await expect(page.getByTestId("event-record-picker")).toBeHidden();
+  await expect(page.getByTestId("db-enemy-action-switch-on-enabled")).toBeChecked();
+  await page.getByTestId("db-enemy-action-ok").click();
+
+  project = await exportedProject(page);
+  const enemyAction = project.database.enemies[0]?.actions[0];
+  expect(enemyAction?.switchOnAfterAction?.enabled).toBe(true);
+  expect(enemyAction?.switchOnAfterAction?.switchId).toBe(project.switches[0]?.id);
+
+  await mkdir(`${task8EvidenceDir}/tabs`, { recursive: true });
+  await page.getByTestId("database-modal").screenshot({ path: `${task8EvidenceDir}/tabs/t8-final-database.png` });
+  await writeFile(`${task8EvidenceDir}/state-capture.json`, `${JSON.stringify({ enemyAction, troopPage }, null, 2)}\n`, "utf8");
+});
+
 function tabBySlug(slug: "battle-screen" | "enemies" | "troops") {
   const tab = DATABASE_TAB_SPECS.find((candidate) => candidate.slug === slug);
   if (!tab) throw new Error(`missing Database tab spec: ${slug}`);
