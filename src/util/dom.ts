@@ -52,5 +52,5 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 
 // 노드의 자식을 전부 비우기.
 export function clearChildren(node: Node): void {
-  while (node.firstChild) node.removeChild(node.firstChild);
+  node.textContent = "";
 }

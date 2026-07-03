@@ -8,164 +8,9 @@ import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/e
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
+import { FakeElement, installFakeDom } from "./fakeDom";
 
-class FakeNode {
-  protected childNodes: (FakeNode | string)[] = [];
-  parentElement: FakeElement | null = null;
-
-  append(...nodes: (FakeNode | string)[]): void {
-    for (const node of nodes) {
-      if (node instanceof FakeNode && this instanceof FakeElement) {
-        node.parentElement = this;
-      }
-      this.childNodes.push(node);
-    }
-  }
-
-  get textContent(): string {
-    return this.childNodes.map((node) => String(node instanceof FakeNode ? node.textContent : node)).join("");
-  }
-
-  set textContent(value: string) {
-    this.childNodes = [value];
-  }
-
-  get firstChild(): FakeNode | string | null {
-    return this.childNodes[0] ?? null;
-  }
-
-  removeChild(node: FakeNode | string): FakeNode | string {
-    const index = this.childNodes.indexOf(node);
-    if (index >= 0) this.childNodes.splice(index, 1);
-    if (node instanceof FakeNode) node.parentElement = null;
-    return node;
-  }
-}
-
-class FakeElement extends FakeNode {
-  className = "";
-  value = "";
-  checked = false;
-  disabled = false;
-  type = "";
-  private readonly listeners: Record<string, EventListener[]> = {};
-  readonly style = {
-    width: "",
-    height: "",
-    transform: "",
-    setProperty: () => undefined,
-  };
-  readonly classList = {
-    add: (...names: string[]) => {
-      const next = new Set(this.className.split(" ").filter(Boolean));
-      names.forEach((name) => next.add(name));
-      this.className = [...next].join(" ");
-    },
-    remove: (...names: string[]) => {
-      const removed = new Set(names);
-      this.className = this.className
-        .split(" ")
-        .filter((name) => name && !removed.has(name))
-        .join(" ");
-    },
-  };
-  readonly dataset: Record<string, string> = {};
-  private readonly attributes: Record<string, string> = {};
-
-  constructor(readonly tagName: string) {
-    super();
-  }
-
-  setAttribute(name: string, value: string): void {
-    this.attributes[name] = value;
-  }
-
-  addEventListener(type: string, handler: EventListener): void {
-    this.listeners[type] ??= [];
-    this.listeners[type].push(handler);
-  }
-
-  dispatchEvent(event: Event): boolean {
-    Object.defineProperty(event, "target", { configurable: true, value: this });
-    for (const handler of this.listeners[event.type] ?? []) {
-      handler.call(this, event);
-    }
-    return !event.defaultPrevented;
-  }
-
-  click(): void {
-    this.dispatchEvent(new Event("click"));
-  }
-
-  focus(): void {
-  }
-
-  scrollTo(): void {
-  }
-
-  getBoundingClientRect(): DOMRect {
-    return { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0, x: 0, y: 0, toJSON: () => ({}) };
-  }
-
-  setPointerCapture(): void {
-  }
-
-  hasPointerCapture(): boolean {
-    return false;
-  }
-
-  releasePointerCapture(): void {
-  }
-
-  prepend(...nodes: (FakeNode | string)[]): void {
-    for (const node of nodes.slice().reverse()) {
-      if (node instanceof FakeNode) node.parentElement = this;
-      this.childNodes.unshift(node);
-    }
-  }
-
-  remove(): void {
-    this.parentElement?.removeChild(this);
-  }
-
-  querySelector(selector: string): FakeElement | null {
-    return this.querySelectorAll(selector)[0] ?? null;
-  }
-
-  querySelectorAll(selector: string): FakeElement[] {
-    const matches: FakeElement[] = [];
-    this.collectMatches(selector, matches);
-    return matches;
-  }
-
-  private collectMatches(selector: string, matches: FakeElement[]): void {
-    for (const node of this.childNodes) {
-      if (!(node instanceof FakeElement)) continue;
-      if (node.matchesSelector(selector)) matches.push(node);
-      node.collectMatches(selector, matches);
-    }
-  }
-
-  private matchesSelector(selector: string): boolean {
-    if (selector.startsWith(".")) {
-      return this.className.split(" ").includes(selector.slice(1));
-    }
-    const testId = selector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
-    if (testId) return this.dataset.testid === testId;
-    return false;
-  }
-}
-
-const fakeDocument = {
-  body: new FakeElement("body"),
-  createElement: (tagName: string): HTMLElement => new FakeElement(tagName) as unknown as HTMLElement,
-  createTextNode: (text: string): Node => {
-    const node = new FakeNode();
-    node.textContent = text;
-    return node as unknown as Node;
-  },
-  querySelector: (selector: string): HTMLElement | null => fakeDocument.body.querySelector(selector) as unknown as HTMLElement | null,
-};
+let restoreFakeDom: () => void = () => undefined;
 
 function fakeContainer(): HTMLElement {
   return new FakeElement("div") as unknown as HTMLElement;
@@ -195,15 +40,24 @@ function gameEvent(page: EventPage): GameEvent {
   };
 }
 
+function deleteKeyEvent(): KeyboardEvent {
+  const event = new Event("keydown", { bubbles: true, cancelable: true });
+  Object.defineProperties(event, {
+    altKey: { value: false },
+    ctrlKey: { value: false },
+    key: { value: "Delete" },
+    metaKey: { value: false },
+  });
+  return event as KeyboardEvent;
+}
+
 describe("RPG Maker style event editor entry points", () => {
   beforeEach(() => {
-    vi.stubGlobal("Node", FakeNode);
-    vi.stubGlobal("HTMLElement", FakeElement);
-    fakeDocument.body = new FakeElement("body");
-    vi.stubGlobal("document", fakeDocument);
+    restoreFakeDom = installFakeDom();
   });
 
   afterEach(() => {
+    restoreFakeDom();
     vi.unstubAllGlobals();
   });
 
@@ -325,4 +179,71 @@ describe("RPG Maker style event editor entry points", () => {
     expect(tabStrip?.textContent).toBe("123");
     expect(content.querySelector('[data-testid="event-page-tab-3"]')?.className).toContain("active");
   });
+
+  it("confirms before deleting the open event with the Delete key", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = eventPage();
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: page.id });
+    const confirmDeletion = vi.fn(() => true);
+    vi.stubGlobal("confirm", confirmDeletion);
+
+    openEventEditorModal(project.startMapId, "event-1");
+    const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+    if (!modal) throw new Error("Expected event editor modal to open");
+
+    modal.dispatchEvent(deleteKeyEvent());
+
+    expect(confirmDeletion).toHaveBeenCalledWith(expect.stringContaining("이벤트"));
+    expect(store.getCurrent().maps[project.startMapId].events).toEqual([]);
+    expect(document.querySelector('[data-testid="event-editor-modal"]')).toBeNull();
+  });
+
+  it("keeps the event and active draft when delete confirmation is canceled", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = eventPage();
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: page.id });
+    const confirmDeletion = vi.fn(() => false);
+    vi.stubGlobal("confirm", confirmDeletion);
+
+    openEventEditorModal(project.startMapId, "event-1");
+    const deleteButton = document.querySelector<HTMLElement>('[data-testid="event-delete"]');
+    if (!deleteButton) throw new Error("Expected event delete button to render");
+
+    deleteButton.click();
+
+    const event = store.getCurrent().maps[project.startMapId].events.find((item) => item.id === "event-1");
+    expect(confirmDeletion).toHaveBeenCalledOnce();
+    expect(event?.draft?.kind).toBe("edit");
+    expect(editorState.get().selectedEventId).toBe("event-1");
+    expect(editorState.get().selectedEventPageId).toBe(page.id);
+    expect(document.querySelector('[data-testid="event-editor-modal"]')).not.toBeNull();
+  });
+
+  it("ignores the modal Delete key when focus is inside an input", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = eventPage();
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: page.id });
+    const confirmDeletion = vi.fn(() => true);
+    vi.stubGlobal("confirm", confirmDeletion);
+
+    openEventEditorModal(project.startMapId, "event-1");
+    const nameInput = document.querySelector<HTMLElement>('[data-testid="event-page-name-input"]');
+    if (!nameInput) throw new Error("Expected event page name input to render");
+
+    nameInput.dispatchEvent(deleteKeyEvent());
+
+    expect(confirmDeletion).not.toHaveBeenCalled();
+    expect(store.getCurrent().maps[project.startMapId].events.some((event) => event.id === "event-1")).toBe(true);
+    expect(document.querySelector('[data-testid="event-editor-modal"]')).not.toBeNull();
+  });
+
 });

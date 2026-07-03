@@ -10,6 +10,10 @@ type PreviousDomGlobals = {
 export class FakeNode {
   readonly childNodes: FakeNode[] = [];
   parentNode: FakeNode | null = null;
+
+  get parentElement(): FakeElement | null {
+    return this.parentNode instanceof FakeElement ? this.parentNode : null;
+  }
   private ownText = "";
 
   get firstChild(): FakeNode | null {
@@ -42,6 +46,13 @@ export class FakeNode {
     this.parentNode = null;
   }
 
+  prepend(...children: FakeNode[]): void {
+    for (const child of children.slice().reverse()) {
+      child.parentNode = this;
+      this.childNodes.unshift(child);
+    }
+  }
+
   contains(node: unknown): boolean {
     if (node === this) return true;
     return this.childNodes.some((child) => child.contains(node));
@@ -60,6 +71,7 @@ export class FakeElement extends FakeNode {
   style: Record<string, string> & { setProperty: (name: string, value: string) => void } = createFakeStyle();
   type = "";
   value = "";
+  isContentEditable = false;
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
@@ -70,6 +82,13 @@ export class FakeElement extends FakeNode {
       this.className = Array.from(classes).join(" ");
     },
     contains: (token: string): boolean => this.className.split(/\s+/).includes(token),
+    remove: (...tokens: string[]): void => {
+      const removed = new Set(tokens);
+      this.className = this.className
+        .split(/\s+/)
+        .filter((token) => token && !removed.has(token))
+        .join(" ");
+    },
   };
 
   constructor(tagName: string) {
@@ -89,6 +108,7 @@ export class FakeElement extends FakeNode {
   }
 
   dispatchEvent(event: Event): boolean {
+    if (event.target === null) Object.defineProperty(event, "target", { configurable: true, value: this });
     for (const listener of this.listeners[event.type] ?? []) {
       if (typeof listener === "function") {
         listener(event);
@@ -96,7 +116,12 @@ export class FakeElement extends FakeNode {
       }
       listener.handleEvent(event);
     }
-    return true;
+    if (event.bubbles) this.parentElement?.dispatchEvent(event);
+    return !event.defaultPrevented;
+  }
+
+  click(): void {
+    this.dispatchEvent(new Event("click"));
   }
 
   focus(): void {
@@ -105,8 +130,30 @@ export class FakeElement extends FakeNode {
   }
 
   querySelector(selector: string): FakeElement | null {
-    const tags = selector.split(",").map((part) => part.trim().toUpperCase());
-    return findFirstByTag(this, tags);
+    return this.querySelectorAll(selector)[0] ?? null;
+  }
+
+  querySelectorAll(selector: string): FakeElement[] {
+    const matches: FakeElement[] = [];
+    collectMatches(this, selector, matches);
+    return matches;
+  }
+
+  scrollTo(): void {
+  }
+
+  getBoundingClientRect(): DOMRect {
+    return { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0, x: 0, y: 0, toJSON: () => ({}) };
+  }
+
+  setPointerCapture(): void {
+  }
+
+  hasPointerCapture(): boolean {
+    return false;
+  }
+
+  releasePointerCapture(): void {
   }
 }
 
@@ -138,6 +185,8 @@ export function installFakeDom(): () => void {
       node.textContent = text;
       return node;
     },
+    querySelector: (selector: string) => body.querySelector(selector),
+    querySelectorAll: (selector: string) => body.querySelectorAll(selector),
   });
   return () => {
     restoreDomGlobal("document", previous.document);
@@ -162,13 +211,21 @@ export function findByTestId(root: FakeNode, testId: string): FakeElement | null
   return null;
 }
 
-function findFirstByTag(root: FakeNode, tags: readonly string[]): FakeElement | null {
-  if (root instanceof FakeElement && tags.includes(root.tagName)) return root;
+function collectMatches(root: FakeNode, selector: string, matches: FakeElement[]): void {
   for (const child of root.childNodes) {
-    const match = findFirstByTag(child, tags);
-    if (match) return match;
+    if (!(child instanceof FakeElement)) continue;
+    if (matchesSelector(child, selector)) matches.push(child);
+    collectMatches(child, selector, matches);
   }
-  return null;
+}
+
+function matchesSelector(element: FakeElement, selector: string): boolean {
+  const simpleSelector = selector.trim().split(/\s+/).at(-1) ?? selector;
+  if (simpleSelector.startsWith(".")) return element.className.split(/\s+/).includes(simpleSelector.slice(1));
+  const testId = simpleSelector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
+  if (testId) return element.dataset.testid === testId;
+  const tag = simpleSelector.match(/^([a-zA-Z]+)(?::not\(:disabled\))?$/u)?.[1];
+  return tag ? element.tagName === tag.toUpperCase() && !element.disabled : false;
 }
 
 function defineDomGlobal(name: DomGlobalName, value: unknown): void {

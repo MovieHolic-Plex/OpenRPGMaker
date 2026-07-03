@@ -471,9 +471,10 @@
   background: transparent;
   display: grid;
   gap: 8px;
-  grid-template-rows: 36px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   min-width: 0;
   overflow: hidden;
+  position: relative;
 }
 
 .event-editor-command-toolbar {
@@ -482,6 +483,10 @@
   gap: 8px;
   justify-content: flex-end;
   min-height: 36px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
 }
 
 .event-editor-command-tool {

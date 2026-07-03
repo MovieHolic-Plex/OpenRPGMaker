@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { applyLayer, handleEditorKey } from "@/editor/hotkeys";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
@@ -9,6 +9,7 @@ import type { GameEvent } from "@/project/types";
 // (shouldIgnoreEditorShortcut 의 DOM 가드는 jsdom 환경이 필요해 여기서는 제외.)
 describe("editor keyboard shortcuts", () => {
   beforeEach(() => {
+    vi.unstubAllGlobals();
     store.replace(createBlankProject());
     editorState.set({ tool: "paint", layer: "lower", zoom: 2 });
   });
@@ -88,6 +89,8 @@ describe("editor keyboard shortcuts", () => {
       selectedEventPageId: null,
       tool: "event",
     });
+
+    vi.stubGlobal("confirm", vi.fn(() => true));
 
     expect(handleEditorKey(keyEvent("Delete"))).toBe(true);
 

@@ -1,5 +1,5 @@
 import { editorState } from "@/editor/editorState";
-import { deleteEditorEvent } from "@/editor/eventDeletion";
+import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import {
   beginExistingEventDraft,
   createEventDraft,
@@ -10,6 +10,7 @@ import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
+import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
@@ -121,64 +122,6 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
   });
 }
 
-type DragState = {
-  readonly pointerId: number;
-  readonly startPointerX: number;
-  readonly startPointerY: number;
-  readonly startX: number;
-  readonly startY: number;
-  readonly startTranslateX: number;
-  readonly startTranslateY: number;
-};
-
-function attachWindowDrag(handle: HTMLElement, windowEl: HTMLElement): void {
-  let translateX = 0;
-  let translateY = 0;
-  let drag: DragState | null = null;
-
-  handle.addEventListener("pointerdown", (event) => {
-    const target = event.target;
-    if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a")) return;
-    const rect = windowEl.getBoundingClientRect();
-    drag = {
-      pointerId: event.pointerId,
-      startPointerX: event.clientX,
-      startPointerY: event.clientY,
-      startX: rect.left,
-      startY: rect.top,
-      startTranslateX: translateX,
-      startTranslateY: translateY,
-    };
-    windowEl.classList.add("dragging");
-    handle.setPointerCapture(event.pointerId);
-    event.preventDefault();
-  });
-
-  handle.addEventListener("pointermove", (event) => {
-    if (!drag || event.pointerId !== drag.pointerId) return;
-    const rect = windowEl.getBoundingClientRect();
-    const nextX = clamp(drag.startX + event.clientX - drag.startPointerX, 0, window.innerWidth - Math.min(rect.width, 160));
-    const nextY = clamp(drag.startY + event.clientY - drag.startPointerY, 0, window.innerHeight - handle.offsetHeight);
-    translateX = drag.startTranslateX + nextX - drag.startX;
-    translateY = drag.startTranslateY + nextY - drag.startY;
-    windowEl.style.transform = `translate(${Math.round(translateX)}px, ${Math.round(translateY)}px)`;
-  });
-
-  const stopDrag = (event: PointerEvent): void => {
-    if (!drag || event.pointerId !== drag.pointerId) return;
-    drag = null;
-    windowEl.classList.remove("dragging");
-    if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
-  };
-
-  handle.addEventListener("pointerup", stopDrag);
-  handle.addEventListener("pointercancel", stopDrag);
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), Math.max(min, max));
-}
-
 function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
   return el("div", {
     class: "event-editor-modal-footer",
@@ -191,6 +134,9 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
       el("div", {
         class: "event-editor-footer-actions",
         children: [
+          footerButton("삭제", "event-delete", () => {
+            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+          }),
           footerButton("확인", "event-editor-ok", () => {
             saveEventDraft(request.mapId, request.eventId);
             close(true);
@@ -230,7 +176,7 @@ function handleModalKeyDown(
   if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
   if (isTextEditingTarget(event.target)) return;
   event.preventDefault();
-  if (deleteEditorEvent(request.mapId, request.eventId)) close(true);
+  if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
 }
 
 function isTextEditingTarget(target: EventTarget | null): boolean {

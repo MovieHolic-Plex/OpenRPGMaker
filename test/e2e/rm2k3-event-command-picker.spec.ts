@@ -2,6 +2,14 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 test.setTimeout(60_000);
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem("rpg-zzu-editor-session-id", "e2e-command-picker");
+  });
+});
+
 async function clickMapCenter(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
@@ -18,7 +26,8 @@ async function dblclickMapCenter(page: Page): Promise<void> {
 
 async function openEventEditor(page: Page): Promise<Locator> {
   await page.getByTestId("layer-event").click();
-  await page.getByTestId("tool-event").click();
+  const visibleEventTool = page.locator('[data-testid="tool-event"]:visible').first();
+  if ((await visibleEventTool.count()) > 0) await visibleEventTool.click();
   await clickMapCenter(page);
 
   const editor = page.getByTestId("event-editor-modal");
@@ -101,7 +110,7 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
   await expect(picker.getByRole("button", { name: "적 HP 변경..." })).toHaveCount(0);
 
   await picker.getByTestId("event-command-picker-tab-1").click();
-  await page.screenshot({ path: testInfo.outputPath("rm2k3-event-command-picker.png"), fullPage: true });
+  await picker.screenshot({ path: testInfo.outputPath("rm2k3-event-command-picker.png") });
   await picker.getByTestId("command-picker-add-text").click();
   await expect(picker).toBeVisible();
   const commandDialog = page.getByTestId("event-command-edit-dialog");
@@ -314,7 +323,8 @@ test("event command context menu, switch picker, and trigger safety warning work
 
   const switchCommand = editor.getByTestId("event-command-setSwitch");
   await expect(switchCommand).toBeVisible();
-  await switchCommand.locator(".cmd-head").dblclick();
+  await switchCommand.locator(".cmd-head").click({ button: "right" });
+  await page.getByTestId("event-command-menu-edit").click();
   await expect(commandDialog).toBeVisible();
   await commandDialog.getByTestId("event-switch-picker-open").click();
   const recordPicker = page.getByTestId("event-record-picker");

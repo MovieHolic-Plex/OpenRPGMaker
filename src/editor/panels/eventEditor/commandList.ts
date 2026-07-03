@@ -6,9 +6,8 @@ import {
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { renderCommandBody } from "./commandBody";
-import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
+import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
-import { openEventCommandPicker } from "./commandPicker";
 import { commandSummaryParts } from "./commandSummary";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
@@ -16,8 +15,6 @@ import type { CommandListActions } from "./types";
 // 이벤트 명령 리스트 렌더링. RM2K3 처럼 트리 들여쓰기 + 드래그 재정렬 + 위/아래/삭제 버튼.
 // 드래그는 같은 컨테이너(리스트) 내에서만 동작한다. path 는 컨테이너 공통 접두어를 공유하므로
 // 마지막 인덱스만 비교해 순서를 바꾼다.
-
-let commandClipboard: Command | null = null;
 
 export function renderCommandList(
   host: HTMLElement,
@@ -88,7 +85,7 @@ function renderCommandItem(
   head.addEventListener("contextmenu", (event) => {
     event.preventDefault();
     selectCommandLine(item);
-    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions });
+    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, toggleInlineEditor });
   });
   head.addEventListener("dblclick", () => {
     selectCommandLine(item);
@@ -97,7 +94,7 @@ function renderCommandItem(
   head.addEventListener("keydown", (event) => {
     if (!(event instanceof KeyboardEvent)) return;
     selectCommandLine(item);
-    handleCommandShortcut(event, { x: 0, y: 0, item, command: cmd, path, actions });
+    handleCommandShortcut(event, { x: 0, y: 0, item, command: cmd, path, actions, toggleInlineEditor });
   });
   item.append(head);
   const editor = el("div", { class: "cmd-inline-editor" });
@@ -240,236 +237,6 @@ function toggleInlineEditor(item: HTMLElement): void {
     if (node !== item) node.classList.remove("editing");
   });
   item.classList.toggle("editing");
-}
-
-type ContextMenuRequest = {
-  readonly x: number;
-  readonly y: number;
-  readonly item: HTMLElement;
-  readonly command: Command;
-  readonly path: number[];
-  readonly actions: CommandListActions;
-};
-
-function openCommandContextMenu(request: ContextMenuRequest): void {
-  document.querySelector('[data-testid="event-command-context-menu"]')?.remove();
-  const menu = el("div", {
-    class: "event-command-context-menu",
-    attrs: { role: "menu" },
-    dataset: { testid: "event-command-context-menu" },
-  });
-  const close = () => menu.remove();
-  menu.append(...contextMenuNodes(request, close));
-  document.body.append(menu);
-  const rect = menu.getBoundingClientRect();
-  const left = Math.min(request.x, window.innerWidth - rect.width - 8);
-  const top = Math.min(request.y, window.innerHeight - rect.height - 8);
-  menu.style.left = `${Math.max(8, left)}px`;
-  menu.style.top = `${Math.max(8, top)}px`;
-  const closeOnOutside = (event: MouseEvent) => {
-    if (event.target instanceof Node && menu.contains(event.target)) return;
-    close();
-    document.removeEventListener("mousedown", closeOnOutside);
-  };
-  document.addEventListener("mousedown", closeOnOutside);
-  menu.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      close();
-      return;
-    }
-    handleCommandShortcut(event, request, close);
-  });
-  menu.querySelector<HTMLElement>('[data-testid="event-command-menu-edit"]')?.focus();
-}
-
-type ContextMenuItem =
-  | {
-      readonly label: string;
-      readonly shortcut: string;
-      readonly icon: string;
-      readonly testId: string;
-      readonly run: () => void;
-      readonly disabled?: boolean;
-      readonly separator?: false;
-    }
-  | { readonly separator: true };
-
-function contextMenuNodes(request: ContextMenuRequest, close: () => void): HTMLElement[] {
-  const items: ContextMenuItem[] = [
-    {
-      label: "삽입...",
-      shortcut: "Enter",
-      icon: "insert",
-      testId: "event-command-menu-insert",
-      run: () => openInsertPicker(request, close),
-    },
-    {
-      label: "편집...",
-      shortcut: "Space",
-      icon: "edit",
-      testId: "event-command-menu-edit",
-      run: () => {
-        openEditCommandDialog(request);
-        close();
-      },
-    },
-    { separator: true },
-    {
-      label: "잘라내기",
-      shortcut: "Ctrl+X",
-      icon: "cut",
-      testId: "event-command-menu-cut",
-      run: () => {
-        cutCommand(request);
-        close();
-      },
-    },
-    {
-      label: "복사",
-      shortcut: "Ctrl+C",
-      icon: "copy",
-      testId: "event-command-menu-copy",
-      run: () => {
-        copyCommand(request.command);
-        close();
-      },
-    },
-    {
-      label: "붙여넣기",
-      shortcut: "Ctrl+V",
-      icon: "paste",
-      testId: "event-command-menu-paste",
-      disabled: !commandClipboard,
-      run: () => {
-        pasteCommand(request);
-        close();
-      },
-    },
-    {
-      label: "삭제",
-      shortcut: "Del",
-      icon: "delete",
-      testId: "event-command-menu-delete",
-      run: () => {
-        request.actions.deleteCommand(request.path);
-        close();
-      },
-    },
-    {
-      label: "전체 선택",
-      shortcut: "Ctrl+A",
-      icon: "select-all",
-      testId: "event-command-menu-select-all",
-      run: () => {
-        selectAllCommands(request.item);
-        close();
-      },
-    },
-  ];
-  return items.map((item) =>
-    item.separator
-      ? el("div", { class: "event-command-menu-separator", attrs: { role: "separator" } })
-      : contextMenuButton(item)
-  );
-}
-
-function contextMenuButton(item: Extract<ContextMenuItem, { readonly separator?: false }>): HTMLButtonElement {
-  return el("button", {
-    class: "event-command-menu-item",
-    attrs: item.disabled ? { type: "button", disabled: "", role: "menuitem" } : { type: "button", role: "menuitem" },
-    children: [
-      el("span", {
-        class: `event-command-menu-icon ${item.icon}`,
-        attrs: { "aria-hidden": "true" },
-      }),
-      el("span", { class: "event-command-menu-label", text: item.label }),
-      el("span", { class: "event-command-menu-shortcut", text: item.shortcut }),
-    ],
-    dataset: { testid: item.testId },
-    on: { click: item.run },
-  }) as HTMLButtonElement;
-}
-
-function handleCommandShortcut(event: KeyboardEvent, request: ContextMenuRequest, closeMenu?: () => void): void {
-  if (event.ctrlKey && !event.altKey) {
-    switch (event.key.toLowerCase()) {
-      case "x":
-        event.preventDefault();
-        cutCommand(request);
-        closeMenu?.();
-        return;
-      case "c":
-        event.preventDefault();
-        copyCommand(request.command);
-        closeMenu?.();
-        return;
-      case "v":
-        event.preventDefault();
-        pasteCommand(request);
-        closeMenu?.();
-        return;
-      case "a":
-        event.preventDefault();
-        selectAllCommands(request.item);
-        closeMenu?.();
-        return;
-    }
-  }
-  if (event.ctrlKey || event.altKey) return;
-  if (event.key === "Enter") {
-    event.preventDefault();
-    openInsertPicker(request, closeMenu ?? (() => undefined));
-    return;
-  }
-  if (event.key === " " || event.key === "Spacebar") {
-    event.preventDefault();
-    toggleInlineEditor(request.item);
-    closeMenu?.();
-    return;
-  }
-  if (event.key === "Delete" || event.key === "Del") {
-    event.preventDefault();
-    request.actions.deleteCommand(request.path);
-    closeMenu?.();
-  }
-}
-
-function openEditCommandDialog(request: ContextMenuRequest): void {
-  openEventCommandEditDialog({
-    initial: request.command,
-    onApply: (command) => request.actions.replaceCommand(request.path, command),
-  });
-}
-
-function cutCommand(request: ContextMenuRequest): void {
-  commandClipboard = structuredClone(request.command);
-  request.actions.deleteCommand(request.path);
-}
-
-function copyCommand(command: Command): void {
-  commandClipboard = structuredClone(command);
-}
-
-function pasteCommand(request: ContextMenuRequest): void {
-  if (commandClipboard) request.actions.insertCommand(request.path, structuredClone(commandClipboard));
-}
-
-function selectAllCommands(item: HTMLElement): void {
-  item.parentElement?.querySelectorAll(".cmd-item").forEach((node) => node.classList.add("selected"));
-}
-
-function openInsertPicker(request: ContextMenuRequest, closeMenu: () => void): void {
-  closeMenu();
-  openEventCommandPicker({
-    title: "이벤트 명령 삽입",
-    onSelect: (command, closePicker) => {
-      openNewEventCommandDialog(command, (editedCommand) => {
-        request.actions.insertCommand(request.path, editedCommand);
-        closePicker();
-      });
-      return { closePicker: false };
-    },
-  });
 }
 
 function commandActions(path: number[], actions: CommandListActions): HTMLElement {

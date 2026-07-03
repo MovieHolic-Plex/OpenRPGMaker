@@ -1,5 +1,5 @@
 import { updateEvent } from "@/editor/eventActions";
-import { deleteEditorEvent } from "@/editor/eventDeletion";
+import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { el } from "@/util/dom";
 import { field, selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, TRIGGER_OPTIONS } from "./options";
@@ -17,9 +17,10 @@ export function renderEventProps(mapId: MapId, ev: GameEvent): HTMLElement {
     el("button", {
       class: "btn danger",
       text: "이벤트 삭제",
+      dataset: { testid: "event-delete" },
       on: {
         click: () => {
-          deleteEditorEvent(mapId, ev.id);
+          requestEditorEventDeletion(mapId, ev.id);
         },
       },
     })
