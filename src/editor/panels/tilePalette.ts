@@ -6,7 +6,7 @@ import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { setTerrainTag } from "@/editor/tilesetActions";
 import { TILE_SIZE } from "@/assets/bundled";
-import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
@@ -17,7 +17,7 @@ import {
   similarTilesForTile,
   usedLocationsForTile,
 } from "@/editor/panels/tileBrushTools";
-import { createPaletteStampFromDrag, paletteStampIncludesTile } from "@/editor/tilePaletteStamp";
+import { createPaletteStampFromDisplayDrag, paletteStampIncludesTile } from "@/editor/tilePaletteStamp";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { compatibleStampIdForTile, isAutoConnectCandidate, tileStampsForTile } from "@/editor/tileStampBrushes";
 import type { TileStampId } from "@/editor/tileStampBrushes";
@@ -663,6 +663,7 @@ function makeChipsetSheet(
     overlay.append(makeChipsetCell({
       active: selectedTile === index,
       currentLayer: tileLayer === layer,
+      displayTiles: tileIndexes,
       inPaletteStamp: paletteStampIncludesTile(activePaletteStamp, index, tileset.tilesPerRow),
       index,
       tileset,
@@ -697,6 +698,7 @@ function canScrollVertically(node: HTMLElement, deltaY: number): boolean {
 type ChipsetCellModel = {
   readonly active: boolean;
   readonly currentLayer: boolean;
+  readonly displayTiles: readonly number[];
   readonly inPaletteStamp: boolean;
   readonly index: number;
   readonly tileset: TilesetDef;
@@ -710,15 +712,15 @@ function makeChipsetCell(model: ChipsetCellModel): HTMLButtonElement {
     attrs: {
       title: name,
       "aria-label": name,
-      style: tilePreviewStyle(index, CHIPSET_SHEET_CELL_SIZE),
     },
+    children: [makeChipsetTilePreview(model.tileset, index)],
     dataset: { testid: `chipset-tile-${index}` },
     on: {
       pointercancel: () => {
         paletteDragStartTile = null;
       },
-      pointerdown: (event) => startPaletteStampDrag(index, event),
-      pointerup: (event) => finishPaletteStampDrag(index, model.tileset, event),
+      pointerdown: (event) => startPaletteStampDrag(model, event),
+      pointerup: (event) => finishPaletteStampDrag(model, event),
       click: (event) => {
         event.preventDefault();
         if (paletteDragHandled) {
@@ -730,6 +732,34 @@ function makeChipsetCell(model: ChipsetCellModel): HTMLButtonElement {
     },
   });
   return cell;
+}
+
+function makeChipsetTilePreview(tileset: TilesetDef, tile: number): HTMLElement {
+  return el("span", {
+    class: "chipset-tile-preview",
+    attrs: { "aria-hidden": "true" },
+    children: [
+      el("img", {
+        attrs: {
+          alt: "",
+          decoding: "async",
+          draggable: "false",
+          src: tilesetImageUrl(tileset),
+          style: tilePreviewImageStyle(tileset, tile, CHIPSET_SHEET_CELL_SIZE),
+        },
+      }),
+    ],
+  });
+}
+
+function tilePreviewImageStyle(tileset: TilesetDef, tile: number, previewSize: number | string): string {
+  const column = tile % tileset.tilesPerRow;
+  const row = Math.floor(tile / tileset.tilesPerRow);
+  const cellSize = typeof previewSize === "number" ? `${previewSize}px` : previewSize;
+  return [
+    `width:calc(${tileset.tilesPerRow} * ${cellSize})`,
+    `transform:translate(calc(${-column} * ${cellSize}), calc(${-row} * ${cellSize}))`,
+  ].join(";");
 }
 
 function tilePaletteAccessibleName(tileset: TilesetDef, index: number): string {
@@ -747,19 +777,25 @@ function cleanTileText(value: string | undefined): string {
   return value?.trim() ?? "";
 }
 
-function startPaletteStampDrag(index: number, event: Event): void {
+function startPaletteStampDrag(model: ChipsetCellModel, event: Event): void {
   if (!isPrimaryButtonEvent(event)) return;
-  paletteDragStartTile = index;
+  paletteDragStartTile = model.index;
   paletteDragHandled = false;
   event.preventDefault();
 }
 
-function finishPaletteStampDrag(index: number, tileset: TilesetDef, event: Event): void {
+function finishPaletteStampDrag(model: ChipsetCellModel, event: Event): void {
   if (!isPrimaryButtonEvent(event)) return;
   const startTile = paletteDragStartTile;
   paletteDragStartTile = null;
-  if (startTile === null || startTile === index) return;
-  const stamp = createPaletteStampFromDrag({ endTile: index, startTile, tileset });
+  if (startTile === null || startTile === model.index) return;
+  const stamp = createPaletteStampFromDisplayDrag({
+    displayTiles: model.displayTiles,
+    displayTilesPerRow: paletteGridColumnCount(event),
+    endTile: model.index,
+    startTile,
+    tileset: model.tileset,
+  });
   paletteDragHandled = true;
   editorState.set({
     activePaletteStamp: stamp,
@@ -770,6 +806,13 @@ function finishPaletteStampDrag(index: number, tileset: TilesetDef, event: Event
   });
   event.preventDefault();
   renderPalettePreservingViewport();
+}
+
+function paletteGridColumnCount(event: Event): number {
+  const target = event.currentTarget;
+  if (!(target instanceof HTMLElement) || !(target.parentElement instanceof HTMLElement)) return 1;
+  const columns = window.getComputedStyle(target.parentElement).gridTemplateColumns.split(" ").filter(Boolean);
+  return Math.max(1, columns.length);
 }
 
 function isPrimaryButtonEvent(event: Event): boolean {

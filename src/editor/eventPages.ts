@@ -279,6 +279,21 @@ export function moveEventPageCommandToIndex(
   });
 }
 
+export function replaceEventPageCommands(
+  mapId: MapId,
+  eventId: string,
+  pageId: string,
+  commands: readonly Command[]
+): void {
+  store.update((project) => {
+    const page = project.maps[mapId]?.events
+      .find((event) => event.id === eventId)
+      ?.pages?.find((item) => item.id === pageId);
+    if (!page) return;
+    page.commands = commands.map((command) => structuredClone(command));
+  });
+}
+
 export function triggerFromKind(kind: Trigger["kind"]): Trigger {
   return { kind };
 }

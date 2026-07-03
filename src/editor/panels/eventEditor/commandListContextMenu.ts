@@ -1,6 +1,7 @@
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
+import { copyEventCommandToClipboard, hasEventCommandClipboard, readEventCommandClipboard } from "./commandClipboard";
 import { openEventCommandPicker } from "./commandPicker";
 import type { CommandListActions } from "./types";
 
@@ -25,8 +26,6 @@ type ContextMenuItem =
       readonly separator?: false;
     }
   | { readonly separator: true };
-
-let commandClipboard: Command | null = null;
 
 export function openCommandContextMenu(request: CommandShortcutRequest): void {
   document.querySelector('[data-testid="event-command-context-menu"]')?.remove();
@@ -73,7 +72,7 @@ export function handleCommandShortcut(
         return;
       case "c":
         event.preventDefault();
-        copyCommand(request.command);
+        copyEventCommandToClipboard(request.command);
         closeMenu?.();
         return;
       case "v":
@@ -136,13 +135,13 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       close();
     }),
     contextMenuAction("복사", "Ctrl+C", "copy", "event-command-menu-copy", () => {
-      copyCommand(request.command);
+      copyEventCommandToClipboard(request.command);
       close();
     }),
     contextMenuAction("붙여넣기", "Ctrl+V", "paste", "event-command-menu-paste", () => {
       pasteCommand(request);
       close();
-    }, !commandClipboard),
+    }, !hasEventCommandClipboard()),
     contextMenuAction("삭제", "Del", "delete", "event-command-menu-delete", () => {
       request.actions.deleteCommand(request.path);
       close();
@@ -195,16 +194,13 @@ function openEditCommandDialog(request: CommandShortcutRequest): void {
 }
 
 function cutCommand(request: CommandShortcutRequest): void {
-  commandClipboard = structuredClone(request.command);
+  copyEventCommandToClipboard(request.command);
   request.actions.deleteCommand(request.path);
 }
 
-function copyCommand(command: Command): void {
-  commandClipboard = structuredClone(command);
-}
-
 function pasteCommand(request: CommandShortcutRequest): void {
-  if (commandClipboard) request.actions.insertCommand(request.path, structuredClone(commandClipboard));
+  const command = readEventCommandClipboard();
+  if (command) request.actions.insertCommand(request.path, command);
 }
 
 function selectAllCommands(item: HTMLElement): void {

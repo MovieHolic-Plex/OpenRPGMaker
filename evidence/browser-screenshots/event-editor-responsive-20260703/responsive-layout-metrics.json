@@ -1,0 +1,278 @@
+{
+  "desktop": {
+    "bodyHasHorizontalOverflow": false,
+    "modalHasHorizontalOverflow": false,
+    "topStripOverlapsWorkbench": false,
+    "workbenchHasHorizontalOverflow": false,
+    "workbenchOverlapsFooter": false,
+    "conditionRowsOverlap": false,
+    "cjkTextClipped": false,
+    "commandToolbarOverlapsList": false,
+    "commandPanelVisible": true,
+    "footerActionsVisible": true,
+    "modal": {
+      "bottom": 992,
+      "height": 992,
+      "left": 0,
+      "right": 1586,
+      "top": 0,
+      "width": 1586
+    },
+    "topStrip": {
+      "bottom": 115,
+      "height": 42,
+      "left": 26,
+      "right": 1560,
+      "top": 73,
+      "width": 1534
+    },
+    "workbench": {
+      "bottom": 905,
+      "height": 770,
+      "left": 26,
+      "right": 1560,
+      "top": 135,
+      "width": 1534
+    },
+    "settings": {
+      "bottom": 905,
+      "height": 770,
+      "left": 26,
+      "right": 654,
+      "top": 135,
+      "width": 628
+    },
+    "commands": {
+      "bottom": 905,
+      "height": 770,
+      "left": 676,
+      "right": 1560,
+      "top": 135,
+      "width": 884
+    },
+    "contents": {
+      "bottom": 905,
+      "height": 770,
+      "left": 676,
+      "right": 1560,
+      "top": 135,
+      "width": 884
+    },
+    "pageProps": {
+      "bottom": 905,
+      "height": 770,
+      "left": 94,
+      "right": 654,
+      "top": 135,
+      "width": 560
+    },
+    "commandToolbar": {
+      "bottom": 181,
+      "height": 36,
+      "left": 1250,
+      "right": 1550,
+      "top": 145,
+      "width": 300
+    },
+    "commandList": {
+      "bottom": 279,
+      "height": 94,
+      "left": 687,
+      "right": 1549,
+      "top": 185,
+      "width": 862
+    },
+    "footerActions": {
+      "bottom": 973,
+      "height": 40,
+      "left": 86,
+      "right": 1560,
+      "top": 933,
+      "width": 1474
+    }
+  },
+  "compact": {
+    "bodyHasHorizontalOverflow": false,
+    "modalHasHorizontalOverflow": false,
+    "topStripOverlapsWorkbench": false,
+    "workbenchHasHorizontalOverflow": false,
+    "workbenchOverlapsFooter": false,
+    "conditionRowsOverlap": false,
+    "cjkTextClipped": false,
+    "commandToolbarOverlapsList": false,
+    "commandPanelVisible": true,
+    "footerActionsVisible": true,
+    "modal": {
+      "bottom": 900,
+      "height": 900,
+      "left": 0,
+      "right": 960,
+      "top": 0,
+      "width": 960
+    },
+    "topStrip": {
+      "bottom": 224,
+      "height": 151,
+      "left": 26,
+      "right": 934,
+      "top": 73,
+      "width": 908
+    },
+    "workbench": {
+      "bottom": 813,
+      "height": 577,
+      "left": 26,
+      "right": 934,
+      "top": 236,
+      "width": 908
+    },
+    "settings": {
+      "bottom": 813,
+      "height": 577,
+      "left": 26,
+      "right": 386,
+      "top": 236,
+      "width": 360
+    },
+    "commands": {
+      "bottom": 813,
+      "height": 577,
+      "left": 406,
+      "right": 934,
+      "top": 236,
+      "width": 528
+    },
+    "contents": {
+      "bottom": 813,
+      "height": 577,
+      "left": 406,
+      "right": 934,
+      "top": 236,
+      "width": 528
+    },
+    "pageProps": {
+      "bottom": 813,
+      "height": 577,
+      "left": 94,
+      "right": 386,
+      "top": 236,
+      "width": 292
+    },
+    "commandToolbar": {
+      "bottom": 282,
+      "height": 36,
+      "left": 624,
+      "right": 924,
+      "top": 246,
+      "width": 300
+    },
+    "commandList": {
+      "bottom": 380,
+      "height": 94,
+      "left": 417,
+      "right": 923,
+      "top": 286,
+      "width": 506
+    },
+    "footerActions": {
+      "bottom": 881,
+      "height": 40,
+      "left": 86,
+      "right": 934,
+      "top": 841,
+      "width": 848
+    }
+  },
+  "narrow": {
+    "bodyHasHorizontalOverflow": false,
+    "modalHasHorizontalOverflow": false,
+    "topStripOverlapsWorkbench": false,
+    "workbenchHasHorizontalOverflow": false,
+    "workbenchOverlapsFooter": false,
+    "conditionRowsOverlap": false,
+    "cjkTextClipped": false,
+    "commandToolbarOverlapsList": false,
+    "commandPanelVisible": true,
+    "footerActionsVisible": true,
+    "modal": {
+      "bottom": 900,
+      "height": 900,
+      "left": 0,
+      "right": 768,
+      "top": 0,
+      "width": 768
+    },
+    "topStrip": {
+      "bottom": 222,
+      "height": 151,
+      "left": 26,
+      "right": 742,
+      "top": 71,
+      "width": 716
+    },
+    "workbench": {
+      "bottom": 813,
+      "height": 579,
+      "left": 26,
+      "right": 742,
+      "top": 234,
+      "width": 716
+    },
+    "settings": {
+      "bottom": 813,
+      "height": 579,
+      "left": 26,
+      "right": 346,
+      "top": 234,
+      "width": 320
+    },
+    "commands": {
+      "bottom": 813,
+      "height": 579,
+      "left": 366,
+      "right": 742,
+      "top": 234,
+      "width": 376
+    },
+    "contents": {
+      "bottom": 813,
+      "height": 579,
+      "left": 366,
+      "right": 742,
+      "top": 234,
+      "width": 376
+    },
+    "pageProps": {
+      "bottom": 813,
+      "height": 579,
+      "left": 94,
+      "right": 346,
+      "top": 234,
+      "width": 252
+    },
+    "commandToolbar": {
+      "bottom": 280,
+      "height": 36,
+      "left": 446,
+      "right": 732,
+      "top": 244,
+      "width": 286
+    },
+    "commandList": {
+      "bottom": 392,
+      "height": 94,
+      "left": 377,
+      "right": 731,
+      "top": 298,
+      "width": 354
+    },
+    "footerActions": {
+      "bottom": 881,
+      "height": 40,
+      "left": 80,
+      "right": 742,
+      "top": 841,
+      "width": 662
+    }
+  }
+}

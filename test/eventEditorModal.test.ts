@@ -181,6 +181,86 @@ describe("RPG Maker style event editor entry points", () => {
     expect(content.querySelector('[data-testid="event-page-tab-3"]')?.className).toContain("active");
   });
 
+  it("wires the command toolbar copy, cut, undo, and redo actions", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = eventPage();
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ selectedEventPageId: page.id });
+
+    const content = fakeContainer();
+    renderEventEditorContent(content, project.startMapId, "event-1");
+    content.querySelector<HTMLElement>('[data-testid="event-command-text"] .cmd-head')?.click();
+
+    content.querySelector<HTMLElement>('[data-testid="event-command-toolbar-copy"]')?.click();
+    content.querySelector<HTMLElement>('[data-testid="event-command-toolbar-cut"]')?.click();
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.commands).toEqual([]);
+
+    const undoContent = fakeContainer();
+    renderEventEditorContent(undoContent, project.startMapId, "event-1");
+    undoContent.querySelector<HTMLElement>('[data-testid="event-command-toolbar-undo"]')?.click();
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.commands).toEqual([{ kind: "text", body: "Hello" }]);
+
+    const redoContent = fakeContainer();
+    renderEventEditorContent(redoContent, project.startMapId, "event-1");
+    redoContent.querySelector<HTMLElement>('[data-testid="event-command-toolbar-redo"]')?.click();
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.commands).toEqual([]);
+  });
+
+  it("persists the event overlap forbidden checkbox", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = { ...eventPage(), overlapForbidden: true };
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ selectedEventPageId: page.id });
+
+    const content = fakeContainer();
+    renderEventEditorContent(content, project.startMapId, "event-1");
+    const overlap = content.querySelector<HTMLInputElement>('[data-testid="event-page-overlap-forbidden"]');
+    if (!overlap) throw new Error("Expected overlap checkbox");
+
+    expect(overlap.disabled).toBe(false);
+    expect(overlap.checked).toBe(true);
+    overlap.checked = false;
+    overlap.dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.overlapForbidden).toBe(false);
+  });
+
+  it("persists custom move-route skippable and keeps Help inside the dialog", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = {
+      ...eventPage(),
+      movement: { type: "custom", speed: 3, frequency: 3, route: { moves: [], repeat: true, skippable: false } },
+    } satisfies EventPage;
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ selectedEventPageId: page.id });
+
+    const content = fakeContainer();
+    renderEventEditorContent(content, project.startMapId, "event-1");
+    content.querySelector<HTMLElement>('[data-testid="event-page-custom-route"]')?.click();
+
+    const dialog = document.querySelector<HTMLElement>('[data-testid="event-page-move-route-dialog"]');
+    if (!dialog) throw new Error("Expected move-route dialog");
+    const target = dialog.querySelector<HTMLSelectElement>('[data-testid="event-page-move-route-target-event"]');
+    const skippable = dialog.querySelector<HTMLInputElement>('[data-testid="event-page-move-route-skippable"]');
+    if (!target || !skippable) throw new Error("Expected move-route controls");
+
+    expect(target.disabled).toBe(false);
+    expect(skippable.disabled).toBe(false);
+    skippable.checked = true;
+    dialog.querySelector<HTMLElement>('[data-testid="event-page-move-route-help"]')?.click();
+    expect(document.querySelector('[data-testid="event-page-move-route-dialog"]')).not.toBeNull();
+    expect(dialog.querySelector('[data-testid="event-page-move-route-help-panel"]')?.textContent).toContain("현재 이벤트");
+
+    dialog.querySelector<HTMLElement>('[data-testid="event-page-move-route-ok"]')?.click();
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.movement.route?.skippable).toBe(true);
+  });
+
   it("confirms before deleting the open event with the Delete key", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

@@ -24,7 +24,8 @@ export function renderTopBar(
         children: [
           el("legend", { text: "이벤트" }),
           el("select", {
-            attrs: { disabled: "" },
+            attrs: { title: "페이지 자율 이동은 현재 이벤트에 적용됩니다." },
+            dataset: { testid: "event-page-move-route-target-event" },
             children: [el("option", { text: "이 이벤트" })],
           }),
         ],
@@ -38,13 +39,13 @@ export function renderTopBar(
   });
 }
 
-export function renderFooter(close: () => void, onOk: () => void): HTMLElement {
+export function renderFooter(close: () => void, onOk: () => void, onHelp: () => void): HTMLElement {
   return el("div", {
     class: "event-page-move-route-footer",
     children: [
       routeFooterButton("확인", "event-page-move-route-ok", onOk),
       routeFooterButton("취소", "event-page-move-route-cancel", close),
-      routeFooterButton("도움말", "event-page-move-route-help", close),
+      routeFooterButton("도움말", "event-page-move-route-help", onHelp),
     ],
   });
 }

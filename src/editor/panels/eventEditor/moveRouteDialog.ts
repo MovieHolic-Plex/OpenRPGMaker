@@ -50,7 +50,17 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
     dataset: { testid: "event-page-move-route-repeat" },
   });
   repeat.checked = request.movement.route?.repeat ?? true;
-  const skip = el("input", { attrs: { type: "checkbox", disabled: "" } });
+  const skip = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-page-move-route-skippable" },
+  });
+  skip.checked = request.movement.route?.skippable ?? false;
+  const helpPanel = el("div", {
+    class: "event-page-move-route-help-panel",
+    text: "현재 이벤트의 자율 이동 경로를 편집합니다. 이동 불가 시 건너뜀은 막힌 이동 명령을 다음 명령으로 넘깁니다.",
+    dataset: { testid: "event-page-move-route-help-panel" },
+  });
+  helpPanel.hidden = true;
   const deleteButton = routeUtilityButton("삭제", "event-page-move-route-delete");
   const deleteAllButton = routeUtilityButton("모두 삭제", "event-page-move-route-delete-all");
   const renderAndSyncList = () => {
@@ -142,14 +152,22 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
             el("div", { class: "event-page-move-route-delete-box", children: [deleteButton, deleteAllButton] }),
           ],
         }),
+        helpPanel,
         renderFooter(close, () => {
           request.onApply({
             ...request.movement,
             type: "custom",
             frequency,
-            route: { moves, repeat: repeat.checked },
+            route: {
+              moves,
+              repeat: repeat.checked,
+              skippable: skip.checked,
+              ...(request.movement.route?.wait === undefined ? {} : { wait: request.movement.route.wait }),
+            },
           });
           close();
+        }, () => {
+          helpPanel.hidden = !helpPanel.hidden;
         }),
       ],
     })

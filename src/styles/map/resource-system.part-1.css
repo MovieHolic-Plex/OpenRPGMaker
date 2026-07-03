@@ -211,6 +211,19 @@
   color: var(--status-success);
 }
 
+.editor-statusbar-cell.db-connection-status.ready.checking {
+  color: var(--status-warning);
+}
+
+.editor-statusbar-cell.db-connection-status.ready.healthy {
+  color: var(--status-success);
+}
+
+.editor-statusbar-cell.db-connection-status.ready.missing,
+.editor-statusbar-cell.db-connection-status.ready.unreachable {
+  color: var(--status-error);
+}
+
 .editor-statusbar-cell.db-connection-status.disabled,
 .editor-statusbar-cell.db-connection-status.not-configured {
   color: var(--status-error);

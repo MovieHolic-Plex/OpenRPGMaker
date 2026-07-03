@@ -25,15 +25,17 @@ describe("EasyRPG Combined Town tileset harness", () => {
     });
   });
 
-  it("locks the Combined Town layer contract to lower building parts and upper roof overlays", () => {
+  it("locks the Combined Town layer contract to lower building parts and upper transparent overlays", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
 
-    expect(harnessLayerForTile(tileset, 85)).toBe("lower");
+    expect(harnessLayerForTile(tileset, 85)).toBe("upper");
+    expect(harnessLayerForTile(tileset, 87)).toBe("upper");
     expect(harnessLayerForTile(tileset, 378)).toBe("lower");
     expect(harnessLayerForTile(tileset, 116)).toBe("lower");
     expect(harnessLayerForTile(tileset, 404)).toBe("lower");
     expect(harnessLayerForTile(tileset, 374)).toBe("upper");
-    expect(tileset.priority[85]).toBe("lower");
+    expect(tileset.priority[85]).toBe("upper");
+    expect(tileset.priority[87]).toBe("upper");
     expect(tileset.priority[378]).toBe("lower");
     expect(tileset.priority[374]).toBe("upper");
     expect(tileset.passability[374]).toEqual({ up: false, down: false, left: false, right: false });

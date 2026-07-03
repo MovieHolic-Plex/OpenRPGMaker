@@ -27,6 +27,8 @@ let teardownShell: (() => void) | null = null;
 export type RenderPlayerOptions = {
   readonly onExit?: () => void;
   readonly trackGlobalGame?: boolean;
+  readonly initialSession?: PlaySession;
+  readonly initialEventTestId?: string;
 };
 
 const MENU_CLOSE_JUICE_MS = 250;
@@ -69,7 +71,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     return isPlayScene(scene) ? scene : undefined;
   };
 
-  const startGame = (session?: PlaySession): void => {
+  const startGame = (session?: PlaySession, eventTestId = ""): void => {
     stopGame();
     const run = ++startRun;
     const startedAt = performance.now();
@@ -81,6 +83,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.sync();
     cleanupPlaySurface = surface.cleanup;
     void startPlayGame(surface.phaserContainer, session, {
+      initialEventTestId: eventTestId,
       trackGlobalGame: options.trackGlobalGame,
     }).then((nextGame) => {
       if (run !== startRun) {
@@ -249,7 +252,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
   };
-  renderTitle();
+  if (options.initialSession) {
+    startGame(options.initialSession, options.initialEventTestId ?? "");
+  } else {
+    renderTitle();
+  }
 }
 
 export function teardownPlayer(): void {

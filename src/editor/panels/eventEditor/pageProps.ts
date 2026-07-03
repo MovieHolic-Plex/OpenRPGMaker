@@ -163,8 +163,14 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     });
   });
 
-  const overlap = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
-  overlap.disabled = true;
+  const overlap = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-page-overlap-forbidden" },
+  }) as HTMLInputElement;
+  overlap.checked = page.overlapForbidden ?? true;
+  overlap.addEventListener("change", () => {
+    updateEventPage(mapId, eventId, page.id, { overlapForbidden: overlap.checked });
+  });
 
   wrap.append(
     rm2k3Fieldset(

@@ -5,6 +5,7 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 ## Pre-edit routing
 
 - Play scene behavior, player movement, event triggering, overlays, and scene test hooks: start in `src/player/PlayScene.ts` and adjacent `src/player/playScene*.ts` modules.
+- Selected-event test play is an isolated editor path: `src/editor/panels/menu.ts` dispatches the selected event request, `src/editor/panels/testPlayModal.ts` creates a temporary `PlaySession`, and `PlayScene` runs that event via `runEvent` instead of normal auto-trigger startup.
 - Event command execution, branching, waits, pauses, stack behavior, and command result handling: start in `src/player/interpreter/` and only let scene code consume interpreter results.
 - Battle rules, turn flow, damage, rewards, battle events, and battle snapshots: start in `src/battle/runtime.ts` and adjacent `src/battle` modules.
 - Title/load surfaces, status menu, dialogue UI, save slots, and play shell wiring: start in `src/player/player.ts`, `src/player/playerLoadPanel.ts`, `src/player/playerStatusMenu*.ts`, and `src/player/dialogue.ts`.

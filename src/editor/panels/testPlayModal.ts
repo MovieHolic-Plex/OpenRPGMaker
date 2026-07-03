@@ -2,7 +2,9 @@ import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene } from "@/player/battleDom";
 import { renderPlayer, teardownPlayer } from "@/player/player";
+import { startSession, type PlaySession } from "@/project/session";
 import { store } from "@/project/store";
+import type { GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 
 let modalRoot: HTMLElement | null = null;
@@ -14,6 +16,24 @@ export async function openTestPlayModal(): Promise<void> {
   await store.flush();
   const body = openTestPlayShell("테스트 플레이 - RPG 쯔꾸르");
   renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false });
+}
+
+export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
+  await store.flush();
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
+  const event = map?.events.find((item) => item.id === eventId);
+  if (!map || !event) return false;
+  const session = selectedEventTestSession(mapId, event);
+  const title = `이벤트 테스트 - ${eventDisplayName(event)}`;
+  const body = openTestPlayShell(title);
+  renderPlayer(body, {
+    initialEventTestId: eventId,
+    initialSession: session,
+    onExit: closeTestPlayModal,
+    trackGlobalGame: false,
+  });
+  return true;
 }
 
 export async function openTroopBattleTestModal(troopId: string): Promise<void> {
@@ -126,4 +146,19 @@ function isPlayWindowFullscreenHotkey(event: KeyboardEvent): boolean {
 
 function nextTestPlayWindowMode(mode: string | undefined): TestPlayWindowMode {
   return mode === "fullscreen" ? "windowed" : "fullscreen";
+}
+
+function selectedEventTestSession(mapId: MapId, event: GameEvent): PlaySession {
+  const project = store.getCurrent();
+  const session = startSession(project);
+  const map = project.maps[mapId];
+  const fallbackY = Math.max(0, event.y - 1);
+  session.currentMapId = mapId;
+  session.x = Math.max(0, Math.min(map.width - 1, event.x));
+  session.y = event.y + 1 < map.height ? event.y + 1 : fallbackY;
+  return session;
+}
+
+function eventDisplayName(event: GameEvent): string {
+  return event.pages?.[0]?.name || event.id;
 }

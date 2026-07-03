@@ -1,0 +1,13 @@
+{
+  "controls": {
+    "1": "command toolbar copy, cut, undo, and redo worked on a selected command",
+    "2": "selected-event toolbar test opened an isolated test-play window and ran the selected event",
+    "3": "overlapForbidden checkbox was enabled and persisted false",
+    "5": "move-route skippable checkbox was enabled and persisted true",
+    "6": "move-route Help opened an in-dialog help panel without closing the route editor"
+  },
+  "screenshots": [
+    "evidence/browser-screenshots/event-editor-controls-1-3-5-6/controls-1-3-5-6-editor-proof.png",
+    "evidence/browser-screenshots/event-editor-controls-1-3-5-6/control-2-selected-event-test-proof.png"
+  ]
+}

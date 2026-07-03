@@ -176,11 +176,19 @@ const SHORTCUT_HELP =
 
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
+  const selectedEvent = selectedEventForState(state);
   row.append(
     el("span", { class: "visually-hidden", text: `3단 레이어: ${layerShortLabel(state.layer)} / ${toolShortLabel(state.tool)}`, dataset: { testid: "layer-selector" } }),
     toolbarButton({ testId: "toolbar-new", label: "새 프로젝트", title: "새 프로젝트", icon: "disabled-diamond", disabled: true, onClick: () => void newProject() }),
     toolbarButton({ testId: "toolbar-map-copy", label: "맵 복사", title: "맵 복사", icon: "disabled-blocks", disabled: true, onClick: () => toast("맵 트리에서 복사할 맵을 선택하세요.", "ok") }),
-    toolbarButton({ testId: "toolbar-event-test", label: "이벤트 테스트", title: "이벤트 테스트", icon: "event-test", disabled: true, onClick: () => toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok") }),
+    toolbarButton({
+      testId: "toolbar-event-test",
+      label: "이벤트 테스트",
+      title: selectedEvent ? "선택 이벤트 테스트" : "이벤트를 선택하면 테스트할 수 있습니다.",
+      icon: "event-test",
+      disabled: !selectedEvent,
+      onClick: () => void openSelectedEventTestWindow(),
+    }),
     separator(),
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
     separator(),
@@ -210,6 +218,27 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
   return row;
+}
+
+function selectedEventForState(state: ReturnType<typeof editorState.get>): { readonly mapId: string; readonly eventId: string } | null {
+  const project = store.getCurrent();
+  const mapId = state.currentMapId ?? project.startMapId;
+  const eventId = state.selectedEventId;
+  if (!eventId) return null;
+  const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  return event ? { mapId, eventId } : null;
+}
+
+async function openSelectedEventTestWindow(): Promise<void> {
+  const selectedEvent = selectedEventForState(editorState.get());
+  if (!selectedEvent) {
+    toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok");
+    return;
+  }
+  await store.flush();
+  window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+    detail: { kind: "selected-event", ...selectedEvent },
+  }));
 }
 
 function classicPlayToolbarRow(mode: string): HTMLElement {

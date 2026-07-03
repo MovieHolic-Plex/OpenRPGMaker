@@ -107,7 +107,10 @@
   display: grid;
   gap: 20px;
   grid-template-rows: 42px minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
   min-width: 0;
+  overflow: hidden;
 }
 
 .event-editor-id-row,
@@ -239,7 +242,9 @@
   display: grid;
   gap: 6px;
   grid-template-columns: minmax(300px, var(--event-editor-settings-track)) 10px minmax(360px, 1fr) !important;
+  height: 100%;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -510,7 +515,7 @@
 .event-contents-fieldset {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  padding: 14px 10px 10px;
+  padding: 24px 10px 10px;
 }
 
 .event-contents-fieldset legend {
@@ -837,6 +842,11 @@
 }
 
 @media (max-width: 1100px) {
+  .event-editor-modal-dynamic .event-editor {
+    gap: 12px;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
   .event-editor-top-strip {
     grid-template-columns: minmax(280px, 1fr);
   }
@@ -848,12 +858,64 @@
   .event-editor-workbench {
     --event-editor-settings-track: clamp(260px, 42vw, 360px);
     grid-template-columns: minmax(260px, var(--event-editor-settings-track)) 8px minmax(300px, 1fr) !important;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .event-editor-settings-column,
   .event-editor-commands-column {
-    min-height: 520px;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 820px) {
+  .event-editor-modal-body {
+    padding: 18px 25px 8px;
+  }
+
+  .event-editor-workbench {
+    --event-editor-settings-track: clamp(250px, 42vw, 320px);
+    grid-template-columns: minmax(250px, var(--event-editor-settings-track)) 8px minmax(280px, 1fr) !important;
+  }
+
+  .event-editor-settings-column {
+    gap: 10px;
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .event-rm2k3-fieldset {
+    padding: 12px 10px;
+  }
+
+  .event-editor-modal-body .event-condition-row {
+    gap: 6px;
+    grid-template-columns: 20px 62px minmax(0, 1fr) minmax(24px, max-content);
+  }
+
+  .event-editor-modal-body .event-condition-control.variable {
+    gap: 4px;
+    grid-template-columns: minmax(0, 1fr) minmax(82px, 104px);
+  }
+
+  .event-condition-threshold {
+    gap: 4px;
+    grid-template-columns: minmax(42px, 1fr) 42px;
+  }
+
+  .event-editor-modal-body .event-condition-control.timer {
+    gap: 4px;
+    grid-template-columns: 44px max-content 44px max-content;
+  }
+
+  .event-page-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .event-editor-command-tool {
+    min-width: 34px;
+  }
+
+  .event-contents-fieldset {
+    padding-top: 38px;
   }
 }
 

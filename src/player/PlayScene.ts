@@ -124,7 +124,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
     // (runEvent가 dialogue 없으면 즉시 return하므로). dialogue는 player.ts가
     // 게임 생성 후 registry에 설정한다 — 비동기이므로 준비될 때까지 기다린다.
-    void this.fireAutoTriggersWhenReady();
+    const initialEventTestId = this.initialEventTestId();
+    if (initialEventTestId) {
+      void this.runInitialEventTestWhenReady(initialEventTestId);
+    } else {
+      void this.fireAutoTriggersWhenReady();
+    }
     // 자동화(E2E)용 입력 주입 훅. headless Chromium에서는 window keydown이
     // Phaser keyboard 매니저에 도달하지 않아 실제 키보드 입력이 잡히지 않는다.
     // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
@@ -279,9 +284,24 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     void this.fireAutoTriggers();
   };
 
+  private async runInitialEventTestWhenReady(eventId: string): Promise<void> {
+    if (this.game.registry.get("dialogue")) {
+      await this.runEvent(eventId);
+      return;
+    }
+    this.game.registry.events.once("changedata", (_parent: unknown, key: string) => {
+      if (key === "dialogue") void this.runEvent(eventId);
+    });
+  }
+
   private initialSession(project: ReturnType<typeof store.getCurrent>): PlaySession {
     const value: unknown = this.game.registry.get("initialSession");
     return isPlaySession(value) ? structuredClone(value) : startSession(project);
+  }
+
+  private initialEventTestId(): string {
+    const value: unknown = this.game.registry.get("initialEventTestId");
+    return typeof value === "string" ? value : "";
   }
 }
 

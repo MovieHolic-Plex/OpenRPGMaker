@@ -1,7 +1,15 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { fileURLToPath, URL } from "node:url";
 
-export default defineConfig({
+const DEFAULT_DEV_SERVER_PORT = 9173;
+
+function devServerPort(mode: string): number {
+  const rawPort = loadEnv(mode, process.cwd(), "").DEV_SERVER_PORT;
+  const port = Number(rawPort ?? DEFAULT_DEV_SERVER_PORT);
+  return Number.isInteger(port) && port > 0 ? port : DEFAULT_DEV_SERVER_PORT;
+}
+
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -10,7 +18,8 @@ export default defineConfig({
   },
   server: {
     host: "::",
-    port: 5173,
+    port: devServerPort(mode),
+    strictPort: true,
     allowedHosts: ["mdc-server"],
     open: false,
     watch: {
@@ -28,4 +37,4 @@ export default defineConfig({
     target: "es2022",
     sourcemap: false,
   },
-});
+}));

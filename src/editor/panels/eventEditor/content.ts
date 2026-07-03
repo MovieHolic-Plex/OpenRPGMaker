@@ -7,6 +7,7 @@ import {
   insertEventPageCommandAt,
   moveEventPageCommandAt,
   moveEventPageCommandToIndex,
+  replaceEventPageCommands,
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
 import { eventDraftDiffById, type EventDiff } from "@/project/eventDrafts";
@@ -15,6 +16,7 @@ import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
+import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
@@ -89,7 +91,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     return;
   }
 
-  const actions = pageCommandActions(mapId, ev.id, activePage.id);
+  const commandHistory = createCommandToolbarHistory({
+    key: `${mapId}:${ev.id}:${activePage.id}`,
+    readCommands: () => activePageCommands(mapId, ev.id, activePage.id),
+    replaceCommands: (commands) => replaceEventPageCommands(mapId, ev.id, activePage.id, commands),
+  });
+  const actions = commandHistory.wrapActions(pageCommandActions(mapId, ev.id, activePage.id));
   const settingsColumn = el("div", { class: "event-editor-settings-column" });
   const commandsColumn = el("div", { class: "event-editor-commands-column" });
   const columnResizer = el("div", {
@@ -115,7 +122,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   });
   settingsColumn.append(renderClassicPageTabStrip(ev, activePage), renderEventPageProps(mapId, ev.id, activePage));
   commandsColumn.append(
-    renderCommandToolbar(cmdList, actions),
+    renderCommandToolbar(cmdList, actions, commandHistory),
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
       dataset: { testid: "event-classic-contents" },
@@ -183,9 +190,13 @@ function activePageIdOf(mapId: MapId, eventId: string): string | null {
   return active.id;
 }
 
-function renderCommandToolbar(cmdList: HTMLElement, actions: CommandListActions): HTMLElement {
+function renderCommandToolbar(
+  cmdList: HTMLElement,
+  actions: CommandListActions,
+  commandHistory: CommandToolbarHistory
+): HTMLElement {
   const selectedPath = (): number[] | null => {
-    const selected = cmdList.querySelector<HTMLElement>(".cmd-item.selected");
+    const selected = cmdList.querySelector<HTMLElement>(".selected");
     if (!selected?.dataset.cmdPath) return null;
     try {
       const path = JSON.parse(selected.dataset.cmdPath);
@@ -202,13 +213,13 @@ function renderCommandToolbar(cmdList: HTMLElement, actions: CommandListActions)
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "실행 내용 도구" },
     children: [
-      toolbarButton("↶", "되돌리기", undefined, true),
-      toolbarButton("↷", "다시 실행", undefined, true),
-      toolbarButton("↑", "위로 이동", () => runForSelected((path) => actions.moveCommand(path, -1))),
-      toolbarButton("↓", "아래로 이동", () => runForSelected((path) => actions.moveCommand(path, 1))),
-      toolbarButton("▣", "복사", undefined, true),
-      toolbarButton("✂", "잘라내기", () => runForSelected((path) => actions.deleteCommand(path))),
-      toolbarButton("+", "명령 추가", () =>
+      toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
+      toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
+      toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
+      toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1))),
+      toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
+      toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions))),
+      toolbarButton("+", "명령 추가", "event-command-toolbar-add", () =>
         cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
           new MouseEvent("dblclick", { bubbles: true, cancelable: true })
         )
@@ -217,11 +228,18 @@ function renderCommandToolbar(cmdList: HTMLElement, actions: CommandListActions)
   });
 }
 
-function toolbarButton(text: string, title: string, onClick?: () => void, disabled = false): HTMLButtonElement {
+function toolbarButton(
+  text: string,
+  title: string,
+  testId: string,
+  onClick?: () => void,
+  disabled = false
+): HTMLButtonElement {
   return el("button", {
     class: "event-editor-command-tool",
     text,
     attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
+    dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,
   }) as HTMLButtonElement;
 }
@@ -257,6 +275,13 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
     moveCommand: (path, dir) => moveEventPageCommandAt(mapId, eventId, pageId, path, dir),
     moveCommandTo: (sourcePath, toIndex) => moveEventPageCommandToIndex(mapId, eventId, pageId, sourcePath, toIndex),
   };
+}
+
+function activePageCommands(mapId: MapId, eventId: string, pageId: string): Command[] {
+  return store.getCurrent().maps[mapId]?.events
+    .find((event) => event.id === eventId)
+    ?.pages?.find((page) => page.id === pageId)
+    ?.commands ?? [];
 }
 
 function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {

@@ -46,6 +46,28 @@ describe("map edit commands", () => {
     expect(map.lowerTiles[1 * map.width + 2]).toBe(TILE.WATER);
   });
 
+  it("copies and pastes both tile layers from a selected map block", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const sourceX = 1;
+    const sourceY = 1;
+    const targetX = 3;
+    const targetY = 1;
+
+    paintTile(mapId, "lower", sourceX, sourceY, TILE.WATER);
+    paintTile(mapId, "upper", sourceX, sourceY, TILE.WALL);
+    editorState.set({ layer: "lower" });
+
+    expect(selectTileRegion(mapId, { mapId, x: sourceX, y: sourceY, width: 1, height: 1 })).toBe(true);
+    expect(copySelection(mapId)).toBe(true);
+    expect(pasteClipboard(mapId, targetX, targetY)).toBe(true);
+
+    const map = store.getCurrent().maps[mapId];
+    const targetIndex = targetY * map.width + targetX;
+    expect(map.lowerTiles[targetIndex]).toBe(TILE.WATER);
+    expect(map.upperTiles[targetIndex]).toBe(TILE.WALL);
+  });
+
   it("restores and reapplies a tile edit through undo/redo", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
@@ -74,14 +96,13 @@ describe("map edit commands", () => {
     expect(map.lowerTiles[1 * map.width + 1]).toBe(LAKE_AUTOTILE_TILE.BODY);
   });
 
-  it("writes transparent prop objects as a single lower-layer tile from lower mode", () => {
+  it("writes lower transparent prop objects as a single lower-layer tile from lower mode", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
     const propPlacements = [
       { tile: 263, x: 1, y: 1 },
       { tile: 378, x: 2, y: 1 },
-      { tile: 85, x: 3, y: 1 },
       { tile: 319, x: 4, y: 1 },
     ] as const;
 
@@ -119,31 +140,39 @@ describe("map edit commands", () => {
 
     paintTile(mapId, "upper", 2, 2, 263);
     paintTile(mapId, "upper", 2, 2, 263);
-    paintTile(mapId, "lower", 2, 2, 85);
-    paintTile(mapId, "lower", 2, 2, 85);
+    paintTile(mapId, "lower", 2, 2, 378);
+    paintTile(mapId, "lower", 2, 2, 378);
 
     const updated = store.getCurrent().maps[mapId];
     expect(updated.upperTiles[tileIndex]).toBe(263);
-    expect(updated.lowerTiles[tileIndex]).toBe(85);
+    expect(updated.lowerTiles[tileIndex]).toBe(378);
     expect(updated.upperTileStacks?.[tileIndex]).toBeUndefined();
     expect(updated.lowerTileStacks?.[tileIndex]).toBeUndefined();
   });
 
-  it("forces windows and fences onto the lower harness layer even from upper mode", () => {
+  it("keeps window overlays on upper while fences stay on the lower harness layer", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
     const windowIndex = 2 * map.width + 2;
+    const secondWindowIndex = 3 * map.width + 2;
     const fenceIndex = 2 * map.width + 3;
+    const originalWindowLowerTile = map.lowerTiles[windowIndex];
+    const originalSecondWindowLowerTile = map.lowerTiles[secondWindowIndex];
 
     paintTile(mapId, "upper", 2, 2, 85);
+    paintTile(mapId, "upper", 2, 3, 87);
     paintTile(mapId, "upper", 3, 2, 378);
 
     const updated = store.getCurrent().maps[mapId];
-    expect(updated.upperTiles[windowIndex]).toBe(TILE.EMPTY);
+    expect(updated.upperTiles[windowIndex]).toBe(85);
+    expect(updated.upperTiles[secondWindowIndex]).toBe(87);
     expect(updated.upperTiles[fenceIndex]).toBe(TILE.EMPTY);
-    expect(updated.lowerTiles[windowIndex]).toBe(85);
+    expect(updated.lowerTiles[windowIndex]).toBe(originalWindowLowerTile);
+    expect(updated.lowerTiles[secondWindowIndex]).toBe(originalSecondWindowLowerTile);
     expect(updated.lowerTiles[fenceIndex]).toBe(378);
+    expect(updated.upperTileStacks?.[windowIndex]).toBeUndefined();
+    expect(updated.upperTileStacks?.[secondWindowIndex]).toBeUndefined();
     expect(updated.lowerTileStacks?.[windowIndex]).toBeUndefined();
     expect(updated.lowerTileStacks?.[fenceIndex]).toBeUndefined();
   });
@@ -187,9 +216,9 @@ describe("map edit commands", () => {
     expect(event?.x).toBe(3);
     expect(event?.y).toBe(3);
     expect(resized.lowerTiles[1 * resized.width + 1]).toBe(263);
-    expect(resized.lowerTiles[2 * resized.width + 2]).toBe(85);
+    expect(resized.upperTiles[2 * resized.width + 2]).toBe(85);
     expect(resized.lowerTileStacks?.[1 * resized.width + 1]).toBeUndefined();
-    expect(resized.lowerTileStacks?.[2 * resized.width + 2]).toBeUndefined();
+    expect(resized.upperTileStacks?.[2 * resized.width + 2]).toBeUndefined();
     expect(resized.upperTileStacks?.[5 * resized.width + 5]).toBeUndefined();
   });
 

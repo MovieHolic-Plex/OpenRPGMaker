@@ -272,7 +272,8 @@ describe("createBlankProject", () => {
     expect(tileset.passability[TILE.TREE]).toEqual(solid);
     expect(tileset.priority[TILE.FLOWERS]).toBe("upper");
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);
-    expect(tileset.priority[85]).toBe("lower");
+    expect(tileset.priority[85]).toBe("upper");
+    expect(tileset.priority[87]).toBe("upper");
     expect(tileset.priority[378]).toBe("lower");
     expect(tileset.priority[374]).toBe("upper");
     const passableRoofTiles = [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437].filter((tile) => !(

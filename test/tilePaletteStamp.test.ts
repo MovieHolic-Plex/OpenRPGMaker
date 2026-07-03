@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createPaletteStampFromDrag, paletteStampIncludesTile } from "@/editor/tilePaletteStamp";
+import { createPaletteStampFromDisplayDrag, createPaletteStampFromDrag, paletteStampIncludesTile } from "@/editor/tilePaletteStamp";
 import type { TilesetDef } from "@/project/types";
 
 describe("tile palette drag stamps", () => {
@@ -20,6 +20,25 @@ describe("tile palette drag stamps", () => {
 
     expect(paletteStampIncludesTile(stamp, 19, tileset.tilesPerRow)).toBe(true);
     expect(paletteStampIncludesTile(stamp, 29, tileset.tilesPerRow)).toBe(false);
+  });
+
+  it("creates a stamp from the visible reordered palette grid", () => {
+    const tileset = testTileset();
+    const displayTiles = [240, 303, 421, 424, 342, 343, 306, 366, 374, 375, 270, 120, 93, 123, 153, 246];
+
+    const stamp = createPaletteStampFromDisplayDrag({
+      displayTiles,
+      displayTilesPerRow: 10,
+      endTile: 270,
+      startTile: 303,
+      tileset: { ...tileset, count: 512 },
+    });
+
+    expect(stamp.width).toBe(2);
+    expect(stamp.height).toBe(2);
+    expect(stamp.cells.map((cell) => cell.tile)).toEqual([240, 303, 270, 120]);
+    expect(paletteStampIncludesTile(stamp, 303, tileset.tilesPerRow)).toBe(true);
+    expect(paletteStampIncludesTile(stamp, 342, tileset.tilesPerRow)).toBe(false);
   });
 });
 

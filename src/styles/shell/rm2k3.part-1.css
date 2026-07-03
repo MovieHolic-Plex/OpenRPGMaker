@@ -457,9 +457,31 @@
   border: 1px solid transparent;
   cursor: crosshair;
   height: var(--chipset-cell);
+  overflow: hidden;
   padding: 0;
+  position: relative;
   min-width: 0;
   width: var(--chipset-cell);
+}
+
+.chipset-tile-preview {
+  display: block;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+.chipset-tile-preview img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  left: 0;
+  max-width: none;
+  position: absolute;
+  top: 0;
+  transform-origin: top left;
+  user-select: none;
 }
 
 .chipset-tile:hover:not(:disabled),
@@ -484,6 +506,10 @@
 .chipset-tile.muted {
   background: rgba(12, 12, 12, 0.18);
   cursor: default;
+}
+
+.chipset-tile.muted .chipset-tile-preview {
+  opacity: 0.45;
 }
 
 .chipset-tile.band-dimmed {

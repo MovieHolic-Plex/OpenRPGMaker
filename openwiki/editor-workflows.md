@@ -25,6 +25,8 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 - Tile palette work usually touches `src/editor/tilePaletteStamp.ts`, `src/editor/chipsetTileRender.ts`, `src/editor/runtimeTileMetadata.ts`, and `src/editor/tilesetActions.ts`.
 - Event editing flows are split across `src/editor/eventActions.ts`, `src/editor/eventPages.ts`, `src/editor/eventDraftActions.ts`, `src/editor/eventDeletion.ts`, `src/editor/eventCommandFactory.ts`, and `src/editor/eventCommands/`.
 - `src/editor/eventCommandPaths.ts` is the shared owner for nested command paths. Use it for choices cancel branches, fork then/else branches, loop bodies, shop transaction branches, and branch creation when a mutation path needs to create a missing optional branch.
+- Event-page command toolbar history/clipboard behavior is split from rendering: `src/editor/panels/eventEditor/commandToolbarHistory.ts` owns page-command undo/redo plus toolbar copy/cut, and `src/editor/panels/eventEditor/commandClipboard.ts` is shared with the command context menu.
+- Event page overlap, movement route skippable, and route Help controls persist through `src/editor/panels/eventEditor/pageProps.ts`, `src/editor/panels/eventEditor/pageMovement.ts`, and the `moveRouteDialog*` modules.
 - Destructive event deletion is routed through `requestEditorEventDeletion` so modal Delete-key and visible delete controls require explicit confirmation before `deleteEditorEvent` mutates project data.
 
 ## Database Editor
@@ -39,7 +41,11 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 ## Other Editor Workflows
 
 - Resource manager behavior usually connects through asset and tileset tooling in `src/editor/tilesetImage.ts`, `src/editor/tilesetActions.ts`, and the related editor panels under `src/editor/panels/`.
+- Tile palette drag stamps should follow the visible palette grid order, not the source chipset coordinates, because curated palettes can reorder tiles and CSS can set the displayed column count.
+- Combined Town window tiles 85 and 87 are upper-layer transparent overlays. Painting them should preserve the lower wall/floor tile underneath so alpha pixels reveal that lower tile.
+- Map area copy/paste treats the selected rectangle as a two-layer map block: copy stores both lower and upper tile arrays, and paste writes both layers at the destination regardless of the currently active layer.
 - Save/import/export flows are centered in `src/editor/saveActions.ts` and the store/persistence layer in `src/project/store.ts`; check adjacent editor actions if a UI button needs to trigger them.
+- The editor status bar DB label is a live health indicator, not just a saved-settings indicator: `src/editor/panels/dbConnectionSettings.ts` pings through `src/project/supabaseProjectSync.ts` and should distinguish checking, healthy, missing project, disconnected, not configured, and disabled states.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
 ## Validation Expectations

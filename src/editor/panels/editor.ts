@@ -5,7 +5,7 @@ import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
 import { renderMapList } from "@/editor/panels/mapList";
-import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
+import { closeTestPlayModal, openSelectedEventTestModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -255,8 +255,23 @@ function toolStatusLabel(tool: string): string {
   }
 }
 
-function onTestPlayWindowRequest(): void {
+function onTestPlayWindowRequest(event: Event): void {
+  const detail = event instanceof CustomEvent ? event.detail : undefined;
+  if (isSelectedEventTestRequest(detail)) {
+    void openSelectedEventTestModal(detail.mapId, detail.eventId);
+    return;
+  }
   void openTestPlayModal();
+}
+
+function isSelectedEventTestRequest(value: unknown): value is { readonly mapId: string; readonly eventId: string } {
+  if (typeof value !== "object" || value === null) return false;
+  return "kind" in value &&
+    value.kind === "selected-event" &&
+    "mapId" in value &&
+    typeof value.mapId === "string" &&
+    "eventId" in value &&
+    typeof value.eventId === "string";
 }
 
 function updateProjectExport(): void {

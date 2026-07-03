@@ -2,7 +2,7 @@ import { editorState, type TileSelection } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { replaceTileStack, tileStackAt } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { GameMap, MapId } from "@/project/types";
 
 type TileLayer = "lower" | "upper";
 
@@ -22,26 +22,18 @@ export function copySelection(mapId: MapId): boolean {
   const state = editorState.get();
   const selection = state.selection;
   if (!selection || selection.mapId !== mapId) return false;
-  const layer = state.layer === "upper" ? "upper" : "lower";
   const map = store.getCurrent().maps[mapId];
   if (!map) return false;
-  const source = layer === "upper" ? map.upperTiles : map.lowerTiles;
-  const tiles: number[] = [];
-  const stacks: number[][] = [];
-  for (let y = 0; y < selection.height; y++) {
-    for (let x = 0; x < selection.width; x++) {
-      const index = (selection.y + y) * map.width + selection.x + x;
-      tiles.push(source[index]);
-      stacks.push([...tileStackAt(map, layer, index)]);
-    }
-  }
+  const lower = copyLayerSelection(map, selection, "lower");
+  const upper = copyLayerSelection(map, selection, "upper");
   editorState.set({
     clipboard: {
-      layer,
       width: selection.width,
       height: selection.height,
-      tiles,
-      stacks,
+      lowerTiles: lower.tiles,
+      upperTiles: upper.tiles,
+      lowerStacks: lower.stacks,
+      upperStacks: upper.stacks,
     },
   });
   return true;
@@ -56,7 +48,6 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
   store.update((project) => {
     const targetMap = project.maps[mapId];
     if (!targetMap) return;
-    const target = tilesForLayer(targetMap, clipboard.layer);
     for (let cy = 0; cy < clipboard.height; cy++) {
       for (let cx = 0; cx < clipboard.width; cx++) {
         const tx = x + cx;
@@ -64,12 +55,42 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
         if (!isInsideMap(tx, ty, targetMap.width, targetMap.height)) continue;
         const sourceIndex = cy * clipboard.width + cx;
         const targetIndex = ty * targetMap.width + tx;
-        target[targetIndex] = clipboard.tiles[sourceIndex];
-        replaceTileStack(targetMap, clipboard.layer, targetIndex, clipboard.stacks?.[sourceIndex] ?? []);
+        pasteLayerTile(targetMap, "lower", targetIndex, clipboard.lowerTiles[sourceIndex], clipboard.lowerStacks?.[sourceIndex] ?? []);
+        pasteLayerTile(targetMap, "upper", targetIndex, clipboard.upperTiles[sourceIndex], clipboard.upperStacks?.[sourceIndex] ?? []);
       }
     }
   });
   return true;
+}
+
+function copyLayerSelection(
+  map: GameMap,
+  selection: TileSelection,
+  layer: TileLayer,
+): { readonly tiles: number[]; readonly stacks: number[][] } {
+  const source = tilesForLayer(map, layer);
+  const tiles: number[] = [];
+  const stacks: number[][] = [];
+  for (let y = 0; y < selection.height; y++) {
+    for (let x = 0; x < selection.width; x++) {
+      const index = (selection.y + y) * map.width + selection.x + x;
+      tiles.push(source[index]);
+      stacks.push([...tileStackAt(map, layer, index)]);
+    }
+  }
+  return { tiles, stacks };
+}
+
+function pasteLayerTile(
+  map: GameMap,
+  layer: TileLayer,
+  index: number,
+  tile: number,
+  stack: readonly number[],
+): void {
+  const target = tilesForLayer(map, layer);
+  target[index] = tile;
+  replaceTileStack(map, layer, index, stack);
 }
 
 function tilesForLayer(map: { lowerTiles: number[]; upperTiles: number[] }, layer: TileLayer): number[] {

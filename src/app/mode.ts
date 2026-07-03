@@ -174,6 +174,7 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
 
 export type StartPlayGameOptions = {
   readonly trackGlobalGame?: boolean;
+  readonly initialEventTestId?: string;
 };
 
 export async function startPlayGame(
@@ -203,6 +204,9 @@ export async function startPlayGame(
   }
   if (initialSession) {
     nextGame.registry.set("initialSession", initialSession);
+  }
+  if (options.initialEventTestId) {
+    nextGame.registry.set("initialEventTestId", options.initialEventTestId);
   }
   return nextGame;
 }

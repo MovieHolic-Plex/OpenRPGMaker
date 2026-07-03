@@ -9,6 +9,7 @@ import {
 import type { SupabaseProjectConfigSource } from "@/project/supabaseProjectConfig";
 import {
   listSupabaseProjects,
+  pingSupabaseProject,
   type SupabaseProjectListConfig,
   type SupabaseProjectListItem,
 } from "@/project/supabaseProjectSync";
@@ -19,23 +20,46 @@ import { toast } from "@/util/toast";
 
 type StatusRefresh = () => void;
 
+type DbHealthState =
+  | { readonly kind: "checking" }
+  | { readonly kind: "healthy" }
+  | { readonly kind: "missing" }
+  | { readonly kind: "unreachable"; readonly message: string };
+
 type DbConnectionSettingsOptions = {
   readonly autoLoadProjects?: boolean;
   readonly required?: boolean;
 };
 
+const DB_HEALTH_PING_INTERVAL_MS = 15_000;
+
 let modalRoot: HTMLElement | null = null;
 let connecting = false;
+let dbHealthState: DbHealthState = { kind: "checking" };
+let dbHealthConfigKey: string | null = null;
+let dbHealthTimer: number | null = null;
+let dbHealthInFlight = false;
+let dbHealthRefresh: StatusRefresh = () => undefined;
 
 export function renderDbConnectionStatus(status: DbPersistenceStatus, onRefresh: StatusRefresh): HTMLElement {
+  ensureDbHealthPolling(status, onRefresh);
+  const health = dbHealthForStatus(status);
   const button = el("button", {
-    class: `editor-statusbar-cell db-connection-status ${status.kind}`,
-    text: dbConnectionStatusText(status),
-    attrs: { title: `${dbConnectionStatusTitle(status)} 클릭해서 DB 설정/연결을 엽니다.`, type: "button" },
+    class: `editor-statusbar-cell db-connection-status ${dbConnectionStatusClass(status, health)}`,
+    text: dbConnectionStatusText(status, health),
+    attrs: { title: `${dbConnectionStatusTitle(status, health)} 클릭해서 DB 설정/연결을 엽니다.`, type: "button" },
     dataset: { testid: "db-connection-status" },
     on: { click: () => openDbConnectionSettings(onRefresh) },
   });
   return button;
+}
+
+export function resetDbConnectionHealthForTests(): void {
+  stopDbHealthPolling();
+  dbHealthState = { kind: "checking" };
+  dbHealthConfigKey = null;
+  dbHealthInFlight = false;
+  dbHealthRefresh = () => undefined;
 }
 
 export function openDbConnectionSettings(onRefresh: StatusRefresh = () => undefined, options: DbConnectionSettingsOptions = {}): void {
@@ -249,6 +273,7 @@ function renderActions(form: HTMLFormElement, statusLine: HTMLElement, onRefresh
         on: {
           click: () => {
             clearSupabaseProjectConfigDraft();
+            resetDbConnectionHealth();
             toast("DB 설정을 초기화했습니다.", "ok");
             closeDbConnectionSettings();
             onRefresh();
@@ -274,6 +299,7 @@ async function connectFromForm(form: HTMLFormElement, statusLine: HTMLElement, o
   connecting = false;
   onRefresh();
   if (result.kind === "connected") {
+    setDbHealthState({ kind: "healthy" });
     markSupabaseRecoveredLocation();
     ensureCurrentMapLock();
     toast("DB 프로젝트를 불러왔습니다.", "ok");
@@ -293,6 +319,7 @@ function saveConfigFromForm(
 ): void {
   const draft = configDraftFromForm(form);
   saveSupabaseProjectConfigDraft(draft);
+  resetDbConnectionHealth();
   onRefresh();
   if (!notify) return;
   setStatusLine(statusLine, "DB 설정을 저장했습니다.");
@@ -322,25 +349,126 @@ function closeDbConnectionSettings(): void {
   modalRoot = null;
 }
 
-function dbConnectionStatusText(status: DbPersistenceStatus): string {
-  switch (status.kind) {
-    case "ready":
-      return `DB 연동: 준비됨 (${dbConfigSourceLabel(status.source)})`;
-    case "not-configured":
-      return `DB 연동: 설정 필요 (${dbConfigSourceLabel(status.source)})`;
-    case "disabled":
-      return "DB 연동: 꺼짐";
+function ensureDbHealthPolling(status: DbPersistenceStatus, onRefresh: StatusRefresh): void {
+  if (status.kind !== "ready" || typeof window === "undefined") {
+    stopDbHealthPolling();
+    return;
+  }
+  dbHealthRefresh = onRefresh;
+  const nextConfigKey = `${status.url}\n${status.projectId}\n${status.source}`;
+  if (dbHealthConfigKey !== nextConfigKey) {
+    dbHealthConfigKey = nextConfigKey;
+    dbHealthState = { kind: "checking" };
+    void refreshDbHealth(nextConfigKey);
+  }
+  if (dbHealthTimer === null) {
+    dbHealthTimer = window.setInterval(() => {
+      const configKey = dbHealthConfigKey;
+      if (configKey) void refreshDbHealth(configKey);
+    }, DB_HEALTH_PING_INTERVAL_MS);
   }
 }
 
-function dbConnectionStatusTitle(status: DbPersistenceStatus): string {
+async function refreshDbHealth(configKey: string): Promise<void> {
+  if (dbHealthInFlight) return;
+  dbHealthInFlight = true;
+  try {
+    const result = await pingSupabaseProject();
+    if (dbHealthConfigKey !== configKey) return;
+    switch (result.kind) {
+      case "healthy":
+        setDbHealthState({ kind: "healthy" });
+        break;
+      case "missing":
+        setDbHealthState({ kind: "missing" });
+        break;
+      case "not-configured":
+        setDbHealthState({ kind: "unreachable", message: "DB 설정이 비어 있습니다." });
+        break;
+    }
+  } catch (error) {
+    if (dbHealthConfigKey !== configKey) return;
+    setDbHealthState({ kind: "unreachable", message: error instanceof Error ? error.message : "알 수 없는 오류" });
+  } finally {
+    dbHealthInFlight = false;
+  }
+}
+
+function setDbHealthState(next: DbHealthState): void {
+  if (dbHealthStateKey(dbHealthState) === dbHealthStateKey(next)) return;
+  dbHealthState = next;
+  dbHealthRefresh();
+}
+
+function dbHealthStateKey(state: DbHealthState): string {
+  return state.kind === "unreachable" ? `${state.kind}:${state.message}` : state.kind;
+}
+
+function resetDbConnectionHealth(): void {
+  dbHealthState = { kind: "checking" };
+  dbHealthConfigKey = null;
+}
+
+function stopDbHealthPolling(): void {
+  if (dbHealthTimer !== null) {
+    window.clearInterval(dbHealthTimer);
+    dbHealthTimer = null;
+  }
+}
+
+function dbHealthForStatus(status: DbPersistenceStatus): DbHealthState {
+  return status.kind === "ready" ? dbHealthState : { kind: "checking" };
+}
+
+function dbConnectionStatusClass(status: DbPersistenceStatus, health: DbHealthState): string {
+  return status.kind === "ready" ? `${status.kind} ${health.kind}` : status.kind;
+}
+
+function dbConnectionStatusText(status: DbPersistenceStatus, health: DbHealthState): string {
   switch (status.kind) {
     case "ready":
-      return `DB 저장 가능: ${status.url} / ${status.projectId} / ${dbConfigSourceLabel(status.source)}`;
+      return dbHealthStatusText(health);
+    case "not-configured":
+      return "DB: 설정 필요";
+    case "disabled":
+      return "DB: 꺼짐";
+  }
+}
+
+function dbHealthStatusText(health: DbHealthState): string {
+  switch (health.kind) {
+    case "checking":
+      return "DB: 확인 중";
+    case "healthy":
+      return "DB: healthy";
+    case "missing":
+      return "DB: 프로젝트 없음";
+    case "unreachable":
+      return "DB: 끊김";
+  }
+}
+
+function dbConnectionStatusTitle(status: DbPersistenceStatus, health: DbHealthState): string {
+  switch (status.kind) {
+    case "ready":
+      return `${dbHealthStatusTitle(health)} (${status.url} / ${status.projectId} / ${dbConfigSourceLabel(status.source)})`;
     case "not-configured":
       return `DB 저장 설정 필요: ${status.missing.map(dbConfigFieldLabel).join(", ")} / ${dbConfigSourceLabel(status.source)}`;
     case "disabled":
       return status.reason === "dev-showcase" ? "개발용 URL이라 원격 DB 저장이 꺼져 있습니다." : "프로젝트 불러오기 실패로 원격 DB 저장이 꺼져 있습니다.";
+  }
+}
+
+function dbHealthStatusTitle(health: DbHealthState): string {
+  switch (health.kind) {
+    case "checking":
+      return "DB 설정은 저장되어 있고, 실제 연결 상태를 확인하는 중입니다.";
+    case "healthy":
+      return "방금 DB ping이 성공했습니다. 원격 저장/불러오기를 시도할 수 있습니다.";
+    case "missing":
+      return "DB 서버는 응답했지만 현재 Project ID를 찾지 못했습니다.";
+    case "unreachable":
+      return `DB ping 실패: ${health.message}`;
   }
 }
 

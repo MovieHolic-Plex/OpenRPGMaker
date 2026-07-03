@@ -29,11 +29,12 @@ export interface TileSelection {
 }
 
 export interface TileClipboard {
-  layer: "lower" | "upper";
   width: number;
   height: number;
-  tiles: number[];
-  stacks?: number[][];
+  lowerTiles: number[];
+  upperTiles: number[];
+  lowerStacks?: number[][];
+  upperStacks?: number[][];
 }
 
 export interface EditorState {

@@ -33,6 +33,15 @@ type SupabaseProjectListRow = {
   readonly title: string | null;
 };
 
+type SupabaseProjectHealthRow = {
+  readonly project_id: string;
+};
+
+export type SupabaseProjectHealthResult =
+  | { readonly kind: "healthy" }
+  | { readonly kind: "missing" }
+  | { readonly kind: "not-configured" };
+
 type SupabaseChildTable = "ai_analysis_runs" | "maps" | "terrain_templates" | "tilesets";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
@@ -90,6 +99,28 @@ export async function listSupabaseProjects(config: SupabaseProjectListConfig): P
     projectId: row.project_id,
     title: supabaseProjectListTitle(row),
   }));
+}
+
+export async function pingSupabaseProject(
+  config = supabaseProjectConfig(),
+  timeoutMs = 3500,
+): Promise<SupabaseProjectHealthResult> {
+  if (!config) return { kind: "not-configured" };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(supabaseProjectHealthUrl(config), {
+      headers: supabaseJsonHeaders(config, "read"),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new SupabaseProjectSyncError(await response.text(), response.status);
+    }
+    const rows = await parseProjectHealthRows(response);
+    return rows.length > 0 ? { kind: "healthy" } : { kind: "missing" };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function loadProjectSnapshotFromSupabase(
@@ -197,6 +228,15 @@ function supabaseProjectListUrl(config: SupabaseProjectListConfig): string {
   return `${config.url}/rest/v1/projects?${query.toString()}`;
 }
 
+function supabaseProjectHealthUrl(config: SupabaseProjectConfig): string {
+  const query = new URLSearchParams({
+    limit: "1",
+    project_id: `eq.${config.projectId}`,
+    select: "project_id",
+  });
+  return `${config.url}/rest/v1/projects?${query.toString()}`;
+}
+
 function supabaseUpsertUrl(config: SupabaseProjectConfig): string {
   const query = new URLSearchParams({ on_conflict: "project_id" });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
@@ -268,6 +308,17 @@ async function parseProjectListRows(response: Response): Promise<readonly Supaba
       project_id: entry.project_id,
       title: typeof entry.title === "string" ? entry.title : null,
     };
+  });
+}
+
+async function parseProjectHealthRows(response: Response): Promise<readonly SupabaseProjectHealthRow[]> {
+  const parsed: unknown = await response.json();
+  if (!Array.isArray(parsed)) throw new SupabaseProjectSyncError("Supabase project health response was not an array");
+  return parsed.map((entry) => {
+    if (!isRecord(entry) || typeof entry.project_id !== "string") {
+      throw new SupabaseProjectSyncError("Supabase project health row is missing project_id");
+    }
+    return { project_id: entry.project_id };
   });
 }
 
