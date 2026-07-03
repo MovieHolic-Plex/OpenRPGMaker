@@ -14,6 +14,7 @@ import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
+const EVENT_EDITOR_CLOSE_EVENT = "rpgzzu:event-editor-close";
 
 type OpenEventEditorRequest = {
   readonly mapId: MapId;
@@ -70,7 +71,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);
   backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, close));
-  backdrop.addEventListener("rpgzzu:event-editor-close", (event) => {
+  backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     if (!saved) discardEventDraft(request.mapId, request.eventId);
     unsubscribeStore();
@@ -89,8 +90,8 @@ export function isEventEditorModalOpenFor(mapId: MapId, eventId: string): boolea
 function closeExistingEventEditorModal(): void {
   const existing = document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
   if (existing instanceof HTMLElement) {
+    existing.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT));
     existing.remove();
-    existing.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close"));
   }
 }
 
@@ -201,9 +202,12 @@ function footerButtonAccessibleName(text: string): string {
 }
 
 function createCloseHandler(backdrop: HTMLElement): (saved?: boolean) => void {
+  let closed = false;
   return (saved = false) => {
+    if (closed) return;
+    closed = true;
+    backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
-    backdrop.dispatchEvent(new CustomEvent("rpgzzu:event-editor-close", { detail: { saved: saved === true } }));
   };
 }
 

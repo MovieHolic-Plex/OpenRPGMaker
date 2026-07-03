@@ -220,4 +220,33 @@ describe("shared command resolver consumers", () => {
     expect(expectTextCommand(persisted.transactionBranch?.[0] ?? null).body).toBe("persisted shop");
     expect(expectTextCommand(staged.transactionBranch?.[0] ?? null).body).toBe("staged shop");
   });
+
+  it("creates missing shop transaction branches through the shared resolver for page edits", () => {
+    replaceEventPageCommandAt(mapId, eventId, pageId, [0], { kind: "shop", itemIds: [], branchOnTransaction: true });
+
+    addEventPageCommandAt(mapId, eventId, pageId, [0, SHOP_TRANSACTION_BRANCH_INDEX], {
+      kind: "text",
+      body: "created persisted branch",
+    });
+
+    const persisted = currentEventPage().commands[0];
+    expect(persisted?.kind).toBe("shop");
+    if (persisted?.kind !== "shop") throw new Error("expected persisted shop command");
+    expect(expectTextCommand(persisted.transactionBranch?.[0] ?? null).body).toBe("created persisted branch");
+  });
+
+  it("keeps canceled staged shop branch edits isolated from the initial command", () => {
+    const initial: Command = { kind: "shop", itemIds: [], branchOnTransaction: true };
+    const staged = structuredClone(initial);
+
+    resolveRootCommandBranchList(staged, [SHOP_TRANSACTION_BRANCH_INDEX], { missingBranches: "create" })?.push({
+      kind: "text",
+      body: "staged only",
+    });
+
+    expect(initial).toEqual({ kind: "shop", itemIds: [], branchOnTransaction: true });
+    expect(staged.kind).toBe("shop");
+    if (staged.kind !== "shop") throw new Error("expected staged shop command");
+    expect(expectTextCommand(staged.transactionBranch?.[0] ?? null).body).toBe("staged only");
+  });
 });

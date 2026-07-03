@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import "./eventEditorModalClose.test";
 
 let restoreFakeDom: () => void = () => undefined;
 

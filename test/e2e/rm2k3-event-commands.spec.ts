@@ -428,6 +428,62 @@ test("event command detail editors persist battle, money, item, and party settin
   await page.screenshot({ path: testInfo.outputPath("event-command-detail-editors.png"), fullPage: true });
 });
 
+test("shop transaction branch persists after Apply OK and reopen", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const project = makeBattleProject();
+  project.maps.map_cmd.events[0] = {
+    id: "ev_shop_branch",
+    x: 0,
+    y: 1,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [{
+      id: "page_shop_branch",
+      name: "Shop Branch",
+      conditions: [],
+      graphic: {},
+      trigger: { kind: "action" },
+      priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [{ kind: "shop", itemIds: [], branchOnTransaction: true }],
+    }],
+  };
+  await seedProject(page, project);
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("event-list-row-ev_shop_branch").click();
+  await page.getByTestId("event-editor-open").click();
+  const shopCommand = page.getByTestId("event-command-shop").first();
+  await shopCommand.locator(".cmd-head").dblclick();
+  await expect(shopCommand).toHaveClass(/editing/);
+  await shopCommand.getByTestId("shop-add-transaction-branch-command").click();
+
+  await applyEventEditor(page);
+  const appliedState = await debugState(page);
+  const appliedShop = appliedState.project.maps[appliedState.project.startMapId].events
+    .flatMap((event) => event.pages?.flatMap((eventPage) => eventPage.commands) ?? [])
+    .find((command) => command.kind === "shop");
+  expect(appliedShop).toMatchObject({
+    kind: "shop",
+    branchOnTransaction: true,
+    transactionBranch: [expect.objectContaining({ kind: "text" })],
+  });
+
+  await page.getByTestId("event-editor-ok").click();
+  await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
+  await page.getByTestId("event-editor-open").click();
+  await expect(page.getByTestId("event-command-shop").first()).toBeVisible();
+  const reopenedState = await debugState(page);
+  const reopenedShop = reopenedState.project.maps[reopenedState.project.startMapId].events
+    .flatMap((event) => event.pages?.flatMap((eventPage) => eventPage.commands) ?? [])
+    .find((command) => command.kind === "shop");
+  expect(reopenedShop).toMatchObject({
+    kind: "shop",
+    branchOnTransaction: true,
+    transactionBranch: [expect.objectContaining({ kind: "text" })],
+  });
+  await page.screenshot({ path: testInfo.outputPath("shop-transaction-branch-reopened.png"), fullPage: true });
+});
+
 test("move event route editor persists route steps", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1");

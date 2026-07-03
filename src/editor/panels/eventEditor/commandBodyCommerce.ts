@@ -120,10 +120,6 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
     on: {
       click: () => {
         const next = newCommand(selectedOptionValue(branchSel, COMMAND_KIND_OPTIONS, "text"));
-        if (!command.transactionBranch) {
-          context.actions.replaceCommand(context.path, { ...command, transactionBranch: [next] });
-          return;
-        }
         context.actions.addCommand([...context.path, SHOP_TRANSACTION_BRANCH_INDEX], next);
       },
     },
