@@ -4,7 +4,7 @@
 // 오프라인(정답 시퀀스) 채점:
 //   runGoldenSuite(GOLDEN_TASKS, (t) => toolSequenceSolver(GOLDEN_SOLUTIONS[t.id]))
 //
-// 실제 LLM(OpenRouter google/gemini-3.1-flash-lite) 야간 배치:
+// 실제 LLM(OpenRouter 기본 메인 모델) 야간 배치:
 //   const config = { ...defaultAiConfig(), apiKey: <키> };
 //   runGoldenSuite(GOLDEN_TASKS, (t) => llmSolver({ config }));
 //   → 비용/네트워크가 있으므로 CI 상시 실행하지 않고 수동/야간에만 돌린다.

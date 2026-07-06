@@ -18,11 +18,13 @@ type MockSession = {
 };
 
 const mocks = vi.hoisted<{
+  constructorOptions: unknown[];
   instances: MockSession[];
   nextResult: TurnResult | null;
   proposedProject: Project | null;
   recordProjectSnapshot: ReturnType<typeof vi.fn>;
 }>(() => ({
+  constructorOptions: [],
   instances: [],
   nextResult: null,
   proposedProject: null,
@@ -30,7 +32,8 @@ const mocks = vi.hoisted<{
 }));
 
 vi.mock("@/ai/assistantSession", () => ({
-  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession() {
+  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession(_project: unknown, options: unknown) {
+    mocks.constructorOptions.push(options);
     const session: MockSession = {
       sendUserMessage: vi.fn(async (_text: string, onEvent: (event: SessionEvent) => void) => {
         onEvent({ type: "assistant_token", delta: "확인했습니다. " });
@@ -99,6 +102,7 @@ beforeEach(() => {
     baseUrl: "https://example.test",
     maxTokens: 1024,
     model: "test-model",
+    liteModel: "test-lite-model",
     reasoningEffort: "medium",
   }));
   Object.defineProperty(globalThis, "localStorage", {
@@ -124,6 +128,7 @@ beforeEach(() => {
   store.replace(project);
   editorState.set({ currentMapId: project.startMapId, selection: null });
   mocks.instances.length = 0;
+  mocks.constructorOptions.length = 0;
   mocks.nextResult = null;
   mocks.proposedProject = null;
   mocks.recordProjectSnapshot.mockReset();
@@ -154,6 +159,7 @@ describe("cluster AI modal", () => {
       expect.stringContaining("클러스터 수정"),
       expect.any(Function)
     );
+    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("test-lite-model");
   });
 
   it("accepts proposed changes into the store and rebases the session", async () => {

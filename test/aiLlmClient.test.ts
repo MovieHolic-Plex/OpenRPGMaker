@@ -37,7 +37,14 @@ function mockFetchOnce(response: Response): void {
   (globalThis as unknown as { fetch: unknown }).fetch = vi.fn(async () => response);
 }
 
-const CONFIG_BASE = { baseUrl: "https://openrouter.ai/api/v1", model: "google/gemini-3.1-flash-lite", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
+function sentBody(): Record<string, unknown> {
+  const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
+  const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
+  if (!init) throw new Error("fetch init missing");
+  return JSON.parse(String(init.body)) as Record<string, unknown>;
+}
+
+const CONFIG_BASE = { baseUrl: "https://openrouter.ai/api/v1", model: "google/gemini-3.5-flash", liteModel: "google/gemini-3.1-flash-lite", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -47,10 +54,11 @@ afterEach(() => {
 describe("aiConfig 저장/로드", () => {
   it("기본값을 반환하고 저장값을 병합한다", async () => {
     installLocalStorage();
-    const { loadAiConfig, saveAiConfig, DEFAULT_MODEL } = await loadClient();
+    const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MODEL } = await loadClient();
 
     const initial = loadAiConfig();
     expect(initial.model).toBe(DEFAULT_MODEL);
+    expect(initial.liteModel).toBe(DEFAULT_LITE_MODEL);
     expect(initial.apiKey).toBe(""); // 키 기본값은 항상 빈값.
     expect(initial.maxTokens).toBe(10240); // 사용자 제한은 출력 토큰 예산 하나(기본 10240).
 
@@ -60,6 +68,30 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.maxTokens).toBe(4000);
     expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
+    expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
+    expect(DEFAULT_MODEL).toBe("google/gemini-3.5-flash");
+    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
+  });
+
+  it("저장된 사용자 model은 존중하고 liteModel 누락은 기본값으로 보강한다", async () => {
+    const store = installLocalStorage();
+    const { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, loadAiConfig } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      apiKey: "sk-user",
+      baseUrl: "https://openrouter.ai/api/v1",
+      model: "user-main-model",
+    }));
+
+    const reloaded = loadAiConfig();
+    expect(reloaded.model).toBe("user-main-model");
+    expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
+  });
+
+  it("configForLiteModel은 보조 모델을 실제 요청 모델로 승격한다", async () => {
+    const { configForLiteModel, defaultAiConfig } = await loadClient();
+    const config = configForLiteModel({ ...defaultAiConfig(), model: "main-model", liteModel: "batch-model" });
+    expect(config.model).toBe("batch-model");
+    expect(config.liteModel).toBe("batch-model");
   });
 
   it("maxToolCalls 저장값은 무시하고 안전핀 기본값을 쓴다 (UI에서 제거된 항목)", async () => {
@@ -78,6 +110,15 @@ describe("aiConfig 저장/로드", () => {
 });
 
 describe("chatCompletion 스트리밍 SSE 파서", () => {
+  it("요청 본문에는 config.model을 그대로 넣는다", async () => {
+    const { chatCompletion } = await loadClient();
+    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
+
+    await chatCompletion({ ...CONFIG_BASE, model: "main-route-model" }, { messages: [{ role: "user", content: "hi" }], stream: false });
+
+    expect(sentBody().model).toBe("main-route-model");
+  });
+
   it("청크 경계로 쪼개진 content/tool_calls delta를 조립한다", async () => {
     const { chatCompletion } = await loadClient();
     // 이벤트가 청크 경계를 가로지르도록 분할.

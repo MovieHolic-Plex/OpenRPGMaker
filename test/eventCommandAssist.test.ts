@@ -12,7 +12,8 @@ import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const CONFIG: AiConfig = {
   baseUrl: "https://openrouter.ai/api/v1",
-  model: "google/gemini-3.1-flash-lite",
+  model: "google/gemini-3.5-flash",
+  liteModel: "google/gemini-3.1-flash-lite",
   apiKey: "sk-test",
   maxToolCalls: 8,
   maxTokens: 2048,
@@ -125,6 +126,19 @@ describe("parseAndValidate", () => {
 });
 
 describe("runEventCommandAssist 자가수정 루프", () => {
+  it("보조 모델(liteModel)로 chatCompletion 요청을 만든다", async () => {
+    const fetchMock = mockFetchSequence(JSON.stringify(CHEST_COMMANDS));
+    const project = testProject();
+    await runEventCommandAssist({
+      config: { ...CONFIG, model: "main-model", liteModel: "event-lite-model" },
+      prompt: "보물상자",
+      context: { project, mapId: project.startMapId, page: testPage() },
+    });
+
+    const firstBody = (fetchMock.mock.calls[0] as unknown as [string, { body: string }])[1].body;
+    expect(JSON.parse(firstBody).model).toBe("event-lite-model");
+  });
+
   it("정상 JSON이면 1회 시도로 커맨드를 돌려준다", async () => {
     const fetchMock = mockFetchSequence(JSON.stringify(CHEST_COMMANDS));
     const project = testProject();

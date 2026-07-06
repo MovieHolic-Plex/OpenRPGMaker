@@ -7,7 +7,7 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
-import { loadAiConfig } from "@/ai/llmClient";
+import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/skills";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -176,7 +176,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   const ensureSession = (): AssistantSession => {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
-        config: loadAiConfig(),
+        config: configForLiteModel(loadAiConfig()),
         contextOptions: { currentMapId: skillContext().mapId ?? undefined },
         renderImages: renderToolImages,
       });
@@ -376,7 +376,7 @@ function startKickoff(
   status: HTMLElement,
   sendText: (text: string, displayText?: string) => Promise<void>
 ): void {
-  const config = loadAiConfig();
+  const config = configForLiteModel(loadAiConfig());
   if (!config.baseUrl.trim() || !config.model.trim() || !config.apiKey.trim()) {
     status.textContent = "설정 필요";
     appendBubble("system", "AI 설정(엔드포인트/키)을 먼저 완료하세요. 오른쪽 AI 패널의 설정을 저장한 뒤 다시 열어 주세요.");

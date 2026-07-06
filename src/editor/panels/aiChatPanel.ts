@@ -46,7 +46,7 @@ import { saveConversation, deriveTitle } from "@/ai/conversationStore";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, pinnedSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { openSkillPalette, renderSkillDrawer, renderSlashList } from "@/editor/panels/aiSkillDrawer";
-import { DEFAULT_BASE_URL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { DEFAULT_BASE_URL, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 
 const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
 const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
@@ -1268,6 +1268,7 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
   const config = loadAiConfig();
   const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
   const model = textField("모델", config.model, "ai-config-model", "text", DEFAULT_MODEL);
+  const liteModel = textField("보조 모델(반복 배치)", config.liteModel ?? DEFAULT_LITE_MODEL, "ai-config-lite-model", "text", DEFAULT_LITE_MODEL);
   const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
   // 사용자 제한은 출력 토큰 예산 하나뿐 — 툴콜 깊이는 AI가 필요한 만큼 쓴다.
   const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");
@@ -1312,9 +1313,10 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
   });
 
   const collect = (): AiConfig => ({
-    // 비워 두면 기본값으로 저장한다(모델 기본: google/gemini-3.1-flash-lite).
+    // 비워 두면 기본값으로 저장한다.
     baseUrl: baseUrl.input.value.trim() || DEFAULT_BASE_URL,
     model: model.input.value.trim() || DEFAULT_MODEL,
+    liteModel: liteModel.input.value.trim() || DEFAULT_LITE_MODEL,
     apiKey: apiKey.input.value,
     maxToolCalls: defaultAiConfig().maxToolCalls,
     maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
@@ -1341,7 +1343,7 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
       persist(false);
     }, 350);
   };
-  for (const field of [baseUrl, model, apiKey, maxTokens]) {
+  for (const field of [baseUrl, model, liteModel, apiKey, maxTokens]) {
     field.input.addEventListener("input", scheduleAutoSave);
     field.input.addEventListener("change", () => persist(false));
   }
@@ -1363,6 +1365,7 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
       el("summary", { text: "설정 (엔드포인트/모델/API 키)" }),
       baseUrl.row,
       model.row,
+      liteModel.row,
       apiKey.row,
       maxTokens.row,
       reasoningRow,

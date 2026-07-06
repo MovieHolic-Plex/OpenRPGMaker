@@ -2,7 +2,7 @@
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: OpenRouter(https://openrouter.ai/api/v1) — 브라우저 CORS 지원.
 // - 스트리밍 SSE 파서(data: 라인 / [DONE] / tool_calls delta 조립) 포함.
-// - 설정(baseUrl/model/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(rpg-zzu:ai-config).
+// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(rpg-zzu:ai-config).
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
@@ -30,7 +30,10 @@ export interface ChatMessage {
 
 export interface AiConfig {
   baseUrl: string;
+  // 메인 세션 모델: 계획/공간추론/스펙 작성/자가수정 AssistantSession 대화 루프.
   model: string;
+  // 반복/배치 보조 호출 모델. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
+  liteModel?: string;
   apiKey: string;
   // 라운드 안전핀(사용자 노출 X). 사용자 제한은 maxTokens(출력 토큰 예산) 하나다.
   maxToolCalls: number;
@@ -40,12 +43,22 @@ export interface AiConfig {
   autoApprove?: boolean;
 }
 
-// 기본값. 모델은 사용자 확정 사항으로 고정한다(다른 모델 사용 금지). apiKey는 항상 빈값.
+// 기본값. apiKey는 항상 빈값.
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-export const DEFAULT_MODEL = "google/gemini-3.1-flash-lite";
+export const DEFAULT_MODEL = "google/gemini-3.5-flash";
+export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
 
 export function defaultAiConfig(): AiConfig {
-  return { baseUrl: DEFAULT_BASE_URL, model: DEFAULT_MODEL, apiKey: "", maxToolCalls: 200, maxTokens: 10240, reasoningEffort: "medium", autoApprove: false };
+  return {
+    baseUrl: DEFAULT_BASE_URL,
+    model: DEFAULT_MODEL,
+    liteModel: DEFAULT_LITE_MODEL,
+    apiKey: "",
+    maxToolCalls: 200,
+    maxTokens: 10240,
+    reasoningEffort: "medium",
+    autoApprove: false,
+  };
 }
 
 export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
@@ -60,8 +73,9 @@ export function loadAiConfig(): AiConfig {
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
     return {
       baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
-      // 모델은 고정이지만 저장값을 존중하되 비었으면 기본값.
+      // 저장된 사용자 모델은 존중하되 비었으면 기본값.
       model: typeof parsed.model === "string" && parsed.model.trim() ? parsed.model.trim() : base.model,
+      liteModel: typeof parsed.liteModel === "string" && parsed.liteModel.trim() ? parsed.liteModel.trim() : base.liteModel,
       apiKey: typeof parsed.apiKey === "string" ? parsed.apiKey : base.apiKey,
       // maxToolCalls는 UI에서 제거된 안전핀 — 저장값(옛 UI에서 설정한 8 등)을 무시하고
       // 항상 기본 안전핀을 쓴다. 세션 생성 시 options.config로는 여전히 재정의 가능(테스트/evals).
@@ -82,6 +96,11 @@ export function loadAiConfig(): AiConfig {
 export function saveAiConfig(config: AiConfig): void {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(config));
+}
+
+export function configForLiteModel(config: AiConfig): AiConfig {
+  const liteModel = config.liteModel?.trim() || DEFAULT_LITE_MODEL;
+  return { ...config, model: liteModel, liteModel };
 }
 
 // OpenAI tools 배열의 요소 형태(toolRegistry.toOpenAiTools() 결과와 동일 구조).

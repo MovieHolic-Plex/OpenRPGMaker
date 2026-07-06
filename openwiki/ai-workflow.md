@@ -16,6 +16,7 @@ This page describes how an agent should operate on this project using the local 
 - Do not change project schema without checking migrations, serialization, fixtures, and save/load tests.
 - Do not change runtime behavior only in UI glue if the rule belongs in `src/battle`, `src/player/interpreter`, or project data logic.
 - AI assistant conversation history persistence lives in `src/ai/conversationStore.ts`; it uses browser `localStorage` only, is separate from project JSON/runtime session state, and is covered by `test/conversationStore.test.ts`.
+- AI model routing is layered in `src/ai/llmClient.ts`: `model` is the main AssistantSession conversation model for planning/spatial reasoning/spec/self-repair, while `liteModel` is for repetitive batch helpers. Route region tasks, cluster/range/sample assist, and event-command natural-language conversion through the lite config helper; keep ambiguous user-visible main chat loops on `model` and document the reason.
 - Do not treat generated evidence, screenshots, or exported projects as source unless the task explicitly asks for evidence updates.
 - Update the matching wiki page when the code change alters future navigation or risk.
 
