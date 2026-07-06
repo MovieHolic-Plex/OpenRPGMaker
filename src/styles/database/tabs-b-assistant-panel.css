@@ -308,9 +308,17 @@ body:has([data-testid='resource-modal']) .ai-chat-panel {
   max-height: none;
   flex: 1 1 auto;
 }
-/* 도킹 시 에디터 레이아웃을 왼쪽으로 밀어 사이드바에 가려지지 않게 한다(오버레이가 아니라 진짜 사이드바). 폭은 패널과 일치. */
+/* 도킹 시 에디터 셸을 왼쪽으로 밀어 사이드바에 가려지지 않게 한다(오버레이가 아니라 진짜 사이드바). 폭은 패널과 일치. */
+body.ai-panel-docked {
+  --ai-docked-panel-inset: calc(min(400px, 46vw) + 4px);
+}
+
+body.ai-panel-docked .topbar {
+  padding-right: var(--ai-docked-panel-inset);
+}
+
 body.ai-panel-docked .editor-layout {
-  padding-right: calc(min(400px, 46vw) + 4px);
+  padding-right: var(--ai-docked-panel-inset);
 }
 .ai-chat-panel.is-docked.is-collapsed {
   top: 0;

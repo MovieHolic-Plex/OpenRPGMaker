@@ -1,12 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { RuntimeDebugHook } from "@/player/playSceneTestHooks";
 
 async function load() {
-  const [debug, { startSession }, { createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP }] = await Promise.all([
+  const [debug, hooks, { startSession }, { createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP }] = await Promise.all([
     import("@/testing/debugSession"),
+    import("@/player/playSceneTestHooks"),
     import("@/project/session"),
     import("@/project/defaults/emberQuestGame"),
   ]);
-  return { debug, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP };
+  return { debug, hooks, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP };
 }
 
 describe("debugSession — 런타임 디버그 조작", () => {
@@ -54,4 +56,59 @@ describe("debugSession — 런타임 디버그 조작", () => {
     expect(session.x).toBe(8);
     expect(session.y).toBe(9);
   });
+
+  it("PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다", async () => {
+    const { hooks, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_MAP } = await load();
+    const previousWindow = globalThis.window;
+    const testWindow = { location: { search: "" } } as Window & { __rpgzzuDebug?: RuntimeDebugHook };
+    const project = createEmberQuestProject();
+    const originalSession = startSession(project);
+    let liveSession = originalSession;
+    let syncCount = 0;
+
+    try {
+      Object.defineProperty(globalThis, "window", {
+        configurable: true,
+        writable: true,
+        value: testWindow,
+      });
+
+      hooks.installPlaySceneTestHooks(
+        { events: { once: vi.fn() } } as never,
+        { injectActionEdge: vi.fn(), injectDirection: vi.fn() } as never,
+        () => liveSession,
+        () => {
+          syncCount += 1;
+        }
+      );
+
+      const restoredSession = startSession(project);
+      restoredSession.currentMapId = EMBER_MAP.forest;
+      restoredSession.x = 2;
+      restoredSession.y = 14;
+      liveSession = restoredSession;
+
+      expect(testWindow.__rpgzzuDebug?.readState().currentMapId).toBe(EMBER_MAP.forest);
+
+      testWindow.__rpgzzuDebug?.setSwitch(EMBER_SWITCH.q1Started, true);
+
+      expect(restoredSession.switches[EMBER_SWITCH.q1Started]).toBe(true);
+      expect(originalSession.switches[EMBER_SWITCH.q1Started]).toBe(false);
+      expect(syncCount).toBe(1);
+    } finally {
+      restoreWindow(previousWindow);
+    }
+  });
 });
+
+function restoreWindow(previousWindow: Window & typeof globalThis | undefined): void {
+  if (previousWindow === undefined) {
+    Reflect.deleteProperty(globalThis, "window");
+    return;
+  }
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: previousWindow,
+  });
+}
