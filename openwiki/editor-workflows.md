@@ -32,6 +32,7 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 - `src/editor/eventCommandPaths.ts` is the shared owner for nested command paths. Use it for choices cancel branches, fork then/else branches, loop bodies, shop transaction branches, and branch creation when a mutation path needs to create a missing optional branch.
 - Destructive event deletion is routed through `requestEditorEventDeletion` so modal Delete-key and visible delete controls require explicit confirmation before `deleteEditorEvent` mutates project data.
 - AI event tools compile `graphic` input through `src/editor/tools/eventCompile.ts`; direct `{textureKey, characterIndex}` charset graphics must be canonicalized to bundled EasyRPG texture keys before commit-time resource validation.
+- `place_npc` SimplePage compilation is intentionally tolerant for common in-editor AI malformed shapes: `conditions` may be omitted, null, an array, or a single condition object; `commands` may be omitted, null, an array, or a single command object; and obvious command-kind aliases such as `command: "text"` or `kind: { command: "text" }` are normalized. Every normalization must emit a tool warning, while unrecoverable shapes should fail with a short `field / expected type / actual type / minimal example` ToolError instead of a raw TypeError.
 
 ## Database Editor
 

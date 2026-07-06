@@ -5,11 +5,25 @@
 
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
+import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
+import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic } from "@/project/types";
 import { ToolError } from "./types";
 import type { SimplePage } from "./types";
 
 const PASSIVE_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
+const COMMAND_KIND_SET: ReadonlySet<string> = new Set(COMMAND_KINDS);
+const CONDITION_KIND_SET: ReadonlySet<string> = new Set(CONDITION_KINDS);
+const SIMPLE_PAGE_EXAMPLE = `{"pages":[{"lines":["안녕하세요"],"conditions":[],"commands":[{"kind":"text","body":"안녕하세요"}]}]}`;
+
+type EventCompileOptions = {
+  readonly movement?: EventPage["movement"];
+  readonly priority?: EventPage["priority"];
+  readonly warnings?: string[];
+  readonly path?: string;
+};
+
+type RecordValue = Record<string, unknown>;
 
 export type GraphicSpec =
   | { readonly query: string }
@@ -132,15 +146,158 @@ function pageLines(page: SimplePage): readonly string[] {
   return [];
 }
 
+function isRecord(value: unknown): value is RecordValue {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function describeValue(value: unknown): string {
+  if (value === undefined) return "undefined";
+  if (value === null) return "null";
+  if (Array.isArray(value)) return `array(length:${value.length})`;
+  switch (typeof value) {
+    case "object": {
+      const keys = Object.keys(value as RecordValue).slice(0, 4);
+      return keys.length > 0 ? `object(keys:${keys.join(",")})` : "object";
+    }
+    case "string": {
+      const compact = value.length > 40 ? `${value.slice(0, 40)}…` : value;
+      return `string(${JSON.stringify(compact)})`;
+    }
+    case "number":
+      return Number.isFinite(value) ? `number(${value})` : "number(non-finite)";
+    case "boolean":
+      return `boolean(${value})`;
+    case "bigint":
+      return "bigint";
+    case "function":
+      return "function";
+    case "symbol":
+      return "symbol";
+    case "undefined":
+      return "undefined";
+  }
+  return "unknown";
+}
+
+function simplePageFieldError(path: string, expected: string, actual: unknown): ToolError {
+  return new ToolError(
+    `SimplePage 인자 오류: 필드: ${path}; 기대 타입: ${expected}; 실제 타입: ${describeValue(actual)}; 최소 예시: ${SIMPLE_PAGE_EXAMPLE}`,
+    { code: "invalid-args" }
+  );
+}
+
+function simplePageShapeError(path: string, expected: string, actual: unknown, detail: string): ToolError {
+  return new ToolError(
+    `SimplePage 인자 오류: 필드: ${path}; 기대 타입: ${expected}; 실제 타입: ${describeValue(actual)}; 세부: ${detail}; 최소 예시: ${SIMPLE_PAGE_EXAMPLE}`,
+    { code: "invalid-args" }
+  );
+}
+
+function normalizeObjectList(
+  raw: unknown,
+  path: string,
+  expected: string,
+  singleObjectWarning: string,
+  nullWarning: string,
+  warnings: string[] | undefined
+): unknown[] {
+  if (raw === undefined) return [];
+  if (raw === null) {
+    warnings?.push(nullWarning);
+    return [];
+  }
+  if (Array.isArray(raw)) return raw;
+  if (isRecord(raw)) {
+    warnings?.push(singleObjectWarning);
+    return [raw];
+  }
+  throw simplePageFieldError(path, expected, raw);
+}
+
+function recoverCommandKind(command: RecordValue, path: string, warnings: string[] | undefined): string | null {
+  const commandAlias = command.command;
+  if (typeof commandAlias === "string") {
+    delete command.command;
+    warnings?.push(`SimplePage 정규화: ${path}.command 문자열을 kind로 사용했습니다.`);
+    return commandAlias;
+  }
+
+  const kind = command.kind;
+  if (!isRecord(kind)) return null;
+  if (typeof kind.command === "string") {
+    warnings?.push(`SimplePage 정규화: ${path}.kind.command 문자열을 kind로 사용했습니다.`);
+    return kind.command;
+  }
+  if (typeof kind.kind === "string") {
+    warnings?.push(`SimplePage 정규화: ${path}.kind.kind 문자열을 kind로 사용했습니다.`);
+    return kind.kind;
+  }
+  return null;
+}
+
+function normalizeCommand(raw: unknown, path: string, warnings: string[] | undefined): Command {
+  if (!isRecord(raw)) throw simplePageFieldError(path, "Command object", raw);
+  const command: RecordValue = { ...raw };
+  const rawKind = command.kind;
+  const kind = typeof rawKind === "string" ? rawKind : recoverCommandKind(command, path, warnings);
+  if (!kind) {
+    throw simplePageFieldError(`${path}.kind`, "string", rawKind);
+  }
+  command.kind = kind;
+  if (!COMMAND_KIND_SET.has(kind)) {
+    throw simplePageFieldError(`${path}.kind`, "known command kind string", kind);
+  }
+  return command as Command;
+}
+
+function normalizeCommands(raw: unknown, path: string, warnings: string[] | undefined): Command[] {
+  const values = normalizeObjectList(
+    raw,
+    path,
+    "array<Command> 또는 Command object",
+    `SimplePage 정규화: ${path} 단수 객체를 배열로 감쌌습니다.`,
+    `SimplePage 정규화: ${path} null을 빈 배열로 처리했습니다.`,
+    warnings
+  );
+  return values.map((value, index) => normalizeCommand(value, `${path}[${index}]`, warnings));
+}
+
+function normalizeCondition(raw: unknown, path: string): EventPageCondition {
+  if (!isRecord(raw)) throw simplePageFieldError(path, "EventPageCondition object", raw);
+  if (typeof raw.kind !== "string") throw simplePageFieldError(`${path}.kind`, "string", raw.kind);
+  if (!CONDITION_KIND_SET.has(raw.kind)) {
+    throw simplePageFieldError(`${path}.kind`, "known condition kind string", raw.kind);
+  }
+  try {
+    validateConditionShape(path, raw);
+  } catch (cause) {
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    throw simplePageShapeError(path, "valid EventPageCondition object", raw, detail);
+  }
+  return raw as EventPageCondition;
+}
+
+function normalizeConditions(raw: unknown, path: string, warnings: string[] | undefined): EventPageCondition[] {
+  const values = normalizeObjectList(
+    raw,
+    path,
+    "array<EventPageCondition> 또는 EventPageCondition object",
+    `SimplePage 정규화: ${path} 단수 객체를 배열로 감쌌습니다.`,
+    `SimplePage 정규화: ${path} null을 빈 배열로 처리했습니다.`,
+    warnings
+  );
+  return values.map((value, index) => normalizeCondition(value, `${path}[${index}]`));
+}
+
 // SimplePage[] → EventPage[]. 각 페이지는 lines(대사) → choices → commands(원시) 순으로 합성한다.
 export function compileSimplePages(
   idPrefix: string,
   name: string,
   pages: readonly SimplePage[],
   graphic: EventPageGraphic,
-  options: { readonly movement?: EventPage["movement"]; readonly priority?: EventPage["priority"] } = {}
+  options: EventCompileOptions = {}
 ): EventPage[] {
-  return pages.map((page, index) => compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, options));
+  return pages.map((page, index) => compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` }));
 }
 
 export function compileSimplePage(
@@ -148,26 +305,27 @@ export function compileSimplePage(
   name: string,
   page: SimplePage,
   graphic: EventPageGraphic,
-  options: { readonly movement?: EventPage["movement"]; readonly priority?: EventPage["priority"] } = {}
+  options: EventCompileOptions = {}
 ): EventPage {
+  const path = options.path ?? "page";
   const commands: Command[] = [];
   for (const line of pageLines(page)) commands.push(textCommand(name, line));
   if (page.choices && page.choices.length > 0) {
     commands.push({
       kind: "choices",
-      options: page.choices.map((choice) => ({
+      options: page.choices.map((choice, choiceIndex) => ({
         text: choice.text,
-        branch: [...((choice.commands ?? []) as Command[])],
+        branch: normalizeCommands(choice.commands, `${path}.choices[${choiceIndex}].commands`, options.warnings),
       })),
       cancelBehavior: "choice2",
     });
   }
-  for (const command of page.commands ?? []) commands.push(command as Command);
+  commands.push(...normalizeCommands(page.commands, `${path}.commands`, options.warnings));
   const priority = options.priority ?? "same";
   return {
     id,
     name,
-    conditions: [...((page.conditions ?? []) as EventPageCondition[])],
+    conditions: normalizeConditions(page.conditions, `${path}.conditions`, options.warnings),
     graphic,
     trigger: { kind: "action" },
     priority,

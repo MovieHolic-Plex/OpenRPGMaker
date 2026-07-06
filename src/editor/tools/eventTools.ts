@@ -86,7 +86,7 @@ const upsertEvent: ToolDefinition = {
 
 const placeNpc: ToolDefinition = {
   name: "place_npc",
-  description: "NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. pages는 SimplePage로 EventPage로 컴파일된다. 통행 불가 칸이면 실패.",
+  description: "NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가 칸이면 실패.",
   mode: "write",
   parameters: {
     type: "object",
@@ -122,15 +122,21 @@ const placeNpc: ToolDefinition = {
     const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
     const id = (args.id as string | undefined) ?? genId("ev_npc");
     const movement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
-    const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, { movement });
+    const normalizationWarnings: string[] = [];
+    const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, { movement, warnings: normalizationWarnings });
     const event: GameEvent = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const adjusted = x !== requestedX || y !== requestedY;
+    const warnings = [
+      ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${x}, ${y})`] : []),
+      ...normalizationWarnings,
+    ];
+    const normalizationSummary = normalizationWarnings.length > 0 ? ` — SimplePage 정규화 경고 ${normalizationWarnings.length}건` : "";
     return {
-      summary: `${map.name}에 NPC '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})가 통행 불가라 자동 조정` : ""}`,
+      summary: `${map.name}에 NPC '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})가 통행 불가라 자동 조정` : ""}${normalizationSummary}`,
       data: { eventId: id, x, y, adjusted },
-      ...(adjusted ? { warnings: [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${x}, ${y})`] } : {}),
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
