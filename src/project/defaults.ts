@@ -64,6 +64,7 @@ export {
   createLogCabinShowcaseProject,
   createMarketTownProject,
   createRetroHouseShowcaseProject,
+  createSampleAdventureProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
   createTownArchitectureCityProject,

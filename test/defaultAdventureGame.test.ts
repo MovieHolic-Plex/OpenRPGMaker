@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 
 const ADVENTURE_MAP_IDS = [
@@ -7,6 +7,7 @@ const ADVENTURE_MAP_IDS = [
   "map_moonwell_forest",
   "map_old_copper_mine",
   "map_sky_lantern_shrine",
+  "map_starter_house_interior",
 ] as const;
 
 const ADVENTURE_SWITCH_IDS = [
@@ -19,10 +20,11 @@ const ADVENTURE_SWITCH_IDS = [
 describe("default editor-authored adventure game", () => {
   it("ships a multi-map RPG made from editor events, variables, battles, and ending commands", () => {
     // Given: a new user opens the editor without importing a project.
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
 
     // Then: the built-in project is a playable game, not just an empty editing sample.
     expect(project.meta.title).toBe("별등 마을과 세 개의 봉인");
+    expect(Object.keys(project.maps)).toHaveLength(5);
     expect(project.system.titleScreen).toBeDefined();
     expect(project.system.titleScreen?.title).toBe("별등 마을");
     expect(project.startMapId).toBe("map_lantern_village");
@@ -48,7 +50,7 @@ describe("default editor-authored adventure game", () => {
   });
 
   it("has enough authored runtime material for an approximately 30 minute first playthrough", () => {
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
     const adventureMaps = ADVENTURE_MAP_IDS.map((mapId) => project.maps[mapId]);
     const events = adventureMaps.flatMap((map) => map.events);
     const pages = events.flatMap((event) => event.pages ?? []);
@@ -66,7 +68,7 @@ describe("default editor-authored adventure game", () => {
   });
 
   it("starts in a visible village beside the sea, not a bare grass test map", () => {
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
     const village = project.maps.map_lantern_village;
     if (!village) throw new Error("missing village map");
 
@@ -82,7 +84,7 @@ describe("default editor-authored adventure game", () => {
   });
 
   it("uses distinct EasyRPG character graphics for major NPC roles", () => {
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
     const visibleGraphics = Object.values(project.maps)
       .flatMap((map) => map.events)
       .flatMap((event) => event.pages ?? [])
@@ -95,7 +97,7 @@ describe("default editor-authored adventure game", () => {
   });
 
   it("includes moving NPCs, relationship dialogue, and editable village markdown documents", () => {
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
     const pages = Object.values(project.maps).flatMap((map) => map.events).flatMap((event) => event.pages ?? []);
     const movingNpcPages = pages.filter((page) => !page.graphic.transparent && page.movement.type !== "fixed");
     const serializedProject = JSON.stringify(project);

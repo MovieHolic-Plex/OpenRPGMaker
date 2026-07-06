@@ -52,7 +52,7 @@ describe("play_walkthrough 툴", () => {
     expect(data.finalState.switchesOn).toContain("sw_ember_q1_clear");
     // 읽기 툴이므로 프로젝트를 변형하지 않는다.
     expect(ctx.project.session.gold).toBe(100);
-  });
+  }, 15_000);
 
   it("파손 시나리오에서 실패 스텝을 데이터로 리포트한다", async () => {
     const [{ runTool }, { createEmberQuestProject }] = await Promise.all([

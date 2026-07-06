@@ -8,7 +8,7 @@ import type {
   VariableDef,
 } from "../types";
 import { SCHEMA_VERSION } from "../types";
-import { DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
+import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -22,6 +22,7 @@ import {
 } from "./defaultDatabase";
 import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
 import {
+  createBlankMap,
   createLogCabinShowcaseMap,
   createRetroHouseShowcaseMap,
   createDbExtractedHouseTemplateMap,
@@ -40,8 +41,20 @@ import {
 } from "./defaultMaps";
 
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
+const BLANK_PROJECT_START_MAP_ID = "map_blank_start";
+const BLANK_PROJECT_MAP_WIDTH = 20;
+const BLANK_PROJECT_MAP_HEIGHT = 15;
 
 export function createBlankProject(): Project {
+  const map = createBlankMap("빈 맵", BLANK_PROJECT_MAP_WIDTH, BLANK_PROJECT_MAP_HEIGHT);
+  map.id = BLANK_PROJECT_START_MAP_ID;
+  const project = createProjectWithMaps([map], 0);
+  project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };
+  project.session = { ...project.session, partyActorIds: [DEFAULT_ACTOR_ID] };
+  return project;
+}
+
+export function createSampleAdventureProject(): Project {
   const project = createProjectWithMaps(createAdventureMaps(), 0);
   configureAdventureProject(project);
   return project;
@@ -217,6 +230,7 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
       y: Math.floor(starter.height / 2) + 1,
     },
     flags: {},
+    villageInfoDocuments: [],
   };
   ensureSwitchVariableSlots(project);
   return project;

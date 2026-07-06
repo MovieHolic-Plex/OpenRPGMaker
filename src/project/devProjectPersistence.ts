@@ -5,11 +5,14 @@ const DEV_PROJECT_STORAGE_PREFIX = "rpg-zzu:dev-project:";
 
 const DEV_PROJECT_PARAMS = [
   "dbExtractedHouseTemplate",
+  "defaultAdventure",
+  "defaultAdventureVisual",
   "devProject",
   "freshProject",
   "houseTemplateGallery",
   "logCabinShowcase",
   "retroHouseShowcase",
+  "sampleAdventure",
   "shopShowcase",
   "smallHouseVariant",
   "townArchitectureCity",

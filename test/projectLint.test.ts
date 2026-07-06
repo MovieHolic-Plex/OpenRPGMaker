@@ -5,7 +5,7 @@ import { deserialize, serialize } from "@/project/io";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { ReachabilitySpec } from "@/project/lint/reachability";
 import { createEmberQuestProject, EMBER_MAP } from "@/project/defaults/emberQuestGame";
-import { createBlankProject } from "@/project/defaults/defaultProject";
+import { createBlankProject, createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 
 const TILE_FLOOR_IMPASSABLE = 342; // TILE.FLOOR — 통행 불가.
@@ -55,8 +55,7 @@ describe("projectLint", () => {
   });
 
   it("(b) 기본 어드벤처 프로젝트도 error가 0건이다", () => {
-    // createBlankProject = 기본 어드벤처 맵 + configureAdventureProject.
-    const issues = projectLint(createBlankProject());
+    const issues = projectLint(createSampleAdventureProject());
     expect(errorsOf(issues), JSON.stringify(errorsOf(issues), null, 2)).toHaveLength(0);
   });
 

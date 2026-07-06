@@ -75,9 +75,8 @@ describe("Project store remote persistence", () => {
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
-    const [{ createBlankProject }, { ADVENTURE_TITLE }, { serialize }] = await Promise.all([
+    const [{ createBlankProject }, { serialize }] = await Promise.all([
       import("@/project/defaults"),
-      import("@/project/defaults/defaultAdventureGameIds"),
       import("@/project/io"),
     ]);
     const staleProject = createBlankProject();
@@ -95,7 +94,8 @@ describe("Project store remote persistence", () => {
     });
     const saveResult = await store.flush();
 
-    expect(project.meta.title).toBe(ADVENTURE_TITLE);
+    expect(project.meta.title).toBe("새 프로젝트");
+    expect(Object.keys(project.maps)).toHaveLength(1);
     expect(project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title1");
     expect(saveResult).toEqual({ kind: "saved-local" });
     expect(setItem).not.toHaveBeenCalled();

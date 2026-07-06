@@ -24,6 +24,7 @@
   - `src/project/store.ts` is the canonical project store. It loads the project, normalizes defaults, emits updates, autosaves, and flushes to local or remote persistence.
   - Store subscribers receive a `ProjectChangeDescriptor` alongside the project. Omitted descriptors fall back to `scope: "project"` for full-refresh compatibility; editor map/tile paths use narrower map/database scopes to avoid unnecessary Phaser and panel redraws.
   - Persistence can come from Supabase, browser overrides, or dev-showcase overrides depending on environment/config.
+  - Local dev `?freshProject=1` means a true blank project. Example adventure routes must opt in with `sampleAdventure=1`, `defaultAdventure=1`, or the existing `defaultAdventureVisual` flag.
   - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems.
 
 - `src/battle` boundary:
