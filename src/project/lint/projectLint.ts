@@ -10,9 +10,12 @@
 //  - transfer-impassable   (error)   transfer 목적지 타일이 통행 불가
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
+//  - command-editor-only   (warning) 저작은 가능하지만 런타임에서 실행되지 않는 커맨드
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 
+import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
 import { validateProjectReferences } from "../io/references";
@@ -42,6 +45,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkStartPosition(project, issues);
   checkTransfers(project, issues);
   checkDuplicateEventPositions(project, issues);
+  checkEditorOnlyCommands(project, issues);
   checkClusterRules(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
@@ -183,6 +187,54 @@ function checkDuplicateEventPositions(project: Project, issues: LintIssue[]): vo
   }
 }
 
+function checkEditorOnlyCommands(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      visitCommands(event.commands, (command) =>
+        pushEditorOnlyCommandIssue(command, issues, { mapId: map.id, x: event.x, y: event.y, owner: `맵 이벤트 ${event.id}` })
+      );
+      for (const page of event.pages ?? []) {
+        visitCommands(page.commands, (command) =>
+          pushEditorOnlyCommandIssue(command, issues, {
+            mapId: map.id,
+            x: event.x,
+            y: event.y,
+            owner: `맵 이벤트 ${event.id}/${page.id}`,
+          })
+        );
+      }
+    }
+  }
+  for (const commonEvent of project.commonEvents) {
+    visitCommands(commonEvent.commands, (command) =>
+      pushEditorOnlyCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` })
+    );
+  }
+  for (const troop of project.database.troops) {
+    for (const page of troop.battleEventPages) {
+      visitCommands(page.commands, (command) =>
+        pushEditorOnlyCommandIssue(command, issues, { owner: `트룹 ${troop.id}/${page.id}` })
+      );
+    }
+  }
+}
+
+function pushEditorOnlyCommandIssue(
+  command: Command,
+  issues: LintIssue[],
+  context: { readonly owner: string; readonly mapId?: string; readonly x?: number; readonly y?: number }
+): void {
+  if (commandRuntimeSupport(command) !== "editor-only") return;
+  issues.push({
+    severity: "warning",
+    code: "command-editor-only",
+    mapId: context.mapId,
+    x: context.x,
+    y: context.y,
+    message: `${context.owner}에 런타임에서 실행되지 않는 명령이 있습니다: ${commandLabel(command)}`,
+  });
+}
+
 function checkClusterRules(project: Project, issues: LintIssue[]): void {
   for (const violation of validateClusterRules(project)) {
     const message = clusterRuleMessage(violation);
@@ -254,23 +306,39 @@ function collectTransfers(
   command: Command,
   out: Array<Extract<Command, { kind: "transfer" }>>
 ): void {
-  if (command.kind === "transfer") {
-    out.push(command);
-    return;
-  }
+  visitCommand(command, (candidate) => {
+    if (candidate.kind === "transfer") out.push(candidate);
+  });
+}
+
+function visitCommands(commands: readonly Command[], visit: (command: Command) => void): void {
+  for (const command of commands) visitCommand(command, visit);
+}
+
+function visitCommand(command: Command, visit: (command: Command) => void): void {
+  visit(command);
   if (command.kind === "choices") {
-    for (const option of command.options) for (const sub of option.branch) collectTransfers(sub, out);
-    if (command.cancelBranch) for (const sub of command.cancelBranch) collectTransfers(sub, out);
+    for (const option of command.options) visitCommands(option.branch, visit);
+    if (command.cancelBranch) visitCommands(command.cancelBranch, visit);
     return;
   }
   if (command.kind === "fork") {
-    for (const sub of command.then) collectTransfers(sub, out);
-    if (command.else) for (const sub of command.else) collectTransfers(sub, out);
+    visitCommands(command.then, visit);
+    if (command.else) visitCommands(command.else, visit);
     return;
   }
   if (command.kind === "loop") {
-    for (const sub of command.body) collectTransfers(sub, out);
+    visitCommands(command.body, visit);
+    return;
   }
+  if (command.kind === "shop" && command.transactionBranch) {
+    visitCommands(command.transactionBranch, visit);
+  }
+}
+
+function commandLabel(command: Command): string {
+  if (command.kind !== "m2Command") return command.kind;
+  return m2CommandById(command.commandId)?.label ?? command.commandId;
 }
 
 // (x,y)에 playerTouch 트리거를 가진 이벤트(레거시 트리거 또는 어느 페이지든)가 있는가?

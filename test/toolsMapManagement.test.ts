@@ -26,6 +26,50 @@ describe("get_event", () => {
     expect(missing.ok).toBe(false);
     expect(missing.summary).toContain("ev_npc");
   });
+
+  it("place_npc가 editor-only 페이지 명령 warning을 ToolResult.issues에 담는다", () => {
+    const { context, mapId } = ctxWithMap();
+    const result = runTool(context, "place_npc", {
+      mapId,
+      x: 3,
+      y: 3,
+      name: "기록자",
+      pages: [{ lines: ["메모를 남긴다."], commands: [{ kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "메모" } }] }],
+      id: "ev_comment_npc",
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "command-editor-only")).toBe(true);
+  });
+
+  it("upsert_event가 editor-only 페이지 명령 warning을 ToolResult.issues에 담는다", () => {
+    const { context, mapId } = ctxWithMap();
+    const result = runTool(context, "upsert_event", {
+      mapId,
+      event: {
+        id: "ev_comment_direct",
+        x: 4,
+        y: 4,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          {
+            id: "p1",
+            name: "본문",
+            conditions: [],
+            graphic: { transparent: true },
+            priority: "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            trigger: { kind: "action" },
+            commands: [{ kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "메모" } }],
+          },
+        ],
+      },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "command-editor-only")).toBe(true);
+  });
 });
 
 describe("set_map_properties", () => {

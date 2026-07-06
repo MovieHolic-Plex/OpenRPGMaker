@@ -6,6 +6,7 @@ import {
   M2_COMMAND_CATALOG,
   m2CommandById,
 } from "@/editor/eventCommands/m2Catalog";
+import { commandRuntimeSupport, m2CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import type { Frame, InterpreterState } from "@/player/interpreter/types";
@@ -32,7 +33,7 @@ describe("m2 event command catalog", () => {
     expect(requireEntry("Input Number").existingKind).toBe("inputNumber");
     expect(requireEntry("Wait").existingKind).toBe("wait");
     expect(requireEntry("Change Skills").existingKind).toBe("learnSkill");
-    expect(requireEntry("Change Skills").runtimeClassification).toBe("runtime");
+    expect(requireEntry("Change Skills").runtimeSupport).toBe("runtime-full");
     expect(requireEntry("Change Equipment").existingKind).toBe("changeEquipment");
     expect(requireEntry("Change HP").existingKind).toBe("changeActorHp");
     expect(requireEntry("Change MP").existingKind).toBe("changeActorMp");
@@ -44,21 +45,21 @@ describe("m2 event command catalog", () => {
 
   it("keeps the normal map picker limited to map-safe commands", () => {
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Show Text"))).toBe(true);
-    expect(requireEntry("Comment").runtimeClassification).toBe("editor-only");
+    expect(requireEntry("Comment").runtimeSupport).toBe("editor-only");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Comment"))).toBe(true);
-    expect(requireEntry("Display Text Settings").runtimeClassification).toBe("runtime");
+    expect(requireEntry("Display Text Settings").runtimeSupport).toBe("runtime-full");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Display Text Settings"))).toBe(true);
-    expect(requireEntry("Open Load Menu").runtimeClassification).toBe("shell");
+    expect(requireEntry("Open Load Menu").runtimeSupport).toBe("runtime-partial");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Open Load Menu"))).toBe(true);
-    expect(requireEntry("Break Loop").runtimeClassification).toBe("runtime");
+    expect(requireEntry("Break Loop").runtimeSupport).toBe("runtime-full");
     expect(requireEntry("Break Loop").existingKind).toBe("breakLoop");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Break Loop"))).toBe(true);
     expect(requireEntry("Loop").existingKind).toBe("loop");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Loop"))).toBe(true);
-    expect(requireEntry("Move Picture").runtimeClassification).toBe("disabled");
+    expect(requireEntry("Move Picture").runtimeSupport).toBe("runtime-partial");
     expect(requireEntry("Move Picture").bodyStrategy).toBe("generic");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Move Picture"))).toBe(true);
-    expect(requireEntry("Change Enemy HP").runtimeClassification).toBe("battle-only");
+    expect(requireEntry("Change Enemy HP").runtimeSupport).toBe("runtime-full");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Change Enemy HP"))).toBe(false);
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Change Skills"))).toBe(true);
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Change Equipment"))).toBe(true);
@@ -173,12 +174,41 @@ describe("m2 event command catalog", () => {
 
     for (const title of modernTitles) {
       const entry = requireEntry(title);
-      expect(entry.runtimeClassification).toBe("runtime");
+      expect(entry.runtimeSupport).toBe("runtime-partial");
       expect(entry.bodyStrategy).toBe("generic");
       expect(entry.pickerPage).toBe(4);
       expect(isM2CatalogEntrySelectableInMap(entry)).toBe(true);
       expect(createDefaultM2Fields(entry)).not.toEqual({});
       expect(entry.label).not.toBe(title);
+    }
+  });
+
+  it("publishes only the three runtime support grades", () => {
+    const grades = new Set(M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport));
+    expect(grades).toEqual(new Set(["runtime-full", "runtime-partial", "editor-only"]));
+    expect(M2_COMMAND_CATALOG.map((entry) => entry.supportStatus)).toEqual(
+      M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport)
+    );
+    expect(requireEntry("Comment").supportStatus).toBe("editor-only");
+    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-partial");
+    expect(requireEntry("Show Text").supportStatus).toBe("runtime-full");
+  });
+
+  it("keeps the support table aligned with implemented battle M2 ids", () => {
+    const fullBattleIds = M2_COMMAND_CATALOG
+      .filter((entry) => entry.index >= 98 && entry.index <= 108 && entry.runtimeSupport === "runtime-full")
+      .map((entry) => entry.id);
+
+    expect(fullBattleIds).toEqual([
+      "m2-098-change-enemy-hp",
+      "m2-101-enemy-encounter",
+      "m2-102-change-battleback",
+      "m2-107-force-escape",
+      "m2-108-action-times",
+    ]);
+    for (const entry of M2_COMMAND_CATALOG.filter((candidate) => !candidate.existingKind)) {
+      expect(m2CommandRuntimeSupport(entry.id)).toBe(entry.runtimeSupport);
+      expect(commandRuntimeSupport(newM2Command(entry.id))).toBe(entry.runtimeSupport);
     }
   });
 

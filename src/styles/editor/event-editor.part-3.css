@@ -1019,6 +1019,37 @@
   white-space: nowrap;
 }
 
+.event-command-picker-command-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.command-runtime-badge {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-s, 3px);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 800 10px/12px Inter, "Segoe UI", system-ui, sans-serif;
+  height: 16px;
+  justify-content: center;
+  margin-left: 6px;
+  min-width: 16px;
+  padding: 0 3px;
+}
+
+.command-runtime-badge.runtime-partial {
+  background: var(--accent-soft, var(--editor-blue-soft));
+  color: var(--status-warning, var(--gold));
+}
+
+.command-runtime-badge.editor-only {
+  background: var(--danger-muted, var(--accent-soft));
+  color: var(--status-error, var(--danger));
+}
+
 .event-command-picker-command:hover {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 58%, var(--bg-raised));
   border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 48%, var(--border-soft, var(--border-subtle)));

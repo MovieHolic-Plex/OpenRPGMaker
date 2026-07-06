@@ -117,18 +117,14 @@ function executeM2Command(
     return resumeNext(frame);
   }
 
-  switch (entry.runtimeClassification) {
+  switch (entry.runtimeSupport) {
     case "editor-only":
       console.warn(`[interpreter] M2 editor-only command skipped: ${entry.label}`);
       return resumeNext(frame);
-    case "shell":
-    case "battle-only":
-    case "disabled":
-    case "missing-runtime":
-    case "internal-non-pdf":
-      console.warn(`[interpreter] M2 command cannot run in map interpreter (${entry.runtimeClassification}): ${entry.label}`);
+    case "runtime-partial":
+      console.warn(`[interpreter] M2 partial runtime command had no map effect: ${entry.label}`);
       return resumeNext(frame);
-    case "runtime":
+    case "runtime-full":
       console.warn(`[interpreter] M2 runtime command should use native command kind: ${entry.label}`);
       return resumeNext(frame);
   }

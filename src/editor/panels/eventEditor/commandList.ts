@@ -10,9 +10,11 @@ import { handleCommandShortcut, openCommandContextMenu } from "./commandListCont
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
+import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 
 // 이벤트 명령 리스트 렌더링. RM2K3 처럼 트리 들여쓰기 + 드래그 재정렬 + 위/아래/삭제 버튼.
 // 드래그는 같은 컨테이너(리스트) 내에서만 동작한다. path 는 컨테이너 공통 접두어를 공유하므로
@@ -78,10 +80,12 @@ function renderCommandItem(
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path);
+  const supportBadge = renderRuntimeSupportBadge(commandRuntimeSupport(cmd), `command-runtime-badge-list-${path.join("-")}`);
   head.append(
     handle,
     el("span", { class: "cmd-prefix", text: "◆" }),
     renderCommandSummary(cmd),
+    ...(supportBadge ? [supportBadge] : []),
     commandActions(path, actions)
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions);

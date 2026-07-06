@@ -105,4 +105,46 @@ describe("projectLint", () => {
     const errors = errorsOf(projectLint(project));
     expect(errors.some((issue) => issue.code === "transfer-bounds"), JSON.stringify(errors)).toBe(true);
   });
+
+  it("editor-only 명령을 맵/커먼/트룹 이벤트 warning으로 보고한다", () => {
+    const project = cloneProject(createBlankProject());
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    const comment: Command = { kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "런타임 무효과" } };
+    map.events.push({
+      id: "ev_editor_only",
+      x: 3,
+      y: 4,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "p1",
+          name: "본문",
+          conditions: [],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "same",
+          overlapForbidden: true,
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [comment],
+        },
+      ],
+    });
+    project.commonEvents.push({ id: "ce_editor_only", name: "주석", trigger: "none", commands: [comment] });
+    project.database.troops[0]?.battleEventPages.push({
+      id: "bp_editor_only",
+      name: "주석",
+      conditions: [],
+      span: "battle",
+      commands: [comment],
+    });
+
+    const issues = projectLint(project).filter((issue) => issue.code === "command-editor-only");
+
+    expect(issues).toHaveLength(3);
+    expect(issues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 3, y: 4 });
+    expect(issues.map((issue) => issue.message).join("\n")).toContain("커먼 이벤트 ce_editor_only");
+    expect(issues.map((issue) => issue.message).join("\n")).toContain("트룹");
+  });
 });
