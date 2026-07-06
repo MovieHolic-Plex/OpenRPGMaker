@@ -23,11 +23,6 @@
   width: 100%;
 }
 
-.player-layout.system-shell .play-stage:has(.battle-scene) {
-  height: min(calc(100% / var(--play-scale)), 240px);
-  width: min(calc(100% / var(--play-scale)), 427px);
-}
-
 .player-layout.system-shell .title-screen {
   height: 100%;
   min-height: 0;
