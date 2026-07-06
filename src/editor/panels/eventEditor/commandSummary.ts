@@ -1,20 +1,52 @@
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { numberedName } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, VariableOperand } from "@/project/types";
 
-export type CommandSummaryTone = "plain" | "command" | "value";
+export type CommandSummaryTone =
+  | "plain"
+  | "command"
+  | "value"
+  // 연산 토큰 전용 톤. += 계열은 증가(성공색), -= 는 감소(위험색), = 는 대입(액센트색).
+  | "op-add"
+  | "op-sub"
+  | "op-set"
+  // 스위치/플래그 ON·OFF 배지 톤.
+  | "badge-on"
+  | "badge-off";
 
 export type CommandSummaryPart = {
   readonly text: string;
   readonly tone: CommandSummaryTone;
 };
 
-export function commandSummary(cmd: Command): string {
-  return commandSummaryParts(cmd).map((part) => part.text).join("");
+// 아이템/장비 아이콘 토큰. 문자열 요약(commandSummary)에는 기여하지 않고
+// 커맨드 리스트 렌더에서만 16px 이미지로 그려진다. text 를 빈 문자열로 고정해
+// `{text, tone}` 기반 기존 소비 코드(테스트 포함)와의 호환을 유지한다.
+export type CommandSummaryIconPart = {
+  readonly kind: "icon";
+  readonly resourceId: string;
+  readonly text: "";
+  readonly tone: "plain";
+};
+
+export type CommandSummaryToken = CommandSummaryPart | CommandSummaryIconPart;
+
+// 아이콘 토큰 판별. 렌더러가 이미지/텍스트 분기할 때 사용한다.
+export function isSummaryIconPart(part: CommandSummaryToken): part is CommandSummaryIconPart {
+  return "kind" in part && part.kind === "icon";
 }
 
-export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[] {
+export function commandSummary(cmd: Command): string {
+  // 아이콘 토큰은 문자열 변환 시 스킵한다 (text 가 "" 라 join 결과는 어차피 불변).
+  return commandSummaryParts(cmd)
+    .filter((part) => !isSummaryIconPart(part))
+    .map((part) => part.text)
+    .join("");
+}
+
+export function commandSummaryParts(cmd: Command): readonly CommandSummaryToken[] {
   switch (cmd.kind) {
     case "text":
       return commandLine("문장 표시", textPart(oneLine(cmd.body || "...")));
@@ -61,13 +93,13 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[]
     case "breakLoop":
       return [commandPart("반복 탈출")];
     case "setSwitch":
-      return commandLine("스위치 조작", valuePart(recordName("switch", cmd.switchId)), plainPart(" "), valuePart(cmd.value ? "ON" : "OFF"));
+      return commandLine("스위치 조작", valuePart(recordName("switch", cmd.switchId)), plainPart(" "), onOffBadgePart(cmd.value));
     case "setVariable":
       return commandLine(
         "변수 조작",
         valuePart(recordName("variable", cmd.variableId)),
         plainPart(" "),
-        valuePart(cmd.op),
+        opPart(cmd.op),
         plainPart(" "),
         valuePart(operandSummary(cmd.value))
       );
@@ -86,7 +118,7 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[]
       }
       return commandLine("장소 이동", valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
     case "moveEvent":
-      return commandLine("이동 경로 설정", valuePart(cmd.eventId || "이 이벤트"), plainPart(" ("), valuePart(String(cmd.route.moves.length)), plainPart("개)"));
+      return commandLine("이동 경로 설정", valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : (cmd.eventId || "이 이벤트")), plainPart(" ("), valuePart(String(cmd.route.moves.length)), plainPart("개)"));
     case "changeTile":
       return commandLine(
         "타일 변경",
@@ -107,9 +139,9 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[]
     case "learnSkill":
       return commandLine("특수기 변경", valuePart(actorName(cmd.actorId)), plainPart(" / "), valuePart(skillName(cmd.skillId)));
     case "changeExp":
-      return commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+      return commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "changeLevel":
-      return commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+      return commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "changeEquipment":
       return commandLine(
         "장비 변경",
@@ -117,18 +149,29 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[]
         plainPart(" / "),
         valuePart(equipmentSlotLabel(cmd.slot)),
         plainPart(" = "),
+        ...equipmentIconParts(cmd.equipmentId),
         valuePart(equipmentName(cmd.equipmentId))
       );
     case "changeActorHp":
-      return commandLine("HP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+      return commandLine("HP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "changeActorMp":
-      return commandLine("MP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+      return commandLine("MP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "recoverAll":
       return commandLine("모두 회복", valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체"));
+    case "enterHeroName":
+      return commandLine("이름 입력 처리", valuePart(actorName(cmd.actorId)), plainPart(" / 최대 "), valuePart(String(cmd.maxLength)), plainPart("자"));
     case "changeGold":
-      return commandLine("소지금 변경", valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+      return commandLine("소지금 변경", opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
     case "changeItem":
-      return commandLine("아이템 변경", valuePart(itemName(cmd.itemId)), plainPart(" "), valuePart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
+      return commandLine(
+        "아이템 변경",
+        ...itemIconParts(cmd.itemId),
+        valuePart(itemName(cmd.itemId)),
+        plainPart(" "),
+        opPart(cmd.op),
+        plainPart(" "),
+        valuePart(String(cmd.amount))
+      );
     case "changeParty":
       return commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외"));
     case "showPicture":
@@ -150,9 +193,9 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[]
     case "returnToTitle":
       return [commandPart("타이틀 화면으로")];
     case "setFlag":
-      return commandLine("플래그 설정", valuePart(cmd.flag), plainPart(" "), valuePart(cmd.value ? "ON" : "OFF"));
+      return commandLine("플래그 설정", valuePart(cmd.flag), plainPart(" "), onOffBadgePart(cmd.value));
     case "setSelfSwitch":
-      return commandLine("셀프 스위치 설정", valuePart(cmd.key), plainPart(" "), valuePart(cmd.value ? "ON" : "OFF"));
+      return commandLine("셀프 스위치 설정", valuePart(cmd.key), plainPart(" "), onOffBadgePart(cmd.value));
     case "m2Command":
       return m2CommandSummaryParts(cmd);
     default:
@@ -160,8 +203,41 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryPart[]
   }
 }
 
-function commandLine(label: string, ...parts: readonly CommandSummaryPart[]): readonly CommandSummaryPart[] {
+function commandLine(label: string, ...parts: readonly CommandSummaryToken[]): readonly CommandSummaryToken[] {
   return [commandPart(label), plainPart(": "), ...parts];
+}
+
+// 연산 토큰. += 계열/-=/= 를 서로 다른 톤으로 구분해 리스트에서 증감·대입이 색으로 읽히게 한다.
+// 텍스트 자체는 기존과 동일하게 유지한다 (commandSummary 문자열 불변).
+function opPart(op: string): CommandSummaryPart {
+  if (op.startsWith("+")) return { text: op, tone: "op-add" };
+  if (op.startsWith("-")) return { text: op, tone: "op-sub" };
+  if (op === "=") return { text: op, tone: "op-set" };
+  return valuePart(op);
+}
+
+// 스위치/플래그 ON·OFF 배지 토큰. 텍스트는 기존 "ON"/"OFF" 그대로.
+function onOffBadgePart(value: boolean): CommandSummaryPart {
+  return { text: value ? "ON" : "OFF", tone: value ? "badge-on" : "badge-off" };
+}
+
+// 아이콘 토큰 생성. 리소스 id 만 담고 URL 해석은 렌더러(commandList) 몫.
+function iconPart(resourceId: string): CommandSummaryIconPart {
+  return { kind: "icon", resourceId, text: "", tone: "plain" };
+}
+
+// 아이템에 아이콘 리소스가 지정돼 있으면 아이콘 토큰 1개, 없으면 빈 배열.
+function itemIconParts(id: string): readonly CommandSummaryIconPart[] {
+  const project = store.getCurrent();
+  const record = project.database.items.find((item) => item.id === id);
+  return record?.iconResourceId ? [iconPart(record.iconResourceId)] : [];
+}
+
+// 장비에 아이콘 리소스가 지정돼 있으면 아이콘 토큰 1개, 없으면 빈 배열.
+function equipmentIconParts(id: string): readonly CommandSummaryIconPart[] {
+  const project = store.getCurrent();
+  const record = project.database.equipment.find((equipment) => equipment.id === id);
+  return record?.iconResourceId ? [iconPart(record.iconResourceId)] : [];
 }
 
 function transferDirectionSummary(direction: "retain" | "up" | "right" | "down" | "left"): string {

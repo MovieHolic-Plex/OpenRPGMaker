@@ -7,11 +7,11 @@
 }
 
 .transfer-command-summary {
-  background: var(--event-rm-field, #fffdf7);
-  border-color: var(--event-rm-mid, #808080) var(--event-rm-light, #ffffff) var(--event-rm-light, #ffffff) var(--event-rm-mid, #808080);
+  background: var(--event-rm-field, var(--bg-raised));
+  border-color: var(--event-rm-mid, var(--border-default)) var(--event-rm-light, var(--border-subtle)) var(--event-rm-light, var(--border-subtle)) var(--event-rm-mid, var(--border-default));
   border-style: solid;
   border-width: 1px;
-  color: var(--event-rm-text, #111111);
+  color: var(--event-rm-text, var(--text-1));
   font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-width: 210px;
   overflow: hidden;
@@ -28,34 +28,34 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-window {
-  background: #d4d0c8;
-  border: 1px solid #808080;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.34);
-  color: #111;
+  color: var(--text-1);
   font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   width: min(836px, calc(100vw - 16px));
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header {
   align-items: center;
-  background: #d4d0c8;
-  border-bottom: 1px solid #b8b8b8;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-default);
   min-height: 39px;
   padding: 7px 8px 5px;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header h3 {
-  color: #111;
+  color: var(--text-1);
   font: 400 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   margin: 0;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-close {
-  background: #f0f0f0;
-  border-color: #fff #808080 #808080 #fff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
-  color: #111;
+  color: var(--text-1);
   font: 400 18px/19px Arial, sans-serif;
   height: 24px;
   min-width: 28px;
@@ -78,8 +78,8 @@
 
 .transfer-player-tree,
 .transfer-player-preview {
-  background: #fff;
-  border-color: #808080 #fff #fff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 2px;
   min-height: 0;
@@ -91,7 +91,7 @@
 }
 
 .transfer-player-project {
-  color: #111;
+  color: var(--text-1);
   font: 400 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   padding-left: 24px;
   position: relative;
@@ -116,7 +116,7 @@
 .transfer-player-map-row {
   background: transparent;
   border: 0;
-  color: #111;
+  color: var(--text-1);
   font: 400 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-height: 23px;
   overflow: hidden;
@@ -139,12 +139,12 @@
 }
 
 .transfer-player-map-row.selected {
-  background: #e8e8e8;
+  background: var(--bg-raised);
 }
 
 .transfer-player-preview {
   align-content: start;
-  background: #eeeeee;
+  background: var(--bg-raised);
   display: grid;
   justify-content: start;
 }
@@ -156,7 +156,7 @@
 
 .transfer-player-direction {
   align-items: center;
-  border-color: #fff #808080 #808080 #fff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   display: flex;
@@ -167,7 +167,7 @@
 }
 
 .transfer-player-direction legend {
-  color: #111;
+  color: var(--text-1);
   font: 400 17px/19px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   padding: 0 4px;
 }
@@ -199,8 +199,8 @@
 
 .transfer-player-status {
   align-content: center;
-  background: #f8f8f8;
-  border-color: #808080 #fff #fff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 2px;
   color: #003070;
@@ -217,20 +217,20 @@
 
 .transfer-player-zoom-button,
 .transfer-player-button {
-  background: #f0f0f0;
-  border-color: #fff #808080 #808080 #fff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
-  box-shadow: inset -1px -1px 0 #b8b8b8, inset 1px 1px 0 #fff;
-  color: #111;
+  box-shadow: inset -1px -1px 0 var(--border-default), inset 1px 1px 0 var(--border-subtle);
+  color: var(--text-1);
   font: 700 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-width: 40px;
   padding: 0 12px;
 }
 
 .transfer-player-zoom-button.active {
-  border-color: #808080 #fff #fff #808080;
-  box-shadow: inset 1px 1px 0 #b8b8b8;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  box-shadow: inset 1px 1px 0 var(--border-default);
 }
 
 @media (max-width: 1240px) {
@@ -456,16 +456,16 @@
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-window,
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-window,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-window.narrow {
-  --event-popup-surface: color-mix(in srgb, var(--surface-panel, #ffffff) 94%, var(--accent-soft, #dbeafe));
+  --event-popup-surface: color-mix(in srgb, var(--surface-panel, var(--bg-raised)) 94%, var(--accent-soft, #dbeafe));
   --event-popup-surface-2: color-mix(in srgb, var(--bg-panel, #f8fafc) 92%, var(--accent-soft, #dbeafe));
-  --event-popup-border: color-mix(in srgb, var(--border, #cbd5e1) 72%, var(--accent, #2563eb));
+  --event-popup-border: color-mix(in srgb, var(--border, var(--border-subtle)) 72%, var(--accent, var(--accent-border)));
   --event-popup-field: color-mix(in srgb, var(--surface-panel, #ffffff) 96%, var(--accent-soft, #dbeafe));
   --event-popup-shadow: 0 24px 70px rgba(15, 23, 42, 0.34), 0 2px 10px rgba(15, 23, 42, 0.16);
   background: var(--event-popup-surface);
   border: 1px solid var(--event-popup-border);
   border-radius: 8px;
   box-shadow: var(--event-popup-shadow);
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
 }
@@ -498,11 +498,9 @@
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-header {
   align-items: start;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0)),
-    var(--event-popup-surface-2);
-  border-bottom: 1px solid color-mix(in srgb, var(--border-soft, #e5e7eb) 82%, var(--accent, #2563eb));
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.75);
+  background: var(--event-popup-surface-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-soft, var(--border-subtle)) 82%, var(--accent, var(--accent-border)));
+  box-shadow: none;
   display: flex;
   gap: 14px;
   justify-content: space-between;
@@ -514,13 +512,13 @@
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-header h3,
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header h3,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-header h3 {
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   font: 750 15px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .event-subdialog-header p {
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--text-2));
   font: 500 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 3px 0 0;
 }
@@ -530,11 +528,11 @@
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-close,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-close {
   align-items: center;
-  background: color-mix(in srgb, var(--surface-button, #f8fafc) 92%, white);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: color-mix(in srgb, var(--surface-button, var(--bg-raised)) 92%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--text-2));
   display: inline-flex;
   font: 700 14px/1 Inter, "Segoe UI", system-ui, sans-serif;
   height: 28px;
@@ -546,10 +544,10 @@
 
 .event-subdialog-close:hover,
 .event-subdialog-close:focus-visible {
-  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 74%, white);
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 48%, var(--border-soft, #e5e7eb));
-  color: var(--accent, #2563eb);
-  outline: 2px solid color-mix(in srgb, var(--accent, #2563eb) 28%, transparent);
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 74%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 48%, var(--border-soft, var(--border-subtle)));
+  color: var(--accent, var(--accent));
+  outline: 2px solid color-mix(in srgb, var(--accent, var(--accent-border)) 28%, transparent);
   outline-offset: 1px;
 }
 
@@ -572,11 +570,11 @@
 .event-page-move-route-parameters input,
 .event-page-move-route-parameters select,
 .event-graphic-direct-box input {
-  background: var(--event-popup-field, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--border, #cbd5e1) 82%, var(--accent, #2563eb));
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 82%, var(--accent, var(--accent-border)));
   border-radius: 6px;
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   font: 500 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-height: 32px;
   padding: 6px 9px;
@@ -593,8 +591,8 @@
 .event-page-move-route-parameters input:focus,
 .event-page-move-route-parameters select:focus,
 .event-graphic-direct-box input:focus {
-  border-color: var(--accent, #2563eb);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #2563eb) 18%, transparent), inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  border-color: var(--accent, var(--accent-border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--accent-border)) 18%, transparent), inset 0 1px 2px rgba(15, 23, 42, 0.06);
   outline: 0;
 }
 
@@ -608,11 +606,11 @@
 .transfer-player-button,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn {
   align-items: center;
-  background: color-mix(in srgb, var(--surface-button, #f8fafc) 91%, white);
-  border: 1px solid color-mix(in srgb, var(--border, #cbd5e1) 88%, var(--accent, #2563eb));
+  background: color-mix(in srgb, var(--surface-button, var(--bg-raised)) 91%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 88%, var(--accent, var(--accent-border)));
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   display: inline-flex;
   font: 650 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   justify-content: center;
@@ -630,8 +628,8 @@
 .transfer-player-zoom-button:hover,
 .transfer-player-button:hover,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:hover {
-  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 72%, white);
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 58%, var(--border, #cbd5e1));
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 58%, var(--border, var(--border-default)));
 }
 
 .event-subdialog-body .btn:focus-visible,
@@ -647,7 +645,7 @@
 .event-record-picker-row:focus-visible,
 .event-command-picker-command:focus-visible,
 .event-command-picker-tab:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent, #2563eb) 34%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--accent, var(--accent-border)) 34%, transparent);
   outline-offset: 2px;
 }
 
@@ -682,8 +680,8 @@
 .event-graphic-resource-list,
 .event-graphic-radio-group,
 .event-graphic-direct-box {
-  background: color-mix(in srgb, var(--event-popup-surface-2, #f8fafc) 94%, white);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: color-mix(in srgb, var(--event-popup-surface-2, var(--bg-raised)) 94%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
@@ -699,11 +697,11 @@
 }
 
 .event-command-edit-summary {
-  background: var(--event-popup-field, #ffffff);
+  background: var(--event-popup-field, var(--bg-raised));
   border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
   border-style: solid;
   border-width: 1px;
-  color: var(--rm2k3-command-blue, #004bff);
+  color: var(--rm2k3-command-blue, var(--accent));
   font: 700 12px/1.35 var(--font-mono, "Cascadia Mono", Consolas, monospace);
   min-width: 0;
   overflow: hidden;
@@ -747,6 +745,17 @@
   grid-template-columns: minmax(90px, auto) minmax(0, 1fr);
 }
 
+/* textarea 필드(문장 내용 등)는 라벨을 위에 두고 입력칸을 전체 너비로 넓힌다. */
+.event-command-edit-body .inline-field:has(textarea) {
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+.event-command-edit-body .inline-field textarea {
+  min-height: 96px;
+  width: 100%;
+}
+
 .event-command-face-editor {
   align-items: stretch;
   display: grid;
@@ -765,11 +774,11 @@
 
 .event-command-face-preview {
   align-items: center;
-  background: var(--surface-recessed, #d8d0be);
+  background: var(--surface-recessed, var(--bg-raised));
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 1px;
-  color: var(--event-rm-text, #111111);
+  color: var(--event-rm-text, var(--text-1));
   display: grid;
   gap: 8px;
   grid-template-columns: auto minmax(0, 1fr);
@@ -816,7 +825,7 @@
 
 .event-command-face-preview-copy span,
 .event-command-face-preview[data-empty="true"] span {
-  color: var(--text-dim, #3c3c3c);
+  color: var(--text-dim, var(--text-1));
   font: 600 11px/1.3 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
 }
 
@@ -852,10 +861,10 @@
 
 .event-command-edit-body .m2-resource-selected-name {
   align-self: stretch;
-  background: var(--event-popup-field, #ffffff);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 4px;
-  color: var(--text, #111111);
+  color: var(--text, var(--text-1));
   font: 600 12px/1.25 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-height: 54px;
   overflow: hidden;
@@ -865,10 +874,10 @@
 }
 
 .event-command-edit-body .m2-record-selected-name {
-  background: var(--event-popup-field, #ffffff);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 4px;
-  color: var(--text-dim, #3c3c3c);
+  color: var(--text-dim, var(--text-1));
   font: 600 11px/1.25 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   overflow: hidden;
   padding: 4px 6px;
@@ -879,10 +888,10 @@
 .event-command-edit-body .m2-resource-preview {
   align-items: center;
   aspect-ratio: 4 / 3;
-  background: var(--surface-recessed, #d8d0be);
-  border: 1px solid var(--border-soft, #b8b4aa);
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
   border-radius: 4px;
-  color: var(--text-muted, #666666);
+  color: var(--text-muted, var(--text-2));
   display: flex;
   font: 600 11px/1.2 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   justify-content: center;
@@ -922,9 +931,9 @@
 .transfer-player-button[data-testid="transfer-player-ok"],
 .event-page-move-route-footer-button[data-testid="event-page-move-route-ok"],
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:first-child {
-  background: var(--accent, #2563eb);
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 86%, black);
-  color: var(--text-inverse, #ffffff);
+  background: var(--accent, var(--accent));
+  border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 86%, black);
+  color: var(--text-inverse, var(--text-1));
 }
 
 .event-command-edit-action.primary:hover,
@@ -932,13 +941,13 @@
 .transfer-player-button[data-testid="transfer-player-ok"]:hover,
 .event-page-move-route-footer-button[data-testid="event-page-move-route-ok"]:hover,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:first-child:hover {
-  background: var(--accent-hover, #1d4ed8);
-  color: var(--text-inverse, #ffffff);
+  background: var(--accent-hover, var(--accent));
+  color: var(--text-inverse, var(--text-1));
 }
 
 .event-command-picker-tabs {
-  background: color-mix(in srgb, var(--bg-panel, #f8fafc) 86%, white);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 86%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
   display: grid;
   gap: 4px;
@@ -950,15 +959,15 @@
   background: transparent;
   border: 0;
   border-radius: 6px;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--text-2));
   font: 750 12px/18px Inter, "Segoe UI", system-ui, sans-serif;
   min-height: 30px;
 }
 
 .event-command-picker-tab[aria-selected="true"] {
-  background: var(--surface-panel, #ffffff);
+  background: var(--surface-panel, var(--bg-raised));
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
-  color: var(--accent, #2563eb);
+  color: var(--accent, var(--accent));
 }
 
 .event-command-picker-panel {
@@ -973,7 +982,7 @@
 
 .event-command-picker-group-heading {
   align-items: center;
-  color: var(--text-dim, #3c3c3c);
+  color: var(--text-dim, var(--text-1));
   display: flex;
   font: 700 11px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
   gap: 8px;
@@ -982,7 +991,7 @@
 }
 
 .event-command-picker-group-heading::after {
-  background: var(--border-soft, #b8b4aa);
+  background: var(--border-soft, var(--bg-overlay));
   content: "";
   flex: 1;
   height: 1px;
@@ -994,10 +1003,10 @@
 
 .event-command-picker-command {
   align-items: center;
-  background: var(--surface-panel, #ffffff);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 6px;
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   display: flex;
   font: 650 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   justify-content: flex-start;
@@ -1011,8 +1020,8 @@
 }
 
 .event-command-picker-command:hover {
-  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 58%, white);
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 48%, var(--border-soft, #e5e7eb));
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 58%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 48%, var(--border-soft, var(--border-subtle)));
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
 }
 
@@ -1022,9 +1031,9 @@
 
 .event-command-picker-command.disabled,
 .event-command-picker-command:disabled {
-  background: color-mix(in srgb, var(--bg-panel, #f8fafc) 88%, white);
-  border-color: var(--border-soft, #e5e7eb);
-  color: var(--text-muted, #64748b);
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 88%, var(--bg-raised));
+  border-color: var(--border-soft, var(--border-subtle));
+  color: var(--text-muted, var(--text-2));
   cursor: not-allowed;
   opacity: 0.58;
 }
@@ -1034,8 +1043,8 @@
 }
 
 .event-command-context-menu {
-  background: color-mix(in srgb, var(--surface-panel, #ffffff) 95%, var(--accent-soft, #dbeafe));
-  border: 1px solid color-mix(in srgb, var(--border, #cbd5e1) 78%, var(--accent, #2563eb));
+  background: color-mix(in srgb, var(--surface-panel, var(--bg-raised)) 95%, var(--accent-soft, var(--accent-muted)));
+  border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 78%, var(--accent, var(--accent-border)));
   border-radius: 8px;
   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.28), 0 2px 8px rgba(15, 23, 42, 0.12);
   display: grid;
@@ -1051,7 +1060,7 @@
   background: transparent;
   border: 0;
   border-radius: 6px;
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   display: grid;
   font: inherit;
   gap: 8px;
@@ -1064,22 +1073,22 @@
 
 .event-command-context-menu button:hover,
 .event-command-context-menu button:focus {
-  background: var(--accent, #2563eb);
-  color: var(--text-inverse, #ffffff);
+  background: var(--accent, var(--accent));
+  color: var(--text-inverse, var(--text-1));
   outline: 0;
 }
 
 .event-command-context-menu button:disabled {
   background: transparent;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--text-2));
   cursor: not-allowed;
   opacity: 0.58;
 }
 
 .event-command-menu-icon {
   align-self: center;
-  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 62%, white);
-  border: 1px solid color-mix(in srgb, var(--accent, #2563eb) 22%, var(--border-soft, #e5e7eb));
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 62%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--accent, var(--accent-border)) 22%, var(--border-soft, var(--border-subtle)));
   border-radius: 5px;
   height: 18px;
   width: 18px;
@@ -1092,7 +1101,7 @@
 }
 
 .event-command-menu-shortcut {
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--text-2));
   font-weight: 650;
   justify-self: end;
 }
@@ -1103,14 +1112,14 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-window.narrow {
-  border-color: var(--border, #808080);
+  border-color: var(--border, var(--border-default));
   border-radius: 0;
   width: min(560px, calc(100vw - 36px));
 }
 
 .event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-header {
-  background: var(--bg-panel-2, #f0f0f0);
-  border-bottom: 1px solid var(--border-soft, #b8b4aa);
+  background: var(--bg-panel-2, var(--bg-raised));
+  border-bottom: 1px solid var(--border-soft, var(--border-default));
   min-height: 36px;
   padding: 8px 10px;
 }
@@ -1127,7 +1136,7 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-body {
-  background: var(--bg-panel, #d4d0c8);
+  background: var(--bg-panel, var(--bg-raised));
   gap: 0;
   padding: 8px;
 }
@@ -1138,7 +1147,7 @@
 }
 
 .event-record-picker-frame {
-  border: 2px groove var(--border-soft, #b8b4aa);
+  border: 2px groove var(--border-soft, var(--border-default));
   box-sizing: border-box;
   display: grid;
   gap: 10px;
@@ -1160,9 +1169,9 @@
 
 .event-record-picker-heading {
   align-items: center;
-  background: var(--accent-primary, #2e6f9e);
-  border: 1px solid var(--border-default, #9d988c);
-  color: var(--text-inverse, #ffffff);
+  background: var(--accent-primary, var(--accent));
+  border: 1px solid var(--border-default, var(--border-default));
+  color: var(--text-inverse, var(--text-1));
   display: flex;
   font: 600 20px/24px "Cascadia Mono", "MS Gothic", monospace;
   justify-content: center;
@@ -1170,8 +1179,8 @@
 
 .event-record-picker-blocks {
   align-content: start;
-  background: var(--surface-panel, #fffdf7);
-  border: 2px inset var(--border-soft, #b8b4aa);
+  background: var(--surface-panel, var(--bg-raised));
+  border: 2px inset var(--border-soft, var(--border-default));
   display: grid;
   grid-auto-rows: 21px;
   min-height: 0;
@@ -1184,7 +1193,7 @@
   background: transparent;
   border: 0;
   border-radius: 0;
-  color: var(--text, #111111);
+  color: var(--text, var(--text-1));
   font: 500 18px/20px "Cascadia Mono", "MS Gothic", monospace;
   min-height: 20px;
   overflow: hidden;
@@ -1198,8 +1207,8 @@
 .event-record-picker-block:hover,
 .event-record-picker-row:hover,
 .event-record-picker-row.selected {
-  background: var(--accent-primary, #2e6f9e);
-  color: var(--text-inverse, #ffffff);
+  background: var(--accent-primary, var(--accent));
+  color: var(--text-inverse, var(--text-1));
 }
 
 .event-record-picker-max {
@@ -1219,8 +1228,8 @@
 
 .event-record-picker-list {
   align-content: start;
-  background: var(--surface-panel, #fffdf7);
-  border: 2px inset var(--border-soft, #b8b4aa);
+  background: var(--surface-panel, var(--bg-raised));
+  border: 2px inset var(--border-soft, var(--border-default));
   display: grid;
   grid-auto-rows: 20px;
   max-height: none;
@@ -1231,7 +1240,7 @@
 
 .event-record-picker-name-box {
   align-items: center;
-  border: 2px groove var(--border-soft, #b8b4aa);
+  border: 2px groove var(--border-soft, var(--border-default));
   box-sizing: border-box;
   display: grid;
   gap: 8px;
@@ -1242,7 +1251,7 @@
 }
 
 .event-record-picker-name-box legend {
-  color: var(--text, #111111);
+  color: var(--text, var(--text-1));
   font: 500 14px/18px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 0 4px;
 }
@@ -1259,14 +1268,14 @@
 }
 
 .event-record-picker-footer .btn:disabled {
-  color: var(--text-muted, #666666);
+  color: var(--text-muted, var(--text-2));
   opacity: 0.54;
 }
 
 .transfer-player-zoom-button.active {
-  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 78%, white);
-  border-color: var(--accent, #2563eb);
-  color: var(--accent, #2563eb);
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 78%, var(--bg-raised));
+  border-color: var(--accent, var(--accent-border));
+  color: var(--accent, var(--accent));
 }
 
 .transfer-player-map-row:hover,
@@ -1275,8 +1284,8 @@
 .event-page-move-route-list-row.selected,
 .event-graphic-resource-row:not(.disabled):hover,
 .event-graphic-resource-row.active {
-  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 72%, white);
-  color: var(--accent, #2563eb);
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
+  color: var(--accent, var(--accent));
 }
 
 .event-page-move-route {
@@ -1293,7 +1302,7 @@
 .event-page-move-route legend,
 .transfer-player-direction legend,
 .event-graphic-radio-group legend {
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--text-2));
   font: 750 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 0 4px;
 }
@@ -1303,7 +1312,7 @@
 .event-page-move-route-parameters span,
 .transfer-player-direction-options span,
 .event-graphic-radio-option {
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -1311,8 +1320,8 @@
 .transfer-player-tree,
 .transfer-player-preview,
 .event-graphic-resource-list {
-  background: var(--event-popup-field, #ffffff);
-  border: 1px solid var(--border-soft, #e5e7eb);
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
 }
 
@@ -1320,7 +1329,7 @@
 .transfer-player-map-row,
 .transfer-player-project,
 .event-graphic-resource-row {
-  color: var(--text, #111827);
+  color: var(--text, var(--text-1));
   font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -1352,7 +1361,7 @@
 }
 
 .transfer-command-summary {
-  border: 1px solid var(--border-soft, #e5e7eb);
+  border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 6px;
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
   font: 650 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
@@ -1372,7 +1381,7 @@
 }
 
 .transfer-player-status {
-  color: var(--accent, #2563eb);
+  color: var(--accent, var(--accent));
   font: 750 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 0 12px;
 }
@@ -1406,7 +1415,7 @@
 
 .event-graphic-preview-panel .npc-character-cell:hover,
 .event-graphic-preview-panel .npc-character-cell.active {
-  border-color: var(--text-inverse, #ffffff);
+  border-color: var(--text-inverse, var(--border-subtle));
   box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.22);
 }
 

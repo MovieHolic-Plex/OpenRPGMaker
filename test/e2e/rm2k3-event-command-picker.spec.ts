@@ -57,7 +57,7 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
 
   const emptyLine = page.getByTestId("event-command-empty-line");
   await expect(emptyLine).toBeVisible();
-  await expect(emptyLine).toHaveText("@>");
+  await expect(emptyLine).toHaveText("◆");
   await expect(editor.getByTestId("event-command-text")).toHaveCount(0);
   await expect(editor.getByTestId("event-npc-quick-author")).toHaveCount(0);
   await expect(editor.getByTestId("event-npc-name-input")).toHaveCount(0);

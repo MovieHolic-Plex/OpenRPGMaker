@@ -10,12 +10,15 @@ import { startSession, type PlaySession } from "@/project/session";
 import { Input } from "@/player/input";
 import type { StepResult } from "@/player/interpreter";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
-import type { GameMap, MapId, MoveCommand, Trigger } from "@/project/types";
+import { resumeAudioState, stopAllAudio } from "@/player/audio";
+import { ensureTilesetTexture } from "@/editor/tilesetImage";
+import type { GameMap, MapId, MoveCommand, TilesetDef, Trigger } from "@/project/types";
 import type { RuntimeEventPositions, RuntimeEventView } from "@/player/runtimeEventState";
 import {
   type AutonomousMover,
   type ParallelProcess,
   type PlaySceneContext,
+  type PlayerRouteState,
   type TransferRequest,
   type RuntimeTimer,
 } from "@/player/playSceneTypes";
@@ -51,6 +54,7 @@ import {
   showRuntimeOverlay as showSceneRuntimeOverlay,
   clearRuntimeOverlay as clearSceneRuntimeOverlay,
   showGameOverScreen as showSceneGameOverScreen,
+  showEndingScreen as showSceneEndingScreen,
   returnToTitle as returnSceneToTitle,
 } from "@/player/playSceneOverlays";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
@@ -82,10 +86,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   moving = false;
   moveProgress = 0;
   moveDurationMs = 160;
+  dashing = false;
   facing: "down" | "left" | "right" | "up" = "down";
   walkFrame = 0;
   walkTimer = 0;
   lastActionTargetKey = "";
+  playerRoute: PlayerRouteState | null = null;
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
 
@@ -135,6 +141,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
     // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 쓰이지 않는다.
     installPlaySceneTestHooks(this, this.input_, this.session, () => this.syncRuntimeState());
+    // 세이브 로드로 진입한 세션이면 저장된 BGM/BGS 를 재개(원샷은 복원 안 함).
+    resumeAudioState(this.session.audio, project);
+    // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
+    this.events.once("shutdown", stopAllAudio);
+    this.events.once("destroy", stopAllAudio);
   }
 
   update(_time: number, deltaMs: number): void {
@@ -152,6 +163,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   renderTiles(): void {
     renderSceneTiles(this);
+  }
+
+  resolveTilesetTexture(tileset: TilesetDef): string {
+    return ensureTilesetTexture(this, tileset);
   }
 
   activeRuntimeEvents(triggerKind: Trigger["kind"]): RuntimeEventView[] {
@@ -253,11 +268,18 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.runtimeTimers.clear();
     this.moving = false;
     this.centerCamera();
+    // 인게임 로드: 이전 오디오 정지 후 저장된 BGM/BGS 재개.
+    stopAllAudio();
+    resumeAudioState(this.session.audio, project);
     this.refreshRuntimeSurfaces();
   }
 
   showGameOverScreen(): void {
     showSceneGameOverScreen(this);
+  }
+
+  showEndingScreen(title: string, message: string): void {
+    showSceneEndingScreen(this, title, message);
   }
 
   returnToTitle(): void {

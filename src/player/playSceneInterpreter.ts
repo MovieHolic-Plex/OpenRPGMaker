@@ -7,12 +7,16 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
 import { playInn, playShop } from "@/player/playSceneCommerce";
-import { dialogueUi } from "@/player/playSceneDom";
+import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
+import { showNameEntry } from "@/player/nameEntry/nameEntryOverlay";
 import { applyTimerStep } from "@/player/playSceneTimers";
+import { startPlayerRoute } from "@/player/playSceneMovement";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
@@ -112,6 +116,20 @@ async function consumeBlockingStep(
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
       }));
+    case "enterHeroName": {
+      const host = dialogueHost(scene);
+      if (!host) return resumeInterpreter(interpreter);
+      const name = await showNameEntry(host, {
+        currentName: step.currentName,
+        maxLength: step.maxLength,
+        showInitialName: step.showInitialName,
+      });
+      const result = interpreter.resume(name);
+      // 액터 이름 변경을 메뉴/전투 표시에 즉시 반영.
+      scene.refreshRuntimeSurfaces();
+      scene.syncRuntimeState();
+      return result;
+    }
     case "timer":
       applyTimerStep(scene, step);
       return resumeAfterSurface(scene, interpreter);
@@ -122,12 +140,18 @@ async function consumeBlockingStep(
     case "changeTile":
       scene.applyChangeTileStep(step);
       return resumeAfterSurface(scene, interpreter);
-    case "moveEvent":
-      scene.registerAutonomousMover(resolveMoveEventTarget(step.eventId, currentEventId), step.moves, step.repeat);
-      if (step.wait) {
-        await waitForMoverComplete(scene, resolveMoveEventTarget(step.eventId, currentEventId));
+    case "moveEvent": {
+      const target = resolveMoveEventTarget(step.eventId, currentEventId);
+      if (target === PLAYER_MOVE_TARGET) {
+        // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
+        startPlayerRoute(scene, step.moves, step.repeat);
+        if (step.wait) await waitForPlayerRouteComplete(scene);
+      } else {
+        scene.registerAutonomousMover(target, step.moves, step.repeat);
+        if (step.wait) await waitForMoverComplete(scene, target);
       }
       return resumeAfterSurface(scene, interpreter);
+    }
     case "battleProcessing":
       scene.session.battleResult = await scene.playBattle(step);
       return resumeAfterSurface(scene, interpreter);
@@ -143,11 +167,13 @@ async function consumeBlockingStep(
       return resumeInterpreter(interpreter);
     case "playAudio":
       setAudioState(scene.session, step);
+      playAudioCommand(step, store.getCurrent());
       scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":
       clearAudioState(scene.session);
+      stopAudioCommand();
       scene.clearRuntimeOverlay("audio-indicator");
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
@@ -167,7 +193,7 @@ async function consumeBlockingStep(
       return resumeInterpreter(interpreter);
     case "returnToTitle":
       if (step.title || step.message) {
-        scene.showRuntimeOverlay("ending-screen", [step.title, step.message].filter(Boolean).join("\n"));
+        scene.showEndingScreen(step.title ?? "", step.message ?? "");
       } else {
         scene.returnToTitle();
       }
@@ -194,6 +220,22 @@ function waitForMoverComplete(scene: PlaySceneContext, eventId: string): Promise
         return;
       }
       if (performance.now() - startedAt >= timeoutMs) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+  });
+}
+
+// 주인공 강제 이동 루트가 끝날 때(scene.playerRoute 가 비워질 때)까지 대기. 안전 타임아웃 30초.
+function waitForPlayerRouteComplete(scene: PlaySceneContext): Promise<void> {
+  return new Promise((resolve) => {
+    const timeoutMs = 30000;
+    const startedAt = performance.now();
+    const check = () => {
+      if (!scene.playerRoute || performance.now() - startedAt >= timeoutMs) {
         resolve();
         return;
       }

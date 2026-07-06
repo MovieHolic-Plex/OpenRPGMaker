@@ -136,7 +136,7 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
     return el("div", {
       class: "db-troop-event-command-area",
       dataset: { testid: "db-troop-event-command-area" },
-      children: [el("div", { class: "db-troop-command-line", text: "@>" })],
+      children: [el("div", { class: "db-troop-command-line", text: "◆" })],
     });
   }
   const host = el("div", { class: "cmd-list", dataset: { testid: "db-troop-event-command-list" } });

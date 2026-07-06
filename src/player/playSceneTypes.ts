@@ -5,7 +5,7 @@ import type { RuntimeEventPositions } from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
-import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, Trigger } from "@/project/types";
+import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, TransferTransition, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
@@ -62,7 +62,14 @@ export type TransferRequest = {
   readonly y: number;
   readonly direction?: TransferDirection;
   readonly fade?: TransferFade;
+  readonly transition?: TransferTransition;
 };
+
+export interface PlayerRouteState {
+  moves: MoveCommand[];
+  index: number;
+  repeat: boolean;
+}
 
 export interface PlaySceneContext extends Phaser.Scene {
   tileLayer: Phaser.GameObjects.Container;
@@ -88,10 +95,13 @@ export interface PlaySceneContext extends Phaser.Scene {
   moving: boolean;
   moveProgress: number;
   moveDurationMs: number;
+  dashing: boolean;
   facing: Dir;
   walkFrame: number;
   walkTimer: number;
   lastActionTargetKey: string;
+  // 주인공 강제 이동 루트(이동 루트 설정 → 주인공). null 이면 일반 입력 이동.
+  playerRoute: PlayerRouteState | null;
   autonomousNPCs: Map<string, AutonomousMover>;
   runtimeTimers: Map<string, RuntimeTimer>;
   getMapId(): MapId;
@@ -129,6 +139,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateAutonomousNPCs(deltaMs: number): void;
   updateTimers(deltaMs: number): void;
   showGameOverScreen(): void;
+  showEndingScreen(title: string, message: string): void;
   returnToTitle(): void;
 }
 

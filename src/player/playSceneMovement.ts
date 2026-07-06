@@ -1,10 +1,12 @@
 import { canMove } from "@/project/collision";
 import { store } from "@/project/store";
+import type { MoveCommand } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import { applyFacing } from "@/player/playSceneAutonomousCommands";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
-import type { Dir } from "@/player/input";
+import type { Dir, InputState } from "@/player/input";
+import { facingForStep, resolveDiagonalStep } from "@/player/input";
 import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
 import { findBlockingRuntimeEventAtInMap, findRuntimeEventAtInMap } from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
@@ -33,7 +35,11 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   }
   scene.session.playTimeSeconds += deltaMs / 1000;
   const input = scene.input_.update();
-  if (!scene.moving && input.dir) tryStartMove(scene, input.dir);
+  if (!scene.moving) {
+    // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
+    if (scene.playerRoute) advancePlayerRoute(scene);
+    else if (input.x !== 0 || input.y !== 0) tryStartMove(scene, input);
+  }
   if (scene.moving) {
     updatePlayerMovement(scene, deltaMs);
   } else {
@@ -52,15 +58,25 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
 export function isRuntimeMenuOpen(scene: Pick<PlaySceneContext, "game">): boolean {
   const canvas = scene.game.canvas;
   const playStage = canvas.parentElement?.closest(".play-stage");
-  return (playStage ?? canvas.ownerDocument).querySelector("[data-testid='main-menu']") !== null;
+  // 메뉴뿐 아니라 엔딩/게임 오버 패널이 떠 있는 동안에도 맵 입력을 차단한다
+  // (엔딩 화면 뒤에서 이동/조사로 이벤트가 재실행되는 것을 막는다).
+  const root = playStage ?? canvas.ownerDocument;
+  return root.querySelector("[data-testid='main-menu'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
 }
 
 function canUpdateWaitingEvents(scene: PlaySceneContext): boolean {
   return !scene.running || scene.session.messageWindowSettings?.allowEventMovementDuringWait === true;
 }
 
+// 대시 배속(RM2K3 관례: 걷기 대비 약 1.8배). 이동 소요시간과 걷기 프레임
+// 주기를 같은 비율로 단축해 애니메이션이 자연스럽게 빨라진다.
+const DASH_SPEED_FACTOR = 1.8;
+const WALK_FRAME_MS = 90;
+
 function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
-  scene.moveProgress += deltaMs / scene.moveDurationMs;
+  const dashFactor = scene.dashing ? DASH_SPEED_FACTOR : 1;
+  const moveDurationMs = scene.moveDurationMs / dashFactor;
+  scene.moveProgress += deltaMs / moveDurationMs;
   if (scene.moveProgress >= 1) {
     scene.moveProgress = 1;
     scene.tileX = scene.movingTo.x;
@@ -81,25 +97,33 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   scene.player.y = characterSpriteY(py);
   updateCharacterDepth(scene.player, "same");
   scene.walkTimer += deltaMs;
-  if (scene.walkTimer > 90) {
+  if (scene.walkTimer > WALK_FRAME_MS / dashFactor) {
     scene.walkTimer = 0;
     scene.walkFrame = (scene.walkFrame + 1) % scene.playerSprite.walkFrameCount;
   }
   scene.player.setFrame(scene.playerSprite.walkFrameFor(scene.facing, scene.walkFrame));
 }
 
-function tryStartMove(scene: PlaySceneContext, dir: Dir): void {
-  scene.facing = dir;
-  const delta = directionDelta(dir);
-  const nx = scene.tileX + delta.x;
-  const ny = scene.tileY + delta.y;
+function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const project = store.getCurrent();
-  if (!canMove(project, scene.map, scene.tileX, scene.tileY, nx, ny)) return;
+  // 현재 칸에서 직교 한 칸 통행 가능 여부(대각선은 두 직교로 분해해 판정).
+  const canStep = (dx: number, dy: number): boolean =>
+    canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
+  const step = resolveDiagonalStep(input.x, input.y, canStep);
+  if (!step) {
+    // 벽을 향해도 그 방향으로 몸은 돌린다(제자리 방향 전환).
+    if (input.dir) scene.facing = input.dir;
+    return;
+  }
+  scene.facing = facingForStep(step.dx, step.dy);
+  const nx = scene.tileX + step.dx;
+  const ny = scene.tileY + step.dy;
   const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
   if (blockingEvent) {
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return;
   }
+  scene.dashing = input.dash;
   scene.movingFrom = { x: scene.tileX, y: scene.tileY };
   scene.movingTo = { x: nx, y: ny };
   scene.moving = true;
@@ -107,6 +131,95 @@ function tryStartMove(scene: PlaySceneContext, dir: Dir): void {
   scene.walkFrame = 0;
   scene.walkTimer = 0;
   scene.lastActionTargetKey = "";
+}
+
+// ── 주인공 강제 이동 루트(이동 루트 설정 → 주인공) ──
+// moveEvent 명령이 주인공을 대상으로 하면 이동 단계를 큐에 넣고, 주인공이 정지할 때마다
+// 다음 단계를 자연스러운 걷기로 실행한다. 장소 이동(transfer)과 달리 한 칸씩 이동한다.
+export function startPlayerRoute(scene: PlaySceneContext, moves: readonly MoveCommand[], repeat: boolean): void {
+  if (moves.length === 0) {
+    scene.playerRoute = null;
+    return;
+  }
+  scene.playerRoute = { moves: [...moves], index: 0, repeat };
+}
+
+function advancePlayerRoute(scene: PlaySceneContext): void {
+  // 이동을 시작하지 않는 명령(회전/스위치 등)은 같은 프레임에 연속 소비한다.
+  // repeat + 이동 없는 루트의 프레임당 무한 루프를 막기 위해 상한을 둔다.
+  let guard = 0;
+  while (scene.playerRoute && !scene.moving && guard < 64) {
+    guard += 1;
+    const route = scene.playerRoute;
+    if (route.index >= route.moves.length) {
+      if (route.repeat && route.moves.length > 0) {
+        route.index = 0;
+      } else {
+        scene.playerRoute = null;
+        return;
+      }
+    }
+    const command = route.moves[route.index];
+    route.index += 1;
+    if (command && applyPlayerRouteCommand(scene, command)) return; // 이동 시작 → 이번 프레임 종료
+  }
+}
+
+// 이동을 시작하면 true(이번 프레임 종료), 아니면 false(다음 명령 계속).
+function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand): boolean {
+  switch (command.kind) {
+    case "move":
+      return startPlayerRouteStep(scene, command.dir);
+    case "stepForward":
+      return startPlayerRouteStep(scene, scene.facing);
+    case "turn":
+      scene.facing = command.dir;
+      return false;
+    case "turnRelative":
+      scene.facing = rotatedFacing(scene.facing, command.turn);
+      return false;
+    case "turnRandom":
+      scene.facing = rotatedFacing(scene.facing, "right90");
+      return false;
+    case "setSwitch":
+      scene.session.switches[command.switchId] = command.value;
+      return false;
+    case "changeSpeed":
+      scene.moveDurationMs = clampPlayerMoveDuration(scene.moveDurationMs, command.delta);
+      return false;
+    // 주인공에게 의미 없거나 MVP 범위 밖(jump/그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
+    default:
+      return false;
+  }
+}
+
+function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
+  scene.facing = dir;
+  const delta = directionDelta(dir);
+  const nx = scene.tileX + delta.x;
+  const ny = scene.tileY + delta.y;
+  if (!canMove(store.getCurrent(), scene.map, scene.tileX, scene.tileY, nx, ny)) return false; // 막히면 건너뜀
+  scene.dashing = false;
+  scene.movingFrom = { x: scene.tileX, y: scene.tileY };
+  scene.movingTo = { x: nx, y: ny };
+  scene.moving = true;
+  scene.moveProgress = 0;
+  scene.walkFrame = 0;
+  scene.walkTimer = 0;
+  return true;
+}
+
+function rotatedFacing(dir: Dir, turn: "right90" | "left90" | "turn180" | "leftOrRight90"): Dir {
+  const order: Dir[] = ["up", "right", "down", "left"];
+  const index = order.indexOf(dir);
+  if (index < 0) return dir;
+  const step = turn === "left90" ? 3 : turn === "turn180" ? 2 : 1; // right90/leftOrRight90 → 우회전(결정적)
+  return order[(index + step) % 4] ?? dir;
+}
+
+function clampPlayerMoveDuration(current: number, delta: number): number {
+  // delta 양수 = 빠르게(이동 시간 단축). 대략 40ms 단위.
+  return Math.min(400, Math.max(60, current - delta * 40));
 }
 
 export function handleAction(scene: ActionEventSceneContext): void {
@@ -120,7 +233,12 @@ export function handleAction(scene: ActionEventSceneContext): void {
   if (event) {
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
+    return;
   }
+  // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
+  // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
+  const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
+  if (underfoot) void scene.runEvent(underfoot.event.id);
 }
 
 function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): void {
