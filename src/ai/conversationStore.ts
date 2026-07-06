@@ -26,6 +26,8 @@ function isAuditEntry(value: unknown): value is AuditEntry {
       return typeof value.text === "string";
     case "assistant":
       return typeof value.text === "string";
+    case "status": // 상태 전이/턴 수명주기 기록(결함 ⑬).
+      return typeof value.text === "string";
     case "tool":
       return (
         typeof value.name === "string" &&

@@ -128,7 +128,9 @@ describe("AssistantSession 툴콜 루프", () => {
     await session.sendUserMessage("안녕", () => {});
     const audit = JSON.parse(session.exportAudit());
     expect(audit.model).toBe(CONFIG.model);
-    expect(audit.entries[0]).toEqual({ kind: "user", text: "안녕" });
+    // at(ISO 타임스탬프)는 결함 ⑬(구조화 세션 로그)에서 추가 — 내용 필드만 고정 검증.
+    expect(audit.entries[0]).toMatchObject({ kind: "user", text: "안녕" });
+    expect(typeof audit.entries[0].at).toBe("string");
     expect(audit.entries.some((e: { kind: string }) => e.kind === "assistant")).toBe(true);
   }, 30000);
 });

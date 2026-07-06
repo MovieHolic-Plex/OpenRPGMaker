@@ -172,15 +172,27 @@ function completenessSpecForProposal(
   return null;
 }
 
-// 누적 히스토리 + 현재 세션의 감사 항목을 합쳐 내보내기 JSON을 만든다. 비었으면 null.
-export function combineAuditJson(history: readonly AuditEntry[], session: AssistantSession | null, model: string): string | null {
+// UI 상태 배지 전이 기록(결함 ⑬) — "검토 대기" 멈춤 같은 문제를 export 로그로 진단 가능하게.
+export interface StatusTransition {
+  readonly at: string;
+  readonly status: string;
+}
+
+// 누적 히스토리 + 현재 세션의 감사 항목(타임스탬프 포함) + UI 상태 전이 타임라인을 합쳐
+// 내보내기 JSON을 만든다. 비었으면 null. (결함 ⑬ — 구조화 세션 로그 export)
+export function combineAuditJson(
+  history: readonly AuditEntry[],
+  session: AssistantSession | null,
+  model: string,
+  statusTimeline: readonly StatusTransition[] = []
+): string | null {
   const entries = [...history, ...(session?.getAuditEntries() ?? [])];
-  if (entries.length === 0) return null;
-  return JSON.stringify({ model, entries }, null, 2);
+  if (entries.length === 0 && statusTimeline.length === 0) return null;
+  return JSON.stringify({ model, exportedAt: new Date().toISOString(), entries, statusTimeline }, null, 2);
 }
 
 function exportCombinedAudit(controller: ChatController): string | null {
-  return combineAuditJson(controller.auditHistory, controller.session, loadAiConfig().model);
+  return combineAuditJson(controller.auditHistory, controller.session, loadAiConfig().model, controller.statusTimeline);
 }
 
 // 0건 프로포절 비블로킹 알림(도그푸딩 결함 ⑤): 세션을 "검토 대기"로 잡아두는 검토 카드 대신
@@ -220,6 +232,8 @@ interface ChatController {
   session: AssistantSession | null;
   // 폐기된(수락/거부) 세션들의 감사 항목 누적 — 내보내기가 세션 폐기 후에도 동작해야 한다.
   auditHistory: AuditEntry[];
+  // UI 상태 배지 전이 타임라인(결함 ⑬) — 로그 export에 포함된다.
+  statusTimeline: StatusTransition[];
 }
 
 function isAiAssistDetail(value: unknown): value is AiAssistDetail {
@@ -257,7 +271,7 @@ function dropSession(controller: ChatController): void {
 }
 
 export function renderAiChatPanel(): HTMLElement {
-  const controller: ChatController = { session: null, auditHistory: [] };
+  const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
   // '새 대화' 시 재발급된다.
   let conversationId = genId("conv");
@@ -275,6 +289,11 @@ export function renderAiChatPanel(): HTMLElement {
   };
 
   const status = el("span", { class: "ai-assistant-status", text: "대기", dataset: { testid: "ai-status" } });
+  // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 로그 export로 "검토 대기" 멈춤을 진단 가능.
+  const setStatus = (text: string): void => {
+    status.textContent = text;
+    controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
+  };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
   const proposalHost = el("div", { class: "ai-proposal-host", dataset: { testid: "ai-proposal-host" } });
   // 원탭 답변 칩(맵 인터뷰 등 "[선택지] a | b" 마커가 있는 응답에 표시).
@@ -483,7 +502,7 @@ export function renderAiChatPanel(): HTMLElement {
     // 커밋 게이트: 합쳐진 최종 draft를 다시 lint. error가 있으면 반영 거부.
     const errors = projectLint(proposed).filter((issue) => issue.severity === "error");
     if (errors.length > 0) {
-      status.textContent = "적용 실패";
+      setStatus("적용 실패");
       toast(`적용 실패: ${errors[0].message}`, "error");
       return;
     }
@@ -502,7 +521,7 @@ export function renderAiChatPanel(): HTMLElement {
     });
     resetManualProjectCommitBaseline(proposed);
     proposalHost.replaceChildren();
-    status.textContent = "적용됨";
+    setStatus("적용됨");
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);
     toast("AI 변경안을 적용했습니다.", "ok");
     // 대화(기억)를 유지한 채 프로젝트 기준만 갱신한다(#6). 세션을 폐기하지 않으므로 문맥이 이어진다.
@@ -512,7 +531,7 @@ export function renderAiChatPanel(): HTMLElement {
   const rejectProposal = (): void => {
     proposalHost.replaceChildren();
     clearAgentGhostPreview();
-    status.textContent = "제안 거부됨";
+    setStatus("제안 거부됨");
     appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
     // 오염된 draft만 store 기준으로 되돌리고 대화는 유지한다(#6).
     controller.session?.rebaseProject(store.getCurrent());
@@ -526,7 +545,7 @@ export function renderAiChatPanel(): HTMLElement {
     const proposed = session.getProposedProject();
     const errors = projectLint(proposed).filter((issue) => issue.severity === "error");
     if (errors.length > 0) {
-      status.textContent = "저장 실패";
+      setStatus("저장 실패");
       toast(`저장 실패: ${errors[0].message}`, "error");
       return;
     }
@@ -543,7 +562,7 @@ export function renderAiChatPanel(): HTMLElement {
       toolNames: calls.map((call) => call.name),
     });
     resetManualProjectCommitBaseline(proposed);
-    status.textContent = "저장됨";
+    setStatus("저장됨");
     appendBubble("system", `타일 지식 ${calls.length}건 저장됨 (Ctrl+Z로 복구 가능)`);
   };
 
@@ -663,7 +682,7 @@ export function renderAiChatPanel(): HTMLElement {
       return;
     }
     turnBusy = true;
-    status.textContent = "생각 중…";
+    setStatus("생각 중…");
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
@@ -732,7 +751,7 @@ export function renderAiChatPanel(): HTMLElement {
             onDemoRequest: (region) => startDemoTeach(region),
             onSaved: (saved) => {
               appendBubble("system", `템플릿 '${saved.name}' 저장됨(행 ${saved.savedRows}개, 사용자 확정) — 다음 대화부터 이 지식을 사용합니다.`);
-              status.textContent = "템플릿 저장됨";
+              setStatus("템플릿 저장됨");
               // 세션 draft는 저장 전 스냅샷 기반이라, 이후 제안 수락이 템플릿을 되돌리지 않도록 세션을 정리한다.
               dropSession(controller);
               proposalHost.replaceChildren();
@@ -742,7 +761,7 @@ export function renderAiChatPanel(): HTMLElement {
         // 인터뷰 진행률: 분석 결과의 커버리지를 상태줄에 표시.
         if (event.name === "analyze_map_tile_usage" && event.result.ok) {
           const data = event.result.data as { coverage?: { used: number; described: number } };
-          if (data.coverage) status.textContent = `타일 설명 ${data.coverage.described}/${data.coverage.used}`;
+          if (data.coverage) setStatus(`타일 설명 ${data.coverage.described}/${data.coverage.used}`);
         }
       } else if (event.type === "status") {
         appendBubble("system", event.text);
@@ -771,7 +790,7 @@ export function renderAiChatPanel(): HTMLElement {
       } else {
         renderProposal(result, result.proposedCalls.length === 0 ? completenessWarnings : []);
         // 0건 프로포절은 더 이상 "검토 대기"로 세션을 잡아두지 않는다(결함 ⑤ — 비블로킹).
-        status.textContent =
+        setStatus(
           result.stoppedReason === "error"
             ? "오류"
             : result.proposedCalls.length > 0
@@ -780,17 +799,18 @@ export function renderAiChatPanel(): HTMLElement {
             ? "완료 — 변경 없음(린트 경고)"
             : status.textContent === "생각 중…"
             ? "완료"
-            : status.textContent;
+            : status.textContent ?? ""
+        );
       }
       if (result.assistantText) renderQuickReplies(result.assistantText);
       // 밑그림 상태 표시 — 확정된 스펙이 있으면 사용자도 본다(다음 빌드가 이 영역 안에서만 실행됨).
       const activeSpec = session.getActiveSpec();
       if (activeSpec && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
-        status.textContent = `밑그림 확정 — 에셋 ${activeSpec.assets.length}개`;
+        setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
-      status.textContent = "오류";
+      setStatus("오류");
       appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
     } finally {
       sendButton.disabled = false;
@@ -1140,7 +1160,7 @@ export function renderAiChatPanel(): HTMLElement {
         log.replaceChildren();
         startScreen = buildStartScreen();
         log.append(startScreen);
-        status.textContent = "새 대화";
+        setStatus("새 대화");
         toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
       },
     },
