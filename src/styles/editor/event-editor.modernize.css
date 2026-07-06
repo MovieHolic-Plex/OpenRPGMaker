@@ -233,6 +233,88 @@
   width: 100%;
 }
 
+/* ---- [P1] 커맨드 리스트 인라인 썸네일 (16px 상한 — 줄 높이 불변) ---- */
+
+.cmd-thumb {
+  background-repeat: no-repeat;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 16px;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.cmd-thumb-face {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.cmd-thumb-map {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  position: relative;
+  width: 24px;
+}
+
+.cmd-thumb-map-canvas {
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.cmd-kind .cmd-thumb {
+  margin: 0 3px -3px 1px;
+}
+
+[data-testid="cmd-speaker-face"] {
+  margin-right: 4px;
+}
+
+/* ---- [중간-3] 문장 표시 폼: 세로 스택 + 제어 문자 팔레트 ---- */
+
+.event-command-edit-body .event-command-text-editor {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-body .event-command-text-editor textarea {
+  font: 500 13px/1.5 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  min-height: 110px;
+  resize: vertical;
+  width: 100%;
+}
+
+.event-command-text-palette {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-command-text-palette-label {
+  color: var(--text-dim, var(--text-2));
+  font: 700 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin-right: 2px;
+}
+
+.event-command-text-palette-button {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 4px;
+  color: var(--rm2k3-command-blue, var(--accent));
+  font: 700 11px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  padding: 2px 6px;
+}
+
+.event-command-text-palette-button:hover {
+  border-color: color-mix(in srgb, var(--accent, #6f87c9) 55%, transparent);
+}
+
 /* ---- [높음-3] 레코드 피커 검색 ---- */
 
 /* 검색 입력이 추가되면서 레코드 페인 행 구성이 [검색 / 리스트 / 이름 박스] 3행이 된다. */
@@ -265,6 +347,167 @@
 .event-subdialog-backdrop ~ .event-subdialog-backdrop {
   backdrop-filter: none;
   background: rgba(12, 15, 22, 0.3);
+}
+
+/* ---- [P2] 모던 전용 파생 뷰: 라이브 미리보기 / 플로우차트 (기본 접힘) ---- */
+
+.event-script-modern-views {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.event-script-live-preview,
+.event-script-flowchart {
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 92%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  padding: 0;
+}
+
+.event-script-live-preview > summary,
+.event-script-flowchart > summary {
+  color: var(--text-muted, var(--text-2));
+  cursor: pointer;
+  font: 700 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 7px 12px;
+  user-select: none;
+}
+
+.event-script-live-preview[open] > summary,
+.event-script-flowchart[open] > summary {
+  border-bottom: 1px solid var(--border-soft, var(--border-subtle));
+  color: var(--accent, var(--text-1));
+}
+
+.event-script-live-preview-body {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+
+.event-script-live-controls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.event-script-live-position {
+  color: var(--text-dim, var(--text-2));
+  font: 700 11px/16px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  margin-left: auto;
+}
+
+.event-script-live-stage {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  min-height: 150px;
+  padding: 8px;
+}
+
+.event-script-live-caption {
+  color: var(--text-dim, var(--text-2));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-flowchart-body {
+  overflow: auto;
+  padding: 10px 12px 12px;
+}
+
+.event-flow-column {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+}
+
+.event-flow-node {
+  align-items: center;
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-left: 3px solid var(--cmdcat, var(--border-soft));
+  border-radius: 5px;
+  display: inline-flex;
+  font: 600 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  gap: 6px;
+  max-width: 420px;
+  padding: 3px 8px;
+}
+
+.event-flow-node[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+.event-flow-node[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+.event-flow-node[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+.event-flow-node[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+.event-flow-node[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+.event-flow-node[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+.event-flow-node[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+.event-flow-node[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+.event-flow-node[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+.event-flow-node[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.event-flow-node-icon {
+  color: var(--cmdcat, var(--text-dim));
+  font-size: 10px;
+}
+
+.event-flow-node-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-flow-branches {
+  border-left: 1px dashed color-mix(in srgb, var(--text-dim, #888) 40%, transparent);
+  display: flex;
+  gap: 10px;
+  margin: 2px 0 4px 10px;
+  padding-left: 10px;
+}
+
+.event-flow-branch {
+  display: grid;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.event-flow-branch-label {
+  color: var(--rm2k3-branch-label, var(--text-dim, var(--text-2)));
+  font: 700 10px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.event-flow-empty {
+  color: var(--text-dim, var(--text-2));
+  font: 500 10px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+/* ---- [P2] 이동 경로: 실제 맵 캔버스 위 경로 오버레이 ---- */
+
+.ecp-move-map-overlay {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  max-height: 240px;
+  overflow: auto;
+  padding: 6px;
+}
+
+.ecp-move-map-canvas {
+  image-rendering: pixelated;
+}
+
+/* ---- [P2] 크로스 컨테이너 드래그: 무효 드롭 대상 표시 ---- */
+
+.cmd-item.cmd-drop-invalid > .cmd-head {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger, #d4553a) 65%, transparent);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* ---- [낮음-3] 그래픽 선택 커서 강화 ---- */

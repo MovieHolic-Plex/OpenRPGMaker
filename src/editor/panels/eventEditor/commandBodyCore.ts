@@ -72,8 +72,19 @@ export function renderCoreCommandBody(
   }
 }
 
+// [중간-3] 문장 표시 폼: 화자/내용 세로 스택 + 제어 문자 팔레트.
+const TEXT_CONTROL_SNIPPETS: readonly { readonly key: string; readonly code: string; readonly hint: string }[] = [
+  { key: "color", code: "\\c[1]", hint: "색상 변경 (0-19)" },
+  { key: "hero", code: "\\n[1]", hint: "주인공 이름" },
+  { key: "variable", code: "\\v[1]", hint: "변수 값" },
+  { key: "gold", code: "\\$", hint: "소지금 창" },
+  { key: "pause", code: "\\!", hint: "키 입력 대기" },
+  { key: "wait-quarter", code: "\\.", hint: "1/4초 지연" },
+  { key: "wait-second", code: "\\|", hint: "1초 지연" },
+];
+
 function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "text" }>): HTMLElement {
-  const wrap = el("span", {});
+  const wrap = el("div", { class: "event-command-text-editor" });
   const speaker = el("input", {
     attrs: { type: "text", placeholder: "화자" },
     value: cmd.speaker ?? "",
@@ -91,8 +102,48 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   speaker.addEventListener("input", apply);
   body.addEventListener("change", apply);
   body.addEventListener("input", apply);
-  wrap.append(fieldControl("화자", speaker), fieldControl("내용", body));
+  wrap.append(fieldControl("화자", speaker), fieldControl("내용", body), controlCharPalette(body, apply));
   return wrap;
+}
+
+// 제어 문자 팔레트: 커서 위치에 스니펫 삽입. RM2003 제어문자 문법 그대로.
+function controlCharPalette(body: HTMLTextAreaElement, apply: () => void): HTMLElement {
+  const palette = el("div", {
+    class: "event-command-text-palette",
+    attrs: { "aria-label": "제어 문자 팔레트" },
+    dataset: { testid: "event-command-text-palette" },
+  });
+  palette.append(el("span", { class: "event-command-text-palette-label", text: "제어 문자" }));
+  for (const snippet of TEXT_CONTROL_SNIPPETS) {
+    palette.append(
+      el("button", {
+        class: "event-command-text-palette-button",
+        text: snippet.code,
+        attrs: { type: "button", title: snippet.hint },
+        dataset: { testid: `event-command-text-insert-${snippet.key}` },
+        on: {
+          click: () => {
+            insertAtCursor(body, snippet.code);
+            apply();
+            body.focus();
+          },
+        },
+      })
+    );
+  }
+  return palette;
+}
+
+function insertAtCursor(body: HTMLTextAreaElement, code: string): void {
+  const start = typeof body.selectionStart === "number" ? body.selectionStart : body.value.length;
+  const end = typeof body.selectionEnd === "number" ? body.selectionEnd : start;
+  body.value = body.value.slice(0, start) + code + body.value.slice(end);
+  const cursor = start + code.length;
+  try {
+    body.setSelectionRange(cursor, cursor);
+  } catch {
+    /* fakeDom 등 selection 미지원 환경 무시 */
+  }
 }
 
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {

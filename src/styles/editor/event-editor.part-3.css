@@ -741,7 +741,7 @@
    선택지 인라인 에디터(.event-command-choices-inline)와 레코드 폼(.event-command-record-form)은
    자체 레이아웃을 가지므로 여기서 제외 — 트랙 폭보다 넓은 자식이 이웃 위로 겹쳐 렌더되던 원인. */
 .event-command-edit-body > div > span,
-.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form) {
+.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor) {
   align-items: end;
   display: grid;
   gap: 10px;

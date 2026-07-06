@@ -2,7 +2,9 @@ import { clearChildren, el } from "@/util/dom";
 import { store } from "@/project/store";
 import type { EventPageMovement, MoveCommand } from "@/project/types";
 import { openEventSubdialog } from "./subdialog";
+import { previewMoveRoute } from "./previewMoveRoute";
 import {
+  DIRECTIONAL_MOVE_TEST_IDS,
   MOVE_ROUTE_COMMAND_ROWS,
   moveCommandLabel,
   type MoveRouteCommandContext,
@@ -33,7 +35,8 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
   let moves = [...(request.movement.route?.moves ?? [])];
   let selectedIndex = moves.length > 0 ? moves.length - 1 : -1;
   let frequency = clampFrequency(request.movement.frequency);
-  let switchId = "sw_route_seen";
+  // 프로젝트에 실재하는 스위치를 기본값으로 (원시 문자열 "sw_route_seen" 은 없는 id 일 수 있다).
+  let switchId = store.getCurrent().switches[0]?.id ?? "";
   let spriteId = "tex_easyrpg_charset_people1";
   let soundId = "se_route_chime";
   let npcTargetMapId = inferNpcTargetMapId(moves);
@@ -53,9 +56,22 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
   const skip = el("input", { attrs: { type: "checkbox", disabled: "" } });
   const deleteButton = routeUtilityButton("삭제", "event-page-move-route-delete");
   const deleteAllButton = routeUtilityButton("모두 삭제", "event-page-move-route-delete-all");
+  // 격자 궤적 라이브 프리뷰 (moveEvent 프리뷰 재사용).
+  const preview = el("div", {
+    class: "event-page-move-route-preview",
+    dataset: { testid: "event-page-move-route-preview" },
+  });
+  const renderPreview = () => {
+    clearChildren(preview);
+    preview.append(
+      previewMoveRoute({ kind: "moveEvent", eventId: "", route: { moves: [...moves], repeat: repeat.checked } })
+    );
+  };
+  repeat.addEventListener("change", renderPreview);
   const renderAndSyncList = () => {
     renderCommandList(commandList, moves, selectedIndex, selectCommand);
     updateDeleteState(deleteButton, deleteAllButton, moves, selectedIndex);
+    renderPreview();
   };
   const selectCommand = (index: number) => {
     selectedIndex = index;
@@ -123,7 +139,7 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
           children: [
             el("fieldset", {
               class: "event-page-move-route-list-panel",
-              children: [el("legend", { text: "이동 명령" }), commandList],
+              children: [el("legend", { text: "이동 명령" }), commandList, preview],
             }),
             renderCommandGrid(appendCommand, () => ({ switchId, spriteId, soundId, npcTargetMapId, npcTargetX, npcTargetY, npcTargetDirection })),
           ],
@@ -164,12 +180,28 @@ function renderCommandGrid(
   const grid = el("div", { class: "event-page-move-route-grid" });
   for (const row of MOVE_ROUTE_COMMAND_ROWS) {
     for (const item of row) {
+      const children: HTMLElement[] = [];
+      if (item.icon) {
+        // 글리프는 data-glyph + CSS ::before 로만 그린다. 버튼 textContent 는 라벨 그대로
+        // 유지되어야 한다 (e2e toHaveText/라벨 클릭 보호).
+        children.push(
+          el("span", {
+            class: "event-page-move-route-command-icon",
+            attrs: { "aria-hidden": "true" },
+            dataset: { glyph: item.icon },
+          })
+        );
+      }
+      children.push(el("span", { class: "event-page-move-route-command-label", text: item.label }));
+      const directional = DIRECTIONAL_MOVE_TEST_IDS.has(item.testId);
       grid.append(
         el("button", {
-          class: "event-page-move-route-command",
-          text: item.label,
+          class: directional
+            ? "event-page-move-route-command event-page-move-route-command-directional"
+            : "event-page-move-route-command",
           attrs: { type: "button" },
           dataset: { testid: `event-page-move-route-add-${item.testId}` },
+          children,
           on: {
             click: () => {
               const command = item.createCommand(commandContext());
