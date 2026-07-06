@@ -112,5 +112,5 @@ background: var(--success-muted); border: 1px solid var(--success); color: var(-
 3. **:root 에서 `--accent`, `--danger`, `--bg`, `--text` 같은 공용 이름 재정의 금지** — 전역 스코프라 앱 전체가 물든다. 영역 전용 변수는 `--rm2k3-enemy-*` 처럼 네임스페이스 프리픽스.
 4. **외부 리소스(웹폰트/CDN) 금지** — 오프라인 LAN 환경.
 5. 레이아웃 치수(width/height/inset/grid 골격)는 보수적으로 — 색/보더/라운드/그림자/타이포 중심.
-6. `src/styles/runtime/` 와 `dialogue.css` 의 인게임 런타임 look 은 이번 범위 제외 (게임 화면은 레트로 유지).
+6. `src/styles/runtime/` 와 `dialogue.css` 의 인게임 런타임 look 은 에디터 셸 토큰과 분리한다. 런타임 게임 표면은 `src/styles/runtime/system.css` 의 `--runtime-*` 토큰(픽셀 폰트, 9-slice 윈도우 스킨)을 사용하고, 모던 다크 에디터 토큰을 창 프레임/폰트에 끌어오지 않는다.
 7. `database/tabs-b-assistant-panel.css` 는 p2-assistant 소유 — 건드리지 말 것.

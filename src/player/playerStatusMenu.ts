@@ -41,10 +41,6 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
 
   if (mode === "function") {
     panel.classList.add("status-menu-function-screen");
-    panel.style.backgroundColor = "#03123d";
-    panel.style.backgroundImage = "linear-gradient(180deg, #06357e 0%, #041f5c 44%, #03123d 100%)";
-    panel.style.borderImageSource = "none";
-    panel.style.borderImageSlice = "";
     panel.append(renderStatusMenuFunctionScene({
       project: options.project,
       session: options.session,
