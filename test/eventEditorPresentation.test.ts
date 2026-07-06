@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor/commandSummary";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
+import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";
 import { renderEventGraphicIcon, renderEventGraphicPreview } from "@/editor/panels/eventEditor/eventGraphicPreview";
 import { openFacesetDialog } from "@/editor/panels/eventEditor/messageCommandDialogs";
@@ -79,6 +80,30 @@ describe("event editor presentation", () => {
 
     expect(icon.dataset.testid).toBe("event-page-graphic-icon-preview");
     expect(icon.classList.contains("event-graphic-icon-preview")).toBe(true);
+  });
+
+  it("renders runtime support badges in the command list", () => {
+    const host = renderWithFakeDom(() => {
+      const node = el("div");
+      renderCommandList(
+        node,
+        [{ kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "메모" } }],
+        [],
+        {
+          addCommand: () => undefined,
+          deleteCommand: () => undefined,
+          insertCommand: () => undefined,
+          moveCommand: () => undefined,
+          moveCommandTo: () => undefined,
+          replaceCommand: () => undefined,
+        }
+      );
+      return node;
+    });
+
+    const badge = findByTestId(host, "command-runtime-badge-list-0");
+    expect(badge?.dataset.runtimeSupport).toBe("editor-only");
+    expect(badge?.attrs.title).toContain("런타임에서 실행되지 않습니다");
   });
 
   it("renders M2 image resource fields with a picker, selected name, and preview", () => {

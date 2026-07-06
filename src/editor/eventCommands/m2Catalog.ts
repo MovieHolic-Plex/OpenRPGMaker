@@ -14,25 +14,13 @@ import {
   type M2CommandPickerGroup,
   type M2CommandPickerPage,
 } from "./m2PickerLayout";
+import { catalogRowRuntimeSupport, type CommandRuntimeSupport } from "./runtimeSupport";
 
 export type { M2CommandPickerGroup, M2CommandPickerPage } from "./m2PickerLayout";
+export type { CommandRuntimeSupport } from "./runtimeSupport";
 
-export type M2CommandSupportStatus =
-  | "enabled-runtime"
-  | "enabled-editor-only"
-  | "enabled-shell"
-  | "battle-only"
-  | "catalog-disabled"
-  | "internal-non-pdf";
-
-export type M2RuntimeClassification =
-  | "runtime"
-  | "editor-only"
-  | "shell"
-  | "battle-only"
-  | "disabled"
-  | "missing-runtime"
-  | "internal-non-pdf";
+export type M2CommandSupportStatus = CommandRuntimeSupport;
+export type M2RuntimeClassification = CommandRuntimeSupport;
 
 export type M2CommandFieldType = "text" | "number" | "boolean" | "textarea" | "select";
 
@@ -57,13 +45,12 @@ export type M2CommandCatalogEntry = M2PdfCommandRow & {
   readonly pickerGroup: M2CommandPickerGroup;
   readonly existingKind?: Command["kind"];
   readonly supportStatus: M2CommandSupportStatus;
+  readonly runtimeSupport: CommandRuntimeSupport;
   readonly runtimeClassification: M2RuntimeClassification;
   readonly bodyStrategy: "existing" | "generic" | "none";
   readonly fields: readonly M2CommandFieldSpec[];
   readonly testId: string;
 };
-
-const SAFE_EDITOR_ONLY_TITLES: ReadonlySet<string> = new Set(["Comment"]);
 
 const OPERATION_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "set", label: "설정" },
@@ -94,42 +81,33 @@ export function createDefaultM2Fields(entry: M2CommandCatalogEntry): Record<stri
 }
 
 export function isM2CatalogEntrySelectableInMap(entry: M2CommandCatalogEntry): boolean {
-  return (
-    entry.runtimeClassification === "runtime" ||
-    entry.runtimeClassification === "editor-only" ||
-    entry.runtimeClassification === "shell" ||
-    (entry.runtimeClassification === "disabled" && entry.bodyStrategy === "generic")
-  );
+  return entry.index <= 97 || entry.index >= 200;
 }
 
 export function isM2CatalogEntrySelectableInBattleEvent(entry: M2CommandCatalogEntry): boolean {
-  return (
-    entry.runtimeClassification === "runtime" ||
-    entry.runtimeClassification === "editor-only" ||
-    entry.runtimeClassification === "battle-only" ||
-    (entry.runtimeClassification === "disabled" && entry.bodyStrategy === "generic")
-  );
+  return (entry.index >= 98 && entry.index <= 108) || entry.runtimeSupport === "runtime-full";
 }
 
 function buildCatalogEntry(row: M2PdfCommandRow): M2CommandCatalogEntry {
   const existingKind = EXISTING_KIND_BY_TITLE[row.title];
   const label = KOREAN_LABEL_BY_TITLE[row.title] ?? row.title;
-  const supportStatus = supportStatusFor(row.title, existingKind, row.index);
-  const runtimeClassification = runtimeClassificationFor(supportStatus, existingKind);
   const fields = existingKind ? [] : genericFieldsFor(row.title);
+  const id = stableCommandId(row);
+  const runtimeSupport = catalogRowRuntimeSupport(id, existingKind);
   return {
     ...row,
-    id: stableCommandId(row),
+    id,
     label,
     pickerLabel: pickerLabelFor(row.title, label, fields),
     pickerPage: pickerPageForM2Command(row),
     pickerGroup: pickerGroupForM2Command(row),
     existingKind,
-    supportStatus,
-    runtimeClassification,
+    supportStatus: runtimeSupport,
+    runtimeSupport,
+    runtimeClassification: runtimeSupport,
     bodyStrategy: existingKind ? "existing" : fields.length > 0 ? "generic" : "none",
     fields,
-    testId: `command-picker-add-${stableCommandId(row)}`,
+    testId: `command-picker-add-${id}`,
   };
 }
 
@@ -145,29 +123,6 @@ function pickerLabelFor(title: string, label: string, fields: readonly M2Command
   if (NO_ELLIPSIS_TITLES.has(title)) return label;
   if (fields.length === 0 && title.startsWith("Open ")) return label;
   return `${label}...`;
-}
-
-function supportStatusFor(
-  title: string,
-  existingKind: Command["kind"] | undefined,
-  index: number
-): M2CommandSupportStatus {
-  if (existingKind) return "enabled-runtime";
-  if (index >= 200) return "enabled-runtime";
-  if (index >= 98) return "battle-only";
-  if (title.startsWith("Open ") || title === "Exit Game" || title.startsWith("Toggle ")) return "enabled-shell";
-  if (SAFE_EDITOR_ONLY_TITLES.has(title)) return "enabled-editor-only";
-  return "catalog-disabled";
-}
-
-function runtimeClassificationFor(supportStatus: M2CommandSupportStatus, existingKind: Command["kind"] | undefined): M2RuntimeClassification {
-  if (existingKind) return "runtime";
-  if (supportStatus === "enabled-runtime") return "runtime";
-  if (supportStatus === "enabled-shell") return "shell";
-  if (supportStatus === "battle-only") return "battle-only";
-  if (supportStatus === "catalog-disabled") return "disabled";
-  if (supportStatus === "internal-non-pdf") return "internal-non-pdf";
-  return "editor-only";
 }
 
 function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {

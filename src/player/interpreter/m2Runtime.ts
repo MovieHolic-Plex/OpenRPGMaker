@@ -15,10 +15,10 @@ export function executeM2RuntimeCommand(
   entry: M2CommandCatalogEntry,
   command: M2RuntimeCommand
 ): boolean {
-  // 배틀 전용 명령(index 98~199)은 맵 인터프리터에서 실행할 수 없다.
-  // false를 반환하면 commandCatalog.ts의 classification 기반 처리(battle-only → 경고 후 스킵)가 담당한다.
+  // 배틀 전용 명령(index 98~108)은 맵 인터프리터에서 실행할 수 없다.
+  // false를 반환하면 commandCatalog.ts의 support 등급 기반 경고/스킵이 담당한다.
   // 배틀 런타임은 별도 경로(executeM2BattleCommand)로 이 명령들을 실제로 처리한다.
-  if (entry.runtimeClassification === "battle-only") return false;
+  if (entry.index >= 98 && entry.index <= 108) return false;
   if (entry.title === "Comment") return true;
 
   executeByTitle(session, entry, command);

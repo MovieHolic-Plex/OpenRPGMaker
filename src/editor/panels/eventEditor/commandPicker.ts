@@ -2,6 +2,7 @@ import { newCommand, newM2Command } from "@/editor/eventActions";
 import {
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
+  type CommandRuntimeSupport,
   type M2CommandCatalogEntry,
   type M2CommandPickerGroup,
   type M2CommandPickerPage,
@@ -10,6 +11,7 @@ import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/editor/eventCommands/m2PickerLa
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
+import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 import { openEventSubdialog } from "./subdialog";
 
 type CommandKind = Command["kind"];
@@ -22,6 +24,7 @@ type CommandEntry = {
   readonly index: number;
   readonly testId: string;
   readonly selectable: boolean;
+  readonly runtimeSupport: CommandRuntimeSupport;
 };
 
 type CommandPage = {
@@ -39,6 +42,7 @@ const EXTRA_COMMAND_ENTRIES: readonly CommandEntry[] = [
     index: 109,
     testId: "command-picker-add-ending",
     selectable: true,
+    runtimeSupport: "runtime-full",
   },
 ];
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
@@ -60,6 +64,7 @@ function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
     index: entry.index,
     testId: entry.existingKind ? `command-picker-add-${entry.existingKind}` : entry.testId,
     selectable: isM2CatalogEntrySelectableInMap(entry),
+    runtimeSupport: entry.runtimeSupport,
   };
 }
 
@@ -126,8 +131,11 @@ function renderCommandGrid(page: CommandPage, onSelect: EventCommandPickerReques
     }
     const button = el("button", {
       class: entry.selectable ? "event-command-picker-command" : "event-command-picker-command disabled",
-      text: entry.label,
       attrs: { type: "button" },
+      children: [
+        el("span", { class: "event-command-picker-command-label", text: entry.label }),
+        renderRuntimeSupportBadge(entry.runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`),
+      ].filter((child): child is HTMLElement => child !== null),
     });
     button.dataset.testid = entry.testId;
     if (entry.selectable) {
