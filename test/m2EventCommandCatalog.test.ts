@@ -191,7 +191,8 @@ describe("m2 event command catalog", () => {
       M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport)
     );
     expect(requireEntry("Comment").supportStatus).toBe("editor-only");
-    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-partial");
+    // 6A-1 머지로 Key Input Processing이 네이티브 inputWait에 매핑되어 runtime-full로 승격됨.
+    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-full");
     expect(requireEntry("Show Text").supportStatus).toBe("runtime-full");
   });
 
