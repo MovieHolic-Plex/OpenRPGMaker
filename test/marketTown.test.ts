@@ -9,6 +9,7 @@ const DB_DOOR_BOTTOM = 359;
 const TOWN_PATH_TILES = new Set<number>(Object.values(SAND_TILE));
 const MARKET_AWNING_TILES = new Set([411, 412, 413, 441, 442, 443]);
 const TREE_TILE = 260;
+const TREE_BOTTOM_TILE = 290;
 const QUEST_BOARD_SIGN_TILE = 320;
 
 function at(map: GameMap, x: number, y: number): number {
@@ -94,9 +95,9 @@ describe("market town map", () => {
 
     // 외곽 테두리가 나무로 둘러싸여 있다.
     expect(map.upperTiles[at(map, 5, 0)]).toBe(TREE_TILE);
-    expect(map.upperTiles[at(map, 0, 5)]).toBe(TREE_TILE);
-    expect(map.upperTiles[at(map, 59, 5)]).toBe(TREE_TILE);
-    expect(map.upperTiles[at(map, 5, 59)]).toBe(TREE_TILE);
+    expect(map.upperTiles[at(map, 0, 5)]).toBe(TREE_BOTTOM_TILE);
+    expect(map.upperTiles[at(map, 59, 5)]).toBe(TREE_BOTTOM_TILE);
+    expect(map.upperTiles[at(map, 5, 59)]).toBe(TREE_BOTTOM_TILE);
 
     const treeCount = map.upperTiles.filter((tile) => tile === TREE_TILE).length;
     expect(treeCount).toBeGreaterThan(100);

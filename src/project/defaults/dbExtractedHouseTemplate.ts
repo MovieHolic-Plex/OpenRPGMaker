@@ -415,6 +415,7 @@ const TREE_TOP_LEFT = 262;
 const TREE_TOP_RIGHT = 263;
 const TREE_BOTTOM_LEFT = 292;
 const TREE_BOTTOM_RIGHT = 293;
+const CONIFER_TOP = 260;
 const TREE_STACK_TILES = new Set([TREE_TOP_LEFT, TREE_TOP_RIGHT, TREE_BOTTOM_LEFT, TREE_BOTTOM_RIGHT]);
 // 패턴이 upper 레이어에 찍은 울타리(378~439 계열)/창문(85,87) 오버레이는
 // RM2K3 정석에 따라 upper에 유지한다 (chipsetMapping.isUpperChipsetTile과 일관).
@@ -599,6 +600,7 @@ function buildOpenYardVariant(map: GameMap): void {
   setTile(map, { layer: "upper", tile: TILE.EMPTY, x: 9, y: 14 });
   setTile(map, { layer: "upper", tile: TILE.EMPTY, x: 10, y: 14 });
   placeUpperTiles(map, [
+    { tile: CONIFER_TOP, x: 1, y: 14 },
     { tile: TILE.TREE, x: 1, y: 15 },
   ]);
   placeOverlappingTreeCluster(map);
@@ -997,7 +999,9 @@ function buildTStemHouseMaterialVariant(map: GameMap, material: SmallHouseMateri
     { tile: wall.window, x: 15, y: 6 },
     { tile: wall.window, x: 8, y: 11 },
     { tile: wall.window, x: 12, y: 11 },
+    { tile: CONIFER_TOP, x: 1, y: 13 },
     { tile: TILE.TREE, x: 1, y: 14 },
+    { tile: CONIFER_TOP, x: 17, y: 13 },
     { tile: TILE.TREE, x: 17, y: 14 },
   ]);
 }

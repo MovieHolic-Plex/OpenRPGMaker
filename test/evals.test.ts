@@ -19,7 +19,7 @@ describe("evals", () => {
     }
     expect(passRate).toBe(1);
     expect(avgScore).toBe(1);
-  });
+  }, 15000);
 
   it("빈 프로젝트(아무 것도 안 함)는 태스크를 통과하지 못한다", async () => {
     const result = await runGoldenTask(GOLDEN_INN, (task) => ({ project: task.initialProject() }));

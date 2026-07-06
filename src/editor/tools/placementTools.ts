@@ -3,6 +3,7 @@ import { TILE } from "@/project/defaults/constants";
 import { isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { inMapBounds, passabilityWarning, requireMap, setLower, type Point } from "./mapHelpers";
+import { hardClusterRuleCount, nonEmptyFootprintTileCount } from "./clusterRulePlacement";
 import { placementSoftPenalty } from "./placementScoring";
 import { resolvePlacementStructure, type StructureCellEdit } from "./placementStructure";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -99,9 +100,13 @@ const scatterObject: ToolDefinition = {
       : [];
     const skipped = args.count - placed.length;
     const warning = passabilityWarning(draft, map, [...touched, ...structureTouched]);
+    const atomicTileCount = nonEmptyFootprintTileCount(footprint);
+    const clusterNote = hardClusterRuleCount(group) > 0
+      ? ` = ${placed.length * atomicTileCount}타일(클러스터 동반 배치 포함)`
+      : "";
     return {
-      summary: `${map.name}에 ${group.name} ${placed.length}개 배치(간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
-      data: { placed: placed.length, requested: args.count, skipped },
+      summary: `${map.name}에 ${group.name} ${placed.length}개${clusterNote} 배치(간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
+      data: { placed: placed.length, requested: args.count, skipped, tilesPlaced: placed.length * atomicTileCount },
       warnings: warning ? [warning] : undefined,
     };
   },
@@ -162,6 +167,8 @@ function groupById(map: GameMap, project: Project, groupId: string): TileGroupMe
 }
 
 function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: TilesetDef): Footprint {
+  const sourceRect = sourceRectFootprint(group, tileset);
+  if (sourceRect) return sourceRect;
   const hasUpper = sample.upper.some((tile) => tile !== TILE.EMPTY);
   const occupied = new Set<number>();
   for (let index = 0; index < sample.w * sample.h; index += 1) {
@@ -202,6 +209,41 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
     }
   }
   return { w: x1 - x0 + 1, h: y1 - y0 + 1, lower, upper };
+}
+
+function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Footprint | null {
+  if (group.patternGrammar?.kind !== "source_rect") return null;
+  const topLeft = partTile(group, "topLeft", group.tileIds[0]);
+  const topRight = partTile(group, "topRight", group.tileIds[1]);
+  const bottomLeft = partTile(group, "bottomLeft", group.tileIds[2]);
+  const bottomRight = partTile(group, "bottomRight", group.tileIds[3]);
+  const tiles = [topLeft, topRight, bottomLeft, bottomRight];
+  if (tiles.every((tile) => tile === TILE.EMPTY)) return null;
+  const lower: number[] = [];
+  const upper: number[] = [];
+  for (const tile of tiles) {
+    if (tile === TILE.EMPTY) {
+      lower.push(TILE.EMPTY);
+      upper.push(TILE.EMPTY);
+    } else if (footprintLayer(tileset, group, tile) === "upper") {
+      lower.push(backingLower(tileset, tile));
+      upper.push(tile);
+    } else {
+      lower.push(tile);
+      upper.push(TILE.EMPTY);
+    }
+  }
+  return { h: 2, lower, upper, w: 2 };
+}
+
+function partTile(group: TileGroupMetadata, role: NonNullable<TileGroupMetadata["patternGrammar"]>["parts"][number]["role"], fallback: number | undefined): number {
+  const tile = group.patternGrammar?.parts.find((part) => part.role === role)?.tileIds[0] ?? fallback;
+  return typeof tile === "number" && Number.isInteger(tile) ? tile : TILE.EMPTY;
+}
+
+function footprintLayer(tileset: TilesetDef, group: TileGroupMetadata, tile: number): "lower" | "upper" {
+  if (group.defaultLayer === "upper" || group.role === "prop" || isUpperOnlyOverlayTile(tileset, tile)) return "upper";
+  return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }
 
 function backingLower(tileset: TilesetDef, upperTile: number): number {

@@ -18,8 +18,7 @@ import type { SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemp
 import { genId } from "@/util/id";
 import type { GameMap, Project } from "@/project/types";
 import {
-  fillRect,
-  floodFill,
+  floodFillCells,
   inMapBounds,
   lineCells,
   passabilityWarning,
@@ -27,6 +26,7 @@ import {
   setLower,
   type Point,
 } from "./mapHelpers";
+import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterRulePlacement";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 // 맵 테두리를 벽으로 두른다.
@@ -148,45 +148,95 @@ const paintTiles: ToolDefinition = {
       }
     }
 
-    const apply = (x: number, y: number): void => {
-      if (!inMapBounds(map, x, y)) return;
-      if (layer === "lower") setLower(map, x, y, tile);
-      else map.upperTiles[y * map.width + x] = tile;
-    };
-
-    let touched: Point[] = [];
+    let targetCells: Point[] = [];
     if (mode === "rect") {
       if (!from || !to) throw new ToolError("rect 모드는 from/to가 필요합니다.");
-      if (layer === "lower") {
-        fillRect(map, from, to, tile);
-      } else {
-        for (let y = Math.min(from.y, to.y); y <= Math.max(from.y, to.y); y += 1)
-          for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x += 1) apply(x, y);
-      }
       for (let y = Math.min(from.y, to.y); y <= Math.max(from.y, to.y); y += 1)
-        for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x += 1) touched.push({ x, y });
+        for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x += 1) targetCells.push({ x, y });
     } else if (mode === "line") {
       if (!from || !to) throw new ToolError("line 모드는 from/to가 필요합니다.");
-      touched = lineCells(from, to);
-      for (const cell of touched) apply(cell.x, cell.y);
+      targetCells = lineCells(from, to);
     } else if (mode === "fill") {
       if (!from) throw new ToolError("fill 모드는 from(시작점)이 필요합니다.");
       if (layer !== "lower") throw new ToolError("fill 모드는 lower 레이어만 지원합니다.");
-      touched = floodFill(map, from, tile);
+      targetCells = floodFillCells(map, from, tile);
     } else {
       if (!cells || cells.length === 0) throw new ToolError("cells 모드는 cells 배열이 필요합니다.");
-      touched = cells;
-      for (const cell of cells) apply(cell.x, cell.y);
+      targetCells = cells;
     }
 
-    const warning = layer === "lower" ? passabilityWarning(draft, map, touched) : null;
-    const warnings = [...(routedNote ? [routedNote] : []), ...(warning ? [warning] : [])];
+    const paintResult = applyClusterAwarePaint(map, tileset, layer, tile, targetCells);
+    const warning = paintResult.touched.some((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)))
+      ? passabilityWarning(draft, map, paintResult.touched)
+      : null;
+    const skippedNote = paintResult.skipped > 0 ? `hard 규칙 동반 배치가 불가능한 ${paintResult.skipped}칸은 거부했습니다.` : null;
+    const autoNote = paintResult.autoTiles > 0 ? `클러스터 동반 ${paintResult.autoTiles}타일 자동 포함` : null;
+    const warnings = [...(routedNote ? [routedNote] : []), ...(skippedNote ? [skippedNote] : []), ...(warning ? [warning] : [])];
     return {
-      summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${layer}, ${touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}`,
+      summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${layer}, ${paintResult.touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
       warnings: warnings.length > 0 ? warnings : undefined,
+      data: { autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length },
     };
   },
 };
+
+function applyClusterAwarePaint(
+  map: GameMap,
+  tileset: Project["tilesets"][string] | undefined,
+  layer: "lower" | "upper",
+  tile: number,
+  cells: readonly Point[]
+): { readonly autoTiles: number; readonly lowerTouched: ReadonlySet<string>; readonly skipped: number; readonly touched: readonly Point[] } {
+  const planned = new Map<string, HardClusterTileEdit>();
+  let autoTiles = 0;
+  let skipped = 0;
+  for (const cell of cells) {
+    if (!inMapBounds(map, cell.x, cell.y)) {
+      skipped += 1;
+      continue;
+    }
+    const expansion = tileset
+      ? expandHardClusterPlacement({ map, origin: cell, originLayer: layer, tile, tileset })
+      : { autoTiles: 0, edits: [{ layer, tile, x: cell.x, y: cell.y }], ok: true as const };
+    if (!expansion.ok || hasPaintConflict(planned, expansion.edits)) {
+      skipped += 1;
+      continue;
+    }
+    for (const edit of expansion.edits) planned.set(editKey(edit), edit);
+    autoTiles += expansion.autoTiles;
+  }
+
+  const touched: Point[] = [];
+  const lowerTouched = new Set<string>();
+  for (const edit of planned.values()) {
+    if (edit.layer === "lower") {
+      setLower(map, edit.x, edit.y, edit.tile);
+      lowerTouched.add(coordKey(edit.x, edit.y));
+    } else {
+      map.upperTiles[edit.y * map.width + edit.x] = edit.tile;
+    }
+    touched.push({ x: edit.x, y: edit.y });
+  }
+  return { autoTiles, lowerTouched, skipped, touched };
+}
+
+function hasPaintConflict(planned: ReadonlyMap<string, HardClusterTileEdit>, edits: readonly HardClusterTileEdit[]): boolean {
+  for (const edit of edits) {
+    const existing = planned.get(editKey(edit));
+    if (existing && existing.tile !== edit.tile) return true;
+    const otherLayer = planned.get(`${edit.layer === "lower" ? "upper" : "lower"}:${edit.x},${edit.y}`);
+    if (otherLayer && otherLayer.tile !== TILE.EMPTY && edit.tile !== TILE.EMPTY) return true;
+  }
+  return false;
+}
+
+function editKey(edit: HardClusterTileEdit): string {
+  return `${edit.layer}:${edit.x},${edit.y}`;
+}
+
+function coordKey(x: number, y: number): string {
+  return `${x},${y}`;
+}
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",

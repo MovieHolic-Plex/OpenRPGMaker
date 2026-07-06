@@ -157,8 +157,17 @@ export function createEmberQuestProject(): Project {
   nameSwitch(project, EMBER_SWITCH.battleGolem, "전투4 돌 골렘 처치");
   nameSwitch(project, EMBER_SWITCH.battleDragon, "전투5 드래곤 처치");
   nameVariable(project, EMBER_VARIABLE.moonHerbs, "모은 달빛 약초");
+  clearBundledClusterRules(project);
   ensureSwitchVariableSlots(project);
   return project;
+}
+
+function clearBundledClusterRules(project: Project): void {
+  for (const tileset of Object.values(project.tilesets)) {
+    for (const group of tileset.tileGroups ?? []) {
+      if (group.id.startsWith("harness-combined-town-")) group.rules = [];
+    }
+  }
 }
 
 function emberDatabase(): Project["database"] {

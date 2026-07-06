@@ -19,9 +19,11 @@ interface ThemePalette {
   readonly decor: number;
 }
 
+const BUSH_OBSTACLE = 289;
+
 const THEME_PALETTES: Record<MapTheme, ThemePalette> = {
-  village: { floor: TILE.GRASS, obstacle: TILE.TREE, decor: TILE.FLOWERS },
-  forest: { floor: TILE.GRASS, obstacle: TILE.TREE, decor: TILE.DARK_GRASS },
+  village: { floor: TILE.GRASS, obstacle: BUSH_OBSTACLE, decor: TILE.FLOWERS },
+  forest: { floor: TILE.GRASS, obstacle: BUSH_OBSTACLE, decor: TILE.DARK_GRASS },
   cave: { floor: 421, obstacle: TILE.WALL, decor: TILE.WATER },
 };
 

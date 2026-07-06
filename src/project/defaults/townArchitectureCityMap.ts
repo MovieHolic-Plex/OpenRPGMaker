@@ -12,6 +12,7 @@ const CITY_SIZE = 50;
 const COMBINED_TOWN_TILESET_ID = "easyrpg_chipset_combined_town";
 const TOWN_GRASS = 270;
 const TREE = 260;
+const TREE_BOTTOM = 290;
 const FLOWER = 288;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
@@ -87,7 +88,7 @@ function stampHouse(map: GameMap, house: CityHouse): void {
 function stampHouseDecor(map: GameMap, house: CityHouse): void {
   switch (house.decor) {
     case "garden":
-      stampUpper(map, { x: house.x + 1, y: house.y + 12 }, TREE);
+      stampConifer(map, { x: house.x + 1, y: house.y + 12 });
       stampUpperPattern(map, { x: house.x + 2, y: house.y + 13 }, [[FLOWER, -1, FLOWER], [-1, FLOWER, -1]]);
       return;
     case "market":
@@ -100,7 +101,7 @@ function stampHouseDecor(map: GameMap, house: CityHouse): void {
       stampUpperPattern(map, { x: house.x + 2, y: house.y + 13 }, [[BENCH_LEFT, BENCH_RIGHT], [FLOWER, -1]]);
       return;
     case "trees":
-      stampUpper(map, { x: house.x + 1, y: house.y + 13 }, TREE);
+      stampConifer(map, { x: house.x + 1, y: house.y + 13 });
       stampUpperPattern(map, { x: house.x + 4, y: house.y + 14 }, [[FLOWER, FLOWER]]);
       return;
   }
@@ -155,7 +156,7 @@ function stampTownDetails(map: GameMap): void {
     { x: 16, y: 11 }, { x: 28, y: 11 }, { x: 15, y: 19 }, { x: 37, y: 14 },
     { x: 17, y: 34 }, { x: 28, y: 43 }, { x: 30, y: 36 }, { x: 49, y: 33 },
   ]) {
-    stampUpper(map, point, TREE);
+    stampConifer(map, point);
   }
 }
 
@@ -178,6 +179,17 @@ function stampLowerRect(map: GameMap, origin: TilePoint, width: number, height: 
 
 function stampUpper(map: GameMap, point: TilePoint, tile: number): void {
   if (isInside(map, point) && !isTownPath(map, point)) map.upperTiles[point.y * map.width + point.x] = tile;
+}
+
+function stampConifer(map: GameMap, point: TilePoint): void {
+  const bottom = { x: point.x, y: point.y + 1 };
+  if (!isInside(map, point) || !isInside(map, bottom)) return;
+  if (isTownPath(map, point) || isTownPath(map, bottom)) return;
+  const topIndex = point.y * map.width + point.x;
+  const bottomIndex = bottom.y * map.width + bottom.x;
+  if (map.upperTiles[topIndex] !== TILE.EMPTY || map.upperTiles[bottomIndex] !== TILE.EMPTY) return;
+  map.upperTiles[topIndex] = TREE;
+  map.upperTiles[bottomIndex] = TREE_BOTTOM;
 }
 
 function stampLower(map: GameMap, point: TilePoint, tile: number): void {

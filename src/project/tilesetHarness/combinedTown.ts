@@ -37,12 +37,17 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
     for (const tile of group.tileIds) changed = applyTileContract(tileset, group, tile) || changed;
   }
   changed = enforceTransparentOverlayPriority(tileset) || changed;
-  const groups = COMBINED_TOWN_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, stackable: _stackable, ...group }) => ({
-    ...group,
-    tileIds: [...group.tileIds],
-    patternGrammar: clonePattern(group.patternGrammar),
-  }));
   const current = tileset.tileGroups ?? [];
+  const currentById = new Map(current.map((group) => [group.id, group]));
+  const groups = COMBINED_TOWN_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, stackable: _stackable, ...group }) => {
+    const existingRules = currentById.get(group.id)?.rules;
+    return {
+      ...group,
+      tileIds: [...group.tileIds],
+      patternGrammar: clonePattern(group.patternGrammar),
+      rules: existingRules !== undefined ? cloneRules(existingRules) : cloneRules(group.rules),
+    };
+  });
   const next = [...current.filter((group) => !group.id.startsWith(COMBINED_TOWN_HARNESS_PREFIX)), ...groups];
   if (JSON.stringify(current) !== JSON.stringify(next)) {
     tileset.tileGroups = next;
@@ -207,6 +212,11 @@ function terrainTagForGroup(group: CombinedTownHarnessGroup, fallback: number): 
 function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: string): string {
   if (group.id.includes("dirt-road")) return roadLabel(tile);
   if (group.id.includes("lake-water")) return "물 오토타일";
+  if (group.id.includes("conifer-tree")) return tile === 260 ? "침엽수 상단" : "침엽수 하단";
+  if (group.id.includes("dry-tree")) return tile === 261 ? "마른나무 상단" : "마른나무 하단";
+  if (group.id.includes("broadleaf-tree")) return broadleafLabel(tile);
+  if (group.id.includes("bush-props")) return "덤불";
+  if (group.id.includes("branch-props")) return "가지";
   if (group.id.includes("roof-overlays")) return "사선 지붕";
   if (group.id.includes("windows")) return "창문";
   if (group.id.includes("fence")) return "울타리";
@@ -234,4 +244,23 @@ function roadLabel(tile: number): string {
 
 function clonePattern(patternGrammar: CombinedTownHarnessGroup["patternGrammar"]): CombinedTownHarnessGroup["patternGrammar"] {
   return patternGrammar ? { ...patternGrammar, parts: patternGrammar.parts.map((part) => ({ role: part.role, tileIds: [...part.tileIds] })) } : undefined;
+}
+
+function cloneRules(rules: CombinedTownHarnessGroup["rules"]): CombinedTownHarnessGroup["rules"] {
+  return rules?.map((rule) => ({ ...rule, params: { ...rule.params } }));
+}
+
+function broadleafLabel(tile: number): string {
+  switch (tile) {
+    case 262:
+      return "활엽수 좌상";
+    case 263:
+      return "활엽수 우상";
+    case 292:
+      return "활엽수 좌하";
+    case 293:
+      return "활엽수 우하";
+    default:
+      return "활엽수";
+  }
 }

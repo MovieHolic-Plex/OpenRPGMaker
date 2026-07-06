@@ -75,6 +75,12 @@ export function lineCells(from: Point, to: Point): Point[] {
 
 // 4방향 flood fill: 시작 칸과 같은 lower 타일을 target으로 교체.
 export function floodFill(map: GameMap, start: Point, tile: number): Point[] {
+  const filled = floodFillCells(map, start, tile);
+  for (const point of filled) setLower(map, point.x, point.y, tile);
+  return filled;
+}
+
+export function floodFillCells(map: GameMap, start: Point, tile: number): Point[] {
   if (!inMapBounds(map, start.x, start.y)) return [];
   const source = map.lowerTiles[start.y * map.width + start.x];
   if (source === tile) return [];
@@ -88,7 +94,6 @@ export function floodFill(map: GameMap, start: Point, tile: number): Point[] {
     seen.add(key);
     if (!inMapBounds(map, point.x, point.y)) continue;
     if (map.lowerTiles[point.y * map.width + point.x] !== source) continue;
-    setLower(map, point.x, point.y, tile);
     filled.push(point);
     stack.push({ x: point.x + 1, y: point.y }, { x: point.x - 1, y: point.y }, { x: point.x, y: point.y + 1 }, { x: point.x, y: point.y - 1 });
   }
