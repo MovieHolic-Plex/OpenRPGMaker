@@ -10,6 +10,7 @@ import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer
 import { loadAiConfig } from "@/ai/llmClient";
 import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/skills";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
+import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -150,6 +151,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     ],
   });
   const close = (): void => {
+    clearAgentGhostPreview();
     root.remove();
     document.removeEventListener?.("keydown", onKeyDown);
     if (activeModal?.close === close) activeModal = null;
@@ -295,6 +297,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const mapId = skillContext().mapId;
     const snapshot: SnapshotRecorder = recordProjectSnapshot;
     const before = store.getCurrent();
+    clearAgentGhostPreview();
     snapshot(`클러스터 수정: ${model.group?.name ?? model.title}`, mapId);
     store.replace(proposed);
     focusAcceptedAgentChanges(before, proposed);
@@ -306,6 +309,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   };
   const rejectProposal = (): void => {
     proposals.replaceChildren();
+    clearAgentGhostPreview();
     state.session?.rebaseProject(store.getCurrent());
     appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
     status.textContent = "제안 거부됨";

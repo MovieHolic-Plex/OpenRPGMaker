@@ -199,6 +199,16 @@ button.btn:disabled {
   z-index: 4;
 }
 
+.agent-ghost-preview {
+  background: rgba(32, 201, 151, 0.08);
+  border: 2px dashed rgba(99, 230, 190, 0.82);
+  box-shadow: 0 0 0 1px rgba(18, 184, 134, 0.26), 0 0 14px rgba(32, 201, 151, 0.18);
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+
 @keyframes agent-focus-highlight-fade {
   0% {
     opacity: 1;
