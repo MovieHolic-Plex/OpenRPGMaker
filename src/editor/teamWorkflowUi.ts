@@ -16,8 +16,18 @@ let activeCommitPanel: HTMLElement | null = null;
 
 export function openLoginModalIfNeeded(onIdentityChanged?: () => void): void {
   if (!canRenderFloatingUi()) return;
+  if (isAutomationBootContext()) return;
   if (browserLocalStorage()?.getItem(LAST_LOGIN_METHOD_KEY)) return;
   openMockLoginModal(onIdentityChanged);
+}
+
+// e2e/dev 부팅(프로젝트 주입·dev URL 파라미터)에서는 모달이 편집 표면 클릭을 가로채므로 자동 표시하지 않는다.
+function isAutomationBootContext(): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.__RPG_ZZU_E2E_PROJECT__) return true;
+  const search = window.location?.search ?? "";
+  const params = new URLSearchParams(search);
+  return params.has("freshProject") || params.has("devProject") || params.has("blankProject");
 }
 
 export function openMockLoginModal(onIdentityChanged?: () => void): void {

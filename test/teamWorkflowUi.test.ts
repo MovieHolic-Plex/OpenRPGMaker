@@ -133,6 +133,16 @@ describe("team workflow UI", () => {
     expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
   });
 
+  it("suppresses the boot login modal in automation/dev boot contexts", () => {
+    (globalThis.window as unknown as { location?: { search: string } }).location = { search: "?freshProject=1" };
+    openLoginModalIfNeeded();
+    expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
+
+    (globalThis.window as unknown as { location?: { search: string } }).location = { search: "?blankProject=1" };
+    openLoginModalIfNeeded();
+    expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
+  });
+
   it("switches OAuth to name-only mock flow and stores the selected provider", () => {
     openLoginModalIfNeeded();
     findByTestId(fakeBody(), "login-oauth-google")?.click();

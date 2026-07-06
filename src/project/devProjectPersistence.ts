@@ -4,6 +4,7 @@ import type { Project } from "./types";
 const DEV_PROJECT_STORAGE_PREFIX = "rpg-zzu:dev-project:";
 
 const DEV_PROJECT_PARAMS = [
+  "blankProject",
   "dbExtractedHouseTemplate",
   "defaultAdventure",
   "defaultAdventureVisual",
@@ -55,5 +56,6 @@ function devProjectStorageKey(): string | null {
 
 function isFreshProjectLocation(): boolean {
   if (typeof window === "undefined") return false;
-  return new URLSearchParams(window.location.search).has("freshProject");
+  const params = new URLSearchParams(window.location.search);
+  return params.has("freshProject") || params.has("blankProject");
 }

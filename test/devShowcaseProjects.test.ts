@@ -32,11 +32,11 @@ describe("local dev project URL overrides", () => {
     expect(project).toBeNull();
   });
 
-  it("creates a true blank project for the freshProject URL", () => {
+  it("creates a true blank project for the blankProject URL", () => {
     vi.stubGlobal("window", {
       location: {
         hostname: "127.0.0.1",
-        search: "?freshProject=1",
+        search: "?blankProject=1",
       },
     });
 
@@ -46,6 +46,21 @@ describe("local dev project URL overrides", () => {
     expect(project?.meta.title).toBe("새 프로젝트");
     expect(Object.keys(project.maps)).toHaveLength(1);
     expect(project.maps[project.startMapId]?.events).toHaveLength(0);
+  });
+
+  it("keeps the legacy freshProject URL on the sample adventure (32+ e2e specs rely on it)", () => {
+    vi.stubGlobal("window", {
+      location: {
+        hostname: "127.0.0.1",
+        search: "?freshProject=1",
+      },
+    });
+
+    const project = createDevShowcaseProjectForLocation();
+
+    if (!project) throw new Error("expected sample adventure project");
+    expect(project?.meta.title).toBe("별등 마을과 세 개의 봉인");
+    expect(Object.keys(project.maps)).toHaveLength(5);
   });
 
   it("keeps the sample adventure behind an explicit example URL flag", () => {

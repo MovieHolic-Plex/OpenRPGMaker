@@ -18,6 +18,7 @@ import {
 import type { Project } from "./types";
 
 const DEV_FRESH_PROJECT_PARAM = "freshProject";
+const DEV_BLANK_PROJECT_PARAM = "blankProject";
 const DEV_PROJECT_PARAM = "devProject";
 const DEV_SAMPLE_ADVENTURE_PARAM = "sampleAdventure";
 const DEV_DEFAULT_ADVENTURE_PARAM = "defaultAdventure";
@@ -42,9 +43,10 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (e2eProject) return e2eProject;
   const params = new URLSearchParams(window.location.search);
   if (params.has(SUPABASE_CANONICAL_PROJECT_PARAM)) return null;
-  if (params.has(DEV_FRESH_PROJECT_PARAM)) {
-    return hasSampleAdventureParam(params) ? createSampleAdventureProject() : createBlankProject();
-  }
+  // 계약: blankProject=1 → 진짜 빈 프로젝트. freshProject=1 단독은 기존 e2e/드라이버
+  // 32개 스펙이 예제 어드벤처를 기대하므로 레거시 의미를 유지한다.
+  if (params.has(DEV_BLANK_PROJECT_PARAM)) return createBlankProject();
+  if (params.has(DEV_FRESH_PROJECT_PARAM)) return createSampleAdventureProject();
   if (!params.has(DEV_PROJECT_PARAM)) return null;
   if (hasSampleAdventureParam(params)) return createSampleAdventureProject();
   if (params.has(DEV_LOG_CABIN_SHOWCASE_PARAM)) return createLogCabinShowcaseProject();
