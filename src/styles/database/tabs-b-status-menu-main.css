@@ -5,9 +5,13 @@
   overflow: hidden;
 }
 .status-menu-party {
-  background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.68), rgba(18, 60, 154, 0.68) 42%, rgba(7, 30, 104, 0.74));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   box-shadow: none;
   display: grid;
   gap: 2px;
@@ -49,9 +53,13 @@
   padding-top: 1px;
 }
 .status-menu-detail {
-  background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.7), rgba(18, 60, 154, 0.72) 42%, rgba(7, 30, 104, 0.8));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   box-shadow: none;
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 2px 3px;
@@ -98,9 +106,13 @@
 }
 .status-menu-footer {
   align-items: center;
-  background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.66), rgba(18, 60, 154, 0.68) 42%, rgba(7, 30, 104, 0.74));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   box-shadow: none;
   display: flex;
   gap: 4px;
@@ -141,6 +153,15 @@
   bottom: 26px;
 }
 .game-over-panel {
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--runtime-window-text);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -160,12 +181,12 @@
   z-index: 45;
 }
 .runtime-overlay-title {
-  font-size: 18px;
+  font-size: var(--runtime-font-size-18);
   font-weight: 700;
 }
 .runtime-overlay-message {
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: var(--runtime-font-size-11);
+  line-height: 1.3;
   max-width: 260px;
   text-align: center;
   white-space: pre-wrap;

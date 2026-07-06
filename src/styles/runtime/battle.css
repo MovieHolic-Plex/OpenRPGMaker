@@ -46,8 +46,8 @@
   border-radius: 0;
   background: #000;
   color: var(--rm2k3-battle-text);
-  font-family: "MS Gothic", "MS PGothic", "Gulim", "Dotum", monospace;
-  font-size: 8px;
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-9);
   line-height: 1.25;
   overflow: hidden;
   position: absolute;
@@ -153,11 +153,14 @@
 .battle-enemy-list-panel,
 .battle-message-window,
 .battle-result-panel {
-  border: 1px solid var(--rm2k3-battle-window-light);
-  border-right-color: var(--rm2k3-battle-window-shadow);
-  border-bottom-color: var(--rm2k3-battle-window-shadow);
-  background: linear-gradient(180deg, var(--rm2k3-battle-blue-hi), var(--rm2k3-battle-blue) 46%, var(--rm2k3-battle-blue-deep));
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.35);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .battle-party {
@@ -627,8 +630,8 @@
   --battle-hud-height: 34%;
   background: #000;
   display: grid;
-  font-family: "Galmuri11", "D2Coding", "Malgun Gothic", "Gulim", sans-serif;
-  font-size: clamp(13px, 1.15vw, 18px);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-11);
   gap: 8px;
   grid-template-columns: minmax(280px, 30%) minmax(520px, 1fr) minmax(300px, 28%);
   grid-template-rows: 92px minmax(0, 1fr) minmax(250px, 34%);
@@ -948,11 +951,14 @@
 .battle-enemy-list-panel,
 .battle-message-window,
 .battle-result-panel {
-  background: linear-gradient(180deg, var(--battle-panel-hi), var(--battle-panel-mid) 45%, var(--battle-panel-low));
-  border: 2px solid var(--battle-metal);
-  border-bottom-color: #4c5d79;
-  border-right-color: #34435c;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 18px rgba(0, 0, 0, 0.45);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .battle-command-panel {
@@ -2061,7 +2067,7 @@
 }
 
 .battle-scene {
-  font-family: var(--font-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", "Galmuri11", "D2Coding", sans-serif);
+  font-family: var(--runtime-pixel-font);
 }
 
 .battle-command-panel {

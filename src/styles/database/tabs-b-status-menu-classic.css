@@ -21,14 +21,16 @@
   overflow: hidden;
 }
 .status-menu-classic-window {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(71, 159, 255, 0.28), transparent 58%),
-    linear-gradient(180deg, rgba(18, 84, 181, 0.93), rgba(8, 58, 143, 0.97) 52%, rgba(5, 35, 103, 0.98));
-  border: 1px solid rgba(233, 249, 255, 0.72);
-  box-shadow:
-    inset 0 0 0 1px rgba(95, 180, 255, 0.28);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  box-shadow: none;
   box-sizing: border-box;
-  color: #f8fbff;
+  color: var(--runtime-window-text);
   min-height: 0;
   overflow: hidden;
   text-shadow: none;

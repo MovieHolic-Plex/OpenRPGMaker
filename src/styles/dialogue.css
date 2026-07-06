@@ -1,12 +1,11 @@
 :root {
-  --runtime-dialogue-bg: rgba(31, 83, 190, 0.86);
-  --runtime-dialogue-bg-2: rgba(8, 36, 130, 0.9);
-  --runtime-dialogue-border: #f2fbff;
+  --runtime-dialogue-border: var(--runtime-window-text);
   --runtime-dialogue-border-mid: #8eb6ff;
-  --runtime-dialogue-shadow: #061a55;
-  --runtime-dialogue-text: #f4fbff;
-  --runtime-dialogue-muted: #d7ecff;
-  --runtime-dialogue-font: "DungGeunMo", "Galmuri11", "DotGothic16", "GulimChe", "DotumChe", "MS Gothic", sans-serif;
+  --runtime-dialogue-shadow: var(--runtime-window-shadow);
+  --runtime-dialogue-text: var(--runtime-window-text);
+  --runtime-dialogue-muted: var(--runtime-window-muted);
+  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font-size: var(--runtime-font-size-9);
   --runtime-dialogue-panel-height: 27%;
   --runtime-choice-panel-height: 26%;
   --runtime-dialogue-face-size: 48px;
@@ -63,22 +62,22 @@
 }
 
 .dialogue-box {
-  background:
-    linear-gradient(180deg, var(--runtime-dialogue-bg) 0%, rgba(15, 57, 162, 0.88) 58%, var(--runtime-dialogue-bg-2) 100%),
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0 2px, rgba(255, 255, 255, 0) 2px 6px),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 4px);
-  border: 1px solid rgba(242, 251, 255, 0.92);
-  box-shadow:
-    inset 0 0 0 1px rgba(142, 182, 255, 0.82),
-    inset 0 0 0 2px rgba(7, 24, 90, 0.38),
-    0 1px 0 rgba(6, 26, 85, 0.78);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
+  box-sizing: border-box;
   cursor: pointer;
   image-rendering: pixelated;
   margin: 0;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 4px 8px;
+  padding: 0 4px;
   pointer-events: auto;
   position: relative;
   width: 100%;
@@ -97,25 +96,29 @@
   min-height: 0;
   max-width: min(280px, calc(100vw - 16px));
   min-width: 168px;
-  padding: 5px 8px;
+  padding: 0 4px;
   pointer-events: none;
   width: auto;
 }
 
 .dialogue-box.choices-prompt .body {
-  font-size: 12px;
-  line-height: 1.15;
+  font-size: var(--runtime-font-size-11);
+  line-height: 1.1;
   min-height: 0;
   overflow: visible;
 }
 
 .dialogue-overlay.choices-active .dialogue-box.choices {
-  border: 0;
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
   box-shadow: none;
   cursor: default;
   min-height: 100%;
   overflow: hidden;
-  padding: 3px 8px;
+  padding: 0 4px;
 }
 
 .dialogue-box.choices::after,
@@ -140,10 +143,10 @@
   box-sizing: border-box;
   color: var(--runtime-dialogue-text);
   display: block;
-  font-size: 8px;
+  font-size: var(--runtime-dialogue-font-size);
   line-height: 1;
   margin: 0;
-  min-height: 10px;
+  min-height: 11px;
   padding: 0 8px;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
   width: 100%;
@@ -152,8 +155,8 @@
 .dialogue-overlay.choices-active .choice-list .choice-btn.selected,
 .dialogue-overlay.choices-active .choice-list .choice-btn:hover,
 .dialogue-overlay.choices-active .choice-list .choice-btn:focus-visible {
-  background: linear-gradient(180deg, rgba(53, 113, 226, 0.9), rgba(22, 65, 170, 0.92));
-  box-shadow: none;
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 0 0 0 1px rgba(245, 251, 255, 0.74);
   outline: 0;
 }
 
@@ -161,7 +164,7 @@
   border-bottom: 1px solid rgba(242, 251, 255, 0.44);
   color: var(--runtime-dialogue-muted);
   font-family: var(--runtime-dialogue-font);
-  font-size: 8px;
+  font-size: var(--runtime-dialogue-font-size);
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 2px;
@@ -176,12 +179,12 @@
 }
 
 .dialogue-overlay.choices-compact .dialogue-box.choices-prompt {
-  padding: 5px 8px;
+  padding: 0 4px;
 }
 
 .dialogue-overlay.choices-compact .dialogue-box.choices-prompt .body {
-  font-size: 12px;
-  line-height: 1.15;
+  font-size: var(--runtime-font-size-9);
+  line-height: 1;
 }
 
 .dialogue-overlay.choices-compact .choice-list {
@@ -189,14 +192,14 @@
 }
 
 .dialogue-overlay.choices-compact .choice-list .choice-btn {
-  font-size: 6px;
+  font-size: var(--runtime-font-size-9);
   line-height: 0.95;
-  min-height: 7px;
+  min-height: 9px;
   padding: 0 8px;
 }
 
 .dialogue-overlay.choices-compact .choice-prompt-row {
-  font-size: 6px;
+  font-size: var(--runtime-font-size-9);
   line-height: 0.95;
   margin-bottom: 0;
   padding: 0 4px 2px;
@@ -215,11 +218,11 @@
 .dialogue-box .speaker {
   color: var(--runtime-dialogue-muted);
   font-family: var(--runtime-dialogue-font);
-  font-size: 7px;
+  font-size: var(--runtime-dialogue-font-size);
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 2px;
-  text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.88);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
 }
 
 .dialogue-content {
@@ -290,15 +293,15 @@
 .dialogue-box .body {
   color: var(--runtime-dialogue-text);
   font-family: var(--runtime-dialogue-font);
-  font-size: 7px;
+  font-size: var(--runtime-dialogue-font-size);
   flex: 1 1 auto;
   font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.25;
+  line-height: 1.2;
   min-height: 0;
   overflow: auto;
   overflow-wrap: anywhere;
-  text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.88);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
   white-space: pre-wrap;
 }
 
@@ -341,23 +344,27 @@
 }
 
 .choices .choice-btn {
-  background: linear-gradient(180deg, rgba(24, 70, 175, 0.9), rgba(12, 38, 126, 0.92));
-  border: 3px solid var(--runtime-dialogue-border);
-  border-radius: 2px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   color: var(--runtime-dialogue-text);
   cursor: pointer;
   font-family: var(--runtime-dialogue-font);
-  font-size: 24px;
+  font-size: var(--runtime-font-size-18);
   font-weight: 700;
-  padding: 12px 16px;
+  padding: 6px 10px;
   text-align: left;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
   transition: border-color 0.12s, background 0.12s;
 }
 
 .choices .choice-btn:hover {
-  background: rgba(245, 208, 74, 0.2);
-  border-color: #f5d04a;
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-focus);
 }
 
 .number-input-box {
@@ -371,7 +378,7 @@
 .number-input-title {
   color: var(--runtime-dialogue-muted);
   font-family: var(--runtime-dialogue-font);
-  font-size: 20px;
+  font-size: var(--runtime-font-size-18);
   font-weight: 700;
   line-height: 1;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.82);
@@ -382,7 +389,7 @@
   border: 2px solid var(--runtime-dialogue-border);
   color: #061034;
   font-family: var(--runtime-dialogue-font);
-  font-size: 26px;
+  font-size: var(--runtime-font-size-22);
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
@@ -398,15 +405,20 @@
 }
 
 .number-input-ok {
-  background: rgba(8, 10, 14, 0.88);
-  border: 2px solid var(--runtime-dialogue-border);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   color: var(--runtime-dialogue-text);
   cursor: pointer;
   font-family: var(--runtime-dialogue-font);
-  font-size: 20px;
+  font-size: var(--runtime-font-size-18);
   font-weight: 700;
   min-width: 56px;
-  padding: 4px 10px;
+  padding: 2px 8px;
 }
 
 .number-input-ok:hover {

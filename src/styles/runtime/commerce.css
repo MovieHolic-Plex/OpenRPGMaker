@@ -4,9 +4,7 @@
   z-index: 45;
 }
 
-/* RM2003 여관 창 — 화면 하단 중앙 프레임 창.
-   배경 윈도우 스킨은 applySystemGraphic 이 background-image 로 입히므로 여기선
-   레이아웃/테두리/글자/버튼만 다룬다(background-image 를 덮어쓰지 않는다). */
+/* RM2003 여관 창 — 화면 하단 중앙 프레임 창. */
 .runtime-commerce-overlay {
   position: absolute;
   left: 50%;
@@ -16,30 +14,36 @@
   max-width: min(560px, 92vw);
   display: grid;
   gap: 10px;
-  padding: 16px 20px;
-  border: 2px solid var(--rm2k3-command-blue, var(--accent));
-  border-radius: 8px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
-  color: var(--text-1);
-  font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 8px 12px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-11);
 }
 
 .runtime-commerce-overlay .runtime-overlay-title {
-  font: 700 16px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  color: var(--rm2k3-command-blue, var(--accent));
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 6px;
+  color: var(--runtime-window-muted);
+  border-bottom: 1px solid rgba(242, 251, 255, 0.42);
+  font: 700 var(--runtime-font-size-11)/1.2 var(--runtime-pixel-font);
+  padding-bottom: 4px;
 }
 
 .runtime-commerce-note {
   margin: 0;
-  color: var(--text-2);
-  font-size: 14px;
+  color: var(--runtime-window-muted);
+  font-size: var(--runtime-font-size-11);
 }
 
 .runtime-commerce-status {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--runtime-font-size-11);
 }
 
 .runtime-commerce-actions {
@@ -50,18 +54,22 @@
 
 .runtime-commerce-actions button {
   min-width: 88px;
-  padding: 8px 16px;
-  border: 1px solid var(--accent-border, var(--accent));
-  border-radius: 6px;
-  background: var(--accent-muted);
-  color: var(--text-1);
-  font: 600 14px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px 12px;
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  background: var(--runtime-window-fill-fallback);
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
   cursor: pointer;
 }
 
 .runtime-commerce-actions button:hover {
-  background: var(--accent);
-  color: #fff;
+  background: var(--runtime-window-selected-bg);
+  color: var(--runtime-window-text);
 }
 
 /* 숙박 휴식 연출: 화면 전체가 잠깐 어두워졌다가(fade) 기상 메시지와 함께 밝아진다. */
@@ -90,7 +98,7 @@
   font-weight: 700;
 }
 
-/* ── RM2003 상점 창 (배경 스킨은 applySystemGraphic) ──
+/* ── RM2003 상점 창 ──
    플레이 호스트(≈640×480) 하단에 앵커링하고 세로 플렉스로 섹션을 배치한다.
    내용이 넘치면 창 전체가 아니라 '아이템 목록만' 스크롤한다(overflow:hidden 로 잘림 방지). */
 .runtime-shop-overlay {
@@ -102,13 +110,18 @@
   flex-direction: column;
   justify-content: center;
   gap: 8px;
-  padding: 12px 14px;
-  border: 2px solid var(--rm2k3-command-blue, var(--accent));
-  border-radius: 8px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
-  background-color: rgba(10, 14, 30, 0.92);
-  color: var(--text-1);
-  font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 6px 8px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-11);
   overflow: hidden;
 }
 
@@ -128,11 +141,15 @@
 
 /* 공통 서브 프레임. 비어 있는 패널(메뉴 뷰의 상/중단)은 감춘다. */
 .runtime-shop-panel {
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 13px;
-  background: rgba(0, 0, 0, 0.16);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  font-size: var(--runtime-font-size-11);
+  padding: 4px 6px;
 }
 .runtime-shop-panel:empty {
   display: none;
@@ -146,7 +163,7 @@
   padding: 6px;
 }
 .runtime-shop-message {
-  font-size: 15px;
+  font-size: var(--runtime-font-size-11);
   text-align: center;
 }
 .runtime-shop-menu-choices {
@@ -158,25 +175,29 @@
 .runtime-shop-menu-choice,
 .runtime-shop-cancel {
   min-width: 72px;
-  padding: 8px 14px;
-  border: 1px solid var(--accent-border, var(--accent));
-  border-radius: 6px;
-  background: var(--accent-muted);
-  color: var(--text-1);
-  font: 600 14px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px 10px;
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  background: var(--runtime-window-fill-fallback);
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
   cursor: pointer;
 }
 .runtime-shop-menu-choice:hover,
 .runtime-shop-cancel:hover {
-  background: var(--accent);
-  color: #fff;
+  background: var(--runtime-window-selected-bg);
+  color: var(--runtime-window-text);
 }
 
 /* ── 아이템 뷰: 메시지 / (목록 | 사이드) / 프롬프트 ── */
 .runtime-shop-message-panel {
   flex: 0 0 auto;
-  font-size: 13px;
-  color: var(--text-2);
+  font-size: var(--runtime-font-size-11);
+  color: var(--runtime-window-muted);
 }
 
 .runtime-shop-main {
@@ -208,10 +229,10 @@
   gap: 10px;
   padding: 7px 10px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
-  color: var(--text-1);
-  font-size: 14px;
+  color: var(--runtime-window-text);
+  font-size: var(--runtime-font-size-11);
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
@@ -219,20 +240,20 @@
 }
 .runtime-shop-item-row:hover,
 .runtime-shop-item-row.selected {
-  background: var(--accent-muted);
-  border-color: var(--accent-border, var(--accent));
+  background: var(--runtime-window-selected-bg);
+  border-color: rgba(245, 251, 255, 0.76);
 }
 .runtime-shop-item-name {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .runtime-shop-item-price {
-  color: var(--rm2k3-command-teal, var(--success));
+  color: var(--runtime-window-highlight);
   font-weight: 600;
 }
 .runtime-shop-empty {
   padding: 12px;
-  color: var(--text-2);
+  color: var(--runtime-window-muted);
   text-align: center;
 }
 
@@ -252,7 +273,7 @@
   width: 24px;
   height: 24px;
   background: var(--bg-inset);
-  border-radius: 3px;
+  border-radius: 0;
 }
 .runtime-shop-owned {
   display: grid;
@@ -265,8 +286,8 @@
 }
 .runtime-shop-gold {
   font-weight: 700;
-  font-size: 15px;
-  color: var(--rm2k3-command-teal, var(--success));
+  font-size: var(--runtime-font-size-11);
+  color: var(--runtime-window-highlight);
   text-align: right;
 }
 
@@ -284,9 +305,9 @@
 .runtime-commerce-quantity-input {
   width: 64px;
   padding: 6px 8px;
-  border: 1px solid var(--border-default);
-  border-radius: 4px;
-  background: var(--control-bg, var(--bg-inset));
-  color: var(--text-1);
-  font-size: 14px;
+  border: 1px solid rgba(245, 251, 255, 0.78);
+  border-radius: 0;
+  background: rgba(3, 18, 55, 0.82);
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
 }

@@ -31,17 +31,7 @@ export function applySystemGraphic(node: HTMLElement): void {
   if (resourceId) {
     node.dataset.systemResource = resourceId;
   }
-  const dataUrl = resourceUrl(resourceId);
-  if (dataUrl) {
-    node.style.borderImageSource = `url("${dataUrl}")`;
-    node.style.borderImageSlice = "1";
-  }
-  node.style.backgroundImage = [
-    "linear-gradient(180deg,",
-    "var(--rm2k3-title-window-hi) 0%,",
-    "var(--rm2k3-title-window) 46%,",
-    "var(--rm2k3-title-window-deep) 100%)",
-  ].join(" ");
+  applyWindowSkinResource(node, resourceId, "easyrpg-system-");
 }
 
 export function applyBattleSystemGraphic(node: HTMLElement): void {
@@ -49,10 +39,15 @@ export function applyBattleSystemGraphic(node: HTMLElement): void {
   if (resourceId) {
     node.dataset.battleSystemResource = resourceId;
   }
+  applyWindowSkinResource(node, resourceId, "easyrpg-system2-");
+}
+
+function applyWindowSkinResource(node: HTMLElement, resourceId: string | undefined, legacyPrefix: string): void {
+  if (resourceId?.startsWith(legacyPrefix)) return;
   const dataUrl = resourceUrl(resourceId);
-  if (dataUrl) {
-    node.style.borderImageSource = `url("${dataUrl}")`;
-    node.style.borderImageSlice = "1";
-    node.style.backgroundImage = `linear-gradient(rgba(20, 28, 44, 0.92), rgba(20, 28, 44, 0.92)), url("${dataUrl}")`;
-  }
+  if (!dataUrl) return;
+  const cssUrl = `url("${dataUrl}")`;
+  node.style.setProperty("--runtime-window-skin", cssUrl);
+  node.style.borderImageSource = cssUrl;
+  node.style.borderImageSlice = "24 fill";
 }
