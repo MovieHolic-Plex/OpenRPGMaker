@@ -18,6 +18,9 @@ Pick validation based on the touched boundary:
 - `npm run build` must pass before merge-ready work.
 - `playwright` / `npm run test:e2e` covers browser `test/e2e` flows.
 - `vitest` is for focused unit tests and fast iteration.
+- `npm run perf:bench` runs the Node headless performance budget harness and writes JSON evidence under `evidence/perf/`.
+- The perf benchmark measures data-pipeline paint latency, edit render diff planning, undo snapshot bytes, and deserialize+validate load time; it intentionally excludes Phaser render.
+- Do not add the perf benchmark as a CI gate unless the budget policy changes, because local timing is machine-dependent.
 - For focused selection, run a single file, pattern, or test name instead of the full suite.
 
 Evidence expectations:
