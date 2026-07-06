@@ -88,10 +88,12 @@ export function renderEditor(main: HTMLElement): void {
   leftMapRoot = el("div", { class: "left-panel-stack", dataset: { testid: "left-map-root" } });
   left.append(leftPaletteRoot, mapTreeResizer, leftMapRoot);
   canvasScrollShell.append(phaserContainer);
+  // 저장 모드 배너(결함 ⑩)는 캔버스 열 상단에 넣는다 — .main(flex row)의 형제로 넣으면
+  // 좌측 열처럼 배치되어 레이아웃이 깨진다.
+  const persistenceBanner = renderPersistenceModeBanner();
+  if (persistenceBanner) canvasArea.append(persistenceBanner);
   canvasArea.append(canvasScrollShell, canvasToolbar, statusBar);
   layout.append(left, leftResizer, canvasArea);
-  const persistenceBanner = renderPersistenceModeBanner();
-  if (persistenceBanner) main.append(persistenceBanner);
   main.append(layout, projectExportNodeElement(), renderAiChatPanel());
 
   leftRoot = left;

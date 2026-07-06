@@ -555,3 +555,8 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   background: #58421f;
   color: #ffe9c7;
 }
+
+/* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
+.persistence-mode-banner ~ .canvas-toolbar {
+  top: 52px;
+}
