@@ -72,34 +72,6 @@ async function findVisibleMapPoint(page: Page, marginTiles = 2): Promise<CanvasP
   throw new Error("missing visible map point");
 }
 
-async function findVisibleTreePaintPoint(page: Page): Promise<{ readonly point: CanvasPoint; readonly tileX: number; readonly tileY: number }> {
-  const canvas = page.getByTestId("edit-canvas").locator("canvas");
-  const box = await canvas.boundingBox();
-  if (!box) throw new Error("missing editor canvas");
-  const state = await debugState(page);
-  const map = currentMap(state);
-  const protectedCells = new Set<string>(map.events.map((event) => `${event.x},${event.y}`));
-  if (state.project.startMapId === (state.editor.currentMapId ?? state.project.startMapId)) {
-    protectedCells.add(`${state.project.startPos.x},${state.project.startPos.y}`);
-  }
-  const fractions = [0.5, 0.45, 0.55, 0.4, 0.6, 0.35, 0.65, 0.3, 0.7];
-  for (const fy of fractions) {
-    for (const fx of fractions) {
-      const point = { x: Math.floor(box.width * fx), y: Math.floor(box.height * fy) };
-      await page.mouse.move(Math.floor(box.x + point.x), Math.floor(box.y + point.y));
-      const cursor = await page.getByTestId("cursor-position").textContent();
-      const match = cursor?.match(/^(\d+),(\d+)$/);
-      if (!match) continue;
-      const tileX = Number(match[1]);
-      const tileY = Number(match[2]);
-      if (tileX < 1 || tileY < 1 || tileX >= map.width - 1 || tileY >= map.height - 2) continue;
-      if (protectedCells.has(`${tileX},${tileY}`) || protectedCells.has(`${tileX},${tileY + 1}`)) continue;
-      return { point, tileX, tileY };
-    }
-  }
-  throw new Error("missing visible tree paint point");
-}
-
 async function clickMapCenter(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const point = await findVisibleMapPoint(page);
@@ -276,25 +248,30 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
 
 test("manual cluster pen paint places hard-rule companion tree tiles", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/?freshProject=1&manualClusterPaint=1");
+  await page.goto("/?freshProject=1");
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await page.getByTestId("layer-lower").click();
-  await page.getByTestId("tool-paint").click();
+  await page.getByTestId("rpg-maker-tool-pen").click();
   await page.getByTestId("cluster-tile-260").scrollIntoViewIfNeeded();
   await page.getByTestId("cluster-tile-260").click();
 
-  const target = await findVisibleTreePaintPoint(page);
-  await page.getByTestId("edit-canvas").locator("canvas").click({ position: target.point });
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  await canvas.click({ position: { x: Math.floor(box.width * 0.5), y: Math.floor(box.height * 0.45) } });
 
+  // 클릭 시 자동 스크롤로 화면 좌표→타일 좌표가 어긋날 수 있어, 좌표 고정 대신
+  // "상단(260)이 놓이면 반드시 바로 아래에 하단(290)이 동반된다"는 hard 규칙 자체를 검증한다.
   await expect.poll(async () => {
     const state = await debugState(page);
     const map = currentMap(state);
-    return [
-      map.upperTiles[target.tileY * map.width + target.tileX],
-      map.upperTiles[(target.tileY + 1) * map.width + target.tileX],
-    ];
-  }).toEqual([260, 290]);
+    const tops: number[] = [];
+    for (let i = 0; i < map.upperTiles.length; i += 1) if (map.upperTiles[i] === 260) tops.push(i);
+    if (tops.length === 0) return "no-top-placed";
+    const paired = tops.every((i) => map.upperTiles[i + map.width] === 290);
+    return paired ? "paired" : "orphan-top";
+  }).toBe("paired");
 });
 
 test("requested map toolbar controls drive select area, zoom, pen, rectangle, round terrain, fill, and undo", async ({ page }, testInfo) => {
