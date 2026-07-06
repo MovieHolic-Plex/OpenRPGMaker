@@ -345,9 +345,9 @@ function mapLockBadgeLabel(status: MapEditLockStatus | null): string {
     case "checking":
       return "확인";
     case "held":
-      return "편집";
+      return "내 잠금";
     case "locked":
-      return "잠김";
+      return `잠김: ${status.ownerLabel}`;
     case "unavailable":
       return "로컬";
     case "idle":

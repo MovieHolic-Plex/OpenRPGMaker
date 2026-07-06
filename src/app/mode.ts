@@ -70,6 +70,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   await renderTopbar();
   await enterMode("edit");
+  const { openLoginModalIfNeeded } = await import("@/editor/teamWorkflowUi");
+  openLoginModalIfNeeded(() => void renderTopbar());
   markInitialEditRender(startedAt);
 }
 
