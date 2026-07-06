@@ -53,8 +53,12 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   try {
     await store.load();
   } catch (error) {
-    renderDbRequiredScreen(error);
-    if (!(error instanceof DbConnectionRequiredError)) {
+    // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
+    // 프로젝트 데이터가 무결성 검증에 실패한 경우(벽돌)를 구분해 다른 화면을 보여준다.
+    if (error instanceof DbConnectionRequiredError) {
+      renderDbRequiredScreen(error);
+    } else {
+      renderLoadFailureScreen(error);
       console.error("[app] Project load failed before editor boot:", error);
     }
     return;
@@ -107,6 +111,94 @@ function openRequiredDbSettings(): void {
       }
     }, { autoLoadProjects: true, required: true });
   });
+}
+
+// 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 도그푸딩 결함 ②.
+// "DB 연결이 필요합니다" 오진 대신 실제 원인을 보여주고 복구 액션 3종을 제공한다:
+// 1) 원격에서 다시 로드  2) 로컬 사본 폐기 후 새로 시작  3) 예제 프로젝트로 시작(메모리).
+function renderLoadFailureScreen(error: unknown): void {
+  if (!elements) return;
+  elements.topbar.textContent = "RPG ZZU - 프로젝트 로드 실패";
+  while (elements.main.firstChild) {
+    elements.main.removeChild(elements.main.firstChild);
+  }
+  const panel = document.createElement("section");
+  panel.className = "db-required-panel project-load-error-panel";
+  panel.dataset.testid = "project-load-error-panel";
+
+  const title = document.createElement("h1");
+  title.textContent = "프로젝트 데이터를 불러올 수 없습니다";
+  const body = document.createElement("p");
+  body.textContent = "DB 연결 문제가 아닙니다 — 저장된 프로젝트 데이터가 무결성 검증에 실패했습니다.";
+  const detail = document.createElement("p");
+  detail.className = "project-load-error-message";
+  detail.dataset.testid = "project-load-error-message";
+  detail.textContent = error instanceof Error ? error.message : String(error);
+
+  const actions = document.createElement("div");
+  actions.className = "project-load-error-actions";
+
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "btn primary";
+  retry.dataset.testid = "load-error-retry";
+  retry.textContent = "원격에서 다시 로드";
+  retry.addEventListener("click", () => {
+    retry.disabled = true;
+    void store.load()
+      .then(() => finishEditorBoot(performance.now()))
+      .catch((cause: unknown) => {
+        retry.disabled = false;
+        if (cause instanceof DbConnectionRequiredError) renderDbRequiredScreen(cause);
+        else renderLoadFailureScreen(cause);
+      });
+  });
+  actions.append(retry);
+
+  void import("@/project/devProjectPersistence").then(({ hasDevProjectOverride, discardDevProjectOverride }) => {
+    if (!hasDevProjectOverride()) return;
+    const discard = document.createElement("button");
+    discard.type = "button";
+    discard.className = "btn";
+    discard.dataset.testid = "load-error-discard-local";
+    discard.textContent = "로컬 사본 폐기 후 새로 시작";
+    discard.addEventListener("click", () => {
+      discardDevProjectOverride();
+      window.location.reload();
+    });
+    actions.append(discard);
+  });
+
+  const sample = document.createElement("button");
+  sample.type = "button";
+  sample.className = "btn";
+  sample.dataset.testid = "load-error-start-sample";
+  sample.textContent = "예제 프로젝트로 시작";
+  sample.title = "깨진 프로젝트를 덮어쓰지 않고 예제를 메모리로 엽니다(원격 저장 꺼짐).";
+  sample.addEventListener("click", () => {
+    void import("@/project/defaults").then(async ({ createSampleAdventureProject }) => {
+      await store.loadFallbackProject(createSampleAdventureProject());
+      await finishEditorBoot(performance.now());
+    });
+  });
+  actions.append(sample);
+
+  const openDb = document.createElement("button");
+  openDb.type = "button";
+  openDb.className = "btn";
+  openDb.dataset.testid = "load-error-open-db";
+  openDb.textContent = "DB 연결 설정 열기";
+  openDb.addEventListener("click", () => {
+    void import("@/editor/panels/dbConnectionSettings").then(({ openDbConnectionSettings }) => {
+      openDbConnectionSettings(() => {
+        if (store.isLoaded()) void finishEditorBoot(performance.now());
+      }, { autoLoadProjects: true });
+    });
+  });
+  actions.append(openDb);
+
+  panel.append(title, body, detail, actions);
+  elements.main.append(panel);
 }
 
 // 모드 진입. 이전 모드 정리 후 새 모드 부팅.

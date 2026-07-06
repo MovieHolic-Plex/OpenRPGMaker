@@ -28,6 +28,20 @@ export function loadDevProjectOverride(): Project | null {
   return loadStoredProject(key);
 }
 
+// 현재 위치의 로컬 사본(dev override)이 존재하는가 — 부팅 실패 화면의 "로컬 사본 폐기" 노출 판단.
+export function hasDevProjectOverride(): boolean {
+  if (isFreshProjectLocation()) return false;
+  const key = devProjectStorageKey();
+  return key !== null && window.localStorage.getItem(key) !== null;
+}
+
+// 로컬 사본 폐기(도그푸딩 결함 ② 복구 액션): 손상된 dev override를 지워 새로 시작할 수 있게 한다.
+export function discardDevProjectOverride(): void {
+  if (typeof window === "undefined") return;
+  const key = devProjectStorageKey();
+  if (key) window.localStorage.removeItem(key);
+}
+
 export function saveDevProjectOverride(project: Project): void {
   if (isFreshProjectLocation()) return;
   const key = devProjectStorageKey();

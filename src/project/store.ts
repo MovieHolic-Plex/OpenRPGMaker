@@ -125,6 +125,19 @@ class ProjectStore {
     return this.loaded;
   }
 
+  // 부팅 실패 복구(도그푸딩 결함 ②): 로드 실패 상태에서 대체 프로젝트(예제/빈)를 메모리로 연다.
+  // 깨진 원격/로컬 프로젝트를 덮어쓰지 않도록 원격 저장은 끈 채 시작한다 —
+  // 사용자는 이후 DB 연결 설정에서 명시적으로 다시 연결/저장할 수 있다.
+  async loadFallbackProject(project: Project): Promise<void> {
+    this.current = project;
+    this.remotePersistenceEnabled = false;
+    this.remotePersistenceDisabledReason = "load-failed";
+    this.persistedBaseline = null;
+    this.loaded = true;
+    await this.normalizeCurrentProject();
+    this.emit({ scope: "project" });
+  }
+
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
   // store.load()가 Supabase 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
