@@ -214,6 +214,10 @@ export class AssistantSession {
   private turnImplicitSpec: BuildSpec | null = null;
   // 이번 턴의 명세 검증 실패 횟수 — MAX_SPEC_REJECTIONS 초과 시 폐기 지시.
   private specRejections = 0;
+  // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
+  private turnProposals = new Map<string, ProposedCall>();
+  // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
+  private lastTurnFailed = false;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -349,9 +353,29 @@ export class AssistantSession {
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.turnImplicitSpec = implicitSpecFromContext(text);
     this.specRejections = 0;
+    this.turnProposals = new Map();
 
+    return await this.runTurnLoop(onEvent);
+  }
+
+  // 직전 턴이 LLM 오류로 끊긴 경우에만 재개 가능(도그푸딩 결함 ⑥ — 수동 재시도).
+  canRetryLastTurn(): boolean {
+    return this.lastTurnFailed;
+  }
+
+  // 오류로 끊긴 턴 재개: 새 사용자 메시지 없이 (LLM ↔ 툴) 루프만 다시 돈다.
+  // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
+  async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}): Promise<TurnResult> {
+    if (!this.lastTurnFailed) {
+      return { assistantText: "", proposedCalls: [...this.turnProposals.values()], stoppedReason: "final" };
+    }
+    return await this.runTurnLoop(onEvent);
+  }
+
+  private async runTurnLoop(onEvent: (event: SessionEvent) => void): Promise<TurnResult> {
+    this.lastTurnFailed = false;
     const tools = [...toOpenAiTools(), SET_BUILD_SPEC_TOOL];
-    const proposedByKey = new Map<string, ProposedCall>();
+    const proposedByKey = this.turnProposals;
     let assistantText = "";
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
     // (maxToolCalls 기본 200은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
@@ -369,6 +393,7 @@ export class AssistantSession {
         });
       } catch (cause) {
         const error = cause instanceof Error ? cause.message : String(cause);
+        this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         onEvent({ type: "status", text: `오류: ${error}` });
         return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "error", error };
       }

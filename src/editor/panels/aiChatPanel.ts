@@ -623,10 +623,21 @@ export function renderAiChatPanel(): HTMLElement {
     chipsHost.replaceChildren();
     closeToolActivity();
     appendBubble("user", displayAs ?? trimmed);
+    const session = ensureSession();
+    await executeTurn(session, trimmed, (onEvent) =>
+      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent)
+    );
+  };
+
+  // 한 턴 실행 공통부: 최초 전송(sendUserMessage)과 오류 후 수동 재시도(retryLastTurn)가
+  // 같은 스트리밍/제안/상태 처리를 공유한다(도그푸딩 결함 ⑥).
+  const executeTurn = async (
+    session: AssistantSession,
+    requestText: string,
+    exec: (onEvent: (event: SessionEvent) => void) => Promise<TurnResult>
+  ): Promise<void> => {
     status.textContent = "생각 중…";
     sendButton.disabled = true;
-
-    const session = ensureSession();
     const activeSpecAtTurnStart = session.getActiveSpec();
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let assistantBubble: HTMLElement | null = null;
@@ -712,12 +723,12 @@ export function renderAiChatPanel(): HTMLElement {
     };
 
     try {
-      const result = await session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent);
+      const result = await exec(onEvent);
       const completenessWarnings = result.stoppedReason === "error"
         ? []
         : proposalCompletenessWarnings({
-            requestText: trimmed,
-            buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, result.proposedCalls, trimmed),
+            requestText,
+            buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, result.proposedCalls, requestText),
             calls: result.proposedCalls,
           });
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
@@ -750,7 +761,7 @@ export function renderAiChatPanel(): HTMLElement {
       if (activeSpec && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
         status.textContent = `밑그림 확정 — 에셋 ${activeSpec.assets.length}개`;
       }
-      if (result.error) appendBubble("system", `오류: ${result.error}`);
+      if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
       status.textContent = "오류";
       appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
@@ -759,6 +770,27 @@ export function renderAiChatPanel(): HTMLElement {
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
     }
+  };
+
+  // LLM 오류 버블 + 수동 [재시도] 버튼(도그푸딩 결함 ⑥). 오류 메시지에는 llmClient가
+  // 만든 원인(네트워크/429/5xx/인증 등)이 그대로 담긴다. 자동 재시도 1회(지수 백오프)는
+  // llmClient.chatCompletion이 이미 수행했고, 여기의 버튼은 그 이후의 수동 재개다.
+  const appendErrorWithRetry = (message: string, session: AssistantSession, requestText: string): void => {
+    const bubble = appendBubble("system", `오류: ${message}`);
+    if (!session.canRetryLastTurn()) return;
+    const retry = el("button", {
+      class: "ai-assistant-action ai-retry-turn",
+      text: "재시도",
+      attrs: { type: "button", title: "끊긴 턴을 같은 문맥에서 다시 시도합니다" },
+      dataset: { testid: "ai-retry-turn" },
+      on: {
+        click: () => {
+          retry.disabled = true;
+          void executeTurn(session, requestText, (onEvent) => session.retryLastTurn(onEvent));
+        },
+      },
+    }) as HTMLButtonElement;
+    bubble.append(el("div", { class: "ai-retry-row", children: [retry] }));
   };
 
   // 풀스크린 테스트 플레이 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
