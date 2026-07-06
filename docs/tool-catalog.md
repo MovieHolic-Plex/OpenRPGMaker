@@ -9,7 +9,7 @@
 
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
-| `create_map` | `name: string`, `width: integer`, `height: integer`, `id?: string` | 새 맵을 생성한다(잔디 바닥 + 테두리 벽). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. |
+| `create_map` | `name: string`, `width: integer`, `height: integer`, `id?: string` | 새 맵을 생성한다(잔디 바닥 + 테두리 벽, 최대 256×256). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. |
 | `paint_tiles` | `mapId: string`, `layer: lower\|upper`, `mode: rect\|line\|fill\|cells`, `tile: integer`, `from?: object`, `to?: object`, `cells?: array` | 타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. |
 | `paint_road` | `mapId: string`, `points: array`, `style: dirt\|sand` | 폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 오토타일로 가장자리를 자동 성형한다. |
 | `stamp_structure` | `mapId: string`, `template: l\|courtyard\|multi\|road\|plaster\|stone`, `origin: object` | 집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 반환 diff에 문 좌표를 포함한다. |
@@ -19,9 +19,9 @@
 | `set_start_position` | `mapId: string`, `x: integer`, `y: integer` | 게임 시작 맵/좌표를 지정한다. 통행 불가 타일이면 실패한다. |
 | `set_tile_passability` | `tilesetId?: string`, `tile: integer`, `passable: boolean` | 타일셋의 특정 타일 통행 가능 여부를 설정한다(4방향 일괄). 겉보기와 실제 통행성이 다른 타일을 고칠 때 사용. |
 | `set_map_properties` | `mapId: string`, `name?: string`, `encounterRate?: integer`, `troopIds?: array` | 맵 속성을 설정한다: name(이름), encounterRate(랜덤 인카운트율, 0=없음), troopIds(인카운트 적 그룹 — 실제 트룹 id여야 함). |
-| `resize_map` | `mapId: string`, `width: integer`, `height: integer` | 맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라. |
+| `resize_map` | `mapId: string`, `width: integer`, `height: integer` | 맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 256×256). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라. |
 | `remove_map` | `mapId: string` | 맵을 삭제한다(파괴적 — 꼭 필요할 때만, 이유를 먼저 설명). 시작 맵은 삭제 불가. 다른 맵의 출입구(transfer)가 참조 중이면 무결성 게이트가 거부한다. |
-| `generate_map` | `theme: village\|forest\|cave`, `name?: string`, `width: integer`, `height: integer`, `entrance?: object`, `pois?: array`, `chokepoints?: integer`, `seed?: integer`, `id?: string` | 테마(village/forest/cave) 맵을 생성한다. 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). |
+| `generate_map` | `theme: village\|forest\|cave`, `name?: string`, `width: integer`, `height: integer`, `entrance?: object`, `pois?: array`, `chokepoints?: integer`, `seed?: integer`, `id?: string` | 테마(village/forest/cave) 맵을 생성한다(최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). |
 | `upsert_event` | `mapId: string`, `event: object` | 저수준 만능 이벤트 툴. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. |
 | `place_npc` | `mapId: string`, `x: integer`, `y: integer`, `name: string`, `graphic?: object`, `movement?: fixed\|random`, `pages: array`, `id?: string` | NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. pages는 SimplePage로 EventPage로 컴파일된다. 통행 불가 칸이면 실패. |
 | `create_transfer_pair` | `a: object`, `b: object`, `fade?: black\|white\|none` | 두 맵 사이 양방향 출입구를 원자적으로 생성한다. 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지). |

@@ -8,6 +8,7 @@ import { newCommand } from "@/editor/eventActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   getMapEditHistoryEntries,
+  getMapEditHistoryDebugEntries,
   getMapEditHistoryState,
   peekPreviousProject,
   recordProjectSnapshot,
@@ -17,7 +18,7 @@ import {
   undoMapEdit,
 } from "@/editor/mapEditHistory";
 import { createDatabaseCommandListActions } from "@/editor/panels/databaseCommandListAdapter";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 
@@ -149,6 +150,59 @@ describe("snapshot dedup", () => {
 
     expect(redoMapEdit()).toBe(true);
     expect(store.getCurrent().maps[mapId].lowerTiles[0]).toBe(222);
+  });
+
+  it("stores map-kind snapshots as per-map history and keeps redo symmetric", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const otherMap = createBlankMap("다른 맵", 12, 12);
+    store.update((draft) => {
+      draft.maps[otherMap.id] = otherMap;
+      draft.mapTree.children.push({ mapId: otherMap.id, children: [] });
+    });
+
+    recordProjectSnapshot("현재 맵 칠하기", mapId, { kind: "map" });
+    store.update((draft) => {
+      draft.maps[mapId].lowerTiles[0] = 111;
+      draft.maps[otherMap.id].lowerTiles[0] = 777;
+    });
+
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[mapId].lowerTiles[0]).not.toBe(111);
+    expect(store.getCurrent().maps[otherMap.id].lowerTiles[0]).toBe(777);
+
+    expect(redoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[mapId].lowerTiles[0]).toBe(111);
+    expect(store.getCurrent().maps[otherMap.id].lowerTiles[0]).toBe(777);
+  });
+
+  it("keeps single-map paint history well below full-project snapshot volume", () => {
+    const base = createBlankProject();
+    for (let index = 1; index < 10; index += 1) {
+      const map = createBlankMap(`메모리 맵 ${index}`, 24, 24);
+      base.maps[map.id] = map;
+      base.mapTree.children.push({ mapId: map.id, children: [] });
+    }
+    store.replace(base);
+    resetMapEditHistory();
+
+    const mapId = store.getCurrent().startMapId;
+    for (let index = 0; index < 50; index += 1) {
+      recordProjectSnapshot(`페인트 ${index}`, mapId, { kind: "map" });
+      store.update((project) => {
+        project.maps[mapId].lowerTiles[index] = index + 100;
+      });
+    }
+
+    const entries = getMapEditHistoryDebugEntries();
+    const mapSnapshotBytes = entries.reduce((sum, entry) => sum + entry.serializedLength, 0);
+    const projectBytes = JSON.stringify(store.getCurrent()).length;
+
+    expect(entries).toHaveLength(50);
+    expect(entries.every((entry) => entry.kind === "map" && entry.mapId === mapId)).toBe(true);
+    // 전체 프로젝트 50벌은 projectBytes * 50에 가깝다. 10맵 프로젝트에서 단일 맵 50벌은
+    // 대략 1/10 수준이므로, 직렬화 오버헤드를 감안해도 projectBytes * 5 미만이어야 한다.
+    expect(mapSnapshotBytes).toBeLessThan(projectBytes * 5);
   });
 });
 

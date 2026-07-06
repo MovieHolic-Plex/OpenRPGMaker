@@ -52,7 +52,7 @@ export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null 
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event?.draft) return null;
   const preferredPageId = editorState.get().selectedEventPageId;
-  recordProjectSnapshot();
+  recordProjectSnapshot("이벤트 편집", mapId, { kind: "map" });
   let diff: EventDiff | null = null;
   store.update((project) => {
     diff = commitEventDraft(project, mapId, eventId);

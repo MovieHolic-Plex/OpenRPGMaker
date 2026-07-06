@@ -5,6 +5,7 @@
 
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
 import { inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
@@ -59,6 +60,15 @@ function blankThemedMap(id: string, name: string, width: number, height: number,
   return map;
 }
 
+function assertGeneratedMapSize(width: number, height: number): void {
+  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) {
+    throw new ToolError(
+      `생성 맵 크기는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}까지 가능합니다. 넓은 지역은 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
+      { code: "map-too-large" }
+    );
+  }
+}
+
 // L자 통로로 두 점을 잇되, 지나는 칸을 통행 가능한 floor로 만든다.
 function carvePath(map: GameMap, from: Point, to: Point, floor: number): void {
   const corner: Point = { x: to.x, y: from.y };
@@ -71,15 +81,15 @@ function carvePath(map: GameMap, from: Point, to: Point, floor: number): void {
 
 const generateMap: ToolDefinition = {
   name: "generate_map",
-  description: "테마(village/forest/cave) 맵을 생성한다. 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프).",
+  description: "테마(village/forest/cave) 맵을 생성한다(최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프).",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       theme: { type: "string", enum: ["village", "forest", "cave"] },
       name: { type: "string" },
-      width: { type: "integer" },
-      height: { type: "integer" },
+      width: { type: "integer", description: "가로 타일 수(최대 256)" },
+      height: { type: "integer", description: "세로 타일 수(최대 256)" },
       entrance: { type: "object", description: "{x,y} 입구(생략 시 좌측 중앙)" },
       pois: { type: "array", description: "[{x,y}] 관심 지점", items: { type: "object" } },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },
@@ -95,6 +105,7 @@ const generateMap: ToolDefinition = {
     const width = args.width as number;
     const height = args.height as number;
     if (width < 6 || height < 6) throw new ToolError("생성 맵은 최소 6x6 이상이어야 합니다.");
+    assertGeneratedMapSize(width, height);
     const id = (args.id as string | undefined) ?? genId("map");
     if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { mapId: id });
     const rng = mulberry32((args.seed as number | undefined) ?? 1);

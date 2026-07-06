@@ -41,7 +41,7 @@ export interface RegionTaskResult {
 const defaultDeps: RegionTaskDeps = {
   getProject: () => store.getCurrent(),
   applyProject: (project, label, mapId) => {
-    recordProjectSnapshot(label, mapId);
+    recordProjectSnapshot(label, mapId, { kind: "map" });
     store.replace(project);
   },
   createSession: (project, mapId) => new AssistantSession(project, { contextOptions: { currentMapId: mapId } }),

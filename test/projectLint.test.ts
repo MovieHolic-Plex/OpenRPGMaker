@@ -6,6 +6,7 @@ import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { ReachabilitySpec } from "@/project/lint/reachability";
 import { createEmberQuestProject, EMBER_MAP } from "@/project/defaults/emberQuestGame";
 import { createBlankProject } from "@/project/defaults/defaultProject";
+import { createBlankMap } from "@/project/defaults/defaultMaps";
 
 const TILE_FLOOR_IMPASSABLE = 342; // TILE.FLOOR — 통행 불가.
 
@@ -146,5 +147,22 @@ describe("projectLint", () => {
     expect(issues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 3, y: 4 });
     expect(issues.map((issue) => issue.message).join("\n")).toContain("커먼 이벤트 ce_editor_only");
     expect(issues.map((issue) => issue.message).join("\n")).toContain("트룹");
+  });
+
+  it("256x256 초과 맵을 warning으로 보고한다", () => {
+    const project = cloneProject(createBlankProject());
+    const huge = createBlankMap("임포트 초대형", 257, 12);
+    project.maps[huge.id] = huge;
+    project.mapTree.children.push({ mapId: huge.id, children: [] });
+
+    const issues = projectLint(project);
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        severity: "warning",
+        code: "map-size",
+        mapId: huge.id,
+      })
+    );
+    expect(errorsOf(issues).some((issue) => issue.code === "map-size")).toBe(false);
   });
 });

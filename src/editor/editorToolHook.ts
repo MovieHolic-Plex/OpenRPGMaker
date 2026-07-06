@@ -28,6 +28,29 @@ type EditorToolHookWindow = Window & {
   __rpgzzuRegionTaskHarness?: RegionTaskHarness;
 };
 
+const MAP_ONLY_WRITE_TOOLS = new Set([
+  "paint_tiles",
+  "paint_road",
+  "stamp_structure",
+  "stamp_template_house",
+  "build_house",
+  "clear_region",
+  "set_map_properties",
+  "place_npc",
+  "upsert_event",
+  "move_event",
+  "remove_event",
+]);
+
+function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
+  const mapId = typeof args.mapId === "string" ? args.mapId : null;
+  if (mapId && MAP_ONLY_WRITE_TOOLS.has(name)) {
+    recordProjectSnapshot(undefined, mapId, { kind: "map" });
+    return;
+  }
+  recordProjectSnapshot();
+}
+
 export function installEditorToolHook(): void {
   if (typeof window === "undefined") return;
   const w = window as EditorToolHookWindow;
@@ -36,7 +59,7 @@ export function installEditorToolHook(): void {
     const result = runTool(ctx, name, args, { dryRun: false });
     const tool = getTool(name);
     if (result.ok && tool?.mode === "write") {
-      recordProjectSnapshot();
+      recordToolSnapshot(name, args);
       store.replace(ctx.project); // runTool이 성공 시 ctx.project를 커밋된 draft로 교체한다.
     }
     return result;
@@ -58,7 +81,7 @@ export function installEditorToolHook(): void {
         {
           getProject: () => store.getCurrent(),
           applyProject: (project, label, snapshotMapId) => {
-            recordProjectSnapshot(label, snapshotMapId);
+            recordProjectSnapshot(label, snapshotMapId, { kind: "map" });
             store.replace(project);
           },
           createSession: (project) => ({
