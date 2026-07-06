@@ -27,30 +27,44 @@ type DbConnectionSettingsOptions = {
 let modalRoot: HTMLElement | null = null;
 let connecting = false;
 
+// 상태바 "DB 연동" 칩(도그푸딩 결함 ⑫): 어떤 상태에서든 클릭하면 항상 DB 연결 설정이
+// 열린다(기존에는 자동저장 오류 상태에서 클릭이 재시도로 소비되어 설정 진입점이 사라졌다).
+// 저장 재시도는 칩 안의 별도 [재시도] 버튼으로 분리. 맵 잠금 "가져오기" 버튼과 구분되도록
+// 🔌 아이콘 + 버튼 스타일을 명시한다.
 export function renderDbConnectionStatus(status: DbPersistenceStatus, onRefresh: StatusRefresh): HTMLElement {
   const autoSave = store.getAutoSaveState();
   const button = el("button", {
-    class: `editor-statusbar-cell db-connection-status ${status.kind} autosave-${autoSave.kind}`,
+    class: `editor-statusbar-cell db-connection-status db-connection-chip-button ${status.kind} autosave-${autoSave.kind}`,
     attrs: { title: dbConnectionStatusButtonTitle(status, autoSave), type: "button" },
     children: [
-      el("span", { class: "db-connection-label", text: dbConnectionStatusText(status) }),
+      el("span", { class: "db-connection-label", text: `🔌 ${dbConnectionStatusText(status)}` }),
       el("span", { class: "db-autosave-state", text: autoSaveStatusText(autoSave), dataset: { testid: "db-autosave-state" } }),
     ],
     dataset: { testid: "db-connection-status" },
     on: {
-      click: () => {
-        if (autoSave.kind !== "error") {
-          openDbConnectionSettings(onRefresh);
-          return;
-        }
-        void store.flush()
-          .catch((error) => {
-            console.error("[store] manual auto-save retry failed:", error);
-          })
-          .finally(onRefresh);
-      },
+      click: () => openDbConnectionSettings(onRefresh),
     },
   });
+  if (autoSave.kind === "error") {
+    button.append(
+      el("button", {
+        class: "db-autosave-retry-button",
+        text: "재시도",
+        attrs: { type: "button", title: `저장 실패: ${autoSave.message} — 클릭해서 저장을 다시 시도합니다.` },
+        dataset: { testid: "db-autosave-retry" },
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            void store.flush()
+              .catch((error) => {
+                console.error("[store] manual auto-save retry failed:", error);
+              })
+              .finally(onRefresh);
+          },
+        },
+      }),
+    );
+  }
   return button;
 }
 
@@ -350,8 +364,7 @@ function dbConnectionStatusText(status: DbPersistenceStatus): string {
 }
 
 function dbConnectionStatusButtonTitle(status: DbPersistenceStatus, autoSave: ReturnType<typeof store.getAutoSaveState>): string {
-  const action = autoSave.kind === "error" ? "클릭해서 저장을 다시 시도합니다." : "클릭해서 DB 설정/연결을 엽니다.";
-  return `${dbConnectionStatusTitle(status)} ${autoSaveStatusTitle(autoSave)} ${action}`;
+  return `${dbConnectionStatusTitle(status)} ${autoSaveStatusTitle(autoSave)} 클릭해서 DB 설정/연결을 엽니다.`;
 }
 
 function autoSaveStatusText(state: ReturnType<typeof store.getAutoSaveState>): string {
@@ -365,7 +378,7 @@ function autoSaveStatusText(state: ReturnType<typeof store.getAutoSaveState>): s
     case "saved":
       return `✓ 저장됨 ${formatAutoSaveTime(state.at)}`;
     case "error":
-      return "⚠ 저장 실패 — 클릭해 재시도";
+      return "⚠ 저장 실패";
   }
 }
 

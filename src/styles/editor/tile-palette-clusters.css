@@ -236,3 +236,25 @@
 .db-connection-status.autosave-error .db-autosave-state {
   color: var(--status-error);
 }
+
+/* DB 연동 칩(결함 ⑫): 항상 클릭 가능한 버튼 — 맵 잠금 '가져오기'와 시각 구분. */
+.db-connection-chip-button {
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.18));
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.db-connection-chip-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.db-autosave-retry-button {
+  background: var(--status-error, #b3453f);
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 16px;
+  padding: 0 6px;
+}

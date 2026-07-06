@@ -446,17 +446,32 @@ function doLoad(topbar: HTMLElement): void {
   });
 }
 
+// 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 기존 미동작 원인 3가지:
+// 1) `await store.flush()`가 저장 오류 시 reject → 함수 전체가 무반응으로 중단(다운로드 없음).
+// 2) anchor가 DOM에 붙지 않은 채 click() — 일부 환경에서 다운로드가 시작되지 않음.
+// 3) click() 직후 동기 revokeObjectURL — 브라우저가 fetch를 시작하기 전에 URL이 무효화될 수 있음.
 async function doExport(): Promise<void> {
-  await store.flush();
-  const project = projectWithoutEventDrafts(store.getCurrent());
-  const blob = createProjectPackage(project);
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = projectPackageFileName(project);
-  anchor.click();
-  URL.revokeObjectURL(url);
-  toast("내보냈습니다", "ok");
+  try {
+    // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).
+    await store.flush().catch((error) => {
+      console.error("[export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태를 내보냅니다", "info");
+    });
+    const project = projectWithoutEventDrafts(store.getCurrent());
+    const blob = createProjectPackage(project);
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = projectPackageFileName(project);
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    toast("내보냈습니다", "ok");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`내보내기 실패: ${message}`, "error");
+  }
 }
 
 function doImport(): void {
