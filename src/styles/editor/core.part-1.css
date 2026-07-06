@@ -184,6 +184,31 @@ button.btn:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.agent-focus-highlight {
+  animation: agent-focus-highlight-fade 2.2s ease-out forwards;
+  background: rgba(255, 212, 59, 0.12);
+  border: 2px solid rgba(255, 243, 191, 0.9);
+  box-shadow: 0 0 0 1px rgba(255, 146, 43, 0.35), 0 0 18px rgba(255, 212, 59, 0.26);
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+@keyframes agent-focus-highlight-fade {
+  0% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ?쎌? ?꾪듃 ?먮┝ 諛⑹?: Phaser 罹붾쾭???뺣? ???쎌???萸됯컻吏吏 ?딄쾶. */

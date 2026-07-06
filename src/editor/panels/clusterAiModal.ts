@@ -9,6 +9,7 @@ import {
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { loadAiConfig } from "@/ai/llmClient";
 import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/skills";
+import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -293,8 +294,10 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const proposed = session.getProposedProject();
     const mapId = skillContext().mapId;
     const snapshot: SnapshotRecorder = recordProjectSnapshot;
+    const before = store.getCurrent();
     snapshot(`클러스터 수정: ${model.group?.name ?? model.title}`, mapId);
     store.replace(proposed);
+    focusAcceptedAgentChanges(before, proposed);
     session.rebaseProject(store.getCurrent());
     proposals.replaceChildren();
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);

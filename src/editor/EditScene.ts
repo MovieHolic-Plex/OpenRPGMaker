@@ -9,6 +9,7 @@ import {
   registerBundledFrames,
   TILE_SIZE,
 } from "@/assets/bundled";
+import { subscribeAgentFocusHighlight, type AgentFocusBounds, type AgentFocusCell, type AgentFocusTarget } from "@/editor/agentFocus";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
@@ -116,15 +117,21 @@ type DragOperation =
   };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+const AGENT_FOCUS_MAX_CELL_RECTS = 256;
+const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
+  private agentFocusHighlightLayer: Phaser.GameObjects.Container | null = null;
   private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
   private gridGraphics: Phaser.GameObjects.Graphics | null = null;
   private unsubStore: (() => void) | null = null;
   private unsubEditor: (() => void) | null = null;
+  private unsubAgentFocus: (() => void) | null = null;
+  private agentFocusDomMarker: HTMLElement | null = null;
+  private agentFocusDomTimer: ReturnType<typeof setTimeout> | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
@@ -187,6 +194,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    this.agentFocusHighlightLayer = this.add.container(0, 0);
+    this.agentFocusHighlightLayer.setDepth(11);
     this.eventClickFeedbackLayer = this.add.container(0, 0);
     this.eventClickFeedbackLayer.setDepth(12);
 
@@ -196,6 +205,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => this.redrawForStoreChange(change));
     this.unsubEditor = editorState.subscribe(() => this.redrawWhenViewStateChanges());
+    this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
 
     this.scale.on("resize", this.handleResize, this);
 
@@ -209,8 +219,11 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unbindWindowPanGuards();
     this.unsubStore?.();
     this.unsubEditor?.();
+    this.unsubAgentFocus?.();
     this.unsubStore = null;
     this.unsubEditor = null;
+    this.unsubAgentFocus = null;
+    this.clearAgentFocusDomMarker();
   }
 
   private handleResize(): void {
@@ -1025,6 +1038,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (mapChanged) {
       this.lastPointerTile = null;
       this.clearHoverPreview();
+      this.clearAgentFocusHighlight();
       this.lastPaintKey = "";
       this.dragOperation = null;
     }
@@ -1150,6 +1164,95 @@ export class EditScene extends PhaserRuntime.Scene {
     const feedback = this.eventLayerClickFeedback;
     if (!feedback || feedback.mapId !== this.mapId() || editorState.get().layer !== "event") return;
     renderEventLayerClickFeedback({ scene: this, overlayLayer: layer }, feedback);
+  }
+
+  private showAgentFocusHighlight(target: AgentFocusTarget): void {
+    if (!target.bounds || target.mapId !== this.mapId()) return;
+    const layer = this.agentFocusHighlightLayer;
+    if (!layer) return;
+    this.clearAgentFocusHighlight();
+
+    const group = this.add.container(0, 0);
+    group.setName("agent-focus-highlight");
+    layer.add(group);
+
+    const cells = target.cells.filter((cell) => cell.x >= 0 && cell.y >= 0);
+    if (cells.length > 0 && cells.length <= AGENT_FOCUS_MAX_CELL_RECTS) {
+      for (const cell of cells) group.add(this.agentFocusCellRect(cell));
+    }
+    group.add(this.agentFocusBoundsRect(target.bounds, cells.length > AGENT_FOCUS_MAX_CELL_RECTS));
+    group.setAlpha(1);
+    this.tweens.add({
+      targets: group,
+      alpha: 0,
+      duration: AGENT_FOCUS_HIGHLIGHT_MS,
+      ease: "Cubic.easeOut",
+      onComplete: () => group.destroy(true),
+    });
+    this.renderAgentFocusDomMarker(target.bounds);
+  }
+
+  private clearAgentFocusHighlight(): void {
+    this.agentFocusHighlightLayer?.removeAll(true);
+    this.clearAgentFocusDomMarker();
+  }
+
+  private agentFocusCellRect(cell: AgentFocusCell): Phaser.GameObjects.Rectangle {
+    const color = cell.layer === "event" ? 0xff922b : cell.layer === "upper" ? 0x74c0fc : 0xffd43b;
+    const rect = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, 0.2);
+    rect.setOrigin(0, 0);
+    rect.setStrokeStyle(1, color, 0.72);
+    return rect;
+  }
+
+  private agentFocusBoundsRect(bounds: AgentFocusBounds, strongFill: boolean): Phaser.GameObjects.Rectangle {
+    const rect = this.add.rectangle(
+      bounds.x * TILE_SIZE,
+      bounds.y * TILE_SIZE,
+      bounds.width * TILE_SIZE,
+      bounds.height * TILE_SIZE,
+      0xffd43b,
+      strongFill ? 0.16 : 0.08
+    );
+    rect.setOrigin(0, 0);
+    rect.setStrokeStyle(3, 0xfff3bf, 0.95);
+    return rect;
+  }
+
+  private renderAgentFocusDomMarker(bounds: AgentFocusBounds): void {
+    if (typeof document === "undefined") return;
+    const host = this.game.canvas.parentElement;
+    if (!host) return;
+    const rect = this.agentFocusScreenRect(bounds);
+    const marker = document.createElement("div");
+    marker.className = "agent-focus-highlight";
+    marker.dataset.testid = "agent-focus-highlight";
+    marker.setAttribute("aria-hidden", "true");
+    marker.style.left = `${rect.x}px`;
+    marker.style.top = `${rect.y}px`;
+    marker.style.width = `${rect.width}px`;
+    marker.style.height = `${rect.height}px`;
+    host.append(marker);
+    this.agentFocusDomMarker = marker;
+    this.agentFocusDomTimer = setTimeout(() => this.clearAgentFocusDomMarker(), AGENT_FOCUS_HIGHLIGHT_MS + 100);
+  }
+
+  private agentFocusScreenRect(bounds: AgentFocusBounds): AgentFocusBounds {
+    const camera = this.cameras.main;
+    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
+    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
+    const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
+    const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
+    return { x, y, width, height };
+  }
+
+  private clearAgentFocusDomMarker(): void {
+    if (this.agentFocusDomTimer) {
+      clearTimeout(this.agentFocusDomTimer);
+      this.agentFocusDomTimer = null;
+    }
+    this.agentFocusDomMarker?.remove();
+    this.agentFocusDomMarker = null;
   }
 }
 

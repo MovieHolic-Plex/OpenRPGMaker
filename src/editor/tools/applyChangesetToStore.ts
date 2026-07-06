@@ -3,6 +3,7 @@
 // **이 파일만 브라우저/에디터(store, mapEditHistory)에 의존한다.** 나머지 툴 레이어는 전부 순수.
 
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
@@ -70,7 +71,8 @@ export function applyToolSequenceToStore(
   calls: readonly { name: string; args: Record<string, unknown> }[],
   options: ApplyToolSequenceOptions = {}
 ): ToolResult[] {
-  const ctx: ToolContext = { project: store.getCurrent() };
+  const before = store.getCurrent();
+  const ctx: ToolContext = { project: before };
   const results: ToolResult[] = [];
   let mutated = false;
   for (const call of calls) {
@@ -82,6 +84,7 @@ export function applyToolSequenceToStore(
   if (mutated && results.every((result) => result.ok)) {
     recordProjectSnapshot();
     store.replace(ctx.project);
+    if (options.source === "agent") focusAcceptedAgentChanges(before, ctx.project);
     const diff = combineDiffs(results.map((result) => result.diff));
     recordProjectCommitFireAndForget({
       project: ctx.project,

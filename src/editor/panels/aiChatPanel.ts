@@ -6,6 +6,7 @@
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
+import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
@@ -411,8 +412,10 @@ export function renderAiChatPanel(): HTMLElement {
       toast(`적용 실패: ${errors[0].message}`, "error");
       return;
     }
+    const before = store.getCurrent();
     recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId()); // 변경 이전 상태를 undo 스냅샷으로.
     store.replace(proposed); // 자동 저장은 store가 스케줄.
+    focusAcceptedAgentChanges(before, proposed);
     recordProjectCommitFireAndForget({
       project: proposed,
       identity: currentAgentEditorIdentity(loadAiConfig().model),
@@ -450,8 +453,10 @@ export function renderAiChatPanel(): HTMLElement {
       toast(`저장 실패: ${errors[0].message}`, "error");
       return;
     }
+    const before = store.getCurrent();
     recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId());
     store.replace(proposed);
+    focusAcceptedAgentChanges(before, proposed);
     recordProjectCommitFireAndForget({
       project: proposed,
       identity: currentAgentEditorIdentity(loadAiConfig().model),

@@ -1,3 +1,4 @@
+import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { editorState } from "@/editor/editorState";
 import { createAiPreviewProject, type AiPreviewResult } from "@/project/aiPreviewGenerator";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -45,8 +46,9 @@ export function renderAiAssistantPanel(): HTMLElement {
           renderPreviewLines(previewStatus, ["프로젝트가 프리뷰 생성 이후 변경되었습니다. 현재 프로젝트 기준으로 프리뷰를 다시 생성해 주세요."]);
           return;
         }
+        const before = store.getCurrent();
         store.replace(pendingPreview.project);
-        editorState.set({ currentMapId: pendingPreview.map.id, selectedEventId: null, selectedEventPageId: null });
+        focusAcceptedAgentChanges(before, pendingPreview.project);
         status.textContent = "승인됨";
         approveButton.setAttribute("disabled", "true");
         renderPreviewLines(previewStatus, [`승인 완료: ${pendingPreview.map.name}`, "원본 프로젝트는 승인 전까지 변경되지 않았고, 승인 후 프리뷰 프로젝트가 현재 프로젝트가 되었습니다."]);

@@ -1,6 +1,7 @@
 import { addChildMap, addMap, deleteMap, duplicateMap, moveMapInTree, setStartMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
-import { checkoutMapForEditing, statusForMap, type MapEditLockStatus } from "@/editor/mapEditLocks";
+import { selectEditorMap } from "@/editor/mapSelection";
+import { statusForMap, type MapEditLockStatus } from "@/editor/mapEditLocks";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
 import { renderMapProps } from "@/editor/panels/mapProps";
@@ -46,6 +47,7 @@ export function renderMapList(container: HTMLElement): void {
   const project = store.getCurrent();
   const state = editorState.get();
   const activeId = state.currentMapId ?? project.startMapId;
+  expandPathToMap(project.mapTree, activeId);
 
   const section = el("div", { class: "panel-section map-tree-panel", dataset: { testid: "map-tree" } });
   const header = el("div", { class: "map-tree-header" });
@@ -94,7 +96,7 @@ function renderNode(spec: RenderNodeSpec): void {
     },
     dataset: { testid: `map-tree-node-${node.mapId}` },
     on: {
-      click: () => selectMap(node.mapId),
+      click: () => selectEditorMap(node.mapId),
       contextmenu: (event) => {
         event.preventDefault();
         if (!(event instanceof MouseEvent)) return;
@@ -104,7 +106,7 @@ function renderNode(spec: RenderNodeSpec): void {
         if (!(event instanceof KeyboardEvent) || event.target !== event.currentTarget) return;
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          selectMap(node.mapId);
+          selectEditorMap(node.mapId);
           return;
         }
         if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) {
@@ -237,11 +239,6 @@ function treeToggle(mapId: MapId, hasChildren: boolean, isCollapsed: boolean): H
   }) as HTMLButtonElement;
 }
 
-function selectMap(mapId: MapId): void {
-  editorState.set({ currentMapId: mapId, selectedEventId: null, selectedEventPageId: null });
-  void checkoutMapForEditing(mapId, store.getCurrent().maps[mapId]?.name ?? mapId);
-}
-
 function makeMapTreeHeaderActions(activeId: MapId, root: MapTreeNode): HTMLElement {
   const allCollapsed = areAllBranchesCollapsed(root);
   return el("div", {
@@ -250,7 +247,7 @@ function makeMapTreeHeaderActions(activeId: MapId, root: MapTreeNode): HTMLEleme
       treeAction({
         action: () => {
           const id = addMap("새 맵");
-          selectMap(id);
+          selectEditorMap(id);
         },
         icon: "map-child",
         label: "루트 맵 추가",
@@ -287,7 +284,7 @@ function addCategoryAndSelect(parentId: MapId): void {
   const id = addChildMap(parentId, "새 카테고리", { width: 8, height: 8 });
   if (!id) return;
   collapsedMapIds.delete(parentId);
-  selectMap(id);
+  selectEditorMap(id);
 }
 
 function areAllBranchesCollapsed(root: MapTreeNode): boolean {
@@ -312,6 +309,21 @@ function branchMapIds(root: MapTreeNode): readonly MapId[] {
 function collectBranchMapIds(node: MapTreeNode, ids: MapId[]): void {
   if (node.children.length > 0) ids.push(node.mapId);
   for (const child of node.children) collectBranchMapIds(child, ids);
+}
+
+function expandPathToMap(root: MapTreeNode, mapId: MapId): void {
+  const path = pathToMap(root, mapId);
+  for (const ancestor of path.slice(0, -1)) collapsedMapIds.delete(ancestor);
+}
+
+function pathToMap(node: MapTreeNode, mapId: MapId, path: MapId[] = []): readonly MapId[] {
+  const nextPath = [...path, node.mapId];
+  if (node.mapId === mapId) return nextPath;
+  for (const child of node.children) {
+    const found = pathToMap(child, mapId, nextPath);
+    if (found.length > 0) return found;
+  }
+  return [];
 }
 
 function rerenderMapList(): void {
@@ -375,14 +387,14 @@ function addChildAndSelect(parentId: MapId, name = "새 맵"): void {
   const id = addChildMap(parentId, name);
   if (!id) return;
   collapsedMapIds.delete(parentId);
-  selectMap(id);
+  selectEditorMap(id);
 }
 
 function duplicateAndSelect(mapId: MapId): void {
   const id = duplicateMap(mapId);
   if (!id) return;
   collapsedMapIds.delete(mapId);
-  selectMap(id);
+  selectEditorMap(id);
 }
 
 function deleteAndSelectNext(mapId: MapId): void {
@@ -390,12 +402,12 @@ function deleteAndSelectNext(mapId: MapId): void {
   deleteMap(mapId);
   const next = store.getCurrent();
   if (!next.maps[editorState.get().currentMapId ?? ""]) {
-    selectMap(next.startMapId);
+    selectEditorMap(next.startMapId);
   }
 }
 
 function openMapProperties(mapId: MapId, mapName: string): void {
-  selectMap(mapId);
+  selectEditorMap(mapId);
   openEventSubdialog({
     render: (body) => renderMapProps(body),
     testId: `map-properties-modal-${mapId}`,
@@ -406,7 +418,7 @@ function openMapProperties(mapId: MapId, mapName: string): void {
 }
 
 function openMapActions(context: MapActionContext, point: MapContextMenuPoint): void {
-  selectMap(context.mapId);
+  selectEditorMap(context.mapId);
   window.setTimeout(() => focusMapRow(context.mapId), 0);
   openMapContextMenu({
     items: mapContextMenuItems(context),
