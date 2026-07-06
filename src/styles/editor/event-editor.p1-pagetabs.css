@@ -1,0 +1,96 @@
+/* P1: 페이지 탭 리치화 (높음-5) */
+/* 좌측 세로 페이지 탭에 그래픽 마이크로 썸네일 + 페이지 번호 + 조건 배지를 세로 스택으로 배치. */
+
+.event-page-number-tabs .btn.event-page-tab-rich {
+  align-content: center;
+  display: grid;
+  gap: 2px;
+  grid-template-rows: 16px auto auto;
+  height: auto;
+  justify-items: center;
+  min-height: 56px;
+  overflow: hidden;
+  padding: 5px 2px 4px;
+}
+
+.event-page-tab-thumb {
+  align-items: flex-start;
+  display: flex;
+  height: 16px;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  width: 18px;
+}
+
+.event-page-tab-thumb .event-graphic-icon-preview {
+  flex: none;
+  image-rendering: pixelated;
+}
+
+/* 그래픽 없음/미지원 → 빈 칸 placeholder */
+.event-page-tab-thumb .event-graphic-icon-preview[data-empty="true"],
+.event-page-tab-thumb .event-graphic-icon-preview[data-unsupported="true"] {
+  background: transparent;
+  border: 1px dashed var(--event-modern-border, currentColor);
+  border-radius: 3px;
+  height: 14px !important;
+  opacity: 0.45;
+  width: 12px !important;
+}
+
+.event-page-tab-number {
+  font-size: 15px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.event-page-tab-badges {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  justify-content: center;
+  max-width: 46px;
+  min-height: 10px;
+  pointer-events: none;
+}
+
+.event-page-tab-badge {
+  align-items: center;
+  background: var(--event-modern-accent-soft, rgba(96, 128, 192, 0.25));
+  border: 1px solid var(--event-modern-border, rgba(96, 128, 192, 0.5));
+  border-radius: 2px;
+  color: var(--text-1, inherit);
+  display: inline-flex;
+  font: 700 8px/1 Tahoma, "Malgun Gothic", sans-serif;
+  justify-content: center;
+  min-width: 10px;
+  padding: 1px 1px 0;
+}
+
+.event-page-tab-badge-switch {
+  background: rgba(88, 160, 96, 0.28);
+}
+
+.event-page-tab-badge-variable {
+  background: rgba(96, 128, 208, 0.28);
+}
+
+.event-page-tab-badge-item {
+  background: rgba(200, 152, 72, 0.3);
+}
+
+.event-page-tab-badge-actor {
+  background: rgba(176, 96, 176, 0.28);
+}
+
+.event-page-tab-badge-timer {
+  background: rgba(192, 88, 88, 0.28);
+}
+
+.event-page-tab-badge-more {
+  background: transparent;
+  border-style: dashed;
+  opacity: 0.8;
+}

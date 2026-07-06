@@ -1,4 +1,4 @@
-import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
@@ -70,6 +70,17 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
       list.splice(fromIndex, 1);
       list.splice(clamped, 0, moving);
     }),
+    // [P2] 크로스 컨테이너 이동 (공용/전투 이벤트 명령 리스트).
+    moveCommandAcross: (sourcePath, targetContainerPath, toIndex) => {
+      if (isContainerInsideCommand(sourcePath, targetContainerPath)) return;
+      edit((commands) => {
+        const targetList = commandList(commands, targetContainerPath);
+        const sourceList = commandList(commands, sourcePath.slice(0, -1));
+        const fromIndex = sourcePath[sourcePath.length - 1];
+        if (!targetList || !sourceList || fromIndex === undefined) return;
+        moveCommandBetweenLists(sourceList, fromIndex, targetList, toIndex);
+      });
+    },
   };
 }
 

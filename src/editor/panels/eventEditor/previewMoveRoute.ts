@@ -1,11 +1,15 @@
 import { el } from "@/util/dom";
+import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import type { Command, Dir, MoveCommand } from "@/project/types";
+import { drawTransferMapPreview } from "./transferMapPreview";
+import type { Command, Dir, GameMap, MoveCommand } from "@/project/types";
 
 type Pt = { x: number; y: number };
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 // 이동 경로 설정(moveEvent) 프리뷰: 대상 카드 + 격자 위 궤적선 + 이동명령 테이프 + 옵션 배지.
+// [P2] 편집 중인 이벤트를 특정할 수 있으면 실제 맵 캔버스 위에 경로 화살표 오버레이도 그린다.
 export function previewMoveRoute(cmd: Extract<Command, { kind: "moveEvent" }>): HTMLElement {
   const root = el("div", { class: "ecp-move", dataset: { testid: "ecp-move-preview" } });
   root.append(
@@ -23,6 +27,8 @@ export function previewMoveRoute(cmd: Extract<Command, { kind: "moveEvent" }>): 
   } else {
     root.append(el("div", { class: "ecp-move-nogrid", text: points.length >= 2 ? "이동 궤적" : "이동 궤적 없음 (제자리/상대 이동)" }));
   }
+  const mapOverlay = points.length >= 2 ? renderMapTrajectoryOverlay(cmd, points) : null;
+  if (mapOverlay) root.append(mapOverlay);
   root.append(renderTape(cmd.route.moves));
   const badges = el("div", { class: "ecp-move-badges" });
   if (cmd.route.repeat) badges.append(badge("반복"));
@@ -30,6 +36,99 @@ export function previewMoveRoute(cmd: Extract<Command, { kind: "moveEvent" }>): 
   if (cmd.route.skippable) badges.append(badge("불가 시 건너뜀"));
   if (badges.childNodes.length > 0) root.append(badges);
   return root;
+}
+
+// [P2] 실제 맵 크롭 위 경로 오버레이. 편집 중 이벤트(모달 dataset 우선, editorState 폴백)의
+// 위치에서 시작하는 절대 궤적을 폴리라인 + 종점 화살촉으로 그린다.
+function renderMapTrajectoryOverlay(
+  cmd: Extract<Command, { kind: "moveEvent" }>,
+  points: readonly Pt[]
+): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  const probe = document.createElement("canvas");
+  if (typeof probe.getContext !== "function") return null;
+  const context = editingEventContext(cmd.eventId);
+  if (!context) return null;
+  const { map, mapId, eventX, eventY } = context;
+  const project = store.getCurrent();
+  const zoom = Math.max(0.15, Math.min(2, 220 / Math.max(1, map.width * map.tileSize)));
+  const wrap = el("div", { class: "ecp-move-map-overlay", dataset: { testid: "ecp-move-map-overlay" } });
+  probe.className = "ecp-move-map-canvas";
+  wrap.append(probe);
+  wrap.append(el("div", { class: "ecp-map-caption", text: `맵 위 경로 — 시작 (${eventX}, ${eventY})` }));
+  drawTransferMapPreview({
+    canvas: probe,
+    project,
+    mapId,
+    selection: { x: eventX, y: eventY, zoom },
+    isCurrent: () => probe.isConnected,
+  })
+    .then(() => drawRouteOnMap(probe, map, eventX, eventY, points))
+    .catch(() => {
+      /* 타일셋 로드 실패 등 — 오버레이 생략 */
+    });
+  return wrap;
+}
+
+function editingEventContext(
+  routeEventId: string
+): { readonly map: GameMap; readonly mapId: string; readonly eventX: number; readonly eventY: number } | null {
+  const project = store.getCurrent();
+  const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+  const mapId = modal?.dataset.mapId ?? editorState.get().currentMapId ?? project.startMapId;
+  const map = project.maps[mapId];
+  if (!map) return null;
+  const targetEventId =
+    routeEventId && routeEventId !== PLAYER_MOVE_TARGET
+      ? routeEventId
+      : modal?.dataset.eventId ?? editorState.get().selectedEventId ?? "";
+  const event = map.events.find((entry) => entry.id === targetEventId);
+  if (!event) return null;
+  return { map, mapId, eventX: event.x, eventY: event.y };
+}
+
+function drawRouteOnMap(canvas: HTMLCanvasElement, map: GameMap, startX: number, startY: number, points: readonly Pt[]): void {
+  const context = canvas.getContext("2d");
+  if (!context || points.length < 2) return;
+  const tile = map.tileSize;
+  const centers = points.map((point) => ({
+    x: (startX + point.x) * tile + tile / 2,
+    y: (startY + point.y) * tile + tile / 2,
+  }));
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.strokeStyle = "rgba(17, 24, 39, 0.85)";
+  context.lineWidth = Math.max(3, tile * 0.3);
+  strokePolyline(context, centers);
+  context.strokeStyle = "#ffd34d";
+  context.lineWidth = Math.max(1.5, tile * 0.16);
+  strokePolyline(context, centers);
+  drawArrowHead(context, centers, Math.max(4, tile * 0.4));
+  context.restore();
+}
+
+function strokePolyline(context: CanvasRenderingContext2D, centers: readonly Pt[]): void {
+  context.beginPath();
+  centers.forEach((point, index) => {
+    if (index === 0) context.moveTo(point.x, point.y);
+    else context.lineTo(point.x, point.y);
+  });
+  context.stroke();
+}
+
+function drawArrowHead(context: CanvasRenderingContext2D, centers: readonly Pt[], size: number): void {
+  const last = centers[centers.length - 1];
+  const prev = centers[centers.length - 2];
+  if (!last || !prev) return;
+  const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
+  context.fillStyle = "#ffd34d";
+  context.beginPath();
+  context.moveTo(last.x, last.y);
+  context.lineTo(last.x - size * Math.cos(angle - Math.PI / 6), last.y - size * Math.sin(angle - Math.PI / 6));
+  context.lineTo(last.x - size * Math.cos(angle + Math.PI / 6), last.y - size * Math.sin(angle + Math.PI / 6));
+  context.closePath();
+  context.fill();
 }
 
 function targetName(eventId: string): string {

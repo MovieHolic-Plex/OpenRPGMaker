@@ -766,13 +766,25 @@
   grid-row: 1;
 }
 
+/* [중간-6] 삭제(파괴적 동작)를 좌측으로 분리: 설정 / 삭제 / (여백) / 확인·취소·적용·도움말 */
 .event-editor-modal-footer {
   align-items: center;
   background: var(--bg-raised);
   border-top: 1px solid var(--border-subtle);
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 12px;
+  grid-template-columns: 48px auto minmax(0, 1fr);
   padding: 0 25px;
+}
+
+.event-editor-footer-danger {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.event-editor-footer-danger .event-editor-footer-button {
+  border-color: color-mix(in srgb, var(--danger, #b3452f) 55%, var(--event-modern-border, var(--border-subtle)));
+  color: var(--danger, #d4553a);
 }
 
 .event-editor-footer-settings {

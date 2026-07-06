@@ -31,17 +31,36 @@ export type CommandSummaryIconPart = {
   readonly tone: "plain";
 };
 
-export type CommandSummaryToken = CommandSummaryPart | CommandSummaryIconPart;
+// [P1] 인라인 썸네일 토큰. 아이콘 토큰과 같은 규약(text:"" 고정, 16px 상한)으로
+// 얼굴 크롭/캐릭터 스프라이트/맵 미니 썸네일을 리스트 줄에 부가한다.
+export type CommandSummaryVisual =
+  | { readonly type: "faceCrop"; readonly resourceId: string; readonly faceIndex: number }
+  | { readonly type: "charsetSprite"; readonly spriteId: string }
+  | { readonly type: "mapThumb"; readonly mapId: string };
+
+export type CommandSummaryVisualPart = {
+  readonly kind: "visual";
+  readonly visual: CommandSummaryVisual;
+  readonly text: "";
+  readonly tone: "plain";
+};
+
+export type CommandSummaryToken = CommandSummaryPart | CommandSummaryIconPart | CommandSummaryVisualPart;
 
 // 아이콘 토큰 판별. 렌더러가 이미지/텍스트 분기할 때 사용한다.
 export function isSummaryIconPart(part: CommandSummaryToken): part is CommandSummaryIconPart {
   return "kind" in part && part.kind === "icon";
 }
 
+// 썸네일 토큰 판별.
+export function isSummaryVisualPart(part: CommandSummaryToken): part is CommandSummaryVisualPart {
+  return "kind" in part && part.kind === "visual";
+}
+
 export function commandSummary(cmd: Command): string {
-  // 아이콘 토큰은 문자열 변환 시 스킵한다 (text 가 "" 라 join 결과는 어차피 불변).
+  // 아이콘/썸네일 토큰은 문자열 변환 시 스킵한다 (text 가 "" 라 join 결과는 어차피 불변).
   return commandSummaryParts(cmd)
-    .filter((part) => !isSummaryIconPart(part))
+    .filter((part) => !isSummaryIconPart(part) && !isSummaryVisualPart(part))
     .map((part) => part.text)
     .join("");
 }
@@ -53,6 +72,7 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryToken[
     case "changeFace":
       return commandLine(
         "얼굴 그래픽 변경",
+        ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId, cmd.faceIndex)] : []),
         valuePart(cmd.resourceId || "(선택 없음)"),
         plainPart(" #"),
         valuePart(String(cmd.faceIndex + 1)),
@@ -109,6 +129,7 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryToken[
       if (cmd.direction && cmd.direction !== "retain") {
         return commandLine(
           "장소 이동",
+          ...mapThumbParts(cmd.mapId),
           valuePart(mapName(cmd.mapId)),
           plainPart(" ("),
           valuePart(`${cmd.x},${cmd.y}`),
@@ -116,9 +137,16 @@ export function commandSummaryParts(cmd: Command): readonly CommandSummaryToken[
           valuePart(transferDirectionSummary(cmd.direction))
         );
       }
-      return commandLine("장소 이동", valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
+      return commandLine("장소 이동", ...mapThumbParts(cmd.mapId), valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
     case "moveEvent":
-      return commandLine("이동 경로 설정", valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : (cmd.eventId || "이 이벤트")), plainPart(" ("), valuePart(String(cmd.route.moves.length)), plainPart("개)"));
+      return commandLine(
+        "이동 경로 설정",
+        ...moveRouteSpriteParts(cmd),
+        valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : (cmd.eventId || "이 이벤트")),
+        plainPart(" ("),
+        valuePart(String(cmd.route.moves.length)),
+        plainPart("개)")
+      );
     case "changeTile":
       return commandLine(
         "타일 변경",
@@ -224,6 +252,24 @@ function onOffBadgePart(value: boolean): CommandSummaryPart {
 // 아이콘 토큰 생성. 리소스 id 만 담고 URL 해석은 렌더러(commandList) 몫.
 function iconPart(resourceId: string): CommandSummaryIconPart {
   return { kind: "icon", resourceId, text: "", tone: "plain" };
+}
+
+// [P1] 얼굴 크롭 썸네일 토큰 (얼굴 그래픽 변경 줄).
+function faceVisualPart(resourceId: string, faceIndex: number): CommandSummaryVisualPart {
+  return { kind: "visual", visual: { type: "faceCrop", resourceId, faceIndex }, text: "", tone: "plain" };
+}
+
+// [P1] 장소 이동 줄의 목적지 맵 미니 썸네일 토큰.
+function mapThumbParts(mapId: string): readonly CommandSummaryVisualPart[] {
+  if (!mapId) return [];
+  return [{ kind: "visual", visual: { type: "mapThumb", mapId }, text: "", tone: "plain" }];
+}
+
+// [P1] 이동 경로에 그래픽 변경이 포함되면 해당 캐릭터 스프라이트 썸네일 토큰.
+function moveRouteSpriteParts(cmd: Extract<Command, { kind: "moveEvent" }>): readonly CommandSummaryVisualPart[] {
+  const change = [...cmd.route.moves].reverse().find((move) => move.kind === "changeGraphic");
+  if (!change || change.kind !== "changeGraphic" || !change.spriteId) return [];
+  return [{ kind: "visual", visual: { type: "charsetSprite", spriteId: change.spriteId }, text: "", tone: "plain" }];
 }
 
 // 아이템에 아이콘 리소스가 지정돼 있으면 아이콘 토큰 1개, 없으면 빈 배열.

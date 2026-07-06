@@ -13,22 +13,27 @@ import { previewMoveRoute } from "./previewMoveRoute";
 import { previewPicture } from "./previewPicture";
 import type { Command } from "@/project/types";
 
+// [중간-3] 프리뷰 문맥: 직전 changeFace 상태 등 리스트 문맥을 프리뷰에 전달.
+export type CommandPreviewContext = {
+  readonly face?: { readonly resourceId: string; readonly faceIndex: number };
+};
+
 // 명령 편집 모달 우측 "이미지 리치" 프리뷰 패널. staged command 를 받아 종류별 시각화를
 // 렌더한다. 전용 렌더러가 없으면 요약 카드로 폴백한다(패널이 비어 보이지 않게).
-export function renderCommandPreview(cmd: Command): HTMLElement {
+export function renderCommandPreview(cmd: Command, context?: CommandPreviewContext): HTMLElement {
   const panel = el("div", {
     class: "event-command-preview",
     dataset: { testid: "event-command-preview-body", previewKind: cmd.kind },
   });
   panel.append(el("div", { class: "ecp-caption", text: commandLabel(cmd.kind) }));
-  panel.append(renderVisual(cmd));
+  panel.append(renderVisual(cmd, context));
   return panel;
 }
 
-function renderVisual(cmd: Command): HTMLElement {
+function renderVisual(cmd: Command, context?: CommandPreviewContext): HTMLElement {
   switch (cmd.kind) {
     case "text":
-      return messageWindowMock(cmd.speaker, cmd.body, false);
+      return messageWindowMock(cmd.speaker, cmd.body, false, context?.face);
     case "changeFace":
       return faceStage(cmd);
     case "displayTextSettings":
@@ -73,10 +78,29 @@ function renderVisual(cmd: Command): HTMLElement {
   }
 }
 
-function messageWindowMock(speaker: string | undefined, body: string, faceRight: boolean): HTMLElement {
+function messageWindowMock(
+  speaker: string | undefined,
+  body: string,
+  faceRight: boolean,
+  face?: CommandPreviewContext["face"]
+): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
-  const win = el("div", { class: `ecp-message-window${faceRight ? " face-right" : ""}`, dataset: { testid: "ecp-message-window" } });
+  const win = el("div", {
+    class: `ecp-message-window${faceRight ? " face-right" : ""}${face ? " with-face" : ""}`,
+    dataset: { testid: "ecp-message-window" },
+  });
   applySystemGraphic(win);
+  // [중간-3] 직전 changeFace 상태가 있으면 화자 얼굴을 프리뷰에 반영.
+  if (face) {
+    win.append(
+      renderFacesetPreview({
+        resourceId: face.resourceId,
+        faceIndex: face.faceIndex,
+        position: "left",
+        flipHorizontally: false,
+      })
+    );
+  }
   if (speaker) win.append(el("div", { class: "ecp-message-speaker", text: speaker }));
   win.append(el("div", { class: "ecp-message-body", text: body || "..." }));
   stage.append(win);

@@ -56,6 +56,36 @@ export function resolveRootCommandBranchList(
   return list;
 }
 
+// [P2] 크로스 컨테이너 드래그: 대상 컨테이너가 이동 대상 명령 자신의 분기(자손)인지 검사.
+// 자기 분기 안으로 이동하면 명령이 자신을 삼켜 유실되므로 금지한다.
+export function isContainerInsideCommand(itemPath: readonly number[], containerPath: readonly number[]): boolean {
+  if (containerPath.length <= itemPath.length) return false;
+  return itemPath.every((value, index) => containerPath[index] === value);
+}
+
+// [P2] 두 명령 리스트 사이(또는 같은 리스트 안)에서 명령을 이동한다.
+// 같은 리스트면 기존 재정렬 규칙(toIndex 를 length-1 로 클램프), 다른 리스트면 끝 삽입 허용.
+export function moveCommandBetweenLists(
+  sourceList: Command[],
+  fromIndex: number,
+  targetList: Command[],
+  toIndex: number
+): boolean {
+  const moving = sourceList[fromIndex];
+  if (!moving) return false;
+  if (sourceList === targetList) {
+    const clamped = Math.max(0, Math.min(targetList.length - 1, toIndex));
+    if (clamped === fromIndex) return false;
+    sourceList.splice(fromIndex, 1);
+    sourceList.splice(clamped, 0, moving);
+    return true;
+  }
+  sourceList.splice(fromIndex, 1);
+  const clamped = Math.max(0, Math.min(targetList.length, toIndex));
+  targetList.splice(clamped, 0, moving);
+  return true;
+}
+
 export function resolveCommandAtPath(commands: Command[], path: readonly number[]): Command | null {
   const commandIndex = path[path.length - 1];
   if (commandIndex === undefined) return null;

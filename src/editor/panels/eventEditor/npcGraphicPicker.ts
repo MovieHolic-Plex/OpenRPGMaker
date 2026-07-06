@@ -20,9 +20,12 @@ import {
   renderNpcGraphicPickerFooter,
   renderPatternRadioGroup,
   setActiveGraphicResource,
+  setClass,
 } from "./npcGraphicPickerControls";
 
 const SLOT_SCALE = 2;
+const WALK_PREVIEW_SCALE = 2;
+const WALK_PATTERNS = [0, 1, 2] as const;
 const DEFAULT_SELECTION = {
   characterIndex: 0,
   direction: "down",
@@ -70,6 +73,15 @@ export function renderNpcGraphicPicker(
   frameProbe.className = "npc-frame-preview event-graphic-frame-probe";
   frameProbe.dataset.testid = "npc-frame-preview";
 
+  const walkPreview = document.createElement("div");
+  walkPreview.className = "npc-walk-preview";
+  walkPreview.dataset.testid = "npc-walk-preview";
+  walkPreview.title = "걷기 애니메이션 미리보기";
+
+  const probeStack = document.createElement("div");
+  probeStack.className = "event-graphic-probe-stack";
+  probeStack.append(frameProbe, walkPreview);
+
   const directionGroup = renderDirectionRadioGroup(selection.direction, (direction) => {
     applySelection({ ...selection, direction });
   });
@@ -92,9 +104,15 @@ export function renderNpcGraphicPicker(
   });
   directBox.append(directInput);
 
+  const advancedDetails = document.createElement("details");
+  advancedDetails.className = "npc-advanced-sprite";
+  const advancedSummary = document.createElement("summary");
+  advancedSummary.textContent = "고급: 직접 ID";
+  advancedDetails.append(advancedSummary, directBox);
+
   const rightPane = document.createElement("div");
   rightPane.className = "event-graphic-right-pane";
-  rightPane.append(slotGrid, optionArea, directBox, frameProbe);
+  rightPane.append(slotGrid, optionArea, advancedDetails, probeStack);
 
   const pickerFrame = document.createElement("div");
   pickerFrame.className = "event-graphic-picker-frame";
@@ -123,9 +141,10 @@ export function renderNpcGraphicPicker(
     directionGroup.setValue(selection.direction);
     patternGroup.setValue(selection.pattern);
     applyFrameDataset(frameProbe, selection);
+    applyWalkPreviewStyle(walkPreview, selection);
     for (const button of slotButtons) {
       const slot = Number(button.dataset.slot ?? "-1");
-      button.classList.toggle("active", slot === selection.characterIndex);
+      setClass(button, "active", slot === selection.characterIndex);
       applyPreviewStyle(button, { ...selection, characterIndex: slot }, SLOT_SCALE);
     }
   }
@@ -159,6 +178,17 @@ function applyPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection, 
   applyTransparentColorKeyBackground(target, selection.asset.path);
   target.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale}px`;
   target.style.backgroundPosition = `-${source.x * scale}px -${source.y * scale}px`;
+}
+
+function applyWalkPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection): void {
+  applyPreviewStyle(target, selection, WALK_PREVIEW_SCALE);
+  for (const pattern of WALK_PATTERNS) {
+    const source = charsetFrameSource({ ...selection, pattern });
+    target.style.setProperty(
+      `--npc-walk-frame-${pattern}`,
+      `-${source.x * WALK_PREVIEW_SCALE}px -${source.y * WALK_PREVIEW_SCALE}px`
+    );
+  }
 }
 
 function applyFrameDataset(target: HTMLElement, selection: NpcGraphicSelection): void {

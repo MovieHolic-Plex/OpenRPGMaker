@@ -16,4 +16,13 @@ export type CommandListActions = {
   readonly moveCommand: (path: readonly number[], dir: -1 | 1) => void;
   /** 같은 컨테이너 안에서 sourcePath 명령을 toIndex 위치로 옮긴다(드래그 재정렬용 단일 호출). */
   readonly moveCommandTo: (sourcePath: readonly number[], toIndex: number) => void;
+  /**
+   * [P2] 크로스 컨테이너 이동: sourcePath 명령을 targetContainerPath 리스트의 toIndex 로 옮긴다.
+   * 옵셔널 — 미구현 호스트는 같은 컨테이너 재정렬만 지원한다.
+   */
+  readonly moveCommandAcross?: (
+    sourcePath: readonly number[],
+    targetContainerPath: readonly number[],
+    toIndex: number
+  ) => void;
 };
