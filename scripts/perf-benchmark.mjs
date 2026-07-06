@@ -75,7 +75,7 @@ function measureEditDataPipeline(bench, config) {
   unsubscribe();
 
   return {
-    label: "single-cell paint data pipeline (store.update structuredClone+normalize+emit)",
+    label: "single-cell paint data pipeline (store.updateMap map clone+emit)",
     iterations: config.editIterations,
     mapSize: `${mapSize}x${mapSize}`,
     emittedChanges,
@@ -84,11 +84,9 @@ function measureEditDataPipeline(bench, config) {
 }
 
 function paintSingleCell(bench, mapId, cellIndex, cellCoordinate, index) {
-  bench.store.update((draft) => {
-    draft.maps[mapId].lowerTiles[cellIndex] = index % 2 === 0 ? 101 : 102;
+  bench.store.updateMap(mapId, (draftMap) => {
+    draftMap.lowerTiles[cellIndex] = index % 2 === 0 ? 101 : 102;
   }, {
-    scope: "map",
-    mapId,
     cells: [{ x: cellCoordinate, y: cellCoordinate, layer: "lower" }],
   });
 }

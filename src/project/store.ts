@@ -14,7 +14,7 @@ import { projectWithoutEventDrafts } from "./eventDrafts";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
-import type { MapId, Project } from "./types";
+import type { GameMap, MapId, Project } from "./types";
 
 export type ProjectChangeCell = {
   readonly x: number;
@@ -197,6 +197,41 @@ class ProjectStore {
     this.current = draft;
     this.emit(change);
     this.scheduleAutoSave();
+  }
+
+  updateMap(
+    mapId: MapId,
+    mapMutator: (draft: GameMap) => void,
+    change: { readonly cells?: readonly ProjectChangeCell[] } = {}
+  ): void {
+    const currentMap = this.current.maps[mapId];
+    if (!currentMap) return;
+    const draftMap: GameMap = structuredClone(currentMap);
+    mapMutator(draftMap);
+    // Map-only edits only replace one GameMap. The skipped normalizers read
+    // project root/mapConnections, switch+variable database/session slots, or
+    // the entire project for legacy sprite IDs; paint/erase/fill/event moves do
+    // not create those legacy/global shapes, so full-project normalize is left
+    // on update(), replace(), load(), and save paths.
+    this.current = {
+      ...this.current,
+      maps: {
+        ...this.current.maps,
+        [mapId]: draftMap,
+      },
+    };
+    this.emit({ scope: "map", mapId, ...change });
+    this.scheduleAutoSave();
+  }
+
+  /** @internal */
+  _getPersistedBaselineForTest(): Project | null {
+    return this.persistedBaseline;
+  }
+
+  /** @internal */
+  _setPersistedBaselineForTest(project: Project | null): void {
+    this.persistedBaseline = project;
   }
 
   async flush(): Promise<ProjectFlushResult> {

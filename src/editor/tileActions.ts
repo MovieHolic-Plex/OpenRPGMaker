@@ -22,14 +22,14 @@ type LowerTileEdit = {
 
 export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, tile: number, options: TilePaintOptions = {}): void {
   const targetLayer = effectiveLayerForCurrentMap(mapId, layer, tile);
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
-    const tileset = p.tilesets[m.tilesetId];
+  const current = store.getCurrent();
+  const currentMap = current.maps[mapId];
+  const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  store.updateMap(mapId, (m) => {
     const previousTile = tileAt(m, targetLayer, x, y);
     setTileSafe(m, targetLayer, x, y, tile);
     shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: [{ x, y }], previousTile, nextTile: tile, autoConnect: options.autoConnect ?? true });
-  }, { scope: "map", mapId, cells: changedTileCellsForEdit(mapId, targetLayer, [{ x, y }], options.autoConnect ?? true) });
+  }, { cells: changedTileCellsForEdit(mapId, targetLayer, [{ x, y }], options.autoConnect ?? true) });
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {
@@ -55,22 +55,23 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
 }
 
 export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
-    const tileset = p.tilesets[m.tilesetId];
+  const current = store.getCurrent();
+  const currentMap = current.maps[mapId];
+  const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  store.updateMap(mapId, (m) => {
     const previousTile = tileAt(m, layer, x, y);
     setTileSafe(m, layer, x, y, TILE.EMPTY);
     shapeTerrainAfterLowerEdit(m, tileset, { layer, points: [{ x, y }], previousTile, nextTile: TILE.EMPTY, autoConnect: options.autoConnect ?? true });
-  }, { scope: "map", mapId, cells: changedTileCellsForEdit(mapId, layer, [{ x, y }], options.autoConnect ?? true) });
+  }, { cells: changedTileCellsForEdit(mapId, layer, [{ x, y }], options.autoConnect ?? true) });
 }
 
 export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
   const fillPlan = planFillTile(mapId, layer, x, y, newTile);
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m || !inMap(m, x, y)) return;
-    const tileset = p.tilesets[m.tilesetId];
+  const current = store.getCurrent();
+  const currentMap = current.maps[mapId];
+  const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  store.updateMap(mapId, (m) => {
+    if (!inMap(m, x, y)) return;
     const targetLayer = effectiveLayer(tileset, layer, newTile);
     const targetArr = targetLayer === "lower" ? m.lowerTiles : m.upperTiles;
     const startIdx = y * m.width + x;
@@ -102,8 +103,6 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     }
     shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: changedPoints, previousTile: target, nextTile: newTile, autoConnect: options.autoConnect ?? true });
   }, {
-    scope: "map",
-    mapId,
     cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, options.autoConnect ?? true),
   });
 }

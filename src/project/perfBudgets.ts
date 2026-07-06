@@ -3,9 +3,9 @@
 // headless benchmark script records evidence and exits non-zero on local budget
 // failures so budget changes stay explicit.
 export const PERF_BUDGETS = {
-  // 잠정 예산(2026-07-06 실측 p95 35.7ms 기준 보정). 16ms 복귀 조건: store.update의
-  // 전체 프로젝트 structuredClone을 map/cell 패치 경로로 대체하는 최적화(백로그) 이후.
-  editDataPipelineP95Ms: 40,
+  // 2026-07-06 W4-1: map-only paint benchmark now uses store.updateMap,
+  // cloning one GameMap with structural sharing instead of cloning the whole project.
+  editDataPipelineP95Ms: 16,
   undoSnapshotBytes: 100 * 1024 * 1024,
   // 실측 180ms — 3s는 과잉 여유라 500ms로 하향(50맵×128×128 기준).
   projectLoadP95Ms: 500,

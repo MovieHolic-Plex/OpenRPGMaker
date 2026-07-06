@@ -63,15 +63,13 @@ export function deleteEvent(mapId: MapId, eventId: string): void {
 }
 
 export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): void {
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
+  store.updateMap(mapId, (m) => {
     const ev = m.events.find((e) => e.id === eventId);
     if (ev) {
       ev.x = x;
       ev.y = y;
     }
-  }, { scope: "map", mapId });
+  });
 }
 
 export function updateEvent(
