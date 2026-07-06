@@ -11,9 +11,9 @@
 }
 .status-menu-command,
 .status-menu-detail-action {
-  background:
-    linear-gradient(180deg, var(--rm2k3-status-window-hi), var(--rm2k3-status-window) 45%, var(--rm2k3-status-window-deep));
-  border: 1px solid rgba(245, 251, 255, 0.78);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
   box-shadow: none;
   color: var(--rm2k3-status-text);
   font: inherit;
@@ -26,10 +26,9 @@
 }
 .status-menu-command.selected,
 .status-menu-detail-action.selected {
-  background:
-    linear-gradient(180deg, var(--rm2k3-status-highlight), var(--rm2k3-status-highlight-deep));
+  background: var(--runtime-window-selected-bg);
   border-color: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(245, 251, 255, 0.36);
 }
 .status-menu-body {
   display: grid;
@@ -45,9 +44,13 @@
   grid-template-rows: minmax(0, 1fr) auto;
 }
 .status-menu-fullscreen-scene {
-  background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.7), rgba(18, 60, 154, 0.74) 42%, rgba(7, 30, 104, 0.82));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
   box-shadow: none;
   box-sizing: border-box;
   display: grid;

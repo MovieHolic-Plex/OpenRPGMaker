@@ -266,6 +266,8 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-map-copy", label: "맵 복사", title: "맵 복사", icon: "disabled-blocks", disabled: true, onClick: () => toast("맵 트리에서 복사할 맵을 선택하세요.", "ok") }),
     toolbarButton({ testId: "toolbar-event-test", label: "이벤트 테스트", title: "이벤트 테스트", icon: "event-test", disabled: true, onClick: () => toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok") }),
     separator(),
+    playModeButton("edit"),
+    separator(),
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
     separator(),
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "Supabase 프로젝트 열기", icon: "open", onClick: () => doLoad(topbar) }),
@@ -286,8 +288,6 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-evidence-packet", label: "증거 패킷", title: "브라우저 증거 패킷", icon: "manual", onClick: () => toast("브라우저 증거 패킷 준비됨", "ok") }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
-    separator(),
-    playModeButton("edit"),
     separator(),
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
     // 지형 템플릿은 타일셋의 지식뱅크이므로 DB → 타일셋 → 구성 탭으로 안내한다(2026-07-05 이사).

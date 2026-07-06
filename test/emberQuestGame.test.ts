@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
-import { deserialize, serialize } from "@/project/io";
+import { deserialize, resolveEventPage, serialize } from "@/project/io";
 import { validateProjectReferences } from "@/project/io/references";
 import { createEmberQuestProject, EMBER_MAP, EMBER_SWITCH } from "@/project/defaults/emberQuestGame";
 
@@ -88,6 +88,24 @@ describe("emberQuestGame", () => {
       expect(command.x).toBeLessThan(target.width - 1);
       expect(command.y).toBeLessThan(target.height - 1);
     }
+  });
+
+  it("잿불 마을 동문은 Q1 시작 후 playerTouch 전이 페이지를 해석한다", () => {
+    const gate = project.maps[EMBER_MAP.village].events.find((event) => event.id === "ev_ember_gate_a");
+    expect(gate).toBeTruthy();
+    if (!gate) return;
+
+    const page = resolveEventPage(gate, {
+      switches: { [EMBER_SWITCH.q1Started]: true },
+      variables: {},
+      inventory: {},
+      partyActorIds: project.session.partyActorIds,
+    });
+
+    expect(page?.id).toBe("ev_ember_gate_a_open");
+    expect(page?.commands).toEqual([
+      { kind: "transfer", mapId: EMBER_MAP.forest, x: 2, y: 14, fade: "black" },
+    ]);
   });
 
   it("모든 맵에서 시작/입장 지점으로부터 주요 이벤트에 도달할 수 있다", () => {

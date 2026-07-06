@@ -16,8 +16,8 @@
 }
 
 .name-entry-title {
-  color: var(--text-1, #e8ecff);
-  font-size: 14px;
+  color: var(--runtime-window-text);
+  font-size: var(--runtime-font-size-11);
   letter-spacing: 2px;
 }
 
@@ -25,9 +25,13 @@
   display: flex;
   gap: 4px;
   padding: 6px 10px;
-  background: #10162e;
-  border: 2px solid #3b4a86;
-  border-radius: 4px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
 }
 
 .name-entry-cell {
@@ -37,8 +41,8 @@
   min-width: 22px;
   height: 28px;
   padding: 0 4px;
-  color: var(--text-1, #f4f6ff);
-  font-size: 18px;
+  color: var(--runtime-window-text);
+  font-size: var(--runtime-font-size-18);
   border-bottom: 2px solid #55639c;
 }
 
@@ -64,11 +68,11 @@
 .name-entry-tab {
   padding: 4px 14px;
   color: #cdd5ff;
-  background: #1a2344;
-  border: 2px solid #3b4a86;
-  border-radius: 4px;
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid rgba(245, 251, 255, 0.64);
+  border-radius: 0;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--runtime-font-size-11);
   transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
     border-color var(--transition-fast, 120ms ease);
 }
@@ -79,9 +83,9 @@
 }
 
 .name-entry-tab.active {
-  color: #101528;
-  background: #ffd76a;
-  border-color: #ffd76a;
+  color: var(--runtime-window-text);
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-focus);
   font-weight: 700;
 }
 
@@ -90,9 +94,13 @@
   flex-direction: column;
   gap: 3px;
   padding: 8px;
-  background: #0c1228;
-  border: 2px solid #3b4a86;
-  border-radius: 4px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
 }
 
 .name-entry-row {
@@ -104,12 +112,12 @@
 .name-entry-key {
   min-width: 30px;
   height: 30px;
-  color: var(--text-1, #e8ecff);
-  background: #1a2344;
+  color: var(--runtime-window-text);
+  background: transparent;
   border: 1px solid #2c3868;
-  border-radius: 3px;
+  border-radius: 0;
   cursor: pointer;
-  font-size: 15px;
+  font-size: var(--runtime-font-size-11);
   line-height: 1;
   transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
     border-color var(--transition-fast, 120ms ease);
@@ -117,9 +125,9 @@
 
 .name-entry-key:hover,
 .name-entry-key.selected {
-  color: #101528;
-  background: #ffd76a;
-  border-color: #fff0bf;
+  color: var(--runtime-window-text);
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-focus);
 }
 
 .name-entry-controls {
@@ -129,10 +137,14 @@
 
 .name-entry-action {
   padding: 6px 20px;
-  border-radius: 4px;
-  border: 2px solid #3b4a86;
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--runtime-font-size-11);
 }
 
 .name-entry-action.delete {

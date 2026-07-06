@@ -1,5 +1,5 @@
 import { el } from "@/util/dom";
-import { PLAY_RESOLUTION } from "@/player/playResolution";
+import { calculatePlaySurfaceCropMetrics, calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
 
 export type PlaySurface = {
   readonly viewport: HTMLElement;
@@ -43,12 +43,20 @@ export function createPlaySurface(): PlaySurface {
 
 function syncPlaySurfaceMetrics(viewport: HTMLElement): void {
   const bounds = viewport.getBoundingClientRect();
-  const containScale = Math.min(bounds.width / PLAY_RESOLUTION.width, bounds.height / PLAY_RESOLUTION.height);
-  const inFullscreenTestPlay = viewport.closest("[data-testid='test-play-window'][data-window-mode='fullscreen']") !== null;
-  const containedScale = containScale >= 1 ? Math.max(1, Math.floor(containScale)) : containScale;
-  const scale = inFullscreenTestPlay ? containedScale : Math.min(2, containedScale);
+  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height);
+  const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale);
   viewport.style.setProperty("--play-scale", String(scale));
   viewport.style.setProperty("--play-scale-x", String(scale));
   viewport.style.setProperty("--play-scale-y", String(scale));
+  viewport.style.setProperty("--play-crop-top", cssPx(crop.top));
+  viewport.style.setProperty("--play-crop-right", cssPx(crop.right));
+  viewport.style.setProperty("--play-crop-bottom", cssPx(crop.bottom));
+  viewport.style.setProperty("--play-crop-left", cssPx(crop.left));
+  viewport.style.setProperty("--play-visible-width", cssPx(crop.visibleWidth));
+  viewport.style.setProperty("--play-visible-height", cssPx(crop.visibleHeight));
   viewport.dataset.scale = scale.toFixed(3);
+}
+
+function cssPx(value: number): string {
+  return `${Math.round(value * 1000) / 1000}px`;
 }

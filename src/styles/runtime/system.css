@@ -1,0 +1,62 @@
+@font-face {
+  font-family: "Galmuri9";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/assets/fonts/Galmuri9.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Galmuri11";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/assets/fonts/Galmuri11.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Galmuri11";
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url("/assets/fonts/Galmuri11-Bold.woff2") format("woff2");
+}
+
+:root {
+  --runtime-pixel-font: "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
+  --runtime-font-size-9: 9px;
+  --runtime-font-size-11: 11px;
+  --runtime-font-size-18: 18px;
+  --runtime-font-size-22: 22px;
+  --runtime-window-skin: url("/assets/ui/windowskin-rm2003.png");
+  --runtime-window-slice: 24 fill;
+  --runtime-window-border: 8px;
+  --runtime-window-border-tight: 6px;
+  --runtime-window-text: #f4fbff;
+  --runtime-window-muted: #d7ecff;
+  --runtime-window-highlight: #fff6a8;
+  --runtime-window-shadow: #061a55;
+  --runtime-window-focus: #f5d04a;
+  --runtime-window-fill-fallback: #123c9a;
+  --runtime-window-selected-bg: rgba(53, 113, 226, 0.62);
+}
+
+.player-layout.system-shell,
+.player-layout.system-shell button,
+.runtime-overlay,
+.dialogue-overlay,
+.battle-scene,
+.name-entry-overlay {
+  -webkit-font-smoothing: none;
+  font-family: var(--runtime-pixel-font);
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
+}
+
+.player-layout.system-shell,
+.runtime-overlay,
+.dialogue-overlay,
+.battle-scene,
+.name-entry-overlay {
+  image-rendering: pixelated;
+}

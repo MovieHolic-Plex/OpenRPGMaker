@@ -88,7 +88,7 @@ type SpriteDebugScene = Phaser.Scene & {
 export function installPlaySceneTestHooks(
   scene: Phaser.Scene,
   input: Input,
-  session: PlaySession,
+  getSession: () => PlaySession,
   syncRuntimeState: () => void
 ): void {
   const w = window as TestHookWindow;
@@ -101,7 +101,7 @@ export function installPlaySceneTestHooks(
   w.__rpgzzuCamera = () => cameraDebug(scene);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {
-    applyDebugOp(session, op);
+    applyDebugOp(getSession(), op);
     syncRuntimeState();
   };
   w.__rpgzzuDebug = {
@@ -112,23 +112,26 @@ export function installPlaySceneTestHooks(
     heal: () => applyAndSync({ kind: "heal" }),
     teleport: (mapId, x, y) => applyAndSync({ kind: "teleport", mapId, x, y }),
     applyPreset: (preset) => {
-      applyStatePreset(session, preset);
+      applyStatePreset(getSession(), preset);
       syncRuntimeState();
     },
     setSeed: (seed) => {
-      reseedSessionRng(session, seed);
+      reseedSessionRng(getSession(), seed);
       syncRuntimeState();
     },
-    readState: () => ({
-      currentMapId: session.currentMapId,
-      x: session.x,
-      y: session.y,
-      gold: session.gold,
-      switches: { ...session.switches },
-      variables: { ...session.variables },
-      inventory: { ...session.inventory },
-      rng: cloneRngState(normalizeRngState(session.rng)),
-    }),
+    readState: () => {
+      const session = getSession();
+      return {
+        currentMapId: session.currentMapId,
+        x: session.x,
+        y: session.y,
+        gold: session.gold,
+        switches: { ...session.switches },
+        variables: { ...session.variables },
+        inventory: { ...session.inventory },
+        rng: cloneRngState(normalizeRngState(session.rng)),
+      };
+    },
   };
   scene.events.once("shutdown", () => {
     delete w.__rpgzzuInput;
@@ -142,6 +145,7 @@ export function installPlaySceneTestHooks(
   const params = new URLSearchParams(window.location.search);
   if (params.get("e2eMedia") === "1") {
     w.__rpgzzuSetMediaState = (state) => {
+      const session = getSession();
       if (state.audioResourceId) {
         session.audio.bgm = { resourceId: state.audioResourceId, loop: true };
         if (hasRuntimeOverlay(scene)) {
@@ -166,6 +170,7 @@ export function installPlaySceneTestHooks(
     return;
   }
   w.__rpgzzuSetActorVitals = (actorId, hp, mp) => {
+    const session = getSession();
     const vitals = session.actorVitals[actorId];
     if (!vitals) return;
     vitals.hp = Math.max(0, Math.min(vitals.maxHp, hp));

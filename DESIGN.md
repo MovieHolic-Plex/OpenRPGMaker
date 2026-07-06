@@ -149,6 +149,22 @@ The Shop Processing play overlay follows the blue RM-era shop windows rather tha
 | `--rm2k3-shop-owned-height` | `48px` | Owned/equipped panel height |
 | `--rm2k3-shop-sprite-*` | component colors | CSS pixel party sprites in shop preview |
 
+### Runtime pixel font and window skin tokens
+
+Runtime game surfaces use a separate retro presentation layer from the modern editor shell. These tokens are defined in `src/styles/runtime/system.css` and are scoped by usage to player/runtime DOM surfaces, not editor workbench chrome.
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--runtime-pixel-font` | `"Galmuri11", "Galmuri9", ...` | Dialogue, choices, title/load, main menu, battle HUD, shop/inn, game-over, and name input |
+| `--runtime-font-size-9` | `9px` | Compact Galmuri9 native-size labels and dialogue text on the 320×240 stage |
+| `--runtime-font-size-11` | `11px` | Standard Galmuri11 native-size menu/HUD text |
+| `--runtime-font-size-18` | `18px` | 2× Galmuri9 display text and compact runtime headings |
+| `--runtime-font-size-22` | `22px` | 2× Galmuri11 title text |
+| `--runtime-window-skin` | `url("/assets/ui/windowskin-rm2003.png")` | Shared 9-slice skin for runtime game windows |
+| `--runtime-window-slice` | `24 fill` | `border-image-slice` value for the 96×96 default skin |
+| `--runtime-window-border` | `8px` | Standard runtime window border width |
+| `--runtime-window-border-tight` | `6px` | Compact nested runtime window border width |
+
 ### Runtime title-screen tokens
 
 The default game title screen uses a bright RPG Maker-style pixel field/castle background with separate title ornaments, a classic blue RM-era menu window, a white selection cursor, and a small input hint panel layered on top. These tokens are scoped to `.rm-title-screen` / `.rm-title-menu` UI only.
@@ -216,7 +232,7 @@ There are **no typography utility classes**; sizes are set per-component with li
 
 - UI: `system-ui, -apple-system, "Segoe UI", sans-serif`
 - Mono (`--font-mono` / `--mono` alias): `"Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace`
-- Pixel display: bitmap/pixel fonts only inside play/dialogue surfaces when bundled locally, without layout shift.
+- Pixel display: Galmuri is bundled locally and is used only inside runtime game surfaces through `--runtime-pixel-font`, with `font-display: block` to avoid fallback-gothic FOUT.
 
 ### Rules
 
