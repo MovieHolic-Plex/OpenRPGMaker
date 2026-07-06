@@ -847,6 +847,8 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.screen).toMatchObject({ tint: "warm", shake: 30, weather: "rain" });
     expect(session.m2Runtime?.access).toMatchObject({ save: false, menu: false });
     expect(session.m2Runtime?.actors?.actor_hero).toMatchObject({ name: "Alex", parameters: 3, states: ["poison"] });
+    expect(session.actorParamBonuses?.actor_hero).toEqual({ maxHp: 3 });
+    expect(session.actorStateIds?.actor_hero).toEqual(["poison"]);
     expect(session.variables.player_map).toBe(0);
     expect(session.variables.player_x).toBe(4);
     expect(session.variables.player_y).toBe(5);
@@ -854,6 +856,39 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.audio).toMatchObject({ memorizedBgm: "field-theme", playedMemorizedBgm: "field-theme" });
     expect(session.audio.bgm).toEqual({ resourceId: "field-theme", loop: true });
     expect(session.m2Runtime?.fallbacks?.some((entry) => entry.commandId.includes("break-loop"))).toBe(true);
+  });
+
+  it("applies M2 damage processing and actor graphic changes to live session actor state", () => {
+    const session = mkM2Session();
+    session.partyActorIds = ["actor_hero"];
+    session.actorVitals.actor_hero = { hp: 40, mp: 8, maxHp: 50, maxMp: 10 };
+    const commands: Command[] = [
+      m2Command("Damage Processing", { target: "actor_hero", operation: "add", value: 12 }),
+      m2Command("Change Actor Graphic", { target: "actor_hero", value: "easyrpg-charset-actor2" }),
+    ];
+
+    drain(createInterpreter(commands, session));
+
+    expect(session.actorVitals.actor_hero?.hp).toBe(28);
+    expect(session.actorCharacterResourceIds?.actor_hero).toBe("easyrpg-charset-actor2");
+    expect(session.m2Runtime?.actors?.actor_hero).toMatchObject({ damage: 12, characterGraphic: "easyrpg-charset-actor2" });
+  });
+
+  it("emits a blocking scrollMap step with direction, return, and lock options", () => {
+    const session = mkM2Session();
+    const interpreter = createInterpreter([
+      m2Command("Scroll Map", { direction: "right", distance: 3, durationMs: 450, wait: true, mode: "return", lock: true }),
+    ], session);
+
+    expect(interpreter.start()).toEqual({
+      kind: "scrollMap",
+      direction: "right",
+      distanceTiles: 3,
+      durationMs: 450,
+      wait: true,
+      returnToPlayer: true,
+      lock: true,
+    });
   });
 
   it("records modern event commands into explicit runtime buckets without unsafe script execution", () => {

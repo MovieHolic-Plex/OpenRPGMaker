@@ -137,6 +137,24 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
   if (title === "Change Battleback") {
     return [{ key: "resourceId", label: "전투 배경", type: "text", defaultValue: "" }];
   }
+  if (title === "Scroll Map") {
+    return [
+      { key: "direction", label: "방향", type: "select", defaultValue: "down", options: [
+        { value: "down", label: "아래" },
+        { value: "left", label: "왼쪽" },
+        { value: "right", label: "오른쪽" },
+        { value: "up", label: "위" },
+      ] },
+      { key: "distance", label: "거리(타일)", type: "number", defaultValue: 1 },
+      { key: "speed", label: "속도", type: "number", defaultValue: 4 },
+      { key: "wait", label: "대기", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
+      { key: "mode", label: "모드", type: "select", defaultValue: "return", options: [
+        { value: "return", label: "복귀" },
+        { value: "lock", label: "고정" },
+        { value: "pan", label: "패닝" },
+      ] },
+    ];
+  }
   if (title.includes("Location") || title.includes("Player") || title.includes("Event") || title.includes("Map")) {
     return [
       { key: "target", label: "대상", type: "text", defaultValue: "" },

@@ -59,6 +59,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     names: options.party?.names,
     levels: options.party?.levels,
     vitals: options.party?.vitals,
+    paramBonuses: options.party?.paramBonuses,
+    stateIds: options.party?.stateIds,
     partyActorIds: options.party?.partyActorIds,
   });
   const enemies = enemyBattlers(options.project, troopRecord);

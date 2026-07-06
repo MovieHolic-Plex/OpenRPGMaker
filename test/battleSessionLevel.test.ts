@@ -66,4 +66,24 @@ describe("battle runtime — 세션 레벨/바이탈 반영", () => {
     expect(actor?.hp).toBe(actor?.maxHp);
     expect(actor?.maxHp).toBe(514);
   });
+
+  it("세션 파라미터 보정과 상태 이상을 전투 액터에 반영한다", () => {
+    const project = battleProject();
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      party: {
+        levels: { actor_hero: 1 },
+        experience: {},
+        paramBonuses: { actor_hero: { maxHp: 25, attack: 7 } },
+        stateIds: { actor_hero: ["state_poison"] },
+      },
+    });
+    const actor = runtime.snapshot().actors[0];
+    expect(actor?.maxHp).toBe(heroMaxHpAtLevel(project, 1) + 25);
+    expect(actor?.hp).toBe(actor?.maxHp);
+    expect(actor?.stateIds).toEqual(["state_poison"]);
+  });
 });

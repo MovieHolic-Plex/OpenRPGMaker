@@ -197,6 +197,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       stopAudioCommand();
       scene.clearRuntimeOverlay("audio-indicator");
       return true;
+    case "scrollMap":
+      void scene.panScreen({ ...step, wait: false });
+      return true;
     case "shop":
       scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
       return true;

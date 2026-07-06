@@ -194,6 +194,11 @@ describe("m2 event command catalog", () => {
     // 6A-1 머지로 Key Input Processing이 네이티브 inputWait에 매핑되어 runtime-full로 승격됨.
     expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-full");
     expect(requireEntry("Show Text").supportStatus).toBe("runtime-full");
+    expect(requireEntry("Change Parameters").supportStatus).toBe("runtime-full");
+    expect(requireEntry("Change State").supportStatus).toBe("runtime-full");
+    expect(requireEntry("Damage Processing").supportStatus).toBe("runtime-full");
+    expect(requireEntry("Change Actor Graphic").supportStatus).toBe("runtime-full");
+    expect(requireEntry("Scroll Map").supportStatus).toBe("runtime-full");
   });
 
   it("keeps the support table aligned with implemented battle M2 ids", () => {

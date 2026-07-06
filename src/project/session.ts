@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, Command, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
@@ -72,6 +72,12 @@ export interface PlaySession {
   actorRows: Record<string, ActorRowPosition>;
   // 런타임 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 미설정 시 DB 이름 사용.
   actorNames?: Record<string, string>;
+  // 런타임 주인공 그래픽 오버라이드(Change Actor Graphic). actorId → charset resourceId.
+  actorCharacterResourceIds?: Record<string, string>;
+  // 런타임 능력치 영구 보정(Change Parameters). actorId → parameterKey → delta.
+  actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;
+  // 필드/전투로 이어지는 런타임 상태 이상(Change State).
+  actorStateIds?: Record<string, string[]>;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;
@@ -134,6 +140,9 @@ export function startSession(project: Project, seed?: number): PlaySession {
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),
     actorNames: {},
+    actorCharacterResourceIds: {},
+    actorParamBonuses: {},
+    actorStateIds: {},
     currentMapId: project.startMapId,
     x: project.startPos.x,
     y: project.startPos.y,

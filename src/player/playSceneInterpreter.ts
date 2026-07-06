@@ -196,6 +196,9 @@ async function consumeBlockingStep(
     case "shakeScreen":
       await scene.shakeScreen(step);
       return resumeAfterSurface(scene, interpreter);
+    case "scrollMap":
+      await scene.panScreen(step);
+      return resumeAfterSurface(scene, interpreter);
     case "shop":
       return resumeWithValue(scene, interpreter, await playShop(scene, step));
     case "inn":

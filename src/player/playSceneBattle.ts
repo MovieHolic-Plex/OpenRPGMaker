@@ -31,6 +31,8 @@ export function playBattle(
       experience: scene.session.actorExperience,
       names: scene.session.actorNames,
       vitals: scene.session.actorVitals,
+      paramBonuses: scene.session.actorParamBonuses,
+      stateIds: scene.session.actorStateIds,
       // 플레이 중 파티 편성(라이브 세션). 없으면 전투가 에디터 시작 상태 파티를 쓴다.
       partyActorIds: scene.session.partyActorIds,
     },
