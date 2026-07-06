@@ -13,9 +13,20 @@ import {
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
-import type { Project } from "./types";
+import type { MapId, Project } from "./types";
 
-type Listener = (project: Project) => void;
+export type ProjectChangeCell = {
+  readonly x: number;
+  readonly y: number;
+  readonly layer: "lower" | "upper" | "event";
+};
+
+export type ProjectChangeDescriptor =
+  | { readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] }
+  | { readonly scope: "database"; readonly collection?: string }
+  | { readonly scope: "system" | "assets" | "project" };
+
+type Listener = (project: Project, change: ProjectChangeDescriptor) => void;
 type AutoSaveListener = (state: AutoSaveState) => void;
 
 export type AutoSaveState =
@@ -104,7 +115,7 @@ class ProjectStore {
       throw error;
     }
     this.loaded = true;
-    this.emit();
+    this.emit({ scope: "project" });
     return this.current;
   }
 
@@ -150,7 +161,7 @@ class ProjectStore {
         this.remotePersistenceDisabledReason = null;
         await this.normalizeCurrentProject();
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
-        this.emit();
+        this.emit({ scope: "project" });
         this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
       }
@@ -170,18 +181,18 @@ class ProjectStore {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
     this.current = project;
-    this.emit();
+    this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
 
-  update(mutator: (draft: Project) => void): void {
+  update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     const draft: Project = structuredClone(this.current);
     mutator(draft);
     ensureProjectMapConnections(draft);
     ensureSwitchVariableSlots(draft);
     removeLegacySpriteReferences(draft);
     this.current = draft;
-    this.emit();
+    this.emit(change);
     this.scheduleAutoSave();
   }
 
@@ -200,7 +211,7 @@ class ProjectStore {
 
   async clearAll(): Promise<void> {
     this.current = createBlankProject();
-    this.emit();
+    this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
 
@@ -209,8 +220,8 @@ class ProjectStore {
     return () => this.listeners.delete(listener);
   }
 
-  private emit(): void {
-    for (const listener of this.listeners) listener(this.current);
+  private emit(change: ProjectChangeDescriptor = { scope: "project" }): void {
+    for (const listener of this.listeners) listener(this.current, change);
   }
 
   private emitAutoSave(): void {
@@ -283,7 +294,7 @@ class ProjectStore {
     this.persistedBaseline = structuredClone(savedProject);
     if (result.project) {
       this.current = structuredClone(result.project);
-      this.emit();
+      this.emit({ scope: "project" });
     }
     this.refreshSupabaseResourceCache();
     return result;

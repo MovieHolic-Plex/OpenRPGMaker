@@ -27,7 +27,7 @@ export function addMap(name: string, width = 16, height = 16): MapId {
     // mapTree에 루트 자식으로 추가.
     appendToTree(p.mapTree, m.id);
     newId = m.id;
-  });
+  }, { scope: "project" });
   return newId;
 }
 
@@ -44,7 +44,7 @@ export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);
     newId = m.id;
-  });
+  }, { scope: "project" });
   return newId;
 }
 
@@ -62,7 +62,7 @@ export function duplicateMap(mapId: MapId): MapId {
     p.maps[copy.id] = copy;
     appendToTree(p.mapTree, copy.id, mapId);
     newId = copy.id;
-  });
+  }, { scope: "project" });
   return newId;
 }
 
@@ -74,7 +74,7 @@ export function deleteMap(mapId: MapId): void {
       p.startMapId = Object.keys(p.maps)[0];
     }
     removeFromTree(p.mapTree, mapId);
-  });
+  }, { scope: "project" });
 }
 
 export function renameMap(mapId: MapId, name: string): void {
@@ -82,7 +82,7 @@ export function renameMap(mapId: MapId, name: string): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (m) m.name = name;
-  });
+  }, { scope: "map", mapId });
 }
 
 export function resizeMap(mapId: MapId, width: number, height: number): void {
@@ -128,19 +128,19 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
       p.startPos.x = Math.min(p.startPos.x, width - 1);
       p.startPos.y = Math.min(p.startPos.y, height - 1);
     }
-  });
+  }, { scope: "map", mapId });
 }
 
 export function setStartMap(mapId: MapId): void {
   store.update((p) => {
     if (p.maps[mapId]) p.startMapId = mapId;
-  });
+  }, { scope: "project" });
 }
 
 export function setStartPos(x: number, y: number): void {
   store.update((p) => {
     p.startPos = { x, y };
-  });
+  }, { scope: "map", mapId: store.getCurrent().startMapId });
 }
 
 // 맵의 타일셋 변경(chipset 분리).
@@ -157,7 +157,7 @@ export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
         editorState.set({ activePaletteStamp: null, activeStampId: null, selectedTile: 0 });
       }
     }
-  });
+  }, { scope: "map", mapId });
 }
 
 function allowMapMutation(mapId: MapId): boolean {
@@ -172,7 +172,7 @@ export function moveMapInTree(mapId: MapId, newParentId: MapId): void {
     if (mapId === newParentId) return;
     removeFromTree(p.mapTree, mapId);
     appendToTree(p.mapTree, mapId, newParentId);
-  });
+  }, { scope: "project" });
 }
 
 // ── Database: Switches/Variables/Common Events CRUD ──
@@ -182,7 +182,7 @@ export function addSwitch(name: string): string {
   store.update((p) => {
     id = nextNumberedId("sw", p.switches);
     p.switches.push({ id, name: name || "새 스위치" });
-  });
+  }, { scope: "database", collection: "switches" });
   return id;
 }
 export function renameSwitch(id: string, name: string): void {
@@ -190,7 +190,7 @@ export function renameSwitch(id: string, name: string): void {
   store.update((p) => {
     const s = p.switches.find((x) => x.id === id);
     if (s) s.name = name;
-  });
+  }, { scope: "database", collection: "switches" });
 }
 export function deleteSwitch(id: string): DeleteResult {
   const message = switchVariableReferenceMessage("switch", id);
@@ -198,7 +198,7 @@ export function deleteSwitch(id: string): DeleteResult {
   recordProjectSnapshot();
   store.update((p) => {
     p.switches = p.switches.filter((s) => s.id !== id);
-  });
+  }, { scope: "database", collection: "switches" });
   return { ok: true };
 }
 
@@ -208,7 +208,7 @@ export function addVariable(name: string): string {
   store.update((p) => {
     id = nextNumberedId("var", p.variables);
     p.variables.push({ id, name: name || "새 변수" });
-  });
+  }, { scope: "database", collection: "variables" });
   return id;
 }
 export function renameVariable(id: string, name: string): void {
@@ -216,7 +216,7 @@ export function renameVariable(id: string, name: string): void {
   store.update((p) => {
     const v = p.variables.find((x) => x.id === id);
     if (v) v.name = name;
-  });
+  }, { scope: "database", collection: "variables" });
 }
 export function deleteVariable(id: string): DeleteResult {
   const message = switchVariableReferenceMessage("variable", id);
@@ -224,7 +224,7 @@ export function deleteVariable(id: string): DeleteResult {
   recordProjectSnapshot();
   store.update((p) => {
     p.variables = p.variables.filter((v) => v.id !== id);
-  });
+  }, { scope: "database", collection: "variables" });
   return { ok: true };
 }
 

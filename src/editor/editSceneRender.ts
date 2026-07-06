@@ -5,7 +5,7 @@ import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
-import { store } from "@/project/store";
+import { store, type ProjectChangeCell } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
@@ -23,75 +23,157 @@ type TintableGameObject = {
   readonly setTint: (tint: number) => unknown;
 };
 
+type RenderableTileCell = ProjectChangeCell & { readonly layer: "lower" | "upper" };
+
 export interface EditSceneRenderContext {
   readonly scene: Phaser.Scene;
   readonly tileLayer: Phaser.GameObjects.Container;
   readonly overlayLayer: Phaser.GameObjects.Container;
   readonly gridGraphics: Phaser.GameObjects.Graphics;
   readonly mapId: MapId;
+  readonly tileIndex?: EditSceneTileIndex;
   readonly resetCamera?: boolean;
 }
 
-export function renderEditScene(context: EditSceneRenderContext): void {
+export type EditSceneTileIndex = Map<string, Phaser.GameObjects.GameObject[]>;
+
+export type EditSceneRenderStats = {
+  readonly tileObjectsUpdated: number;
+};
+
+export function renderEditScene(context: EditSceneRenderContext): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
-  if (!map) return;
+  if (!map) return { tileObjectsUpdated: 0 };
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const state = editorState.get();
 
   context.tileLayer.removeAll(true);
+  context.tileIndex?.clear();
   context.overlayLayer.removeAll(true);
   context.gridGraphics.clear();
 
   if (context.resetCamera) applyCameraView(context.scene, map);
-  renderTiles(context, map, mapOnlyCapture);
-  if (mapOnlyCapture) return;
+  const tileObjectsUpdated = renderTiles(context, map, mapOnlyCapture);
+  if (mapOnlyCapture) return { tileObjectsUpdated };
   if (state.tool === "collision") renderCollisionOverlay(context, map);
   if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
   renderStartPosition(context);
   renderEventMarkers(context, map, state.layer);
   renderSelection(context);
+  return { tileObjectsUpdated };
 }
 
-function renderTiles(context: EditSceneRenderContext, map: GameMap, mapOnlyCapture: boolean): void {
-  const tileset = store.getCurrent().tilesets[map.tilesetId];
-  if (!tileset) return;
+export function renderEditSceneTileCells(
+  context: EditSceneRenderContext & { readonly tileIndex: EditSceneTileIndex },
+  cells: readonly ProjectChangeCell[]
+): EditSceneRenderStats {
+  const map = store.getCurrent().maps[context.mapId];
+  if (!map) return { tileObjectsUpdated: 0 };
+  const mapOnlyCapture = isMapOnlyCaptureMode();
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
-  const lowerAlpha = activeLayer === "upper" ? 0.58 : 1;
-  const dimUpper = activeLayer === "lower";
+  const uniqueCells = uniqueRenderableTileCells(cells);
+  let tileObjectsUpdated = 0;
+  for (const cell of uniqueCells) {
+    if (cell.x < 0 || cell.y < 0 || cell.x >= map.width || cell.y >= map.height) continue;
+    const key = tileIndexKey(cell.layer, cell.x, cell.y);
+    const previous = context.tileIndex.get(key) ?? [];
+    for (const object of previous) {
+      context.tileLayer.remove(object, true);
+    }
+    const next = renderTileCellLayer(context, map, activeLayer, cell.layer, cell.x, cell.y);
+    if (next.length) context.tileIndex.set(key, next);
+    else context.tileIndex.delete(key);
+    tileObjectsUpdated += next.length;
+  }
+  return { tileObjectsUpdated };
+}
+
+function renderTiles(context: EditSceneRenderContext, map: GameMap, mapOnlyCapture: boolean): number {
+  const tileset = store.getCurrent().tilesets[map.tilesetId];
+  if (!tileset) return 0;
+  const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
+  let tileObjectsUpdated = 0;
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
-      const i = y * map.width + x;
-      const lower = map.lowerTiles[i];
-      if (lower >= 0) {
-        const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
-        lowerTile.setAlpha(lowerAlpha);
-        context.tileLayer.add(lowerTile);
-      } else {
-        context.tileLayer.add(createEmptyTile(context.scene, x, y));
-      }
-      for (const stackedLower of tileStackAt(map, "lower", i)) {
-        const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
-        lowerTile.setAlpha(lowerAlpha);
-        context.tileLayer.add(lowerTile);
-      }
+      tileObjectsUpdated += renderTileCellLayer(context, map, activeLayer, "lower", x, y).length;
     }
   }
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
-      const i = y * map.width + x;
-      const upper = map.upperTiles[i];
-      if (upper >= 0) {
-        const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, upper);
-        if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
-        context.tileLayer.add(upperTile);
-      }
-      for (const stackedUpper of tileStackAt(map, "upper", i)) {
-        const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
-        if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
-        context.tileLayer.add(upperTile);
-      }
+      tileObjectsUpdated += renderTileCellLayer(context, map, activeLayer, "upper", x, y).length;
     }
   }
+  return tileObjectsUpdated;
+}
+
+function renderTileCellLayer(
+  context: EditSceneRenderContext,
+  map: GameMap,
+  activeLayer: Layer,
+  layer: "lower" | "upper",
+  x: number,
+  y: number
+): Phaser.GameObjects.GameObject[] {
+  const tileset = store.getCurrent().tilesets[map.tilesetId];
+  if (!tileset) return [];
+  const objects: Phaser.GameObjects.GameObject[] = [];
+  const i = y * map.width + x;
+  if (layer === "lower") {
+    const lowerAlpha = activeLayer === "upper" ? 0.58 : 1;
+    const lower = map.lowerTiles[i];
+    if (lower >= 0) {
+      const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
+      lowerTile.setAlpha(lowerAlpha);
+      addTileObject(context, objects, lowerTile, 0);
+    } else {
+      addTileObject(context, objects, createEmptyTile(context.scene, x, y), 0);
+    }
+    for (const stackedLower of tileStackAt(map, "lower", i)) {
+      const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
+      lowerTile.setAlpha(lowerAlpha);
+      addTileObject(context, objects, lowerTile, 1);
+    }
+  } else {
+    const dimUpper = activeLayer === "lower";
+    const upper = map.upperTiles[i];
+    if (upper >= 0) {
+      const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, upper);
+      if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
+      addTileObject(context, objects, upperTile, 2);
+    }
+    for (const stackedUpper of tileStackAt(map, "upper", i)) {
+      const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
+      if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
+      addTileObject(context, objects, upperTile, 3);
+    }
+  }
+  context.tileIndex?.set(tileIndexKey(layer, x, y), objects);
+  return objects;
+}
+
+function addTileObject(
+  context: EditSceneRenderContext,
+  objects: Phaser.GameObjects.GameObject[],
+  object: Phaser.GameObjects.GameObject,
+  depth: number
+): void {
+  if ("setDepth" in object && typeof object.setDepth === "function") object.setDepth(depth);
+  context.tileLayer.add(object);
+  objects.push(object);
+}
+
+function uniqueRenderableTileCells(cells: readonly ProjectChangeCell[]): readonly RenderableTileCell[] {
+  const unique = new Map<string, RenderableTileCell>();
+  for (const cell of cells) {
+    if (cell.layer === "event") continue;
+    const renderableCell: RenderableTileCell = { x: cell.x, y: cell.y, layer: cell.layer };
+    unique.set(tileIndexKey(renderableCell.layer, renderableCell.x, renderableCell.y), renderableCell);
+  }
+  return [...unique.values()];
+}
+
+function tileIndexKey(layer: "lower" | "upper", x: number, y: number): string {
+  return `${layer}:${x},${y}`;
 }
 
 function tintIfPossible(object: Phaser.GameObjects.GameObject, tint: number): void {

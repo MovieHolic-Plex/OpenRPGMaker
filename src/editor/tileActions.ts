@@ -1,4 +1,4 @@
-import { store } from "@/project/store";
+import { store, type ProjectChangeCell } from "@/project/store";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -21,15 +21,15 @@ type LowerTileEdit = {
 } & Required<TilePaintOptions>;
 
 export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, tile: number, options: TilePaintOptions = {}): void {
+  const targetLayer = effectiveLayerForCurrentMap(mapId, layer, tile);
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
     const tileset = p.tilesets[m.tilesetId];
-    const targetLayer = effectiveLayer(tileset, layer, tile);
     const previousTile = tileAt(m, targetLayer, x, y);
     setTileSafe(m, targetLayer, x, y, tile);
     shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: [{ x, y }], previousTile, nextTile: tile, autoConnect: options.autoConnect ?? true });
-  });
+  }, { scope: "map", mapId, cells: changedTileCellsForEdit(mapId, targetLayer, [{ x, y }], options.autoConnect ?? true) });
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {
@@ -62,10 +62,11 @@ export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number, 
     const previousTile = tileAt(m, layer, x, y);
     setTileSafe(m, layer, x, y, TILE.EMPTY);
     shapeTerrainAfterLowerEdit(m, tileset, { layer, points: [{ x, y }], previousTile, nextTile: TILE.EMPTY, autoConnect: options.autoConnect ?? true });
-  });
+  }, { scope: "map", mapId, cells: changedTileCellsForEdit(mapId, layer, [{ x, y }], options.autoConnect ?? true) });
 }
 
 export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
+  const fillPlan = planFillTile(mapId, layer, x, y, newTile);
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m || !inMap(m, x, y)) return;
@@ -100,7 +101,70 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       }
     }
     shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: changedPoints, previousTile: target, nextTile: newTile, autoConnect: options.autoConnect ?? true });
+  }, {
+    scope: "map",
+    mapId,
+    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, options.autoConnect ?? true),
   });
+}
+
+function effectiveLayerForCurrentMap(mapId: MapId, requestedLayer: TileLayer, tile: number): TileLayer {
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
+  return effectiveLayer(map ? project.tilesets[map.tilesetId] : undefined, requestedLayer, tile);
+}
+
+function planFillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number): { readonly layer: TileLayer; readonly points: readonly RoadPoint[] } {
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
+  if (!map || !inMap(map, x, y)) return { layer, points: [] };
+  const targetLayer = effectiveLayer(project.tilesets[map.tilesetId], layer, newTile);
+  const targetArr = targetLayer === "lower" ? map.lowerTiles : map.upperTiles;
+  const startIdx = y * map.width + x;
+  const target = targetArr[startIdx];
+  const queue = [startIdx];
+  const seen = new Set<number>([startIdx]);
+  const points: RoadPoint[] = [];
+  while (queue.length) {
+    const idx = queue.shift();
+    if (idx === undefined) break;
+    const cx = idx % map.width;
+    const cy = Math.floor(idx / map.width);
+    points.push({ x: cx, y: cy });
+    const neighbors = [
+      [cx - 1, cy],
+      [cx + 1, cy],
+      [cx, cy - 1],
+      [cx, cy + 1],
+    ] as const;
+    for (const [nx, ny] of neighbors) {
+      if (!inMap(map, nx, ny)) continue;
+      const ni = ny * map.width + nx;
+      if (seen.has(ni)) continue;
+      if (targetArr[ni] !== target) continue;
+      seen.add(ni);
+      queue.push(ni);
+    }
+  }
+  return { layer: targetLayer, points };
+}
+
+function changedTileCellsForEdit(mapId: MapId, layer: TileLayer, points: readonly RoadPoint[], autoConnect: boolean): readonly ProjectChangeCell[] {
+  const map = store.getCurrent().maps[mapId];
+  const cells = new Map<string, ProjectChangeCell>();
+  const add = (x: number, y: number): void => {
+    if (map && !inMap(map, x, y)) return;
+    cells.set(`${layer}:${x},${y}`, { x, y, layer });
+  };
+  for (const point of points) {
+    add(point.x, point.y);
+    if (layer !== "lower" || !autoConnect) continue;
+    add(point.x, point.y - 1);
+    add(point.x, point.y + 1);
+    add(point.x - 1, point.y);
+    add(point.x + 1, point.y);
+  }
+  return [...cells.values()];
 }
 
 function effectiveLayer(tileset: TilesetDef | undefined, requestedLayer: TileLayer, tile: number): TileLayer {

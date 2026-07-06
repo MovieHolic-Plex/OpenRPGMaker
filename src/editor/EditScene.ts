@@ -9,7 +9,7 @@ import {
   registerBundledFrames,
   TILE_SIZE,
 } from "@/assets/bundled";
-import { store } from "@/project/store";
+import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
@@ -18,7 +18,8 @@ import {
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
 import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
-import { renderEditScene } from "@/editor/editSceneRender";
+import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
+import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
 import {
   paintTile,
   eraseTile,
@@ -132,6 +133,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastRenderedMapId: MapId | null = null;
   private lastRenderStateKey = "";
   private lastCameraViewKey = "";
+  private readonly tileIndex: EditSceneTileIndex = new Map();
   private isPanning = false;
   private dragOperation: DragOperation | null = null;
   // 이벤트 레이어에서 눌린 이벤트. 포인터가 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
@@ -192,7 +194,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.redraw();
 
     // store/에디터 상태 변경 시 재렌더.
-    this.unsubStore = store.subscribe(() => this.redraw());
+    this.unsubStore = store.subscribe((_project, change) => this.redrawForStoreChange(change));
     this.unsubEditor = editorState.subscribe(() => this.redrawWhenViewStateChanges());
 
     this.scale.on("resize", this.handleResize, this);
@@ -212,6 +214,21 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleResize(): void {
+    this.redraw();
+  }
+
+  private redrawForStoreChange(change: ProjectChangeDescriptor): void {
+    const mapId = this.mapId();
+    const plan = planEditSceneRenderForStoreChange({
+      change,
+      currentMapId: mapId,
+      canIncrementalCells: mapId !== null && this.canIncrementallyRenderCells(mapId),
+    });
+    if (plan.kind === "skip") return;
+    if (plan.kind === "cells") {
+      this.redrawCells(plan.cells);
+      return;
+    }
     this.redraw();
   }
 
@@ -1017,9 +1034,33 @@ export class EditScene extends PhaserRuntime.Scene {
     const overlayLayer = this.overlayLayer;
     const gridGraphics = this.gridGraphics;
     if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
-    renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, resetCamera });
+    renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, tileIndex: this.tileIndex, resetCamera });
     this.renderEventLayerClickFeedback();
     if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+  }
+
+  private canIncrementallyRenderCells(mapId: MapId): boolean {
+    if (this.lastRenderedMapId !== mapId) return false;
+    if (!this.tileLayer || !this.overlayLayer || !this.gridGraphics) return false;
+    return this.lastRenderStateKey === this.renderStateKey(mapId);
+  }
+
+  private redrawCells(cells: readonly ProjectChangeCell[]): EditSceneRenderStats {
+    const mid = this.mapId();
+    const tileLayer = this.tileLayer;
+    const overlayLayer = this.overlayLayer;
+    const gridGraphics = this.gridGraphics;
+    if (!mid || !tileLayer || !overlayLayer || !gridGraphics) return { tileObjectsUpdated: 0 };
+    const stats = renderEditSceneTileCells({
+      scene: this,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: mid,
+      tileIndex: this.tileIndex,
+    }, cells);
+    if (this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    return stats;
   }
 
   private applyStamp(input: {

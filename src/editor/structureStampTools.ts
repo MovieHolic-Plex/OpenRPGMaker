@@ -43,7 +43,7 @@ export function placeStructureStamp(mapId: MapId, placement: StructureStampPlace
     const map = project.maps[mapId];
     if (!map) return;
     applyStructureStampToMap(map, placement);
-  });
+  }, { scope: "map", mapId });
 }
 
 export function applyStructureStampToMap(map: GameMap, placement: StructureStampPlacement): void {

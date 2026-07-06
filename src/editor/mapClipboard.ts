@@ -1,7 +1,7 @@
 import { editorState, type TileSelection } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { replaceTileStack, tileStackAt } from "@/project/mapOverlayTiles";
-import { store } from "@/project/store";
+import { store, type ProjectChangeCell } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
 import { toast } from "@/util/toast";
 
@@ -68,6 +68,7 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
     showClipboardToast("붙여넣을 위치가 맵 밖입니다.", "error");
     return false;
   }
+  const cells = pastedCells(map, clipboard.width, clipboard.height, x, y);
   recordProjectSnapshot();
   store.update((project) => {
     const targetMap = project.maps[mapId];
@@ -86,8 +87,21 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
         }
       }
     }
-  });
+  }, { scope: "map", mapId, cells });
   return true;
+}
+
+function pastedCells(map: GameMap, width: number, height: number, originX: number, originY: number): readonly ProjectChangeCell[] {
+  const cells: ProjectChangeCell[] = [];
+  for (let cy = 0; cy < height; cy++) {
+    for (let cx = 0; cx < width; cx++) {
+      const x = originX + cx;
+      const y = originY + cy;
+      if (!isInsideMap(x, y, map.width, map.height)) continue;
+      cells.push({ x, y, layer: "lower" }, { x, y, layer: "upper" });
+    }
+  }
+  return cells;
 }
 
 function tilesForLayer(map: GameMap, layer: TileLayer): number[] {

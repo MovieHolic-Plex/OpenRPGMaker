@@ -11,7 +11,7 @@ import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayM
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
-import { store } from "@/project/store";
+import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
@@ -105,7 +105,7 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
   void startEditGame(phaserContainer).then(() => fitCanvas());
 
-  unsubStore = store.subscribe(() => refreshPanels());
+  unsubStore = store.subscribe((_project, change) => refreshPanels(change));
   unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
   unsubEditor = editorState.subscribe(() => refreshPanels());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
@@ -181,8 +181,19 @@ function applyLayout(): void {
   leftResizer.style.display = "";
 }
 
-function refreshPanels(): void {
+function refreshPanels(change?: ProjectChangeDescriptor): void {
   if (!leftPaletteRoot || !leftMapRoot || !canvasToolbarRoot || !statusBarRoot) return;
+  if (change?.scope === "map" && change.cells?.length) {
+    renderCanvasToolbar(canvasToolbarRoot);
+    renderEditorStatusbar(statusBarRoot);
+    updateProjectExport();
+    return;
+  }
+  if (change?.scope === "database" || change?.scope === "system") {
+    renderEditorStatusbar(statusBarRoot);
+    updateProjectExport();
+    return;
+  }
   renderTilePalette(leftPaletteRoot);
   renderMapList(leftMapRoot);
   renderCanvasToolbar(canvasToolbarRoot);

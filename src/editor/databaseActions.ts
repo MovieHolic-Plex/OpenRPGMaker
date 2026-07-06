@@ -82,7 +82,7 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
         project.database.battleAnimations.push({ id, name: "새 애니메이션" });
         return;
     }
-  });
+  }, { scope: "database", collection });
   return id;
 }
 
@@ -178,7 +178,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         return;
       }
     }
-  });
+  }, { scope: "database", collection });
 }
 
 export function duplicateDatabaseRecord(collection: DatabaseCollection, id: string): string {
@@ -214,7 +214,7 @@ export function duplicateDatabaseRecord(collection: DatabaseCollection, id: stri
         duplicateInto(project.database.battleAnimations, id, copyId);
         return;
     }
-  });
+  }, { scope: "database", collection });
   return copyId;
 }
 
@@ -252,7 +252,7 @@ export function deleteDatabaseRecord(collection: DatabaseCollection, id: string)
         project.database.battleAnimations = project.database.battleAnimations.filter((entry) => entry.id !== id);
         return;
     }
-  });
+  }, { scope: "database", collection });
   return { ok: true };
 }
 
