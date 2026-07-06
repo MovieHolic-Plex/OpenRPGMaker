@@ -514,3 +514,49 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   margin: 0;
   max-width: 560px;
 }
+
+/* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. */
+.project-load-error-message {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 12px;
+  max-width: 640px;
+  overflow-wrap: anywhere;
+  padding: 10px 12px;
+}
+
+.project-load-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
+.persistence-mode-banner {
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 5px 12px;
+  text-align: center;
+}
+
+.persistence-mode-banner.is-save-skipped {
+  background: #7a2e2e;
+  color: #ffe2e2;
+}
+
+.persistence-mode-banner.is-local-only {
+  background: #4a4420;
+  color: #f4ecc8;
+}
+
+.persistence-mode-banner.is-recovery {
+  background: #58421f;
+  color: #ffe9c7;
+}
+
+/* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
+.persistence-mode-banner ~ .canvas-toolbar {
+  top: 52px;
+}

@@ -7,7 +7,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { shapeRoadAround } from "@/project/defaults/roadAutotile";
 import { shapeSandAround } from "@/project/defaults/sandAutotile";
-import { removeFromTree } from "@/editor/mapTreeActions";
+import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampTerrainTemplateHouse } from "@/project/defaults/terrainTemplateHouseStamp";
@@ -690,10 +690,12 @@ const resizeMapTool: ToolDefinition = {
   },
 };
 
-// 맵 삭제(파괴적). 시작 맵/마지막 맵은 거부, 다른 맵의 transfer가 참조하면 커밋 게이트가 거부한다.
+// 맵 삭제(파괴적). 시작 맵/마지막 맵은 거부. mapTree/연결/이동 명령 등 참조는 재배선/정리되고,
+// 삭제 결과가 재로드(shape) 검증을 통과하지 못하면 차단된다(무결성 가드 — 도그푸딩 결함 ①).
 const removeMapTool: ToolDefinition = {
   name: "remove_map",
-  description: "맵을 삭제한다(파괴적 — 꼭 필요할 때만, 이유를 먼저 설명). 시작 맵은 삭제 불가. 다른 맵의 출입구(transfer)가 참조 중이면 무결성 게이트가 거부한다.",
+  description:
+    "맵을 삭제한다(파괴적 — 꼭 필요할 때만, 이유를 먼저 설명). 시작 맵은 삭제 불가. 맵 트리/연결/이동(transfer) 참조는 함께 정리되며, 무결성 검증에 실패하면 거부된다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -702,17 +704,22 @@ const removeMapTool: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
+    // 에이전트 경로는 시작 맵 삭제를 차단(암묵 재배선 금지) — 먼저 시작 위치를 옮기게 한다.
     if (draft.startMapId === map.id) throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요.", { code: "start-map" });
-    if (Object.keys(draft.maps).length <= 1) throw new ToolError("마지막 맵은 삭제할 수 없습니다.", { code: "last-map" });
+    const plan = planMapDeletion(draft, map.id);
+    if (!plan.ok) throw new ToolError(plan.block.message, { code: plan.block.code });
     const name = map.name;
-    delete draft.maps[map.id];
-    removeFromTree(draft.mapTree, map.id);
-    if (draft.mapConnections) {
-      draft.mapConnections = draft.mapConnections.filter(
-        (connection) => connection.from.mapId !== map.id && connection.to.mapId !== map.id
-      );
-    }
-    return { summary: `맵 '${name}'(${map.id}) 삭제됨`, data: { mapId: map.id } };
+    applyMapDeletion(draft, map.id);
+    const impact = plan.impact;
+    const cleaned = [
+      impact.incomingCommandCount > 0 ? `이동 명령 ${impact.incomingCommandCount}개` : null,
+      impact.connectionCount > 0 ? `맵 연결 ${impact.connectionCount}개` : null,
+      impact.questCount > 0 ? `퀘스트 ${impact.questCount}개` : null,
+    ].filter(Boolean);
+    return {
+      summary: `맵 '${name}'(${map.id}) 삭제됨${cleaned.length > 0 ? ` — 함께 정리: ${cleaned.join(", ")}` : ""}`,
+      data: { mapId: map.id, impact },
+    };
   },
 };
 

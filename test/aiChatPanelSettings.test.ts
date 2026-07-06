@@ -168,7 +168,8 @@ describe("감사 로그 내보내기", () => {
     const parsed = JSON.parse(json ?? "{}");
     expect(parsed.model).toBe("google/gemini-3.5-flash");
     expect(parsed.entries.length).toBe(history.length);
-    expect(parsed.entries[0]).toEqual({ kind: "user", text: "npc 넣어줘" });
+    // at(ISO 타임스탬프)는 결함 ⑬(구조화 세션 로그)에서 추가 — 내용 필드만 고정 검증.
+    expect(parsed.entries[0]).toMatchObject({ kind: "user", text: "npc 넣어줘" });
   });
 
   it("현재 세션과 히스토리를 합쳐 내보낸다", async () => {

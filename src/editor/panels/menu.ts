@@ -1,5 +1,6 @@
 import { getMode, toggleMode } from "@/app/mode";
-import { addMap, deleteMap, setStartMap } from "@/editor/actions";
+import { addMap, setStartMap } from "@/editor/actions";
+import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -44,6 +45,7 @@ type MenuCommand =
   | { readonly kind: "separator" };
 
 let activeMenuPopup: HTMLElement | null = null;
+let popupOutsideListener: (() => void) | null = null;
 
 export function renderTopbar(topbar: HTMLElement): void {
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
@@ -191,12 +193,23 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   popup.style.top = `${Math.round(box.bottom)}px`;
   document.body.append(popup);
   activeMenuPopup = popup;
+  // 바깥 클릭 시 닫기 — 단, 팝업 '안'을 누른 pointerdown은 닫지 않는다(도그푸딩 결함 ⑪ 근본 원인).
+  // 기존에는 무조건 닫아서, 항목의 pointerdown이 팝업을 제거 → 이어질 click이 분리된 항목에
+  // 도달하지 못해 내보내기 등 메뉴 항목 onClick이 실행되지 않았다(내보내기 무반응).
+  const onOutsidePointerDown = (event: PointerEvent): void => {
+    if (event.target instanceof Node && popup.contains(event.target)) return;
+    closeMenuPopup();
+    document.removeEventListener("pointerdown", onOutsidePointerDown);
+  };
   window.setTimeout(() => {
-    document.addEventListener("pointerdown", closeMenuPopup, { once: true });
+    document.addEventListener("pointerdown", onOutsidePointerDown);
   }, 0);
+  popupOutsideListener = () => document.removeEventListener("pointerdown", onOutsidePointerDown);
 }
 
 function closeMenuPopup(): void {
+  popupOutsideListener?.();
+  popupOutsideListener = null;
   activeMenuPopup?.remove();
   activeMenuPopup = null;
   document.querySelectorAll<HTMLElement>(".rm2k3-menu-item[aria-expanded='true']").forEach((node) => {
@@ -418,9 +431,9 @@ function deleteCurrentMap(mapId: string): void {
     toast("마지막 맵은 삭제할 수 없습니다", "error");
     return;
   }
-  const mapName = project.maps[mapId]?.name ?? mapId;
-  if (!window.confirm(`'${mapName}' 맵을 삭제할까요?`)) return;
-  deleteMap(mapId);
+  // 확인 다이얼로그(임팩트 요약) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
+  const result = confirmAndDeleteMap(mapId);
+  if (!result.ok) return;
   const next = store.getCurrent();
   editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("맵을 삭제했습니다", "ok");
@@ -445,17 +458,32 @@ function doLoad(topbar: HTMLElement): void {
   });
 }
 
+// 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 기존 미동작 원인 3가지:
+// 1) `await store.flush()`가 저장 오류 시 reject → 함수 전체가 무반응으로 중단(다운로드 없음).
+// 2) anchor가 DOM에 붙지 않은 채 click() — 일부 환경에서 다운로드가 시작되지 않음.
+// 3) click() 직후 동기 revokeObjectURL — 브라우저가 fetch를 시작하기 전에 URL이 무효화될 수 있음.
 async function doExport(): Promise<void> {
-  await store.flush();
-  const project = projectWithoutEventDrafts(store.getCurrent());
-  const blob = createProjectPackage(project);
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = projectPackageFileName(project);
-  anchor.click();
-  URL.revokeObjectURL(url);
-  toast("내보냈습니다", "ok");
+  try {
+    // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).
+    await store.flush().catch((error) => {
+      console.error("[export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태를 내보냅니다", "info");
+    });
+    const project = projectWithoutEventDrafts(store.getCurrent());
+    const blob = createProjectPackage(project);
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = projectPackageFileName(project);
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    toast("내보냈습니다", "ok");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`내보내기 실패: ${message}`, "error");
+  }
 }
 
 function doImport(): void {

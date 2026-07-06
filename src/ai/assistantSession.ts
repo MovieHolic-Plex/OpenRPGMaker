@@ -59,10 +59,13 @@ export interface TurnResult {
 }
 
 // 감사 로그 항목(Phase 1 헤드리스 러너로 리플레이 가능한 시퀀스).
+// at: ISO 타임스탬프(결함 ⑬ — 상태 전이/툴 호출/오류 타임라인을 export 가능하게).
+// kind:"status"는 턴 수명주기(시작/종료 사유/오류/재시도) 전이 기록이다.
 export type AuditEntry =
-  | { kind: "user"; text: string }
-  | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[] }
-  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[] };
+  | { kind: "user"; text: string; at?: string }
+  | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
+  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[]; at?: string }
+  | { kind: "status"; text: string; at?: string };
 
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 
@@ -214,6 +217,10 @@ export class AssistantSession {
   private turnImplicitSpec: BuildSpec | null = null;
   // 이번 턴의 명세 검증 실패 횟수 — MAX_SPEC_REJECTIONS 초과 시 폐기 지시.
   private specRejections = 0;
+  // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
+  private turnProposals = new Map<string, ProposedCall>();
+  // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
+  private lastTurnFailed = false;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -344,14 +351,40 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void = () => {}
   ): Promise<TurnResult> {
     this.messages.push({ role: "user", content: text });
-    this.audit.push({ kind: "user", text });
+    this.pushAudit({ kind: "user", text });
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.turnImplicitSpec = implicitSpecFromContext(text);
     this.specRejections = 0;
+    this.turnProposals = new Map();
 
+    return await this.runTurnLoop(onEvent);
+  }
+
+  // 직전 턴이 LLM 오류로 끊긴 경우에만 재개 가능(도그푸딩 결함 ⑥ — 수동 재시도).
+  canRetryLastTurn(): boolean {
+    return this.lastTurnFailed;
+  }
+
+  // 오류로 끊긴 턴 재개: 새 사용자 메시지 없이 (LLM ↔ 툴) 루프만 다시 돈다.
+  // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
+  async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}): Promise<TurnResult> {
+    if (!this.lastTurnFailed) {
+      return { assistantText: "", proposedCalls: [...this.turnProposals.values()], stoppedReason: "final" };
+    }
+    this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
+    return await this.runTurnLoop(onEvent);
+  }
+
+  // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
+  private pushAudit(entry: AuditEntry): void {
+    this.audit.push({ ...entry, at: new Date().toISOString() });
+  }
+
+  private async runTurnLoop(onEvent: (event: SessionEvent) => void): Promise<TurnResult> {
+    this.lastTurnFailed = false;
     const tools = [...toOpenAiTools(), SET_BUILD_SPEC_TOOL];
-    const proposedByKey = new Map<string, ProposedCall>();
+    const proposedByKey = this.turnProposals;
     let assistantText = "";
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
     // (maxToolCalls 기본 200은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
@@ -369,6 +402,8 @@ export class AssistantSession {
         });
       } catch (cause) {
         const error = cause instanceof Error ? cause.message : String(cause);
+        this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
+        this.pushAudit({ kind: "status", text: `턴 중단(error): ${error}` });
         onEvent({ type: "status", text: `오류: ${error}` });
         return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "error", error };
       }
@@ -378,7 +413,7 @@ export class AssistantSession {
       this.messages.push(assistantMsg);
       // assistant 응답은 항상 문자열 content다(멀티모달 파트는 우리가 넣는 user 메시지 전용).
       const messageText = typeof assistantMsg.content === "string" ? assistantMsg.content : null;
-      this.audit.push({
+      this.pushAudit({
         kind: "assistant",
         text: messageText ?? "",
         toolCalls: assistantMsg.tool_calls?.map((tc) => ({ name: tc.function.name, args: tc.function.arguments })),
@@ -389,6 +424,7 @@ export class AssistantSession {
         // 최종 응답.
         assistantText = messageText ?? "";
         onEvent({ type: "assistant_message", content: assistantText });
+        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
         return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "final" };
       }
 
@@ -411,7 +447,7 @@ export class AssistantSession {
             : gate;
         }
         onEvent({ type: "tool_call", name, args, result: toolResult });
-        this.audit.push({
+        this.pushAudit({
           kind: "tool",
           name,
           args,
@@ -477,12 +513,14 @@ export class AssistantSession {
           type: "status",
           text: `출력 토큰 예산(${this.config.maxTokens}) 소진 — 현재까지의 변경을 제안합니다. 설정 '최대 토큰'에서 예산을 높일 수 있습니다.`,
         });
+        this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건` });
         return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "token-budget" };
       }
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
     onEvent({ type: "status", text: `툴 호출 상한(${this.config.maxToolCalls}) 도달 — 현재까지의 변경을 제안합니다.` });
+    this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건` });
     return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "max-tool-calls" };
   }
 }

@@ -289,8 +289,57 @@ function parseNonStream(json: Record<string, unknown>): ChatResult {
   };
 }
 
-// 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
+// 일시 오류(네트워크/429/5xx) 자동 재시도 1회의 백오프(도그푸딩 결함 ⑥).
+export const LLM_RETRY_BACKOFF_MS = 1500;
+
+// 재시도해 볼 만한 오류인가 — 네트워크(상태 없음)/요청 한도(429)/서버 오류(5xx).
+// 인증(401)/크레딧(402) 같은 영구 오류는 재시도하지 않는다.
+export function isRetryableLlmError(error: unknown): boolean {
+  if (!(error instanceof LlmError)) return false;
+  return error.status === undefined || error.status === 429 || error.status >= 500;
+}
+
+// Chat Completions 호출 + 일시 오류 자동 재시도 1회(지수 백오프).
+// 스트리밍 도중(토큰이 이미 UI로 나간 뒤) 끊긴 경우는 중복 출력을 피하기 위해 재시도하지 않는다.
 export async function chatCompletion(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
+  let streamedAny = false;
+  const guardedReq: ChatRequest = {
+    ...req,
+    onToken: req.onToken
+      ? (delta) => {
+          streamedAny = true;
+          req.onToken?.(delta);
+        }
+      : undefined,
+    onReasoning: req.onReasoning
+      ? (delta) => {
+          streamedAny = true;
+          req.onReasoning?.(delta);
+        }
+      : undefined,
+  };
+  try {
+    return await chatCompletionOnce(config, guardedReq);
+  } catch (cause) {
+    if (!isRetryableLlmError(cause) || streamedAny || req.signal?.aborted) throw cause;
+    await sleep(LLM_RETRY_BACKOFF_MS);
+    try {
+      return await chatCompletionOnce(config, guardedReq);
+    } catch (retryCause) {
+      if (retryCause instanceof LlmError) {
+        throw new LlmError(`${retryCause.message} (자동 재시도 1회 실패)`, retryCause.status);
+      }
+      throw retryCause;
+    }
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
+async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
   if (!config.apiKey || !config.apiKey.trim()) {
     throw new LlmError("API 키가 설정되지 않았습니다. 어시스턴트 설정에서 OpenRouter 키를 입력하세요.", 401);
   }

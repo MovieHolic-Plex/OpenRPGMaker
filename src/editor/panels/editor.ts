@@ -11,6 +11,7 @@ import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayM
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
@@ -88,6 +89,10 @@ export function renderEditor(main: HTMLElement): void {
   leftMapRoot = el("div", { class: "left-panel-stack", dataset: { testid: "left-map-root" } });
   left.append(leftPaletteRoot, mapTreeResizer, leftMapRoot);
   canvasScrollShell.append(phaserContainer);
+  // 저장 모드 배너(결함 ⑩)는 캔버스 열 상단에 넣는다 — .main(flex row)의 형제로 넣으면
+  // 좌측 열처럼 배치되어 레이아웃이 깨진다.
+  const persistenceBanner = renderPersistenceModeBanner();
+  if (persistenceBanner) canvasArea.append(persistenceBanner);
   canvasArea.append(canvasScrollShell, canvasToolbar, statusBar);
   layout.append(left, leftResizer, canvasArea);
   main.append(layout, projectExportNodeElement(), renderAiChatPanel());
@@ -151,6 +156,29 @@ function refreshStatusbar(): void {
 
 export function isLeftCollapsed(): boolean {
   return leftCollapsed;
+}
+
+// 저장 스킵/로컬 저장 모드 배너(도그푸딩 결함 ⑩): blankProject/freshProject 등에서
+// 저장이 조용히 스킵되어 세션 작업물이 통째로 증발하던 문제 — 모드를 화면에 명시한다.
+function renderPersistenceModeBanner(): HTMLElement | null {
+  const status = store.getDbPersistenceStatus();
+  if (status.kind !== "disabled") return null;
+  if (status.reason === "dev-showcase") {
+    const saveSkipped = isSaveSkippedLocation();
+    return el("div", {
+      class: `persistence-mode-banner ${saveSkipped ? "is-save-skipped" : "is-local-only"}`,
+      dataset: { testid: "save-skip-banner" },
+      text: saveSkipped
+        ? "⚠ 이 모드(blankProject/freshProject)에서는 저장되지 않습니다 — 새로고침하면 작업물이 사라집니다. 보존하려면 '내보내기'를 사용하세요."
+        : "개발 모드 — 원격 DB 대신 이 브라우저에만 저장됩니다.",
+    });
+  }
+  // load-failed(복구 모드): 원격 저장이 꺼진 채 편집 중임을 알린다.
+  return el("div", {
+    class: "persistence-mode-banner is-recovery",
+    dataset: { testid: "save-skip-banner" },
+    text: "복구 모드 — 원격 DB 저장이 꺼져 있습니다. 상태바의 'DB 연동'에서 다시 연결하거나 '내보내기'로 백업하세요.",
+  });
 }
 
 function projectExportNodeElement(): HTMLElement {
