@@ -10,6 +10,11 @@ export type CommandRuntimeSupportBadge = {
 };
 
 const M2_RUNTIME_FULL_IDS: ReadonlySet<string> = new Set([
+  "m2-014-change-parameters",
+  "m2-019-change-state",
+  "m2-021-damage-processing",
+  "m2-024-change-actor-graphic",
+  "m2-049-scroll-map",
   "m2-098-change-enemy-hp",
   "m2-101-enemy-encounter",
   "m2-102-change-battleback",

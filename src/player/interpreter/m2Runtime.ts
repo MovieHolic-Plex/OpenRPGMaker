@@ -1,5 +1,6 @@
 import type { M2CommandCatalogEntry } from "@/editor/eventCommands/m2Catalog";
-import type { M2CommandFields } from "@/project/types";
+import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
+import type { ActorParameterKey, M2CommandFields } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/player/types";
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
@@ -92,11 +93,11 @@ function executeByTitle(session: PlaySessionLike, entry: M2CommandCatalogEntry, 
     return;
   }
   if (title.startsWith("Change Actor ")) {
-    mutateActorState(runtime, title, fields);
+    mutateActorState(session, runtime, title, fields);
     return;
   }
   if (title === "Change Parameters" || title === "Change State" || title === "Damage Processing") {
-    mutateActorState(runtime, title, fields);
+    mutateActorState(session, runtime, title, fields);
     return;
   }
   if (title.startsWith("Get ")) {
@@ -177,7 +178,7 @@ function accessKey(title: string): keyof M2RuntimeState["access"] {
   return "menu";
 }
 
-function mutateActorState(runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
+function mutateActorState(session: PlaySessionLike, runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
   const actorId = fieldString(fields, "target", "party");
   runtime.actors[actorId] ??= {};
   const actor = runtime.actors[actorId];
@@ -190,7 +191,12 @@ function mutateActorState(runtime: M2RuntimeState, title: string, fields: M2Comm
     return;
   }
   if (title === "Change Actor Graphic") {
-    actor.characterGraphic = fieldString(fields, "value", "");
+    const resourceId = fieldString(fields, "value", "");
+    actor.characterGraphic = resourceId;
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      session.actorCharacterResourceIds ??= {};
+      session.actorCharacterResourceIds[targetActorId] = resourceId;
+    }
     return;
   }
   if (title === "Change Actor Faceset") {
@@ -207,14 +213,76 @@ function mutateActorState(runtime: M2RuntimeState, title: string, fields: M2Comm
   }
   if (title === "Change Parameters") {
     actor.parameters = applyRuntimeNumber(actor.parameters, fields);
+    const parameter = actorParameterKey(fields);
+    const amount = fieldNumber(fields, "value", 0);
+    const op = fieldString(fields, "operation", "set");
+    session.actorParamBonuses ??= {};
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      const bonuses = session.actorParamBonuses[targetActorId] ?? {};
+      const current = bonuses[parameter] ?? 0;
+      const next = applySessionNumber(current, op, amount);
+      bonuses[parameter] = next;
+      session.actorParamBonuses[targetActorId] = bonuses;
+      syncVitalMaximumBonus(session, targetActorId, parameter, next - current);
+    }
     return;
   }
   if (title === "Damage Processing") {
     actor.damage = applyRuntimeNumber(actor.damage, fields);
+    const amount = Math.max(0, fieldNumber(fields, "value", 0));
+    const op = fieldString(fields, "operation", "add");
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      const vitals = session.actorVitals[targetActorId];
+      if (!vitals) continue;
+      const signed = op === "remove" ? amount : -amount;
+      vitals.hp = clampNumber(vitals.hp + signed, 0, vitals.maxHp);
+    }
     return;
   }
   if (title === "Change State") {
     actor.states = applyStringCollection(actor.states, fields);
+    session.actorStateIds ??= {};
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      session.actorStateIds[targetActorId] = [...applyStringCollection(session.actorStateIds[targetActorId], fields)];
+    }
+  }
+}
+
+function resolveActorTargets(session: PlaySessionLike, target: string): readonly string[] {
+  if (!target || target === "party" || target === "all") return session.partyActorIds;
+  return [target];
+}
+
+function actorParameterKey(fields: M2CommandFields): ActorParameterKey {
+  const explicit = fieldString(fields, "parameter", fieldString(fields, "stat", fieldString(fields, "key", "")));
+  return ACTOR_PARAMETER_KEYS.includes(explicit as ActorParameterKey) ? explicit as ActorParameterKey : "maxHp";
+}
+
+function applySessionNumber(current: number, operation: string, value: number): number {
+  switch (operation) {
+    case "add":
+      return current + value;
+    case "remove":
+      return current - value;
+    case "toggle":
+      return current === value ? 0 : value;
+    case "set":
+      return value;
+    default:
+      return value;
+  }
+}
+
+function syncVitalMaximumBonus(session: PlaySessionLike, actorId: string, parameter: ActorParameterKey, delta: number): void {
+  const vitals = session.actorVitals[actorId] as ({ maxHp: number; maxMp: number; hp: number; mp: number } | undefined);
+  if (!vitals) return;
+  if (parameter === "maxHp") {
+    vitals.maxHp = Math.max(1, vitals.maxHp + delta);
+    vitals.hp = clampNumber(vitals.hp, 0, vitals.maxHp);
+  }
+  if (parameter === "maxMp") {
+    vitals.maxMp = Math.max(0, vitals.maxMp + delta);
+    vitals.mp = clampNumber(vitals.mp, 0, vitals.maxMp);
   }
 }
 
@@ -285,6 +353,11 @@ function applyStringCollection(current: unknown, fields: M2CommandFields): reado
 function numericMapId(mapId: string): number {
   const parsed = Number(mapId.replace(/\D+/g, ""));
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.max(min, Math.min(max, Math.trunc(value)));
 }
 
 function slugKey(value: string): string {

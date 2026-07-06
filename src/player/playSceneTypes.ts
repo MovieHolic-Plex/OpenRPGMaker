@@ -125,6 +125,14 @@ export interface PlaySceneContext extends Phaser.Scene {
   transferTo(request: TransferRequest): Promise<void>;
   flashScreen(step: { red: number; green: number; blue: number; durationMs: number }): Promise<void>;
   shakeScreen(step: { intensity: number; durationMs: number }): Promise<void>;
+  panScreen(step: {
+    direction: "down" | "left" | "right" | "up";
+    distanceTiles: number;
+    durationMs: number;
+    wait: boolean;
+    returnToPlayer: boolean;
+    lock: boolean;
+  }): Promise<void>;
   playBattle(step: {
     kind: "battleProcessing";
     troopId: string;

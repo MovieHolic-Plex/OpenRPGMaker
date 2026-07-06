@@ -1,4 +1,4 @@
-import type { Command } from "@/project/types";
+import type { Command, M2CommandFields } from "@/project/types";
 import { changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, learnSkill, setSwitch, setTimer, setVariable } from "@/project/session";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
@@ -6,7 +6,7 @@ import { resolveEventPage } from "@/project/io";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
-import { fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
+import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -127,6 +127,18 @@ function executeM2Command(
       kind: "shakeScreen",
       intensity: fieldNumber(command.fields, "intensity", 3),
       durationMs: clampMs(fieldNumber(command.fields, "durationMs", 400)),
+    });
+  }
+
+  if (entry.title === "Scroll Map" && executeM2RuntimeCommand(state.session, entry, command)) {
+    return pause("scrollMap", {
+      kind: "scrollMap",
+      direction: scrollDirection(fieldString(command.fields, "direction", fieldString(command.fields, "target", "down"))),
+      distanceTiles: Math.max(0, fieldNumber(command.fields, "distance", fieldNumber(command.fields, "value", 0))),
+      durationMs: scrollDurationMs(command.fields),
+      wait: fieldBoolean(command.fields, "wait", true),
+      returnToPlayer: fieldBoolean(command.fields, "return", false) || fieldString(command.fields, "mode", "") === "return",
+      lock: fieldBoolean(command.fields, "lock", false) || fieldString(command.fields, "mode", "") === "lock",
     });
   }
 
@@ -394,4 +406,24 @@ export function screenColorToRgb(color: string): { red: number; green: number; b
 export function clampMs(ms: number): number {
   if (!Number.isFinite(ms) || ms <= 0) return 300;
   return Math.max(50, Math.min(5000, Math.round(ms)));
+}
+
+function scrollDirection(value: string): "down" | "left" | "right" | "up" {
+  switch (value) {
+    case "left":
+    case "right":
+    case "up":
+    case "down":
+      return value;
+    default:
+      return "down";
+  }
+}
+
+function scrollDurationMs(fields: M2CommandFields): number {
+  const explicit = fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 0));
+  if (explicit > 0) return clampMs(explicit);
+  const distance = Math.max(0, fieldNumber(fields, "distance", fieldNumber(fields, "value", 0)));
+  const speed = Math.max(1, Math.min(6, fieldNumber(fields, "speed", 4)));
+  return clampMs(distance * (700 - speed * 80));
 }

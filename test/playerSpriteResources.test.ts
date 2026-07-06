@@ -28,4 +28,15 @@ describe("player sprite resource resolution", () => {
     expect(sprite.resourceId).toBe("easyrpg-charset-people1");
     expect(sprite.texture).toBe(DEFAULT_EASYRPG_CHARSET_ID);
   });
+
+  it("prefers the live session actor graphic override for the lead party actor", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    session.actorCharacterResourceIds = { actor_hero: "easyrpg-charset-actor2" };
+
+    const sprite = resolvePlayerSpriteResource(project, session);
+
+    expect(sprite.resourceId).toBe("easyrpg-charset-actor2");
+    expect(sprite.texture).toBe("tex_easyrpg_charset_actor2");
+  });
 });

@@ -50,6 +50,15 @@ export type StepResult =
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
   | { kind: "shakeScreen"; intensity: number; durationMs: number }
   | {
+      kind: "scrollMap";
+      direction: "down" | "left" | "right" | "up";
+      distanceTiles: number;
+      durationMs: number;
+      wait: boolean;
+      returnToPlayer: boolean;
+      lock: boolean;
+    }
+  | {
       kind: "shop";
       itemIds: string[];
       allowSell?: boolean;

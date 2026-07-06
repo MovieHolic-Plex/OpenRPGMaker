@@ -9,9 +9,11 @@ import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import {
   isActorEquipmentRecord,
+  isActorParamBonusRecord,
   isActorRowsRecord,
   isStringRecord,
   isActorSkillIdsRecord,
+  isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
   isNumberRecord,
@@ -72,6 +74,9 @@ export type SaveSnapshot = {
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
     readonly actorNames?: Record<string, string>;
+    readonly actorCharacterResourceIds?: Record<string, string>;
+    readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
+    readonly actorStateIds?: PlaySession["actorStateIds"];
     readonly playTimeSeconds?: number;
     readonly rng?: RngState;
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
@@ -128,6 +133,9 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
       actorNames: structuredClone(session.actorNames),
+      actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
+      actorParamBonuses: structuredClone(session.actorParamBonuses),
+      actorStateIds: structuredClone(session.actorStateIds),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
       rng: cloneRngState(normalizeRngState(session.rng)),
       screen: pickScreenState(session),
@@ -204,6 +212,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
   if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
+  if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
+  if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
+  if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
@@ -289,6 +300,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
       actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
+      actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
+      actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
+      actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
       rng: isRngState(session.rng) ? session.rng : undefined,
       screen: parseScreenState(session.screen),

@@ -1,4 +1,4 @@
-import type { ActorInitialEquipment } from "@/project/types";
+import type { ActorInitialEquipment, ActorParameterKey } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
@@ -36,6 +36,19 @@ export function isActorVitalsRecord(value: unknown): value is Record<string, Act
 export function isActorSkillIdsRecord(value: unknown): value is PlaySession["actorSkillIds"] {
   if (!isRecord(value)) return false;
   return Object.values(value).every(isStringArray);
+}
+
+export function isActorParamBonusRecord(value: unknown): value is Record<string, Partial<Record<ActorParameterKey, number>>> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((bonuses) => {
+    if (!isRecord(bonuses)) return false;
+    return Object.values(bonuses).every((amount) => typeof amount === "number" && Number.isFinite(amount));
+  });
+}
+
+export function isActorStateIdsRecord(value: unknown): value is Record<string, string[]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((states) => Array.isArray(states) && states.every((stateId) => typeof stateId === "string"));
 }
 
 export function isRngState(value: unknown): value is RngState {

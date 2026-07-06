@@ -22,7 +22,7 @@ export type PlayerSpriteResource = {
 export function resolvePlayerSpriteResource(project: Project, session: PlaySession): PlayerSpriteResource {
   const actorId = session.partyActorIds[0];
   const actor = actorId ? project.database.actors.find((entry) => entry.id === actorId) : undefined;
-  const resourceId = actor?.characterResourceId;
+  const resourceId = actorId ? session.actorCharacterResourceIds?.[actorId] ?? actor?.characterResourceId : undefined;
   const charsetAsset = resourceId ? findCharsetAsset(resourceId) : undefined;
   if (charsetAsset) {
     return createCharsetSpriteResource(charsetAsset.id, charsetAsset.textureKey);

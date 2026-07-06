@@ -95,6 +95,26 @@ describe("세이브/로드 — 화면 색조/날씨 복원", () => {
     expect(restored.pictures.pic1).toMatchObject({ scale: 150, opacity: 200, x: 3, y: 4 });
   });
 
+  it("액터 그래픽, 파라미터 보정, 상태 이상 세션 필드를 저장/복원한다", () => {
+    const project = createBlankProject();
+    const session = mkSession();
+    session.actorCharacterResourceIds = { actor_hero: "easyrpg-charset-actor2" };
+    session.actorParamBonuses = { actor_hero: { maxHp: 20, attack: 4 } };
+    session.actorStateIds = { actor_hero: ["state_poison"] };
+
+    const storage = new MemoryStorage();
+    saveToSlot(storage, 1, createSaveSnapshot(project, session));
+    const result = readSaveSlot(storage, 1);
+
+    expect(result.kind).toBe("present");
+    if (result.kind === "present") {
+      const restored = applySaveSnapshot(project, result.snapshot);
+      expect(restored.actorCharacterResourceIds).toEqual({ actor_hero: "easyrpg-charset-actor2" });
+      expect(restored.actorParamBonuses).toEqual({ actor_hero: { maxHp: 20, attack: 4 } });
+      expect(restored.actorStateIds).toEqual({ actor_hero: ["state_poison"] });
+    }
+  });
+
   it("storage 왕복(직렬화)에서도 화면 상태가 유지된다", () => {
     const project = createBlankProject();
     const session = mkSession();

@@ -58,7 +58,7 @@ import {
   returnToTitle as returnSceneToTitle,
 } from "@/player/playSceneOverlays";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
-import { centerRuntimeCamera } from "@/player/playSceneCamera";
+import { centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -174,6 +174,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   refreshRuntimeSurfaces(): void {
+    const project = store.getCurrent();
+    const nextPlayerSprite = resolvePlayerSpriteResource(project, this.session);
+    if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId) {
+      this.playerSprite = nextPlayerSprite;
+      this.player.setTexture(this.playerSprite.texture);
+      this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
+    }
     refreshSceneRuntimeSurfaces(this);
   }
 
@@ -244,6 +251,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   shakeScreen(step: Extract<StepResult, { kind: "shakeScreen" }>): Promise<void> {
     return shakeCamera(this, step);
+  }
+
+  panScreen(step: Extract<StepResult, { kind: "scrollMap" }>): Promise<void> {
+    return panRuntimeCamera(this, step);
   }
 
   getSession(): PlaySession {

@@ -1,7 +1,7 @@
 import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
-import type { ActorId, EnemyId, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorParameterKey, EnemyId, Project, SkillId } from "@/project/types";
 import type { BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
 
@@ -16,6 +16,10 @@ export interface ActorBattlerOverrides {
   readonly levels?: Readonly<Record<string, number>>;
   // 현재 바이탈(필드에서 이어지는 현재 HP/MP). actorId → {hp, mp}.
   readonly vitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number }>>;
+  // 런타임 영구 파라미터 보정(Change Parameters). actorId → parameterKey → delta.
+  readonly paramBonuses?: Readonly<Record<string, Partial<Record<ActorParameterKey, number>>>>;
+  // 필드에서 이어지는 런타임 상태 이상(Change State).
+  readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
   // 플레이 중 파티가 바뀌면 반드시 라이브 세션 값을 넘겨야 전투 편성이 일치한다.
   readonly partyActorIds?: readonly ActorId[];
@@ -56,12 +60,13 @@ export function actorBattlers(
     const normalizedActor = normalizeActorRecord(actor);
     // 세션 레벨(레벨업 반영값)이 있으면 그 레벨로 파라미터 곡선을 조회. 없으면 DB initialLevel.
     const level = clampLevel(overrides?.levels?.[actorId] ?? normalizedActor.initialLevel);
-    const maxHp = parameterValueAtLevel(normalizedActor.parameterCurves.maxHp, level);
-    const maxMp = parameterValueAtLevel(normalizedActor.parameterCurves.maxMp, level);
-    const attack = parameterValueAtLevel(normalizedActor.parameterCurves.attack, level);
-    const defense = parameterValueAtLevel(normalizedActor.parameterCurves.defense, level);
-    const mind = parameterValueAtLevel(normalizedActor.parameterCurves.mind, level);
-    const agility = parameterValueAtLevel(normalizedActor.parameterCurves.agility, level);
+    const bonuses = overrides?.paramBonuses?.[actorId];
+    const maxHp = parameterWithBonus(normalizedActor.parameterCurves.maxHp, level, bonuses?.maxHp, 1);
+    const maxMp = parameterWithBonus(normalizedActor.parameterCurves.maxMp, level, bonuses?.maxMp, 0);
+    const attack = parameterWithBonus(normalizedActor.parameterCurves.attack, level, bonuses?.attack, 1);
+    const defense = parameterWithBonus(normalizedActor.parameterCurves.defense, level, bonuses?.defense, 1);
+    const mind = parameterWithBonus(normalizedActor.parameterCurves.mind, level, bonuses?.mind, 1);
+    const agility = parameterWithBonus(normalizedActor.parameterCurves.agility, level, bonuses?.agility, 1);
     // 세션 현재 바이탈이 있으면 그 값을 이어받되(필드에서 이어지는 부상 상태 유지),
     // 이 전투 레벨 기준 최대치로 클램프. 없으면 완충 상태로 시작.
     const sessionVitals = overrides?.vitals?.[actorId];
@@ -83,7 +88,7 @@ export function actorBattlers(
       battleX: 248 + (index % 2) * 32,
       battleY: 70 + index * 24,
       gauge: 0,
-      stateIds: [],
+      stateIds: [...(overrides?.stateIds?.[actorId] ?? [])],
       stateTurns: {},
       defending: false,
       skillIds: normalizedActor.learnedSkills.map((entry) => entry.skillId),
@@ -95,6 +100,11 @@ export function actorBattlers(
 function clampVital(value: number, max: number): number {
   if (!Number.isFinite(value)) return max;
   return Math.max(0, Math.min(max, Math.trunc(value)));
+}
+
+function parameterWithBonus(curve: readonly number[], level: number, bonus: number | undefined, min: number): number {
+  const value = parameterValueAtLevel(curve, level) + (Number.isFinite(bonus) ? Math.trunc(bonus ?? 0) : 0);
+  return Math.max(min, value);
 }
 
 export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
