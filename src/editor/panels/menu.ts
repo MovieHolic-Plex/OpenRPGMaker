@@ -45,6 +45,7 @@ type MenuCommand =
   | { readonly kind: "separator" };
 
 let activeMenuPopup: HTMLElement | null = null;
+let popupOutsideListener: (() => void) | null = null;
 
 export function renderTopbar(topbar: HTMLElement): void {
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
@@ -192,12 +193,23 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   popup.style.top = `${Math.round(box.bottom)}px`;
   document.body.append(popup);
   activeMenuPopup = popup;
+  // 바깥 클릭 시 닫기 — 단, 팝업 '안'을 누른 pointerdown은 닫지 않는다(도그푸딩 결함 ⑪ 근본 원인).
+  // 기존에는 무조건 닫아서, 항목의 pointerdown이 팝업을 제거 → 이어질 click이 분리된 항목에
+  // 도달하지 못해 내보내기 등 메뉴 항목 onClick이 실행되지 않았다(내보내기 무반응).
+  const onOutsidePointerDown = (event: PointerEvent): void => {
+    if (event.target instanceof Node && popup.contains(event.target)) return;
+    closeMenuPopup();
+    document.removeEventListener("pointerdown", onOutsidePointerDown);
+  };
   window.setTimeout(() => {
-    document.addEventListener("pointerdown", closeMenuPopup, { once: true });
+    document.addEventListener("pointerdown", onOutsidePointerDown);
   }, 0);
+  popupOutsideListener = () => document.removeEventListener("pointerdown", onOutsidePointerDown);
 }
 
 function closeMenuPopup(): void {
+  popupOutsideListener?.();
+  popupOutsideListener = null;
   activeMenuPopup?.remove();
   activeMenuPopup = null;
   document.querySelectorAll<HTMLElement>(".rm2k3-menu-item[aria-expanded='true']").forEach((node) => {
