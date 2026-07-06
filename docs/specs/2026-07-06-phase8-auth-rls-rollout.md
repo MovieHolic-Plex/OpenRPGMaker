@@ -90,3 +90,13 @@ Existing project-scoped tables follow the same model: `SELECT` requires project 
 ## Static SQL Validation Limit
 
 This draft was locally checked without connecting to Supabase or Postgres. The check can catch missing files, unbalanced `$...$` blocks, rough parenthesis imbalance, and missing semicolon terminators; it cannot prove extension availability (`gen_random_uuid()`), policy recursion behavior under the actual owner role, grant ownership, or query plans.
+
+---
+
+## 결정 사항 (2026-07-06, 감독 판단 — 사용자 위임)
+
+1. **commit_identity 마이그레이션**: 실 DB 적용 완료(2026-07-06). supabase-db(postgres)에 신원/리뷰 컬럼 6종 + CHECK(NOT VALID) + 인덱스. PostgREST 읽기 스모크 통과. 커밋 이력 기록은 이제 라이브.
+2. **로그인 방식**: 이메일(매직링크 포함) 우선 도입. OAuth는 필요 시 후속(사용자 요구 발생 시).
+3. **기존 공유 프로젝트 최초 owner**: hyeonseokoh94@gmail.com 계정으로 백필.
+4. **viewer 역할**: read-only 에디터 허용(리뷰 워크플로 지원 목적). 뮤테이션은 RLS가 차단.
+5. 신규 프로젝트 owner 부여: RPC(SECURITY DEFINER) 방식 채택 예정 — client 사전 멤버십 삽입은 RLS와 순환 문제, service-role은 7B 잡 서버 이후 가능하므로.
