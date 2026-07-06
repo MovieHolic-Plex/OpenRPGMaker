@@ -420,7 +420,7 @@ describe("스펙 게이트 — 구조물 보호(집 삭제 방지)", () => {
     const ctx = { project: createBlankProject() };
     expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 20 }).ok).toBe(true);
     // 집 (3,3) 6×7 → 점유 x∈[3,9), y∈[3,10)
-    expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster" }).ok).toBe(true);
+    expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster", naturalness: 0 }).ok).toBe(true);
     return ctx.project;
   }
 
@@ -472,7 +472,7 @@ describe("스펙 게이트 — 배치 전 주변 정리 확인", () => {
   function projectWithHouse() {
     const ctx = { project: createBlankProject() };
     expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 20 }).ok).toBe(true);
-    expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster" }).ok).toBe(true);
+    expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster", naturalness: 0 }).ok).toBe(true);
     return ctx.project;
   }
 

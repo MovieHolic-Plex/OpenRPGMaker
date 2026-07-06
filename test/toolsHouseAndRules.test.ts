@@ -28,6 +28,7 @@ describe("build_house", () => {
       width: 10,
       height: 10,
       material: "plaster",
+      naturalness: 0,
     });
     expect(result.ok, result.summary).toBe(true);
     const map = context.project.maps[mapId];

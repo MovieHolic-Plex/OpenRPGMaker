@@ -27,6 +27,8 @@ import {
   type Point,
 } from "./mapHelpers";
 import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterRulePlacement";
+import { jitterPlacement, wobblePath } from "./naturalScatter";
+import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool } from "./naturalToolArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 // 맵 테두리를 벽으로 두른다.
@@ -240,7 +242,7 @@ function coordKey(x: number, y: number): string {
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",
-  description: "폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 오토타일로 가장자리를 자동 성형한다.",
+  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 오토타일로 가장자리를 자동 성형한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -248,6 +250,8 @@ const paintRoad: ToolDefinition = {
       mapId: { type: "string" },
       points: { type: "array", description: "[{x,y}...] 경로 꼭짓점", items: { type: "object" } },
       style: { type: "string", enum: ["dirt", "sand"] },
+      naturalness: { type: "number", description: "0~1 자연도. 0은 기존 직선 세그먼트와 동일, 기본 0.5" },
+      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 자연 경로)" },
     },
     required: ["mapId", "points", "style"],
   },
@@ -255,29 +259,60 @@ const paintRoad: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const points = args.points as Point[];
     const style = args.style as "dirt" | "sand";
+    const naturalness = naturalnessArg(args);
     if (points.length < 1) throw new ToolError("경로에는 최소 1개의 점이 필요합니다.");
     const painted: Point[] = [];
     const body = style === "dirt" ? DIRT_ROAD_TILE.BODY : SAND_TILE.BODY;
-    for (let i = 0; i < points.length; i += 1) {
-      const segmentCells = i === 0 ? [points[0]] : lineCells(points[i - 1], points[i]);
-      for (const cell of segmentCells) {
-        if (!inMapBounds(map, cell.x, cell.y)) continue;
-        map.lowerTiles[cell.y * map.width + cell.x] = body;
-        map.upperTiles[cell.y * map.width + cell.x] = TILE.EMPTY;
-        painted.push(cell);
-      }
-    }
+    const pathCells = naturalness === 0
+      ? paintStraightRoad(map, points, body, painted)
+      : paintNaturalRoad(map, points, body, naturalness, args, painted);
     if (style === "dirt") shapeRoadAround(map, painted);
     else shapeSandAround(map, painted);
-    return { summary: `${map.name}에 ${style} 도로 ${painted.length}칸` };
+    return { summary: `${map.name}에 ${style} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸` };
   },
 };
+
+function paintStraightRoad(map: GameMap, points: readonly Point[], body: number, painted: Point[]): number {
+  let pathCells = 0;
+  for (let i = 0; i < points.length; i += 1) {
+    const segmentCells = i === 0 ? [points[0]] : lineCells(points[i - 1], points[i]);
+    pathCells += segmentCells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
+    for (const cell of segmentCells) paintRoadCell(map, cell, body, painted);
+  }
+  return pathCells;
+}
+
+function paintNaturalRoad(
+  map: GameMap,
+  points: readonly Point[],
+  body: number,
+  naturalness: number,
+  args: Record<string, unknown>,
+  painted: Point[]
+): number {
+  const result = wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
+  const pathCells = result.path.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
+  for (const cell of result.path) paintRoadCell(map, cell, body, painted);
+  for (const cell of result.widthCells) paintRoadCell(map, cell, body, painted);
+  return pathCells;
+}
+
+function paintRoadCell(map: GameMap, cell: Point, body: number, painted: Point[]): void {
+  if (!inMapBounds(map, cell.x, cell.y)) return;
+  map.lowerTiles[cell.y * map.width + cell.x] = body;
+  map.upperTiles[cell.y * map.width + cell.x] = TILE.EMPTY;
+  painted.push(cell);
+}
+
+function roadSeedSignature(map: GameMap, points: readonly Point[], naturalness: number): string {
+  return `paint_road|${map.id}|${map.width}x${map.height}|${naturalnessLabel(naturalness)}|${points.map(pointSignature).join(";")}`;
+}
 
 const STRUCTURE_STYLES: readonly TownCityPlotStyle[] = ["l", "courtyard", "multi", "road", "plaster", "stone"];
 
 const stampStructure: ToolDefinition = {
   name: "stamp_structure",
-  description: "집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 반환 diff에 문 좌표를 포함한다.",
+  description: `집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 반환 diff에 문 좌표를 포함한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -285,18 +320,30 @@ const stampStructure: ToolDefinition = {
       mapId: { type: "string" },
       template: { type: "string", enum: STRUCTURE_STYLES as unknown as string[] },
       origin: { type: "object", description: "{x,y} 좌상단" },
+      naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
+      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 지터)" },
     },
     required: ["mapId", "template", "origin"],
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const template = args.template as TownCityPlotStyle;
-    const origin = args.origin as Point;
+    const requestedOrigin = args.origin as Point;
+    const naturalness = naturalnessArg(args);
     if (!STRUCTURE_STYLES.includes(template)) throw new ToolError(`알 수 없는 구조물 템플릿: ${template}`);
+    const origin = jitterPlacement(
+      requestedOrigin,
+      jitterMaxOffset(naturalness),
+      rngForTool(args, structureSeedSignature(map, template, requestedOrigin, naturalness)),
+      (candidate) => inMapBounds(map, candidate.x, candidate.y)
+    );
     stampTownCityPlot(map, template, origin.x, origin.y);
     // 문 좌표는 대략적으로 구조물 하단 중앙으로 추정(정확 좌표는 템플릿별 상이).
     const door = { x: origin.x + 3, y: origin.y + 4 };
-    return { summary: `${map.name}에 '${template}' 구조물 스탬프(${origin.x},${origin.y})`, data: { door } };
+    return {
+      summary: `${map.name}에 '${template}' 구조물 스탬프(${origin.x},${origin.y}) — 자연도 ${naturalnessLabel(naturalness)}`,
+      data: { door, origin },
+    };
   },
 };
 
@@ -391,6 +438,30 @@ function houseBuildArgs(map: GameMap, args: Record<string, unknown>): HouseBuild
   return { origin, width, height, material };
 }
 
+function houseFits(map: GameMap, origin: Point, width: number, height: number): boolean {
+  return origin.x >= 0 && origin.y >= 0 && origin.x + width <= map.width && origin.y + height <= map.height;
+}
+
+function houseSeedSignature(map: GameMap, house: HouseBuildArgs, naturalness: number): string {
+  return [
+    "build_house",
+    map.id,
+    `${map.width}x${map.height}`,
+    pointSignature(house.origin),
+    `${house.width}x${house.height}`,
+    house.material,
+    naturalnessLabel(naturalness),
+  ].join("|");
+}
+
+function structureSeedSignature(map: GameMap, template: TownCityPlotStyle, origin: Point, naturalness: number): string {
+  return ["stamp_structure", map.id, `${map.width}x${map.height}`, template, pointSignature(origin), naturalnessLabel(naturalness)].join("|");
+}
+
+function pointSignature(point: Point): string {
+  return `${point.x},${point.y}`;
+}
+
 function stampBuildHouse(map: GameMap, { origin, width, height, material }: HouseBuildArgs): Point {
   const wallRows = height - 4;
   const doorX = Math.floor(width / 2);
@@ -468,7 +539,7 @@ const previewHouse: ToolDefinition = {
 const buildHouse: ToolDefinition = {
   name: "build_house",
   description:
-    "요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함.",
+    `요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -478,16 +549,26 @@ const buildHouse: ToolDefinition = {
       width: { type: "integer", description: `가로 칸 수(${HOUSE_MIN_WIDTH}~${HOUSE_MAX_WIDTH})` },
       height: { type: "integer", description: `세로 칸 수(${HOUSE_MIN_HEIGHT}~${HOUSE_MAX_HEIGHT}, 지붕 4행 포함)` },
       material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
+      naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
+      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 지터)" },
     },
     required: ["mapId", "origin", "width", "height", "material"],
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const house = houseBuildArgs(map, args);
+    const baseHouse = houseBuildArgs(map, args);
+    const naturalness = naturalnessArg(args);
+    const origin = jitterPlacement(
+      baseHouse.origin,
+      jitterMaxOffset(naturalness),
+      rngForTool(args, houseSeedSignature(map, baseHouse, naturalness)),
+      (candidate) => houseFits(map, candidate, baseHouse.width, baseHouse.height)
+    );
+    const house = { ...baseHouse, origin };
     const door = stampBuildHouse(map, house);
     return {
-      summary: `${map.name}에 ${house.width}×${house.height} ${house.material} 집 건설(${house.origin.x},${house.origin.y}) — 문 (${door.x},${door.y})`,
-      data: { door, width: house.width, height: house.height, material: house.material },
+      summary: `${map.name}에 ${house.width}×${house.height} ${house.material} 집 건설(${house.origin.x},${house.origin.y}) — 문 (${door.x},${door.y}) — 자연도 ${naturalnessLabel(naturalness)}`,
+      data: { door, origin: house.origin, width: house.width, height: house.height, material: house.material },
     };
   },
 };

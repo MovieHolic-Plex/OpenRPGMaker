@@ -306,9 +306,11 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       { key: "theme", label: "테마", type: "text", placeholder: "예: 강가의 어촌, 광산 마을" },
       { key: "houses", label: "집 수", type: "number", min: 2, max: 6, defaultValue: 3 },
       { key: "npcs", label: "NPC 수", type: "number", min: 0, max: 8, defaultValue: 3 },
+      { key: "naturalness", label: "자연스러움", type: "enum", defaultValue: "보통", options: [{ value: "정갈", label: "정갈" }, { value: "보통", label: "보통" }, { value: "야생", label: "야생" }] },
     ],
     buildPrompt: (args, ctx) => [
       `현재 맵(${ctx.mapName ?? "현재 맵"})에 '${args.theme || "평범한"}' 테마의 마을을 만들어 주세요. 집 ${args.houses}채, NPC ${args.npcs}명.`,
+      `- 자연스러움: ${args.naturalness || "보통"} (정갈=naturalness 0~0.2, 보통=0.5, 야생=0.8+)`,
       "",
       "단계별로 진행하고, 각 단계가 끝날 때마다 한 줄로 보고하세요(전부 끝날 때까지 멈추지 마세요):",
       "1. 부지 계획 — get_map_region으로 지형을 읽고 집·길 배치를 정하세요.",
