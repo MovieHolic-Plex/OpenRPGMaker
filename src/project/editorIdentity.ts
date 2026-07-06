@@ -42,6 +42,14 @@ export function ownerLabel(): string {
   return customLabel || `브라우저 ${editorSessionId().slice(0, 4)}`;
 }
 
+export function setOwnerLabel(label: string): void {
+  const trimmed = label.trim();
+  const storage = browserStorage();
+  if (!storage) return;
+  if (trimmed) storage.setItem(OWNER_LABEL_KEY, trimmed);
+  else storage.removeItem(OWNER_LABEL_KEY);
+}
+
 function browserStorage(): Storage | null {
   try {
     return typeof window === "undefined" ? null : window.localStorage;

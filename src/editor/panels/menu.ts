@@ -24,6 +24,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { saveProjectNow } from "@/editor/saveActions";
 import { separator, toolbarButton } from "./menuToolbar";
+import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
 const MENU_ITEMS = [
   { id: "project", label: "프로젝트" },
@@ -53,6 +54,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   for (const item of MENU_ITEMS) {
     menuBar.append(renderMenu(item.id, item.label, menuCommands(item.id, state, history, topbar)));
   }
+  menuBar.append(renderCommitHistoryButton(), renderIdentityTopbarControl(() => renderTopbar(topbar)));
   menuBar.append(renderWindowControls());
 
   const toolbar = el("div", { class: "rm2k3-toolbar classic-toolbar", dataset: { testid: "rm2k3-toolbar" } });

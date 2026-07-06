@@ -11,6 +11,7 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 - Database tabs, record views, battle database records, utility records, references, common-event command editing, and record mutation: start in `src/editor/panels/database*.ts`, `src/editor/databaseActions.ts`, `src/editor/databaseRecordMutators.ts`, `src/editor/databaseReferences.ts`, and `src/editor/databaseCommandReferences.ts`.
 - Resource manager, imported graphics, tileset metadata, generated assets, and transparency behavior: start in `src/editor/panels/resourceManager.ts`, `src/editor/tileset*`, and `src/assets`.
 - Save, import, export, autosave, remote/local project loading, and persistence status: start in `src/editor/saveActions.ts` and `src/project/store.ts`.
+- Team workflow visualization, mock editor login, topbar identity, commit-history panel, and map-lock badges: start in `src/editor/teamWorkflowUi.ts`, `src/editor/panels/menu.ts`, `src/editor/panels/mapList.ts`, `src/project/editorIdentity.ts`, and `src/project/supabaseProjectSync.ts`. Login remains mock-only until Phase 8 auth switchover; do not add Supabase Auth calls here.
 
 ## Agent cautions
 
@@ -49,6 +50,7 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 - Tileset transparent-color editing lives in `src/editor/panels/tilesetSettingsDetails.ts` and stores a user override on `TilesetDef.transparentColor`; render paths resolve it in `src/assets/chipsetTransparency.ts` before falling back to chipset defaults.
 - Save/import/export flows are centered in `src/editor/saveActions.ts` and the store/persistence layer in `src/project/store.ts`; check adjacent editor actions if a UI button needs to trigger them.
 - AI/tool changesets accepted through `src/editor/tools/applyChangesetToStore.ts` or the AI chat panel record one Supabase commit row plus one project change row with editor identity. Manual edits are batched at successful autosave/flush time and deduped by the last recorded serialized project.
+- W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromSupabase`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
 ## Validation Expectations

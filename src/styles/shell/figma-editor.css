@@ -47,6 +47,224 @@
     margin-left: auto;
   }
 
+  .team-history-button,
+  .team-identity-button {
+    align-items: center;
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: var(--radius-s);
+    color: var(--editor-text);
+    cursor: pointer;
+    display: inline-flex;
+    font: 600 12px/1 var(--font-ui);
+    gap: 8px;
+    height: 32px;
+    letter-spacing: 0;
+    margin-left: 8px;
+    padding: 0 10px;
+  }
+
+  .team-history-button:hover,
+  .team-history-button:focus-visible,
+  .team-identity-button:hover,
+  .team-identity-button:focus-visible,
+  .team-identity-button[aria-expanded="true"] {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-line-strong);
+    outline: none;
+  }
+
+  .team-identity-kind,
+  .team-commit-kind,
+  .team-commit-review {
+    border: 1px solid var(--editor-line);
+    border-radius: 999px;
+    color: var(--editor-text-muted);
+    font: 700 10px/1 var(--font-ui);
+    padding: 3px 6px;
+  }
+
+  .team-identity-label {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .team-identity-kind-text {
+    color: var(--editor-text-muted);
+    font-size: 11px;
+  }
+
+  .team-login-backdrop {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.58);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 24px;
+    position: fixed;
+    z-index: 2400;
+  }
+
+  .team-login-card,
+  .team-identity-menu,
+  .team-commit-panel {
+    background: var(--editor-popover-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 8px;
+    box-shadow: 0 18px 56px rgba(0, 0, 0, 0.38);
+    color: var(--editor-text);
+  }
+
+  .team-login-card {
+    display: grid;
+    gap: 14px;
+    max-width: 380px;
+    padding: 22px;
+    width: min(380px, 100%);
+  }
+
+  .team-login-head h2,
+  .team-commit-head h2 {
+    font: 700 16px/1.2 var(--font-ui);
+    margin: 0;
+  }
+
+  .team-login-head p {
+    color: var(--editor-text-muted);
+    font-size: 12px;
+    margin: 6px 0 0;
+  }
+
+  .team-login-form,
+  .team-login-field,
+  .team-login-oauth {
+    display: grid;
+    gap: 10px;
+  }
+
+  .team-login-field span {
+    color: var(--editor-text-muted);
+    font-size: 12px;
+  }
+
+  .team-login-input,
+  .team-identity-input {
+    background: var(--editor-panel-bg-2);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    font: 500 13px/1.2 var(--font-ui);
+    min-height: 34px;
+    padding: 0 10px;
+  }
+
+  .team-login-submit,
+  .team-login-oauth-button,
+  .team-login-guest,
+  .team-identity-menu-action,
+  .team-commit-refresh {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    cursor: pointer;
+    font: 700 12px/1 var(--font-ui);
+    min-height: 34px;
+    padding: 0 12px;
+  }
+
+  .team-login-submit,
+  .team-identity-menu-action.primary {
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
+  }
+
+  .team-login-guest {
+    background: transparent;
+    border-color: transparent;
+    color: var(--editor-text-muted);
+  }
+
+  .team-identity-menu {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    position: fixed;
+    width: 220px;
+    z-index: 2300;
+  }
+
+  .team-identity-menu-title {
+    color: var(--editor-text-muted);
+    font: 700 11px/1 var(--font-ui);
+  }
+
+  .team-commit-panel {
+    display: grid;
+    gap: 12px;
+    max-height: min(520px, calc(100vh - 96px));
+    overflow: auto;
+    padding: 14px;
+    position: fixed;
+    right: 20px;
+    top: 58px;
+    width: min(680px, calc(100vw - 40px));
+    z-index: 2200;
+  }
+
+  .team-commit-head {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .team-commit-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .team-commit-row {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 120px auto minmax(90px, 1fr) auto;
+    padding: 10px;
+  }
+
+  .team-commit-time,
+  .team-commit-author,
+  .team-commit-summary,
+  .team-commit-empty {
+    font-size: 12px;
+  }
+
+  .team-commit-time {
+    color: var(--editor-text-muted);
+  }
+
+  .team-commit-summary {
+    color: var(--editor-text-muted);
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+
+  .team-commit-kind.agent,
+  .team-commit-review.approved {
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .team-commit-empty.error {
+    color: var(--status-error);
+  }
+
   .rm2k3-window-control {
     align-items: center;
     background: transparent;
