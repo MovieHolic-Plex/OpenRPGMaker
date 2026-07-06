@@ -1,7 +1,7 @@
 ﻿.event-editor-modal-backdrop {
   align-content: stretch;
   align-items: stretch;
-  background: #f8fafc;
+  background: var(--bg-raised);
   display: grid;
   justify-content: stretch;
   justify-items: stretch;
@@ -10,19 +10,19 @@
 }
 
 .event-editor-modal-window {
-  --event-modern-accent: #2f7cf6;
-  --event-modern-accent-soft: #eaf2ff;
-  --event-modern-border: #e5e7eb;
-  --event-modern-border-strong: #cfd8e7;
-  --event-modern-card: #ffffff;
-  --event-modern-field: #ffffff;
-  --event-modern-field-muted: #f7f9fc;
-  --event-modern-line: #dfe7f3;
-  --event-modern-success: #059669;
-  --event-modern-text: #111827;
-  --event-modern-text-soft: #475467;
+  --event-modern-accent: var(--accent);
+  --event-modern-accent-soft: var(--accent-muted);
+  --event-modern-border: var(--border-subtle);
+  --event-modern-border-strong: var(--border-strong);
+  --event-modern-card: var(--bg-raised);
+  --event-modern-field: var(--bg-inset);
+  --event-modern-field-muted: var(--bg-surface);
+  --event-modern-line: var(--border-default);
+  --event-modern-success: var(--success);
+  --event-modern-text: var(--text-1);
+  --event-modern-text-soft: var(--text-2);
   background: var(--event-modern-card);
-  border: 1px solid #d7dde7;
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   box-shadow: none;
   color: var(--event-modern-text);
@@ -37,9 +37,9 @@
 }
 
 .event-editor-modal-header {
-  background: #ffffff;
-  border-bottom: 1px solid #eef1f5;
-  color: #1d2939;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-1);
   cursor: default;
   gap: 10px;
   min-height: 52px;
@@ -55,7 +55,7 @@
 }
 
 .event-editor-modal-header h2 {
-  color: #1d2939;
+  color: var(--text-1);
   font: 700 20px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   text-shadow: none;
 }
@@ -73,7 +73,7 @@
   border: 0;
   border-radius: 5px;
   box-shadow: none;
-  color: #374151;
+  color: var(--text-1);
   display: inline-flex;
   font: 500 18px/1 "Segoe UI", system-ui, sans-serif;
   height: 32px;
@@ -87,11 +87,11 @@
 
 .event-editor-window-control:hover,
 .event-editor-modal-header .event-editor-modal-close:hover {
-  background: #f3f4f6;
+  background: var(--bg-raised);
 }
 
 .event-editor-modal-body {
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 0;
   padding: 20px 25px 8px;
 }
@@ -103,7 +103,7 @@
 }
 
 .event-editor-modal-dynamic .event-editor {
-  background: #ffffff;
+  background: var(--bg-raised);
   display: grid;
   gap: 20px;
   grid-template-rows: 42px minmax(0, 1fr);
@@ -137,7 +137,7 @@
 }
 
 .event-editor-name-field span {
-  color: #111827;
+  color: var(--text-1);
   font: 700 17px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -146,7 +146,7 @@
 .event-editor-modal-body select,
 .event-editor-modal-body textarea {
   background: var(--event-modern-field);
-  border: 1px solid #d9dee8;
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04) inset;
   color: var(--event-modern-text);
@@ -189,11 +189,11 @@
 .event-page-number-tabs .btn,
 .event-editor-modal-footer .btn {
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-border);
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-  color: #344054;
+  color: var(--text-1);
   display: inline-flex;
   font: 700 14px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   justify-content: center;
@@ -203,8 +203,8 @@
 
 .event-page-action-buttons .btn:disabled,
 .event-page-action-buttons .btn.disabled {
-  background: #fbfbfc;
-  color: #c7cdd8;
+  background: var(--bg-raised);
+  color: var(--text-3);
 }
 
 .event-page-button-icon {
@@ -311,10 +311,10 @@
 
 .event-page-number-tabs::after {
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-border);
   border-radius: 6px;
-  color: #344054;
+  color: var(--text-1);
   content: "+";
   display: flex;
   font: 400 29px/1 "Segoe UI", system-ui, sans-serif;
@@ -338,7 +338,7 @@
 }
 
 .event-rm2k3-fieldset {
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-border);
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
@@ -349,7 +349,7 @@
 
 .event-rm2k3-fieldset legend {
   background: transparent;
-  color: #374151;
+  color: var(--text-1);
   font: 700 14px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 0 0 8px;
   white-space: nowrap;
@@ -491,10 +491,10 @@
 
 .event-editor-command-tool {
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-border);
   border-radius: 6px;
-  color: #344054;
+  color: var(--text-1);
   display: inline-flex;
   font: 600 20px/1 "Segoe UI Symbol", "Segoe UI", system-ui, sans-serif;
   height: 32px;
@@ -504,7 +504,7 @@
 }
 
 .event-editor-command-tool:disabled {
-  color: #c7cdd8;
+  color: var(--text-3);
 }
 
 .event-contents-fieldset {
@@ -514,13 +514,13 @@
 }
 
 .event-contents-fieldset legend {
-  color: #111827;
+  color: var(--text-1);
   font-size: 15px;
   padding: 0 0 8px 2px;
 }
 
 .event-contents-fieldset .cmd-list {
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-border);
   border-radius: 8px;
   counter-reset: command-row;
@@ -541,16 +541,20 @@
 .event-contents-fieldset .cmd-line-marker,
 .event-contents-fieldset .cmd-empty-line {
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid transparent;
   border-radius: 6px;
-  color: #334155;
+  color: var(--text-1);
   display: grid;
   font: 500 15px/22px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   gap: 10px;
   grid-template-columns: 42px 18px minmax(0, 1fr) 28px;
   min-height: 46px;
-  padding: 0 12px 0 8px;
+  /* RM2K3 트리 들여쓰기: 분기(조건 분기/선택지 표시 등) 안의 명령과 마커는
+     depth 레벨마다 18px 씩 우측으로 밀어 위계를 드러낸다. --cmd-depth 는
+     commandList.ts 가 명령/마커 렌더 시 부여하며(자식은 depth+1), 중첩 분기는
+     그만큼 누적 들여쓰기된다. (root 명령은 depth 0 → 기본 8px) */
+  padding: 0 12px 0 calc(8px + (var(--cmd-depth, 0) * 18px));
   white-space: nowrap;
 }
 
@@ -563,14 +567,14 @@
 }
 
 .event-contents-fieldset .cmd-head::before {
-  color: #6b7280;
+  color: var(--text-2);
   content: counter(command-row);
   font: 500 15px/1 "Segoe UI", system-ui, sans-serif;
   text-align: center;
 }
 
 .event-contents-fieldset .cmd-head::after {
-  color: #64748b;
+  color: var(--text-2);
   content: "+";
   font: 400 22px/1 "Segoe UI", system-ui, sans-serif;
   text-align: center;
@@ -612,7 +616,7 @@
 }
 
 .event-contents-fieldset .cmd-kind {
-  color: #334155;
+  color: var(--text-1);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -636,17 +640,18 @@
 
 .event-contents-fieldset .cmd-item.selected > .cmd-head,
 .event-contents-fieldset .cmd-item.editing > .cmd-head {
-  background: #ffffff;
-  border-color: #9cc5ff;
-  color: #334155;
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--text-1);
 }
 
 .event-contents-fieldset .cmd-item.editing .cmd-inline-editor {
-  background: #fbfdff;
-  border: 1px solid #b7d4ff;
+  background: var(--bg-overlay);
+  border: 1px solid var(--accent-border);
   border-radius: 8px;
   display: grid;
-  margin: 0 0 10px 60px;
+  /* 편집 패널도 대상 명령의 들여쓰기 깊이만큼 함께 밀어 정렬한다. */
+  margin: 0 0 10px calc(60px + (var(--cmd-depth, 0) * 18px));
   padding: 14px;
 }
 
@@ -671,7 +676,7 @@
 
 .event-command-face-editor {
   align-items: stretch;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-line);
   border-radius: 6px;
   display: grid;
@@ -696,7 +701,7 @@
 .event-command-face-crop {
   background-position: var(--face-scaled-x) var(--face-scaled-y);
   background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
-  border: 1px solid #d9dee8;
+  border: 1px solid var(--border-subtle);
   border-radius: 2px;
   height: var(--face-display-height);
   image-rendering: pixelated;
@@ -713,7 +718,7 @@
 
 .event-command-face-preview-copy strong,
 .event-command-face-preview[data-empty="true"] strong {
-  color: #111827;
+  color: var(--text-1);
   font: 700 14px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -722,14 +727,14 @@
 
 .event-command-face-preview-copy span,
 .event-command-face-preview[data-empty="true"] span {
-  color: #475467;
+  color: var(--text-2);
   font: 500 13px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   white-space: nowrap;
 }
 
 .event-command-face-editor .inline-field {
   align-content: start;
-  background: #ffffff;
+  background: var(--bg-raised);
   border-left: 1px solid var(--event-modern-line);
   display: grid;
   gap: 8px;
@@ -746,9 +751,9 @@
 
 .event-command-face-editor .inline-field input,
 .event-command-face-editor .inline-field select {
-  background: #ffffff;
+  background: var(--bg-raised);
   border-color: var(--event-modern-border-strong);
-  color: #111827;
+  color: var(--text-1);
   font-weight: 600;
   width: 100%;
 }
@@ -771,8 +776,8 @@
 
 .event-editor-modal-footer {
   align-items: center;
-  background: #ffffff;
-  border-top: 1px solid #eef1f5;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border-subtle);
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr);
   padding: 0 25px;
@@ -780,10 +785,10 @@
 
 .event-editor-footer-settings {
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 1px solid var(--event-modern-border);
   border-radius: 6px;
-  color: #344054;
+  color: var(--text-1);
   display: inline-flex;
   font: 500 20px/1 "Segoe UI Symbol", "Segoe UI", system-ui, sans-serif;
   height: 42px;
@@ -803,9 +808,9 @@
 }
 
 .event-editor-footer-button.primary {
-  background: linear-gradient(180deg, #3b8cff, #1f6fe7);
-  border-color: #1f6fe7;
-  color: #ffffff;
+  background: linear-gradient(180deg, var(--accent), var(--accent));
+  border-color: var(--accent-border);
+  color: var(--text-1);
 }
 
 .event-editor-modal-resize-handle {
