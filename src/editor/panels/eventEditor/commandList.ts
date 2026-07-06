@@ -5,7 +5,7 @@ import {
   FORK_THEN_BRANCH_INDEX,
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
-import { renderCommandBody } from "./commandBody";
+import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
@@ -84,31 +84,25 @@ function renderCommandItem(
     renderCommandSummary(cmd),
     commandActions(path, actions)
   );
+  const openEditor = () => openCommandEditModal(cmd, path, actions);
   head.addEventListener("click", () => selectCommandLine(item));
   head.addEventListener("contextmenu", (event) => {
     event.preventDefault();
     selectCommandLine(item);
-    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, toggleInlineEditor });
+    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor });
   });
-  head.addEventListener("dblclick", () => {
+  head.addEventListener("dblclick", (event) => {
+    // 버튼(↑↓x)·드래그 핸들 더블클릭은 편집 모달을 열지 않는다(각자 동작을 유지한다).
+    if (event.target instanceof Element && event.target.closest(".cmd-actions, .cmd-drag-handle")) return;
     selectCommandLine(item);
-    toggleInlineEditor(item);
+    openEditor();
   });
   head.addEventListener("keydown", (event) => {
     if (!(event instanceof KeyboardEvent)) return;
     selectCommandLine(item);
-    handleCommandShortcut(event, { x: 0, y: 0, item, command: cmd, path, actions, toggleInlineEditor });
+    handleCommandShortcut(event, { x: 0, y: 0, item, command: cmd, path, actions, openEditor });
   });
   item.append(head);
-  const editor = el("div", { class: "cmd-inline-editor" });
-  editor.style.setProperty("--cmd-depth", String(depth));
-  // 다이얼로그와 동일한 폼 레이아웃(.event-command-edit-body 필드 그리드)을 인라인
-  // 편집기에도 적용해 명령별로 제각각이던 폼을 일관되게 만든다.
-  const formHost = el("div", { class: "event-command-edit-body" });
-  formHost.append(renderCommandBody({ path, actions }, cmd));
-  editor.append(formHost);
-  ensureTerminalEditorHint(editor, cmd);
-  item.append(editor);
   ensureTerminalRowHint(item, cmd);
   // 항목 자체를 드롭 타겟으로 만들어 위/아래 삽입 위치를 결정한다.
   attachItemDropHandlers(item, path, containerPath, actions);
@@ -144,17 +138,6 @@ function ensureTerminalRowHint(item: HTMLElement, cmd: Command): void {
   if (!hint) return;
   if (item.querySelector(`[data-testid="${hint.testId}"]`)) return;
   item.append(el("span", {
-    class: "terminal-command-editor empty-hint",
-    text: hint.text,
-    dataset: { testid: hint.testId },
-  }));
-}
-
-function ensureTerminalEditorHint(editor: HTMLElement, cmd: Command): void {
-  const hint = terminalEditorHint(cmd);
-  if (!hint) return;
-  if (editor.querySelector(`[data-testid="${hint.testId}"]`)) return;
-  editor.firstElementChild?.append(el("span", {
     class: "terminal-command-editor empty-hint",
     text: hint.text,
     dataset: { testid: hint.testId },
@@ -256,11 +239,14 @@ function selectCommandLine(item: HTMLElement): void {
   item.classList.add("selected");
 }
 
-function toggleInlineEditor(item: HTMLElement): void {
-  item.parentElement?.querySelectorAll(".cmd-item.editing").forEach((node) => {
-    if (node !== item) node.classList.remove("editing");
+// 더블클릭/Enter·Space·우클릭"편집" 모두 이 모달로 진입한다(인라인 collapse 폐지).
+// 기존 명령 편집이므로 lockKind:true — 종류 변경으로 인한 분기 유실을 막는다.
+function openCommandEditModal(cmd: Command, path: number[], actions: CommandListActions): void {
+  openEventCommandEditDialog({
+    initial: cmd,
+    lockKind: true,
+    onApply: (edited) => actions.replaceCommand(path, edited),
   });
-  item.classList.toggle("editing");
 }
 
 function commandActions(path: number[], actions: CommandListActions): HTMLElement {

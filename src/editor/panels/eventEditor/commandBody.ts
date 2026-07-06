@@ -11,16 +11,19 @@ import type { CommandEditContext } from "./types";
 
 export function renderCommandBody(context: CommandEditContext, cmd: Command): HTMLElement {
   const wrap = el("div", {});
-  const kindSel = commandKindSelect(cmd.kind);
-  kindSel.dataset.commandKindSelect = "true";
-  kindSel.addEventListener("change", () => {
-    context.actions.replaceCommand(
-      context.path,
-      newCommand(selectedOptionValue(kindSel, COMMAND_KIND_OPTIONS, cmd.kind))
-    );
-  });
+  // 종류 잠금(기존 명령 편집)에서는 kind select 를 렌더하지 않는다 — 분기 유실 방지.
+  if (!context.lockKind) {
+    const kindSel = commandKindSelect(cmd.kind);
+    kindSel.dataset.commandKindSelect = "true";
+    kindSel.addEventListener("change", () => {
+      context.actions.replaceCommand(
+        context.path,
+        newCommand(selectedOptionValue(kindSel, COMMAND_KIND_OPTIONS, cmd.kind))
+      );
+    });
+    wrap.append(kindSel);
+  }
   wrap.append(
-    kindSel,
     el("div", {
       class: "event-command-edit-summary",
       text: commandSummary(cmd),
