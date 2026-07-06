@@ -123,7 +123,7 @@ function decorateHarborVillage(map: GameMap): void {
   stampLower(map, { x: 4, y: 20 }, SMALL_HARBOR_HOUSE_PATTERN);
   stampUpper(map, { x: 9, y: 10 }, MARKET_CANOPY_PATTERN);
   stampUpper(map, { x: 17, y: 18 }, [[327, 328], [288, -1]]);
-  stampUpper(map, { x: 21, y: 11 }, [[260, -1, 288]]);
+  stampUpper(map, { x: 21, y: 11 }, [[260, -1, 288], [290, -1, -1]]);
 }
 
 function trainingEvent(): GameEvent {

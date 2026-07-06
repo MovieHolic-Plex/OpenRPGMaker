@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { runTool } from "@/editor/tools/toolRunner";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
@@ -73,6 +74,25 @@ describe("validateClusterRules", () => {
     expect(violations[0]?.coords).toEqual([{ mapId: MAP_ID, x: 1, y: 1 }]);
   });
 
+  it("adjacency 규칙은 b 타일만 남은 반쪽 페어도 같은 hard 위반으로 보고한다", () => {
+    // Given: hard adjacency says 260 must be directly above 290, but only the lower half exists.
+    const { map, project } = projectWithRules([
+      { id: "conifer-hard", kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" },
+    ]);
+    map.upperTiles[at(map, 2, 3)] = 290;
+
+    // When: cluster rules are validated.
+    const violations = validateClusterRules(project);
+
+    // Then: the orphan lower half is reported at its own coordinate.
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toMatchObject({
+      code: "cluster-rule:adjacency:cluster-main",
+      severity: "error",
+    });
+    expect(violations[0]?.coords).toEqual([{ mapId: MAP_ID, x: 2, y: 3 }]);
+  });
+
   it("spacing 규칙은 같은 그룹 인스턴스가 minGap 미만이면 두 좌표를 warning으로 모은다", () => {
     // Given: medium spacing requires a gap of at least 3 grid steps between group tiles.
     const { map, project } = projectWithRules([
@@ -121,5 +141,32 @@ describe("validateClusterRules", () => {
       { mapId: MAP_ID, x: 1, y: 1 },
       { mapId: MAP_ID, x: 1, y: 2 },
     ]);
+  });
+
+  it("run_lint는 hard/medium/soft 클러스터 위반을 error/warning/info와 좌표로 노출한다", () => {
+    // Given: one project carries all three cluster rule strengths.
+    const { map, project } = projectWithRules([
+      { id: "hard-pair", kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" },
+      { id: "medium-gap", kind: "spacing", params: { minGap: 3 }, strength: "medium" },
+      { id: "soft-cap", kind: "count", params: { max: 2, perMap: true }, strength: "soft" },
+    ]);
+    project.startPos = { x: 4, y: 4 };
+    map.upperTiles[at(map, 2, 3)] = 290;
+    map.lowerTiles[at(map, 0, 0)] = 10;
+    map.lowerTiles[at(map, 1, 0)] = 11;
+
+    // When: the AI-facing lint tool is executed.
+    const lint = runTool({ project }, "run_lint", {});
+    const issues = (lint.data as { readonly issues: Array<{ readonly code: string; readonly severity: string; readonly x?: number; readonly y?: number }> }).issues;
+
+    // Then: each strength maps to the expected public severity.
+    expect(lint.ok, lint.summary).toBe(true);
+    expect(issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: "cluster-rule:adjacency:cluster-main", severity: "error", x: 2, y: 3 }),
+        expect.objectContaining({ code: "cluster-rule:spacing:cluster-main", severity: "warning", x: 0, y: 0 }),
+        expect.objectContaining({ code: "cluster-rule:count:cluster-main", severity: "info" }),
+      ])
+    );
   });
 });

@@ -103,14 +103,20 @@ function severityForStrength(strength: ClusterRule["strength"]): LintSeverity {
 function adjacencyViolation(map: GameMap, group: TileGroupMetadata, rule: ClusterRule): ClusterRuleViolation | null {
   const params = adjacencyParams(rule.params);
   if (!params) return null;
-  const coords: ClusterRuleViolationCoord[] = [];
+  const coords = new Map<string, ClusterRuleViolationCoord>();
   for (const coord of tileCoords(map, params.a)) {
     const expected = neighbor(coord, params.relation);
     if (!isInside(map, expected.x, expected.y) || !hasTileAt(map, expected.x, expected.y, params.b)) {
-      coords.push({ mapId: map.id, x: coord.x, y: coord.y });
+      coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
-  return coords.length > 0 ? baseViolation(group, rule, coords) : null;
+  for (const coord of tileCoords(map, params.b)) {
+    const expected = neighbor(coord, oppositeRelation(params.relation));
+    if (!isInside(map, expected.x, expected.y) || !hasTileAt(map, expected.x, expected.y, params.a)) {
+      coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
+    }
+  }
+  return coords.size > 0 ? baseViolation(group, rule, [...coords.values()]) : null;
 }
 
 function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly relation: RuleRelation } | null {
@@ -131,6 +137,19 @@ function neighbor(coord: ClusterRuleViolationCoord, relation: RuleRelation): { r
       return { x: coord.x + 1, y: coord.y };
     case "aRightOfB":
       return { x: coord.x - 1, y: coord.y };
+  }
+}
+
+function oppositeRelation(relation: RuleRelation): RuleRelation {
+  switch (relation) {
+    case "aAboveB":
+      return "aBelowB";
+    case "aBelowB":
+      return "aAboveB";
+    case "aLeftOfB":
+      return "aRightOfB";
+    case "aRightOfB":
+      return "aLeftOfB";
   }
 }
 

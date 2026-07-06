@@ -25,6 +25,44 @@ describe("EasyRPG Combined Town tileset harness", () => {
     });
   });
 
+  it("seeds conifer, dry tree, broadleaf, flower, and bush cluster rules by default", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const group = (suffix: string) => tileset.tileGroups?.find((entry) => entry.id.endsWith(suffix));
+
+    expect(group("conifer-tree")?.rules).toEqual([
+      expect.objectContaining({ kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" }),
+    ]);
+    expect(group("dry-tree")?.rules).toEqual([
+      expect.objectContaining({ kind: "adjacency", params: { a: 261, b: 291, relation: "aAboveB" }, strength: "hard" }),
+    ]);
+    expect(group("broadleaf-tree-2x2")?.rules).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ params: { a: 262, b: 292, relation: "aAboveB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 263, b: 293, relation: "aAboveB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 262, b: 263, relation: "aLeftOfB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 292, b: 293, relation: "aLeftOfB" }, strength: "hard" }),
+      ])
+    );
+    expect(group("flower-props")?.rules).toEqual([
+      expect.objectContaining({ kind: "spacing", params: { minGap: 2 }, strength: "medium" }),
+    ]);
+    expect(group("bush-props")?.rules).toEqual([
+      expect.objectContaining({ kind: "spacing", params: { minGap: 2 }, strength: "soft" }),
+    ]);
+  });
+
+  it("does not overwrite existing rules when the Combined Town harness is re-applied", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
+    if (!conifer) throw new Error("missing conifer group");
+    conifer.rules = [{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }];
+
+    applyCombinedTownHarness(tileset);
+
+    const reseeded = tileset.tileGroups?.find((group) => group.id === conifer.id);
+    expect(reseeded?.rules).toEqual([{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }]);
+  });
+
   it("locks the Combined Town layer contract to lower building parts and upper roof overlays", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
 

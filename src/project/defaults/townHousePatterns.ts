@@ -14,6 +14,7 @@ const ROAD_SHOWCASE_CROSS_PATH = {
 } as const;
 const FLOWER = 288;
 const TREE = 260;
+const TREE_BOTTOM = 290;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
 
@@ -52,11 +53,11 @@ export function stampTownHouseStyle(
       // "wide" 변형을 써서 l/courtyard/multi와 각기 다른 houseShapeSignature를 만든다.
       stampTemplateHouse(map, { approachHeight: 5, material: "wood", originX, originY, variant: "wide" });
       paintTownPathNetwork(map, [offsetTownRect(originX, originY, ROAD_SHOWCASE_CROSS_PATH)]);
-      stampUpperPattern(map, originX + 2, originY + 12, [[TREE, -1, FLOWER]]);
+      stampUpperPattern(map, originX + 2, originY + 9, [[TREE, -1, FLOWER], [TREE_BOTTOM, -1, -1]]);
       return;
     case "l":
       stampTemplateHouse(map, { approachHeight: 3, material: "wood", originX, originY, variant: "l" });
-      stampUpperPattern(map, originX + 1, originY + 12, [[TREE], [FLOWER]]);
+      stampUpperPattern(map, originX + 1, originY + 9, [[TREE, -1], [TREE_BOTTOM, FLOWER]]);
       return;
   }
 }
