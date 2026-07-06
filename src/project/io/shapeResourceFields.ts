@@ -61,6 +61,11 @@ export function validateTileset(id: string, value: unknown): void {
   if (tileset.transparentColor !== undefined) {
     requireString(`tileset ${id}.transparentColor`, tileset.transparentColor);
   }
+  if (tileset.suppressedHarnessGroupIds !== undefined) {
+    for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
+      requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);
+    }
+  }
   if (tileset.tileGroups !== undefined) {
     for (const [index, group] of requireArray(`tileset ${id}.tileGroups`, tileset.tileGroups).entries()) {
       const record = requireRecord(`tileset ${id}.tileGroups[${index}]`, group);

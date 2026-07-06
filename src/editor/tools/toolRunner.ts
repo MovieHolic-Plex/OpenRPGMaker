@@ -3,7 +3,8 @@
 // - 인자를 JSON Schema로 최소 검증.
 // - 읽기 툴: project를 읽기만 하고 data 반환.
 // - 쓰기 툴: draft(구조적 복제)에 적용 → diff 요약 → commitChangeset(projectLint 게이트).
-//   error가 있으면 반영 거부(ok:false). dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
+//   차단 error가 있으면 반영 거부(ok:false). cluster-rule hard error는 issues로 보고하되 통과한다.
+//   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
 import { commitChangeset, createDraft, summarizeChanges } from "./changeset";

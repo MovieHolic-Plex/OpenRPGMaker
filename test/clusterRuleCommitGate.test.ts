@@ -55,17 +55,17 @@ function projectForGate(): { readonly map: GameMap; readonly project: Project } 
 }
 
 describe("cluster rule commit gate", () => {
-  it("hard adjacency 위반은 commitChangeset에서 거부되고 보강하면 통과한다", () => {
+  it("hard adjacency 위반은 lint error로 보고되지만 commitChangeset을 차단하지 않는다", () => {
     // Given: a hard rule requiring tile 260 directly above tile 290.
     const { map, project } = projectForGate();
     map.lowerTiles[at(map, 1, 1)] = 260;
 
     // When: the unsupported draft is committed.
-    const rejected = commitChangeset(project);
+    const reported = commitChangeset(project);
 
-    // Then: the existing projectLint error gate blocks the write.
-    expect(rejected.ok).toBe(false);
-    expect(rejected.issues).toEqual(
+    // Then: the cluster-rule hard error is reported but does not block the write.
+    expect(reported.ok).toBe(true);
+    expect(reported.issues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           code: "cluster-rule:adjacency:roof-wall",
@@ -80,7 +80,7 @@ describe("cluster rule commit gate", () => {
     map.lowerTiles[at(map, 1, 2)] = 290;
     const accepted = commitChangeset(project);
 
-    // Then: the same gate allows the draft.
+    // Then: the fixed draft still passes, now without cluster-rule issues.
     expect(accepted.ok).toBe(true);
     expect(accepted.issues.filter((issue) => issue.code.startsWith("cluster-rule"))).toHaveLength(0);
   });

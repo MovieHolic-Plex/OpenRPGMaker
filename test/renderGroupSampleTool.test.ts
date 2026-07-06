@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { renderToolImages } from "@/ai/toolImageRenderer";
+import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -95,6 +96,30 @@ describe("render_group_sample", () => {
     expect(result.data.samples).toHaveLength(1);
     expect(result.data.samples[0]?.label).toBe("현재");
     expect(result.data.samples[0]?.lower).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+
+  it("exposes patternGrammar kind and part enums in the tool schema", () => {
+    const tool = GROUP_SAMPLE_TOOLS.find((entry) => entry.name === "render_group_sample");
+    const patternGrammar = tool?.parameters.properties?.patternGrammar;
+    const proposedPatternGrammar = tool?.parameters.properties?.proposed?.properties?.patternGrammar;
+
+    expect(patternGrammar?.properties?.kind?.enum).toEqual(expect.arrayContaining(["vertical_expandable", "source_rect", "nine_slice_expandable"]));
+    expect(patternGrammar?.properties?.parts?.items?.properties?.role?.enum).toEqual(expect.arrayContaining(["top", "bottom", "topLeft"]));
+    expect(proposedPatternGrammar).toBe(patternGrammar);
+  });
+
+  it("reports valid patternGrammar kinds when an invalid kind is provided", () => {
+    const ctx = context();
+    const result = runTool(ctx, "render_group_sample", {
+      patternGrammar: { kind: "vertical", parts: [] },
+      role: "terrain",
+      tileIds: [1],
+      tilesetId: DEFAULT_TILESET_ID,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.message).toContain("vertical_expandable");
+    expect(result.issues?.[0]?.message).toContain("source_rect");
   });
 
   it("returns before and after samples when proposed data changes the group", () => {

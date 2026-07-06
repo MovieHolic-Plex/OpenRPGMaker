@@ -7,6 +7,7 @@ import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
+import { applyCombinedTownHarness, COMBINED_TOWN_HARNESS_GROUPS } from "@/project/tilesetHarness";
 import type { TileGroupMetadata } from "@/project/types";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 
@@ -192,6 +193,20 @@ describe("delete_tile_group", () => {
     const missing = runTool(context, "delete_tile_group", { tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" });
     expect(missing.ok).toBe(false);
     expect(missing.issues?.[0]?.code).toBe("group-not-found");
+  });
+
+  it("기본 Combined Town 하네스 그룹 삭제는 tombstone을 남겨 재시드를 막는다", () => {
+    const context = { project: createBlankProject() };
+    const groupId = COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.id.endsWith("conifer-tree"))?.id;
+    if (!groupId) throw new Error("missing conifer harness group");
+
+    const deleted = runTool(context, "delete_tile_group", { tilesetId: DEFAULT_TILESET_ID, groupId });
+    expect(deleted.ok, deleted.summary).toBe(true);
+
+    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    expect(tileset.suppressedHarnessGroupIds).toContain(groupId);
+    applyCombinedTownHarness(tileset);
+    expect(tileset.tileGroups?.some((group) => group.id === groupId)).toBe(false);
   });
 });
 

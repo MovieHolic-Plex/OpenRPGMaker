@@ -1,7 +1,7 @@
 import { buildGroupSample, type GroupSample, type GroupSampleInput } from "@/ai/groupSampleBuilder";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 const TILE_GROUP_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];
 
@@ -73,6 +73,45 @@ const PATTERN_PART_ROLES: readonly PatternPartRole[] = [
 const JUNCTION_SIDES: readonly JunctionSide[] = ["below", "above", "leftOf", "rightOf"];
 const JUNCTION_ACTIONS: readonly JunctionAction[] = ["omit", "replace"];
 const OVERLAY_WHENS: readonly OverlayWhen[] = ["diagonalCorner", "innerCorner", "ridge", "eaveEnd"];
+const PATTERN_KIND_HINT = PATTERN_KINDS.join(", ");
+
+const PATTERN_GRAMMAR_SCHEMA = {
+  type: "object",
+  description: `후보 조립 문법. kind는 다음 중 하나: ${PATTERN_KIND_HINT}`,
+  properties: {
+    axis: { type: "string", enum: ["both", "horizontal", "vertical"], description: "문법 축" },
+    kind: { type: "string", enum: PATTERN_KINDS as unknown as string[], description: `문법 종류: ${PATTERN_KIND_HINT}` },
+    minHeight: { type: "integer", description: "최소 높이" },
+    minWidth: { type: "integer", description: "최소 너비" },
+    parts: {
+      type: "array",
+      description: "문법 파트 목록",
+      items: {
+        type: "object",
+        properties: {
+          role: { type: "string", enum: PATTERN_PART_ROLES as unknown as string[], description: "파트 역할" },
+          tileIds: { type: "array", items: { type: "integer" }, description: "이 파트에 해당하는 타일 id" },
+        },
+        required: ["role", "tileIds"],
+      },
+    },
+    preserveCaps: { type: "boolean", description: "캡 타일 보존 여부" },
+    repeat: { type: "string", enum: ["body", "center", "source_order"], description: "반복 방식" },
+  },
+  required: ["kind", "parts"],
+  additionalProperties: true,
+} satisfies JsonSchema;
+
+const PROPOSED_SCHEMA = {
+  type: "object",
+  description: "수정 후 후보. 현재 그룹 기준으로 바꿀 필드만 넣는다.",
+  properties: {
+    role: { type: "string", enum: TILE_GROUP_ROLES as unknown as string[], description: "후보 역할" },
+    tileIds: { type: "array", items: { type: "integer" }, description: "후보 타일 id 목록" },
+    patternGrammar: PATTERN_GRAMMAR_SCHEMA,
+  },
+  additionalProperties: true,
+} satisfies JsonSchema;
 
 const renderGroupSample: ToolDefinition = {
   name: "render_group_sample",
@@ -86,8 +125,8 @@ const renderGroupSample: ToolDefinition = {
       groupId: { type: "string", description: "저장된 타일 그룹 id. 있으면 현재 샘플의 기준" },
       role: { type: "string", enum: ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"], description: "후보 역할" },
       tileIds: { type: "array", items: { type: "integer" }, description: "후보 타일 id 목록" },
-      patternGrammar: { type: "object", additionalProperties: true, description: "후보 조립 문법" },
-      proposed: { type: "object", additionalProperties: true, description: "수정 후 후보 {role?, tileIds?, patternGrammar?}" },
+      patternGrammar: PATTERN_GRAMMAR_SCHEMA,
+      proposed: PROPOSED_SCHEMA,
     },
     required: ["tilesetId"],
   },
@@ -209,7 +248,7 @@ function patternGrammarValue(value: unknown): PatternGrammar | undefined {
   const record = recordValue(value);
   if (!record) throw new ToolError("patternGrammar 형식이 올바르지 않습니다.", { code: "invalid-args" });
   const kind = record.kind;
-  if (!isPatternKind(kind)) throw new ToolError("patternGrammar.kind가 올바르지 않습니다.", { code: "invalid-args" });
+  if (!isPatternKind(kind)) throw new ToolError(`patternGrammar.kind가 올바르지 않습니다. 유효 값: ${PATTERN_KIND_HINT}`, { code: "invalid-args" });
   const rawParts = record.parts;
   if (!Array.isArray(rawParts)) throw new ToolError("patternGrammar.parts가 필요합니다.", { code: "invalid-args" });
   const parts = rawParts.map(patternPartValue);

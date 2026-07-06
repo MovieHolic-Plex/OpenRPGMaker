@@ -4,7 +4,9 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
-import type { AutotileGroup, GameMap, MapId, PassFlag, TilesetDef } from "@/project/types";
+import { expandHardClusterPlacement, type HardClusterTileEdit } from "@/editor/tools/clusterRulePlacement";
+import { toast } from "@/util/toast";
+import type { AutotileGroup, Command, GameMap, MapId, PassFlag, Project, TilesetDef } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
 type RoadPoint = { readonly x: number; readonly y: number };
@@ -19,17 +21,39 @@ type LowerTileEdit = {
   readonly previousTile: number | undefined;
   readonly nextTile: number;
 } & Required<TilePaintOptions>;
+type PlannedTileEdit = HardClusterTileEdit;
+type TilePaintPlan =
+  | { readonly edits: readonly PlannedTileEdit[]; readonly ok: true }
+  | { readonly ok: false; readonly reason: string };
 
 export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, tile: number, options: TilePaintOptions = {}): void {
   const targetLayer = effectiveLayerForCurrentMap(mapId, layer, tile);
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
   const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  const plan = currentMap ? planManualClusterPaint(current, currentMap, tileset, targetLayer, x, y, tile) : { ok: true as const, edits: [] };
+  if (!plan.ok) {
+    showClusterRejectionToast(plan.reason);
+    return;
+  }
+  if (plan.edits.length === 0) return;
   store.updateMap(mapId, (m) => {
-    const previousTile = tileAt(m, targetLayer, x, y);
-    setTileSafe(m, targetLayer, x, y, tile);
-    shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: [{ x, y }], previousTile, nextTile: tile, autoConnect: options.autoConnect ?? true });
-  }, { cells: changedTileCellsForEdit(mapId, targetLayer, [{ x, y }], options.autoConnect ?? true) });
+    const lowerEdits: LowerTileEdit[] = [];
+    for (const edit of plan.edits) {
+      const previousTile = tileAt(m, edit.layer, edit.x, edit.y);
+      setTileSafe(m, edit.layer, edit.x, edit.y, edit.tile);
+      if (edit.layer === "lower") {
+        lowerEdits.push({
+          autoConnect: options.autoConnect ?? true,
+          layer: edit.layer,
+          nextTile: edit.tile,
+          points: [{ x: edit.x, y: edit.y }],
+          previousTile,
+        });
+      }
+    }
+    for (const edit of lowerEdits) shapeTerrainAfterLowerEdit(m, tileset, edit);
+  }, { cells: changedTileCellsForPlannedEdits(mapId, plan.edits, options.autoConnect ?? true) });
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {
@@ -166,6 +190,95 @@ function changedTileCellsForEdit(mapId: MapId, layer: TileLayer, points: readonl
   return [...cells.values()];
 }
 
+function changedTileCellsForPlannedEdits(mapId: MapId, edits: readonly PlannedTileEdit[], autoConnect: boolean): readonly ProjectChangeCell[] {
+  const cells = new Map<string, ProjectChangeCell>();
+  for (const edit of edits) {
+    for (const cell of changedTileCellsForEdit(mapId, edit.layer, [{ x: edit.x, y: edit.y }], autoConnect)) {
+      cells.set(`${cell.layer}:${cell.x},${cell.y}`, cell);
+    }
+  }
+  return [...cells.values()];
+}
+
+function planManualClusterPaint(
+  project: Project,
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  layer: TileLayer,
+  x: number,
+  y: number,
+  tile: number
+): TilePaintPlan {
+  if (!inMap(map, x, y)) return { ok: true, edits: [] };
+  if (!tileset) return { ok: true, edits: [{ layer, tile, x, y }] };
+  const expansion = expandHardClusterPlacement({
+    map,
+    origin: { x, y },
+    originLayer: layer,
+    tile,
+    tileset,
+  });
+  if (!expansion.ok) return { ok: false, reason: expansion.reason ?? "동반 타일 배치 불가" };
+  if (expansion.autoTiles === 0) return { ok: true, edits: expansion.edits };
+  const protectedExpansion = expandHardClusterPlacement({
+    blocked: protectedClusterCells(project, map),
+    map,
+    origin: { x, y },
+    originLayer: layer,
+    tile,
+    tileset,
+  });
+  if (!protectedExpansion.ok) return { ok: false, reason: protectedExpansion.reason ?? "동반 타일 배치 불가" };
+  return { ok: true, edits: protectedExpansion.edits };
+}
+
+function showClusterRejectionToast(reason: string): void {
+  if (typeof document === "undefined") return;
+  toast(`클러스터 규칙 때문에 배치할 수 없습니다: ${reason}`, "error");
+}
+
+function protectedClusterCells(project: Project, map: GameMap): ReadonlySet<string> {
+  const blocked = new Set<string>();
+  if (project.startMapId === map.id) blocked.add(coordKey(project.startPos.x, project.startPos.y));
+  for (const event of map.events) {
+    blocked.add(coordKey(event.x, event.y));
+    collectTransferTargets(event.commands, map.id, blocked);
+    for (const page of event.pages ?? []) collectTransferTargets(page.commands, map.id, blocked);
+  }
+  for (const sourceMap of Object.values(project.maps)) {
+    if (sourceMap.id === map.id) continue;
+    for (const event of sourceMap.events) {
+      collectTransferTargets(event.commands, map.id, blocked);
+      for (const page of event.pages ?? []) collectTransferTargets(page.commands, map.id, blocked);
+    }
+  }
+  for (const commonEvent of project.commonEvents) collectTransferTargets(commonEvent.commands, map.id, blocked);
+  return blocked;
+}
+
+function collectTransferTargets(commands: readonly Command[], mapId: string, blocked: Set<string>): void {
+  for (const command of commands) {
+    switch (command.kind) {
+      case "transfer":
+        if (command.mapId === mapId) blocked.add(coordKey(command.x, command.y));
+        break;
+      case "choices":
+        for (const option of command.options) collectTransferTargets(option.branch, mapId, blocked);
+        collectTransferTargets(command.cancelBranch ?? [], mapId, blocked);
+        break;
+      case "fork":
+        collectTransferTargets(command.then, mapId, blocked);
+        collectTransferTargets(command.else ?? [], mapId, blocked);
+        break;
+      case "loop":
+        collectTransferTargets(command.body, mapId, blocked);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 function effectiveLayer(tileset: TilesetDef | undefined, requestedLayer: TileLayer, tile: number): TileLayer {
   if (!tileset) return requestedLayer;
   // RM2K3식 엄격 분류: 타일의 홈 레이어(하네스 그룹 → priority)가 단일 판정되면
@@ -195,6 +308,10 @@ function tileAt(m: GameMap, layer: TileLayer, x: number, y: number): number | un
   if (!inMap(m, x, y)) return undefined;
   const i = y * m.width + x;
   return layer === "lower" ? m.lowerTiles[i] : m.upperTiles[i];
+}
+
+function coordKey(x: number, y: number): string {
+  return `${x},${y}`;
 }
 
 // lower 레이어 편집 후 오토타일 그룹(타일셋 정의 또는 내장 기본값)을 재계산한다.

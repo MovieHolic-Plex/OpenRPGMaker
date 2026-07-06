@@ -132,10 +132,11 @@ export interface CommitResult {
   issues: LintIssue[];
 }
 
-// 커밋 게이트: draft에 projectLint를 돌려 error가 하나라도 있으면 반영 거부.
-// warning은 통과시키되 issues로 함께 반환한다(모델/사람이 참고).
+// 커밋 게이트: draft에 projectLint를 돌려 차단 error가 있으면 반영 거부.
+// cluster-rule hard 위반은 배치 시점 강제 + lint 보고 대상이므로 커밋 차단에서는 제외한다.
+// warning/info와 비차단 error는 통과시키되 issues로 함께 반환한다(모델/사람이 참고).
 export function commitChangeset(draft: Project): CommitResult {
   const issues = projectLint(draft);
-  const hasError = issues.some((issue) => issue.severity === "error");
+  const hasError = issues.some((issue) => issue.severity === "error" && !issue.code.startsWith("cluster-rule:"));
   return { ok: !hasError, issues };
 }

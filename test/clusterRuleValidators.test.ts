@@ -6,6 +6,7 @@ import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
 
 const MAP_ID = "map_cluster_rules";
+type PatternGrammar = NonNullable<TileGroupMetadata["patternGrammar"]>;
 
 function blankMap(): GameMap {
   const width = 5;
@@ -27,7 +28,7 @@ function at(map: GameMap, x: number, y: number): number {
   return y * map.width + x;
 }
 
-function groupWithRules(rules: readonly ClusterRule[]): TileGroupMetadata {
+function groupWithRules(rules: readonly ClusterRule[], patternGrammar?: PatternGrammar): TileGroupMetadata {
   return {
     defaultLayer: "lower",
     description: "검증 대상 클러스터",
@@ -37,18 +38,34 @@ function groupWithRules(rules: readonly ClusterRule[]): TileGroupMetadata {
     role: "building",
     rules: [...rules],
     tileIds: [10, 11, 260, 290],
+    ...(patternGrammar ? { patternGrammar } : {}),
   };
 }
 
-function projectWithRules(rules: readonly ClusterRule[]): { readonly map: GameMap; readonly project: Project } {
+function projectWithRules(rules: readonly ClusterRule[], patternGrammar?: PatternGrammar): { readonly map: GameMap; readonly project: Project } {
   const project = createBlankProject();
   const map = blankMap();
   project.maps = { [MAP_ID]: map };
   project.mapTree = { mapId: MAP_ID, children: [] };
   project.startMapId = MAP_ID;
   project.startPos = { x: 0, y: 0 };
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [groupWithRules(rules)];
+  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [groupWithRules(rules, patternGrammar)];
   return { map, project };
+}
+
+function verticalTreeGrammar(): PatternGrammar {
+  return {
+    axis: "vertical",
+    kind: "vertical_expandable",
+    minHeight: 2,
+    minWidth: 1,
+    parts: [
+      { role: "top", tileIds: [260] },
+      { role: "bottom", tileIds: [290] },
+    ],
+    preserveCaps: true,
+    repeat: "body",
+  };
 }
 
 describe("validateClusterRules", () => {
@@ -141,6 +158,66 @@ describe("validateClusterRules", () => {
       { mapId: MAP_ID, x: 1, y: 1 },
       { mapId: MAP_ID, x: 1, y: 2 },
     ]);
+  });
+
+  it("spacing 규칙은 1x2 풋프린트의 자기 인접 셀을 위반으로 세지 않는다", () => {
+    // Given: a vertical tree footprint occupies two adjacent cells as one instance.
+    const { map, project } = projectWithRules([
+      { id: "space-tree", kind: "spacing", params: { minGap: 2 }, strength: "hard" },
+    ], verticalTreeGrammar());
+    map.upperTiles[at(map, 1, 1)] = 260;
+    map.upperTiles[at(map, 1, 2)] = 290;
+
+    // When: cluster rules are validated.
+    const violations = validateClusterRules(project);
+
+    // Then: the top and bottom of the same tree do not violate their own minGap.
+    expect(violations).toHaveLength(0);
+  });
+
+  it("spacing 규칙은 별도 풋프린트 인스턴스 사이 간격을 검사한다", () => {
+    // Given: two complete 1x2 trees are touching horizontally.
+    const { map, project } = projectWithRules([
+      { id: "space-tree", kind: "spacing", params: { minGap: 1 }, strength: "hard" },
+    ], verticalTreeGrammar());
+    map.upperTiles[at(map, 1, 1)] = 260;
+    map.upperTiles[at(map, 1, 2)] = 290;
+    map.upperTiles[at(map, 2, 1)] = 260;
+    map.upperTiles[at(map, 2, 2)] = 290;
+
+    // When: cluster rules are validated.
+    const violations = validateClusterRules(project);
+
+    // Then: the two tree instances violate spacing, and all footprint cells are reported.
+    expect(violations).toHaveLength(1);
+    expect(violations[0]?.coords).toEqual([
+      { mapId: MAP_ID, x: 1, y: 1 },
+      { mapId: MAP_ID, x: 1, y: 2 },
+      { mapId: MAP_ID, x: 2, y: 1 },
+      { mapId: MAP_ID, x: 2, y: 2 },
+    ]);
+  });
+
+  it("count 규칙은 다중 타일 풋프린트를 셀이 아니라 한 인스턴스로 센다", () => {
+    // Given: one complete 1x2 tree and a max count of one.
+    const { map, project } = projectWithRules([
+      { id: "cap-tree", kind: "count", params: { max: 1, perMap: true }, strength: "hard" },
+    ], verticalTreeGrammar());
+    map.upperTiles[at(map, 1, 1)] = 260;
+    map.upperTiles[at(map, 1, 2)] = 290;
+
+    // When/Then: the two occupied cells count as one instance.
+    expect(validateClusterRules(project)).toHaveLength(0);
+
+    // When: a second complete tree is added.
+    map.upperTiles[at(map, 3, 1)] = 260;
+    map.upperTiles[at(map, 3, 2)] = 290;
+    const violations = validateClusterRules(project);
+
+    // Then: count now fails on two instances, not four cells.
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toMatchObject({ code: "cluster-rule:count:cluster-main", severity: "error" });
+    expect(violations[0]?.coords).toHaveLength(4);
   });
 
   it("run_lint는 hard/medium/soft 클러스터 위반을 error/warning/info와 좌표로 노출한다", () => {

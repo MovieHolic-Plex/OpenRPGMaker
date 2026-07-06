@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const devPort = process.env.PLAYWRIGHT_DEV_PORT ?? "5173";
+const devUrl = `http://127.0.0.1:${devPort}`;
+
 export default defineConfig({
   testDir: "test/e2e",
   timeout: 30_000,
@@ -7,7 +10,7 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: devUrl,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
@@ -18,8 +21,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 5173",
-    url: "http://127.0.0.1:5173",
+    command: `npm run dev -- --host 127.0.0.1 --port ${devPort}`,
+    url: devUrl,
     reuseExistingServer: true,
     timeout: 30_000,
   },

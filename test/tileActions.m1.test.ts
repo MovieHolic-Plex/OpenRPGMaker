@@ -5,6 +5,7 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
+import { findByTestId, installFakeDom } from "./fakeDom";
 
 // M1 핵심 워크플로우 단위 검증: 타일 페인트/채우기/지우개 + 통행 토글.
 // 브라우저 없이 store.update 경로의 결과를 직접 단언한다.
@@ -124,6 +125,52 @@ describe("paintTile — layer routing", () => {
     paintTile(mapId, "lower", 0, 1, TILE.WATER);
 
     expect(at(currentMap(), 1, 1)).toBe(SAND_TILE.EDGE_NORTH);
+  });
+
+  it("hard 클러스터 규칙이 있는 나무는 수동 펜 페인트에서도 동반 타일을 원자적으로 배치한다", () => {
+    const mapId = store.getCurrent().startMapId;
+
+    paintTile(mapId, "lower", 1, 1, 260);
+    paintTile(mapId, "lower", 4, 1, 262);
+
+    const map = currentMap();
+    expect(upperAt(map, 1, 1)).toBe(260);
+    expect(upperAt(map, 1, 2)).toBe(290);
+    expect(upperAt(map, 4, 1)).toBe(262);
+    expect(upperAt(map, 5, 1)).toBe(263);
+    expect(upperAt(map, 4, 2)).toBe(292);
+    expect(upperAt(map, 5, 2)).toBe(293);
+  });
+
+  it("hard 클러스터 동반 타일이 경계나 보호셀에 걸리면 수동 펜 배치를 거부하고 토스트를 띄운다", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const toastText = (): string | undefined => findByTestId(
+        document.body as unknown as Parameters<typeof findByTestId>[0],
+        "toast"
+      )?.textContent;
+      const project = store.getCurrent();
+      const mapId = project.startMapId;
+      const map = currentMap();
+      const bottomY = map.height - 1;
+      const beforeBoundary = [...map.upperTiles];
+
+      paintTile(mapId, "lower", 1, bottomY, 260);
+
+      expect(currentMap().upperTiles).toEqual(beforeBoundary);
+      expect(toastText()).toContain("맵 경계");
+
+      const protectedMap = currentMap();
+      protectedMap.events.push({ id: "event_under_tree", x: 3, y: 2, trigger: { kind: "action" }, commands: [] });
+      const beforeProtected = [...protectedMap.upperTiles];
+
+      paintTile(mapId, "lower", 3, 1, 260);
+
+      expect(currentMap().upperTiles).toEqual(beforeProtected);
+      expect(toastText()).toContain("보호셀");
+    } finally {
+      restoreDom();
+    }
   });
 });
 

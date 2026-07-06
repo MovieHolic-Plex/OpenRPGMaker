@@ -145,6 +145,47 @@ describe("tile palette cluster partition", () => {
     expect(tileGroupGridColumns({ ...makeGroup("wall", "wall", [1, 2, 3, 4, 5, 6, 7, 8, 9]), sourceRect: { x: 0, y: 0, width: 3, height: 3 } })).toBe(3);
     expect(tileGroupGridColumns(makeGroup("flow", "terrain", [1, 2, 3]))).toBe(8);
   });
+
+  it("hides unsupported nine-slice palette badges while keeping executable tree grammar badges", () => {
+    const wall = makeGroup("wall9", "wall", [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    wall.patternGrammar = {
+      axis: "both",
+      kind: "nine_slice_expandable",
+      minHeight: 3,
+      minWidth: 3,
+      parts: [
+        { role: "topLeft", tileIds: [1] },
+        { role: "top", tileIds: [2] },
+        { role: "topRight", tileIds: [3] },
+        { role: "left", tileIds: [4] },
+        { role: "center", tileIds: [5] },
+        { role: "right", tileIds: [6] },
+        { role: "bottomLeft", tileIds: [7] },
+        { role: "bottom", tileIds: [8] },
+        { role: "bottomRight", tileIds: [9] },
+      ],
+      preserveCaps: true,
+      repeat: "center",
+    };
+    const tree = makeGroup("tree", "prop", [10, 11]);
+    tree.patternGrammar = {
+      axis: "vertical",
+      kind: "vertical_expandable",
+      minHeight: 2,
+      minWidth: 1,
+      parts: [
+        { role: "top", tileIds: [10] },
+        { role: "bottom", tileIds: [11] },
+      ],
+      preserveCaps: true,
+      repeat: "body",
+    };
+
+    const sections = createTileClusterSections(makeTileset({ count: 16, tileGroups: [wall, tree] }));
+
+    expect(sections.groups.find((group) => group.id === "wall9")?.patternKind).toBeUndefined();
+    expect(sections.groups.find((group) => group.id === "tree")?.patternKind).toBe("vertical_expandable");
+  });
 });
 
 describe("tile palette cluster UI", () => {

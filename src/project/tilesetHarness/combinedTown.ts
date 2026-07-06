@@ -38,17 +38,18 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
   }
   changed = enforceTransparentOverlayPriority(tileset) || changed;
   const current = tileset.tileGroups ?? [];
+  const suppressed = normalizeSuppressedHarnessGroupIds(tileset);
+  if (suppressed.changed) changed = true;
+  const suppressedIds = new Set(suppressed.ids);
+  const harnessIds = new Set(COMBINED_TOWN_HARNESS_GROUPS.map((group) => group.id));
   const currentById = new Map(current.map((group) => [group.id, group]));
-  const groups = COMBINED_TOWN_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, stackable: _stackable, ...group }) => {
-    const existingRules = currentById.get(group.id)?.rules;
-    return {
-      ...group,
-      tileIds: [...group.tileIds],
-      patternGrammar: clonePattern(group.patternGrammar),
-      rules: existingRules !== undefined ? cloneRules(existingRules) : cloneRules(group.rules),
-    };
+  const preserved = current.filter((group) => !harnessIds.has(group.id) && !isBundledCombinedTownHarnessGroup(group));
+  const groups = COMBINED_TOWN_HARNESS_GROUPS.flatMap((group) => {
+    if (suppressedIds.has(group.id)) return [];
+    const existing = currentById.get(group.id);
+    return existing ? [preserveHarnessGroup(existing, group)] : [cloneHarnessGroup(group)];
   });
-  const next = [...current.filter((group) => !group.id.startsWith(COMBINED_TOWN_HARNESS_PREFIX)), ...groups];
+  const next = [...preserved, ...groups];
   if (JSON.stringify(current) !== JSON.stringify(next)) {
     tileset.tileGroups = next;
     changed = true;
@@ -176,6 +177,34 @@ function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
 function ensureTileMetaLength(tileset: TilesetDef): void {
   tileset.tileMeta ??= [];
   while (tileset.tileMeta.length < tileset.count) tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
+}
+
+function normalizeSuppressedHarnessGroupIds(tileset: TilesetDef): { readonly changed: boolean; readonly ids: readonly string[] } {
+  const raw = tileset.suppressedHarnessGroupIds ?? [];
+  const ids = [...new Set(raw.filter((id) => id.startsWith(COMBINED_TOWN_HARNESS_PREFIX)))];
+  const changed = ids.length !== raw.length || ids.some((id, index) => raw[index] !== id);
+  if (changed) tileset.suppressedHarnessGroupIds = ids;
+  return { changed, ids };
+}
+
+function preserveHarnessGroup(existing: TileGroupMetadata, group: CombinedTownHarnessGroup): TileGroupMetadata {
+  const next = structuredClone(existing);
+  if (next.rules === undefined) next.rules = cloneRules(group.rules);
+  return next;
+}
+
+function isBundledCombinedTownHarnessGroup(group: TileGroupMetadata): boolean {
+  return group.id.startsWith(COMBINED_TOWN_HARNESS_PREFIX) && group.source !== "user";
+}
+
+function cloneHarnessGroup(group: CombinedTownHarnessGroup): TileGroupMetadata {
+  const { passage: _passage, repeatability: _repeatability, stackable: _stackable, ...metadata } = group;
+  return {
+    ...metadata,
+    tileIds: [...metadata.tileIds],
+    patternGrammar: clonePattern(metadata.patternGrammar),
+    rules: cloneRules(metadata.rules),
+  };
 }
 
 function groupForTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, tile: number): RuntimeHarnessGroup | null {

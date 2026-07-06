@@ -9,6 +9,7 @@
 import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
 import type { GameMap, Project, TileAiMetadata, TileGroupLayer, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
@@ -550,6 +551,9 @@ const deleteTileGroup: ToolDefinition = {
     if (index < 0) throw new ToolError(`그룹을 찾을 수 없습니다: ${groupId}`, { code: "group-not-found" });
     const [removed] = groups.splice(index, 1);
     tileset.tileGroups = groups;
+    if (groupId.startsWith(COMBINED_TOWN_HARNESS_PREFIX)) {
+      tileset.suppressedHarnessGroupIds = [...new Set([...(tileset.suppressedHarnessGroupIds ?? []), groupId])];
+    }
     return {
       summary: `타일 그룹 '${removed.name}' 삭제(${removed.tileIds.length}개 타일)`,
       data: { tilesetId: tileset.id, groupId },

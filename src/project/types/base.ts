@@ -173,6 +173,7 @@ export interface TilesetDef {
   terrain: number[];
   tileMeta?: TileAiMetadata[];
   tileGroups?: TileGroupMetadata[];
+  suppressedHarnessGroupIds?: string[];
   terrainTemplates?: TerrainTemplateMetadata[];
   transparentColor?: string;
   // 범용 오토타일(지형 자동 연결) 그룹 정의. 없으면 내장 기본 그룹(흙길/모래)을 사용한다.

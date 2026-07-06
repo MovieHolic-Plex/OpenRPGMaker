@@ -67,10 +67,10 @@ export function expandHardClusterPlacement(input: {
           x: companion.x,
           y: companion.y,
         };
-        if (planned.has(coordKey(next.x, next.y))) continue;
+        const beforeSize = planned.size;
         const error = add(next);
         if (error) return { autoTiles: Math.max(0, planned.size - 1), edits: [], ok: false, reason: error };
-        changed = true;
+        if (planned.size > beforeSize) changed = true;
       }
     }
   }
