@@ -6,6 +6,7 @@ import {
   selectLiteral,
   textField,
 } from "@/editor/panels/databaseControls";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import type {
@@ -45,6 +46,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
       class: "db-items-rm2k3-workbench",
       dataset: { testid: "db-items-rm2k3-workbench" },
       children: [
+        resourcePanel(record),
         panel("기본 설정", [
           textField("설명", "db-field-item-description", record.description, (description) =>
             updateDatabaseRecord("items", record.id, { description })
@@ -101,6 +103,27 @@ function equipmentPanels(record: ItemRecord): HTMLElement[] {
       ),
     ]),
   ];
+}
+
+function resourcePanel(record: ItemRecord): HTMLElement {
+  return panel("아이템 그래픽", [
+    imagePreview("이미지", record.imageResourceId),
+    textField("이미지", "db-field-item-image-resource", resourceText(record.imageResourceId), (imageResourceId) =>
+      updateDatabaseRecord("items", record.id, { imageResourceId: emptyToUndefined(imageResourceId) })
+    ),
+    imagePreview("아이콘", record.iconResourceId),
+    textField("아이콘", "db-field-item-icon-resource", resourceText(record.iconResourceId), (iconResourceId) =>
+      updateDatabaseRecord("items", record.id, { iconResourceId: emptyToUndefined(iconResourceId) })
+    ),
+  ]);
+}
+
+function imagePreview(label: string, resourceId: string | undefined): HTMLElement {
+  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const visual = url
+    ? el("img", { attrs: { alt: `${label} 미리보기`, src: url } })
+    : el("strong", { text: resourceId ?? "(없음)" });
+  return el("div", { class: "db-image-preview", children: [el("span", { text: label }), visual] });
 }
 
 function medicinePanels(record: ItemRecord): HTMLElement[] {
@@ -376,6 +399,10 @@ function updateCurrentEquipmentProfile(record: ItemRecord, patch: Partial<ItemEq
 
 function currentItem(record: ItemRecord): ItemRecord {
   return store.getCurrent().database.items.find((item) => item.id === record.id) ?? record;
+}
+
+function resourceText(resourceId: string | undefined): string {
+  return resourceId?.startsWith("generated-") ? "" : resourceId ?? "";
 }
 
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {

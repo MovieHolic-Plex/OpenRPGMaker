@@ -413,7 +413,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       power,
       statistic,
       effect: effectKind,
-      hitRate: skill?.hitRate,
+      // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
+      // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
+      hitRate: combinedSkillHitRate(skill),
       variance: skill?.variance,
       criticalRate: criticalRateFor(user),
       elementMultiplier: elementMultiplierFor(skill?.elementId, target),
@@ -433,10 +435,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit) {
       applyStateEffects(options.project, target, skill?.stateEffects, rng);
     }
-    if (skill?.effect?.kind === "switch" && skill.effect.switchId) {
-      // 전투 내 스위치 토글은 플레이 세션으로 전파하지 않고 배틀 stateIds 에 기록만.
-      // (런타임-세션 연동은 별도 작업)
+    if (result.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
+      // RM2K3 스위치형 스킬: 명중 시 지정 스위치를 ON으로 만든다.
+      battleEventState.switches[skill.effect.switchId] = true;
     }
+  }
+
+  // 스킬 명중률(hitRate)과 성공률(successRate)을 곱해 0~100 판정 확률로 합성한다.
+  // successRate 는 감사 A12 에서 "편집만 되고 전투에 미반영"으로 확인된 필드다.
+  function combinedSkillHitRate(skill: { hitRate?: number; successRate?: number } | undefined): number | undefined {
+    if (!skill) return undefined;
+    const hitRate = skill.hitRate ?? 100;
+    const successRate = skill.successRate ?? 100;
+    return Math.max(0, Math.min(100, Math.round((hitRate * successRate) / 100)));
   }
 
   // 사용자의 크리티컬 발동 확률(%)을 계산. actor 는 ActorCritical.chanceDenominator(1/N),

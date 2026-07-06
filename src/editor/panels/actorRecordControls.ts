@@ -11,9 +11,14 @@ import { field } from "@/editor/panels/databaseControls";
 import { store } from "@/project/store";
 import type { ActorRateGrade } from "@/project/types";
 import { el } from "@/util/dom";
-import { toast } from "@/util/toast";
 
-type GraphicPreviewKind = "battleCharset" | "charset" | "faceset";
+export type GraphicPreviewKind = "battleCharset" | "charset" | "faceset";
+
+const GENERATED_BATTLE_CHARSET_FRAME_WIDTH = 48;
+const GENERATED_BATTLE_CHARSET_FRAME_HEIGHT = 64;
+const GENERATED_BATTLE_CHARSET_SHEET_WIDTH = 144;
+const GENERATED_BATTLE_CHARSET_SHEET_HEIGHT = 384;
+const GENERATED_BATTLE_CHARSET_PREVIEW_SCALE = 0.75;
 
 export function actorPanel(title: string, className: string, children: HTMLElement[]): HTMLElement {
   return el("fieldset", {
@@ -25,8 +30,8 @@ export function actorPanel(title: string, className: string, children: HTMLEleme
 
 export function graphicPreview(label: string, resourceId: string, kind: GraphicPreviewKind): HTMLElement {
   const url = resolveAssetResourceUrl(resourceId === "(없음)" ? undefined : resourceId, { project: store.getCurrent() });
-  const visual = url && !isGeneratedActorPreviewResource(resourceId)
-    ? previewVisual(label, url, kind)
+  const visual = url
+    ? previewVisual(label, resourceId, url, kind)
     : neutralActorResourceSlot(resourceId);
   return el("div", {
     class: "actor-graphic-preview",
@@ -34,26 +39,17 @@ export function graphicPreview(label: string, resourceId: string, kind: GraphicP
   });
 }
 
-function isGeneratedActorPreviewResource(resourceId: string): boolean {
-  return resourceId.startsWith("generated-");
-}
-
 function neutralActorResourceSlot(resourceId: string): HTMLElement {
-  const isGenerated = isGeneratedActorPreviewResource(resourceId);
-  const label = isGenerated ? "설정..." : resourceId;
-  const labelNode = isGenerated
-    ? el("button", { class: "actor-resource-set-button", attrs: { type: "button", "aria-label": "배우 리소스 선택 (준비 중)" }, text: label, on: { click: () => toast("배우 리소스 선택은 준비 중입니다. 리소스 ID 필드에서 직접 지정하세요.", "info") } })
-    : el("strong", { text: label });
   return el("div", {
-    class: `actor-neutral-resource-slot${isGenerated ? " generated" : ""}`,
+    class: "actor-neutral-resource-slot",
     children: [
       el("span", { class: "actor-neutral-resource-icon" }),
-      labelNode,
+      el("strong", { text: resourceId }),
     ],
   });
 }
 
-function previewVisual(label: string, url: string, kind: GraphicPreviewKind): HTMLElement {
+function previewVisual(label: string, resourceId: string, url: string, kind: GraphicPreviewKind): HTMLElement {
   if (kind === "faceset") return sheetCrop(label, url, { x: 0, y: 0, width: 48, height: 48, sheetWidth: 192, sheetHeight: 192, scale: 1 });
   if (kind === "charset") {
     const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
@@ -64,7 +60,22 @@ function previewVisual(label: string, url: string, kind: GraphicPreviewKind): HT
       scale: 2,
     });
   }
+  if (resourceId === "hero" || isGeneratedBattleActorResource(resourceId)) {
+    return sheetCrop(label, url, {
+      x: 0,
+      y: 0,
+      width: GENERATED_BATTLE_CHARSET_FRAME_WIDTH,
+      height: GENERATED_BATTLE_CHARSET_FRAME_HEIGHT,
+      sheetWidth: GENERATED_BATTLE_CHARSET_SHEET_WIDTH,
+      sheetHeight: GENERATED_BATTLE_CHARSET_SHEET_HEIGHT,
+      scale: GENERATED_BATTLE_CHARSET_PREVIEW_SCALE,
+    });
+  }
   return el("img", { attrs: { alt: `${label} 미리보기`, src: url } });
+}
+
+function isGeneratedBattleActorResource(resourceId: string): boolean {
+  return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");
 }
 
 function sheetCrop(
@@ -102,6 +113,24 @@ export function textControl(label: string, testid: string, value: string, onInpu
   const input = el("input", { attrs: { type: "text" }, dataset: { testid }, value }) as HTMLInputElement;
   input.addEventListener("input", () => onInput(input.value));
   return field(label, input);
+}
+
+export function resourceControl(
+  label: string,
+  testid: string,
+  value: string,
+  onInput: (value: string) => void,
+  onPick: () => void
+): HTMLElement {
+  const input = el("input", { attrs: { type: "text" }, dataset: { testid }, value }) as HTMLInputElement;
+  input.addEventListener("input", () => onInput(input.value));
+  const button = el("button", {
+    class: "actor-resource-set-button",
+    text: "설정...",
+    attrs: { type: "button", "aria-label": `${label} 리소스 선택` },
+    on: { click: onPick },
+  });
+  return field(label, el("span", { class: "actor-resource-control", children: [input, button] }));
 }
 
 export function numberControl(label: string, testid: string, value: number, onInput: (value: number) => void): HTMLElement {

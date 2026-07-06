@@ -50,6 +50,9 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("variance" in patch && patch.variance !== undefined) record.variance = patch.variance;
   if ("hitRate" in patch && patch.hitRate !== undefined) record.hitRate = patch.hitRate;
   if ("effect" in patch && patch.effect !== undefined) record.effect = patch.effect;
+  // 속성/상태 변화는 런타임이 소비하는 필드(runtime.ts elementMultiplierFor/applyStateEffects) — 편집 반영 필수.
+  if ("elementId" in patch) record.elementId = patch.elementId;
+  if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   database.skills[index] = normalizeSkillRecord(record);
 }
 

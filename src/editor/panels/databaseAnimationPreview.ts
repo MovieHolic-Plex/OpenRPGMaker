@@ -4,26 +4,36 @@ import { el } from "@/util/dom";
 
 const DEFAULT_CELL: BattleAnimationCell = { pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true };
 const PATTERN_PREVIEW_COUNT = 8;
+const ANIMATION_PLAYBACK_FRAME_MS = Math.round(1000 / 15);
+
+let copiedAnimationCells: BattleAnimationCell[] | null = null;
 
 export type AnimationPreviewContext = {
   readonly animation: BattleAnimationRecord;
   readonly sheet: BattleAnimationSheet;
+  readonly frames: readonly BattleAnimationFrame[];
+  readonly selectedFrameIndex: number;
   readonly selectedFrame: BattleAnimationFrame;
   readonly project: Project;
+  readonly duplicateLastFrame: () => void;
+  readonly updateSelectedFrameCells: (cells: readonly BattleAnimationCell[]) => void;
 };
 
 export function renderAnimationStagePanel(context: AnimationPreviewContext): HTMLElement {
   const panel = panelWrap("", "db-animation-sheet-preview", "db-animation-stage-panel");
+  const url = animationResourceUrl(context);
   const preview = el("div", {
-    class: "db-animation-sheet-preview db-animation-stage",
+    class: "db-animation-sheet-preview db-animation-stage db-animation-stage-surface",
     dataset: { testid: "db-animation-sheet-preview-surface" },
   });
   preview.style.setProperty("--animation-frame-width", `${context.sheet.frameWidth}px`);
   preview.style.setProperty("--animation-frame-height", `${context.sheet.frameHeight}px`);
   preview.style.setProperty("--animation-sheet-columns", String(Math.max(1, context.sheet.columns)));
-  preview.append(stageCrosshair(), targetSilhouette(), selectedCellSprite(context, animationResourceUrl(context)));
+  const cellLayer = el("div", { class: "db-animation-stage-cells" });
+  renderStageCells(cellLayer, context, context.selectedFrame, url);
+  preview.append(stageCrosshair(), targetSilhouette(), cellLayer);
 
-  panel.append(commandGrid(), preview, statGrid([["시트", `${context.sheet.frameWidth}x${context.sheet.frameHeight}`], ["열", String(context.sheet.columns)], ["셀", String(context.selectedFrame.cells.length)]]));
+  panel.append(commandGrid(context, panel, cellLayer, url), preview, statGrid([["시트", `${context.sheet.frameWidth}x${context.sheet.frameHeight}`], ["열", String(context.sheet.columns)], ["셀", String(context.selectedFrame.cells.length)]]));
   return panel;
 }
 
@@ -47,32 +57,120 @@ export function renderAnimationPatternStripPanel(context: AnimationPreviewContex
   return panel;
 }
 
-function commandGrid(): HTMLElement {
-  return el("div", {
+function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellLayer: HTMLElement, url: string | undefined): HTMLElement {
+  const pasteButton = el("button", {
+    text: "셀 붙여넣기",
+    attrs: { type: "button", title: "복사한 셀을 현재 프레임에 덮어쓰기" },
+    on: {
+      click: () => {
+        if (copiedAnimationCells === null) return;
+        context.updateSelectedFrameCells(cloneCells(copiedAnimationCells));
+      },
+    },
+  });
+  pasteButton.disabled = copiedAnimationCells === null;
+
+  const playButton = el("button", {
+    class: "db-animation-play-button",
+    text: "▶ 재생",
+    attrs: { type: "button", "aria-pressed": "false" },
+    dataset: { testid: "db-animation-play" },
+  });
+  bindPlayback(playButton, panel, cellLayer, context, url);
+
+  const grid = el("div", {
     class: "db-animation-command-grid",
     children: [
-      el("button", { text: "마지막 프레임 복제", attrs: { disabled: "true", type: "button" } }),
-      el("button", { text: "셀 일괄...", attrs: { type: "button" } }),
-      el("button", { text: "셀 복사/지우기", attrs: { type: "button" } }),
-      el("button", { class: "db-animation-play-button", text: "▶ 재생", attrs: { type: "button" } }),
-      el("button", { text: "보간", attrs: { type: "button" } }),
+      el("button", { text: "마지막 프레임 복제", attrs: { type: "button", title: "마지막 프레임을 복제해 끝에 추가" }, on: { click: () => context.duplicateLastFrame() } }),
+      disabledCommandButton("셀 일괄..."),
+      el("button", {
+        text: "셀 복사",
+        attrs: { type: "button", title: "현재 프레임 셀 복사" },
+        on: {
+          click: () => {
+            copiedAnimationCells = cloneCells(context.selectedFrame.cells);
+            pasteButton.disabled = false;
+          },
+        },
+      }),
+      pasteButton,
+      playButton,
+      disabledCommandButton("보간"),
       checkboxLabel("격자 사용", true),
     ],
   });
+  return grid;
 }
 
-function selectedCellSprite(context: AnimationPreviewContext, url: string | undefined): HTMLElement {
-  const cell = context.selectedFrame.cells[0] ?? DEFAULT_CELL;
-  const sprite = el("div", {
-    class: `db-animation-stage-cell${cell.visible ? "" : " muted"}`,
-    dataset: { testid: "db-animation-stage-target" },
-    children: [el("span"), el("span"), el("span")],
+function bindPlayback(
+  button: HTMLButtonElement,
+  panel: HTMLElement,
+  cellLayer: HTMLElement,
+  context: AnimationPreviewContext,
+  url: string | undefined
+): void {
+  let timer: ReturnType<typeof window.setInterval> | null = null;
+  let frameIndex = context.selectedFrameIndex;
+
+  const stop = (restoreSelectedFrame: boolean): void => {
+    if (timer !== null) {
+      window.clearInterval(timer);
+      timer = null;
+    }
+    button.textContent = "▶ 재생";
+    button.setAttribute("aria-pressed", "false");
+    if (restoreSelectedFrame) renderStageCells(cellLayer, context, context.selectedFrame, url);
+  };
+
+  const tick = (): void => {
+    if (isDisconnected(panel)) {
+      stop(false);
+      return;
+    }
+    frameIndex += 1;
+    if (frameIndex >= context.frames.length) {
+      stop(true);
+      return;
+    }
+    renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
+  };
+
+  button.addEventListener("click", () => {
+    if (timer !== null) {
+      stop(true);
+      return;
+    }
+    // RM2003 재생 의미: 선택 프레임과 무관하게 항상 1프레임부터 전체를 1회 재생한다.
+    // (선택 프레임에서 시작하면 마지막 프레임 선택 시 즉시 종료돼 무반응처럼 보인다.)
+    frameIndex = 0;
+    renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
+    button.textContent = "■ 정지";
+    button.setAttribute("aria-pressed", "true");
+    timer = window.setInterval(tick, ANIMATION_PLAYBACK_FRAME_MS);
   });
-  if (url) sprite.setAttribute("aria-label", "선택 셀 효과");
+}
+
+function renderStageCells(layer: HTMLElement, context: AnimationPreviewContext, frame: BattleAnimationFrame, url: string | undefined): void {
+  const cells = frame.cells.length > 0 ? frame.cells : [DEFAULT_CELL];
+  layer.replaceChildren(...cells.map((cell, index) => stageCellSprite(context, cell, url, index)));
+}
+
+function stageCellSprite(context: AnimationPreviewContext, cell: BattleAnimationCell, url: string | undefined, index: number): HTMLElement {
+  const sprite = el("div", {
+    class: `db-animation-stage-cell db-animation-stage-cell-sprite${cell.visible ? "" : " muted"}`,
+    children: url ? [] : [el("span"), el("span"), el("span")],
+  });
+  if (index === 0) sprite.dataset.testid = "db-animation-stage-target";
+  if (url) {
+    sprite.setAttribute("aria-label", `애니메이션 셀 ${index + 1}`);
+    applySpriteBackground(sprite, context.sheet, cell.pattern, url);
+    if (!cell.visible) sprite.style.backgroundImage = "";
+  }
   sprite.style.setProperty("--animation-cell-x", `${cell.x}px`);
   sprite.style.setProperty("--animation-cell-y", `${cell.y}px`);
   sprite.style.setProperty("--animation-cell-scale", String(cell.zoom / 100));
-  sprite.style.opacity = String(cell.opacity / 255);
+  sprite.style.transform = `translate(${cell.x}px, ${cell.y}px) scale(${cell.zoom / 100})`;
+  sprite.style.opacity = String(cell.visible ? cell.opacity / 255 : Math.min(cell.opacity / 255, 0.38));
   return sprite;
 }
 
@@ -99,6 +197,20 @@ function applySpriteBackground(element: HTMLElement, sheet: BattleAnimationSheet
   element.style.backgroundImage = `url("${url}")`;
   element.style.backgroundPosition = `-${column * sheet.frameWidth}px -${row * sheet.frameHeight}px`;
   element.style.backgroundSize = `${columns * sheet.frameWidth}px auto`;
+}
+
+function cloneCells(cells: readonly BattleAnimationCell[]): BattleAnimationCell[] {
+  return cells.map(({ tone, ...cell }) => (tone ? { ...cell, tone: { ...tone } } : { ...cell }));
+}
+
+function disabledCommandButton(text: string): HTMLButtonElement {
+  const button = el("button", { text, attrs: { type: "button", title: "준비 중" } });
+  button.disabled = true;
+  return button;
+}
+
+function isDisconnected(element: HTMLElement): boolean {
+  return "isConnected" in element && element.isConnected === false;
 }
 
 function checkboxLabel(label: string, checked: boolean): HTMLElement {

@@ -115,8 +115,13 @@ function literalLabel(value: string): string {
     case "accessory":
       return "장신구";
     case "normal":
+      return "일반";
     case "normalGoods":
       return "일반 물품";
+    case "add":
+      return "부여";
+    case "remove":
+      return "해제";
     case "switch":
       return "스위치";
     case "medicine":

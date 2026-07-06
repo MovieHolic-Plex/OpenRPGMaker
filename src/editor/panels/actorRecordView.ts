@@ -8,9 +8,11 @@ import {
   emptyToUndefined,
   graphicPreview,
   numberControl,
+  resourceControl,
   selectRecord,
   textControl,
 } from "@/editor/panels/actorRecordControls";
+import { openActorResourceDialog } from "@/editor/panels/databaseActorResourceDialog";
 import { store } from "@/project/store";
 import type { ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -28,9 +30,9 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
         el("div", {
           class: "actor-editor-grid",
           children: [
-            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor), classPanel(actor), graphicsPanel(actor), baseStatsPanel(actor)] }),
+            el("div", { class: "actor-column actor-left-stack", children: [identityPanel(actor), classPanel(actor), graphicsPanel(actor, rerender), baseStatsPanel(actor)] }),
             el("div", { class: "actor-column actor-center-stack", children: [curvesPanel(actor), experiencePanel(actor)] }),
-            el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(), battlePanel(actor, rerender), ratesPanel(actor)] }),
+            el("div", { class: "actor-column actor-right-stack", children: [inspectorTabs(() => form), battlePanel(actor, rerender), ratesPanel(actor)] }),
           ],
         }),
       ],
@@ -104,36 +106,60 @@ function baseStatsPanel(actor: ActorRecord): HTMLElement {
   ]);
 }
 
-function inspectorTabs(): HTMLElement {
+function inspectorTabs(root: () => HTMLElement): HTMLElement {
+  const tabs = [
+    { label: "특성", target: "[data-testid='actor-panel-actor-options']" },
+    { label: "장비", target: "[data-testid='actor-panel-actor-starting-equipment']" },
+    { label: "성장 곡선", target: "[data-testid='actor-panel-actor-parameter-curves']" },
+    { label: "능력치 보정", target: "[data-testid='actor-panel-actor-basic-stats']" },
+    { label: "공격 속성", target: "[data-testid='actor-panel-actor-rates']" },
+  ];
   return el("div", {
     class: "actor-inspector-tabs",
     dataset: { testid: "db-actor-inspector-tabs" },
-    children: ["특성", "장비", "성장 곡선", "능력치 보정", "공격 속성", "노트"].map((label, index) =>
-      el("button", {
+    children: tabs.map((tab, index) => {
+      const button = el("button", {
         class: `actor-inspector-tab${index === 0 ? " active" : ""}`,
-        text: label,
+        text: tab.label,
         attrs: { type: "button", "aria-pressed": String(index === 0) },
-      })
-    ),
+      });
+      button.addEventListener("click", () => activateInspectorTab(button, root(), tab.target));
+      return button;
+    }),
   });
 }
 
-function graphicsPanel(actor: ActorRecord): HTMLElement {
+function activateInspectorTab(button: HTMLElement, root: HTMLElement, selector: string): void {
+  for (const tab of root.querySelectorAll(".actor-inspector-tab")) {
+    if (!(tab instanceof HTMLElement)) continue;
+    const active = tab === button;
+    if (active) tab.classList.add("active");
+    else tab.classList.remove("active");
+    tab.setAttribute("aria-pressed", String(active));
+  }
+  const panel = root.querySelector(selector);
+  if (panel instanceof HTMLElement) panel.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+}
+
+function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
   return actorPanel("그래픽", "actor-graphic", [
     graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset"),
-    textControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
-      updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) })
+    resourceControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
+      updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
+      () => openActorResourceDialog(actor, "faceResourceId", rerender)
     ),
     graphicPreview("캐릭터셋", actor.characterResourceId ?? "(없음)", "charset"),
-    textControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>
-      updateDatabaseRecord("actors", actor.id, { characterResourceId: emptyToUndefined(characterResourceId) })
+    resourceControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>
+      updateDatabaseRecord("actors", actor.id, { characterResourceId: emptyToUndefined(characterResourceId) }),
+      () => openActorResourceDialog(actor, "characterResourceId", rerender)
     ),
     checkboxControl("투명", "db-field-character-transparent", actor.characterTransparent, (characterTransparent) =>
       updateDatabaseRecord("actors", actor.id, { characterTransparent })
     ),
     graphicPreview("애니메이션", actor.battleCharacterResourceId ?? "(없음)", "battleCharset"),
-    textControl("애니메이션", "db-field-battle-character-resource", actor.battleCharacterResourceId ?? "", (battleCharacterResourceId) =>
-      updateDatabaseRecord("actors", actor.id, { battleCharacterResourceId: emptyToUndefined(battleCharacterResourceId) })
+    resourceControl("애니메이션", "db-field-battle-character-resource", actor.battleCharacterResourceId ?? "", (battleCharacterResourceId) =>
+      updateDatabaseRecord("actors", actor.id, { battleCharacterResourceId: emptyToUndefined(battleCharacterResourceId) }),
+      () => openActorResourceDialog(actor, "battleCharacterResourceId", rerender)
     ),
   ]);
 }
