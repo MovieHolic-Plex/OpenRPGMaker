@@ -82,7 +82,11 @@ export type M2MapRuntimeState = {
 };
 
 export type M2SessionRuntimeState = {
+  endedEventProcessing?: boolean;
+  eraseEventRequested?: boolean;
   shellAction?: string;
+  stopAllMovementRequested?: boolean;
+  waitForAllMovementRequested?: boolean;
   weightedBranch?: { readonly resultVariableId: string; readonly table: string };
 };
 
@@ -214,6 +218,7 @@ export interface PlaySessionLike {
   actorNames?: Record<ActorId, string>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations?: Record<string, RuntimeEventLocation>;
+  erasedEventIds?: readonly string[];
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
   playTimeSeconds?: number;
   currentMapId: MapId;

@@ -5,14 +5,21 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
-import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings } from "@/project/types";
+import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
+import type { PlaySessionLike } from "@/player/types";
 import { el, clearChildren } from "@/util/dom";
 
 type DialogueSurfaceSettings = {
   readonly settings?: MessageWindowSettings;
   readonly playerTileY: number;
   readonly mapHeight: number;
+  readonly textContext?: DialogueTextContext;
+};
+
+export type DialogueTextContext = {
+  readonly session: Pick<PlaySessionLike, "variables" | "actorNames">;
+  readonly project: Pick<Project, "database">;
 };
 
 export type DialogueTextRequest = DialogueSurfaceSettings & {
@@ -25,6 +32,11 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
   readonly prompt?: string;
   readonly options: { text: string }[];
   readonly cancelBehavior?: ChoiceCancelBehavior;
+};
+
+type DialogueTextSegment = {
+  readonly text: string;
+  readonly colorIndex: number;
 };
 
 export interface DialogueUI {
@@ -68,10 +80,11 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       // Typewriter effect.
       let i = 0;
       let typing = true;
-      const full = request.body;
+      const segments = parseDialogueText(request.body, request.textContext);
+      const fullLength = visibleTextLength(segments);
       const typeStep = () => {
-        if (i < full.length) {
-          bodyEl.textContent = full.slice(0, i + 1);
+        if (i < fullLength) {
+          renderDialogueSegments(bodyEl, segments, i + 1);
           i++;
           timer = window.setTimeout(typeStep, 24);
         } else {
@@ -84,7 +97,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
         if (typing) {
           // Skip the typewriter and show the full line.
           clearTimeout(timer);
-          bodyEl.textContent = full;
+          renderDialogueSegments(bodyEl, segments);
           typing = false;
           return;
         }
@@ -124,8 +137,8 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       if (request.prompt) {
         const promptEl = el("div", {
           class: "choice-prompt-row",
-          text: request.prompt,
         });
+        renderDialogueSegments(promptEl, parseDialogueText(request.prompt, request.textContext));
         choicesEl.append(promptEl);
       }
 
@@ -180,10 +193,10 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       request.options.forEach((opt, idx) => {
         const btn = el("button", {
           class: "choice-btn",
-          text: opt.text,
           attrs: { role: "option", type: "button" },
           dataset: { testid: `runtime-choice-${idx}` },
         });
+        renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
         btn.addEventListener("mouseenter", () => setSelected(idx));
         btn.addEventListener("focus", () => setSelected(idx));
         btn.addEventListener("click", () => finish(idx));
@@ -211,6 +224,102 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
     showNumberInput: (request) => showNumberInput(overlay, request, { applyTextSettings, resetOverlay }),
     hide,
   };
+}
+
+export function resolveDialogueText(value: string, context?: DialogueTextContext): string {
+  return parseDialogueText(value, context).map((segment) => segment.text).join("");
+}
+
+function parseDialogueText(value: string, context?: DialogueTextContext): DialogueTextSegment[] {
+  const segments: DialogueTextSegment[] = [];
+  let colorIndex = 0;
+  let buffer = "";
+  const push = (): void => {
+    if (!buffer) return;
+    segments.push({ text: buffer, colorIndex });
+    buffer = "";
+  };
+  for (let i = 0; i < value.length; i += 1) {
+    const char = value[i];
+    if (char !== "\\") {
+      buffer += char;
+      continue;
+    }
+    const next = value[i + 1];
+    if (next === "\\") {
+      buffer += "\\";
+      i += 1;
+      continue;
+    }
+    if ((next === "v" || next === "n" || next === "c") && value[i + 2] === "[") {
+      const end = value.indexOf("]", i + 3);
+      if (end >= 0) {
+        const rawIndex = value.slice(i + 3, end).trim();
+        const index = Number(rawIndex);
+        if (Number.isInteger(index)) {
+          if (next === "v") {
+            buffer += String(resolveVariable(context, index));
+            i = end;
+            continue;
+          }
+          if (next === "n") {
+            buffer += resolveActorName(context, index);
+            i = end;
+            continue;
+          }
+          push();
+          colorIndex = clampDialogueColor(index);
+          i = end;
+          continue;
+        }
+      }
+    }
+    buffer += char;
+  }
+  push();
+  return segments;
+}
+
+function resolveVariable(context: DialogueTextContext | undefined, index: number): number {
+  if (!context) return 0;
+  const slotId = `var_${String(index).padStart(4, "0")}`;
+  return context.session.variables[slotId] ?? context.session.variables[String(index)] ?? context.session.variables[`v${index}`] ?? 0;
+}
+
+function resolveActorName(context: DialogueTextContext | undefined, index: number): string {
+  if (!context) return "";
+  const actor = context.project.database.actors[index - 1];
+  if (!actor) return "";
+  return context.session.actorNames?.[actor.id] ?? actor.name;
+}
+
+function clampDialogueColor(index: number): number {
+  if (!Number.isFinite(index)) return 0;
+  return Math.max(0, Math.min(19, Math.trunc(index)));
+}
+
+function visibleTextLength(segments: readonly DialogueTextSegment[]): number {
+  return segments.reduce((total, segment) => total + Array.from(segment.text).length, 0);
+}
+
+function renderDialogueSegments(target: HTMLElement, segments: readonly DialogueTextSegment[], visibleChars = Infinity): void {
+  clearChildren(target);
+  let remaining = visibleChars;
+  for (const segment of segments) {
+    if (remaining <= 0) break;
+    const chars = Array.from(segment.text);
+    const text = chars.slice(0, remaining).join("");
+    remaining -= chars.length;
+    if (!text) continue;
+    if (segment.colorIndex === 0) {
+      target.append(document.createTextNode(text));
+      continue;
+    }
+    target.append(el("span", {
+      class: `dialogue-color dialogue-color-${segment.colorIndex}`,
+      text,
+    }));
+  }
 }
 
 function dialogueBox(extraClass: string, testId: string): HTMLElement {

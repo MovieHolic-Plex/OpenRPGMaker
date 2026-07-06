@@ -87,6 +87,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   autoStartedKeys: Set<string>;
   pageMoveRouteKeys: Set<string>;
   pageMoveRouteEventIds: Set<string>;
+  commandMoveRouteEventIds: Set<string>;
   missingResources: Set<string>;
   tileX: number;
   tileY: number;
@@ -105,7 +106,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   autonomousNPCs: Map<string, AutonomousMover>;
   runtimeTimers: Map<string, RuntimeTimer>;
   getMapId(): MapId;
-  loadMap(mapId: MapId): void;
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean }): void;
   renderTiles(): void;
   syncRuntimeState(): void;
   refreshRuntimeSurfaces(): void;

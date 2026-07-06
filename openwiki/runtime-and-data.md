@@ -25,6 +25,7 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 - Session state is the mutable play save for a running game. It includes switches, variables, timers, inventory, party state, positions, flags, and other runtime-only values; `src/project` data should be treated as the source project definition, not the live session.
 - Session RNG is runtime state. `PlaySession.rng` stores one session seed plus derived `encounter`, `battle`, `movement`, and `misc` stream states from `src/util/rng.ts`; gameplay code should consume it through `nextSessionRandom(session, stream)` so save/load resumes the sequence. Legacy saves without `rng` are accepted and assigned a new compatible RNG state during load.
 - Stream ownership: random encounters and troop picks use `encounter`; battle damage variance, hit/critical rolls, escape, state rolls, and drops use `battle`; autonomous NPC random move/turn route choices use `movement`; miscellaneous runtime commands such as weighted branch selection use `misc`.
+- `PlaySession.erasedEventIds` is runtime-only Erase Event state. It filters page resolution, sprites, triggers, and collision while the current map session is active, is included in save snapshots, is preserved when applying a saved session, and is cleared on normal map load/re-entry so authored `Project` event data remains unchanged.
 - The `src/project` data model is the canonical authored content: maps, database records, tilesets, events, and saveable project metadata. Code that edits project content should update this model, not runtime session fields.
 - `TilesetDef.transparentColor` is an optional authored-project hex color key (`#rrggbb`) set by the editor. It is persisted with the tileset, validated as an optional string, and render-time transparency should prefer it over bundled chipset default color keys.
 - `TileGroupMetadata.junctions` and `TileGroupMetadata.overlays` are optional authored structural-rule arrays. They are persisted with tile groups for roof/wall boundary omissions/replacements and conditional overlay tiles; keep them backward compatible and validate referenced roles/tiles through tileset semantic checks.
@@ -32,3 +33,10 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 - Persistence boundary: `src/project/store.ts` manages loading, autosave, and flushing, while Supabase sync only handles project transport/storage. Keep browser/local overrides and Supabase interactions behind that boundary.
 - Migration and serialization cautions: only `serialize`/`deserialize` and migration helpers should translate schema versions. Preserve backward compatibility, keep migrations deterministic, and avoid adding runtime-only or transient fields to persisted JSON unless the format explicitly supports them.
 - When changing project shape, remember the split between authored project data and runtime session data, and update any migration, validation, and save-path code together.
+
+## M2 Runtime Flow Controls
+
+- `End Event Processing` terminates the current interpreter run, including common-event and map-event call frames.
+- `Erase Event` emits a scene step that records the current event id in `session.erasedEventIds`, removes its active movement routes, and refreshes runtime surfaces.
+- `Wait for All Movement` waits for command-issued `moveEvent` routes and forced player routes to finish; page autonomous movement is not treated as a blocking command route.
+- `Stop All Movement` cancels command-issued event routes and forced player routes without mutating authored page movement.

@@ -19,6 +19,7 @@ function mkSession(): PlaySession {
     actorLevels: {},
     actorVitals: {},
     eventLocations: {},
+    erasedEventIds: [],
     npcTravelStates: {},
     actorEquipment: {},
     actorRows: {},
@@ -81,6 +82,18 @@ describe("세이브 직렬화 — gold/selfSwitches", () => {
     const snapshot = createSaveSnapshot(project, session);
 
     expect(snapshot.mapName).toBe("시작 마을");
+  });
+
+  it("erasedEventIds 가 스냅샷에 저장되고 로드 후 복원된다", () => {
+    const project = createBlankProject();
+    const session = mkSession();
+    session.erasedEventIds = ["ev_erased"];
+
+    const snapshot = createSaveSnapshot(project, session);
+    const restored = applySaveSnapshot(project, snapshot);
+
+    expect(snapshot.session.erasedEventIds).toEqual(["ev_erased"]);
+    expect(restored.erasedEventIds).toEqual(["ev_erased"]);
   });
 });
 

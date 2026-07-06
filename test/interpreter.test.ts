@@ -58,6 +58,48 @@ function mkSession(): PlaySessionLike {
   };
 }
 
+describe("M2 interpreter control flow commands", () => {
+  it("End Event Processing terminates the whole call stack", () => {
+    const session = mkSession();
+    session.commonEvents = [
+      {
+        id: "common_end",
+        commands: [m2Command("End Event Processing"), { kind: "setSwitch", switchId: "after_end", value: true }],
+      },
+    ];
+    const interpreter = createInterpreter(
+      [
+        { kind: "callCommonEvent", commonEventId: "common_end" },
+        { kind: "setSwitch", switchId: "root_after", value: true },
+      ],
+      session
+    );
+
+    expect(interpreter.start()).toEqual({ kind: "done" });
+    expect(session.switches.after_end).toBeUndefined();
+    expect(session.switches.root_after).toBeUndefined();
+  });
+
+  it("Erase Event, Wait for All Movement, and Stop All Movement produce runtime steps", () => {
+    const session = mkSession();
+    const interpreter = createInterpreter(
+      [
+        m2Command("Erase Event"),
+        m2Command("Wait for All Movement"),
+        m2Command("Stop All Movement"),
+      ],
+      session,
+      undefined,
+      { currentEventId: "ev1" }
+    );
+
+    expect(interpreter.start()).toEqual({ kind: "eraseEvent", eventId: "ev1" });
+    expect(interpreter.resume()).toEqual({ kind: "waitForAllMovement" });
+    expect(interpreter.resume()).toEqual({ kind: "stopAllMovement" });
+    expect(interpreter.resume()).toEqual({ kind: "done" });
+  });
+});
+
 function mkM2Session(): M2RuntimeTestSession {
   return {
     ...mkSession(),

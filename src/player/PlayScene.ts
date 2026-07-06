@@ -78,6 +78,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   autoStartedKeys: Set<string> = new Set();
   pageMoveRouteKeys: Set<string> = new Set();
   pageMoveRouteEventIds: Set<string> = new Set();
+  commandMoveRouteEventIds: Set<string> = new Set();
   missingResources: Set<string> = new Set();
   tileX = 0;
   tileY = 0;
@@ -115,7 +116,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     this.session = this.initialSession(project);
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId);
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
@@ -151,8 +152,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return this.session.currentMapId;
   }
 
-  loadMap(mapId: MapId): void {
-    loadSceneMap(this, mapId);
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean }): void {
+    loadSceneMap(this, mapId, options);
     resetEncounterCounter();
   }
 
@@ -253,7 +254,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.session = structuredClone(session);
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId);
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);

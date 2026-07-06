@@ -93,6 +93,23 @@ function executeM2Command(
     return resumeNext(frame);
   }
 
+  if (entry.title === "End Event Processing") {
+    executeM2RuntimeCommand(state.session, entry, command);
+    return { kind: "done" };
+  }
+
+  if (entry.title === "Erase Event" && executeM2RuntimeCommand(state.session, entry, command)) {
+    return pause("eraseEvent", { kind: "eraseEvent", eventId: state.currentEventId });
+  }
+
+  if (entry.title === "Wait for All Movement" && executeM2RuntimeCommand(state.session, entry, command)) {
+    return pause("waitForAllMovement", { kind: "waitForAllMovement" });
+  }
+
+  if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command)) {
+    return pause("stopAllMovement", { kind: "stopAllMovement" });
+  }
+
   // 일회성 화면 효과: 상태 기록(executeM2RuntimeCommand) 후 블로킹 pause 로 플레이어에 위임.
   if (entry.title === "Flash Screen" && executeM2RuntimeCommand(state.session, entry, command)) {
     const rgb = screenColorToRgb(fieldString(command.fields, "color", "white"));

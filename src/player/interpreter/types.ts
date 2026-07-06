@@ -26,6 +26,9 @@ export type StepResult =
     }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "wait"; ms: number }
+  | { kind: "eraseEvent"; eventId?: string }
+  | { kind: "waitForAllMovement" }
+  | { kind: "stopAllMovement" }
   | { kind: "inputWait"; variableId?: string }
   | { kind: "inputNumber"; variableId: string; digits: number; settings: MessageWindowSettings }
   | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string }
