@@ -617,9 +617,31 @@ export function renderAiChatPanel(): HTMLElement {
     return `[컨텍스트] ${parts.join(" · ")}`;
   };
 
+  // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
+  // 큐에 쌓고 "대기 중 N건"으로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
+  let turnBusy = false;
+  const pendingSends: { text: string; displayAs?: string }[] = [];
+  const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
+  queueIndicator.hidden = true;
+  const refreshQueueIndicator = (): void => {
+    queueIndicator.hidden = pendingSends.length === 0;
+    queueIndicator.textContent =
+      pendingSends.length > 0 ? `⏳ 대기 중 ${pendingSends.length}건 — 현재 응답이 끝나면 순서대로 전송됩니다` : "";
+  };
+  const drainPendingSends = (): void => {
+    const next = pendingSends.shift();
+    refreshQueueIndicator();
+    if (next) void sendText(next.text, next.displayAs);
+  };
+
   const sendText = async (text: string, displayAs?: string): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
+    if (turnBusy) {
+      pendingSends.push({ text: trimmed, ...(displayAs !== undefined ? { displayAs } : {}) });
+      refreshQueueIndicator();
+      return;
+    }
     chipsHost.replaceChildren();
     closeToolActivity();
     appendBubble("user", displayAs ?? trimmed);
@@ -636,6 +658,11 @@ export function renderAiChatPanel(): HTMLElement {
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void) => Promise<TurnResult>
   ): Promise<void> => {
+    if (turnBusy) {
+      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+      return;
+    }
+    turnBusy = true;
     status.textContent = "생각 중…";
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
@@ -767,8 +794,10 @@ export function renderAiChatPanel(): HTMLElement {
       appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
     } finally {
       sendButton.disabled = false;
+      turnBusy = false;
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
+      drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
     }
   };
 
@@ -1148,6 +1177,7 @@ export function renderAiChatPanel(): HTMLElement {
       slashHost,
       contextChips,
       pinBar,
+      queueIndicator,
       el("div", {
         class: "ai-chat-input-row",
         children: [skillToggle, input, sendButton],
