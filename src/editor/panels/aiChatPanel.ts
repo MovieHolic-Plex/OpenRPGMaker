@@ -33,6 +33,12 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import type { BuildSpec } from "@/ai/buildSpec";
+import {
+  proposalCompletenessWarningLines,
+  proposalCompletenessWarnings,
+  proposalHasChangedMap,
+  requestLikelyExpectsChange,
+} from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { renderMarkdown } from "@/util/markdown";
 import { saveConversation, deriveTitle } from "@/ai/conversationStore";
@@ -108,11 +114,12 @@ function backupProjectSnapshot(): void {
 }
 
 // 파괴적 작업 여부에 따라 제안 요약 라인을 만든다(테스트 가능하도록 순수 함수로 분리).
-export function proposalSummaryLines(calls: readonly ProposedCall[]): string[] {
-  return calls.map((call) => {
+export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnings: readonly string[] = []): string[] {
+  const callLines = calls.map((call) => {
     const flag = call.destructive ? "⚠️ 파괴적 " : "";
     return `${flag}${call.name} — ${call.summary}`;
   });
+  return [...callLines, ...proposalCompletenessWarningLines(calls, extraWarnings)];
 }
 
 export function hasDestructiveCall(calls: readonly ProposedCall[]): boolean {
@@ -140,6 +147,28 @@ function confirmRuleApproval(warnings: readonly string[]): boolean {
   if (warnings.length === 0) return true;
   if (typeof window === "undefined" || typeof window.confirm !== "function") return true;
   return window.confirm(`${warnings.join("\n")}\n\n이 규칙을 적용할까요?`);
+}
+
+function attachCompletenessWarnings(calls: readonly ProposedCall[], warnings: readonly string[]): void {
+  if (warnings.length === 0) return;
+  const diff = calls.find((call) => call.result.diff)?.result.diff;
+  if (!diff) return;
+  for (const warning of warnings) {
+    if (!diff.warnings.includes(warning)) diff.warnings.push(warning);
+  }
+}
+
+function completenessSpecForProposal(
+  confirmedThisTurn: BuildSpec | null,
+  activeAtTurnStart: BuildSpec | null,
+  calls: readonly ProposedCall[],
+  requestText: string
+): BuildSpec | null {
+  if (confirmedThisTurn) return calls.length > 0 || requestLikelyExpectsChange(requestText) ? confirmedThisTurn : null;
+  if (!activeAtTurnStart) return null;
+  if (proposalHasChangedMap(calls, activeAtTurnStart.mapId)) return activeAtTurnStart;
+  if (calls.length === 0 && requestLikelyExpectsChange(requestText)) return activeAtTurnStart;
+  return null;
 }
 
 // 누적 히스토리 + 현재 세션의 감사 항목을 합쳐 내보내기 JSON을 만든다. 비었으면 null.
@@ -354,11 +383,11 @@ export function renderAiChatPanel(): HTMLElement {
     return controller.session;
   };
 
-  const renderProposal = (result: TurnResult): void => {
+  const renderProposal = (result: TurnResult, extraWarnings: readonly string[] = []): void => {
     proposalHost.replaceChildren();
-    if (result.proposedCalls.length === 0) return;
+    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
+    if (result.proposedCalls.length === 0 && lines.length === 0) return;
 
-    const lines = proposalSummaryLines(result.proposedCalls);
     const warnings = proposalApprovalWarnings(result.proposedCalls);
     const card = el("div", {
       class: `ai-proposal-card${hasDestructiveCall(result.proposedCalls) ? " is-destructive" : ""}`,
@@ -376,22 +405,32 @@ export function renderAiChatPanel(): HTMLElement {
         }),
         el("div", {
           class: "ai-proposal-actions",
-          children: [
-            el("button", {
-              class: "ai-assistant-action ai-proposal-accept",
-              text: "수락해서 적용",
-              attrs: { type: "button" },
-              dataset: { testid: "ai-proposal-accept" },
-              on: { click: () => acceptProposal(result.proposedCalls) },
-            }),
-            el("button", {
-              class: "ai-assistant-action ai-proposal-reject",
-              text: "거부(초안 폐기)",
-              attrs: { type: "button" },
-              dataset: { testid: "ai-proposal-reject" },
-              on: { click: () => rejectProposal() },
-            }),
-          ],
+          children: result.proposedCalls.length > 0
+            ? [
+                el("button", {
+                  class: "ai-assistant-action ai-proposal-accept",
+                  text: "수락해서 적용",
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-proposal-accept" },
+                  on: { click: () => acceptProposal(result.proposedCalls) },
+                }),
+                el("button", {
+                  class: "ai-assistant-action ai-proposal-reject",
+                  text: "거부(초안 폐기)",
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-proposal-reject" },
+                  on: { click: () => rejectProposal() },
+                }),
+              ]
+            : [
+                el("button", {
+                  class: "ai-assistant-action ai-proposal-reject",
+                  text: "확인",
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-proposal-reject" },
+                  on: { click: () => proposalHost.replaceChildren() },
+                }),
+              ],
         }),
       ],
     });
@@ -550,6 +589,8 @@ export function renderAiChatPanel(): HTMLElement {
     sendButton.disabled = true;
 
     const session = ensureSession();
+    const activeSpecAtTurnStart = session.getActiveSpec();
+    let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let assistantBubble: HTMLElement | null = null;
     let reasoningBox: { body: HTMLElement } | null = null;
     const streamedBubbles: HTMLElement[] = [];
@@ -577,6 +618,7 @@ export function renderAiChatPanel(): HTMLElement {
         // 밑그림(스펙) 확정: 중간과정 가시화 — 에셋별 할당 영역을 카드로 보여준다.
         if (event.name === "set_build_spec" && event.result.ok && event.result.data) {
           const spec = event.result.data as BuildSpec;
+          confirmedBuildSpecThisTurn = spec;
           const lines = [
             `📐 밑그림 — ${spec.title ?? spec.mapId}`,
             ...(spec.buildOrder && spec.buildOrder.length > 0 ? [`건설 순서: ${spec.buildOrder.join(" → ")}`] : []),
@@ -633,21 +675,29 @@ export function renderAiChatPanel(): HTMLElement {
 
     try {
       const result = await session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent);
+      const completenessWarnings = result.stoppedReason === "error"
+        ? []
+        : proposalCompletenessWarnings({
+            requestText: trimmed,
+            buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, result.proposedCalls, trimmed),
+            calls: result.proposedCalls,
+          });
+      attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
       streamedBubbles.forEach(renderStreamedMarkdown); // 스트리밍 원문을 마크다운으로 다시 렌더.
       if (result.assistantText && !assistantBubble) appendBubble("assistant", result.assistantText);
-      if (result.proposedCalls.length > 0 && result.stoppedReason !== "error" && isMetadataOnlyProposal(result.proposedCalls) && !proposalNeedsExplicitApproval(result.proposedCalls)) {
+      if (result.proposedCalls.length > 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error" && isMetadataOnlyProposal(result.proposedCalls) && !proposalNeedsExplicitApproval(result.proposedCalls)) {
         // 타일 지식만 바뀌었으면 검토 카드 없이 저장하고 세션(인터뷰 대화)을 이어간다.
         applyMetadataKeepSession(result.proposedCalls);
-      } else if (result.proposedCalls.length > 0 && loadAiConfig().autoApprove === true && result.stoppedReason !== "error" && !proposalNeedsExplicitApproval(result.proposedCalls)) {
+      } else if (result.proposedCalls.length > 0 && completenessWarnings.length === 0 && loadAiConfig().autoApprove === true && result.stoppedReason !== "error" && !proposalNeedsExplicitApproval(result.proposedCalls)) {
         // 자동 승인 모드: 제안을 즉시 적용한다(검토 카드 생략). 되돌리기는 Ctrl+Z.
         appendBubble("system", `자동 승인 — 변경 ${result.proposedCalls.length}건을 바로 적용합니다.`);
         acceptProposal(result.proposedCalls);
       } else {
-        renderProposal(result);
+        renderProposal(result, result.proposedCalls.length === 0 ? completenessWarnings : []);
         status.textContent =
           result.stoppedReason === "error"
             ? "오류"
-            : result.proposedCalls.length > 0
+            : result.proposedCalls.length > 0 || completenessWarnings.length > 0
             ? "검토 대기"
             : status.textContent === "생각 중…"
             ? "완료"
@@ -656,7 +706,7 @@ export function renderAiChatPanel(): HTMLElement {
       if (result.assistantText) renderQuickReplies(result.assistantText);
       // 밑그림 상태 표시 — 확정된 스펙이 있으면 사용자도 본다(다음 빌드가 이 영역 안에서만 실행됨).
       const activeSpec = session.getActiveSpec();
-      if (activeSpec && result.proposedCalls.length === 0 && result.stoppedReason !== "error") {
+      if (activeSpec && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
         status.textContent = `밑그림 확정 — 에셋 ${activeSpec.assets.length}개`;
       }
       if (result.error) appendBubble("system", `오류: ${result.error}`);
