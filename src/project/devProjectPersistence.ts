@@ -42,11 +42,14 @@ export function discardDevProjectOverride(): void {
   if (key) window.localStorage.removeItem(key);
 }
 
-export function saveDevProjectOverride(project: Project): void {
-  if (isFreshProjectLocation()) return;
+// 반환값: 실제로 기록했는가 — fresh/blank 위치(저장 스킵 모드)에서는 false.
+// store가 미저장 변경 추적(결함 ⑧)에 사용한다.
+export function saveDevProjectOverride(project: Project): boolean {
+  if (isFreshProjectLocation()) return false;
   const key = devProjectStorageKey();
-  if (!key) return;
+  if (!key) return false;
   window.localStorage.setItem(key, serialize(project));
+  return true;
 }
 
 function loadStoredProject(key: string | null): Project | null {

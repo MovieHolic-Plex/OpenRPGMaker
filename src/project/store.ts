@@ -70,6 +70,10 @@ class ProjectStore {
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
+  // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
+  // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
+  // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
+  private dirtySinceLastPersist = false;
 
   constructor() {
     this.current = createBlankProject();
@@ -117,6 +121,7 @@ class ProjectStore {
       throw error;
     }
     this.loaded = true;
+    this.dirtySinceLastPersist = false;
     this.emit({ scope: "project" });
     return this.current;
   }
@@ -135,6 +140,7 @@ class ProjectStore {
     this.persistedBaseline = null;
     this.loaded = true;
     await this.normalizeCurrentProject();
+    this.dirtySinceLastPersist = false;
     this.emit({ scope: "project" });
   }
 
@@ -160,6 +166,11 @@ class ProjectStore {
     return this.autoSaveState;
   }
 
+  // 마지막 실제 저장 이후 미저장 변경이 있는가(결함 ⑧ — 창 닫기 경고 근거).
+  hasUnsavedChanges(): boolean {
+    return this.dirtySinceLastPersist;
+  }
+
   subscribeAutoSave(listener: AutoSaveListener): () => void {
     this.autoSaveListeners.add(listener);
     return () => this.autoSaveListeners.delete(listener);
@@ -177,6 +188,7 @@ class ProjectStore {
         await this.normalizeCurrentProject();
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
         resetManualProjectCommitBaseline(this.current);
+        this.dirtySinceLastPersist = false;
         this.emit({ scope: "project" });
         this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
@@ -197,6 +209,7 @@ class ProjectStore {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
     this.current = project;
+    this.dirtySinceLastPersist = true;
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
@@ -208,6 +221,7 @@ class ProjectStore {
     ensureSwitchVariableSlots(draft);
     removeLegacySpriteReferences(draft);
     this.current = draft;
+    this.dirtySinceLastPersist = true;
     this.emit(change);
     this.scheduleAutoSave();
   }
@@ -233,6 +247,7 @@ class ProjectStore {
         [mapId]: draftMap,
       },
     };
+    this.dirtySinceLastPersist = true;
     this.emit({ scope: "map", mapId, ...change });
     this.scheduleAutoSave();
   }
@@ -262,6 +277,7 @@ class ProjectStore {
 
   async clearAll(): Promise<void> {
     this.current = createBlankProject();
+    this.dirtySinceLastPersist = true;
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
@@ -330,7 +346,10 @@ class ProjectStore {
   private async persistCurrent(): Promise<ProjectFlushResult> {
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
-        saveDevProjectOverride(projectWithoutEventDrafts(this.current));
+        // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
+        if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
+          this.dirtySinceLastPersist = false;
+        }
         return { kind: "saved-local" };
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
@@ -343,6 +362,7 @@ class ProjectStore {
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? persistedProject;
     this.persistedBaseline = structuredClone(savedProject);
+    this.dirtySinceLastPersist = false;
     if (result.project) {
       this.current = structuredClone(result.project);
       this.emit({ scope: "project" });
