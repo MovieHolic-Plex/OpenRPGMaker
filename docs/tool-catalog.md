@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 76개 툴 — 쓰기 49, 읽기 27.
+> 총 77개 툴 — 쓰기 49, 읽기 28.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -76,6 +76,7 @@
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps` | 컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps. |
 | `run_lint` | `reachability?: array` | projectLint를 실행해 무결성 issue 목록을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
+| `list_project_commits` | `limit?: integer` | Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다. |
 | `get_tile_info` | `tileIds: array`, `tilesetId?: string` | 타일들의 의미(라벨/설명/태그)·시맨틱 그룹·배치 규칙(placementRules)·통행성·레이어를 조회한다. 타일을 깔기 전에 확인하는 용도. |
 | `list_unclassified_tiles` | `tilesetId: string`, `limit?: integer`, `offset?: integer` | 타일셋에서 라벨이 없고 어떤 타일 그룹에도 속하지 않은 미분류 타일 인덱스를 페이지로 조회한다. 미분류 분석을 다음 배치로 이어갈 때 사용. |
 | `analyze_map_tile_usage` | `mapId: string`, `includeDescribed?: boolean` | 사람이 깐 맵에서 사용된 타일 종류·사용량·설명 유무·대표 영역(sampleRegion)·인접 통계(mostCommonBelow/Above)를 추출한다. 맵 인터뷰의 시작점 — 설명 없는(described=false) 타일부터 질문하라. |

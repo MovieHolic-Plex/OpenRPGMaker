@@ -8,6 +8,7 @@ import { isPassable } from "@/project/collision";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";
+import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -297,6 +298,29 @@ const checkReachabilityTool: ToolDefinition = {
   },
 };
 
+const listProjectCommits: ToolDefinition = {
+  name: "list_project_commits",
+  description: "Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      limit: { type: "integer", description: "가져올 최근 커밋 수(기본 20, 최대 100)" },
+    },
+  },
+  run(_project, args): ToolExecResult {
+    if (typeof window === "undefined" || typeof XMLHttpRequest === "undefined") {
+      throw new ToolError("list_project_commits는 브라우저 PostgREST 환경에서만 지원됩니다.", { code: "browser-only" });
+    }
+    const config = supabaseProjectConfig();
+    if (!config) throw new ToolError("Supabase 설정이 없어 커밋 이력을 조회할 수 없습니다.", { code: "supabase-not-configured" });
+    const requestedLimit = typeof args.limit === "number" ? args.limit : 20;
+    const limit = Math.max(1, Math.min(100, Math.floor(requestedLimit)));
+    const commits = listProjectCommitsSync(config.url, config.anonKey, config.projectId, limit);
+    return { summary: `최근 커밋 ${commits.length}건`, data: { commits } };
+  },
+};
+
 // DB/프로젝트 컬렉션별 {id, name} 목록. LLM이 기존 id를 확인하지 않고 추측해
 // 참조 오류를 내는 문제(evals 실패 패턴)를 막는 조회 툴이다.
 const DB_COLLECTIONS = [
@@ -347,4 +371,27 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   getDatabaseRecords,
   runLint,
   checkReachabilityTool,
+  listProjectCommits,
 ];
+
+function listProjectCommitsSync(url: string, anonKey: string, projectId: string, limit: number): readonly Record<string, unknown>[] {
+  const query = new URLSearchParams({
+    project_id: `eq.${projectId}`,
+    limit: String(limit),
+    order: "created_at.desc",
+    select: "commit_id,message,summary,review_status,author_id,author_label,author_kind,agent_name,created_at",
+  });
+  const request = new XMLHttpRequest();
+  request.open("GET", `${url}/rest/v1/project_commits?${query.toString()}`, false);
+  request.setRequestHeader("apikey", anonKey);
+  request.setRequestHeader("Authorization", `Bearer ${anonKey}`);
+  request.setRequestHeader("Accept", "application/json");
+  request.setRequestHeader("Accept-Profile", "rpg_zzu");
+  request.send();
+  if (request.status < 200 || request.status >= 300) {
+    throw new ToolError(request.responseText || `커밋 이력 조회 실패(${request.status})`, { code: "supabase-read-failed" });
+  }
+  const parsed: unknown = JSON.parse(request.responseText || "[]");
+  if (!Array.isArray(parsed)) throw new ToolError("커밋 이력 응답이 배열이 아닙니다.", { code: "invalid-response" });
+  return parsed.filter((entry): entry is Record<string, unknown> => typeof entry === "object" && entry !== null && !Array.isArray(entry));
+}

@@ -1,0 +1,118 @@
+import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
+import { projectWithoutEventDrafts } from "./eventDrafts";
+import { serialize } from "./io";
+import { recordProjectCommitToSupabase, type ProjectCommitReviewStatus } from "./supabaseProjectSync";
+import type { ChangeSummary } from "@/editor/tools/types";
+import type { Project } from "./types";
+
+type CommitLogInput = {
+  readonly project: Project;
+  readonly identity?: EditorIdentity;
+  readonly reviewStatus: ProjectCommitReviewStatus;
+  readonly summary: string;
+  readonly diff?: ChangeSummary;
+  readonly toolNames?: readonly string[];
+};
+
+let lastManualSerialized: string | null = null;
+
+export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
+  const persistedProject = projectWithoutEventDrafts(input.project);
+  const serialized = serialize(persistedProject);
+  void recordProjectCommitToSupabase({
+    project: persistedProject,
+    identity: input.identity ?? currentHumanEditorIdentity(),
+    reviewStatus: input.reviewStatus,
+    summary: input.summary,
+    diff: input.diff,
+    toolNames: input.toolNames ?? [],
+    serialized,
+  }).catch((error) => {
+    console.warn("[projectCommits] record failed:", error);
+  });
+}
+
+export function recordManualProjectCommitAfterSave(project: Project): void {
+  const persistedProject = projectWithoutEventDrafts(project);
+  const serialized = serialize(persistedProject);
+  if (serialized === lastManualSerialized) return;
+  lastManualSerialized = serialized;
+  const diff = manualDiffSummary();
+  void recordProjectCommitToSupabase({
+    project: persistedProject,
+    identity: currentHumanEditorIdentity(),
+    reviewStatus: "direct",
+    summary: summaryForDiff(diff),
+    diff,
+    toolNames: [],
+    serialized,
+  }).catch((error) => {
+    console.warn("[projectCommits] manual record failed:", error);
+  });
+}
+
+export function resetManualProjectCommitBaseline(project: Project): void {
+  lastManualSerialized = serialize(projectWithoutEventDrafts(project));
+}
+
+export function summaryForDiff(diff: ChangeSummary): string {
+  const parts = [
+    diff.tilesChanged > 0 ? `타일 ${diff.tilesChanged}` : null,
+    diff.eventsAdded > 0 ? `이벤트 추가 ${diff.eventsAdded}` : null,
+    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}` : null,
+    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}` : null,
+    diff.mapsAdded > 0 ? `맵 추가 ${diff.mapsAdded}` : null,
+    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}` : null,
+    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}` : null,
+    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}` : null,
+    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}` : null,
+    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}` : null,
+    diff.sessionChanged ? "세션" : null,
+    diff.systemChanged ? "시스템" : null,
+  ].filter((part): part is string => part !== null);
+  return parts.length > 0 ? `변경 저장: ${parts.join(", ")}` : "변경 저장";
+}
+
+export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): ChangeSummary {
+  return diffs.reduce<ChangeSummary>((combined, diff) => {
+    if (!diff) return combined;
+    combined.tilesChanged += diff.tilesChanged;
+    combined.eventsAdded += diff.eventsAdded;
+    combined.eventsModified += diff.eventsModified;
+    combined.eventsRemoved += diff.eventsRemoved;
+    combined.mapsAdded += diff.mapsAdded;
+    combined.mapsRemoved += diff.mapsRemoved;
+    combined.dbRecordsChanged += diff.dbRecordsChanged;
+    combined.tilesetsChanged += diff.tilesetsChanged;
+    combined.switchesAdded += diff.switchesAdded;
+    combined.variablesAdded += diff.variablesAdded;
+    combined.sessionChanged = combined.sessionChanged || diff.sessionChanged;
+    combined.systemChanged = combined.systemChanged || diff.systemChanged;
+    combined.warnings.push(...diff.warnings);
+    return combined;
+  }, emptyDiffSummary());
+}
+
+function manualDiffSummary(): ChangeSummary {
+  const diff = emptyDiffSummary();
+  diff.systemChanged = true;
+  return diff;
+}
+
+function emptyDiffSummary(): ChangeSummary {
+  return {
+    tilesChanged: 0,
+    eventsAdded: 0,
+    eventsModified: 0,
+    eventsRemoved: 0,
+    mapsAdded: 0,
+    mapsRemoved: 0,
+    dbRecordsChanged: 0,
+    tilesetsChanged: 0,
+    switchesAdded: 0,
+    variablesAdded: 0,
+    sessionChanged: false,
+    systemChanged: false,
+    warnings: [],
+  };
+}

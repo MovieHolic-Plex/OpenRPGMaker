@@ -13,6 +13,7 @@ import {
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
+import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import type { MapId, Project } from "./types";
 
 export type ProjectChangeCell = {
@@ -100,6 +101,7 @@ class ProjectStore {
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+          resetManualProjectCommitBaseline(this.current);
         }
       }
       await this.normalizeCurrentProject();
@@ -161,6 +163,7 @@ class ProjectStore {
         this.remotePersistenceDisabledReason = null;
         await this.normalizeCurrentProject();
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+        resetManualProjectCommitBaseline(this.current);
         this.emit({ scope: "project" });
         this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
@@ -296,6 +299,7 @@ class ProjectStore {
       this.current = structuredClone(result.project);
       this.emit({ scope: "project" });
     }
+    recordManualProjectCommitAfterSave(savedProject);
     this.refreshSupabaseResourceCache();
     return result;
   }

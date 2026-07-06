@@ -1,7 +1,7 @@
 // editor/panels/aiChatPanel.ts
 // LLM 어시스턴트 채팅 dock. 대화 히스토리 + 입력 + 스트리밍 표시 + 제안(changeset) 카드 + 설정 폼.
 // - 이 파일만 브라우저/스토어에 의존한다. 세션 로직(assistantSession)/클라이언트(llmClient)는 순수.
-// - 제안 수락은 applyToolSequenceToStore(기존 어댑터) → projectLint 게이트 → undo 체크포인트.
+// - 제안 수락은 세션 draft를 store에 반영 → projectLint 게이트 → undo 체크포인트.
 // - API 키는 설정 폼에서만 입력(localStorage). 소스/프로젝트 JSON에 하드코딩 금지.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
@@ -13,7 +13,9 @@ import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowse
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { projectLint } from "@/project/lint/projectLint";
+import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -411,6 +413,15 @@ export function renderAiChatPanel(): HTMLElement {
     }
     recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId()); // 변경 이전 상태를 undo 스냅샷으로.
     store.replace(proposed); // 자동 저장은 store가 스케줄.
+    recordProjectCommitFireAndForget({
+      project: proposed,
+      identity: currentAgentEditorIdentity(loadAiConfig().model),
+      reviewStatus: "approved",
+      summary: aiHistoryLabel(calls),
+      diff: combineDiffs(calls.map((call) => call.result.diff)),
+      toolNames: calls.map((call) => call.name),
+    });
+    resetManualProjectCommitBaseline(proposed);
     proposalHost.replaceChildren();
     status.textContent = "적용됨";
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);
@@ -441,6 +452,15 @@ export function renderAiChatPanel(): HTMLElement {
     }
     recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId());
     store.replace(proposed);
+    recordProjectCommitFireAndForget({
+      project: proposed,
+      identity: currentAgentEditorIdentity(loadAiConfig().model),
+      reviewStatus: "approved",
+      summary: aiHistoryLabel(calls),
+      diff: combineDiffs(calls.map((call) => call.result.diff)),
+      toolNames: calls.map((call) => call.name),
+    });
+    resetManualProjectCommitBaseline(proposed);
     status.textContent = "저장됨";
     appendBubble("system", `타일 지식 ${calls.length}건 저장됨 (Ctrl+Z로 복구 가능)`);
   };
