@@ -14,6 +14,7 @@ import { equipmentFields, itemFields, skillFields } from "@/editor/panels/databa
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
+import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
@@ -241,12 +242,14 @@ function recordListRow(
 ): HTMLElement {
   const { record, originalIndex, visibleIndex } = entry;
   const isSelected = selectedRecordIdForSession(collection) === record.id;
+  const thumb = recordListThumbnail(collection, record, store.getCurrent());
   return el("button", {
-    class: `db-list-row${isSelected ? " active" : ""}`,
+    class: `db-list-row${thumb ? " db-list-row-has-thumb" : ""}${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
     dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}` },
     children: [
       el("span", { class: "db-list-number", text: `${ordinalLabel(originalIndex)}:` }),
+      ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
     ],
     on: { click: () => onSelect(record.id) },

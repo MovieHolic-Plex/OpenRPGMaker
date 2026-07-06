@@ -1,1 +1,191 @@
 /* 레코드 리스트 썸네일/리소스 피커 스타일 (database-overhaul, 신규 클래스 전용) */
+
+.database-modal-body .rm2k3-record-list-pane .db-list-row.db-list-row-has-thumb {
+  gap: 6px;
+  grid-template-columns: auto 24px minmax(0, 1fr);
+}
+
+.db-list-thumb {
+  align-self: center;
+  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  display: inline-grid;
+  height: 24px;
+  image-rendering: pixelated;
+  overflow: hidden;
+  place-items: center;
+  position: relative;
+  width: 24px;
+}
+
+.db-list-thumb img {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 100%;
+}
+
+.db-list-thumb.empty {
+  background-image: none;
+  opacity: 0.36;
+}
+
+.db-list-thumb.empty::before {
+  background: var(--border-subtle, rgba(255, 255, 255, 0.22));
+  content: "";
+  display: block;
+  height: 1px;
+  transform: rotate(-35deg);
+  width: 16px;
+}
+
+.db-list-thumb-probe {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.db-animation-stage-surface {
+  background:
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.18) 50%, transparent calc(50% + 1px)),
+    linear-gradient(0deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.18) 50%, transparent calc(50% + 1px)),
+    radial-gradient(circle at 50% 58%, rgba(255, 255, 255, 0.08), transparent 42%);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  min-height: 154px;
+  overflow: hidden;
+  position: relative;
+}
+
+.db-animation-stage-cells {
+  height: 0;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 52%;
+  width: 0;
+  z-index: 2;
+}
+
+.db-animation-stage-cell-sprite {
+  background-repeat: no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+  height: var(--animation-frame-height, 96px);
+  image-rendering: pixelated;
+  left: calc(var(--animation-frame-width, 96px) / -2);
+  position: absolute;
+  top: calc(var(--animation-frame-height, 96px) / -2);
+  transform-origin: center;
+  width: var(--animation-frame-width, 96px);
+}
+
+.db-animation-stage-cell-sprite.muted {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.46);
+  border-style: dashed;
+}
+
+.actor-resource-control {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.actor-resource-control input {
+  min-width: 0;
+}
+
+.db-actor-resource-dialog-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 280px) minmax(120px, 1fr);
+}
+
+.db-actor-resource-list {
+  background: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  border: 1px inset var(--border-default, rgba(255, 255, 255, 0.2));
+  display: grid;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.db-actor-resource-list button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  min-height: 44px;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.db-actor-resource-list button.active,
+.db-actor-resource-list button:hover {
+  background: var(--accent-muted, rgba(120, 140, 255, 0.22));
+}
+
+.db-actor-resource-list button > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-actor-resource-dialog-preview {
+  align-items: center;
+  background: var(--bg-raised, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  display: grid;
+  justify-items: center;
+  min-height: 148px;
+  padding: 10px;
+}
+
+.db-actor-resource-option-thumb,
+.db-actor-resource-preview-visual {
+  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  display: block;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.db-actor-resource-option-thumb {
+  height: 36px;
+  max-width: 36px;
+  width: 36px;
+}
+
+.db-actor-resource-preview-visual {
+  max-height: 96px;
+  max-width: 120px;
+}
+
+.db-actor-resource-crop {
+  background-image: var(--actor-resource-url);
+  background-position: var(--actor-resource-x) var(--actor-resource-y);
+  background-repeat: no-repeat;
+  background-size: var(--actor-resource-sheet-width) var(--actor-resource-sheet-height);
+  height: min(var(--actor-resource-height), 96px);
+  overflow: hidden;
+  width: min(var(--actor-resource-width), 120px);
+}
+
+.db-actor-resource-empty {
+  color: var(--text-3, rgba(255, 255, 255, 0.5));
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+}
