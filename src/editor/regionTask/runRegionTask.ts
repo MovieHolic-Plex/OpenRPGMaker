@@ -5,6 +5,7 @@
 //
 // store/세션 싱글턴 의존을 deps로 분리해 단위 테스트가 가능하다.
 import { AssistantSession, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
+import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
@@ -45,7 +46,10 @@ const defaultDeps: RegionTaskDeps = {
     recordProjectSnapshot(label, mapId, { kind: "map" });
     store.replace(project);
   },
-  createSession: (project, mapId) => new AssistantSession(project, { contextOptions: { currentMapId: mapId } }),
+  createSession: (project, mapId) => new AssistantSession(project, {
+    config: configForLiteModel(loadAiConfig()),
+    contextOptions: { currentMapId: mapId },
+  }),
 };
 
 // aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).

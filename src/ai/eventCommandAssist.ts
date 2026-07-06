@@ -16,7 +16,7 @@ import {
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
-import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
+import { chatCompletion, configForLiteModel, type AiConfig, type ChatMessage } from "./llmClient";
 
 export interface EventAssistContext {
   readonly project: Project;
@@ -244,7 +244,8 @@ export async function runEventCommandAssist(options: {
   readonly onDelta?: (delta: string) => void;
   readonly signal?: AbortSignal;
 }): Promise<AssistRunResult> {
-  const { config, prompt, context, onDelta, signal } = options;
+  const { prompt, context, onDelta, signal } = options;
+  const config = configForLiteModel(options.config);
   const messages: ChatMessage[] = [
     { role: "system", content: buildEventAssistPrompt(context) },
     { role: "user", content: prompt },

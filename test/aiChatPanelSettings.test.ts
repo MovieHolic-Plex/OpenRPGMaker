@@ -1,10 +1,10 @@
 // AI 어시스턴트 채팅 패널 — 접기 토글 + 설정 자동 저장 + 세션 설정 반영.
 // 사용자 불만 회귀 테스트: (1) 패널을 접을 수 없었다, (2) API 키/설정이 저장되지 않는 것처럼
-// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 google/gemini-3.1-flash-lite.
+// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 google/gemini-3.5-flash.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AssistantSession } from "@/ai/assistantSession";
-import { AI_CONFIG_STORAGE_KEY, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
+import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
@@ -78,7 +78,7 @@ describe("설정 자동 저장", () => {
     expect(stored.apiKey).toBe("sk-or-test-abc");
   });
 
-  it("모델을 비우고 저장하면 기본값(google/gemini-3.1-flash-lite)으로 저장된다", () => {
+  it("모델을 비우고 저장하면 기본값(google/gemini-3.5-flash)으로 저장된다", () => {
     const panel = renderPanel();
     const model = findByTestId(panel, "ai-config-model");
     if (!model) throw new Error("model field missing");
@@ -87,8 +87,9 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
-    expect(loadAiConfig().model).toBe("google/gemini-3.1-flash-lite");
+    expect(DEFAULT_MODEL).toBe("google/gemini-3.5-flash");
+    expect(loadAiConfig().model).toBe("google/gemini-3.5-flash");
+    expect(loadAiConfig().liteModel).toBe(DEFAULT_LITE_MODEL);
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
@@ -100,6 +101,29 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe("google/gemini-3.1-pro");
+  });
+
+  it("보조 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
+    const panel = renderPanel();
+    const liteModel = findByTestId(panel, "ai-config-lite-model");
+    if (!liteModel) throw new Error("lite model field missing");
+    liteModel.value = "   ";
+    liteModel.dispatchEvent(new Event("change"));
+
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
+    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
+  });
+
+  it("보조 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
+    const panel = renderPanel();
+    const liteModel = findByTestId(panel, "ai-config-lite-model");
+    if (!liteModel) throw new Error("lite model field missing");
+    liteModel.value = "google/gemini-3.1-flash-lite-preview";
+    liteModel.dispatchEvent(new Event("input"));
+
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.liteModel).toBe("google/gemini-3.1-flash-lite-preview");
   });
 
   it("설정 저장 버튼도 동일하게 저장한다", () => {
@@ -139,10 +163,10 @@ describe("감사 로그 내보내기", () => {
 
     // 패널의 dropSession과 동일한 흐름: 세션 폐기 전 항목을 히스토리로 회수.
     const history = [...session.getAuditEntries()];
-    const json = combineAuditJson(history, null, "google/gemini-3.1-flash-lite");
+    const json = combineAuditJson(history, null, "google/gemini-3.5-flash");
     expect(json).not.toBeNull();
     const parsed = JSON.parse(json ?? "{}");
-    expect(parsed.model).toBe("google/gemini-3.1-flash-lite");
+    expect(parsed.model).toBe("google/gemini-3.5-flash");
     expect(parsed.entries.length).toBe(history.length);
     expect(parsed.entries[0]).toEqual({ kind: "user", text: "npc 넣어줘" });
   });
@@ -167,7 +191,7 @@ describe("세션 설정 반영", () => {
     });
     expect(JSON.parse(session.exportAudit()).model).toBe("old-model");
 
-    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "google/gemini-3.1-flash-lite" });
-    expect(JSON.parse(session.exportAudit()).model).toBe("google/gemini-3.1-flash-lite");
+    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "google/gemini-3.5-flash" });
+    expect(JSON.parse(session.exportAudit()).model).toBe("google/gemini-3.5-flash");
   });
 });

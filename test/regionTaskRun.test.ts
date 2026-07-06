@@ -8,10 +8,12 @@ import {
 } from "@/editor/regionTask/runRegionTask";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { TurnResult } from "@/ai/assistantSession";
+import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { implicitSpecFromContext } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
+import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 
 const MAP_ID = "map_region";
@@ -80,6 +82,56 @@ describe("countInRegionChangedCells", () => {
 });
 
 describe("runRegionTask", () => {
+  it("기본 세션 생성은 보조 모델(liteModel)로 chat 요청을 만든다", async () => {
+    const base = baseProject();
+    store.replace(base);
+    const bodies: string[] = [];
+    const fetchDescriptor = Object.getOwnPropertyDescriptor(globalThis, "fetch");
+    const storageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      writable: true,
+      value: {
+        getItem: (key: string) => key === AI_CONFIG_STORAGE_KEY
+          ? JSON.stringify({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test/v1",
+              liteModel: "region-lite-model",
+              maxTokens: 1024,
+              model: "region-main-model",
+              reasoningEffort: "medium",
+            })
+          : null,
+        setItem: () => undefined,
+        removeItem: () => undefined,
+        clear: () => undefined,
+      },
+    });
+    Object.defineProperty(globalThis, "fetch", {
+      configurable: true,
+      writable: true,
+      value: async (_input: RequestInfo | URL, init?: RequestInit) => {
+        bodies.push(String(init?.body ?? ""));
+        return new Response(
+          JSON.stringify({ choices: [{ message: { content: "완료" }, finish_reason: "stop" }] }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      },
+    });
+
+    try {
+      const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" });
+      expect(result.ok).toBe(true);
+      expect(result.applied).toBe(false);
+      expect(JSON.parse(bodies[0]).model).toBe("region-lite-model");
+    } finally {
+      if (fetchDescriptor) Object.defineProperty(globalThis, "fetch", fetchDescriptor);
+      else Reflect.deleteProperty(globalThis, "fetch");
+      if (storageDescriptor) Object.defineProperty(globalThis, "localStorage", storageDescriptor);
+      else Reflect.deleteProperty(globalThis, "localStorage");
+    }
+  });
+
   it("영역 안 변경을 적용하고 영역 밖은 클립한다(undo 1개 형태)", async () => {
     const base = baseProject();
     const proposed: Project = structuredClone(base);

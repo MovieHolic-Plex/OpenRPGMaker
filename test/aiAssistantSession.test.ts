@@ -31,9 +31,27 @@ function assistantFinal(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
-const CONFIG = { baseUrl: "x", model: "google/gemini-3.1-flash-lite", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
+const CONFIG = { baseUrl: "x", model: "google/gemini-3.5-flash", liteModel: "google/gemini-3.1-flash-lite", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
 
 describe("AssistantSession 툴콜 루프", () => {
+  it("메인 세션은 config.model을 그대로 chat 함수에 전달한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const seenModels: string[] = [];
+    const chat = async (config: { readonly model: string }): Promise<ChatResult> => {
+      seenModels.push(config.model);
+      return assistantFinal("완료");
+    };
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...CONFIG, model: "main-session-model", liteModel: "lite-session-model" },
+      chat,
+    });
+
+    await session.sendUserMessage("안녕", () => {});
+
+    expect(seenModels).toEqual(["main-session-model"]);
+    expect(JSON.parse(session.exportAudit()).model).toBe("main-session-model");
+  }, 30000);
+
   it("연쇄 툴콜 2개(읽기→쓰기) 후 최종 응답을 반환하고 쓰기만 제안에 담는다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([
