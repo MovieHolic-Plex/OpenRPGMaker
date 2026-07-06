@@ -7,6 +7,7 @@
 import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolResult } from "@/editor/tools";
+import { appendAgentGhostPreviewForToolCall, hasAgentGhostPreviewSubscribers } from "@/editor/agentGhostPreview";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
@@ -376,6 +377,7 @@ export class AssistantSession {
       for (const call of toolCalls) {
         const { name, args } = parseToolCall(call);
         const tool = getTool(name);
+        const ghostProject = this.ctx.project;
         // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
         // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
         let toolResult: ToolResult;
@@ -398,6 +400,7 @@ export class AssistantSession {
 
         // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
         if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
+          if (hasAgentGhostPreviewSubscribers()) appendAgentGhostPreviewForToolCall(ghostProject, name, args);
           const key = `${name}:${JSON.stringify(args)}`;
           const proposal: ProposedCall = {
             name,

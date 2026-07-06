@@ -10,6 +10,14 @@ import {
   TILE_SIZE,
 } from "@/assets/bundled";
 import { subscribeAgentFocusHighlight, type AgentFocusBounds, type AgentFocusCell, type AgentFocusTarget } from "@/editor/agentFocus";
+import {
+  agentGhostPreviewsForMap,
+  getAgentGhostPreviewState,
+  subscribeAgentGhostPreview,
+  type AgentGhostBounds,
+  type AgentGhostCell,
+  type AgentGhostPreview,
+} from "@/editor/agentGhostPreview";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
@@ -119,17 +127,23 @@ type DragOperation =
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
 const AGENT_FOCUS_MAX_CELL_RECTS = 256;
 const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
+const AGENT_GHOST_MAX_CELL_RECTS = 256;
+const AGENT_GHOST_FILL_COLOR = 0x20c997;
+const AGENT_GHOST_STROKE_COLOR = 0x63e6be;
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
+  private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
   private agentFocusHighlightLayer: Phaser.GameObjects.Container | null = null;
   private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
   private gridGraphics: Phaser.GameObjects.Graphics | null = null;
   private unsubStore: (() => void) | null = null;
   private unsubEditor: (() => void) | null = null;
+  private unsubAgentGhost: (() => void) | null = null;
   private unsubAgentFocus: (() => void) | null = null;
+  private agentGhostDomMarkers: HTMLElement[] = [];
   private agentFocusDomMarker: HTMLElement | null = null;
   private agentFocusDomTimer: ReturnType<typeof setTimeout> | null = null;
   private isPainting = false;
@@ -194,6 +208,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    this.agentGhostPreviewLayer = this.add.container(0, 0);
+    this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
     this.eventClickFeedbackLayer = this.add.container(0, 0);
@@ -205,6 +221,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => this.redrawForStoreChange(change));
     this.unsubEditor = editorState.subscribe(() => this.redrawWhenViewStateChanges());
+    this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
 
     this.scale.on("resize", this.handleResize, this);
@@ -219,10 +236,13 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unbindWindowPanGuards();
     this.unsubStore?.();
     this.unsubEditor?.();
+    this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
     this.unsubStore = null;
     this.unsubEditor = null;
+    this.unsubAgentGhost = null;
     this.unsubAgentFocus = null;
+    this.clearAgentGhostPreviewLayer();
     this.clearAgentFocusDomMarker();
   }
 
@@ -384,6 +404,7 @@ export class EditScene extends PhaserRuntime.Scene {
       start.scrollX - dx / camera.zoom,
       start.scrollY - dy / camera.zoom
     );
+    this.renderAgentGhostDomMarkers();
     const shell = this.canvasScrollShell();
     if (!shell) return;
     shell.scrollLeft = start.shellScrollLeft - dx;
@@ -893,6 +914,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private panCameraBy(deltaX: number, deltaY: number): void {
     const camera = this.cameras.main;
     camera.setScroll(camera.scrollX + deltaX, camera.scrollY + deltaY);
+    this.renderAgentGhostDomMarkers();
   }
 
   private handleShortcut(event: KeyboardEvent): void {
@@ -1054,6 +1076,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
     renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, tileIndex: this.tileIndex, resetCamera });
     this.renderEventLayerClickFeedback();
+    this.renderAgentGhostPreview();
     if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
   }
 
@@ -1164,6 +1187,135 @@ export class EditScene extends PhaserRuntime.Scene {
     const feedback = this.eventLayerClickFeedback;
     if (!feedback || feedback.mapId !== this.mapId() || editorState.get().layer !== "event") return;
     renderEventLayerClickFeedback({ scene: this, overlayLayer: layer }, feedback);
+  }
+
+  private renderAgentGhostPreview(): void {
+    const layer = this.agentGhostPreviewLayer;
+    if (!layer) return;
+    layer.removeAll(true);
+    this.clearAgentGhostDomMarkers();
+    const previews = this.currentAgentGhostPreviews();
+    if (previews.length === 0) return;
+
+    const group = this.add.container(0, 0);
+    group.setName("agent-ghost-preview");
+    layer.add(group);
+
+    const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
+    for (const preview of previews) {
+      group.add(this.agentGhostBoundsGraphic(preview.bounds));
+      if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
+        for (const cell of preview.cells) group.add(this.agentGhostCellRect(cell));
+      }
+    }
+    this.renderAgentGhostDomMarkers(previews);
+  }
+
+  private currentAgentGhostPreviews(): readonly AgentGhostPreview[] {
+    return agentGhostPreviewsForMap(getAgentGhostPreviewState(), this.mapId());
+  }
+
+  private clearAgentGhostPreviewLayer(): void {
+    this.agentGhostPreviewLayer?.removeAll(true);
+    this.clearAgentGhostDomMarkers();
+  }
+
+  private agentGhostCellRect(cell: AgentGhostCell): Phaser.GameObjects.Rectangle {
+    const color = cell.layer === "event" ? 0x15aabf : cell.layer === "upper" ? 0x38d9a9 : AGENT_GHOST_FILL_COLOR;
+    const rect = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, 0.12);
+    rect.setOrigin(0, 0);
+    rect.setStrokeStyle(1, color, 0.52);
+    return rect;
+  }
+
+  private agentGhostBoundsGraphic(bounds: AgentGhostBounds): Phaser.GameObjects.Graphics {
+    const graphics = this.add.graphics();
+    const x = bounds.x * TILE_SIZE;
+    const y = bounds.y * TILE_SIZE;
+    const width = bounds.width * TILE_SIZE;
+    const height = bounds.height * TILE_SIZE;
+    graphics.fillStyle(AGENT_GHOST_FILL_COLOR, 0.09);
+    graphics.fillRect(x, y, width, height);
+    graphics.lineStyle(2, AGENT_GHOST_STROKE_COLOR, 0.88);
+    this.drawDashedRect(graphics, x, y, width, height, 10, 6);
+    return graphics;
+  }
+
+  private drawDashedRect(
+    graphics: Phaser.GameObjects.Graphics,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    dash: number,
+    gap: number
+  ): void {
+    this.drawDashedLine(graphics, x, y, x + width, y, dash, gap);
+    this.drawDashedLine(graphics, x + width, y, x + width, y + height, dash, gap);
+    this.drawDashedLine(graphics, x + width, y + height, x, y + height, dash, gap);
+    this.drawDashedLine(graphics, x, y + height, x, y, dash, gap);
+  }
+
+  private drawDashedLine(
+    graphics: Phaser.GameObjects.Graphics,
+    x0: number,
+    y0: number,
+    x1: number,
+    y1: number,
+    dash: number,
+    gap: number
+  ): void {
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+    const length = Math.hypot(dx, dy);
+    if (length <= 0) return;
+    const ux = dx / length;
+    const uy = dy / length;
+    let cursor = 0;
+    while (cursor < length) {
+      const next = Math.min(cursor + dash, length);
+      graphics.beginPath();
+      graphics.moveTo(x0 + ux * cursor, y0 + uy * cursor);
+      graphics.lineTo(x0 + ux * next, y0 + uy * next);
+      graphics.strokePath();
+      cursor = next + gap;
+    }
+  }
+
+  private renderAgentGhostDomMarkers(previews: readonly AgentGhostPreview[] = this.currentAgentGhostPreviews()): void {
+    if (typeof document === "undefined") return;
+    this.clearAgentGhostDomMarkers();
+    if (previews.length === 0) return;
+    const host = this.game.canvas.parentElement;
+    if (!host) return;
+    for (const preview of previews) {
+      const rect = this.agentGhostScreenRect(preview.bounds);
+      const marker = document.createElement("div");
+      marker.className = "agent-ghost-preview";
+      marker.dataset.testid = "agent-ghost-preview";
+      marker.setAttribute("aria-hidden", "true");
+      marker.setAttribute("title", preview.label || "AI 작업 중");
+      marker.style.left = `${rect.x}px`;
+      marker.style.top = `${rect.y}px`;
+      marker.style.width = `${rect.width}px`;
+      marker.style.height = `${rect.height}px`;
+      host.append(marker);
+      this.agentGhostDomMarkers.push(marker);
+    }
+  }
+
+  private agentGhostScreenRect(bounds: AgentGhostBounds): AgentGhostBounds {
+    const camera = this.cameras.main;
+    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
+    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
+    const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
+    const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
+    return { x, y, width, height };
+  }
+
+  private clearAgentGhostDomMarkers(): void {
+    for (const marker of this.agentGhostDomMarkers) marker.remove();
+    this.agentGhostDomMarkers = [];
   }
 
   private showAgentFocusHighlight(target: AgentFocusTarget): void {

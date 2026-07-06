@@ -5,6 +5,7 @@
 //
 // store/세션 싱글턴 의존을 deps로 분리해 단위 테스트가 가능하다.
 import { AssistantSession, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
+import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
@@ -95,9 +96,11 @@ export async function runRegionTask(
   try {
     turn = await session.sendUserMessage(message, opts.onEvent);
   } catch (cause) {
+    clearAgentGhostPreview();
     const error = cause instanceof Error ? cause.message : String(cause);
     return { ...empty, error };
   }
+  clearAgentGhostPreview();
 
   if (turn.stoppedReason === "error") {
     return { ...empty, proposedCalls: turn.proposedCalls.length, assistantText: turn.assistantText, error: turn.error ?? "AI 처리 오류" };

@@ -7,6 +7,7 @@
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
+import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
@@ -190,6 +191,7 @@ interface TileGridData {
 function dropSession(controller: ChatController): void {
   if (controller.session) controller.auditHistory.push(...controller.session.getAuditEntries());
   controller.session = null;
+  clearAgentGhostPreview();
 }
 
 export function renderAiChatPanel(): HTMLElement {
@@ -413,6 +415,7 @@ export function renderAiChatPanel(): HTMLElement {
       return;
     }
     const before = store.getCurrent();
+    clearAgentGhostPreview();
     recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId()); // 변경 이전 상태를 undo 스냅샷으로.
     store.replace(proposed); // 자동 저장은 store가 스케줄.
     focusAcceptedAgentChanges(before, proposed);
@@ -435,6 +438,7 @@ export function renderAiChatPanel(): HTMLElement {
 
   const rejectProposal = (): void => {
     proposalHost.replaceChildren();
+    clearAgentGhostPreview();
     status.textContent = "제안 거부됨";
     appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
     // 오염된 draft만 store 기준으로 되돌리고 대화는 유지한다(#6).
