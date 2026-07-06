@@ -47,3 +47,7 @@
 
 ## 진행 기록
 - 2026-07-07: 설계 합의·문서화. N1 codex 착수 (worktree rpg-zzu-wt-natural).
+- 2026-07-07: N1(2c7a6ed)·N2(551c45e) 머지. 실측 평가(evidence/natural-eval/): 에이전트 마을 생성에서
+  길 63칸 crossExplainedRatio 0.29(십자=1.0), 9행×30열 분포 — 십자 탈피 확인.
+  침엽수 12그루 전부 260/290 페어(고아 0) — 클러스터 hard 규칙 실사용 확인.
+  medium/soft 규칙은 lint warning/info로 보고됨(비차단) — 3단계 의미론 실동작.
