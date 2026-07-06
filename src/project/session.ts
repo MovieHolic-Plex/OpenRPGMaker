@@ -64,6 +64,8 @@ export interface PlaySession {
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
+  // Erase Event 런타임 소거 목록. 맵을 다시 로드/진입하면 RM2003 관례대로 초기화된다.
+  erasedEventIds: string[];
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
@@ -125,6 +127,7 @@ export function startSession(project: Project): PlaySession {
     actorLevels: initialActorLevels(project),
     actorVitals: initialActorVitals(project),
     eventLocations: {},
+    erasedEventIds: [],
     npcTravelStates: {},
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),

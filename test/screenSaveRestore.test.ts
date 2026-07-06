@@ -18,6 +18,7 @@ function mkSession(): PlaySession {
     actorLevels: {},
     actorVitals: {},
     eventLocations: {},
+    erasedEventIds: [],
     npcTravelStates: {},
     actorEquipment: {},
     actorRows: {},

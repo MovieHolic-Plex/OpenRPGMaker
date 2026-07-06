@@ -90,7 +90,9 @@ export function runtimeEventViewsForMap(
 ): RuntimeEventView[] {
   const views: RuntimeEventView[] = [];
   const included = new Set<string>();
+  const erased = new Set(session.erasedEventIds ?? []);
   for (const event of map.events) {
+    if (erased.has(event.id)) continue;
     const location = session.eventLocations?.[event.id];
     if (location && location.mapId !== map.id) continue;
     views.push(runtimeEventView(event, session, positions));
@@ -100,6 +102,7 @@ export function runtimeEventViewsForMap(
     if (sourceMap.id === map.id) continue;
     for (const event of sourceMap.events) {
       if (included.has(event.id)) continue;
+      if (erased.has(event.id)) continue;
       if (session.eventLocations?.[event.id]?.mapId !== map.id) continue;
       views.push(runtimeEventView(event, session, positions));
       included.add(event.id);
@@ -123,6 +126,7 @@ export function findRuntimeEventAt(
   triggerKind: Trigger["kind"] | readonly Trigger["kind"][]
 ): RuntimeEventView | undefined {
   return events
+    .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
     .find((event) => event.x === x && event.y === y && matchesTrigger(event.trigger.kind, triggerKind));
 }
@@ -148,6 +152,7 @@ export function findBlockingRuntimeEventAt(
   y: number
 ): RuntimeEventView | undefined {
   return events
+    .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
     .find((event) => event.x === x && event.y === y && event.priority === "same" && event.overlapForbidden);
 }

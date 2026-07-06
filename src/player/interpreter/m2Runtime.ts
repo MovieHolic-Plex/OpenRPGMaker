@@ -39,6 +39,22 @@ function executeByTitle(session: PlaySessionLike, entry: M2CommandCatalogEntry, 
     runtime.screen.hidden = title === "Hide Screen";
     return;
   }
+  if (title === "End Event Processing") {
+    runtime.session.endedEventProcessing = true;
+    return;
+  }
+  if (title === "Erase Event") {
+    runtime.session.eraseEventRequested = true;
+    return;
+  }
+  if (title === "Wait for All Movement") {
+    runtime.session.waitForAllMovementRequested = true;
+    return;
+  }
+  if (title === "Stop All Movement") {
+    runtime.session.stopAllMovementRequested = true;
+    return;
+  }
   if (title === "Tint Screen") {
     // color 필드(색 이름)를 우선 사용하고, value(r,g,b / hex)가 있으면 그것을 사용.
     const explicit = fieldString(fields, "value", "");

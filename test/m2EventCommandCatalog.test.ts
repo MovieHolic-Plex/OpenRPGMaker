@@ -30,6 +30,7 @@ describe("m2 event command catalog", () => {
     expect(requireEntry("Shop Processing").existingKind).toBe("shop");
     expect(requireEntry("Inn Processing").existingKind).toBe("inn");
     expect(requireEntry("Input Number").existingKind).toBe("inputNumber");
+    expect(requireEntry("Key Input Processing").existingKind).toBe("inputWait");
     expect(requireEntry("Wait").existingKind).toBe("wait");
     expect(requireEntry("Change Skills").existingKind).toBe("learnSkill");
     expect(requireEntry("Change Skills").runtimeClassification).toBe("runtime");

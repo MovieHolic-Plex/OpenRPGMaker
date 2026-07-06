@@ -17,6 +17,7 @@ export type AutonomousNpcSceneContext = Pick<
   readonly showRuntimeOverlay?: PlaySceneContext["showRuntimeOverlay"];
   readonly refreshRuntimeSurfaces?: PlaySceneContext["refreshRuntimeSurfaces"];
   readonly syncRuntimeState?: PlaySceneContext["syncRuntimeState"];
+  readonly commandMoveRouteEventIds?: PlaySceneContext["commandMoveRouteEventIds"];
 };
 
 export type AutonomousNpcSprite = CharacterSprite & {

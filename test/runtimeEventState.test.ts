@@ -11,6 +11,7 @@ import {
   findRuntimeEventAt,
   initialRuntimeEventPositions,
   moveRuntimeEventPosition,
+  runtimeEventViewsForMap,
 } from "@/player/runtimeEventState";
 
 function page(id: string, priority: EventPage["priority"], trigger: EventPage["trigger"]): EventPage {
@@ -158,6 +159,20 @@ describe("runtime event state", () => {
     expect(events[0].x).toBe(0);
     expect(events[0].y).toBe(1);
     expect(findRuntimeEventAt(events, session(), positions, 1, 1, "action")?.event.id).toBe("mover");
+  });
+
+  it("excludes erased events from page resolution, triggers, and blocking checks", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const events = [event("erased", 1, 0, [page("erased_page", "same", { kind: "action" })])];
+    map.events = events;
+    const playSession = session();
+    playSession.erasedEventIds = ["erased"];
+    const positions = initialRuntimeEventPositions(events);
+
+    expect(runtimeEventViewsForMap(project, map, playSession, positions)).toEqual([]);
+    expect(findRuntimeEventAt(events, playSession, positions, 1, 0, "action")).toBeUndefined();
+    expect(findBlockingRuntimeEventAt(events, playSession, positions, 1, 0)).toBeUndefined();
   });
 
   it("reports a missing event sprite when a page uses the bundled tileset texture id", () => {

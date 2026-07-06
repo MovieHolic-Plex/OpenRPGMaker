@@ -291,6 +291,7 @@ export const EXISTING_KIND_BY_TITLE: Partial<Record<string, Command["kind"]>> = 
   "Game Over": "gameOver",
   "Inn Processing": "inn",
   "Input Number": "inputNumber",
+  "Key Input Processing": "inputWait",
   "Name Input Processing": "enterHeroName",
   "Jump to Label": "gotoLabel",
   "Label": "label",

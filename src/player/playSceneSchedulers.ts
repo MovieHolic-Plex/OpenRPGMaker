@@ -162,6 +162,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "moveEvent":
       scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
+      scene.commandMoveRouteEventIds.add(step.eventId || currentEventId || "");
+      return true;
+    case "eraseEvent":
+      eraseRuntimeEvent(scene, step.eventId || currentEventId);
+      return true;
+    case "stopAllMovement":
+      stopCommandMovement(scene);
       return true;
     case "transfer":
       void scene.transferTo(step);
@@ -206,6 +213,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "text":
     case "choices":
     case "wait":
+    case "waitForAllMovement":
     case "inputWait":
     case "inputNumber":
     case "enterHeroName":
@@ -226,9 +234,24 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||
     step.kind === "enterHeroName" ||
+    step.kind === "waitForAllMovement" ||
     step.kind === "flashScreen" ||
     step.kind === "shakeScreen"
   );
+}
+
+function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.session.erasedEventIds = [...new Set([...(scene.session.erasedEventIds ?? []), eventId])];
+  scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.delete(eventId);
+  scene.pageMoveRouteEventIds.delete(eventId);
+}
+
+function stopCommandMovement(scene: PlaySceneContext): void {
+  for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.clear();
+  scene.playerRoute = null;
 }
 
 export function updateTimers(scene: PlaySceneContext, deltaMs: number): void {

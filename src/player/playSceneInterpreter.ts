@@ -21,6 +21,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
+import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
@@ -82,6 +83,7 @@ async function consumeBlockingStep(
         body: step.body,
         face: step.face,
         settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+        textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
       });
@@ -95,6 +97,7 @@ async function consumeBlockingStep(
           options: step.options,
           settings: step.settings,
           cancelBehavior: step.cancelBehavior,
+          textContext: { session: scene.session, project: store.getCurrent() },
           playerTileY: scene.tileY,
           mapHeight: scene.map.height,
         })
@@ -148,10 +151,20 @@ async function consumeBlockingStep(
         if (step.wait) await waitForPlayerRouteComplete(scene);
       } else {
         scene.registerAutonomousMover(target, step.moves, step.repeat);
+        scene.commandMoveRouteEventIds.add(target);
         if (step.wait) await waitForMoverComplete(scene, target);
       }
       return resumeAfterSurface(scene, interpreter);
     }
+    case "eraseEvent":
+      eraseRuntimeEvent(scene, step.eventId ?? currentEventId);
+      return resumeAfterSurface(scene, interpreter);
+    case "waitForAllMovement":
+      await waitForAllCommandMovement(scene);
+      return resumeAfterSurface(scene, interpreter);
+    case "stopAllMovement":
+      stopCommandMovement(scene);
+      return resumeAfterSurface(scene, interpreter);
     case "battleProcessing":
       scene.session.battleResult = await scene.playBattle(step);
       return resumeAfterSurface(scene, interpreter);
@@ -229,6 +242,26 @@ function waitForMoverComplete(scene: PlaySceneContext, eventId: string): Promise
   });
 }
 
+function waitForAllCommandMovement(scene: PlaySceneContext): Promise<void> {
+  return new Promise((resolve) => {
+    const timeoutMs = 30000;
+    const startedAt = performance.now();
+    const check = () => {
+      const hasCommandMover = [...scene.commandMoveRouteEventIds].some((eventId) => scene.autonomousNPCs.has(eventId));
+      if (!hasCommandMover && !scene.playerRoute && !scene.moving) {
+        resolve();
+        return;
+      }
+      if (performance.now() - startedAt >= timeoutMs) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+  });
+}
+
 // 주인공 강제 이동 루트가 끝날 때(scene.playerRoute 가 비워질 때)까지 대기. 안전 타임아웃 30초.
 function waitForPlayerRouteComplete(scene: PlaySceneContext): Promise<void> {
   return new Promise((resolve) => {
@@ -243,6 +276,26 @@ function waitForPlayerRouteComplete(scene: PlaySceneContext): Promise<void> {
     };
     requestAnimationFrame(check);
   });
+}
+
+function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.session.erasedEventIds = [...new Set([...(scene.session.erasedEventIds ?? []), eventId])];
+  scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.delete(eventId);
+  scene.pageMoveRouteEventIds.delete(eventId);
+}
+
+function stopCommandMovement(scene: PlaySceneContext): void {
+  for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.clear();
+  scene.playerRoute = null;
+  if (scene.moving) {
+    scene.moving = false;
+    scene.moveProgress = 0;
+    scene.movingTo = { ...scene.movingFrom };
+    scene.player.setPosition(characterSpriteX(scene.tileX), characterSpriteY(scene.tileY));
+  }
 }
 
 function resumeAfterSurface(scene: PlaySceneContext, interpreter: Interpreter): StepResult {

@@ -302,6 +302,26 @@
   white-space: pre-wrap;
 }
 
+.dialogue-color-1 { color: #7fd3ff; }
+.dialogue-color-2 { color: #ff7777; }
+.dialogue-color-3 { color: #80ff8f; }
+.dialogue-color-4 { color: #ffe66d; }
+.dialogue-color-5 { color: #c99cff; }
+.dialogue-color-6 { color: #ff9bd6; }
+.dialogue-color-7 { color: #b7c4d8; }
+.dialogue-color-8,
+.dialogue-color-9,
+.dialogue-color-10,
+.dialogue-color-11,
+.dialogue-color-12,
+.dialogue-color-13,
+.dialogue-color-14,
+.dialogue-color-15,
+.dialogue-color-16,
+.dialogue-color-17,
+.dialogue-color-18,
+.dialogue-color-19 { color: var(--runtime-dialogue-text); }
+
 .dialogue-box .continue-hint {
   color: transparent;
   font-size: 0;

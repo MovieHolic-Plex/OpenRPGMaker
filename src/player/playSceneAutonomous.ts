@@ -23,7 +23,10 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
       continue;
     }
-    if (mover.moves.length === 0) continue;
+    if (mover.moves.length === 0) {
+      if (scene.commandMoveRouteEventIds?.delete(eventId)) scene.autonomousNPCs.delete(eventId);
+      continue;
+    }
     mover.timer += Math.max(0, deltaMs);
     if (mover.timer < mover.moveIntervalMs) continue;
     mover.timer = 0;

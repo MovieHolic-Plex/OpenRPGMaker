@@ -57,6 +57,7 @@ export type SaveSnapshot = {
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly eventLocations?: PlaySession["eventLocations"];
+    readonly erasedEventIds?: readonly string[];
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
     readonly currentMapId: string;
     readonly x: number;
@@ -111,6 +112,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       eventLocations: structuredClone(session.eventLocations),
+      erasedEventIds: structuredClone(session.erasedEventIds),
       npcTravelStates: structuredClone(session.npcTravelStates),
       currentMapId: session.currentMapId,
       x: session.x,
@@ -185,6 +187,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
+  if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
@@ -268,6 +271,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
+      erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
       currentMapId: session.currentMapId,
       x: session.x,

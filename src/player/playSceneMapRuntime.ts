@@ -68,7 +68,7 @@ interface RenderTilesSceneContext<
   syncRuntimeState(): void;
 }
 
-export function loadMap(scene: PlaySceneContext, mapId: MapId): void {
+export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readonly preserveErasedEvents?: boolean } = {}): void {
   const map = store.getCurrent().maps[mapId];
   if (!map) {
     console.warn(`[player] map not found: ${mapId}`);
@@ -76,6 +76,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId): void {
   }
   scene.map = mapWithCommittedEvents(map);
   scene.session.currentMapId = mapId;
+  if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
   applyMapOverrides(scene);
   scene.renderTiles();
@@ -187,6 +188,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.autoStartedKeys.clear();
   scene.pageMoveRouteKeys.clear();
   scene.pageMoveRouteEventIds.clear();
+  scene.commandMoveRouteEventIds.clear();
   scene.autonomousNPCs.clear();
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();

@@ -17,7 +17,7 @@ const FACE_LINE_LIMIT = 38;
 
 const CONTROL_CHARACTER_ROWS: readonly { readonly code: string; readonly label: string }[] = [
   { code: "\\\\", label: "\\ 문자 표시" },
-  { code: "\\c[n]", label: "n번 색상으로 이후 문장 표시" },
+  { code: "\\c[n]", label: "n번 색상(0-19)으로 이후 문장 표시" },
   { code: "\\s[n]", label: "문장 표시 속도 1-20 지정" },
   { code: "\\n[n]", label: "n번 주인공 이름 표시" },
   { code: "\\v[n]", label: "n번 변수 값 표시" },
