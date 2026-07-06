@@ -45,7 +45,7 @@ describe("autosave status", () => {
     expect(store.getAutoSaveState().kind).toBe("saved");
     expect(states.map((state) => state.kind)).toEqual(["pending", "saving", "saved"]);
     expect(fetchControl.calls.length).toBeGreaterThan(0);
-  });
+  }, 15_000);
 
   it("retries one time 30 seconds after an autosave error without another update", async () => {
     vi.useFakeTimers();

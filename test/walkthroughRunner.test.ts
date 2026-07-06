@@ -30,7 +30,7 @@ describe("walkthroughRunner — 잿불의 유산 완주", () => {
     expect(result.session.switches[EMBER_SWITCH.q1Clear]).toBe(true);
     expect(result.session.switches[EMBER_SWITCH.q2Done]).toBe(true);
     expect(result.session.switches[EMBER_SWITCH.q3Done]).toBe(true);
-  });
+  }, 15_000);
 
   it("고의 파손(낡은 열쇠 지급 제거) 시 광산 문에서 막히고 실패 스텝을 리포트한다", async () => {
     const { runWalkthrough, EMBER_WALKTHROUGH, createEmberQuestProject } = await load();

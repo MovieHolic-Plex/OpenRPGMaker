@@ -5,6 +5,7 @@ import {
   createLogCabinShowcaseProject,
   createMarketTownProject,
   createRetroHouseShowcaseProject,
+  createSampleAdventureProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
   createTownArchitectureCityProject,
@@ -18,6 +19,9 @@ import type { Project } from "./types";
 
 const DEV_FRESH_PROJECT_PARAM = "freshProject";
 const DEV_PROJECT_PARAM = "devProject";
+const DEV_SAMPLE_ADVENTURE_PARAM = "sampleAdventure";
+const DEV_DEFAULT_ADVENTURE_PARAM = "defaultAdventure";
+const DEV_DEFAULT_ADVENTURE_VISUAL_PARAM = "defaultAdventureVisual";
 const DEV_LOG_CABIN_SHOWCASE_PARAM = "logCabinShowcase";
 const DEV_RETRO_HOUSE_SHOWCASE_PARAM = "retroHouseShowcase";
 const DEV_TOWN_HOUSE_SHOWCASE_PARAM = "townHouseShowcase";
@@ -38,8 +42,11 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (e2eProject) return e2eProject;
   const params = new URLSearchParams(window.location.search);
   if (params.has(SUPABASE_CANONICAL_PROJECT_PARAM)) return null;
-  if (params.has(DEV_FRESH_PROJECT_PARAM)) return createBlankProject();
+  if (params.has(DEV_FRESH_PROJECT_PARAM)) {
+    return hasSampleAdventureParam(params) ? createSampleAdventureProject() : createBlankProject();
+  }
   if (!params.has(DEV_PROJECT_PARAM)) return null;
+  if (hasSampleAdventureParam(params)) return createSampleAdventureProject();
   if (params.has(DEV_LOG_CABIN_SHOWCASE_PARAM)) return createLogCabinShowcaseProject();
   if (params.has(DEV_RETRO_HOUSE_SHOWCASE_PARAM)) return createRetroHouseShowcaseProject();
   if (params.has(DEV_SHOP_SHOWCASE_PARAM)) return createShopShowcaseProject();
@@ -58,6 +65,10 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   }
   if (params.has(DEV_DB_EXTRACTED_HOUSE_TEMPLATE_PARAM)) return createDbExtractedHouseTemplateProject();
   return null;
+}
+
+function hasSampleAdventureParam(params: URLSearchParams): boolean {
+  return params.has(DEV_SAMPLE_ADVENTURE_PARAM) || params.has(DEV_DEFAULT_ADVENTURE_PARAM) || params.has(DEV_DEFAULT_ADVENTURE_VISUAL_PARAM);
 }
 
 function createE2eProjectForLocation(): Project | null {

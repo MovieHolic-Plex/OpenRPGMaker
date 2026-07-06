@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 
 const DATABASE_ACTOR_IDS = [
@@ -35,8 +35,8 @@ const STARTER_EQUIPMENT_IDS = [
 
 describe("default database starter party", () => {
   it("builds a coherent RTP-backed six actor roster with a four member starting party", () => {
-    // Given: the blank project factory owns the editor's default database.
-    const project = createBlankProject();
+    // Given: the sample adventure factory owns the editor's full default database showcase.
+    const project = createSampleAdventureProject();
 
     // When: default database records are inspected.
     const actors = project.database.actors.map((actor) => actor.id);
@@ -59,7 +59,7 @@ describe("default database starter party", () => {
 
   it("round-trips default party actor and equipment resources as valid references", () => {
     // Given: the starter party uses bundled EasyRPG and promoted generated resources.
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
 
     // When: the project is exported and imported through the real IO layer.
     const restored = deserialize(serialize(project));
@@ -116,8 +116,8 @@ describe("default database starter party", () => {
   });
 
   it("registers the generated dragon monster image in enemies and troops", () => {
-    // Given: the blank project seeds battle database content for the editor.
-    const project = createBlankProject();
+    // Given: the sample adventure keeps the generated battle database content available.
+    const project = createSampleAdventureProject();
 
     // When: generated monster-backed records are inspected.
     const dragon = project.database.enemies.find((enemy) => enemy.id === "enemy_dragon");

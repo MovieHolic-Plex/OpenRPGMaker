@@ -10,6 +10,7 @@ import { openResourceModal } from "@/editor/panels/resourceModal";
 import { setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
 import { openVillageInfoModal } from "@/editor/panels/villageInfoModal";
 import { deserialize, ProjectFormatError } from "@/project/io";
+import { createSampleAdventureProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -215,6 +216,7 @@ function menuCommands(
     case "project":
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
+        item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
@@ -394,6 +396,14 @@ async function newProject(): Promise<void> {
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("새 프로젝트를 만들었습니다", "ok");
+}
+
+async function newSampleAdventureProject(): Promise<void> {
+  if (!window.confirm("현재 작업을 지우고 예제 프로젝트를 시작할까요?")) return;
+  store.replace(createSampleAdventureProject());
+  const project = store.getCurrent();
+  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  toast("예제 프로젝트를 불러왔습니다", "ok");
 }
 
 function newMap(): void {
