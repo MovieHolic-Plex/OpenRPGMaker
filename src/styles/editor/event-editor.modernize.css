@@ -49,6 +49,11 @@
   width: 13px;
 }
 
+/* 글리프는 생성 콘텐츠로 — 줄 textContent/접근성 이름을 오염시키지 않는다. */
+.cmd-cat-icon::before {
+  content: attr(data-glyph);
+}
+
 /* ---- [P1] 조건/선택지 분기 깊이 가이드 라인 ---- */
 
 .cmd-item[data-cmd-depth] > .cmd-head,
@@ -111,7 +116,8 @@
   justify-content: center;
 }
 
-.event-command-picker-tab-icon {
+.event-command-picker-tab::before {
+  content: attr(data-glyph);
   font-size: 11px;
   opacity: 0.75;
 }
@@ -127,11 +133,12 @@
 .event-command-picker-group-heading[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
 .event-command-picker-group-heading[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
 
-.event-command-picker-group-icon {
+.event-command-picker-group-heading::before {
   align-items: center;
   background: color-mix(in srgb, var(--cmdcat, var(--text-dim)) 18%, transparent);
   border-radius: 4px;
   color: var(--cmdcat, var(--text-dim, currentColor));
+  content: attr(data-glyph);
   display: inline-flex;
   flex: 0 0 auto;
   font-size: 10px;
@@ -162,6 +169,10 @@
   margin-right: 7px;
   opacity: 0.9;
   width: 16px;
+}
+
+.event-command-picker-command-icon::before {
+  content: attr(data-glyph);
 }
 
 .event-command-picker-page-chip {
@@ -221,6 +232,10 @@
   height: 24px;
   margin-right: 0;
   width: 24px;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command {
+  position: relative;
 }
 
 .event-command-picker-grid.icon-grid .event-command-picker-command-label {

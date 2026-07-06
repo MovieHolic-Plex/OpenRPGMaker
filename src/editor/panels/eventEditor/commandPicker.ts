@@ -129,15 +129,18 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         render();
       });
       for (const page of COMMAND_PAGES) {
+        // 아이콘은 data-glyph + CSS ::before 로 그린다 — textContent("1"~"4")를 오염시키지 않아
+        // 기존 텍스트 기반 e2e/단언과 호환된다.
         tabs.append(
           el("button", {
             class: "event-command-picker-tab",
+            text: String(page.page),
             attrs: { type: "button", role: "tab", "aria-selected": page.page === activePage ? "true" : "false" },
-            dataset: { testid: `event-command-picker-tab-${page.page}`, page: String(page.page) },
-            children: [
-              el("span", { class: "event-command-picker-tab-icon", text: pickerPageGlyph(page.page), attrs: { "aria-hidden": "true" } }),
-              el("span", { text: String(page.page) }),
-            ],
+            dataset: {
+              testid: `event-command-picker-tab-${page.page}`,
+              page: String(page.page),
+              glyph: pickerPageGlyph(page.page),
+            },
             on: {
               click: () => {
                 activePage = page.page;
@@ -193,14 +196,12 @@ function renderCommandGrid(
     if (entry.group !== currentGroup) {
       currentGroup = entry.group;
       const visual = groupVisual(entry.group);
+      // 아이콘은 ::before(attr(data-glyph)) 로 — 헤딩 textContent 는 그룹명 그대로 유지(e2e toHaveText 호환).
       grid.append(
         el("div", {
           class: "event-command-picker-group-heading",
-          dataset: { category: visual.key },
-          children: [
-            el("span", { class: "event-command-picker-group-icon", text: visual.glyph, attrs: { "aria-hidden": "true" } }),
-            el("span", { text: entry.group }),
-          ],
+          text: entry.group,
+          dataset: { category: visual.key, glyph: visual.glyph },
         })
       );
     }
@@ -216,12 +217,18 @@ function renderCommandButton(
   options: { readonly showPageChip: boolean },
 ): HTMLButtonElement {
   const visual = groupVisual(entry.group);
+  // 카테고리 아이콘: aria-hidden 스팬의 ::before(attr(data-glyph)) — 버튼 textContent 와
+  // 접근성 이름(getByRole name, exact:true 포함)을 오염시키지 않는다.
   const children: HTMLElement[] = [
-    el("span", { class: "event-command-picker-command-icon", text: visual.glyph, attrs: { "aria-hidden": "true" } }),
+    el("span", {
+      class: "event-command-picker-command-icon",
+      attrs: { "aria-hidden": "true" },
+      dataset: { glyph: visual.glyph },
+    }),
     el("span", { class: "event-command-picker-command-label", text: entry.label }),
   ];
   if (options.showPageChip) {
-    children.push(el("span", { class: "event-command-picker-page-chip", text: `탭${entry.page}` }));
+    children.push(el("span", { class: "event-command-picker-page-chip", text: `탭${entry.page}`, attrs: { "aria-hidden": "true" } }));
   }
   const badge = renderRuntimeSupportBadge(entry.runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`);
   if (badge) children.push(badge);

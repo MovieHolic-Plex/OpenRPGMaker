@@ -122,11 +122,11 @@ function renderCommandItem(
   head.append(
     handle,
     el("span", { class: "cmd-prefix", text: "◆" }),
+    // kind 아이콘은 ::before(attr(data-glyph)) — 줄 textContent(RM2003 텍스트 정본)를 보존한다.
     el("span", {
       class: "cmd-cat-icon",
-      text: categoryVisual.glyph,
       attrs: { "aria-hidden": "true" },
-      dataset: { category: categoryVisual.key },
+      dataset: { category: categoryVisual.key, glyph: categoryVisual.glyph },
     }),
     ...(speakerFace ? [speakerFace] : []),
     renderCommandSummary(cmd),
