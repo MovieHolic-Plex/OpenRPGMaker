@@ -3,6 +3,7 @@
 
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { shapeRoadAround } from "@/project/defaults/roadAutotile";
 import { shapeSandAround } from "@/project/defaults/sandAutotile";
@@ -49,16 +50,25 @@ function adoptStartIfNeeded(project: Project, map: GameMap): void {
   project.startPos = { x: cx, y: cy };
 }
 
+function assertToolMapSize(width: number, height: number): void {
+  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) {
+    throw new ToolError(
+      `맵 크기는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}까지 가능합니다. 더 넓은 월드는 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
+      { code: "map-too-large" }
+    );
+  }
+}
+
 const createMap: ToolDefinition = {
   name: "create_map",
-  description: "새 맵을 생성한다(잔디 바닥 + 테두리 벽). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다.",
+  description: "새 맵을 생성한다(잔디 바닥 + 테두리 벽, 최대 256×256). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       name: { type: "string", description: "맵 이름" },
-      width: { type: "integer", description: "가로 타일 수(3 이상)" },
-      height: { type: "integer", description: "세로 타일 수(3 이상)" },
+      width: { type: "integer", description: "가로 타일 수(3 이상, 최대 256)" },
+      height: { type: "integer", description: "세로 타일 수(3 이상, 최대 256)" },
       id: { type: "string", description: "맵 id(생략 시 자동 생성)" },
     },
     required: ["name", "width", "height"],
@@ -67,6 +77,7 @@ const createMap: ToolDefinition = {
     const width = args.width as number;
     const height = args.height as number;
     if (width < 3 || height < 3) throw new ToolError("맵 크기는 최소 3x3 이상이어야 합니다.");
+    assertToolMapSize(width, height);
     const id = (args.id as string | undefined) ?? genId("map");
     if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { code: "map-exists", mapId: id });
     const size = width * height;
@@ -578,14 +589,14 @@ const setMapProperties: ToolDefinition = {
 // 맵 크기 변경(좌상단 기준 유지, 확장부는 잔디/빈 칸). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: "맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.",
+  description: "맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 256×256). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      width: { type: "integer", description: "3 이상" },
-      height: { type: "integer", description: "3 이상" },
+      width: { type: "integer", description: "3 이상, 최대 256" },
+      height: { type: "integer", description: "3 이상, 최대 256" },
     },
     required: ["mapId", "width", "height"],
   },
@@ -594,6 +605,7 @@ const resizeMapTool: ToolDefinition = {
     const width = args.width as number;
     const height = args.height as number;
     if (width < 3 || height < 3) throw new ToolError("맵 크기는 최소 3x3 이상이어야 합니다.");
+    assertToolMapSize(width, height);
     const outEvents = map.events.filter((event) => event.x >= width || event.y >= height);
     if (outEvents.length > 0) {
       throw new ToolError(

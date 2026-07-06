@@ -58,4 +58,13 @@ describe("generate_map", () => {
     const reach = checkReachability(ctx.project, "gen_dense", entrance, pois);
     expect(reach.reachable).toBe(true);
   });
+
+  it("256x256 초과 생성은 거부하고 분할 맵 대안을 안내한다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(ctx, "generate_map", { theme: "forest", width: 257, height: 32, id: "gen_huge" });
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("최대 256×256");
+    expect(result.summary).toContain("여러 맵");
+    expect(ctx.project.maps.gen_huge).toBeUndefined();
+  });
 });

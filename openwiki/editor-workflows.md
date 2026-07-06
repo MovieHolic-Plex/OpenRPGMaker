@@ -22,6 +22,8 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 
 - `src/editor` is the main area to inspect for editor behavior. Start with `src/editor/EditScene.ts`, `src/editor/actions.ts`, `src/editor/editorState.ts`, and the feature modules under `src/editor/panels/`.
 - Map editing lives in `src/editor/map*`, `src/editor/tile*`, `src/editor/tileset*`, and `src/editor/structure*` files. Look at `src/editor/tileActions.ts`, `src/editor/tilePaletteStamp.ts`, `src/editor/tilePicking.ts`, `src/editor/mapEditHistory.ts`, `src/editor/mapShiftActions.ts`, and `src/editor/mapClipboard.ts` for common flows.
+- Undo history is budgeted around per-map snapshots: high-frequency edits that only touch one existing map should record `{ kind: "map" }` snapshots through `mapEditHistory`.
+- Keep full-project snapshots for global edits such as database/system changes, map add/delete/tree changes, resize, imports, or any mutation whose boundary is ambiguous.
 - Tile palette work usually touches `src/editor/tilePaletteStamp.ts`, `src/editor/chipsetTileRender.ts`, `src/editor/runtimeTileMetadata.ts`, and `src/editor/tilesetActions.ts`.
 - Event editing flows are split across `src/editor/eventActions.ts`, `src/editor/eventPages.ts`, `src/editor/eventDraftActions.ts`, `src/editor/eventDeletion.ts`, `src/editor/eventCommandFactory.ts`, and `src/editor/eventCommands/`.
 - `src/editor/eventCommandPaths.ts` is the shared owner for nested command paths. Use it for choices cancel branches, fork then/else branches, loop bodies, shop transaction branches, and branch creation when a mutation path needs to create a missing optional branch.

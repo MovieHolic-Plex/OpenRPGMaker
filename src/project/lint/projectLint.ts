@@ -10,12 +10,14 @@
 //  - transfer-impassable   (error)   transfer 목적지 타일이 통행 불가
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
+//  - map-size              (warning) 256×256 초과 맵
 //  - command-editor-only   (warning) 저작은 가능하지만 런타임에서 실행되지 않는 커맨드
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
 import { validateProjectReferences } from "../io/references";
@@ -45,6 +47,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkStartPosition(project, issues);
   checkTransfers(project, issues);
   checkDuplicateEventPositions(project, issues);
+  checkMapSizes(project, issues);
   checkEditorOnlyCommands(project, issues);
   checkClusterRules(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
@@ -184,6 +187,18 @@ function checkDuplicateEventPositions(project: Project, issues: LintIssue[]): vo
         seen.set(key, event.id);
       }
     }
+  }
+}
+
+function checkMapSizes(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    if (map.width <= MAX_TOOL_MAP_DIMENSION && map.height <= MAX_TOOL_MAP_DIMENSION) continue;
+    issues.push({
+      severity: "warning",
+      code: "map-size",
+      mapId: map.id,
+      message: `맵이 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}을 초과합니다: ${map.id} (${map.width}×${map.height}) — 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
+    });
   }
 }
 

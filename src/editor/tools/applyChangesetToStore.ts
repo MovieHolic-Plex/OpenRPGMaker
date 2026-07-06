@@ -7,6 +7,29 @@ import { store } from "@/project/store";
 import { runTool } from "./toolRunner";
 import type { ToolContext, ToolResult } from "./types";
 
+const MAP_ONLY_WRITE_TOOLS = new Set([
+  "paint_tiles",
+  "paint_road",
+  "stamp_structure",
+  "stamp_template_house",
+  "build_house",
+  "clear_region",
+  "set_map_properties",
+  "place_npc",
+  "upsert_event",
+  "move_event",
+  "remove_event",
+]);
+
+function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
+  const mapId = typeof args.mapId === "string" ? args.mapId : null;
+  if (mapId && MAP_ONLY_WRITE_TOOLS.has(name)) {
+    recordProjectSnapshot(undefined, mapId, { kind: "map" });
+    return;
+  }
+  recordProjectSnapshot();
+}
+
 // dryRun 프리뷰: 스토어를 건드리지 않고 결과(diff/issues)만 계산한다.
 export function previewTool(name: string, args: Record<string, unknown>): ToolResult {
   const ctx: ToolContext = { project: store.getCurrent() };
@@ -19,7 +42,7 @@ export function applyToolToStore(name: string, args: Record<string, unknown>): T
   const result = runTool(ctx, name, args, { dryRun: false });
   // 쓰기 툴이 성공적으로 새 프로젝트를 만든 경우에만 반영(읽기 툴/거부는 무시).
   if (result.ok && ctx.project !== store.getCurrent()) {
-    recordProjectSnapshot(); // 변경 이전 상태를 undo 스냅샷으로 저장.
+    recordToolSnapshot(name, args); // 변경 이전 상태를 undo 스냅샷으로 저장.
     store.replace(ctx.project);
   }
   return result;
