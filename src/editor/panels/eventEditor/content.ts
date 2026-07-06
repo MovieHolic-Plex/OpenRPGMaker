@@ -13,6 +13,7 @@ import { eventDraftDiffById, type EventDiff } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderEventAiAssist } from "./aiAssist";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { openEventCommandPicker } from "./commandPicker";
@@ -123,7 +124,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         el("legend", { text: "실행 내용" }),
         cmdList,
       ],
-    })
+    }),
+    // 커맨드 리스트 하단 AI Assist(자연어 → 커맨드 JSON 생성/프리뷰/삽입).
+    renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList })
   );
 
   const workbench = el("div", {
@@ -275,7 +278,7 @@ function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {
   };
   return el("button", {
     class: "cmd-empty-line",
-    text: "@>",
+    text: "◆",
     attrs: { type: "button", title: "더블클릭해서 이벤트 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {

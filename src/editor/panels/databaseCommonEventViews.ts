@@ -73,7 +73,7 @@ function emptyCommonEventEditor(): HTMLElement {
         class: "rm2k3-db-fieldset db-common-event-command-shell",
         children: [
           el("legend", { text: "이벤트 명령" }),
-          el("div", { class: "cmd-list", children: [el("div", { class: "db-command-placeholder-row", text: "@>" })] }),
+          el("div", { class: "cmd-list", children: [el("div", { class: "db-command-placeholder-row", text: "◆" })] }),
         ],
       }),
     ],

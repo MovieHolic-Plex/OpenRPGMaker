@@ -143,7 +143,7 @@ test("RM2K3 Troops tab matches Korean classic troop editor layout", async ({ pag
   await expect(workbench).toContainText("지형");
   await expect(workbench).toContainText("전투 이벤트");
   await expect(page.getByTestId("db-troop-preview-stage")).toBeVisible();
-  await expect(page.getByTestId("db-troop-event-command-area")).toContainText("@>");
+  await expect(page.getByTestId("db-troop-event-command-area")).toContainText("◆");
 
   const metrics = await page.getByTestId("database-modal").evaluate((node) => {
     const modal = node.getBoundingClientRect();

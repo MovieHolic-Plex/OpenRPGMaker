@@ -1,4 +1,5 @@
 import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
@@ -13,7 +14,13 @@ export type DatabaseCommandArrayAdapter = {
 };
 
 export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAdapter): CommandListActions {
-  const edit = (mutate: (commands: Command[]) => void, rerender = true): void => {
+  // coalesceKey 가 주어지면(예: 명령 본문 필드 편집) 커밋 단위로 스냅샷을 병합하고,
+  // 없으면(추가/삭제/재정렬 등 이산 편집) 매번 스냅샷을 남긴다. DB 호스트 명령 리스트
+  // (공용 이벤트/전투 이벤트)는 draft 가 아닌 실제 store 를 바로 바꾸므로 undo 대상이다.
+  const edit = (mutate: (commands: Command[]) => void, options: { rerender?: boolean; coalesceKey?: string } = {}): void => {
+    const { rerender = true, coalesceKey } = options;
+    if (coalesceKey !== undefined) recordCoalescedSnapshot(`db-command:${coalesceKey}`);
+    else recordProjectSnapshot();
     const next = structuredClone(adapter.commands);
     mutate(next);
     adapter.replaceCommands(next);
@@ -36,7 +43,7 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
       const list = commandList(commands, path.slice(0, -1));
       if (!list || index === undefined) return;
       list[index] = structuredClone(command);
-    }, false),
+    }, { rerender: false, coalesceKey: path.join(",") }),
     deleteCommand: (path) => edit((commands) => {
       const index = path[path.length - 1];
       const list = commandList(commands, path.slice(0, -1));
@@ -95,7 +102,7 @@ function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {
   };
   return el("button", {
     class: "cmd-empty-line",
-    text: "@>",
+    text: "◆",
     attrs: { type: "button", title: "더블클릭해서 공통 이벤트 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {

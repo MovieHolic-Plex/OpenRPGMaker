@@ -8,7 +8,9 @@ import {
 import { renderCommandBody } from "./commandBody";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
-import { commandSummaryParts } from "./commandSummary";
+import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
 
@@ -57,7 +59,8 @@ function renderCommandItem(
 ): HTMLElement {
   const item = el("div", {
     class: "cmd-item",
-    dataset: { testid: `event-command-${cmd.kind}`, cmdPath: JSON.stringify(path), commandKind: cmd.kind },
+    // cmdDepth 는 CSS 어트리뷰트 셀렉터/디버깅용으로 들여쓰기 깊이를 함께 노출한다.
+    dataset: { testid: `event-command-${cmd.kind}`, cmdPath: JSON.stringify(path), commandKind: cmd.kind, cmdDepth: String(depth) },
   });
   item.dataset.renderKindString = String(cmd.kind);
   // 드래그는 핸들에서 시작하고 항목 전체를 드래그한다.
@@ -77,7 +80,7 @@ function renderCommandItem(
   enableItemDrag(handle, item, path);
   head.append(
     handle,
-    el("span", { class: "cmd-prefix", text: "@>" }),
+    el("span", { class: "cmd-prefix", text: "◆" }),
     renderCommandSummary(cmd),
     commandActions(path, actions)
   );
@@ -111,9 +114,25 @@ function renderCommandItem(
 function renderCommandSummary(cmd: Command): HTMLElement {
   const summary = el("span", { class: "cmd-kind" });
   for (const part of commandSummaryParts(cmd)) {
+    // 아이콘 토큰은 텍스트 대신 16px 이미지로 렌더. URL 을 못 찾으면 조용히 생략한다.
+    if (isSummaryIconPart(part)) {
+      const icon = renderSummaryIcon(part.resourceId);
+      if (icon) summary.append(icon);
+      continue;
+    }
     summary.append(el("span", { class: `cmd-summary-token ${part.tone}`, text: part.text }));
   }
   return summary;
+}
+
+// 아이템/장비 아이콘 리소스 id → <img>. cc0 아이콘·생성 에셋·업로드 에셋 모두 해석한다.
+function renderSummaryIcon(resourceId: string): HTMLElement | null {
+  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  if (!url) return null;
+  return el("img", {
+    class: "cmd-summary-icon",
+    attrs: { src: url, alt: "", width: "16", height: "16", draggable: "false", "aria-hidden": "true" },
+  });
 }
 
 function ensureTerminalRowHint(item: HTMLElement, cmd: Command): void {
@@ -156,13 +175,13 @@ function appendCommandChildren(
 ): void {
   if (cmd.kind === "choices") {
     cmd.options.forEach((option, optionIndex) => {
-      host.append(renderMarkerLine(`: ${option.text || `선택지 ${optionIndex + 1}`}`, depth));
+      host.append(renderMarkerLine(`: ${option.text || `선택지 ${optionIndex + 1}`}`, depth, "choices"));
       option.branch.forEach((child, childIndex) => {
         renderCommandTree(host, child, [...path, optionIndex, childIndex], containerPath, actions, depth + 1);
       });
     });
     if (cmd.cancelBehavior === "branch") {
-      host.append(renderMarkerLine(": 취소할 때", depth));
+      host.append(renderMarkerLine(": 취소할 때", depth, "choices"));
       (cmd.cancelBranch ?? []).forEach((child, childIndex) => {
         renderCommandTree(
           host,
@@ -174,11 +193,11 @@ function appendCommandChildren(
         );
       });
     }
-    host.append(renderMarkerLine(": 선택지 종료", depth));
+    host.append(renderMarkerLine(": 선택지 종료", depth, "choices"));
     return;
   }
   if (cmd.kind === "fork") {
-    host.append(renderMarkerLine(": 조건이 참일 때", depth));
+    host.append(renderMarkerLine(": 조건이 참일 때", depth, "fork"));
     cmd.then.forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -190,7 +209,7 @@ function appendCommandChildren(
       );
     });
     if (cmd.else) {
-      host.append(renderMarkerLine(": 그 외의 경우", depth));
+      host.append(renderMarkerLine(": 그 외의 경우", depth, "fork"));
       cmd.else.forEach((child, childIndex) => {
         renderCommandTree(
           host,
@@ -202,11 +221,11 @@ function appendCommandChildren(
         );
       });
     }
-    host.append(renderMarkerLine(": 분기 종료", depth));
+    host.append(renderMarkerLine(": 분기 종료", depth, "fork"));
     return;
   }
   if (cmd.kind === "shop" && cmd.branchOnTransaction) {
-    host.append(renderMarkerLine(": 플레이어가 구매/판매했을 때", depth));
+    host.append(renderMarkerLine(": 플레이어가 구매/판매했을 때", depth, "shop"));
     (cmd.transactionBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -217,12 +236,13 @@ function appendCommandChildren(
         depth + 1
       );
     });
-    host.append(renderMarkerLine(": 상점 분기 종료", depth));
+    host.append(renderMarkerLine(": 상점 분기 종료", depth, "shop"));
   }
 }
 
-function renderMarkerLine(text: string, depth: number): HTMLElement {
-  const line = el("div", { class: "cmd-line-marker", text });
+// 분기 마커 라인 (": 조건이 참일 때" 등). kind 별 클래스로 fork/choices/shop 마커를 톤으로 구분한다.
+function renderMarkerLine(text: string, depth: number, kind: "fork" | "choices" | "shop"): HTMLElement {
+  const line = el("div", { class: `cmd-line-marker cmd-marker-${kind}`, text, dataset: { cmdDepth: String(depth) } });
   line.style.setProperty("--cmd-depth", String(depth));
   return line;
 }
