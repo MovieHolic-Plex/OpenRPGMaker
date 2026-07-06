@@ -15,7 +15,7 @@ import {
   cloneDefaultAutotileGroups,
 } from "@/project/defaults/autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults";
+import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 import type { AutotileGroup } from "@/project/types";
 
 type MapView = { width: number; height: number; lowerTiles: number[] };
@@ -166,8 +166,11 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
     expect(autotileVariantForCell(landMap, DEFAULT_SAND_AUTOTILE_GROUP, 1, 1)).toBe(SAND_TILE.EDGE_WEST);
   });
 
-  it("autotileGroupsForTileset 는 정의가 없으면 기본 그룹으로 폴백한다", () => {
+  it("autotileGroupsForTileset 는 기본 Combined Town에서만 내장 그룹으로 폴백한다", () => {
     expect(autotileGroupsForTileset(undefined)).toHaveLength(2);
+    const project = createBlankProject();
+    expect(autotileGroupsForTileset(project.tilesets[DEFAULT_TILESET_ID])).toHaveLength(2);
+    expect(autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon)).toHaveLength(0);
     const cloned = cloneDefaultAutotileGroups();
     expect(cloned).toHaveLength(2);
     expect(cloned[0]?.memberTileIds).not.toBe(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);

@@ -1,6 +1,7 @@
 import type { AutotileGroup, TilesetDef } from "../types";
 import { buildEdgeCornerVariantMap } from "./autotileEngine";
 import { CHIPSET_TILE_GROUPS, DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
+import { DEFAULT_TILESET_TEXTURE_KEY } from "./constants";
 
 // 내장 오토타일 기본 그룹 정의.
 // 기존에 하드코딩돼 있던 흙길(road)/모래(sand) 셰이핑을 범용 엔진 데이터 모델로 표현한다.
@@ -88,5 +89,6 @@ export function cloneDefaultAutotileGroups(): AutotileGroup[] {
 // 타일셋에 정의된 오토타일 그룹을 반환한다. 없으면 내장 기본 그룹(흙길/모래)으로 폴백.
 export function autotileGroupsForTileset(tileset: TilesetDef | undefined): readonly AutotileGroup[] {
   if (tileset?.autotileGroups && tileset.autotileGroups.length > 0) return tileset.autotileGroups;
-  return DEFAULT_AUTOTILE_GROUPS;
+  if (!tileset || (tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY)) return DEFAULT_AUTOTILE_GROUPS;
+  return [];
 }

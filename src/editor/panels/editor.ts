@@ -214,6 +214,18 @@ function renderEditorStatusbar(container: HTMLElement): void {
     el("span", { class: "editor-statusbar-cell", text: `타일: ${tileDisplayLabelForIndex(state.selectedTile)}` }),
     el("span", { class: "editor-statusbar-cell", text: `도구: ${toolStatusLabel(state.tool)}` }),
     el("span", { class: "editor-statusbar-cell", text: `줌: ${state.zoom}x` }),
+    el("span", {
+      class: "editor-statusbar-cell",
+      children: ["좌표: ", el("span", { dataset: { testid: "cursor-position" }, text: "outside" })],
+    }),
+    el("span", {
+      class: "editor-statusbar-cell",
+      children: ["하위: ", el("span", { dataset: { testid: "cursor-lower" }, text: "-" })],
+    }),
+    el("span", {
+      class: "editor-statusbar-cell",
+      children: ["상위: ", el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
+    }),
     renderMapEditLockStatus(getMapEditLockStatus(), mapId),
     renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar)
   );

@@ -78,7 +78,7 @@ export function createTileClusterSections(tileset: TilesetDef): TileClusterSecti
     return [{
       id: group.id,
       name: group.name,
-      patternKind: group.patternGrammar?.kind,
+      patternKind: visiblePatternKind(group),
       role: group.role,
       sourceRect: group.sourceRect,
       tileIds,
@@ -140,6 +140,12 @@ function sortedTileGroups(tileset: TilesetDef): readonly TileGroupMetadata[] {
   });
 }
 
+function visiblePatternKind(group: TileGroupMetadata): TilePatternKind | undefined {
+  const kind = group.patternGrammar?.kind;
+  if (kind === "nine_slice_expandable") return undefined;
+  return kind;
+}
+
 function uniqueValidTileIds(tileIds: readonly number[], count: number, assignedTileIds: ReadonlySet<number>): number[] {
   const local = new Set<number>();
   const result: number[] = [];
@@ -172,7 +178,7 @@ function renderGroupCard(args: RenderTilePaletteClustersArgs, group: ClusteredTi
         el("span", {
           class: "tile-cluster-card-actions",
           children: [
-            el("span", { class: "tile-cluster-kind-badge", text: tilePatternKindLabel(group.patternKind) }),
+            ...(group.patternKind ? [el("span", { class: "tile-cluster-kind-badge", text: tilePatternKindLabel(group.patternKind) })] : []),
             renderClusterAiButton(args.tileset.id, group.id),
           ],
         }),

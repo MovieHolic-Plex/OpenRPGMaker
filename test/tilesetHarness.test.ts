@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { deserialize, serialize } from "@/project/io";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, COMBINED_TOWN_HARNESS_GROUPS, DUNGEON_HARNESS_PREFIX, harnessLayerForTile, INTERIOR_HARNESS_PREFIX, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
@@ -56,11 +57,48 @@ describe("EasyRPG Combined Town tileset harness", () => {
     const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
     if (!conifer) throw new Error("missing conifer group");
     conifer.rules = [{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }];
+    conifer.tileIds = [260];
+    conifer.patternGrammar = { kind: "single", parts: [{ role: "center", tileIds: [260] }], preserveCaps: true, repeat: "source_order" };
 
     applyCombinedTownHarness(tileset);
 
     const reseeded = tileset.tileGroups?.find((group) => group.id === conifer.id);
     expect(reseeded?.rules).toEqual([{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }]);
+    expect(reseeded?.tileIds).toEqual([260]);
+    expect(reseeded?.patternGrammar).toEqual({ kind: "single", parts: [{ role: "center", tileIds: [260] }], preserveCaps: true, repeat: "source_order" });
+  });
+
+  it("seeds missing default rules without resetting user-edited group layout", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
+    if (!conifer) throw new Error("missing conifer group");
+    conifer.rules = undefined;
+    conifer.tileIds = [260];
+    conifer.patternGrammar = { kind: "single", parts: [{ role: "center", tileIds: [260] }], preserveCaps: true, repeat: "source_order" };
+
+    applyCombinedTownHarness(tileset);
+
+    const reseeded = tileset.tileGroups?.find((group) => group.id === conifer.id);
+    expect(reseeded?.tileIds).toEqual([260]);
+    expect(reseeded?.patternGrammar?.kind).toBe("single");
+    expect(reseeded?.rules).toEqual([
+      expect.objectContaining({ kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" }),
+    ]);
+  });
+
+  it("keeps tombstoned Combined Town harness groups deleted across serialization and re-apply", () => {
+    const project = createBlankProject();
+    const tileset = project.tilesets[DEFAULT_TILESET_ID];
+    const groupId = COMBINED_TOWN_HARNESS_GROUPS[0]?.id;
+    if (!groupId) throw new Error("missing harness group");
+    tileset.tileGroups = tileset.tileGroups?.filter((group) => group.id !== groupId);
+    tileset.suppressedHarnessGroupIds = [groupId];
+
+    const restored = deserialize(serialize(project));
+    applyCombinedTownHarness(restored.tilesets[DEFAULT_TILESET_ID]);
+
+    expect(restored.tilesets[DEFAULT_TILESET_ID].tileGroups?.some((group) => group.id === groupId)).toBe(false);
+    expect(restored.tilesets[DEFAULT_TILESET_ID].suppressedHarnessGroupIds).toEqual([groupId]);
   });
 
   it("locks the Combined Town layer contract to lower building parts and upper roof overlays", () => {
