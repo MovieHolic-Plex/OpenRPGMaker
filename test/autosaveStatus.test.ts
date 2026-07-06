@@ -66,16 +66,16 @@ describe("autosave status", () => {
       expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down" });
     });
 
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(projectSaveCalls(fetchSpy)).toHaveLength(1);
 
     vi.advanceTimersByTime(30000);
     await vi.waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
     });
 
     expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down" });
     vi.advanceTimersByTime(30000);
-    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
     expect(states.map((state) => state.kind)).toEqual(["pending", "saving", "error", "saving", "error"]);
   });
 
@@ -140,6 +140,10 @@ function installControlledFetch(): FetchControl {
     calls,
     resolveFirst: (response) => resolveFirst?.(response),
   };
+}
+
+function projectSaveCalls(fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>): unknown[] {
+  return fetchSpy.mock.calls.filter(([input]) => String(input).includes("/rest/v1/projects?"));
 }
 
 function installBrowserGlobals(): ListenerMap {

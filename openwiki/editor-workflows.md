@@ -47,6 +47,7 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 - Tile metadata tools live in `src/editor/tools/tileMetadataTools.ts`; `set_group_junction` and `set_group_overlay` add or update optional tile-group structural rules, while `upsert_tile_group` can persist those arrays with the rest of the group metadata. Cluster rule authoring lives in `src/editor/tools/clusterRuleTools.ts`: `set_cluster_rule` adds or updates tile-group `rules`, and `upsert_tile_group` can persist the same rules array.
 - Tileset transparent-color editing lives in `src/editor/panels/tilesetSettingsDetails.ts` and stores a user override on `TilesetDef.transparentColor`; render paths resolve it in `src/assets/chipsetTransparency.ts` before falling back to chipset defaults.
 - Save/import/export flows are centered in `src/editor/saveActions.ts` and the store/persistence layer in `src/project/store.ts`; check adjacent editor actions if a UI button needs to trigger them.
+- AI/tool changesets accepted through `src/editor/tools/applyChangesetToStore.ts` or the AI chat panel record one Supabase commit row plus one project change row with editor identity. Manual edits are batched at successful autosave/flush time and deduped by the last recorded serialized project.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
 ## Validation Expectations
