@@ -366,18 +366,39 @@
 
 /* ---- [P2] 모던 전용 파생 뷰: 라이브 미리보기 / 플로우차트 (기본 접힘) ---- */
 
+/* 실행 내용 fieldset 의 그리드 높이를 잠식하지 않도록 커맨드 컬럼 하단에 떠 있는
+   오버레이로 배치 (RM2003 창 비율 e2e 계약 보존 — contents fieldset 높이 불변). */
+.event-editor-commands-column {
+  position: relative;
+}
+
 .event-script-modern-views {
+  /* AI 드로어 바(하단 in-flow)를 가리지 않도록 그 위에 띄운다. */
+  bottom: 48px;
   display: grid;
   gap: 6px;
-  margin-top: 6px;
+  left: 8px;
+  position: absolute;
+  right: 8px;
+  z-index: 6;
 }
 
 .event-script-live-preview,
 .event-script-flowchart {
-  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 92%, var(--bg-raised));
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 96%, var(--bg-raised));
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
+  box-shadow: 0 -2px 14px rgba(10, 14, 24, 0.28);
   padding: 0;
+}
+
+.event-script-live-preview[open] .event-script-live-preview-body {
+  max-height: 340px;
+  overflow: auto;
+}
+
+.event-script-flowchart[open] .event-flowchart-body {
+  max-height: 300px;
 }
 
 .event-script-live-preview > summary,
