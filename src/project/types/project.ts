@@ -14,6 +14,7 @@ import type {
   VariableDef,
 } from "./base";
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
+import type { QuestDef } from "../quest/questDef";
 import type {
   CommandV1,
   CommonEvent,
@@ -55,6 +56,16 @@ export interface ProjectSession {
   gold?: number;
 }
 
+/**
+ * 프로젝트의 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티).
+ * 런타임 상태(PlaySession)와는 다른 개념이며, 새 세션의 시드로만 쓰인다.
+ *
+ * @deprecated 의미를 드러내기 위한 alias. 새 코드는 이 타입과 `startStateOf(project)`
+ *   헬퍼를 함께 사용해 "런타임이 아니라 시작 상태를 읽는다"는 의도를 명시할 것.
+ *   직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
+ */
+export type ProjectStartState = ProjectSession;
+
 export interface SaveSlot {
   schemaVersion: typeof SCHEMA_VERSION;
   projectTitle: string;
@@ -86,6 +97,19 @@ export interface VillageInfoDocument {
   markdown: string;
 }
 
+// 테스트 상태 프리셋(Phase 4-1). 스위치/변수/인벤토리/골드/시작 좌표를 부분 저장해
+// 테스트 플레이/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
+export interface TestPreset {
+  id: string;
+  name: string;
+  switches?: Record<string, boolean>;
+  variables?: Record<string, number>;
+  inventory?: Record<string, number>;
+  gold?: number;
+  startMapId?: MapId;
+  startPos?: { x: number; y: number };
+}
+
 export interface Project {
   version: number;
   meta: { title: string; author: string; terms: Terms };
@@ -101,6 +125,11 @@ export interface Project {
   maps: Record<MapId, GameMap>;
   mapConnections?: MapConnection[];
   villageInfoDocuments?: VillageInfoDocument[];
+  // 선언적 퀘스트 정의(Phase 3). questCompiler가 스위치/변수/이벤트로 컴파일하며,
+  // 플레이어 퀘스트 로그가 이 메타 + 세션 상태로 단계를 표시한다. optional이라 마이그레이션 불필요.
+  quests?: QuestDef[];
+  // 테스트 상태 프리셋(Phase 4-1). 에디터 디버그 패널이 저장/적용한다. optional.
+  testPresets?: TestPreset[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

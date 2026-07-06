@@ -137,6 +137,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "status":
     case "row":
     case "formation":
+    case "quests":
       actions.onCommand(command.id);
       return;
     default:

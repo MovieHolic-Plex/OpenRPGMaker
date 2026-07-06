@@ -9,10 +9,10 @@
 
 .db-classic-group-tab {
   min-height: 16px;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
-  border-bottom-color: var(--rm2k3-surface-raised, #f4f4f4);
-  background: var(--rm2k3-surface, #ece9d8);
-  color: var(--rm2k3-text, #111);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
+  border-bottom-color: var(--rm2k3-surface-raised, var(--border-subtle));
+  background: var(--rm2k3-surface, var(--bg-raised));
+  color: var(--rm2k3-text, var(--text-1));
   line-height: 15px;
   text-align: center;
 }
@@ -52,14 +52,14 @@
   min-width: 0;
   margin: 0;
   padding: 7px 5px 5px;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
-  background: var(--rm2k3-surface, #ece9d8);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
+  background: var(--rm2k3-surface, var(--bg-raised));
 }
 
 .actor-classic-sheet .actor-panel legend {
   padding: 0 4px;
   font-size: 12px;
-  color: var(--rm2k3-text, #111);
+  color: var(--rm2k3-text, var(--text-1));
 }
 
 .actor-classic-sheet label,
@@ -76,9 +76,9 @@
 .actor-classic-sheet select {
   min-width: 0;
   height: 20px;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
   border-radius: 0;
-  background: #fff;
+  background: var(--bg-raised);
   font: inherit;
 }
 
@@ -133,9 +133,9 @@
 .actor-classic-sheet .actor-neutral-resource-slot {
   width: 48px;
   height: 48px;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
   border-radius: 0;
-  background-color: #fff;
+  background-color: var(--bg-raised);
 }
 
 .actor-classic-sheet .actor-neutral-resource-slot {
@@ -146,10 +146,10 @@
 .actor-classic-sheet .actor-resource-set-button,
 .actor-classic-sheet .btn.small {
   height: 22px;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
   border-radius: 0;
-  background: var(--rm2k3-surface-raised, #f4f4f4);
-  color: var(--rm2k3-text, #111);
+  background: var(--rm2k3-surface-raised, var(--bg-raised));
+  color: var(--rm2k3-text, var(--text-1));
   font-size: 12px;
   line-height: 18px;
 }
@@ -163,10 +163,10 @@
 .actor-classic-sheet .actor-curve {
   min-height: 58px;
   padding: 4px;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
   border-radius: 0;
-  background: #111;
-  color: #fff;
+  background: var(--bg-inset);
+  color: var(--text-1);
   font-size: 11px;
 }
 
@@ -239,8 +239,8 @@
 .actor-classic-sheet .actor-rate-list {
   max-height: 98px;
   overflow-y: auto;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
-  background: #fff;
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
+  background: var(--bg-raised);
 }
 
 .actor-classic-sheet .actor-rate-list > strong,
@@ -249,8 +249,8 @@
   min-height: 18px;
   align-items: center;
   padding: 0 4px;
-  border-bottom: 1px solid var(--rm2k3-border-dark, #8f8f8f);
-  background: var(--rm2k3-surface-raised, #f4f4f4);
+  border-bottom: 1px solid var(--rm2k3-border-dark, var(--border-default));
+  background: var(--rm2k3-surface-raised, var(--bg-raised));
   font-size: 12px;
 }
 
@@ -266,9 +266,9 @@
   min-height: 286px;
   max-height: 286px;
   overflow-y: auto;
-  border: 1px solid var(--rm2k3-border-dark, #8f8f8f);
+  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
   border-top: 0;
-  background: #fff;
+  background: var(--bg-raised);
 }
 
 .actor-classic-sheet .actor-skill-row,
@@ -307,7 +307,7 @@
 }
 
 .rm2k3-record-actors .rm2k3-record-list-pane {
-  background: #d8d4cb;
+  background: var(--bg-raised);
   padding: 10px 10px 8px;
 }
 
@@ -317,7 +317,7 @@
 }
 
 .rm2k3-record-actors .db-list {
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   margin: 0;
@@ -325,17 +325,17 @@
 }
 
 .rm2k3-record-actors .db-list-row {
-  background: #f7f7f7;
+  background: var(--bg-raised);
   border: 0;
-  border-bottom: 1px solid #c9c6bd;
+  border-bottom: 1px solid var(--border-subtle);
   font-size: 13px;
   min-height: 24px;
   padding: 2px 8px;
 }
 
 .rm2k3-record-actors .db-list-row.active {
-  background: linear-gradient(#3c74d7, #255ab8);
-  color: #ffffff;
+  background: var(--accent-muted);
+  color: var(--text-1);
 }
 
 .rm2k3-record-actors .db-list-number {
@@ -344,7 +344,7 @@
 }
 
 .rm2k3-record-actors .rm2k3-record-detail-pane {
-  background: #d8d4cb;
+  background: var(--bg-raised);
   min-height: 0;
   padding: 10px;
 }
@@ -394,11 +394,11 @@
 }
 
 .rm2k3-record-actors .actor-inspector-tab {
-  background: #d8d4cb;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
-  color: #111111;
+  color: var(--text-1);
   font: 600 13px/1.2 inherit;
   height: 32px;
   min-width: 70px;
@@ -406,13 +406,13 @@
 }
 
 .rm2k3-record-actors .actor-inspector-tab.active {
-  background: #e5e1d7;
-  border-bottom-color: #e5e1d7;
+  background: var(--bg-raised);
+  border-bottom-color: var(--border-subtle);
 }
 
 .rm2k3-record-actors .actor-panel {
-  background: #d8d4cb;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   padding: 9px 10px 8px;
 }
 
@@ -477,7 +477,7 @@
 
 .rm2k3-record-actors .actor-curve {
   background: #fbfaf4;
-  color: #111111;
+  color: var(--text-1);
 }
 
 .rm2k3-record-actors .actor-skill-list {
@@ -496,8 +496,8 @@
 
 @media (min-width: 901px) {
   .rm2k3-record-actors .rm2k3-record-list-pane {
-    background: #ffffff;
-    border: 1px solid #dddcd7;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 5px;
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;
@@ -505,7 +505,7 @@
   }
 
   .rm2k3-record-actors .rm2k3-record-list-pane h3 {
-    color: #1f1e1b;
+    color: var(--text-1);
     font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0 0 12px;
   }
@@ -515,11 +515,11 @@
   }
 
   .rm2k3-record-actors .db-search input {
-    background: #fbfbfa;
-    border: 1px solid #d9d8d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
     box-sizing: border-box;
-    color: #202020;
+    color: var(--text-1);
     font: 400 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     height: 38px;
     padding: 5px 8px;
@@ -527,29 +527,29 @@
   }
 
   .rm2k3-record-actors .db-list {
-    background: #ffffff;
-    border: 1px solid #ecebe6;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
     min-height: 0;
   }
 
   .rm2k3-record-actors .db-list-row {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 0;
-    border-bottom: 1px solid #ecebe6;
-    color: #35332f;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-1);
     font: 500 16px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 36px;
     padding: 0 14px;
   }
 
   .rm2k3-record-actors .db-list-row:hover {
-    background: #f5f7fb;
+    background: var(--bg-raised);
   }
 
   .rm2k3-record-actors .db-list-row.active {
-    background: linear-gradient(180deg, #0c75eb 0%, #075ed1 100%);
-    color: #ffffff;
+    background: var(--accent-muted);
+    color: var(--text-1);
   }
 
   .rm2k3-record-actors .db-list-number {
@@ -565,16 +565,16 @@
   }
 
   .rm2k3-record-actors .rm2k3-maximum-button {
-    background: #f8f8f6;
-    border: 1px solid #dddcd7;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #8a847a;
+    color: var(--text-2);
     font-size: 14px;
     min-height: 36px;
   }
 
   .rm2k3-record-actors .rm2k3-record-count {
-    color: #141414;
+    color: var(--text-1);
     font: 500 15px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
@@ -586,10 +586,10 @@
   }
 
   .rm2k3-record-actors .db-toolbar .btn {
-    background: #ffffff;
-    border: 1px solid #d9d8d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #1f1d1a;
+    color: var(--text-1);
     font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 32px;
   }
@@ -599,14 +599,14 @@
   }
 
   .rm2k3-record-actors .rm2k3-record-detail-pane {
-    background: #ffffff;
-    border: 1px solid #dddcd7;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 5px;
     padding: 14px;
   }
 
   .rm2k3-record-actors .actor-classic-sheet {
-    background: #ffffff;
+    background: var(--bg-raised);
     border-radius: 0;
     padding: 0;
   }
@@ -646,8 +646,8 @@
   }
 
   .rm2k3-record-actors .actor-panel {
-    background: #ffffff;
-    border: 1px solid #e1e0db;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 0;
     box-shadow: none;
     margin: 0;
@@ -682,12 +682,12 @@
   }
 
   .rm2k3-record-actors .actor-basic-stats {
-    border-top: 1px solid #deddd8;
+    border-top: 1px solid var(--border-subtle);
     padding-top: 12px;
   }
 
   .rm2k3-record-actors .actor-panel legend {
-    color: #111111;
+    color: var(--text-1);
     float: left;
     font: 700 17px/1.1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: -6px 0 12px;
@@ -701,7 +701,7 @@
 
   .rm2k3-record-actors .actor-classic-sheet label,
   .rm2k3-record-actors .actor-classic-sheet .field {
-    color: #5a554d;
+    color: var(--text-2);
     font: 500 16px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     gap: 12px;
     grid-template-columns: 92px minmax(0, 1fr);
@@ -710,10 +710,10 @@
 
   .rm2k3-record-actors .actor-classic-sheet input,
   .rm2k3-record-actors .actor-classic-sheet select {
-    background: #fbfbfa;
-    border: 1px solid #d6d5d0;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #161616;
+    color: var(--text-1);
     font: 400 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     height: 32px;
     padding: 3px 8px;
@@ -735,7 +735,7 @@
 
   .rm2k3-record-actors .actor-check {
     align-items: center;
-    color: #4f4a43;
+    color: var(--text-1);
     font-size: 15px;
     gap: 10px;
     min-height: 30px;
@@ -748,18 +748,18 @@
 
   .rm2k3-record-actors .actor-classic-sheet .btn.small,
   .rm2k3-record-actors .actor-resource-set-button {
-    background: #ffffff;
-    border: 1px solid #d9d8d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #6b655d;
+    color: var(--text-2);
     font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     height: 32px;
   }
 
   .rm2k3-record-actors .actor-graphic-preview {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 0;
-    border-bottom: 1px solid #e5e4df;
+    border-bottom: 1px solid var(--border-subtle);
     gap: 14px;
     grid-template-columns: 86px minmax(0, 1fr);
     margin-bottom: 7px;
@@ -768,13 +768,13 @@
   }
 
   .rm2k3-record-actors .actor-graphic-preview > span {
-    color: #59544d;
+    color: var(--text-2);
     font-size: 15px;
   }
 
   .rm2k3-record-actors .actor-neutral-resource-slot {
-    background: #ffffff;
-    border: 1px solid #d9d8d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     height: 68px;
     width: 86px;
   }
@@ -793,7 +793,7 @@
   }
 
   .rm2k3-record-actors .actor-basic-stat-row {
-    color: #2d2b27;
+    color: var(--text-1);
     font: 500 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
@@ -807,10 +807,10 @@
   }
 
   .rm2k3-record-actors .actor-inspector-tab {
-    background: #eeeae2;
-    border: 1px solid #d8d4ca;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-bottom: 0;
-    color: #22211f;
+    color: var(--text-1);
     font: 600 15px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     height: 48px;
     min-width: 92px;
@@ -818,12 +818,12 @@
   }
 
   .rm2k3-record-actors .actor-inspector-tab.active {
-    background: #ffffff;
-    border-color: #d8d4ca;
+    background: var(--bg-raised);
+    border-color: var(--border-subtle);
   }
 
   .rm2k3-record-actors .actor-starting-equipment {
-    background: #ffffff;
+    background: var(--bg-raised);
     grid-column: 1;
     grid-row: 1;
   }
@@ -835,15 +835,15 @@
   }
 
   .rm2k3-record-actors .actor-skills {
-    background: #ffffff;
+    background: var(--bg-raised);
     grid-column: 2;
     grid-row: 1 / span 3;
   }
 
   .rm2k3-record-actors .actor-skill-header {
-    background: #ffffff;
-    border: 1px solid #deddd8;
-    color: #3a3834;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-1);
     font: 600 16px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     grid-template-columns: 80px minmax(0, 1fr) 58px;
     min-height: 34px;
@@ -851,8 +851,8 @@
   }
 
   .rm2k3-record-actors .actor-skill-list {
-    background: #fbfbfa;
-    border: 1px solid #deddd8;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-top: 0;
     max-height: 248px;
     min-height: 248px;
@@ -860,7 +860,7 @@
 
   .rm2k3-record-actors .actor-skill-row {
     align-items: center;
-    border-bottom: 1px solid #e2ddd3;
+    border-bottom: 1px solid var(--border-subtle);
     gap: 8px;
     grid-template-columns: 80px minmax(0, 1fr) 58px;
     min-height: 40px;
@@ -868,7 +868,7 @@
   }
 
   .rm2k3-record-actors .actor-rates {
-    background: #ffffff;
+    background: var(--bg-raised);
     grid-column: 1 / -1;
     grid-row: 4;
     max-height: 190px;
@@ -882,15 +882,15 @@
   }
 
   .rm2k3-record-actors .actor-rate-list {
-    background: #ffffff;
-    border: 1px solid #deddd8;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     max-height: 118px;
   }
 
   .rm2k3-record-actors .actor-rate-list > strong {
-    background: #ffffff;
-    border-bottom: 1px solid #deddd8;
-    color: #2f2c28;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-1);
     font: 700 16px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 32px;
     padding: 0 10px;
@@ -898,8 +898,8 @@
 
   .rm2k3-record-actors .actor-rate-row {
     align-items: center;
-    border-bottom: 1px solid #e2ddd3;
-    color: #4d4942;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-1);
     font-size: 15px;
     grid-template-columns: minmax(0, 1fr) 64px;
     min-height: 34px;
@@ -908,8 +908,8 @@
 
   .rm2k3-record-actors .actor-curve {
     background: #fbfaf4;
-    border: 1px solid #c4beb2;
-    color: #1c1b18;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-1);
     min-height: 72px;
   }
 

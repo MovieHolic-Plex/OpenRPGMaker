@@ -1,5 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
+import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   beginExistingEventDraft,
   createEventDraft,
@@ -174,6 +175,8 @@ function handleModalKeyDown(
     close();
     return;
   }
+  // 이벤트 에디터 모달이 열려 있어도 Ctrl+Z/Y 로 undo/redo. store 구독으로 자동 재렌더된다.
+  if (handleHistoryHotkey(event)) return;
   if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
   if (isTextEditingTarget(event.target)) return;
   event.preventDefault();

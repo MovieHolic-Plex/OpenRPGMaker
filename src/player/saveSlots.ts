@@ -6,9 +6,11 @@ import {
   type PlaySession,
 } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import {
   isActorEquipmentRecord,
   isActorRowsRecord,
+  isStringRecord,
   isActorSkillIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
@@ -66,8 +68,18 @@ export type SaveSnapshot = {
     readonly pictures: Record<string, PictureState>;
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
+    readonly actorNames?: Record<string, string>;
     readonly playTimeSeconds?: number;
+    // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
+    readonly screen?: SaveScreenState;
   };
+};
+
+export type SaveScreenState = {
+  readonly tint?: string;
+  readonly weather?: string;
+  readonly hidden?: boolean;
+  readonly tintDurationMs?: number;
 };
 
 export type SaveSlotReadResult =
@@ -110,9 +122,22 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       pictures: structuredClone(session.pictures),
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
+      actorNames: structuredClone(session.actorNames),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
+      screen: pickScreenState(session),
     },
   };
+}
+
+// 지속형 화면 효과(색조/날씨/숨김)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
+function pickScreenState(session: PlaySession): SaveScreenState | undefined {
+  const screen = session.m2Runtime?.screen;
+  if (!screen) return undefined;
+  const { tint, weather, hidden, tintDurationMs } = screen;
+  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined) {
+    return undefined;
+  }
+  return { tint, weather, hidden, tintDurationMs };
 }
 
 export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): void {
@@ -171,8 +196,19 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.pictures = structuredClone(snapshot.session.pictures);
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
+  if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
+  if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   return session;
+}
+
+// 색조/날씨/숨김 상태를 m2Runtime.screen 에 복원한다.
+function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
+  const runtime = ensureM2Runtime(session);
+  if (screen.tint !== undefined) runtime.screen.tint = screen.tint;
+  if (screen.weather !== undefined) runtime.screen.weather = screen.weather;
+  if (screen.hidden !== undefined) runtime.screen.hidden = screen.hidden;
+  if (screen.tintDurationMs !== undefined) runtime.screen.tintDurationMs = screen.tintDurationMs;
 }
 
 function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadResult {
@@ -243,9 +279,22 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       pictures: parsePictures(session.pictures),
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
+      actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
+      screen: parseScreenState(session.screen),
     },
   };
+}
+
+// 저장된 화면 상태를 방어적으로 파싱(모든 필드 선택). 유효 필드가 없으면 undefined.
+function parseScreenState(value: unknown): SaveScreenState | undefined {
+  if (!isRecord(value)) return undefined;
+  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number } = {};
+  if (typeof value.tint === "string") result.tint = value.tint;
+  if (typeof value.weather === "string") result.weather = value.weather;
+  if (typeof value.hidden === "boolean") result.hidden = value.hidden;
+  if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function parseBattleResult(value: unknown): PlaySession["battleResult"] | "invalid" {

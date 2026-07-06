@@ -14,10 +14,10 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-window {
-  background: #d4d0c8;
-  border: 1px solid #808080;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.38);
-  color: #111;
+  color: var(--text-1);
   display: grid;
   font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   grid-template-rows: 42px minmax(0, 1fr);
@@ -28,14 +28,14 @@
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-header {
   align-items: center;
-  background: #d4d0c8;
+  background: var(--bg-raised);
   border-bottom: 0;
   min-height: 42px;
   padding: 8px 10px 0;
 }
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-header h3 {
-  color: #111;
+  color: var(--text-1);
   font: 400 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
 }
 
@@ -43,7 +43,7 @@
   background: transparent;
   border: 0;
   box-shadow: none;
-  color: #111;
+  color: var(--text-1);
   font: 400 26px/26px Arial, sans-serif;
   height: 28px;
   min-width: 28px;
@@ -66,7 +66,7 @@
 }
 
 .event-page-move-route fieldset {
-  border-color: #fff #808080 #808080 #fff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   margin: 0;
@@ -75,7 +75,7 @@
 }
 
 .event-page-move-route legend {
-  color: #111;
+  color: var(--text-1);
   font: 400 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   padding: 0 4px;
 }
@@ -90,11 +90,11 @@
 .event-page-move-route-event select,
 .event-page-move-route-parameters input,
 .event-page-move-route-parameters select {
-  background: #fff;
-  border-color: #808080 #fff #fff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 2px;
-  color: #111;
+  color: var(--text-1);
   font: 400 16px/24px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   height: 32px;
   min-width: 0;
@@ -137,7 +137,7 @@
 }
 
 .event-page-move-route-parameters span {
-  color: #333;
+  color: var(--text-1);
   font: 400 12px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   white-space: nowrap;
 }
@@ -159,8 +159,8 @@
 }
 
 .event-page-move-route-command-list {
-  background: #fff;
-  border-color: #808080 #fff #fff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 2px;
   display: flex;
@@ -174,7 +174,7 @@
 .event-page-move-route-list-row {
   background: transparent;
   border: 0;
-  color: #004bff;
+  color: var(--accent);
   flex: 0 0 auto;
   font: 400 19px/28px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-height: 28px;
@@ -186,8 +186,8 @@
 }
 
 .event-page-move-route-list-row.selected {
-  background: #0080ff;
-  color: #fff;
+  background: var(--accent);
+  color: var(--text-1);
 }
 
 .event-page-move-route-grid {
@@ -201,12 +201,12 @@
 .event-page-move-route-command,
 .event-page-move-route-utility,
 .event-page-move-route-footer-button {
-  background: #f0f0f0;
-  border-color: #fff #808080 #808080 #fff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
-  box-shadow: inset -1px -1px 0 #b8b8b8, inset 1px 1px 0 #fff;
-  color: #111;
+  box-shadow: inset -1px -1px 0 var(--border-default), inset 1px 1px 0 var(--border-subtle);
+  color: var(--text-1);
   font: 400 19px/26px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-width: 0;
   overflow: hidden;
@@ -219,21 +219,21 @@
 .event-page-move-route-command:active,
 .event-page-move-route-utility:active,
 .event-page-move-route-footer-button:active {
-  border-color: #808080 #fff #fff #808080;
-  box-shadow: inset 1px 1px 0 #b8b8b8;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  box-shadow: inset 1px 1px 0 var(--border-default);
 }
 
 .event-page-move-route-command:focus-visible,
 .event-page-move-route-utility:focus-visible,
 .event-page-move-route-footer-button:focus-visible,
 .event-page-move-route-list-row:focus-visible {
-  outline: 1px dotted #111;
+  outline: 1px dotted var(--border-strong);
   outline-offset: -5px;
 }
 
 .event-page-move-route-command:disabled,
 .event-page-move-route-utility:disabled {
-  color: #888;
+  color: var(--text-2);
   cursor: default;
 }
 
@@ -254,7 +254,7 @@
 
 .event-page-move-route-delete-box {
   align-content: end;
-  border-color: #fff #808080 #808080 #fff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   display: grid;
@@ -333,16 +333,16 @@
 }
 
 .event-editor-modal-window {
-  --event-rm-chrome: #d4d0c8;
-  --event-rm-face: #eeeeee;
-  --event-rm-field: #fffdf7;
-  --event-rm-text: #111111;
-  --event-rm-disabled: #9b9b9b;
-  --event-rm-light: #ffffff;
-  --event-rm-mid: #808080;
-  --event-rm-shadow: #404040;
+  --event-rm-chrome: var(--bg-raised);
+  --event-rm-face: var(--bg-surface);
+  --event-rm-field: var(--bg-inset);
+  --event-rm-text: var(--text-1);
+  --event-rm-disabled: var(--text-3);
+  --event-rm-light: var(--border-strong);
+  --event-rm-mid: var(--border-default);
+  --event-rm-shadow: var(--border-subtle);
   background: var(--event-rm-chrome);
-  border-color: #9db6df #213b83 #213b83 #9db6df;
+  border-color: #9db6df var(--accent-border) var(--accent-border) #9db6df;
   border-style: solid;
   border-width: 2px;
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.34);
@@ -366,9 +366,9 @@
   align-items: center;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 42%),
-    linear-gradient(180deg, #5aa8f3 0%, #236ed1 48%, #1d47a7 100%);
-  border-bottom: 1px solid #0e2f86;
-  color: #fff;
+    linear-gradient(180deg, var(--accent) 0%, var(--accent) 48%, var(--accent) 100%);
+  border-bottom: 1px solid var(--accent-border);
+  color: var(--text-1);
   cursor: move;
   display: flex;
   gap: 8px;
@@ -395,7 +395,7 @@
 }
 
 .event-editor-modal-header h2 {
-  color: #fff;
+  color: var(--text-1);
   font: 700 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   letter-spacing: 0;
   margin: 0;
@@ -415,7 +415,7 @@
   border-radius: 4px;
   border-style: solid;
   border-width: 1px;
-  color: #fff;
+  color: var(--text-1);
   font: 700 18px/20px Tahoma, "MS Sans Serif", sans-serif;
   height: 23px;
   min-height: 23px;

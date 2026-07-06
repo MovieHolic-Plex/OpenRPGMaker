@@ -25,6 +25,13 @@ if (typeof window !== "undefined" && window.location) {
       document.body.classList.add(flag.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
   }
+  window.addEventListener("beforeunload", () => {
+    const autoSave = store.getAutoSaveState();
+    if (autoSave.kind !== "pending" && autoSave.kind !== "saving") return;
+    void store.flush().catch((error) => {
+      console.error("[store] beforeunload auto-save flush failed:", error);
+    });
+  });
 }
 
 const app = document.getElementById("app");

@@ -7,7 +7,7 @@ import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
-import { openTerrainTemplateModal } from "@/editor/panels/terrainTemplatePanel";
+import { setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
 import { openVillageInfoModal } from "@/editor/panels/villageInfoModal";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import {
@@ -33,6 +33,8 @@ const MENU_ITEMS = [
   { id: "help", label: "도움말" },
 ] as const;
 
+const TOOLBAR_COLLAPSED_KEY = "rpg-zzu:toolbar-collapsed";
+
 type MenuId = (typeof MENU_ITEMS)[number]["id"];
 
 type MenuCommand =
@@ -43,6 +45,7 @@ let activeMenuPopup: HTMLElement | null = null;
 
 export function renderTopbar(topbar: HTMLElement): void {
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
+  applyToolbarCollapsed(readToolbarCollapsed());
   const mode = getMode();
   const state = editorState.get();
   const history = getMapEditHistoryState();
@@ -50,6 +53,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   for (const item of MENU_ITEMS) {
     menuBar.append(renderMenu(item.id, item.label, menuCommands(item.id, state, history, topbar)));
   }
+  menuBar.append(renderWindowControls());
 
   const toolbar = el("div", { class: "rm2k3-toolbar classic-toolbar", dataset: { testid: "rm2k3-toolbar" } });
   toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
@@ -71,6 +75,86 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
       },
     },
   });
+}
+
+function renderWindowControls(): HTMLElement {
+  const controls = el("div", { class: "rm2k3-window-controls" });
+  const collapsed = document.body.classList.contains("toolbar-collapsed");
+  const collapse = el("button", {
+    class: "rm2k3-window-control",
+    text: collapsed ? "▾" : "─",
+    attrs: { type: "button", title: "툴바 접기/펼치기", "aria-pressed": collapsed ? "true" : "false" },
+    dataset: { testid: "window-toolbar-collapse" },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        const nextCollapsed = !document.body.classList.contains("toolbar-collapsed");
+        applyToolbarCollapsed(nextCollapsed);
+        writeToolbarCollapsed(nextCollapsed);
+        collapse.textContent = nextCollapsed ? "▾" : "─";
+        collapse.setAttribute("aria-pressed", nextCollapsed ? "true" : "false");
+      },
+    },
+  });
+  const fullscreen = el("button", {
+    class: "rm2k3-window-control",
+    text: document.fullscreenElement ? "◱" : "□",
+    attrs: { type: "button", title: "전체화면 전환" },
+    dataset: { testid: "window-fullscreen" },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        void toggleFullscreen();
+      },
+    },
+  });
+  document.addEventListener("fullscreenchange", () => {
+    fullscreen.textContent = document.fullscreenElement ? "◱" : "□";
+  });
+  // 브라우저 탭은 스크립트로 안정적으로 닫을 수 없어 닫기 컨트롤은 렌더하지 않는다.
+  controls.append(collapse, fullscreen);
+  return controls;
+}
+
+function applyToolbarCollapsed(collapsed: boolean): void {
+  document.body.classList[collapsed ? "add" : "remove"]("toolbar-collapsed");
+}
+
+function readToolbarCollapsed(): boolean {
+  return browserLocalStorage()?.getItem(TOOLBAR_COLLAPSED_KEY) === "1";
+}
+
+function writeToolbarCollapsed(collapsed: boolean): void {
+  browserLocalStorage()?.setItem(TOOLBAR_COLLAPSED_KEY, collapsed ? "1" : "0");
+}
+
+function browserLocalStorage(): Storage | null {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch (error) {
+    if (error instanceof Error) return null;
+    return null;
+  }
+}
+
+async function toggleFullscreen(): Promise<void> {
+  try {
+    if (document.fullscreenElement) {
+      if (typeof document.exitFullscreen !== "function") {
+        toast("이 브라우저에서는 전체화면을 지원하지 않습니다", "error");
+        return;
+      }
+      await document.exitFullscreen();
+      return;
+    }
+    if (typeof document.documentElement.requestFullscreen !== "function") {
+      toast("이 브라우저에서는 전체화면을 지원하지 않습니다", "error");
+      return;
+    }
+    await document.documentElement.requestFullscreen();
+  } catch (error) {
+    toast(error instanceof Error ? `전체화면 전환 실패: ${error.message}` : "전체화면 전환 실패", "error");
+  }
 }
 
 function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuCommand[]): void {
@@ -206,7 +290,18 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     playModeButton("edit"),
     separator(),
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
-    toolbarButton({ testId: "toolbar-title-screen", label: "TITLE", title: "타이틀/시스템 리소스", icon: "title", onClick: () => openTerrainTemplateModal() }),
+    // 지형 템플릿은 타일셋의 지식뱅크이므로 DB → 타일셋 → 구성 탭으로 안내한다(2026-07-05 이사).
+    // testId는 e2e 호환을 위해 유지한다.
+    toolbarButton({
+      testId: "toolbar-title-screen",
+      label: "템플릿",
+      title: "지형 템플릿 (DB → 타일셋 → 구성 탭)",
+      icon: "title",
+      onClick: () => {
+        setTilesetSectionTab("compose", () => {});
+        openDatabaseModal("tilesets");
+      },
+    }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
   return row;

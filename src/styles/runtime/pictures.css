@@ -1,0 +1,30 @@
+/* 픽처(그림) 레이어. runtimeDom.syncPictureLayer 가 픽처 번호별 슬롯을 배치한다.
+   실제 이미지는 <img class="picture-layer-image">, 미해석 리소스는 텍스트 라벨로 폴백. */
+@layer runtime {
+  .picture-layer-item {
+    position: absolute;
+    transform-origin: top left;
+    will-change: transform, opacity, left, top;
+  }
+
+  .picture-layer-image {
+    display: block;
+    image-rendering: pixelated;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .picture-layer-label {
+    background: var(--bg-glass, rgba(24, 28, 40, 0.88));
+    border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.17));
+    border-radius: var(--radius-s, 6px);
+    color: var(--text-1, #e9ecf3);
+    display: inline-block;
+    font-family: var(--font-ui, system-ui, sans-serif);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 4px 6px;
+  }
+}

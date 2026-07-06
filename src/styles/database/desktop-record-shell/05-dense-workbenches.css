@@ -128,22 +128,22 @@
   }
 
   .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane {
-    background: #ffffff;
-    border: 1px solid var(--db-modern-line, #d7d7d3);
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 5px;
     box-shadow: none;
   }
 
   .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane h3 {
     background: transparent;
-    color: #1f1e1b;
+    color: var(--text-1);
     font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0 0 12px;
   }
 
   .database-modal-body .rm2k3-record-enemies .db-list {
-    background: #ffffff;
-    border: 1px solid var(--db-modern-line-soft, #e8e7e2);
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft, var(--border-subtle));
     border-radius: 4px;
   }
 
@@ -156,8 +156,8 @@
   }
 
   .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
-    background: #ffffff;
-    border-color: var(--db-modern-line, #d7d7d3);
+    background: var(--bg-raised);
+    border-color: var(--db-modern-line, var(--border-subtle));
     padding: 10px;
   }
 
@@ -244,8 +244,8 @@
   }
 
   .database-modal-body .db-animation-panel {
-    background: #ffffff;
-    border: 1px solid var(--db-modern-line, #d7d7d3);
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 4px;
     box-sizing: border-box;
     margin: 0;
@@ -256,7 +256,7 @@
   }
 
   .database-modal-body .db-animation-panel legend {
-    color: #1f1e1b;
+    color: var(--text-1);
     font: 700 14px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0 0 8px;
     padding: 0;
@@ -273,8 +273,8 @@
 
   .database-modal-body .db-animation-top-grid :is(input, select),
   .database-modal-body .db-animation-panel :is(input, select) {
-    background: #fbfbfa;
-    border: 1px solid var(--db-modern-line, #d7d7d3);
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 4px;
     box-sizing: border-box;
     min-height: 30px;
@@ -361,14 +361,14 @@
   }
 
   .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body > h3 {
-    color: #1f1e1b;
+    color: var(--text-1);
     font: 700 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0;
   }
 
   .database-modal-body .db-parity-form {
     align-content: start;
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 5px;
     box-sizing: border-box;
@@ -384,7 +384,7 @@
 
   .database-modal-body .db-parity-form .rm2k3-db-fieldset {
     align-content: start;
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     box-sizing: border-box;
@@ -408,8 +408,8 @@
   }
 
   .database-modal-body .db-parity-form .rm2k3-db-fieldset legend {
-    background: #ffffff;
-    color: #1f1e1b;
+    background: var(--bg-raised);
+    color: var(--text-1);
     font: 700 15px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     padding: 0 4px;
   }
@@ -428,7 +428,7 @@
   }
 
   .database-modal-body .db-parity-form .db-readonly-row > span {
-    color: #33312d;
+    color: var(--text-1);
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -436,7 +436,7 @@
   }
 
   .database-modal-body .db-parity-form :is(input, select, code) {
-    background: #fbfbfa;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     box-sizing: border-box;
@@ -480,7 +480,7 @@
 
   .database-modal-body .db-common-event-list-pane,
   .database-modal-body .db-common-event-detail-pane {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 5px;
     box-sizing: border-box;
@@ -497,16 +497,16 @@
   }
 
   .database-modal-body .db-common-event-list-pane > .btn {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
-    color: #1f1d1a;
+    color: var(--text-1);
     font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 34px;
   }
 
   .database-modal-body .db-common-event-list {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line-soft);
     border-radius: 4px;
     display: block;
@@ -516,11 +516,11 @@
 
   .database-modal-body .db-common-event-list .db-list-row {
     align-items: center;
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 0;
     border-bottom: 1px solid var(--db-modern-line-soft);
     box-sizing: border-box;
-    color: #35332f;
+    color: var(--text-1);
     display: grid;
     font: 500 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     gap: 8px;
@@ -532,12 +532,12 @@
   }
 
   .database-modal-body .db-common-event-list .db-list-row:hover {
-    background: #f5f7fb;
+    background: var(--bg-raised);
   }
 
   .database-modal-body .db-common-event-list .db-list-row.active {
-    background: linear-gradient(180deg, #0c75eb 0%, #075ed1 100%);
-    color: #ffffff;
+    background: var(--accent-muted);
+    color: var(--text-1);
   }
 
   .database-modal-body .db-common-event-list :is(.db-list-number, .db-list-name, .db-list-meta) {
@@ -586,7 +586,7 @@
   }
 
   .database-modal-body .db-common-event-editor :is(input, select) {
-    background: #fbfbfa;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     color: var(--db-modern-text);
@@ -597,10 +597,10 @@
   }
 
   .database-modal-body .db-common-event-editor .btn {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
-    color: #1f1d1a;
+    color: var(--text-1);
     min-height: 32px;
   }
 
@@ -635,7 +635,7 @@
   }
 
   .database-modal-body .db-common-event-editor .cmd-list {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     box-sizing: border-box;
@@ -800,20 +800,20 @@
 
   .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane,
   .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 0;
     box-shadow: none;
     padding: 0;
   }
 
   .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
-    border: 1px solid var(--db-modern-line, #d7d7d3);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 5px;
     padding: 10px;
   }
 
   .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 0;
     gap: 10px;
     grid-template-rows: 96px 172px 132px minmax(194px, 1fr);
@@ -837,12 +837,12 @@
   }
 
   .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row {
-    border-bottom: 1px solid #ececec;
+    border-bottom: 1px solid var(--border-subtle);
     min-height: 32px;
   }
 
   .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row span {
-    color: #30343b;
+    color: var(--text-1);
     font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
     min-width: 0;
     overflow: hidden;

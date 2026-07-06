@@ -57,4 +57,24 @@ describe("tileset semantic checker", () => {
     );
     expect(usage.ruleText).toContain(roadGroup.placementRules);
   });
+
+  it("marks groups with invalid structure rules as invalid", () => {
+    // Given: a semantic group whose structural rules reference missing roles and out-of-range tiles.
+    const tileset = defaultTileset();
+    const invalidGroup = tileset.tileGroups?.find((group) => group.role === "roof");
+    if (!invalidGroup) throw new Error("expected roof group");
+    Object.assign(invalidGroup, {
+      junctions: [
+        { action: "omit", atRoles: ["missingPart"], side: "below", withRole: "wall" },
+        { action: "omit", side: "above", withRole: "sky" },
+      ],
+      overlays: [{ tileIds: [tileset.count + 1], when: "ridge" }],
+    });
+
+    // When: the tileset checker evaluates generation readiness.
+    const summary = summarizeTilesetGenerationReadiness(tileset);
+
+    // Then: the malformed structural rule excludes that group from valid generation coverage.
+    expect(summary.invalidGroups.map((group) => group.id)).toContain(invalidGroup.id);
+  });
 });

@@ -1,6 +1,6 @@
 import type { M2CommandCatalogEntry } from "@/editor/eventCommands/m2Catalog";
 import type { M2CommandFields } from "@/project/types";
-import type { M2RuntimeState, PlaySessionLike } from "@/player/types";
+import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/player/types";
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { ensureM2Runtime } from "./m2RuntimeState";
@@ -43,6 +43,12 @@ function executeByTitle(session: PlaySessionLike, entry: M2CommandCatalogEntry, 
     // color 필드(색 이름)를 우선 사용하고, value(r,g,b / hex)가 있으면 그것을 사용.
     const explicit = fieldString(fields, "value", "");
     runtime.screen.tint = explicit || fieldString(fields, "color", "neutral");
+    // duration(초 또는 ms) 필드가 있으면 점진 전환 시간으로 기록. 초로 판단되면 ms 로 변환.
+    if (hasField(fields, "duration")) {
+      runtime.screen.tintDurationMs = toDurationMs(fieldNumber(fields, "duration", 0));
+    } else {
+      runtime.screen.tintDurationMs = 0;
+    }
     return;
   }
   if (title === "Flash Screen") {
@@ -94,15 +100,44 @@ function executeByTitle(session: PlaySessionLike, entry: M2CommandCatalogEntry, 
 
 function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void {
   const pictureId = fieldString(fields, "pictureId", "pic1");
-  const resourceId = fieldString(fields, "resourceId", "");
-  const picture = {
+  const previous = session.pictures?.[pictureId];
+  // resourceId 미지정 이동은 기존 픽처의 리소스를 유지(Move Picture 는 대개 이미지를 안 바꾼다).
+  const resourceId = hasField(fields, "resourceId")
+    ? fieldString(fields, "resourceId", "")
+    : previous?.resourceId ?? fieldString(fields, "resourceId", "");
+  const picture: RuntimePictureState = {
     pictureId,
     resourceId,
-    x: fieldNumber(fields, "x", 0),
-    y: fieldNumber(fields, "y", 0),
+    x: fieldNumber(fields, "x", previous?.x ?? 0),
+    y: fieldNumber(fields, "y", previous?.y ?? 0),
   };
+  // 선택 필드는 명령에 포함될 때만 기록(기존 테스트의 정확한 형태 비교 유지).
+  if (hasField(fields, "scale") || hasField(fields, "zoom")) {
+    (picture as { scale?: number }).scale = fieldNumber(fields, hasField(fields, "scale") ? "scale" : "zoom", 100);
+  }
+  if (hasField(fields, "opacity")) {
+    (picture as { opacity?: number }).opacity = fieldNumber(fields, "opacity", 255);
+  }
+  if (hasField(fields, "rotation") || hasField(fields, "angle")) {
+    (picture as { rotation?: number }).rotation = fieldNumber(fields, hasField(fields, "rotation") ? "rotation" : "angle", 0);
+  }
+  if (hasField(fields, "duration")) {
+    (picture as { durationMs?: number }).durationMs = toDurationMs(fieldNumber(fields, "duration", 0));
+  }
   session.pictures ??= {};
   session.pictures[pictureId] = picture;
+}
+
+// 필드 존재 여부(값이 undefined 가 아님).
+function hasField(fields: M2CommandFields, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
+}
+
+// duration 값을 ms 로 정규화. RM2K3 는 duration 을 프레임(60fps)/초로 쓰기도 하나,
+// 여기서는 값이 작으면(<=60) 초로 보고 ms 로 환산, 그 외(>60)는 이미 ms 로 간주.
+function toDurationMs(value: number): number {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return value <= 60 ? Math.round(value * 1000) : Math.round(value);
 }
 
 function currentBgm(session: PlaySessionLike): string {

@@ -165,6 +165,7 @@ describe("T12 RM2K3 player status menu", () => {
       "상태",
       "열",
       "진형",
+      "임무",
       "대기 ON",
       "타이틀",
     ]);

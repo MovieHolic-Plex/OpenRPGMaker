@@ -2,12 +2,14 @@ import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Tool, Layer } from "@/editor/editorState";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
+import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { setTerrainTag } from "@/editor/tilesetActions";
 import { TILE_SIZE } from "@/assets/bundled";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
+import { renderTilePaletteClusters, type PaletteViewMode } from "@/editor/panels/tilePaletteClusters";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
@@ -17,6 +19,7 @@ import {
   similarTilesForTile,
   usedLocationsForTile,
 } from "@/editor/panels/tileBrushTools";
+import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import { createPaletteStampFromDrag, paletteStampIncludesTile } from "@/editor/tilePaletteStamp";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { compatibleStampIdForTile, isAutoConnectCandidate, tileStampsForTile } from "@/editor/tileStampBrushes";
@@ -47,6 +50,9 @@ const TOOLS: { readonly id: Tool; readonly label: string; readonly hint: string;
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 const CHIPSET_SHEET_CELL_SIZE = "var(--chipset-cell)";
+const RANGE_DRAG_THRESHOLD_PX = 4;
+const PALETTE_VIEW_STORAGE_KEY = "rpg-zzu:palette-view";
+const PALETTE_ADVANCED_STORAGE_KEY = "rpg-zzu:palette-advanced";
 const CURATED_TOWN_PALETTE_INDEXES = [
   240, 303, 421, 424, 342, 343, 306, 366, 374, 375,
   270, 120, 93, 123, 153, 246, 129, 376, 390, 391,
@@ -81,6 +87,7 @@ let advancedTileToolsExpanded = false;
 let resetChipsetScroll = false;
 let paletteDragStartTile: number | null = null;
 let paletteDragHandled = false;
+let sheetRangeDrag: SheetRangeDrag | null = null;
 const recentTiles: number[] = [];
 
 type PaletteScroll = {
@@ -88,6 +95,33 @@ type PaletteScroll = {
   readonly containerTop: number;
   readonly sheetLeft: number;
   readonly sheetTop: number;
+};
+
+type SheetRangeRect = {
+  readonly h: number;
+  readonly w: number;
+  readonly x: number;
+  readonly y: number;
+};
+
+type SheetRangeSelection = {
+  readonly rect: SheetRangeRect;
+  readonly tileIds: readonly number[];
+};
+
+type SheetRangeDrag = {
+  readonly active: boolean;
+  readonly currentTile: number;
+  readonly startClientX: number;
+  readonly startClientY: number;
+  readonly startTile: number;
+};
+
+type SheetRangeClassifyDetail = {
+  readonly kind: "range-classify";
+  readonly rect: SheetRangeRect;
+  readonly tileIds: readonly number[];
+  readonly tilesetId: string;
 };
 
 export function renderTilePalette(container: HTMLElement): void {
@@ -139,10 +173,20 @@ export function renderTilePalette(container: HTMLElement): void {
     return;
   }
 
-  const palette = makeChipsetSheet(state.selectedTile, state.layer, tileset, state.activePaletteStamp);
+  advancedTileToolsExpanded = readAdvancedTileToolsExpanded();
+  const paletteView = readPaletteView();
+  const palette = paletteView === "sheet"
+    ? makeChipsetSheet(state.selectedTile, state.layer, tileset, state.activePaletteStamp)
+    : renderTilePaletteClusters({
+      layer: state.layer,
+      onSelectTile: selectPaletteTile,
+      selectedTile: state.selectedTile,
+      tileset,
+    });
   tileSection.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   tileSection.append(makePaletteStampStatus(state.activePaletteStamp));
-  tileSection.append(el("h3", { class: "tile-palette-title", text: "타일 팔레트" }));
+  // RM2K3처럼 팔레트는 현재 편집 레이어에 속한 타일만 보여 준다 — 제목에 레이어를 명시.
+  tileSection.append(makeTilePaletteTitleRow(state.layer, paletteView));
   tileSection.append(palette);
   // 타일 매핑 인스펙터는 항상 표시 — RM2K3에서 현재 타일의 메타데이터
   // (이름/키/AI 라벨/레이어/통행/지형)를 보여주는 표준 패널이다.
@@ -403,8 +447,9 @@ function makeQuickTilePicker(
   const grid = el("div", { class: "quick-tile-grid", dataset: { testid: "quick-tile-grid" } });
   const matches = quickTileIndexes(tileset).slice(0, 96);
   for (const index of matches) {
-    const tileLayer = tileset.priority[index] ?? "lower";
-    grid.append(makeQuickTileCell(index, selectedTile === index, tileLayer === layer));
+    // 빠른 선택은 검색 편의상 전 레이어를 보여 주되, 다른 레이어 타일은 흐리게 표시한다.
+    // 클릭하면 selectPaletteTile이 해당 타일의 홈 레이어로 자동 전환한다.
+    grid.append(makeQuickTileCell(index, selectedTile === index, tileVisibleOnLayer(tileset, index, layer)));
   }
   if (matches.length === 0) {
     grid.append(el("div", { class: "empty-hint quick-tile-empty", text: "검색 결과 없음" }));
@@ -421,6 +466,88 @@ function renderCurrentPalette(): void {
 
 function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
+}
+
+function makeTilePaletteTitleRow(layer: Exclude<Layer, "event">, paletteView: PaletteViewMode): HTMLElement {
+  const row = el("div", { class: "tile-palette-title-row" });
+  row.append(el("h3", {
+    class: "tile-palette-title",
+    text: layer === "upper" ? "타일 팔레트 · 상위 레이어" : "타일 팔레트 · 하위 레이어",
+  }));
+  row.append(
+    el("div", {
+      class: "tile-palette-title-controls",
+      children: [
+        el("div", {
+          class: "palette-view-segment",
+          attrs: { role: "group", "aria-label": "타일 팔레트 보기" },
+          children: [
+            makePaletteViewButton("cluster", "클러스터", paletteView),
+            makePaletteViewButton("sheet", "시트", paletteView),
+          ],
+        }),
+        makeAdvancedTileToolsToggle(),
+      ],
+    })
+  );
+  return row;
+}
+
+function makePaletteViewButton(view: PaletteViewMode, label: string, activeView: PaletteViewMode): HTMLButtonElement {
+  const active = view === activeView;
+  return el("button", {
+    class: "btn palette-view-button" + (active ? " active" : ""),
+    text: label,
+    attrs: {
+      "aria-label": `${label} 보기`,
+      "aria-pressed": String(active),
+      title: `${label} 보기`,
+    },
+    dataset: { testid: view === "cluster" ? "palette-view-cluster" : "palette-view-sheet" },
+    on: {
+      click: () => {
+        writePaletteStorage(PALETTE_VIEW_STORAGE_KEY, view);
+        renderPalettePreservingViewport();
+      },
+    },
+  });
+}
+
+function makeAdvancedTileToolsToggle(): HTMLButtonElement {
+  return el("button", {
+    class: "btn tile-advanced-toggle" + (advancedTileToolsExpanded ? " active" : ""),
+    text: advancedTileToolsExpanded ? "고급 ▾" : "고급 ▸",
+    attrs: {
+      "aria-expanded": String(advancedTileToolsExpanded),
+      title: "고급 타일 도구",
+    },
+    dataset: { testid: "tile-advanced-toggle" },
+    on: {
+      click: () => {
+        advancedTileToolsExpanded = !advancedTileToolsExpanded;
+        writePaletteStorage(PALETTE_ADVANCED_STORAGE_KEY, advancedTileToolsExpanded ? "1" : "0");
+        renderPalettePreservingViewport();
+      },
+    },
+  });
+}
+
+function readPaletteView(): PaletteViewMode {
+  return readPaletteStorage(PALETTE_VIEW_STORAGE_KEY) === "sheet" ? "sheet" : "cluster";
+}
+
+function readAdvancedTileToolsExpanded(): boolean {
+  return readPaletteStorage(PALETTE_ADVANCED_STORAGE_KEY) === "1";
+}
+
+function readPaletteStorage(key: string): string | null {
+  if (typeof localStorage === "undefined") return null;
+  return localStorage.getItem(key);
+}
+
+function writePaletteStorage(key: string, value: string): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(key, value);
 }
 
 function quickTileIndexes(tileset: TilesetDef): readonly number[] {
@@ -490,12 +617,22 @@ export function selectPaletteTile(index: number): void {
     if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);
     recentTiles.unshift(index);
     if (recentTiles.length > 18) recentTiles.length = 18;
-    const activeStampId = editorState.get().activeStampId;
-    const nextActiveStampId = compatibleStampIdForTile(activeStampId, index, currentTilesetForPalette());
+    const state = editorState.get();
+    const tileset = currentTilesetForPalette();
+    const nextActiveStampId = compatibleStampIdForTile(state.activeStampId, index, tileset);
+    // RM2K3식 엄격 분류: 타일은 소속 레이어가 정해져 있다. 다른 레이어의 타일을
+    // (검색/즐겨찾기/유사 타일 등에서) 선택하면 편집 레이어를 그 타일의 홈으로 전환한다.
+    // 이벤트 레이어에서는 전환하지 않는다 — 이벤트 편집 흐름을 깨지 않기 위해.
+    let nextLayer = state.layer;
+    if (tileset && state.layer !== "event") {
+      const home = tileLayerHome(tileset, index);
+      if (home !== "both" && home !== state.layer) nextLayer = home;
+    }
     editorState.set({
       activePaletteStamp: null,
       activeStampId: nextActiveStampId,
       activeStructureStampId: null,
+      layer: nextLayer,
       selectedTile: index,
     });
   });
@@ -507,13 +644,13 @@ function preservePaletteViewport(action: () => void): void {
     return;
   }
   const container = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
-  const palette = container?.querySelector<HTMLElement>('[data-testid="tile-palette"]') ?? null;
+  const palette = container ? paletteViewportElement(container) : null;
   const scroll = container ? readPaletteScroll(container) : null;
   const windowScroll = { x: window.scrollX, y: window.scrollY };
   action();
   const restore = (): void => {
     const nextContainer = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
-    const nextPalette = nextContainer?.querySelector<HTMLElement>('[data-testid="tile-palette"]') ?? null;
+    const nextPalette = nextContainer ? paletteViewportElement(nextContainer) : null;
     if (scroll && nextContainer && nextPalette) applyPaletteScroll(nextContainer, nextPalette, scroll);
     if (palette && container && scroll) applyPaletteScroll(container, palette, scroll);
     window.scrollTo(windowScroll.x, windowScroll.y);
@@ -525,13 +662,20 @@ function preservePaletteViewport(action: () => void): void {
 }
 
 function readPaletteScroll(container: HTMLElement): PaletteScroll {
-  const palette = container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  const palette = paletteViewportElement(container);
   return {
     containerLeft: container.scrollLeft,
     containerTop: container.scrollTop,
     sheetLeft: palette?.scrollLeft ?? 0,
     sheetTop: palette?.scrollTop ?? 0,
   };
+}
+
+function paletteViewportElement(container: HTMLElement): HTMLElement | null {
+  return (
+    container.querySelector<HTMLElement>('[data-testid="tile-palette"]') ??
+    container.querySelector<HTMLElement>('[data-testid="tile-palette-clusters"]')
+  );
 }
 
 function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {
@@ -631,7 +775,9 @@ function makeChipsetSheet(
   activePaletteStamp: PaletteStamp | null
 ): HTMLElement {
   const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
-  const tileIndexes = displayPaletteTileIndexes(tileset);
+  // RM2K3식 엄격 분류: 현재 편집 레이어에 속한 타일만 시트에 노출한다.
+  const tileIndexes = displayPaletteTileIndexes(tileset).filter((index) => tileVisibleOnLayer(tileset, index, layer));
+  const classifiedTileIds = classifiedTiles(tileset);
   const sheet = el("div", {
     class: "chipset-sheet tile-palette chipset-sheet-filtered",
     dataset: { testid: "tile-palette" },
@@ -658,17 +804,21 @@ function makeChipsetSheet(
     { passive: false }
   );
   const overlay = el("div", { class: "chipset-grid", dataset: { testid: "chipset-sheet" } });
+  const cells = new Map<number, HTMLButtonElement>();
   for (const index of tileIndexes) {
-    const tileLayer = tileset.priority[index] ?? "lower";
-    overlay.append(makeChipsetCell({
+    const cell = makeChipsetCell({
       active: selectedTile === index,
-      currentLayer: tileLayer === layer,
+      classified: classifiedTileIds.has(index),
+      currentLayer: true,
       inPaletteStamp: paletteStampIncludesTile(activePaletteStamp, index, tileset.tilesPerRow),
       index,
       tileset,
-    }));
+    });
+    cells.set(index, cell);
+    overlay.append(cell);
   }
   sheet.append(overlay);
+  installSheetRangeSelection({ cells, layer, overlay, sheet, tileset });
   return sheet;
 }
 
@@ -696,6 +846,7 @@ function canScrollVertically(node: HTMLElement, deltaY: number): boolean {
 
 type ChipsetCellModel = {
   readonly active: boolean;
+  readonly classified: boolean;
   readonly currentLayer: boolean;
   readonly inPaletteStamp: boolean;
   readonly index: number;
@@ -706,13 +857,17 @@ function makeChipsetCell(model: ChipsetCellModel): HTMLButtonElement {
   const index = model.index;
   const name = tilePaletteAccessibleName(model.tileset, index);
   const cell = el("button", {
-    class: "chipset-tile" + (model.active ? " active" : "") + (model.currentLayer ? "" : " muted") + (model.inPaletteStamp ? " stamp-source" : ""),
+    class: "chipset-tile"
+      + (model.active ? " active" : "")
+      + (model.currentLayer ? "" : " muted")
+      + (model.classified ? " classified" : "")
+      + (model.inPaletteStamp ? " stamp-source" : ""),
     attrs: {
       title: name,
       "aria-label": name,
       style: tilePreviewStyle(index, CHIPSET_SHEET_CELL_SIZE),
     },
-    dataset: { testid: `chipset-tile-${index}` },
+    dataset: { testid: `chipset-tile-${index}`, tileIndex: String(index) },
     on: {
       pointercancel: () => {
         paletteDragStartTile = null;
@@ -747,6 +902,213 @@ function cleanTileText(value: string | undefined): string {
   return value?.trim() ?? "";
 }
 
+function classifiedTiles(tileset: TilesetDef): Set<number> {
+  const classified = new Set<number>();
+  for (const group of tileset.tileGroups ?? []) {
+    for (const tileId of group.tileIds) {
+      if (tileId >= 0 && tileId < tileset.count) classified.add(tileId);
+    }
+  }
+  for (let index = 0; index < tileset.count; index += 1) {
+    if (cleanTileText(tileset.tileMeta?.[index]?.label)) classified.add(index);
+  }
+  return classified;
+}
+
+type SheetRangeSelectionArgs = {
+  readonly cells: ReadonlyMap<number, HTMLButtonElement>;
+  readonly layer: Exclude<Layer, "event">;
+  readonly overlay: HTMLElement;
+  readonly sheet: HTMLElement;
+  readonly tileset: TilesetDef;
+};
+
+function installSheetRangeSelection(args: SheetRangeSelectionArgs): void {
+  const marquee = el("div", {
+    class: "chipset-range-marquee hidden",
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: "sheet-range-marquee" },
+  });
+  let rangeAction: HTMLButtonElement | null = null;
+  args.sheet.append(marquee);
+
+  const showSelection = (selection: SheetRangeSelection): void => {
+    paintRangeCells(args.cells, selection.tileIds);
+    rangeAction?.remove();
+    rangeAction = null;
+    if (selection.tileIds.length === 0) return;
+    rangeAction = rangeClassifyButton(args.tileset.id, selection);
+    args.sheet.append(rangeAction);
+  };
+
+  args.overlay.addEventListener("pointerdown", (event) => {
+    if (!isPrimaryButtonEvent(event)) return;
+    const startTile = tileIndexFromEventTarget(event, args.overlay);
+    if (startTile === null) return;
+    const point = pointerPoint(event);
+    sheetRangeDrag = {
+      active: false,
+      currentTile: startTile,
+      startClientX: point.x,
+      startClientY: point.y,
+      startTile,
+    };
+    rangeAction?.remove();
+    rangeAction = null;
+    paintRangeCells(args.cells, []);
+    hideMarquee(marquee);
+  });
+
+  args.overlay.addEventListener("pointermove", (event) => {
+    const drag = sheetRangeDrag;
+    if (!drag) return;
+    const currentTile = tileIndexFromEventTarget(event, args.overlay) ?? drag.currentTile;
+    const active = drag.active || pointerDistance(drag, event) >= RANGE_DRAG_THRESHOLD_PX;
+    sheetRangeDrag = { ...drag, active, currentTile };
+    if (!active) return;
+    paletteDragHandled = true;
+    const selection = sheetRangeSelection(args.tileset, args.layer, drag.startTile, currentTile);
+    paintRangeCells(args.cells, selection.tileIds);
+    updateMarquee(marquee, drag, event);
+    event.preventDefault();
+  });
+
+  args.overlay.addEventListener("pointerup", (event) => {
+    const drag = sheetRangeDrag;
+    if (!drag) return;
+    const currentTile = tileIndexFromEventTarget(event, args.overlay) ?? drag.currentTile;
+    const active = drag.active || pointerDistance(drag, event) >= RANGE_DRAG_THRESHOLD_PX;
+    sheetRangeDrag = null;
+    hideMarquee(marquee);
+    if (!active) return;
+    paletteDragHandled = true;
+    showSelection(sheetRangeSelection(args.tileset, args.layer, drag.startTile, currentTile));
+    event.preventDefault();
+  });
+
+  args.overlay.addEventListener("pointercancel", () => {
+    sheetRangeDrag = null;
+    hideMarquee(marquee);
+  });
+}
+
+function rangeClassifyButton(tilesetId: string, selection: SheetRangeSelection): HTMLButtonElement {
+  return el("button", {
+    class: "sheet-range-classify",
+    text: "🤖 이 범위 분류",
+    attrs: { title: "선택한 시트 범위를 새 클러스터로 분류", type: "button" },
+    dataset: { testid: "sheet-range-classify" },
+    on: {
+      click: (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openRangeClassifyModal({
+          kind: "range-classify",
+          rect: selection.rect,
+          tileIds: selection.tileIds,
+          tilesetId,
+        });
+      },
+    },
+  });
+}
+
+// ponytail: Team B owns the modal union; remove this adapter once range-classify lands in ClusterAiModalDetail.
+function openRangeClassifyModal(detail: SheetRangeClassifyDetail): void {
+  Reflect.apply(openClusterAiModal, undefined, [detail]);
+}
+
+function paintRangeCells(cells: ReadonlyMap<number, HTMLButtonElement>, tileIds: readonly number[]): void {
+  for (const cell of cells.values()) cell.classList.remove("range-selected");
+  for (const tileId of tileIds) cells.get(tileId)?.classList.add("range-selected");
+}
+
+function sheetRangeSelection(
+  tileset: TilesetDef,
+  layer: Exclude<Layer, "event">,
+  startTile: number,
+  endTile: number
+): SheetRangeSelection {
+  const rect = normalizeSheetRect(startTile, endTile, tileset.tilesPerRow);
+  return {
+    rect,
+    tileIds: tileIdsInRect(tileset, layer, rect),
+  };
+}
+
+function normalizeSheetRect(startTile: number, endTile: number, tilesPerRow: number): SheetRangeRect {
+  const start = tilePoint(startTile, tilesPerRow);
+  const end = tilePoint(endTile, tilesPerRow);
+  const x = Math.min(start.x, end.x);
+  const y = Math.min(start.y, end.y);
+  return {
+    h: Math.abs(start.y - end.y) + 1,
+    w: Math.abs(start.x - end.x) + 1,
+    x,
+    y,
+  };
+}
+
+function tilePoint(tile: number, tilesPerRow: number): { readonly x: number; readonly y: number } {
+  return { x: tile % tilesPerRow, y: Math.floor(tile / tilesPerRow) };
+}
+
+function tileIdsInRect(tileset: TilesetDef, layer: Exclude<Layer, "event">, rect: SheetRangeRect): readonly number[] {
+  const tileIds: number[] = [];
+  for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+    for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+      const tileId = y * tileset.tilesPerRow + x;
+      if (tileId >= tileset.count) continue;
+      if (tileVisibleOnLayer(tileset, tileId, layer)) tileIds.push(tileId);
+    }
+  }
+  return tileIds;
+}
+
+function tileIndexFromEventTarget(event: Event, boundary: HTMLElement): number | null {
+  let node = event.target instanceof HTMLElement ? event.target : null;
+  while (node) {
+    const tileIndex = integerString(node.dataset.tileIndex);
+    if (tileIndex !== null) return tileIndex;
+    if (node === boundary) return null;
+    node = node.parentElement;
+  }
+  return null;
+}
+
+function integerString(value: string | undefined): number | null {
+  if (value === undefined || !/^\d+$/u.test(value)) return null;
+  return Number.parseInt(value, 10);
+}
+
+function pointerPoint(event: Event): { readonly x: number; readonly y: number } {
+  const x = Reflect.get(event, "clientX");
+  const y = Reflect.get(event, "clientY");
+  return {
+    x: typeof x === "number" ? x : 0,
+    y: typeof y === "number" ? y : 0,
+  };
+}
+
+function pointerDistance(drag: SheetRangeDrag, event: Event): number {
+  const point = pointerPoint(event);
+  return Math.hypot(point.x - drag.startClientX, point.y - drag.startClientY);
+}
+
+function updateMarquee(marquee: HTMLElement, drag: SheetRangeDrag, event: Event): void {
+  const start = { x: drag.startClientX, y: drag.startClientY };
+  const current = pointerPoint(event);
+  marquee.style.setProperty("--range-left", `${Math.min(start.x, current.x)}px`);
+  marquee.style.setProperty("--range-top", `${Math.min(start.y, current.y)}px`);
+  marquee.style.setProperty("--range-width", `${Math.abs(start.x - current.x)}px`);
+  marquee.style.setProperty("--range-height", `${Math.abs(start.y - current.y)}px`);
+  marquee.classList.remove("hidden");
+}
+
+function hideMarquee(marquee: HTMLElement): void {
+  marquee.classList.add("hidden");
+}
+
 function startPaletteStampDrag(index: number, event: Event): void {
   if (!isPrimaryButtonEvent(event)) return;
   paletteDragStartTile = index;
@@ -756,6 +1118,12 @@ function startPaletteStampDrag(index: number, event: Event): void {
 
 function finishPaletteStampDrag(index: number, tileset: TilesetDef, event: Event): void {
   if (!isPrimaryButtonEvent(event)) return;
+  if (sheetRangeDrag?.active) {
+    paletteDragStartTile = null;
+    paletteDragHandled = true;
+    event.preventDefault();
+    return;
+  }
   const startTile = paletteDragStartTile;
   paletteDragStartTile = null;
   if (startTile === null || startTile === index) return;

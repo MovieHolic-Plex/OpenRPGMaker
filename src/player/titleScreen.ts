@@ -69,7 +69,7 @@ function titleButton(label: string, testId: string, selected: boolean, onClick: 
 function renderInputHint(): HTMLElement {
   return el("div", {
     class: "rm-title-input-hint",
-    text: "Enter 선택   Esc 취소",
+    text: "↑↓ 이동   Z/Enter 결정   X/Esc 취소",
     dataset: { testid: "title-input-hint" },
   });
 }

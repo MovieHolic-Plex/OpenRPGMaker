@@ -1,0 +1,18 @@
+/* 맵 전환 연출 오버레이. transitionOverlay.ts 가 진행도별 스타일을 갱신한다.
+   모자이크는 배경 픽셀 격자, 블라인드는 가로 막대. */
+@layer runtime {
+  .runtime-transition-overlay {
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 40;
+  }
+
+  .runtime-transition-blind {
+    background: var(--bg-canvas, #05070c);
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+}

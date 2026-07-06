@@ -48,6 +48,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "changeActorHp", label: "HP 변경" },
   { value: "changeActorMp", label: "MP 변경" },
   { value: "recoverAll", label: "모두 회복" },
+  { value: "enterHeroName", label: "이름 입력 처리" },
   { value: "changeGold", label: "소지금 변경" },
   { value: "changeItem", label: "아이템 변경" },
   { value: "changeParty", label: "파티 변경" },

@@ -1,11 +1,14 @@
 import { textControl } from "@/editor/panels/databaseControls";
+import { renderTerrainTemplateSection } from "@/editor/panels/terrainTemplatePanel";
 import { renderTilesetCheckerSummary } from "@/editor/panels/tilesetCheckerSummary";
+import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import {
-  getTilesetMetadataEditMode,
+  getTilesetSectionTab,
   renderTilesetMetadataEditor,
-  setTilesetMetadataEditMode,
+  setTilesetSectionTab,
 } from "@/editor/panels/tilesetMetadataEditor";
 import { openTilesetSettingsModal } from "@/editor/panels/tilesetPassageModal";
+import { TILESET_SECTION_TABS, type TilesetSectionTab } from "@/editor/panels/tilesetUsageGuide";
 import { store } from "@/project/store";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import type { TilesetDef } from "@/project/types";
@@ -18,35 +21,20 @@ type DisabledButtonSpec = {
   readonly title: string;
 };
 
-type ModeButtonSpec = {
-  readonly activeMode: ReturnType<typeof getTilesetMetadataEditMode>;
-  readonly label: string;
-  readonly mode: ReturnType<typeof getTilesetMetadataEditMode>;
-  readonly rerender: () => void;
-};
-
-const TERRAIN_NAMES = [
-  "초원",
-  "숲",
-  "사막",
-  "황무지",
-  "독 늪",
-  "눈",
-  "눈: 숲",
-  "대미지 바닥",
-  "바다: 해안",
-  "바다: 외해",
-] as const;
+const DEFAULT_TRANSPARENT_COLOR = "#ff00ff";
 
 export function renderTilesetEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const tab = getTilesetSectionTab();
   return el("section", {
     class: "tileset-db-editor simplified rm2k3-tileset-editor",
     children: [
       renderTilesetProperties(tileset, rerender),
       el("div", {
         class: "rm2k3-tileset-main",
-        children: [renderTilesetMetadataEditor(tileset, rerender), renderTerrainPanel(tileset, rerender)],
+        children: [renderTilesetMetadataEditor(tileset, rerender), renderTabSidePanel(tileset, tab, rerender)],
       }),
+      // 구성 탭: 이 타일셋의 지형 템플릿(교과서)을 여기서 관리한다.
+      ...(tab === "compose" ? [renderTerrainTemplateSection(tileset)] : []),
     ],
   });
 }
@@ -74,85 +62,69 @@ function renderTilesetProperties(tileset: TilesetDef, rerender: () => void): HTM
           }),
         ],
       }),
-      el("div", {
-        class: "tileset-db-layer-tabs rm2k3-tileset-layer-tabs",
-        dataset: { testid: "tileset-rm2k3-layer-tabs" },
-        children: [
-          disabledButton({
-            extraClass: "active",
-            label: "하위 레이어",
-            testid: "tileset-rm2k3-layer-lower",
-            title: "현재 타일셋 표시는 하위/상위 레이어를 함께 보여줍니다.",
-          }),
-          disabledButton({
-            label: "상위 레이어",
-            testid: "tileset-rm2k3-layer-upper",
-            title: "현재 타일셋 표시는 하위/상위 레이어를 함께 보여줍니다.",
-          }),
-        ],
-      }),
-      el("button", {
-        class: "database-footer-button rm2k3-global-terrain-button",
-        text: "상세 통행",
-        attrs: { type: "button", title: "상세 통행 설정 열기" },
-        dataset: { testid: "tileset-settings-open" },
-        on: { click: () => openTilesetSettingsModal(tileset.id, rerender) },
-      }),
-      el("button", {
-        class: "database-footer-button rm2k3-global-terrain-button primary",
-        text: "AI 메타",
-        attrs: { type: "button", title: "AI 타일 의미 분석 열기" },
-        dataset: { testid: "tileset-ai-meta-open" },
-        on: { click: () => openTilesetAiMeta(rerender) },
-      }),
+      renderTransparentColorField(tileset, rerender),
+      renderSectionTabs(rerender),
     ],
   });
 }
 
-function renderTerrainPanel(tileset: TilesetDef, rerender: () => void): HTMLElement {
-  const activeMode = getTilesetMetadataEditMode();
+// 3탭: 타일 규칙 / 타일 지식(단어장) / 구성 — 성격이 다른 기능을 한 화면에 쌓지 않는다.
+function renderSectionTabs(rerender: () => void): HTMLElement {
+  const active = getTilesetSectionTab();
+  return el("div", {
+    class: "tileset-section-tabs",
+    attrs: { role: "tablist", "aria-label": "타일셋 섹션" },
+    dataset: { testid: "tileset-section-tabs" },
+    children: TILESET_SECTION_TABS.map((tab) =>
+      el("button", {
+        class: `database-footer-button tileset-section-tab${tab.id === active ? " active" : ""}`,
+        text: tab.label,
+        attrs: { type: "button", role: "tab", "aria-selected": String(tab.id === active) },
+        dataset: { testid: `tileset-section-tab-${tab.id}` },
+        on: { click: () => setTilesetSectionTab(tab.id, rerender) },
+      }),
+    ),
+  });
+}
+
+function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerender: () => void): HTMLElement {
+  if (tab === "rules") {
+    return el("aside", {
+      class: "rm2k3-tileset-terrain-pane",
+      children: [
+        el("fieldset", {
+          class: "rm2k3-db-fieldset",
+          dataset: { testid: "tileset-rules-side" },
+          children: [
+            el("legend", { text: "상세 편집" }),
+            el("button", {
+              class: "database-footer-button rm2k3-global-terrain-button",
+              text: "상세 통행 (O/X/★)",
+              attrs: { type: "button", title: "칩셋 전체 통행 표를 한 화면에서 편집" },
+              dataset: { testid: "tileset-settings-open" },
+              on: { click: () => openTilesetSettingsModal(tileset.id, rerender) },
+            }),
+            el("div", { class: "tileset-rule-note", text: "칩을 클릭하면 통행/차단이 토글되고, 레이어는 왼쪽 레이어 버튼으로 정합니다." }),
+          ],
+        }),
+      ],
+    });
+  }
+  if (tab === "knowledge") {
+    return el("aside", { class: "rm2k3-tileset-terrain-pane", children: [renderTilesetCheckerSummary(tileset)] });
+  }
   return el("aside", {
     class: "rm2k3-tileset-terrain-pane",
     children: [
-      renderTilesetCheckerSummary(tileset),
       el("fieldset", {
-        class: "rm2k3-db-fieldset rm2k3-tileset-edit-mode",
-        dataset: { testid: "tileset-rm2k3-edit-mode" },
+        class: "rm2k3-db-fieldset rm2k3-tileset-autotile",
         children: [
-          el("legend", { text: "편집 모드" }),
-          renderModeButton({ activeMode, label: "지형", mode: "terrain", rerender }),
-          renderModeButton({ activeMode, label: "통행", mode: "passage", rerender }),
-          renderModeButton({ activeMode, label: "AI 메타", mode: "ai", rerender }),
-          renderModeButton({ activeMode, label: "그룹", mode: "group", rerender }),
-          el("button", {
-            class: "database-footer-button rm2k3-mode-button",
-            text: "4방향 통행",
-            attrs: { type: "button", title: "타일별 4방향 통행 설정 열기" },
-            dataset: { testid: "tileset-rm2k3-mode-four-way" },
-            on: { click: () => openTilesetSettingsModal(tileset.id, rerender) },
-          }),
-          disabledButton({
-            extraClass: "rm2k3-mode-button",
-            label: "전역 지형 설정",
-            testid: "tileset-rm2k3-mode-global-terrain",
-            title: "전역 지형 일괄 설정은 아직 지원하지 않습니다.",
-          }),
+          el("legend", { text: "자동타일 애니메이션" }),
+          el("div", { class: "tileset-db-autotile-swatch" }),
+          el("div", { class: "tileset-db-resource", text: passageSummary(tileset) }),
         ],
       }),
-      renderAutotileSummary(tileset),
-      renderTerrainList(),
     ],
-  });
-}
-
-function renderModeButton(spec: ModeButtonSpec): HTMLButtonElement {
-  const isActive = spec.activeMode === spec.mode;
-  return el("button", {
-    class: `database-footer-button rm2k3-mode-button${isActive ? " active" : ""}`,
-    text: spec.label,
-    attrs: { type: "button", "aria-pressed": String(isActive) },
-    dataset: { testid: `tileset-rm2k3-mode-${spec.mode}` },
-    on: { click: () => setTilesetMetadataEditMode(spec.mode, spec.rerender) },
   });
 }
 
@@ -165,33 +137,6 @@ function disabledButton(spec: DisabledButtonSpec): HTMLButtonElement {
   });
 }
 
-function renderAutotileSummary(tileset: TilesetDef): HTMLElement {
-  return el("fieldset", {
-    class: "rm2k3-db-fieldset rm2k3-tileset-autotile",
-    children: [
-      el("legend", { text: "자동타일 애니메이션" }),
-      el("div", { class: "tileset-db-autotile-swatch" }),
-      el("div", { class: "tileset-db-resource", text: passageSummary(tileset) }),
-    ],
-  });
-}
-
-function renderTerrainList(): HTMLElement {
-  return el("fieldset", {
-    class: "rm2k3-db-fieldset rm2k3-tileset-terrain-list-wrap",
-    children: [
-      el("legend", { text: "지형" }),
-      el("div", {
-        class: "tileset-db-terrain-list",
-        dataset: { testid: "tileset-rm2k3-terrain-list" },
-        children: TERRAIN_NAMES.map((name, index) =>
-          el("div", { class: `tileset-db-terrain-row${index === 0 ? " active" : ""}`, text: `${recordNumber(index)}:${name}` }),
-        ),
-      }),
-    ],
-  });
-}
-
 function updateTilesetName(tilesetId: string, value: string): void {
   store.update((project) => {
     const target = project.tilesets[tilesetId];
@@ -199,11 +144,91 @@ function updateTilesetName(tilesetId: string, value: string): void {
   });
 }
 
-function openTilesetAiMeta(rerender: () => void): void {
-  setTilesetMetadataEditMode("ai", rerender);
-  window.requestAnimationFrame(() => {
-    document.querySelector("[data-testid='tileset-ai-question-panel']")?.scrollIntoView({ block: "nearest" });
+function updateTilesetTransparentColor(tilesetId: string, value: string): void {
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (!target) return;
+    target.transparentColor = value;
   });
+}
+
+function clearTilesetTransparentColor(tilesetId: string): void {
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (target) delete target.transparentColor;
+  });
+}
+
+function renderTransparentColorField(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const current = colorInputValue(tileset);
+  const colorInput = el("input", {
+    class: "rm2k3-transparent-color",
+    attrs: { type: "color", title: "타일셋의 투명 처리할 색(색 키)", "aria-label": "투명색" },
+    value: current,
+    dataset: { testid: "tileset-transparent-color" },
+  });
+  const hexInput = el("input", {
+    class: "rm2k3-transparent-hex",
+    attrs: {
+      type: "text",
+      inputmode: "text",
+      maxlength: "7",
+      pattern: "#[0-9a-fA-F]{6}",
+      spellcheck: "false",
+      "aria-label": "투명색 HEX",
+    },
+    value: current,
+    dataset: { testid: "tileset-transparent-hex" },
+  });
+  colorInput.addEventListener("input", () => {
+    hexInput.value = colorInput.value;
+  });
+  colorInput.addEventListener("change", () => {
+    updateTilesetTransparentColor(tileset.id, colorInput.value);
+    rerender();
+  });
+  hexInput.addEventListener("input", () => {
+    const normalized = normalizeRgbHexColor(hexInput.value);
+    if (normalized) colorInput.value = normalized;
+  });
+  hexInput.addEventListener("change", () => {
+    const normalized = normalizeRgbHexColor(hexInput.value);
+    if (!normalized) {
+      const fallback = colorInputValue(store.getCurrent().tilesets[tileset.id] ?? tileset);
+      hexInput.value = fallback;
+      colorInput.value = fallback;
+      return;
+    }
+    hexInput.value = normalized;
+    colorInput.value = normalized;
+    updateTilesetTransparentColor(tileset.id, normalized);
+    rerender();
+  });
+  const resetButton = el("button", {
+    class: "database-footer-button",
+    text: "기본값으로",
+    attrs: { type: "button", title: "칩셋 기본 투명색으로 되돌리기" },
+    dataset: { testid: "tileset-transparent-reset" },
+    on: {
+      click: () => {
+        clearTilesetTransparentColor(tileset.id);
+        rerender();
+      },
+    },
+  });
+  resetButton.disabled = !tileset.transparentColor;
+  return el("fieldset", {
+    class: "rm2k3-db-fieldset rm2k3-tileset-transparent-field",
+    dataset: { testid: "tileset-transparent-field" },
+    children: [
+      el("legend", { text: "투명색" }),
+      el("div", { class: "rm2k3-transparent-row", children: [colorInput, hexInput, resetButton] }),
+    ],
+  });
+}
+
+function colorInputValue(tileset: TilesetDef): string {
+  return normalizeRgbHexColor(tileset.transparentColor ?? "") ?? DEFAULT_TRANSPARENT_COLOR;
 }
 
 function passageSummary(tileset: TilesetDef): string {
@@ -212,8 +237,4 @@ function passageSummary(tileset: TilesetDef): string {
   const blocked = marks.filter((mark) => mark === "x").length;
   const upper = marks.filter((mark) => mark === "star").length;
   return `O ${open} / X ${blocked} / * ${upper}`;
-}
-
-function recordNumber(index: number): string {
-  return String(index + 1).padStart(4, "0");
 }

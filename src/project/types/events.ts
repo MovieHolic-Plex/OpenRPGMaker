@@ -85,6 +85,8 @@ export type ShopType = "normal" | "buyOnly" | "sellOnly";
 export type ShopMessageType = "welcome" | "business" | "direct";
 export type TransferDirection = "retain" | Dir;
 export type TransferFade = "black" | "white" | "none";
+// 전환 연출 종류. 기본 페이드 외에 모자이크(픽셀화)/블라인드 지원.
+export type TransferTransition = "fade" | "mosaic" | "blinds";
 export type ActorAmountOp = "=" | "+=" | "-=";
 export type ActorEquipmentSlot = "weapon" | "shield" | "armor" | "helmet" | "accessory";
 export type MessageWindowFormat = "normal" | "transparent";
@@ -129,7 +131,7 @@ export type Command =
       value: VariableOperand;
     }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade }
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | {
       kind: "changeTile";
@@ -149,6 +151,7 @@ export type Command =
   | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "recoverAll"; actorId?: ActorId }
+  | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }

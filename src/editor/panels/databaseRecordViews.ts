@@ -1,6 +1,7 @@
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
 import {
   addDatabaseRecord,
   deleteDatabaseRecord,
@@ -16,7 +17,16 @@ import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
-import { resetRecordViewSessionState, searchQueryForCollection, selectedRecordForSession, selectedRecordIdForSession, setSearchQueryForCollection, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import {
+  listScrollTopForCollection,
+  resetRecordViewSessionState,
+  searchQueryForCollection,
+  selectedRecordForSession,
+  selectedRecordIdForSession,
+  setListScrollTopForCollection,
+  setSearchQueryForCollection,
+  setSelectedRecordId,
+} from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { DatabaseRecords } from "@/project/types";
@@ -38,26 +48,64 @@ const COLLECTION_LABELS: Record<DatabaseCollection, string> = {
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
   const selected = selectedRecordForSession(collection, records);
-  const selectedIndex = selected ? records.findIndex((record) => record.id === selected.id) : -1;
+  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
+
+  // 디테일 폼만 부분 갱신한다(리스트/스크롤/검색 포커스는 유지).
+  const renderDetail = (id: string | undefined): void => {
+    const liveRecords = store.getCurrent().database[collection];
+    const record = id ? liveRecords.find((entry) => entry.id === id) : undefined;
+    if (!record) {
+      detailPane.replaceChildren(el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "레코드가 없습니다." }));
+      return;
+    }
+    const index = liveRecords.findIndex((entry) => entry.id === record.id);
+    const onRename = (next: string): void => updateRecordRowLabel(listEl, record.id, next);
+    const form = recordForm(collection, record, rerender, onRename);
+    form.classList.add("rm2k3-detail-form", `rm2k3-detail-${collection}`);
+    detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
+  };
+
+  // 레코드 선택 시: 리스트를 통째로 재빌드하지 않고 활성 행 표시 + 디테일만 교체한다.
+  const onSelect = (id: string): void => {
+    setSelectedRecordId(collection, id);
+    markActiveRow(listEl, id);
+    renderDetail(id);
+  };
+
+  const listEl = recordList(collection, records, onSelect);
   const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
   listPane.append(
     el("h3", { text: COLLECTION_LABELS[collection] }),
     recordSearch(collection, rerender),
-    recordList(collection, records, selected?.id ?? "", rerender),
+    listEl,
     recordListFooter(records.length),
     toolbar(collection, rerender),
   );
-  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
-  if (!selected) {
-    detailPane.append(el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "레코드가 없습니다." }));
-    host.append(el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] }));
-    return;
-  }
-  detailPane.append(recordIdentity(COLLECTION_LABELS[collection], selected.id, selected.name, selectedIndex));
-  const form = recordForm(collection, selected, rerender);
-  form.classList.add("rm2k3-detail-form", `rm2k3-detail-${collection}`);
-  detailPane.append(form);
+  renderDetail(selected?.id);
   host.append(el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] }));
+}
+
+// 활성 레코드 행만 갱신한다(다른 행은 그대로 두어 스크롤/포커스 유지).
+function markActiveRow(listEl: HTMLElement, id: string): void {
+  for (const row of Array.from(listEl.querySelectorAll(".db-list-row"))) {
+    if (!(row instanceof HTMLElement)) continue;
+    const rowId = row.dataset.recordId;
+    if (!rowId) continue;
+    const isActive = rowId === id;
+    if (isActive) row.classList.add("active");
+    else row.classList.remove("active");
+    row.setAttribute("aria-pressed", String(isActive));
+  }
+}
+
+// 필드 수정 시 해당 레코드 행 라벨만 갱신한다(디테일 폼 재생성 없이 포커스 유지).
+function updateRecordRowLabel(listEl: HTMLElement, id: string, name: string): void {
+  const row = listEl.querySelector(`[data-testid='db-record-row-${id}']`);
+  if (!(row instanceof HTMLElement)) return;
+  const nameNode = row.querySelector(".db-list-name");
+  if (nameNode instanceof HTMLElement) nameNode.textContent = name || "(이름 없음)";
+  row.dataset.recordName = name;
+  row.setAttribute("title", `${name} (${id})`);
 }
 
 export function resetDatabaseRecordViewSession(): void {
@@ -142,59 +190,104 @@ function restoreSearchFocus(selector: string, cursor: number): void {
   });
 }
 
+type VisibleRow = {
+  readonly record: DatabaseRecords[DatabaseCollection][number];
+  readonly originalIndex: number;
+  readonly visibleIndex: number;
+};
+
 function recordList(
   collection: DatabaseCollection,
   records: DatabaseRecords[DatabaseCollection],
-  selectedId: string,
-  rerender: () => void
+  onSelect: (id: string) => void
 ): HTMLElement {
-  const list = el("div", { class: "db-list" });
-  let visibleIndex = 0;
   const effectiveSearchQuery = collection === "classes" ? "" : searchQueryForCollection(collection);
-  for (const [recordIndex, record] of records.entries()) {
+  const visible: VisibleRow[] = [];
+  let visibleIndex = 0;
+  for (const [originalIndex, record] of records.entries()) {
     if (effectiveSearchQuery && !matchesNameOrId(record.name, record.id, effectiveSearchQuery)) continue;
     visibleIndex += 1;
-    const isSelected = record.id === selectedId;
-    list.append(
+    visible.push({ record, originalIndex, visibleIndex });
+  }
+
+  const virtualList = createVirtualList<VisibleRow>({
+    items: visible,
+    className: "db-list",
+    onScroll: (scrollTop) => setListScrollTopForCollection(collection, scrollTop),
+    renderRow: (entry) => recordListRow(collection, entry, records.length, onSelect),
+  });
+
+  // 직업 탭의 장식용 채움 행(가상화 대상이 아니며 항상 목록 뒤에 유지).
+  if (collection === "classes" && records.length < 18) {
+    virtualList.element.append(...classFillerRows(records.length));
+  }
+
+  // 탭 전환 후 되돌아올 때 리스트 스크롤 위치를 복원한다.
+  const restoredScrollTop = listScrollTopForCollection(collection);
+  if (restoredScrollTop > 0) {
+    scheduleFrame(() => {
+      virtualList.element.scrollTop = restoredScrollTop;
+      virtualList.render();
+    });
+  }
+  return virtualList.element;
+}
+
+function recordListRow(
+  collection: DatabaseCollection,
+  entry: VisibleRow,
+  total: number,
+  onSelect: (id: string) => void
+): HTMLElement {
+  const { record, originalIndex, visibleIndex } = entry;
+  const isSelected = selectedRecordIdForSession(collection) === record.id;
+  return el("button", {
+    class: `db-list-row${isSelected ? " active" : ""}`,
+    attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
+    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}` },
+    children: [
+      el("span", { class: "db-list-number", text: `${ordinalLabel(originalIndex)}:` }),
+      el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
+    ],
+    on: { click: () => onSelect(record.id) },
+  });
+}
+
+function classFillerRows(startIndex: number): HTMLElement[] {
+  const visualClassNames = ["마검사", "기사", "무투가", "도적", "해적", "사무라이", "닌자", "성기사", "암흑기사", "현자", "음유시인", "소환사"];
+  const fillers: HTMLElement[] = [];
+  for (let fillerIndex = startIndex; fillerIndex < 18; fillerIndex += 1) {
+    const name = visualClassNames[fillerIndex - startIndex] ?? "";
+    fillers.push(
       el("button", {
-        class: `db-list-row${isSelected ? " active" : ""}`,
-        attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
-        dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(records.length), testid: `db-record-row-${record.id}` },
+        class: "db-list-row db-list-row-visual-filler",
+        attrs: { "aria-hidden": "true", disabled: "true", tabindex: "-1", type: "button" },
         children: [
-          el("span", { class: "db-list-number", text: `${ordinalLabel(recordIndex)}:` }),
-          el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
+          el("span", { class: "db-list-number", text: `${ordinalLabel(fillerIndex)}:` }),
+          el("span", { class: "db-list-name", text: name }),
         ],
-        on: {
-          click: () => {
-            setSelectedRecordId(collection, record.id);
-            rerender();
-          },
-        },
       })
     );
   }
-  if (collection === "classes" && records.length < 18) {
-    const visualClassNames = ["마검사", "기사", "무투가", "도적", "해적", "사무라이", "닌자", "성기사", "암흑기사", "현자", "음유시인", "소환사"];
-    for (let fillerIndex = records.length; fillerIndex < 18; fillerIndex += 1) {
-      const name = visualClassNames[fillerIndex - records.length] ?? "";
-      list.append(
-        el("button", {
-          class: "db-list-row db-list-row-visual-filler",
-          attrs: { "aria-hidden": "true", disabled: "true", tabindex: "-1", type: "button" },
-          children: [
-            el("span", { class: "db-list-number", text: `${ordinalLabel(fillerIndex)}:` }),
-            el("span", { class: "db-list-name", text: name }),
-          ],
-        })
-      );
-    }
-  }
-  return list;
+  return fillers;
 }
 
-function recordForm(collection: DatabaseCollection, record: DatabaseRecords[DatabaseCollection][number], rerender: () => void): HTMLElement {
+function scheduleFrame(run: () => void): void {
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => run());
+    return;
+  }
+  run();
+}
+
+function recordForm(
+  collection: DatabaseCollection,
+  record: DatabaseRecords[DatabaseCollection][number],
+  rerender: () => void,
+  onRename?: (name: string) => void
+): HTMLElement {
   const form = el("section", { class: `db-detail-form rm2k3-detail-form rm2k3-detail-${collection}`, dataset: { testid: "db-detail-form" } });
-  if (collection !== "classes" && collection !== "enemies" && collection !== "troops") form.append(nameField(collection, record.id, record.name));
+  if (collection !== "classes" && collection !== "enemies" && collection !== "troops") form.append(nameField(collection, record.id, record.name, onRename));
   switch (collection) {
     case "actors": {
       const actor = store.getCurrent().database.actors.find((entry) => entry.id === record.id);
@@ -242,6 +335,9 @@ function recordListFooter(count: number): HTMLElement {
   });
 }
 
-function nameField(collection: DatabaseCollection, id: string, value: string): HTMLElement {
-  return textField("이름", "db-field-name", value, (next) => updateDatabaseRecord(collection, id, { name: next }));
+function nameField(collection: DatabaseCollection, id: string, value: string, onRename?: (name: string) => void): HTMLElement {
+  return textField("이름", "db-field-name", value, (next) => {
+    updateDatabaseRecord(collection, id, { name: next });
+    onRename?.(next);
+  });
 }

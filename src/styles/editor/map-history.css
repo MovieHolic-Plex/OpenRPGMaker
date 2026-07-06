@@ -1,0 +1,163 @@
+.map-history-panel {
+  background: var(--editor-panel-bg-2);
+  border: 1px solid var(--editor-line);
+  border-radius: 6px;
+  color: var(--editor-text);
+  flex: 0 0 auto;
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2);
+}
+
+.rpg-maker-history-dropdown {
+  min-width: 260px;
+}
+
+.rpg-maker-history-dropdown .map-history-panel {
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.map-history-panel > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+}
+
+.map-history-panel > summary::-webkit-details-marker {
+  display: none;
+}
+
+.map-history-actions {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 1fr 1fr;
+  margin-top: var(--space-2);
+}
+
+.map-history-button,
+.map-history-revert {
+  background: var(--control-bg);
+  border: 1px solid var(--editor-line);
+  border-radius: 4px;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.map-history-button {
+  min-height: 28px;
+  padding: 0 var(--space-2);
+}
+
+.map-history-revert {
+  align-self: start;
+  color: var(--editor-blue);
+  font-size: 11px;
+  margin-top: var(--space-1);
+  padding: 3px var(--space-2);
+}
+
+.map-history-button:hover:not(:disabled),
+.map-history-revert:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--editor-line-strong);
+}
+
+.map-history-button:disabled,
+.map-history-revert:disabled {
+  color: var(--editor-text-soft);
+  cursor: default;
+  opacity: 0.58;
+}
+
+.map-history-list {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  max-height: 180px;
+  overflow: auto;
+  padding: 0;
+}
+
+.map-history-item {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 12px minmax(0, 1fr);
+  position: relative;
+}
+
+.map-history-item::before {
+  background: var(--editor-line);
+  bottom: -10px;
+  content: "";
+  left: 5px;
+  position: absolute;
+  top: 14px;
+  width: 1px;
+}
+
+.map-history-item:last-child::before {
+  display: none;
+}
+
+.map-history-dot {
+  color: var(--editor-text-soft);
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.map-history-item.is-current .map-history-dot,
+.map-history-item.is-current .map-history-current {
+  color: var(--editor-blue);
+}
+
+.map-history-item.is-other-map {
+  opacity: 0.62;
+}
+
+.map-history-content {
+  min-width: 0;
+}
+
+.map-history-label-row {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-1);
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.map-history-label {
+  font-size: 12px;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-history-current,
+.map-history-map {
+  color: var(--editor-text-muted);
+  font-size: 11px;
+}
+
+.map-history-map {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-history-empty {
+  color: var(--editor-text-muted);
+  font-size: 12px;
+  padding: var(--space-2) 0;
+}

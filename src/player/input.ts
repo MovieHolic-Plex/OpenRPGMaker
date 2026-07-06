@@ -6,18 +6,79 @@ import type Phaser from "phaser";
 
 export type Dir = "down" | "left" | "right" | "up";
 
+export type Axis = -1 | 0 | 1;
+
 export interface InputState {
-  dir: Dir | null; // 현재 눌린 방향(우선순위: 마지막 눌린 것)
+  dir: Dir | null; // 스프라이트 facing(4방향, 수평 우선)
+  x: Axis; // 수평 이동 성분(-1 좌 / 0 / 1 우)
+  y: Axis; // 수직 이동 성분(-1 상 / 0 / 1 하)
+  dash: boolean; // 대시(Shift) 유지 여부
   actionPressed: boolean; // 이번 프레임에 action(조사) 엣지
   confirmPressed: boolean; // 이번 프레임에 confirm(대사 진행) 엣지
+}
+
+// 눌린 방향 우선순위 목록(오래된→최근)에서 8방향 이동 의도를 해석한다.
+// - 수평/수직 각각 "가장 최근에 눌린" 방향을 축 성분으로 채택(반대 키가 나중에
+//   눌리면 그쪽을 따름).
+// - facing 은 RM 관례상 수평 우선: 대각선이면 수평 방향을 바라본다.
+export interface MovementIntent {
+  readonly dir: Dir | null;
+  readonly x: Axis;
+  readonly y: Axis;
+}
+
+export function resolveMovementIntent(priority: readonly Dir[]): MovementIntent {
+  let horizontal: Dir | null = null;
+  let vertical: Dir | null = null;
+  for (const d of priority) {
+    if (d === "left" || d === "right") horizontal = d;
+    else vertical = d;
+  }
+  const x: Axis = horizontal === "right" ? 1 : horizontal === "left" ? -1 : 0;
+  const y: Axis = vertical === "down" ? 1 : vertical === "up" ? -1 : 0;
+  return { dir: horizontal ?? vertical, x, y };
+}
+
+export interface ResolvedStep {
+  readonly dx: Axis;
+  readonly dy: Axis;
+}
+
+// 대각선 통행/미끄러짐 판정(순수). canStep(dx,dy)=현재 칸에서 직교 한 칸 통행 가능?
+// - 직교 입력: 해당 칸이 열려있으면 이동, 아니면 null.
+// - 대각선 입력: 양쪽 직교 칸이 모두 열려야 대각선 이동(모서리 끼임 방지).
+//   한쪽만 막히면 가능한 직교 방향으로 미끄러지고, 둘 다 막히면 null.
+export function resolveDiagonalStep(
+  x: Axis,
+  y: Axis,
+  canStep: (dx: number, dy: number) => boolean
+): ResolvedStep | null {
+  if (x === 0 && y === 0) return null;
+  if (x !== 0 && y !== 0) {
+    const horiz = canStep(x, 0);
+    const vert = canStep(0, y);
+    if (horiz && vert) return { dx: x, dy: y };
+    if (horiz) return { dx: x, dy: 0 };
+    if (vert) return { dx: 0, dy: y };
+    return null;
+  }
+  return canStep(x, y) ? { dx: x, dy: y } : null;
+}
+
+// 이동 성분 → 4방향 facing(수평 우선).
+export function facingForStep(dx: number, dy: number): Dir {
+  if (dx !== 0) return dx > 0 ? "right" : "left";
+  return dy > 0 ? "down" : "up";
 }
 
 export class RuntimeKeyHoldTracker {
   private readonly actionKeys = new Set<string>();
   private readonly directions = new Set<Dir>();
   private pendingActionEdge = false;
+  private dashHeld = false;
 
   keyDown(key: string): void {
+    if (isDashKey(key)) this.dashHeld = true;
     const actionKey = normalizedActionKey(key);
     if (actionKey) {
       if (!this.actionKeys.has(actionKey)) {
@@ -30,10 +91,15 @@ export class RuntimeKeyHoldTracker {
   }
 
   keyUp(key: string): void {
+    if (isDashKey(key)) this.dashHeld = false;
     const actionKey = normalizedActionKey(key);
     if (actionKey) this.actionKeys.delete(actionKey);
     const dir = directionForRuntimeKey(key);
     if (dir) this.directions.delete(dir);
+  }
+
+  isDashing(): boolean {
+    return this.dashHeld;
   }
 
   consumeActionEdge(): boolean {
@@ -121,7 +187,7 @@ export class Input {
   update(): InputState {
     if (!this.enabled) {
       this.runtimeKeys.clearPendingActionEdge();
-      return { dir: null, actionPressed: false, confirmPressed: false };
+      return { dir: null, x: 0, y: 0, dash: false, actionPressed: false, confirmPressed: false };
     }
 
     // 현재 눌린 방향들 수집(우선순위: 위/아래 > 좌/우 관례 → 여기선 마지막 눌림).
@@ -142,14 +208,19 @@ export class Input {
     for (const d of downSet) {
       if (!this.priority.includes(d)) this.priority.push(d);
     }
-    const dir = this.priority.length > 0 ? this.priority[this.priority.length - 1] : null;
+    // 8방향 이동 의도 해석(수평/수직 축 성분 + 수평 우선 facing).
+    const intent = resolveMovementIntent(this.priority);
+    const dash = this.runtimeKeys.isDashing() || (this.cursors?.shift?.isDown ?? false);
 
     // action/confirm 엣지: 이벤트 기반(keydown 리스너) 큐에서 소비.
     // JustDown(폴링)은 headless/프레임 타이밍에 취약하므로 직접 잡은 엣지를 쓴다.
     const actionEdge = this.runtimeKeys.consumeActionEdge();
 
     const state: InputState = {
-      dir,
+      dir: intent.dir,
+      x: intent.x,
+      y: intent.y,
+      dash,
       actionPressed: actionEdge && !this.actionConsumed,
       confirmPressed: actionEdge && !this.confirmConsumed,
     };
@@ -220,6 +291,11 @@ export function directionForRuntimeKey(key: string): Dir | null {
     default:
       return null;
   }
+}
+
+// 대시 키(Shift). RM2K3 관례: Shift 를 누르는 동안 달리기.
+function isDashKey(key: string): boolean {
+  return key.toLowerCase() === "shift";
 }
 
 function normalizedActionKey(key: string): string | null {

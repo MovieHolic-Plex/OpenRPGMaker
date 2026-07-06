@@ -5,6 +5,9 @@ import type { MapId, TransferFade } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
+import { dialogueHost } from "@/player/playSceneDom";
+import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
+import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
@@ -38,8 +41,16 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     return;
   }
   const destination = nearestPassableTile(project, targetMap, request.x, request.y);
-  const fadeColor = transferFadeColor(request.fade ?? "black");
-  if (fadeColor) await fadeCamera(scene, "out", fadeColor);
+  // 전환 연출: 모자이크/블라인드는 DOM 오버레이, 그 외(기본)는 카메라 페이드.
+  const transition = parseTransitionKind(request.transition);
+  const overlayTransition = usesOverlayTransition(transition);
+  const host = overlayTransition ? dialogueHost(scene) : undefined;
+  const fadeColor = overlayTransition ? null : transferFadeColor(request.fade ?? "black");
+  if (host) {
+    await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS);
+  } else if (fadeColor) {
+    await fadeCamera(scene, "out", fadeColor);
+  }
   scene.loadMap(request.mapId);
   scene.tileX = destination.x;
   scene.tileY = destination.y;
@@ -51,7 +62,11 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   updateCharacterDepth(scene.player, "same");
   scene.moving = false;
   scene.centerCamera();
-  if (fadeColor) await fadeCamera(scene, "in", fadeColor);
+  if (host) {
+    await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);
+  } else if (fadeColor) {
+    await fadeCamera(scene, "in", fadeColor);
+  }
   void fireAutoTriggers(scene);
 }
 

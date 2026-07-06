@@ -27,8 +27,8 @@
 
 .database-modal-body .rm2k3-detail-states > .db-field:first-child {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid var(--db-modern-line, #dedfdf);
+  background: var(--bg-raised);
+  border: 1px solid var(--db-modern-line, var(--border-subtle));
   border-radius: 5px;
   display: grid;
   gap: 12px;
@@ -41,7 +41,7 @@
 }
 
 .database-modal-body .rm2k3-detail-states > .db-field:first-child > span {
-  color: #20242c;
+  color: var(--text-1);
   font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 

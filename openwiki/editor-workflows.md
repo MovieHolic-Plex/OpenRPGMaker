@@ -26,6 +26,7 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 - Event editing flows are split across `src/editor/eventActions.ts`, `src/editor/eventPages.ts`, `src/editor/eventDraftActions.ts`, `src/editor/eventDeletion.ts`, `src/editor/eventCommandFactory.ts`, and `src/editor/eventCommands/`.
 - `src/editor/eventCommandPaths.ts` is the shared owner for nested command paths. Use it for choices cancel branches, fork then/else branches, loop bodies, shop transaction branches, and branch creation when a mutation path needs to create a missing optional branch.
 - Destructive event deletion is routed through `requestEditorEventDeletion` so modal Delete-key and visible delete controls require explicit confirmation before `deleteEditorEvent` mutates project data.
+- AI event tools compile `graphic` input through `src/editor/tools/eventCompile.ts`; direct `{textureKey, characterIndex}` charset graphics must be canonicalized to bundled EasyRPG texture keys before commit-time resource validation.
 
 ## Database Editor
 
@@ -39,6 +40,8 @@ Use this page when changing editor-facing behavior. Before editing, identify whi
 ## Other Editor Workflows
 
 - Resource manager behavior usually connects through asset and tileset tooling in `src/editor/tilesetImage.ts`, `src/editor/tilesetActions.ts`, and the related editor panels under `src/editor/panels/`.
+- Tile metadata tools live in `src/editor/tools/tileMetadataTools.ts`; `set_group_junction` and `set_group_overlay` add or update optional tile-group structural rules, while `upsert_tile_group` can persist those arrays with the rest of the group metadata. Cluster rule authoring lives in `src/editor/tools/clusterRuleTools.ts`: `set_cluster_rule` adds or updates tile-group `rules`, and `upsert_tile_group` can persist the same rules array.
+- Tileset transparent-color editing lives in `src/editor/panels/tilesetSettingsDetails.ts` and stores a user override on `TilesetDef.transparentColor`; render paths resolve it in `src/assets/chipsetTransparency.ts` before falling back to chipset defaults.
 - Save/import/export flows are centered in `src/editor/saveActions.ts` and the store/persistence layer in `src/project/store.ts`; check adjacent editor actions if a UI button needs to trigger them.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 

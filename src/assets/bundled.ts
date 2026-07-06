@@ -134,6 +134,11 @@ export function registerBundledFrames(scene: Phaser.Scene): void {
   registerEasyRpgCharsetTextures(scene);
 }
 
+export function registerTilesetTextureFrames(scene: Phaser.Scene, textureKey: string): void {
+  registerTileFrames(scene, textureKey);
+  registerTileAnimationsForTexture(scene, textureKey);
+}
+
 function registerTransparentChipsetTexture(scene: Phaser.Scene, asset: BundledImageAsset): void {
   if (scene.textures.exists(asset.textureKey)) return;
   const rawKey = rawChipsetTextureKey(asset.textureKey);

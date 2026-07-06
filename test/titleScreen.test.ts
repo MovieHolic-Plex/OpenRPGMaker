@@ -40,7 +40,7 @@ describe("title screen", () => {
       expect(newGame?.textContent).toBe("처음부터");
       expect(continueGame?.textContent).toBe("이어하기");
       expect(quit?.textContent).toBe("끝내기");
-      expect(hint?.textContent).toBe("Enter 선택   Esc 취소");
+      expect(hint?.textContent).toBe("↑↓ 이동   Z/Enter 결정   X/Esc 취소");
       expect(newGame?.attrs["aria-current"]).toBe("true");
       expect(continueGame?.attrs["aria-current"]).toBeUndefined();
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
@@ -113,7 +113,7 @@ describe("title screen", () => {
       expect(screen.style.backgroundImage).toContain("Title1.png");
       expect(title.style.left).toBe("50%");
       expect(menu.style.left).toBe("50%");
-      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe("Enter 선택   Esc 취소");
+      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe("↑↓ 이동   Z/Enter 결정   X/Esc 취소");
     } finally {
       restoreDom();
     }

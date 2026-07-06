@@ -1,5 +1,6 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip } from "@/player/playerEquipmentRules";
+import { resolveActorName } from "@/project/sessionActorCommands";
 import type { PlaySession } from "@/project/session";
 import type {
   ActorInitialEquipment,
@@ -9,6 +10,7 @@ import type {
   SkillRecord,
 } from "@/project/types";
 import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
+import { buildQuestLog, questStateLabel } from "@/player/questLog";
 
 export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
@@ -30,6 +32,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "status": return statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
+    case "quests": return questsDetail(options.project, options.session);
     case "wait": return waitDetail(options.waitModeEnabled);
     case "to-title": return { title: "타이틀", entries: [], hint: "타이틀 화면으로 돌아갑니다." };
     default: return assertNever(options.selectedCommand);
@@ -107,7 +110,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       testId: `status-menu-equipment-slot-${slot.id}`,
       onActivate: options.onSelectEquipmentSlot ? () => options.onSelectEquipmentSlot?.(actor.id, slot.id) : undefined,
     }));
-    return { title: `장비: ${actor.name}`, entries, hint: "바꿀 부위를 선택하세요." };
+    return { title: `장비: ${resolveActorName(session, actor)}`, entries, hint: "바꿀 부위를 선택하세요." };
   }
 
   const choices = project.database.equipment.filter((equipment) => {
@@ -183,6 +186,21 @@ function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
+function questsDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const quests = buildQuestLog(project, session);
+  return {
+    title: "임무",
+    entries: quests.map((quest) => ({
+      label: quest.title,
+      value: `${questStateLabel(quest.state)} (${quest.completedSteps}/${quest.totalSteps})`,
+      description: quest.summary,
+      testId: `status-menu-quest-entry-${quest.key}`,
+    })),
+    emptyLabel: "등록된 임무가 없습니다",
+    hint: "선택하면 임무 진행 상황을 봅니다.",
+  };
+}
+
 function waitDetail(waitModeEnabled: boolean): StatusMenuDetail {
   return {
     title: "대기",
@@ -198,7 +216,9 @@ function partyActors(project: Project, session: PlaySession): readonly ActorReco
   const actorsById = new Map(project.database.actors.map((actor) => [actor.id, actor]));
   return session.partyActorIds.flatMap((actorId): ActorRecord[] => {
     const actor = actorsById.get(actorId);
-    return actor ? [actor] : [];
+    if (!actor) return [];
+    const name = resolveActorName(session, actor);
+    return [name === actor.name ? actor : { ...actor, name }];
   });
 }
 

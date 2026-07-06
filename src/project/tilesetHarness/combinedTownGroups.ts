@@ -11,7 +11,7 @@ export type CombinedTownHarnessGroup = Omit<TileGroupMetadata, "tileIds"> & {
 };
 
 export const COMBINED_TOWN_HARNESS_PREFIX = "harness-combined-town-";
-export const COMBINED_TOWN_ROOF_OVERLAY_TILES = [374, 375, 376, 377, 384, 386, 387] as const;
+export const COMBINED_TOWN_ROOF_OVERLAY_TILES = [374, 375, 376, 377, 384, 385, 386, 387] as const;
 
 export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] = [
   {
@@ -102,13 +102,20 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     stackable: true,
     patternGrammar: overlayGrammar(COMBINED_TOWN_ROOF_OVERLAY_TILES),
   },
-  lowerStackGroup("fence", "울타리", CHIPSET_TILE_GROUPS.fenceObjects, "울타리는 하위 레이어 투명 소품으로 쌓습니다. 길과 문 동선을 가리지 않게 끊어 배치합니다."),
-  lowerStackGroup("windows", "창문", CHIPSET_TILE_GROUPS.houseWindowObjects, "창문은 벽 위에 보이는 하위 레이어 투명 소품입니다. 상위 레이어로 올리지 않습니다."),
+  lowerStackGroup("fence", "울타리", CHIPSET_TILE_GROUPS.fenceObjects, "울타리는 투명 소품이라 상위 레이어에 겹쳐 지면을 보존합니다. 길과 문 동선을 가리지 않게 끊어 배치합니다."),
+  lowerStackGroup("windows", "창문", CHIPSET_TILE_GROUPS.houseWindowObjects, "창문은 벽 위에 겹치는 투명 소품입니다. 상위 레이어에 놓아 아래 벽을 보존합니다."),
   lowerSolidGroup("doors", "문/입구", [...CHIPSET_TILE_GROUPS.houseEntranceObjects, ...CHIPSET_TILE_GROUPS.houseDoorObjects, 116, 146], "문은 1x2 세로 입구 기준으로 하위 레이어에 배치합니다."),
   lowerSolidGroup("roof-wall-boundary", "지붕-벽 경계", [404, 405, 406, 407, 434, 435, 436, 437, 464, 466, 467], "직선 지붕면과 벽 경계는 하위 레이어입니다. 사선 지붕만 상위에 겹칩니다."),
   mixedStackGroup("tree-props", "나무 소품", CHIPSET_TILE_GROUPS.treeObjects, "나무는 투명 소품입니다. 필요한 경우 하위/상위 스택에 겹쳐 배치합니다.", "solid"),
   mixedStackGroup("flower-props", "꽃/자연 소품", CHIPSET_TILE_GROUPS.flowerObjects, "꽃은 통행 가능한 투명 자연 소품으로 기존 지면을 보존합니다.", "passable"),
   mixedStackGroup("small-props", "마을 소품", [...CHIPSET_TILE_GROUPS.benchObjects, ...CHIPSET_TILE_GROUPS.signObjects, ...CHIPSET_TILE_GROUPS.fireObjects, ...CHIPSET_TILE_GROUPS.statueObjects, ...CHIPSET_TILE_GROUPS.smallObjects], "표지판, 벤치, 장식물은 투명 소품으로 기존 지면을 보존합니다.", "passable"),
+  // 헤드리스 플레이테스트로 검증된 통행성 함정 타일(핸드오프 0.4) — 겉보기와 달리 통행이 막히는 돌바닥.
+  lowerSolidGroup("stone-floor-trap", "돌바닥", [TILE.FLOOR, 343], "겉보기엔 평평해 통행 가능해 보이지만 실측 결과 통행이 막히는 돌바닥입니다. 장식용 바닥 마감으로만 사용하세요."),
+  // 검증된 통행 불가 성벽 계단/어두운 벽 타일.
+  // 참고: TILE.WALL(306)은 하네스 그룹 미소속 — 레이어는 tileset.priority(lower)로 분류되고
+  // isSolidChipsetTile 기본값으로 이미 통행 불가라 별도 그룹이 필요 없다.
+  // "벽" 검색은 tileSemanticsCombinedTown.ts(검색 전용 큐레이션)에서 제공한다.
+  lowerSolidGroup("castle-solid-tiles", "성벽 계단/어두운 벽", [TILE.STAIRS, 426], "성벽 계단, 어두운 벽 등 통행이 막히는 구조 타일입니다."),
 ];
 
 function wall9Slice(id: string, name: string, tileIds: readonly number[], description: string): CombinedTownHarnessGroup {

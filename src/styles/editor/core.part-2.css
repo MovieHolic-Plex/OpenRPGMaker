@@ -134,7 +134,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   overflow: hidden;
 }
 .tile-cell:hover {
-  border-color: var(--text-muted);
+  border-color: var(--border-strong);
 }
 .tile-cell.active {
   border-color: var(--accent);
@@ -176,7 +176,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 .map-item .del:hover {
   color: var(--danger);
-  background: rgba(239, 107, 107, 0.12);
+  background: var(--danger-muted);
 }
 
 /* ?? ?뚮젅?댁뼱 ?덉씠?꾩썐 ?? */
@@ -446,8 +446,8 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .db-required-panel {
   align-content: center;
-  background: #151a22;
-  color: var(--text, #e7edf7);
+  background: var(--bg-surface);
+  color: var(--text-1);
   display: grid;
   gap: 12px;
   justify-items: start;
@@ -463,7 +463,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .db-required-panel p {
-  color: var(--muted, #aab4c2);
+  color: var(--text-2);
   font-size: 14px;
   line-height: 1.6;
   margin: 0;

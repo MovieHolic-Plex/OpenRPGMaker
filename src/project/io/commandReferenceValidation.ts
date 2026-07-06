@@ -133,6 +133,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
         assert(context.actorIds.has(command.actorId ?? ""), `recoverAll: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
       }
       return;
+    case "enterHeroName":
+      if (command.actorId.trim().length > 0) {
+        assert(context.actorIds.has(command.actorId), `enterHeroName: actorId가 존재하지 않습니다: ${command.actorId}`);
+      }
+      return;
     case "showPicture":
       assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;

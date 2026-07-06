@@ -7,6 +7,7 @@ import type {
   MoveCommand,
   Project,
   TransferFade,
+  TransferTransition,
   TransferDirection,
   ShopMessageType,
   ShopType,
@@ -23,10 +24,11 @@ export type StepResult =
       settings: MessageWindowSettings;
       cancelBehavior?: ChoiceCancelBehavior;
     }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade }
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "wait"; ms: number }
   | { kind: "inputWait"; variableId?: string }
   | { kind: "inputNumber"; variableId: string; digits: number; settings: MessageWindowSettings }
+  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
   | {
       kind: "changeTile";
@@ -57,7 +59,7 @@ export type StepResult =
   | { kind: "gameOver" }
   | { kind: "returnToTitle"; title?: string; message?: string };
 
-export type ResumeValue = number | boolean | undefined | void;
+export type ResumeValue = number | boolean | string | undefined | void;
 export type PendingStep = Exclude<StepResult["kind"], "done">;
 export type ResumeAdvance = "continue" | "done";
 

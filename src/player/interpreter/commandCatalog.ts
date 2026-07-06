@@ -220,7 +220,7 @@ export function executeCommand(
       breakLoop(state);
       return { kind: "continue" };
     case "transfer":
-      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade });
+      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
     case "wait":
       return pause("wait", { kind: "wait", ms: command.ms });
     case "changeTile":
@@ -315,6 +315,16 @@ export function executeCommand(
     case "recoverAll":
       recoverAll(state.session, command.actorId);
       return resumeNext(frame);
+    case "enterHeroName": {
+      const actor = state.project?.database.actors.find((record) => record.id === command.actorId);
+      return pause("enterHeroName", {
+        kind: "enterHeroName",
+        actorId: command.actorId,
+        maxLength: command.maxLength,
+        showInitialName: command.showInitialName,
+        currentName: actor?.name ?? "",
+      });
+    }
     case "changeGold":
       changeGold(state.session, command.op, command.amount);
       return resumeNext(frame);

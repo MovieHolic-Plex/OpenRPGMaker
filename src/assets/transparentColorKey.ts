@@ -7,6 +7,23 @@ export type RgbaColor = {
 
 export type RgbColor = Omit<RgbaColor, "a">;
 
+const RGB_HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+
+export function parseRgbHexColor(value: string): RgbColor | null {
+  const normalized = normalizeRgbHexColor(value);
+  if (!normalized) return null;
+  return {
+    r: Number.parseInt(normalized.slice(1, 3), 16),
+    g: Number.parseInt(normalized.slice(3, 5), 16),
+    b: Number.parseInt(normalized.slice(5, 7), 16),
+  };
+}
+
+export function normalizeRgbHexColor(value: string): string | null {
+  const trimmed = value.trim();
+  return RGB_HEX_COLOR.test(trimmed) ? trimmed.toLowerCase() : null;
+}
+
 export function applyTransparentColorKey(pixels: Uint8ClampedArray): RgbaColor {
   const key = readTopLeftPixel(pixels);
   applyTransparentColorKeys(pixels, [key]);

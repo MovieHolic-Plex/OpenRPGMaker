@@ -1,0 +1,59 @@
+// editor/tools/jsonSchema.ts
+// JSON Schema 기반 최소 인자 검증(필수 필드/타입). 깊은 구조는 검증하지 않고
+// 툴 내부의 기존 shape 검증기(io/shape*)에 위임한다.
+
+import type { JsonSchema } from "./types";
+
+// 값이 스키마 타입에 부합하는지 판정.
+function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
+  switch (type) {
+    case "object":
+      return typeof value === "object" && value !== null && !Array.isArray(value);
+    case "array":
+      return Array.isArray(value);
+    case "string":
+      return typeof value === "string";
+    case "number":
+      return typeof value === "number" && Number.isFinite(value);
+    case "integer":
+      return typeof value === "number" && Number.isInteger(value);
+    case "boolean":
+      return typeof value === "boolean";
+  }
+}
+
+// 최상위 object 스키마에 대해 args를 검증하고 오류 메시지 배열을 반환한다(빈 배열=통과).
+export function validateArgs(schema: JsonSchema, args: unknown): string[] {
+  const errors: string[] = [];
+  if (schema.type !== "object") {
+    errors.push("툴 파라미터 스키마의 최상위 타입은 object여야 합니다.");
+    return errors;
+  }
+  if (typeof args !== "object" || args === null || Array.isArray(args)) {
+    errors.push("인자는 객체여야 합니다.");
+    return errors;
+  }
+  const record = args as Record<string, unknown>;
+  for (const key of schema.required ?? []) {
+    if (record[key] === undefined) errors.push(`필수 인자 누락: ${key}`);
+  }
+  for (const [key, propSchema] of Object.entries(schema.properties ?? {})) {
+    const value = record[key];
+    if (value === undefined) continue;
+    if (!matchesType(value, propSchema.type)) {
+      errors.push(`인자 '${key}'의 타입이 ${propSchema.type}이어야 합니다.`);
+      continue;
+    }
+    if (propSchema.enum && !propSchema.enum.includes(value as string | number)) {
+      errors.push(`인자 '${key}'는 [${propSchema.enum.join(", ")}] 중 하나여야 합니다.`);
+    }
+    if (propSchema.type === "array" && propSchema.items && Array.isArray(value)) {
+      for (let i = 0; i < value.length; i += 1) {
+        if (!matchesType(value[i], propSchema.items.type)) {
+          errors.push(`인자 '${key}[${i}]'의 타입이 ${propSchema.items.type}이어야 합니다.`);
+        }
+      }
+    }
+  }
+  return errors;
+}

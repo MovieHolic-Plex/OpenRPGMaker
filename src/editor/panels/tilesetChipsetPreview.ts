@@ -245,6 +245,7 @@ function stableRerender(rerender: () => void): void {
   const snapshots = captureScrollSnapshots();
   rerender();
   restoreScrollSnapshots(snapshots);
+  if (typeof window === "undefined") return; // fakeDom 테스트 환경.
   window.requestAnimationFrame(() => restoreScrollSnapshots(snapshots));
   window.setTimeout(() => restoreScrollSnapshots(snapshots), 0);
 }

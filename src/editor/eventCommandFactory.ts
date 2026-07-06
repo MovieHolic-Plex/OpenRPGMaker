@@ -57,6 +57,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeActorMp", actorId: "", op: "-=", amount: 5 };
     case "recoverAll":
       return { kind: "recoverAll", actorId: "" };
+    case "enterHeroName":
+      return { kind: "enterHeroName", actorId: "", maxLength: 6, showInitialName: true };
     case "changeGold":
       return { kind: "changeGold", op: "+=", amount: 10 };
     case "changeItem":

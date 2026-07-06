@@ -2,9 +2,11 @@ export {
   applyCombinedTownHarness,
   combinedTownHarnessPrompt,
   ensureTilesetHarnesses,
+  harnessGroupForTile,
   harnessLayerForTile,
   isCombinedTownTileset,
   isHarnessStackableTile,
+  isUpperOnlyOverlayTile,
 } from "./tilesetHarness/combinedTown";
 export {
   COMBINED_TOWN_HARNESS_GROUPS,

@@ -12,6 +12,7 @@
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
+import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 
 /**
  * 현재 포커스가 폼 컨트롤이거나 모달이 열려 있어 에디터 단축키를 무시해야 하는지 판별.
@@ -34,6 +35,43 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (document.querySelector("[data-testid='database-modal']")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
+    // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
+    if (document.querySelector("[data-testid='event-editor-modal']")) return true;
+  }
+  return false;
+}
+
+/**
+ * 포커스가 텍스트 편집 컨트롤(input/textarea/select/contentEditable)에 있는지 판별.
+ * 이 경우 Ctrl+Z/Y 는 브라우저 기본 텍스트 실행취소가 우선되어야 하므로
+ * 히스토리 단축키를 처리하지 않는다.
+ */
+function isTextEditingFocus(event: KeyboardEvent): boolean {
+  const target = event.target;
+  if (typeof HTMLElement === "undefined" || !(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  return target.isContentEditable;
+}
+
+/**
+ * 모달(데이터베이스/이벤트 에디터) 이 열려 있어도 전역 실행취소/다시실행을 처리한다.
+ * 텍스트 입력 필드에 포커스가 있으면(브라우저 텍스트 undo 우선) 무시한다.
+ * Ctrl+Z = 실행취소, Ctrl+Y 또는 Ctrl+Shift+Z = 다시실행.
+ * 히스토리 키(Ctrl+Z/Y)는 스택이 비어 있어도 브라우저 기본 동작을 막지만,
+ * @returns 프로젝트 상태가 실제로 복원/재적용되었으면 true(=재렌더 필요).
+ */
+export function handleHistoryHotkey(event: KeyboardEvent): boolean {
+  if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
+  if (isTextEditingFocus(event)) return false;
+  const key = event.key.toLowerCase();
+  if (key === "z") {
+    event.preventDefault();
+    return event.shiftKey ? redoMapEdit() : undoMapEdit();
+  }
+  if (key === "y") {
+    event.preventDefault();
+    return redoMapEdit();
   }
   return false;
 }

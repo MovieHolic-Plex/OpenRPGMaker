@@ -120,8 +120,11 @@ export async function enterMode(mode: Mode): Promise<void> {
     teardownEditor();
   } else if (modeMounted) {
     const { teardownPlayer } = await import("@/player/player");
+    const { stopAllAudio } = await import("@/player/audio");
     if (run !== modeRun) return;
     teardownPlayer();
+    // 에디터 복귀 시 재생 중인 BGM/SE 를 확실히 정지(씬 teardown 누락 대비).
+    stopAllAudio();
   }
   modeMounted = false;
 

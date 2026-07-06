@@ -1,6 +1,19 @@
 import type Phaser from "phaser";
 import type { Dir, Input } from "@/player/input";
 import type { PlaySession } from "@/project/session";
+import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
+
+// 런타임 디버그 쓰기 훅. 플레이 중 스위치/변수/아이템/골드/회복/텔레포트를 조작한다.
+export type RuntimeDebugHook = {
+  setSwitch: (switchId: string, value: boolean) => void;
+  setVariable: (variableId: string, value: number) => void;
+  giveItem: (itemId: string, amount: number) => void;
+  setGold: (amount: number) => void;
+  heal: () => void;
+  teleport: (mapId: string, x: number, y: number) => void;
+  applyPreset: (preset: StatePreset) => void;
+  readState: () => { currentMapId: string; x: number; y: number; gold: number; switches: Record<string, boolean>; variables: Record<string, number>; inventory: Record<string, number> };
+};
 
 type TestHookWindow = Window & {
   __rpgzzuInput?: { action: () => void; dir: (d: string | null) => void };
@@ -9,6 +22,7 @@ type TestHookWindow = Window & {
   __rpgzzuCamera?: () => CameraDebug;
   __rpgzzuSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
   __rpgzzuSetMediaState?: (state: MediaStateDebug) => void;
+  __rpgzzuDebug?: RuntimeDebugHook;
 };
 
 type MediaStateDebug = {
@@ -83,6 +97,32 @@ export function installPlaySceneTestHooks(
   w.__rpgzzuPlayerSprite = () => playerSpriteDebug(scene);
   w.__rpgzzuCharacterSprites = () => characterSpritesDebug(scene);
   w.__rpgzzuCamera = () => cameraDebug(scene);
+  // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
+  const applyAndSync = (op: DebugOp): void => {
+    applyDebugOp(session, op);
+    syncRuntimeState();
+  };
+  w.__rpgzzuDebug = {
+    setSwitch: (switchId, value) => applyAndSync({ kind: "setSwitch", switchId, value }),
+    setVariable: (variableId, value) => applyAndSync({ kind: "setVariable", variableId, value }),
+    giveItem: (itemId, amount) => applyAndSync({ kind: "giveItem", itemId, amount }),
+    setGold: (amount) => applyAndSync({ kind: "setGold", amount }),
+    heal: () => applyAndSync({ kind: "heal" }),
+    teleport: (mapId, x, y) => applyAndSync({ kind: "teleport", mapId, x, y }),
+    applyPreset: (preset) => {
+      applyStatePreset(session, preset);
+      syncRuntimeState();
+    },
+    readState: () => ({
+      currentMapId: session.currentMapId,
+      x: session.x,
+      y: session.y,
+      gold: session.gold,
+      switches: { ...session.switches },
+      variables: { ...session.variables },
+      inventory: { ...session.inventory },
+    }),
+  };
   scene.events.once("shutdown", () => {
     delete w.__rpgzzuInput;
     delete w.__rpgzzuPlayerSprite;
@@ -90,6 +130,7 @@ export function installPlaySceneTestHooks(
     delete w.__rpgzzuCamera;
     delete w.__rpgzzuSetActorVitals;
     delete w.__rpgzzuSetMediaState;
+    delete w.__rpgzzuDebug;
   });
   const params = new URLSearchParams(window.location.search);
   if (params.get("e2eMedia") === "1") {

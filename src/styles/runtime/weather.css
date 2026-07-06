@@ -1,0 +1,59 @@
+/* 날씨(비/눈/안개) 오버레이. weatherOverlay.ts 가 파티클 DOM 을 생성하고,
+   낙하 애니메이션은 여기 CSS 가 담당한다. */
+@layer runtime {
+  .runtime-weather-overlay {
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 28;
+  }
+
+  .weather-particle {
+    position: absolute;
+    top: -10%;
+    animation-name: weather-fall;
+    animation-duration: var(--weather-duration, 1.1s);
+    animation-delay: var(--weather-delay, 0s);
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .weather-particle-rain {
+    width: 2px;
+    height: 14px;
+    background: linear-gradient(180deg, rgba(174, 208, 255, 0.1), rgba(174, 208, 255, 0.85));
+  }
+
+  .weather-particle-snow {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    animation-name: weather-fall-drift;
+  }
+
+  @keyframes weather-fall {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(120vh);
+    }
+  }
+
+  @keyframes weather-fall-drift {
+    from {
+      transform: translateY(0) translateX(0);
+    }
+    to {
+      transform: translateY(120vh) translateX(24px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .weather-particle {
+      animation: none;
+    }
+  }
+}

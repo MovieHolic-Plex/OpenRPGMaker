@@ -32,7 +32,7 @@
 }
 .db-tab.active {
   background: var(--bg-panel-2);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   color: var(--text);
   font-weight: 600;
 }

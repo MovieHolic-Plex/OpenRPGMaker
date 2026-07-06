@@ -33,8 +33,9 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(harnessLayerForTile(tileset, 116)).toBe("lower");
     expect(harnessLayerForTile(tileset, 404)).toBe("lower");
     expect(harnessLayerForTile(tileset, 374)).toBe("upper");
-    expect(tileset.priority[85]).toBe("lower");
-    expect(tileset.priority[378]).toBe("lower");
+    // 창문(85)/울타리(378)는 그룹 계약이 lower여도 투명 칩이라 런타임 priority는 upper로 승격된다.
+    expect(tileset.priority[85]).toBe("upper");
+    expect(tileset.priority[378]).toBe("upper");
     expect(tileset.priority[374]).toBe("upper");
     expect(tileset.passability[374]).toEqual({ up: false, down: false, left: false, right: false });
   });

@@ -268,12 +268,13 @@ describe("createBlankProject", () => {
     expect(tileset.terrain[TILE.PATH]).toBe(TERRAIN_TAG.NORMAL);
     expect(tileset.passability[TILE.WATER]).toEqual(solid);
     expect(tileset.passability[TILE.PATH]).toEqual(passable);
-    expect(tileset.priority[TILE.TREE]).toBe("lower");
+    // 투명 배경 칩(나무/창문/울타리 등)은 상위 레이어 전용 — 하위에 깔리면 검게 보인다.
+    expect(tileset.priority[TILE.TREE]).toBe("upper");
     expect(tileset.passability[TILE.TREE]).toEqual(solid);
     expect(tileset.priority[TILE.FLOWERS]).toBe("upper");
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);
-    expect(tileset.priority[85]).toBe("lower");
-    expect(tileset.priority[378]).toBe("lower");
+    expect(tileset.priority[85]).toBe("upper");
+    expect(tileset.priority[378]).toBe("upper");
     expect(tileset.priority[374]).toBe("upper");
     const passableRoofTiles = [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437].filter((tile) => !(
       tileset.passability[tile]?.up === false &&

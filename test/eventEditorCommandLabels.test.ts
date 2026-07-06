@@ -30,6 +30,7 @@ const EXPECTED_COMMAND_KINDS = [
   "changeActorHp",
   "changeActorMp",
   "recoverAll",
+  "enterHeroName",
   "changeGold",
   "changeItem",
   "changeParty",

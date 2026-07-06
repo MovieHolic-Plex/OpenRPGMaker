@@ -1,0 +1,156 @@
+/* runtime/nameEntry.css */
+/* RM2K3 스타일 이름 입력 오버레이. 문자표 그리드 + 현재 이름 표시줄 + 페이지 탭. */
+
+.name-entry-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: rgba(4, 8, 24, 0.72);
+  z-index: 40;
+  font-family: inherit;
+}
+
+.name-entry-title {
+  color: var(--text-1, #e8ecff);
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.name-entry-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #10162e;
+  border: 2px solid #3b4a86;
+  border-radius: 4px;
+}
+
+.name-entry-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 28px;
+  padding: 0 4px;
+  color: var(--text-1, #f4f6ff);
+  font-size: 18px;
+  border-bottom: 2px solid #55639c;
+}
+
+.name-entry-cell.filled {
+  border-bottom-color: #ffd76a;
+}
+
+/* 직접 타이핑/IME 조합용 입력. 화면 밖으로 숨기되 포커스는 유지. */
+.name-entry-typing {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+}
+
+.name-entry-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.name-entry-tab {
+  padding: 4px 14px;
+  color: #cdd5ff;
+  background: #1a2344;
+  border: 2px solid #3b4a86;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
+    border-color var(--transition-fast, 120ms ease);
+}
+
+.name-entry-tab:hover {
+  border-color: #55639c;
+  color: #fff;
+}
+
+.name-entry-tab.active {
+  color: #101528;
+  background: #ffd76a;
+  border-color: #ffd76a;
+  font-weight: 700;
+}
+
+.name-entry-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px;
+  background: #0c1228;
+  border: 2px solid #3b4a86;
+  border-radius: 4px;
+}
+
+.name-entry-row {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+}
+
+.name-entry-key {
+  min-width: 30px;
+  height: 30px;
+  color: var(--text-1, #e8ecff);
+  background: #1a2344;
+  border: 1px solid #2c3868;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
+    border-color var(--transition-fast, 120ms ease);
+}
+
+.name-entry-key:hover,
+.name-entry-key.selected {
+  color: #101528;
+  background: #ffd76a;
+  border-color: #fff0bf;
+}
+
+.name-entry-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.name-entry-action {
+  padding: 6px 20px;
+  border-radius: 4px;
+  border: 2px solid #3b4a86;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.name-entry-action.delete {
+  color: #ffd0d0;
+  background: #3a1d2a;
+}
+
+.name-entry-action.confirm {
+  color: #101528;
+  background: #7ee08a;
+  border-color: #7ee08a;
+  font-weight: 700;
+}
+
+/* 키보드 포커스 일관화 — 토큰 포커스 링(레이아웃 불변, box-shadow만 추가) */
+.name-entry-key:focus-visible,
+.name-entry-tab:focus-visible,
+.name-entry-action:focus-visible {
+  box-shadow: var(--focus-ring, 0 0 0 2px rgba(108, 121, 242, 0.55));
+  outline: none;
+}

@@ -63,6 +63,7 @@ interface RenderTilesSceneContext<
     image(x: number, y: number, texture: string, frame?: string | number): TImage;
     sprite(x: number, y: number, texture: string, frame?: string | number): TSprite;
   };
+  readonly resolveTilesetTexture?: (tileset: TilesetDef) => string;
   runEvent(eventId: string): Promise<void>;
   syncRuntimeState(): void;
 }
@@ -114,7 +115,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   tile: number
 ): void {
   if (tile < 0) return;
-  const textureKey = tilesetTextureKey(tileset);
+  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
     renderLakeAutotile(scene, textureKey, x, y);
     return;

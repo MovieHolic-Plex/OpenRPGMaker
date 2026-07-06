@@ -33,7 +33,7 @@
 .tileset-ai-preview-tool {
   background: var(--surface-button);
   border: 1px solid;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   color: var(--text-primary);
   cursor: pointer;
   font: 700 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -44,8 +44,8 @@
 
 .tileset-ai-preview-tool.active {
   background: var(--accent-blue);
-  border-color: #184b73 #d9edf8 #d9edf8 #184b73;
-  color: #ffffff;
+  border-color: var(--accent-border) #d9edf8 #d9edf8 var(--accent-border);
+  color: var(--text-1);
 }
 
 .tileset-ai-result-map-frame {
@@ -55,7 +55,7 @@
 
 .tileset-ai-result-map {
   background: var(--surface-recessed);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   display: grid;
@@ -89,7 +89,7 @@
 
 .tileset-ai-result-map-number {
   background: rgba(248, 245, 236, 0.82);
-  color: #111111;
+  color: var(--text-1);
   display: none;
   font: 700 7px/1 ui-monospace, "SFMono-Regular", Consolas, monospace;
   inset: auto 0 0 0;
@@ -98,7 +98,7 @@
   pointer-events: none;
   position: absolute;
   text-align: center;
-  text-shadow: 0 1px 0 #ffffff;
+  text-shadow: 0 1px 0 var(--border-subtle);
   z-index: 2;
 }
 
@@ -306,7 +306,7 @@
 
 .database-modal-window {
   background: var(--surface-workbench);
-  border-color: #ffffff #6d675d #6d675d #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28), 0 10px 24px rgba(0, 0, 0, 0.22);
@@ -334,8 +334,8 @@
 
 .database-modal-header {
   align-items: center;
-  background: linear-gradient(90deg, #183c82, #2f6fb4);
-  border-bottom: 1px solid #263f63;
+  background: linear-gradient(90deg, var(--accent), var(--accent));
+  border-bottom: 1px solid var(--accent-border);
   cursor: move;
   display: flex;
   flex: 0 0 auto;
@@ -346,7 +346,7 @@
 }
 
 .database-modal-header h2 {
-  color: #ffffff;
+  color: var(--text-1);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.25;
@@ -363,11 +363,11 @@
 .database-modal-close,
 .database-modal-maximize {
   align-items: center;
-  background: #d8d0be;
-  border-color: #ffffff #6d675d #6d675d #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
-  color: #1f1f1f;
+  color: var(--text-1);
   cursor: pointer;
   display: inline-flex;
   font: 700 14px/1 Arial, sans-serif;
@@ -380,7 +380,7 @@
 
 .database-modal-close:active,
 .database-modal-maximize:active {
-  border-color: #6d675d #ffffff #ffffff #6d675d;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   padding: 1px 0 0 1px;
 }
 
@@ -397,8 +397,8 @@
 }
 
 .database-modal-body .db-tabs {
-  background: #d8d0be;
-  border-bottom: 1px solid #8f8a80;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-default);
   gap: 0;
   margin: 0;
   overflow-x: auto;
@@ -406,8 +406,8 @@
 }
 
 .database-modal-body .db-tab {
-  background: #d8d0be;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);

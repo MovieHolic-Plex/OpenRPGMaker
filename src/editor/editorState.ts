@@ -28,12 +28,17 @@ export interface TileSelection {
   height: number;
 }
 
+export interface TileClipboardLayer {
+  tiles: number[];
+  stacks: number[][];
+}
+
+// 복사는 항상 하위+상위 레이어를 통째로 담는다(RM2K3 영역 복사 관례).
 export interface TileClipboard {
-  layer: "lower" | "upper";
   width: number;
   height: number;
-  tiles: number[];
-  stacks?: number[][];
+  lower: TileClipboardLayer;
+  upper: TileClipboardLayer;
 }
 
 export interface EditorState {

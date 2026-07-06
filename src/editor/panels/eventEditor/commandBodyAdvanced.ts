@@ -4,6 +4,7 @@ import { el } from "@/util/dom";
 import { selectWithOptions } from "./dom";
 import { innBody, shopBody } from "./commandBodyCommerce";
 import {
+  actorSubtitle,
   battleProcessingBody,
   changeActorHpBody,
   changeActorMpBody,
@@ -13,8 +14,11 @@ import {
   changeItemBody,
   changeLevelBody,
   changePartyBody,
+  enterHeroNameBody,
   recoverAllBody,
 } from "./commandBodyDatabase";
+import { facesetIconOf, recordPickerWithPreview } from "./recordPicker";
+import { isPassable } from "@/project/collision";
 import { moveEventBody } from "./commandBodyRoute";
 import { changeTileBody } from "./commandBodyTile";
 import { BOOLEAN_OPTIONS } from "./options";
@@ -55,6 +59,8 @@ export function renderAdvancedCommandBody(
       return changeActorMpBody(context, cmd);
     case "recoverAll":
       return recoverAllBody(context, cmd);
+    case "enterHeroName":
+      return enterHeroNameBody(context, cmd);
     case "shop":
       return shopBody(context, cmd);
     case "inn":
@@ -86,7 +92,20 @@ export function renderAdvancedCommandBody(
 
 function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
   const project = store.getCurrent();
-  const mapName = cmd.mapId ? project.maps[cmd.mapId]?.name ?? cmd.mapId : "(map)";
+  const map = cmd.mapId ? project.maps[cmd.mapId] : undefined;
+  const mapName = cmd.mapId ? map?.name ?? cmd.mapId : "(map)";
+  // 대상 좌표 통행성 즉석 검사 배지 — 통행 불가 타일로 이동시키는 실수를 편집 시점에 잡는다.
+  const passable = map ? isPassable(project, map, cmd.x, cmd.y) : undefined;
+  const passabilityBadge =
+    passable === undefined
+      ? []
+      : [
+          el("span", {
+            class: `rich-badge ${passable ? "passable" : "blocked"}`,
+            text: passable ? "통행 가능" : "통행 불가 타일!",
+            dataset: { testid: "transfer-passability-badge", passable: String(passable) },
+          }),
+        ];
   return el("div", {
     class: "transfer-command-editor",
     children: [
@@ -95,6 +114,7 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
         text: `${mapName} (${cmd.x}, ${cmd.y}) / ${transferDirectionLabel(cmd.direction)} / 페이드: ${transferFadeLabel(cmd.fade)}`,
         dataset: { testid: "transfer-command-summary" },
       }),
+      ...passabilityBadge,
       el("button", {
         class: "btn small",
         text: "장소 이동...",
@@ -166,19 +186,36 @@ function callMapEventBody(
 
 function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kind: "learnSkill" }>): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", "learn-skill-actor-select");
-  const skill = recordSelect(project.database.skills, cmd.skillId, "특수기 선택", "learn-skill-skill-select");
+  // 액터/스킬 픽커: 얼굴(또는 이니셜) + 직업 부제, 스킬은 MP/위력 부제.
+  const actor = recordPickerWithPreview({
+    records: project.database.actors,
+    selectedId: cmd.actorId,
+    placeholder: "주인공 선택",
+    testid: "learn-skill-actor-select",
+    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
+    subtitleOf: (record) => actorSubtitle(project, record),
+  });
+  const skill = recordPickerWithPreview({
+    records: project.database.skills,
+    selectedId: cmd.skillId,
+    placeholder: "특수기 선택",
+    testid: "learn-skill-skill-select",
+    subtitleOf: (record) => `MP ${record.mpCost.flat} · 위력 ${record.power}`,
+  });
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "learnSkill",
-      actorId: actor.value,
-      skillId: skill.value,
+      actorId: actor.select.value,
+      skillId: skill.select.value,
     });
   };
-  actor.addEventListener("change", apply);
-  skill.addEventListener("change", apply);
-  const wrap = el("span", {});
-  wrap.append(actor, skill);
+  actor.select.addEventListener("change", apply);
+  skill.select.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [actor.root] }),
+    el("span", { class: "rich-form-row", children: [skill.root] })
+  );
   return wrap;
 }
 
@@ -272,21 +309,6 @@ export function mapSelect(currentId: string, testId?: string): HTMLSelectElement
   }
   mapSel.value = currentId;
   return mapSel;
-}
-
-function recordSelect(
-  records: readonly { readonly id: string; readonly name: string }[],
-  currentId: string,
-  placeholder: string,
-  testId: string
-): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
-  select.append(el("option", { text: `(${placeholder})`, attrs: { value: "" } }));
-  for (const [index, record] of records.entries()) {
-    select.append(el("option", { text: `${String(index + 1).padStart(4, "0")}: ${record.name}`, attrs: { value: record.id } }));
-  }
-  select.value = currentId;
-  return select;
 }
 
 function textInput(value: string, placeholder: string, testId: string): HTMLInputElement {

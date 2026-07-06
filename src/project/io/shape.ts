@@ -61,6 +61,8 @@ export function validateProjectV3(data: JsonRecord): Project {
   const maps = validateMaps(data.maps);
   validateMapConnections(data.mapConnections, new Set(Object.keys(maps)));
   validateVillageInfoDocuments(data.villageInfoDocuments, new Set(Object.keys(maps)));
+  validateQuests(data.quests, new Set(Object.keys(maps)));
+  validateTestPresets(data.testPresets, new Set(Object.keys(maps)));
   validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
   assert(startMapId in maps, "startMapId가 maps에 없습니다.");
@@ -86,6 +88,44 @@ function validateVillageInfoDocuments(value: unknown, mapIds: ReadonlySet<string
     assert(mapIds.has(mapId), `villageInfoDocuments[${index}].mapId가 존재하지 않는 맵입니다: ${mapId}`);
     requireString(`villageInfoDocuments[${index}].title`, document.title);
     requireString(`villageInfoDocuments[${index}].markdown`, document.markdown);
+  }
+}
+
+// 퀘스트 정의(선언적 메타). 상세 step 구조는 questCompiler가 소비하므로 여기선 최상위 형태만 검증한다.
+function validateQuests(value: unknown, mapIds: ReadonlySet<string>): void {
+  if (value === undefined) return;
+  assert(Array.isArray(value), "quests는 배열이어야 합니다.");
+  for (const [index, entry] of value.entries()) {
+    const quest = requireRecord(`quests[${index}]`, entry);
+    requireString(`quests[${index}].key`, quest.key);
+    requireString(`quests[${index}].title`, quest.title);
+    requireString(`quests[${index}].summary`, quest.summary);
+    assert(Array.isArray(quest.steps), `quests[${index}].steps는 배열이어야 합니다.`);
+    // giver가 기존 이벤트 참조면 맵 존재를 확인(생성형이면 컴파일 시 생성되므로 생략).
+    const giver = quest.giver as { mapId?: unknown } | undefined;
+    if (giver && typeof giver.mapId === "string") {
+      assert(mapIds.has(giver.mapId), `quests[${index}].giver.mapId가 존재하지 않는 맵입니다: ${giver.mapId}`);
+    }
+  }
+}
+
+// 테스트 상태 프리셋(Phase 4-1). optional. 최상위 형태와 참조 맵 존재만 검증한다.
+function validateTestPresets(value: unknown, mapIds: ReadonlySet<string>): void {
+  if (value === undefined) return;
+  assert(Array.isArray(value), "testPresets는 배열이어야 합니다.");
+  for (const [index, entry] of value.entries()) {
+    const preset = requireRecord(`testPresets[${index}]`, entry);
+    requireString(`testPresets[${index}].id`, preset.id);
+    requireString(`testPresets[${index}].name`, preset.name);
+    if (preset.switches !== undefined) requireRecord(`testPresets[${index}].switches`, preset.switches);
+    if (preset.variables !== undefined) requireRecord(`testPresets[${index}].variables`, preset.variables);
+    if (preset.inventory !== undefined) requireRecord(`testPresets[${index}].inventory`, preset.inventory);
+    if (preset.gold !== undefined) requireNumber(`testPresets[${index}].gold`, preset.gold);
+    if (preset.startMapId !== undefined) {
+      const mapId = requireString(`testPresets[${index}].startMapId`, preset.startMapId);
+      assert(mapIds.has(mapId), `testPresets[${index}].startMapId가 존재하지 않는 맵입니다: ${mapId}`);
+    }
+    if (preset.startPos !== undefined) requirePosition(`testPresets[${index}].startPos`, preset.startPos);
   }
 }
 

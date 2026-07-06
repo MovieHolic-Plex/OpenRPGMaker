@@ -1,4 +1,5 @@
 import { addSwitch, addVariable, renameSwitch, renameVariable } from "@/editor/actions";
+import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { duplicateInto } from "@/editor/databaseCopy";
 import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databaseReferences";
 import { updateClassRecord, updateEnemyRecord, updateEquipmentRecord, updateItemRecord, updateSkillRecord, updateTroopRecord } from "@/editor/databaseRecordMutators";
@@ -43,6 +44,7 @@ export type DatabasePatch =
 
 export function addDatabaseRecord(collection: DatabaseCollection): string {
   const id = genId(databaseRecordPrefix(collection));
+  recordProjectSnapshot();
   store.update((project) => {
     switch (collection) {
       case "actors":
@@ -85,6 +87,9 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
 }
 
 export function updateDatabaseRecord(collection: DatabaseCollection, id: string, patch: DatabasePatch): void {
+  // 텍스트/숫자 필드는 keystroke 마다 호출되므로, 같은 레코드의 같은 필드 편집은
+  // 커밋 단위(1 스냅샷)로 병합한다. 필드가 바뀌면 키가 달라져 새 스냅샷이 남는다.
+  recordCoalescedSnapshot(`db-update:${collection}:${id}:${Object.keys(patch).sort().join(",")}`);
   store.update((project) => {
     switch (collection) {
       case "actors": {
@@ -178,6 +183,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
 
 export function duplicateDatabaseRecord(collection: DatabaseCollection, id: string): string {
   const copyId = genId(databaseRecordPrefix(collection));
+  recordProjectSnapshot();
   store.update((project) => {
     switch (collection) {
       case "actors":
@@ -215,6 +221,7 @@ export function duplicateDatabaseRecord(collection: DatabaseCollection, id: stri
 export function deleteDatabaseRecord(collection: DatabaseCollection, id: string): DeleteResult {
   const message = databaseReferenceMessage(collection, id);
   if (message) return { ok: false, message };
+  recordProjectSnapshot();
   store.update((project) => {
     switch (collection) {
       case "actors":

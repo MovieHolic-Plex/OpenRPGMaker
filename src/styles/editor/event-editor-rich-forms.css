@@ -1,0 +1,316 @@
+/* ============================================================================
+   이벤트 명령 리치 편집 폼 (EV-2) — RM2K3 수준 비주얼 UX
+   전부 tokens.css 토큰 기반. 소유: event-editor rich-forms 워커.
+   ========================================================================= */
+
+/* 폼 골격: 세로 스택 + 가로 행 */
+.rich-command-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.rich-form-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* ---- 레코드 픽커 (select + 선택 카드) ---------------------------------- */
+.record-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.record-picker > select {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  padding: 4px 8px;
+  max-width: 220px;
+}
+
+.record-picker > select:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-muted);
+}
+
+.record-picker-card {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  padding: 4px 10px 4px 6px;
+  min-height: 32px;
+  max-width: 260px;
+  transition: border-color var(--transition-fast);
+}
+
+.record-picker-card[data-empty="true"] {
+  border-style: dashed;
+}
+
+.record-picker-card-copy {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.record-picker-card-name {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record-picker-card-name.empty {
+  color: var(--text-3);
+  font-weight: 400;
+}
+
+.record-picker-card-subtitle {
+  color: var(--text-3);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 아이콘: 이미지 / 시트 크롭 / 이니셜 플레이스홀더 */
+.rich-record-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+}
+
+.rich-record-icon-crop {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: inline-block;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border-radius: var(--radius-s);
+  background-color: var(--bg-inset);
+}
+
+.rich-record-initial {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ---- 세그먼트 버튼 (연산 = / + / −, 파티 추가/제거) --------------------- */
+.rich-segment-group {
+  position: relative;
+  display: inline-flex;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--control-bg);
+  overflow: hidden;
+}
+
+.rich-segment {
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.rich-segment + .rich-segment {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.rich-segment:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.rich-segment.selected {
+  background: var(--accent-muted);
+  color: var(--text-1);
+  box-shadow: inset 0 0 0 1px var(--accent-border);
+}
+
+/* 기존 select 는 테스트/자동화 호환용으로 남긴다.
+   크기(1x1 이상)와 visibility 를 유지해 selectOption 액션이 가능해야 하므로
+   display:none / visibility:hidden 금지 — opacity 로만 숨긴다. */
+.rich-native-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- 수량 스테퍼 (− input +) ------------------------------------------- */
+.rich-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.rich-stepper > input {
+  width: 64px;
+  border: 0;
+  background: transparent;
+  color: var(--text-1);
+  text-align: center;
+  font-size: 12px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.rich-stepper > input::-webkit-outer-spin-button,
+.rich-stepper > input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rich-stepper > input:focus {
+  outline: 2px solid var(--accent-muted);
+  outline-offset: -2px;
+}
+
+.rich-stepper-button {
+  border: 0;
+  background: var(--control-bg);
+  color: var(--text-2);
+  width: 26px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.rich-stepper-button:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.rich-stepper-button:active {
+  background: var(--control-bg-active);
+}
+
+/* ---- 전/후 프리뷰 스트립 ------------------------------------------------ */
+.rich-preview-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  padding: 6px 10px;
+  max-width: 100%;
+}
+
+.rich-preview-body {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  color: var(--text-1);
+  font-size: 12px;
+}
+
+.rich-preview-arrow {
+  color: var(--text-3);
+}
+
+.rich-preview-after {
+  font-weight: 600;
+}
+
+.rich-preview-after.gain {
+  color: var(--success);
+}
+
+.rich-preview-after.loss {
+  color: var(--danger);
+}
+
+.rich-preview-hint {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.rich-preview-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* 코인 뉘앙스 배지 (소지금) */
+.rich-gold-badge {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--warning-muted);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ---- 상태 배지 (통행성 등) ---------------------------------------------- */
+.rich-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  color: var(--text-2);
+}
+
+.rich-badge.passable {
+  background: var(--success-muted);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.rich-badge.blocked {
+  background: var(--danger-muted);
+  border-color: var(--danger);
+  color: var(--danger);
+}

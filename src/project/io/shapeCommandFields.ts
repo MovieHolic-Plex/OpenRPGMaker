@@ -44,6 +44,13 @@ function validateCommandShape(label: string, value: unknown): void {
       validateCommandArray(`${label}.then`, command.then);
       if (command.else !== undefined) validateCommandArray(`${label}.else`, command.else);
       return;
+    case "loop":
+      validateCommandArray(`${label}.body`, command.body);
+      return;
+    case "setSelfSwitch":
+      requireSelfSwitchKey(`${label}.key`, command.key);
+      requireBoolean(`${label}.value`, command.value);
+      return;
     case "setVariable":
       requireString(`${label}.variableId`, command.variableId);
       requireString(`${label}.op`, command.op);
@@ -72,9 +79,22 @@ function validateCommandShape(label: string, value: unknown): void {
     case "recoverAll":
       if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
       return;
+    case "enterHeroName": {
+      requireString(`${label}.actorId`, command.actorId);
+      requireBoolean(`${label}.showInitialName`, command.showInitialName);
+      const maxLength = requireNumber(`${label}.maxLength`, command.maxLength);
+      if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
+      throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);
+    }
     default:
       return;
   }
+}
+
+function requireSelfSwitchKey(label: string, value: unknown): void {
+  const key = requireString(label, value);
+  if (key === "A" || key === "B" || key === "C" || key === "D") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
 function requireFacePosition(label: string, value: unknown): void {
@@ -133,19 +153,41 @@ function requireEquipmentSlot(label: string, value: unknown): void {
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
+// Condition 유니온(fork/페이지 조건 공용)이 지원하는 모든 kind를 허용해야 한다.
+// switch/variable만 검증하면 item/selfSwitch/gold 조건이 든 프로젝트의 저장/불러오기가 깨진다.
 export function validateConditionShape(label: string, value: unknown): void {
   const condition = requireRecord(label, value);
   const kind = requireString(`${label}.kind`, condition.kind);
-  if (kind === "switch") {
-    requireString(`${label}.switchId`, condition.switchId);
-    requireBoolean(`${label}.value`, condition.value);
-    return;
-  }
-  if (kind === "variable") {
-    requireString(`${label}.variableId`, condition.variableId);
-    requireString(`${label}.op`, condition.op);
-    requireNumber(`${label}.value`, condition.value);
-    return;
+  switch (kind) {
+    case "switch":
+      requireString(`${label}.switchId`, condition.switchId);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "variable":
+      requireString(`${label}.variableId`, condition.variableId);
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.value`, condition.value);
+      return;
+    case "selfSwitch":
+      requireString(`${label}.key`, condition.key);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "actor":
+      requireString(`${label}.actorId`, condition.actorId);
+      requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "item":
+      requireString(`${label}.itemId`, condition.itemId);
+      requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "gold":
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.amount`, condition.amount);
+      return;
+    case "timer":
+      requireString(`${label}.timerId`, condition.timerId);
+      requireNumber(`${label}.seconds`, condition.seconds);
+      return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
 }

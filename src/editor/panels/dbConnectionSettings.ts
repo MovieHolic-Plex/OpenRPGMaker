@@ -28,12 +28,28 @@ let modalRoot: HTMLElement | null = null;
 let connecting = false;
 
 export function renderDbConnectionStatus(status: DbPersistenceStatus, onRefresh: StatusRefresh): HTMLElement {
+  const autoSave = store.getAutoSaveState();
   const button = el("button", {
-    class: `editor-statusbar-cell db-connection-status ${status.kind}`,
-    text: dbConnectionStatusText(status),
-    attrs: { title: `${dbConnectionStatusTitle(status)} 클릭해서 DB 설정/연결을 엽니다.`, type: "button" },
+    class: `editor-statusbar-cell db-connection-status ${status.kind} autosave-${autoSave.kind}`,
+    attrs: { title: dbConnectionStatusButtonTitle(status, autoSave), type: "button" },
+    children: [
+      el("span", { class: "db-connection-label", text: dbConnectionStatusText(status) }),
+      el("span", { class: "db-autosave-state", text: autoSaveStatusText(autoSave), dataset: { testid: "db-autosave-state" } }),
+    ],
     dataset: { testid: "db-connection-status" },
-    on: { click: () => openDbConnectionSettings(onRefresh) },
+    on: {
+      click: () => {
+        if (autoSave.kind !== "error") {
+          openDbConnectionSettings(onRefresh);
+          return;
+        }
+        void store.flush()
+          .catch((error) => {
+            console.error("[store] manual auto-save retry failed:", error);
+          })
+          .finally(onRefresh);
+      },
+    },
   });
   return button;
 }
@@ -331,6 +347,50 @@ function dbConnectionStatusText(status: DbPersistenceStatus): string {
     case "disabled":
       return "DB 연동: 꺼짐";
   }
+}
+
+function dbConnectionStatusButtonTitle(status: DbPersistenceStatus, autoSave: ReturnType<typeof store.getAutoSaveState>): string {
+  const action = autoSave.kind === "error" ? "클릭해서 저장을 다시 시도합니다." : "클릭해서 DB 설정/연결을 엽니다.";
+  return `${dbConnectionStatusTitle(status)} ${autoSaveStatusTitle(autoSave)} ${action}`;
+}
+
+function autoSaveStatusText(state: ReturnType<typeof store.getAutoSaveState>): string {
+  switch (state.kind) {
+    case "idle":
+      return "저장 대기 없음";
+    case "pending":
+      return "● 저장 대기";
+    case "saving":
+      return "● 저장 중…";
+    case "saved":
+      return `✓ 저장됨 ${formatAutoSaveTime(state.at)}`;
+    case "error":
+      return "⚠ 저장 실패 — 클릭해 재시도";
+  }
+}
+
+function autoSaveStatusTitle(state: ReturnType<typeof store.getAutoSaveState>): string {
+  switch (state.kind) {
+    case "idle":
+      return "자동저장 대기 중인 변경이 없습니다.";
+    case "pending":
+      return "변경 사항이 있어 곧 자동저장합니다.";
+    case "saving":
+      return "변경 사항을 저장하는 중입니다.";
+    case "saved":
+      return `${formatAutoSaveTime(state.at)}에 저장했습니다.`;
+    case "error":
+      return `저장 실패: ${state.message}`;
+  }
+}
+
+function formatAutoSaveTime(at: number): string {
+  const date = new Date(at);
+  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
+
+function pad2(value: number): string {
+  return value < 10 ? `0${value}` : String(value);
 }
 
 function dbConnectionStatusTitle(status: DbPersistenceStatus): string {

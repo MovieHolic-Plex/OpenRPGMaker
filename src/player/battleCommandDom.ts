@@ -57,7 +57,7 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     return menu;
   }
   if (options.submenu === "item") {
-    menu.append(...itemSubmenu(options));
+    menu.append(...itemSubmenu(snapshot, options));
     return menu;
   }
 
@@ -73,8 +73,9 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     options.setSubmenu("skill");
     options.render();
   }));
-  menu.append(commandButton("아이템", "actor-command-item", "bag", battleItems().length > 0 ? `${battleItems().length}종` : "없음", () => {
-    if (targetMode || battleItems().length === 0) return;
+  const items = battleItems(snapshot);
+  menu.append(commandButton("아이템", "actor-command-item", "bag", items.length > 0 ? `${items.length}종` : "없음", () => {
+    if (targetMode || battleItems(snapshot).length === 0) return;
     options.setSubmenu("item");
     options.render();
   }, targetMode));
@@ -107,9 +108,11 @@ function usableSkills(actor: BattleBattlerSnapshot | undefined): SkillId[] {
   return actor.skillIds.filter((id) => skills.some((skill) => skill.id === id));
 }
 
-function battleItems(): { itemId: ItemId; name: string; count: number }[] {
+// 전투 아이템 목록은 전투 런타임의 이벤트 상태(현재 플레이 세션에서 시드됨)를 기준으로 한다.
+// project.session은 에디터 시작 상태라 플레이 중 획득/소모가 반영되지 않는다.
+function battleItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number }[] {
   const project = store.getCurrent();
-  const inventory = project.session.inventory;
+  const inventory = snapshot.eventState.inventory;
   return project.database.items
     .filter((item) => item.skillId && (inventory[item.id] ?? 0) > 0)
     .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0 }));
@@ -155,12 +158,12 @@ function mpDetail(project: ReturnType<typeof store.getCurrent>, skillId: SkillId
   return `MP ${flat}${pct > 0 ? `+${pct}%` : ""}`;
 }
 
-function itemSubmenu(options: BattleCommandPanelOptions): HTMLElement[] {
+function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
   header.textContent = "아이템";
   const nodes: HTMLElement[] = [header];
-  for (const item of battleItems()) {
+  for (const item of battleItems(snapshot)) {
     nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", "아이템 사용", () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
     }));

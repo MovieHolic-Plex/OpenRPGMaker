@@ -1,11 +1,22 @@
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
 import type { ActorId, ItemId, SkillId } from "@/project/types";
+import { startStateOf } from "@/project/session";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, type MutableBattler } from "@/battle/battleBattlers";
 import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
+import { computeActorLevelUp } from "@/battle/battleLevelUp";
+import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
+import {
+  applyStateEffects,
+  attackMultiplierForStates,
+  canBattlerAct,
+  defenseMultiplierForStates,
+  recoverStatesWhenHit,
+  runStateUpkeep,
+} from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import type {
   ActorCommand,
@@ -42,9 +53,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
 
-  const actors = actorBattlers(options.project);
+  const actors = actorBattlers(options.project, {
+    names: options.party?.names,
+    levels: options.party?.levels,
+    vitals: options.party?.vitals,
+    partyActorIds: options.party?.partyActorIds,
+  });
   const enemies = enemyBattlers(options.project, troopRecord);
-  let backdropResourceId = troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
+  let backdropResourceId = options.backdropResourceId ?? troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
 
   let phase: BattlePhase = "charging";
   let activeActorId: ActorId | undefined;
@@ -55,11 +71,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
-  const rewards: { exp: number; gold: number; items: ItemId[] } = { exp: 0, gold: 0, items: [] };
+  const rewards: { exp: number; gold: number; items: ItemId[]; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
+  // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
+  const sessionState = options.sessionState ?? startStateOf(options.project);
   const battleEventState: BattleEventRuntimeState = {
-    switches: { ...options.project.session.switches },
-    variables: { ...options.project.session.variables },
-    inventory: { ...options.project.session.inventory },
+    switches: { ...sessionState.switches },
+    variables: { ...sessionState.variables },
+    inventory: { ...sessionState.inventory },
   };
   const battleEvents = createBattleEventRuntime({
     troopRecord,
@@ -84,6 +102,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     chargeBattlers(actors, enemiesInBattle, ready.timeMs);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
+      // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
+      runStateUpkeep(options.project, ready.battler);
+      resolveOutcome();
+      if (result) return;
+      if (!canBattlerAct(options.project, ready.battler)) {
+        ready.battler.gauge = 0;
+        phase = "charging";
+        return;
+      }
       phase = "actorCommand";
       activeActorId = ready.battler.recordId;
       return;
@@ -104,7 +131,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           currentActorCommandKind = undefined;
           return;
         }
-        const result = applySkillLike(actor, target, { power: actor.attackPower, statistic: "attack", effect: "damage", criticalRate: criticalRateFor(actor) });
+        const result = applySkillLike(actor, target, {
+          power: actor.attackPower,
+          statistic: "attack",
+          effect: "damage",
+          criticalRate: criticalRateFor(actor),
+          attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
+          targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+        });
+        if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target);
         lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
         break;
       }
@@ -281,6 +316,23 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performEnemyTurn(enemy: MutableBattler): void {
+    // 턴 시작 상태 처리(지속 피해/자연 회복).
+    runStateUpkeep(options.project, enemy);
+    resolveOutcome();
+    if (result) {
+      phase = "resolved";
+      return;
+    }
+    // 행동 불가(수면 등)면 적도 턴을 건너뛴다.
+    if (!canBattlerAct(options.project, enemy)) {
+      enemy.gauge = 0;
+      for (const actor of actors) actor.defending = false;
+      turn += 1;
+      applyTroopEvents();
+      resolveOutcome();
+      phase = result ? "resolved" : "charging";
+      return;
+    }
     const target = actors.find((actor) => actor.hp > 0);
     if (!target) return;
     const skillId = enemy.skillIds[0];
@@ -288,7 +340,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       consumeSkillMp(enemy, skillId);
       applySkill(enemy, target, skillId);
     } else {
-      const result = applySkillLike(enemy, target, { power: enemy.attackPower, statistic: "attack", effect: "damage", criticalRate: criticalRateFor(enemy) });
+      const result = applySkillLike(enemy, target, {
+        power: enemy.attackPower,
+        statistic: "attack",
+        effect: "damage",
+        criticalRate: criticalRateFor(enemy),
+        attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
+        targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      });
+      if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target);
       lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
     }
     enemy.gauge = 0;
@@ -351,10 +411,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       variance: skill?.variance,
       criticalRate: criticalRateFor(user),
       elementMultiplier: elementMultiplierFor(skill?.elementId, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, user),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
     });
     lastActionResult = { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name };
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
+    }
+    // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
+    // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
+    if (result.hit && effectKind === "damage" && result.amount > 0) {
+      recoverStatesWhenHit(options.project, target);
+    }
+    if (result.hit) {
+      applyStateEffects(options.project, target, skill?.stateEffects);
     }
     if (skill?.effect?.kind === "switch" && skill.effect.switchId) {
       // 전투 내 스위치 토글은 플레이 세션으로 전파하지 않고 배틀 stateIds 에 기록만.
@@ -443,6 +513,26 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.items = [...collected.items];
+    rewards.levelUps = computeLevelUpPreview(collected.exp);
+  }
+
+  // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).
+  // 실제 세션 적립/성장은 battleRewardsToSession 이 담당하며 동일 로직으로 일치한다.
+  function computeLevelUpPreview(earnedExp: number): BattleLevelUpResult[] {
+    const party = options.party;
+    if (!party) return [];
+    const results: BattleLevelUpResult[] = [];
+    const seen = new Set<string>();
+    for (const actor of actors) {
+      const actorId = actor.recordId;
+      if (seen.has(actorId)) continue;
+      seen.add(actorId);
+      const level = party.levels[actorId] ?? 1;
+      const totalExp = (party.experience[actorId] ?? 0) + earnedExp;
+      const result = computeActorLevelUp(options.project, actorId, level, totalExp);
+      if (result) results.push(result);
+    }
+    return results;
   }
 
   return { tick, beginActorCommand, selectTargetEnemy, setSelectedTargetEnemy, cancelTargetSelection, performActorCommand, snapshot };

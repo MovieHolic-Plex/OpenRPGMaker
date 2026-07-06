@@ -8,6 +8,7 @@ Pick validation based on the touched boundary:
 
 - Type-only or low-risk helper changes: run `npm run typecheck` plus a focused unit test if one exists.
 - Project schema, migration, persistence, defaults, or references: run focused Vitest coverage for the changed path and include save/load or migration evidence.
+- Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must produce a `projectLint` error that makes `commitChangeset` return `ok:false`, while the fixed map returns `ok:true`.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
 - Runtime/player/battle changes: run focused unit tests plus the smallest e2e or browser scenario that proves the behavior in play mode.
 - Wiki-only changes: run `npm run openwiki:verify`.

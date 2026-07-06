@@ -41,8 +41,8 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) {
-    background: #d8d4cb;
-    border-color: #ffffff #4f4f4f #4f4f4f #ffffff;
+    background: var(--bg-raised);
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.32);
     height: min(1024px, calc(100vh - 24px));
     max-width: calc(100vw - 24px);
@@ -67,9 +67,9 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .database-modal-header {
-    background: linear-gradient(90deg, #174a9e 0%, #2d72d2 100%);
-    border-bottom: 1px solid #0f377d;
-    color: #ffffff;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 100%);
+    border-bottom: 1px solid var(--accent-border);
+    color: var(--text-1);
     min-height: 28px;
     padding: 2px 8px;
   }
@@ -92,7 +92,7 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .database-modal-header h2 {
-    color: #ffffff;
+    color: var(--text-1);
     font: 700 14px/22px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.36);
   }
@@ -115,7 +115,7 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .database-modal-body {
-    background: #d8d4cb;
+    background: var(--bg-raised);
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr);
     overflow: hidden;
@@ -140,8 +140,8 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-tabs {
-    background: #d8d0be;
-    border-bottom: 1px solid #8f8a80;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-default);
     flex-wrap: nowrap;
     height: auto;
     margin: 0;
@@ -169,8 +169,8 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-tab {
-    background: #d8d0be;
-    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    background: var(--bg-raised);
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     color: var(--text-primary);
     flex: 0 0 auto;
     font-size: 12px;
@@ -198,11 +198,11 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-tab.active {
-    background: linear-gradient(#5e84dc, #315ebc);
-    border-bottom-color: #315ebc;
-    border-color: #dfe8ff #1f4695 #1f4695 #dfe8ff;
+    background: linear-gradient(var(--accent), var(--accent));
+    border-bottom-color: var(--accent-border);
+    border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
     box-shadow: none;
-    color: #ffffff;
+    color: var(--text-1);
     margin-bottom: -1px;
   }
 
@@ -224,8 +224,8 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-body {
-    background: #d8d4cb;
-    border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+    background: var(--bg-raised);
+    border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
     border-style: solid;
     border-width: 1px;
     height: auto;
@@ -241,8 +241,8 @@
   }
 
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-list-pane {
-    background: #d8d4cb;
-    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    background: var(--bg-raised);
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     border-style: solid;
     border-width: 1px;
     box-shadow: none;
@@ -254,7 +254,7 @@
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-list-pane h3 {
     background: transparent;
     border: 0;
-    color: #111111;
+    color: var(--text-1);
     display: block;
     font: 700 13px/1.2 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
     height: auto;
@@ -263,8 +263,8 @@
   }
 
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list {
-    background: #f7f7f7;
-    border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+    background: var(--bg-raised);
+    border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
     border-style: solid;
     border-width: 1px;
     display: grid;
@@ -277,10 +277,10 @@
 
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list-row {
     align-items: center;
-    background: #f7f7f7;
+    background: var(--bg-raised);
     border: 0;
-    border-bottom: 1px solid #c9c6bd;
-    color: #111111;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-1);
     display: grid;
     font: 13px/1.35 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
     gap: 4px;
@@ -292,8 +292,8 @@
   }
 
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list-row.active {
-    background: linear-gradient(#3c74d7, #255ab8);
-    color: #ffffff;
+    background: var(--accent-muted);
+    color: var(--text-1);
   }
 
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-toolbar {
@@ -306,8 +306,8 @@
 
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-detail-pane,
   .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-detail-form {
-    background: #d8d4cb;
-    border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+    background: var(--bg-raised);
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     border-style: solid;
     border-width: 1px;
     box-shadow: none;

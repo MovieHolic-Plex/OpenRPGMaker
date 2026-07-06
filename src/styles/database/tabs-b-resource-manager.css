@@ -31,8 +31,8 @@
   height: 48px;
   object-fit: contain;
   background:
-    linear-gradient(45deg, #b8b2a4 25%, transparent 25%, transparent 75%, #b8b2a4 75%),
-    linear-gradient(45deg, #b8b2a4 25%, #ece7da 25%, #ece7da 75%, #b8b2a4 75%);
+    linear-gradient(45deg, var(--bg-raised) 25%, transparent 25%, transparent 75%, var(--bg-raised) 75%),
+    linear-gradient(45deg, var(--bg-raised) 25%, var(--bg-inset) 25%, var(--bg-inset) 75%, var(--bg-raised) 75%);
   background-position: 0 0, 6px 6px;
   background-size: 12px 12px;
   border: 1px solid var(--border-soft);
@@ -137,18 +137,19 @@ body.resizing {
 }
 .system-shell {
   align-items: center;
-  background: var(--surface-recessed, #d8d0be);
-  color: var(--text-primary, #232323);
+  background: var(--bg-canvas);
+  color: var(--text-1);
   display: flex;
   justify-content: center;
   min-height: 100%;
   position: relative;
 }
 .system-panel {
-  background: rgba(20, 28, 44, 0.94);
-  border: 2px solid #d9e8f6;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
-  color: #fff;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
   display: flex;
   flex-direction: column;
   gap: 8px;

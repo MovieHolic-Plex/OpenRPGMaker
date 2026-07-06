@@ -139,6 +139,11 @@ export function isNumberRecord(value: unknown): value is Record<string, number> 
   return Object.values(value).every((item) => typeof item === "number");
 }
 
+export function isStringRecord(value: unknown): value is Record<string, string> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((item) => typeof item === "string");
+}
+
 export function isStringArray(value: unknown): value is readonly string[] {
   return Array.isArray(value) && value.every((item) => typeof item === "string");
 }

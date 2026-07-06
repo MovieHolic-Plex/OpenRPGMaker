@@ -209,7 +209,7 @@
 .tileset-ai-setup-option {
   align-items: center;
   background: var(--surface-recessed);
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -224,7 +224,7 @@
 
 .tileset-ai-setup-option:has(input:checked) {
   background: var(--accent-primary);
-  border-color: #14324a #ffffff #ffffff #14324a;
+  border-color: #14324a var(--border-subtle) var(--border-subtle) #14324a;
   color: var(--text-inverse);
 }
 
@@ -238,7 +238,7 @@
 .tileset-ai-loading-spinner {
   animation: tileset-ai-spinner-step 0.96s steps(8, end) infinite;
   background: var(--surface-recessed);
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.16);
@@ -396,7 +396,7 @@
 
 .tileset-ai-question-tile {
   background-repeat: no-repeat;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
   box-sizing: content-box;

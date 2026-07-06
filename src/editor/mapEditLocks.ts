@@ -1,7 +1,9 @@
 import { editorState } from "@/editor/editorState";
+import { randomUuid } from "@/util/id";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
+import { toast } from "@/util/toast";
 
 type MapEditLockRow = {
   readonly owner_label: string | null;
@@ -114,6 +116,29 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
   }
 }
 
+export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<void> {
+  const config = supabaseProjectConfig();
+  checkedMapId = mapId;
+  requestVersion += 1;
+  if (!config) {
+    stopHeartbeat();
+    setStatus({ kind: "unavailable", mapId, mapName, reason: "not-configured", message: "Supabase 설정 없음" });
+    toast("편집 권한을 가져올 수 없습니다: Supabase 설정 없음", "error");
+    return;
+  }
+  try {
+    const result = await upsertOwnMapLock(config, mapId, mapName);
+    setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
+    scheduleHeartbeat(mapId, mapName);
+    toast("편집 권한을 가져왔습니다", "ok");
+  } catch (error) {
+    stopHeartbeat();
+    const nextStatus = unavailableStatusFromError(error, mapId, mapName);
+    setStatus(nextStatus);
+    toast(`편집 권한 가져오기 실패: ${nextStatus.kind === "unavailable" ? nextStatus.message : "잠금 확인 실패"}`, "error");
+  }
+}
+
 async function acquireMapLock(
   config: SupabaseProjectConfig,
   mapId: MapId,
@@ -129,8 +154,16 @@ async function acquireMapLock(
       expiresAt: existing.expires_at,
     };
   }
-  const expiresAt = new Date(now + LOCK_TTL_MS).toISOString();
-  await upsertMapLock(config, mapId, mapName, sessionId, expiresAt);
+  return upsertOwnMapLock(config, mapId, mapName);
+}
+
+async function upsertOwnMapLock(
+  config: SupabaseProjectConfig,
+  mapId: MapId,
+  mapName: string,
+): Promise<{ readonly kind: "held"; readonly expiresAt: string }> {
+  const expiresAt = new Date(Date.now() + LOCK_TTL_MS).toISOString();
+  await upsertMapLock(config, mapId, mapName, editorSessionId(), expiresAt);
   return { kind: "held", expiresAt };
 }
 
@@ -256,7 +289,7 @@ function editorSessionId(): string {
   const storage = browserStorage();
   const existing = storage?.getItem(SESSION_KEY);
   if (existing) return existing;
-  const next = crypto.randomUUID();
+  const next = randomUuid();
   storage?.setItem(SESSION_KEY, next);
   return next;
 }

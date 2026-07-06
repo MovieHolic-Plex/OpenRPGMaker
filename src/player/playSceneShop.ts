@@ -1,13 +1,16 @@
 import { changeGold, changeItem } from "@/project/session";
 import { store } from "@/project/store";
 import { dialogueHost } from "@/player/playSceneDom";
+import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import {
+  adjustShopQuantity,
   createShopOverlay,
   defaultShopMode,
   renderShopItems,
   renderShopMenu,
   sellPrice,
   shopPromptText,
+  updateShopOwnedPanel,
   type ShopMode,
   type ShopView,
 } from "@/player/playSceneShopDom";
@@ -25,8 +28,46 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
     let mode: ShopMode = defaultShopMode(step);
     let statusText = items.length ? shopPromptText(step, mode) : "There are no goods here.";
     let transactionCompleted = false;
-    const finish = () => finishCommerce(scene, overlay, resolve, transactionCompleted);
+    // 커서 메뉴는 매 렌더마다 재부착한다(뷰/상태 변경 시 overlay 전체 재빌드).
+    // 커서 위치는 뷰별 인덱스로 보존해 상태 메시지 갱신에도 자리를 유지한다.
+    let detachCursor: (() => void) | null = null;
+    let menuCursor = 0;
+    let itemCursor = 0;
+    const teardownCursor = (): void => {
+      detachCursor?.();
+      detachCursor = null;
+    };
+    const finish = () => {
+      teardownCursor();
+      finishCommerce(scene, overlay, resolve, transactionCompleted);
+    };
+    const attachShopCursor = (): (() => void) => {
+      if (view === "menu") {
+        // 구입/판매/취소 — ←→ 또는 ↑↓ 로 이동(1D), Z/Enter 결정, X/Esc(=취소).
+        return attachCursorMenu(overlay, {
+          items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
+          cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-menu-cancel']"),
+          initialIndex: menuCursor,
+          onSelect: (index) => {
+            menuCursor = index;
+          },
+        });
+      }
+      // 아이템 목록 — ↑↓ 이동, 선택 시 보유 패널 갱신, select 수량모드면 ←→ 로 수량 ±1.
+      const selectMode = (step.quantityMode ?? "single") === "select";
+      return attachCursorMenu(overlay, {
+        items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-item-row")),
+        cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-item-cancel']"),
+        initialIndex: itemCursor,
+        onSelect: (index) => {
+          itemCursor = index;
+          updateShopOwnedPanel(overlay, scene, items[index]);
+        },
+        onHorizontal: selectMode ? (dir) => adjustShopQuantity(overlay, dir) : undefined,
+      });
+    };
     const renderShop = () => {
+      teardownCursor();
       clearElement(overlay);
       overlay.append(
         view === "menu"
@@ -47,6 +88,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
               },
             })
       );
+      detachCursor = attachShopCursor();
     };
     const showMenu = () => {
       view = "menu";
@@ -62,8 +104,9 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
       statusText = text;
       renderShop();
     };
-    renderShop();
+    // 먼저 마운트한 뒤 렌더해야 첫 커서 focus/scrollIntoView 가 연결된 노드에서 동작한다.
     mountCommerceOverlay(scene, overlay);
+    renderShop();
   });
 }
 

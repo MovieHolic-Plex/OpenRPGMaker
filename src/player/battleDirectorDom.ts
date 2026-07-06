@@ -229,7 +229,11 @@ function resultLine(result: BattleSnapshot["result"]): string {
 function rewardsLine(snapshot: BattleSnapshot): string {
   if (snapshot.result !== "victory") return "전투가 종료되었습니다.";
   const itemCount = snapshot.rewards.items.length;
-  return `경험치 ${snapshot.rewards.exp} / 골드 ${snapshot.rewards.gold} / 아이템 ${itemCount}`;
+  const base = `경험치 ${snapshot.rewards.exp} / 골드 ${snapshot.rewards.gold} / 아이템 ${itemCount}`;
+  const levelUps = snapshot.rewards.levelUps ?? [];
+  if (levelUps.length === 0) return base;
+  const names = levelUps.map((entry) => `${entry.actorName} Lv.${entry.toLevel}`).join(", ");
+  return `${base} · 레벨 업! ${names}`;
 }
 
 function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {
@@ -241,6 +245,10 @@ function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string;
   // 획득한 아이템이 있으면 실제 이름으로, 없으면 행을 추가하지 않는다(거짓 표시 금지).
   for (const itemId of snapshot.rewards.items) {
     rows.push({ kind: "item", label: "아이템", value: itemName(itemId) });
+  }
+  // 레벨업이 발생한 액터별로 "레벨 업!" 행을 추가.
+  for (const levelUp of snapshot.rewards.levelUps ?? []) {
+    rows.push({ kind: "levelup", label: `${levelUp.actorName} 레벨 업!`, value: `Lv.${levelUp.fromLevel}→${levelUp.toLevel}` });
   }
   return rows;
 }

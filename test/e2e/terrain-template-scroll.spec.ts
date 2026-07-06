@@ -1,47 +1,28 @@
 import { expect, test } from "@playwright/test";
 
-test("terrain template modal body scrolls inside the window", async ({ page }) => {
+// 지형 템플릿(교과서)은 DB → 타일셋 → 구성 탭으로 이사했다(2026-07-05).
+// 툴바 "템플릿" 버튼은 이제 그 탭을 바로 연다.
+test("terrain template section opens inside the tileset compose tab", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&terrainTemplateScroll=1");
 
-  await page.getByTestId("toolbar-terrain-template").click();
-  await expect(page.getByTestId("terrain-template-modal")).toBeVisible();
+  await page.getByTestId("toolbar-title-screen").click();
+  await expect(page.getByTestId("database-modal")).toBeVisible();
+  await expect(page.getByTestId("db-tab-tilesets")).toHaveClass(/active/);
+  await expect(page.getByTestId("tileset-section-tab-compose")).toHaveClass(/active/);
+  await expect(page.getByTestId("terrain-template-section")).toBeVisible();
   await expect(page.getByTestId("terrain-template-agent-notice")).toContainText("AI 에이전트용 참고 자료");
-  await expect(page.getByTestId("terrain-template-agent-notice")).toContainText("AI가 타일 구조를 해석");
 
-  const scrollMetrics = await page.getByTestId("terrain-template-modal").evaluate(async (node) => {
-    const body = node.querySelector(".terrain-template-modal-body");
-    const rail = node.querySelector(".terrain-template-scrollbar");
-    const thumb = node.querySelector(".terrain-template-scrollbar-thumb");
-    if (!(body instanceof HTMLElement) || !(rail instanceof HTMLElement) || !(thumb instanceof HTMLElement)) return null;
-    body.scrollTop = 180;
-    body.dispatchEvent(new Event("scroll"));
-    await new Promise<void>((resolve) => {
-      window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-    });
-    const railBox = rail.getBoundingClientRect();
-    const thumbBox = thumb.getBoundingClientRect();
+  // 상세는 자체 스크롤 컨테이너 안에서 스크롤된다(모달 본문이 옆으로 새지 않게).
+  const detailScrolls = await page.getByTestId("terrain-template-section").evaluate((node) => {
+    const detail = node.querySelector(".terrain-template-section-detail");
+    if (!(detail instanceof HTMLElement)) return null;
     return {
-      bodyClientHeight: body.clientHeight,
-      bodyClientWidth: body.clientWidth,
-      bodyOverflowY: getComputedStyle(body).overflowY,
-      bodyOffsetWidth: body.offsetWidth,
-      bodyScrollHeight: body.scrollHeight,
-      bodyScrollTop: body.scrollTop,
-      thumbHidden: thumb.hidden,
-      thumbHeight: thumbBox.height,
-      thumbOffsetTop: thumbBox.top - railBox.top,
-      thumbWidth: thumbBox.width,
+      overflowY: getComputedStyle(detail).overflowY,
+      scrollable: detail.scrollHeight >= detail.clientHeight,
     };
   });
-
-  expect(scrollMetrics).not.toBeNull();
-  expect(scrollMetrics?.bodyOverflowY).toBe("scroll");
-  expect(scrollMetrics?.bodyOffsetWidth).toBeGreaterThan(scrollMetrics?.bodyClientWidth ?? 0);
-  expect(scrollMetrics?.bodyScrollHeight).toBeGreaterThan(scrollMetrics?.bodyClientHeight ?? 0);
-  expect(scrollMetrics?.bodyScrollTop).toBeGreaterThan(0);
-  expect(scrollMetrics?.thumbHidden).toBe(false);
-  expect(scrollMetrics?.thumbHeight).toBeGreaterThan(48);
-  expect(scrollMetrics?.thumbOffsetTop).toBeGreaterThan(0);
-  expect(scrollMetrics?.thumbWidth).toBeGreaterThan(8);
+  expect(detailScrolls).not.toBeNull();
+  expect(detailScrolls?.overflowY).toBe("auto");
+  expect(detailScrolls?.scrollable).toBe(true);
 });

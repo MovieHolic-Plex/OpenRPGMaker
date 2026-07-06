@@ -1,18 +1,19 @@
   :root {
-    --editor-shell-bg: #10151c;
-    --editor-toolbar-bg: #151a22;
-    --editor-canvas-bg: #090d13;
-    --editor-panel-bg: #182029;
-    --editor-panel-bg-2: #202832;
-    --editor-popover-bg: rgba(34, 38, 47, 0.96);
-    --editor-line: rgba(255, 255, 255, 0.1);
-    --editor-line-strong: rgba(255, 255, 255, 0.16);
-    --editor-text: #edf1f7;
-    --editor-text-muted: #a7afbd;
-    --editor-text-soft: #747d8c;
-    --editor-blue: #2d7fd2;
-    --editor-blue-soft: rgba(45, 127, 210, 0.28);
-    --editor-yellow: #ffd447;
+    /* (UI-0) 셸 스킨 변수 → tokens.css 별칭 */
+    --editor-shell-bg: var(--bg-base);
+    --editor-toolbar-bg: var(--bg-surface);
+    --editor-canvas-bg: var(--bg-canvas);
+    --editor-panel-bg: var(--bg-surface);
+    --editor-panel-bg-2: var(--bg-raised);
+    --editor-popover-bg: var(--bg-overlay);
+    --editor-line: var(--border-subtle);
+    --editor-line-strong: var(--border-strong);
+    --editor-text: var(--text-1);
+    --editor-text-muted: var(--text-2);
+    --editor-text-soft: var(--text-3);
+    --editor-blue: var(--accent);
+    --editor-blue-soft: var(--accent-muted);
+    --editor-yellow: var(--warning);
   }
 
   body,
@@ -30,7 +31,8 @@
   }
 
   .rm2k3-menu-bar {
-    background: linear-gradient(180deg, #141b24 0%, var(--editor-shell-bg) 100%);
+    align-items: center;
+    background: var(--bg-base);
     border-bottom: 1px solid var(--editor-line);
     color: var(--editor-text);
     display: flex;
@@ -38,29 +40,56 @@
     padding: 0 18px;
   }
 
-  .rm2k3-menu-bar::after {
-    color: var(--editor-text-muted);
-    content: "─   □   ×";
-    font: 600 16px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  .rm2k3-window-controls {
+    align-items: center;
+    display: inline-flex;
+    gap: 4px;
     margin-left: auto;
-    opacity: 0.9;
+  }
+
+  .rm2k3-window-control {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-s);
+    color: var(--editor-text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    font: 700 16px/1 var(--font-ui);
+    height: 32px;
+    justify-content: center;
+    padding: 0;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    width: 32px;
+  }
+
+  .rm2k3-window-control:hover,
+  .rm2k3-window-control:focus-visible {
+    background: var(--control-bg-hover);
+    color: var(--editor-text);
+    outline: none;
+  }
+
+  .toolbar-collapsed .rm2k3-toolbar {
+    display: none;
   }
 
   .rm2k3-menu-item {
-    border-radius: 6px;
+    border-radius: var(--radius-s);
     color: var(--editor-text);
-    font: 700 16px/1.1 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 600 14px/1.1 var(--font-ui);
     height: 34px;
-    margin-right: 20px;
-    padding: 0 6px;
+    margin-right: 12px;
+    padding: 0 10px;
+    transition: background var(--transition-fast), color var(--transition-fast);
   }
 
   .rm2k3-menu-item:hover,
   .rm2k3-menu-item:focus-visible,
   .rm2k3-menu-item[aria-expanded="true"] {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--control-bg-hover);
     border-color: transparent;
-    color: #ffffff;
+    color: var(--text-1);
   }
 
   .rm2k3-toolbar {
@@ -92,7 +121,7 @@
   .left-panel-stack[data-testid="left-map-root"] .map-tree-action,
   .left-panel-stack[data-testid="left-map-root"] .btn,
   .left-panel-stack[data-testid="left-map-root"] .map-tree-wide-action {
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -114,7 +143,7 @@
   .rm2k3-tool-button:focus-visible,
   .tool-grid .btn:hover:not(:disabled),
   .tool-grid .btn:focus-visible {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     outline: none;
   }
@@ -128,16 +157,16 @@
   .layer-btn[aria-pressed="true"],
   .brush-size-btn.active,
   .brush-size-btn[aria-pressed="true"] {
-    background: linear-gradient(180deg, #2b76be 0%, #1d548b 100%);
-    border-color: rgba(96, 168, 255, 0.6);
-    color: #ffffff;
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
   }
 
   .rm2k3-tool-button.active:hover:not(:disabled),
   .rm2k3-tool-button[aria-pressed="true"]:hover:not(:disabled) {
-    background: linear-gradient(180deg, #2b76be 0%, #1d548b 100%);
-    border-color: rgba(96, 168, 255, 0.6);
-    color: #ffffff;
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
   }
 
   .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-1,
@@ -202,7 +231,7 @@
   .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-2,
   .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-4,
   .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-8 {
-    color: #ffffff;
+    color: var(--on-accent);
   }
 
   .main,
@@ -231,7 +260,7 @@
 
   .editor-layout .resizer-left:hover,
   .editor-layout .resizer-left:active {
-    background: rgba(47, 140, 255, 0.24);
+    background: var(--accent-muted);
   }
 
   .editor-layout .resizer-map-tree {
@@ -248,14 +277,14 @@
 
   .editor-layout .resizer-map-tree:hover,
   .editor-layout .resizer-map-tree:active {
-    background: rgba(47, 140, 255, 0.24);
+    background: var(--accent-muted);
   }
 
   .editor-layout.no-right-panel .left-panel-stack,
   .left-panel-stack[data-testid="left-palette-root"],
   .left-panel-stack[data-testid="left-map-root"] {
     background-color: var(--editor-panel-bg);
-    background-image: linear-gradient(180deg, #20252d 0%, var(--editor-panel-bg) 100%);
+    background-image: none;
     color: var(--editor-text);
   }
 
@@ -326,12 +355,12 @@
   .left-panel-stack textarea,
   .tile-search-input {
     appearance: none;
-    background: #141a22;
+    background: var(--bg-inset);
     border: 1px solid var(--editor-line-strong);
     border-radius: 6px;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     color: var(--editor-text);
-    font: 500 16px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 500 16px/1.2 var(--font-ui);
     height: 34px;
     min-width: 0;
     padding: 0 12px;
@@ -351,7 +380,7 @@
 
   .left-panel-stack .field.compact-field::after {
     align-items: center;
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     color: var(--editor-text);
@@ -372,7 +401,7 @@
   .chipset-band-button,
   .stamp-button,
   .used-location-button {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     color: var(--editor-text);
@@ -386,9 +415,9 @@
   .chipset-band-button[aria-pressed="true"],
   .stamp-button.active,
   .stamp-button[aria-pressed="true"] {
-    background: linear-gradient(180deg, #2b76be 0%, #1d548b 100%);
-    border-color: rgba(96, 168, 255, 0.62);
-    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
   }
 
   .tile-brush-row,
@@ -429,14 +458,14 @@
   }
 
   .chipset-sheet {
-    background: #111820;
+    background: var(--bg-inset);
     border: 1px solid var(--editor-line-strong);
     border-radius: 0;
     container-type: inline-size;
     height: 196px;
     max-height: 196px;
     min-height: 196px;
-    scrollbar-color: #3a4654 #121821;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
   }
 
   .chipset-sheet.tile-palette {
@@ -454,14 +483,14 @@
   }
 
   .chipset-tile {
-    border-color: rgba(255, 255, 255, 0.16);
+    border-color: var(--border-default);
   }
 
   .chipset-tile.active,
   .chipset-tile:hover:not(:disabled),
   .chipset-tile:focus-visible:not(:disabled) {
-    border-color: #61a8ff;
-    box-shadow: inset 0 0 0 1px #0b1118;
+    border-color: var(--accent-hover);
+    box-shadow: inset 0 0 0 1px var(--bg-canvas);
   }
 
   .left-panel-stack .tile-tool-status {
@@ -503,12 +532,12 @@
   }
 
   .left-panel-stack .tile-tool-status-value {
-    background: #141a22;
+    background: var(--bg-inset);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     color: var(--editor-text);
     display: block;
-    font: 500 15px/28px system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 500 15px/28px var(--font-ui);
     min-height: 28px;
     overflow: hidden;
     padding: 0 8px;
@@ -586,7 +615,7 @@
   .event-list-empty,
   .event-list-row,
   .event-editor-launch {
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     color: var(--editor-text-muted);
@@ -600,7 +629,7 @@
   .event-list-row:hover,
   .event-list-row:focus-visible,
   .event-list-row.active {
-    background: rgba(255, 255, 255, 0.085);
+    background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     color: var(--editor-text);
   }
@@ -616,7 +645,7 @@
   }
 
   .event-list-icon {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--control-bg);
     border-color: var(--editor-line);
   }
 
@@ -639,7 +668,7 @@
 
   .left-panel-stack[data-testid="left-map-root"] .map-item:hover,
   .left-panel-stack[data-testid="left-map-root"] .map-item.active {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--control-bg-hover);
     color: var(--editor-text);
   }
 
@@ -658,7 +687,7 @@
   }
 
   .editor-layout .canvas-area .phaser-container {
-    background: #111318;
+    background: var(--bg-canvas);
     border: 0;
     box-shadow: none;
     height: 100%;
@@ -668,10 +697,10 @@
   }
 
   .canvas-toolbar {
-    background: rgba(34, 38, 47, 0.78);
+    background: var(--bg-glass);
     border: 1px solid var(--editor-line-strong);
-    border-radius: 8px;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
     box-sizing: border-box;
     gap: 6px;
     max-width: calc(100% - 24px);
@@ -703,22 +732,53 @@
     color: var(--editor-text-muted);
     font-size: 14px;
     height: 54px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     padding: 0 14px;
   }
 
   .editor-statusbar-cell {
+    align-items: center;
     border-left: 0;
     border-right: 1px solid var(--editor-line);
-    flex: 0 1 auto;
-    min-width: 0;
-    padding: 0 18px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-width: max-content;
+    overflow: visible;
+    padding: 0 10px;
+    text-overflow: clip;
     white-space: nowrap;
   }
 
   .editor-statusbar-cell.strong {
     color: var(--editor-text);
     flex: 0 0 auto;
+  }
+
+  .editor-statusbar-cell.map-edit-lock-status,
+  .editor-statusbar-cell.db-connection-status {
+    flex-shrink: 0;
+    max-width: none;
+  }
+
+  .map-lock-takeover-button {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: var(--radius-s);
+    color: var(--editor-text);
+    cursor: pointer;
+    font: 700 12px/1 var(--font-ui);
+    margin-left: 8px;
+    min-height: 24px;
+    padding: 0 8px;
+    white-space: nowrap;
+  }
+
+  .map-lock-takeover-button:hover,
+  .map-lock-takeover-button:focus-visible {
+    background: var(--control-bg-hover);
+    outline: 1px solid var(--editor-blue);
+    outline-offset: 1px;
   }
 
   button.editor-statusbar-cell {
@@ -746,8 +806,8 @@
   .rm2k3-menu-popup {
     background: var(--editor-popover-bg);
     border: 1px solid var(--editor-line-strong);
-    border-radius: 8px;
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
     color: var(--editor-text);
     min-width: 322px;
     padding: 12px;
@@ -761,8 +821,8 @@
   .db-config-window {
     background: var(--editor-panel-bg);
     border: 1px solid var(--editor-line-strong);
-    border-radius: 8px;
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.44);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-modal);
     color: var(--editor-text);
     height: auto;
     max-width: min(520px, calc(100vw - 32px));
@@ -789,7 +849,7 @@
   }
 
   .db-config-field input {
-    background: #151922;
+    background: var(--bg-inset);
     border: 1px solid var(--editor-line-strong);
     border-radius: 6px;
     color: var(--editor-text);
@@ -800,7 +860,7 @@
 
   .db-config-field input:focus-visible {
     border-color: var(--editor-blue);
-    outline: 2px solid rgba(47, 140, 255, 0.22);
+    outline: 2px solid var(--accent-muted);
   }
 
   .db-config-status-line {
@@ -849,7 +909,7 @@
 
   .db-config-project-option {
     align-items: center;
-    background: #151922;
+    background: var(--bg-inset);
     border: 1px solid var(--editor-line-strong);
     border-radius: 6px;
     color: var(--editor-text);
@@ -864,7 +924,7 @@
   .db-config-project-option:hover,
   .db-config-project-option:focus-visible {
     border-color: var(--editor-blue);
-    outline: 2px solid rgba(47, 140, 255, 0.22);
+    outline: 2px solid var(--accent-muted);
   }
 
   .db-config-project-option strong {
@@ -898,7 +958,7 @@
     border-radius: 6px;
     color: var(--editor-text);
     column-gap: 14px;
-    font: 700 16px/1.3 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 700 16px/1.3 var(--font-ui);
     min-height: 39px;
     padding: 7px 12px;
   }
@@ -908,7 +968,7 @@
   .rm2k3-menu-command:hover:not(:disabled),
   .rm2k3-menu-command:focus-visible:not(:disabled) {
     background: var(--editor-blue-soft);
-    border-color: rgba(96, 168, 255, 0.42);
+    border-color: var(--accent-border);
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel,
@@ -1028,13 +1088,6 @@
       padding: 0 10px;
     }
 
-    .editor-statusbar-cell:nth-child(2),
-    .editor-statusbar-cell:nth-child(3),
-    .editor-statusbar-cell.map-edit-lock-status,
-    .editor-statusbar-cell.db-connection-status {
-      display: none;
-    }
-
     .map-context-menu,
     .rm2k3-menu-popup {
       min-width: min(304px, calc(100vw - 24px));
@@ -1059,13 +1112,9 @@
       padding: 0 12px;
     }
 
-    .editor-statusbar-cell.map-edit-lock-status {
-      display: none;
-    }
-
     .editor-statusbar-cell.db-connection-status {
       display: inline-flex;
-      max-width: 220px;
+      max-width: none;
       padding: 0 10px;
     }
   }
@@ -1115,7 +1164,7 @@
 
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar {
     align-items: center;
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     display: flex;
@@ -1154,7 +1203,7 @@
 
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool:hover:not(:disabled),
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool.active {
-    background: rgba(255, 255, 255, 0.09);
+    background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     color: var(--editor-blue);
   }
@@ -1328,7 +1377,7 @@
   .left-panel-stack[data-testid="left-palette-root"] .brush-size-btn:not(.active),
   .left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action:not(.active),
   .left-panel-stack[data-testid="left-palette-root"] .chipset-band-more {
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--control-bg);
     border-color: var(--editor-line);
     color: var(--editor-text);
   }
@@ -1502,9 +1551,9 @@
   }
 
   .left-panel-stack[data-testid="left-map-root"] .map-item.active {
-    background: linear-gradient(180deg, #245fa9 0%, #1d4e8c 100%);
-    border-color: rgba(96, 168, 255, 0.62);
-    color: #ffffff;
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
   }
 
   .left-panel-stack[data-testid="left-map-root"] .map-tree-panel {
@@ -1621,7 +1670,7 @@
   }
 
   .left-panel-stack[data-testid="left-map-root"] .map-tree-header-actions .map-tree-action {
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--control-bg);
     border-color: var(--editor-line);
     border-radius: 5px;
     opacity: 1;

@@ -7,13 +7,17 @@ import type {
   SkillRecord,
 } from "@/project/types";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
+import { resolveActorName } from "@/project/sessionActorCommands";
 import { EQUIPMENT_SLOTS, STAT_LABELS } from "@/player/playerStatusMenuFunctionTypes";
 
 export function partyActors(project: Project, session: PlaySession): readonly ActorRecord[] {
   const byId = new Map(project.database.actors.map((actor) => [actor.id, actor]));
   return session.partyActorIds.flatMap((id) => {
     const actor = byId.get(id);
-    return actor ? [actor] : [];
+    if (!actor) return [];
+    // 세션 이름 오버라이드를 반영해 메뉴 표시 이름을 결정한다.
+    const name = resolveActorName(session, actor);
+    return [name === actor.name ? actor : { ...actor, name }];
   });
 }
 

@@ -1,8 +1,8 @@
 :root {
-  --rm2k3-enemy-preview-bg: #0000ff;
-  --rm2k3-enemy-preview-text: #ffffff;
-  --rm2k3-enemy-table-bg: #ffffff;
-  --rm2k3-enemy-table-text: #000000;
+  --rm2k3-enemy-preview-bg: var(--accent);
+  --rm2k3-enemy-preview-text: var(--text-1);
+  --rm2k3-enemy-table-bg: var(--bg-raised);
+  --rm2k3-enemy-table-text: var(--text-1);
   --rm2k3-enemy-table-separator: #d2d2d2;
   --rm2k3-enemy-menu-ink: var(--text-primary);
   --rm2k3-enemy-menu-muted-ink: var(--text-muted);

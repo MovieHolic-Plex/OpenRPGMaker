@@ -1,4 +1,3 @@
-import { ProjectFormatError } from "./errors";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateCommandArray, validateConditionShape, validateMoveRoute } from "./shapeCommandFields";
 import { validateTrigger } from "./shapeReferenceFields";
@@ -109,26 +108,7 @@ function validateLivingMovement(label: string, value: unknown): void {
 }
 
 function validatePageConditionShape(label: string, value: unknown): void {
-  const condition = requireRecord(label, value);
-  const kind = requireString(`${label}.kind`, condition.kind);
-  switch (kind) {
-    case "switch":
-    case "variable":
-      validateConditionShape(label, value);
-      return;
-    case "actor":
-      requireString(`${label}.actorId`, condition.actorId);
-      requireBoolean(`${label}.present`, condition.present);
-      return;
-    case "item":
-      requireString(`${label}.itemId`, condition.itemId);
-      requireBoolean(`${label}.present`, condition.present);
-      return;
-    case "timer":
-      requireString(`${label}.timerId`, condition.timerId);
-      requireNumber(`${label}.seconds`, condition.seconds);
-      return;
-    default:
-      throw new ProjectFormatError(`${label}: 알 수 없는 page condition kind: ${kind}`);
-  }
+  // EventPageCondition = Condition 이므로 fork 조건과 같은 검증기를 그대로 쓴다.
+  // (과거 별도 구현이 selfSwitch/gold kind를 누락해 저장/불러오기가 깨졌다.)
+  validateConditionShape(label, value);
 }

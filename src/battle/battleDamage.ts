@@ -14,12 +14,17 @@ export interface SkillLikeEffect {
   readonly criticalMultiplier?: number;
   // 속성 상성 배율. 기본 1.0. 1.5=약점, 0.5=내성 등.
   readonly elementMultiplier?: number;
+  // 시전자 능력치 배율(공격 상승 상태 등). 기본 1.0.
+  readonly attackerStatMultiplier?: number;
+  // 대상 방어력 배율(방어 하락 상태 등). 기본 1.0.
+  readonly targetDefenseMultiplier?: number;
 }
 
 export type SkillApplyResult = { hit: boolean; amount: number; critical: boolean };
 
 export function applySkillLike(user: MutableBattler, target: MutableBattler, spec: SkillLikeEffect): SkillApplyResult {
-  const stat = spec.statistic === "mind" ? user.mind : user.attackPower;
+  const baseStat = spec.statistic === "mind" ? user.mind : user.attackPower;
+  const stat = Math.round(baseStat * (spec.attackerStatMultiplier ?? 1));
   if (spec.effect === "healing") {
     const result = computeMagnitude(spec.power, target, "heal", stat, spec);
     target.hp = Math.min(target.maxHp, target.hp + result.amount);
@@ -57,8 +62,9 @@ function computeMagnitude(
   if (critical) {
     magnitude = Math.round(magnitude * (spec.criticalMultiplier ?? 3));
   }
-  // 방어 반감 + 대상 방어력
-  magnitude -= Math.floor(target.defense / 2);
+  // 방어 반감 + 대상 방어력(방어 하락 상태 등의 배율 반영)
+  const effectiveDefense = target.defense * (spec.targetDefenseMultiplier ?? 1);
+  magnitude -= Math.floor(effectiveDefense / 2);
   if (target.defending) magnitude = Math.floor(magnitude / 2);
   return { amount: Math.max(1, magnitude), critical };
 }

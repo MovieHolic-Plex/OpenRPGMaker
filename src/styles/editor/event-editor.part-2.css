@@ -32,7 +32,7 @@
 .event-editor-modal-body input:disabled,
 .event-editor-modal-body select:disabled,
 .event-editor-modal-body textarea:disabled {
-  background-color: #eee;
+  background-color: var(--bg-raised);
   color: var(--event-rm-disabled);
 }
 
@@ -250,7 +250,7 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  color: var(--event-rm-text, #111111);
+  color: var(--event-rm-text, var(--text-1));
   display: flex;
   font: 400 16px/21px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   gap: 2px;
@@ -262,6 +262,21 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+  /* 들여쓰기 인덴트 가이드: depth 개의 18px 밴드마다 1px 세로선을 그린다.
+     (RM2K3 의 ':' 컬럼 느낌 — 부모 분기의 프리픽스 열과 정렬)
+     zebra/선택 배경은 아래에서 background-color 만 갱신하므로 가이드는 항상 남는다. */
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent 5px,
+    var(--border-subtle) 5px,
+    var(--border-subtle) 6px,
+    transparent 6px,
+    transparent 18px
+  );
+  background-position: 6px 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
 }
 
 .event-contents-fieldset .cmd-empty-line {
@@ -274,23 +289,38 @@
   margin: 0;
 }
 
+/* zebra 줄무늬 — background-color 만 갱신해 인덴트 가이드(background-image)를 보존한다. */
 .event-contents-fieldset .cmd-list > .cmd-item:nth-child(odd) > .cmd-head,
 .event-contents-fieldset .cmd-list > .cmd-line-marker:nth-child(odd),
 .event-contents-fieldset .cmd-list > .cmd-empty-line:nth-child(odd) {
-  background: var(--event-rm-field);
+  background-color: var(--event-rm-field);
 }
 
 .event-contents-fieldset .cmd-list > .cmd-item:nth-child(even) > .cmd-head,
 .event-contents-fieldset .cmd-list > .cmd-line-marker:nth-child(even),
 .event-contents-fieldset .cmd-list > .cmd-empty-line:nth-child(even) {
-  background: var(--rm2k3-command-row-alt, #e8f2f7);
+  background-color: var(--rm2k3-command-row-alt, var(--bg-hover));
 }
 
+/* hover — zebra 짝수행(--bg-hover)보다 한 단계 강한 오버레이로 어느 행에서든 보이게. */
+.event-contents-fieldset .cmd-list .cmd-head:hover,
+.event-contents-fieldset .cmd-empty-line:hover {
+  background-color: var(--bg-active);
+}
+
+/* 선택 행 — 토큰 규약(--accent-muted 배경 + 좌측 액센트 바). 토큰 고유색을 유지한다. */
 .event-contents-fieldset .cmd-item.selected .cmd-head,
 .event-contents-fieldset .cmd-empty-line:focus {
-  background: var(--rm2k3-command-selected, #0080ff);
-  color: var(--text-inverse, #ffffff);
+  background-color: var(--rm2k3-command-selected, var(--accent-muted));
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text-1);
   outline: 0;
+}
+
+/* 인라인 편집 중인 행 — 선택보다 뚜렷한 상태 표시. */
+.event-contents-fieldset .cmd-item.editing > .cmd-head {
+  background-color: var(--accent-muted);
+  box-shadow: inset 2px 0 0 var(--accent-hover);
 }
 
 .event-contents-fieldset .cmd-prefix,
@@ -306,12 +336,12 @@
 }
 
 .event-contents-fieldset .cmd-prefix {
-  color: var(--rm2k3-command-blue, #004bff);
+  color: var(--rm2k3-command-blue, var(--accent));
   flex: 0 0 auto;
 }
 
 .event-contents-fieldset .cmd-kind {
-  color: var(--event-rm-text, #111111);
+  color: var(--event-rm-text, var(--text-1));
 }
 
 .event-contents-fieldset .cmd-summary-token {
@@ -319,23 +349,86 @@
 }
 
 .event-contents-fieldset .cmd-summary-token.command {
-  color: var(--rm2k3-command-blue, #004bff);
+  color: var(--rm2k3-command-blue, var(--accent));
 }
 
 .event-contents-fieldset .cmd-summary-token.value {
-  color: var(--rm2k3-command-teal, #008c8c);
+  color: var(--rm2k3-command-teal, var(--success));
 }
 
-.event-contents-fieldset .cmd-line-marker,
+/* 연산 토큰 — 증가/감소/대입이 색으로 바로 읽히게. */
+.event-contents-fieldset .cmd-summary-token.op-add {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.event-contents-fieldset .cmd-summary-token.op-sub {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.event-contents-fieldset .cmd-summary-token.op-set {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* 스위치/플래그 ON·OFF 배지. */
+.event-contents-fieldset .cmd-summary-token.badge-on,
+.event-contents-fieldset .cmd-summary-token.badge-off {
+  border: 1px solid var(--success);
+  border-radius: var(--radius-s);
+  background: var(--success-muted);
+  color: var(--success);
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  padding: 0 4px;
+}
+
+.event-contents-fieldset .cmd-summary-token.badge-off {
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  color: var(--text-2);
+}
+
+/* 아이템/장비 요약 아이콘 (16px 픽셀아트). */
+.event-contents-fieldset .cmd-summary-icon {
+  flex: 0 0 auto;
+  height: 16px;
+  image-rendering: pixelated;
+  margin: 0 2px 0 1px;
+  vertical-align: text-bottom;
+  width: 16px;
+}
+
+/* 분기 마커 라인 기본: 본 커맨드와 구분되는 이탤릭 보조 텍스트. */
+.event-contents-fieldset .cmd-line-marker {
+  color: var(--text-2);
+  font-style: italic;
+}
+
 .event-contents-fieldset .cmd-empty-line {
-  color: var(--rm2k3-command-blue, #004bff);
+  color: var(--rm2k3-command-blue, var(--accent));
 }
 
-.event-contents-fieldset .cmd-item.selected .cmd-prefix,
-.event-contents-fieldset .cmd-item.selected .cmd-kind,
-.event-contents-fieldset .cmd-item.selected .cmd-summary-token {
-  color: inherit;
+/* fork(if 분기) 마커는 액센트 계열 — '@>' 프리픽스와 같은 톤으로 정렬. */
+.event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
+  color: var(--rm2k3-command-blue, var(--accent));
 }
+
+/* 선택지 마커는 fork 와 구분되는 웜 톤. */
+.event-contents-fieldset .cmd-line-marker.cmd-marker-choices {
+  color: var(--warning);
+}
+
+/* 상점 분기 마커. */
+.event-contents-fieldset .cmd-line-marker.cmd-marker-shop {
+  color: var(--success);
+}
+
+/* 선택 행에서도 프리픽스/토큰/마커의 고유색을 그대로 유지한다
+   (--accent-muted 반투명 배경 위에서 충분히 읽히므로 색 반전이 필요 없다). */
 
 .event-contents-fieldset .cmd-drag-handle,
 .event-contents-fieldset .cmd-actions,
@@ -471,8 +564,8 @@
 }
 
 .event-command-choice-branch {
-  background: color-mix(in srgb, var(--event-rm-chrome) 86%, #f5f7fb);
-  border-color: #7c8aa5 var(--event-rm-light) var(--event-rm-light) #53617a;
+  background: color-mix(in srgb, var(--event-rm-chrome) 86%, var(--bg-raised));
+  border-color: var(--border-default) var(--event-rm-light) var(--event-rm-light) var(--border-default);
   border-style: solid;
   border-width: 1px 1px 1px 3px;
   display: grid;
@@ -498,8 +591,8 @@
 }
 
 .event-command-context-menu {
-  background: var(--event-rm-chrome, #d4d0c8);
-  border-color: var(--event-rm-light, #ffffff) var(--event-rm-shadow, #404040) var(--event-rm-shadow, #404040) var(--event-rm-light, #ffffff);
+  background: var(--event-rm-chrome, var(--bg-raised));
+  border-color: var(--event-rm-light, var(--border-subtle)) var(--event-rm-shadow, #404040) var(--event-rm-shadow, #404040) var(--event-rm-light, var(--border-subtle));
   border-style: solid;
   border-width: 1px;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.28);
@@ -515,7 +608,7 @@
   align-items: center;
   background: transparent;
   border: 0;
-  color: var(--event-rm-text, #111111);
+  color: var(--event-rm-text, var(--text-1));
   display: grid;
   font: inherit;
   grid-template-columns: 22px minmax(78px, 1fr) 64px;
@@ -527,14 +620,14 @@
 
 .event-command-context-menu button:hover,
 .event-command-context-menu button:focus {
-  background: var(--rm2k3-command-selected, #0080ff);
-  color: var(--text-inverse, #ffffff);
+  background: var(--rm2k3-command-selected, var(--accent));
+  color: var(--text-inverse, var(--text-1));
   outline: 0;
 }
 
 .event-command-context-menu button:disabled {
   background: transparent;
-  color: var(--event-rm-disabled, #9b9b9b);
+  color: var(--event-rm-disabled, var(--text-2));
 }
 
 .event-command-menu-label,

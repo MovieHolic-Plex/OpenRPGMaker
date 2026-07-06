@@ -5,6 +5,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import type { Command, CommonEvent, MoveCommand } from "@/project/types";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import { commerceOverlayText } from "@/player/playSceneCommerce";
@@ -181,10 +182,12 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "playAudio":
       setAudioState(scene.session, step);
+      playAudioCommand(step, store.getCurrent());
       scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       return true;
     case "stopAudio":
       clearAudioState(scene.session);
+      stopAudioCommand();
       scene.clearRuntimeOverlay("audio-indicator");
       return true;
     case "shop":
@@ -205,6 +208,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "wait":
     case "inputWait":
     case "inputNumber":
+    case "enterHeroName":
     case "flashScreen":
     case "shakeScreen":
       return false;
@@ -221,6 +225,7 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "choices" ||
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||
+    step.kind === "enterHeroName" ||
     step.kind === "flashScreen" ||
     step.kind === "shakeScreen"
   );

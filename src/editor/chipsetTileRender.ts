@@ -1,6 +1,6 @@
 import type Phaser from "phaser";
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
-import { isDefaultTilesetTexture, tilesetTextureKey } from "@/editor/tilesetImage";
+import { ensureTilesetTexture, isDefaultTilesetTexture } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import {
   isLakeAutotileTile,
@@ -84,7 +84,7 @@ function createLakeAutotileObject(
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
   container.setSize(TILE_SIZE, TILE_SIZE);
-  const textureKey = tilesetTextureKey(tileset);
+  const textureKey = ensureTilesetTexture(scene, tileset);
   for (const part of lakeAutotileQuarterSources(map, x, y)) {
     container.add(createLakeQuarterObject(scene, textureKey, part));
   }
@@ -106,7 +106,7 @@ function createLakeQuarterObject(
 }
 
 function createRawTileObject(scene: Phaser.Scene, tileset: TilesetDef, pixelX: number, pixelY: number, tile: number): ChipsetTilePiece {
-  const textureKey = tilesetTextureKey(tileset);
+  const textureKey = ensureTilesetTexture(scene, tileset);
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey

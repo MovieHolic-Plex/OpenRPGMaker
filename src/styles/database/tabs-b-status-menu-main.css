@@ -141,12 +141,20 @@
   bottom: 26px;
 }
 .game-over-panel {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
   left: 50%;
   min-width: 220px;
   position: absolute;
   top: 50%;
+  /* .runtime-overlay의 inset이 right/bottom까지 고정해 내용이 넘치므로 해제한다. */
+  right: auto;
+  bottom: auto;
+  height: auto;
+  width: max-content;
+  max-width: 90%;
   transform: translate(-50%, -50%);
   pointer-events: auto;
   z-index: 45;
@@ -154,4 +162,11 @@
 .runtime-overlay-title {
   font-size: 18px;
   font-weight: 700;
+}
+.runtime-overlay-message {
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 260px;
+  text-align: center;
+  white-space: pre-wrap;
 }

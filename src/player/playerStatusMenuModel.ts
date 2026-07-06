@@ -11,6 +11,7 @@ export const STATUS_MENU_COMMAND_IDS = [
   "status",
   "row",
   "formation",
+  "quests",
   "wait",
   "to-title",
 ] as const;
@@ -95,6 +96,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "status": return "상태";
     case "row": return "열";
     case "formation": return "진형";
+    case "quests": return "임무";
     case "wait": return waitModeEnabled ? "대기 ON" : "대기 OFF";
     case "to-title": return "타이틀";
     default: return assertNever(commandId);

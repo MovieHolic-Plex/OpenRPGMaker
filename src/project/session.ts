@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, Command, MapId, Project, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, Command, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
@@ -29,6 +29,13 @@ export type PictureState = {
   readonly resourceId: string;
   readonly x: number;
   readonly y: number;
+  // Move Picture 트윈용 선택 필드(RM2K3 호환). 미지정 시 기본값으로 렌더.
+  // scale: %(기본 100), opacity: 0~255(기본 255), rotation: 도(기본 0),
+  // durationMs: 이 상태로의 전환에 걸릴 시간(0=즉시).
+  readonly scale?: number;
+  readonly opacity?: number;
+  readonly rotation?: number;
+  readonly durationMs?: number;
 };
 
 export type ActorRowPosition = "front" | "back";
@@ -60,6 +67,8 @@ export interface PlaySession {
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
+  // 런타임 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 미설정 시 DB 이름 사용.
+  actorNames?: Record<string, string>;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;
@@ -78,9 +87,18 @@ export interface PlaySession {
   playTimeSeconds: number;
 }
 
+// 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
+// 명시적으로 읽는 헬퍼. 런타임 상태(PlaySession = scene.session)와 혼동하지 않도록,
+// "이 값은 플레이 중 상태가 아니라 시작 상태다"라는 의도를 코드로 표시한다.
+// 직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
+export function startStateOf(project: Project): ProjectStartState {
+  return project.session;
+}
+
 // Project로부터 새 세션 시작.
 // 스위치/변수는 Database 정의에서 0/false 로 초기화(Project.flags는 레거시).
 export function startSession(project: Project): PlaySession {
+  const start = startStateOf(project);
   const switches: Record<string, boolean> = {};
   for (const sw of project.switches) {
     switches[sw.id] = false;
@@ -97,10 +115,11 @@ export function startSession(project: Project): PlaySession {
     switches,
     selfSwitches: {},
     variables,
-    timers: { ...(project.session.timers ?? {}) },
-    gold: 0,
-    inventory: { ...project.session.inventory },
-    partyActorIds: [...project.session.partyActorIds],
+    timers: { ...(start.timers ?? {}) },
+    // 시작 소지금은 인벤토리/파티와 마찬가지로 프로젝트 시작 상태 설정을 따른다.
+    gold: Math.max(0, start.gold ?? 0),
+    inventory: { ...start.inventory },
+    partyActorIds: [...start.partyActorIds],
     actorSkillIds: {},
     actorExperience: initialActorExperience(project),
     actorLevels: initialActorLevels(project),
@@ -109,6 +128,7 @@ export function startSession(project: Project): PlaySession {
     npcTravelStates: {},
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),
+    actorNames: {},
     currentMapId: project.startMapId,
     x: project.startPos.x,
     y: project.startPos.y,
@@ -123,7 +143,7 @@ export function startSession(project: Project): PlaySession {
 
 function initialActorExperience(project: Project): Record<string, number> {
   const experience: Record<string, number> = {};
-  for (const actorId of project.session.partyActorIds) {
+  for (const actorId of startStateOf(project).partyActorIds) {
     experience[actorId] = 0;
   }
   return experience;
@@ -147,7 +167,7 @@ function initialActorEquipment(project: Project): Record<string, ActorInitialEqu
 
 function initialActorRows(project: Project): Record<string, ActorRowPosition> {
   const rows: Record<string, ActorRowPosition> = {};
-  for (const actorId of project.session.partyActorIds) {
+  for (const actorId of startStateOf(project).partyActorIds) {
     rows[actorId] = "front";
   }
   return rows;

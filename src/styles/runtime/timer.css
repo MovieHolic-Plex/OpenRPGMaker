@@ -1,3 +1,4 @@
+/* 중립 플로팅 HUD — RM2K3 테마가 아니라 토큰(글래스 패널)으로 정돈. text-shadow는 게임 위 가독성 유지. */
 .runtime-timer-hud {
   position: absolute;
   right: 14px;
@@ -5,10 +6,11 @@
   z-index: 29;
   min-width: 86px;
   padding: 4px 7px;
-  border: 1px solid rgba(248, 251, 255, 0.82);
-  background: rgba(6, 18, 40, 0.86);
-  color: #f8fbff;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-s);
+  background: var(--bg-glass);
+  color: var(--text-1);
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.15;

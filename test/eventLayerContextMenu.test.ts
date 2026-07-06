@@ -40,7 +40,9 @@ describe("event layer context menu", () => {
       "장소 이동 이벤트 생성...",
       "주인공 시작 위치 설정",
       "탈것 시작 위치 설정...",
+      "여기서 테스트",
     ]);
+    expect(items.find((item) => item.id === "test-here")?.testId).toBe("event-layer-test-here");
     expect(items.find((item) => item.id === "create-event")?.testId).toBe("event-layer-create-event");
     expect(items.find((item) => item.id === "cut")?.disabled).toBe(true);
     expect(items.find((item) => item.id === "paste")?.disabled).toBe(true);

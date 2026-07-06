@@ -58,6 +58,9 @@ export function validateTileset(id: string, value: unknown): void {
       `tileset ${id}: tileMeta 길이 불일치.`
     );
   }
+  if (tileset.transparentColor !== undefined) {
+    requireString(`tileset ${id}.transparentColor`, tileset.transparentColor);
+  }
   if (tileset.tileGroups !== undefined) {
     for (const [index, group] of requireArray(`tileset ${id}.tileGroups`, tileset.tileGroups).entries()) {
       const record = requireRecord(`tileset ${id}.tileGroups[${index}]`, group);
@@ -173,6 +176,34 @@ export function validateTileset(id: string, value: unknown): void {
       }
       for (const rule of requireArray(`tileset ${id}.terrainTemplates[${index}].rules`, record.rules)) {
         requireString(`tileset ${id}.terrainTemplates[${index}].rules[]`, rule);
+      }
+    }
+  }
+  if (tileset.autotileGroups !== undefined) {
+    for (const [index, group] of requireArray(`tileset ${id}.autotileGroups`, tileset.autotileGroups).entries()) {
+      const record = requireRecord(`tileset ${id}.autotileGroups[${index}]`, group);
+      requireString(`tileset ${id}.autotileGroups[${index}].id`, record.id);
+      requireString(`tileset ${id}.autotileGroups[${index}].name`, record.name);
+      if (record.neighborhood !== undefined) {
+        const neighborhood = requireNumber(`tileset ${id}.autotileGroups[${index}].neighborhood`, record.neighborhood);
+        assert(neighborhood === 4 || neighborhood === 8, `tileset ${id}: autotileGroups[${index}] neighborhood invalid`);
+      }
+      for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].memberTileIds`, record.memberTileIds)) {
+        requireNumber(`tileset ${id}.autotileGroups[${index}].memberTileIds[]`, tileId);
+      }
+      if (record.connectTileIds !== undefined) {
+        for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].connectTileIds`, record.connectTileIds)) {
+          requireNumber(`tileset ${id}.autotileGroups[${index}].connectTileIds[]`, tileId);
+        }
+      }
+      if (record.triggerTileIds !== undefined) {
+        for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].triggerTileIds`, record.triggerTileIds)) {
+          requireNumber(`tileset ${id}.autotileGroups[${index}].triggerTileIds[]`, tileId);
+        }
+      }
+      const variantMap = requireRecord(`tileset ${id}.autotileGroups[${index}].variantMap`, record.variantMap);
+      for (const [mask, variant] of Object.entries(variantMap)) {
+        requireNumber(`tileset ${id}.autotileGroups[${index}].variantMap[${mask}]`, variant);
       }
     }
   }

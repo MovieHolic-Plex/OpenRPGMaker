@@ -25,6 +25,19 @@ export function playBattle(
     troopId: step.troopId,
     canEscape: step.canEscape,
     canLose: step.canLose,
+    party: {
+      levels: scene.session.actorLevels,
+      experience: scene.session.actorExperience,
+      names: scene.session.actorNames,
+      vitals: scene.session.actorVitals,
+      // 플레이 중 파티 편성(라이브 세션). 없으면 전투가 에디터 시작 상태 파티를 쓴다.
+      partyActorIds: scene.session.partyActorIds,
+    },
+    sessionState: {
+      switches: scene.session.switches,
+      variables: scene.session.variables,
+      inventory: scene.session.inventory,
+    },
   });
   advanceBattleRuntime(runtime);
   return new Promise<BattleResult>((resolve) => {
@@ -32,7 +45,11 @@ export function playBattle(
       host,
       runtime,
       onResult: (result, snapshot) => {
-        applyBattleRewardsToSession(scene.session, { result, rewards: snapshot.rewards });
+        applyBattleRewardsToSession(
+          scene.session,
+          { result, rewards: snapshot.rewards, actors: snapshot.actors, eventState: snapshot.eventState },
+          store.getCurrent()
+        );
         battleScene.destroy();
         resolve(result);
       },

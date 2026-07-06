@@ -16,6 +16,14 @@ import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersisten
 import type { Project } from "./types";
 
 type Listener = (project: Project) => void;
+type AutoSaveListener = (state: AutoSaveState) => void;
+
+export type AutoSaveState =
+  | { readonly kind: "idle" }
+  | { readonly kind: "pending" }
+  | { readonly kind: "saving" }
+  | { readonly kind: "saved"; readonly at: number }
+  | { readonly kind: "error"; readonly message: string };
 
 export type ProjectFlushResult =
   | { readonly kind: "disabled" }
@@ -40,8 +48,12 @@ export class DbConnectionRequiredError extends Error {
 class ProjectStore {
   private current: Project;
   private listeners = new Set<Listener>();
+  private autoSaveListeners = new Set<AutoSaveListener>();
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly autoSaveDelayMs = 15000;
+  private autoSaveRetryTimer: ReturnType<typeof setTimeout> | null = null;
+  private autoSaveState: AutoSaveState = { kind: "idle" };
+  private readonly autoSaveDelayMs = 4000;
+  private readonly autoSaveRetryDelayMs = 30000;
   private loaded = false;
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
@@ -118,6 +130,15 @@ class ProjectStore {
     return dbPersistenceStatus({ disabledReason: this.remotePersistenceDisabledReason });
   }
 
+  getAutoSaveState(): AutoSaveState {
+    return this.autoSaveState;
+  }
+
+  subscribeAutoSave(listener: AutoSaveListener): () => void {
+    this.autoSaveListeners.add(listener);
+    return () => this.autoSaveListeners.delete(listener);
+  }
+
   async reconnectRemotePersistence(): Promise<ProjectDbReconnectResult> {
     const status = dbPersistenceStatus({ disabledReason: null });
     if (status.kind !== "ready") return { kind: "not-configured" };
@@ -169,11 +190,12 @@ class ProjectStore {
       clearTimeout(this.autoSaveTimer);
       this.autoSaveTimer = null;
     }
+    this.clearAutoSaveRetry();
     if (!this.loaded) return { kind: "not-loaded" };
     if (!this.remotePersistenceEnabled && this.remotePersistenceDisabledReason === null) {
       return { kind: "not-configured" };
     }
-    return await this.persistCurrent();
+    return await this.saveCurrentWithAutoSaveState(true);
   }
 
   async clearAll(): Promise<void> {
@@ -191,16 +213,56 @@ class ProjectStore {
     for (const listener of this.listeners) listener(this.current);
   }
 
+  private emitAutoSave(): void {
+    for (const listener of this.autoSaveListeners) listener(this.autoSaveState);
+  }
+
+  private setAutoSaveState(state: AutoSaveState): void {
+    this.autoSaveState = state;
+    this.emitAutoSave();
+  }
+
   private scheduleAutoSave(): void {
     if (!this.loaded) return;
     if (!this.remotePersistenceEnabled) return;
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    this.clearAutoSaveRetry();
+    this.setAutoSaveState({ kind: "pending" });
     this.autoSaveTimer = setTimeout(() => {
       this.autoSaveTimer = null;
-      void this.persistCurrent().catch((error) => {
+      void this.saveCurrentWithAutoSaveState(true).catch((error) => {
         console.error("[store] Supabase auto-save failed:", error);
       });
     }, this.autoSaveDelayMs);
+  }
+
+  private clearAutoSaveRetry(): void {
+    if (!this.autoSaveRetryTimer) return;
+    clearTimeout(this.autoSaveRetryTimer);
+    this.autoSaveRetryTimer = null;
+  }
+
+  private scheduleAutoSaveRetry(): void {
+    if (this.autoSaveRetryTimer) return;
+    this.autoSaveRetryTimer = setTimeout(() => {
+      this.autoSaveRetryTimer = null;
+      void this.saveCurrentWithAutoSaveState(false).catch((error) => {
+        console.error("[store] Supabase auto-save retry failed:", error);
+      });
+    }, this.autoSaveRetryDelayMs);
+  }
+
+  private async saveCurrentWithAutoSaveState(allowRetry: boolean): Promise<ProjectFlushResult> {
+    this.setAutoSaveState({ kind: "saving" });
+    try {
+      const result = await this.persistCurrent();
+      this.setAutoSaveState(autoSaveStateForFlushResult(result));
+      return result;
+    } catch (error) {
+      this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
+      if (allowRetry) this.scheduleAutoSaveRetry();
+      throw error;
+    }
   }
 
   private async persistCurrent(): Promise<ProjectFlushResult> {
@@ -255,4 +317,24 @@ function ensureProjectMapConnections(project: Project): boolean {
   if (Array.isArray(project.mapConnections)) return false;
   project.mapConnections = [];
   return true;
+}
+
+function autoSaveStateForFlushResult(result: ProjectFlushResult): AutoSaveState {
+  switch (result.kind) {
+    case "saved":
+    case "saved-local":
+      return { kind: "saved", at: Date.now() };
+    case "conflict":
+      return { kind: "error", message: "DB 저장 충돌이 있습니다. 새로고침 후 다시 저장하세요." };
+    case "disabled":
+      return { kind: "error", message: "DB 저장이 꺼져 있습니다." };
+    case "not-configured":
+      return { kind: "error", message: "DB 설정이 필요합니다." };
+    case "not-loaded":
+      return { kind: "idle" };
+  }
+}
+
+function autoSaveErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "알 수 없는 저장 오류";
 }

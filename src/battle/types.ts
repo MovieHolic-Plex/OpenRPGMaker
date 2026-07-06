@@ -41,6 +41,32 @@ export interface BattleRuntimeOptions {
   readonly troopId: TroopId;
   readonly canEscape: boolean;
   readonly canLose: boolean;
+  // 현재 플레이 세션의 파티 레벨/경험치. 승리 시 레벨업 미리보기(rewards.levelUps) 산출에 사용.
+  // 없으면 레벨업 미리보기를 계산하지 않는다(세션 적립은 별도 파이프라인이 담당).
+  readonly party?: BattlePartyProgress;
+  // 전투 배경 리소스 override(주로 지형 battleBackgroundResourceId). 지정 시 최우선.
+  // 없으면 전투군 previewBackground → 시스템 battleSystem 순으로 사용.
+  readonly backdropResourceId?: string;
+  // 현재 플레이 세션의 스위치/변수/인벤토리. 전투 이벤트 조건과 아이템 목록/소모의 기준.
+  // 없으면 project.session(에디터 시작 상태)을 사용한다 — 에디터 전투 테스트 경로용.
+  readonly sessionState?: BattleSessionState;
+}
+
+export interface BattleSessionState {
+  readonly switches: Readonly<Record<string, boolean>>;
+  readonly variables: Readonly<Record<string, number>>;
+  readonly inventory: Readonly<Record<string, number>>;
+}
+
+export interface BattlePartyProgress {
+  readonly levels: Readonly<Record<string, number>>;
+  readonly experience: Readonly<Record<string, number>>;
+  // 세션 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 없으면 DB 이름 사용.
+  readonly names?: Readonly<Record<string, string>>;
+  // 세션 현재 바이탈(필드에서 이어지는 현재 HP/MP). 전투 진입 능력치에 반영.
+  readonly vitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number }>>;
+  // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
+  readonly partyActorIds?: readonly string[];
 }
 
 export interface BattleBattlerSnapshot {
@@ -84,10 +110,26 @@ export interface BattleActionResultSnapshot {
   readonly skillName?: string;
 }
 
+export interface BattleLevelUpPreview {
+  readonly actorId: string;
+  readonly actorName: string;
+  readonly fromLevel: number;
+  readonly toLevel: number;
+  readonly maxHpGain: number;
+  readonly maxMpGain: number;
+  readonly attackGain: number;
+  readonly defenseGain: number;
+  readonly mindGain: number;
+  readonly agilityGain: number;
+  readonly learnedSkillIds: readonly SkillId[];
+}
+
 export interface BattleRewardsSnapshot {
   readonly exp: number;
   readonly gold: number;
   readonly items: readonly ItemId[];
+  // 승리 시 파티 정보가 주어졌다면 산출되는 레벨업 미리보기(결과 화면 연출용).
+  readonly levelUps?: readonly BattleLevelUpPreview[];
 }
 
 export interface BattleEventStateSnapshot {

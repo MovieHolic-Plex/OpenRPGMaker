@@ -2,6 +2,7 @@ import { changeGold } from "@/project/session";
 import { recoverPartyVitals } from "@/project/sessionVitals";
 import { dialogueHost } from "@/player/playSceneDom";
 import { applySystemGraphic } from "@/player/systemGraphics";
+import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -28,27 +29,45 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<void> {
     const question = commerceStatus(`하룻밤 묵는 데 ${step.price} G 입니다. 묵으시겠습니까?`);
     const actions = document.createElement("div");
     actions.className = "runtime-commerce-actions";
-    actions.append(
-      closeButton(
-        "예",
-        () => {
-          if (scene.session.gold < step.price) {
-            question.textContent = "소지금이 부족합니다.";
-            scene.syncRuntimeState();
-            return;
-          }
-          // 회복/차감은 즉시 반영하고, 이후 휴식 연출을 거쳐 이벤트를 재개한다.
-          changeGold(scene.session, "-=", step.price);
-          recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds);
+    let detachCursor: (() => void) | null = null;
+    const teardownCursor = (): void => {
+      detachCursor?.();
+      detachCursor = null;
+    };
+    const stayButton = closeButton(
+      "예",
+      () => {
+        if (scene.session.gold < step.price) {
+          question.textContent = "소지금이 부족합니다.";
           scene.syncRuntimeState();
-          playInnRest(scene, overlay, resolve);
-        },
-        "inn-stay"
-      ),
-      closeButton("아니오", () => finishCommerce(scene, overlay, resolve), "inn-cancel")
+          return;
+        }
+        // 회복/차감은 즉시 반영하고, 이후 휴식 연출을 거쳐 이벤트를 재개한다.
+        teardownCursor();
+        changeGold(scene.session, "-=", step.price);
+        recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds);
+        scene.syncRuntimeState();
+        playInnRest(scene, overlay, resolve);
+      },
+      "inn-stay"
     );
+    const cancelButton = closeButton(
+      "아니오",
+      () => {
+        teardownCursor();
+        finishCommerce(scene, overlay, resolve);
+      },
+      "inn-cancel"
+    );
+    actions.append(stayButton, cancelButton);
     overlay.append(question, actions);
     mountCommerceOverlay(scene, overlay);
+    // 예/아니오 를 방향키(←→)로 선택, Z/Enter 결정, X/Esc(=아니오) 취소.
+    detachCursor = attachCursorMenu(overlay, {
+      items: [stayButton, cancelButton],
+      cancelEl: cancelButton,
+      columns: 2,
+    });
   });
 }
 

@@ -74,26 +74,27 @@ describe("map edit commands", () => {
     expect(map.lowerTiles[1 * map.width + 1]).toBe(LAKE_AUTOTILE_TILE.BODY);
   });
 
-  it("writes transparent prop objects as a single lower-layer tile from lower mode", () => {
+  it("routes transparent props to the upper layer even when lower is requested", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
+    // 투명 배경 소품(나무 263, 표지판 319)은 하위에 깔리면 검게 보이므로 상위 전용 —
+    // 하위 요청도 상위로 라우팅되어 지면을 보존한다.
     const propPlacements = [
       { tile: 263, x: 1, y: 1 },
-      { tile: 378, x: 2, y: 1 },
-      { tile: 85, x: 3, y: 1 },
       { tile: 319, x: 4, y: 1 },
     ] as const;
 
     for (const placement of propPlacements) {
       const tileIndex = placement.y * map.width + placement.x;
       expect(isHarnessStackableTile(project.tilesets[map.tilesetId], placement.tile)).toBe(true);
+      const groundBefore = store.getCurrent().maps[mapId].lowerTiles[tileIndex];
       paintTile(mapId, "lower", placement.x, placement.y, placement.tile);
 
       const updated = store.getCurrent().maps[mapId];
-      expect(updated.lowerTiles[tileIndex]).toBe(placement.tile);
-      expect(updated.upperTiles[tileIndex]).toBe(TILE.EMPTY);
-      expect(updated.lowerTileStacks?.[tileIndex]).toBeUndefined();
+      expect(updated.upperTiles[tileIndex]).toBe(placement.tile);
+      expect(updated.lowerTiles[tileIndex]).toBe(groundBefore);
+      expect(updated.upperTileStacks?.[tileIndex]).toBeUndefined();
     }
   });
 
@@ -111,39 +112,47 @@ describe("map edit commands", () => {
     expect(updated.upperTileStacks?.[tileIndex]).toBeUndefined();
   });
 
-  it("keeps one tile per layer when painting the same transparent tile repeatedly", () => {
+  it("keeps a single upper tile when painting transparent props repeatedly", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
     const tileIndex = 2 * map.width + 2;
+    const groundBefore = map.lowerTiles[tileIndex];
 
+    // 263/319는 투명 소품이라 요청 레이어와 무관하게 상위 단일 슬롯에 남는다(스택 없음).
     paintTile(mapId, "upper", 2, 2, 263);
     paintTile(mapId, "upper", 2, 2, 263);
-    paintTile(mapId, "lower", 2, 2, 85);
-    paintTile(mapId, "lower", 2, 2, 85);
+    paintTile(mapId, "lower", 2, 2, 319); // 하위 요청도 상위로 라우팅 — 마지막 붓이 이긴다.
+    paintTile(mapId, "lower", 2, 2, 319);
 
     const updated = store.getCurrent().maps[mapId];
-    expect(updated.upperTiles[tileIndex]).toBe(263);
-    expect(updated.lowerTiles[tileIndex]).toBe(85);
+    expect(updated.upperTiles[tileIndex]).toBe(319);
+    expect(updated.lowerTiles[tileIndex]).toBe(groundBefore);
     expect(updated.upperTileStacks?.[tileIndex]).toBeUndefined();
     expect(updated.lowerTileStacks?.[tileIndex]).toBeUndefined();
   });
 
-  it("forces windows and fences onto the lower harness layer even from upper mode", () => {
+  it("routes windows and fences to the upper layer so the lower ground is preserved", () => {
+    // Phase 0-5 회귀: 창문/울타리(하네스가 lower로 고정하는 stackable 소품)를 잔디 위에 칠해도
+    // 단일 슬롯 lowerTiles를 덮어써 지면을 지우면 안 된다. 상위 레이어로 라우팅해 지면을 보존한다.
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = project.maps[mapId];
     const windowIndex = 2 * map.width + 2;
     const fenceIndex = 2 * map.width + 3;
 
+    paintTile(mapId, "lower", 2, 2, TILE.GRASS);
+    paintTile(mapId, "lower", 3, 2, TILE.GRASS);
     paintTile(mapId, "upper", 2, 2, 85);
     paintTile(mapId, "upper", 3, 2, 378);
 
     const updated = store.getCurrent().maps[mapId];
-    expect(updated.upperTiles[windowIndex]).toBe(TILE.EMPTY);
-    expect(updated.upperTiles[fenceIndex]).toBe(TILE.EMPTY);
-    expect(updated.lowerTiles[windowIndex]).toBe(85);
-    expect(updated.lowerTiles[fenceIndex]).toBe(378);
+    // 지면(잔디)은 lower에 보존된다.
+    expect(updated.lowerTiles[windowIndex]).toBe(TILE.GRASS);
+    expect(updated.lowerTiles[fenceIndex]).toBe(TILE.GRASS);
+    // 창문/울타리는 상위 레이어 오버레이로 올라간다.
+    expect(updated.upperTiles[windowIndex]).toBe(85);
+    expect(updated.upperTiles[fenceIndex]).toBe(378);
     expect(updated.lowerTileStacks?.[windowIndex]).toBeUndefined();
     expect(updated.lowerTileStacks?.[fenceIndex]).toBeUndefined();
   });
@@ -186,8 +195,10 @@ describe("map edit commands", () => {
     const event = resized.events.find((item) => item.id === eventId);
     expect(event?.x).toBe(3);
     expect(event?.y).toBe(3);
-    expect(resized.lowerTiles[1 * resized.width + 1]).toBe(263);
-    expect(resized.lowerTiles[2 * resized.width + 2]).toBe(85);
+    // 263(나무)은 투명 소품이라 lower 요청도 upper로 라우팅된다.
+    expect(resized.upperTiles[1 * resized.width + 1]).toBe(263);
+    // 85(창문)는 stackable+lower 소품이라 upper로 라우팅된다(지면 보존).
+    expect(resized.upperTiles[2 * resized.width + 2]).toBe(85);
     expect(resized.lowerTileStacks?.[1 * resized.width + 1]).toBeUndefined();
     expect(resized.lowerTileStacks?.[2 * resized.width + 2]).toBeUndefined();
     expect(resized.upperTileStacks?.[5 * resized.width + 5]).toBeUndefined();
@@ -199,7 +210,9 @@ describe("map edit commands", () => {
     const eventId = addEvent(mapId, 1, 1);
 
     paintTile(mapId, "lower", 1, 1, TILE.WATER);
-    paintTile(mapId, "upper", 1, 1, TILE.WALL);
+    // WALL(306)은 하위 홈 타일이라 엄격 분류에서 상위에 놓이지 않는다.
+    // 상위 레이어 시프트 검증에는 상위로 라우팅되는 소품 85(창문)를 쓴다.
+    paintTile(mapId, "upper", 1, 1, 85);
 
     expect(shiftMapContent(mapId, { dx: 1, dy: 1 })).toBe(true);
 
@@ -210,7 +223,7 @@ describe("map edit commands", () => {
     expect(shifted.lowerTiles[edgeIndex]).toBe(TILE.GRASS);
     expect(shifted.upperTiles[edgeIndex]).toBe(TILE.EMPTY);
     expect(shifted.lowerTiles[newIndex]).toBe(TILE.WATER);
-    expect(shifted.upperTiles[newIndex]).toBe(TILE.WALL);
+    expect(shifted.upperTiles[newIndex]).toBe(85);
     expect(event?.x).toBe(2);
     expect(event?.y).toBe(2);
   });

@@ -1,5 +1,6 @@
 import { DEFAULT_TILES_PER_ROW, TILE } from "./constants";
 import { CHIPSET_ANIMATION_FRAME_TILES } from "./chipsetAnimation";
+import { COMBINED_TOWN_TRANSPARENT_TILES } from "./generatedChipsetTransparency";
 
 // allow: SIZE_OK - central descriptor table for the 480-cell EasyRPG exterior atlas.
 
@@ -324,8 +325,16 @@ export function isPropOverlayChipsetTile(index: number): boolean {
   );
 }
 
+// 투명 픽셀을 가진 스프라이트형 칩(벤치·사선 지붕·나무 등). 하위 레이어에 깔리면
+// 투명 부분 아래에 지형이 없어 검게 보이므로 상위 레이어 전용으로 취급한다.
+const TRANSPARENT_CHIPSET_TILES = new Set<number>(COMBINED_TOWN_TRANSPARENT_TILES);
+
+export function isTransparentChipsetTile(index: number): boolean {
+  return TRANSPARENT_CHIPSET_TILES.has(index);
+}
+
 export function isUpperChipsetTile(index: number): boolean {
-  return isPropOverlayChipsetTile(index);
+  return isPropOverlayChipsetTile(index) || isTransparentChipsetTile(index);
 }
 
 function isBuildingBaseChipsetTile(index: number): boolean {

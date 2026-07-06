@@ -15,6 +15,11 @@ export type RuntimePictureState = {
   readonly resourceId: string;
   readonly x: number;
   readonly y: number;
+  // Move Picture 트윈용 선택 필드(PictureState 와 동일 의미).
+  readonly scale?: number;
+  readonly opacity?: number;
+  readonly rotation?: number;
+  readonly durationMs?: number;
 };
 
 export type M2RecordedFallback = {
@@ -28,6 +33,8 @@ export type M2ScreenRuntimeState = {
   hidden?: boolean;
   shake?: number;
   tint?: string;
+  // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
+  tintDurationMs?: number;
   weather?: string;
 };
 
@@ -203,6 +210,7 @@ export interface PlaySessionLike {
   actorExperience?: Record<string, number>;
   actorLevels?: Record<string, number>;
   actorEquipment?: Record<string, ActorInitialEquipment>;
+  actorNames?: Record<ActorId, string>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations?: Record<string, RuntimeEventLocation>;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;

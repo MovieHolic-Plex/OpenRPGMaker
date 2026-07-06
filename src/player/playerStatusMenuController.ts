@@ -213,6 +213,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "status":
       case "row":
       case "formation":
+      case "quests":
         resetSubscreenState();
         mode = "function";
         renderMenu(undefined, selectedCommand);

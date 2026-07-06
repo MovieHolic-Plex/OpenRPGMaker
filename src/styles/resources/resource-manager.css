@@ -15,47 +15,68 @@
   --rm-resource-footer-button-width: 132px;
   --rm-resource-icon-folder-width: 17px;
   --rm-resource-icon-file-size: 14px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  outline: none;
+  overflow: hidden;
   max-width: min(var(--rm-resource-window-max), calc(100vw - var(--rm-resource-viewport-gutter)));
   width: min(var(--rm-resource-window-max), calc(100vw - var(--rm-resource-viewport-gutter)));
 }
 
 .resource-modal-window .database-modal-header {
-  background: linear-gradient(#f8f8f8, #e6e6e6);
-  border-bottom: 1px solid var(--border-soft);
-  color: var(--text-dim);
-  min-height: 28px;
-  padding: 3px 6px;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-1);
+  min-height: 36px;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
 }
 
 .resource-modal-window .database-modal-header h2 {
-  color: var(--text-dim);
-  font: 400 14px/20px "Segoe UI", Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--text-1);
+  font: 600 13px/20px var(--font-ui);
+  letter-spacing: 0.01em;
+  text-shadow: none;
 }
 
 .resource-modal-window .database-modal-header h2::before {
-  background:
-    radial-gradient(circle at 50% 32%, var(--status-success) 0 23%, transparent 24%),
-    linear-gradient(135deg, var(--accent-blue), var(--accent-secondary));
-  border: 1px solid var(--border-strong);
-  border-radius: 50% 50% 55% 55%;
+  background: var(--accent);
+  border: 0;
+  border-radius: 50%;
   content: "";
   display: inline-block;
-  height: 16px;
+  height: 8px;
   margin-right: 8px;
-  vertical-align: -3px;
-  width: 13px;
+  vertical-align: 1px;
+  width: 8px;
 }
 
 .resource-modal-window .database-modal-close {
   background: transparent;
   border: 0;
+  border-radius: var(--radius-s);
   box-shadow: none;
-  color: var(--text-muted);
-  font: 400 20px/20px "Segoe UI", Arial, sans-serif;
-  height: 22px;
-  min-height: 22px;
-  min-width: 22px;
-  width: 22px;
+  color: var(--text-2);
+  font: 400 16px/1 var(--font-ui);
+  height: 24px;
+  min-height: 24px;
+  min-width: 24px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 24px;
+}
+
+.resource-modal-window .database-modal-close:hover,
+.resource-modal-window .database-modal-close:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.resource-modal-window .database-modal-close:active {
+  background: var(--bg-active);
+  border-color: transparent;
+  padding: 0;
 }
 
 .resource-modal-window .database-modal-body {
@@ -78,11 +99,14 @@
 .rm-category-list,
 .rm-entry-list,
 .rm-preview-well {
-  background: var(--surface-panel);
-  border-color: var(--border-soft) var(--rm2k3-light) var(--rm2k3-light) var(--border-soft);
-  border-style: solid;
-  border-width: 2px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
   min-width: 0;
+}
+
+.rm-preview-well {
+  background: var(--bg-canvas);
 }
 
 .rm-category-list,
@@ -90,7 +114,7 @@
   align-content: start;
   display: grid;
   overflow: auto;
-  padding: 2px;
+  padding: var(--space-1);
 }
 
 .rm-hidden-kind-select {
@@ -104,39 +128,45 @@
   align-items: center;
   background: transparent;
   border: 0;
+  border-radius: var(--radius-s);
   box-shadow: none;
-  color: var(--text);
+  color: var(--text-2);
   display: flex;
-  font: 400 13px/20px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  gap: 5px;
+  font: 400 13px/20px var(--font-ui);
+  gap: 6px;
   min-height: var(--rm-resource-row-height);
   overflow: hidden;
-  padding: 0 4px 0 2px;
+  padding: 0 6px 0 4px;
   text-align: left;
+  transition: background var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
 }
 
 .resource-modal-window .rm-category-row::before {
-  background:
-    linear-gradient(90deg, var(--gold) 0 14%, transparent 14%),
-    linear-gradient(var(--rm2k3-light), var(--status-warning));
-  border: 1px solid var(--border);
-  box-shadow: inset 1px 1px 0 var(--rm2k3-light);
+  background: var(--warning-muted);
+  border: 1px solid var(--warning);
+  border-radius: 3px;
   content: "";
   flex: 0 0 var(--rm-resource-icon-folder-width);
   height: calc(var(--rm-resource-icon-folder-width) - 4px);
+  opacity: 0.8;
 }
 
 .resource-modal-window .rm-category-row:hover,
 .resource-modal-window .rm-category-row:focus-visible {
-  background: var(--surface-selected);
-  outline: 1px dotted var(--text);
+  background: var(--bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+
+.resource-modal-window .rm-category-row:focus-visible {
+  outline: var(--focus-outline);
   outline-offset: -2px;
 }
 
 .resource-modal-window .rm-category-row.active {
-  background: var(--rm2k3-command-selected);
-  color: var(--text-inverse);
+  background: var(--accent-muted);
+  color: var(--text-1);
 }
 
 .rm-entry-list {
@@ -159,29 +189,30 @@
   align-items: center;
   background: transparent;
   border: 0;
-  color: var(--text);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
   display: flex;
-  font: 400 13px/23px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  gap: 5px;
+  font: 400 13px/23px var(--font-ui);
+  gap: 6px;
   min-height: var(--rm-resource-row-height);
   min-width: 0;
   overflow: hidden;
-  padding: 0 4px;
+  padding: 0 6px;
   text-overflow: ellipsis;
+  transition: background var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
 }
 
+.rm-profile-row:hover,
+.rm-asset-row:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
 .rm-profile-row::before {
-  background:
-    linear-gradient(
-      90deg,
-      var(--status-error) 0 25%,
-      var(--status-warning) 25% 50%,
-      var(--accent-editor) 50% 75%,
-      var(--surface-panel) 75%
-    ),
-    var(--surface-panel);
-  border: 1px solid var(--border);
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 3px;
   content: "";
   flex: 0 0 var(--rm-resource-icon-file-size);
   height: var(--rm-resource-icon-file-size);
@@ -205,9 +236,10 @@
 }
 
 .rm-tile-cell {
-  background: var(--surface-recessed);
-  border: 1px solid var(--border-soft);
-  color: var(--text-muted);
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  color: var(--text-3);
   flex: 0 0 12px;
   font: 400 8px/10px var(--font-mono);
   height: 12px;
@@ -216,9 +248,9 @@
 
 .rm-entry-empty,
 .empty-hint {
-  color: var(--text-muted);
-  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  padding: 4px;
+  color: var(--text-3);
+  font: 400 12px/18px var(--font-ui);
+  padding: var(--space-2);
 }
 
 .rm-command-panel {
@@ -230,67 +262,89 @@
 
 .rm-command-button,
 .resource-footer-button {
-  background: var(--rm2k3-chrome);
-  border-color: var(--rm2k3-light) var(--rm2k3-shadow) var(--rm2k3-shadow) var(--rm2k3-light);
-  border-style: solid;
-  border-width: 2px;
-  box-shadow: inset -1px -1px 0 var(--rm2k3-mid), inset 1px 1px 0 var(--rm2k3-control-light);
-  color: var(--text);
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font: 700 14px/1 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 600 13px/1 var(--font-ui);
   min-width: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.rm-command-button:hover:not(:disabled),
+.resource-footer-button:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.rm-command-button:active:not(:disabled),
+.resource-footer-button:active:not(:disabled) {
+  background: var(--control-bg-active);
+}
+
+.rm-command-button:focus-visible,
+.resource-footer-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.rm-command-button.primary {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+
+.rm-command-button.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-border);
+}
+
+.rm-command-button.primary:active:not(:disabled) {
+  background: var(--accent-active);
 }
 
 .rm-command-button::before {
-  content: "";
-  display: inline-block;
-  flex: 0 0 auto;
-  height: 17px;
-  width: 20px;
-}
-
-.rm-command-button.primary::before {
-  background:
-    linear-gradient(90deg, transparent 0 26%, var(--status-success) 26% 44%, transparent 44%),
-    linear-gradient(var(--rm2k3-light), var(--status-warning));
-  border: 1px solid var(--border);
-  box-shadow: inset 1px 1px 0 var(--rm2k3-light);
-}
-
-.rm-command-button:not(.primary)::before {
-  background:
-    linear-gradient(45deg, transparent 0 42%, var(--text-muted) 43% 57%, transparent 58%),
-    linear-gradient(-45deg, transparent 0 42%, var(--text-muted) 43% 57%, transparent 58%);
-  opacity: 0.65;
+  display: none;
 }
 
 .rm-command-button:disabled {
-  color: var(--text-muted);
+  color: var(--text-3);
+  cursor: default;
+  opacity: 0.6;
 }
 
 .rm-import-format {
-  background: var(--rm2k3-chrome);
-  border: 2px groove var(--rm2k3-light);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   margin: 0;
-  padding: 8px 10px 10px;
+  padding: var(--space-2) var(--space-3) var(--space-3);
 }
 
 .rm-import-format legend {
-  color: var(--text);
-  font: 700 13px/1 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  padding: 0 3px;
+  color: var(--text-2);
+  font: 600 12px/1 var(--font-ui);
+  padding: 0 4px;
 }
 
 .rm-radio-row {
   align-items: center;
+  color: var(--text-2);
   display: flex;
-  font: 400 13px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 13px/18px var(--font-ui);
   gap: 7px;
+}
+
+.rm-radio-row input[type="radio"] {
+  accent-color: var(--accent);
 }
 
 .rm-preview-well {
@@ -329,8 +383,8 @@
 }
 
 .resource-footer-status {
-  color: var(--text-dim);
-  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  color: var(--text-3);
+  font: 400 12px/18px var(--font-ui);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

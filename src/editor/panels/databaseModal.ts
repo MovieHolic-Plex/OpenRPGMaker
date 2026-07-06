@@ -1,4 +1,5 @@
-import { renderDatabasePanel, setDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
+import { handleHistoryHotkey } from "@/editor/hotkeys";
+import { refreshDatabasePanel, renderDatabasePanel, setDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
 import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
@@ -53,9 +54,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     ],
   });
 
+  // 데이터베이스 모달이 열려 있어도 Ctrl+Z/Y 로 undo/redo 하고, 복원된 프로젝트 상태를
+  // 패널에 다시 반영한다(입력 필드 포커스 중에는 브라우저 텍스트 undo 우선 — 가드 유지).
+  const handleHistoryKeyDown = (event: KeyboardEvent): void => {
+    // undo/redo 후에도 부분 갱신 경로를 타서 스크롤/선택/검색 상태를 보존한다.
+    if (handleHistoryHotkey(event)) refreshDatabasePanel(body);
+  };
   const close = (): void => {
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);
+    document.removeEventListener("keydown", handleHistoryKeyDown);
     stopModalDrag();
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
@@ -101,6 +109,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   header.addEventListener("dblclick", () => toggleMaximizedDatabaseModal(maximizeButton));
   backdrop.addEventListener("mousedown", (event) => controller.handleBackdropMouseDown(event, backdrop));
   document.addEventListener("keydown", controller.handleKeyDown);
+  document.addEventListener("keydown", handleHistoryKeyDown);
   const footerStatus = el("div", {
     class: "database-footer-status",
     attrs: { "aria-live": "polite" },

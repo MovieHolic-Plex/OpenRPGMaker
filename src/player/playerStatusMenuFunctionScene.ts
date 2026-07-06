@@ -1,6 +1,7 @@
 import { renderEquipmentScene } from "@/player/playerStatusMenuEquipmentScene";
 import { renderItemScene, renderSaveScene } from "@/player/playerStatusMenuItemSaveScenes";
 import { renderFormationScene, renderRowScene, renderSkillScene, renderStatusScene } from "@/player/playerStatusMenuActorScenes";
+import { renderQuestScene } from "@/player/playerStatusMenuQuestScene";
 import type { StatusMenuFunctionSceneOptions } from "@/player/playerStatusMenuFunctionTypes";
 
 export function renderStatusMenuFunctionScene(options: StatusMenuFunctionSceneOptions): HTMLElement {
@@ -21,6 +22,8 @@ export function renderStatusMenuFunctionScene(options: StatusMenuFunctionSceneOp
       return renderRowScene(options);
     case "formation":
       return renderFormationScene(options);
+    case "quests":
+      return renderQuestScene(options);
     case "wait":
     case "to-title":
       throw new Error(`Status command ${options.commandId} does not use a function scene`);

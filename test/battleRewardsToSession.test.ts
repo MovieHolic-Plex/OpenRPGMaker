@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { startSession } from "@/project/session";
 import { createBlankProject } from "@/project/defaults";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 
 describe("battle rewards to play session", () => {
   it("adds victory rewards to actor experience, gold, and inventory", () => {
@@ -18,7 +19,7 @@ describe("battle rewards to play session", () => {
     applyBattleRewardsToSession(session, {
       result: "victory",
       rewards: { exp: 28, gold: 5, items: ["item_bomb"] },
-    });
+    }, project);
 
     // Then: the actual playable session carries the rewards forward.
     expect(session.actorExperience[actorId]).toBe(28);
@@ -28,18 +29,64 @@ describe("battle rewards to play session", () => {
 
   it("does not pay rewards for escape or defeat", () => {
     // Given: a fresh play session.
-    const session = startSession(createBlankProject());
+    const project = createBlankProject();
+    const session = startSession(project);
     const actorId = session.partyActorIds[0];
 
     // When: a non-victory result reports rewards in the battle snapshot.
     applyBattleRewardsToSession(session, {
       result: "escape",
       rewards: { exp: 28, gold: 5, items: ["item_bomb"] },
-    });
+    }, project);
 
     // Then: no victory reward leaks into the session.
     expect(session.actorExperience[actorId]).toBe(0);
     expect(session.gold).toBe(0);
     expect(session.inventory.item_bomb).toBeUndefined();
+  });
+
+  it("auto-levels the actor and grows vitals when victory exp crosses the curve", () => {
+    // Given: a fresh session at level 1.
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0];
+    const hero = normalizeActorRecord(project.database.actors.find((entry) => entry.id === actorId)!);
+    // 고레벨까지 올려 능력치 곡선 성장(양수)이 실제로 반영되는지 본다.
+    const expForLevel40 = totalExpForLevel(hero.expCurve, 40);
+    const beforeMaxHp = session.actorVitals[actorId].maxHp;
+
+    // When: victory pays enough EXP to reach level 40.
+    const levelUps = applyBattleRewardsToSession(
+      session,
+      { result: "victory", rewards: { exp: expForLevel40, gold: 0, items: [] } },
+      project
+    );
+
+    // Then: the level, max vitals, and current vitals all advance.
+    expect(session.actorLevels[actorId]).toBe(40);
+    expect(session.actorVitals[actorId].maxHp).toBeGreaterThan(beforeMaxHp);
+    expect(session.actorVitals[actorId].hp).toBe(session.actorVitals[actorId].maxHp);
+    expect(levelUps.length).toBeGreaterThanOrEqual(1);
+    expect(levelUps.every((entry) => entry.toLevel === 40)).toBe(true);
+    expect(levelUps.some((entry) => entry.actorId === actorId)).toBe(true);
+  });
+
+  it("teaches skills learned at the newly reached level", () => {
+    // Given: the hero learns skill_heal at level 2.
+    const project = createBlankProject();
+    const heroRecord = project.database.actors.find((entry) => entry.id === "actor_hero")!;
+    heroRecord.learnedSkills = [
+      { level: 1, skillId: "default_skill" },
+      { level: 2, skillId: "skill_heal" },
+    ];
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0];
+    const expForLevel2 = totalExpForLevel(normalizeActorRecord(heroRecord).expCurve, 2);
+
+    // When: victory triggers the level-up.
+    applyBattleRewardsToSession(session, { result: "victory", rewards: { exp: expForLevel2, gold: 0, items: [] } }, project);
+
+    // Then: the newly learned skill is added to the session skill list.
+    expect(session.actorSkillIds[actorId]).toContain("skill_heal");
   });
 });

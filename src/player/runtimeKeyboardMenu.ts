@@ -7,6 +7,7 @@ export type RuntimeMenuKey =
   | "ArrowUp"
   | "Enter"
   | " "
+  | "z"
   | "e"
   | "x"
   | "Escape";
@@ -73,4 +74,56 @@ function nextStatusCommand(current: StatusMenuCommandId, delta: number): StatusM
 
 function wrapIndex(index: number, length: number): number {
   return ((index % length) + length) % length;
+}
+
+// ── 공용 커서 메뉴용 순수 계층 (RM2003 키 관례 통일) ──
+// 결정(confirm): Z / Enter / Space (+ 레거시 e). 취소(cancel): X / Esc.
+export const CONFIRM_KEYS: ReadonlySet<string> = new Set(["z", "Z", "Enter", " ", "e"]);
+export const CANCEL_KEYS: ReadonlySet<string> = new Set(["x", "X", "Escape"]);
+
+export function isConfirmKey(key: string): boolean {
+  return CONFIRM_KEYS.has(key);
+}
+
+export function isCancelKey(key: string): boolean {
+  return CANCEL_KEYS.has(key);
+}
+
+export type CursorDirection = "up" | "down" | "left" | "right";
+
+export function navDirection(key: string): CursorDirection | null {
+  switch (key) {
+    case "ArrowUp":
+      return "up";
+    case "ArrowDown":
+      return "down";
+    case "ArrowLeft":
+      return "left";
+    case "ArrowRight":
+      return "right";
+    default:
+      return null;
+  }
+}
+
+// 커서 이동 인덱스 계산. columns<=1 이면 1D 리스트(up/left=-1, down/right=+1, 관용적).
+// columns>1 이면 격자(up/down=±columns, left/right=±1). wrap 기본 true.
+export function moveCursorIndex(
+  index: number,
+  count: number,
+  dir: CursorDirection,
+  opts: { readonly columns?: number; readonly wrap?: boolean } = {}
+): number {
+  if (count <= 0) return 0;
+  const wrap = opts.wrap ?? true;
+  const columns = Math.max(1, opts.columns ?? 1);
+  if (columns <= 1) {
+    const delta = dir === "up" || dir === "left" ? -1 : 1;
+    const next = index + delta;
+    return wrap ? wrapIndex(next, count) : Math.max(0, Math.min(count - 1, next));
+  }
+  const delta = dir === "up" ? -columns : dir === "down" ? columns : dir === "left" ? -1 : 1;
+  const next = index + delta;
+  if (next < 0 || next >= count) return wrap ? wrapIndex(next, count) : index;
+  return next;
 }

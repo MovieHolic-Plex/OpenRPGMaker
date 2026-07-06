@@ -1,8 +1,10 @@
 /* CSS entrypoint: preserves cascade order while moving shared primitives out of screen files. */
 @layer tokens, base, components, shell, editor, database, map, runtime, resources, overrides;
 
+@import "./tokens.css";
 @import "./editor/core.css";
 @import "./editor/palette-player.css";
+@import "./editor/tile-palette-clusters.css";
 @import "./editor/event-editor-legacy.css";
 @import "./database/core.css";
 @import "./database/tabs-a.css";
@@ -16,6 +18,12 @@
 @import "./runtime/commerce.css";
 @import "./runtime/title.css";
 @import "./runtime/timer.css";
+@import "./runtime/touchpad.css";
+@import "./runtime/pictures.css";
+@import "./runtime/weather.css";
+@import "./runtime/transitions.css";
+@import "./runtime/nameEntry.css";
+@import "./runtime/keyboardNav.css";
 @import "./dialogue.css";
 @import "./database/actors.css";
 @import "./database/enemies.css";
@@ -26,7 +34,63 @@
 @import "./database/tilesets-terrain.css";
 @import "./database/desktop.css";
 @import "./database/desktop-record-shell.css";
+@import "./database/virtual-list.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
+@import "./editor/event-editor-rich-forms.css";
+@import "./editor/event-editor-ai.css";
 @import "./shell/figma-editor.css";
 @import "./editor/village-info.css";
+@import "./editor/cluster-ai-modal.css";
+@import "./editor/map-history.css";
+@import "./editor/rule-audit.css";
+@import "./editor/region-task.css";
+
+/* ============================================================================
+   전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md
+   ========================================================================= */
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(108, 121, 242, 0.35);
+  color: var(--text-1);
+}
+
+/* 얇은 라운드 스크롤바 — 전역 기본 (개별 영역에서 클래스로 재정의 가능) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}

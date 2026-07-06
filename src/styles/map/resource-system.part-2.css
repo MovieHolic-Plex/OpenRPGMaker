@@ -1,7 +1,7 @@
 .rm-tool-icon-database::before {
   background: #d6e5f2;
-  border: 1px solid #1f4b6e;
-  box-shadow: 0 4px 0 #b8c9d8, 0 8px 0 #9badbc;
+  border: 1px solid var(--accent-border);
+  box-shadow: 0 4px 0 #b8c9d8, 0 8px 0 var(--border-default);
   height: 3px;
   left: 2px;
   top: 3px;
@@ -9,7 +9,7 @@
 }
 
 .rm-tool-icon-database::after {
-  background: #2e6f9e;
+  background: var(--accent);
   height: 2px;
   left: 4px;
   top: 13px;
@@ -17,8 +17,8 @@
 }
 
 .rm-tool-icon-resources::before {
-  background: #f2f2f2;
-  border: 1px solid #333333;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
   box-shadow: inset 0 0 0 2px #7bc0c8;
   height: 11px;
   left: 2px;
@@ -48,9 +48,9 @@
 .rm-tool-icon-zoom-2::before,
 .rm-tool-icon-zoom-4::before,
 .rm-tool-icon-zoom-8::before {
-  color: #45288f;
+  color: var(--text-1);
   content: attr(class);
-  font: 700 13px/16px "Cascadia Mono", Consolas, monospace;
+  font: 700 13px/16px var(--font-mono);
   height: 16px;
   left: 0;
   overflow: hidden;
@@ -63,8 +63,8 @@
 .rm-tool-icon-zoom-2::after,
 .rm-tool-icon-zoom-4::after,
 .rm-tool-icon-zoom-8::after {
-  color: #45288f;
-  font: 700 13px/16px "Cascadia Mono", Consolas, monospace;
+  color: var(--text-1);
+  font: 700 13px/16px var(--font-mono);
   height: 16px;
   left: 1px;
   top: 0;
@@ -97,7 +97,7 @@
 }
 
 .rm-tool-icon-pencil::after {
-  background: #1b1b1b;
+  background: var(--text-3);
   box-shadow: -2px -2px 0 #a13b32;
   height: 3px;
   left: 3px;
@@ -107,8 +107,8 @@
 }
 
 .rm-tool-icon-bucket::before {
-  background: #7f8790;
-  border: 1px solid #1b1b1b;
+  background: var(--bg-overlay);
+  border: 1px solid var(--text-3);
   height: 7px;
   left: 3px;
   top: 4px;
@@ -117,8 +117,8 @@
 }
 
 .rm-tool-icon-bucket::after {
-  background: #2e6f9e;
-  box-shadow: 2px 2px 0 #2e6f9e, 5px 3px 0 #2e6f9e;
+  background: var(--accent);
+  box-shadow: 2px 2px 0 var(--accent-border), 5px 3px 0 var(--accent-border);
   height: 3px;
   left: 7px;
   top: 11px;
@@ -126,8 +126,8 @@
 }
 
 .rm-tool-icon-dropper::before {
-  background: #d9e8f6;
-  border: 1px solid #1b1b1b;
+  background: var(--accent-muted);
+  border: 1px solid var(--text-3);
   height: 11px;
   left: 7px;
   top: 2px;
@@ -136,7 +136,7 @@
 }
 
 .rm-tool-icon-dropper::after {
-  background: #2e6f9e;
+  background: var(--accent);
   height: 3px;
   left: 2px;
   top: 12px;
@@ -158,7 +158,7 @@
 }
 
 .rm-tool-icon-hand::after {
-  border: 1px solid #1b1b1b;
+  border: 1px solid var(--text-3);
   height: 10px;
   left: 1px;
   top: 3px;
@@ -166,7 +166,7 @@
 }
 
 .rm-tool-icon-select::before {
-  border: 1px dashed #1b1b1b;
+  border: 1px dashed var(--text-3);
   height: 11px;
   left: 2px;
   top: 2px;
@@ -175,7 +175,7 @@
 
 .rm-tool-icon-select::after {
   border-bottom: 5px solid transparent;
-  border-left: 7px solid #ffffff;
+  border-left: 7px solid var(--border-subtle);
   border-top: 5px solid transparent;
   filter: drop-shadow(1px 1px 0 #111111);
   height: 0;
@@ -185,15 +185,15 @@
 }
 
 .rm-tool-icon-collision::before {
-  background: #a33a32;
+  background: var(--danger);
   box-shadow:
-    3px 3px 0 #a33a32,
-    6px 6px 0 #a33a32,
-    9px 9px 0 #a33a32,
-    9px 0 0 #a33a32,
-    6px 3px 0 #a33a32,
-    3px 6px 0 #a33a32,
-    0 9px 0 #a33a32;
+    3px 3px 0 var(--danger),
+    6px 6px 0 var(--danger),
+    9px 9px 0 var(--danger),
+    9px 0 0 var(--danger),
+    6px 3px 0 var(--danger),
+    3px 6px 0 var(--danger),
+    0 9px 0 var(--danger);
   height: 3px;
   left: 2px;
   top: 2px;
@@ -201,7 +201,7 @@
 }
 
 .rm-tool-icon-collision::after {
-  border: 1px solid #1b1b1b;
+  border: 1px solid var(--text-3);
   height: 11px;
   left: 1px;
   top: 1px;
@@ -209,8 +209,8 @@
 }
 
 .rm-tool-icon-event::before {
-  background: #7c4fd6;
-  border: 1px solid #1b1b1b;
+  background: var(--accent);
+  border: 1px solid var(--text-3);
   height: 9px;
   left: 4px;
   top: 3px;
@@ -219,7 +219,7 @@
 }
 
 .rm-tool-icon-event::after {
-  background: #ffffff;
+  background: var(--bg-raised);
   height: 3px;
   left: 7px;
   top: 7px;
@@ -228,7 +228,7 @@
 
 .rm-tool-icon-eraser::before {
   background: #f4b6c8;
-  border: 1px solid #1b1b1b;
+  border: 1px solid var(--text-3);
   height: 7px;
   left: 3px;
   top: 5px;
@@ -237,7 +237,7 @@
 }
 
 .rm-tool-icon-eraser::after {
-  background: #ffffff;
+  background: var(--bg-raised);
   height: 2px;
   left: 2px;
   top: 13px;
@@ -263,9 +263,9 @@
 }
 
 .rm-tool-icon-upper::before {
-  background: #5987ad;
+  background: var(--accent);
   border: 1px solid #1e354b;
-  box-shadow: 3px -3px 0 #d7e3e8, inset 0 0 0 2px #83b4cf;
+  box-shadow: 3px -3px 0 var(--border-subtle), inset 0 0 0 2px var(--accent-border);
   height: 9px;
   left: 2px;
   top: 6px;
@@ -273,7 +273,7 @@
 }
 
 .rm-tool-icon-upper::after {
-  background: #274c68;
+  background: var(--accent);
   height: 2px;
   left: 5px;
   top: 4px;
@@ -282,7 +282,7 @@
 
 .rm-tool-icon-undo::before,
 .rm-tool-icon-redo::before {
-  border-color: #1d3f79;
+  border-color: var(--text-2);
   border-style: solid;
   height: 8px;
   top: 5px;
@@ -307,12 +307,12 @@
 }
 
 .rm-tool-icon-undo::after {
-  border-right: 6px solid #1d3f79;
+  border-right: 6px solid var(--text-2);
   left: 1px;
 }
 
 .rm-tool-icon-redo::after {
-  border-left: 6px solid #1d3f79;
+  border-left: 6px solid var(--text-2);
   right: 1px;
 }
 
@@ -347,7 +347,7 @@
 
 .rm-tool-icon-panel-left::before,
 .rm-tool-icon-panel-right::before {
-  background: #c8d0d8;
+  background: var(--bg-raised);
   border: 1px solid #2f3b45;
   height: 11px;
   left: 2px;
@@ -357,7 +357,7 @@
 
 .rm-tool-icon-panel-left::after,
 .rm-tool-icon-panel-right::after {
-  background: #2f6f9f;
+  background: var(--accent);
   height: 9px;
   top: 5px;
   width: 4px;
@@ -372,9 +372,9 @@
 }
 
 .rm-tool-icon-play-window::before {
-  background: #f2f2f2;
+  background: var(--bg-raised);
   border: 1px solid #2f3b45;
-  box-shadow: inset 0 2px 0 #7d9ab6;
+  box-shadow: inset 0 2px 0 var(--accent-border);
   height: 12px;
   left: 1px;
   top: 2px;
@@ -391,7 +391,7 @@
 
 .rm-tool-icon-folder::before {
   background: #d8b35e;
-  border: 1px solid #5a421b;
+  border: 1px solid var(--border-default);
   box-shadow: inset 0 2px 0 #f0d48c;
   height: 10px;
   left: 2px;
@@ -401,7 +401,7 @@
 
 .rm-tool-icon-folder::after {
   background: #c79840;
-  border: 1px solid #5a421b;
+  border: 1px solid var(--border-default);
   border-bottom: 0;
   height: 4px;
   left: 3px;
@@ -411,7 +411,7 @@
 
 .rm-tool-icon-map-child::before {
   background: #d8b35e;
-  border: 1px solid #5a421b;
+  border: 1px solid var(--border-default);
   height: 9px;
   left: 1px;
   top: 5px;

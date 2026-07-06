@@ -84,6 +84,27 @@ export function sellPrice(item: ItemRecord): number {
   return Math.max(0, Math.floor(item.price / 2));
 }
 
+// 커서가 아이템을 옮길 때 우측 '보유' 패널을 선택 아이템 기준으로 갱신(RM2003 감각).
+export function updateShopOwnedPanel(
+  overlay: HTMLElement,
+  scene: PlaySceneContext,
+  item: ItemRecord | undefined
+): void {
+  const panel = overlay.querySelector(".runtime-shop-owned-panel");
+  if (!panel) return;
+  while (panel.firstChild) panel.firstChild.remove();
+  panel.append(ownedPanel(scene, item));
+}
+
+// 수량 select 모드에서 ←(-1)/→(+1) 로 수량 입력을 1~99 범위로 조절. 항상 소비(true).
+export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1): boolean {
+  const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+  if (!input) return true;
+  const current = Math.max(1, Number.parseInt(input.value, 10) || 1);
+  input.value = String(Math.min(99, Math.max(1, current + dir)));
+  return true;
+}
+
 function shopItemList(step: ShopStep, items: readonly ItemRecord[], mode: ShopMode, onItem: ShopItemAction): HTMLElement {
   const wrap = document.createElement("div");
   wrap.className = "runtime-shop-item-list";

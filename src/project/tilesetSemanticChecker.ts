@@ -45,6 +45,11 @@ type GenerationRule = {
   readonly roleSlots: readonly TilesetRoleSlot[];
 };
 
+const TILE_GROUP_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];
+const JUNCTION_SIDES = ["below", "above", "leftOf", "rightOf"] as const;
+const JUNCTION_ACTIONS = ["omit", "replace"] as const;
+const OVERLAY_WHENS = ["diagonalCorner", "innerCorner", "ridge", "eaveEnd"] as const;
+
 const GENERATION_RULES: readonly GenerationRule[] = [
   {
     id: "city",
@@ -146,7 +151,41 @@ function rolesCoveredByRule(rule: GenerationRule, groups: readonly TileGroupMeta
 
 function isValidSemanticGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean {
   if (group.tileIds.length === 0) return false;
-  return group.tileIds.every((tile) => Number.isInteger(tile) && tile >= 0 && tile < tileset.count);
+  return group.tileIds.every((tile) => isValidTileId(tileset, tile))
+    && (group.junctions ?? []).every((junction) => isValidJunction(tileset, group, junction))
+    && (group.overlays ?? []).every((overlay) => isValidOverlay(tileset, overlay));
+}
+
+function isValidJunction(
+  tileset: TilesetDef,
+  group: TileGroupMetadata,
+  junction: NonNullable<TileGroupMetadata["junctions"]>[number]
+): boolean {
+  if (!TILE_GROUP_ROLES.includes(junction.withRole)) return false;
+  if (!JUNCTION_SIDES.some((side) => side === junction.side)) return false;
+  if (!JUNCTION_ACTIONS.some((action) => action === junction.action)) return false;
+  if (!hasValidPartRoles(group, junction.atRoles)) return false;
+  if (junction.replaceWith && !junction.replaceWith.every((tile) => isValidTileId(tileset, tile))) return false;
+  return junction.action !== "replace" || Boolean(junction.replaceWith && junction.replaceWith.length > 0);
+}
+
+function isValidOverlay(
+  tileset: TilesetDef,
+  overlay: NonNullable<TileGroupMetadata["overlays"]>[number]
+): boolean {
+  return OVERLAY_WHENS.some((when) => when === overlay.when)
+    && overlay.tileIds.length > 0
+    && overlay.tileIds.every((tile) => isValidTileId(tileset, tile));
+}
+
+function hasValidPartRoles(group: TileGroupMetadata, atRoles: readonly string[] | undefined): boolean {
+  if (!atRoles) return true;
+  const validRoles = new Set<string>((group.patternGrammar?.parts ?? []).map((part) => part.role));
+  return atRoles.every((role) => validRoles.has(role));
+}
+
+function isValidTileId(tileset: TilesetDef, tile: number): boolean {
+  return Number.isInteger(tile) && tile >= 0 && tile < tileset.count;
 }
 
 function groupsForTile(tileset: TilesetDef, tile: number): readonly SelectedTileGroupUsage[] {

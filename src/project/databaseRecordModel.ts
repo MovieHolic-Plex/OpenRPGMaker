@@ -113,6 +113,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     hitRate: clampInteger(record.hitRate ?? 100, 0, 100),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
+    stateEffects: normalizeStateEffects(record.stateEffects),
   };
 }
 

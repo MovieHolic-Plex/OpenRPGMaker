@@ -160,6 +160,9 @@ export interface SkillRecord {
   effect: SkillEffect;
   // 속성 ID. DatabaseElementRecord.id 와 매칭. 없으면 비속성(상성 배율 1.0).
   elementId?: string;
+  // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
+  // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
+  stateEffects?: DatabaseStateEffect[];
 }
 
 export interface SkillMpCost {

@@ -56,6 +56,8 @@ export interface PassFlag {
 export interface TileAiMetadata {
   label: string;
   description: string;
+  // 검색용 커스텀 태그(맵 인터뷰/사용자 입력). list_resources(tile) 검색에 히트한다.
+  tags?: string[];
   role?: string;
   repeatability?: "auto" | "center" | "fixed" | "repeat";
   defaultLayer?: TileGroupLayer;
@@ -71,6 +73,31 @@ export type TileMetadataSource = "ai" | "bundled-default" | "imported" | "unknow
 export type TileGroupRole = "building" | "castle" | "fence" | "roof" | "terrain" | "water" | "wall" | "prop";
 
 export type TileGroupLayer = "lower" | "upper" | "event" | "mixed";
+
+export type LintSeverity = "error" | "info" | "warning";
+
+export interface TileGroupJunctionRule {
+  withRole: TileGroupRole;
+  side: "below" | "above" | "leftOf" | "rightOf";
+  action: "omit" | "replace";
+  atRoles?: string[];
+  replaceWith?: number[];
+}
+
+export interface TileGroupOverlayRule {
+  when: "diagonalCorner" | "innerCorner" | "ridge" | "eaveEnd";
+  tileIds: number[];
+}
+
+export type ClusterRuleStrength = "hard" | "medium" | "soft";
+
+export interface ClusterRule {
+  id: string;
+  kind: "adjacency" | "spacing" | "count";
+  strength: ClusterRuleStrength;
+  params: Record<string, unknown>;
+  message?: string;
+}
 
 export interface TileGroupMetadata {
   id: string;
@@ -129,6 +156,9 @@ export interface TileGroupMetadata {
     preserveCaps: boolean;
     repeat: "body" | "center" | "source_order";
   };
+  junctions?: TileGroupJunctionRule[];
+  overlays?: TileGroupOverlayRule[];
+  rules?: ClusterRule[];
 }
 
 export interface TilesetDef {
@@ -144,6 +174,29 @@ export interface TilesetDef {
   tileMeta?: TileAiMetadata[];
   tileGroups?: TileGroupMetadata[];
   terrainTemplates?: TerrainTemplateMetadata[];
+  transparentColor?: string;
+  // 범용 오토타일(지형 자동 연결) 그룹 정의. 없으면 내장 기본 그룹(흙길/모래)을 사용한다.
+  autotileGroups?: AutotileGroup[];
+}
+
+// 이웃 판정 범위: 4방향(상하좌우) 또는 8방향(대각 포함).
+export type AutotileNeighborhood = 4 | 8;
+
+// 하나의 지형 패밀리를 이웃 연결 상태에 따라 자동으로 변형 타일로 바꾸는 정의.
+export interface AutotileGroup {
+  id: string;
+  name: string;
+  // 이웃 판정 범위. 생략 시 4방향.
+  neighborhood?: AutotileNeighborhood;
+  // 이 그룹에 속하여 자동 변형 대상이 되는 타일 인덱스 목록.
+  memberTileIds: number[];
+  // 연결된 이웃으로 간주할 타일 목록. 생략 시 memberTileIds 사용(예: 모래는 물까지 포함).
+  connectTileIds?: number[];
+  // 이 타일을 편집(칠/채우기/지우기)했을 때 그룹 재계산을 유발하는 타일 목록.
+  // 생략 시 connectTileIds ?? memberTileIds 사용.
+  triggerTileIds?: number[];
+  // 이웃 비트마스크(10진수 문자열) → 배치할 타일 인덱스 매핑.
+  variantMap: Record<string, number>;
 }
 
 export interface TerrainTemplateMetadata {
@@ -154,6 +207,10 @@ export interface TerrainTemplateMetadata {
   grammar?: readonly TerrainTemplateGrammarRule[];
   rows: readonly TerrainTemplateRow[];
   rules: readonly string[];
+  // 지식뱅크 확장(2026-07-05): 출처 추적 + 검색 태그 + 추출 원본 영역.
+  source?: TileMetadataSource;
+  tags?: string[];
+  sourceRegion?: { mapId: string; x: number; y: number; w: number; h: number };
 }
 
 export interface TerrainTemplateBuildPlan {

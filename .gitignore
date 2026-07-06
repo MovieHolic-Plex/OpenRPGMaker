@@ -23,3 +23,9 @@ rpg-zzu-*.png
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# tooling state / QA artifacts / infra handoff (never commit)
+.omc/
+.playwright-mcp/
+evidence/
+handoff.md

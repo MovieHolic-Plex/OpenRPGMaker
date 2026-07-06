@@ -1,5 +1,6 @@
-import { applyTransparentColorKey, applyTransparentColorKeys } from "@/assets/transparentColorKey";
+import { applyTransparentColorKey, applyTransparentColorKeys, parseRgbHexColor } from "@/assets/transparentColorKey";
 import type { RgbColor } from "@/assets/transparentColorKey";
+import type { TilesetDef } from "@/project/types";
 
 const RAW_CHIPSET_TEXTURE_SUFFIX = "__raw_chipset";
 const INTERIOR_CHIPSET_OBJECT_BACKGROUND: RgbColor = { r: 255, g: 103, b: 139 };
@@ -22,7 +23,7 @@ export function rawChipsetTextureKey(textureKey: string): string {
 }
 
 export function createTransparentColorKeyCanvas(
-  textureKey: string,
+  sourceKey: string | Pick<TilesetDef, "image" | "transparentColor">,
   source: HTMLImageElement | HTMLCanvasElement
 ): HTMLCanvasElement | null {
   const canvas = document.createElement("canvas");
@@ -32,7 +33,7 @@ export function createTransparentColorKeyCanvas(
   if (!context) return null;
   context.drawImage(source, 0, 0);
   const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-  const keys = transparentColorKeysForChipset(textureKey);
+  const keys = typeof sourceKey === "string" ? transparentColorKeysForChipset(sourceKey) : resolveTransparentColorKeys(sourceKey);
   if (keys) {
     applyTransparentColorKeys(imageData.data, keys);
   } else {
@@ -54,7 +55,19 @@ function sourceImageHeight(source: HTMLImageElement | HTMLCanvasElement): number
   return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
-function transparentColorKeysForChipset(textureKey: string): readonly RgbColor[] | null {
+export function resolveTransparentColorKeys(
+  tileset: Pick<TilesetDef, "image" | "transparentColor">
+): readonly RgbColor[] | null {
+  const userKey = tileset.transparentColor ? parseRgbHexColor(tileset.transparentColor) : null;
+  if (userKey) return [userKey];
+  return transparentColorKeysForChipset(tilesetTextureSourceKey(tileset));
+}
+
+export function transparentColorKeysForChipset(textureKey: string): readonly RgbColor[] | null {
   if (textureKey === "tex_easyrpg_chipset_interior") return [INTERIOR_CHIPSET_OBJECT_BACKGROUND];
   return null;
+}
+
+function tilesetTextureSourceKey(tileset: Pick<TilesetDef, "image">): string {
+  return tileset.image.id;
 }

@@ -1,4 +1,5 @@
 import { el, clearChildren } from "@/util/dom";
+import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { setMapTileset } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { resourceReferenceMessage } from "@/editor/databaseReferences";
@@ -56,6 +57,7 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
     priority.push("lower");
     terrain.push(0);
   }
+  const transparentColor = asset.meta.transparentColor ? normalizeRgbHexColor(asset.meta.transparentColor) : null;
   return {
     id: genId("ts"),
     name: asset.name,
@@ -66,6 +68,7 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
     passability,
     priority,
     terrain,
+    ...(transparentColor ? { transparentColor } : {}),
   };
 }
 

@@ -21,7 +21,12 @@ type DebugState = {
     currentMapId: string | null;
     paintShape: "pen" | "rect" | "round";
     selection: { mapId: string; x: number; y: number; width: number; height: number } | null;
-    clipboard: { layer: "lower" | "upper"; width: number; height: number; tiles: number[] } | null;
+    clipboard: {
+      width: number;
+      height: number;
+      lower: { tiles: number[]; stacks: number[][] };
+      upper: { tiles: number[]; stacks: number[][] };
+    } | null;
     tool: string;
     zoom: number;
   };
@@ -189,7 +194,7 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
   await page.getByTestId("tool-select").click();
   await clickMapCenter(page);
   await page.keyboard.press("Control+C");
-  await expect.poll(async () => (await debugState(page)).editor.clipboard?.tiles[0]).toBe(PAINT_TILE);
+  await expect.poll(async () => (await debugState(page)).editor.clipboard?.lower.tiles[0]).toBe(PAINT_TILE);
 
   await clickMapOffset(page, 1, 0);
   await page.keyboard.press("Control+V");

@@ -1,29 +1,29 @@
 :root {
-  --bg: #ece7da;
-  --bg-panel: #d4d0c8;
-  --bg-panel-2: #f0f0f0;
-  --bg-elev: #e5e5e5;
-  --border: #808080;
-  --border-soft: #b8b4aa;
-  --text: #111111;
-  --text-dim: #3c3c3c;
-  --text-muted: #666666;
-  --accent: #0a246a;
-  --accent-hover: #1e4f9a;
-  --accent-soft: rgba(10, 36, 106, 0.14);
-  --danger: #9d1f1f;
-  --ok: #1f6f38;
-  --gold: #7c5e22;
-  --surface-app: var(--bg);
+  /* (UI-0) 과거 Win2k 라이트 스킨 변수 → 전역 다크 토큰 브리지로 통일.
+     이 :root 는 전역 스코프라 앱 전체 변수를 덮어쓰므로 tokens.css 별칭만 남긴다.
+     (--accent / --accent-hover / --danger 는 tokens.css 정의를 그대로 사용) */
+  --bg: var(--bg-base);
+  --bg-panel: var(--bg-surface);
+  --bg-panel-2: var(--bg-raised);
+  --bg-elev: var(--bg-raised);
+  --border: var(--border-default);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-1);
+  --text-dim: var(--text-2);
+  --text-muted: var(--text-3);
+  --accent-soft: var(--accent-muted);
+  --ok: var(--success);
+  --gold: #f5d04a;
+  --surface-app: var(--bg-base);
   --accent-secondary: var(--gold);
-  --accent-editor: #3a6b32;
+  --accent-editor: #86b878;
   --accent-blue: var(--accent);
-  --bg-recessed: #d8d0be;
-  --surface-button: var(--bg-panel-2);
+  --bg-recessed: var(--bg-inset);
+  --surface-button: var(--control-bg);
   --mono: var(--font-mono);
-  --status-warning: #b4761e;
-  --status-success: var(--ok);
-  --pixel-grid: rgba(0, 0, 0, 0.2);
+  --status-warning: var(--warning);
+  --status-success: var(--success);
+  --pixel-grid: rgba(255, 255, 255, 0.15);
 }
 .topbar {
   align-items: stretch;
@@ -48,7 +48,7 @@
 .rm2k3-menu-bar {
   align-items: center;
   background: #efe9dc;
-  border-bottom: 1px solid #aaa59b;
+  border-bottom: 1px solid var(--border-default);
   display: flex;
   height: 22px;
   padding: 0 var(--space-1);
@@ -70,13 +70,13 @@
 .rm2k3-menu-item[aria-expanded="true"] {
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--text-1);
   outline: none;
 }
 .rm2k3-menu-popup {
   background: #f8f5ec;
   border: 1px solid;
-  border-color: #ffffff #6c6c6c #6c6c6c #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.22);
   display: none;
   left: 0;
@@ -108,17 +108,17 @@
   outline: none;
 }
 .rm2k3-menu-command:disabled {
-  color: #8f8a80;
+  color: var(--text-2);
 }
 .rm2k3-menu-separator {
-  border-top: 1px solid #aaa59b;
-  box-shadow: 0 1px 0 #ffffff;
+  border-top: 1px solid var(--border-default);
+  box-shadow: 0 1px 0 var(--border-subtle);
   height: 0;
   margin: 3px 2px;
 }
 .rm2k3-toolbar {
   background: var(--bg-panel);
-  border-top: 1px solid #ffffff;
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -135,7 +135,7 @@
   width: 100%;
 }
 .rm2k3-toolbar-row.edit-row {
-  border-top: 1px solid #aaa59b;
+  border-top: 1px solid var(--border-default);
   padding-top: 2px;
 }
 .rm2k3-tool-button {
@@ -143,7 +143,7 @@
   appearance: none;
   background: var(--bg-panel);
   border: 1px solid;
-  border-color: #ffffff #6c6c6c #6c6c6c #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   color: var(--text);
   cursor: pointer;
   display: inline-flex;
@@ -175,7 +175,7 @@
 }
 .rm2k3-tool-button:active:not(:disabled) {
   background: var(--surface-recessed);
-  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 .rm2k3-tool-button:active:not(:disabled) {
   transform: translateY(1px);
@@ -183,12 +183,12 @@
 .rm2k3-tool-button.active,
 .rm2k3-tool-button[aria-pressed="true"] {
   background: var(--surface-selected);
-  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   color: var(--text-primary);
 }
 .rm2k3-tool-button.primary {
   background: var(--surface-selected);
-  border-color: #ffffff var(--border-strong) var(--border-strong) #ffffff;
+  border-color: var(--border-subtle) var(--border-strong) var(--border-strong) var(--border-subtle);
   color: var(--text-primary);
 }
 .rm2k3-tool-button.primary:hover:not(:disabled),
@@ -197,7 +197,7 @@
 }
 .rm2k3-tool-button.primary:active:not(:disabled) {
   background: var(--surface-recessed);
-  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 .rm2k3-tool-button:disabled {
   cursor: not-allowed;
@@ -205,8 +205,8 @@
   opacity: 0.45;
 }
 .rm2k3-toolbar-separator {
-  background: #8f8a80;
-  border-right: 1px solid #ffffff;
+  background: var(--control-bg);
+  border-right: 1px solid var(--border-subtle);
   height: 20px;
   margin: 0 2px;
   width: 1px;
@@ -215,7 +215,7 @@
   align-items: center;
   background: #f5f1e8;
   border: 1px solid;
-  border-color: #ffffff #9d988c #9d988c #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   color: var(--text-primary);
   display: inline-flex;
   flex: 0 0 auto;

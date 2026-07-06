@@ -1,11 +1,12 @@
-import { getMapEditHistoryState, undoMapEdit } from "@/editor/mapEditHistory";
+import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
 import { el } from "@/util/dom";
 import { makeSvgIcon } from "@/editor/panels/rpgMakerTileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/rpgMakerTileToolbarIcons";
 import { isRpgMakerToolbarItemActive, selectRpgMakerTileTool } from "@/editor/panels/rpgMakerTileToolbarActions";
 import type { RpgMakerTileTool } from "@/editor/panels/rpgMakerTileToolbarActions";
-import { makeBrushDropdown, makeInspectorDropdown, makeTemplateDropdown } from "@/editor/panels/rpgMakerTileToolbarMenus";
+import { makeBrushDropdown, makeHistoryDropdown, makeInspectorDropdown, makeRuleAuditDropdown, makeTemplateDropdown } from "@/editor/panels/rpgMakerTileToolbarMenus";
 import type { RpgMakerToolbarModel } from "@/editor/panels/rpgMakerTileToolbarMenus";
+import { store } from "@/project/store";
 
 export {
   selectRpgMakerEyedropperTool,
@@ -31,7 +32,11 @@ const TOOLBAR_ITEMS: readonly RpgMakerToolbarItem[] = [
   { id: "fill", label: "채우기", icon: "fill" },
 ];
 
+let latestToolbarRerender: (() => void) | null = null;
+let toolbarBadgeRefreshInstalled = false;
+
 export function makeRpgMakerTileToolbar(model: RpgMakerToolbarModel): HTMLElement {
+  installToolbarBadgeRefresh(model.rerender);
   const { state } = model;
   const row = el("div", {
     class: "rpg-maker-tile-toolbar",
@@ -71,8 +76,23 @@ export function makeRpgMakerTileToolbar(model: RpgMakerToolbarModel): HTMLElemen
   }
   row.append(el("span", { class: "rpg-maker-tile-toolbar-spacer", attrs: { "aria-hidden": "true" } }));
   row.append(makeInspectorDropdown(model));
+  row.append(makeRuleAuditDropdown(model));
+  row.append(makeHistoryDropdown(model));
   row.append(makeBrushDropdown(model));
   row.append(makeTemplateDropdown(model));
 
   return row;
+}
+
+function installToolbarBadgeRefresh(rerender: () => void): void {
+  latestToolbarRerender = rerender;
+  if (toolbarBadgeRefreshInstalled) return;
+  toolbarBadgeRefreshInstalled = true;
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => latestToolbarRerender?.());
+  }
+  store.subscribe(() => {
+    if (typeof document === "undefined") return;
+    latestToolbarRerender?.();
+  });
 }

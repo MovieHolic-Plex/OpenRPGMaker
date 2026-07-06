@@ -7,6 +7,70 @@ import { el } from "@/util/dom";
 import { renderTerrainTemplateAgentNotice } from "./terrainTemplateAgentNotice";
 import { bindTerrainTemplateScrollbar } from "./terrainTemplateScrollbar";
 
+// DB 타일셋 → 구성 탭에 인라인으로 붙는 지형 템플릿(교과서) 섹션.
+// 모달(첫 템플릿만)과 달리 이 타일셋의 템플릿 전체를 목록으로 보여준다.
+let selectedTemplateId: string | null = null;
+
+export function renderTerrainTemplateSection(tileset: TilesetDef): HTMLElement {
+  const templates = tileset.terrainTemplates ?? [];
+  const host = el("section", {
+    class: "terrain-template-section",
+    dataset: { testid: "terrain-template-section" },
+  });
+  const heading = el("h3", { class: "terrain-template-section-title", text: `지형 템플릿 (교과서) · ${templates.length}개` });
+  host.append(heading);
+  if (templates.length === 0) {
+    host.append(el("p", {
+      class: "empty-hint",
+      text: "저장된 지형 템플릿이 없습니다. AI 어시스턴트의 📐 선택 영역 학습으로 맵에서 구조물을 추출해 저장할 수 있습니다.",
+    }));
+    return host;
+  }
+  const selected = templates.find((template) => template.id === selectedTemplateId) ?? templates[0];
+  selectedTemplateId = selected.id;
+  const detailHost = el("div", { class: "terrain-template-section-detail" });
+  const list = el("div", {
+    class: "terrain-template-section-list",
+    dataset: { testid: "terrain-template-section-list" },
+    children: templates.map((template) =>
+      el("button", {
+        class: `database-footer-button terrain-template-section-row${template.id === selected.id ? " active" : ""}`,
+        text: `${template.name}${template.buildPlan ? " · 스탬프 가능" : ""}`,
+        attrs: { type: "button", title: template.sourceMapName },
+        dataset: { testid: `terrain-template-row-${template.id}` },
+        on: {
+          click: () => {
+            selectedTemplateId = template.id;
+            detailHost.replaceChildren(renderTemplateDetail(template, tileset));
+            for (const row of list.querySelectorAll(".terrain-template-section-row")) row.classList.remove("active");
+            list.querySelector(`[data-testid='terrain-template-row-${template.id}']`)?.classList.add("active");
+          },
+        },
+      }),
+    ),
+  });
+  detailHost.append(renderTemplateDetail(selected, tileset));
+  host.append(el("div", { class: "terrain-template-section-layout", children: [list, detailHost] }));
+  return host;
+}
+
+function renderTemplateDetail(template: TerrainTemplateMetadata, tileset: TilesetDef): HTMLElement {
+  return el("div", {
+    class: "terrain-template-panel",
+    dataset: { testid: "terrain-template-detail" },
+    children: [
+      renderTerrainTemplateAgentNotice(),
+      el("p", { class: "terrain-template-summary", text: `${template.name} / 원본: ${template.sourceMapName}` }),
+      el("h4", { text: "구성 원칙" }),
+      renderTemplateRules(template.rules),
+      renderTemplateGrammar(template.grammar ?? []),
+      el("h4", { text: "타일 표" }),
+      renderTemplateTable(template.rows, tileset),
+      renderJsonDetails(template),
+    ],
+  });
+}
+
 export function openTerrainTemplateModal(): void {
   document.querySelector("[data-testid='terrain-template-modal']")?.remove();
   const template = currentTerrainTemplate();

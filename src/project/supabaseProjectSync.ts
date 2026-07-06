@@ -9,6 +9,8 @@ import {
 } from "./defaults/defaultDatabaseStarterRecords";
 import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
+import { sha256HexText } from "../util/sha256";
+import { randomUuid } from "../util/id";
 import type { GameMap, MapTreeNode, Project, TerrainTemplateMetadata, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
@@ -473,7 +475,7 @@ function terrainTemplateRow(projectId: string, tilesetId: string, template: Terr
 
 function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput): Record<string, unknown> {
   return {
-    run_id: crypto.randomUUID(),
+    run_id: randomUuid(),
     project_id: projectId,
     tileset_id: input.tilesetId,
     selected_tile_ids_json: input.selectedTiles,
@@ -483,8 +485,7 @@ function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput):
 }
 
 async function sha256Hex(value: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return sha256HexText(value);
 }
 
 function terrainTemplateCount(project: Project): number {

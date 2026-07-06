@@ -1,0 +1,235 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { editorState } from "@/editor/editorState";
+import { renderTilePalette } from "@/editor/panels/tilePalette";
+import {
+  createTileClusterSections,
+  tileGroupGridColumns,
+  tilePatternKindLabel,
+} from "@/editor/panels/tilePaletteClusters";
+import { createBlankProject, TILE } from "@/project/defaults";
+import type { TileGroupMetadata, TilesetDef } from "@/project/types";
+import { store } from "@/project/store";
+import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+
+class MemoryStorage implements Storage {
+  private readonly values = new Map<string, string>();
+
+  get length(): number {
+    return this.values.size;
+  }
+
+  clear(): void {
+    this.values.clear();
+  }
+
+  getItem(key: string): string | null {
+    return this.values.get(key) ?? null;
+  }
+
+  key(index: number): string | null {
+    return Array.from(this.values.keys())[index] ?? null;
+  }
+
+  removeItem(key: string): void {
+    this.values.delete(key);
+  }
+
+  setItem(key: string, value: string): void {
+    this.values.set(key, value);
+  }
+}
+
+let restoreDom: (() => void) | null = null;
+let previousWindow: (Window & typeof globalThis) | undefined;
+let storage: MemoryStorage;
+
+beforeEach(() => {
+  store.replace(createBlankProject());
+  editorState.set({
+    activePaletteStamp: null,
+    activeStampId: null,
+    activeStructureStampId: null,
+    currentMapId: null,
+    layer: "lower",
+    selectedTile: TILE.GRASS,
+    tool: "paint",
+  });
+  restoreDom = installFakeDom();
+  Object.defineProperty(globalThis.document, "createElementNS", {
+    configurable: true,
+    value: (_namespace: string, tagName: string) => new FakeElement(tagName),
+  });
+  storage = new MemoryStorage();
+  previousWindow = globalThis.window;
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    writable: true,
+    value: storage,
+  });
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: {
+      localStorage: storage,
+      requestAnimationFrame: (callback: FrameRequestCallback): number => {
+        callback(0);
+        return 0;
+      },
+      scrollTo: () => undefined,
+      scrollX: 0,
+      scrollY: 0,
+      setTimeout: (handler: TimerHandler): number => {
+        if (typeof handler === "function") handler();
+        return 0;
+      },
+    },
+  });
+});
+
+afterEach(() => {
+  restoreDom?.();
+  restoreDom = null;
+  restoreWindow(previousWindow);
+  Reflect.deleteProperty(globalThis, "localStorage");
+});
+
+describe("tile palette cluster partition", () => {
+  it("keeps grouped, labeled, and uncategorized tiles disjoint while covering the whole tileset", () => {
+    const tileset = makeTileset({
+      count: 10,
+      tileGroups: [
+        makeGroup("wall", "wall", [1, 2, 3]),
+        makeGroup("water", "water", [5, 6]),
+      ],
+      tileMeta: {
+        0: "잔디",
+        2: "그룹 안 라벨",
+        7: "표지판",
+      },
+    });
+
+    const sections = createTileClusterSections(tileset);
+    const grouped = sections.groups.flatMap((group) => group.tileIds);
+    const all = [...grouped, ...sections.labeledTileIds, ...sections.uncategorizedTileIds];
+
+    expect(new Set(all).size).toBe(tileset.count);
+    expect([...all].sort((a, b) => a - b)).toEqual(Array.from({ length: tileset.count }, (_, index) => index));
+    expect(sections.labeledTileIds).toEqual([0, 7]);
+    expect(sections.uncategorizedTileIds).toEqual([4, 8, 9]);
+  });
+
+  it("sorts groups by metadata role order", () => {
+    const tileset = makeTileset({
+      count: 8,
+      tileGroups: [
+        makeGroup("prop", "prop", [7]),
+        makeGroup("wall", "wall", [3]),
+        makeGroup("terrain", "terrain", [0]),
+        makeGroup("water", "water", [1]),
+      ],
+    });
+
+    expect(createTileClusterSections(tileset).groups.map((group) => group.id)).toEqual(["terrain", "water", "wall", "prop"]);
+  });
+
+  it("maps pattern grammar kinds to Korean badges and preserves source-rect columns", () => {
+    expect(tilePatternKindLabel("autotile_3x3")).toBe("3×3");
+    expect(tilePatternKindLabel("nine_slice_expandable")).toBe("9분할");
+    expect(tilePatternKindLabel("horizontal_expandable")).toBe("가로 확장");
+    expect(tilePatternKindLabel("vertical_expandable")).toBe("세로 확장");
+    expect(tilePatternKindLabel("animated_terrain")).toBe("애니");
+    expect(tilePatternKindLabel("single")).toBe("단일");
+    expect(tilePatternKindLabel("source_rect")).toBe("영역");
+    expect(tilePatternKindLabel("overlay_detail")).toBe("장식");
+    expect(tilePatternKindLabel("event_required_object")).toBe("이벤트");
+    expect(tileGroupGridColumns({ ...makeGroup("wall", "wall", [1, 2, 3, 4, 5, 6, 7, 8, 9]), sourceRect: { x: 0, y: 0, width: 3, height: 3 } })).toBe(3);
+    expect(tileGroupGridColumns(makeGroup("flow", "terrain", [1, 2, 3]))).toBe(8);
+  });
+});
+
+describe("tile palette cluster UI", () => {
+  it("renders cluster view by default and persists sheet view when the sheet segment is clicked", () => {
+    const root = renderPalette();
+
+    expect(findByTestId(root, "tile-palette-clusters")).not.toBeNull();
+    expect(findByTestId(root, "tile-palette")).toBeNull();
+
+    requireTestId(root, "palette-view-sheet").click();
+
+    expect(storage.getItem("rpg-zzu:palette-view")).toBe("sheet");
+    expect(findByTestId(root, "tile-palette")).not.toBeNull();
+  });
+
+  it("restores advanced tile tools from the title toggle", () => {
+    const root = renderPalette();
+
+    expect(findByTestId(root, "quick-tile-picker")).toBeNull();
+    requireTestId(root, "tile-advanced-toggle").click();
+
+    expect(storage.getItem("rpg-zzu:palette-advanced")).toBe("1");
+    expect(findByTestId(root, "quick-tile-picker")).not.toBeNull();
+  });
+});
+
+function renderPalette(): FakeElement {
+  return renderWithFakeDom(() => {
+    const root = document.createElement("div");
+    root.dataset.testid = "left-palette-root";
+    document.body.append(root);
+    renderTilePalette(root);
+    return root;
+  });
+}
+
+function requireTestId(root: FakeElement, testId: string): FakeElement {
+  const element = findByTestId(root, testId);
+  if (!element) throw new Error(`Missing ${testId}`);
+  return element;
+}
+
+function makeTileset(args: {
+  readonly count: number;
+  readonly tileGroups?: readonly TileGroupMetadata[];
+  readonly tileMeta?: Readonly<Record<number, string>>;
+}): TilesetDef {
+  return {
+    count: args.count,
+    id: "test_tileset",
+    image: { id: "tex_tiles_default", type: "bundled" },
+    passability: Array.from({ length: args.count }, () => ({ down: true, left: true, right: true, up: true })),
+    priority: Array.from({ length: args.count }, () => "lower"),
+    terrain: Array.from({ length: args.count }, () => 0),
+    tileGroups: args.tileGroups ? [...args.tileGroups] : [],
+    tileMeta: Array.from({ length: args.count }, (_, index) => ({
+      description: "",
+      label: args.tileMeta?.[index] ?? "",
+    })),
+    tileSize: 16,
+    tilesPerRow: 8,
+    name: "Test tileset",
+  };
+}
+
+function makeGroup(id: string, role: TileGroupMetadata["role"], tileIds: readonly number[]): TileGroupMetadata {
+  return {
+    defaultLayer: "lower",
+    description: "",
+    id,
+    name: id,
+    placementRules: "",
+    role,
+    tileIds: [...tileIds],
+  };
+}
+
+function restoreWindow(windowValue: (Window & typeof globalThis) | undefined): void {
+  if (windowValue === undefined) {
+    Reflect.deleteProperty(globalThis, "window");
+    return;
+  }
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: windowValue,
+  });
+}
