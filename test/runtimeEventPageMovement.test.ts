@@ -96,6 +96,26 @@ describe("runtime event page movement", () => {
     expect(mover.step).toBe(2);
   });
 
+  it("preserves an NPC's action-turn facing when page routes are re-registered", () => {
+    // refreshRuntimeSurfaces 는 이벤트 조사 직후에도 registerPageMoveRoutes 를 다시
+    // 부른다. 그때 facing 을 기본 방향으로 리셋하면 turnActionEventTowardPlayer 가
+    // 돌려놓은 방향이 즉시 취소돼 "말을 걸어도 NPC 가 쳐다보지 않는" 버그가 된다.
+    const scene = movementScene({
+      movement: { type: "random", speed: 3, frequency: 3 },
+    });
+    registerPageMoveRoutes(scene);
+    const mover = scene.autonomousNPCs.get("npc");
+    if (!mover) throw new Error("missing autonomous mover");
+
+    // 조사 시 플레이어 쪽으로 돌린 상태를 흉내낸다(기본 방향과 다른 방향).
+    mover.facing = "up";
+
+    // 이벤트 실행 중 refreshRuntimeSurfaces → registerPageMoveRoutes 재호출.
+    registerPageMoveRoutes(scene);
+
+    expect(scene.autonomousNPCs.get("npc")?.facing).toBe("up");
+  });
+
   it("does not register an autonomous mover for stationary NPC pages", () => {
     const scene = movementScene({
       movement: {

@@ -35,7 +35,11 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
     activePageRouteEventIds.add(view.event.id);
     if (scene.pageMoveRouteKeys.has(key) && scene.pageMoveRouteEventIds.has(view.event.id)) {
       const mover = scene.autonomousNPCs.get(view.event.id);
-      if (mover) configurePageMover(mover, movement, route.strategy, view.page?.graphic.direction ?? "down");
+      // 기존 무버는 속도/빈도만 재설정하고 facing 은 보존한다. refreshRuntimeSurfaces
+      // 가 이벤트 조사 직후에도 호출되는데, 여기서 facing 을 기본 방향으로 되돌리면
+      // turnActionEventTowardPlayer 가 플레이어 쪽으로 돌려놓은 방향이 즉시 취소된다
+      // (= "말을 걸어도 NPC 가 쳐다보지 않는" 버그).
+      if (mover) configurePageMover(mover, movement, route.strategy);
       continue;
     }
     removePageRouteForEvent(scene, view.event.id);
@@ -43,7 +47,11 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
     scene.pageMoveRouteEventIds.add(view.event.id);
     scene.registerAutonomousMover(view.event.id, route.moves, route.repeat);
     const mover = scene.autonomousNPCs.get(view.event.id);
-    if (mover) configurePageMover(mover, movement, route.strategy, view.page?.graphic.direction ?? "down");
+    if (mover) {
+      // 신규 무버만 페이지 그래픽의 초기 방향으로 세팅한다.
+      mover.facing = view.page?.graphic.direction ?? "down";
+      configurePageMover(mover, movement, route.strategy);
+    }
   }
   for (const eventId of [...scene.pageMoveRouteEventIds]) {
     if (!activePageRouteEventIds.has(eventId)) removePageRouteForEvent(scene, eventId);
@@ -85,11 +93,9 @@ function routeForPageMovement(
 function configurePageMover(
   mover: AutonomousMover,
   movement: EventPageMovement,
-  strategy: AutonomousMover["strategy"],
-  facing: AutonomousMover["facing"]
+  strategy: AutonomousMover["strategy"]
 ): void {
   mover.strategy = strategy;
-  mover.facing = facing;
   mover.speedRank = clampSetting(movement.speed);
   mover.frequencyRank = clampSetting(movement.frequency);
   mover.moveDurationMs = npcMoveDurationMs(movement.speed);
