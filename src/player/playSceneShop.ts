@@ -108,8 +108,11 @@ function handleShopTransaction(
 function mountCommerceOverlay(scene: PlaySceneContext, overlay: HTMLElement): void {
   const host = dialogueHost(scene);
   if (!host) return;
-  host.querySelector(`[data-testid='${overlay.dataset.testid ?? ""}']`)?.remove();
-  host.append(overlay);
+  // dialogueHost(.play-stage)는 transform: scale 이라 절대배치 자식이 보이는 영역 밖(위쪽)으로 튄다.
+  // 스케일 밖의 .play-viewport 레이어에 올려 보이는 게임 영역 기준으로 상점 창을 배치한다.
+  const layer = host.closest(".play-viewport") ?? host;
+  layer.querySelector(`[data-testid='${overlay.dataset.testid ?? ""}']`)?.remove();
+  layer.append(overlay);
 }
 
 function finishCommerce(

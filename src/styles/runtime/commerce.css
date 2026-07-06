@@ -91,42 +91,74 @@
 }
 
 /* ── RM2003 상점 창 (배경 스킨은 applySystemGraphic) ──
-   좌우 inset + margin auto 로 플레이 화면(호스트) 크기에 맞게 안전하게 들어간다. */
+   플레이 호스트(≈640×480) 하단에 앵커링하고 세로 플렉스로 섹션을 배치한다.
+   내용이 넘치면 창 전체가 아니라 '아이템 목록만' 스크롤한다(overflow:hidden 로 잘림 방지). */
 .runtime-shop-overlay {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 20px;
-  margin-inline: auto;
-  max-width: 600px;
-  padding: 14px 18px;
+  /* 상점은 .play-viewport(스케일 변환 밖) 레이어에 마운트된다(playSceneShop.ts). 그래서 이 inset 은
+     보이는 게임 영역(비스케일) 기준으로 동작해 플레이 영역을 채우는 상점 창이 된다. */
+  inset: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
   border: 2px solid var(--rm2k3-command-blue, var(--accent));
   border-radius: 8px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  background-color: rgba(10, 14, 30, 0.92);
   color: var(--text-1);
   font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
 }
 
-/* 메뉴 뷰: 인사말 + 구입/판매/취소 */
+/* 셸: 오버레이 안에서 세로 플렉스. 아이템 뷰는 높이를 채우고, 메뉴 뷰는 내용 크기. */
+.runtime-shop-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.runtime-shop-items-shell {
+  flex: 1 1 auto;
+}
+.runtime-shop-menu-shell {
+  flex: 0 0 auto;
+}
+
+/* 공통 서브 프레임. 비어 있는 패널(메뉴 뷰의 상/중단)은 감춘다. */
+.runtime-shop-panel {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: rgba(0, 0, 0, 0.16);
+}
+.runtime-shop-panel:empty {
+  display: none;
+}
+
+/* ── 메뉴 뷰: 인사말 + 구입/판매/취소 ── */
 .runtime-shop-menu {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   justify-items: center;
+  padding: 6px;
 }
-
 .runtime-shop-message {
   font-size: 15px;
+  text-align: center;
 }
-
 .runtime-shop-menu-choices {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
-
 .runtime-shop-menu-choice,
 .runtime-shop-cancel {
-  min-width: 88px;
-  padding: 8px 16px;
+  min-width: 72px;
+  padding: 8px 14px;
   border: 1px solid var(--accent-border, var(--accent));
   border-radius: 6px;
   background: var(--accent-muted);
@@ -134,41 +166,47 @@
   font: 600 14px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   cursor: pointer;
 }
-
 .runtime-shop-menu-choice:hover,
 .runtime-shop-cancel:hover {
   background: var(--accent);
   color: #fff;
 }
 
-/* 아이템 뷰: 목록 + 우측 패널(파티/보유/소지금) */
-.runtime-shop-items-shell {
-  display: grid;
-  gap: 10px;
+/* ── 아이템 뷰: 메시지 / (목록 | 사이드) / 프롬프트 ── */
+.runtime-shop-message-panel {
+  flex: 0 0 auto;
+  font-size: 13px;
+  color: var(--text-2);
 }
 
 .runtime-shop-main {
   display: grid;
-  grid-template-columns: minmax(160px, 1fr) minmax(120px, 150px);
-  gap: 12px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 188px);
+  gap: 10px;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.runtime-shop-item-list {
-  display: grid;
-  gap: 4px;
-  max-height: 240px;
-  overflow-y: auto;
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+/* 목록 패널: 높이를 그리드 행에 맞추고 목록만 스크롤한다. */
+.runtime-shop-list-panel {
+  display: flex;
+  min-height: 0;
   padding: 6px;
 }
-
+.runtime-shop-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
 .runtime-shop-item-row {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 7px 10px;
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
@@ -177,40 +215,69 @@
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
+  width: 100%;
 }
-
-.runtime-shop-item-row:hover {
+.runtime-shop-item-row:hover,
+.runtime-shop-item-row.selected {
   background: var(--accent-muted);
   border-color: var(--accent-border, var(--accent));
 }
+.runtime-shop-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.runtime-shop-item-price {
+  color: var(--rm2k3-command-teal, var(--success));
+  font-weight: 600;
+}
+.runtime-shop-empty {
+  padding: 12px;
+  color: var(--text-2);
+  text-align: center;
+}
 
+/* 사이드: 파티 / 보유 / 소지금 서브 패널 세로 배치 */
 .runtime-shop-side {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+  min-height: 0;
 }
-
-.runtime-shop-panel {
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 13px;
+.runtime-shop-party {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
 }
-
+.runtime-shop-party-sprite {
+  width: 24px;
+  height: 24px;
+  background: var(--bg-inset);
+  border-radius: 3px;
+}
+.runtime-shop-owned {
+  display: grid;
+  gap: 4px;
+}
+.runtime-shop-stat-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 .runtime-shop-gold {
   font-weight: 700;
+  font-size: 15px;
   color: var(--rm2k3-command-teal, var(--success));
   text-align: right;
 }
 
-.runtime-shop-message-panel {
-  font-size: 14px;
-  color: var(--text-2);
+/* 프롬프트: 안내문 + 취소 버튼 */
+.runtime-shop-prompt-panel {
+  flex: 0 0 auto;
 }
-
 .runtime-shop-prompt {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -222,16 +289,4 @@
   background: var(--control-bg, var(--bg-inset));
   color: var(--text-1);
   font-size: 14px;
-}
-
-.runtime-shop-party {
-  display: flex;
-  gap: 4px;
-}
-
-.runtime-shop-party-sprite {
-  width: 24px;
-  height: 24px;
-  background: var(--bg-inset);
-  border-radius: 3px;
 }
