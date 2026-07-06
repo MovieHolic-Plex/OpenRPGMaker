@@ -90,7 +90,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   speaker.addEventListener("input", apply);
   body.addEventListener("change", apply);
   body.addEventListener("input", apply);
-  wrap.append(speaker, body);
+  wrap.append(fieldControl("화자", speaker), fieldControl("내용", body));
   return wrap;
 }
 
@@ -198,7 +198,7 @@ function setFlagBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
   };
   flag.addEventListener("change", apply);
   val.addEventListener("change", apply);
-  wrap.append(flag, val);
+  wrap.append(fieldControl("플래그", flag), fieldControl("값", val));
   return wrap;
 }
 
@@ -215,7 +215,7 @@ function setSelfSwitchBody(context: CommandEditContext, cmd: Extract<Command, { 
   };
   key.addEventListener("change", apply);
   val.addEventListener("change", apply);
-  wrap.append(key, val);
+  wrap.append(fieldControl("셀프 스위치", key), fieldControl("값", val));
   return wrap;
 }
 
@@ -248,7 +248,7 @@ function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind
   val.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, { ...cmd, switchId: currentSwitchId, value: val.value === "true" });
   });
-  wrap.append(swSel, val);
+  wrap.append(fieldControl("스위치", swSel), fieldControl("값", val));
   return wrap;
 }
 
@@ -284,6 +284,6 @@ function timerBody(context: CommandEditContext, cmd: Extract<Command, { kind: "t
   action.addEventListener("change", apply);
   timerId.addEventListener("change", apply);
   secs.addEventListener("change", apply);
-  wrap.append(action, timerId, secs);
+  wrap.append(fieldControl("동작", action), fieldControl("타이머", timerId), fieldControl("시간(초)", secs));
   return wrap;
 }

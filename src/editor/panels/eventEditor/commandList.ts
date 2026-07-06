@@ -102,7 +102,11 @@ function renderCommandItem(
   item.append(head);
   const editor = el("div", { class: "cmd-inline-editor" });
   editor.style.setProperty("--cmd-depth", String(depth));
-  editor.append(renderCommandBody({ path, actions }, cmd));
+  // 다이얼로그와 동일한 폼 레이아웃(.event-command-edit-body 필드 그리드)을 인라인
+  // 편집기에도 적용해 명령별로 제각각이던 폼을 일관되게 만든다.
+  const formHost = el("div", { class: "event-command-edit-body" });
+  formHost.append(renderCommandBody({ path, actions }, cmd));
+  editor.append(formHost);
   ensureTerminalEditorHint(editor, cmd);
   item.append(editor);
   ensureTerminalRowHint(item, cmd);
