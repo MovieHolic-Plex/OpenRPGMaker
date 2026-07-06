@@ -17,35 +17,60 @@ type CommerceOverlayOptions = {
 };
 
 export function playInn(scene: PlaySceneContext, step: InnStep): Promise<void> {
+  // RM2003 여관 처리: 인사 → "N G 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
+  // 화면이 어두워졌다가(휴식) 기상 메시지와 함께 밝아지고 이벤트가 계속된다.
   return new Promise((resolve) => {
     const overlay = createCommerceOverlay({
       testId: "inn-scene",
       title: "여관",
-      note: `숙박 요금은 ${step.price} G입니다.`,
+      note: "어서 오세요. 편히 쉬어가시겠어요?",
     });
+    const question = commerceStatus(`하룻밤 묵는 데 ${step.price} G 입니다. 묵으시겠습니까?`);
     const actions = document.createElement("div");
     actions.className = "runtime-commerce-actions";
-    const status = commerceStatus("숙박하면 요금이 차감되고 이벤트가 계속됩니다.");
     actions.append(
       closeButton(
-        "숙박한다",
+        "예",
         () => {
           if (scene.session.gold < step.price) {
-            status.textContent = "소지금이 부족합니다.";
+            question.textContent = "소지금이 부족합니다.";
             scene.syncRuntimeState();
             return;
           }
+          // 회복/차감은 즉시 반영하고, 이후 휴식 연출을 거쳐 이벤트를 재개한다.
           changeGold(scene.session, "-=", step.price);
           recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds);
           scene.syncRuntimeState();
-          finishCommerce(scene, overlay, resolve);
+          playInnRest(scene, overlay, resolve);
         },
         "inn-stay"
       ),
-      closeButton("그만둔다", () => finishCommerce(scene, overlay, resolve), "inn-cancel")
+      closeButton("아니오", () => finishCommerce(scene, overlay, resolve), "inn-cancel")
     );
-    overlay.append(status, actions);
+    overlay.append(question, actions);
     mountCommerceOverlay(scene, overlay);
+  });
+}
+
+// 숙박 연출: 어두워짐(휴식) → 기상 메시지 → 밝아지며 종료.
+function playInnRest(scene: PlaySceneContext, overlay: HTMLElement, resolve: () => void): void {
+  overlay.classList.add("runtime-inn-rest");
+  const fade = document.createElement("div");
+  fade.className = "runtime-inn-fade";
+  fade.dataset.testid = "inn-resting";
+  overlay.replaceChildren(fade);
+  scene.syncRuntimeState();
+  scene.time.delayedCall(500, () => {
+    const wake = commerceStatus("좋은 아침입니다! 파티가 모두 회복했습니다.");
+    wake.dataset.testid = "inn-wake";
+    overlay.classList.remove("runtime-inn-rest");
+    overlay.classList.add("runtime-inn-wake-view");
+    const title = document.createElement("div");
+    title.className = "runtime-overlay-title";
+    title.textContent = "여관";
+    overlay.replaceChildren(title, wake);
+    scene.syncRuntimeState();
+    scene.time.delayedCall(750, () => finishCommerce(scene, overlay, resolve));
   });
 }
 

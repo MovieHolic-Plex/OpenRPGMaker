@@ -103,6 +103,8 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
   expect(finalState.actorVitals[actorId]?.hp).toBe(finalState.actorVitals[actorId]?.maxHp);
   expect(finalState.actorVitals[actorId]?.mp).toBe(finalState.actorVitals[actorId]?.maxMp);
   await writeJson("010-runtime-after-commerce.json", finalState);
+  // 숙박 연출(페이드 → 기상 메시지)이 끝나 여관 창이 닫힌 뒤 메뉴를 연다.
+  await expect(page.getByTestId("inn-scene")).toBeHidden();
   await page.keyboard.press("X");
   await page.getByTestId("status-menu-command-items").click();
   await expect(page.getByTestId("status-menu-gold")).toContainText(`${expectedFinalGold}G`);
