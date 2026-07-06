@@ -10,6 +10,8 @@
 @import "./database/core.css";
 @import "./database/tabs-a.css";
 @import "./database/tabs-b.css";
+@import "./database/skill-item-visuals.css";
+@import "./database/record-thumbs.css";
 @import "./map/resource-system.css";
 @import "./components/icons.css";
 @import "./shell/rm2k3.css";
