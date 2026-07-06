@@ -12,6 +12,15 @@
 4. **범위**: 설정(lore) + 제작 규범(guideline) 통합 — 한 온톨로지, UI 탭만 분리
 5. **기존 증거**: 내부화 — 기술 증거는 "생성 검증 상세" 아코디언(기본 접힘)으로 격하, '증거 패킷' 버튼은 '세계관' 버튼으로 교체
 
+## 기존 구현 실체 (조사 결과)
+현재 '마을 정보 문서' = `VillageInfoDocument { id, mapId, title, markdown }` (`project.villageInfoDocuments`,
+`src/editor/panels/villageInfoModal.ts` 모달, `src/ai/contextBuilder.ts:115` 주입). 맵별 평면 마크다운일 뿐
+개체/관계/검증/세계관이 없다 — 이것이 사용자가 지적한 재개념화 대상이다.
+
+**마이그레이션 (W3~W4)**: 기존 villageInfoDocuments는 `WorldEntity(type:"place", refs:[{kind:"map",id:mapId}],
+body=markdown, origin:"user")`로 변환. contextBuilder:115의 주입 지점을 world 다이제스트로 교체.
+villageInfoModal은 세계관 패널로 대체하고 진입점 리다이렉트. 변환 후에도 원본 필드는 1버전 동안 보존(롤백 가능).
+
 ## 데이터 모델
 저장 위치: `project.world` (project.json에 포함 → Supabase 동기화·버전관리 상속). 코드: `src/project/world/`.
 
