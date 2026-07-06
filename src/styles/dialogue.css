@@ -412,3 +412,36 @@
 .number-input-ok:hover {
   background: rgba(255, 255, 255, 0.16);
 }
+
+/* === dialogue pagination cursor === */
+.dialogue-page-cursor {
+  bottom: 2px;
+  color: var(--runtime-dialogue-text);
+  font-family: var(--runtime-dialogue-font);
+  font-size: 7px;
+  font-weight: 700;
+  left: 50%;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.88);
+  transform: translateX(-50%);
+}
+
+.dialogue-box.page-ready .dialogue-page-cursor {
+  animation: dialogue-page-cursor-blink 0.9s steps(2, end) infinite;
+  opacity: 1;
+}
+
+@keyframes dialogue-page-cursor-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+
+  46%,
+  100% {
+    opacity: 0;
+  }
+}

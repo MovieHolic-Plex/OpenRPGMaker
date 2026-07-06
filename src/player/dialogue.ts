@@ -6,7 +6,16 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
 import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
+import {
+  DIALOGUE_FALLBACK_CHAR_WIDTH,
+  DIALOGUE_LINES_PER_PAGE,
+  fallbackMeasureDialogueText,
+  paginateDialogueSegments,
+  type DialogueTextMeasure,
+  type DialogueTextSegment,
+} from "@/player/dialoguePagination";
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
+import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/player/types";
 import { el, clearChildren } from "@/util/dom";
 
@@ -34,10 +43,17 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
   readonly cancelBehavior?: ChoiceCancelBehavior;
 };
 
-type DialogueTextSegment = {
-  readonly text: string;
-  readonly colorIndex: number;
-};
+const DIALOGUE_OVERLAY_HORIZONTAL_PADDING = {
+  top: 12,
+  center: 8,
+  bottom: 12,
+} satisfies Record<MessageWindowPosition, number>;
+const DIALOGUE_BOX_HORIZONTAL_PADDING = 16;
+const DIALOGUE_BOX_HORIZONTAL_BORDER = 2;
+const DIALOGUE_FACE_COLUMN_WIDTH = 48;
+const DIALOGUE_FACE_COLUMN_GAP = 6;
+const DIALOGUE_FONT_FALLBACK =
+  '700 7px "DungGeunMo", "Galmuri11", "DotGothic16", "GulimChe", "DotumChe", "MS Gothic", sans-serif';
 
 export interface DialogueUI {
   // Show a dialogue window until the player advances it.
@@ -58,7 +74,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
     resetOverlay(overlay);
     return new Promise<void>((resolve) => {
       const box = dialogueBox("", "dialogue-box");
-      applyTextSettings(overlay, box, request);
+      const position = applyTextSettings(overlay, box, request);
       const content = el("div", {
         class: `dialogue-content${request.face?.position === "right" ? " face-right" : ""}`,
       });
@@ -71,34 +87,65 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       textColumn.append(bodyEl);
       content.append(textColumn);
       box.append(content);
-      const hint = el("div", {
-        class: "continue-hint",
-        text: "click/enter",
+      const cursor = el("div", {
+        class: "dialogue-page-cursor",
+        text: "▼",
+        attrs: { "aria-hidden": "true" },
       });
-      box.append(hint);
+      box.append(cursor);
+      overlay.append(box);
 
-      // Typewriter effect.
-      let i = 0;
+      const measure = createDialogueTextMeasure(bodyEl);
+      const pages = paginateDialogueSegments(parseDialogueText(request.body, request.textContext), {
+        maxWidth: dialogueBodyWidth(request, position),
+        measure,
+        maxLines: DIALOGUE_LINES_PER_PAGE,
+        fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
+      });
+      let pageIndex = 0;
+      let visibleChars = 0;
       let typing = true;
-      const segments = parseDialogueText(request.body, request.textContext);
-      const fullLength = visibleTextLength(segments);
+      let timer = 0;
+      const currentSegments = (): readonly DialogueTextSegment[] => pages[pageIndex]?.segments ?? [];
+      const finishTyping = (): void => {
+        clearTimeout(timer);
+        renderDialogueSegments(bodyEl, currentSegments());
+        typing = false;
+        box.classList.add("page-ready");
+      };
       const typeStep = () => {
-        if (i < fullLength) {
-          renderDialogueSegments(bodyEl, segments, i + 1);
-          i++;
+        const segments = currentSegments();
+        const fullLength = visibleTextLength(segments);
+        if (visibleChars < fullLength) {
+          visibleChars += 1;
+          renderDialogueSegments(bodyEl, segments, visibleChars);
           timer = window.setTimeout(typeStep, 24);
         } else {
-          typing = false;
+          finishTyping();
         }
       };
-      let timer = window.setTimeout(typeStep, 24);
+      const startPage = (nextPageIndex: number): void => {
+        clearTimeout(timer);
+        pageIndex = nextPageIndex;
+        visibleChars = 0;
+        typing = true;
+        box.classList.remove("page-ready");
+        renderDialogueSegments(bodyEl, currentSegments(), 0);
+        if (visibleTextLength(currentSegments()) === 0) {
+          finishTyping();
+          return;
+        }
+        timer = window.setTimeout(typeStep, 24);
+      };
+      startPage(0);
 
       const advance = () => {
         if (typing) {
-          // Skip the typewriter and show the full line.
-          clearTimeout(timer);
-          renderDialogueSegments(bodyEl, segments);
-          typing = false;
+          finishTyping();
+          return;
+        }
+        if (pageIndex < pages.length - 1) {
+          startPage(pageIndex + 1);
           return;
         }
         cleanup();
@@ -119,8 +166,6 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       };
       box.addEventListener("click", advance);
       document.addEventListener("keydown", onKey);
-
-      overlay.append(box);
     });
   }
 
@@ -230,7 +275,7 @@ export function resolveDialogueText(value: string, context?: DialogueTextContext
   return parseDialogueText(value, context).map((segment) => segment.text).join("");
 }
 
-function parseDialogueText(value: string, context?: DialogueTextContext): DialogueTextSegment[] {
+export function parseDialogueText(value: string, context?: DialogueTextContext): DialogueTextSegment[] {
   const segments: DialogueTextSegment[] = [];
   let colorIndex = 0;
   let buffer = "";
@@ -322,6 +367,39 @@ function renderDialogueSegments(target: HTMLElement, segments: readonly Dialogue
   }
 }
 
+function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition): number {
+  // The play stage is a fixed 320px logical surface. dialogue.css gives the
+  // bottom/top overlay 6px horizontal padding, the box 8px padding, and a 1px
+  // border; a face column consumes 48px plus the 6px grid gap.
+  const baseWidth = PLAY_RESOLUTION.width
+    - DIALOGUE_OVERLAY_HORIZONTAL_PADDING[position]
+    - DIALOGUE_BOX_HORIZONTAL_PADDING
+    - DIALOGUE_BOX_HORIZONTAL_BORDER;
+  const faceWidth = request.face ? DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP : 0;
+  return Math.max(1, baseWidth - faceWidth);
+}
+
+function createDialogueTextMeasure(reference: HTMLElement): DialogueTextMeasure {
+  const fallback = (text: string): number => fallbackMeasureDialogueText(text, DIALOGUE_FALLBACK_CHAR_WIDTH);
+  const ownerDocument = reference.ownerDocument ?? document;
+  const view = ownerDocument.defaultView;
+  const canvas = ownerDocument.createElement("canvas");
+  const context = typeof canvas.getContext === "function" ? canvas.getContext("2d") : null;
+  if (!context) return fallback;
+  const computed = view?.getComputedStyle(reference);
+  context.font = computed?.font || [
+    computed?.fontStyle,
+    computed?.fontVariant,
+    computed?.fontWeight,
+    computed?.fontSize,
+    computed?.fontFamily,
+  ].filter(Boolean).join(" ") || DIALOGUE_FONT_FALLBACK;
+  return (text: string): number => {
+    const width = context.measureText(text).width;
+    return Number.isFinite(width) && width >= 0 ? width : fallback(text);
+  };
+}
+
 function dialogueBox(extraClass: string, testId: string): HTMLElement {
   return el("div", {
     class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
@@ -343,12 +421,13 @@ function applyTextSettings(
   box: HTMLElement,
   request: DialogueSurfaceSettings,
   appliedPosition?: MessageWindowPosition
-): void {
+): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
   const position = appliedPosition ?? applyOverlayPosition(overlay, request);
   box.classList.toggle("transparent", settings.format === "transparent");
   box.dataset.messageFormat = settings.format;
   box.dataset.messagePosition = position;
+  return position;
 }
 
 function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings): MessageWindowPosition {
