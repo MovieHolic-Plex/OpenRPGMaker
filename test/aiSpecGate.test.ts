@@ -212,6 +212,114 @@ describe("세션 스펙 게이트", () => {
     const paint = events.find((e) => e.name === "paint_tiles")!;
     expect(paint.ok).toBe(false);
     expect(paint.summary).toContain("밖");
+    expect(paint.summary).toContain("허용 slack ±2칸");
+  });
+
+  it("할당 영역 동쪽 +1칸 초과는 차단하지 않고 slack warning으로 통과", async () => {
+    const chat = scriptedChat([
+      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
+      toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 6, y: 3 }, to: { x: 8, y: 3 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
+      finalMsg("경계 근처까지 칠했습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; issues?: Array<{ severity: string; code: string; message: string }>; warnings?: string[] }> = [];
+    await session.sendUserMessage("집 지어줘", (e) => {
+      if (e.type === "tool_call") {
+        events.push({
+          name: e.name,
+          ok: e.result.ok,
+          issues: e.result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message })),
+          warnings: e.result.diff?.warnings,
+        });
+      }
+    });
+    const paint = events.find((e) => e.name === "paint_tiles")!;
+    expect(paint.ok).toBe(true);
+    expect(paint.issues).toContainEqual(expect.objectContaining({
+      severity: "warning",
+      code: "spec-gate-slack",
+      message: expect.stringContaining("동쪽 1칸"),
+    }));
+    expect(paint.issues?.[0]?.message).toContain("slack 허용");
+    expect(paint.warnings?.some((warning) => warning.includes("동쪽 1칸"))).toBe(true);
+  });
+
+  it("할당 영역 동쪽 +2칸 초과도 slack warning으로 통과", async () => {
+    const chat = scriptedChat([
+      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
+      toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 6, y: 4 }, to: { x: 9, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
+      finalMsg("길을 조금 넓혔습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; issues?: Array<{ severity: string; code: string; message: string }> }> = [];
+    await session.sendUserMessage("길 칠해줘", (e) => {
+      if (e.type === "tool_call") {
+        events.push({
+          name: e.name,
+          ok: e.result.ok,
+          issues: e.result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message })),
+        });
+      }
+    });
+    const paint = events.find((e) => e.name === "paint_tiles")!;
+    expect(paint.ok).toBe(true);
+    expect(paint.issues).toContainEqual(expect.objectContaining({
+      severity: "warning",
+      code: "spec-gate-slack",
+      message: expect.stringContaining("동쪽 2칸"),
+    }));
+  });
+
+  it("할당 영역 동쪽 +3칸 초과는 기존처럼 차단하고 허용 slack을 안내", async () => {
+    const chat = scriptedChat([
+      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
+      toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 7, y: 4 }, to: { x: 10, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
+      finalMsg("좌표를 줄이겠습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; summary: string; issues?: Array<{ message: string }> }> = [];
+    await session.sendUserMessage("길 칠해줘", (e) => {
+      if (e.type === "tool_call") {
+        events.push({
+          name: e.name,
+          ok: e.result.ok,
+          summary: e.result.summary,
+          issues: e.result.issues?.map((issue) => ({ message: issue.message })),
+        });
+      }
+    });
+    const paint = events.find((e) => e.name === "paint_tiles")!;
+    expect(paint.ok).toBe(false);
+    expect(paint.summary).toContain("허용 slack ±2칸");
+    expect(paint.issues?.some((issue) => issue.message.includes("허용 slack ±2칸"))).toBe(true);
+  });
+
+  it("clear_region은 정리/파괴성 호출이라 할당 영역 +1칸도 slack 없이 차단", async () => {
+    const chat = scriptedChat([
+      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "청소", kind: "clear", x: 5, y: 5, w: 3, h: 3 }] }, "c2"),
+      toolCallMsg("clear_region", { mapId: "m1", x: 5, y: 5, w: 4, h: 3 }, "c3"),
+      finalMsg("정리 영역을 줄이겠습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; summary: string; issues?: Array<{ message: string }> }> = [];
+    await session.sendUserMessage("빈터 청소해줘", (e) => {
+      if (e.type === "tool_call") {
+        events.push({
+          name: e.name,
+          ok: e.result.ok,
+          summary: e.result.summary,
+          issues: e.result.issues?.map((issue) => ({ message: issue.message })),
+        });
+      }
+    });
+    const clear = events.find((e) => e.name === "clear_region")!;
+    expect(clear.ok).toBe(false);
+    expect(clear.summary).toContain("slack 없음");
+    expect(clear.issues?.some((issue) => issue.message.includes("slack 없이"))).toBe(true);
   });
 
   it("확정된 스펙은 턴 간 유지된다 — 다음 턴 '계속해'에서 재제출 없이 빌드", async () => {
@@ -243,6 +351,29 @@ describe("세션 스펙 게이트", () => {
       if (e.type === "tool_call") events.push(e.result.ok);
     });
     expect(events).toEqual([true]);
+  });
+
+  it("사용자 선택 영역 암묵 스펙도 경계 +2칸은 warning으로 통과한다", async () => {
+    const project = projectWithMap();
+    const chat = scriptedChat([
+      toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 7, y: 4 }, to: { x: 9, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c1"),
+      finalMsg("선택 영역 가장자리까지 깔았습니다."),
+    ]);
+    const session = new AssistantSession(project, { config: CONFIG, chat });
+    const events: Array<{ ok: boolean; issues?: Array<{ code: string; message: string }> }> = [];
+    await session.sendUserMessage("여기 잔디 깔아줘\n\n[컨텍스트] 현재 맵: 스펙 테스트 (m1) · 사용자 선택 영역: (3,3) 5×5", (e) => {
+      if (e.type === "tool_call") {
+        events.push({
+          ok: e.result.ok,
+          issues: e.result.issues?.map((issue) => ({ code: issue.code, message: issue.message })),
+        });
+      }
+    });
+    expect(events[0]?.ok).toBe(true);
+    expect(events[0]?.issues).toContainEqual(expect.objectContaining({
+      code: "spec-gate-slack",
+      message: expect.stringContaining("동쪽 2칸"),
+    }));
   });
 
   it("스펙 검증 3회 실패 → 폐기 안내, 공간 툴은 계속 차단", async () => {
@@ -305,6 +436,14 @@ describe("스펙 게이트 — 구조물 보호(집 삭제 방지)", () => {
     const spec: BuildSpec = { mapId: "m1", assets: [{ id: "청소", kind: "clear", x: 3, y: 3, w: 8, h: 7 }] };
     const issues = validateBuildSpec(project, spec);
     expect(issues.some((i) => i.severity === "error" && i.message.includes("구조물") && i.message.includes("청소"))).toBe(true);
+  });
+
+  it("구조물보다 +1칸 넓힌 clear도 slack 예외 없이 confirmDestroy 없이는 거부", () => {
+    const project = projectWithHouse();
+    const spec: BuildSpec = { mapId: "m1", assets: [{ id: "주변청소", kind: "clear", x: 2, y: 2, w: 8, h: 9 }] };
+    const issues = validateBuildSpec(project, spec);
+    expect(issues.some((i) => i.severity === "error" && i.message.includes("구조물") && i.message.includes("confirmDestroy"))).toBe(true);
+    expect(issues.some((i) => i.message.includes("slack 허용"))).toBe(false);
   });
 
   it("confirmDestroy:true면 철거 의도로 인정되어 통과", () => {

@@ -55,7 +55,7 @@ export interface SkillDef {
 const HONEST_REPORT_RULE =
   "작업이 끝나면 실제로 한 것만 보고하세요. 실패/위반이 남았으면 '조정 중' 같은 얼버무림 없이 남은 문제를 그대로 알리세요.";
 const SPEC_RULE =
-  "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/경계)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 빌드 툴은 명세에 할당된 영역 안에서만 호출하며, 사용자가 선택한 영역은 암묵적 명세입니다.";
+  "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/큰 경계 초과)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 페인트/배치 툴은 명세에 할당된 영역 안에서만 호출하되 경계 1~2칸 초과는 warning으로 통과합니다. clear_region은 slack 없이 명세 안에서만 호출하세요. 사용자가 선택한 영역은 암묵적 명세입니다.";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";
