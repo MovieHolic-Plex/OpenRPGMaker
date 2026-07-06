@@ -1,5 +1,6 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, Dir, MapId, MoveCommand } from "@/project/types";
 import type { CommandEditContext } from "./types";
 import {
@@ -14,11 +15,32 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   const wrap = el("div", { class: "move-route-editor", dataset: { testid: "move-route-editor" } });
   const parameterKey = context.path.join(".");
   const parameterDraft = routeParameterDrafts.get(parameterKey) ?? inferRouteParameters(cmd.route.moves);
+  // 대상: 이 이벤트("") / 주인공(PLAYER_MOVE_TARGET) / 특정 이벤트(임의 ID).
+  const targetKindOf = (id: string): "this" | "player" | "event" =>
+    id === PLAYER_MOVE_TARGET ? "player" : id === "" ? "this" : "event";
+  const targetSelect = el("select", { dataset: { testid: "move-route-target-select" } }) as HTMLSelectElement;
+  for (const option of [
+    { value: "this", label: "이 이벤트" },
+    { value: "player", label: "주인공" },
+    { value: "event", label: "특정 이벤트" },
+  ] as const) {
+    targetSelect.append(el("option", { attrs: { value: option.value }, text: option.label }));
+  }
+  targetSelect.value = targetKindOf(cmd.eventId);
   const eventIdIn = el("input", {
-    attrs: { type: "text", placeholder: "이벤트 ID(비우면 현재 이벤트)" },
-    value: cmd.eventId,
+    attrs: { type: "text", placeholder: "이벤트 ID" },
+    value: cmd.eventId === PLAYER_MOVE_TARGET ? "" : cmd.eventId,
     dataset: { testid: "move-route-event-id-input" },
   });
+  const resolvedEventId = (): string => {
+    if (targetSelect.value === "player") return PLAYER_MOVE_TARGET;
+    if (targetSelect.value === "this") return "";
+    return eventIdIn.value;
+  };
+  const syncTargetVisibility = () => {
+    eventIdIn.style.display = targetSelect.value === "event" ? "" : "none";
+  };
+  syncTargetVisibility();
   const repeat = el("input", {
     attrs: { type: "checkbox" },
     dataset: { testid: "move-route-repeat-checkbox" },
@@ -59,10 +81,14 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "moveEvent",
-      eventId: eventIdIn.value,
+      eventId: resolvedEventId(),
       route: { moves: cmd.route.moves, repeat: repeat.checked, wait: wait.checked },
     });
   };
+  targetSelect.addEventListener("change", () => {
+    syncTargetVisibility();
+    apply();
+  });
   eventIdIn.addEventListener("change", apply);
   repeat.addEventListener("change", apply);
   wait.addEventListener("change", apply);
@@ -109,7 +135,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
                 npcTargetY: parseInt(npcTargetY.value, 10) || 0,
                 npcTargetDirection: toDirection(npcTargetDirection.value),
               });
-              if (move) replaceMoveRoute(context, eventIdIn.value, repeat.checked, [...cmd.route.moves, move], wait.checked);
+              if (move) replaceMoveRoute(context, resolvedEventId(), repeat.checked, [...cmd.route.moves, move], wait.checked);
             },
           },
         })
@@ -121,7 +147,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
       class: "btn small danger",
       text: "비우기",
       dataset: { testid: "move-route-clear" },
-      on: { click: () => replaceMoveRoute(context, eventIdIn.value, repeat.checked, [], wait.checked) },
+      on: { click: () => replaceMoveRoute(context, resolvedEventId(), repeat.checked, [], wait.checked) },
     })
   );
   const repeatLabel = el("label", { text: "반복" });
@@ -129,7 +155,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   const waitLabel = el("label", { text: "완료까지 대기" });
   waitLabel.prepend(wait);
   wrap.append(
-    el("div", { children: [eventIdIn, repeatLabel, waitLabel] }),
+    el("div", { children: [el("span", { class: "move-route-target-label", text: "대상" }), targetSelect, eventIdIn, repeatLabel, waitLabel] }),
     el("div", { class: "move-route-parameters", children: [switchIdIn, graphicIdIn, soundIdIn, npcTargetMap, npcTargetX, npcTargetY, npcTargetDirection] }),
     controls,
     el("div", {
