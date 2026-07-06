@@ -1,12 +1,14 @@
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
+import { recordUsageHint } from "./recordUsageHint";
 import { databasePicker } from "./conditionForm";
 import { VARIABLE_OP_OPTIONS } from "./options";
 import type { Command, VariableOperand } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 export function setVariableBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setVariable" }>): HTMLElement {
-  const wrap = el("span", {});
+  // [치명-2] 스위치 조작과 동일한 레코드 폼 레이아웃 — 셀렉트 폭 붕괴/겹침 방지.
+  const wrap = el("div", { class: "event-command-record-form" });
   let currentVariableId = cmd.variableId;
   const varSel = databasePicker("variable", cmd.variableId, (variableId) => {
     currentVariableId = variableId;
@@ -47,6 +49,6 @@ export function setVariableBody(context: CommandEditContext, cmd: Extract<Comman
   value.addEventListener("change", apply);
   value.hidden = source.value === "variable";
   operandVariable.hidden = source.value !== "variable";
-  wrap.append(varSel, op, source, value, operandVariable);
+  wrap.append(varSel, op, source, value, operandVariable, recordUsageHint("variable", cmd.variableId));
   return wrap;
 }

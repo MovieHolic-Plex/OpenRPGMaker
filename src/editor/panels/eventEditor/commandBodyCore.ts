@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { recordUsageHint } from "./recordUsageHint";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { choicesBody } from "./commandBodyChoices";
 import { inputNumberBody } from "./commandBodyInputNumber";
@@ -238,7 +239,9 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
 }
 
 function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSwitch" }>): HTMLElement {
-  const wrap = el("span", {});
+  // [치명-2] 전용 레코드 폼 레이아웃(스타일: .event-command-record-form) — 셀렉트 최소폭 보장,
+  // ... 피커 버튼과 수평 배치, 빈 공간에는 참조 요약을 표시한다.
+  const wrap = el("div", { class: "event-command-record-form" });
   let currentSwitchId = cmd.switchId;
   const swSel = databasePicker("switch", cmd.switchId, (switchId) => {
     currentSwitchId = switchId;
@@ -248,7 +251,11 @@ function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind
   val.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, { ...cmd, switchId: currentSwitchId, value: val.value === "true" });
   });
-  wrap.append(fieldControl("스위치", swSel), fieldControl("값", val));
+  wrap.append(
+    fieldControl("스위치", swSel),
+    fieldControl("값", val),
+    recordUsageHint("switch", cmd.switchId)
+  );
   return wrap;
 }
 
