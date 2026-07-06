@@ -4,12 +4,15 @@ import { isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { inMapBounds, passabilityWarning, requireMap, setLower, type Point } from "./mapHelpers";
 import { hardClusterRuleCount, nonEmptyFootprintTileCount } from "./clusterRulePlacement";
+import { clusterScatter, poissonScatter, type ScatterBounds } from "./naturalScatter";
+import { naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool, seedForTool } from "./naturalToolArgs";
 import { placementSoftPenalty } from "./placementScoring";
 import { resolvePlacementStructure, type StructureCellEdit } from "./placementStructure";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Area = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 type Rect = Area;
+type ScatterMode = "uniform" | "poisson" | "cluster";
 type RecordValue = { readonly [key: string]: unknown };
 type ScatterArgs = {
   readonly mapId: string;
@@ -18,6 +21,9 @@ type ScatterArgs = {
   readonly count: number;
   readonly minGap: number;
   readonly maxGap: number;
+  readonly naturalness: number;
+  readonly mode: ScatterMode;
+  readonly seed?: number;
   readonly avoidProtected: boolean;
   readonly preferSoftRules: boolean;
   readonly applyStructure: boolean;
@@ -35,6 +41,20 @@ type ChooseInput = {
   readonly group: TileGroupMetadata;
   readonly preferSoftRules: boolean;
 };
+type UniformChooseInput = Omit<ChooseInput, "choices"> & {
+  readonly maxGap: number;
+};
+type RankedChooseInput = {
+  readonly allowed: readonly Point[];
+  readonly choices: readonly Point[];
+  readonly footprint: Footprint;
+  readonly group: TileGroupMetadata;
+  readonly map: GameMap;
+  readonly minGap: number;
+  readonly placed: readonly Rect[];
+  readonly preferSoftRules: boolean;
+  readonly rankByPoint: ReadonlyMap<string, number>;
+};
 
 const AREA_SCHEMA: JsonSchema = {
   type: "object",
@@ -44,7 +64,7 @@ const AREA_SCHEMA: JsonSchema = {
 
 const scatterObject: ToolDefinition = {
   name: "scatter_object",
-  description: "타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다.",
+  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -55,6 +75,9 @@ const scatterObject: ToolDefinition = {
       count: { type: "integer" },
       minGap: { type: "integer", description: "오브젝트 사이 최소 빈 칸 수(기본 1)" },
       maxGap: { type: "integer", description: "흩뿌림 후보를 고를 때 선호하는 최대 빈 칸 수(기본 3)" },
+      naturalness: { type: "number", description: "0~1 자연도. <0.3 uniform, 0.3~0.7 poisson, >0.7 cluster(기본 0.5)" },
+      mode: { type: "string", enum: ["uniform", "poisson", "cluster"], description: "자연산포 모드 명시 오버라이드" },
+      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 산포)" },
       avoidProtected: { type: "boolean", description: "시작칸/이벤트/transfer 목적지/상위 타일 점유 칸 회피(기본 true)" },
       preferSoftRules: { type: "boolean", description: "soft/medium 규칙 만족을 우선(기본 true)" },
       applyStructure: { type: "boolean", description: "overlay/처마 생략 등 구조 규칙 자동 적용(기본 true)" },
@@ -75,24 +98,18 @@ const scatterObject: ToolDefinition = {
     const footprint = oneInstance(sample, group, tileset);
     const blocked = args.avoidProtected ? blockedCells(draft, map) : new Set<string>();
     const candidates = origins(map, args.area, footprint).filter((origin) => clearAt(map, footprint, origin, blocked));
-    const seed = `${map.id}|${group.id}|${args.area.x},${args.area.y},${args.area.w},${args.area.h}|${args.count}|${args.minGap}|${args.maxGap}`;
+    const legacySeed = `${map.id}|${group.id}|${args.area.x},${args.area.y},${args.area.w},${args.area.h}|${args.count}|${args.minGap}|${args.maxGap}`;
+    const seed = args.seed === undefined ? legacySeed : String(args.seed);
+    const ranked = args.mode === "uniform" ? null : rankedNaturalCandidates({ args, candidates, footprint, legacySeed, map });
     const placed: Rect[] = [];
     for (let step = 0; step < args.count; step += 1) {
-      const allowed = candidates.filter((origin) => spaced(rectAt(origin, footprint), placed, args.minGap));
+      const sourceCandidates = ranked?.ordered ?? candidates;
+      const allowed = sourceCandidates.filter((origin) => spaced(rectAt(origin, footprint), placed, args.minGap));
       if (allowed.length === 0) break;
-      const nearby = placed.length === 0 ? allowed : allowed.filter((origin) => placed.some((rect) => gap(rectAt(origin, footprint), rect) <= args.maxGap));
-      placed.push(rectAt(choose({
-        choices: nearby.length > 0 ? nearby : allowed,
-        allowed,
-        placed,
-        footprint,
-        minGap: args.minGap,
-        seed,
-        step,
-        map,
-        group,
-        preferSoftRules: args.preferSoftRules,
-      }), footprint));
+      const chosen = ranked
+        ? chooseRanked({ allowed, choices: allowed, placed, footprint, minGap: args.minGap, map, group, preferSoftRules: args.preferSoftRules, rankByPoint: ranked.rankByPoint })
+        : chooseUniform({ allowed, placed, footprint, minGap: args.minGap, maxGap: args.maxGap, seed, step, map, group, preferSoftRules: args.preferSoftRules });
+      placed.push(rectAt(chosen, footprint));
     }
     const touched = placed.flatMap((rect) => paint(map, footprint, rect));
     const structureTouched = args.applyStructure && ((group.junctions?.length ?? 0) > 0 || (group.overlays?.length ?? 0) > 0)
@@ -105,8 +122,8 @@ const scatterObject: ToolDefinition = {
       ? ` = ${placed.length * atomicTileCount}타일(클러스터 동반 배치 포함)`
       : "";
     return {
-      summary: `${map.name}에 ${group.name} ${placed.length}개${clusterNote} 배치(간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
-      data: { placed: placed.length, requested: args.count, skipped, tilesPlaced: placed.length * atomicTileCount },
+      summary: `${map.name}에 ${group.name} ${placed.length}개${clusterNote} 배치(${args.mode}, 자연도 ${naturalnessLabel(args.naturalness)}, 간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
+      data: { mode: args.mode, naturalness: args.naturalness, placed: placed.length, requested: args.count, skipped, tilesPlaced: placed.length * atomicTileCount },
       warnings: warning ? [warning] : undefined,
     };
   },
@@ -120,6 +137,9 @@ function parseArgs(args: Record<string, unknown>): ScatterArgs {
   const count = int(args["count"], "count");
   const minGap = int(args["minGap"] ?? 1, "minGap");
   const maxGap = int(args["maxGap"] ?? 3, "maxGap");
+  const naturalness = naturalnessArg(args);
+  const mode = modeArg(args["mode"], naturalness);
+  const seed = optionalInt(args["seed"], "seed");
   if (area.w < 1 || area.h < 1) throw new ToolError("area.w/h는 1 이상이어야 합니다.", { code: "invalid-args" });
   if (count < 1) throw new ToolError("count는 1 이상이어야 합니다.", { code: "invalid-args" });
   if (minGap < 0 || maxGap < minGap) throw new ToolError("간격은 0 이상이고 maxGap은 minGap 이상이어야 합니다.", { code: "invalid-args" });
@@ -130,6 +150,9 @@ function parseArgs(args: Record<string, unknown>): ScatterArgs {
     count,
     minGap,
     maxGap,
+    naturalness,
+    mode,
+    ...(seed === undefined ? {} : { seed }),
     avoidProtected: bool(args["avoidProtected"] ?? true, "avoidProtected"),
     preferSoftRules: bool(args["preferSoftRules"] ?? true, "preferSoftRules"),
     applyStructure: bool(args["applyStructure"] ?? true, "applyStructure"),
@@ -155,9 +178,24 @@ function int(value: unknown, label: string): number {
   return value;
 }
 
+function optionalInt(value: unknown, label: string): number | undefined {
+  if (value === undefined) return undefined;
+  return int(value, label);
+}
+
 function bool(value: unknown, label: string): boolean {
   if (typeof value !== "boolean") throw new ToolError(`${label}(boolean)가 필요합니다.`, { code: "invalid-args" });
   return value;
+}
+
+function modeArg(value: unknown, naturalness: number): ScatterMode {
+  if (value === undefined) {
+    if (naturalness < 0.3) return "uniform";
+    if (naturalness <= 0.7) return "poisson";
+    return "cluster";
+  }
+  if (value === "uniform" || value === "poisson" || value === "cluster") return value;
+  throw new ToolError("mode는 uniform/poisson/cluster 중 하나여야 합니다.", { code: "invalid-args" });
 }
 
 function groupById(map: GameMap, project: Project, groupId: string): TileGroupMetadata {
@@ -310,6 +348,73 @@ function gap(a: Rect, b: Rect): number {
   return Math.max(Math.max(b.x - (a.x + a.w), a.x - (b.x + b.w), 0), Math.max(b.y - (a.y + a.h), a.y - (b.y + b.h), 0));
 }
 
+function rankedNaturalCandidates(input: {
+  readonly args: ScatterArgs;
+  readonly candidates: readonly Point[];
+  readonly footprint: Footprint;
+  readonly legacySeed: string;
+  readonly map: GameMap;
+}): { readonly ordered: readonly Point[]; readonly rankByPoint: ReadonlyMap<string, number> } {
+  const { args, candidates, footprint, legacySeed, map } = input;
+  const bounds = scatterBoundsForOrigins(args.area, footprint);
+  const seedArgs: Record<string, unknown> = args.seed === undefined ? {} : { seed: args.seed };
+  const signature = `${legacySeed}|${args.mode}|${naturalnessLabel(args.naturalness)}|${map.width}x${map.height}`;
+  const rng = rngForTool(seedArgs, signature);
+  const request = Math.min(candidates.length, Math.max(args.count * 4, args.count + 16));
+  const sampled = args.mode === "poisson"
+    ? poissonScatter(bounds, request, poissonOriginGap(args, footprint), rng).points
+    : clusterScatter(bounds, [], request, clusterFalloff(bounds, args.naturalness), rng);
+  return rankCandidateOrder(sampled, candidates, seedForTool(seedArgs, signature));
+}
+
+function scatterBoundsForOrigins(area: Area, footprint: Footprint): ScatterBounds {
+  return {
+    x: area.x,
+    y: area.y,
+    width: Math.max(0, area.w - footprint.w + 1),
+    height: Math.max(0, area.h - footprint.h + 1),
+  };
+}
+
+function poissonOriginGap(args: ScatterArgs, footprint: Footprint): number {
+  return Math.max(1, args.minGap + Math.min(3, Math.max(footprint.w, footprint.h) - 1));
+}
+
+function clusterFalloff(bounds: ScatterBounds, naturalness: number): number {
+  const span = Math.max(1, Math.min(bounds.width, bounds.height));
+  return Math.max(1, span * (1.05 - naturalness) * 0.3);
+}
+
+function rankCandidateOrder(
+  sampled: readonly Point[],
+  candidates: readonly Point[],
+  seed: number
+): { readonly ordered: readonly Point[]; readonly rankByPoint: ReadonlyMap<string, number> } {
+  const candidateByKey = new Map(candidates.map((candidate) => [pointKey(candidate), candidate]));
+  const seen = new Set<string>();
+  const ordered: Point[] = [];
+  for (const point of sampled) {
+    const key = pointKey(point);
+    const candidate = candidateByKey.get(key);
+    if (!candidate || seen.has(key)) continue;
+    seen.add(key);
+    ordered.push(candidate);
+  }
+  const remaining = candidates
+    .filter((candidate) => !seen.has(pointKey(candidate)))
+    .sort((a, b) => hash(`${seed}|rest|${pointKey(a)}`) - hash(`${seed}|rest|${pointKey(b)}`));
+  ordered.push(...remaining);
+  const rankByPoint = new Map<string, number>();
+  ordered.forEach((point, index) => rankByPoint.set(pointKey(point), index));
+  return { ordered, rankByPoint };
+}
+
+function chooseUniform(input: UniformChooseInput): Point {
+  const { allowed, placed, footprint, maxGap } = input;
+  const nearby = placed.length === 0 ? allowed : allowed.filter((origin) => placed.some((rect) => gap(rectAt(origin, footprint), rect) <= maxGap));
+  return choose({ ...input, choices: nearby.length > 0 ? nearby : allowed });
+}
+
 function choose(input: ChooseInput): Point {
   const { choices, allowed, placed, footprint, minGap, seed, step, map, group, preferSoftRules } = input;
   const first = choices[0];
@@ -323,6 +428,29 @@ function choose(input: ChooseInput): Point {
     const penalty = preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0;
     const future = allowed.filter((origin) => (origin.x !== candidate.x || origin.y !== candidate.y) && spaced(rectAt(origin, footprint), [...placed, candidateRect], minGap)).length;
     const rank = hash(`${seed}|${step}|${candidate.x},${candidate.y}`);
+    if (penalty < bestPenalty || (penalty === bestPenalty && (future > bestFuture || (future === bestFuture && rank < bestRank)))) {
+      best = candidate;
+      bestPenalty = penalty;
+      bestFuture = future;
+      bestRank = rank;
+    }
+  }
+  return best;
+}
+
+function chooseRanked(input: RankedChooseInput): Point {
+  const { allowed, choices, placed, footprint, minGap, map, group, preferSoftRules, rankByPoint } = input;
+  const first = choices[0];
+  if (!first) throw new ToolError("배치 후보가 없습니다.", { code: "no-placement" });
+  let best = first;
+  let bestPenalty = Number.POSITIVE_INFINITY;
+  let bestFuture = -1;
+  let bestRank = Number.POSITIVE_INFINITY;
+  for (const candidate of choices) {
+    const candidateRect = rectAt(candidate, footprint);
+    const penalty = preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0;
+    const future = allowed.filter((origin) => (origin.x !== candidate.x || origin.y !== candidate.y) && spaced(rectAt(origin, footprint), [...placed, candidateRect], minGap)).length;
+    const rank = rankByPoint.get(pointKey(candidate)) ?? Number.POSITIVE_INFINITY;
     if (penalty < bestPenalty || (penalty === bestPenalty && (future > bestFuture || (future === bestFuture && rank < bestRank)))) {
       best = candidate;
       bestPenalty = penalty;
@@ -373,4 +501,8 @@ function applyStructureEdits(map: GameMap, edits: readonly StructureCellEdit[]):
 
 function key(x: number, y: number): string {
   return `${x},${y}`;
+}
+
+function pointKey(point: Point): string {
+  return key(point.x, point.y);
 }
