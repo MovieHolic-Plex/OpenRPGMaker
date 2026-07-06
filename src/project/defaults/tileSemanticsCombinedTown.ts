@@ -37,11 +37,12 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
   // 검증된 통행 가능 지면(핸드오프 0.4).
   ...entries([TILE.GRASS, 270, 271, 272, 273, 300, 301, 302, 330, 331, 332, 333], "잔디", "terrain", "passable", ["grass", "GRASS", "풀밭"]),
   ...entries([TILE.DARK_GRASS], "짙은 잔디", "terrain", "passable", ["dark grass", "숲", "풀밭"]),
-  ...entries([TILE.PATH], "자갈길", "terrain", "passable", ["길", "path", "자갈", "보라"]),
+  ...entries([TILE.PATH], "흙길 변형", "terrain", "passable", ["길", "path", "흙길", "자갈"]),
   ...entries([421], "흙길", "terrain", "passable", ["길", "흙길", "dirt road"]),
   ...entries([390, 391, 392, 420, 422, 450, 451, 452], "흙길 외곽", "terrain", "passable", ["길", "흙길", "dirt road", "edge"]),
   ...entries([TILE.SAND, 424], "모래", "terrain", "passable", ["sand", "SAND", "사막", "해변"]),
-  ...entries([361, 362, 363], "모래", "terrain", "passable", ["sand", "사막", "해변"]),
+  ...entries([361, 362], "흙길 변형", "terrain", "passable", ["길", "흙길", "dirt road", "자갈"]),
+  ...entries([363], "모래", "terrain", "passable", ["sand", "사막", "해변"]),
   ...entries([425, 453, 454], "모래 외곽", "terrain", "passable", ["sand", "사막", "edge"]),
 
   // 집 패턴 타일 — 지붕/벽/문/창문(핸드오프 0.4 최소 범위).
