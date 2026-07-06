@@ -1,5 +1,6 @@
 import { getMode, toggleMode } from "@/app/mode";
-import { addMap, deleteMap, setStartMap } from "@/editor/actions";
+import { addMap, setStartMap } from "@/editor/actions";
+import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -418,9 +419,9 @@ function deleteCurrentMap(mapId: string): void {
     toast("마지막 맵은 삭제할 수 없습니다", "error");
     return;
   }
-  const mapName = project.maps[mapId]?.name ?? mapId;
-  if (!window.confirm(`'${mapName}' 맵을 삭제할까요?`)) return;
-  deleteMap(mapId);
+  // 확인 다이얼로그(임팩트 요약) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
+  const result = confirmAndDeleteMap(mapId);
+  if (!result.ok) return;
   const next = store.getCurrent();
   editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("맵을 삭제했습니다", "ok");

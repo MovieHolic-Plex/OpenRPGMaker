@@ -1,4 +1,5 @@
-import { addChildMap, addMap, deleteMap, duplicateMap, moveMapInTree, setStartMap } from "@/editor/actions";
+import { addChildMap, addMap, duplicateMap, moveMapInTree, setStartMap } from "@/editor/actions";
+import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { statusForMap, type MapEditLockStatus } from "@/editor/mapEditLocks";
@@ -399,7 +400,9 @@ function duplicateAndSelect(mapId: MapId): void {
 
 function deleteAndSelectNext(mapId: MapId): void {
   if (Object.keys(store.getCurrent().maps).length <= 1) return;
-  deleteMap(mapId);
+  // 확인 다이얼로그(임팩트 요약) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
+  const result = confirmAndDeleteMap(mapId);
+  if (!result.ok) return;
   const next = store.getCurrent();
   if (!next.maps[editorState.get().currentMapId ?? ""]) {
     selectEditorMap(next.startMapId);

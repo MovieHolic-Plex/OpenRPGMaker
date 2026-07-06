@@ -14,6 +14,7 @@ import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
+import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 export { eraseTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
 import type { MapId, TilesetDef } from "@/project/types";
@@ -66,15 +67,21 @@ export function duplicateMap(mapId: MapId): MapId {
   return newId;
 }
 
-export function deleteMap(mapId: MapId): void {
-  store.update((p) => {
-    if (Object.keys(p.maps).length <= 1) return;
-    delete p.maps[mapId];
-    if (p.startMapId === mapId) {
-      p.startMapId = Object.keys(p.maps)[0];
-    }
-    removeFromTree(p.mapTree, mapId);
-  }, { scope: "project" });
+export type DeleteMapResult =
+  | { readonly ok: true; readonly impact: MapDeletionImpact }
+  | { readonly ok: false; readonly message: string };
+
+// 맵 삭제(무결성 가드 — 도그푸딩 결함 ①).
+// startMapId/mapTree 루트는 안전 재배선하고, 연결/이벤트 참조를 함께 정리한다.
+// 삭제 결과가 재로드(shape) 검증을 통과하지 못하면 커밋하지 않는다(벽돌 원천 차단).
+export function deleteMap(mapId: MapId): DeleteMapResult {
+  const plan = planMapDeletion(store.getCurrent(), mapId);
+  if (!plan.ok) {
+    toast(plan.block.message, "error");
+    return { ok: false, message: plan.block.message };
+  }
+  store.update((p) => applyMapDeletion(p, mapId), { scope: "project" });
+  return { ok: true, impact: plan.impact };
 }
 
 export function renameMap(mapId: MapId, name: string): void {
