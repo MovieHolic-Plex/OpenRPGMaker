@@ -88,6 +88,8 @@ export class ToolError extends Error {
 }
 
 // place_npc 등이 받는 고수준 페이지 정의. EventPage로 컴파일된다.
+// 컴파일러는 에이전트 출력의 흔한 변형을 warning과 함께 정규화한다:
+// conditions 단수 객체/null, commands 단수 객체, command 또는 kind.command 문자열 alias.
 export interface SimplePageChoice {
   readonly text: string;
   readonly commands?: readonly unknown[];

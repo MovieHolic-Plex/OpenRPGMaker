@@ -14,6 +14,7 @@ Pick validation based on the touched boundary:
 - Wiki-only changes: run `npm run openwiki:verify`.
 
 - `npm test` runs the Vitest unit suite.
+- Vitest uses a 15 second per-test timeout in `vitest.config.ts`; several headless walkthrough/autosave tests can exceed the default 5 seconds during full-suite parallel runs even when they pass focused.
 - `npm run typecheck` verifies TypeScript only.
 - `npm run build` must pass before merge-ready work.
 - `playwright` / `npm run test:e2e` covers browser `test/e2e` flows.
