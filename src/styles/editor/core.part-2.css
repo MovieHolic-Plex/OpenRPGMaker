@@ -532,3 +532,26 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
+.persistence-mode-banner {
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 5px 12px;
+  text-align: center;
+}
+
+.persistence-mode-banner.is-save-skipped {
+  background: #7a2e2e;
+  color: #ffe2e2;
+}
+
+.persistence-mode-banner.is-local-only {
+  background: #4a4420;
+  color: #f4ecc8;
+}
+
+.persistence-mode-banner.is-recovery {
+  background: #58421f;
+  color: #ffe9c7;
+}

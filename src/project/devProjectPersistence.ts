@@ -76,3 +76,8 @@ function isFreshProjectLocation(): boolean {
   const params = new URLSearchParams(window.location.search);
   return params.has("freshProject") || params.has("blankProject");
 }
+
+// 저장이 완전히 스킵되는 위치인가(blankProject/freshProject) — 배너(결함 ⑩) 노출 판단.
+export function isSaveSkippedLocation(): boolean {
+  return isFreshProjectLocation();
+}
