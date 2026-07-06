@@ -91,6 +91,10 @@ function installWindow(): void {
     configurable: true,
     value: vi.fn(),
   });
+  Object.defineProperty(document, "removeEventListener", {
+    configurable: true,
+    value: vi.fn(),
+  });
 }
 
 beforeEach(() => {

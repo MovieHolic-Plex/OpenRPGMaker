@@ -219,10 +219,17 @@ function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIde
   document.body.append(menu);
   activeIdentityMenu = menu;
   input.focus();
-  window.setTimeout(() => document.addEventListener("pointerdown", closeIdentityMenu, { once: true }), 0);
+  window.setTimeout(() => document.addEventListener("pointerdown", onDocumentPointerDown), 0);
+}
+
+function onDocumentPointerDown(event: Event): void {
+  // 메뉴 내부 pointerdown 에 닫으면 버튼 click 이벤트가 소실된다 (실브라우저 결함, 유닛 fake DOM 은 못 잡음)
+  if (activeIdentityMenu && event.target instanceof Node && activeIdentityMenu.contains(event.target)) return;
+  closeIdentityMenu();
 }
 
 function closeIdentityMenu(): void {
+  document.removeEventListener("pointerdown", onDocumentPointerDown);
   activeIdentityMenu?.remove();
   activeIdentityMenu = null;
   document.querySelectorAll<HTMLElement>("[data-testid='topbar-identity']").forEach((node) => node.setAttribute("aria-expanded", "false"));
