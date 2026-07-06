@@ -19,12 +19,14 @@ import {
   isRecord,
   isRuntimeEventLocationRecord,
   isRuntimeNpcTravelStateRecord,
+  isRngState,
   isSelfSwitchesRecord,
   isStringArray,
   parseAudioState,
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
+import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -70,6 +72,7 @@ export type SaveSnapshot = {
     readonly actorRows?: Record<string, "front" | "back">;
     readonly actorNames?: Record<string, string>;
     readonly playTimeSeconds?: number;
+    readonly rng?: RngState;
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
   };
@@ -124,6 +127,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorRows: structuredClone(session.actorRows),
       actorNames: structuredClone(session.actorNames),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
+      rng: cloneRngState(normalizeRngState(session.rng)),
       screen: pickScreenState(session),
     },
   };
@@ -198,6 +202,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
   if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
+  session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   return session;
 }
@@ -281,6 +286,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
       actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
+      rng: isRngState(session.rng) ? session.rng : undefined,
       screen: parseScreenState(session.screen),
     },
   };

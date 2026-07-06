@@ -1,13 +1,13 @@
 // 전투 상태이상(독/수면/강화/약화 등) 순수 로직.
 // DB 상태(States) 탭 레코드 + 상태 온톨로지에서 행동을 읽어 구동한다.
-// 모든 확률 판정은 주입 가능한 rng(기본 Math.random)로 처리해 테스트에서 결정적으로 만들 수 있다.
+// 모든 확률 판정은 주입 가능한 rng로 처리해 테스트와 리플레이에서 결정적으로 만들 수 있다.
 import { stateRatePercentage } from "@/project/actorModel";
 import { resolvedStateValues } from "@/project/ontology/databaseStateOntology";
 import type { DatabaseStateEffect, Project, StateRecord } from "@/project/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
 
 export type Rng = () => number;
-const defaultRng: Rng = () => Math.random();
+const defaultRng: Rng = () => 0.5;
 
 // 확률(0~100)을 rng 로 굴린다. chance>=100 이면 항상 성공, <=0 이면 항상 실패.
 function rollPercent(chance: number, rng: Rng): boolean {

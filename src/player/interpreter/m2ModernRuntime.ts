@@ -1,5 +1,6 @@
 import type { M2CommandFields } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike } from "@/player/types";
+import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 
@@ -204,19 +205,19 @@ function recordQuestObjective(session: PlaySessionLike, runtime: M2RuntimeState,
 function recordWeightedBranch(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
   const variableId = fieldString(fields, "resultVariableId", "");
   const table = fieldString(fields, "table", "");
-  const selectedIndex = selectWeightedIndex(table);
+  const selectedIndex = selectWeightedIndex(session, table);
   runtime.session.weightedBranch = { table, resultVariableId: variableId };
   if (variableId) session.variables[variableId] = selectedIndex;
 }
 
-function selectWeightedIndex(table: string): number {
+function selectWeightedIndex(session: PlaySessionLike, table: string): number {
   const weights = table
     .split(/\r?\n/)
     .map((line) => Number(line.split("=").at(1) ?? 0))
     .filter((value) => Number.isFinite(value) && value > 0);
   if (weights.length === 0) return 0;
   const total = weights.reduce((sum, value) => sum + value, 0);
-  let cursor = Math.random() * total;
+  let cursor = nextSessionRandom(session, "misc") * total;
   for (let index = 0; index < weights.length; index += 1) {
     cursor -= weights[index] ?? 0;
     if (cursor <= 0) return index;

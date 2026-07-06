@@ -119,6 +119,22 @@ export function renderRuntimeDebugPanel(): HTMLElement {
     children: [mapSelect, txInput, tyInput, el("button", { class: "runtime-debug-btn", text: "이동", attrs: { type: "button" }, dataset: { testid: "runtime-debug-teleport" }, on: { click: () => debug()?.teleport(mapSelect.value, Number(txInput.value) || 0, Number(tyInput.value) || 0) } })],
   });
 
+  const seedInput = el("input", { class: "runtime-debug-input", attrs: { type: "number", value: "1", title: "seed" } }) as HTMLInputElement;
+  const seedRow = el("div", {
+    class: "runtime-debug-controls",
+    children: [
+      seedInput,
+      el("button", {
+        class: "runtime-debug-btn",
+        text: "시드 설정",
+        attrs: { type: "button" },
+        dataset: { testid: "runtime-debug-seed-set" },
+        // TODO(Phase 6A): 플레이 씬의 안전한 새 게임 재시작 API가 생기면 현재 세션 reseed 대신 seed restart로 확장한다.
+        on: { click: () => debug()?.setSeed(Number(seedInput.value) || 1) },
+      }),
+    ],
+  });
+
   // 프리셋 목록.
   const presetList = el("div", { class: "runtime-debug-presets", dataset: { testid: "runtime-debug-presets" } });
   const renderPresets = (): void => {
@@ -174,6 +190,7 @@ export function renderRuntimeDebugPanel(): HTMLElement {
       labeled("아이템", itemRow),
       labeled("골드/회복", goldRow),
       labeled("텔레포트", teleRow),
+      labeled("RNG 시드", seedRow),
       labeled("프리셋", el("div", { class: "runtime-debug-controls", children: [presetName, savePreset] })),
       presetList,
       readButton,

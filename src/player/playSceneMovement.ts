@@ -11,6 +11,7 @@ import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
 import { findBlockingRuntimeEventAtInMap, findRuntimeEventAtInMap } from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { EventAnimationType } from "@/project/types";
+import { nextSessionRandom } from "@/project/session";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -339,10 +340,10 @@ function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   encounterAccumulator += rate;
   // 누적 가중치가 임계(1000)를 넘으면 인카운트 발생. 매 스텝마다 rate가 쌓여
   // 결국 발생하도록 보장(rate 클수록 빠름). 발생 시 카운터/누적값 리셋.
-  if (encounterAccumulator < 1000 && Math.random() * 1000 >= encounterAccumulator) return;
+  if (!rollRandomEncounter(scene.session, encounterAccumulator)) return;
   encounterStepCounter = 0;
   encounterAccumulator = 0;
-  const troopId = troops[Math.floor(Math.random() * troops.length)] ?? troops[0];
+  const troopId = pickRandomEncounterTroop(scene.session, troops);
   if (!troopId) return;
   // 전투 시작(비동기). scene.running 가드로 재진입 방지.
   void scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
@@ -352,4 +353,18 @@ function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
 export function resetEncounterCounter(): void {
   encounterStepCounter = 0;
   encounterAccumulator = 0;
+}
+
+export function rollRandomEncounter(
+  session: PlaySceneContext["session"],
+  accumulator: number
+): boolean {
+  return accumulator >= 1000 || nextSessionRandom(session, "encounter") * 1000 < accumulator;
+}
+
+export function pickRandomEncounterTroop(
+  session: PlaySceneContext["session"],
+  troops: readonly string[]
+): string | undefined {
+  return troops[Math.floor(nextSessionRandom(session, "encounter") * troops.length)] ?? troops[0];
 }

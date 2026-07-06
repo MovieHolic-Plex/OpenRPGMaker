@@ -2,6 +2,7 @@ import type { ActorInitialEquipment } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
+import { RNG_STREAMS, type RngState } from "@/util/rng";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
   if (!isRecord(value)) return false;
@@ -35,6 +36,21 @@ export function isActorVitalsRecord(value: unknown): value is Record<string, Act
 export function isActorSkillIdsRecord(value: unknown): value is PlaySession["actorSkillIds"] {
   if (!isRecord(value)) return false;
   return Object.values(value).every(isStringArray);
+}
+
+export function isRngState(value: unknown): value is RngState {
+  if (!isRecord(value)) return false;
+  if (typeof value.seed !== "number" || !Number.isFinite(value.seed)) return false;
+  if (!isRecord(value.streams)) return false;
+  const streams = value.streams;
+  return RNG_STREAMS.every((stream) => {
+    const state = streams[stream];
+    return isRecord(state) &&
+      typeof state.seed === "number" &&
+      Number.isFinite(state.seed) &&
+      typeof state.state === "number" &&
+      Number.isFinite(state.state);
+  });
 }
 
 export function isRuntimeEventLocationRecord(value: unknown): value is Record<string, RuntimeEventLocation> {

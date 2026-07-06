@@ -1,7 +1,8 @@
 import type Phaser from "phaser";
 import type { Dir, Input } from "@/player/input";
-import type { PlaySession } from "@/project/session";
+import { reseedSessionRng, type PlaySession } from "@/project/session";
 import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
+import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 
 // 런타임 디버그 쓰기 훅. 플레이 중 스위치/변수/아이템/골드/회복/텔레포트를 조작한다.
 export type RuntimeDebugHook = {
@@ -12,7 +13,8 @@ export type RuntimeDebugHook = {
   heal: () => void;
   teleport: (mapId: string, x: number, y: number) => void;
   applyPreset: (preset: StatePreset) => void;
-  readState: () => { currentMapId: string; x: number; y: number; gold: number; switches: Record<string, boolean>; variables: Record<string, number>; inventory: Record<string, number> };
+  setSeed: (seed: number) => void;
+  readState: () => { currentMapId: string; x: number; y: number; gold: number; switches: Record<string, boolean>; variables: Record<string, number>; inventory: Record<string, number>; rng: RngState };
 };
 
 type TestHookWindow = Window & {
@@ -113,6 +115,10 @@ export function installPlaySceneTestHooks(
       applyStatePreset(session, preset);
       syncRuntimeState();
     },
+    setSeed: (seed) => {
+      reseedSessionRng(session, seed);
+      syncRuntimeState();
+    },
     readState: () => ({
       currentMapId: session.currentMapId,
       x: session.x,
@@ -121,6 +127,7 @@ export function installPlaySceneTestHooks(
       switches: { ...session.switches },
       variables: { ...session.variables },
       inventory: { ...session.inventory },
+      rng: cloneRngState(normalizeRngState(session.rng)),
     }),
   };
   scene.events.once("shutdown", () => {

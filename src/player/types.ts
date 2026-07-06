@@ -4,6 +4,7 @@
 
 import type { ActorId, ActorInitialEquipment, Dir, MapId, Command, MessageWindowSettings, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
+import type { RngState } from "@/util/rng";
 
 export type RuntimeAudioState = {
   readonly resourceId: string;
@@ -222,4 +223,5 @@ export interface PlaySessionLike {
   // 공통 이벤트(callCommonEvent용). Project.commonEvents 참조를 세션에 복사.
   commonEvents?: { id: string; commands: Command[] }[];
   m2Runtime?: M2RuntimeState;
+  rng?: RngState;
 }

@@ -8,6 +8,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
+import { nextSessionRandom } from "@/project/session";
 
 export function showBattleScene(scene: PlaySceneContext, troopId: string): void {
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
@@ -38,6 +39,7 @@ export function playBattle(
       variables: scene.session.variables,
       inventory: scene.session.inventory,
     },
+    rng: () => nextSessionRandom(scene.session, "battle"),
   });
   advanceBattleRuntime(runtime);
   return new Promise<BattleResult>((resolve) => {

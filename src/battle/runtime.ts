@@ -31,6 +31,7 @@ import type {
   BattleTargetSelectionSnapshot,
   TargetedActorCommand,
 } from "@/battle/types";
+import { mulberry32, type Rng } from "@/util/rng";
 
 export type {
   ActorCommand,
@@ -52,6 +53,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
+  const rng: Rng = options.rng ?? mulberry32(1);
 
   const actors = actorBattlers(options.project, {
     names: options.party?.names,
@@ -103,7 +105,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
-      runStateUpkeep(options.project, ready.battler);
+      runStateUpkeep(options.project, ready.battler, rng);
       resolveOutcome();
       if (result) return;
       if (!canBattlerAct(options.project, ready.battler)) {
@@ -138,8 +140,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           criticalRate: criticalRateFor(actor),
           attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
           targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+          rng,
         });
-        if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target);
+        if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
         lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
         break;
       }
@@ -171,7 +174,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const actorAgi = average(actors.filter((a) => a.hp > 0).map((a) => a.agility));
         const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
         const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
-        if (Math.random() < chance) {
+        if (rng() < chance) {
           escaped = true;
         }
         break;
@@ -317,7 +320,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function performEnemyTurn(enemy: MutableBattler): void {
     // 턴 시작 상태 처리(지속 피해/자연 회복).
-    runStateUpkeep(options.project, enemy);
+    runStateUpkeep(options.project, enemy, rng);
     resolveOutcome();
     if (result) {
       phase = "resolved";
@@ -347,8 +350,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         criticalRate: criticalRateFor(enemy),
         attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
         targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+        rng,
       });
-      if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target);
+      if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
       lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
     }
     enemy.gauge = 0;
@@ -413,6 +417,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       elementMultiplier: elementMultiplierFor(skill?.elementId, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
     });
     lastActionResult = { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name };
     if (skill?.animationId) {
@@ -421,10 +426,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
     if (result.hit && effectKind === "damage" && result.amount > 0) {
-      recoverStatesWhenHit(options.project, target);
+      recoverStatesWhenHit(options.project, target, rng);
     }
     if (result.hit) {
-      applyStateEffects(options.project, target, skill?.stateEffects);
+      applyStateEffects(options.project, target, skill?.stateEffects, rng);
     }
     if (skill?.effect?.kind === "switch" && skill.effect.switchId) {
       // 전투 내 스위치 토글은 플레이 세션으로 전파하지 않고 배틀 stateIds 에 기록만.
@@ -509,7 +514,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function accumulateRewards(): void {
-    const collected = collectBattleRewards(options.project, enemies);
+    const collected = collectBattleRewards(options.project, enemies, rng);
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.items = [...collected.items];

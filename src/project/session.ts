@@ -9,6 +9,7 @@ import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
+import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -85,6 +86,7 @@ export interface PlaySession {
   m2Runtime?: M2RuntimeState;
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
   playTimeSeconds: number;
+  rng?: RngState;
 }
 
 // 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
@@ -97,7 +99,7 @@ export function startStateOf(project: Project): ProjectStartState {
 
 // Project로부터 새 세션 시작.
 // 스위치/변수는 Database 정의에서 0/false 로 초기화(Project.flags는 레거시).
-export function startSession(project: Project): PlaySession {
+export function startSession(project: Project, seed?: number): PlaySession {
   const start = startStateOf(project);
   const switches: Record<string, boolean> = {};
   for (const sw of project.switches) {
@@ -138,7 +140,17 @@ export function startSession(project: Project): PlaySession {
     pictures: {},
     messageWindowSettings: { ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
     playTimeSeconds: 0,
+    rng: createRngState(seed),
   };
+}
+
+export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {
+  session.rng = createRngState(seed);
+}
+
+export function nextSessionRandom(session: PlaySessionLike, stream: RngStreamName): number {
+  session.rng ??= createRngState();
+  return nextRngFloat(session.rng, stream);
 }
 
 function initialActorExperience(project: Project): Record<string, number> {

@@ -1,4 +1,5 @@
 import type { MutableBattler } from "@/battle/battleBattlers";
+import type { Rng } from "@/util/rng";
 
 export interface SkillLikeEffect {
   readonly power: number;
@@ -18,6 +19,7 @@ export interface SkillLikeEffect {
   readonly attackerStatMultiplier?: number;
   // 대상 방어력 배율(방어 하락 상태 등). 기본 1.0.
   readonly targetDefenseMultiplier?: number;
+  readonly rng?: Rng;
 }
 
 export type SkillApplyResult = { hit: boolean; amount: number; critical: boolean };
@@ -33,7 +35,8 @@ export function applySkillLike(user: MutableBattler, target: MutableBattler, spe
   if (spec.effect === "support" || spec.effect === "switch") return { hit: true, amount: 0, critical: false };
   // 명중 판정(데미지 효과만). hitRate 기본 100.
   const hitRate = spec.hitRate ?? 100;
-  if (Math.random() * 100 >= hitRate) {
+  const rng = spec.rng ?? fallbackRng;
+  if (rng() * 100 >= hitRate) {
     return { hit: false, amount: 0, critical: false };
   }
   const magnitude = computeMagnitude(spec.power, target, "damage", stat, spec);
@@ -58,7 +61,7 @@ function computeMagnitude(
   magnitude = applyVariance(magnitude, spec);
   // 크리티컬(확률×배율)
   const criticalRate = spec.criticalRate ?? 0;
-  const critical = criticalRate > 0 && Math.random() * 100 < criticalRate;
+  const critical = criticalRate > 0 && (spec.rng ?? fallbackRng)() * 100 < criticalRate;
   if (critical) {
     magnitude = Math.round(magnitude * (spec.criticalMultiplier ?? 3));
   }
@@ -72,10 +75,14 @@ function computeMagnitude(
 function applyVariance(magnitude: number, spec: SkillLikeEffect): number {
   const variance = spec.variance ?? 0;
   if (variance <= 0) return magnitude;
-  const factor = 1 + (Math.random() * 2 - 1) * (variance / 100);
+  const factor = 1 + ((spec.rng ?? fallbackRng)() * 2 - 1) * (variance / 100);
   return Math.max(1, Math.round(magnitude * factor));
 }
 
 function applyDamage(target: MutableBattler, amount: number): void {
   target.hp = Math.max(0, target.hp - amount);
+}
+
+function fallbackRng(): number {
+  return 0.5;
 }

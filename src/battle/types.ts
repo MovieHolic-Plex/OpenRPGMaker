@@ -9,6 +9,7 @@ import type {
   SkillId,
   TroopId,
 } from "@/project/types";
+import type { Rng } from "@/util/rng";
 
 export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "resolved";
 export type BattleResult = "victory" | "defeat" | "escape";
@@ -50,6 +51,7 @@ export interface BattleRuntimeOptions {
   // 현재 플레이 세션의 스위치/변수/인벤토리. 전투 이벤트 조건과 아이템 목록/소모의 기준.
   // 없으면 project.session(에디터 시작 상태)을 사용한다 — 에디터 전투 테스트 경로용.
   readonly sessionState?: BattleSessionState;
+  readonly rng?: Rng;
 }
 
 export interface BattleSessionState {

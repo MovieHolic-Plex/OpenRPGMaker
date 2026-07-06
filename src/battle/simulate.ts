@@ -2,13 +2,11 @@
 // 전투 런타임(createBattleRuntime — 순수 TS)을 DOM 없이 N회 구동하는 헤드리스 시뮬레이터.
 // 간단 AI: 평타 + HP 30% 이하일 때 회복 아이템 사용. 시드 고정 시 재현 가능.
 //
-// 재현성: 런타임/데미지 공식이 Math.random을 직접 쓰므로(battleDamage 명중·분산·크리, runtime 도주·적 AI),
-// 시뮬레이션 동안에만 Math.random을 시드 PRNG로 교체하고 finally에서 원복한다(런타임 동작 불변).
-
 import { actorBattlers } from "@/battle/battleBattlers";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { BattleRuntimeOptions } from "@/battle/types";
 import type { Project } from "@/project/types";
+import { mulberry32, type Rng } from "@/util/rng";
 
 export interface SimulateBattleInput {
   readonly project: Project;
@@ -31,17 +29,6 @@ export interface SimulateBattleResult {
   readonly samples: number;
 }
 
-// mulberry32 시드 PRNG(결정적). Math.random과 동일한 [0,1) 반환.
-function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 interface SingleRunResult {
   readonly victory: boolean;
   readonly turns: number;
@@ -50,7 +37,7 @@ interface SingleRunResult {
 }
 
 // 회복 아이템을 가진 저HP 액터가 아이템을 쓰도록 하는 간단 AI로 한 판을 구동한다.
-function runSingleBattle(input: SimulateBattleInput): SingleRunResult {
+function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult {
   const inventory: Record<string, number> = { ...(input.inventory ?? {}) };
   const partyActorIds = input.partyActorIds ?? input.project.session.partyActorIds;
   const levels: Record<string, number> = {};
@@ -63,6 +50,7 @@ function runSingleBattle(input: SimulateBattleInput): SingleRunResult {
     canLose: true,
     party: { levels, experience: {}, partyActorIds: [...partyActorIds] },
     sessionState: { switches: {}, variables: {}, inventory },
+    rng,
   };
 
   const rt = createBattleRuntime(options);
@@ -103,23 +91,16 @@ function runSingleBattle(input: SimulateBattleInput): SingleRunResult {
 export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult {
   const n = Math.max(1, input.n ?? 50);
   const rng = mulberry32(input.seed ?? 1);
-  const originalRandom = Math.random;
   let wins = 0;
   let totalTurns = 0;
   let totalPotions = 0;
   let totalHp = 0;
-  try {
-    // 시드 PRNG 주입(시뮬 동안만).
-    Math.random = rng;
-    for (let i = 0; i < n; i += 1) {
-      const run = runSingleBattle(input);
-      if (run.victory) wins += 1;
-      totalTurns += run.turns;
-      totalPotions += run.potionsUsed;
-      totalHp += run.hpRemaining;
-    }
-  } finally {
-    Math.random = originalRandom;
+  for (let i = 0; i < n; i += 1) {
+    const run = runSingleBattle(input, rng);
+    if (run.victory) wins += 1;
+    totalTurns += run.turns;
+    totalPotions += run.potionsUsed;
+    totalHp += run.hpRemaining;
   }
   return {
     winRate: wins / n,

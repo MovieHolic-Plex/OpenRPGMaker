@@ -23,6 +23,7 @@ import {
   clampRouteRank,
   playMoveRouteSound,
 } from "@/player/playSceneAutonomousRouteEffects";
+import { nextSessionRandom } from "@/project/session";
 
 const DEFAULT_JUMP_DISTANCE = 2;
 
@@ -41,8 +42,16 @@ export type NpcCommandTarget = {
 
 export function nextMoveCommand(mover: AutonomousMover): MoveCommand {
   if (mover.strategy === "approach") return { kind: "moveTowardPlayer" };
-  if (mover.strategy === "random") return mover.moves[randomMoveIndex(mover.moves.length)] ?? { kind: "wait" };
+  if (mover.strategy === "random") return mover.moves[randomMoveIndex(mover.moves.length, () => 0)] ?? { kind: "wait" };
   return mover.moves[mover.step % mover.moves.length] ?? { kind: "wait" };
+}
+
+export function nextMoveCommandForScene(scene: AutonomousNpcSceneContext, mover: AutonomousMover): MoveCommand {
+  if (mover.strategy === "approach") return { kind: "moveTowardPlayer" };
+  if (mover.strategy === "random") {
+    return mover.moves[randomMoveIndex(mover.moves.length, () => nextSessionRandom(scene.session, "movement"))] ?? { kind: "wait" };
+  }
+  return nextMoveCommand(mover);
 }
 
 export function movementDeltaForCommand(
@@ -58,7 +67,7 @@ export function movementDeltaForCommand(
       return { x, y, face: command.horizontal };
     }
     case "moveRandom": {
-      const dir = randomDirection();
+      const dir = randomDirection(() => nextSessionRandom(context.scene.session, "movement"));
       return { ...commandDelta(dir), face: dir };
     }
     case "moveTowardPlayer":
@@ -115,10 +124,10 @@ export function executeInstantCommand(
       turnNpc(target, command.dir);
       return true;
     case "turnRelative":
-      turnNpc(target, relativeTurn(target.mover.facing, command.turn));
+      turnNpc(target, relativeTurn(target.mover.facing, command.turn, () => nextSessionRandom(routeContext.scene.session, "movement")));
       return true;
     case "turnRandom":
-      turnNpc(target, randomDirection());
+      turnNpc(target, randomDirection(() => nextSessionRandom(routeContext.scene.session, "movement")));
       return true;
     case "turnTowardPlayer": {
       const dir = playerRelativeDirection(routeContext.scene, routeContext.eventId, true);

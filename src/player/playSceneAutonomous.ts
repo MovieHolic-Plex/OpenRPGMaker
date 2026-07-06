@@ -5,7 +5,7 @@ import {
   applyFacing,
   executeInstantCommand,
   movementDeltaForCommand,
-  nextMoveCommand,
+  nextMoveCommandForScene,
 } from "@/player/playSceneAutonomousCommands";
 import { canNpcMove } from "@/player/playSceneAutonomousMapActions";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
@@ -33,7 +33,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       completeRouteCommand(mover);
       continue;
     }
-    const command = nextMoveCommand(mover);
+    const command = nextMoveCommandForScene(scene, mover);
     mover.step += 1;
     const baseFrame = view.page?.graphic.pattern ?? 0;
     const sprite = scene.eventSprites.get(eventId);
