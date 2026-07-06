@@ -1330,8 +1330,32 @@
   }
 
   @media (min-width: 901px) and (max-width: 1320px) {
+    .canvas-toolbar {
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px;
+    }
+
+    .canvas-toolbar-label {
+      font-size: 13px;
+      padding: 0 4px;
+    }
+
+    .zoom-button {
+      min-width: 34px;
+      padding: 0 6px;
+    }
+
+    .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+      min-width: 60px;
+    }
+
+    .editor-statusbar {
+      font-size: 12px;
+    }
+
     .editor-statusbar-cell {
-      padding: 0 12px;
+      padding: 0 8px;
     }
 
     .editor-statusbar-cell.db-connection-status {

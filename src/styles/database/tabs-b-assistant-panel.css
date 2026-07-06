@@ -1640,3 +1640,10 @@ body.ai-panel-docked .editor-layout {
 .ai-chat-panel.is-studio .ai-start-grid {
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 }
+
+/* 1280px 급 좁은 화면: AI 도킹 인셋을 줄여 캔버스/좌팔레트에 폭을 돌려준다. */
+@media (max-width: 1320px) {
+  body.ai-panel-docked {
+    --ai-docked-panel-inset: calc(min(360px, 40vw) + 4px);
+  }
+}
