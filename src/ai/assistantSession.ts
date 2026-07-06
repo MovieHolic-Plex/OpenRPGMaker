@@ -7,6 +7,7 @@
 import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolResult } from "@/editor/tools";
+import type { LintIssue } from "@/project/lint/projectLint";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
@@ -23,8 +24,9 @@ import {
 import {
   SPATIAL_BUILD_TOOLS,
   affectedRegions,
+  boundarySlackForTool,
+  checkRegionsAgainstSpecBoundary,
   implicitSpecFromContext,
-  regionsCoveredBySpec,
   validateBuildSpec,
   type BuildSpec,
 } from "./buildSpec";
@@ -141,7 +143,7 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
   function: {
     name: "set_build_spec",
     description:
-      "공간 빌드(집/마을/길/청소/NPC 배치) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후에만 공간 빌드 툴이 열리고, 각 빌드 호출은 명세에 할당한 영역 안에서만 실행된다. 에셋마다 겹치지 않는 영역(x,y,w,h)을 배정하라.",
+      "공간 빌드(집/마을/길/청소/NPC 배치) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후에만 공간 빌드 툴이 열린다. 페인트/배치 호출은 할당 영역 +2칸까지 warning으로 통과하지만, clear_region은 slack 없이 명세 안에서만 실행된다. 에셋마다 겹치지 않는 영역(x,y,w,h)을 배정하라.",
     parameters: {
       type: "object",
       properties: {
@@ -177,6 +179,10 @@ function specGateResult(summary: string, guidance: readonly string[]): ToolResul
     summary,
     issues: [{ severity: "error", code: "spec-gate", message: guidance.join(" ") }],
   };
+}
+
+interface SpecGatePass {
+  warnings: LintIssue[];
 }
 
 export interface AssistantSessionOptions {
@@ -280,10 +286,10 @@ export class AssistantSession {
     };
   }
 
-  // 공간 쓰기 툴 게이트. 통과하면 null, 차단이면 사유가 담긴 ToolResult.
-  private specGate(name: string, args: Record<string, unknown>): ToolResult | null {
+  // 공간 쓰기 툴 게이트. 통과하면 warning 목록, 차단이면 사유가 담긴 ToolResult.
+  private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
     const regions = affectedRegions(name, args);
-    if (regions.length === 0) return null; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
+    if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
     const specs = [this.activeSpec, this.turnImplicitSpec]
       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
@@ -296,15 +302,30 @@ export class AssistantSession {
     }
     // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지를 판정한다.
     const assets = specs.flatMap((spec) => spec.assets);
-    const coverage = regionsCoveredBySpec(assets, regions);
-    if (!coverage.covered) {
+    const slackCells = boundarySlackForTool(name);
+    const coverage = checkRegionsAgainstSpecBoundary(assets, regions, slackCells);
+    if (!coverage.withinSlack) {
       const sample = coverage.sample ? `, 예: (${coverage.sample.x},${coverage.sample.y})` : "";
-      return specGateResult(`스펙 게이트: '${name}' 차단 — 할당 영역 밖(${coverage.outsideCells}칸${sample})`, [
+      const slackSummary = slackCells > 0 ? `허용 slack ±${slackCells}칸 초과` : "이 툴은 slack 없음";
+      const slackGuidance = slackCells > 0
+        ? `경계 근처 ${slackCells}칸까지는 warning으로 통과하지만, 이 호출은 허용 slack ±${slackCells}칸을 넘었습니다.`
+        : "정리/파괴성 호출은 slack 없이 밑그림에 할당된 영역 안에서만 실행됩니다.";
+      return specGateResult(`스펙 게이트: '${name}' 차단 — 할당 영역 밖(${coverage.outsideCells}칸${sample}, ${slackSummary})`, [
         "이 호출의 좌표가 밑그림에 할당된 영역을 벗어났습니다(구간 격리).",
+        slackGuidance,
         "좌표를 명세 안으로 고치거나, 필요한 영역을 에셋으로 추가해 set_build_spec을 재제출하세요.",
       ]);
     }
-    return null;
+    if (slackCells > 0 && !coverage.covered && coverage.slackWarning) {
+      return {
+        warnings: [{
+          severity: "warning",
+          code: "spec-gate-slack",
+          message: coverage.slackWarning,
+        }],
+      };
+    }
+    return { warnings: [] };
   }
 
   exportAudit(): string {
@@ -382,8 +403,10 @@ export class AssistantSession {
         if (name === "set_build_spec") {
           toolResult = this.applyBuildSpec(args);
         } else {
-          const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : null;
-          toolResult = gate ?? runTool(this.ctx, name, args, { dryRun: false });
+          const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
+          toolResult = isSpecGatePass(gate)
+            ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
+            : gate;
         }
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.audit.push({
@@ -392,8 +415,8 @@ export class AssistantSession {
           args,
           ok: toolResult.ok,
           summary: toolResult.summary,
-          // 실패 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
-          ...(toolResult.ok ? {} : { issues: toolResult.issues?.map((issue) => issue.message) }),
+          // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
+          ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
         });
 
         // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
@@ -459,6 +482,22 @@ export class AssistantSession {
     onEvent({ type: "status", text: `툴 호출 상한(${this.config.maxToolCalls}) 도달 — 현재까지의 변경을 제안합니다.` });
     return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "max-tool-calls" };
   }
+}
+
+function isSpecGatePass(result: ToolResult | SpecGatePass): result is SpecGatePass {
+  return "warnings" in result;
+}
+
+function withSpecGateWarnings(result: ToolResult, warnings: readonly LintIssue[]): ToolResult {
+  if (!result.ok || warnings.length === 0) return result;
+  const warningMessages = warnings.map((warning) => warning.message);
+  return {
+    ...result,
+    diff: result.diff
+      ? { ...result.diff, warnings: [...result.diff.warnings, ...warningMessages] }
+      : result.diff,
+    issues: [...(result.issues ?? []), ...warnings],
+  };
 }
 
 // usage가 없는 응답(일부 스트리밍)의 출력 토큰 추정 — 한국어 기준 보수적으로 3자당 1토큰.

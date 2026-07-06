@@ -23,6 +23,9 @@ export interface SpecAsset {
 const STRUCTURE_MIN_CELLS = 6;
 // 배치 에셋 자리+주변(1칸 테두리)에 이 칸 수 이상의 기본-아닌 타일이 있으면 정리 확인(overExisting)을 요구한다.
 const PLACEMENT_CONFLICT_MIN = 4;
+// 모델이 선형 도로/페인트를 경계에 딱 붙여 칠할 때 흔한 1~2칸 오차는 재계획 대신 경고로 흡수한다.
+// 구조물 삭제·기존 타일 보호 규칙에는 적용하지 않는, 확정 밑그림 대비 공간 쓰기 호출 경계 전용 slack이다.
+export const SPEC_BOUNDARY_SLACK_CELLS = 2;
 
 export interface BuildSpec {
   mapId: string; title?: string;
@@ -39,6 +42,15 @@ export interface AffectedRegion {
   mapId: string; x: number; y: number; w: number; h: number;
 }
 
+export interface SpecBoundaryCheck {
+  covered: boolean;
+  outsideCells: number;
+  withinSlack: boolean;
+  beyondSlackCells: number;
+  sample?: { x: number; y: number };
+  slackWarning?: string;
+}
+
 interface CheckedAsset {
   id: string; kind: string;
   x: number; y: number; w: number; h: number;
@@ -51,6 +63,15 @@ export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
   "stamp_template_house", "clear_region", "place_npc", "place_battle_blocker",
 ]);
+
+export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
+  "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
+  "stamp_template_house", "place_npc", "place_battle_blocker",
+]);
+
+export function boundarySlackForTool(toolName: string): number {
+  return SPEC_BOUNDARY_SLACK_TOOLS.has(toolName) ? SPEC_BOUNDARY_SLACK_CELLS : 0;
+}
 
 export function orderedAssets(spec: BuildSpec): SpecAsset[] {
   if (spec.buildOrder === undefined) return [...spec.assets];
@@ -201,6 +222,52 @@ export function regionsCoveredBySpec(assets: readonly SpecAsset[], regions: read
   return sample === undefined ? { covered: true, outsideCells } : { covered: false, outsideCells, sample };
 }
 
+export function checkRegionsAgainstSpecBoundary(
+  assets: readonly SpecAsset[],
+  regions: readonly AffectedRegion[],
+  slackCells = SPEC_BOUNDARY_SLACK_CELLS
+): SpecBoundaryCheck {
+  let outsideCells = 0;
+  let beyondSlackCells = 0;
+  let sample: { x: number; y: number } | undefined;
+  let beyondSample: { x: number; y: number } | undefined;
+  const slackDetails = new Map<string, SlackDetail>();
+
+  for (const region of regions) {
+    if (region.w <= 0 || region.h <= 0) continue;
+    for (let y = region.y; y < region.y + region.h; y += 1) {
+      for (let x = region.x; x < region.x + region.w; x += 1) {
+        if (assets.some((asset) => containsCell(asset, x, y))) continue;
+        outsideCells += 1;
+        sample ??= { x, y };
+        const detail = bestSlackDetail(assets, x, y, slackCells);
+        if (detail === null) {
+          beyondSlackCells += 1;
+          beyondSample ??= { x, y };
+          continue;
+        }
+        mergeSlackDetail(slackDetails, detail);
+      }
+    }
+  }
+
+  if (outsideCells === 0) return { covered: true, outsideCells, withinSlack: true, beyondSlackCells };
+  if (beyondSlackCells > 0) {
+    const failureSample = beyondSample ?? sample;
+    return failureSample === undefined
+      ? { covered: false, outsideCells, withinSlack: false, beyondSlackCells }
+      : { covered: false, outsideCells, withinSlack: false, beyondSlackCells, sample: failureSample };
+  }
+  return {
+    covered: false,
+    outsideCells,
+    withinSlack: true,
+    beyondSlackCells,
+    ...(sample === undefined ? {} : { sample }),
+    slackWarning: formatSlackWarning([...slackDetails.values()], slackCells),
+  };
+}
+
 // 영역 안에서 '지어진'(자연 지형이 아닌) 칸 수를 센다. 구조물 존재의 근거 —
 // 상위 타일이 비어있지 않거나, 하위 타일이 잔디/빈칸이 아니면 무언가 지어진 것으로 본다.
 export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegion[]): { count: number; sample?: { x: number; y: number } } {
@@ -347,6 +414,75 @@ function overlapAllowed(a: CheckedAsset, b: CheckedAsset): boolean {
 
 function containsCell(asset: SpecAsset, x: number, y: number): boolean {
   return x >= asset.x && y >= asset.y && x < asset.x + asset.w && y < asset.y + asset.h;
+}
+
+interface SlackDetail {
+  asset: SpecAsset;
+  west: number;
+  east: number;
+  north: number;
+  south: number;
+}
+
+function bestSlackDetail(assets: readonly SpecAsset[], x: number, y: number, slackCells: number): SlackDetail | null {
+  let best: (SlackDetail & { max: number; total: number }) | null = null;
+  for (const asset of assets) {
+    const detail = slackDetailForCell(asset, x, y, slackCells);
+    if (detail === null) continue;
+    const max = Math.max(detail.west, detail.east, detail.north, detail.south);
+    const total = detail.west + detail.east + detail.north + detail.south;
+    if (best === null || max < best.max || (max === best.max && total < best.total)) {
+      best = { ...detail, max, total };
+    }
+  }
+  return best === null ? null : { asset: best.asset, west: best.west, east: best.east, north: best.north, south: best.south };
+}
+
+function slackDetailForCell(asset: SpecAsset, x: number, y: number, slackCells: number): SlackDetail | null {
+  const left = asset.x;
+  const top = asset.y;
+  const right = asset.x + asset.w - 1;
+  const bottom = asset.y + asset.h - 1;
+  if (x < left - slackCells || x > right + slackCells || y < top - slackCells || y > bottom + slackCells) return null;
+  const west = Math.max(0, left - x);
+  const east = Math.max(0, x - right);
+  const north = Math.max(0, top - y);
+  const south = Math.max(0, y - bottom);
+  if (west === 0 && east === 0 && north === 0 && south === 0) return null;
+  return { asset, west, east, north, south };
+}
+
+function mergeSlackDetail(details: Map<string, SlackDetail>, next: SlackDetail): void {
+  const key = `${next.asset.id}:${next.asset.x}:${next.asset.y}:${next.asset.w}:${next.asset.h}`;
+  const current = details.get(key);
+  if (current === undefined) {
+    details.set(key, next);
+    return;
+  }
+  current.west = Math.max(current.west, next.west);
+  current.east = Math.max(current.east, next.east);
+  current.north = Math.max(current.north, next.north);
+  current.south = Math.max(current.south, next.south);
+}
+
+function formatSlackWarning(details: readonly SlackDetail[], slackCells: number): string {
+  const clauses = details.slice(0, 2).map((detail) => {
+    const asset = detail.asset;
+    const bounds = `(${asset.x},${asset.y})~(${asset.x + asset.w - 1},${asset.y + asset.h - 1})`;
+    const label = asset.id.length > 0 ? ` '${asset.id}'` : "";
+    return `밑그림${label} ${bounds} 대비 ${directionText(detail)} 초과`;
+  });
+  const extra = details.length > clauses.length ? ` 외 ${details.length - clauses.length}개` : "";
+  return `${clauses.join("; ")}${extra} — slack 허용(±${slackCells}칸)`;
+}
+
+function directionText(detail: SlackDetail): string {
+  const entries: string[] = [];
+  if (detail.west > 0) entries.push(`서쪽 ${detail.west}칸`);
+  if (detail.east > 0) entries.push(`동쪽 ${detail.east}칸`);
+  if (detail.north > 0) entries.push(`북쪽 ${detail.north}칸`);
+  if (detail.south > 0) entries.push(`남쪽 ${detail.south}칸`);
+  return entries.join(", ");
 }
 
 function assetLabel(rawAsset: unknown, index: number): string {
