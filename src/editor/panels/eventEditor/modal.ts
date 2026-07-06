@@ -97,21 +97,15 @@ function closeExistingEventEditorModal(): void {
 }
 
 function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HTMLElement {
+  // [낮음-1] 타이틀에 이벤트 이름과 좌표까지 표기 — 어느 이벤트를 편집 중인지 즉시 식별.
+  // [낮음-2] 동작이 없던 최소화/최대화 장식 버튼 제거.
   return el("div", {
     class: "event-editor-modal-header",
     dataset: { testid: "event-editor-titlebar" },
     children: [
       el("div", {
         class: "event-editor-window-title",
-        children: [el("h2", { text: `이벤트 에디터 · ID:${displayEventNumber(mapId, eventId)}` })],
-      }),
-      el("div", {
-        class: "event-editor-window-controls",
-        attrs: { "aria-hidden": "true" },
-        children: [
-          el("button", { class: "event-editor-window-control", text: "−", attrs: { type: "button", tabindex: "-1", title: "최소화" } }),
-          el("button", { class: "event-editor-window-control", text: "□", attrs: { type: "button", tabindex: "-1", title: "최대화" } }),
-        ],
+        children: [el("h2", { text: eventEditorTitle(mapId, eventId) })],
       }),
       el("button", {
         class: "event-editor-window-control event-editor-modal-close",
@@ -124,6 +118,23 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
   });
 }
 
+function eventEditorTitle(mapId: MapId, eventId: string): string {
+  const base = `이벤트 에디터 · ID:${displayEventNumber(mapId, eventId)}`;
+  const event = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId);
+  if (!event) return base;
+  const name = eventDisplayNameOf(event);
+  return name ? `${base} · ${name} (${event.x},${event.y})` : `${base} (${event.x},${event.y})`;
+}
+
+function eventDisplayNameOf(event: { readonly pages?: readonly { readonly name: string }[] }): string {
+  const pages = event.pages ?? [];
+  for (let index = pages.length - 1; index >= 0; index -= 1) {
+    const name = pages[index]?.name.trim();
+    if (name) return name;
+  }
+  return "";
+}
+
 function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
   return el("div", {
     class: "event-editor-modal-footer",
@@ -133,12 +144,18 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
         text: "⚙",
         attrs: { type: "button", title: "설정", "aria-label": "설정" },
       }),
+      // [중간-6] 파괴적 동작(삭제)을 확인/취소 묶음에서 분리해 좌측에 배치.
       el("div", {
-        class: "event-editor-footer-actions",
+        class: "event-editor-footer-danger",
         children: [
           footerButton("삭제", "event-delete", () => {
             if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
           }),
+        ],
+      }),
+      el("div", {
+        class: "event-editor-footer-actions",
+        children: [
           footerButton("확인", "event-editor-ok", () => {
             saveEventDraft(request.mapId, request.eventId);
             close(true);

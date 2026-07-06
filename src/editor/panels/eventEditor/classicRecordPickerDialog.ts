@@ -23,6 +23,8 @@ type PickerState = {
   blockStart: number;
   draftName: string;
   selectedId: string;
+  // [높음-3] 이름/번호 인크리멘털 검색 질의. 비어 있으면 기존 범위(블록) 내비게이션.
+  query: string;
 };
 
 type PickerHosts = {
@@ -31,6 +33,7 @@ type PickerHosts = {
   readonly nameInput: HTMLInputElement;
   readonly ordinal: HTMLElement;
   readonly records: HTMLElement;
+  readonly searchInput: HTMLInputElement;
 };
 
 const BLOCK_SIZE = 20;
@@ -55,11 +58,17 @@ function renderClassicRecordPicker(options: {
     blockStart: blockStartFor(records, initialId),
     draftName: recordName(records, initialId),
     selectedId: initialId,
+    query: "",
   };
   const nameInput = el("input", {
     attrs: { type: "text", "aria-label": "이름" },
     dataset: { testid: "event-record-picker-name" },
   });
+  const searchInput = el("input", {
+    class: "event-record-picker-search",
+    attrs: { type: "search", placeholder: "이름/번호 검색", "aria-label": "레코드 검색" },
+    dataset: { testid: "event-record-picker-search" },
+  }) as HTMLInputElement;
   const applyButton = footerButton({
     label: "적용",
     testId: "event-record-picker-apply",
@@ -74,11 +83,16 @@ function renderClassicRecordPicker(options: {
     nameInput,
     ordinal: el("span", { class: "event-record-picker-name-id" }),
     records: el("div", { class: "event-record-picker-list", attrs: { role: "listbox", "aria-label": options.request.headerLabel } }),
+    searchInput,
   };
 
   nameInput.addEventListener("input", () => {
     state.draftName = nameInput.value;
     updateApplyButton(hosts.applyButton, options.request, state);
+  });
+  searchInput.addEventListener("input", () => {
+    state.query = searchInput.value;
+    render(hosts, options.request, state);
   });
   options.body.append(recordPickerShell({
     applyButton,
@@ -130,6 +144,7 @@ function recordPickerShell(options: {
           el("section", {
             class: "event-record-picker-record-pane",
             children: [
+              options.hosts.searchInput,
               options.hosts.records,
               el("fieldset", {
                 class: "event-record-picker-name-box",
@@ -170,14 +185,21 @@ function render(hosts: PickerHosts, request: ClassicRecordPickerRequest, state: 
   clearChildren(hosts.records);
   renderBlocks({ host: hosts.blocks, records, state, onSelect: (blockStart) => {
     state.blockStart = blockStart;
+    // 범위를 직접 고르면 검색을 해제하고 RM2003 블록 내비게이션으로 돌아간다.
+    state.query = "";
+    hosts.searchInput.value = "";
     render(hosts, request, state);
   } });
-  const blockRecords = records.slice(state.blockStart, state.blockStart + BLOCK_SIZE);
-  if (blockRecords.length === 0) {
-    hosts.records.append(el("div", { class: "empty-hint", text: request.emptyText }));
+  // [높음-3] 검색 중이면 전체 레코드에서 이름/번호 부분일치로 필터. 범위 리스트는 유지(정체성).
+  const visibleRecords = visibleRecordEntries(records, state);
+  if (visibleRecords.length === 0) {
+    hosts.records.append(el("div", {
+      class: "empty-hint",
+      text: state.query.trim() ? `"${state.query.trim()}" 와 일치하는 레코드가 없습니다.` : request.emptyText,
+      dataset: { testid: "event-record-picker-no-result" },
+    }));
   }
-  for (const [offset, record] of blockRecords.entries()) {
-    const index = state.blockStart + offset;
+  for (const { index, record } of visibleRecords) {
     hosts.records.append(recordButton({
       index,
       record,
@@ -185,6 +207,7 @@ function render(hosts: PickerHosts, request: ClassicRecordPickerRequest, state: 
       onSelect: () => {
         state.selectedId = record.id;
         state.draftName = record.name;
+        state.blockStart = blockStartFor(request.records(), record.id);
         render(hosts, request, state);
       },
     }));
@@ -193,6 +216,28 @@ function render(hosts: PickerHosts, request: ClassicRecordPickerRequest, state: 
   hosts.ordinal.textContent = `${ordinalLabel(selectedIndex)}:`;
   hosts.nameInput.value = state.draftName;
   updateApplyButton(hosts.applyButton, request, state);
+}
+
+const SEARCH_RESULT_LIMIT = 60;
+
+type VisibleRecordEntry = { readonly index: number; readonly record: ClassicRecordDef };
+
+function visibleRecordEntries(records: readonly ClassicRecordDef[], state: PickerState): VisibleRecordEntry[] {
+  const needle = state.query.trim().toLowerCase();
+  if (!needle) {
+    return records
+      .slice(state.blockStart, state.blockStart + BLOCK_SIZE)
+      .map((record, offset) => ({ index: state.blockStart + offset, record }));
+  }
+  const matches: VisibleRecordEntry[] = [];
+  for (const [index, record] of records.entries()) {
+    const ordinal = ordinalLabel(index);
+    if (record.name.toLowerCase().includes(needle) || ordinal.includes(needle) || String(index + 1).includes(needle)) {
+      matches.push({ index, record });
+      if (matches.length >= SEARCH_RESULT_LIMIT) break;
+    }
+  }
+  return matches;
 }
 
 function renderBlocks(options: {

@@ -8,6 +8,7 @@ import {
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
+import { commandCategoryVisual } from "./commandCategoryIcons";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
@@ -59,10 +60,18 @@ function renderCommandItem(
   actions: CommandListActions,
   depth: number
 ): HTMLElement {
+  // [중간-1] 카테고리 색 레일 + kind 아이콘용 시각 정보 (CSS 는 data-command-category 로 매칭).
+  const categoryVisual = commandCategoryVisual(cmd);
   const item = el("div", {
     class: "cmd-item",
     // cmdDepth 는 CSS 어트리뷰트 셀렉터/디버깅용으로 들여쓰기 깊이를 함께 노출한다.
-    dataset: { testid: `event-command-${cmd.kind}`, cmdPath: JSON.stringify(path), commandKind: cmd.kind, cmdDepth: String(depth) },
+    dataset: {
+      testid: `event-command-${cmd.kind}`,
+      cmdPath: JSON.stringify(path),
+      commandKind: cmd.kind,
+      cmdDepth: String(depth),
+      commandCategory: categoryVisual.key,
+    },
   });
   item.dataset.renderKindString = String(cmd.kind);
   // 드래그는 핸들에서 시작하고 항목 전체를 드래그한다.
@@ -84,6 +93,12 @@ function renderCommandItem(
   head.append(
     handle,
     el("span", { class: "cmd-prefix", text: "◆" }),
+    el("span", {
+      class: "cmd-cat-icon",
+      text: categoryVisual.glyph,
+      attrs: { "aria-hidden": "true" },
+      dataset: { category: categoryVisual.key },
+    }),
     renderCommandSummary(cmd),
     ...(supportBadge ? [supportBadge] : []),
     commandActions(path, actions)
