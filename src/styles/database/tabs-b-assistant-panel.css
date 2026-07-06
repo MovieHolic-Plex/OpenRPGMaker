@@ -497,6 +497,12 @@ body.ai-panel-docked .editor-layout {
   border-color: var(--danger);
   background: var(--danger-muted);
 }
+/* 0건 프로포절 패시브 알림(결함 ⑤) — 검토 카드보다 흐리게, 자동 소거. */
+.ai-proposal-card.ai-proposal-empty {
+  border-style: dashed;
+  box-shadow: none;
+  opacity: 0.85;
+}
 .ai-proposal-title {
   color: var(--text-1);
   font-size: 12px;

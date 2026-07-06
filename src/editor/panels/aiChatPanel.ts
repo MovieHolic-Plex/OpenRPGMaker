@@ -183,6 +183,39 @@ function exportCombinedAudit(controller: ChatController): string | null {
   return combineAuditJson(controller.auditHistory, controller.session, loadAiConfig().model);
 }
 
+// 0건 프로포절 비블로킹 알림(도그푸딩 결함 ⑤): 세션을 "검토 대기"로 잡아두는 검토 카드 대신
+// 자동 소거되는 패시브 알림을 쓴다. 완성도 린트 경고는 대화 로그(system 버블)에 남는다(호출자 책임).
+// 전용 testid: ai-proposal-empty-notice / ai-proposal-dismiss (기존 ai-proposal-reject 재사용 제거).
+export const EMPTY_PROPOSAL_NOTICE_DISMISS_MS = 8000;
+
+export function renderEmptyProposalNotice(lines: readonly string[], onDismiss: () => void): HTMLElement {
+  return el("div", {
+    class: "ai-proposal-card ai-proposal-empty",
+    dataset: { testid: "ai-proposal-empty-notice" },
+    children: [
+      el("div", { class: "ai-proposal-title", text: "변경 제안 없음 (0건)" }),
+      ...(lines.length > 0
+        ? [el("div", {
+            class: "ai-proposal-lines",
+            children: lines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
+          })]
+        : []),
+      el("div", {
+        class: "ai-proposal-actions",
+        children: [
+          el("button", {
+            class: "ai-assistant-action",
+            text: "닫기",
+            attrs: { type: "button", title: "이 알림은 잠시 후 자동으로 사라집니다" },
+            dataset: { testid: "ai-proposal-dismiss" },
+            on: { click: onDismiss },
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
 interface ChatController {
   session: AssistantSession | null;
   // 폐기된(수락/거부) 세션들의 감사 항목 누적 — 내보내기가 세션 폐기 후에도 동작해야 한다.
@@ -390,6 +423,17 @@ export function renderAiChatPanel(): HTMLElement {
     const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
     if (result.proposedCalls.length === 0 && lines.length === 0) return;
 
+    // 0건 프로포절(결함 ⑤): 블로킹 검토 카드 대신 자동 소거 알림 + 대화 로그 기록.
+    if (result.proposedCalls.length === 0) {
+      appendBubble("system", ["변경 제안 없음(0건) — 완성도 린트:", ...lines].join("\n"));
+      const notice = renderEmptyProposalNotice(lines, () => proposalHost.replaceChildren());
+      proposalHost.append(notice);
+      if (typeof window !== "undefined" && typeof window.setTimeout === "function") {
+        window.setTimeout(() => notice.remove(), EMPTY_PROPOSAL_NOTICE_DISMISS_MS);
+      }
+      return;
+    }
+
     const warnings = proposalApprovalWarnings(result.proposedCalls);
     const card = el("div", {
       class: `ai-proposal-card${hasDestructiveCall(result.proposedCalls) ? " is-destructive" : ""}`,
@@ -407,32 +451,22 @@ export function renderAiChatPanel(): HTMLElement {
         }),
         el("div", {
           class: "ai-proposal-actions",
-          children: result.proposedCalls.length > 0
-            ? [
-                el("button", {
-                  class: "ai-assistant-action ai-proposal-accept",
-                  text: "수락해서 적용",
-                  attrs: { type: "button" },
-                  dataset: { testid: "ai-proposal-accept" },
-                  on: { click: () => acceptProposal(result.proposedCalls) },
-                }),
-                el("button", {
-                  class: "ai-assistant-action ai-proposal-reject",
-                  text: "거부(초안 폐기)",
-                  attrs: { type: "button" },
-                  dataset: { testid: "ai-proposal-reject" },
-                  on: { click: () => rejectProposal() },
-                }),
-              ]
-            : [
-                el("button", {
-                  class: "ai-assistant-action ai-proposal-reject",
-                  text: "확인",
-                  attrs: { type: "button" },
-                  dataset: { testid: "ai-proposal-reject" },
-                  on: { click: () => proposalHost.replaceChildren() },
-                }),
-              ],
+          children: [
+            el("button", {
+              class: "ai-assistant-action ai-proposal-accept",
+              text: "수락해서 적용",
+              attrs: { type: "button" },
+              dataset: { testid: "ai-proposal-accept" },
+              on: { click: () => acceptProposal(result.proposedCalls) },
+            }),
+            el("button", {
+              class: "ai-assistant-action ai-proposal-reject",
+              text: "거부(초안 폐기)",
+              attrs: { type: "button" },
+              dataset: { testid: "ai-proposal-reject" },
+              on: { click: () => rejectProposal() },
+            }),
+          ],
         }),
       ],
     });
@@ -698,11 +732,14 @@ export function renderAiChatPanel(): HTMLElement {
         acceptProposal(result.proposedCalls);
       } else {
         renderProposal(result, result.proposedCalls.length === 0 ? completenessWarnings : []);
+        // 0건 프로포절은 더 이상 "검토 대기"로 세션을 잡아두지 않는다(결함 ⑤ — 비블로킹).
         status.textContent =
           result.stoppedReason === "error"
             ? "오류"
-            : result.proposedCalls.length > 0 || completenessWarnings.length > 0
+            : result.proposedCalls.length > 0
             ? "검토 대기"
+            : completenessWarnings.length > 0
+            ? "완료 — 변경 없음(린트 경고)"
             : status.textContent === "생각 중…"
             ? "완료"
             : status.textContent;
