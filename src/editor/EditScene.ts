@@ -578,7 +578,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
     if (cells.length === 0) return;
-    recordProjectSnapshot();
+    this.recordTileEditSnapshot(operation.mapId);
     for (const cell of cells) {
       paintTile(operation.mapId, operation.layer, cell.x, cell.y, operation.tile, { autoConnect: operation.autoConnect });
     }
@@ -668,7 +668,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
     switch (tool) {
       case "paint":
-        recordProjectSnapshot();
+        this.recordTileEditSnapshot(mid);
         {
           if (activePaletteStamp) {
             this.applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y });
@@ -695,12 +695,12 @@ export class EditScene extends PhaserRuntime.Scene {
         break;
       case "fill":
         if (firstStrokeTile) {
-          recordProjectSnapshot();
+          this.recordTileEditSnapshot(mid);
           fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
         }
         break;
       case "erase":
-        recordProjectSnapshot();
+        this.recordTileEditSnapshot(mid);
         this.applyBrush({
           centerX: x,
           centerY: y,
@@ -709,7 +709,7 @@ export class EditScene extends PhaserRuntime.Scene {
         });
         break;
       case "collision":
-        recordProjectSnapshot();
+        this.recordTileEditSnapshot(mid, { includeTilesets: true });
         toggleCollision(mid, x, y);
         break;
       case "event":
@@ -726,6 +726,10 @@ export class EditScene extends PhaserRuntime.Scene {
       case "pan":
         break;
     }
+  }
+
+  private recordTileEditSnapshot(mapId: MapId, options: { readonly includeTilesets?: boolean } = {}): void {
+    recordProjectSnapshot(undefined, mapId, { kind: "map", includeTilesets: options.includeTilesets });
   }
 
   private applyBrush(stroke: BrushStroke): void {

@@ -14,6 +14,7 @@ type MapSnapshot = {
   readonly kind: "map";
   readonly mapId: MapId;
   readonly before: GameMap;
+  readonly beforeTilesets?: Project["tilesets"];
 };
 
 type HistorySnapshot = ProjectSnapshot | MapSnapshot;
@@ -27,7 +28,7 @@ type HistoryEntry = {
 
 export type MapEditHistoryRecordOptions =
   | { readonly kind?: "project" }
-  | { readonly kind: "map"; readonly mapId?: MapId };
+  | { readonly kind: "map"; readonly mapId?: MapId; readonly includeTilesets?: boolean };
 
 export type MapEditHistoryEntry = {
   readonly index: number;
@@ -78,7 +79,12 @@ function makeSnapshotFromCurrent(mapId: string | null | undefined, options?: Map
     const snapshotMapId = options.mapId ?? mapId;
     const map = snapshotMapId ? current.maps[snapshotMapId] : undefined;
     if (map && snapshotMapId) {
-      return { kind: "map", mapId: snapshotMapId, before: mapWithCommittedEvents(map) };
+      return {
+        kind: "map",
+        mapId: snapshotMapId,
+        before: mapWithCommittedEvents(map),
+        ...(options.includeTilesets ? { beforeTilesets: structuredClone(current.tilesets) } : {}),
+      };
     }
   }
   return { kind: "project", before: projectWithoutEventDrafts(current) };
@@ -92,7 +98,14 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
   const current = store.getCurrent();
   if (entry.snapshot.kind === "map") {
     const map = current.maps[entry.snapshot.mapId];
-    return map ? { kind: "map", mapId: entry.snapshot.mapId, before: mapWithCommittedEvents(map) } : null;
+    return map
+      ? {
+        kind: "map",
+        mapId: entry.snapshot.mapId,
+        before: mapWithCommittedEvents(map),
+        ...(entry.snapshot.beforeTilesets ? { beforeTilesets: structuredClone(current.tilesets) } : {}),
+      }
+      : null;
   }
   return { kind: "project", before: projectWithoutEventDrafts(current) };
 }
@@ -101,6 +114,7 @@ function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Proje
   if (snapshot.kind === "project") return structuredClone(snapshot.before);
   const next = structuredClone(base);
   next.maps[snapshot.mapId] = structuredClone(snapshot.before);
+  if (snapshot.beforeTilesets) next.tilesets = structuredClone(snapshot.beforeTilesets);
   return next;
 }
 
