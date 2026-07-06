@@ -80,10 +80,11 @@ function report(name, ok, detail = "") {
   report("animation-play-button-exists", await play.count() > 0);
   if (await play.count()) {
     await play.click();
-    await page.waitForTimeout(200);
-    await page.screenshot({ path: path.join(OUT, "animation-playing.png") });
+    // 기본 애니메이션은 3프레임(~200ms)이라 대기를 길게 잡으면 재생 종료와 경합한다.
+    await page.waitForTimeout(80);
     const label = await play.textContent();
     report("animation-play-toggles", (label || "").includes("정지"), `label=${label}`);
+    await page.screenshot({ path: path.join(OUT, "animation-playing.png") });
     await page.waitForTimeout(1500);
   }
   await page.screenshot({ path: path.join(OUT, "animations-stage.png") });
