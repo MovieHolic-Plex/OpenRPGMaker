@@ -28,7 +28,9 @@ import {
 import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
 import { recordProjectSnapshot, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
-import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
+import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
+import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
+import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapSelectionContextMenu";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
 import { placeStructureStamp, previewStructureStampCells } from "@/editor/structureStampTools";
@@ -38,6 +40,7 @@ import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type Ti
 import { compatibleStampIdForTile, tileStampById, tileStampsForTile, type TileStamp } from "@/editor/tileStampBrushes";
 import { visibleTilePickAt } from "@/editor/tilePicking";
 import { committedEvents } from "@/project/eventDrafts";
+import { moveEvent } from "@/editor/eventActions";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -102,6 +105,13 @@ type DragOperation =
     readonly kind: "structure";
     readonly mapId: MapId;
     readonly stampId: StructureStampId;
+  }
+  | {
+    // 이벤트 레이어에서 NPC/이벤트를 드래그해 다른 칸으로 옮긴다.
+    readonly kind: "eventMove";
+    readonly mapId: MapId;
+    readonly eventId: string;
+    readonly origin: TilePoint;
   };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
@@ -124,6 +134,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastCameraViewKey = "";
   private isPanning = false;
   private dragOperation: DragOperation | null = null;
+  // 이벤트 레이어에서 눌린 이벤트. 포인터가 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
+  private eventDragCandidate: { readonly mapId: MapId; readonly eventId: string; readonly origin: TilePoint } | null = null;
   private spacePanActive = false;
   private panStart: PanStart | null = null;
   private readonly handleAuxiliaryCanvasPointerDown = (event: MouseEvent | PointerEvent): void => {
@@ -211,6 +223,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.updatePointerStatus(ptr);
       this.updateHoverPreview(ptr);
       if (this.isRightClick(ptr)) {
+        if (this.tryOpenRegionTaskMenu(ptr)) return; // 선택 영역 안 우클릭 → 영역 작업 메뉴
         if (editorState.get().layer === "event") {
           this.openEventLayerMenu(ptr);
         } else {
@@ -225,6 +238,8 @@ export class EditScene extends PhaserRuntime.Scene {
       if (this.beginDragOperation(ptr)) return;
       this.isPainting = true;
       this.lastPaintKey = "";
+      // 이벤트 레이어: 눌린 칸에 이벤트가 있으면 드래그 이동 후보로 기록(클릭/더블클릭은 그대로).
+      this.maybeBeginEventDragCandidate(ptr);
       this.applyAtPointer(ptr);
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
@@ -233,6 +248,8 @@ export class EditScene extends PhaserRuntime.Scene {
         this.updateDragOperation(ptr);
         return;
       }
+      // 이벤트를 누른 채 다른 칸으로 이동하면 드래그 이동을 시작한다.
+      if (this.eventDragCandidate && ptr.isDown && this.tryPromoteEventDrag(ptr)) return;
       this.updateHoverPreview(ptr);
       if (this.isPanning) {
         this.continuePan(ptr);
@@ -244,6 +261,7 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointerup", (ptr: Phaser.Input.Pointer) => {
       this.finishDragOperation(ptr);
+      this.eventDragCandidate = null;
       this.isPainting = false;
       this.lastPaintKey = "";
       this.stopPan();
@@ -425,6 +443,74 @@ export class EditScene extends PhaserRuntime.Scene {
     return false;
   }
 
+  // 이벤트 레이어에서 눌린 칸에 이벤트가 있으면 드래그 이동 후보로 기록한다.
+  // 실제 드래그(다른 칸으로 이동)가 시작되기 전까지는 클릭/더블클릭 동작을 방해하지 않는다.
+  private maybeBeginEventDragCandidate(ptr: Phaser.Input.Pointer): void {
+    this.eventDragCandidate = null;
+    if (editorState.get().layer !== "event") return;
+    const mapId = this.mapId();
+    if (!mapId) return;
+    const map = store.getCurrent().maps[mapId];
+    if (!map) return;
+    const point = this.pointerToTile(ptr);
+    if (!this.isInsideMapPoint(point, map)) return;
+    const existing = committedEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
+    if (!existing) return;
+    this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
+  }
+
+  // 후보 이벤트를 누른 채 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
+  private tryPromoteEventDrag(ptr: Phaser.Input.Pointer): boolean {
+    const candidate = this.eventDragCandidate;
+    if (!candidate) return false;
+    const point = this.pointerToTile(ptr);
+    if (point.x === candidate.origin.x && point.y === candidate.origin.y) return false;
+    this.dragOperation = {
+      kind: "eventMove",
+      mapId: candidate.mapId,
+      eventId: candidate.eventId,
+      origin: candidate.origin,
+    };
+    this.eventDragCandidate = null;
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.renderEventMoveDragPreview(this.dragOperation, point);
+    return true;
+  }
+
+  private renderEventMoveDragPreview(
+    operation: Extract<DragOperation, { readonly kind: "eventMove" }>,
+    point: TilePoint
+  ): void {
+    const map = store.getCurrent().maps[operation.mapId];
+    if (!map || !this.isInsideMapPoint(point, map)) return;
+    // 드롭 예정 칸을 이벤트 레이어 하이라이트로 표시한다.
+    this.showEventLayerClickFeedback(operation.mapId, point.x, point.y);
+  }
+
+  private commitEventMoveDrag(
+    operation: Extract<DragOperation, { readonly kind: "eventMove" }>,
+    point: TilePoint
+  ): void {
+    const map = store.getCurrent().maps[operation.mapId];
+    if (!map || !this.isInsideMapPoint(point, map)) return; // 맵 밖 → 취소
+    if (point.x === operation.origin.x && point.y === operation.origin.y) return; // 제자리 → 무시
+    if (!canEditMap(operation.mapId)) {
+      toast(mapEditLockNotice(operation.mapId), "error");
+      return;
+    }
+    const occupied = committedEvents(map.events).some(
+      (event) => event.id !== operation.eventId && event.x === point.x && event.y === point.y
+    );
+    if (occupied) {
+      toast("이미 다른 이벤트가 있는 칸입니다.", "error");
+      return;
+    }
+    recordProjectSnapshot();
+    moveEvent(operation.mapId, operation.eventId, point.x, point.y);
+    editorState.set({ selectedEventId: operation.eventId });
+  }
+
   private updateDragOperation(ptr: Phaser.Input.Pointer): void {
     const operation = this.dragOperation;
     if (!operation) return;
@@ -438,6 +524,10 @@ export class EditScene extends PhaserRuntime.Scene {
       this.renderStructureDragPreview(operation, point);
       return;
     }
+    if (operation.kind === "eventMove") {
+      this.renderEventMoveDragPreview(operation, point);
+      return;
+    }
     this.renderShapeDragPreview(operation, point);
   }
 
@@ -449,6 +539,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.updateSelectionDrag(operation, point);
     } else if (operation.kind === "structure") {
       this.commitStructureDrag(operation, point);
+    } else if (operation.kind === "eventMove") {
+      this.commitEventMoveDrag(operation, point);
     } else {
       this.commitShapeDrag(operation, point);
     }
@@ -669,6 +761,37 @@ export class EditScene extends PhaserRuntime.Scene {
       layer: pick.layer,
       tool: "paint",
     });
+  }
+
+  // 우클릭 셀이 현재 맵의 활성 선택 영역 안이면 "이 영역에 AI 작업…" 메뉴를 연다.
+  // 이벤트 레이어에서는 기존 이벤트 항목도 함께 보여 아무것도 잃지 않는다. 편집 잠금
+  // 맵이면 열지 않는다(false 반환 → 기존 우클릭 동작으로 폴백).
+  private tryOpenRegionTaskMenu(ptr: Phaser.Input.Pointer): boolean {
+    const mapId = this.mapId();
+    if (!mapId || !canEditMap(mapId)) return false;
+    const selection = editorState.get().selection;
+    if (!selection || selection.mapId !== mapId) return false;
+    const { x, y } = this.pointerToTile(ptr);
+    if (!isCellInsideSelection(selection, x, y)) return false;
+
+    const point = this.pointerScreenPosition(ptr);
+    const map = store.getCurrent().maps[mapId];
+    const eventItems =
+      editorState.get().layer === "event"
+        ? eventLayerContextMenuItems({ mapId, x, y }).map((item, index) =>
+            index === 0 ? { ...item, separatorBefore: true } : item,
+          )
+        : [];
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.lastPointerTile = { x, y };
+    openMapContextMenu({
+      items: [...regionTaskMenuItems(selection), ...eventItems],
+      mapId,
+      mapName: `${map?.name ?? mapId} (${x},${y})`,
+      point,
+    });
+    return true;
   }
 
   private openEventLayerMenu(ptr: Phaser.Input.Pointer): void {
