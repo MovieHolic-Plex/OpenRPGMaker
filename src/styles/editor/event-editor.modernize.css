@@ -495,7 +495,15 @@
   justify-items: center;
   max-height: 240px;
   overflow: auto;
-  padding: 6px;
+  padding: 6px 6px 20px;
+  /* .ecp-map-caption 이 absolute 로 잡히는 프리뷰 스킨과 함께 쓰여도 밖으로 새지 않게 */
+  position: relative;
+}
+
+.ecp-move-map-overlay .ecp-map-caption {
+  bottom: 2px;
+  left: 6px;
+  position: absolute;
 }
 
 .ecp-move-map-canvas {
