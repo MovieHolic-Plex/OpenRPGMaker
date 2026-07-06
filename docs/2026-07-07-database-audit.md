@@ -36,8 +36,43 @@
 
 양호(참고): 장비 상세(아이콘+이미지 미리보기), 몬스터 상세(스프라이트+색조), 적 그룹(배경+배틀러 배치 프리뷰), 타일셋(칩셋 풀 프리뷰), 액터 얼굴/캐릭터셋 크롭, 애니메이션 패턴 스트립(시트 크롭 8칸).
 
-## C. 수리 계획
+## C. 수리 결과 (2026-07-07 동일 세션)
 
-1. A1+A2+A3+A4+A10: 스킬 폼에 속성 select / 상태 효과 편집기(상태+확률+부여·해제, 추가/삭제) / 스위치 피커 추가, 런타임 switch 효과 구현(`battleEventState.switches` 기록), 라벨 수정. + B1(스킬 애니메이션 미리보기 패널), B3/A7(아이템 그래픽 패널).
-2. A5+A6+A11: 재생 버튼 실동작(프레임 순회 재생), 스테이지 실셀 렌더, 나머지 무반응 버튼은 실동작 부여 또는 명시적 disabled 처리.
-3. A8+A9+B2+B4: 리스트 썸네일 컬럼, generated 배틀 차셋 미리보기, 리소스 피커 다이얼로그(기존 에셋 파이프라인 재사용), 인스펙터 탭 기능화(패널 내비게이션) 또는 제거.
+| 항목 | 상태 | 수리 내용 | 커밋 |
+|---|---|---|---|
+| A1 스킬 스위치 피커 | 완료 | 효과=스위치 선택 시 스위치 select 노출, `effect.switchId` 저장 (`db-field-skill-effect-switch`) | db-skills |
+| A2 런타임 스위치 스킬 | 완료 | 명중 시 `battleEventState.switches[switchId]=true`, 전투 이벤트 조건 재평가 연동 (테스트 포함) | db-skills |
+| A3 스킬 속성 편집 | 완료 | 속성 select (`db-field-skill-element`) + `updateSkillRecord` 뮤테이터에 elementId 화이트리스트 추가 | db-skills |
+| A4 스킬 상태 효과 편집 | 완료 | 상태+확률(0~100)+부여/해제 행 편집기, 추가/삭제 (`db-skill-state-effect-*`) | db-skills |
+| A5 재생/무반응 버튼 | 완료 | ▶재생 실동작(15fps, 1프레임부터 1회, 정지 토글), 마지막 프레임 복제 활성화, 셀 복사/붙여넣기 분리 구현, 셀 일괄/보간은 disabled+"준비 중" 명시 | db-visuals |
+| A6 스테이지 실렌더 | 완료 | 선택 프레임 전체 셀을 시트 크롭으로 렌더 (x/y/zoom/opacity/visible 반영) | db-visuals |
+| A7 아이템 그래픽 편집 | 완료 | 이미지/아이콘 미리보기+텍스트 필드 패널 (`db-field-item-image-resource`, `db-field-item-icon-resource`) | db-skills |
+| A8 액터 리소스 스텁 | 완료 | 얼굴/캐릭터셋/배틀차셋 선택 다이얼로그(`db-actor-resource-dialog`, 미리보기 포함), generated 배틀차셋 48x64 크롭 미리보기 | db-visuals |
+| A9 액터 dead 탭 | 완료 | 5개 탭 기능화(대응 패널 스크롤 내비+active), 대응 없는 '노트' 탭 제거 | db-visuals |
+| A10 종류 라벨 | 완료 | 스킬 type normal → "일반" | db-skills |
+| A11 대상 하드코딩 | 완료 | 참조 스킬/아이템 이름으로 계산, 없으면 "(참조 없음)" | db-visuals |
+| A12 successRate 미반영 | 완료 | hitRate×successRate/100 합성 판정 (기본값 100이라 기존 데이터 기대값 불변, 테스트 포함) | db-skills |
+| B1 스킬 이미지 | 완료 | 연결 애니메이션 시트 미리보기 패널 (`db-skill-animation-preview`) | db-skills |
+| B2 리스트 썸네일 | 완료 | 액터 얼굴/몬스터/아이템·장비 아이콘/스킬·애니메이션 패턴 크롭 (`databaseRecordThumbnails.ts`) | db-visuals |
+| B3/B4/B5 | 완료 | A7/A8/A6 과 동일 수리로 해소 | — |
+
+증거: `evidence/db-overhaul/after/` — `skills-rich.png`(속성/상태변화/미리보기+리스트 썸네일), `skills-switch-effect.png`, `items-rich.png`(그래픽 패널+아이콘 리스트), `animation-playing.png`(정지 토글), `animations-stage.png`, `actors-rich.png`, `actor-resource-dialog.png`, `enemies-list-thumbs.png`, `verify-results.json`(자동 프로브 13/13 PASS).
+
+검증: `npx tsc --noEmit` clean · 단위 전체 재실행 결과는 아래 E · 실브라우저 자동 프로브 13/13 PASS.
+
+## D. 수리 방식 메모
+
+1. A1+A2+A3+A4+A10+B1+A7: codex worker A 구현, 뮤테이터 화이트리스트/successRate 합성은 팀장 직접.
+2. A5+A6+A11+A8+A9+B2: codex worker B 구현, 재생 시작 프레임(선택 프레임→1프레임) 수정은 팀장 직접.
+3. CSS 대비/레이아웃 교정(상태 변화 행, 캡션 색)은 팀장 직접.
+
+## E. 최종 검증 (수리 후, feat/database-overhaul)
+
+| 게이트 | 결과 |
+|---|---|
+| `npx tsc --noEmit` | clean |
+| `npm test` (vitest 전체) | **1702 passed / 1 skipped, 실패 0** (베이스라인 1693 + 신규 9) |
+| 실브라우저 자동 프로브 (`scripts/db-verify-driver.cjs`, 포트 5302) | **13/13 PASS**, JS 콘솔 에러 0 |
+| DB e2e 21 spec (`rm2k3-database-*.spec.ts`) | 18 passed / 3 failed — 실패 3건은 **변경 전 베이스(942b350)에서도 동일 실패**(기존 결함, phase-6a 머지 유래). 신규 실패 0건. `rm2k3-database-animation.spec.ts:6` 은 베이스에서 실패하던 것이 이번 수리로 **복구**됨 |
+
+기존 실패 3건(우리 귀책 아님, 별도 수리 대상): `rm2k3-database-animation.spec.ts:42`(리소스/타일셋 편집 지속성), `rm2k3-database-inventory-effects.spec.ts:9`, `rm2k3-database-party-class.spec.ts:22`(`db-actor-curve-edit-attack` 타임아웃).
