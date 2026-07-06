@@ -17,6 +17,7 @@ import { clearChildren, el } from "@/util/dom";
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
 const LEFT_PANEL_MAX_WIDTH = 640;
+const MIN_CANVAS_WIDTH = 520;
 const MAP_TREE_DEFAULT_HEIGHT = 154;
 const MAP_TREE_MIN_HEIGHT = 112;
 const MAP_TREE_MAX_HEIGHT = 260;
@@ -175,7 +176,24 @@ function applyLayout(): void {
     return;
   }
   leftRoot.style.display = "";
-  const effectiveLeftWidth = Math.min(leftWidth, Math.max(LEFT_PANEL_MIN_WIDTH, window.innerWidth - 420));
+  // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩(AI 도킹 인셋 포함). 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
+  const layoutEl = leftRoot.parentElement;
+  let usableWidth = window.innerWidth;
+  if (layoutEl) {
+    const cs =
+      typeof getComputedStyle === "function"
+        ? getComputedStyle(layoutEl)
+        : typeof window.getComputedStyle === "function"
+          ? window.getComputedStyle(layoutEl)
+          : null;
+    const padL = cs ? parseFloat(cs.paddingLeft) || 0 : 0;
+    const padR = cs ? parseFloat(cs.paddingRight) || 0 : 0;
+    const layoutWidth = Number.isFinite(layoutEl.clientWidth) && layoutEl.clientWidth > 0 ? layoutEl.clientWidth : window.innerWidth;
+    usableWidth = layoutWidth - padL - padR;
+  }
+  const resizerWidth = leftResizer.offsetWidth || 6;
+  const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth);
+  const effectiveLeftWidth = Math.min(leftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
   leftRoot.style.setProperty("--map-tree-height", `${mapTreeHeight}px`);
   leftResizer.style.display = "";
