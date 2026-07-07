@@ -1,0 +1,137 @@
+/* ── Command-bar AI IA (2026-07-07): bottom center bar + rising overlay ── */
+body.ai-command-bar-active {
+  --ai-command-bar-inset: 88px;
+}
+
+body.ai-command-bar-active .editor-layout {
+  padding-bottom: var(--ai-command-bar-inset);
+}
+
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  inset: auto;
+  max-height: none;
+  padding: 0;
+  width: 0;
+}
+
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-header,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-toolbar,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-body,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-resize-handle,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-collapsed-restore {
+  display: none;
+}
+
+.ai-command-bar {
+  align-items: end;
+  bottom: 18px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 34px minmax(320px, min(760px, calc(100vw - 188px))) auto;
+  left: 50%;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 50;
+}
+
+.ai-command-menu-toggle {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font-size: 17px;
+  font-weight: 800;
+  height: 40px;
+  place-items: center;
+  width: 34px;
+}
+
+.ai-command-menu-toggle:hover,
+.ai-command-menu-toggle:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+
+.ai-command-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  bottom: 48px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 2px;
+  left: 0;
+  min-width: 170px;
+  padding: 6px;
+  position: absolute;
+}
+
+.ai-command-menu[hidden] {
+  display: none;
+}
+
+.ai-command-menu-item {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 9px;
+  text-align: left;
+}
+
+.ai-command-menu-item:hover,
+.ai-command-menu-item:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+
+.ai-command-input-stack {
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+}
+
+.ai-command-bar .ai-status-group {
+  align-self: center;
+  background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  box-shadow: var(--shadow-pop);
+  padding: 5px 7px;
+}
+
+@media (max-width: 720px) {
+  body.ai-command-bar-active {
+    --ai-command-bar-inset: 118px;
+  }
+
+  .ai-command-bar {
+    bottom: 10px;
+    grid-template-columns: 32px minmax(0, calc(100vw - 56px));
+    width: calc(100vw - 20px);
+  }
+
+  .ai-command-bar .ai-status-group {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .ai-rising-overlay {
+    bottom: 108px;
+    width: calc(100vw - 20px);
+  }
+}

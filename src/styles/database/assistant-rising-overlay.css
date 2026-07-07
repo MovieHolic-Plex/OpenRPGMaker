@@ -1,0 +1,86 @@
+.ai-rising-overlay {
+  bottom: 76px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  left: 50%;
+  max-height: min(58vh, 620px);
+  overflow: visible;
+  position: fixed;
+  transform: translateX(-50%);
+  width: min(780px, calc(100vw - 48px));
+  /* 커맨드 바(50) 위 — 컨텍스트 칩이 pill 클릭을 가로채지 않게. 모달(72)·스킬 팔레트(80) 아래. */
+  z-index: 56;
+}
+
+.ai-rising-volatile-zone {
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.ai-rising-volatile-zone.is-faded {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
+.ai-rising-overlay .ai-chat-log {
+  background: color-mix(in srgb, var(--bg-inset) 88%, transparent);
+  box-shadow: var(--shadow-pop);
+  /* 미니 스트림: 현재 턴만 보이므로 낮은 상한으로 맵 가림 최소화. */
+  max-height: min(18vh, 200px);
+  min-height: 0;
+}
+
+/* 미니 스트림: 떠오르는 오버레이에서는 이전 턴을 숨긴다(현재 턴만). 과거 대화는 ⌃ 전체 기록에서. */
+.ai-rising-overlay .ai-chat-log > .is-prior-turn {
+  display: none;
+}
+
+/* 전체 기록/스튜디오 뷰에서는 이전 턴도 전부 보인다. */
+.ai-history-log-mount .ai-chat-log > .is-prior-turn,
+.ai-chat-panel.is-studio .ai-chat-log > .is-prior-turn {
+  display: block;
+}
+
+.ai-rising-sticky-zone {
+  max-height: min(38vh, 420px);
+  overflow-y: auto;
+}
+
+/* 최소화 pill — 승인 대기를 잃지 않는 재진입점. */
+.ai-proposal-pill {
+  align-items: center;
+  animation: ai-proposal-pill-in 180ms ease-out;
+  background: color-mix(in srgb, var(--accent, #4c7dff) 18%, var(--bg-panel, #12141c));
+  border: 1px solid color-mix(in srgb, var(--accent, #7aa2ff) 45%, transparent);
+  border-radius: 999px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  width: fit-content;
+}
+
+.ai-proposal-pill:hover {
+  filter: brightness(1.15);
+}
+
+.ai-proposal-pill[hidden] {
+  display: none;
+}
+
+@keyframes ai-proposal-pill-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.ai-rising-sticky-zone .ai-action-zone {
+  border-top: none;
+  max-height: none;
+  padding-top: 0;
+}

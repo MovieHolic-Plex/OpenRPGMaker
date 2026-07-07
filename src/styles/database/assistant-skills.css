@@ -1,0 +1,281 @@
+.ai-skill-toggle {
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 30px;
+  padding: 2px 8px;
+}
+
+.ai-skill-drawer {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  margin: 4px 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.ai-skill-drawer-title {
+  color: var(--text-2);
+  font-size: 11px;
+  margin: 4px 0 6px;
+}
+
+.ai-skill-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+}
+
+.ai-skill-card-wrap {
+  position: relative;
+}
+
+.ai-skill-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.ai-skill-card:hover {
+  border-color: var(--accent-border);
+}
+
+.ai-skill-card-icon {
+  font-size: 16px;
+}
+
+.ai-skill-card-name {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ai-skill-card-desc {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ai-skill-card-remove {
+  background: var(--danger-muted);
+  border: 1px solid var(--danger);
+  border-radius: 50%;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 11px;
+  height: 18px;
+  line-height: 1;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 18px;
+}
+
+.ai-skill-drawer-utils {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.ai-skill-param-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-skill-param-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-skill-param-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.ai-skill-param-label {
+  color: var(--text-2);
+  flex: 0 0 96px;
+  font-size: 12px;
+}
+
+.ai-skill-param-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-1);
+  flex: 1;
+  font-size: 12px;
+  padding: 4px 6px;
+}
+
+.ai-skill-icon-input {
+  max-width: 64px;
+}
+
+.ai-skill-param-note {
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.ai-skill-param-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ai-slash-host {
+  margin: 0 8px;
+}
+
+.ai-slash-list {
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.ai-slash-item {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.ai-slash-item:hover,
+.ai-slash-item.is-active {
+  background: var(--accent-muted);
+}
+
+.ai-slash-item-name {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ai-slash-item-desc {
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.ai-slash-item-example {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.ai-slash-view-all {
+  border-bottom: none;
+  border-top: 1px solid var(--accent-border);
+}
+
+.ai-slash-empty {
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+.ai-chat-body > .ai-skill-drawer {
+  margin: 0;
+  order: -1;
+}
+
+.ai-chat-panel.is-studio .ai-chat-body > .ai-skill-drawer {
+  border-left: 1px solid var(--border-subtle);
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  background: transparent;
+  flex: 0 0 300px;
+  max-height: none;
+  order: 2;
+  overflow-y: auto;
+}
+
+/* 핀 바 — 자주 쓰는 스킬 원클릭 */
+.ai-skill-pinbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 2px;
+}
+
+.ai-skill-pin {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.ai-skill-pin:hover {
+  border-color: var(--accent-border);
+}
+
+.ai-skill-pin-more {
+  color: var(--text-2);
+}
+.ai-resume-conversation {
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* Ctrl+K 스킬 팔레트 */
+.ai-skill-palette-backdrop {
+  align-items: flex-start;
+  background: rgba(2, 6, 23, 0.42);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 80;
+}
+
+.ai-skill-palette-window {
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12vh auto 0;
+  max-width: 460px;
+  padding: 12px;
+  width: calc(100vw - 40px);
+}
+
+.ai-skill-palette-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+
+body:has(.ai-skill-palette-backdrop) .ai-chat-panel {
+  filter: brightness(0.84);
+}
+
+.ai-skill-pinbar {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}

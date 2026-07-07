@@ -43,7 +43,6 @@ import {
   requestLikelyExpectsChange,
 } from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
-import { renderMarkdown } from "@/util/markdown";
 import {
   deriveTitle,
   loadConversation,
@@ -56,6 +55,7 @@ import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { DEFAULT_BASE_URL, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { createCommandBarElements } from "./aiCommandBar";
 import {
   applyAiFontSize,
   clampPanelSize,
@@ -95,6 +95,8 @@ import {
   vocabularyCardsData,
   type VocabularyCardEdit,
 } from "./aiChatRenderers";
+import { appendConversationBubble, renderStreamedMarkdown, type AiBubbleRole } from "./aiConversationLog";
+import { createProposalModalElements } from "./aiProposalModal";
 export {
   AI_FONT_SIZE_KEY,
   AI_FONT_SIZE_SCALE,
@@ -450,62 +452,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // ── 변경 제안 몰입 모달: 제안 카드는 중앙 모달에서 검토한다(채팅 오버레이에 얹으면 답답하다는 UX 피드백).
   // proposalHost가 모달 본문에 상주하므로 카드 렌더/승인/융합 로직은 그대로다.
   // '나중에'(Esc/백드롭 포함)는 최소화 — 커맨드 바 위 pill로 남아 승인 대기를 잃지 않는다. 폐기는 오직 [거부] 버튼.
-  const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
-  const proposalPill = el("button", {
-    class: "ai-proposal-pill",
-    attrs: { type: "button", hidden: "" },
-    dataset: { testid: "ai-proposal-reopen" },
-  }) as HTMLButtonElement;
-  const proposalModalCount = el("span", { class: "ai-proposal-modal-count", dataset: { testid: "ai-proposal-modal-count" } });
-  const proposalModalLater = el("button", {
-    class: "ai-assistant-action ai-proposal-modal-later",
-    text: "나중에",
-    attrs: { type: "button", title: "제안을 유지한 채 닫기 (Esc)" },
-    dataset: { testid: "ai-proposal-modal-later" },
-  }) as HTMLButtonElement;
-  const proposalModalRoot = el("div", {
-    class: "ai-proposal-modal-backdrop",
-    attrs: { hidden: "" },
-    dataset: { testid: "ai-proposal-modal" },
-    children: [
-      el("div", {
-        class: "ai-proposal-modal",
-        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "변경 제안 검토", tabindex: "-1" },
-        children: [
-          el("div", {
-            class: "ai-proposal-modal-header",
-            children: [
-              el("span", { class: "ai-proposal-modal-title", text: "변경 제안" }),
-              proposalModalCount,
-              proposalModalLater,
-            ],
-          }),
-          el("div", { class: "ai-proposal-modal-body", children: [proposalHost] }),
-        ],
-      }),
-    ],
-  });
-  const openProposalModal = (): void => {
-    proposalModalRoot.hidden = false;
-    proposalPill.hidden = true;
-  };
-  const minimizeProposalModal = (): void => {
-    if (proposalModalRoot.hidden) return;
-    proposalModalRoot.hidden = true;
-    proposalPill.hidden = false;
-  };
-  const closeProposalModal = (): void => {
-    proposalModalRoot.hidden = true;
-    proposalPill.hidden = true;
-  };
-  proposalPill.addEventListener("click", () => openProposalModal());
-  proposalModalLater.addEventListener("click", () => minimizeProposalModal());
-  proposalModalRoot.addEventListener("click", (event) => {
-    if ((event as { target?: unknown }).target === proposalModalRoot) minimizeProposalModal();
-  });
-  proposalModalRoot.addEventListener("keydown", (event) => {
-    if ((event as KeyboardEvent).key === "Escape") minimizeProposalModal();
-  });
+  const proposalModal = createProposalModalElements(proposalHost);
+  const proposalNoticeHost = proposalModal.noticeHost;
+  const proposalPill = proposalModal.pill;
+  const proposalModalCount = proposalModal.count;
+  const proposalModalRoot = proposalModal.root;
+  const openProposalModal = proposalModal.open;
+  const closeProposalModal = proposalModal.close;
   let turnBusy = false;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let volatileFadeTimer: number | null = null;
@@ -593,34 +546,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     volatileFadeTimer = null;
   };
 
-  // 미니 스트림: 새 턴이 시작되면(사용자 버블) 이전 턴 전부를 is-prior-turn으로 표시한다.
-  // 떠오르는 오버레이에서는 현재 턴만 보이고, 전체 기록 뷰에서는 전부 보인다(CSS 스코프).
-  const markPriorTurns = (): void => {
-    for (const child of Array.from(log.childNodes)) {
-      (child as HTMLElement).classList?.add?.("is-prior-turn");
-    }
-  };
-  const appendBubble = (role: "user" | "assistant" | "tool" | "system", text: string): HTMLElement => {
-    revealVolatileZone();
-    removeStartScreen();
-    if (role === "user") markPriorTurns();
-    const bubble = el("div", {
-      class: `ai-chat-bubble ai-chat-${role}`,
-      dataset: { testid: `ai-bubble-${role}` },
-    });
-    // 어시스턴트/시스템 말풍선은 마크다운을 렌더한다(굵게/목록/코드/링크 — 안전한 DOM 생성).
-    // 사용자·툴 버블은 원문 그대로. 빈 텍스트(스트리밍 자리표시자)는 그대로 두고 완료 시 렌더한다.
-    if (text && (role === "assistant" || role === "system")) bubble.replaceChildren(renderMarkdown(text));
-    else if (text) bubble.textContent = text;
-    log.append(bubble);
-    log.scrollTop = log.scrollHeight;
-    return bubble;
-  };
-  // 스트리밍이 끝난 어시스턴트 버블의 누적 원문을 마크다운으로 다시 렌더한다.
-  const renderStreamedMarkdown = (bubble: HTMLElement | null): void => {
-    const raw = bubble?.textContent ?? "";
-    if (bubble && raw.trim()) bubble.replaceChildren(renderMarkdown(raw));
-  };
+  const appendBubble = (role: AiBubbleRole, text: string): HTMLElement =>
+    appendConversationBubble({ log, role, text, revealVolatileZone, removeStartScreen });
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
   // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
   let lastReasoning: { box: HTMLElement; body: HTMLElement; toggle: HTMLElement; state: { count: number } } | null = null;
@@ -1957,36 +1884,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-input-row",
     children: [skillToggle, input, sendButton],
   });
-  const commandMenu = el("div", {
-    class: "ai-command-menu",
-    attrs: { role: "menu" },
-    dataset: { testid: "ai-command-menu" },
-  });
-  commandMenu.hidden = true;
-  const commandMenuToggle = el("button", {
-    class: "ai-command-menu-toggle",
-    text: "⌃",
-    attrs: { type: "button", title: "AI 메뉴", "aria-label": "AI 메뉴", "aria-expanded": "false" },
-    dataset: { testid: "ai-command-menu-toggle" },
-    on: {
-      click: () => {
-        commandMenu.hidden = !commandMenu.hidden;
-        commandMenuToggle.setAttribute("aria-expanded", String(!commandMenu.hidden));
-      },
-    },
-  }) as HTMLButtonElement;
-  const commandBar = el("div", {
-    class: "ai-command-bar",
-    dataset: { testid: "ai-command-bar" },
-    children: [
-      commandMenu,
-      commandMenuToggle,
-      el("div", {
-        class: "ai-command-input-stack",
-        children: [slashHost, contextChips, queueIndicator, inputRow],
-      }),
-      statusGroup,
-    ],
+  const { commandBar, commandMenu, commandMenuToggle } = createCommandBarElements({
+    slashHost,
+    contextChips,
+    queueIndicator,
+    inputRow,
+    statusGroup,
   });
   const volatileLogMount = el("div", {
     class: "ai-rising-volatile-zone",
