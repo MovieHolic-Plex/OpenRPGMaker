@@ -127,9 +127,11 @@ describe("스킬 UI(fakeDom)", () => {
     restoreDom = null;
   });
 
-  it("패널 재배치: 스킬 서랍 토글/레거시 카드/설정 접힘/컨텍스트 칩이 있다", () => {
+  it("패널 재배치: 헤더 모드 배지/핀바 없이 slash 진입점/서랍/설정/컨텍스트 칩이 있다", () => {
     const panel = renderAiChatPanel() as unknown as FakeElement;
-    expect(findByTestId(panel, "ai-skill-drawer-toggle")).toBeTruthy();
+    expect(findByTestId(panel, "ai-mode-badge")).toBeNull();
+    expect(findByTestId(panel, "ai-skill-pinbar")).toBeNull();
+    expect(findByTestId(panel, "ai-skill-slash-toggle")).toBeTruthy();
     expect(findByTestId(panel, "ai-skill-drawer")).toBeTruthy();
     // 기존 버튼 testid는 서랍 카드로 이관되어 유지된다.
     expect(findByTestId(panel, "ai-interview")).toBeTruthy();
@@ -150,9 +152,36 @@ describe("스킬 UI(fakeDom)", () => {
     input.value = "/집";
     input.dispatchEvent(new Event("input"));
     expect(findByTestId(panel, "ai-slash-item-build-house")).toBeTruthy();
+    expect(findByTestId(panel, "ai-slash-item-build-house")?.textContent).toContain("집");
+    expect(findByTestId(panel, "ai-slash-item-build-house")?.textContent).toContain("/");
     input.value = "일반 텍스트";
     input.dispatchEvent(new Event("input"));
     expect(findByTestId(panel, "ai-slash-item-build-house")).toBeNull();
+  });
+
+  it("슬래시 버튼은 입력창의 스킬 검색 메뉴를 열고 전체 보기 항목은 서랍으로 진입한다", () => {
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const drawer = findByTestId(panel, "ai-skill-drawer") as unknown as HTMLElement;
+    expect(drawer.hidden).toBe(true);
+    (findByTestId(panel, "ai-skill-slash-toggle") as unknown as HTMLElement).click();
+    expect(findByTestId(panel, "ai-slash-list")).toBeTruthy();
+    (findByTestId(panel, "ai-slash-view-all") as unknown as HTMLElement).click();
+    expect(drawer.hidden).toBe(false);
+  });
+
+  it("슬래시 검색은 방향키와 Enter로 선택한 스킬을 연다", () => {
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "/마을";
+    input.dispatchEvent(new Event("input"));
+    const down = new Event("keydown") as Event & { key: string };
+    down.key = "ArrowDown";
+    input.dispatchEvent(down);
+    const enter = new Event("keydown") as Event & { key: string };
+    enter.key = "Enter";
+    input.dispatchEvent(enter);
+    expect(findByTestId(panel, "ai-skill-param-form")).toBeTruthy();
+    expect(findByTestId(panel, "ai-slash-list")).toBeNull();
   });
 
   it("인자 폼: 값을 바꿔 실행하면 프롬프트에 반영된다", () => {
@@ -176,14 +205,13 @@ describe("스킬 UI(fakeDom)", () => {
     expect((onPick.mock.calls[0][0] as { id: string }).id).toBe("map-audit");
   });
 
-  it("시작 화면(빈 대화)에 큰 스킬 카드가 뜨고, 핀 바가 상시 노출된다", () => {
+  it("시작 화면(빈 대화)에 큰 스킬 카드가 뜨고, 헤더/입력부는 경량 IA를 유지한다", () => {
     const panel = renderAiChatPanel() as unknown as FakeElement;
     expect(findByTestId(panel, "ai-start-screen")).toBeTruthy();
     expect(findByTestId(panel, "ai-start-build-house")).toBeTruthy();
-    const pinbar = findByTestId(panel, "ai-skill-pinbar");
-    expect(pinbar).toBeTruthy();
-    expect(findByTestId(panel, "ai-skill-pin-interview")).toBeTruthy(); // 기본 핀 1순위.
-    expect(findByTestId(panel, "ai-skill-pin-more")).toBeTruthy();
+    expect(findByTestId(panel, "ai-mode-badge")).toBeNull();
+    expect(findByTestId(panel, "ai-skill-pinbar")).toBeNull();
+    expect(findByTestId(panel, "ai-skill-slash-toggle")).toBeTruthy();
     // 헤더: 로그 내보내기 복귀 + 스튜디오 토글.
     expect(findByTestId(panel, "ai-export")).toBeTruthy();
     expect(findByTestId(panel, "ai-studio-toggle")).toBeTruthy();

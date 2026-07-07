@@ -1,6 +1,6 @@
 // editor/panels/aiSkillDrawer.ts
 // 스킬 서랍 + 인자 폼 + 슬래시 목록 — AI 패널의 "의식적으로 쓰는 스킬" UI.
-// 서랍은 항상 DOM에 존재하고(hidden 토글) 카드를 누르면 인자 폼 → 킥오프 프롬프트 전송.
+// 스킬 발견은 입력창 "/"에서 시작하고, 서랍은 전체 보기/저장/삭제 표면으로 남긴다.
 import {
   deleteUserSkill,
   filterSkills,
@@ -112,26 +112,62 @@ function paramControl(param: SkillParam): HTMLInputElement | HTMLSelectElement {
   return input;
 }
 
+export interface SlashListOptions {
+  readonly activeIndex?: number;
+  readonly onViewAll?: () => void;
+}
+
+function skillRecipeLine(skill: SkillDef): string {
+  if (skill.params.length > 0) {
+    const args = skill.params
+      .slice(0, 3)
+      .map((param) => `<${param.label}>`)
+      .join(" ");
+    return `/${skill.name} ${args}`.trim();
+  }
+  return `/${skill.name}`;
+}
+
 // 슬래시 자동완성 목록 — 입력창 위에 뜬다.
-export function renderSlashList(query: string, onPick: (skill: SkillDef) => void): HTMLElement {
-  const matches = filterSkills(query).slice(0, 8);
+export function slashSkillMatches(query: string): SkillDef[] {
+  return filterSkills(query).slice(0, 8);
+}
+
+export function renderSlashList(query: string, onPick: (skill: SkillDef) => void, options: SlashListOptions = {}): HTMLElement {
+  const matches = slashSkillMatches(query);
+  const activeIndex = Math.max(0, Math.min(options.activeIndex ?? 0, Math.max(0, matches.length - 1)));
+  const skillItems = matches.map((skill, index) =>
+    el("button", {
+      class: `ai-slash-item${index === activeIndex ? " is-active" : ""}`,
+      attrs: { type: "button", title: skill.description, "aria-selected": String(index === activeIndex) },
+      dataset: { testid: `ai-slash-item-${skill.id}` },
+      children: [
+        el("span", { class: "ai-slash-item-name", text: `${skill.icon} ${skill.name}` }),
+        el("span", { class: "ai-slash-item-desc", text: skill.description }),
+        el("span", { class: "ai-slash-item-example", text: skillRecipeLine(skill) }),
+      ],
+      on: { click: () => onPick(skill) },
+    })
+  );
+  const footer = options.onViewAll
+    ? [el("button", {
+        class: "ai-slash-item ai-slash-view-all",
+        attrs: { type: "button", title: "스킬 전체 보기" },
+        dataset: { testid: "ai-slash-view-all" },
+        children: [
+          el("span", { class: "ai-slash-item-name", text: "전체 보기" }),
+          el("span", { class: "ai-slash-item-desc", text: "스킬 서랍에서 저장/삭제와 전체 목록을 봅니다." }),
+        ],
+        on: { click: options.onViewAll },
+      })]
+    : [];
   return el("div", {
     class: "ai-slash-list",
     dataset: { testid: "ai-slash-list" },
+    attrs: { role: "listbox", "aria-label": "스킬 검색" },
     children: matches.length > 0
-      ? matches.map((skill) =>
-          el("button", {
-            class: "ai-slash-item",
-            attrs: { type: "button", title: skill.description },
-            dataset: { testid: `ai-slash-item-${skill.id}` },
-            children: [
-              el("span", { class: "ai-slash-item-name", text: `${skill.icon} ${skill.name}` }),
-              el("span", { class: "ai-slash-item-desc", text: skill.description }),
-            ],
-            on: { click: () => onPick(skill) },
-          })
-        )
-      : [el("div", { class: "ai-slash-empty", text: "일치하는 스킬이 없습니다" })],
+      ? [...skillItems, ...footer]
+      : [el("div", { class: "ai-slash-empty", text: "일치하는 스킬이 없습니다" }), ...footer],
   });
 }
 
