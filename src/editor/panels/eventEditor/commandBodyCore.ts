@@ -35,42 +35,33 @@ export function renderCoreCommandBody(
   context: CommandEditContext,
   cmd: Command
 ): HTMLElement | undefined {
-  switch (cmd.kind) {
-    case "text":
-      return textBody(context, cmd);
-    case "changeFace":
-      return changeFaceBody(context, cmd);
-    case "displayTextSettings":
-      return displayTextSettingsBody(context, cmd);
-    case "choices":
-      return choicesBody(context, cmd);
-    case "setFlag":
-      return setFlagBody(context, cmd);
-    case "setSelfSwitch":
-      return setSelfSwitchBody(context, cmd);
-    case "fork":
-      return forkBody(context, cmd);
-    case "setSwitch":
-      return setSwitchBody(context, cmd);
-    case "setVariable":
-      return setVariableBody(context, cmd);
-    case "timer":
-      return timerBody(context, cmd);
-    case "inputWait":
-      return inputWaitBody(context, cmd);
-    case "inputNumber":
-      return inputNumberBody(context, cmd);
-    case "label":
-    case "gotoLabel":
-      return labelBody(context, cmd);
-    case "loop":
-      return loopBody(context, cmd);
-    case "breakLoop":
-      return el("div", { class: "empty-hint", text: "현재 반복을 탈출합니다" });
-    default:
-      return undefined;
-  }
+  const handler = coreCommandBodyHandlers[cmd.kind] as CoreCommandBodyHandler<Command> | undefined;
+  return handler?.(context, cmd);
 }
+
+type CoreCommandBodyHandler<T extends Command> = (context: CommandEditContext, cmd: T) => HTMLElement;
+type CoreCommandBodyHandlers = {
+  readonly [K in Command["kind"]]?: CoreCommandBodyHandler<Extract<Command, { kind: K }>>;
+};
+
+const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
+  text: textBody,
+  changeFace: changeFaceBody,
+  displayTextSettings: displayTextSettingsBody,
+  choices: choicesBody,
+  setFlag: setFlagBody,
+  setSelfSwitch: setSelfSwitchBody,
+  fork: forkBody,
+  setSwitch: setSwitchBody,
+  setVariable: setVariableBody,
+  timer: timerBody,
+  inputWait: inputWaitBody,
+  inputNumber: inputNumberBody,
+  label: labelBody,
+  gotoLabel: labelBody,
+  loop: loopBody,
+  breakLoop: () => el("div", { class: "empty-hint", text: "현재 반복을 탈출합니다" }),
+};
 
 // [중간-3] 문장 표시 폼: 화자/내용 세로 스택 + 제어 문자 팔레트.
 const TEXT_CONTROL_SNIPPETS: readonly { readonly key: string; readonly code: string; readonly hint: string }[] = [

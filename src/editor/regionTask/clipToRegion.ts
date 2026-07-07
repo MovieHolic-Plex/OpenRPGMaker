@@ -17,7 +17,7 @@ export interface RegionClipResult {
   readonly clippedCells: number;
 }
 
-function inRegion(x: number, y: number, region: RegionRect): boolean {
+export function inRegion(x: number, y: number, region: RegionRect): boolean {
   return x >= region.x && y >= region.y && x < region.x + region.width && y < region.y + region.height;
 }
 
