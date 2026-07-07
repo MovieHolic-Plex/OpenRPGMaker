@@ -3,6 +3,7 @@ import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { buildEightNeighborVariantMap, derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
+import type { LintIssue } from "@/project/lint/projectLint";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { store } from "@/project/store";
 import type { MapId, Project, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
@@ -26,6 +27,10 @@ export interface BuildPaletteResult {
 type PresetRole = "wall" | "door" | "window" | "roof" | "path" | "water" | "tree" | "prop";
 
 const P = COMBINED_TOWN_HARNESS_PREFIX;
+
+const LINT_FAILURE_MESSAGES: Record<string, string> = {
+  "start-position": "시작 위치를 덮을 수 없습니다. 다른 영역을 선택하세요.",
+};
 
 export const BUILD_PALETTE_PRESETS: Record<PresetRole, string> = {
   wall: `${P}plaster-wall-9slice`,
@@ -76,6 +81,8 @@ export function applyBuildPalettePrimitiveToProject(
   if (!tileset) return { ok: false, summary: "타일셋을 찾을 수 없습니다.", toolResults: [], project };
   const rect = clampSelection(selection, map.width, map.height);
   if (rect.width < 1 || rect.height < 1) return { ok: false, summary: "선택 영역이 맵 밖입니다.", toolResults: [], project };
+  const validationFailure = validateBuildPalettePrimitive(rect, primitive);
+  if (validationFailure) return { ok: false, summary: validationFailure, toolResults: [], project };
   ensureBuildPalettePresets(tileset);
 
   const ctx: ToolContext = { project };
@@ -96,7 +103,7 @@ export function applyBuildPalettePrimitiveToProject(
   else if (primitive === "npc") ok = run("place_npc", { mapId: rect.mapId, x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2), name: "주민", pages: [{ lines: ["안녕하세요."] }] });
 
   const failed = toolResults.find((result) => !result.ok);
-  const summary = failed?.summary ?? `${primitive} 시공 완료`;
+  const summary = failed ? summarizeToolFailure(failed) : ok ? `${primitive} 시공 완료` : `${primitive} 시공에 실패했습니다.`;
   return { ok: ok && !failed, summary, toolResults, project: ctx.project };
 }
 
@@ -144,6 +151,28 @@ function stampHouse(rect: BuildPaletteSelection, run: (name: string, args: Recor
   return run("build_wall", { mapId: rect.mapId, rect: wallRect, wallVocabId: BUILD_PALETTE_PRESETS.wall })
     && run("place_door", { mapId: rect.mapId, at: { x: doorX, y: doorY }, doorVocabId: BUILD_PALETTE_PRESETS.door })
     && run("build_roof", { mapId: rect.mapId, roofVocabId: BUILD_PALETTE_PRESETS.roof, wallRect });
+}
+
+function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive): string | null {
+  if (primitive === "house" && (rect.width < 2 || rect.height < 2)) {
+    return "집은 최소 2×2 영역이 필요합니다.";
+  }
+  if (primitive === "roof" && rect.width < 2) {
+    return "지붕은 최소 2×1 영역이 필요합니다.";
+  }
+  return null;
+}
+
+function summarizeToolFailure(result: ToolResult): string {
+  const issue = result.issues?.find((entry) => entry.severity === "error");
+  if (!issue) return result.summary;
+  return friendlyLintMessage(issue);
+}
+
+function friendlyLintMessage(issue: LintIssue): string {
+  const mapped = LINT_FAILURE_MESSAGES[issue.code];
+  if (mapped) return mapped;
+  return `시공할 수 없습니다: ${issue.message}`;
 }
 
 function stampPath(rect: BuildPaletteSelection, run: (name: string, args: Record<string, unknown>) => boolean): boolean {
