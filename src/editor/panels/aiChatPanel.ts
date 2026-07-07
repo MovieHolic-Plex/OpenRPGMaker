@@ -54,18 +54,15 @@ import {
 } from "@/ai/conversationStore";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
-import { openSkillPalette, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
+import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { DEFAULT_BASE_URL, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import {
   applyAiFontSize,
-  clampDockWidth,
   clampPanelSize,
   loadAiFontSize,
-  loadDockWidth,
   loadPanelCollapsed,
   loadPanelSize,
   saveAiFontSize,
-  saveDockWidth,
   savePanelCollapsed,
   savePanelSize,
   type AiFontSize,
@@ -101,17 +98,13 @@ import {
 export {
   AI_FONT_SIZE_KEY,
   AI_FONT_SIZE_SCALE,
-  DOCK_WIDTH_LIMITS,
   PANEL_SIZE_LIMITS,
   applyAiFontSize,
-  clampDockWidth,
   clampPanelSize,
   loadAiFontSize,
-  loadDockWidth,
   loadPanelCollapsed,
   loadPanelSize,
   saveAiFontSize,
-  saveDockWidth,
   savePanelCollapsed,
   savePanelSize,
   type AiFontSize,
@@ -156,6 +149,7 @@ export {
 } from "./aiChatRenderers";
 
 const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
+const VOLATILE_OVERLAY_IDLE_MS = 6000;
 const MAP_TILE_TOOLS = new Set([
   "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
@@ -452,6 +446,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
   // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 입력창 바로 위 고정, 비면 숨김(CSS :empty).
   const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
+  let turnBusy = false;
+  let runningProgress: { startedAt: number; toolCount: number } | null = null;
+  let volatileFadeTimer: number | null = null;
+  let volatileZone: HTMLElement | null = null;
+  const revealVolatileZone = (): void => {
+    if (!volatileZone) return;
+    volatileZone.hidden = false;
+    volatileZone.classList.remove("is-faded");
+    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
+    volatileFadeTimer = null;
+  };
+  const scheduleVolatileFade = (): void => {
+    if (!volatileZone || turnBusy || runningProgress) return;
+    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
+    if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
+    volatileFadeTimer = window.setTimeout(() => {
+      volatileFadeTimer = null;
+      if (turnBusy || runningProgress || !volatileZone) return;
+      volatileZone.classList.add("is-faded");
+    }, VOLATILE_OVERLAY_IDLE_MS);
+  };
   // 원탭 답변 칩(맵 인터뷰 등 "[선택지] a | b" 마커가 있는 응답에 표시).
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   let exportButton: HTMLButtonElement | null = null;
@@ -510,6 +525,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const appendBubble = (role: "user" | "assistant" | "tool" | "system", text: string): HTMLElement => {
+    revealVolatileZone();
     removeStartScreen();
     const bubble = el("div", {
       class: `ai-chat-bubble ai-chat-${role}`,
@@ -537,6 +553,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return item;
   };
   const appendReasoning = (): { body: HTMLElement } => {
+    revealVolatileZone();
     removeStartScreen();
     if (lastReasoning?.box.parentNode === log && log.childNodes[log.childNodes.length - 1] === lastReasoning.box) {
       lastReasoning.state.count += 1;
@@ -572,6 +589,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     toolActivity = null;
   };
   const appendToolLine = (name: string, result: ToolResult, args?: Record<string, unknown>): void => {
+    revealVolatileZone();
     if (!toolActivity) {
       const list = el("div", { class: "ai-tool-activity-list" });
       list.hidden = true;
@@ -649,6 +667,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜). 사용자가 "어떤 타일인지"를
   // 번호가 아니라 그림으로 확인할 수 있다 — 맵 인터뷰 질문의 필수 시각 자료.
   const appendTileThumbs = (tilesetId: string, tiles: readonly number[]): void => {
+    revealVolatileZone();
     removeStartScreen();
     const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
@@ -698,6 +717,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const renderProposal = (result: TurnResult, extraWarnings: readonly string[] = [], assistantBubble: HTMLElement | null = null): void => {
     proposalHost.replaceChildren();
+    proposalHost.classList.remove("is-sticky-empty");
     const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
     if (result.proposedCalls.length === 0 && lines.length === 0) return;
 
@@ -1041,6 +1061,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
+    revealVolatileZone();
     removeStartScreen();
     const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
@@ -1094,7 +1115,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
   // 큐에 쌓고 "대기 중 N건"으로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
-  let turnBusy = false;
   const pendingSends: { text: string; displayAs?: string }[] = [];
   const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
   queueIndicator.hidden = true;
@@ -1135,7 +1155,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let abortButton: HTMLButtonElement | null = null;
   let activeAbortController: AbortController | null = null;
   let abortNoticeShown = false;
-  let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let progressTimer: number | null = null;
   const refreshAbortButton = (): void => {
     if (!abortButton) return;
@@ -1190,6 +1209,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     chipsHost.replaceChildren();
     closeToolActivity();
+    revealVolatileZone();
     const userBubble = appendBubble("user", displayAs ?? trimmed);
     if (displayAs !== undefined && displayAs !== trimmed) appendSkillPromptToggle(userBubble, trimmed);
     const session = ensureSession();
@@ -1213,6 +1233,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
+    revealVolatileZone();
     beginTurnProgress();
     refreshAbortButton();
     sendButton.disabled = true;
@@ -1360,6 +1381,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
+      if (pendingSends.length === 0) scheduleVolatileFade();
     }
   };
 
@@ -1690,7 +1712,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { type: "button", title: "엔드포인트/모델/API 키 설정", "aria-label": "AI 설정 열기" },
     dataset: { testid: "ai-settings-toggle" },
     on: {
-      click: () => openAiSettings("first"),
+      click: () => {
+        applyHistoryOpen(true);
+        openAiSettings("first");
+      },
     },
   });
   // 감사 로그 내보내기 — 도구줄에 라벨 달아 상주(중요 기능이라 잘 보이게, #5).
@@ -1738,19 +1763,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
   // AI 스튜디오 모드 — 에디터를 덮는 넓은 워크스페이스(좌: 대화, 우: 스킬 레일).
   let studio = typeof localStorage !== "undefined" && localStorage.getItem(STUDIO_MODE_KEY) === "1";
+  let historyOpen = false;
+  let applyHistoryOpen: (next: boolean) => void = () => {};
+  let applyStudio: (next: boolean) => void = () => {};
   const studioButton = el("button", {
     class: "ai-chat-tools-button",
     text: "⛶",
     attrs: { type: "button", title: "AI 스튜디오 — 넓게 펼치기/되돌리기", "aria-label": "AI 스튜디오 펼치기" },
     dataset: { testid: "ai-studio-toggle" },
   });
-  // 오른쪽 사이드바(도킹) ↔ 떠 있는 말풍선 전환. 도킹이 기본값.
-  const dockStored = typeof localStorage !== "undefined" ? localStorage.getItem(DOCK_MODE_KEY) : null;
-  let docked = dockStored === null ? true : dockStored === "1";
-  const dockButton = el("button", {
+  // 구 도크 버튼은 전체 기록 패널 토글로 역할을 바꾼다. testid는 호환을 위해 유지한다.
+  const historyButton = el("button", {
     class: "ai-chat-tools-button",
-    text: "⇥",
-    attrs: { type: "button", title: "사이드바 도킹 ↔ 떠 있는 말풍선", "aria-label": "AI 패널 도킹 전환" },
+    text: "🕒",
+    attrs: { type: "button", title: "전체 기록 열기", "aria-label": "전체 기록 열기" },
     dataset: { testid: "ai-dock-toggle" },
   });
   // 새 대화(#6): 현재 대화를 기록에 저장하고 문맥을 비운다. 대화가 길수록 비용이 늘어나므로 새 주제는 새 대화로.
@@ -1812,8 +1838,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-header",
     children: [
       titleEl,
-      statusGroup,
-      el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, dockButton] }),
+      el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, historyButton] }),
       collapseButton,
     ],
   });
@@ -1831,20 +1856,64 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     ],
   });
 
+  const inputRow = el("div", {
+    class: "ai-chat-input-row",
+    children: [skillToggle, input, sendButton],
+  });
+  const commandMenu = el("div", {
+    class: "ai-command-menu",
+    attrs: { role: "menu" },
+    dataset: { testid: "ai-command-menu" },
+  });
+  commandMenu.hidden = true;
+  const commandMenuToggle = el("button", {
+    class: "ai-command-menu-toggle",
+    text: "⌃",
+    attrs: { type: "button", title: "AI 메뉴", "aria-label": "AI 메뉴", "aria-expanded": "false" },
+    dataset: { testid: "ai-command-menu-toggle" },
+    on: {
+      click: () => {
+        commandMenu.hidden = !commandMenu.hidden;
+        commandMenuToggle.setAttribute("aria-expanded", String(!commandMenu.hidden));
+      },
+    },
+  }) as HTMLButtonElement;
+  const commandBar = el("div", {
+    class: "ai-command-bar",
+    dataset: { testid: "ai-command-bar" },
+    children: [
+      commandMenu,
+      commandMenuToggle,
+      el("div", {
+        class: "ai-command-input-stack",
+        children: [slashHost, contextChips, queueIndicator, inputRow],
+      }),
+      statusGroup,
+    ],
+  });
+  const volatileLogMount = el("div", {
+    class: "ai-rising-volatile-zone",
+    dataset: { testid: "ai-rising-volatile-zone" },
+    children: [log],
+  });
+  volatileZone = volatileLogMount;
+  const stickyProposalZone = el("div", {
+    class: "ai-rising-sticky-zone",
+    dataset: { testid: "ai-rising-sticky-zone" },
+    children: [proposalHost],
+  });
+  const risingOverlay = el("div", {
+    class: "ai-rising-overlay",
+    dataset: { testid: "ai-rising-overlay" },
+    children: [volatileLogMount, stickyProposalZone],
+  });
+  const historyLogMount = el("div", { class: "ai-history-log-mount" });
   const mainColumn = el("div", {
     class: "ai-chat-main",
     children: [
       settings.element,
-      log,
-      proposalHost,
+      historyLogMount,
       chipsHost,
-      slashHost,
-      contextChips,
-      queueIndicator,
-      el("div", {
-        class: "ai-chat-input-row",
-        children: [skillToggle, input, sendButton],
-      }),
     ],
   });
   const body = el("div", { class: "ai-chat-body", children: [mainColumn, drawer.element] });
@@ -1853,7 +1922,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-panel",
     attrs: { "aria-label": "AI 어시스턴트 채팅" },
     dataset: { testid: "ai-panel" },
-    children: [header, toolbar, body, collapsedRestore],
+    children: [header, toolbar, body, collapsedRestore, risingOverlay, commandBar],
   });
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
@@ -1896,36 +1965,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   panel.append(resizeHandle);
 
-  // 도킹 폭 리사이저(§2.3 — G4): 좌측 엣지 드래그로 --ai-dock-width 조절, localStorage 유지.
-  let dockWidth = loadDockWidth();
-  const applyDockWidth = (): void => {
-    if (typeof document === "undefined") return;
-    document.documentElement?.style?.setProperty?.("--ai-dock-width", `${dockWidth}px`);
-  };
-  applyDockWidth();
-  const dockResizer = el("div", {
-    class: "ai-dock-resizer",
-    attrs: { title: "드래그로 사이드바 폭 조절", "aria-label": "AI 사이드바 폭 조절", role: "separator" },
-    dataset: { testid: "ai-dock-resizer" },
-  });
-  dockResizer.addEventListener("pointerdown", (event: PointerEvent) => {
-    event.preventDefault();
-    const startX = event.clientX;
-    const startWidth = dockWidth;
-    const onMove = (move: PointerEvent): void => {
-      dockWidth = clampDockWidth(startWidth + (startX - move.clientX));
-      applyDockWidth();
-    };
-    const onUp = (): void => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      saveDockWidth(dockWidth);
-    };
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-  });
-  panel.append(dockResizer);
-
   const applyCollapsed = (): void => {
     if (collapsed) panel.classList.add("is-collapsed");
     else panel.classList.remove("is-collapsed");
@@ -1933,10 +1972,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseButton.setAttribute("title", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
     collapseButton.setAttribute("aria-label", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
     collapseButton.setAttribute("aria-expanded", String(!collapsed));
-    // 도킹 상태에서 접으면 에디터 인셋(우측 여백)을 해제한다.
-    if (typeof document !== "undefined" && document.body) {
-      document.body.classList[docked && !collapsed ? "add" : "remove"]("ai-panel-docked");
-    }
+    if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
   };
   const toggleCollapsed = (): void => {
@@ -1955,8 +1991,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   collapsedRestore.addEventListener("click", restoreCollapsed);
   applyCollapsed();
 
+  applyHistoryOpen = (next: boolean): void => {
+    historyOpen = next;
+    if (historyOpen) {
+      panel.classList.add("is-history-open", "is-docked");
+      historyLogMount.append(log);
+      historyButton.textContent = "×";
+      historyButton.setAttribute("title", "전체 기록 닫기");
+      historyButton.setAttribute("aria-label", "전체 기록 닫기");
+    } else {
+      panel.classList.remove("is-history-open", "is-docked");
+      volatileLogMount.append(log);
+      historyButton.textContent = "🕒";
+      historyButton.setAttribute("title", "전체 기록 열기");
+      historyButton.setAttribute("aria-label", "전체 기록 열기");
+    }
+    if (typeof document !== "undefined" && document.body) {
+      document.body.classList.remove("ai-panel-docked");
+      document.body.classList.add("ai-command-bar-active");
+    }
+    applySize();
+  };
+  historyButton.addEventListener("click", () => applyHistoryOpen(!historyOpen));
+
   // 스튜디오 모드 적용: 넓은 레이아웃 + 스킬 레일 상시 노출.
-  const applyStudio = (next: boolean): void => {
+  applyStudio = (next: boolean): void => {
     studio = next;
     if (typeof localStorage !== "undefined") localStorage.setItem(STUDIO_MODE_KEY, studio ? "1" : "0");
     if (studio) {
@@ -1967,7 +2026,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       panel.classList.add("is-studio");
       panel.setAttribute("style", ""); // 커스텀 크기 대신 전체 폭.
-      // 스튜디오는 전체 오버레이라 도킹을 시각적으로 해제한다(도킹 선호는 유지).
+      // 스튜디오는 전체 오버레이라 기록 패널을 넓은 워크스페이스로 전환한다.
+      historyOpen = true;
+      historyLogMount.append(log);
       panel.classList.remove("is-docked");
       if (typeof document !== "undefined" && document.body) document.body.classList.remove("ai-panel-docked");
       drawer.element.hidden = false;
@@ -1979,39 +2040,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       drawer.element.hidden = true;
       studioButton.textContent = "⛶";
       studioButton.setAttribute("aria-label", "AI 스튜디오 펼치기");
-      applyDock(docked); // 스튜디오 해제 시 도킹 선호를 복원(또는 떠 있는 말풍선).
+      applyHistoryOpen(false);
     }
   };
   studioButton.addEventListener("click", () => applyStudio(!studio));
 
-  // 도킹(오른쪽 사이드바) 적용: body에 클래스를 걸어 에디터를 밀어내고, 패널을 우측 전체 높이로 고정한다.
-  const applyDock = (next: boolean): void => {
-    docked = next;
-    if (typeof localStorage !== "undefined") localStorage.setItem(DOCK_MODE_KEY, docked ? "1" : "0");
-    if (docked && studio) {
-      applyStudio(false); // 도킹 선택 시 스튜디오 해제(applyStudio가 다시 applyDock을 호출한다).
-      return;
-    }
-    if (docked) {
-      panel.classList.add("is-docked");
-      dockButton.textContent = "⇤";
-      dockButton.setAttribute("title", "떠 있는 말풍선으로 전환");
-      dockButton.setAttribute("aria-label", "AI 패널을 떠 있는 말풍선으로 전환");
-    } else {
-      panel.classList.remove("is-docked");
-      dockButton.textContent = "⇥";
-      dockButton.setAttribute("title", "오른쪽 사이드바로 도킹");
-      dockButton.setAttribute("aria-label", "AI 패널을 오른쪽 사이드바로 도킹");
-    }
-    if (typeof document !== "undefined" && document.body) {
-      document.body.classList[docked && !collapsed ? "add" : "remove"]("ai-panel-docked");
-    }
-    applySize();
-  };
-  dockButton.addEventListener("click", () => applyDock(!docked));
-  // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 도킹(기본값) 적용.
+  commandMenu.replaceChildren(
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "🕒 전체 기록",
+      attrs: { type: "button", role: "menuitem" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); applyHistoryOpen(true); } },
+    }),
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "➕ 새 대화",
+      attrs: { type: "button", role: "menuitem" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); newSessionButton.click(); } },
+    }),
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "⚙️ 설정",
+      attrs: { type: "button", role: "menuitem" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); applyHistoryOpen(true); openAiSettings("first"); } },
+    }),
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "🎬 스튜디오",
+      attrs: { type: "button", role: "menuitem" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); applyStudio(true); } },
+    })
+  );
+
+  // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.
   if (studio) applyStudio(true);
-  else applyDock(docked);
+  else applyHistoryOpen(false);
 
   const handleAiAssist = (event: Event): void => {
     const detail = event instanceof CustomEvent ? event.detail : null;
@@ -2053,7 +2116,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     document.addEventListener?.("keydown", (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        openSkillPalette((skill) => drawer.run(skill));
+        input.focus();
+        revealVolatileZone();
       }
     });
   }
@@ -2062,7 +2126,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 }
 
 const STUDIO_MODE_KEY = "rpg-zzu:ai-studio";
-const DOCK_MODE_KEY = "rpg-zzu:ai-panel-docked";
 
 // ── 설정 폼(접이식) ─────────────────────────────────────────────
 // 입력이 바뀌면 즉시 localStorage에 자동 저장한다 — "저장 버튼을 안 눌러서 날아가는" 문제 방지.

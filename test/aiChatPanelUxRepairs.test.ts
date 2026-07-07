@@ -186,6 +186,27 @@ describe("대화 복원과 내보내기", () => {
 });
 
 describe("키 온보딩과 설정 접근성", () => {
+  it("하단 커맨드 바에 입력과 확장 메뉴를 마운트한다", () => {
+    const panel = renderPanel();
+    const commandBar = findByTestId(panel, "ai-command-bar");
+    const menu = findByTestId(panel, "ai-command-menu");
+
+    expect(commandBar).toBeTruthy();
+    expect(findByTestId(commandBar!, "ai-input")).toBeTruthy();
+    expect(findByTestId(commandBar!, "ai-send")).toBeTruthy();
+    expect(findByTestId(commandBar!, "ai-context-chips")).toBeTruthy();
+    expect(findByTestId(panel, "ai-rising-overlay")).toBeTruthy();
+    expect(menu?.hidden).toBe(true);
+
+    findByTestId(panel, "ai-command-menu-toggle")?.click();
+    expect(menu?.hidden).toBe(false);
+    expect(menu?.textContent).toContain("전체 기록");
+    expect(menu?.textContent).toContain("새 대화");
+    expect(menu?.textContent).toContain("설정");
+    expect(menu?.textContent).toContain("스튜디오");
+    expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);
+  });
+
   it("키가 없으면 전송 전에 설정을 열고 API 키 입력에 포커스하며 안내를 중복하지 않는다", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;

@@ -62,28 +62,30 @@ describe("AI 패널 크롬", () => {
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBeUndefined();
   });
 
-  it("접기 버튼은 도킹 레일 복귀 타깃을 남기고, 복귀 타깃 클릭으로 펼친다", () => {
+  it("접기 버튼은 커맨드 바 인셋을 유지하고, 복귀 타깃 클릭으로 펼친다", () => {
     const panel = renderPanel();
     const collapse = findByTestId(panel, "ai-collapse");
     if (!collapse) throw new Error("collapse button missing");
-    expect(document.body.classList.contains("ai-panel-docked")).toBe(true);
+    expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
+    expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
 
     collapse.click();
 
-    expect(panel.classList.contains("is-docked")).toBe(true);
+    expect(panel.classList.contains("is-docked")).toBe(false);
     expect(panel.classList.contains("is-collapsed")).toBe(true);
     const restore = findByTestId(panel, "ai-collapsed-restore");
-    const railLabel = restore?.querySelector(".ai-collapsed-restore-rail-label");
     expect(restore).toBeTruthy();
     expect(restore?.getAttribute("title")).toBe("AI 패널 펼치기");
-    expect(railLabel?.textContent).toBe("AI 어시스턴트");
+    expect(restore?.querySelector(".ai-collapsed-restore-float")?.textContent).toBe("🤖 AI ▸");
+    expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
     expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
 
     restore?.click();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(document.body.classList.contains("ai-panel-docked")).toBe(true);
+    expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
+    expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
   });
 
