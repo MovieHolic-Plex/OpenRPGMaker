@@ -1996,3 +1996,129 @@
     font-size: 13px;
     height: 32px;
   }
+
+/* UXC editor shell repairs: keep canvas controls in reserved chrome, not over the map. */
+.editor-canvas-scroll-shell {
+  top: 48px !important;
+}
+
+.persistence-mode-banner ~ .editor-canvas-scroll-shell {
+  top: 74px !important;
+}
+
+.canvas-toolbar,
+.persistence-mode-banner ~ .canvas-toolbar {
+  left: auto;
+  max-width: calc(100% - 24px);
+  right: 12px;
+  top: 8px;
+  transform: none;
+}
+
+.persistence-mode-banner ~ .canvas-toolbar {
+  top: 36px;
+}
+
+.canvas-toolbar-zoom-group,
+.canvas-toolbar-save-group {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.canvas-toolbar .zoom-button,
+.canvas-toolbar .canvas-toolbar-save-group {
+  display: none;
+}
+
+.canvas-toolbar:hover .zoom-button,
+.canvas-toolbar:focus-within .zoom-button,
+.canvas-toolbar.is-expanded .zoom-button,
+.canvas-toolbar:hover .canvas-toolbar-save-group,
+.canvas-toolbar:focus-within .canvas-toolbar-save-group,
+.canvas-toolbar.is-expanded .canvas-toolbar-save-group {
+  display: inline-flex;
+}
+
+.canvas-toolbar-save-group {
+  border-left: 1px solid var(--editor-line);
+  margin-left: 4px;
+  padding-left: 6px;
+}
+
+.canvas-toolbar-expand {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  height: 30px;
+  justify-content: center;
+  min-width: 30px;
+  padding: 0;
+}
+
+.map-save-button {
+  min-width: 66px;
+}
+
+.map-lock-banner {
+  align-items: center;
+  background: rgba(122, 46, 46, 0.94);
+  border: 1px solid rgba(255, 210, 210, 0.34);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop);
+  color: #ffe2e2;
+  display: flex;
+  gap: 8px;
+  left: 12px;
+  max-width: min(560px, calc(100% - 380px));
+  min-height: 32px;
+  padding: 5px 8px;
+  position: absolute;
+  top: 8px;
+  z-index: 22;
+}
+
+.map-lock-banner.is-hidden {
+  display: none;
+}
+
+.map-lock-banner-text {
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-lock-takeover-button {
+  background: var(--control-bg);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 12px;
+  min-height: 26px;
+  padding: 3px 8px;
+}
+
+.event-editor-draft-status {
+  color: var(--text-2);
+  font-size: 12px;
+  margin-right: auto;
+}
+
+@media (max-width: 1320px) {
+  .map-lock-banner {
+    max-width: calc(100% - 260px);
+  }
+
+  .canvas-toolbar-label {
+    font-size: 12px;
+  }
+}

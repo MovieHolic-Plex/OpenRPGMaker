@@ -7,6 +7,7 @@
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.
   - `bootApp()` loads the project store, seeds editor state from `startMapId`, renders the topbar, and enters edit mode.
+  - If canonical project load fails with a validation/integrity error, `src/app/mode.ts` renders a recovery screen whose primary actions load a sample or blank fallback project through `store.loadFallbackProject()`. That path keeps remote/local saved data intact and disables remote persistence until the user explicitly reconnects or exports.
   - `enterMode()` tears down the previous mode, clears the main area, and lazily imports either the editor or player renderer.
   - `startEditGame()` and `startPlayGame()` build separate Phaser games with different scenes/resolution; `destroyGame()` is the shared cleanup path.
 

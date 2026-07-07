@@ -10,9 +10,14 @@ let mapScreenshotRequestSeq = 0;
 export function renderCanvasToolbar(container: HTMLElement): void {
   clearChildren(container);
   const currentZoom = editorState.get().zoom;
-  container.append(el("span", { class: "canvas-toolbar-label", text: "확대" }));
+  const zoomGroup = el("div", {
+    class: "canvas-toolbar-zoom-group",
+    attrs: { "aria-label": "캔버스 확대", role: "group" },
+    dataset: { testid: "editor-zoom-group" },
+    children: [el("span", { class: "canvas-toolbar-label", text: "확대" })],
+  });
   for (const zoom of EDITOR_ZOOM_LEVELS) {
-    container.append(
+    zoomGroup.append(
       el("button", {
         class: "rm2k3-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),
         text: `${zoom}x`,
@@ -22,15 +27,33 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       })
     );
   }
-  container.append(
-    el("button", {
-      class: "rm2k3-tool-button zoom-button",
-      text: "맵 저장",
-      attrs: { title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
-      dataset: { testid: "editor-map-screenshot-button" },
-      on: { click: () => void downloadCurrentMapScreenshot() },
-    })
-  );
+  const saveAction = el("div", {
+    class: "canvas-toolbar-save-group",
+    attrs: { "aria-label": "맵 이미지 저장", role: "group" },
+    dataset: { testid: "editor-map-save-group" },
+    children: [
+      el("button", {
+        class: "rm2k3-tool-button map-save-button",
+        text: "맵 저장",
+        attrs: { title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
+        dataset: { testid: "editor-map-screenshot-button" },
+        on: { click: () => void downloadCurrentMapScreenshot() },
+      }),
+    ],
+  });
+  const expandButton = el("button", {
+      class: "canvas-toolbar-expand",
+      text: "⋯",
+      attrs: { type: "button", title: "확대/저장 컨트롤", "aria-label": "확대/저장 컨트롤" },
+      dataset: { testid: "editor-canvas-toolbar-expand" },
+      on: {
+        click: () => {
+          if (container.classList.contains("is-expanded")) container.classList.remove("is-expanded");
+          else container.classList.add("is-expanded");
+        },
+      },
+    });
+  container.append(zoomGroup, expandButton, saveAction);
 }
 
 async function downloadCurrentMapScreenshot(): Promise<void> {

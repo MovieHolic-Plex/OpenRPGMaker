@@ -146,7 +146,7 @@ export function openSkillPalette(onRun: (skill: SkillDef) => void): HTMLElement 
   }) as HTMLInputElement;
 
   const backdrop = el("div", {
-    class: "database-modal-backdrop ai-skill-palette-backdrop",
+    class: "ai-skill-palette-backdrop",
     attrs: { role: "presentation" },
     dataset: { testid: "ai-skill-palette" },
     children: [

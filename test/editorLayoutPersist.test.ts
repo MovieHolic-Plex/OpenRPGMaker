@@ -121,6 +121,8 @@ function mockEditorDependencies(): void {
   vi.doMock("@/editor/mapEditLocks", () => ({
     ensureCurrentMapLock: vi.fn(),
     getMapEditLockStatus: () => lockStatus,
+    isMapEditLockTakeoverImmediate: () => false,
+    mapEditLockLastActivityText: () => "방금 활동",
     subscribeMapEditLocks: vi.fn(() => () => undefined),
     takeoverMapLock,
   }));
