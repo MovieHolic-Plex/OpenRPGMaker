@@ -10,6 +10,7 @@ import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";
 import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import { lintWorld, normalizeProjectWorld } from "@/project/world";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -259,14 +260,17 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
 
 const runLint: ToolDefinition = {
   name: "run_lint",
-  description: "projectLint를 실행해 무결성 issue 목록을 반환한다.",
+  description: "projectLint와 세계관 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
     properties: { reachability: { type: "array", description: "[{mapId,from,targets}]", items: { type: "object" } } },
   },
   run(project, args): ToolExecResult {
-    const issues: LintIssue[] = projectLint(project, { reachability: toReachSpecs(args.reachability) });
+    const issues: LintIssue[] = [
+      ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
+      ...lintWorld(normalizeProjectWorld(project), project),
+    ];
     const errors = issues.filter((issue) => issue.severity === "error").length;
     const warnings = issues.filter((issue) => issue.severity === "warning").length;
     const infos = issues.filter((issue) => issue.severity === "info").length;

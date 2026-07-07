@@ -274,6 +274,8 @@ function changeSummary(): ChangeSummary {
     tilesChanged: 0,
     tilesetsChanged: 1,
     variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
     warnings: [],
   };
 }

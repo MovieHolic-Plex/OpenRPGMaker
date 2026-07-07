@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 77개 툴 — 쓰기 49, 읽기 28.
+> 총 80개 툴 — 쓰기 51, 읽기 29.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -40,6 +40,8 @@
 | `upsert_common_event` | `id: string`, `name: string`, `trigger?: none\|auto\|parallel`, `conditionSwitchId?: string`, `commands: array` | 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능. |
 | `set_session_start` | `gold?: integer`, `inventory?: object`, `partyActorIds?: array` | 게임 시작 상태(골드/인벤토리/파티)를 설정한다. |
 | `set_title_screen` | `title: string`, `menuLabels?: object` | 타이틀 화면 제목/메뉴 라벨을 설정한다. |
+| `upsert_world_entities` | `entities: array` | 세계관 개체를 배치 추가/수정한다. 새 NPC/맵/명명 아이템을 만들 때 같은 제안에 반드시 세계관 갱신을 동봉하라. 잠긴 세계관 개체는 AI가 수정할 수 없다. |
+| `link_world_ref` | `entityId: string`, `kind: map\|event\|item\|skill\|actor`, `id: string`, `action: link\|unlink` | 기존 세계관 개체에 게임 개체 ref(kind+id)를 연결하거나 해제한다. 새 NPC/맵/명명 아이템 생성 시 upsert_world_entities와 함께 실제 게임 id를 연결하라. |
 | `create_quest_flags` | `questKey: string`, `steps: integer` | 퀘스트용 스위치(sw_<key>_started/_done)와 진행 변수(var_<key>_progress)를 자동 등록한다. |
 | `create_quest` | `def: object` | 선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존. |
 | `tune_enemy` | `enemyId: string`, `targetHitsToKill: integer`, `targetDamageToHeroPerHit: integer`, `heroLevel?: integer` | 데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함. |
@@ -64,6 +66,7 @@
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
+| `query_world` | `type?: character\|place\|faction\|event\|item\|concept\|guideline`, `tags?: array`, `text?: string`, `limit?: integer` | 세계관 개체와 관계를 조회한다. type/tags/text로 필터링해 상세(body/refs/relations)를 읽고, 세계관을 수정하기 전 현재 내용을 확인하라. |
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
@@ -74,7 +77,7 @@
 | `find_switch_usage` | `switchId: string` | 스위치의 전 맵 이벤트/커먼이벤트/트룹 전투이벤트 역참조를 찾는다. |
 | `list_resources` | `kind: tile\|charset\|backdrop\|bgm\|se`, `query: string` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/backdrop/bgm/se. |
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps` | 컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps. |
-| `run_lint` | `reachability?: array` | projectLint를 실행해 무결성 issue 목록을 반환한다. |
+| `run_lint` | `reachability?: array` | projectLint와 세계관 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
 | `list_project_commits` | `limit?: integer` | Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다. |
 | `get_tile_info` | `tileIds: array`, `tilesetId?: string` | 타일들의 의미(라벨/설명/태그)·시맨틱 그룹·배치 규칙(placementRules)·통행성·레이어를 조회한다. 타일을 깔기 전에 확인하는 용도. |

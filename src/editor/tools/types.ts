@@ -32,6 +32,8 @@ export interface ChangeSummary {
   tilesetsChanged: number;
   switchesAdded: number;
   variablesAdded: number;
+  worldEntitiesAdded: number;
+  worldEntitiesModified: number;
   sessionChanged: boolean;
   systemChanged: boolean;
   warnings: string[];

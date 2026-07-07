@@ -122,6 +122,8 @@ function emptySummary(): ChangeSummary {
     tilesetsChanged: 0,
     switchesAdded: 0,
     variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
@@ -149,6 +151,7 @@ function summarizeHeadlessChanges(before: Project, after: Project): ChangeSummar
   }
   summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
+  diffWorld(before, after, summary);
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
   return summary;
@@ -222,4 +225,15 @@ function countNamedDefChanges(
     else if (prev !== undefined && prev === "" && entry.name !== "") changed += 1;
   }
   return changed;
+}
+
+function diffWorld(before: Project, after: Project, summary: ChangeSummary): void {
+  const beforeEntities = before.world?.entities ?? [];
+  const afterEntities = after.world?.entities ?? [];
+  const beforeById = new Map(beforeEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
+  for (const entity of afterEntities) {
+    const prev = beforeById.get(entity.id);
+    if (prev === undefined) summary.worldEntitiesAdded += 1;
+    else if (prev !== JSON.stringify(entity)) summary.worldEntitiesModified += 1;
+  }
 }
