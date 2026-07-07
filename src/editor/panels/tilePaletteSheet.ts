@@ -31,6 +31,9 @@ type SheetRangeSelection = {
 type SheetRangeDrag = {
   readonly active: boolean;
   readonly currentTile: number;
+  // 기본 드래그 = 멀티타일 스탬프(칠하기 의도), Shift+드래그 = AI 범위 분류.
+  // 과거엔 모든 드래그가 분류에 흡수되어 스탬프가 마우스로 도달 불가한 죽은 기능이었다(UX 리뷰 버그 1).
+  readonly mode: "stamp" | "classify";
   readonly startClientX: number;
   readonly startClientY: number;
   readonly startTile: number;
@@ -103,7 +106,14 @@ export function makeChipsetSheet(args: MakeChipsetSheetArgs): HTMLElement {
     overlay.append(cell);
   }
   sheet.append(overlay);
-  installSheetRangeSelection({ cells, layer: args.layer, overlay, sheet, tileset: args.tileset });
+  installSheetRangeSelection({
+    cells,
+    layer: args.layer,
+    onCreatePaletteStamp: args.onCreatePaletteStamp,
+    overlay,
+    sheet,
+    tileset: args.tileset,
+  });
   return sheet;
 }
 
@@ -203,6 +213,7 @@ function classifiedTiles(tileset: TilesetDef): Set<number> {
 type SheetRangeSelectionArgs = {
   readonly cells: ReadonlyMap<number, HTMLButtonElement>;
   readonly layer: Exclude<Layer, "event">;
+  readonly onCreatePaletteStamp: (stamp: PaletteStamp) => void;
   readonly overlay: HTMLElement;
   readonly sheet: HTMLElement;
   readonly tileset: TilesetDef;
@@ -234,6 +245,7 @@ function installSheetRangeSelection(args: SheetRangeSelectionArgs): void {
     sheetRangeDrag = {
       active: false,
       currentTile: startTile,
+      mode: "shiftKey" in event && event.shiftKey === true ? "classify" : "stamp",
       startClientX: point.x,
       startClientY: point.y,
       startTile,
@@ -265,6 +277,13 @@ function installSheetRangeSelection(args: SheetRangeSelectionArgs): void {
     sheetRangeDrag = null;
     hideMarquee(marquee);
     if (!active) return;
+    if (drag.mode === "stamp") {
+      // 기본 드래그 = 멀티타일 스탬프. 지붕 3줄 같은 세트를 한 번에 집어 칠한다.
+      paintRangeCells(args.cells, []);
+      args.onCreatePaletteStamp(createPaletteStampFromDrag({ endTile: currentTile, startTile: drag.startTile, tileset: args.tileset }));
+      event.preventDefault();
+      return;
+    }
     showSelection(sheetRangeSelection(args.tileset, args.layer, drag.startTile, currentTile));
     event.preventDefault();
   });

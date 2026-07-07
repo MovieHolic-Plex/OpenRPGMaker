@@ -99,10 +99,12 @@ afterEach(() => {
 });
 
 describe("sheet range selection", () => {
-  it("opens range-classify with the sheet rect and filtered tile ids after marquee drag", () => {
+  // 2026-07-08 계약 변경(UX 리뷰): 무수식 드래그 = 멀티타일 스탬프(칠하기 기본값),
+  // Shift+드래그 = AI 범위 분류. 과거엔 모든 드래그가 분류에 흡수되어 스탬프가 죽은 기능이었다.
+  it("opens range-classify with the sheet rect and filtered tile ids after shift-marquee drag", () => {
     const root = renderPalette();
 
-    dispatchPointer(requireTestId(root, "chipset-tile-2"), "pointerdown", { clientX: 4, clientY: 4 });
+    dispatchPointer(requireTestId(root, "chipset-tile-2"), "pointerdown", { clientX: 4, clientY: 4, shiftKey: true });
     dispatchPointer(requireTestId(root, "chipset-tile-13"), "pointermove", { clientX: 18, clientY: 18 });
     dispatchPointer(requireTestId(root, "chipset-tile-13"), "pointerup", { clientX: 18, clientY: 18 });
     requireTestId(root, "sheet-range-classify").click();
@@ -113,6 +115,20 @@ describe("sheet range selection", () => {
       tileIds: [2, 3, 7, 8, 12, 13],
       tilesetId: "range_tileset",
     });
+  });
+
+  it("creates a multi-tile palette stamp from a plain (no-shift) marquee drag", () => {
+    const root = renderPalette();
+
+    dispatchPointer(requireTestId(root, "chipset-tile-2"), "pointerdown", { clientX: 4, clientY: 4 });
+    dispatchPointer(requireTestId(root, "chipset-tile-13"), "pointermove", { clientX: 18, clientY: 18 });
+    dispatchPointer(requireTestId(root, "chipset-tile-13"), "pointerup", { clientX: 18, clientY: 18 });
+
+    expect(findByTestId(root, "sheet-range-classify")).toBeNull();
+    expect(modalMock.openClusterAiModal).not.toHaveBeenCalled();
+    const stamp = editorState.get().activePaletteStamp;
+    expect(stamp).not.toBeNull();
+    expect(stamp?.cells.map((cell) => cell.tile).sort((a, b) => a - b)).toEqual([2, 3, 7, 8, 12, 13]);
   });
 
   it("keeps a small pointer movement as a normal tile click without showing range action", () => {
@@ -126,10 +142,10 @@ describe("sheet range selection", () => {
     expect(modalMock.openClusterAiModal).not.toHaveBeenCalled();
   });
 
-  it("allows a one-cell range when the pointer crosses the marquee threshold", () => {
+  it("allows a one-cell range when the shift-pointer crosses the marquee threshold", () => {
     const root = renderPalette();
 
-    dispatchPointer(requireTestId(root, "chipset-tile-4"), "pointerdown", { clientX: 0, clientY: 0 });
+    dispatchPointer(requireTestId(root, "chipset-tile-4"), "pointerdown", { clientX: 0, clientY: 0, shiftKey: true });
     dispatchPointer(requireTestId(root, "chipset-tile-4"), "pointermove", { clientX: 8, clientY: 0 });
     dispatchPointer(requireTestId(root, "chipset-tile-4"), "pointerup", { clientX: 8, clientY: 0 });
     requireTestId(root, "sheet-range-classify").click();
@@ -167,12 +183,17 @@ function renderPalette(): FakeElement {
   });
 }
 
-function dispatchPointer(target: FakeElement, type: string, point: { readonly clientX: number; readonly clientY: number }): void {
+function dispatchPointer(
+  target: FakeElement,
+  type: string,
+  point: { readonly clientX: number; readonly clientY: number; readonly shiftKey?: boolean }
+): void {
   const event = new Event(type, { bubbles: true, cancelable: true });
   Object.defineProperty(event, "button", { configurable: true, value: 0 });
   Object.defineProperty(event, "clientX", { configurable: true, value: point.clientX });
   Object.defineProperty(event, "clientY", { configurable: true, value: point.clientY });
   Object.defineProperty(event, "pointerId", { configurable: true, value: 1 });
+  Object.defineProperty(event, "shiftKey", { configurable: true, value: point.shiftKey ?? false });
   target.dispatchEvent(event);
 }
 
