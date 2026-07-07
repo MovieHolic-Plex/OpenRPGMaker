@@ -12,6 +12,7 @@ import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
 import { HISTORY_TOOLS } from "@/editor/tools/historyTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { TILE_TOOLS_V2 } from "@/editor/tools/v2";
+import { HOUSE_KIT_TOOLS } from "@/editor/tools/houseKitTools";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "@/editor/tools/v3";
 import { PALETTE_PRESET_TOOLS } from "@/editor/tools/palettePresetTools";
 import { PLAY_TOOLS } from "@/editor/tools/playTools";
@@ -40,6 +41,7 @@ const PLACEMENT_CATEGORIES: readonly ToolCategory[] = PLACEMENT_TOOLS.length > 0
 export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "타일 v3 (승인 어휘)", tools: VOCABULARY_TOOLS_V3 },
   { label: "타일 v3 (공정 시공)", tools: CONSTRUCTION_TOOLS_V3 },
+  { label: "집 키트(하네싱)", tools: HOUSE_KIT_TOOLS },
   { label: "타일 v2", tools: TILE_TOOLS_V2 },
   { label: "맵 편집", tools: MAP_TOOLS },
   { label: "맵 생성", tools: MAP_GEN_TOOLS },
