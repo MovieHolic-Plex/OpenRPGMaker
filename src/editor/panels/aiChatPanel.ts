@@ -33,6 +33,7 @@ import {
   proposalNeedsExplicitApproval,
   ruleToolRejectionText,
   type AuditEntry,
+  type PendingBuild,
   type ProposedCall,
   type SessionEvent,
   type TurnResult,
@@ -567,6 +568,72 @@ export function callsWithVocabularyEdits(
 export function hasVocabularyEdits(editsByCall: ReadonlyMap<number, ReadonlyMap<number, VocabularyCardEdit>>): boolean {
   for (const edits of editsByCall.values()) if (edits.size > 0) return true;
   return false;
+}
+
+// ─── 승인+시공 융합 (2026-07-07 타일 시공 흐름 재설계 §2.1.3) ────────────────────
+// 어휘 제안 카드에 첨부된 보류 시공(pendingBuild)을 수락 제스처 안에서 실행한다.
+// 모델 재호출 없음(결정적): 어휘 커밋이 반영된 draft에 프리미티브를 직접 실행하고 함께 커밋한다.
+
+export interface SelectedPendingBuild {
+  readonly callIndex: number;
+  readonly pending: PendingBuild;
+}
+
+export function collectPendingBuilds(calls: readonly ProposedCall[], selected?: readonly boolean[]): SelectedPendingBuild[] {
+  const out: SelectedPendingBuild[] = [];
+  calls.forEach((call, index) => {
+    if (selected && selected[index] !== true) return;
+    for (const pending of call.pendingBuilds ?? []) out.push({ callIndex: index, pending });
+  });
+  return out;
+}
+
+// 카드 교정으로 커밋된 그룹 id가 바뀐 경우(이름 교정 → 슬러그 재생성 등) 보류 시공의
+// 어휘 id 인자를 교정값으로 리바인드한다. originalCards[i] ↔ committedCards[i] 는 1:1.
+export function rebindPendingBuildArgs(
+  pending: PendingBuild,
+  originalCards: readonly VocabularyProposalCard[] | null,
+  committedCards: readonly VocabularyProposalCard[] | null
+): Record<string, unknown> {
+  const args = structuredClone(pending.args);
+  const original = originalCards ?? [];
+  const committed = committedCards ?? original;
+  let target: string | undefined;
+  const index = original.findIndex((card) => card.kind === "group" && card.groupId === pending.vocabId);
+  if (index >= 0) target = committed[index]?.groupId ?? pending.vocabId;
+  else {
+    // 모델이 다른 id(예: 자기가 만든 '흰-벽-2')를 썼어도 단일 그룹 제안이면 그 그룹으로 묶는다.
+    const groups = committed.filter((card) => card.kind === "group" && typeof card.groupId === "string");
+    if (groups.length === 1) target = groups[0].groupId;
+  }
+  if (target !== undefined) args[pending.vocabIdField] = target;
+  return args;
+}
+
+export interface PendingBuildOutcome {
+  readonly pending: PendingBuild;
+  readonly result: ToolResult;
+}
+
+// 어휘 커밋이 반영된 프로젝트에 보류 시공을 순서대로 실행한다. 실패한 시공은 draft가
+// 폐기되므로(runTool) 성공분만 프로젝트에 남는다 — 호출측이 실패 사유를 표시한다.
+export function runPendingBuilds(
+  project: Project,
+  builds: readonly { readonly pending: PendingBuild; readonly args: Record<string, unknown> }[]
+): { project: Project; outcomes: PendingBuildOutcome[] } {
+  const ctx: ToolContext = { project };
+  const outcomes: PendingBuildOutcome[] = [];
+  for (const { pending, args } of builds) {
+    const result = runTool(ctx, pending.tool, args, { dryRun: false });
+    outcomes.push({ pending, result });
+  }
+  return { project: ctx.project, outcomes };
+}
+
+// 버튼 라벨(§2.1.3): 보류 시공이 있으면 "승인하고 시공", 없으면 기존 "수락해서 적용".
+export function proposalAcceptButtonLabel(hasPendingBuild: boolean, selectedCount: number, total: number): string {
+  if (hasPendingBuild) return selectedCount === total ? "승인하고 시공" : `선택 ${selectedCount}건 승인하고 시공`;
+  return selectedCount === total ? "수락해서 적용" : `선택 ${selectedCount}건 적용`;
 }
 
 const VOCAB_ROLE_OPTIONS = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"] as const;
@@ -1222,7 +1289,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (acceptButton) {
         const count = selected.filter(Boolean).length;
         acceptButton.disabled = count === 0;
-        acceptButton.textContent = count === result.proposedCalls.length ? "수락해서 적용" : `선택 ${count}건 적용`;
+        // 보류 시공(§2.1.3)이 선택에 포함되면 라벨이 "승인하고 시공"으로 바뀐다.
+        const hasPending = result.proposedCalls.some((call, index) => selected[index] === true && (call.pendingBuilds?.length ?? 0) > 0);
+        acceptButton.textContent = proposalAcceptButtonLabel(hasPending, count, result.proposedCalls.length);
       }
     };
 
@@ -1359,7 +1428,40 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast(`적용 실패: ${reassembled.message}`, "error");
       return;
     }
-    const proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
+    let proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
+
+    // 승인+시공 융합(§2.1.3): 어휘 커밋(=파츠 생성)이 반영된 draft에 보류 시공을
+    // 같은 사용자 제스처 안에서 실행한다. 모델 재호출 없음. 카드 교정으로 그룹 id가
+    // 바뀌었으면(재실행 결과 카드 기준) 어휘 id 인자를 리바인드한다.
+    const pendingSelections = collectPendingBuilds(calls, selected);
+    let fusionOutcomes: PendingBuildOutcome[] = [];
+    if (pendingSelections.length > 0) {
+      // calls[i] → selectedCalls 내 위치(재실행 결과 인덱스) 매핑.
+      const selectedPosition = (callIndex: number): number => {
+        let position = -1;
+        for (let index = 0; index <= callIndex; index += 1) if (selected[index]) position += 1;
+        return position;
+      };
+      const builds = pendingSelections.map(({ callIndex, pending }) => {
+        const call = calls[callIndex];
+        const originalCards = vocabularyCardsData(call)?.cards ?? null;
+        const committedResult = reassembled?.ok ? reassembled.results[selectedPosition(callIndex)] : null;
+        const committedCards = committedResult
+          ? vocabularyCardsData({ name: call.name, result: committedResult })?.cards ?? null
+          : originalCards;
+        return { pending, args: rebindPendingBuildArgs(pending, originalCards, committedCards) };
+      });
+      const fused = runPendingBuilds(proposed, builds);
+      proposed = fused.project;
+      fusionOutcomes = fused.outcomes;
+      // 실패 사유 표시 — 성공분만 커밋된다(실패 draft는 폐기됨). TODO(4단계): 커스텀 모달로 교체.
+      for (const outcome of fusionOutcomes.filter((entry) => !entry.result.ok)) {
+        appendBubble("system", `⚠️ 시공 실패 — ${outcome.pending.label}: ${outcome.result.summary}`);
+        toast(`시공 실패: ${outcome.pending.label}`, "error");
+      }
+    }
+    const fusionApplied = fusionOutcomes.filter((entry) => entry.result.ok);
+
     // 커밋 게이트: 합쳐진 최종 draft를 다시 lint. error가 있으면 반영 거부.
     const commit = commitChangeset(proposed);
     if (!commit.ok) {
@@ -1372,14 +1474,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     recordProjectSnapshot(aiHistoryLabel(selectedCalls), currentHistoryMapId()); // 변경 이전 상태를 undo 스냅샷으로.
     store.replace(proposed); // 자동 저장은 store가 스케줄.
     focusAcceptedAgentChanges(before, proposed);
-    const actualDiff = reassembled?.ok ? combineDiffs(reassembled.results.map((result) => result.diff)) : summarizeChanges(before, proposed);
+    const actualDiff = reassembled?.ok
+      ? combineDiffs([...reassembled.results, ...fusionApplied.map((entry) => entry.result)].map((result) => result.diff))
+      : summarizeChanges(before, proposed);
     recordProjectCommitFireAndForget({
       project: proposed,
       identity: currentAgentEditorIdentity(loadAiConfig().model),
       reviewStatus: "approved",
       summary: aiHistoryLabel(selectedCalls),
       diff: actualDiff,
-      toolNames: selectedCalls.map((call) => call.name),
+      toolNames: [...selectedCalls.map((call) => call.name), ...fusionApplied.map((entry) => entry.pending.tool)],
     });
     resetManualProjectCommitBaseline(proposed);
     proposalHost.replaceChildren();
@@ -1391,7 +1495,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       : { calls: selectedCalls, assistantBubble: null, summary: proposalHumanSummaryLine(selectedCalls) };
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${selectedCalls.length}건을 프로젝트에 적용했습니다.`);
-    toast("AI 변경안을 적용했습니다.", "ok");
+    // 융합 시공 결과(§2.1.3) — 수락 한 번으로 어휘 승인 + 시공까지 끝났음을 보여준다.
+    for (const outcome of fusionApplied) {
+      appendBubble("system", `🏗 승인하고 시공 — ${outcome.result.summary}`);
+    }
+    toast(fusionApplied.length > 0 ? "어휘를 승인하고 바로 시공했습니다." : "AI 변경안을 적용했습니다.", "ok");
     // 대화(기억)를 유지한 채 프로젝트 기준만 갱신한다(#6). 세션을 폐기하지 않으므로 문맥이 이어진다.
     controller.session?.rebaseProject(store.getCurrent());
   };

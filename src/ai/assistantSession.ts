@@ -42,6 +42,17 @@ export type SessionEvent =
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
   | { type: "status"; text: string };
 
+// 승인+시공 융합(2026-07-07 §2.1.3): v3 프리미티브가 "미승인 어휘"로 실패한 호출을
+// 어휘 제안 카드에 보류 시공으로 첨부한다 — 수락 한 번으로 어휘 커밋 + 시공이 끝난다.
+export interface PendingBuild {
+  readonly tool: string;
+  readonly args: Record<string, unknown>;
+  readonly label: string;
+  // 시공이 소비하는 어휘 id 인자 이름(예: wallVocabId)과 원래 값 — 카드 교정 시 리바인드용.
+  readonly vocabIdField: string;
+  readonly vocabId?: string;
+}
+
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
 export interface ProposedCall {
   name: string;
@@ -51,6 +62,8 @@ export interface ProposedCall {
   destructive: boolean; // remove_event 등 파괴적 작업.
   requiresApproval?: boolean;
   approvalWarning?: string;
+  // 이 어휘 제안이 수락되면 같은 제스처로 실행할 보류 시공(§2.1.3).
+  pendingBuilds?: readonly PendingBuild[];
 }
 
 export interface TurnResult {
@@ -73,6 +86,37 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 
 // 파괴적으로 간주하는 툴 이름.
 const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map"]);
+// v3 공정 프리미티브 → 어휘 id 인자 이름(§2.1.3 보류 시공 리바인드용).
+export const V3_PRIMITIVE_VOCAB_FIELDS: ReadonlyMap<string, string> = new Map([
+  ["build_wall", "wallVocabId"],
+  ["build_roof", "roofVocabId"],
+  ["place_door", "doorVocabId"],
+  ["place_window", "windowVocabId"],
+  ["lay_path", "pathVocabId"],
+  ["place_props", "propVocabId"],
+]);
+
+// 보류 시공 카드 라벨(예: "벽 (8,6) 6×5") — 사용자가 무엇이 시공될지 카드에서 본다.
+export function pendingBuildLabel(tool: string, args: Record<string, unknown>): string {
+  const rect = isRecord(args.rect) ? args.rect : undefined;
+  const at = isRecord(args.at) ? args.at : undefined;
+  switch (tool) {
+    case "build_wall":
+      return rect ? `벽 (${String(rect.x)},${String(rect.y)}) ${String(rect.w)}×${String(rect.h)}` : "벽";
+    case "build_roof":
+      return "지붕";
+    case "place_door":
+      return at ? `문 (${String(at.x)},${String(at.y)})` : "문";
+    case "place_window":
+      return at ? `창문 (${String(at.x)},${String(at.y)})` : "창문";
+    case "lay_path":
+      return Array.isArray(args.points) ? `길 경유점 ${args.points.length}개` : "길";
+    case "place_props":
+      return typeof args.count === "number" ? `소품 ${args.count}개` : "소품";
+    default:
+      return tool;
+  }
+}
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 // v3 어휘 프로포절(2026-07-07, 원칙 0): 승인 = origin:"user" 마킹은 '사용자 명시 수락'으로만.
 // requiresApproval 태깅이 메타데이터 자동 커밋·autoApprove 자동 수락 경로를 모두 차단하므로,
@@ -239,6 +283,8 @@ export class AssistantSession {
   private specRejections = 0;
   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
   private turnProposals = new Map<string, ProposedCall>();
+  // 이번 턴에 "미승인 어휘"로 실패한 v3 시공 호출(§2.1.3) — 어휘 제안 카드에 첨부된다.
+  private turnPendingBuilds = new Map<string, PendingBuild>();
   private eventBaseProposalKeys = new Map<string, string>();
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
@@ -387,6 +433,7 @@ export class AssistantSession {
     this.carryoverWarningAdded = false;
     this.specRejections = 0;
     this.turnProposals = new Map();
+    this.turnPendingBuilds = new Map();
     this.eventBaseProposalKeys = new Map();
 
     return await this.runTurnLoop(onEvent, signal);
@@ -401,7 +448,7 @@ export class AssistantSession {
   // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
   async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
     if (!this.lastTurnFailed) {
-      return { assistantText: "", proposedCalls: [...this.turnProposals.values()], stoppedReason: "final" };
+      return { assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" };
     }
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
     return await this.runTurnLoop(onEvent, signal);
@@ -420,6 +467,33 @@ export class AssistantSession {
     this.carryoverWarningAdded = true;
     const warning = proposalScopeCarryoverWarning(buildSpecPlanLabel(spec));
     return { ...proposal, result: appendDiffWarning(proposal.result, warning) };
+  }
+
+  // 미승인 어휘로 실패한 v3 시공 호출을 보류 시공으로 기록한다(같은 호출 재시도는 1건으로 병합).
+  private recordPendingBuildIfUnapproved(name: string, args: Record<string, unknown>, result: ToolResult): void {
+    const vocabIdField = V3_PRIMITIVE_VOCAB_FIELDS.get(name);
+    if (!vocabIdField || result.ok) return;
+    if (!(result.issues ?? []).some((issue) => issue.code === "unapproved-vocabulary")) return;
+    const vocabId = typeof args[vocabIdField] === "string" ? (args[vocabIdField] as string) : undefined;
+    this.turnPendingBuilds.set(`${name}:${JSON.stringify(args)}`, {
+      tool: name,
+      args: structuredClone(args),
+      label: pendingBuildLabel(name, args),
+      vocabIdField,
+      ...(vocabId !== undefined ? { vocabId } : {}),
+    });
+  }
+
+  // 턴 종료 시 보류 시공을 마지막 어휘 제안 카드에 첨부한다(§2.1.3).
+  // 어휘 제안이 없으면 첨부할 카드가 없으므로 버린다(다음 턴에서 다시 제안됨).
+  private finalizeProposals(proposedByKey: Map<string, ProposedCall>): ProposedCall[] {
+    const calls = [...proposedByKey.values()];
+    if (this.turnPendingBuilds.size === 0) return calls;
+    const lastProposeIndex = calls.map((call) => call.name).lastIndexOf("propose_tile_vocabulary");
+    if (lastProposeIndex < 0) return calls;
+    return calls.map((call, index) =>
+      index === lastProposeIndex ? { ...call, pendingBuilds: [...this.turnPendingBuilds.values()] } : call
+    );
   }
 
   private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
@@ -454,7 +528,7 @@ export class AssistantSession {
     for (let round = 0; round < this.config.maxToolCalls; round += 1) {
       if (signal?.aborted) {
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
-        return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "aborted", error: "사용자가 중단했습니다" };
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
       let result: ChatResult;
       try {
@@ -470,12 +544,12 @@ export class AssistantSession {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
           this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
-          return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "aborted", error: "사용자가 중단했습니다" };
+          return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
         const error = cause instanceof Error ? cause.message : String(cause);
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error}` });
-        return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "error", error };
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
       }
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
 
@@ -495,7 +569,7 @@ export class AssistantSession {
         assistantText = messageText ?? "";
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
-        return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "final" };
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
@@ -516,6 +590,9 @@ export class AssistantSession {
             ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
             : gate;
         }
+        // 승인+시공 융합(§2.1.3): 미승인 어휘로 거부된 v3 시공은 보류 시공으로 기록해
+        // 이번 턴의 어휘 제안 카드에 첨부한다(수락 한 번 = 어휘 커밋 + 시공).
+        this.recordPendingBuildIfUnapproved(name, args, toolResult);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({
           kind: "tool",
@@ -584,14 +661,14 @@ export class AssistantSession {
           text: TOKEN_BUDGET_STATUS_TEXT,
         });
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건` });
-        return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "token-budget" };
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
       }
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건` });
-    return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "max-tool-calls" };
+    return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "max-tool-calls" };
   }
 }
 
