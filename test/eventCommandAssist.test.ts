@@ -12,8 +12,8 @@ import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const CONFIG: AiConfig = {
   baseUrl: "https://openrouter.ai/api/v1",
-  model: "google/gemini-3.5-flash",
-  liteModel: "google/gemini-3.1-flash-lite",
+  model: "minimax/minimax-m3",
+  liteModel: "minimax/minimax-m3",
   apiKey: "sk-test",
   maxToolCalls: 8,
   maxTokens: 2048,

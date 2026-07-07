@@ -8,7 +8,7 @@
 
 import type { LintIssue } from "@/project/lint/projectLint";
 import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
-import { validateArgs } from "./jsonSchema";
+import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
 
@@ -31,6 +31,12 @@ function failureSummary(name: string, cause: unknown): string {
   return `'${name}' 실행 실패: ${message}`;
 }
 
+export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
+  const tool = getTool(name);
+  if (!tool) return args;
+  return normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
+}
+
 export function runTool(
   ctx: ToolContext,
   name: string,
@@ -42,7 +48,8 @@ export function runTool(
     return { ok: false, summary: `알 수 없는 툴: ${name}`, issues: [{ severity: "error", code: "unknown-tool", message: `등록되지 않은 툴: ${name}` }] };
   }
 
-  const argErrors = validateArgs(tool.parameters, args);
+  const normalizedArgs = normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
+  const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     return {
       ok: false,
@@ -53,7 +60,7 @@ export function runTool(
 
   if (tool.mode === "read") {
     try {
-      const exec = tool.run(ctx.project, args);
+      const exec = tool.run(ctx.project, normalizedArgs);
       return { ok: true, summary: exec.summary, data: exec.data };
     } catch (cause) {
       return { ok: false, summary: failureSummary(name, cause), issues: [issueFromError(cause)] };
@@ -65,7 +72,7 @@ export function runTool(
   const draft = createDraft(before);
   let exec;
   try {
-    exec = tool.run(draft, args);
+    exec = tool.run(draft, normalizedArgs);
   } catch (cause) {
     return { ok: false, summary: failureSummary(name, cause), issues: [issueFromError(cause)] };
   }

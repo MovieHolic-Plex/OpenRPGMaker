@@ -220,7 +220,7 @@ function emberDatabase(): Project["database"] {
   // 기본 몬스터 스탯은 저레벨 스케일이라 영웅 파라미터 곡선(레벨1 HP 514/공 45/방 59)과 맞지 않는다.
   // 데미지 공식(power + stat/2 - def/2) 기준으로 전투가 2~8합이 되도록 재보정한다.
   const enemyTuning: Record<string, { stats: Partial<EnemyStats>; exp: number; gold: number }> = {
-    enemy_slime: { stats: { maxHp: 55, attack: 82, defense: 16, agility: 36 }, exp: 25, gold: 10 }, // 말벌
+    enemy_slime: { stats: { maxHp: 55, attack: 82, defense: 16, agility: 36 }, exp: 25, gold: 10 }, // 슬라임
     enemy_meadow_slime: { stats: { maxHp: 60, attack: 75, defense: 20, agility: 12 }, exp: 22, gold: 12 },
     enemy_cave_bat: { stats: { maxHp: 48, attack: 79, defense: 12, agility: 46, mind: 70 }, exp: 26, gold: 9 },
     enemy_stone_golem: { stats: { maxHp: 95, attack: 108, defense: 40, agility: 10 }, exp: 90, gold: 45 },

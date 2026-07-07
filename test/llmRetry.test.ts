@@ -17,7 +17,7 @@ import type { ChatResult } from "@/ai/llmClient";
 
 const CONFIG: AiConfig = {
   baseUrl: "http://llm.test/v1",
-  model: "test-model",
+  model: "minimax/minimax-m3",
   apiKey: "sk-test",
   maxToolCalls: 8,
   maxTokens: 512,
@@ -106,7 +106,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
     const chat = async (): Promise<ChatResult> => {
       round += 1;
       if (round === 1) return toolCallResult("create_map", { id: "m_retry", name: "재시도 맵", width: 6, height: 6 });
-      if (round === 2) throw new LlmError("네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다");
+      if (round === 2) throw new Error("일반 오류: 수동 재시도 확인");
       return { message: { role: "assistant", content: "완료했습니다.", tool_calls: undefined }, finishReason: "stop" };
     };
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
@@ -121,6 +121,26 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
     expect(retried.assistantText).toBe("완료했습니다.");
     // 오류 이전에 누적된 제안을 잃지 않는다.
     expect(retried.proposedCalls.map((call) => call.name)).toEqual(["create_map"]);
+    expect(session.canRetryLastTurn()).toBe(false);
+  });
+
+  it("일시 LLM 오류는 같은 턴에서 자동 재시도해 수동 재시도 없이 완주한다", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      calls += 1;
+      if (calls === 1) throw new LlmError("서버 오류", 503);
+      return { message: { role: "assistant", content: "자동 복구됨", tool_calls: undefined }, finishReason: "stop" };
+    };
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+
+    const pending = session.sendUserMessage("안녕", () => {});
+    await vi.advanceTimersByTimeAsync(LLM_RETRY_BACKOFF_MS + 10);
+    const result = await pending;
+
+    expect(calls).toBe(2);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.assistantText).toBe("자동 복구됨");
     expect(session.canRetryLastTurn()).toBe(false);
   });
 

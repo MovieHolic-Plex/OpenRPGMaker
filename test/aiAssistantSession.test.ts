@@ -31,7 +31,7 @@ function assistantFinal(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
-const CONFIG = { baseUrl: "x", model: "google/gemini-3.5-flash", liteModel: "google/gemini-3.1-flash-lite", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
+const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
 
 describe("AssistantSession 툴콜 루프", () => {
   it("메인 세션은 config.model을 그대로 chat 함수에 전달한다", async () => {

@@ -4,6 +4,60 @@
 
 import type { JsonSchema } from "./types";
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseJsonString(value: unknown, schema: JsonSchema): unknown {
+  if (typeof value !== "string") return value;
+  const trimmed = value.trim();
+  if (!trimmed) return value;
+  const first = trimmed[0];
+  if ((schema.type === "object" && first !== "{") || (schema.type === "array" && first !== "[")) return value;
+  try {
+    return JSON.parse(trimmed) as unknown;
+  } catch {
+    return value;
+  }
+}
+
+function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
+  const parsed = parseJsonString(value, schema);
+  switch (schema.type) {
+    case "object": {
+      const unwrapped = Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed;
+      if (!isRecord(unwrapped)) return unwrapped;
+      const properties = schema.properties ?? {};
+      const next: Record<string, unknown> = { ...unwrapped };
+      for (const [key, childSchema] of Object.entries(properties)) {
+        if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key]);
+      }
+      return next;
+    }
+    case "array": {
+      if (!Array.isArray(parsed)) return parsed;
+      if (!schema.items) return parsed;
+      return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry));
+    }
+    case "integer":
+    case "number": {
+      if (typeof parsed === "string" && parsed.trim() !== "") {
+        const number = Number(parsed);
+        if (Number.isFinite(number)) return number;
+      }
+      return parsed;
+    }
+    case "string":
+    case "boolean":
+      return parsed;
+  }
+}
+
+// LLM 툴콜에서 흔히 나오는 무해한 표현 흔들림을 스키마 검증 전에 정규화한다.
+export function normalizeArgsForSchema(schema: JsonSchema, args: unknown): unknown {
+  return coerceForSchema(schema, args);
+}
+
 // 값이 스키마 타입에 부합하는지 판정.
 function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
   switch (type) {
