@@ -4,9 +4,11 @@
 // 쓰기 툴 성공 시 undo 스냅샷을 남기고 store에 반영하므로 Ctrl+Z 복구가 가능하다.
 
 import { editorState } from "@/editor/editorState";
+import { stampRectHouseKit, type RectHousePlan, type RectHouseStampResult } from "@/editor/houseKit";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   applyBuildPalettePrimitive,
+  ensureBuildPalettePresets,
   type BuildPaletteApplyOptions,
   type BuildPalettePrimitive,
   type BuildPaletteResult,
@@ -15,7 +17,7 @@ import {
 import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
-import { getTool, runTool } from "@/editor/tools";
+import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
@@ -39,6 +41,8 @@ type EditorToolHookWindow = Window & {
     primitive: BuildPalettePrimitive,
     options?: BuildPaletteApplyOptions
   ) => BuildPaletteResult;
+  // 하네싱 집 키트 시공 — 기준 집 문법(houseKit) 그대로. 커밋 게이트(신규 오류만 차단) 포함.
+  __rpgzzuHouseKit?: (mapId: MapId, plan: RectHousePlan) => RectHouseStampResult;
 };
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
@@ -80,6 +84,25 @@ export function installEditorToolHook(): void {
 
   w.__rpgzzuBuildPalette = (selection, primitive, options = {}) =>
     applyBuildPalettePrimitive(selection, primitive, options);
+
+  w.__rpgzzuHouseKit = (mapId, plan) => {
+    const current = store.getCurrent();
+    if (!current.maps[mapId]) return { ok: false, reason: `맵을 찾을 수 없습니다: ${mapId}` };
+    const draft = structuredClone(current);
+    // 키트 벽 세트가 문/창 배치의 "승인된 벽 어휘" 검사를 통과하도록 프리셋/승인 상태를 보장.
+    const tileset = draft.tilesets[draft.maps[mapId].tilesetId];
+    if (tileset) ensureBuildPalettePresets(tileset);
+    const result = stampRectHouseKit(draft.maps[mapId], plan);
+    if (!result.ok) return result;
+    const commit = commitChangeset(draft, current);
+    if (!commit.ok) {
+      const issue = commit.issues.find((entry) => entry.severity === "error");
+      return { ok: false, reason: issue?.message ?? "무결성 오류" };
+    }
+    recordProjectSnapshot(`집 키트: ${plan.kitId}`, mapId, { kind: "map" });
+    store.replace(draft);
+    return result;
+  };
 
   w.__rpgzzuRegionTaskHarness = {
     setSelection: (selection) => editorState.set({ selection: selection ?? null }),

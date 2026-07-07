@@ -99,6 +99,9 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
   },
   wall9Slice("plaster-wall-9slice", "흰 집 벽 확장", CHIPSET_TILE_GROUPS.houseWhiteWallObjects, "흰 회벽 집의 정면 벽입니다. 좌/중/우 열과 상/중/하 행을 유지해 확장합니다."),
   wall9Slice("wood-wall-9slice", "통나무 집 벽 확장", CHIPSET_TILE_GROUPS.houseWoodWallObjects, "통나무 집 정면 벽입니다. 상/중/하 행과 좌/중/우 열을 보존합니다."),
+  // 연습08 기준 집(밝은 오렌지 지붕 페어)의 벽 세트(12/42/72 계열). 벽 어휘에 없어서
+  // place_door/place_window가 이 벽 위 배치를 거부하던 공백을 메운다.
+  wall9Slice("timber-stone-wall-9slice", "목골 석벽 집 벽 확장", CHIPSET_TILE_GROUPS.housePurpleStoneWallObjects, "목골+석재 집의 정면 벽입니다. 좌/중/우 열과 상/중/하 행을 유지해 확장합니다."),
   {
     id: `${COMBINED_TOWN_HARNESS_PREFIX}roof-overlays`,
     name: "사선 지붕 오버레이",
