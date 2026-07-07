@@ -5,7 +5,7 @@ import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
-let buildPaletteEnabled = true;
+let buildPaletteEnabled = false;
 export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
@@ -32,14 +32,22 @@ export function renderBuildPaletteToggle(): HTMLElement {
     dataset: { testid: "build-palette-toggle" },
     on: {
       click: (event) => {
-        buildPaletteEnabled = !buildPaletteEnabled;
+        const next = !buildPaletteEnabled;
         const button = event?.currentTarget as HTMLElement | null;
-        button?.classList.toggle("active", buildPaletteEnabled);
-        button?.setAttribute("aria-pressed", String(buildPaletteEnabled));
-        window.dispatchEvent(new CustomEvent(BUILD_PALETTE_VISIBILITY_EVENT));
+        button?.classList?.toggle?.("active", next);
+        button?.setAttribute?.("aria-pressed", String(next));
+        setBuildPaletteEnabled(next);
       },
     },
   });
+}
+
+// 건축 모드 on/off. 켜면 곧바로 영역 선택 툴로 전환해 사용자가 바로 드래그로 영역을 지정할 수 있게 하고,
+// 끄면 그리기 툴로 되돌린다. (이 툴 전환이 없으면 건축을 눌러도 그리기 상태라 "반응 없음"으로 보인다.)
+export function setBuildPaletteEnabled(enabled: boolean): void {
+  buildPaletteEnabled = enabled;
+  editorState.set({ tool: enabled ? "select" : "paint" });
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(BUILD_PALETTE_VISIBILITY_EVENT));
 }
 
 export function isBuildPaletteEnabled(): boolean {

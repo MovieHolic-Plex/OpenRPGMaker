@@ -523,6 +523,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     startScreen?.remove();
     startScreen = null;
   };
+  // 대화가 비어 있고(시작 화면만) 진행 중이 아니면 휘발 존을 접어 맵을 가리지 않는다.
+  // (입력창 포커스 시에는 revealVolatileZone으로 다시 펼쳐 웰컴/스킬 카드를 보여준다.)
+  const hideVolatileIfIdle = (): void => {
+    if (startScreen === null || turnBusy || runningProgress || !volatileZone) return;
+    volatileZone.hidden = true;
+    volatileZone.classList.remove("is-faded");
+    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
+    volatileFadeTimer = null;
+  };
 
   const appendBubble = (role: "user" | "assistant" | "tool" | "system", text: string): HTMLElement => {
     revealVolatileZone();
@@ -1663,6 +1672,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     slashActiveIndex = 0;
     refreshSlash();
   });
+  // 입력창 포커스 시 휘발 존(웰컴/대화)을 펼치고, 빈 대화 상태로 포커스를 잃으면 접어 맵을 비운다.
+  input.addEventListener("focus", () => revealVolatileZone());
+  input.addEventListener("blur", () => {
+    if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
+    // 오버레이 안(스킬 카드 등) 클릭이 blur보다 먼저 처리되도록 잠깐 늦춘 뒤 접는다.
+    window.setTimeout(() => {
+      if (typeof document !== "undefined" && document.activeElement === input) return;
+      hideVolatileIfIdle();
+    }, 160);
+  });
 
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
@@ -1897,6 +1916,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [log],
   });
   volatileZone = volatileLogMount;
+  // 초기(빈 대화)엔 휘발 존을 접어 맵을 가리지 않는다. 입력 포커스/첫 콘텐츠에서 펼쳐진다.
+  volatileLogMount.hidden = true;
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
