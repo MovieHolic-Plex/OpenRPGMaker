@@ -9,20 +9,14 @@ import {
   registerBundledFrames,
   TILE_SIZE,
 } from "@/assets/bundled";
-import { subscribeAgentFocusHighlight, type AgentFocusBounds, type AgentFocusCell, type AgentFocusTarget } from "@/editor/agentFocus";
-import {
-  agentGhostPreviewsForMap,
-  getAgentGhostPreviewState,
-  subscribeAgentGhostPreview,
-  type AgentGhostBounds,
-  type AgentGhostCell,
-  type AgentGhostPreview,
-} from "@/editor/agentGhostPreview";
+import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
+import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
-import { editorState, type PaintShape } from "@/editor/editorState";
+import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import {
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
@@ -31,14 +25,8 @@ import { eventLayerSwitchPrompt, eventMarkerTooltip, shouldOfferEventLayerSwitch
 import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
-import {
-  paintTile,
-  eraseTile,
-  toggleCollision,
-  fillTile,
-} from "@/editor/actions";
-import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
-import { recordProjectSnapshot, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
+import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
+import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
@@ -46,35 +34,15 @@ import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapS
 import { tileFixFromCanvasMenuItem } from "@/editor/panels/tileMetaFixPopover";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
-import { placeStructureStamp, previewStructureStampCells } from "@/editor/structureStampTools";
-import type { StructureStampId } from "@/editor/structureStampTools";
-import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
-import { compatibleStampIdForTile, tileStampById, tileStampsForTile, type TileStamp } from "@/editor/tileStampBrushes";
 import { visibleTilePickAt } from "@/editor/tilePicking";
+import { TilePaintEngine } from "@/editor/TilePaintEngine";
+import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { committedEvents } from "@/project/eventDrafts";
-import { moveEvent } from "@/editor/eventActions";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
 
 const PhaserRuntime = getLoadedPhaser();
-
-type BrushStroke = {
-  readonly centerX: number;
-  readonly centerY: number;
-  readonly size: number;
-  readonly applyCell: (x: number, y: number) => void;
-};
-
-type TileLayer = "lower" | "upper";
-
-type TilePickTarget = {
-  readonly mapId: MapId;
-  readonly layer: TileLayer;
-  readonly x: number;
-  readonly y: number;
-};
 
 type EventLayerClick = {
   readonly at: number;
@@ -90,49 +58,7 @@ type EventLayerClickTarget = {
   readonly y: number;
 };
 
-type PanStart = {
-  readonly screenX: number;
-  readonly screenY: number;
-  readonly scrollX: number;
-  readonly scrollY: number;
-  readonly shellScrollLeft: number;
-  readonly shellScrollTop: number;
-};
-
-type DragOperation =
-  | {
-    readonly kind: "select";
-    readonly mapId: MapId;
-    readonly start: TilePoint;
-  }
-  | {
-    readonly kind: "shape";
-    readonly layer: TileLayer;
-    readonly mapId: MapId;
-    readonly shape: Exclude<PaintShape, "pen">;
-    readonly start: TilePoint;
-    readonly tile: number;
-    readonly autoConnect: boolean;
-  }
-  | {
-    readonly kind: "structure";
-    readonly mapId: MapId;
-    readonly stampId: StructureStampId;
-  }
-  | {
-    // 이벤트 레이어에서 NPC/이벤트를 드래그해 다른 칸으로 옮긴다.
-    readonly kind: "eventMove";
-    readonly mapId: MapId;
-    readonly eventId: string;
-    readonly origin: TilePoint;
-  };
-
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
-const AGENT_FOCUS_MAX_CELL_RECTS = 256;
-const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
-const AGENT_GHOST_MAX_CELL_RECTS = 256;
-const AGENT_GHOST_FILL_COLOR = 0x20c997;
-const AGENT_GHOST_STROKE_COLOR = 0x63e6be;
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
@@ -146,9 +72,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubEditor: (() => void) | null = null;
   private unsubAgentGhost: (() => void) | null = null;
   private unsubAgentFocus: (() => void) | null = null;
-  private agentGhostDomMarkers: HTMLElement[] = [];
-  private agentFocusDomMarker: HTMLElement | null = null;
-  private agentFocusDomTimer: ReturnType<typeof setTimeout> | null = null;
+  private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
+  private agentFocusRenderer: AgentFocusRenderer | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
@@ -158,38 +83,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastRenderStateKey = "";
   private lastCameraViewKey = "";
   private readonly tileIndex: EditSceneTileIndex = new Map();
-  private isPanning = false;
-  private dragOperation: DragOperation | null = null;
-  // 이벤트 레이어에서 눌린 이벤트. 포인터가 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
-  private eventDragCandidate: { readonly mapId: MapId; readonly eventId: string; readonly origin: TilePoint } | null = null;
-  private spacePanActive = false;
-  private panStart: PanStart | null = null;
-  private readonly handleAuxiliaryCanvasPointerDown = (event: MouseEvent | PointerEvent): void => {
-    if (!this.isMiddleButtonEvent(event)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    this.startPanAt(event.clientX, event.clientY);
-  };
-  private readonly handleAuxiliaryCanvasClick = (event: MouseEvent | PointerEvent): void => {
-    if (!this.isMiddleButtonEvent(event)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-  };
-  private readonly handleWindowPanMove = (event: MouseEvent | PointerEvent): void => {
-    if (!this.isPanning) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    this.continuePanAt(event.clientX, event.clientY);
-  };
-  private readonly handleWindowPanEnd = (event?: MouseEvent | PointerEvent): void => {
-    event?.preventDefault();
-    event?.stopPropagation();
-    event?.stopImmediatePropagation();
-    this.stopPan();
-  };
+  private cameraPanController: CameraPanController | null = null;
+  private tilePaintEngine: TilePaintEngine | null = null;
+  private dragOperationHandler: DragOperationHandler | null = null;
 
   constructor() {
     super({ key: "EditScene" });
@@ -215,6 +111,15 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
+    this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
+    this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
+    this.cameraPanController = new CameraPanController(this, {
+      onPanStart: () => {
+        this.isPainting = false;
+        this.lastPaintKey = "";
+      },
+      onPanMove: () => this.refreshAgentGhostDomMarkers(),
+    });
     this.eventClickFeedbackLayer = this.add.container(0, 0);
     this.eventClickFeedbackLayer.setDepth(12);
 
@@ -236,7 +141,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private cleanup(): void {
     this.unbindCanvasPanGuards();
-    this.unbindWindowPanGuards();
+    this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
@@ -246,7 +151,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubAgentGhost = null;
     this.unsubAgentFocus = null;
     this.clearAgentGhostPreviewLayer();
-    this.clearAgentFocusDomMarker();
+    this.clearAgentFocusHighlight();
   }
 
   private handleResize(): void {
@@ -299,14 +204,14 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
-      if (this.dragOperation && ptr.isDown) {
+      if (this.getDragOperationHandler().active() && ptr.isDown) {
         this.updateDragOperation(ptr);
         return;
       }
       // 이벤트를 누른 채 다른 칸으로 이동하면 드래그 이동을 시작한다.
-      if (this.eventDragCandidate && ptr.isDown && this.tryPromoteEventDrag(ptr)) return;
+      if (ptr.isDown && this.tryPromoteEventDrag(ptr)) return;
       this.updateHoverPreview(ptr);
-      if (this.isPanning) {
+      if (this.cameraPanController?.active()) {
         this.continuePan(ptr);
         return;
       }
@@ -316,13 +221,13 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointerup", (ptr: Phaser.Input.Pointer) => {
       this.finishDragOperation(ptr);
-      this.eventDragCandidate = null;
+      this.getDragOperationHandler().clearEventCandidate();
       this.isPainting = false;
       this.lastPaintKey = "";
       this.stopPan();
     });
     this.input.on("pointerout", () => {
-      if (!this.dragOperation) this.clearHoverPreview();
+      if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
     this.input.on(
       "wheel",
@@ -336,37 +241,15 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private shouldPan(ptr: Phaser.Input.Pointer): boolean {
-    return editorState.get().tool === "pan" || this.spacePanActive || ptr.middleButtonDown() || ptr.button === 1;
+    return this.cameraPanController?.shouldPan(ptr) ?? false;
   }
 
   private bindCanvasPanGuards(): void {
-    const canvas = this.game.canvas;
-    canvas.addEventListener("pointerdown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.addEventListener("mousedown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.addEventListener("auxclick", this.handleAuxiliaryCanvasClick, { capture: true });
+    this.cameraPanController?.bindCanvasGuards();
   }
 
   private unbindCanvasPanGuards(): void {
-    const canvas = this.game.canvas;
-    canvas.removeEventListener("pointerdown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.removeEventListener("mousedown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.removeEventListener("auxclick", this.handleAuxiliaryCanvasClick, { capture: true });
-  }
-
-  private bindWindowPanGuards(): void {
-    window.addEventListener("pointermove", this.handleWindowPanMove, { capture: true, passive: false });
-    window.addEventListener("mousemove", this.handleWindowPanMove, { capture: true, passive: false });
-    window.addEventListener("pointerup", this.handleWindowPanEnd, { capture: true });
-    window.addEventListener("pointercancel", this.handleWindowPanEnd, { capture: true });
-    window.addEventListener("mouseup", this.handleWindowPanEnd, { capture: true });
-  }
-
-  private unbindWindowPanGuards(): void {
-    window.removeEventListener("pointermove", this.handleWindowPanMove, { capture: true });
-    window.removeEventListener("mousemove", this.handleWindowPanMove, { capture: true });
-    window.removeEventListener("pointerup", this.handleWindowPanEnd, { capture: true });
-    window.removeEventListener("pointercancel", this.handleWindowPanEnd, { capture: true });
-    window.removeEventListener("mouseup", this.handleWindowPanEnd, { capture: true });
+    this.cameraPanController?.unbindCanvasGuards();
   }
 
   private isRightClick(ptr: Phaser.Input.Pointer): boolean {
@@ -374,70 +257,19 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private startPan(ptr: Phaser.Input.Pointer): void {
-    const point = this.pointerScreenPosition(ptr);
-    this.startPanAt(point.x, point.y);
-  }
-
-  private startPanAt(screenX: number, screenY: number): void {
-    const camera = this.cameras.main;
-    this.isPanning = true;
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    this.panStart = {
-      screenX,
-      screenY,
-      scrollX: camera.scrollX,
-      scrollY: camera.scrollY,
-      shellScrollLeft: this.canvasScrollShell()?.scrollLeft ?? 0,
-      shellScrollTop: this.canvasScrollShell()?.scrollTop ?? 0,
-    };
-    this.bindWindowPanGuards();
+    this.cameraPanController?.start(ptr);
   }
 
   private continuePan(ptr: Phaser.Input.Pointer): void {
-    const point = this.pointerScreenPosition(ptr);
-    this.continuePanAt(point.x, point.y);
-  }
-
-  private continuePanAt(screenX: number, screenY: number): void {
-    const start = this.panStart;
-    if (!start) return;
-    const camera = this.cameras.main;
-    const dx = screenX - start.screenX;
-    const dy = screenY - start.screenY;
-    camera.setScroll(
-      start.scrollX - dx / camera.zoom,
-      start.scrollY - dy / camera.zoom
-    );
-    this.renderAgentGhostDomMarkers();
-    const shell = this.canvasScrollShell();
-    if (!shell) return;
-    shell.scrollLeft = start.shellScrollLeft - dx;
-    shell.scrollTop = start.shellScrollTop - dy;
+    this.cameraPanController?.continue(ptr);
   }
 
   private stopPan(): void {
-    this.isPanning = false;
-    this.panStart = null;
-    this.unbindWindowPanGuards();
+    this.cameraPanController?.stop();
   }
 
   private pointerScreenPosition(ptr: Phaser.Input.Pointer): { readonly x: number; readonly y: number } {
-    const event = ptr.event;
-    if (event instanceof MouseEvent || event instanceof PointerEvent) {
-      return { x: event.clientX, y: event.clientY };
-    }
-    return { x: ptr.x, y: ptr.y };
-  }
-
-  private canvasScrollShell(): HTMLElement | null {
-    const canvas = this.game.canvas;
-    const shell = canvas.closest("[data-testid='editor-canvas-scroll-shell']");
-    return shell instanceof HTMLElement ? shell : null;
-  }
-
-  private isMiddleButtonEvent(event: MouseEvent | PointerEvent): boolean {
-    return event.button === 1 || (event.buttons & 4) === 4;
+    return pointerScreenPosition(ptr);
   }
 
   private updateHoverPreview(ptr: Phaser.Input.Pointer): void {
@@ -461,370 +293,34 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private beginDragOperation(ptr: Phaser.Input.Pointer): boolean {
-    const mapId = this.mapId();
-    if (!mapId) return false;
-    const map = store.getCurrent().maps[mapId];
-    if (!map) return false;
-    const point = this.pointerToTile(ptr);
-    if (!this.isInsideMapPoint(point, map)) return false;
-    const state = editorState.get();
-    if (state.tool === "select") {
-      this.dragOperation = { kind: "select", mapId, start: point };
-      selectTileRegion(mapId, { mapId, x: point.x, y: point.y, width: 1, height: 1 });
-      return true;
-    }
-    if (state.tool === "paint" && state.activeStructureStampId) {
-      const operation: Extract<DragOperation, { readonly kind: "structure" }> = {
-        kind: "structure",
-        mapId,
-        stampId: state.activeStructureStampId,
-      };
-      this.dragOperation = operation;
-      this.renderStructureDragPreview(operation, point);
-      return true;
-    }
-    if (state.tool === "paint" && state.paintShape !== "pen" && state.selectedTile >= 0) {
-      const layer: TileLayer = state.layer === "upper" ? "upper" : "lower";
-      const operation: Extract<DragOperation, { readonly kind: "shape" }> = {
-        kind: "shape",
-        layer,
-        mapId,
-        shape: state.paintShape,
-        start: point,
-        tile: state.selectedTile,
-        autoConnect: state.autoConnectMode,
-      };
-      this.dragOperation = operation;
-      this.renderShapeDragPreview(operation, point);
-      return true;
-    }
-    return false;
+    return this.getDragOperationHandler().begin(ptr);
   }
 
   // 이벤트 레이어에서 눌린 칸에 이벤트가 있으면 드래그 이동 후보로 기록한다.
   // 실제 드래그(다른 칸으로 이동)가 시작되기 전까지는 클릭/더블클릭 동작을 방해하지 않는다.
   private maybeBeginEventDragCandidate(ptr: Phaser.Input.Pointer): void {
-    this.eventDragCandidate = null;
-    if (editorState.get().layer !== "event") return;
-    const mapId = this.mapId();
-    if (!mapId) return;
-    const map = store.getCurrent().maps[mapId];
-    if (!map) return;
-    const point = this.pointerToTile(ptr);
-    if (!this.isInsideMapPoint(point, map)) return;
-    const existing = committedEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
-    if (!existing) return;
-    this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
+    this.getDragOperationHandler().maybeBeginEventDragCandidate(ptr);
   }
 
   // 후보 이벤트를 누른 채 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
   private tryPromoteEventDrag(ptr: Phaser.Input.Pointer): boolean {
-    const candidate = this.eventDragCandidate;
-    if (!candidate) return false;
-    const point = this.pointerToTile(ptr);
-    if (point.x === candidate.origin.x && point.y === candidate.origin.y) return false;
-    this.dragOperation = {
-      kind: "eventMove",
-      mapId: candidate.mapId,
-      eventId: candidate.eventId,
-      origin: candidate.origin,
-    };
-    this.eventDragCandidate = null;
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    this.renderEventMoveDragPreview(this.dragOperation, point);
-    return true;
-  }
-
-  private renderEventMoveDragPreview(
-    operation: Extract<DragOperation, { readonly kind: "eventMove" }>,
-    point: TilePoint
-  ): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return;
-    // 드롭 예정 칸을 이벤트 레이어 하이라이트로 표시한다.
-    this.showEventLayerClickFeedback(operation.mapId, point.x, point.y);
-  }
-
-  private commitEventMoveDrag(
-    operation: Extract<DragOperation, { readonly kind: "eventMove" }>,
-    point: TilePoint
-  ): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return; // 맵 밖 → 취소
-    if (point.x === operation.origin.x && point.y === operation.origin.y) return; // 제자리 → 무시
-    if (!canEditMap(operation.mapId)) {
-      toast(mapEditLockNotice(operation.mapId), "error");
-      return;
-    }
-    const occupied = committedEvents(map.events).some(
-      (event) => event.id !== operation.eventId && event.x === point.x && event.y === point.y
-    );
-    if (occupied) {
-      toast("이미 다른 이벤트가 있는 칸입니다.", "error");
-      return;
-    }
-    recordProjectSnapshot();
-    moveEvent(operation.mapId, operation.eventId, point.x, point.y);
-    editorState.set({ selectedEventId: operation.eventId });
+    return this.getDragOperationHandler().tryPromoteEventDrag(ptr);
   }
 
   private updateDragOperation(ptr: Phaser.Input.Pointer): void {
-    const operation = this.dragOperation;
-    if (!operation) return;
-    const point = this.pointerToTile(ptr);
-    this.lastPointerTile = point;
-    if (operation.kind === "select") {
-      this.updateSelectionDrag(operation, point);
-      return;
-    }
-    if (operation.kind === "structure") {
-      this.renderStructureDragPreview(operation, point);
-      return;
-    }
-    if (operation.kind === "eventMove") {
-      this.renderEventMoveDragPreview(operation, point);
-      return;
-    }
-    this.renderShapeDragPreview(operation, point);
+    this.getDragOperationHandler().update(ptr);
   }
 
   private finishDragOperation(ptr: Phaser.Input.Pointer): void {
-    const operation = this.dragOperation;
-    if (!operation) return;
-    const point = this.pointerToTile(ptr);
-    if (operation.kind === "select") {
-      this.updateSelectionDrag(operation, point);
-    } else if (operation.kind === "structure") {
-      this.commitStructureDrag(operation, point);
-    } else if (operation.kind === "eventMove") {
-      this.commitEventMoveDrag(operation, point);
-    } else {
-      this.commitShapeDrag(operation, point);
-    }
-    this.dragOperation = null;
-    this.clearHoverPreview();
-  }
-
-  private updateSelectionDrag(operation: Extract<DragOperation, { readonly kind: "select" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map) return;
-    const rect = tileRectWithinBounds(tileRectFromDrag(operation.start, point), { width: map.width, height: map.height });
-    if (!rect) return;
-    selectTileRegion(operation.mapId, { mapId: operation.mapId, x: rect.x, y: rect.y, width: rect.width, height: rect.height });
-  }
-
-  private commitShapeDrag(operation: Extract<DragOperation, { readonly kind: "shape" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map) return;
-    const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
-    if (cells.length === 0) return;
-    this.recordTileEditSnapshot(operation.mapId);
-    for (const cell of cells) {
-      paintTile(operation.mapId, operation.layer, cell.x, cell.y, operation.tile, { autoConnect: operation.autoConnect });
-    }
-  }
-
-  private commitStructureDrag(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return;
-    recordProjectSnapshot();
-    placeStructureStamp(operation.mapId, { id: operation.stampId, origin: point });
-  }
-
-  private renderStructureDragPreview(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
-    const layer = this.hoverPreviewLayer;
-    if (!layer) return;
-    layer.removeAll(true);
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return;
-    const tileset = store.getCurrent().tilesets[map.tilesetId];
-    if (!tileset) return;
-    const cells = previewStructureStampCells(map, { id: operation.stampId, origin: point });
-    for (const cell of cells) {
-      const preview = createChipsetTileObject(this, map, tileset, cell.x, cell.y, cell.tile);
-      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
-      layer.add(preview);
-      const marker = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
-      marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
-      layer.add(marker);
-    }
-  }
-
-  private renderShapeDragPreview(operation: Extract<DragOperation, { readonly kind: "shape" }>, point: TilePoint): void {
-    const layer = this.hoverPreviewLayer;
-    if (!layer) return;
-    layer.removeAll(true);
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map) return;
-    const tileset = store.getCurrent().tilesets[map.tilesetId];
-    if (!tileset) return;
-    const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
-    for (const cell of cells) {
-      const preview = createChipsetTileObject(this, map, tileset, cell.x, cell.y, operation.tile);
-      preview.setAlpha(0.62);
-      layer.add(preview);
-      const marker = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x3bc9db, 0.18);
-      marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
-      layer.add(marker);
-    }
-  }
-
-  private isInsideMapPoint(point: TilePoint, map: { readonly width: number; readonly height: number }): boolean {
-    return point.x >= 0 && point.y >= 0 && point.x < map.width && point.y < map.height;
+    this.getDragOperationHandler().finish(ptr);
   }
 
   private applyAtPointer(ptr: Phaser.Input.Pointer): void {
-    const mid = this.mapId();
-    if (!mid) return;
-    const { x, y } = this.pointerToTile(ptr);
-    this.lastPointerTile = { x, y };
-    this.updatePointerStatus(ptr);
-
-    const tool = editorState.get().tool;
-    const layer = editorState.get().layer;
-    if (!canEditMap(mid) && this.toolCanMutateMap(tool)) {
-      this.isPainting = false;
-      this.lastPaintKey = "";
-      toast(mapEditLockNotice(mid), "error");
-      return;
-    }
-    const { activePaletteStamp, activeStampId, activeStructureStampId, autoConnectMode, brushSize, selectedTile } = editorState.get();
-    const tileset = this.currentTileset();
-    const key = `${x},${y}`;
-    const firstStrokeTile = this.lastPaintKey === "";
-    const repeatedNonEventCell = layer !== "event" && key === this.lastPaintKey;
-    // event 레이어에선 타일 도구 동작 안 함.
-    const tileLayer: "lower" | "upper" = layer === "upper" ? "upper" : "lower";
-    const clickCount =
-      layer === "event" ? this.eventLayerClickCount({ mapId: mid, ptr, x, y }) : this.pointerClickCount(ptr);
-    if (this.offerEventLayerSwitchAt(mid, x, y, layer, clickCount)) return;
-    if (repeatedNonEventCell) return;
-    this.lastPaintKey = key;
-    if (layer === "event") this.showEventLayerClickFeedback(mid, x, y);
-
-    if (layer === "event" && clickCount >= 2 && this.openExistingEventAt(mid, x, y)) {
-      return;
-    }
-
-    switch (tool) {
-      case "paint":
-        this.recordTileEditSnapshot(mid);
-        {
-          if (activePaletteStamp) {
-            this.applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y });
-            break;
-          }
-          if (activeStructureStampId) {
-            placeStructureStamp(mid, { id: activeStructureStampId, origin: { x, y } });
-            break;
-          }
-          const stamp = tileset
-            ? tileStampsForTile(selectedTile, tileset).find((candidate) => candidate.id === activeStampId) ?? null
-            : tileStampById(activeStampId);
-          if (stamp) {
-            this.applyStamp({ mapId: mid, layer: tileLayer, x, y, stamp, autoConnect: autoConnectMode });
-          } else {
-            this.applyBrush({
-              centerX: x,
-              centerY: y,
-              size: brushSize,
-              applyCell: (brushX, brushY) => paintTile(mid, tileLayer, brushX, brushY, selectedTile, { autoConnect: autoConnectMode }),
-            });
-          }
-        }
-        break;
-      case "fill":
-        if (firstStrokeTile) {
-          this.recordTileEditSnapshot(mid);
-          fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
-        }
-        break;
-      case "erase":
-        this.recordTileEditSnapshot(mid);
-        this.applyBrush({
-          centerX: x,
-          centerY: y,
-          size: brushSize,
-          applyCell: (brushX, brushY) => eraseTile(mid, tileLayer, brushX, brushY, { autoConnect: autoConnectMode }),
-        });
-        break;
-      case "collision":
-        this.recordTileEditSnapshot(mid, { includeTilesets: true });
-        toggleCollision(mid, x, y);
-        break;
-      case "event":
-        this.isPainting = false;
-        this.lastPaintKey = "";
-        this.handleEventClick(mid, x, y, clickCount >= 2);
-        break;
-      case "select":
-        selectTileRegion(mid, { mapId: mid, x, y, width: 1, height: 1 });
-        break;
-      case "eyedropper":
-        this.pickTileAt({ mapId: mid, layer: tileLayer, x, y });
-        break;
-      case "pan":
-        break;
-    }
-  }
-
-  private recordTileEditSnapshot(mapId: MapId, options: { readonly includeTilesets?: boolean } = {}): void {
-    recordProjectSnapshot(undefined, mapId, { kind: "map", includeTilesets: options.includeTilesets });
-  }
-
-  private applyBrush(stroke: BrushStroke): void {
-    const offset = Math.floor(stroke.size / 2);
-    for (let y = stroke.centerY - offset; y <= stroke.centerY + offset; y++) {
-      for (let x = stroke.centerX - offset; x <= stroke.centerX + offset; x++) {
-        stroke.applyCell(x, y);
-      }
-    }
-  }
-
-  private pickTileAt(target: TilePickTarget): void {
-    const map = store.getCurrent().maps[target.mapId];
-    if (!map) return;
-    if (target.x < 0 || target.y < 0 || target.x >= map.width || target.y >= map.height) return;
-    const index = target.y * map.width + target.x;
-    const tile =
-      target.layer === "upper"
-        ? topTileInStack(map, "upper", index) ?? map.upperTiles[index]
-        : topTileInStack(map, "lower", index) ?? map.lowerTiles[index];
-    const fallbackTile =
-      target.layer === "upper" ? topTileInStack(map, "lower", index) ?? map.lowerTiles[index] : tile;
-    const selectedTile = tile >= 0 ? tile : fallbackTile;
-    if (selectedTile < 0) return;
-    const tileset = this.tilesetForMap(target.mapId);
-    editorState.set({
-      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, selectedTile, tileset),
-      selectedTile,
-      layer: target.layer,
-      tool: "paint",
-    });
+    this.getTilePaintEngine().applyAtPointer(ptr);
   }
 
   private pickTileAtPointer(ptr: Phaser.Input.Pointer): void {
-    const mapId = this.mapId();
-    if (!mapId) return;
-    const { x, y } = this.pointerToTile(ptr);
-    const map = store.getCurrent().maps[mapId];
-    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
-    const pick = visibleTilePickAt(map, y * map.width + x);
-    if (!pick) return;
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    const tileset = this.tilesetForMap(mapId);
-    editorState.set({
-      activePaletteStamp: null,
-      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, pick.tile, tileset),
-      activeStructureStampId: null,
-      selectedTile: pick.tile,
-      layer: pick.layer,
-      tool: "paint",
-    });
+    this.getTilePaintEngine().pickTileAtPointer(ptr);
   }
 
   // 우클릭 셀이 현재 맵의 활성 선택 영역 안이면 "이 영역에 AI 작업…" 메뉴를 연다.
@@ -906,11 +402,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleKeyDown(event: KeyboardEvent): void {
     // 텍스트 입력/모달이 포커스를 잡고 있으면 에디터 단축키를 끈다.
     if (shouldIgnoreEditorShortcut(event)) return;
-    if (event.code === "Space") {
-      event.preventDefault();
-      this.spacePanActive = true;
-      return;
-    }
+    if (this.cameraPanController?.handleSpaceKeyDown(event)) return;
     if (!(event.ctrlKey || event.metaKey) && this.panWithArrowKey(event)) return;
     // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
     if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
@@ -918,12 +410,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleKeyUp(event: KeyboardEvent): void {
-    if (event.code !== "Space") return;
-    event.preventDefault();
-    this.spacePanActive = false;
-    if (!this.isPanning) return;
-    this.isPanning = false;
-    this.panStart = null;
+    this.cameraPanController?.handleSpaceKeyUp(event);
   }
 
   private panWithArrowKey(event: KeyboardEvent): boolean {
@@ -951,9 +438,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private panCameraBy(deltaX: number, deltaY: number): void {
-    const camera = this.cameras.main;
-    camera.setScroll(camera.scrollX + deltaX, camera.scrollY + deltaY);
-    this.renderAgentGhostDomMarkers();
+    this.cameraPanController?.panBy(deltaX, deltaY);
   }
 
   private handleShortcut(event: KeyboardEvent): void {
@@ -1028,10 +513,6 @@ export class EditScene extends PhaserRuntime.Scene {
     setTileToolStatus("cursor-position", `${x},${y}`);
     setTileToolStatus("cursor-lower", String(topTileInStack(map, "lower", index) ?? map.lowerTiles[index]));
     setTileToolStatus("cursor-upper", String(topTileInStack(map, "upper", index) ?? map.upperTiles[index]));
-  }
-
-  private toolCanMutateMap(tool: string): boolean {
-    return tool === "paint" || tool === "fill" || tool === "erase" || tool === "collision" || tool === "event";
   }
 
   private handleEventClick(mapId: MapId, x: number, y: number, openEditor = false): void {
@@ -1112,15 +593,52 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   // ── 렌더 ──
-  private currentTileset() {
-    const mapId = this.mapId();
-    return mapId ? this.tilesetForMap(mapId) : undefined;
-  }
-
   private tilesetForMap(mapId: MapId) {
     const project = store.getCurrent();
     const map = project.maps[mapId];
     return map ? project.tilesets[map.tilesetId] : undefined;
+  }
+
+  private getTilePaintEngine(): TilePaintEngine {
+    this.tilePaintEngine ??= new TilePaintEngine({
+      mapId: () => this.mapId(),
+      pointerToTile: (ptr) => this.pointerToTile(ptr),
+      updatePointerStatus: (ptr) => this.updatePointerStatus(ptr),
+      eventLayerClickCount: (target) => this.eventLayerClickCount(target),
+      pointerClickCount: (ptr) => this.pointerClickCount(ptr),
+      offerEventLayerSwitchAt: (mapId, x, y, layer, clickCount) => this.offerEventLayerSwitchAt(mapId, x, y, layer, clickCount),
+      showEventLayerClickFeedback: (mapId, x, y) => this.showEventLayerClickFeedback(mapId, x, y),
+      openExistingEventAt: (mapId, x, y) => this.openExistingEventAt(mapId, x, y),
+      handleEventClick: (mapId, x, y, openEditor) => this.handleEventClick(mapId, x, y, openEditor),
+      tilesetForMap: (mapId) => this.tilesetForMap(mapId),
+      setLastPointerTile: (point) => {
+        this.lastPointerTile = point;
+      },
+      getPaintState: () => ({ isPainting: this.isPainting, lastPaintKey: this.lastPaintKey }),
+      setPaintState: (state) => {
+        if (state.isPainting !== undefined) this.isPainting = state.isPainting;
+        if (state.lastPaintKey !== undefined) this.lastPaintKey = state.lastPaintKey;
+      },
+    });
+    return this.tilePaintEngine;
+  }
+
+  private getDragOperationHandler(): DragOperationHandler {
+    this.dragOperationHandler ??= new DragOperationHandler(this, {
+      mapId: () => this.mapId(),
+      pointerToTile: (ptr) => this.pointerToTile(ptr),
+      hoverPreviewLayer: () => this.hoverPreviewLayer,
+      clearHoverPreview: () => this.clearHoverPreview(),
+      showEventLayerClickFeedback: (mapId, x, y) => this.showEventLayerClickFeedback(mapId, x, y),
+      setLastPointerTile: (point) => {
+        this.lastPointerTile = point;
+      },
+      setPaintState: (state) => {
+        if (state.isPainting !== undefined) this.isPainting = state.isPainting;
+        if (state.lastPaintKey !== undefined) this.lastPaintKey = state.lastPaintKey;
+      },
+    });
+    return this.dragOperationHandler;
   }
 
   private redraw(): void {
@@ -1132,7 +650,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearHoverPreview();
       this.clearAgentFocusHighlight();
       this.lastPaintKey = "";
-      this.dragOperation = null;
+      this.dragOperationHandler?.clear();
     }
     this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
@@ -1172,30 +690,6 @@ export class EditScene extends PhaserRuntime.Scene {
     }, cells);
     if (this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     return stats;
-  }
-
-  private applyStamp(input: {
-    readonly autoConnect: boolean;
-    readonly layer: TileLayer;
-    readonly mapId: MapId;
-    readonly stamp: TileStamp;
-    readonly x: number;
-    readonly y: number;
-  }): void {
-    for (const cell of input.stamp.cells) {
-      paintTile(input.mapId, input.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: input.autoConnect });
-    }
-  }
-
-  private applyPaletteStamp(input: {
-    readonly mapId: MapId;
-    readonly stamp: PaletteStamp;
-    readonly x: number;
-    readonly y: number;
-  }): void {
-    for (const cell of input.stamp.cells) {
-      paintTile(input.mapId, cell.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: false });
-    }
   }
 
   private redrawWhenViewStateChanges(): void {
@@ -1274,221 +768,23 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private renderAgentGhostPreview(): void {
-    const layer = this.agentGhostPreviewLayer;
-    if (!layer) return;
-    layer.removeAll(true);
-    this.clearAgentGhostDomMarkers();
-    const previews = this.currentAgentGhostPreviews();
-    if (previews.length === 0) return;
-
-    const group = this.add.container(0, 0);
-    group.setName("agent-ghost-preview");
-    layer.add(group);
-
-    const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
-    for (const preview of previews) {
-      group.add(this.agentGhostBoundsGraphic(preview.bounds));
-      if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
-        for (const cell of preview.cells) group.add(this.agentGhostCellRect(cell));
-      }
-    }
-    this.renderAgentGhostDomMarkers(previews);
-  }
-
-  private currentAgentGhostPreviews(): readonly AgentGhostPreview[] {
-    return agentGhostPreviewsForMap(getAgentGhostPreviewState(), this.mapId());
+    this.agentGhostPreviewRenderer?.render();
   }
 
   private clearAgentGhostPreviewLayer(): void {
-    this.agentGhostPreviewLayer?.removeAll(true);
-    this.clearAgentGhostDomMarkers();
+    this.agentGhostPreviewRenderer?.clear();
   }
 
-  private agentGhostCellRect(cell: AgentGhostCell): Phaser.GameObjects.Rectangle {
-    const color = cell.layer === "event" ? 0x15aabf : cell.layer === "upper" ? 0x38d9a9 : AGENT_GHOST_FILL_COLOR;
-    const rect = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, 0.12);
-    rect.setOrigin(0, 0);
-    rect.setStrokeStyle(1, color, 0.52);
-    return rect;
-  }
-
-  private agentGhostBoundsGraphic(bounds: AgentGhostBounds): Phaser.GameObjects.Graphics {
-    const graphics = this.add.graphics();
-    const x = bounds.x * TILE_SIZE;
-    const y = bounds.y * TILE_SIZE;
-    const width = bounds.width * TILE_SIZE;
-    const height = bounds.height * TILE_SIZE;
-    graphics.fillStyle(AGENT_GHOST_FILL_COLOR, 0.09);
-    graphics.fillRect(x, y, width, height);
-    graphics.lineStyle(2, AGENT_GHOST_STROKE_COLOR, 0.88);
-    this.drawDashedRect(graphics, x, y, width, height, 10, 6);
-    return graphics;
-  }
-
-  private drawDashedRect(
-    graphics: Phaser.GameObjects.Graphics,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    dash: number,
-    gap: number
-  ): void {
-    this.drawDashedLine(graphics, x, y, x + width, y, dash, gap);
-    this.drawDashedLine(graphics, x + width, y, x + width, y + height, dash, gap);
-    this.drawDashedLine(graphics, x + width, y + height, x, y + height, dash, gap);
-    this.drawDashedLine(graphics, x, y + height, x, y, dash, gap);
-  }
-
-  private drawDashedLine(
-    graphics: Phaser.GameObjects.Graphics,
-    x0: number,
-    y0: number,
-    x1: number,
-    y1: number,
-    dash: number,
-    gap: number
-  ): void {
-    const dx = x1 - x0;
-    const dy = y1 - y0;
-    const length = Math.hypot(dx, dy);
-    if (length <= 0) return;
-    const ux = dx / length;
-    const uy = dy / length;
-    let cursor = 0;
-    while (cursor < length) {
-      const next = Math.min(cursor + dash, length);
-      graphics.beginPath();
-      graphics.moveTo(x0 + ux * cursor, y0 + uy * cursor);
-      graphics.lineTo(x0 + ux * next, y0 + uy * next);
-      graphics.strokePath();
-      cursor = next + gap;
-    }
-  }
-
-  private renderAgentGhostDomMarkers(previews: readonly AgentGhostPreview[] = this.currentAgentGhostPreviews()): void {
-    if (typeof document === "undefined") return;
-    this.clearAgentGhostDomMarkers();
-    if (previews.length === 0) return;
-    const host = this.game.canvas.parentElement;
-    if (!host) return;
-    for (const preview of previews) {
-      const rect = this.agentGhostScreenRect(preview.bounds);
-      const marker = document.createElement("div");
-      marker.className = "agent-ghost-preview";
-      marker.dataset.testid = "agent-ghost-preview";
-      marker.setAttribute("aria-hidden", "true");
-      marker.setAttribute("title", preview.label || "AI 작업 중");
-      marker.style.left = `${rect.x}px`;
-      marker.style.top = `${rect.y}px`;
-      marker.style.width = `${rect.width}px`;
-      marker.style.height = `${rect.height}px`;
-      host.append(marker);
-      this.agentGhostDomMarkers.push(marker);
-    }
-  }
-
-  private agentGhostScreenRect(bounds: AgentGhostBounds): AgentGhostBounds {
-    const camera = this.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
-    const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
-    const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
-    return { x, y, width, height };
-  }
-
-  private clearAgentGhostDomMarkers(): void {
-    for (const marker of this.agentGhostDomMarkers) marker.remove();
-    this.agentGhostDomMarkers = [];
+  private refreshAgentGhostDomMarkers(): void {
+    this.agentGhostPreviewRenderer?.refreshDomMarkers();
   }
 
   private showAgentFocusHighlight(target: AgentFocusTarget): void {
-    if (!target.bounds || target.mapId !== this.mapId()) return;
-    const layer = this.agentFocusHighlightLayer;
-    if (!layer) return;
-    this.clearAgentFocusHighlight();
-
-    const group = this.add.container(0, 0);
-    group.setName("agent-focus-highlight");
-    layer.add(group);
-
-    const cells = target.cells.filter((cell) => cell.x >= 0 && cell.y >= 0);
-    if (cells.length > 0 && cells.length <= AGENT_FOCUS_MAX_CELL_RECTS) {
-      for (const cell of cells) group.add(this.agentFocusCellRect(cell));
-    }
-    group.add(this.agentFocusBoundsRect(target.bounds, cells.length > AGENT_FOCUS_MAX_CELL_RECTS));
-    group.setAlpha(1);
-    this.tweens.add({
-      targets: group,
-      alpha: 0,
-      duration: AGENT_FOCUS_HIGHLIGHT_MS,
-      ease: "Cubic.easeOut",
-      onComplete: () => group.destroy(true),
-    });
-    this.renderAgentFocusDomMarker(target.bounds);
+    this.agentFocusRenderer?.show(target);
   }
 
   private clearAgentFocusHighlight(): void {
-    this.agentFocusHighlightLayer?.removeAll(true);
-    this.clearAgentFocusDomMarker();
-  }
-
-  private agentFocusCellRect(cell: AgentFocusCell): Phaser.GameObjects.Rectangle {
-    const color = cell.layer === "event" ? 0xff922b : cell.layer === "upper" ? 0x74c0fc : 0xffd43b;
-    const rect = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, 0.2);
-    rect.setOrigin(0, 0);
-    rect.setStrokeStyle(1, color, 0.72);
-    return rect;
-  }
-
-  private agentFocusBoundsRect(bounds: AgentFocusBounds, strongFill: boolean): Phaser.GameObjects.Rectangle {
-    const rect = this.add.rectangle(
-      bounds.x * TILE_SIZE,
-      bounds.y * TILE_SIZE,
-      bounds.width * TILE_SIZE,
-      bounds.height * TILE_SIZE,
-      0xffd43b,
-      strongFill ? 0.16 : 0.08
-    );
-    rect.setOrigin(0, 0);
-    rect.setStrokeStyle(3, 0xfff3bf, 0.95);
-    return rect;
-  }
-
-  private renderAgentFocusDomMarker(bounds: AgentFocusBounds): void {
-    if (typeof document === "undefined") return;
-    const host = this.game.canvas.parentElement;
-    if (!host) return;
-    const rect = this.agentFocusScreenRect(bounds);
-    const marker = document.createElement("div");
-    marker.className = "agent-focus-highlight";
-    marker.dataset.testid = "agent-focus-highlight";
-    marker.setAttribute("aria-hidden", "true");
-    marker.style.left = `${rect.x}px`;
-    marker.style.top = `${rect.y}px`;
-    marker.style.width = `${rect.width}px`;
-    marker.style.height = `${rect.height}px`;
-    host.append(marker);
-    this.agentFocusDomMarker = marker;
-    this.agentFocusDomTimer = setTimeout(() => this.clearAgentFocusDomMarker(), AGENT_FOCUS_HIGHLIGHT_MS + 100);
-  }
-
-  private agentFocusScreenRect(bounds: AgentFocusBounds): AgentFocusBounds {
-    const camera = this.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
-    const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
-    const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
-    return { x, y, width, height };
-  }
-
-  private clearAgentFocusDomMarker(): void {
-    if (this.agentFocusDomTimer) {
-      clearTimeout(this.agentFocusDomTimer);
-      this.agentFocusDomTimer = null;
-    }
-    this.agentFocusDomMarker?.remove();
-    this.agentFocusDomMarker = null;
+    this.agentFocusRenderer?.clear();
   }
 }
 
