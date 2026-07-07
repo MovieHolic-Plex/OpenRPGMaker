@@ -268,6 +268,44 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("변경 제안");
   });
 
+  it("제안이 오면 몰입 모달이 열리고, '나중에'는 pill로 최소화, 수락하면 닫힌다", async () => {
+    const mapId = store.getCurrent().startMapId;
+    const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "초안";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    // 제안 렌더 → 모달 자동 오픈(+건수), pill 숨김
+    const modal = findByTestId(panel, "ai-proposal-modal") as FakeElement;
+    const pill = findByTestId(panel, "ai-proposal-reopen") as FakeElement;
+    expect(modal.hidden).toBe(false);
+    expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("1건");
+    expect(pill.hidden).toBe(true);
+    // 카드 본체(수락 버튼)는 모달 안에 있다
+    expect(findByTestId(modal, "ai-proposal-accept")).toBeTruthy();
+
+    // '나중에' → 최소화: 모달 숨고 pill 등장(승인 대기 유지)
+    findByTestId(panel, "ai-proposal-modal-later")?.click();
+    expect(modal.hidden).toBe(true);
+    expect(pill.hidden).toBe(false);
+    expect(pill.textContent).toContain("변경 제안 1건");
+
+    // pill 클릭 → 재오픈
+    pill.click();
+    expect(modal.hidden).toBe(false);
+    expect(pill.hidden).toBe(true);
+
+    // 수락 → 모달/pill 모두 정리
+    findByTestId(panel, "ai-proposal-accept")?.click();
+    await flushAsync();
+    expect(modal.hidden).toBe(true);
+    expect(pill.hidden).toBe(true);
+  });
+
   it("미니 스트림: 새 턴이 시작되면 이전 턴 버블에 is-prior-turn을 표시한다", async () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "첫 응답." }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());

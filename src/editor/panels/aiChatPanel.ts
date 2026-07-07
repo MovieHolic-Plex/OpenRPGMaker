@@ -444,8 +444,68 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
-  // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 입력창 바로 위 고정, 비면 숨김(CSS :empty).
+  // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 비면 숨김(CSS :empty).
   const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
+
+  // ── 변경 제안 몰입 모달: 제안 카드는 중앙 모달에서 검토한다(채팅 오버레이에 얹으면 답답하다는 UX 피드백).
+  // proposalHost가 모달 본문에 상주하므로 카드 렌더/승인/융합 로직은 그대로다.
+  // '나중에'(Esc/백드롭 포함)는 최소화 — 커맨드 바 위 pill로 남아 승인 대기를 잃지 않는다. 폐기는 오직 [거부] 버튼.
+  const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
+  const proposalPill = el("button", {
+    class: "ai-proposal-pill",
+    attrs: { type: "button", hidden: "" },
+    dataset: { testid: "ai-proposal-reopen" },
+  }) as HTMLButtonElement;
+  const proposalModalCount = el("span", { class: "ai-proposal-modal-count", dataset: { testid: "ai-proposal-modal-count" } });
+  const proposalModalLater = el("button", {
+    class: "ai-assistant-action ai-proposal-modal-later",
+    text: "나중에",
+    attrs: { type: "button", title: "제안을 유지한 채 닫기 (Esc)" },
+    dataset: { testid: "ai-proposal-modal-later" },
+  }) as HTMLButtonElement;
+  const proposalModalRoot = el("div", {
+    class: "ai-proposal-modal-backdrop",
+    attrs: { hidden: "" },
+    dataset: { testid: "ai-proposal-modal" },
+    children: [
+      el("div", {
+        class: "ai-proposal-modal",
+        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "변경 제안 검토", tabindex: "-1" },
+        children: [
+          el("div", {
+            class: "ai-proposal-modal-header",
+            children: [
+              el("span", { class: "ai-proposal-modal-title", text: "변경 제안" }),
+              proposalModalCount,
+              proposalModalLater,
+            ],
+          }),
+          el("div", { class: "ai-proposal-modal-body", children: [proposalHost] }),
+        ],
+      }),
+    ],
+  });
+  const openProposalModal = (): void => {
+    proposalModalRoot.hidden = false;
+    proposalPill.hidden = true;
+  };
+  const minimizeProposalModal = (): void => {
+    if (proposalModalRoot.hidden) return;
+    proposalModalRoot.hidden = true;
+    proposalPill.hidden = false;
+  };
+  const closeProposalModal = (): void => {
+    proposalModalRoot.hidden = true;
+    proposalPill.hidden = true;
+  };
+  proposalPill.addEventListener("click", () => openProposalModal());
+  proposalModalLater.addEventListener("click", () => minimizeProposalModal());
+  proposalModalRoot.addEventListener("click", (event) => {
+    if ((event as { target?: unknown }).target === proposalModalRoot) minimizeProposalModal();
+  });
+  proposalModalRoot.addEventListener("keydown", (event) => {
+    if ((event as KeyboardEvent).key === "Escape") minimizeProposalModal();
+  });
   let turnBusy = false;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let volatileFadeTimer: number | null = null;
@@ -662,6 +722,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     pendingProposalMessage = null;
     lastAppliedProposalMessage = null;
     proposalHost.replaceChildren();
+    closeProposalModal();
     chipsHost.replaceChildren();
     log.replaceChildren();
     startScreen = null;
@@ -738,11 +799,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
     if (result.proposedCalls.length === 0 && lines.length === 0) return;
 
-    // 0건 프로포절(결함 ⑤): 블로킹 검토 카드 대신 자동 소거 알림 + 대화 로그 기록.
+    // 0건 프로포절(결함 ⑤): 모달 없이 스티키 존 자동 소거 알림 + 대화 로그 기록.
     if (result.proposedCalls.length === 0) {
+      closeProposalModal();
       appendBubble("system", ["변경 제안 없음(0건) — 완성도 린트:", ...lines].join("\n"));
-      const notice = renderEmptyProposalNotice(lines, () => proposalHost.replaceChildren());
-      proposalHost.append(notice);
+      const notice = renderEmptyProposalNotice(lines, () => notice.remove());
+      proposalNoticeHost.append(notice);
       if (typeof window !== "undefined" && typeof window.setTimeout === "function") {
         window.setTimeout(() => notice.remove(), EMPTY_PROPOSAL_NOTICE_DISMISS_MS);
       }
@@ -895,6 +957,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     setAssistantMessageBadge(assistantBubble, "proposal");
     refreshSelectionUi();
     proposalHost.append(card);
+    // 몰입 검토: 제안이 준비되면 모달을 연다. pill 라벨도 최신 건수로.
+    proposalModalCount.textContent = `${result.proposedCalls.length}건`;
+    proposalPill.textContent = `📋 변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;
+    openProposalModal();
   };
 
   const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits = false): void => {
@@ -995,6 +1061,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     resetManualProjectCommitBaseline(proposed);
     proposalHost.replaceChildren();
+    closeProposalModal();
     setStatus("적용됨");
     const messageState = pendingProposalMessage;
     setAssistantMessageBadge(messageState?.assistantBubble ?? null, "applied");
@@ -1014,6 +1081,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const rejectProposal = (): void => {
     proposalHost.replaceChildren();
+    closeProposalModal();
     clearAgentGhostPreview();
     setStatus("제안 거부됨");
     setAssistantMessageBadge(pendingProposalMessage?.assistantBubble ?? null, "discarded");
@@ -1325,6 +1393,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
               // 세션 draft는 저장 전 스냅샷 기반이라, 이후 제안 수락이 템플릿을 되돌리지 않도록 세션을 정리한다.
               dropSession(controller);
               proposalHost.replaceChildren();
+              closeProposalModal();
             },
           });
         }
@@ -1821,6 +1890,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         pendingProposalMessage = null;
         lastAppliedProposalMessage = null;
         proposalHost.replaceChildren();
+        closeProposalModal();
         chipsHost.replaceChildren();
         log.replaceChildren();
         startScreen = buildStartScreen();
@@ -1929,7 +1999,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
-    children: [proposalHost],
+    // 제안 카드 본체는 몰입 모달에 상주 — 여기엔 0건 알림과 '검토 대기' pill만 남는다.
+    children: [proposalNoticeHost, proposalPill],
   });
   const risingOverlay = el("div", {
     class: "ai-rising-overlay",
@@ -1951,7 +2022,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-panel",
     attrs: { "aria-label": "AI 어시스턴트 채팅" },
     dataset: { testid: "ai-panel" },
-    children: [header, toolbar, body, collapsedRestore, risingOverlay, commandBar],
+    children: [header, toolbar, body, collapsedRestore, risingOverlay, commandBar, proposalModalRoot],
   });
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
