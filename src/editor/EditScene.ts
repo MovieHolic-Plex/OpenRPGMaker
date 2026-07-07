@@ -20,6 +20,7 @@ import {
 } from "@/editor/agentGhostPreview";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState, type PaintShape } from "@/editor/editorState";
+import { showConfirm } from "@/editor/ui/modal";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import {
@@ -1053,15 +1054,17 @@ export class EditScene extends PhaserRuntime.Scene {
       return false;
     }
     if (!existing) return false;
-    const confirmed = typeof window === "undefined" || window.confirm(eventLayerSwitchPrompt(existing));
-    if (!confirmed) {
-      toast("이벤트 레이어 전환을 취소했습니다.", "info");
-      return true;
-    }
+    // 커스텀 인앱 모달(§2.4): 확인은 비동기로 받고, 제안이 뜬 시점에 페인팅은 즉시 멈춘다.
     this.isPainting = false;
     this.lastPaintKey = "";
-    editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
-    openEventEditorModal(mapId, existing.id);
+    void showConfirm({ title: "이벤트 레이어 전환", message: eventLayerSwitchPrompt(existing), confirmLabel: "전환" }).then((confirmed) => {
+      if (!confirmed) {
+        toast("이벤트 레이어 전환을 취소했습니다.", "info");
+        return;
+      }
+      editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
+      openEventEditorModal(mapId, existing.id);
+    });
     return true;
   }
 

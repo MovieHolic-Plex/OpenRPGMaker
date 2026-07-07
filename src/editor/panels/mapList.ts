@@ -400,13 +400,14 @@ function duplicateAndSelect(mapId: MapId): void {
 
 function deleteAndSelectNext(mapId: MapId): void {
   if (Object.keys(store.getCurrent().maps).length <= 1) return;
-  // 확인 다이얼로그(임팩트 요약) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
-  const result = confirmAndDeleteMap(mapId);
-  if (!result.ok) return;
-  const next = store.getCurrent();
-  if (!next.maps[editorState.get().currentMapId ?? ""]) {
-    selectEditorMap(next.startMapId);
-  }
+  // 확인 다이얼로그(임팩트 요약, 커스텀 모달) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
+  void confirmAndDeleteMap(mapId).then((result) => {
+    if (!result.ok) return;
+    const next = store.getCurrent();
+    if (!next.maps[editorState.get().currentMapId ?? ""]) {
+      selectEditorMap(next.startMapId);
+    }
+  });
 }
 
 function openMapProperties(mapId: MapId, mapName: string): void {

@@ -94,14 +94,19 @@ describe("map history panel", () => {
     expect(findByTestId(panel, "history-revert-2")).toBeTruthy();
   });
 
-  it("reverts a history point after confirmation", () => {
+  it("reverts a history point after confirmation (커스텀 모달 §2.4)", async () => {
     const mapId = store.getCurrent().startMapId;
     historyMock.entries = [{ index: 4, label: "되돌릴 지점", mapId, at: 4, current: false }];
     const panel = renderPanel();
 
     findByTestId(panel, "history-revert-4")?.click();
 
-    expect(window.confirm).toHaveBeenCalled();
+    // 네이티브 confirm 대신 커스텀 인앱 모달이 뜬다 — 확인을 눌러야 되돌린다.
+    const bodyEl = document.body as unknown as FakeElement;
+    expect(findByTestId(bodyEl, "app-confirm-modal")).toBeTruthy();
+    expect(historyMock.revertToHistoryIndex).not.toHaveBeenCalled();
+    findByTestId(bodyEl, "app-modal-confirm")?.click();
+    await Promise.resolve();
     expect(historyMock.revertToHistoryIndex).toHaveBeenCalledWith(4);
   });
 

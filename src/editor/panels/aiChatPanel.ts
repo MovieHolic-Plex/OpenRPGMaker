@@ -5,7 +5,7 @@
 // - API 키는 설정 폼에서만 입력(localStorage). 소스/프로젝트 JSON에 하드코딩 금지.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
-import { computeAssistantToolMode } from "@/editor/assistantToolMode";
+import { computeAssistantToolMode, TOOL_MODE_LABELS } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -16,13 +16,14 @@ import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowse
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
-import { commitChangeset, runTool, summarizeChanges, type ToolContext, type ToolResult } from "@/editor/tools";
+import { commitChangeset, runTool, summarizeChanges, toOpenAiTools, type ToolContext, type ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import type { Project, TilesetDef } from "@/project/types";
 import { getGrammarProfile, type VocabularyProposalCard } from "@/editor/tools/v3";
+import { showConfirm } from "@/editor/ui/modal";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -116,6 +117,27 @@ export function loadPanelSize(): PanelSize | null {
 export function savePanelSize(size: PanelSize): void {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(clampPanelSize(size)));
+}
+
+// ── 도킹 사이드바 폭(§2.3 — G4) ──────────────────────────────────
+// 기본 폭을 400→520px로 상향하고, 좌측 리사이저로 조절해 localStorage에 유지한다.
+const DOCK_WIDTH_KEY = "rpg-zzu:ai-dock-width";
+export const DOCK_WIDTH_LIMITS = { min: 320, max: 900, default: 520 } as const;
+
+export function clampDockWidth(width: number): number {
+  if (!Number.isFinite(width)) return DOCK_WIDTH_LIMITS.default;
+  return Math.round(Math.min(DOCK_WIDTH_LIMITS.max, Math.max(DOCK_WIDTH_LIMITS.min, width)));
+}
+
+export function loadDockWidth(): number {
+  if (typeof localStorage === "undefined") return DOCK_WIDTH_LIMITS.default;
+  const raw = Number(localStorage.getItem(DOCK_WIDTH_KEY));
+  return raw > 0 ? clampDockWidth(raw) : DOCK_WIDTH_LIMITS.default;
+}
+
+export function saveDockWidth(width: number): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(DOCK_WIDTH_KEY, String(clampDockWidth(width)));
 }
 
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────
@@ -781,10 +803,11 @@ export function isMetadataOnlyProposal(calls: readonly ProposedCall[]): boolean 
   return calls.length > 0 && calls.every((call) => METADATA_ONLY_TOOLS.has(call.name));
 }
 
-function confirmRuleApproval(warnings: readonly string[]): boolean {
+// 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체. 경고가 없으면 동기 true를 돌려
+// 수락 경로가 마이크로태스크로 미뤄지지 않게 한다(적용 직후 상태를 읽는 흐름 보존).
+function confirmRuleApproval(warnings: readonly string[]): true | Promise<boolean> {
   if (warnings.length === 0) return true;
-  if (typeof window === "undefined" || typeof window.confirm !== "function") return true;
-  return window.confirm(`${warnings.join("\n")}\n\n이 규칙을 적용할까요?`);
+  return showConfirm({ title: "승인 확인", message: `${warnings.join("\n")}\n\n이 규칙을 적용할까요?`, confirmLabel: "적용" });
 }
 
 function attachCompletenessWarnings(calls: readonly ProposedCall[], warnings: readonly string[]): void {
@@ -999,7 +1022,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
-  const proposalHost = el("div", { class: "ai-proposal-host", dataset: { testid: "ai-proposal-host" } });
+  // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 입력창 바로 위 고정, 비면 숨김(CSS :empty).
+  const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
   // 원탭 답변 칩(맵 인터뷰 등 "[선택지] a | b" 마커가 있는 응답에 표시).
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   let exportButton: HTMLButtonElement | null = null;
@@ -1417,7 +1441,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const selectedCalls = calls.filter((_, index) => selected[index]);
     if (selectedCalls.length === 0) return;
     const warnings = proposalApprovalWarnings(selectedCalls);
-    if (warnings.length > 0 && !confirmRuleApproval(warnings)) return;
+    const decision = confirmRuleApproval(warnings);
+    if (decision !== true) {
+      // 모달 확인 후 같은 적용 경로를 이어간다(취소 시 아무것도 하지 않음).
+      void decision.then((confirmed) => {
+        if (confirmed) applyAcceptedProposal(calls, selected, selectedCalls, hasEdits);
+      });
+      return;
+    }
+    applyAcceptedProposal(calls, selected, selectedCalls, hasEdits);
+  };
+
+  // acceptProposal 의 적용 본문 — 확인 모달(비동기) 뒤에도 동일 경로를 타도록 분리(§2.4).
+  const applyAcceptedProposal = (
+    calls: readonly ProposedCall[],
+    selected: readonly boolean[],
+    selectedCalls: readonly ProposedCall[],
+    hasEdits: boolean
+  ): void => {
+    const session = controller.session;
+    if (!session) return;
     const before = store.getCurrent();
     const fullAccept = selectedCalls.length === calls.length && !hasEdits;
     const reassembled = fullAccept
@@ -2290,11 +2333,45 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-status-group" },
     children: [status, abortButton],
   });
+  // ① 헤더(§2.3·§2.2.3): 모드 배지 + 폰트 크기 + 설정 + 도크 버튼을 상단 고정 헤더로 수렴.
+  const modeBadge = el("span", {
+    class: "ai-mode-badge",
+    dataset: { testid: "ai-mode-badge" },
+    attrs: { title: "현재 편집 컨텍스트에서 AI에 노출되는 툴 범위(모드 · 툴 수)" },
+  });
+  const refreshModeBadge = (): void => {
+    if (typeof document === "undefined") return; // fakeDom 해제 후 잔존 구독 가드(테스트).
+    const mode = computeAssistantToolMode();
+    modeBadge.textContent = `${TOOL_MODE_LABELS[mode]} · ${toOpenAiTools(undefined, { mode }).length}툴`;
+  };
+  refreshModeBadge();
+  editorState.subscribe(() => refreshModeBadge());
+  store.subscribe(() => refreshModeBadge());
+  const fontButton = el("button", {
+    class: "ai-chat-tools-button",
+    text: "가",
+    attrs: { type: "button", title: "글자 크기 전환 (작게 → 보통 → 크게)", "aria-label": "글자 크기 전환" },
+    dataset: { testid: "ai-font-cycle" },
+    on: {
+      click: () => {
+        const order: AiFontSize[] = ["small", "normal", "large"];
+        const next = order[(order.indexOf(loadAiFontSize()) + 1) % order.length];
+        saveAiFontSize(next);
+        applyAiFontSize(panel, next);
+      },
+    },
+  });
   const header = el("div", {
     class: "ai-chat-header",
-    children: [titleEl, statusGroup, collapseButton],
+    children: [
+      titleEl,
+      modeBadge,
+      statusGroup,
+      el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, dockButton] }),
+      collapseButton,
+    ],
   });
-  // 도구줄(접으면 숨김): 주요 액션을 그룹으로 정리 — 새 대화 · 로그 | 설정 · 툴 | 도킹 · 스튜디오.
+  // 도구줄(접으면 숨김): 새 대화 · 되돌리기 · 로그 | 툴 · 스튜디오 (설정/도킹은 헤더로 이동 — §2.3 ①).
   const toolbar = el("div", {
     class: "ai-chat-toolbar",
     dataset: { testid: "ai-chat-toolbar" },
@@ -2303,10 +2380,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       undoLastButton,
       exportButton,
       el("span", { class: "ai-toolbar-sep" }),
-      settingsButton,
       toolsButton,
-      el("span", { class: "ai-toolbar-sep" }),
-      dockButton,
       studioButton,
     ],
   });
@@ -2376,6 +2450,36 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     window.addEventListener("pointerup", onUp);
   });
   panel.append(resizeHandle);
+
+  // 도킹 폭 리사이저(§2.3 — G4): 좌측 엣지 드래그로 --ai-dock-width 조절, localStorage 유지.
+  let dockWidth = loadDockWidth();
+  const applyDockWidth = (): void => {
+    if (typeof document === "undefined") return;
+    document.documentElement?.style?.setProperty?.("--ai-dock-width", `${dockWidth}px`);
+  };
+  applyDockWidth();
+  const dockResizer = el("div", {
+    class: "ai-dock-resizer",
+    attrs: { title: "드래그로 사이드바 폭 조절", "aria-label": "AI 사이드바 폭 조절", role: "separator" },
+    dataset: { testid: "ai-dock-resizer" },
+  });
+  dockResizer.addEventListener("pointerdown", (event: PointerEvent) => {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = dockWidth;
+    const onMove = (move: PointerEvent): void => {
+      dockWidth = clampDockWidth(startWidth + (startX - move.clientX));
+      applyDockWidth();
+    };
+    const onUp = (): void => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      saveDockWidth(dockWidth);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  });
+  panel.append(dockResizer);
 
   const applyCollapsed = (): void => {
     if (collapsed) panel.classList.add("is-collapsed");

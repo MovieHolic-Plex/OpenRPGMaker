@@ -12,6 +12,7 @@ import {
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
 import { renderMapList } from "@/editor/panels/mapList";
@@ -294,7 +295,7 @@ function renderMapEditLockBanner(container: HTMLElement): void {
       attrs: { type: "button", title: "현재 맵 편집 권한 가져오기" },
       dataset: { testid: "map-lock-banner-takeover" },
       on: {
-        click: () => requestMapLockTakeover(status),
+        click: () => void requestMapLockTakeover(status),
       },
     }),
   );
@@ -347,7 +348,7 @@ function renderMapEditLockStatus(status: MapEditLockStatus, mapId: string): HTML
         on: {
           click: (event) => {
             event.stopPropagation();
-            requestMapLockTakeover(status);
+            void requestMapLockTakeover(status);
           },
         },
       }),
@@ -356,12 +357,15 @@ function renderMapEditLockStatus(status: MapEditLockStatus, mapId: string): HTML
   return cell;
 }
 
-function requestMapLockTakeover(status: Extract<MapEditLockStatus, { readonly kind: "locked" }>): void {
+async function requestMapLockTakeover(status: Extract<MapEditLockStatus, { readonly kind: "locked" }>): Promise<void> {
   const immediate = isMapEditLockTakeoverImmediate(status);
   if (!immediate) {
-    const confirmed = window.confirm(
-      `${status.ownerLabel} 세션이 최근 활동했습니다. 편집 권한을 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
-    );
+    // 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체.
+    const confirmed = await showConfirm({
+      title: "편집 권한 가져오기",
+      message: `${status.ownerLabel} 세션이 최근 활동했습니다. 편집 권한을 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
+      confirmLabel: "가져오기",
+    });
     if (!confirmed) return;
   }
   void takeoverMapLock(status.mapId, status.mapName).then(() => refreshPanels());

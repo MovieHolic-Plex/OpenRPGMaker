@@ -2,6 +2,7 @@
 // 맵 삭제 확인(도그푸딩 결함 ⑦): 원클릭 파괴 대신 이벤트 수/참조 정리 등 임팩트 요약을
 // 확인 다이얼로그로 보여준 뒤 삭제한다. mapList 트리 메뉴와 상단 메뉴가 공유한다.
 import { deleteMap, type DeleteMapResult } from "@/editor/actions";
+import { showConfirm } from "@/editor/ui/modal";
 import { collectMapDeletionImpact, type MapDeletionImpact } from "@/project/mapDeletion";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
@@ -24,12 +25,17 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
 export type ConfirmDeleteMapResult = DeleteMapResult | { readonly ok: false; readonly message: string; readonly cancelled: true };
 
 // 임팩트 요약 확인 → 삭제. 사용자가 취소하면 아무것도 하지 않는다.
-export function confirmAndDeleteMap(mapId: MapId): ConfirmDeleteMapResult {
+// 커스텀 인앱 모달(§2.4) — 헤드리스에서는 자동 통과(기존 window.confirm 부재 규약 승계).
+export async function confirmAndDeleteMap(mapId: MapId): Promise<ConfirmDeleteMapResult> {
   const impact = collectMapDeletionImpact(store.getCurrent(), mapId);
-  if (impact && typeof window !== "undefined" && typeof window.confirm === "function") {
-    if (!window.confirm(mapDeletionConfirmMessage(impact))) {
-      return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
-    }
+  if (impact) {
+    const confirmed = await showConfirm({
+      title: "맵 삭제",
+      message: mapDeletionConfirmMessage(impact),
+      confirmLabel: "삭제",
+      danger: true,
+    });
+    if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
   }
   return deleteMap(mapId);
 }

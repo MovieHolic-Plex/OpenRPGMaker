@@ -12,6 +12,7 @@ import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/sk
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
+import { showConfirm } from "@/editor/ui/modal";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
@@ -221,7 +222,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
               text: "수락해서 적용",
               attrs: { title: "변경안을 바로 적용", type: "button" },
               dataset: { testid: "cluster-ai-accept" },
-              on: { click: () => acceptProposal(result.proposedCalls) },
+              on: { click: () => void acceptProposal(result.proposedCalls) },
             }),
             el("button", {
               class: "cluster-ai-reject",
@@ -287,12 +288,12 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       setBusy(false);
     }
   };
-  const acceptProposal = (calls: readonly ProposedCall[]): void => {
+  const acceptProposal = async (calls: readonly ProposedCall[]): Promise<void> => {
     const session = state.session;
     if (!session) return;
-    if (calls.some((call) => call.destructive) && !confirmDestructive()) return;
+    if (calls.some((call) => call.destructive) && !(await confirmDestructive())) return;
     const warnings = proposalApprovalWarnings(calls);
-    if (warnings.length > 0 && !confirmRuleApproval(warnings)) return;
+    if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
     const proposed = session.getProposedProject();
     const mapId = skillContext().mapId;
     const snapshot: SnapshotRecorder = recordProjectSnapshot;
@@ -538,15 +539,14 @@ function proposalLine(call: ProposedCall): string {
   return `${call.destructive ? "파괴적 · " : ""}${call.name}${ruleStrengthLabel(call)} — ${call.summary}`;
 }
 
-function confirmDestructive(): boolean {
-  if (typeof window === "undefined" || typeof window.confirm !== "function") return true;
-  return window.confirm("파괴적 변경이 포함되어 있습니다. 그래도 적용할까요?");
+// 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체(헤드리스 자동 통과 규약 유지).
+function confirmDestructive(): Promise<boolean> {
+  return showConfirm({ title: "파괴적 변경", message: "파괴적 변경이 포함되어 있습니다. 그래도 적용할까요?", confirmLabel: "적용", danger: true });
 }
 
-function confirmRuleApproval(warnings: readonly string[]): boolean {
-  if (warnings.length === 0) return true;
-  if (typeof window === "undefined" || typeof window.confirm !== "function") return true;
-  return window.confirm(`${warnings.join("\n")}\n\n이 규칙을 적용할까요?`);
+function confirmRuleApproval(warnings: readonly string[]): Promise<boolean> {
+  if (warnings.length === 0) return Promise.resolve(true);
+  return showConfirm({ title: "규칙 승인", message: `${warnings.join("\n")}\n\n이 규칙을 적용할까요?`, confirmLabel: "적용" });
 }
 
 function ruleStrengthLabel(call: ProposedCall): string {

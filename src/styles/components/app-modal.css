@@ -1,0 +1,63 @@
+/* 커스텀 인앱 모달 (2026-07-07 §2.4) — 네이티브 confirm/alert 대체. */
+@layer components {
+  .app-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 10, 16, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 220;
+  }
+  .app-modal-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-modal);
+    color: var(--text-1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: calc(100vh - 64px);
+    max-width: 440px;
+    overflow-y: auto;
+    padding: var(--space-4);
+    width: calc(100vw - 48px);
+  }
+  .app-modal-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .app-modal-message {
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .app-modal-actions {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: flex-end;
+  }
+  .app-modal-button {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-1);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 14px;
+  }
+  .app-modal-button.is-confirm {
+    background: var(--accent);
+    border-color: var(--accent-border, var(--accent));
+    color: var(--accent-contrast, #fff);
+  }
+  .app-modal-button.is-confirm:hover {
+    background: var(--accent-hover);
+  }
+  .app-modal-button.is-danger {
+    background: var(--danger, #b3261e);
+    border-color: var(--danger, #b3261e);
+    color: #fff;
+  }
+}

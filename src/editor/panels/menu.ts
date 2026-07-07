@@ -1,6 +1,7 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { addMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
+import { showConfirm } from "@/editor/ui/modal";
 import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -417,7 +418,7 @@ function applyHistory(action: () => boolean, topbar: HTMLElement): void {
 }
 
 async function newProject(): Promise<void> {
-  if (!window.confirm("현재 작업을 지우고 새 프로젝트를 시작할까요?")) return;
+  if (!(await showConfirm({ title: "새 프로젝트", message: "현재 작업을 지우고 새 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   await store.clearAll();
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
@@ -425,7 +426,7 @@ async function newProject(): Promise<void> {
 }
 
 async function newSampleAdventureProject(): Promise<void> {
-  if (!window.confirm("현재 작업을 지우고 예제 프로젝트를 시작할까요?")) return;
+  if (!(await showConfirm({ title: "예제 프로젝트", message: "현재 작업을 지우고 예제 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replace(createSampleAdventureProject());
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
@@ -444,12 +445,13 @@ function deleteCurrentMap(mapId: string): void {
     toast("마지막 맵은 삭제할 수 없습니다", "error");
     return;
   }
-  // 확인 다이얼로그(임팩트 요약) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
-  const result = confirmAndDeleteMap(mapId);
-  if (!result.ok) return;
-  const next = store.getCurrent();
-  editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
-  toast("맵을 삭제했습니다", "ok");
+  // 확인 다이얼로그(임팩트 요약, 커스텀 모달) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
+  void confirmAndDeleteMap(mapId).then((result) => {
+    if (!result.ok) return;
+    const next = store.getCurrent();
+    editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
+    toast("맵을 삭제했습니다", "ok");
+  });
 }
 
 async function togglePlayMode(): Promise<void> {

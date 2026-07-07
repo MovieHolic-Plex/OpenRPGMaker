@@ -1,4 +1,5 @@
 import { editorState } from "@/editor/editorState";
+import { showConfirm } from "@/editor/ui/modal";
 import {
   getMapEditHistoryEntries,
   getMapEditHistoryState,
@@ -122,8 +123,11 @@ function historyRow(entry: MapEditHistoryEntry): HTMLElement {
     dataset: { testid: `history-revert-${entry.index}` },
     on: {
       click: () => {
-        if (typeof window !== "undefined" && !window.confirm(`'${entry.label}' 지점으로 되돌릴까요?`)) return;
-        if (revertToHistoryIndex(entry.index)) toast("되돌렸습니다", "ok");
+        // 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체.
+        void showConfirm({ title: "기록 되돌리기", message: `'${entry.label}' 지점으로 되돌릴까요?`, confirmLabel: "되돌리기" }).then((confirmed) => {
+          if (!confirmed) return;
+          if (revertToHistoryIndex(entry.index)) toast("되돌렸습니다", "ok");
+        });
       },
     },
   });

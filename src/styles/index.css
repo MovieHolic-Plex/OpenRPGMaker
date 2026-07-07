@@ -14,6 +14,7 @@
 @import "./database/record-thumbs.css";
 @import "./map/resource-system.css";
 @import "./components/icons.css";
+@import "./components/app-modal.css";
 @import "./shell/rm2k3.css";
 @import "./editor/responsive-a.css";
 @import "./editor/terrain-template.css";

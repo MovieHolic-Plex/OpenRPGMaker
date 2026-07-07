@@ -240,6 +240,12 @@ describe("맵 잠금 상태바", () => {
     if (!takeover) throw new Error("map-lock-takeover button missing");
 
     takeover.click();
+    // 비즉시 takeover는 커스텀 인앱 모달(§2.4)로 확인을 받는다 — 확인을 눌러야 호출된다.
+    await vi.waitFor(() => {
+      const confirm = findByTestId(fakeElement(document.body as unknown as HTMLElement), "app-modal-confirm");
+      if (!confirm) throw new Error("app-modal-confirm not yet rendered");
+      confirm.click();
+    });
     await vi.waitFor(() => {
       expect(takeoverMapLock).toHaveBeenCalledWith(mapId, mapName);
     });
