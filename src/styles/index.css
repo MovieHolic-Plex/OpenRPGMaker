@@ -44,6 +44,7 @@
 @import "./editor/event-editor-ai.css";
 @import "./shell/figma-editor.css";
 @import "./editor/village-info.css";
+@import "./editor/world-panel.css";
 @import "./editor/cluster-ai-modal.css";
 @import "./editor/map-history.css";
 @import "./editor/rule-audit.css";

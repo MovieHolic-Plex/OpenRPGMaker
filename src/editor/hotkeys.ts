@@ -34,6 +34,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
   if (typeof document !== "undefined") {
     if (document.querySelector("[data-testid='database-modal']")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
+    if (document.querySelector("[data-testid='world-panel-modal']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
     if (document.querySelector("[data-testid='event-editor-modal']")) return true;
@@ -96,6 +97,11 @@ export function applyLayer(layer: Layer): void {
 /** Ctrl 없이 누른 키에 대한 에디터 전역 단축키 처리. true=처리함. */
 export function handleEditorKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
+  if ((event.ctrlKey || event.metaKey) && event.altKey && event.key.toLowerCase() === "w") {
+    event.preventDefault();
+    void import("@/editor/panels/worldPanel").then(({ openWorldPanel }) => openWorldPanel());
+    return true;
+  }
   if (event.ctrlKey || event.metaKey || event.altKey) return false;
 
   if (handleEditorDeleteKey(event)) return true;
