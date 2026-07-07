@@ -22,6 +22,7 @@ import { TERRAIN_TEMPLATE_TOOLS } from "./terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import type { JsonSchema, ToolDefinition } from "./types";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
+import { VOCABULARY_TOOLS_V3 } from "./v3";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 
@@ -37,8 +38,9 @@ function tagV1(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
   });
 }
 
-// 레지스트리(순서 = 카탈로그 표시 순서). v2 타일 툴이 앞에 온다.
+// 레지스트리(순서 = 카탈로그 표시 순서). v3 승인 보캐뷸러리 → v2 타일 툴 순으로 앞에 온다.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
+  ...VOCABULARY_TOOLS_V3,
   ...TILE_TOOLS_V2,
   ...MAP_TOOLS,
   ...MAP_GEN_TOOLS,

@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 91개 툴 — 쓰기 60, 읽기 31.
+> 총 92개 툴 — 쓰기 61, 읽기 31.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -9,6 +9,7 @@
 
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
+| `propose_tile_vocabulary` | `tilesetId?: string`, `items: array` | 미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. 수락되면 origin:user로 승인 어휘에 편입된다(자동 승인 불가 — 반드시 사용자 수락 대기). 배치 프리미티브는 승인 어휘만 소비한다. |
 | `tile_paint` | `mapId: string`, `action?: paint\|erase`, `layer?: lower\|upper`, `mode: rect\|line\|fill\|cells`, `tile?: integer`, `from?: object`, `to?: object`, `cells?: array` | 타일을 칠하거나 지운다(v2). action=paint(기본)는 tile 필수, action=erase는 tile 불필요. mode: rect(from/to)/line(from/to)/fill(from, lower 전용)/cells(cells 배열). 클러스터 hard 규칙 동반 배치와 통행성 경고는 자동. |
 | `tile_road` | `mapId: string`, `points: array`, `style?: dirt\|sand`, `presetId?: string`, `paletteRole?: ground\|path\|wall\|water\|decor\|boundary\|roof\|furniture`, `naturalness?: number`, `seed?: integer` | 길을 깐다(v2). points 폴리라인(2개 이상)을 잇고 오토타일 셰이핑까지 자동. naturalness 0~1(기본 0.5): 0=반듯한 직선, 0.8+=야생 구불길. 프리셋이 있으면 presetId+paletteRole(path)로 타일을 고른다. |
 | `tile_scatter` | `mapId: string`, `area: object`, `count: integer`, `groupId?: string`, `presetId?: string`, `paletteRole?: ground\|path\|wall\|water\|decor\|boundary\|roof\|furniture`, `minGap?: integer`, `naturalness?: number`, `seed?: integer` | 타일 그룹/프리셋 오브젝트를 area 안에 자연 산포한다(v2). groupId 또는 presetId+paletteRole 중 하나 필수. 풋프린트 원자 배치·보호셀 회피·클러스터 hard 규칙 자동. naturalness: <0.3 균일, 0.3~0.7 포아송, >0.7 군락. |
@@ -74,7 +75,7 @@
 
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
-| `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|terrain_templates\|terrain_template`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `templateId?: string`, `limit?: integer` | 타일 지식 통합 조회(v2). ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), terrain_templates(템플릿 목록), terrain_template(템플릿 상세: templateId). |
+| `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|terrain_templates\|terrain_template\|unapproved`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `templateId?: string`, `limit?: integer` | 타일 지식 통합 조회(v2). ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), terrain_templates(템플릿 목록), terrain_template(템플릿 상세: templateId), unapproved(미승인 어휘 요약 — 배치 전 propose_tile_vocabulary 대상 확인). |
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `query_world` | `type?: character\|place\|faction\|event\|item\|concept\|guideline`, `tags?: array`, `text?: string`, `limit?: integer` | 세계관 개체와 관계를 조회한다. type/tags/text로 필터링해 상세(body/refs/relations)를 읽고, 세계관을 수정하기 전 현재 내용을 확인하라. |
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |

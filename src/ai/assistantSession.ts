@@ -74,6 +74,11 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 // 파괴적으로 간주하는 툴 이름.
 const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map"]);
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
+// v3 어휘 프로포절(2026-07-07, 원칙 0): 승인 = origin:"user" 마킹은 '사용자 명시 수락'으로만.
+// requiresApproval 태깅이 메타데이터 자동 커밋·autoApprove 자동 수락 경로를 모두 차단하므로,
+// 이 툴의 draft 마킹이 store에 반영되는 유일한 경로가 명시 수락이 된다(자동 수락 = 승인 불인정).
+export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
+const VOCABULARY_APPROVAL_WARNING = "🔒 어휘 승인 제안: 수락하면 해당 타일/그룹이 승인 보캐뷸러리(origin:user)에 편입됩니다. 자동 승인은 적용되지 않습니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 
@@ -101,6 +106,7 @@ export function ruleToolRejectionText(name: string, result: ToolResult): string 
 }
 
 function approvalWarningFor(name: string, args: Record<string, unknown>): string | undefined {
+  if (VOCABULARY_PROPOSAL_TOOLS.has(name)) return VOCABULARY_APPROVAL_WARNING;
   const rule = args.rule;
   if (name !== "set_cluster_rule" || !isRecord(rule)) return undefined;
   return rule.strength === "hard" ? HARD_CLUSTER_RULE_WARNING : undefined;
@@ -523,7 +529,7 @@ export class AssistantSession {
             summary: toolResult.summary,
             result: toolResult,
             destructive: DESTRUCTIVE_TOOLS.has(name),
-            requiresApproval: RULE_TOOLS.has(name) || DESTRUCTIVE_TOOLS.has(name),
+            requiresApproval: RULE_TOOLS.has(name) || DESTRUCTIVE_TOOLS.has(name) || VOCABULARY_PROPOSAL_TOOLS.has(name),
           };
           const approvalWarning = approvalWarningFor(name, args);
           if (approvalWarning) proposal.approvalWarning = approvalWarning;

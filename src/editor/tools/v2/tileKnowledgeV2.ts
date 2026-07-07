@@ -1,6 +1,8 @@
 // editor/tools/v2/tileKnowledgeV2.ts
 // 타일 지식 v2 — 메타데이터/그룹/클러스터 규칙/팔레트 프리셋 쓰기 + 통합 조회(tile_query).
 
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { unapprovedVocabulary } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { CLUSTER_RULE_TOOLS } from "../clusterRuleTools";
 import { PALETTE_PRESET_TOOLS } from "../palettePresetTools";
@@ -209,12 +211,12 @@ const tilePalettePreset: ToolDefinition = {
   },
 };
 
-const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "terrain_templates", "terrain_template"] as const;
+const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "terrain_templates", "terrain_template", "unapproved"] as const;
 
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회(v2). ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), terrain_templates(템플릿 목록), terrain_template(템플릿 상세: templateId).",
+    "타일 지식 통합 조회(v2). ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), terrain_templates(템플릿 목록), terrain_template(템플릿 상세: templateId), unapproved(미승인 어휘 요약 — 배치 전 propose_tile_vocabulary 대상 확인).",
   mode: "read",
   version: 2,
   parameters: {
@@ -248,6 +250,18 @@ const tileQuery: ToolDefinition = {
     if (ask === "similar") {
       if (args.tileId === undefined) failWithExample("ask=similar에는 tileId가 필요합니다", { ask, tileId: 260 });
       return v1FindSimilar.run(draft, compactArgs({ tilesetId: args.tilesetId ?? "tiles_default", tileId: args.tileId, limit: args.limit }));
+    }
+    if (ask === "unapproved") {
+      // v3 승인 보캐뷸러리: 미승인 그룹/타일 요약(수량 + 대표 id). 승인 편입은 propose_tile_vocabulary.
+      const tilesetId = typeof args.tilesetId === "string" && args.tilesetId ? args.tilesetId : DEFAULT_TILESET_ID;
+      const tileset = draft.tilesets[tilesetId];
+      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: DEFAULT_TILESET_ID });
+      const limit = typeof args.limit === "number" && Number.isInteger(args.limit) && args.limit > 0 ? args.limit : 10;
+      const summary = unapprovedVocabulary(tileset, limit);
+      return {
+        summary: `미승인 어휘: 그룹 ${summary.groupCount}개, 타일 ${summary.tileCount}개 — 배치 프리미티브는 승인 어휘만 소비하므로 propose_tile_vocabulary로 승인을 받으세요.`,
+        data: { tilesetId, ...summary },
+      };
     }
     if (ask === "terrain_templates") return v1ListTemplates.run(draft, {});
     if (typeof args.templateId !== "string") failWithExample("ask=terrain_template에는 templateId가 필요합니다", { ask, templateId: "tt_village_core" });
