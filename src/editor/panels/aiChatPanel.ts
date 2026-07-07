@@ -5,7 +5,7 @@
 // - API 키는 설정 폼에서만 입력(localStorage). 소스/프로젝트 JSON에 하드코딩 금지.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
-import { computeActiveToolDomains, computeAssistantToolMode, describeActiveToolDomains, TOOL_MODE_LABELS } from "@/editor/assistantToolMode";
+import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -16,7 +16,7 @@ import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowse
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
-import { commitChangeset, summarizeChanges, toOpenAiTools, type ToolResult } from "@/editor/tools";
+import { commitChangeset, summarizeChanges, type ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
@@ -53,8 +53,8 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
-import { listAllSkills, pinnedSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
-import { openSkillPalette, renderSkillDrawer, renderSlashList } from "@/editor/panels/aiSkillDrawer";
+import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
+import { openSkillPalette, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { DEFAULT_BASE_URL, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import {
   applyAiFontSize,
@@ -1424,6 +1424,33 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   input.addEventListener("keydown", (event) => {
     // 엔터 = 즉시 전송, Shift+Enter = 줄바꿈. IME 조합 중(한글 입력 확정)에는 전송하지 않는다.
     const composing = event.isComposing || (event as KeyboardEvent & { keyCode?: number }).keyCode === 229;
+    if (input.value.startsWith("/") && !composing) {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        const count = slashSkillMatches(input.value).length;
+        if (count > 0) slashActiveIndex = (slashActiveIndex + 1) % count;
+        refreshSlash();
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        const count = slashSkillMatches(input.value).length;
+        if (count > 0) slashActiveIndex = (slashActiveIndex - 1 + count) % count;
+        refreshSlash();
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        slashHost.replaceChildren();
+        return;
+      }
+      if (event.key === "Enter" && !event.shiftKey) {
+        if (pickActiveSlashSkill()) {
+          event.preventDefault();
+          return;
+        }
+      }
+    }
     if (event.key === "Enter" && !event.shiftKey && !composing) {
       event.preventDefault();
       void send();
@@ -1467,43 +1494,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const drawer = renderSkillDrawer({
     getContext: getSkillContext,
     onRunPrompt: (prompt, displayAs) => {
-      refreshPinBar();
       void sendText(prompt, displayAs);
     },
     onAction: (skillId) => {
       if (skillId !== "demo-teach") return;
-      refreshPinBar();
       const selection = editorState.get().selection;
       startDemoTeach(selection ? { mapId: selection.mapId, x: selection.x, y: selection.y, w: selection.width, h: selection.height } : null);
     },
     getSavePrefill: () => lastTypedMessage,
   });
-
-  // 자주 쓰는 스킬 핀 바 — 최근 사용순 5개가 입력창 위에 항상 보인다(클릭 1번 실행).
-  const pinBar = el("div", { class: "ai-skill-pinbar", dataset: { testid: "ai-skill-pinbar" } });
-  const refreshPinBar = (): void => {
-    if (typeof document === "undefined") return;
-    const pins = pinnedSkills(5).map((skill) =>
-      el("button", {
-        class: "ai-skill-pin",
-        attrs: { type: "button", title: skill.description },
-        dataset: { testid: `ai-skill-pin-${skill.id}` },
-        text: `${skill.icon} ${skill.name}`,
-        on: { click: () => drawer.run(skill) },
-      })
-    );
-    pins.push(
-      el("button", {
-        class: "ai-skill-pin ai-skill-pin-more",
-        attrs: { type: "button", title: "스킬 전체 보기 (Ctrl+K)" },
-        dataset: { testid: "ai-skill-pin-more" },
-        text: "⋯ 전체",
-        on: { click: () => drawer.toggle() },
-      })
-    );
-    pinBar.replaceChildren(...pins);
-  };
-  refreshPinBar();
 
   const runSkillPrompt = (skill: SkillDef, args: Record<string, SkillArgValue>): void => {
     const prompt = skill.buildPrompt?.(args, getSkillContext()) ?? "";
@@ -1513,7 +1512,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     recordSkillUse(skill.id);
     drawer.element.hidden = true;
-    refreshPinBar();
     void sendText(prompt, skill.displayAs?.(args) ?? `${skill.icon} ${skill.name}`);
   };
 
@@ -1585,31 +1583,63 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const skillToggle = el("button", {
     class: "ai-assistant-action ai-skill-toggle",
-    text: "+",
-    attrs: { type: "button", title: "스킬 서랍 열기 — 입력창에 /를 쳐도 검색됩니다", "aria-label": "스킬 서랍 열기" },
-    dataset: { testid: "ai-skill-drawer-toggle" },
-    on: { click: () => drawer.toggle() },
+    text: "/",
+    attrs: { type: "button", title: "스킬 검색 열기", "aria-label": "스킬 검색 열기" },
+    dataset: { testid: "ai-skill-slash-toggle" },
+    on: {
+      click: () => {
+        input.value = "/";
+        input.focus();
+        slashActiveIndex = 0;
+        refreshSlash();
+      },
+    },
   });
 
   // 슬래시 자동완성: "/집"처럼 입력하면 입력창 위에 스킬 목록이 뜬다.
   const slashHost = el("div", { class: "ai-slash-host", dataset: { testid: "ai-slash-host" } });
+  let slashActiveIndex = 0;
   const refreshSlash = (): void => {
     const value = input.value;
     if (!value.startsWith("/")) {
       slashHost.replaceChildren();
+      slashActiveIndex = 0;
       return;
     }
+    const matches = slashSkillMatches(value);
+    slashActiveIndex = Math.max(0, Math.min(slashActiveIndex, Math.max(0, matches.length - 1)));
     slashHost.replaceChildren(
-      renderSlashList(value, (skill) => {
-        input.value = "";
-        slashHost.replaceChildren();
-        drawer.run(skill);
-      })
+      renderSlashList(
+        value,
+        (skill) => {
+          input.value = "";
+          slashHost.replaceChildren();
+          drawer.run(skill);
+        },
+        {
+          activeIndex: slashActiveIndex,
+          onViewAll: () => {
+            input.value = "";
+            slashHost.replaceChildren();
+            if (drawer.element.hidden) drawer.toggle();
+            else drawer.refresh();
+          },
+        }
+      )
     );
   };
+  const pickActiveSlashSkill = (): boolean => {
+    if (!input.value.startsWith("/")) return false;
+    const skill = slashSkillMatches(input.value)[slashActiveIndex];
+    if (!skill) return false;
+    input.value = "";
+    slashHost.replaceChildren();
+    drawer.run(skill);
+    return true;
+  };
   input.addEventListener("input", () => {
+    slashActiveIndex = 0;
     refreshSlash();
-    refreshModeBadge();
   });
 
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
@@ -1764,22 +1794,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-status-group" },
     children: [status, abortButton],
   });
-  // ① 헤더(§2.3·§2.2.3): 모드 배지 + 폰트 크기 + 설정 + 도크 버튼을 상단 고정 헤더로 수렴.
-  const modeBadge = el("span", {
-    class: "ai-mode-badge",
-    dataset: { testid: "ai-mode-badge" },
-    attrs: { title: "현재 편집 컨텍스트에서 AI에 노출되는 툴 범위(모드 · 툴 수)" },
-  });
-  const refreshModeBadge = (): void => {
-    if (typeof document === "undefined") return; // fakeDom 해제 후 잔존 구독 가드(테스트).
-    const domains = computeActiveToolDomains(input.value);
-    const labels = [...domains].filter((domain) => domain !== "core").map((domain) => TOOL_MODE_LABELS[domain]);
-    modeBadge.textContent = `${labels.slice(0, 3).join(" +") || TOOL_MODE_LABELS.core} · ${toOpenAiTools(undefined, { domains }).length}툴`;
-    modeBadge.title = `${describeActiveToolDomains(domains)} · 현재 입력 기준 활성 도메인`;
-  };
-  refreshModeBadge();
-  editorState.subscribe(() => refreshModeBadge());
-  store.subscribe(() => refreshModeBadge());
   const fontButton = el("button", {
     class: "ai-chat-tools-button",
     text: "가",
@@ -1798,7 +1812,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-header",
     children: [
       titleEl,
-      modeBadge,
       statusGroup,
       el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, dockButton] }),
       collapseButton,
@@ -1827,7 +1840,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       chipsHost,
       slashHost,
       contextChips,
-      pinBar,
       queueIndicator,
       el("div", {
         class: "ai-chat-input-row",

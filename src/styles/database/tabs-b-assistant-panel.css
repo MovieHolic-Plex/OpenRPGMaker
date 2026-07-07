@@ -1631,7 +1631,8 @@ body.ai-panel-docked .editor-layout {
   text-align: left;
 }
 
-.ai-slash-item:hover {
+.ai-slash-item:hover,
+.ai-slash-item.is-active {
   background: var(--accent-muted);
 }
 
@@ -1644,6 +1645,16 @@ body.ai-panel-docked .editor-layout {
 .ai-slash-item-desc {
   color: var(--text-2);
   font-size: 11px;
+}
+
+.ai-slash-item-example {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.ai-slash-view-all {
+  border-bottom: none;
+  border-top: 1px solid var(--accent-border);
 }
 
 .ai-slash-empty {
