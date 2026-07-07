@@ -49,7 +49,9 @@ export interface AiConfig {
 // liteModel(반복/배치 보조)은 지연이 중요한 제약 호출 전용이라 경량 flash-lite를 유지한다.
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const DEFAULT_MODEL = "minimax/minimax-m3";
-export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
+// 정책(2026-07-07): 앱의 모든 LLM 호출은 minimax/minimax-m3 만 사용한다.
+// lite 경로도 별도 경량 모델을 쓰지 않고 동일 모델로 통일한다.
+export const DEFAULT_LITE_MODEL = "minimax/minimax-m3";
 
 export function defaultAiConfig(): AiConfig {
   return {

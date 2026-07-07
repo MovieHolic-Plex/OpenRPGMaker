@@ -261,7 +261,7 @@ function selectedTileDraft(): string {
   const tile = describeChipsetTile(selected);
   return JSON.stringify(
     {
-      model: "gemini-3.5-flash",
+      model: "minimax/minimax-m3",
       response_format: { type: "json_object" },
       task: "tileset_tile_metadata",
       tile,
@@ -282,7 +282,7 @@ function currentMapDraft(): string {
   );
   return JSON.stringify(
     {
-      model: "gemini-3.5-flash",
+      model: "minimax/minimax-m3",
       response_format: { type: "json_object" },
       task: "map_improvement_draft",
       map: map
