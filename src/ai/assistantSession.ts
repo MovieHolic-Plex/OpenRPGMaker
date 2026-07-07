@@ -6,7 +6,7 @@
 
 import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
-import type { ToolContext, ToolResult } from "@/editor/tools";
+import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { appendAgentGhostPreviewForToolCall, hasAgentGhostPreviewSubscribers } from "@/editor/agentGhostPreview";
 import type { Project } from "@/project/types";
@@ -205,6 +205,9 @@ export interface AssistantSessionOptions {
   chat?: ChatFn;
   // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
   renderImages?: ToolImageRenderer;
+  // 컨텍스트 모드 제공자(§2.2 툴 스코핑) — 턴 시작마다 호출해 노출 툴을 좁힌다.
+  // UI 상태에서 결정론으로 계산된 값이어야 한다(원칙 0 — 모델 판단 금지). 없으면 전체 노출.
+  toolMode?: () => ToolDomain | undefined;
 }
 
 export class AssistantSession {
@@ -213,6 +216,8 @@ export class AssistantSession {
   private readonly contextOptions: ContextOptions;
   // 비전 렌더러(브라우저 전용). 주입되면 '보여줘' 툴 이미지가 모델에 전달된다.
   private readonly renderImages?: ToolImageRenderer;
+  // 컨텍스트 모드 제공자(§2.2) — 턴 시작 시 toOpenAiTools({mode})로 노출 툴을 구성한다.
+  private readonly toolMode?: () => ToolDomain | undefined;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
   private ctx: ToolContext;
   private readonly messages: ChatMessage[] = [];
@@ -243,6 +248,7 @@ export class AssistantSession {
     this.chat = options.chat ?? chatCompletion;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
+    this.toolMode = options.toolMode;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: structuredClone(project) };
     this.messages.push({ role: "system", content: buildSystemPrompt(project, this.contextOptions) });
@@ -437,7 +443,8 @@ export class AssistantSession {
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
-    const tools = [...toOpenAiTools(), SET_BUILD_SPEC_TOOL];
+    // 컨텍스트 모드 스코핑(§2.2): UI 상태에서 계산된 mode로 노출 툴을 좁힌다(턴마다 재평가).
+    const tools = [...toOpenAiTools(undefined, { mode: this.toolMode?.() }), SET_BUILD_SPEC_TOOL];
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고

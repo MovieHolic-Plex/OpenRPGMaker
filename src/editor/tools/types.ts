@@ -64,6 +64,10 @@ export interface ToolExecResult {
 
 export type ToolMode = "read" | "write";
 
+// 컨텍스트 모드 툴 스코핑(2026-07-07 타일 시공 흐름 재설계 §2.2) — 툴이 속한 도메인.
+// "core"는 모든 모드에서 상시 노출. 도메인 없는 툴은 범용(모든 모드 노출)으로 취급한다.
+export type ToolDomain = "core" | "tile" | "map" | "event" | "database" | "world" | "quest" | "battle" | "system";
+
 // 툴 정의: 이름/설명(한국어)/파라미터 JSON Schema/실행 함수의 단일 형태.
 export interface ToolDefinition {
   readonly name: string;
@@ -76,6 +80,8 @@ export interface ToolDefinition {
   readonly deprecated?: boolean;
   // deprecated 툴을 대체하는 v2 툴 이름.
   readonly supersededBy?: string;
+  // 이 툴이 노출되는 컨텍스트 모드(§2.2). 레지스트리가 패밀리 단위로 일괄 태깅한다.
+  readonly domains?: readonly ToolDomain[];
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
   run(draft: Project, args: Record<string, unknown>): ToolExecResult;
 }

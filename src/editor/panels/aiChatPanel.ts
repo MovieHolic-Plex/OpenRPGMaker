@@ -5,6 +5,7 @@
 // - API 키는 설정 폼에서만 입력(localStorage). 소스/프로젝트 JSON에 하드코딩 금지.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
+import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -1161,6 +1162,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         contextOptions: { currentMapId: editorState.get().currentMapId ?? undefined },
         // 비전(BUG C): '보여줘' 툴 이미지를 렌더해 비전 모델에 전달한다(브라우저 전용).
         renderImages: renderToolImages,
+        // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
+        toolMode: computeAssistantToolMode,
       });
     }
     return controller.session;

@@ -4,7 +4,7 @@
 // (2) 인자 오류마다 "다시 보낼 형식 예시" 동봉 (3) 정상 경로는 v1 엔진과 동일 효과.
 
 import { describe, expect, it } from "vitest";
-import { getTool, toOpenAiTools } from "@/editor/tools";
+import { getTool, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED } from "@/editor/tools";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "@/editor/tools/v2";
 import { V2_TILE_SUPERSEDED } from "@/editor/tools/v3";
 import { createBlankProject } from "@/project/defaults";
@@ -34,11 +34,13 @@ function expectExampleError(fn: () => unknown): string {
 }
 
 describe("타일 v2 레지스트리", () => {
-  it("v2 지식 계열은 LLM에 노출되고, v2 배치 4종(V3B에서 v3 대체)과 deprecated v1 타일 툴은 노출되지 않는다", () => {
+  it("v2 배치 4종(v3 대체)·옛 타일 지식 툴(§2.2.1)·deprecated v1 타일 툴은 노출되지 않는다", () => {
     const exposed = new Set(toOpenAiTools().map((tool) => tool.function.name));
     for (const tool of TILE_TOOLS_V2) {
-      // v3 공정 프리미티브(2026-07-07 V3B)가 대체한 배치 4종은 비노출(실행 호환은 유지).
-      expect(exposed.has(tool.name), tool.name).toBe(!V2_TILE_SUPERSEDED.has(tool.name));
+      // v3 공정 프리미티브(V3B)가 대체한 배치 4종 + v3 어휘 흐름과 경쟁하는 지식 툴
+      // (tile_metadata/tile_group/tile_cluster_rule — 2026-07-07 툴 스코핑 §2.2.1)은 비노출.
+      const hidden = V2_TILE_SUPERSEDED.has(tool.name) || LEGACY_TILE_KNOWLEDGE_SUPERSEDED.has(tool.name);
+      expect(exposed.has(tool.name), tool.name).toBe(!hidden);
     }
     for (const v1Name of V1_TILE_SUPERSEDED.keys()) expect(exposed.has(v1Name), v1Name).toBe(false);
   });

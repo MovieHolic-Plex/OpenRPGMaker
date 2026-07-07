@@ -7,11 +7,20 @@ export type {
   SimplePage,
   ToolContext,
   ToolDefinition,
+  ToolDomain,
   ToolExecResult,
   ToolResult,
 } from "./types";
 export { ToolError } from "./types";
-export { allTools, getTool, toOpenAiTools, TOOL_REGISTRY, type OpenAiTool } from "./toolRegistry";
+export {
+  allTools,
+  getTool,
+  toOpenAiTools,
+  LEGACY_TILE_KNOWLEDGE_SUPERSEDED,
+  TOOL_REGISTRY,
+  type OpenAiTool,
+  type ToolExposureOptions,
+} from "./toolRegistry";
 export { runTool, type RunToolOptions } from "./toolRunner";
 export { commitChangeset, createDraft, summarizeChanges, type CommitResult } from "./changeset";
 export { validateArgs } from "./jsonSchema";
