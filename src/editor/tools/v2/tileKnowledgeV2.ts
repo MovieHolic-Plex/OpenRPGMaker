@@ -259,7 +259,7 @@ const tileQuery: ToolDefinition = {
       const limit = typeof args.limit === "number" && Number.isInteger(args.limit) && args.limit > 0 ? args.limit : 10;
       const summary = unapprovedVocabulary(tileset, limit);
       return {
-        summary: `미승인 어휘: 그룹 ${summary.groupCount}개, 타일 ${summary.tileCount}개 — 배치 프리미티브는 승인 어휘만 소비하므로 propose_tile_vocabulary로 승인을 받으세요.`,
+        summary: `미승인 어휘: 그룹 ${summary.groupCount}개, 타일 ${summary.tileCount}개 — propose_tile_vocabulary로 어휘를 제안한 뒤, 같은 턴에 곧바로 그 그룹 id로 시공 프리미티브(build_wall 등)를 호출하세요. 미승인 첫 호출 실패는 정상이며 승인 카드에 보류 시공으로 묶입니다(수락 한 번에 시공 완료). 제안만 하고 멈추지 마세요.`,
         data: { tilesetId, ...summary },
       };
     }

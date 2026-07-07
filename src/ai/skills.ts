@@ -57,7 +57,7 @@ const HONEST_REPORT_RULE =
 const SPEC_RULE =
   "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/큰 경계 초과)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 페인트/배치 툴은 명세에 할당된 영역 안에서만 호출하되 경계 1~2칸 초과는 warning으로 통과합니다. 지우기(erase)는 slack 없이 명세 안에서만 호출하세요. 사용자가 선택한 영역은 암묵적 명세입니다.";
 const CONSTRUCTION_ORDER_RULE =
-  "시공 공정 순서(준수): 벽(build_wall) → 문/창(place_door/place_window) → 지붕(build_roof) → 길(lay_path) → 소품(place_props). 배치 프리미티브는 승인된 어휘만 소비합니다 — 미승인 어휘는 propose_tile_vocabulary로 사용자 합의를 먼저 받으세요(tile_query ask=unapproved로 조회).";
+  "시공 공정 순서(준수): 벽(build_wall) → 문/창(place_door/place_window) → 지붕(build_roof) → 길(lay_path) → 소품(place_props). 배치 프리미티브는 승인된 어휘만 소비합니다. 미승인 어휘로 시공하려면: (1) propose_tile_vocabulary로 어휘를 제안하고, (2) **같은 턴에 곧바로** 그 그룹 id를 wallVocabId 등으로 넣어 시공 프리미티브(build_wall 등)를 호출하세요. 미승인 상태의 첫 호출은 실패하지만 그건 정상입니다 — 시스템이 그 시공을 승인 카드에 '보류 시공'으로 묶어, 사용자가 [승인하고 시공]을 한 번 누르면 어휘 승인과 시공이 함께 끝납니다. **제안만 하고 승인을 기다리며 턴을 끝내지 마세요 — 반드시 같은 턴에 시공 프리미티브까지 호출하세요.**";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";

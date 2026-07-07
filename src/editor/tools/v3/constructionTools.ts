@@ -137,7 +137,7 @@ function isWallCell(map: GameMap, tileset: TilesetDef, x: number, y: number): bo
 const buildWall: ToolDefinition = {
   name: "build_wall",
   description:
-    "승인된 벽 어휘로 벽을 시공한다(v3 공정 1단계). rect 영역에 9분할(nine_slice)/기둥(vertical) 패턴을 전개하며 레이어는 어휘의 layerHome이 결정한다(layer 인자 없음). 미승인 어휘는 거부 — 먼저 propose_tile_vocabulary로 승인을 받으라. 시공 후 place_door/place_window → build_roof 순서로 진행하라.",
+    "승인된 벽 어휘로 벽을 시공한다(v3 공정 1단계). rect 영역에 9분할(nine_slice)/기둥(vertical) 패턴을 전개하며 레이어는 어휘의 layerHome이 결정한다(layer 인자 없음). 미승인 어휘여도 그냥 호출하라 — propose_tile_vocabulary로 어휘를 제안한 직후 같은 턴에 이 툴을 호출하면, 미승인 실패가 승인 카드에 '보류 시공'으로 묶여 사용자가 한 번 수락하면 시공까지 완료된다(승인을 기다리며 멈추지 마라). 시공 후 place_door/place_window → build_roof 순서로 진행하라.",
   mode: "write",
   version: 3,
   parameters: {

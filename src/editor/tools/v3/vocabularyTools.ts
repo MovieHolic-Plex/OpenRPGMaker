@@ -131,7 +131,7 @@ function factContradictions(label: string, claimed: VocabLayerHome, facts: reado
 const proposeTileVocabulary: ToolDefinition = {
   name: "propose_tile_vocabulary",
   description:
-    "미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. 수락되면 origin:user로 승인 어휘에 편입된다(자동 승인 불가 — 반드시 사용자 수락 대기). 배치 프리미티브는 승인 어휘만 소비한다.",
+    "미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **중요: 이 툴만 부르고 멈추지 마라 — 제안 직후 같은 턴에 build_wall 등 시공 프리미티브를 그 그룹 id로 호출하면, 미승인 실패가 승인 카드에 보류 시공으로 묶여 사용자 수락 한 번으로 시공까지 끝난다.** 배치 프리미티브는 승인 어휘만 소비한다.",
   mode: "write",
   version: 3,
   parameters: {
@@ -187,7 +187,7 @@ const proposeTileVocabulary: ToolDefinition = {
     }
     const names = cards.map((card) => `'${card.name}'`).join(", ");
     return {
-      summary: `타일 어휘 ${cards.length}건 제안(${names}) — 사용자가 카드에서 교정·수락하면 승인 어휘(origin:user)로 편입됩니다.`,
+      summary: `타일 어휘 ${cards.length}건 제안(${names}). 다음 단계(필수): 지금 같은 턴에 이 그룹 id를 wallVocabId/pathVocabId 등으로 넣어 시공 프리미티브(build_wall/lay_path 등)를 곧바로 호출하세요. 미승인 상태라 그 호출은 실패하지만, 시스템이 그 시공을 이 승인 카드에 '보류 시공'으로 묶어 사용자가 [승인하고 시공]을 한 번 누르면 어휘 승인+시공이 함께 끝납니다. 제안만 하고 턴을 끝내지 마세요.`,
       ...(warnings.length > 0 ? { warnings } : {}),
       data: { tilesetId: tileset.id, grammarProfile: profile.id, cards },
     };
