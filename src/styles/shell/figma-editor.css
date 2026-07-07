@@ -2031,11 +2031,8 @@
   display: none;
 }
 
-.canvas-toolbar:hover .zoom-button,
-.canvas-toolbar:focus-within .zoom-button,
+/* hover 자동 노출 제거(UX 피드백) — 확장은 오직 ⋯ 버튼(is-expanded)으로만. */
 .canvas-toolbar.is-expanded .zoom-button,
-.canvas-toolbar:hover .canvas-toolbar-save-group,
-.canvas-toolbar:focus-within .canvas-toolbar-save-group,
 .canvas-toolbar.is-expanded .canvas-toolbar-save-group {
   display: inline-flex;
 }

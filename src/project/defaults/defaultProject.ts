@@ -21,6 +21,7 @@ import {
   defaultTerms,
 } from "./defaultDatabase";
 import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
+import { createTrainingExampleMaps } from "./trainingExampleMaps";
 import {
   createBlankMap,
   createLogCabinShowcaseMap,
@@ -57,6 +58,13 @@ export function createBlankProject(): Project {
 export function createSampleAdventureProject(): Project {
   const project = createProjectWithMaps(createAdventureMaps(), 0);
   configureAdventureProject(project);
+  return project;
+}
+
+// 학습 예시 12맵 — 지붕/집/마을 구성을 사람이 채워넣어 AI 학습 정답 데이터로 쓰는 캔버스 프로젝트.
+export function createTrainingExamplesProject(): Project {
+  const project = createProjectWithMaps(createTrainingExampleMaps(), 0);
+  project.meta = { ...project.meta, title: "학습 예시 12맵" };
   return project;
 }
 

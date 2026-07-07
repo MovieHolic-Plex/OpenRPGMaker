@@ -373,12 +373,18 @@ export function selectPaletteTile(index: number): void {
       const home = tileLayerHome(tileset, index);
       if (home !== "both" && home !== state.layer) nextLayer = home;
     }
+    // 타일을 고르는 행위는 "칠하겠다"는 의도 — select(건축 영역 지정) 등 다른 툴에 갇혀
+    // "클릭해도 안 깔리는" 상태가 되지 않게 페인트 계열이 아니면 paint로 전환한다.
+    // 단 이벤트 레이어/이벤트 툴은 기존 계약대로 건드리지 않는다(이벤트 편집 흐름 보존).
+    const keepTools = new Set(["paint", "fill", "erase", "event"]);
+    const switchToPaint = !keepTools.has(state.tool) && nextLayer !== "event";
     editorState.set({
       activePaletteStamp: null,
       activeStampId: nextActiveStampId,
       activeStructureStampId: null,
       layer: nextLayer,
       selectedTile: index,
+      ...(switchToPaint ? { tool: "paint" as const } : {}),
     });
   });
 }

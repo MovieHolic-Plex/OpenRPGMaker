@@ -2061,6 +2061,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       attrs: { type: "button", role: "menuitem" },
       on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); newSessionButton.click(); } },
     }),
+    // 되돌리기/내보내기/툴은 구 헤더 툴바가 기본(바 전용) 상태에서 숨겨지며 도달 불가가 됐던 것 — 메뉴로 복원.
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "↩️ 되돌리기",
+      attrs: { type: "button", role: "menuitem", title: "마지막 AI 적용 되돌리기" },
+      dataset: { testid: "ai-command-menu-undo" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); undoLastButton.click(); } },
+    }),
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "📤 대화 내보내기",
+      attrs: { type: "button", role: "menuitem", title: "대화 로그 내보내기" },
+      dataset: { testid: "ai-command-menu-export" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); exportButton?.click(); } },
+    }),
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "🧰 툴 브라우저",
+      attrs: { type: "button", role: "menuitem" },
+      dataset: { testid: "ai-command-menu-tools" },
+      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); toolsButton.click(); } },
+    }),
     el("button", {
       class: "ai-command-menu-item",
       text: "⚙️ 설정",

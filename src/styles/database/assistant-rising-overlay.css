@@ -11,6 +11,16 @@
   width: min(780px, calc(100vw - 48px));
   /* 커맨드 바(50) 위 — 컨텍스트 칩이 pill 클릭을 가로채지 않게. 모달(72)·스킬 팔레트(80) 아래. */
   z-index: 56;
+  /* 오버레이 컨테이너는 클릭을 삼키지 않는다 — 빈 영역/투명 틈은 아래(좌측 타일 팔레트 등)로 통과.
+     실제 인터랙티브 자식만 auto로 복원한다. */
+  pointer-events: none;
+}
+
+.ai-rising-overlay .ai-chat-log,
+.ai-rising-overlay .ai-proposal-pill,
+.ai-rising-overlay .ai-proposal-notice-host > *,
+.ai-rising-overlay .ai-proposal-host > * {
+  pointer-events: auto;
 }
 
 .ai-rising-volatile-zone {

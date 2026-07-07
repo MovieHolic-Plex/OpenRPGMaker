@@ -51,12 +51,15 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   const expandButton = el("button", {
       class: "canvas-toolbar-expand",
       text: "⋯",
-      attrs: { type: "button", title: "확대/저장 컨트롤", "aria-label": "확대/저장 컨트롤" },
+      // hover 자동 노출을 없앴으므로 이 버튼이 확대/맵저장 컨트롤을 여닫는 유일한 토글이다.
+      attrs: { type: "button", title: "확대·맵 저장 펼치기/접기", "aria-label": "확대·맵 저장 펼치기/접기", "aria-expanded": "false" },
       dataset: { testid: "editor-canvas-toolbar-expand" },
       on: {
         click: () => {
-          if (container.classList.contains("is-expanded")) container.classList.remove("is-expanded");
-          else container.classList.add("is-expanded");
+          const expanded = !container.classList.contains("is-expanded");
+          if (expanded) container.classList.add("is-expanded");
+          else container.classList.remove("is-expanded");
+          expandButton.setAttribute("aria-expanded", String(expanded));
         },
       },
     });

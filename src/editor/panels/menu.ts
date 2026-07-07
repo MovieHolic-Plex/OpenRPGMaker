@@ -12,7 +12,7 @@ import { openResourceModal } from "@/editor/panels/resourceModal";
 import { setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject, createTrainingExamplesProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -245,6 +245,7 @@ function menuCommands(
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
         item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
+        item("학습 예시 12맵", "menu-project-training-examples", () => void newTrainingExamplesProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
@@ -423,6 +424,14 @@ async function newProject(): Promise<void> {
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("새 프로젝트를 만들었습니다", "ok");
+}
+
+async function newTrainingExamplesProject(): Promise<void> {
+  if (!(await showConfirm({ title: "학습 예시 12맵", message: "현재 작업을 지우고 학습 예시 12맵 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replace(createTrainingExamplesProject());
+  const project = store.getCurrent();
+  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  toast("학습 예시 12맵을 불러왔습니다 — 각 맵 이름의 주제대로 예시를 채워넣으세요", "ok");
 }
 
 async function newSampleAdventureProject(): Promise<void> {

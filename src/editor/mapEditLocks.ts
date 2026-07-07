@@ -63,7 +63,8 @@ export function statusForMap(mapId: MapId): MapEditLockStatus | null {
 
 export function canEditMap(mapId: MapId): boolean {
   if (status.kind === "locked" && status.mapId === mapId) return false;
-  if (status.kind === "checking" && status.mapId === mapId) return false;
+  // checking(부팅/맵 전환 직후 비동기 확인 중)은 낙관적으로 편집 허용 — 확인 중 몇 초간
+  // 페인트가 조용히 막혀 "수동으로 못 깐다"로 느껴지던 데드존 제거. 진짜 잠금이면 곧 locked로 바뀐다.
   return true;
 }
 
@@ -103,6 +104,14 @@ export function ensureCurrentMapLock(): void {
   const mapId = editorState.get().currentMapId ?? project.startMapId;
   const mapName = project.maps[mapId]?.name ?? mapId;
   void checkoutMapForEditing(mapId, mapName);
+}
+
+// 탭 닫기/새로고침 시 보유 락을 즉시 반납 — 새로고침한 자기 자신이 이전 세션 락에 걸려
+// "읽기 전용"으로 시작하던 자기잠금 문제 완화(TTL은 백스톱으로 유지).
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+  window.addEventListener("beforeunload", () => {
+    if (status.kind === "held") void releaseMapLock(status.mapId);
+  });
 }
 
 export async function checkoutMapForEditing(mapId: MapId, mapName: string): Promise<void> {
