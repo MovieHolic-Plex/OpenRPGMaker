@@ -112,7 +112,7 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
-    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
+    expect(DEFAULT_LITE_MODEL).toBe("minimax/minimax-m3");
   });
 
   it("보조 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {

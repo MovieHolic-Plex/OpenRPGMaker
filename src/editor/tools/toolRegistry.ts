@@ -25,6 +25,7 @@ import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, V2_TILE_SUPERSEDED, VOCABULARY_TOOLS_V3 } from "./v3";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
+import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
 
 export { PLACEMENT_TOOLS };
 
@@ -138,19 +139,86 @@ export interface OpenAiTool {
 
 // 컨텍스트 모드 노출 옵션(§2.2.2). mode가 없으면 종전대로 deprecated만 거른다.
 export interface ToolExposureOptions {
+  readonly domains?: ReadonlySet<ToolDomain>;
   readonly mode?: ToolDomain;
 }
 
-// mode 스코핑 판정: 도메인 없는 툴은 범용(항상), core는 상시, 그 외엔 도메인이 mode를 포함해야 노출.
-function exposedInMode(tool: ToolDefinition, mode: ToolDomain | undefined): boolean {
-  if (mode === undefined || !tool.domains) return true;
-  return tool.domains.includes("core") || tool.domains.includes(mode);
+const MAX_EXPOSED_TOOLS = 30;
+const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
+  ["tile", 0],
+  ["event", 1],
+  ["database", 2],
+  ["battle", 3],
+  ["quest", 4],
+  ["world", 5],
+  ["map", 6],
+  ["system", 7],
+  ["core", 8],
+]);
+
+function domainsFromOptions(opts: ToolExposureOptions): ReadonlySet<ToolDomain> | undefined {
+  if (opts.domains) return opts.domains;
+  if (!opts.mode) return undefined;
+  return new Set<ToolDomain>(["core", opts.mode]);
+}
+
+// 도메인 스코핑 판정: 도메인 없는 툴은 범용(항상), core는 상시, 그 외엔 활성 도메인과 교집합이 있어야 노출.
+function exposedInDomains(tool: ToolDefinition, domains: ReadonlySet<ToolDomain> | undefined): boolean {
+  if (domains === undefined || !tool.domains) return true;
+  return tool.domains.includes("core") || tool.domains.some((domain) => domains.has(domain));
+}
+
+function toolPrimaryDomain(tool: ToolDefinition): ToolDomain | undefined {
+  return tool.domains?.find((domain) => domain !== "core") ?? tool.domains?.[0];
+}
+
+function domainPriority(domain: ToolDomain, domains: ReadonlySet<ToolDomain>): number {
+  if (domain === "core") return 0;
+  const info = getActiveToolDomainInfo(domains);
+  if (!info) return 4;
+  if (domain === info.uiDomain) return 1;
+  if (info.strongIntentDomains.has(domain)) return 2;
+  if (info.recentDomains.has(domain)) return 3;
+  if (info.weakIntentDomains.has(domain)) return 5;
+  return 4;
+}
+
+function removableDomains(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain>): ToolDomain[] {
+  const active = new Set<ToolDomain>();
+  for (const tool of exposed) {
+    const domain = toolPrimaryDomain(tool);
+    if (domain && domain !== "core") active.add(domain);
+  }
+  active.delete("database");
+  return [...active].sort((a, b) => {
+    const priority = domainPriority(b, domains) - domainPriority(a, domains);
+    if (priority !== 0) return priority;
+    return (WRITE_HEAVY_DOMAIN_ORDER.get(a) ?? 99) - (WRITE_HEAVY_DOMAIN_ORDER.get(b) ?? 99);
+  });
+}
+
+function applyExposureLimit(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain> | undefined): readonly ToolDefinition[] {
+  if (domains === undefined || exposed.length <= MAX_EXPOSED_TOOLS) return exposed;
+  const removed = new Set<ToolDomain>();
+  let limited = [...exposed];
+  for (const domain of removableDomains(exposed, domains)) {
+    if (limited.length <= MAX_EXPOSED_TOOLS) break;
+    removed.add(domain);
+    limited = limited.filter((tool) => {
+      if (tool.domains?.includes("core") || !tool.domains) return true;
+      return !tool.domains.some((toolDomain) => removed.has(toolDomain));
+    });
+  }
+  return limited.length <= MAX_EXPOSED_TOOLS ? limited : limited.slice(0, MAX_EXPOSED_TOOLS);
 }
 
 // OpenAI Chat Completions `tools` 배열로 변환. deprecated 툴은 어떤 모드에서도 노출하지 않는다.
 export function toOpenAiTools(tools: readonly ToolDefinition[] = TOOL_REGISTRY, opts: ToolExposureOptions = {}): OpenAiTool[] {
-  return tools
-    .filter((tool) => tool.deprecated !== true && exposedInMode(tool, opts.mode))
+  const domains = domainsFromOptions(opts);
+  return applyExposureLimit(
+    tools.filter((tool) => tool.deprecated !== true && exposedInDomains(tool, domains)),
+    domains
+  )
     .map((tool) => ({
       type: "function",
       function: {

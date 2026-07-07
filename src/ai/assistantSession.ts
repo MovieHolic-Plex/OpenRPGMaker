@@ -9,6 +9,7 @@ import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { appendAgentGhostPreviewForToolCall, hasAgentGhostPreviewSubscribers } from "@/editor/agentGhostPreview";
+import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
@@ -249,8 +250,7 @@ export interface AssistantSessionOptions {
   chat?: ChatFn;
   // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
   renderImages?: ToolImageRenderer;
-  // 컨텍스트 모드 제공자(§2.2 툴 스코핑) — 턴 시작마다 호출해 노출 툴을 좁힌다.
-  // UI 상태에서 결정론으로 계산된 값이어야 한다(원칙 0 — 모델 판단 금지). 없으면 전체 노출.
+  // 이전 모드 스코핑 호환 옵션. 현재는 computeActiveToolDomains()가 UI 도메인을 직접 계산한다.
   toolMode?: () => ToolDomain | undefined;
 }
 
@@ -260,8 +260,6 @@ export class AssistantSession {
   private readonly contextOptions: ContextOptions;
   // 비전 렌더러(브라우저 전용). 주입되면 '보여줘' 툴 이미지가 모델에 전달된다.
   private readonly renderImages?: ToolImageRenderer;
-  // 컨텍스트 모드 제공자(§2.2) — 턴 시작 시 toOpenAiTools({mode})로 노출 툴을 구성한다.
-  private readonly toolMode?: () => ToolDomain | undefined;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
   private ctx: ToolContext;
   private readonly messages: ChatMessage[] = [];
@@ -286,6 +284,7 @@ export class AssistantSession {
   // 이번 턴에 "미승인 어휘"로 실패한 v3 시공 호출(§2.1.3) — 어휘 제안 카드에 첨부된다.
   private turnPendingBuilds = new Map<string, PendingBuild>();
   private eventBaseProposalKeys = new Map<string, string>();
+  private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
 
@@ -294,7 +293,6 @@ export class AssistantSession {
     this.chat = options.chat ?? chatCompletion;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
-    this.toolMode = options.toolMode;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: structuredClone(project) };
     this.messages.push({ role: "system", content: buildSystemPrompt(project, this.contextOptions) });
@@ -423,6 +421,8 @@ export class AssistantSession {
   ): Promise<TurnResult> {
     this.messages.push({ role: "user", content: text });
     this.pushAudit({ kind: "user", text });
+    beginAssistantToolDomainTurn(text);
+    this.currentTurnToolDomains = computeActiveToolDomains(text);
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
@@ -517,8 +517,9 @@ export class AssistantSession {
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
-    // 컨텍스트 모드 스코핑(§2.2): UI 상태에서 계산된 mode로 노출 툴을 좁힌다(턴마다 재평가).
-    const tools = [...toOpenAiTools(undefined, { mode: this.toolMode?.() }), SET_BUILD_SPEC_TOOL];
+    // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온으로 툴을 고정한다.
+    const domains = this.currentTurnToolDomains ?? computeActiveToolDomains("");
+    const tools = [...toOpenAiTools(undefined, { domains }), SET_BUILD_SPEC_TOOL];
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
@@ -593,6 +594,7 @@ export class AssistantSession {
         // 승인+시공 융합(§2.1.3): 미승인 어휘로 거부된 v3 시공은 보류 시공으로 기록해
         // 이번 턴의 어휘 제안 카드에 첨부한다(수락 한 번 = 어휘 커밋 + 시공).
         this.recordPendingBuildIfUnapproved(name, args, toolResult);
+        if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({
           kind: "tool",

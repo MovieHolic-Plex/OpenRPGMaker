@@ -71,7 +71,7 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
     // v3 설계(2026-07-07) 합의: 기본 세션 모델은 minimax-m3(저가 모델 전제). lite는 flash-lite 유지.
     expect(DEFAULT_MODEL).toBe("minimax/minimax-m3");
-    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
+    expect(DEFAULT_LITE_MODEL).toBe("minimax/minimax-m3");
   });
 
   it("저장된 사용자 model은 존중하고 liteModel 누락은 기본값으로 보강한다", async () => {

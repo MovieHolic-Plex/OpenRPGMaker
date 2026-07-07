@@ -5,7 +5,7 @@
 // - API 키는 설정 폼에서만 입력(localStorage). 소스/프로젝트 JSON에 하드코딩 금지.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
-import { computeAssistantToolMode, TOOL_MODE_LABELS } from "@/editor/assistantToolMode";
+import { computeActiveToolDomains, computeAssistantToolMode, describeActiveToolDomains, TOOL_MODE_LABELS } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -2179,7 +2179,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       })
     );
   };
-  input.addEventListener("input", refreshSlash);
+  input.addEventListener("input", () => {
+    refreshSlash();
+    refreshModeBadge();
+  });
 
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
@@ -2341,8 +2344,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const refreshModeBadge = (): void => {
     if (typeof document === "undefined") return; // fakeDom 해제 후 잔존 구독 가드(테스트).
-    const mode = computeAssistantToolMode();
-    modeBadge.textContent = `${TOOL_MODE_LABELS[mode]} · ${toOpenAiTools(undefined, { mode }).length}툴`;
+    const domains = computeActiveToolDomains(input.value);
+    const labels = [...domains].filter((domain) => domain !== "core").map((domain) => TOOL_MODE_LABELS[domain]);
+    modeBadge.textContent = `${labels.slice(0, 3).join(" +") || TOOL_MODE_LABELS.core} · ${toOpenAiTools(undefined, { domains }).length}툴`;
+    modeBadge.title = `${describeActiveToolDomains(domains)} · 현재 입력 기준 활성 도메인`;
   };
   refreshModeBadge();
   editorState.subscribe(() => refreshModeBadge());
