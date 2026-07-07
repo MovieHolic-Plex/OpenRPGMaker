@@ -1,6 +1,6 @@
 // AI 어시스턴트 채팅 패널 — 접기 토글 + 설정 자동 저장 + 세션 설정 반영.
 // 사용자 불만 회귀 테스트: (1) 패널을 접을 수 없었다, (2) API 키/설정이 저장되지 않는 것처럼
-// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 google/gemini-3.5-flash.
+// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 minimax/minimax-m3 (v3 설계 합의).
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AssistantSession } from "@/ai/assistantSession";
@@ -78,7 +78,7 @@ describe("설정 자동 저장", () => {
     expect(stored.apiKey).toBe("sk-or-test-abc");
   });
 
-  it("모델을 비우고 저장하면 기본값(google/gemini-3.5-flash)으로 저장된다", () => {
+  it("모델을 비우고 저장하면 기본값(minimax/minimax-m3 — v3 설계 합의)으로 저장된다", () => {
     const panel = renderPanel();
     const model = findByTestId(panel, "ai-config-model");
     if (!model) throw new Error("model field missing");
@@ -87,8 +87,8 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(DEFAULT_MODEL).toBe("google/gemini-3.5-flash");
-    expect(loadAiConfig().model).toBe("google/gemini-3.5-flash");
+    expect(DEFAULT_MODEL).toBe("minimax/minimax-m3");
+    expect(loadAiConfig().model).toBe("minimax/minimax-m3");
     expect(loadAiConfig().liteModel).toBe(DEFAULT_LITE_MODEL);
   });
 

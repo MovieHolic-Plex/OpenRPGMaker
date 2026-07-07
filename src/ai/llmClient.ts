@@ -44,8 +44,11 @@ export interface AiConfig {
 }
 
 // 기본값. apiKey는 항상 빈값.
+// DEFAULT_MODEL: 타일 툴 v3 설계(2026-07-07) 합의 — 저가 모델 전제에서 재량을 회수했으므로
+// 기본 세션 모델을 minimax-m3로 전환한다. 저장된 사용자 지정 모델은 loadAiConfig가 존중한다.
+// liteModel(반복/배치 보조)은 지연이 중요한 제약 호출 전용이라 경량 flash-lite를 유지한다.
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-export const DEFAULT_MODEL = "google/gemini-3.5-flash";
+export const DEFAULT_MODEL = "minimax/minimax-m3";
 export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
 
 export function defaultAiConfig(): AiConfig {

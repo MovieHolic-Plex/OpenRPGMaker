@@ -156,7 +156,15 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   const mapId = stringValue(call.args.mapId);
   if (mapId === null) return null;
 
-  if (call.name === "paint_road" || call.name === "tile_road") return roadRegions(mapId, call.args.points);
+  if (call.name === "paint_road" || call.name === "tile_road" || call.name === "lay_path") return roadRegions(mapId, call.args.points);
+  // 타일 v3 공정 프리미티브(V3B): rect/자동 감지 영역은 result.data가 실측 영역을 준다.
+  if (call.name === "build_wall") return rectRegion(mapId, call.args.rect);
+  if (call.name === "build_roof") return v3DataRegion(mapId, call.result.data, "roofRegion") ?? rectRegion(mapId, call.args.wallRect);
+  if (call.name === "place_door" || call.name === "place_window") {
+    const at = pointValue(call.args.at);
+    return at === null ? [] : [{ mapId, x: at.x, y: at.y, w: 1, h: 1 }];
+  }
+  if (call.name === "place_props") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
   // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
   if (call.name === "tile_structure") {
@@ -182,6 +190,23 @@ function originRect(mapId: string, args: Record<string, unknown>, w: number | nu
   const origin = pointValue(args.origin);
   if (origin === null || w === null || h === null) return [];
   return [{ mapId, x: origin.x, y: origin.y, w, h }];
+}
+
+// {x,y,w,h} 값(인자 rect/데이터 영역)을 AffectedRegion으로. 형식이 아니면 빈 배열.
+function rectRegion(mapId: string, value: unknown): AffectedRegion[] {
+  if (!isRecord(value)) return [];
+  const x = numberValue(value.x);
+  const y = numberValue(value.y);
+  const w = numberValue(value.w);
+  const h = numberValue(value.h);
+  return x === null || y === null || w === null || h === null ? [] : [{ mapId, x, y, w, h }];
+}
+
+// v3 프리미티브 result.data의 실측 영역(예: build_roof data.roofRegion). 없으면 null.
+function v3DataRegion(mapId: string, data: unknown, key: string): AffectedRegion[] | null {
+  if (!isRecord(data)) return null;
+  const region = rectRegion(mapId, data[key]);
+  return region.length > 0 ? region : null;
 }
 
 function scatterRegions(mapId: string, args: Record<string, unknown>, data: unknown): AffectedRegion[] {
@@ -285,12 +310,12 @@ function actualPlacementCount(calls: readonly ProposalCompletenessCall[]): numbe
 }
 
 function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
-  if (call.name === "scatter_object" || call.name === "tile_scatter") {
+  if (call.name === "scatter_object" || call.name === "tile_scatter" || call.name === "place_props") {
     const data = isRecord(call.result.data) ? call.result.data : null;
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
   if (call.name === "place_npc" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
-  if (call.name === "build_house" || call.name === "stamp_template_house" || call.name === "stamp_structure" || call.name === "stamp_terrain_template" || call.name === "tile_structure") return 1;
+  if (call.name === "build_house" || call.name === "stamp_template_house" || call.name === "stamp_structure" || call.name === "stamp_terrain_template" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
 }

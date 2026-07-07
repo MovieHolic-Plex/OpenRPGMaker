@@ -20,7 +20,8 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import type { Project, TilesetDef } from "@/project/types";
+import { getGrammarProfile, type VocabularyProposalCard } from "@/editor/tools/v3";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -65,7 +66,12 @@ const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "cle
 const HOUSE_TOOLS = new Set(["build_house", "stamp_template_house"]);
 const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
   HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && (call.args.kind === "house" || call.args.kind === "template_house"));
-const MAP_TILE_TOOLS = new Set(["paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map", "tile_paint", "tile_road", "tile_scatter", "tile_structure"]);
+const MAP_TILE_TOOLS = new Set([
+  "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map",
+  "tile_paint", "tile_road", "tile_scatter", "tile_structure",
+  // 타일 v3 공정 프리미티브(V3B)
+  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
+]);
 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
@@ -278,15 +284,15 @@ function countFromSummary(summary: string, pattern: RegExp): number {
 }
 
 function isTreeScatter(call: ProposedCall): boolean {
-  if (call.name !== "scatter_object" && call.name !== "tile_scatter") return false;
-  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : "";
+  if (call.name !== "scatter_object" && call.name !== "tile_scatter" && call.name !== "place_props") return false;
+  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : typeof call.args.propVocabId === "string" ? call.args.propVocabId : "";
   const haystack = `${groupId} ${call.summary}`.toLowerCase();
   return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
 }
 
 function countProposalHouses(calls: readonly ProposedCall[]): number {
   return calls.reduce((total, call) => {
-    if (isHouseCall(call)) return total + 1;
+    if (isHouseCall(call) || call.name === "build_wall") return total + 1;
     if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return total + 1;
     return total;
   }, 0);
@@ -294,6 +300,10 @@ function countProposalHouses(calls: readonly ProposedCall[]): number {
 
 function countProposalRoadCells(calls: readonly ProposedCall[]): number {
   return calls.reduce((total, call) => {
+    if (call.name === "lay_path") {
+      const fromData = positive(numberFromRecord(call.result.data, "pathCells"));
+      return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /길\s+(\d+)칸/u));
+    }
     if (call.name === "paint_road" || call.name === "tile_road") {
       const fromData = positive(numberFromRecord(call.result.data, "tilesTouched"));
       return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /도로\s+(\d+)칸/u));
@@ -489,6 +499,181 @@ export function reassembleSelectedProposalProject(
     if (!result.ok) return { ok: false, message: result.summary, results };
   }
   return { ok: true, project: ctx.project, results, calls: selectedCalls };
+}
+
+// ─── 어휘 카드 인라인 편집 (타일 툴 v3 설계 축 6 — V3B) ────────────────────────
+// propose_tile_vocabulary의 data.cards를 카드 UI로 렌더하고, 편집값이 수락 시
+// 커밋되는 값이 되도록 args.items를 재조립해 UXD 부분 수락(재실행) 경로에 태운다.
+
+export interface VocabularyCardEdit {
+  name?: string;
+  role?: string;
+  patternKind?: string;
+  layerHome?: string;
+}
+
+interface VocabularyCardsData {
+  readonly tilesetId: string;
+  readonly grammarProfile: string;
+  readonly cards: readonly VocabularyProposalCard[];
+}
+
+export function vocabularyCardsData(call: Pick<ProposedCall, "name" | "result">): VocabularyCardsData | null {
+  if (call.name !== "propose_tile_vocabulary") return null;
+  const data = call.result.data;
+  if (typeof data !== "object" || data === null) return null;
+  const record = data as Partial<VocabularyCardsData>;
+  if (typeof record.tilesetId !== "string" || typeof record.grammarProfile !== "string" || !Array.isArray(record.cards)) return null;
+  return record as VocabularyCardsData;
+}
+
+// 카드 편집값을 propose_tile_vocabulary args.items에 반영한다(카드 i ↔ items[i] 1:1).
+// 수락 시 이 args로 베이스라인에서 재실행되므로 편집값이 곧 커밋값이다.
+export function applyVocabularyCardEdits(
+  args: Record<string, unknown>,
+  edits: ReadonlyMap<number, VocabularyCardEdit>
+): Record<string, unknown> {
+  if (edits.size === 0) return args;
+  const next = structuredClone(args);
+  const items = Array.isArray(next.items) ? (next.items as unknown[]) : [];
+  for (const [index, edit] of edits) {
+    const item = items[index];
+    if (typeof item !== "object" || item === null) continue;
+    const target = item as Record<string, unknown>;
+    if (edit.name !== undefined && edit.name.trim().length > 0) target.name = edit.name.trim();
+    if (edit.role !== undefined) target.role = edit.role;
+    if (edit.patternKind !== undefined) target.patternKind = edit.patternKind === "" ? undefined : edit.patternKind;
+    if (edit.layerHome !== undefined) target.layerHome = edit.layerHome;
+  }
+  return next;
+}
+
+// 프로포절 전체에 카드 편집을 적용한 유효 call 목록 — 수락 경로가 소비한다.
+export function callsWithVocabularyEdits(
+  calls: readonly ProposedCall[],
+  editsByCall: ReadonlyMap<number, ReadonlyMap<number, VocabularyCardEdit>>
+): readonly ProposedCall[] {
+  let touched = false;
+  const next = calls.map((call, index) => {
+    const edits = editsByCall.get(index);
+    if (!edits || edits.size === 0 || call.name !== "propose_tile_vocabulary") return call;
+    touched = true;
+    return { ...call, args: applyVocabularyCardEdits(call.args, edits) };
+  });
+  return touched ? next : calls;
+}
+
+export function hasVocabularyEdits(editsByCall: ReadonlyMap<number, ReadonlyMap<number, VocabularyCardEdit>>): boolean {
+  for (const edits of editsByCall.values()) if (edits.size > 0) return true;
+  return false;
+}
+
+const VOCAB_ROLE_OPTIONS = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"] as const;
+const VOCAB_LAYER_OPTIONS = ["lower", "upper", "perCell"] as const;
+const VOCAB_THUMB_LIMIT = 9;
+const VOCAB_FACT_LIMIT = 4;
+
+function vocabSelect(testid: string, options: readonly string[], value: string, onChange: (next: string) => void): HTMLSelectElement {
+  const select = el("select", { class: "ai-vocab-edit-select", dataset: { testid } }) as HTMLSelectElement;
+  const values = options.includes(value) || value === "" ? [...options] : [value, ...options];
+  for (const option of values) {
+    const node = el("option", { text: option === "" ? "(없음)" : option, attrs: { value: option } }) as HTMLOptionElement;
+    if (option === value) node.selected = true;
+    select.append(node);
+  }
+  select.value = value;
+  select.addEventListener("change", () => onChange(select.value));
+  return select;
+}
+
+function vocabFieldRow(label: string, control: HTMLElement): HTMLElement {
+  return el("label", { class: "ai-vocab-field", children: [el("span", { class: "ai-vocab-field-label", text: label }), control] });
+}
+
+// 어휘 프로포절 카드 1건 렌더 — AI 추정(편집 가능) vs 사실 배지(결정론) 병기.
+function renderVocabularyCard(
+  tileset: TilesetDef | undefined,
+  card: VocabularyProposalCard,
+  cardNumber: number,
+  patternKindOptions: readonly string[],
+  onEdit: (field: keyof VocabularyCardEdit, value: string) => void
+): HTMLElement {
+  const thumbs = el("div", {
+    class: "ai-vocab-thumbs",
+    children: card.tileIds.slice(0, VOCAB_THUMB_LIMIT).map((tile) =>
+      el("span", {
+        class: "ai-vocab-thumb",
+        attrs: { title: `타일 ${tile}`, style: tileset ? tilesetTileBackgroundStyle(tileset, tile, 24) : "" },
+      })
+    ),
+  });
+  const nameInput = el("input", {
+    class: "ai-vocab-edit-input",
+    attrs: { type: "text", value: card.name, "aria-label": "어휘 이름(AI 추정 — 교정 가능)" },
+    dataset: { testid: `ai-vocab-edit-name-${cardNumber}` },
+  }) as HTMLInputElement;
+  nameInput.value = card.name;
+  nameInput.addEventListener("input", () => onEdit("name", nameInput.value));
+  nameInput.addEventListener("change", () => onEdit("name", nameInput.value));
+
+  const facts = card.facts.slice(0, VOCAB_FACT_LIMIT).map((fact) =>
+    el("span", {
+      class: "ai-vocab-fact",
+      text: `타일 ${fact.tileId}: ${fact.layerHome}·${fact.passable ? "통행" : "차단"}`,
+    })
+  );
+  const factSuffix = card.facts.length > VOCAB_FACT_LIMIT ? [el("span", { class: "ai-vocab-fact", text: `외 ${card.facts.length - VOCAB_FACT_LIMIT}` })] : [];
+
+  const editRows: HTMLElement[] = [
+    vocabFieldRow("이름", nameInput),
+    vocabFieldRow("role", vocabSelect(`ai-vocab-edit-role-${cardNumber}`, VOCAB_ROLE_OPTIONS, card.role, (next) => onEdit("role", next))),
+    vocabFieldRow("layerHome", vocabSelect(`ai-vocab-edit-layerHome-${cardNumber}`, VOCAB_LAYER_OPTIONS, card.layerHome, (next) => onEdit("layerHome", next))),
+  ];
+  if (card.kind === "group") {
+    editRows.push(vocabFieldRow("패턴", vocabSelect(`ai-vocab-edit-patternKind-${cardNumber}`, patternKindOptions, card.patternKind ?? "", (next) => onEdit("patternKind", next))));
+  }
+
+  return el("div", {
+    class: "ai-vocab-card",
+    dataset: { testid: `ai-vocab-card-${cardNumber}` },
+    children: [
+      el("div", {
+        class: "ai-vocab-card-head",
+        children: [
+          el("span", { class: "ai-vocab-badge is-estimate", text: "AI 추정" }),
+          el("span", { class: "ai-vocab-kind", text: card.kind === "group" ? `그룹${card.groupId ? ` ${card.groupId}` : ""}` : `낱개 타일 ${card.tileIds.join(",")}` }),
+          el("span", {
+            class: `ai-vocab-badge ${card.patternDefined ? "is-fact" : "is-warn"}`,
+            text: card.patternDefined ? "패턴 정의됨" : "패턴 미정의(T1b에서 파츠 필요)",
+          }),
+        ],
+      }),
+      thumbs,
+      el("div", { class: "ai-vocab-edits", children: editRows }),
+      el("div", { class: "ai-vocab-facts", children: [el("span", { class: "ai-vocab-badge is-fact", text: "사실" }), ...facts, ...factSuffix] }),
+      ...card.warnings.map((warning) => el("div", { class: "ai-vocab-warning", text: warning })),
+    ],
+  });
+}
+
+// propose_tile_vocabulary 항목 아래에 붙는 카드 목록. cardNumberStart는 프로포절 전체 연번(1-base).
+export function renderVocabularyCardList(
+  project: Project,
+  call: ProposedCall,
+  cardNumberStart: number,
+  onEdit: (cardIndex: number, field: keyof VocabularyCardEdit, value: string) => void
+): { element: HTMLElement; count: number } | null {
+  const data = vocabularyCardsData(call);
+  if (!data || data.cards.length === 0) return null;
+  const tileset = project.tilesets[data.tilesetId];
+  const patternKindOptions = ["", ...getGrammarProfile(data.grammarProfile).supportedPatternKinds];
+  const element = el("div", {
+    class: "ai-vocab-cards",
+    children: data.cards.map((card, cardIndex) =>
+      renderVocabularyCard(tileset, card, cardNumberStart + cardIndex, patternKindOptions, (field, value) => onEdit(cardIndex, field, value))
+    ),
+  });
+  return { element, count: data.cards.length };
 }
 
 export function proposalHasMapTileChanges(calls: readonly ProposedCall[]): boolean {
@@ -1038,6 +1223,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     };
 
+    // 어휘 카드 인라인 편집 상태(V3B): call index → (card index → 편집값). 수락 시
+    // callsWithVocabularyEdits로 args를 재조립해 편집값이 곧 커밋값이 된다.
+    const vocabEditsByCall = new Map<number, Map<number, VocabularyCardEdit>>();
+    const itemElements: HTMLElement[] = [];
+    let vocabCardNumber = 1;
     result.proposedCalls.forEach((call, index) => {
       const checkbox = el("input", {
         attrs: { type: "checkbox", "aria-label": `${index + 1}번 변경 포함` },
@@ -1062,6 +1252,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ],
       });
       itemRows.push(row);
+      itemElements.push(row);
+      // UXD 체크박스(항목 수락/거부)와 결합된 어휘 카드 — 항목 아래에 붙는다.
+      const cards = renderVocabularyCardList(beforeProject, call, vocabCardNumber, (cardIndex, field, value) => {
+        const edits = vocabEditsByCall.get(index) ?? new Map<number, VocabularyCardEdit>();
+        vocabEditsByCall.set(index, edits);
+        const entry = edits.get(cardIndex) ?? {};
+        entry[field] = value;
+        edits.set(cardIndex, entry);
+      });
+      if (cards) {
+        vocabCardNumber += cards.count;
+        itemElements.push(cards.element);
+      }
     });
 
     const card = el("div", {
@@ -1088,7 +1291,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
               ],
             })]
           : []),
-        el("div", { class: "ai-proposal-items", children: itemRows }),
+        el("div", { class: "ai-proposal-items", children: itemElements }),
         el("details", {
           class: "ai-proposal-technical",
           children: [
@@ -1107,7 +1310,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
               text: "수락해서 적용",
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-accept" },
-              on: { click: () => acceptProposal(result.proposedCalls, selected) },
+              on: {
+                click: () =>
+                  acceptProposal(
+                    callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
+                    selected,
+                    hasVocabularyEdits(vocabEditsByCall)
+                  ),
+              },
             }) as HTMLButtonElement),
             el("button", {
               class: "ai-assistant-action ai-proposal-reject",
@@ -1126,8 +1336,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalHost.append(card);
   };
 
-  const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[]): void => {
+  const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits = false): void => {
     // 프리뷰 == 적용: 세션이 누적한 draft를 그대로 적용한다(재실행에 따른 id 불일치 방지).
+    // 단 어휘 카드가 편집됐으면(hasEdits) 편집된 args가 커밋값이 되도록 반드시 재실행한다.
     const session = controller.session;
     if (!session) return;
     const selected = selectedState ? enforceProposalDependencies(selectedState, proposalDependencyIndexes(calls)) : calls.map(() => true);
@@ -1136,7 +1347,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const warnings = proposalApprovalWarnings(selectedCalls);
     if (warnings.length > 0 && !confirmRuleApproval(warnings)) return;
     const before = store.getCurrent();
-    const fullAccept = selectedCalls.length === calls.length;
+    const fullAccept = selectedCalls.length === calls.length && !hasEdits;
     const reassembled = fullAccept
       ? null
       : reassembleSelectedProposalProject(session.baselineProject, calls, selected);

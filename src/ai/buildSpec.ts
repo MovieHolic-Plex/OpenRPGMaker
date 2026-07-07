@@ -64,12 +64,15 @@ export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "stamp_template_house", "clear_region", "place_npc", "place_battle_blocker",
   // 타일 v2 (2026-07-07 재구축)
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
+  // 타일 v3 공정 프리미티브 (V3B)
+  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
 ]);
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
   "stamp_template_house", "place_npc", "place_battle_blocker",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
+  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
 ]);
 
 export function boundarySlackForTool(toolName: string): number {

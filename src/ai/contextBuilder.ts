@@ -149,7 +149,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "프리셋이 있으면 tile_road/tile_scatter/tile_structure에서 개별 tile id보다 presetId+paletteRole을 우선 사용하세요. 칠할 타일을 모르면 tile_query(ask=palette)로 먼저 찾으세요.",
+    "배치는 승인된 어휘만 소비하는 v3 공정 프리미티브(build_wall/place_door/place_window/build_roof/lay_path/place_props)를 공정 순서(벽→문/창→지붕→길→소품)대로 쓰세요. 어휘가 미승인이면 propose_tile_vocabulary로 먼저 합의하고, 모르는 어휘는 tile_query(ask=unapproved/palette)로 조회하세요.",
     trimDigestLines(lines, 700),
   ].join("\n");
 }

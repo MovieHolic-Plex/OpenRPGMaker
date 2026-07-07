@@ -22,7 +22,7 @@ import { TERRAIN_TEMPLATE_TOOLS } from "./terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import type { JsonSchema, ToolDefinition } from "./types";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
-import { VOCABULARY_TOOLS_V3 } from "./v3";
+import { CONSTRUCTION_TOOLS_V3, V2_TILE_SUPERSEDED, VOCABULARY_TOOLS_V3 } from "./v3";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 
@@ -30,10 +30,13 @@ export { PLACEMENT_TOOLS };
 
 // v2 재구축(2026-07-07): 모든 기존 툴은 version 1로 태깅하고, 타일 계열 v1은 v2 대체와 함께
 // deprecated 처리한다(LLM 노출 제외 — getTool/실행 호환은 유지).
+// v3 공정 프리미티브(V3B): v2 배치 4종도 같은 방식으로 deprecated 마킹한다(version 2 유지).
 function tagV1(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
   return tools.map((tool) => {
-    const supersededBy = V1_TILE_SUPERSEDED.get(tool.name);
-    if (supersededBy) return { ...tool, version: 1 as const, deprecated: true, supersededBy };
+    const supersededByV1 = V1_TILE_SUPERSEDED.get(tool.name);
+    if (supersededByV1) return { ...tool, version: 1 as const, deprecated: true, supersededBy: supersededByV1 };
+    const supersededByV2 = V2_TILE_SUPERSEDED.get(tool.name);
+    if (supersededByV2) return { ...tool, version: tool.version ?? (2 as const), deprecated: true, supersededBy: supersededByV2 };
     return { ...tool, version: tool.version ?? (1 as const) };
   });
 }
@@ -41,6 +44,7 @@ function tagV1(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
 // 레지스트리(순서 = 카탈로그 표시 순서). v3 승인 보캐뷸러리 → v2 타일 툴 순으로 앞에 온다.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...VOCABULARY_TOOLS_V3,
+  ...CONSTRUCTION_TOOLS_V3,
   ...TILE_TOOLS_V2,
   ...MAP_TOOLS,
   ...MAP_GEN_TOOLS,

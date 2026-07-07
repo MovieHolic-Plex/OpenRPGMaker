@@ -6,6 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { getTool, toOpenAiTools } from "@/editor/tools";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "@/editor/tools/v2";
+import { V2_TILE_SUPERSEDED } from "@/editor/tools/v3";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 
@@ -33,9 +34,12 @@ function expectExampleError(fn: () => unknown): string {
 }
 
 describe("타일 v2 레지스트리", () => {
-  it("v2 9종이 LLM에 노출되고 deprecated v1 타일 툴은 노출되지 않는다", () => {
+  it("v2 지식 계열은 LLM에 노출되고, v2 배치 4종(V3B에서 v3 대체)과 deprecated v1 타일 툴은 노출되지 않는다", () => {
     const exposed = new Set(toOpenAiTools().map((tool) => tool.function.name));
-    for (const tool of TILE_TOOLS_V2) expect(exposed.has(tool.name), tool.name).toBe(true);
+    for (const tool of TILE_TOOLS_V2) {
+      // v3 공정 프리미티브(2026-07-07 V3B)가 대체한 배치 4종은 비노출(실행 호환은 유지).
+      expect(exposed.has(tool.name), tool.name).toBe(!V2_TILE_SUPERSEDED.has(tool.name));
+    }
     for (const v1Name of V1_TILE_SUPERSEDED.keys()) expect(exposed.has(v1Name), v1Name).toBe(false);
   });
 
