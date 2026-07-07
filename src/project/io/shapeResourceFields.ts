@@ -83,6 +83,9 @@ export function validateTileset(id: string, value: unknown): void {
   if (tileset.transparentColor !== undefined) {
     requireString(`tileset ${id}.transparentColor`, tileset.transparentColor);
   }
+  if (tileset.grammarProfile !== undefined) {
+    requireString(`tileset ${id}.grammarProfile`, tileset.grammarProfile);
+  }
   if (tileset.suppressedHarnessGroupIds !== undefined) {
     for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
       requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);
@@ -97,6 +100,17 @@ export function validateTileset(id: string, value: unknown): void {
       requireString(`tileset ${id}.tileGroups[${index}].defaultLayer`, record.defaultLayer);
       requireString(`tileset ${id}.tileGroups[${index}].description`, record.description);
       requireString(`tileset ${id}.tileGroups[${index}].placementRules`, record.placementRules);
+      if (record.origin !== undefined) {
+        const origin = requireString(`tileset ${id}.tileGroups[${index}].origin`, record.origin);
+        assert(origin === "user" || origin === "ai", `tileset ${id}: tileGroups[${index}] origin invalid`);
+      }
+      if (record.layerHome !== undefined) {
+        const layerHome = requireString(`tileset ${id}.tileGroups[${index}].layerHome`, record.layerHome);
+        assert(
+          layerHome === "lower" || layerHome === "upper" || layerHome === "perCell",
+          `tileset ${id}: tileGroups[${index}] layerHome invalid`
+        );
+      }
       if (record.confidence !== undefined) {
         const confidence = requireString(`tileset ${id}.tileGroups[${index}].confidence`, record.confidence);
         assert(

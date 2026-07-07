@@ -109,6 +109,13 @@ export interface TileGroupMetadata {
   tileIds: number[];
   description: string;
   placementRules: string;
+  // v3 승인 보캐뷸러리(2026-07-07, 원칙 0 Zero-Trust Perception): 사용자 명시 수락으로
+  // 커밋될 때만 "user"가 된다. source와 달리 어떤 자동 경로도 이 값을 "user"로 만들지 않는다
+  // (제로 부트스트랩). tileMeta.origin / PalettePreset.origin과 동일 규약.
+  origin?: "user" | "ai";
+  // 어휘의 속성인 홈 레이어 — 시공 프리미티브가 layer 인자 없이 결정론 배치할 때 소비.
+  // perCell은 타일별(tileLayerHome) 판정. 생략 시 defaultLayer에서 유도한다.
+  layerHome?: "lower" | "upper" | "perCell";
   confidence?: "high" | "low" | "medium";
   sourceRect?: {
     x: number;
@@ -205,6 +212,9 @@ export interface TilesetDef {
   transparentColor?: string;
   // 범용 오토타일(지형 자동 연결) 그룹 정의. 없으면 내장 기본 그룹(흙길/모래)을 사용한다.
   autotileGroups?: AutotileGroup[];
+  // v3 시공 문법 프로파일(2026-07-07). 생략 시 "rm-type"(RM2003 combined_town 규약).
+  // 프리미티브 전개는 프로파일 레지스트리(grammarProfiles.ts) 디스패치.
+  grammarProfile?: string;
 }
 
 // 이웃 판정 범위: 4방향(상하좌우) 또는 8방향(대각 포함).
