@@ -15,11 +15,12 @@ import {
   type AutotileMapView,
 } from "@/project/defaults/autotileEngine";
 import type { EdgeCornerTileSet } from "@/project/defaults/autotileEngine";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { groupLayerHome, type VocabLayerHome } from "@/project/tileVocabulary";
 import type { AutotileGroup, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { ToolError } from "../types";
-import type { GrammarProfile } from "./grammarProfiles";
+import type { GrammarPatternKind, GrammarProfile } from "./grammarProfiles";
 
 export interface Rect {
   readonly x: number;
@@ -302,4 +303,168 @@ export function buildEightNeighborVariantMap(tiles: EdgeCornerTileSet, inner: In
     variantMap[String(mask)] = tile;
   }
   return variantMap;
+}
+
+// ── 승인 시 패턴 파츠 자동 생성 (2026-07-07 타일 시공 흐름 재설계 §2.1.2) ────────────
+// 불변식: origin:"user" + 전개형 patternKind 그룹은 반드시 patternGrammar.parts를 갖는다.
+// propose_tile_vocabulary 수락(approveGroupItem)이 커밋 직전에 이 함수로 파츠를 채운다.
+// 파츠의 정의(여기)와 소비(expandWall/expandRoof/resolveAutotile)를 같은 파일에 둔다.
+
+// 전개기가 소비하는 patternKind — 이 목록의 그룹은 파츠 없이 승인 완료될 수 없다.
+export const EXPANDABLE_PATTERN_KINDS = [
+  "nine_slice_expandable",
+  "vertical_expandable",
+  "horizontal_expandable",
+  "autotile_3x3",
+] as const;
+
+export type ExpandablePatternKind = (typeof EXPANDABLE_PATTERN_KINDS)[number];
+
+export function isExpandablePatternKind(kind: string | undefined): kind is ExpandablePatternKind {
+  return kind !== undefined && (EXPANDABLE_PATTERN_KINDS as readonly string[]).includes(kind);
+}
+
+// nine_slice/autotile의 3×3 row-major 역할 순서(TL,T,TR / L,C,R / BL,B,BR).
+const NINE_ROLES: readonly PartRole[] = [
+  "topLeft", "top", "topRight",
+  "left", "center", "right",
+  "bottomLeft", "bottom", "bottomRight",
+];
+
+function underspecified(message: string): ToolError {
+  return new ToolError(message, { code: "pattern-underspecified" });
+}
+
+function nineParts(tileIds: readonly number[]): PatternGrammar["parts"] {
+  const parts = NINE_ROLES.map((role, index) => ({ role, tileIds: [tileIds[index]] }));
+  // 9개 초과분은 center 변형 타일로 편입한다(선례: 흙길 center [BODY, BODY_ALT] —
+  // pickTile 좌표 해시가 결정론으로 고른다).
+  for (const extra of tileIds.slice(9)) parts[4].tileIds.push(extra);
+  return parts;
+}
+
+// 세로(기둥) 파츠: 3의 배수 tileIds를 row-major 상/중(반복)/하 행으로 3등분.
+// 2개는 1×2 문/입구 규약(top/bottom — doorLikeEdits가 소비)으로 허용한다.
+function verticalParts(tileIds: readonly number[], label: string): PatternGrammar["parts"] {
+  if (tileIds.length === 2) {
+    return [
+      { role: "top", tileIds: [tileIds[0]] },
+      { role: "bottom", tileIds: [tileIds[1]] },
+    ];
+  }
+  if (tileIds.length < 3 || tileIds.length % 3 !== 0) {
+    throw underspecified(
+      `${label}: 기둥(vertical_expandable) 패턴은 tileIds 2개(상/하 1×2 규약) 또는 3의 배수(상/중(반복)/하 행 row-major)가 필요합니다 — 현재 ${tileIds.length}개.`
+    );
+  }
+  const columns = tileIds.length / 3;
+  return [
+    { role: "top", tileIds: [...tileIds.slice(0, columns)] },
+    { role: "repeatBody", tileIds: [...tileIds.slice(columns, columns * 2)] },
+    { role: "bottom", tileIds: [...tileIds.slice(columns * 2)] },
+  ];
+}
+
+// 가로(처마/울타리 행) 파츠: 3의 배수 tileIds를 row-major 좌/중(반복)/우 열로 분배.
+function horizontalParts(tileIds: readonly number[], label: string): PatternGrammar["parts"] {
+  if (tileIds.length === 2) {
+    return [
+      { role: "leftCap", tileIds: [tileIds[0]] },
+      { role: "rightCap", tileIds: [tileIds[1]] },
+    ];
+  }
+  if (tileIds.length < 3 || tileIds.length % 3 !== 0) {
+    throw underspecified(
+      `${label}: 가로(horizontal_expandable) 패턴은 tileIds 2개(좌/우 캡) 또는 3의 배수(좌/중(반복)/우 열 row-major)가 필요합니다 — 현재 ${tileIds.length}개.`
+    );
+  }
+  const left: number[] = [];
+  const body: number[] = [];
+  const right: number[] = [];
+  tileIds.forEach((tile, index) => {
+    if (index % 3 === 0) left.push(tile);
+    else if (index % 3 === 1) body.push(tile);
+    else right.push(tile);
+  });
+  return [
+    { role: "leftCap", tileIds: left },
+    { role: "repeatBody", tileIds: body },
+    { role: "rightCap", tileIds: right },
+  ];
+}
+
+// autotile_3x3 승인 시 8-이웃 variantMap 오토타일 그룹을 타일셋에 등록한다 —
+// lay_path가 autotileGroupForVocab로 이 정의를 찾아 소비한다(승인 = 시공 가능 보장).
+function registerAutotileGroup(
+  tileset: TilesetDef,
+  identity: { readonly groupId: string; readonly name: string },
+  tileIds: readonly number[],
+  variantMap: Record<string, number>
+): void {
+  if (!tileset.autotileGroups || tileset.autotileGroups.length === 0) {
+    // 내장 기본 그룹(흙길/모래)이 폴백으로 살아있는 타일셋이면, 새 등록이 폴백을
+    // 가리지 않도록(autotileGroupsForTileset은 자체 정의가 있으면 그것만 쓴다) 먼저 승계한다.
+    tileset.autotileGroups = autotileGroupsForTileset(tileset).map((group) => ({
+      ...group,
+      memberTileIds: [...group.memberTileIds],
+      connectTileIds: group.connectTileIds ? [...group.connectTileIds] : undefined,
+      triggerTileIds: group.triggerTileIds ? [...group.triggerTileIds] : undefined,
+      variantMap: { ...group.variantMap },
+    }));
+  }
+  const entry: AutotileGroup = {
+    id: identity.groupId,
+    name: identity.name,
+    neighborhood: 8,
+    memberTileIds: [...new Set([...tileIds, ...Object.values(variantMap)])],
+    variantMap,
+  };
+  const index = tileset.autotileGroups.findIndex((group) => group.id === identity.groupId);
+  if (index >= 0) tileset.autotileGroups[index] = entry;
+  else tileset.autotileGroups.push(entry);
+}
+
+// 승인 대상 그룹의 patternKind + tileIds에서 전개 가능한 patternGrammar를 결정론으로 파생한다.
+// - nine_slice_expandable: 9개 row-major {TL,T,TR,L,C,R,BL,B,BR}. 9개 미만이면 pattern-underspecified.
+// - vertical_expandable: 3의 배수 행 3등분(top/repeatBody/bottom), 2개는 1×2 문 규약.
+// - horizontal_expandable: 3의 배수 열 분배(leftCap/repeatBody/rightCap), 2개는 좌/우 캡.
+// - autotile_3x3: 9개 row-major(NW,N,NE,W,C,E,SW,S,SE) → buildEightNeighborVariantMap으로
+//   variantMap 생성 + (identity가 있으면) 타일셋 오토타일 그룹 등록.
+// - 그 외(미지원) patternKind: undefined 반환 — 승인은 가능하되 호출측이 "전개 불가"를 명시한다.
+export function derivePatternGrammar(
+  patternKind: GrammarPatternKind,
+  tileIds: readonly number[],
+  tileset: TilesetDef,
+  identity?: { readonly groupId: string; readonly name: string }
+): TileGroupMetadata["patternGrammar"] | undefined {
+  const label = identity ? `그룹 '${identity.name}'(${identity.groupId})` : "그룹";
+  if (patternKind === "nine_slice_expandable") {
+    if (tileIds.length < 9) {
+      throw underspecified(
+        `${label}: 9분할(nine_slice_expandable) 패턴은 tileIds 9개(row-major TL,T,TR,L,C,R,BL,B,BR)가 필요합니다 — 현재 ${tileIds.length}개. 타일을 채워 다시 제안하세요.`
+      );
+    }
+    return { axis: "both", kind: "nine_slice_expandable", minWidth: 3, minHeight: 3, parts: nineParts(tileIds), preserveCaps: true, repeat: "center" };
+  }
+  if (patternKind === "vertical_expandable") {
+    return { axis: "vertical", kind: "vertical_expandable", minHeight: 2, parts: verticalParts(tileIds, label), preserveCaps: true, repeat: "body" };
+  }
+  if (patternKind === "horizontal_expandable") {
+    return { axis: "horizontal", kind: "horizontal_expandable", minWidth: 2, parts: horizontalParts(tileIds, label), preserveCaps: true, repeat: "body" };
+  }
+  if (patternKind === "autotile_3x3") {
+    if (tileIds.length < 9) {
+      throw underspecified(
+        `${label}: 오토타일(autotile_3x3) 패턴은 tileIds 9개(row-major NW,N,NE,W,C,E,SW,S,SE)가 필요합니다 — 현재 ${tileIds.length}개.`
+      );
+    }
+    const variantMap = buildEightNeighborVariantMap({
+      cornerNW: tileIds[0], edgeN: tileIds[1], cornerNE: tileIds[2],
+      edgeW: tileIds[3], body: tileIds[4], edgeE: tileIds[5],
+      cornerSW: tileIds[6], edgeS: tileIds[7], cornerSE: tileIds[8],
+    });
+    if (identity) registerAutotileGroup(tileset, identity, tileIds, variantMap);
+    return { axis: "both", kind: "autotile_3x3", minWidth: 1, minHeight: 1, parts: nineParts(tileIds), preserveCaps: true, repeat: "center" };
+  }
+  return undefined;
 }

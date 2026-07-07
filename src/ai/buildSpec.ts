@@ -59,20 +59,20 @@ interface CheckedAsset {
   overExisting?: "clear" | "keep";
 }
 
+// v3 공정 프리미티브(build_wall 등 6종)는 여기 넣지 않는다(2026-07-07 타일 시공 흐름 재설계 §2.1.1):
+// v3는 승인 어휘 자체가 명세이므로 set_build_spec 게이트가 불필요하고, 미승인 하드 차단은
+// 프리미티브 내부(assertApprovedOrFail)가 그대로 수행한다. 레거시 배치 툴만 게이트를 탄다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
   "stamp_template_house", "clear_region", "place_npc", "place_battle_blocker",
   // 타일 v2 (2026-07-07 재구축)
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
-  // 타일 v3 공정 프리미티브 (V3B)
-  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
 ]);
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
   "stamp_template_house", "place_npc", "place_battle_blocker",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
-  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
 ]);
 
 export function boundarySlackForTool(toolName: string): number {

@@ -19,6 +19,7 @@ import type { Project, TileAiMetadata, TileGroupLayer, TileGroupMetadata, TileGr
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
 import { coerceEnum, failWithExample, optionalEnum } from "../v2/tileToolsV2Support";
 import { tilesetGrammarProfile, type GrammarPatternKind } from "./grammarProfiles";
+import { derivePatternGrammar, isExpandablePatternKind } from "./rmTypeExpander";
 
 const ITEM_KINDS = ["group", "tile"] as const;
 const GROUP_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];
@@ -244,6 +245,13 @@ function approveGroupItem(tileset: TilesetDef, item: Record<string, unknown>, in
     warnings.push(
       `${claims.itemLabel}: 제안한 patternKind '${claims.patternKind}'이(가) 기존 패턴 정의(사실)와 다릅니다 — 그룹에는 '${group.patternGrammar.kind}'이(가) 정의돼 있습니다.`
     );
+  }
+  // 승인 시 패턴 파츠 자동 생성(2026-07-07 §2.1.2) — 불변식: origin:"user" + 전개형
+  // patternKind 그룹은 반드시 patternGrammar.parts를 갖는다. 이미 파츠가 있으면(사실) 유지.
+  // tileIds가 모자라면 derivePatternGrammar가 pattern-underspecified를 던져 승인이 거부된다
+  // (쓰기 draft는 runTool이 폐기하므로 부분 마킹이 남지 않는다).
+  if (isExpandablePatternKind(claims.patternKind) && !group.patternGrammar) {
+    group.patternGrammar = derivePatternGrammar(claims.patternKind, group.tileIds, tileset, { groupId: group.id, name: group.name });
   }
   return {
     kind: "group",

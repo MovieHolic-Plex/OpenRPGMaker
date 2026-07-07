@@ -6,13 +6,17 @@
 
 export { CONSTRUCTION_TOOLS_V3, V2_TILE_SUPERSEDED, wallCellsAt } from "./constructionTools";
 export {
+  EXPANDABLE_PATTERN_KINDS,
   buildEightNeighborVariantMap,
+  derivePatternGrammar,
   expandRoof,
   expandWall,
+  isExpandablePatternKind,
   layerForVocabTile,
   resolveAutotile,
   vocabLayerHomeFor,
   type CellEdit,
+  type ExpandablePatternKind,
   type Expansion,
   type Rect,
 } from "./rmTypeExpander";
