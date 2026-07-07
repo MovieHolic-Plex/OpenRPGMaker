@@ -7,11 +7,13 @@ export function validateMapTree(
   knownMapIds: ReadonlySet<string>
 ): MapTreeNode {
   const node = requireRecord(label, value);
-  const mapId = requireString(`${label}.mapId`, node.mapId);
-  assert(knownMapIds.has(mapId), `${label}: mapId(${mapId})가 존재하지 않는 맵.`);
+  const rawMapId = requireString(`${label}.mapId`, node.mapId);
+  const fallbackMapId = knownMapIds.values().next().value as string | undefined;
+  const mapId = knownMapIds.has(rawMapId) ? rawMapId : fallbackMapId;
+  assert(mapId !== undefined, `${label}: 유효한 맵이 없습니다.`);
   const children = requireArray(`${label}.children`, node.children).map((child, index) =>
     validateMapTree(`${label}.children[${index}]`, child, knownMapIds)
-  );
+  ).filter((child) => knownMapIds.has(child.mapId));
   return { mapId, children };
 }
 

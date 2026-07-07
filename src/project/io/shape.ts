@@ -4,7 +4,7 @@ import { normalizeWorld } from "../world/guards";
 import type { ProjectWorld } from "../world/types";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { assert, cloneJson, sanitize, type JsonRecord, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
-import { validateProjectReferences } from "./references";
+import { repairProjectReferences, validateProjectReferences } from "./references";
 import {
   requirePosition,
   validateAssets,
@@ -41,12 +41,14 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   validateVariables(data.variables);
   validateCommonEvents(data.commonEvents);
   const maps = validateMaps(data.maps);
-  validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
+  const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
   assert(startMapId in maps, "startMapId가 maps에 없습니다.");
   requirePosition("startPos", data.startPos);
   requireRecord("flags", data.flags);
-  return cloneJson<ProjectV2>(data);
+  const project = cloneJson<ProjectV2>(data);
+  project.mapTree = mapTree;
+  return project;
 }
 
 export function validateProjectV3(data: JsonRecord): Project {
@@ -66,13 +68,14 @@ export function validateProjectV3(data: JsonRecord): Project {
   validateVillageInfoDocuments(data.villageInfoDocuments, new Set(Object.keys(maps)));
   validateQuests(data.quests, new Set(Object.keys(maps)));
   validateTestPresets(data.testPresets, new Set(Object.keys(maps)));
-  validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
+  const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
   assert(startMapId in maps, "startMapId가 maps에 없습니다.");
   requirePosition("startPos", data.startPos);
   requireRecord("flags", data.flags);
 
   const project = cloneJson<Project>(data);
+  project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
   normalizeTilesetPalettePresets(project);
@@ -80,6 +83,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
+  repairProjectReferences(project);
   validateProjectReferences(project);
   return project;
 }
