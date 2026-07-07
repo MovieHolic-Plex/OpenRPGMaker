@@ -8,6 +8,7 @@ import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
+import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 
 export interface ContextOptions {
   // 현재 에디터에서 열려 있는 맵(있으면 주변 영역을 요약에 포함).
@@ -29,6 +30,8 @@ const BALANCE_NOTE = [
 const INTRO = [
   "당신은 브라우저 기반 2D RPG 에디터(RPG ZZU)의 개발 어시스턴트입니다.",
   "맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.",
+  "",
+  AGENT_UX_POLICY_LINES,
   "",
   "## 작업 수칙(반드시 준수)",
   "1. 모든 쓰기(맵/이벤트/DB 변경)는 제안(dry-run)으로만 반영되며, 리드(사용자)가 수락해야 실제 프로젝트에 적용됩니다.",

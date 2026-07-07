@@ -32,6 +32,7 @@ import {
   validateBuildSpec,
   type BuildSpec,
 } from "./buildSpec";
+import { proposalHasChangedMap, proposalScopeCarryoverWarning } from "./proposalCompleteness";
 
 // UI 스트리밍/로그용 이벤트.
 export type SessionEvent =
@@ -74,6 +75,7 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map"]);
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
+export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 
 export function proposalNeedsExplicitApproval(calls: readonly ProposedCall[]): boolean {
   return calls.some((call) => call.requiresApproval === true);
@@ -214,12 +216,19 @@ export class AssistantSession {
   // 스펙 게이트 상태: 확정된 밑그림은 턴 간 유지된다(사용자가 "계속해"로 이어가도 재제출 불필요).
   // 새 set_build_spec이 검증을 통과하면 교체된다.
   private activeSpec: BuildSpec | null = null;
+  private activeSpecTurnIndex = 0;
+  private currentTurnIndex = 0;
   // 이번 턴 사용자 메시지의 [컨텍스트] 선택 영역에서 파생된 암묵적 명세(턴마다 재계산).
   private turnImplicitSpec: BuildSpec | null = null;
+  // 이번 턴 시작 전에 이미 존재하던 명시 스펙. 이 스펙으로 변경 제안이 만들어지면
+  // 카드에 이전 계획 포함 경고를 붙인다(D06).
+  private carryoverSpecForTurn: BuildSpec | null = null;
+  private carryoverWarningAdded = false;
   // 이번 턴의 명세 검증 실패 횟수 — MAX_SPEC_REJECTIONS 초과 시 폐기 지시.
   private specRejections = 0;
   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
   private turnProposals = new Map<string, ProposedCall>();
+  private eventBaseProposalKeys = new Map<string, string>();
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
 
@@ -286,6 +295,8 @@ export class AssistantSession {
       };
     }
     this.activeSpec = spec;
+    this.activeSpecTurnIndex = this.currentTurnIndex;
+    this.carryoverSpecForTurn = null;
     this.specRejections = 0;
     const kinds = [...new Set(spec.assets.map((asset) => asset.kind))].join("·");
     return {
@@ -356,9 +367,15 @@ export class AssistantSession {
     this.pushAudit({ kind: "user", text });
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
+    this.currentTurnIndex += 1;
     this.turnImplicitSpec = implicitSpecFromContext(text);
+    this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
+      ? structuredClone(this.activeSpec)
+      : null;
+    this.carryoverWarningAdded = false;
     this.specRejections = 0;
     this.turnProposals = new Map();
+    this.eventBaseProposalKeys = new Map();
 
     return await this.runTurnLoop(onEvent, signal);
   }
@@ -381,6 +398,35 @@ export class AssistantSession {
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
   private pushAudit(entry: AuditEntry): void {
     this.audit.push({ ...entry, at: new Date().toISOString() });
+  }
+
+  private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
+    const spec = this.carryoverSpecForTurn;
+    if (spec === null || this.carryoverWarningAdded || !SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
+    if (!proposalHasChangedMap([proposal], spec.mapId)) return proposal;
+
+    this.carryoverWarningAdded = true;
+    const warning = proposalScopeCarryoverWarning(buildSpecPlanLabel(spec));
+    return { ...proposal, result: appendDiffWarning(proposal.result, warning) };
+  }
+
+  private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
+    const move = moveEventTarget(proposal);
+    if (move !== null) {
+      const baseKey = this.eventBaseProposalKeys.get(eventTargetKey(move));
+      const baseProposal = baseKey ? proposedByKey.get(baseKey) : undefined;
+      if (baseKey && baseProposal) {
+        proposedByKey.set(baseKey, withMovedEventBaseProposal(baseProposal, move));
+        return;
+      }
+      proposedByKey.set(`move_event:${eventTargetKey(move)}`, proposal);
+      return;
+    }
+
+    const key = proposalKey(proposal);
+    proposedByKey.set(key, proposal);
+    const eventTarget = eventBaseTarget(proposal);
+    if (eventTarget !== null) this.eventBaseProposalKeys.set(eventTargetKey(eventTarget), key);
   }
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
@@ -471,8 +517,7 @@ export class AssistantSession {
         // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
         if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
           if (hasAgentGhostPreviewSubscribers()) appendAgentGhostPreviewForToolCall(ghostProject, name, args);
-          const key = `${name}:${JSON.stringify(args)}`;
-          const proposal: ProposedCall = {
+          let proposal: ProposedCall = {
             name,
             args,
             summary: toolResult.summary,
@@ -482,7 +527,8 @@ export class AssistantSession {
           };
           const approvalWarning = approvalWarningFor(name, args);
           if (approvalWarning) proposal.approvalWarning = approvalWarning;
-          proposedByKey.set(key, proposal);
+          proposal = this.withCarryoverWarningIfNeeded(proposal);
+          this.upsertProposal(proposedByKey, proposal);
         }
 
         this.messages.push({
@@ -522,7 +568,7 @@ export class AssistantSession {
       if (spentOutputTokens >= this.config.maxTokens) {
         onEvent({
           type: "status",
-          text: `출력 토큰 예산(${this.config.maxTokens}) 소진 — 현재까지의 변경을 제안합니다. 설정 '최대 토큰'에서 예산을 높일 수 있습니다.`,
+          text: TOKEN_BUDGET_STATUS_TEXT,
         });
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건` });
         return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "token-budget" };
@@ -530,10 +576,110 @@ export class AssistantSession {
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
-    onEvent({ type: "status", text: `툴 호출 상한(${this.config.maxToolCalls}) 도달 — 현재까지의 변경을 제안합니다.` });
+    onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건` });
     return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "max-tool-calls" };
   }
+}
+
+interface EventTargetKey {
+  readonly mapId: string;
+  readonly eventId: string;
+}
+
+interface EventMoveTarget extends EventTargetKey {
+  readonly x: number;
+  readonly y: number;
+}
+
+function appendDiffWarning(result: ToolResult, warning: string): ToolResult {
+  const diff = result.diff;
+  if (!diff || diff.warnings.includes(warning)) return result;
+  return { ...result, diff: { ...diff, warnings: [...diff.warnings, warning] } };
+}
+
+function buildSpecPlanLabel(spec: BuildSpec): string {
+  const title = spec.title?.trim();
+  if (title) return title;
+  const assetLabels = spec.assets
+    .slice(0, 3)
+    .map((asset) => asset.id.trim() || asset.kind.trim())
+    .filter((label) => label.length > 0);
+  const suffix = spec.assets.length > assetLabels.length ? ` 외 ${spec.assets.length - assetLabels.length}개` : "";
+  return assetLabels.length > 0 ? `${assetLabels.join(", ")}${suffix}` : spec.mapId;
+}
+
+function proposalKey(proposal: ProposedCall): string {
+  return `${proposal.name}:${JSON.stringify(proposal.args)}`;
+}
+
+function moveEventTarget(proposal: ProposedCall): EventMoveTarget | null {
+  if (proposal.name !== "move_event") return null;
+  const mapId = stringValue(proposal.args.mapId);
+  const eventId = stringValue(proposal.args.eventId);
+  const x = numberValue(proposal.args.x);
+  const y = numberValue(proposal.args.y);
+  return mapId === null || eventId === null || x === null || y === null ? null : { mapId, eventId, x, y };
+}
+
+function eventBaseTarget(proposal: ProposedCall): EventTargetKey | null {
+  if (proposal.name === "place_npc" || proposal.name === "place_battle_blocker") {
+    const mapId = stringValue(proposal.args.mapId);
+    const data = isRecord(proposal.result.data) ? proposal.result.data : null;
+    const eventId = stringValue(data?.eventId) ?? stringValue(proposal.args.id);
+    return mapId === null || eventId === null ? null : { mapId, eventId };
+  }
+
+  if (proposal.name === "upsert_event") {
+    const mapId = stringValue(proposal.args.mapId);
+    const event = isRecord(proposal.args.event) ? proposal.args.event : null;
+    const eventId = stringValue(event?.id);
+    return mapId === null || eventId === null ? null : { mapId, eventId };
+  }
+
+  if (proposal.name === "duplicate_event") {
+    const mapId = stringValue(proposal.args.toMapId);
+    const data = isRecord(proposal.result.data) ? proposal.result.data : null;
+    const eventId = stringValue(data?.eventId) ?? stringValue(proposal.args.newId);
+    return mapId === null || eventId === null ? null : { mapId, eventId };
+  }
+
+  return null;
+}
+
+function withMovedEventBaseProposal(base: ProposedCall, move: EventMoveTarget): ProposedCall {
+  const args = structuredClone(base.args);
+
+  if (base.name === "place_npc" || base.name === "place_battle_blocker" || base.name === "duplicate_event") {
+    args.x = move.x;
+    args.y = move.y;
+  } else if (base.name === "upsert_event") {
+    const event = isRecord(args.event) ? args.event : null;
+    if (event !== null) args.event = { ...event, x: move.x, y: move.y };
+  } else {
+    return base;
+  }
+
+  return {
+    ...base,
+    args,
+    summary: summaryWithFinalEventPosition(base.summary, move),
+    result: { ...base.result, data: dataWithEventPosition(base.result.data, move) },
+  };
+}
+
+function summaryWithFinalEventPosition(summary: string, move: EventMoveTarget): string {
+  const coord = `(${move.x}, ${move.y})`;
+  const replaced = summary.replace(/배치 \(-?\d+,\s*-?\d+\)/, `배치 ${coord}`);
+  return replaced !== summary ? replaced : `${summary} — 최종 위치 ${coord}`;
+}
+
+function dataWithEventPosition(data: unknown, move: EventMoveTarget): unknown {
+  return isRecord(data) ? { ...data, x: move.x, y: move.y } : data;
+}
+
+function eventTargetKey(target: EventTargetKey): string {
+  return `${target.mapId}:${target.eventId}`;
 }
 
 function isSpecGatePass(result: ToolResult | SpecGatePass): result is SpecGatePass {
@@ -584,4 +730,12 @@ function parseToolCall(call: ToolCall): { name: string; args: Record<string, unk
     }
   }
   return { name, args };
+}
+
+function stringValue(value: unknown): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function numberValue(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }

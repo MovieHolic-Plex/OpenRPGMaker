@@ -6,6 +6,7 @@ import { affectedRegions, type AffectedRegion, type BuildSpec, type SpecAsset } 
 import type { ChangeSummary } from "@/editor/tools/types";
 
 export const PROPOSAL_COMPLETENESS_WARNING_PREFIX = "⚠ 미이행:";
+export const PROPOSAL_SCOPE_WARNING_PREFIX = "⚠ 범위:";
 
 const TEMPLATE_HOUSE_FOOTPRINT = { w: 18, h: 16 } as const;
 
@@ -43,7 +44,11 @@ export function proposalCompletenessWarningLines(
 }
 
 export function isProposalCompletenessWarning(warning: string): boolean {
-  return warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX);
+  return warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX) || warning.startsWith(PROPOSAL_SCOPE_WARNING_PREFIX);
+}
+
+export function proposalScopeCarryoverWarning(planLabel: string): string {
+  return `${PROPOSAL_SCOPE_WARNING_PREFIX} 이 제안에는 이전 계획(${planLabel})이 포함되어 있습니다.`;
 }
 
 export function proposalHasChangedMap(calls: readonly ProposalCompletenessCall[], mapId: string): boolean {
