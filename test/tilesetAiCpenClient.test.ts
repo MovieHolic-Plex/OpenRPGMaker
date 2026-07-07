@@ -10,7 +10,7 @@ describe("requestCpenTilesetMapping", () => {
     vi.unstubAllGlobals();
   });
 
-  it("Given an API key When requesting a tileset mapping Then it sends the Yunwu Gemini request", async () => {
+  it("Given an API key When requesting a tileset mapping Then it sends the default OpenRouter request", async () => {
     const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
       new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
     );

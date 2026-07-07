@@ -24,6 +24,7 @@ export function applyBattleRewardsToSession(
   // RM2K3 관례: 승리/도주 모두 전투에서 입은 피해와 MP 소모가 필드로 유지된다.
   if (outcome.result === "victory" || outcome.result === "escape") {
     applyBattleVitalsToSession(session, outcome.actors ?? []);
+    applyBattleStatesToSession(session, outcome.actors ?? []);
     applyBattleEventStateToSession(session, outcome.eventState);
   }
   if (outcome.result !== "victory") return [];
@@ -42,6 +43,13 @@ export function applyBattleRewardsToSession(
     changeItem(session, itemId, "+=", 1);
   }
   return levelUps;
+}
+
+function applyBattleStatesToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
+  session.actorStateIds ??= {};
+  for (const actor of actors) {
+    session.actorStateIds[actor.recordId] = [...actor.stateIds];
+  }
 }
 
 // 전투 이벤트 상태(아이템 소모, 전투 이벤트가 바꾼 스위치/변수)를 세션에 되돌려 쓴다.

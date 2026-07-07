@@ -16,6 +16,11 @@ describe("battle runtime — 상태이상 연결", () => {
     const fire = project.database.skills.find((skill) => skill.id === "skill_fire");
     if (!fire) throw new Error("missing skill_fire");
     fire.stateEffects = [{ stateId: "state_burn", chance: 100, operation: "add" }];
+    fire.mpCost = { flat: 0, percentMax: 0 };
+    const actor = project.database.actors.find((record) => record.id === "actor_hero");
+    if (actor) actor.learnedSkills = [{ level: 1, skillId: "skill_fire" }];
+    const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
+    if (enemy) enemy.stats = { ...enemy.stats, maxHp: 9999 };
 
     const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true });
     runtime.tick(1_000);

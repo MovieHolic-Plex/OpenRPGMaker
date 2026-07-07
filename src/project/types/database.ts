@@ -396,6 +396,15 @@ export interface StateRecord {
   mpReleaseStep?: number;
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
+  runtimeEffects?: StateRuntimeEffects;
+}
+
+export interface StateRuntimeEffects {
+  restrictsAction?: boolean;
+  hpDamagePercentPerTurn?: number;
+  attackMultiplier?: number;
+  defenseMultiplier?: number;
+  removeOnBattleEnd?: boolean;
 }
 
 export interface BattleAnimationRecord {

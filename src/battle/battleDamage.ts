@@ -40,6 +40,10 @@ export function applySkillLike(user: MutableBattler, target: MutableBattler, spe
     return { hit: false, amount: 0, critical: false };
   }
   const magnitude = computeMagnitude(spec.power, target, "damage", stat, spec);
+  if (magnitude.amount < 0) {
+    target.hp = Math.min(target.maxHp, target.hp + Math.abs(magnitude.amount));
+    return { hit: true, amount: magnitude.amount, critical: false };
+  }
   applyDamage(target, magnitude.amount);
   return { hit: true, amount: magnitude.amount, critical: magnitude.critical };
 }
@@ -56,7 +60,10 @@ function computeMagnitude(
     return { amount: applyVariance(magnitude, spec), critical: false };
   }
   // 속성 상성 배율(기본 1.0)
-  magnitude = Math.round(magnitude * (spec.elementMultiplier ?? 1));
+  const elementMultiplier = spec.elementMultiplier ?? 1;
+  magnitude = Math.round(magnitude * elementMultiplier);
+  if (elementMultiplier === 0) return { amount: 0, critical: false };
+  if (elementMultiplier < 0) return { amount: magnitude, critical: false };
   // 분산(±variance%)
   magnitude = applyVariance(magnitude, spec);
   // 크리티컬(확률×배율)
@@ -69,7 +76,7 @@ function computeMagnitude(
   const effectiveDefense = target.defense * (spec.targetDefenseMultiplier ?? 1);
   magnitude -= Math.floor(effectiveDefense / 2);
   if (target.defending) magnitude = Math.floor(magnitude / 2);
-  return { amount: Math.max(1, magnitude), critical };
+  return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };
 }
 
 function applyVariance(magnitude: number, spec: SkillLikeEffect): number {

@@ -13,6 +13,7 @@ import {
   applyStateEffects,
   attackMultiplierForStates,
   canBattlerAct,
+  clearBattleEndStates,
   defenseMultiplierForStates,
   recoverStatesWhenHit,
   runStateUpkeep,
@@ -60,6 +61,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     levels: options.party?.levels,
     vitals: options.party?.vitals,
     paramBonuses: options.party?.paramBonuses,
+    equipment: options.party?.equipment,
+    skillIds: options.party?.skillIds,
     stateIds: options.party?.stateIds,
     partyActorIds: options.party?.partyActorIds,
   });
@@ -140,6 +143,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           statistic: "attack",
           effect: "damage",
           criticalRate: criticalRateFor(actor),
+          hitRate: normalAttackHitRate(actor, target),
           attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
           targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
           rng,
@@ -150,6 +154,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       case "skill": {
         const skill = lookupSkill(command.skillId);
+        if (!canUseSkill(actor, command.skillId)) {
+          performFallbackAttack(actor, command.targetEnemyId);
+          break;
+        }
         consumeSkillMp(actor, command.skillId);
         if (skill?.scope === "allEnemies") {
           for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
@@ -287,16 +295,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, actor: MutableBattler): MutableBattler {
-    // 힐/서포트 스킬은 아군(자신)을, 공격 스킬은 지정 적을 대상으로 삼는다.
+  function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, user: MutableBattler): MutableBattler {
+    // 힐/서포트 스킬은 시전자 진영의 생존자를 대상으로 삼는다.
     const record = lookupSkill(skillOrItemId) ?? lookupItemSkill(skillOrItemId);
     const effect = record?.effect;
     const scope = record?.scope;
-    if (effect && (effect.kind === "healing" || effect.kind === "support")) return actor;
-    if (scope === "self" || scope === "ally") return actor;
+    if (effect && (effect.kind === "healing" || effect.kind === "support")) return supportTargetFor(user);
+    if (scope === "self" || scope === "ally") return supportTargetFor(user);
     return visibleEnemies().find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
       ?? visibleEnemies().find((entry) => entry.hp > 0)
-      ?? actor;
+      ?? user;
+  }
+
+  function supportTargetFor(user: MutableBattler): MutableBattler {
+    const side = actors.some((entry) => entry.id === user.id) ? actors : visibleEnemies();
+    return side
+      .filter((entry) => entry.hp > 0)
+      .sort((a, b) => (a.hp / Math.max(1, a.maxHp)) - (b.hp / Math.max(1, b.maxHp)))[0]
+      ?? user;
   }
 
   function snapshot(): BattleSnapshot {
@@ -338,18 +354,23 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = result ? "resolved" : "charging";
       return;
     }
-    const target = actors.find((actor) => actor.hp > 0);
-    if (!target) return;
-    const skillId = enemy.skillIds[0];
+    const action = chooseEnemyAction(enemy);
+    const skillId = action?.skillId;
     if (skillId) {
+      const target = resolveEnemySkillTarget(enemy, skillId);
+      if (!target) return;
       consumeSkillMp(enemy, skillId);
       applySkill(enemy, target, skillId);
+      applyEnemyActionSwitchEffects(action);
     } else {
+      const target = actors.find((actor) => actor.hp > 0);
+      if (!target) return;
       const result = applySkillLike(enemy, target, {
         power: enemy.attackPower,
         statistic: "attack",
         effect: "damage",
         criticalRate: criticalRateFor(enemy),
+        hitRate: normalAttackHitRate(enemy, target),
         attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
         targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
         rng,
@@ -377,6 +398,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return options.project.database.skills.find((record) => record.id === item.skillId);
   }
 
+  function performFallbackAttack(actor: MutableBattler, requestedEnemyId: string): void {
+    const target = visibleEnemies().find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
+      ?? visibleEnemies().find((entry) => entry.hp > 0);
+    if (!target) return;
+    const result = applySkillLike(actor, target, {
+      power: actor.attackPower,
+      statistic: "attack",
+      effect: "damage",
+      criticalRate: criticalRateFor(actor),
+      hitRate: normalAttackHitRate(actor, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
+    });
+    if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+  }
+
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
     const item = options.project.database.items.find((record) => record.id === itemId);
     if (!item?.skillId) return;
@@ -398,6 +437,58 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const pct = skill.mpCost.percentMax ?? 0;
     const cost = flat + Math.floor((user.maxMp * pct) / 100);
     if (cost > 0) user.mp = Math.max(0, user.mp - cost);
+  }
+
+  function skillMpCost(user: MutableBattler, skillId: SkillId): number {
+    const skill = lookupSkill(skillId);
+    if (!skill?.mpCost) return 0;
+    const flat = skill.mpCost.flat ?? 0;
+    const pct = skill.mpCost.percentMax ?? 0;
+    return Math.max(0, flat + Math.floor((user.maxMp * pct) / 100));
+  }
+
+  function canUseSkill(user: MutableBattler, skillId: SkillId): boolean {
+    if (!lookupSkill(skillId)) return false;
+    if (actors.some((actor) => actor.id === user.id) && !user.skillIds.includes(skillId)) return false;
+    return user.mp >= skillMpCost(user, skillId);
+  }
+
+  function chooseEnemyAction(enemy: MutableBattler): { readonly skillId: SkillId; readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string }; readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string } } | undefined {
+    const actionTurn = turn + 1;
+    const candidates = (enemy.enemyActions ?? [])
+      .filter((action) => enemyActionConditionMet(action.condition, actionTurn))
+      .filter((action) => canUseSkill(enemy, action.skillId));
+    if (candidates.length === 0) return undefined;
+    const total = candidates.reduce((sum, action) => sum + Math.max(1, action.priority), 0);
+    let roll = rng() * total;
+    for (const action of candidates) {
+      roll -= Math.max(1, action.priority);
+      if (roll < 0) return action;
+    }
+    return candidates[candidates.length - 1];
+  }
+
+  function enemyActionConditionMet(condition: { readonly kind: "always" } | { readonly kind: "turn"; readonly start: number; readonly interval: number }, actionTurn: number): boolean {
+    if (condition.kind === "always") return true;
+    if (actionTurn < condition.start) return false;
+    return (actionTurn - condition.start) % condition.interval === 0;
+  }
+
+  function applyEnemyActionSwitchEffects(action: { readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string }; readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string } }): void {
+    if (action.switchOnAfterAction.enabled && action.switchOnAfterAction.switchId) {
+      battleEventState.switches[action.switchOnAfterAction.switchId] = true;
+    }
+    if (action.switchOffAfterAction.enabled && action.switchOffAfterAction.switchId) {
+      battleEventState.switches[action.switchOffAfterAction.switchId] = false;
+    }
+  }
+
+  function resolveEnemySkillTarget(enemy: MutableBattler, skillId: SkillId): MutableBattler | undefined {
+    const skill = lookupSkill(skillId);
+    if (skill?.effect.kind === "healing" || skill?.effect.kind === "support" || skill?.scope === "self" || skill?.scope === "ally") {
+      return supportTargetFor(enemy);
+    }
+    return actors.find((actor) => actor.hp > 0);
   }
 
   function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId): void {
@@ -464,6 +555,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return 0;
   }
 
+  function normalAttackHitRate(user: MutableBattler, target: MutableBattler): number {
+    const enemy = options.project.database.enemies.find((entry) => entry.id === user.recordId);
+    let rate = enemy?.attackOptions.normalAttacksMiss ? 90 : 100;
+    for (const stateId of user.stateIds) {
+      const state = options.project.database.states.find((entry) => entry.id === stateId);
+      if (typeof state?.accuracyModifier === "number") rate *= state.accuracyModifier / 100;
+    }
+    rate -= Math.max(-20, Math.min(40, (target.agility - user.agility) * 0.5));
+    return Math.max(5, Math.min(100, Math.round(rate)));
+  }
+
   // 속성 상성 배율을 계산. skill.elementId 가 없거나 데이터가 없으면 1.0.
   // target 의 elementRates(등급 A~E) → DatabaseElementRecord.damageMultipliers(배율) 조회.
   function elementMultiplierFor(elementId: string | undefined, target: MutableBattler): number {
@@ -517,13 +619,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (visibleEnemies().every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
+      clearEndOfBattleStates();
       accumulateRewards();
       return;
     }
     if (actors.every((actor) => actor.hp <= 0)) {
       result = "defeat";
       phase = "resolved";
+      clearEndOfBattleStates();
     }
+  }
+
+  function clearEndOfBattleStates(): void {
+    for (const actor of actors) clearBattleEndStates(options.project, actor);
+    for (const enemy of enemies) clearBattleEndStates(options.project, enemy);
   }
 
   function accumulateRewards(): void {

@@ -42,6 +42,10 @@ function requireId(record: unknown, label: string): { id: string; name: string }
   return value as { id: string; name: string };
 }
 
+function knownIds(records: readonly { readonly id: string }[], limit = 8): string {
+  return records.slice(0, limit).map((record) => record.id).join(", ") || "(없음)";
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다(normalizeItemRecord 경유).",
@@ -90,6 +94,11 @@ const upsertTroop: ToolDefinition = {
     const record = normalizeTroopRecord(args.troop as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;
     if (memberCount === 0) throw new ToolError("트룹에는 최소 1마리의 적(enemyIds/members)이 필요합니다.", { code: "troop-empty" });
+    const enemyIds = new Set(draft.database.enemies.map((enemy) => enemy.id));
+    const missing = [...new Set(record.enemyIds.filter((enemyId) => !enemyIds.has(enemyId)))];
+    if (missing.length > 0) {
+      throw new ToolError(`존재하지 않는 enemyId: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.enemies)}`, { code: "enemy-not-found" });
+    }
     const outcome = upsertById(draft.database.troops, record);
     return { summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}`, data: { id: record.id } };
   },

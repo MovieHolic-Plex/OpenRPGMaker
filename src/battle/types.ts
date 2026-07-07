@@ -1,5 +1,6 @@
 import type {
   ActorId,
+  ActorInitialEquipment,
   ActorParameterKey,
   BattleAnimationId,
   BattleAnimationPosition,
@@ -70,6 +71,10 @@ export interface BattlePartyProgress {
   readonly vitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number }>>;
   // 세션 영구 파라미터 보정(Change Parameters). 전투 진입 능력치에 반영.
   readonly paramBonuses?: Readonly<Record<string, Partial<Record<ActorParameterKey, number>>>>;
+  // 세션 장비 상태. 없으면 DB initialEquipment 를 사용한다.
+  readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
+  // 이벤트/레벨업으로 세션에 직접 습득된 스킬.
+  readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
   // 세션 상태 이상(Change State). 전투 진입 시 초기 stateIds 로 반영.
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).

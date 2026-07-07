@@ -69,7 +69,7 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
-    // v3 설계(2026-07-07) 합의: 기본 세션 모델은 minimax-m3(저가 모델 전제). lite는 flash-lite 유지.
+    // v3 설계(2026-07-07) 합의: 기본 세션/보조 모델은 minimax-m3(저가 모델 전제).
     expect(DEFAULT_MODEL).toBe("minimax/minimax-m3");
     expect(DEFAULT_LITE_MODEL).toBe("minimax/minimax-m3");
   });

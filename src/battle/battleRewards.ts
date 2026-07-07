@@ -5,10 +5,11 @@ import type { Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
 export function collectBattleRewards(project: Project, enemies: readonly MutableBattler[], rng: Rng = () => 0.5): BattleRewardsSnapshot {
+  const rewardedEnemies = enemies.filter((enemy) => !enemy.hidden);
   return {
-    exp: enemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),
-    gold: enemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0),
-    items: enemies.flatMap((enemy) => {
+    exp: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),
+    gold: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0),
+    items: rewardedEnemies.flatMap((enemy) => {
       const reward = enemyReward(project, enemy);
       if (reward.dropItemId && reward.dropRatePercent > 0 && rng() * 100 < reward.dropRatePercent) {
         return [reward.dropItemId];
