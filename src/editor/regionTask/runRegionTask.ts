@@ -10,7 +10,7 @@ import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
-import { clipMapCellsToRegion, type RegionRect } from "./clipToRegion";
+import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 
 export interface RegionTaskSessionLike {
   sendUserMessage(text: string, onEvent?: (event: SessionEvent) => void): Promise<TurnResult>;
@@ -57,10 +57,6 @@ const defaultDeps: RegionTaskDeps = {
 export function buildRegionTaskMessage(instruction: string, mapName: string, mapId: MapId, region: RegionRect): string {
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
   return `${instruction.trim()}\n\n이 작업은 아래 선택 영역 안에서만 수행하라. 영역 밖의 타일은 절대 수정하지 마라.\n${footer}`;
-}
-
-function inRegion(x: number, y: number, region: RegionRect): boolean {
-  return x >= region.x && y >= region.y && x < region.x + region.width && y < region.y + region.height;
 }
 
 // 영역 안에서 base 대비 lower/upper가 바뀐 셀 수(적용 여부 판단·요약용).

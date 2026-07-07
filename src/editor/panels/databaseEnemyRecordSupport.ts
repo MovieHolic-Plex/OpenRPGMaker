@@ -3,6 +3,7 @@ import { ACTOR_RATE_GRADES } from "@/project/actorModel";
 import { store } from "@/project/store";
 import type { ActorRateGrade, EnemyActionCondition, EnemyActionPattern, EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { applyMagentaChromaKey } from "./chromaKey";
 
 export { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
 export { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
@@ -38,36 +39,6 @@ export function enemyGraphicVisual(record: EnemyRecord): HTMLElement {
     if (record.monsterResourceId && MAGENTA_CHROMA_KEY_RESOURCE_IDS.has(record.monsterResourceId)) applyMagentaChromaKey(image);
   }
   return el("div", { class: "db-enemy-graphic-stage", children: [image] });
-}
-
-function applyMagentaChromaKey(image: HTMLImageElement): void {
-  const apply = (): void => {
-    if (image.dataset.chromaKeyed === "true") return;
-    const width = image.naturalWidth;
-    const height = image.naturalHeight;
-    if (width <= 0 || height <= 0) return;
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d", { willReadFrequently: true });
-    if (!context) return;
-    context.drawImage(image, 0, 0);
-    const pixels = context.getImageData(0, 0, width, height);
-    for (let index = 0; index < pixels.data.length; index += 4) {
-      const red = pixels.data[index] ?? 0;
-      const green = pixels.data[index + 1] ?? 0;
-      const blue = pixels.data[index + 2] ?? 0;
-      if (red > 220 && green < 80 && blue > 180) pixels.data[index + 3] = 0;
-    }
-    context.putImageData(pixels, 0, 0);
-    image.dataset.chromaKeyed = "true";
-    image.src = canvas.toDataURL("image/png");
-  };
-  if (image.complete) {
-    apply();
-    return;
-  }
-  image.addEventListener("load", apply, { once: true });
 }
 
 export function rateField(label: string, testid: string, value: ActorRateGrade, onChange: (value: ActorRateGrade) => void): HTMLElement {

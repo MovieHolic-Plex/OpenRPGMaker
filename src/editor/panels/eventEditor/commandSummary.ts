@@ -66,170 +66,131 @@ export function commandSummary(cmd: Command): string {
 }
 
 export function commandSummaryParts(cmd: Command): readonly CommandSummaryToken[] {
-  switch (cmd.kind) {
-    case "text":
-      return commandLine("문장 표시", textPart(oneLine(cmd.body || "...")));
-    case "changeFace":
-      return commandLine(
-        "얼굴 그래픽 변경",
-        ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId, cmd.faceIndex)] : []),
-        valuePart(cmd.resourceId || "(선택 없음)"),
-        plainPart(" #"),
-        valuePart(String(cmd.faceIndex + 1)),
-        plainPart(" "),
-        valuePart(facePositionLabel(cmd.position)),
-        ...(cmd.flipHorizontally ? [plainPart(" / "), valuePart("좌우 반전")] : [])
-      );
-    case "displayTextSettings":
-      return commandLine(
-        "문장 표시 설정",
-        valuePart(messageWindowFormatLabel(cmd.format)),
-        plainPart(" / "),
-        valuePart(messageWindowPositionLabel(cmd.position)),
-        ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
-      );
-    case "choices":
-      return commandLine(
-        "선택지 표시",
-        valuePart(choiceSummary(cmd)),
-        ...(cmd.cancelBehavior ? [plainPart(" / 취소 "), valuePart(choiceCancelSummary(cmd.cancelBehavior))] : [])
-      );
-    case "fork":
-      return commandLine("조건 분기", valuePart(conditionSummary(cmd.condition)));
-    case "wait":
-      return commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초"));
-    case "inputWait":
-      return cmd.variableId
-        ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
-        : [commandPart("입력 대기")];
-    case "inputNumber":
-      return commandLine("숫자 입력", valuePart(recordName("variable", cmd.variableId)), plainPart(" / "), valuePart(String(cmd.digits)), plainPart("자리"));
-    case "label":
-      return commandLine("라벨", valuePart(cmd.name));
-    case "gotoLabel":
-      return commandLine("라벨로 점프", valuePart(cmd.name));
-    case "loop":
-      return commandLine("반복", valuePart(String(cmd.body.length)), plainPart("개 명령"));
-    case "breakLoop":
-      return [commandPart("반복 탈출")];
-    case "setSwitch":
-      return commandLine("스위치 조작", valuePart(recordName("switch", cmd.switchId)), plainPart(" "), onOffBadgePart(cmd.value));
-    case "setVariable":
-      return commandLine(
-        "변수 조작",
-        valuePart(recordName("variable", cmd.variableId)),
-        plainPart(" "),
-        opPart(cmd.op),
-        plainPart(" "),
-        valuePart(operandSummary(cmd.value))
-      );
-    case "timer":
-      return commandLine("타이머 조작", valuePart(cmd.action), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : []));
-    case "transfer":
-      if (cmd.direction && cmd.direction !== "retain") {
-        return commandLine(
-          "장소 이동",
-          ...mapThumbParts(cmd.mapId),
-          valuePart(mapName(cmd.mapId)),
-          plainPart(" ("),
-          valuePart(`${cmd.x},${cmd.y}`),
-          plainPart(") / "),
-          valuePart(transferDirectionSummary(cmd.direction))
-        );
-      }
-      return commandLine("장소 이동", ...mapThumbParts(cmd.mapId), valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
-    case "moveEvent":
-      return commandLine(
-        "이동 경로 설정",
-        ...moveRouteSpriteParts(cmd),
-        valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : (cmd.eventId || "이 이벤트")),
-        plainPart(" ("),
-        valuePart(String(cmd.route.moves.length)),
-        plainPart("개)")
-      );
-    case "changeTile":
-      return commandLine(
-        "타일 변경",
+  const handler = commandSummaryPartHandlers[cmd.kind] as CommandSummaryPartHandler<Command> | undefined;
+  return handler ? handler(cmd) : [commandPart("명령")];
+}
+
+type CommandSummaryPartHandler<T extends Command> = (cmd: T) => readonly CommandSummaryToken[];
+type CommandSummaryPartHandlers = {
+  readonly [K in Command["kind"]]?: CommandSummaryPartHandler<Extract<Command, { kind: K }>>;
+};
+
+const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
+  text: (cmd) => commandLine("문장 표시", textPart(oneLine(cmd.body || "..."))),
+  changeFace: (cmd) => commandLine(
+    "얼굴 그래픽 변경",
+    ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId, cmd.faceIndex)] : []),
+    valuePart(cmd.resourceId || "(선택 없음)"),
+    plainPart(" #"),
+    valuePart(String(cmd.faceIndex + 1)),
+    plainPart(" "),
+    valuePart(facePositionLabel(cmd.position)),
+    ...(cmd.flipHorizontally ? [plainPart(" / "), valuePart("좌우 반전")] : [])
+  ),
+  displayTextSettings: (cmd) => commandLine(
+    "문장 표시 설정",
+    valuePart(messageWindowFormatLabel(cmd.format)),
+    plainPart(" / "),
+    valuePart(messageWindowPositionLabel(cmd.position)),
+    ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
+  ),
+  choices: (cmd) => commandLine(
+    "선택지 표시",
+    valuePart(choiceSummary(cmd)),
+    ...(cmd.cancelBehavior ? [plainPart(" / 취소 "), valuePart(choiceCancelSummary(cmd.cancelBehavior))] : [])
+  ),
+  fork: (cmd) => commandLine("조건 분기", valuePart(conditionSummary(cmd.condition))),
+  wait: (cmd) => commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초")),
+  inputWait: (cmd) => cmd.variableId
+    ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
+    : [commandPart("입력 대기")],
+  inputNumber: (cmd) => commandLine("숫자 입력", valuePart(recordName("variable", cmd.variableId)), plainPart(" / "), valuePart(String(cmd.digits)), plainPart("자리")),
+  label: (cmd) => commandLine("라벨", valuePart(cmd.name)),
+  gotoLabel: (cmd) => commandLine("라벨로 점프", valuePart(cmd.name)),
+  loop: (cmd) => commandLine("반복", valuePart(String(cmd.body.length)), plainPart("개 명령")),
+  breakLoop: () => [commandPart("반복 탈출")],
+  setSwitch: (cmd) => commandLine("스위치 조작", valuePart(recordName("switch", cmd.switchId)), plainPart(" "), onOffBadgePart(cmd.value)),
+  setVariable: (cmd) => commandLine(
+    "변수 조작",
+    valuePart(recordName("variable", cmd.variableId)),
+    plainPart(" "),
+    opPart(cmd.op),
+    plainPart(" "),
+    valuePart(operandSummary(cmd.value))
+  ),
+  timer: (cmd) => commandLine("타이머 조작", valuePart(cmd.action), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : [])),
+  transfer: (cmd) => cmd.direction && cmd.direction !== "retain"
+    ? commandLine(
+        "장소 이동",
+        ...mapThumbParts(cmd.mapId),
         valuePart(mapName(cmd.mapId)),
-        plainPart(" "),
-        valuePart(tileLayerSummary(cmd.layer)),
         plainPart(" ("),
         valuePart(`${cmd.x},${cmd.y}`),
-        plainPart(") = "),
-        valuePart(String(cmd.tile))
-      );
-    case "callCommonEvent":
-      return commandLine("이벤트 호출", valuePart(commonEventName(cmd.commonEventId)));
-    case "callMapEvent":
-      return commandLine("맵 이벤트 호출", valuePart(cmd.eventId || "(이벤트 선택)"));
-    case "battleProcessing":
-      return commandLine("전투 처리", valuePart(cmd.canEscape ? "도망 가능" : "일반"), plainPart(", ["), valuePart(troopName(cmd.troopId)), plainPart("]"));
-    case "learnSkill":
-      return commandLine("특수기 변경", valuePart(actorName(cmd.actorId)), plainPart(" / "), valuePart(skillName(cmd.skillId)));
-    case "changeExp":
-      return commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
-    case "changeLevel":
-      return commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
-    case "changeEquipment":
-      return commandLine(
-        "장비 변경",
-        valuePart(actorName(cmd.actorId)),
-        plainPart(" / "),
-        valuePart(equipmentSlotLabel(cmd.slot)),
-        plainPart(" = "),
-        ...equipmentIconParts(cmd.equipmentId),
-        valuePart(equipmentName(cmd.equipmentId))
-      );
-    case "changeActorHp":
-      return commandLine("HP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
-    case "changeActorMp":
-      return commandLine("MP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
-    case "recoverAll":
-      return commandLine("모두 회복", valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체"));
-    case "enterHeroName":
-      return commandLine("이름 입력 처리", valuePart(actorName(cmd.actorId)), plainPart(" / 최대 "), valuePart(String(cmd.maxLength)), plainPart("자"));
-    case "changeGold":
-      return commandLine("소지금 변경", opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount)));
-    case "changeItem":
-      return commandLine(
-        "아이템 변경",
-        ...itemIconParts(cmd.itemId),
-        valuePart(itemName(cmd.itemId)),
-        plainPart(" "),
-        opPart(cmd.op),
-        plainPart(" "),
-        valuePart(String(cmd.amount))
-      );
-    case "changeParty":
-      return commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외"));
-    case "showPicture":
-      return commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")"));
-    case "erasePicture":
-      return commandLine("그림 삭제", valuePart(cmd.pictureId));
-    case "playAudio":
-      return commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)"));
-    case "stopAudio":
-      return commandLine("소리 정지", valuePart("설정 없음"));
-    case "shop":
-      return commandLine("상점 처리", valuePart(String(cmd.itemIds.length)), plainPart("개"));
-    case "inn":
-      return commandLine("여관 처리", valuePart(String(cmd.price)), plainPart("G"));
-    case "gameOver":
-      return [commandPart("게임 오버")];
-    case "ending":
-      return commandLine("엔딩", valuePart(cmd.title));
-    case "returnToTitle":
-      return [commandPart("타이틀 화면으로")];
-    case "setFlag":
-      return commandLine("플래그 설정", valuePart(cmd.flag), plainPart(" "), onOffBadgePart(cmd.value));
-    case "setSelfSwitch":
-      return commandLine("셀프 스위치 설정", valuePart(cmd.key), plainPart(" "), onOffBadgePart(cmd.value));
-    case "m2Command":
-      return m2CommandSummaryParts(cmd);
-    default:
-      return [commandPart("명령")];
-  }
-}
+        plainPart(") / "),
+        valuePart(transferDirectionSummary(cmd.direction))
+      )
+    : commandLine("장소 이동", ...mapThumbParts(cmd.mapId), valuePart(mapName(cmd.mapId)), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
+  moveEvent: (cmd) => commandLine(
+    "이동 경로 설정",
+    ...moveRouteSpriteParts(cmd),
+    valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : (cmd.eventId || "이 이벤트")),
+    plainPart(" ("),
+    valuePart(String(cmd.route.moves.length)),
+    plainPart("개)")
+  ),
+  changeTile: (cmd) => commandLine(
+    "타일 변경",
+    valuePart(mapName(cmd.mapId)),
+    plainPart(" "),
+    valuePart(tileLayerSummary(cmd.layer)),
+    plainPart(" ("),
+    valuePart(`${cmd.x},${cmd.y}`),
+    plainPart(") = "),
+    valuePart(String(cmd.tile))
+  ),
+  callCommonEvent: (cmd) => commandLine("이벤트 호출", valuePart(commonEventName(cmd.commonEventId))),
+  callMapEvent: (cmd) => commandLine("맵 이벤트 호출", valuePart(cmd.eventId || "(이벤트 선택)")),
+  battleProcessing: (cmd) => commandLine("전투 처리", valuePart(cmd.canEscape ? "도망 가능" : "일반"), plainPart(", ["), valuePart(troopName(cmd.troopId)), plainPart("]")),
+  learnSkill: (cmd) => commandLine("특수기 변경", valuePart(actorName(cmd.actorId)), plainPart(" / "), valuePart(skillName(cmd.skillId))),
+  changeExp: (cmd) => commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  changeLevel: (cmd) => commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  changeEquipment: (cmd) => commandLine(
+    "장비 변경",
+    valuePart(actorName(cmd.actorId)),
+    plainPart(" / "),
+    valuePart(equipmentSlotLabel(cmd.slot)),
+    plainPart(" = "),
+    ...equipmentIconParts(cmd.equipmentId),
+    valuePart(equipmentName(cmd.equipmentId))
+  ),
+  changeActorHp: (cmd) => commandLine("HP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  changeActorMp: (cmd) => commandLine("MP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  recoverAll: (cmd) => commandLine("모두 회복", valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체")),
+  enterHeroName: (cmd) => commandLine("이름 입력 처리", valuePart(actorName(cmd.actorId)), plainPart(" / 최대 "), valuePart(String(cmd.maxLength)), plainPart("자")),
+  changeGold: (cmd) => commandLine("소지금 변경", opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  changeItem: (cmd) => commandLine(
+    "아이템 변경",
+    ...itemIconParts(cmd.itemId),
+    valuePart(itemName(cmd.itemId)),
+    plainPart(" "),
+    opPart(cmd.op),
+    plainPart(" "),
+    valuePart(String(cmd.amount))
+  ),
+  changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
+  showPicture: (cmd) => commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
+  erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
+  playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
+  stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
+  shop: (cmd) => commandLine("상점 처리", valuePart(String(cmd.itemIds.length)), plainPart("개")),
+  inn: (cmd) => commandLine("여관 처리", valuePart(String(cmd.price)), plainPart("G")),
+  gameOver: () => [commandPart("게임 오버")],
+  ending: (cmd) => commandLine("엔딩", valuePart(cmd.title)),
+  returnToTitle: () => [commandPart("타이틀 화면으로")],
+  setFlag: (cmd) => commandLine("플래그 설정", valuePart(cmd.flag), plainPart(" "), onOffBadgePart(cmd.value)),
+  setSelfSwitch: (cmd) => commandLine("셀프 스위치 설정", valuePart(cmd.key), plainPart(" "), onOffBadgePart(cmd.value)),
+  m2Command: m2CommandSummaryParts,
+};
 
 function commandLine(label: string, ...parts: readonly CommandSummaryToken[]): readonly CommandSummaryToken[] {
   return [commandPart(label), plainPart(": "), ...parts];

@@ -31,52 +31,38 @@ export function renderCommandPreview(cmd: Command, context?: CommandPreviewConte
 }
 
 function renderVisual(cmd: Command, context?: CommandPreviewContext): HTMLElement {
-  switch (cmd.kind) {
-    case "text":
-      return messageWindowMock(cmd.speaker, cmd.body, false, context?.face);
-    case "changeFace":
-      return faceStage(cmd);
-    case "displayTextSettings":
-      return settingsMessageMock(cmd);
-    case "choices":
-      return choicesMock(cmd);
-    case "transfer":
-      return transferStage(cmd);
-    case "moveEvent":
-      return previewMoveRoute(cmd);
-    case "fork":
-      return previewForkFlow(cmd);
-    case "showPicture":
-      return previewPicture(cmd);
-    case "playAudio":
-    case "stopAudio":
-      return previewAudio(cmd);
-    case "changeItem":
-      return itemStage(cmd);
-    case "shop":
-      return shopStage(cmd);
-    case "changeParty":
-      return actorStage(cmd.actorId, cmd.action === "add" ? "파티에 추가" : "파티에서 제외");
-    case "changeGold":
-      return goldStage(cmd);
-    case "battleProcessing":
-      return battleStage(cmd);
-    case "setSwitch":
-      return lampStage(switchName(cmd.switchId), cmd.value);
-    case "setSelfSwitch":
-      return lampStage(`셀프 스위치 ${cmd.key}`, cmd.value);
-    case "setFlag":
-      return lampStage(cmd.flag || "플래그", cmd.value);
-    case "gameOver":
-      return screenMock("GAME OVER", "gameover");
-    case "returnToTitle":
-      return screenMock("타이틀 화면", "title");
-    case "ending":
-      return screenMock(cmd.title || "THE END", "ending");
-    default:
-      return summaryCard(cmd);
-  }
+  const handler = visualPreviewHandlers[cmd.kind] as VisualPreviewHandler<Command> | undefined;
+  return handler ? handler(cmd, context) : summaryCard(cmd);
 }
+
+type VisualPreviewHandler<T extends Command> = (cmd: T, context?: CommandPreviewContext) => HTMLElement;
+type VisualPreviewHandlers = {
+  readonly [K in Command["kind"]]?: VisualPreviewHandler<Extract<Command, { kind: K }>>;
+};
+
+const visualPreviewHandlers: VisualPreviewHandlers = {
+  text: (cmd, context) => messageWindowMock(cmd.speaker, cmd.body, false, context?.face),
+  changeFace: faceStage,
+  displayTextSettings: settingsMessageMock,
+  choices: choicesMock,
+  transfer: transferStage,
+  moveEvent: previewMoveRoute,
+  fork: previewForkFlow,
+  showPicture: previewPicture,
+  playAudio: previewAudio,
+  stopAudio: previewAudio,
+  changeItem: itemStage,
+  shop: shopStage,
+  changeParty: (cmd) => actorStage(cmd.actorId, cmd.action === "add" ? "파티에 추가" : "파티에서 제외"),
+  changeGold: goldStage,
+  battleProcessing: battleStage,
+  setSwitch: (cmd) => lampStage(switchName(cmd.switchId), cmd.value),
+  setSelfSwitch: (cmd) => lampStage(`셀프 스위치 ${cmd.key}`, cmd.value),
+  setFlag: (cmd) => lampStage(cmd.flag || "플래그", cmd.value),
+  gameOver: () => screenMock("GAME OVER", "gameover"),
+  returnToTitle: () => screenMock("타이틀 화면", "title"),
+  ending: (cmd) => screenMock(cmd.title || "THE END", "ending"),
+};
 
 function messageWindowMock(
   speaker: string | undefined,

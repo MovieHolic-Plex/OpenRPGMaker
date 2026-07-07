@@ -100,16 +100,26 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
   return wrap;
 }
 
-function renderSwitchCondition(
+export function renderSwitchCondition(
   cond: Extract<Condition, { kind: "switch" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: string, onChange: (id: string) => void) => HTMLElement;
+    readonly showValue?: boolean;
+    readonly forceTrueOnSwitchChange?: boolean;
+    readonly className?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentSwitchId = cond.switchId;
-  const sw = databasePicker("switch", cond.switchId, (switchId) => {
+  const sw = (options.picker ?? ((switchId, onPick) => databasePicker("switch", switchId, onPick)))(cond.switchId, (switchId) => {
     currentSwitchId = switchId;
-    onChange({ kind: "switch", switchId, value: cond.value });
+    onChange({ kind: "switch", switchId, value: options.forceTrueOnSwitchChange ? true : cond.value });
   });
+  if (options.showValue === false) {
+    row.append(sw);
+    return row;
+  }
   const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value));
   val.addEventListener("change", () => {
     onChange({ kind: "switch", switchId: currentSwitchId, value: val.value === "true" });
@@ -118,20 +128,27 @@ function renderSwitchCondition(
   return row;
 }
 
-function renderVariableCondition(
+export function renderVariableCondition(
   cond: Extract<Condition, { kind: "variable" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: string, onChange: (id: string) => void) => HTMLElement;
+    readonly className?: string;
+    readonly opTestId?: string;
+    readonly valueTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentVariableId = cond.variableId;
-  const variable = databasePicker("variable", cond.variableId, (variableId) => {
+  const variable = (options.picker ?? ((variableId, onPick) => databasePicker("variable", variableId, onPick)))(cond.variableId, (variableId) => {
     currentVariableId = variableId;
     onChange({ kind: "variable", variableId, op: cond.op, value: cond.value });
   });
-  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op);
+  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, options.opTestId);
   const value = el("input", {
     attrs: { type: "number" },
     value: String(cond.value),
+    dataset: options.valueTestId ? { testid: options.valueTestId } : undefined,
   }) as HTMLInputElement;
   const apply = () => {
     onChange({
@@ -147,13 +164,18 @@ function renderVariableCondition(
   return row;
 }
 
-function renderSelfSwitchCondition(
+export function renderSelfSwitchCondition(
   cond: Extract<Condition, { kind: "selfSwitch" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly keyTestId?: string;
+    readonly valueTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
-  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cond.key, "event-condition-self-switch-key");
-  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value), "event-condition-self-switch-value");
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cond.key, options.keyTestId ?? "event-condition-self-switch-key");
+  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value), options.valueTestId ?? "event-condition-self-switch-value");
   const apply = () => {
     onChange({ kind: "selfSwitch", key: key.value as "A" | "B" | "C" | "D", value: val.value === "true" });
   };
@@ -171,16 +193,26 @@ function itemPicker(currentId: ItemId, onChange: (id: ItemId) => void): HTMLElem
   return recordSelect(store.getCurrent().database.items, currentId, onChange, "event-condition-item");
 }
 
-function renderActorCondition(
+export function renderActorCondition(
   cond: Extract<Condition, { kind: "actor" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: ActorId, onChange: (id: ActorId) => void) => HTMLElement;
+    readonly showPresent?: boolean;
+    readonly forcePresentOnActorChange?: boolean;
+    readonly className?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentActorId = cond.actorId;
-  const sel = actorPicker(cond.actorId, (actorId) => {
+  const sel = (options.picker ?? actorPicker)(cond.actorId, (actorId) => {
     currentActorId = actorId;
-    onChange({ kind: "actor", actorId, present: cond.present });
+    onChange({ kind: "actor", actorId, present: options.forcePresentOnActorChange ? true : cond.present });
   });
+  if (options.showPresent === false) {
+    row.append(sel);
+    return row;
+  }
   const present = el("select", { dataset: { testid: "event-condition-actor-present" } }) as HTMLSelectElement;
   present.append(
     el("option", { text: "파티에 있음", attrs: { value: "true" } }),
@@ -194,16 +226,26 @@ function renderActorCondition(
   return row;
 }
 
-function renderItemCondition(
+export function renderItemCondition(
   cond: Extract<Condition, { kind: "item" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: ItemId, onChange: (id: ItemId) => void) => HTMLElement;
+    readonly showPresent?: boolean;
+    readonly forcePresentOnItemChange?: boolean;
+    readonly className?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentItemId = cond.itemId;
-  const sel = itemPicker(cond.itemId, (itemId) => {
+  const sel = (options.picker ?? itemPicker)(cond.itemId, (itemId) => {
     currentItemId = itemId;
-    onChange({ kind: "item", itemId, present: cond.present });
+    onChange({ kind: "item", itemId, present: options.forcePresentOnItemChange ? true : cond.present });
   });
+  if (options.showPresent === false) {
+    row.append(sel);
+    return row;
+  }
   const present = el("select", { dataset: { testid: "event-condition-item-present" } }) as HTMLSelectElement;
   present.append(
     el("option", { text: "소지함", attrs: { value: "true" } }),
@@ -217,16 +259,21 @@ function renderItemCondition(
   return row;
 }
 
-function renderGoldCondition(
+export function renderGoldCondition(
   cond: Extract<Condition, { kind: "gold" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly opTestId?: string;
+    readonly amountTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
-  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, "event-condition-gold-op");
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, options.opTestId ?? "event-condition-gold-op");
   const amount = el("input", {
     attrs: { type: "number", min: "0" },
     value: String(cond.amount),
-    dataset: { testid: "event-condition-gold-amount" },
+    dataset: { testid: options.amountTestId ?? "event-condition-gold-amount" },
   }) as HTMLInputElement;
   const apply = () => {
     onChange({
@@ -241,21 +288,52 @@ function renderGoldCondition(
   return row;
 }
 
-function renderTimerCondition(
+export function renderTimerCondition(
   cond: Extract<Condition, { kind: "timer" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly timerIdTestId?: string;
+    readonly secondsTestId?: string;
+    readonly minutesSeconds?: boolean;
+    readonly minutesTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
-  const timerId = el("select", { dataset: { testid: "event-condition-timer-id" } }) as HTMLSelectElement;
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const timerId = el("select", { dataset: { testid: options.timerIdTestId ?? "event-condition-timer-id" } }) as HTMLSelectElement;
   timerId.append(
     el("option", { text: "타이머 1", attrs: { value: "timer1" } }),
     el("option", { text: "타이머 2", attrs: { value: "timer2" } })
   );
   timerId.value = cond.timerId;
+  if (options.minutesSeconds) {
+    const minutes = el("input", {
+      attrs: { type: "number", min: "0" },
+      value: String(Math.floor(cond.seconds / 60)),
+      dataset: { testid: options.minutesTestId ?? "event-condition-timer-minutes" },
+    }) as HTMLInputElement;
+    const seconds = el("input", {
+      attrs: { type: "number", min: "0", max: "59" },
+      value: String(cond.seconds % 60),
+      dataset: { testid: options.secondsTestId ?? "event-condition-timer-seconds" },
+    }) as HTMLInputElement;
+    const apply = () => {
+      onChange({
+        kind: "timer",
+        timerId: timerId.value === "timer2" ? "timer2" : "timer1",
+        seconds: (parseInt(minutes.value, 10) || 0) * 60 + (parseInt(seconds.value, 10) || 0),
+      });
+    };
+    timerId.addEventListener("change", apply);
+    minutes.addEventListener("change", apply);
+    seconds.addEventListener("change", apply);
+    row.append(timerId, minutes, el("span", { text: "분" }), seconds, el("span", { text: "초 이하" }));
+    return row;
+  }
   const seconds = el("input", {
     attrs: { type: "number", min: "0" },
     value: String(cond.seconds),
-    dataset: { testid: "event-condition-timer-seconds" },
+    dataset: { testid: options.secondsTestId ?? "event-condition-timer-seconds" },
   }) as HTMLInputElement;
   const apply = () => {
     onChange({
