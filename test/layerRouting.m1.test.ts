@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { eraseTile, paintTile } from "@/editor/actions";
+import { eraseTile, eraseVisibleTile, paintTile } from "@/editor/actions";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -71,6 +71,45 @@ describe("레이어 독립성 — 한 레이어 편집이 다른 레이어를 �
     expect(upperAt(map, 3, 3)).toBe(TILE.FLOWERS);
     expect(lowerAt(map, 4, 4)).toBe(TILE.GRASS);
     expect(upperAt(map, 4, 4)).toBe(TILE.FLOWERS);
+  });
+});
+
+
+describe("eraseVisibleTile — 지우개 무반응 버그 회귀(2026-07-08)", () => {
+  // 팔레트 자동 레이어 전환으로 layer=upper가 된 상태에서 빈 상위만 지워
+  // 아무 일도 안 일어나던 버그: 선택 레이어가 비었으면 보이는 레이어를 지운다.
+  it("upper가 비어 있으면 lower의 보이는 타일을 지운다", () => {
+    const mapId = store.getCurrent().startMapId;
+    paintTile(mapId, "lower", 3, 3, TILE.WATER);
+
+    eraseVisibleTile(mapId, "upper", 3, 3);
+
+    const map = currentMap();
+    expect(lowerAt(map, 3, 3)).toBe(TILE.EMPTY);
+  });
+
+  it("upper에 내용이 있으면 upper만 지우고 lower는 보존한다", () => {
+    const mapId = store.getCurrent().startMapId;
+    paintTile(mapId, "lower", 4, 4, TILE.GRASS);
+    paintTile(mapId, "upper", 4, 4, TILE.FLOWERS);
+
+    eraseVisibleTile(mapId, "upper", 4, 4);
+
+    const map = currentMap();
+    expect(upperAt(map, 4, 4)).toBe(TILE.EMPTY);
+    expect(lowerAt(map, 4, 4)).toBe(TILE.GRASS);
+  });
+
+  it("lower 선호 + lower가 점유면 기존과 동일하게 lower를 지운다", () => {
+    const mapId = store.getCurrent().startMapId;
+    paintTile(mapId, "lower", 5, 5, TILE.WATER);
+    paintTile(mapId, "upper", 5, 5, TILE.FLOWERS);
+
+    eraseVisibleTile(mapId, "lower", 5, 5);
+
+    const map = currentMap();
+    expect(lowerAt(map, 5, 5)).toBe(TILE.EMPTY);
+    expect(upperAt(map, 5, 5)).toBe(TILE.FLOWERS);
   });
 });
 

@@ -84,7 +84,8 @@ export function runTool(
   const diff = summarizeChanges(before, draft);
   if (exec.warnings) diff.warnings.push(...exec.warnings);
 
-  const commit = commitChangeset(draft);
+  // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
+  const commit = commitChangeset(draft, before);
   if (!commit.ok) {
     return { ok: false, summary: `'${name}' 커밋 거부(무결성 오류)`, diff, issues: commit.issues };
   }

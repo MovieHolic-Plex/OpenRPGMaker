@@ -78,6 +78,44 @@ describe("hard cluster rule placement", () => {
     expect(painted.upperTiles[at(painted, 5, 0)]).toBe(TILE.EMPTY);
   });
 
+  // 2026-07-08 회귀: 동반 타일이 이웃 칸의 "기존" 상위 오브젝트를 조용히 덮어쓰던 버그.
+  it("동반 타일 위치의 상위 레이어에 다른 오브젝트가 있으면 배치를 거부한다", () => {
+    const { ctx, map } = context();
+    map.upperTiles[at(map, 5, 4)] = 263; // 침엽수 상단(260) 자리에 이미 다른 오브젝트
+
+    const result = runTool(ctx, "paint_tiles", {
+      cells: [{ x: 5, y: 5 }],
+      layer: "upper",
+      mapId: map.id,
+      mode: "cells",
+      tile: 290,
+    });
+
+    expectOk(result);
+    const painted = currentMap(ctx, map.id);
+    expect(result.summary).toContain("거부");
+    expect(painted.upperTiles[at(painted, 5, 4)]).toBe(263); // 기존 오브젝트 보존
+    expect(painted.upperTiles[at(painted, 5, 5)]).toBe(TILE.EMPTY);
+  });
+
+  it("동반 타일 위치에 같은 타일이 이미 있으면 재배치를 허용한다(멱등)", () => {
+    const { ctx, map } = context();
+    map.upperTiles[at(map, 5, 4)] = 260;
+
+    const result = runTool(ctx, "paint_tiles", {
+      cells: [{ x: 5, y: 5 }],
+      layer: "upper",
+      mapId: map.id,
+      mode: "cells",
+      tile: 290,
+    });
+
+    expectOk(result);
+    const painted = currentMap(ctx, map.id);
+    expect(painted.upperTiles[at(painted, 5, 4)]).toBe(260);
+    expect(painted.upperTiles[at(painted, 5, 5)]).toBe(290);
+  });
+
   it("paint_tiles가 활엽수 하단 좌측(292)에서 2x2 전체를 원자 배치한다", () => {
     const { ctx, map } = context();
 

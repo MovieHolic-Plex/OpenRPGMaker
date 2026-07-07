@@ -49,9 +49,10 @@ export function expandHardClusterPlacement(input: {
     return null;
   };
 
+  const originKey = coordKey(origin.x, origin.y);
   const firstError = add({ layer: originLayer, tile, x: origin.x, y: origin.y });
   if (firstError) return { autoTiles: 0, edits: [], ok: false, reason: firstError };
-  if (tile === TILE.EMPTY) return validatePlanned(map, planned, blocked, 0);
+  if (tile === TILE.EMPTY) return validatePlanned(map, planned, blocked, 0, originKey);
 
   let changed = true;
   while (changed) {
@@ -75,7 +76,7 @@ export function expandHardClusterPlacement(input: {
     }
   }
 
-  return validatePlanned(map, planned, blocked, Math.max(0, planned.size - 1));
+  return validatePlanned(map, planned, blocked, Math.max(0, planned.size - 1), originKey);
 }
 
 export function hardClusterRuleCount(group: TileGroupMetadata): number {
@@ -95,14 +96,28 @@ function validatePlanned(
   map: GameMap,
   planned: ReadonlyMap<string, PlannedTile>,
   blocked: ReadonlySet<string> | undefined,
-  autoTiles: number
+  autoTiles: number,
+  originKey: string
 ): HardClusterPlacementResult {
-  for (const entry of planned.values()) {
+  for (const [key, entry] of planned.entries()) {
     if (!inMapBounds(map, entry.x, entry.y)) {
       return { autoTiles, edits: [], ok: false, reason: `hard 규칙 동반 타일이 맵 경계를 벗어남: (${entry.x},${entry.y})` };
     }
     if (blocked?.has(coordKey(entry.x, entry.y))) {
       return { autoTiles, edits: [], ok: false, reason: `hard 규칙 동반 타일이 보호셀과 겹침: (${entry.x},${entry.y})` };
+    }
+    // 동반 타일이 이웃 칸의 기존 상위 레이어 오브젝트(나무 꼭대기/지붕 등)를 조용히
+    // 덮어쓰지 않는다 — 사용자가 직접 클릭한 원점만 덮어쓰기 허용, 같은 타일 재배치는 무해.
+    if (key !== originKey && entry.layer === "upper") {
+      const existing = map.upperTiles[entry.y * map.width + entry.x] ?? TILE.EMPTY;
+      if (existing !== TILE.EMPTY && existing !== entry.tile) {
+        return {
+          autoTiles,
+          edits: [],
+          ok: false,
+          reason: `동반 타일 위치 (${entry.x},${entry.y})의 상위 레이어에 다른 오브젝트가 있습니다`,
+        };
+      }
     }
   }
   return { autoTiles, edits: [...planned.values()], ok: true };

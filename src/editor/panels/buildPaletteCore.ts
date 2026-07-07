@@ -6,6 +6,8 @@ import {
   validateHousePlanSelection,
   type HousePreset,
   type HousePresetId,
+  type RoofMaterialId,
+  type RoofMaterialSet,
 } from "@/editor/panels/housePlan";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { buildEightNeighborVariantMap, derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
@@ -185,6 +187,32 @@ const ROOF_RIDGE_TILE = 374;
 const ROOF_BODY_TILE = 375;
 const ROOF_EAVE_TILE = 405;
 
+// 지붕 재질 세트 — 사용자 예시 맵(fable-village 연습02/08) 학습 결과.
+// 상세 문법: docs/knowledge/2026-07-08-roof-tile-semantics-learned.md
+const ROOF_MATERIAL_SETS: Record<RoofMaterialId, RoofMaterialSet> = {
+  "orange-classic": { id: "orange-classic", kind: "classic", ridge: ROOF_RIDGE_TILE, body: ROOF_BODY_TILE, eave: ROOF_EAVE_TILE },
+  "orange-bright": {
+    id: "orange-bright",
+    kind: "bright",
+    body: 404,
+    eave: 405,
+    upper: { ridgeLine: 374, ridgeCapLeft: 354, ridgeCapRight: 355, trimLeft: 376, trimRight: 377, trimCapLeft: 384, trimCapRight: 385 },
+  },
+  blue: {
+    id: "blue",
+    kind: "blue",
+    body: 406,
+    eave: 467,
+    leftEdge: 437,
+    rightEdge: 407,
+    upper: { cornerNW: 356, cornerNE: 357, cornerSW: 386, cornerSE: 387 },
+  },
+};
+
+function roofMaterialForPreset(preset: HousePreset): RoofMaterialSet {
+  return ROOF_MATERIAL_SETS[preset.roofMaterial];
+}
+
 // rect 안에 직선 지붕을 칠한다: 상단 1행 용마루 → 몸통 → 최하단 1행 처마. 1행이면 처마만.
 function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: number, rows: number): void {
   for (let dy = 0; dy < rows; dy++) {
@@ -204,7 +232,7 @@ function stampHouse(
 ): boolean {
   // 지붕은 벽/문 툴 커밋 후 직접 칠한다. runTool이 ctx.project를 draft로 교체하므로
   // 열 단위 페인트는 housePlan 내부에서 항상 최신 ctx.project를 참조한다.
-  return stampHousePlan(ctx, rect, preset, { ridge: ROOF_RIDGE_TILE, body: ROOF_BODY_TILE, eave: ROOF_EAVE_TILE }, run, runOptional) !== null;
+  return stampHousePlan(ctx, rect, preset, roofMaterialForPreset(preset), run, runOptional) !== null;
 }
 
 function stampVillage(
@@ -218,7 +246,7 @@ function stampVillage(
   const placements = planVillagePlacements(ctx.project, rect, preset, requested);
   const doors: { x: number; y: number }[] = [];
   for (const placement of placements) {
-    const stamped = stampHousePlan(ctx, placement, preset, { ridge: ROOF_RIDGE_TILE, body: ROOF_BODY_TILE, eave: ROOF_EAVE_TILE }, run, runOptional);
+    const stamped = stampHousePlan(ctx, placement, preset, roofMaterialForPreset(preset), run, runOptional);
     if (stamped) doors.push(stamped.door);
   }
   if (doors.length >= 2) {

@@ -16,7 +16,7 @@ import { toast } from "@/util/toast";
 import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
 import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
-export { eraseTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
+export { eraseTile, eraseVisibleTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
 import type { MapId, TilesetDef } from "@/project/types";
 
 // ── 맵 CRUD ──

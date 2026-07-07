@@ -38,6 +38,21 @@ describe("build palette deterministic stamps", () => {
     expect(result.toolResults.some((toolResult) => toolResult.issues?.some((issue) => issue.code === "start-position"))).toBe(true);
   });
 
+  // 2026-07-08 회귀: 선재 lint 오류(예: 시작 위치 통행 불가)가 있으면 무관한 편집까지
+  // 전부 커밋 거부되던 버그 — 새로 생긴 오류만 차단해야 한다.
+  it("선재 무결성 오류가 있어도 무관한 영역의 시공은 허용한다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.lowerTiles[project.startPos.y * map.width + project.startPos.x] = 120; // 물 — 통행 불가
+    const preexisting = projectLint(project).filter((issue) => issue.code === "start-position");
+    expect(preexisting.length, "선재 오류가 심어져야 함").toBeGreaterThan(0);
+
+    const result = applyBuildPalettePrimitiveToProject(project, selection(), "house");
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("완료");
+  });
+
   it("집 프리미티브는 LLM 없이 벽, 문, 지붕을 한 번에 시공한다", () => {
     const chat = vi.spyOn(llmClient, "chatCompletion");
     const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection(), "house");
@@ -96,6 +111,54 @@ describe("build palette deterministic stamps", () => {
     expect(map.lowerTiles[at(2, 3)]).toBe(375);
     expect(map.lowerTiles[at(2, 4)]).toBe(405);
     for (let y = 5; y <= 8; y += 1) expect(map.lowerTiles[at(2, y)], `wall y=${y}`).not.toBe(0);
+  });
+
+  // 2026-07-08 학습 반영(연습02): 파랑 지붕 — 몸통 406, 좌/우 가장자리 437/407, 처마 467,
+  // 대각 모서리는 상위 레이어 356/357/386/387.
+  it("파랑1층 프리셋은 파랑 세트 하위 타일과 상위 대각 모서리로 지붕을 시공한다", () => {
+    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection(), "house", {
+      housePresetId: "blue-cottage-1f",
+    });
+    expect(result.ok, result.summary).toBe(true);
+
+    const map = result.project.maps[MAP_ID];
+    const at = (x: number, y: number) => y * map.width + x;
+    // 선택 (4,4) 6×5, 벽 2행 → 지붕 rows 4~6 (처마 6행).
+    expect(map.upperTiles[at(4, 4)]).toBe(356); // NW 대각(상위), 하위는 비워 둔다
+    expect(map.upperTiles[at(9, 4)]).toBe(357); // NE
+    expect(map.lowerTiles[at(5, 4)]).toBe(406); // 최상행 몸통
+    expect(map.lowerTiles[at(4, 5)]).toBe(437); // 좌측 가장자리
+    expect(map.lowerTiles[at(9, 5)]).toBe(407); // 우측 가장자리
+    expect(map.lowerTiles[at(6, 5)]).toBe(406); // 몸통
+    for (let x = 4; x <= 9; x++) expect(map.lowerTiles[at(x, 6)], `eave(${x},6)`).toBe(467);
+    expect(map.upperTiles[at(4, 6)]).toBe(386); // SW
+    expect(map.upperTiles[at(9, 6)]).toBe(387); // SE
+  });
+
+  // 2026-07-08 학습 반영(연습08): 밝은 오렌지 — 용마루(374)는 지붕 위 한 줄 상위 레이어,
+  // 수직 트림 376/377은 지붕 좌우 바깥 열 상위 레이어.
+  it("밝은ㄱ자 프리셋은 용마루·트림을 상위 레이어에 얹는다", () => {
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 3, y: 3, width: 6, height: 6 }),
+      "house",
+      { housePresetId: "bright-l-1f" }
+    );
+    expect(result.ok, result.summary).toBe(true);
+
+    const map = result.project.maps[MAP_ID];
+    const at = (x: number, y: number) => y * map.width + x;
+    // 지붕 최상단은 y=3 → 용마루 라인은 y=2 상위 레이어, 좌우 캡은 지붕 바깥.
+    expect(map.upperTiles[at(6, 2)]).toBe(374);
+    expect(map.upperTiles[at(8, 2)]).toBe(374);
+    expect(map.upperTiles[at(2, 2)]).toBe(354); // 좌측 용마루 캡
+    expect(map.upperTiles[at(9, 2)]).toBe(355); // 우측 용마루 캡
+    // 우측 날개(x=6..8, 지붕 y=3..6) 바깥 열 수직 트림 + 하단 캡.
+    expect(map.upperTiles[at(9, 3)]).toBe(377);
+    expect(map.upperTiles[at(9, 6)]).toBe(385);
+    // 하위 몸통은 404, 각 열의 최하 지붕행은 처마 405.
+    expect(map.lowerTiles[at(7, 4)]).toBe(404);
+    expect(map.lowerTiles[at(7, 6)]).toBe(405);
   });
 
   it("마을 프리미티브는 집을 2채 이상 배치한 뒤 문 앞 좌표 사이에 길을 연결하고 시작 위치를 막지 않는다", () => {

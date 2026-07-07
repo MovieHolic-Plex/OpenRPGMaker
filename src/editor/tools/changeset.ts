@@ -167,8 +167,20 @@ export interface CommitResult {
 // 커밋 게이트: draft에 projectLint를 돌려 차단 error가 있으면 반영 거부.
 // cluster-rule hard 위반은 배치 시점 강제 + lint 보고 대상이므로 커밋 차단에서는 제외한다.
 // warning/info와 비차단 error는 통과시키되 issues로 함께 반환한다(모델/사람이 참고).
-export function commitChangeset(draft: Project): CommitResult {
+export function commitChangeset(draft: Project, baseline?: Project): CommitResult {
   const issues = projectLint(draft);
-  const hasError = issues.some((issue) => issue.severity === "error" && !issue.code.startsWith("cluster-rule:"));
-  return { ok: !hasError, issues };
+  const isBlocking = (issue: LintIssue): boolean => issue.severity === "error" && !issue.code.startsWith("cluster-rule:");
+  let blocking = issues.filter(isBlocking);
+  if (baseline && blocking.length > 0) {
+    // 이 변경이 만들지 않은 "기존" 오류는 커밋을 막지 않는다 — 시작 위치 통행 불가 같은
+    // 선재 오류가 있는 프로젝트에서 무관한 편집(건축 팔레트/AI 툴)까지 전부 거부되던 버그의 수정.
+    // 새로 생긴 오류만 차단해 추가 손상은 여전히 막는다.
+    const baselineKeys = new Set(projectLint(baseline).filter(isBlocking).map(issueKey));
+    blocking = blocking.filter((issue) => !baselineKeys.has(issueKey(issue)));
+  }
+  return { ok: blocking.length === 0, issues };
+}
+
+function issueKey(issue: LintIssue): string {
+  return `${issue.code}|${issue.mapId ?? ""}|${issue.x ?? ""}|${issue.y ?? ""}|${issue.message}`;
 }

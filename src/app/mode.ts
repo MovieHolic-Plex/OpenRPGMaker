@@ -29,6 +29,7 @@ let game: Phaser.Game | null = null;
 let elements: AppElements | null = null;
 let modeMounted = false;
 let modeRun = 0;
+let topbarRefreshQueued = false;
 
 // 현재 모드 조회.
 export function getMode(): Mode {
@@ -48,6 +49,20 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   // Node 환경(테스트)에서는 window가 없으므로 가드 — 브라우저 전용 리스너.
   if (typeof window !== "undefined") {
     window.addEventListener(MAP_EDIT_HISTORY_EVENT, onMapEditHistoryChange);
+  }
+  // 탑바(레이어/도구 버튼 등)는 editorState를 표시하지만 명시적 핸들러에서만 다시 그려져
+  // 팔레트발 자동 레이어 전환 시 상태바와 어긋났다(지우개 버그의 절반). 상태 변경마다
+  // 마이크로태스크로 합쳐 갱신한다.
+  // 테스트에서 editorState가 부분 목킹될 수 있으므로 함수 존재를 가드.
+  if (typeof editorState.subscribe === "function") {
+    editorState.subscribe(() => {
+      if (topbarRefreshQueued) return;
+      topbarRefreshQueued = true;
+      queueMicrotask(() => {
+        topbarRefreshQueued = false;
+        void renderTopbar();
+      });
+    });
   }
 
   try {

@@ -17,6 +17,7 @@ import type { TilesetDef } from "@/project/types";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { compatibleStampIdForTile } from "@/editor/tileStampBrushes";
+import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 const PALETTE_VIEW_STORAGE_KEY = "rpg-zzu:palette-view";
@@ -387,6 +388,11 @@ export function selectPaletteTile(index: number): void {
       selectedTile: index,
       ...(switchToPaint ? { tool: "paint" as const } : {}),
     });
+    // 자동 레이어 전환은 사용자에게 보여야 한다 — 몰래 바뀌면 지우개/페인트가
+    // "빈 레이어"를 대상으로 삼아 무반응처럼 느껴진다(지우개 버그 보고의 원인).
+    if (nextLayer !== state.layer) {
+      toast(nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환", "ok");
+    }
   });
 }
 

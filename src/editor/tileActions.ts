@@ -14,13 +14,15 @@ type RoadPoint = { readonly x: number; readonly y: number };
 export type TileLayer = "lower" | "upper";
 export type TilePaintOptions = {
   readonly autoConnect?: boolean;
+  /** false면 hard 클러스터 동반 타일 확장을 건너뛴다 — 스탬프처럼 "고른 그대로" 찍는 도구용. */
+  readonly clusterExpand?: boolean;
 };
 type LowerTileEdit = {
   readonly layer: TileLayer;
   readonly points: readonly RoadPoint[];
   readonly previousTile: number | undefined;
   readonly nextTile: number;
-} & Required<TilePaintOptions>;
+} & Required<Pick<TilePaintOptions, "autoConnect">>;
 type PlannedTileEdit = HardClusterTileEdit;
 type TilePaintPlan =
   | { readonly edits: readonly PlannedTileEdit[]; readonly ok: true }
@@ -31,7 +33,11 @@ export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, 
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
   const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
-  const plan = currentMap ? planManualClusterPaint(current, currentMap, tileset, targetLayer, x, y, tile) : { ok: true as const, edits: [] };
+  const plan = !currentMap
+    ? { ok: true as const, edits: [] }
+    : options.clusterExpand === false
+      ? { ok: true as const, edits: inMap(currentMap, x, y) ? [{ layer: targetLayer, tile, x, y }] : [] }
+      : planManualClusterPaint(current, currentMap, tileset, targetLayer, x, y, tile);
   if (!plan.ok) {
     showClusterRejectionToast(plan.reason);
     return;
@@ -76,6 +82,20 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
     ts.passability[tileIdx] = next;
     markUserTileRuntimeMetadata(ts, tileIdx, { passage: allOpen ? "solid" : "passable" });
   });
+}
+
+// 지우개 도구용: 선택 레이어가 비어 있으면 실제로 점유된(보이는) 레이어를 지운다.
+// 팔레트의 자동 레이어 전환(장식 타일 클릭 → 상위) 직후 빈 상위 레이어만 지워져
+// "지우개가 안 먹는" 무반응 버그의 수정 — 의도한 레이어에 내용이 있으면 그 레이어를 지운다.
+export function eraseVisibleTile(mapId: MapId, preferredLayer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {
+  const map = store.getCurrent().maps[mapId];
+  if (!map || !inMap(map, x, y)) return;
+  const index = y * map.width + x;
+  const occupied = (layer: TileLayer): boolean =>
+    ((layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index]) ?? TILE.EMPTY) !== TILE.EMPTY;
+  const fallback: TileLayer = preferredLayer === "upper" ? "lower" : "upper";
+  const layer = occupied(preferredLayer) ? preferredLayer : occupied(fallback) ? fallback : preferredLayer;
+  eraseTile(mapId, layer, x, y, options);
 }
 
 export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {

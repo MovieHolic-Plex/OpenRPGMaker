@@ -963,8 +963,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     const fusionApplied = fusionOutcomes.filter((entry) => entry.result.ok);
 
-    // 커밋 게이트: 합쳐진 최종 draft를 다시 lint. error가 있으면 반영 거부.
-    const commit = commitChangeset(proposed);
+    // 커밋 게이트: 합쳐진 최종 draft를 다시 lint. 이 제안이 "새로 만든" error만 반영을 거부한다
+    // (선재 오류가 있는 프로젝트에서 무관한 편집까지 막지 않도록 현재 프로젝트를 baseline으로).
+    const commit = commitChangeset(proposed, store.getCurrent());
     if (!commit.ok) {
       setStatus("적용 실패");
       const issue = commit.issues.find((entry) => entry.severity === "error");
@@ -1024,7 +1025,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const session = controller.session;
     if (!session) return;
     const proposed = session.getProposedProject();
-    const commit = commitChangeset(proposed);
+    const commit = commitChangeset(proposed, store.getCurrent());
     if (!commit.ok) {
       setStatus("저장 실패");
       const issue = commit.issues.find((entry) => entry.severity === "error");
