@@ -20,6 +20,8 @@ function changeSummary(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
     tilesetsChanged: 0,
     switchesAdded: 0,
     variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
@@ -108,6 +110,7 @@ describe("proposal completeness lint", () => {
       requestText: "24×18 맵 만들어줘",
       calls: [
         call("create_map", { id: "m2", name: "새 맵", width: 24, height: 18 }, { mapsAdded: 1 }),
+        call("upsert_world_entities", { entities: [{ type: "place", name: "새 맵", summary: "새로 만든 장소" }] }, { worldEntitiesAdded: 1 }),
       ],
     });
 

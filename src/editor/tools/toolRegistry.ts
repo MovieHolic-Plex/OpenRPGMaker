@@ -21,6 +21,7 @@ import { TERRAIN_TEMPLATE_TOOLS } from "./terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import type { JsonSchema, ToolDefinition } from "./types";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
+import { WORLD_TOOLS } from "./worldTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -30,6 +31,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   ...MAP_GEN_TOOLS,
   ...EVENT_TOOLS,
   ...DB_TOOLS,
+  ...WORLD_TOOLS,
   ...QUEST_TOOLS,
   ...BATTLE_TOOLS,
   ...REFACTOR_TOOLS,

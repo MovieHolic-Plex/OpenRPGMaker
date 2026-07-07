@@ -21,6 +21,7 @@ import { TERRAIN_TEMPLATE_TOOLS } from "@/editor/tools/terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "@/editor/tools/tileMetadataTools";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { VISION_QUERY_TOOLS } from "@/editor/tools/visionQueryTools";
+import { WORLD_TOOLS } from "@/editor/tools/worldTools";
 import { el } from "@/util/dom";
 
 interface ToolCategory {
@@ -39,6 +40,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   ...PLACEMENT_CATEGORIES,
   { label: "이벤트/NPC", tools: EVENT_TOOLS },
   { label: "데이터베이스", tools: DB_TOOLS },
+  { label: "세계관", tools: WORLD_TOOLS },
   { label: "퀘스트", tools: QUEST_TOOLS },
   { label: "전투", tools: BATTLE_TOOLS },
   { label: "리팩토링", tools: REFACTOR_TOOLS },

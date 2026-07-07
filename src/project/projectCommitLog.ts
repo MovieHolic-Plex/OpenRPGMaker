@@ -67,6 +67,8 @@ export function summaryForDiff(diff: ChangeSummary): string {
     diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}` : null,
     diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}` : null,
     diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}` : null,
+    diff.worldEntitiesAdded > 0 ? `세계관 추가 ${diff.worldEntitiesAdded}` : null,
+    diff.worldEntitiesModified > 0 ? `세계관 수정 ${diff.worldEntitiesModified}` : null,
     diff.sessionChanged ? "세션" : null,
     diff.systemChanged ? "시스템" : null,
   ].filter((part): part is string => part !== null);
@@ -86,6 +88,8 @@ export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): Cha
     combined.tilesetsChanged += diff.tilesetsChanged;
     combined.switchesAdded += diff.switchesAdded;
     combined.variablesAdded += diff.variablesAdded;
+    combined.worldEntitiesAdded += diff.worldEntitiesAdded;
+    combined.worldEntitiesModified += diff.worldEntitiesModified;
     combined.sessionChanged = combined.sessionChanged || diff.sessionChanged;
     combined.systemChanged = combined.systemChanged || diff.systemChanged;
     combined.warnings.push(...diff.warnings);
@@ -111,6 +115,8 @@ function emptyDiffSummary(): ChangeSummary {
     tilesetsChanged: 0,
     switchesAdded: 0,
     variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],

@@ -26,8 +26,10 @@ export interface ProposalCompletenessInput {
 }
 
 export function proposalCompletenessWarnings(input: ProposalCompletenessInput): string[] {
-  if (input.buildSpec) return buildSpecCompletenessWarnings(input.buildSpec, input.calls);
-  return heuristicCompletenessWarnings(input.requestText ?? "", input.calls);
+  const base = input.buildSpec
+    ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
+    : heuristicCompletenessWarnings(input.requestText ?? "", input.calls);
+  return dedupe([...base, ...worldCompletenessWarnings(input.calls)]);
 }
 
 export function proposalCompletenessWarningLines(
@@ -75,6 +77,48 @@ function heuristicCompletenessWarnings(requestText: string, calls: readonly Prop
   const actualCount = actualPlacementCount(changedCalls);
   if (!isClearlyShort(requestedCount, actualCount)) return [];
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 요청 수량 ${requestedCount}개 대비 실제 배치 ${actualCount}개입니다.`];
+}
+
+function worldCompletenessWarnings(calls: readonly ProposalCompletenessCall[]): string[] {
+  const changedCalls = calls.filter((call) => call.result.ok && hasMeaningfulDiff(call.result.diff));
+  if (changedCalls.length === 0) return [];
+  if (changedCalls.some((call) => call.name === "upsert_world_entities" || call.name === "link_world_ref")) return [];
+  const missingKinds = [
+    changedCalls.some(isNpcWorldRelevantCall) ? "NPC" : null,
+    changedCalls.some(isMapWorldRelevantCall) ? "맵" : null,
+    changedCalls.some(isItemWorldRelevantCall) ? "아이템" : null,
+  ].filter((kind): kind is string => kind !== null);
+  if (missingKinds.length === 0) return [];
+  return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 세계관 미기재 — ${missingKinds.join("/")} 생성·수정 제안에 세계관 업데이트가 없습니다.`];
+}
+
+function isNpcWorldRelevantCall(call: ProposalCompletenessCall): boolean {
+  if (call.name === "place_npc") return (call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) > 0;
+  if (call.name !== "upsert_event") return false;
+  if ((call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) <= 0) return false;
+  const event = isRecord(call.args.event) ? call.args.event : null;
+  return event !== null && eventHasNamedNpcPage(event);
+}
+
+function isMapWorldRelevantCall(call: ProposalCompletenessCall): boolean {
+  return (call.name === "create_map" || call.name === "generate_map") && (call.result.diff?.mapsAdded ?? 0) > 0;
+}
+
+function isItemWorldRelevantCall(call: ProposalCompletenessCall): boolean {
+  if (call.name !== "upsert_item" || (call.result.diff?.dbRecordsChanged ?? 0) <= 0) return false;
+  const item = isRecord(call.args.item) ? call.args.item : null;
+  return typeof item?.name === "string" && item.name.trim().length > 0;
+}
+
+function eventHasNamedNpcPage(event: Record<string, unknown>): boolean {
+  const pages = Array.isArray(event.pages) ? event.pages : [];
+  return pages.some((page) => {
+    if (!isRecord(page)) return false;
+    const name = typeof page.name === "string" ? page.name.trim() : "";
+    if (!name || /^(페이지|page)\s*\d+$/iu.test(name)) return false;
+    const graphic = isRecord(page.graphic) ? page.graphic : null;
+    return graphic !== null && graphic.transparent !== true && isRecord(graphic.sprite);
+  });
 }
 
 function formatMissingSpecAssets(missing: readonly SpecAsset[]): string {
@@ -201,6 +245,8 @@ function hasMeaningfulDiff(diff: ChangeSummary | undefined): boolean {
     diff.tilesetsChanged > 0 ||
     diff.switchesAdded > 0 ||
     diff.variablesAdded > 0 ||
+    diff.worldEntitiesAdded > 0 ||
+    diff.worldEntitiesModified > 0 ||
     diff.sessionChanged ||
     diff.systemChanged
   );

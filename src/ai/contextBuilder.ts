@@ -7,6 +7,7 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import type { Project, TileGroupMetadata } from "@/project/types";
+import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 
 export interface ContextOptions {
   // 현재 에디터에서 열려 있는 맵(있으면 주변 영역을 요약에 포함).
@@ -111,9 +112,29 @@ function mapRegionSection(project: Project, mapId: string | undefined): string {
   ].join("\n");
 }
 
-function styleSection(project: Project, remaining: number): string {
+function worldDigestSection(project: Project): string {
+  const world = normalizeProjectWorld(project);
+  if (world.entities.length === 0) return "";
+  const digest = buildWorldDigest(world, { maxTokens: 700 });
+  if (digest === "세계관 없음") return "";
+  return [
+    "## 세계관 다이제스트",
+    "새 NPC/맵/명명 아이템을 만들거나 바꾸면 upsert_world_entities와 link_world_ref로 세계관도 같은 제안에 갱신하세요.",
+    digest,
+  ].join("\n");
+}
+
+function styleSection(project: Project, remaining: number, hasWorldDigest: boolean): string {
   const docs = project.villageInfoDocuments ?? [];
   if (docs.length === 0) return "";
+  if (hasWorldDigest) {
+    return [
+      "## 게임 스타일 문서(원문 보존)",
+      "세계관 다이제스트가 우선입니다. 기존 마을 정보 문서는 롤백을 위해 프로젝트에 보존됩니다.",
+      ...docs.slice(0, 12).map((doc) => `- ${doc.title} (${doc.mapId})`),
+      docs.length > 12 ? `- …외 ${docs.length - 12}개` : "",
+    ].filter((line) => line.length > 0).join("\n");
+  }
   const lines: string[] = ["## 게임 스타일 문서(발췌)"];
   for (const doc of docs) {
     const excerpt = doc.markdown.slice(0, 400);
@@ -263,6 +284,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   if (templateSection) sections.push(templateSection);
   const clusterRulePreferences = clusterRulePreferenceSection(project, options.currentMapId);
   if (clusterRulePreferences) sections.push(clusterRulePreferences);
+  const worldDigest = worldDigestSection(project);
+  if (worldDigest) sections.push(worldDigest);
 
   const mapSection = mapRegionSection(project, options.currentMapId);
   if (mapSection) sections.push(mapSection);
@@ -270,7 +293,7 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   let assembled = sections.join("\n\n");
   const remaining = budget - assembled.length;
   if (remaining > 200) {
-    const style = styleSection(project, remaining - 100);
+    const style = styleSection(project, remaining - 100, worldDigest.length > 0);
     if (style) assembled += `\n\n${style}`;
   }
 

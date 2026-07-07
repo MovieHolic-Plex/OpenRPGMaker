@@ -23,6 +23,8 @@ function emptySummary(): ChangeSummary {
     tilesetsChanged: 0,
     switchesAdded: 0,
     variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
@@ -100,6 +102,18 @@ function countNamedDefChanges(
   return changed;
 }
 
+function diffWorld(before: Project, after: Project, summary: ChangeSummary): void {
+  const beforeEntities = before.world?.entities ?? [];
+  const afterEntities = after.world?.entities ?? [];
+  const beforeById = new Map(beforeEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
+  const afterById = new Map(afterEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
+  for (const [id, json] of afterById) {
+    const prev = beforeById.get(id);
+    if (prev === undefined) summary.worldEntitiesAdded += 1;
+    else if (prev !== json) summary.worldEntitiesModified += 1;
+  }
+}
+
 // before → after 변경을 구조화 요약으로 계산한다.
 export function summarizeChanges(before: Project, after: Project): ChangeSummary {
   const summary = emptySummary();
@@ -122,6 +136,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   }
   summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
+  diffWorld(before, after, summary);
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
   return summary;

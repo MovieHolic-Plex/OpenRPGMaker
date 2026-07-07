@@ -1,7 +1,8 @@
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { normalizeWorld } from "../world/guards";
-import { assert, cloneJson, type JsonRecord, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import type { ProjectWorld } from "../world/types";
+import { assert, cloneJson, sanitize, type JsonRecord, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateProjectReferences } from "./references";
 import {
   requirePosition,
@@ -74,10 +75,69 @@ export function validateProjectV3(data: JsonRecord): Project {
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
+  migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
   validateProjectReferences(project);
   return project;
+}
+
+function migrateVillageInfoDocumentsToWorld(project: Project): void {
+  const docs = project.villageInfoDocuments ?? [];
+  if (docs.length === 0) return;
+  const current = project.world ?? { entities: [], relations: [] };
+  if (!worldIsEmpty(current)) return;
+
+  const entities: ProjectWorld["entities"][number][] = [];
+  const usedIds = new Set<string>();
+  const placeMapIds = new Set<string>();
+  for (const entity of current.entities) {
+    entities.push(entity);
+    usedIds.add(entity.id);
+    if (entity.type !== "place") continue;
+    for (const ref of entity.refs ?? []) {
+      if (ref.kind === "map") placeMapIds.add(ref.id);
+    }
+  }
+
+  for (const doc of docs) {
+    if (placeMapIds.has(doc.mapId)) continue;
+    const entity = {
+      id: nextVillageWorldId(doc.id, usedIds),
+      type: "place" as const,
+      name: doc.title,
+      summary: firstMarkdownLine(doc.markdown) || doc.title,
+      body: doc.markdown,
+      refs: [{ kind: "map" as const, id: doc.mapId }],
+      origin: "user" as const,
+    };
+    entities.push(entity);
+    usedIds.add(entity.id);
+    placeMapIds.add(doc.mapId);
+  }
+
+  if (entities.length > current.entities.length) {
+    project.world = normalizeWorld({ entities, relations: current.relations });
+  }
+}
+
+function worldIsEmpty(world: ProjectWorld): boolean {
+  return world.entities.length === 0;
+}
+
+function nextVillageWorldId(documentId: string, usedIds: Set<string>): string {
+  const base = `w_village_${sanitize(documentId)}`;
+  let id = base;
+  let index = 2;
+  while (usedIds.has(id)) {
+    id = `${base}_${index}`;
+    index += 1;
+  }
+  return id;
+}
+
+function firstMarkdownLine(markdown: string): string {
+  return markdown.split(/\r?\n/u).map((line) => line.trim()).find((line) => line.length > 0) ?? "";
 }
 
 function validateVillageInfoDocuments(value: unknown, mapIds: ReadonlySet<string>): void {
