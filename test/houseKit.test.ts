@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rectHouseHeight, stampRectHouseKit } from "@/editor/houseKit";
+import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
 import { createBlankProject, TILE } from "@/project/defaults";
 import type { GameMap } from "@/project/types";
 
@@ -94,6 +94,74 @@ describe("house kit — 하네싱 골든", () => {
     });
     expect(result.ok).toBe(false);
     expect(result.reason).toContain("경계");
+  });
+
+  it("풋프린트 painter가 연습08 ㄱ자 기준 집을 셀 단위로 재현한다", () => {
+    const map = freshMap();
+    // 연습08 질량: 좌날개 x3..7 rows3..9 + 우날개 x8..12 rows3..12.
+    const result = stampFootprintHouseKit(map, {
+      kitId: "bright-plaster",
+      wings: [
+        { x: 3, y: 3, w: 5, h: 7 },
+        { x: 8, y: 3, w: 5, h: 10 },
+      ],
+    });
+    expect(result.ok, result.reason).toBe(true);
+
+    // 연습08 실데이터 전체 행 비교 (x2..13).
+    expect(row(map, "upper", 2, 2, 13)).toEqual([E, 354, 374, 374, 374, 374, 374, 374, 374, 374, 355, E]);
+    for (const y of [3, 4, 5]) {
+      expect(row(map, "lower", y, 2, 13)).toEqual([G, G, 404, 404, 404, 404, 404, 404, 404, 404, G, G]);
+      expect(row(map, "upper", y, 2, 13)).toEqual([E, 376, E, E, E, E, E, E, E, E, 377, E]);
+    }
+    expect(row(map, "lower", 6, 2, 13)).toEqual([G, 405, 405, 405, 405, 405, G, 404, 404, 404, G, G]);
+    expect(row(map, "upper", 6, 2, 13)).toEqual([E, 384, E, E, E, E, 376, E, E, E, 377, E]);
+    expect(row(map, "lower", 7, 2, 13)).toEqual([G, 12, 13, 13, 13, 14, G, 404, 404, 404, G, G]);
+    expect(row(map, "upper", 7, 2, 13)).toEqual([E, E, E, E, E, E, 376, E, E, E, 377, E]);
+    expect(row(map, "lower", 8, 2, 13)).toEqual([G, 42, 43, 43, 43, 44, G, 404, 404, 404, G, G]);
+    expect(row(map, "lower", 9, 2, 13)).toEqual([G, 72, 73, 73, 73, 74, 405, 405, 405, 405, 405, G]);
+    expect(row(map, "upper", 9, 2, 13)).toEqual([E, E, E, E, E, E, 384, E, E, E, 385, E]);
+    expect(row(map, "lower", 10, 2, 13)).toEqual([G, G, G, G, G, G, 12, 13, 13, 13, 14, G]);
+    expect(row(map, "lower", 11, 2, 13)).toEqual([G, G, G, G, G, G, 42, 43, 43, 43, 44, G]);
+    expect(row(map, "lower", 12, 2, 13)).toEqual([G, G, G, G, G, G, 72, 73, 73, 73, 74, G]);
+  });
+
+  it("풋프린트 painter가 연습04 직사각 파랑 기준 집도 재현한다", () => {
+    const map = freshMap();
+    const result = stampFootprintHouseKit(map, { kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }] });
+    expect(result.ok, result.reason).toBe(true);
+    expect(row(map, "lower", 2, 2, 7)).toEqual([G, 406, 406, 406, 406, G]);
+    expect(row(map, "upper", 2, 2, 7)).toEqual([356, E, E, E, E, 357]);
+    expect(row(map, "lower", 3, 2, 7)).toEqual([406, 406, 406, 406, 406, 407]);
+    expect(row(map, "lower", 4, 2, 7)).toEqual([467, 467, 467, 467, 467, 467]);
+    expect(row(map, "upper", 4, 2, 7)).toEqual([386, E, E, E, E, 387]);
+    expect(row(map, "lower", 5, 2, 7)).toEqual([15, 16, 16, 16, 16, 17]);
+    expect(row(map, "lower", 6, 2, 7)).toEqual([45, 46, 46, 46, 46, 47]);
+    expect(row(map, "lower", 7, 2, 7)).toEqual([75, 76, 76, 76, 76, 77]);
+    expect(result.doorAt).toEqual({ x: 4, y: 7 });
+  });
+
+  it("ㅁ자(안마당 링) 평면 — 안마당을 향한 북쪽 날개 벽과 남쪽 외벽이 함께 생긴다", () => {
+    const map = freshMap();
+    const result = stampFootprintHouseKit(map, {
+      kitId: "bright-plaster",
+      wings: [
+        { x: 2, y: 2, w: 16, h: 6 }, // 북쪽 날개 (rows2..7)
+        { x: 2, y: 8, w: 4, h: 7 }, // 서쪽 날개 (rows8..14)
+        { x: 14, y: 8, w: 4, h: 7 }, // 동쪽 날개
+        { x: 2, y: 10, w: 16, h: 5 }, // 남쪽 날개 (rows10..14)
+      ],
+    });
+    expect(result.ok, result.reason).toBe(true);
+    // 안마당(x6..13, y8..9)은 비어 있다.
+    for (let x = 6; x <= 13; x += 1) {
+      for (const y of [8, 9]) {
+        expect(map.lowerTiles[y * map.width + x], `courtyard(${x},${y})`).toBe(G);
+      }
+    }
+    // 북쪽 날개의 안마당 쪽 벽(하단 행 y=7)과 남쪽 외벽(y=14)이 존재.
+    expect(map.lowerTiles[7 * map.width + 8]).toBe(73);
+    expect(map.lowerTiles[14 * map.width + 8]).toBe(73);
   });
 
   it("rectHouseHeight는 층수·지붕 몸통 행수에 따라 결정된다", () => {

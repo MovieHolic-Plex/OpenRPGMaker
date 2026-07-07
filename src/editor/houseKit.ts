@@ -101,6 +101,165 @@ function wallMidRows(stories: 1 | 2): number {
   return 2 * stories - 1;
 }
 
+// ── 임의 평면(ㄱ/ㄴ/ㄷ/ㅁ/O …) 일반화 ────────────────────────────────────────
+// 건물 질량(mass) = 날개 사각형들의 합집합. 열 구간(interval)마다 하단 3행이 벽,
+// 그 위가 지붕(R). 지붕 렌더는 기준 집에서 추출한 "국소 규칙"으로 결정된다:
+//   처마 = 아래 칸이 지붕이 아님 / 상단행 = 위 칸이 지붕이 아님 /
+//   가장자리 = 옆 칸이 지붕이 아님(bright는 처마도 지지대로 안 침).
+// 이 규칙만으로 연습04(직사각 파랑)·연습08(ㄱ자 오렌지)이 셀 단위 재현된다(골든 테스트).
+
+export interface FootprintWing {
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+}
+
+export interface FootprintHousePlan {
+  readonly wings: readonly FootprintWing[];
+  readonly kitId: HouseKitId;
+}
+
+const WALL_BAND_ROWS = 3; // 하네싱 불변식: 벽 = 상단+중단+하단
+
+export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): RectHouseStampResult {
+  const kit = HOUSE_KITS[plan.kitId];
+  if (!kit) return { ok: false, reason: `알 수 없는 키트: ${plan.kitId}` };
+  if (plan.wings.length === 0) return { ok: false, reason: "날개가 없습니다." };
+
+  // 질량 집합 + 경계 검증.
+  const mass = new Set<number>();
+  const key = (x: number, y: number): number => y * map.width + x;
+  for (const wing of plan.wings) {
+    if (wing.w < 3 || wing.h < 1) return { ok: false, reason: "날개는 최소 폭 3이 필요합니다." };
+    if (wing.x < 0 || wing.y < 0 || wing.x + wing.w > map.width || wing.y + wing.h > map.height) {
+      return { ok: false, reason: "날개가 맵 경계를 벗어납니다." };
+    }
+    for (let y = wing.y; y < wing.y + wing.h; y += 1) {
+      for (let x = wing.x; x < wing.x + wing.w; x += 1) mass.add(key(x, y));
+    }
+  }
+  const inMass = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height && mass.has(key(x, y));
+
+  // 열 구간 → 벽(구간 하단 3행) / 지붕(R).
+  const roof = new Set<number>();
+  const wallRole = new Map<number, 0 | 1 | 2>(); // 0=상단, 1=중단, 2=하단
+  const xs = new Set<number>();
+  const ys = new Set<number>();
+  for (const cell of mass) {
+    xs.add(cell % map.width);
+    ys.add(Math.floor(cell / map.width));
+  }
+  for (const x of xs) {
+    let y = Math.min(...ys);
+    const yEnd = Math.max(...ys);
+    while (y <= yEnd + 1) {
+      if (!inMass(x, y)) {
+        y += 1;
+        continue;
+      }
+      let top = y;
+      while (inMass(x, y + 1)) y += 1;
+      const bottom = y;
+      const height = bottom - top + 1;
+      if (height < WALL_BAND_ROWS + 2) {
+        return { ok: false, reason: `열 x=${x}의 구간 높이(${height})가 최소 5(벽 3+지붕 2)보다 작습니다.` };
+      }
+      for (let wy = bottom - WALL_BAND_ROWS + 1; wy <= bottom; wy += 1) {
+        wallRole.set(key(x, wy), (wy - (bottom - WALL_BAND_ROWS + 1)) as 0 | 1 | 2);
+      }
+      for (let ry = top; ry <= bottom - WALL_BAND_ROWS; ry += 1) roof.add(key(x, ry));
+      y = bottom + 1;
+    }
+  }
+  const inRoof = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height && roof.has(key(x, y));
+
+  const lower = (x: number, y: number, tile: number): void => {
+    map.lowerTiles[key(x, y)] = tile;
+  };
+  const upperIfEmpty = (x: number, y: number, tile: number): void => {
+    if (y < 0) return;
+    const index = key(x, y);
+    if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
+  };
+
+  // ── 벽: 같은 행·같은 역할의 연속 런을 나인슬라이스로 ──
+  for (const [cell, role] of [...wallRole.entries()].sort((a, b) => a[0] - b[0])) {
+    const x = cell % map.width;
+    const y = Math.floor(cell / map.width);
+    const slice = role === 0 ? kit.wall.top : role === 1 ? kit.wall.mid : kit.wall.bottom;
+    const runStart = !wallRole.has(key(x - 1, y)) || wallRole.get(key(x - 1, y)) !== role;
+    const runEnd = !wallRole.has(key(x + 1, y)) || wallRole.get(key(x + 1, y)) !== role;
+    lower(x, y, runStart ? slice[0] : runEnd ? slice[2] : slice[1]);
+  }
+
+  // ── 지붕: 기준 집에서 추출한 국소 규칙 ──
+  for (const cell of roof) {
+    const x = cell % map.width;
+    const y = Math.floor(cell / map.width);
+    const isEave = !inRoof(x, y + 1);
+    const isTop = !inRoof(x, y - 1);
+    if (kit.roof.kind === "blue") {
+      const edgeL = !inRoof(x - 1, y);
+      const edgeR = !inRoof(x + 1, y);
+      if (isEave) {
+        lower(x, y, kit.roof.eave);
+        if (edgeL) upperIfEmpty(x, y, kit.roof.upper.sw);
+        if (edgeR) upperIfEmpty(x, y, kit.roof.upper.se);
+        continue;
+      }
+      if (isTop && edgeL) {
+        upperIfEmpty(x, y, kit.roof.upper.nw);
+        continue;
+      }
+      if (isTop && edgeR) {
+        upperIfEmpty(x, y, kit.roof.upper.ne);
+        continue;
+      }
+      lower(x, y, edgeR ? kit.roof.rightEdge : kit.roof.body);
+      continue;
+    }
+    // bright: 처마는 지지대로 안 치는 가장자리 판정(기준 08의 안쪽 트림 재현 조건).
+    const eaveAt = (nx: number, ny: number): boolean => inRoof(nx, ny) && !inRoof(nx, ny + 1);
+    const edgeL = !inRoof(x - 1, y) || eaveAt(x - 1, y);
+    const edgeR = !inRoof(x + 1, y) || eaveAt(x + 1, y);
+    if (isEave) {
+      lower(x, y, kit.roof.eave);
+      if (!inRoof(x - 1, y)) upperIfEmpty(x, y, kit.roof.upper.trimCapL);
+      if (!inRoof(x + 1, y)) upperIfEmpty(x, y, kit.roof.upper.trimCapR);
+      if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridge);
+      continue;
+    }
+    if (edgeL) {
+      upperIfEmpty(x, y, kit.roof.upper.trimL);
+      if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridgeCapL);
+      continue;
+    }
+    if (edgeR) {
+      upperIfEmpty(x, y, kit.roof.upper.trimR);
+      if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridgeCapR);
+      continue;
+    }
+    lower(x, y, kit.roof.body);
+    if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridge);
+  }
+
+  // 문 권장 위치: 건물 최남단(외부에 면한) 벽 하단 런 중 가장 긴 것의 중앙.
+  let best: { x0: number; x1: number; y: number } | null = null;
+  for (const [cell, role] of wallRole.entries()) {
+    if (role !== 2) continue;
+    const x = cell % map.width;
+    const y = Math.floor(cell / map.width);
+    if (inMass(x, y + 1)) continue; // 외부에 면한 하단만
+    if (wallRole.get(key(x - 1, y)) === 2 && !inMass(x - 1, y + 1)) continue; // 런 시작만 취급
+    let x1 = x;
+    while (wallRole.get(key(x1 + 1, y)) === 2 && !inMass(x1 + 1, y + 1)) x1 += 1;
+    if (!best || x1 - x > best.x1 - best.x0 || (x1 - x === best.x1 - best.x0 && y > best.y)) best = { x0: x, x1, y };
+  }
+  const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
+  return { ok: true, doorAt };
+}
+
 // 직사각 집을 하네싱 규칙 그대로 전개한다. map을 직접 변경(호출측이 draft/스냅샷 관리).
 export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseStampResult {
   const kit = HOUSE_KITS[plan.kitId];
