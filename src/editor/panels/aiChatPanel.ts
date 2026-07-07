@@ -1265,7 +1265,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const refreshRunningStatus = (record = false): void => {
     if (!runningProgress) return;
-    setStatus(formatAiRunningStatus(runningProgress.startedAt, now(), runningProgress.toolCount), record);
+    // 분모는 세션의 실제 안전핀(config.maxToolCalls) — 하드코딩 30은 실한도(200)와 어긋나 "77/30" 같은 모순 표기를 냈다.
+    setStatus(formatAiRunningStatus(runningProgress.startedAt, now(), runningProgress.toolCount, loadAiConfig().maxToolCalls), record);
   };
   const beginTurnProgress = (): void => {
     runningProgress = { startedAt: now(), toolCount: 0 };

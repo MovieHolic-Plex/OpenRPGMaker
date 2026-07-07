@@ -14,7 +14,27 @@ const upsertPalettePreset: ToolDefinition = {
     type: "object",
     properties: {
       tilesetId: { type: "string", description: "대상 타일셋 id(기본 tiles_default)" },
-      preset: { type: "object", description: "PalettePreset 부분 객체. 신규는 id 생략 가능(name/slots 필요, origin 기본 ai)." },
+      preset: {
+        type: "object",
+        description: "신규는 id 생략(name/slots 필요). tileIds는 이 타일셋의 타일 인덱스 — 모르면 먼저 query_tiles/get_tile_info로 조회하라.",
+        properties: {
+          id: { type: "string", description: "기존 프리셋 수정 시에만 지정" },
+          name: { type: "string", description: "예: '숲속 마을'" },
+          slots: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                role: { type: "string", enum: ["ground", "path", "wall", "water", "decor", "boundary", "roof", "furniture"] },
+                tileIds: { type: "array", items: { type: "integer" }, description: "타일 인덱스 배열(1개 이상)" },
+                weight: { type: "number", description: "산포 가중치(>0, 기본 1)" },
+              },
+              required: ["role", "tileIds"],
+            },
+          },
+        },
+        required: ["name", "slots"],
+      },
     },
     required: ["preset"],
   },
