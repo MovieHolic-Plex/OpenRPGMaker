@@ -42,7 +42,7 @@ function record(id: string, savedAt: number, entries: readonly AuditEntry[] = [u
   return {
     id,
     title: deriveTitle(entries),
-    model: "google/gemini-3.1-flash-lite",
+    model: "minimax/minimax-m3",
     savedAt,
     entries: [...entries],
   };
@@ -70,8 +70,8 @@ describe("conversationStore", () => {
     saveConversation(record("new", 200, [assistant("준비"), user("두 번째 요청"), tool("create_map"), user("수정 요청")]));
 
     expect(listConversations()).toEqual([
-      { id: "new", title: "두 번째 요청", model: "google/gemini-3.1-flash-lite", savedAt: 200, turnCount: 2 },
-      { id: "old", title: "첫 번째 요청", model: "google/gemini-3.1-flash-lite", savedAt: 100, turnCount: 1 },
+      { id: "new", title: "두 번째 요청", model: "minimax/minimax-m3", savedAt: 200, turnCount: 2 },
+      { id: "old", title: "첫 번째 요청", model: "minimax/minimax-m3", savedAt: 100, turnCount: 1 },
     ]);
   });
 
@@ -80,7 +80,7 @@ describe("conversationStore", () => {
     saveConversation(record("same", 300, [user("교체됨"), assistant("응답")]));
 
     expect(listConversations()).toEqual([
-      { id: "same", title: "교체됨", model: "google/gemini-3.1-flash-lite", savedAt: 300, turnCount: 1 },
+      { id: "same", title: "교체됨", model: "minimax/minimax-m3", savedAt: 300, turnCount: 1 },
     ]);
   });
 
@@ -99,7 +99,7 @@ describe("conversationStore", () => {
     deleteConversation("delete");
 
     expect(listConversations()).toEqual([
-      { id: "keep", title: "대화 keep", model: "google/gemini-3.1-flash-lite", savedAt: 200, turnCount: 1 },
+      { id: "keep", title: "대화 keep", model: "minimax/minimax-m3", savedAt: 200, turnCount: 1 },
     ]);
   });
 

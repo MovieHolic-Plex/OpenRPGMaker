@@ -15,6 +15,8 @@ import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
   chatCompletion,
   isLlmAbortError,
+  isRetryableLlmError,
+  LLM_RETRY_BACKOFF_MS,
   loadAiConfig,
   type AiConfig,
   type ChatMessage,
@@ -230,6 +232,7 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
 
 // 검증 실패 허용 횟수(턴당). 초과하면 계획 폐기를 지시한다 — 루프 방지.
 const MAX_SPEC_REJECTIONS = 3;
+const ASSISTANT_TURN_RETRY_ATTEMPTS = 2;
 
 function specGateResult(summary: string, guidance: readonly string[]): ToolResult {
   return {
@@ -515,6 +518,44 @@ export class AssistantSession {
     if (eventTarget !== null) this.eventBaseProposalKeys.set(eventTargetKey(eventTarget), key);
   }
 
+  private async chatWithTransientRetry(
+    req: ChatRequest,
+    onEvent: (event: SessionEvent) => void,
+    signal?: AbortSignal
+  ): Promise<ChatResult> {
+    let attempt = 0;
+    while (true) {
+      let streamedAny = false;
+      try {
+        return await this.chat(this.config, {
+          ...req,
+          onToken: (delta) => {
+            streamedAny = true;
+            onEvent({ type: "assistant_token", delta });
+          },
+          onReasoning: (delta) => {
+            streamedAny = true;
+            onEvent({ type: "reasoning_token", delta });
+          },
+          signal,
+        });
+      } catch (cause) {
+        if (
+          signal?.aborted ||
+          isLlmAbortError(cause) ||
+          !isRetryableLlmError(cause) ||
+          streamedAny ||
+          attempt >= ASSISTANT_TURN_RETRY_ATTEMPTS
+        ) {
+          throw cause;
+        }
+        attempt += 1;
+        this.pushAudit({ kind: "status", text: `일시 오류 자동 재시도 ${attempt}/${ASSISTANT_TURN_RETRY_ATTEMPTS}` });
+        await sleep(LLM_RETRY_BACKOFF_MS * attempt);
+      }
+    }
+  }
+
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
     // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온으로 툴을 고정한다.
@@ -533,14 +574,11 @@ export class AssistantSession {
       }
       let result: ChatResult;
       try {
-        result = await this.chat(this.config, {
+        result = await this.chatWithTransientRetry({
           messages: this.messages,
           tools,
           tool_choice: "auto",
-          onToken: (delta) => onEvent({ type: "assistant_token", delta }),
-          onReasoning: (delta) => onEvent({ type: "reasoning_token", delta }),
-          signal,
-        });
+        }, onEvent, signal);
       } catch (cause) {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
@@ -822,6 +860,10 @@ function parseToolCall(call: ToolCall): { name: string; args: Record<string, unk
     }
   }
   return { name, args };
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function stringValue(value: unknown): string | null {

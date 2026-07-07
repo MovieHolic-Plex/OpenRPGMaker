@@ -9,8 +9,8 @@ import type { ChatResult } from "@/ai/llmClient";
 
 const CONFIG = {
   baseUrl: "x",
-  model: "google/gemini-3.5-flash",
-  liteModel: "google/gemini-3.1-flash-lite",
+  model: "minimax/minimax-m3",
+  liteModel: "minimax/minimax-m3",
   apiKey: "sk",
   maxToolCalls: 12,
   maxTokens: 2048,
@@ -186,4 +186,3 @@ describe("assistant proposal assembly move_event squash", () => {
     expect(result.proposedCalls.map((call) => `${call.name}:${call.args.eventId}`)).toEqual(["move_event:ev_a", "move_event:ev_b"]);
   });
 });
-

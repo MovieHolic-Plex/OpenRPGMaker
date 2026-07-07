@@ -78378,8 +78378,8 @@
     "enemies": [
       {
         "id": "enemy_slime",
-        "name": "말벌",
-        "monsterResourceId": "generated-enemy-sylph-hornet",
+        "name": "슬라임",
+        "monsterResourceId": "generated-enemy-slime-01",
         "graphicHue": 0,
         "transparent": false,
         "flying": false,
@@ -80280,7 +80280,7 @@
     "troops": [
       {
         "id": "troop_slime",
-        "name": "말벌 정찰대",
+        "name": "슬라임 정찰대",
         "enemyIds": [
           "enemy_slime"
         ],
@@ -80355,7 +80355,7 @@
       },
       {
         "id": "troop_forest_hornets",
-        "name": "숲의 말벌과 박쥐",
+        "name": "숲의 슬라임과 박쥐",
         "enemyIds": [
           "enemy_slime",
           "enemy_cave_bat",

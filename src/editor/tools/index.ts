@@ -21,7 +21,7 @@ export {
   type OpenAiTool,
   type ToolExposureOptions,
 } from "./toolRegistry";
-export { runTool, type RunToolOptions } from "./toolRunner";
+export { normalizeToolArgs, runTool, type RunToolOptions } from "./toolRunner";
 export { commitChangeset, createDraft, summarizeChanges, type CommitResult } from "./changeset";
 export { validateArgs } from "./jsonSchema";
 export { createEmptyToolProject } from "./emptyProject";

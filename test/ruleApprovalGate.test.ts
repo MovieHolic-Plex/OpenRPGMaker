@@ -11,7 +11,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 import type { Project, TileGroupMetadata } from "@/project/types";
 
-const CONFIG = { baseUrl: "x", model: "google/gemini-3.1-flash-lite", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
+const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;

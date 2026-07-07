@@ -96,11 +96,11 @@ describe("설정 자동 저장", () => {
     const panel = renderPanel();
     const model = findByTestId(panel, "ai-config-model");
     if (!model) throw new Error("model field missing");
-    model.value = "google/gemini-3.1-pro";
+    model.value = "minimax/minimax-m3";
     model.dispatchEvent(new Event("input"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.model).toBe("google/gemini-3.1-pro");
+    expect(stored.model).toBe("minimax/minimax-m3");
   });
 
   it("보조 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
@@ -119,11 +119,11 @@ describe("설정 자동 저장", () => {
     const panel = renderPanel();
     const liteModel = findByTestId(panel, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
-    liteModel.value = "google/gemini-3.1-flash-lite-preview";
+    liteModel.value = "minimax/minimax-m3";
     liteModel.dispatchEvent(new Event("input"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.liteModel).toBe("google/gemini-3.1-flash-lite-preview");
+    expect(stored.liteModel).toBe("minimax/minimax-m3");
   });
 
   it("설정 저장 버튼도 동일하게 저장한다", () => {
@@ -163,10 +163,10 @@ describe("감사 로그 내보내기", () => {
 
     // 패널의 dropSession과 동일한 흐름: 세션 폐기 전 항목을 히스토리로 회수.
     const history = [...session.getAuditEntries()];
-    const json = combineAuditJson(history, null, "google/gemini-3.5-flash");
+    const json = combineAuditJson(history, null, "minimax/minimax-m3");
     expect(json).not.toBeNull();
     const parsed = JSON.parse(json ?? "{}");
-    expect(parsed.model).toBe("google/gemini-3.5-flash");
+    expect(parsed.model).toBe("minimax/minimax-m3");
     expect(parsed.entries.length).toBe(history.length);
     // at(ISO 타임스탬프)는 결함 ⑬(구조화 세션 로그)에서 추가 — 내용 필드만 고정 검증.
     expect(parsed.entries[0]).toMatchObject({ kind: "user", text: "npc 넣어줘" });
@@ -192,7 +192,7 @@ describe("세션 설정 반영", () => {
     });
     expect(JSON.parse(session.exportAudit()).model).toBe("old-model");
 
-    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "google/gemini-3.5-flash" });
-    expect(JSON.parse(session.exportAudit()).model).toBe("google/gemini-3.5-flash");
+    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "minimax/minimax-m3" });
+    expect(JSON.parse(session.exportAudit()).model).toBe("minimax/minimax-m3");
   });
 });

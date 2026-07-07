@@ -44,7 +44,7 @@ function sentBody(): Record<string, unknown> {
   return JSON.parse(String(init.body)) as Record<string, unknown>;
 }
 
-const CONFIG_BASE = { baseUrl: "https://openrouter.ai/api/v1", model: "google/gemini-3.5-flash", liteModel: "google/gemini-3.1-flash-lite", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
+const CONFIG_BASE = { baseUrl: "https://openrouter.ai/api/v1", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -95,11 +95,11 @@ describe("aiConfig 저장/로드", () => {
     expect(config.liteModel).toBe("batch-model");
   });
 
-  it("maxToolCalls 저장값은 무시하고 안전핀 기본값을 쓴다 (UI에서 제거된 항목)", async () => {
+  it("maxToolCalls 저장값을 실제 세션 안전핀으로 로드한다", async () => {
     installLocalStorage();
     const { loadAiConfig, saveAiConfig, defaultAiConfig } = await loadClient();
     saveAiConfig({ ...defaultAiConfig(), maxToolCalls: 3 });
-    expect(loadAiConfig().maxToolCalls).toBe(defaultAiConfig().maxToolCalls);
+    expect(loadAiConfig().maxToolCalls).toBe(3);
   });
 
   it("옛 기본값 maxTokens 2048은 새 기본(10240)으로 승격된다", async () => {

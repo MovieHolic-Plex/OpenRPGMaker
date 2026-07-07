@@ -18,8 +18,8 @@ function defaultEnemyRecords(): EnemyRecord[] {
   return [
     normalizeEnemyRecord({
       id: DEFAULT_ENEMY_ID,
-      name: "말벌",
-      monsterResourceId: "generated-enemy-sylph-hornet",
+      name: "슬라임",
+      monsterResourceId: "generated-enemy-slime-01",
       stats: { maxHp: 18, maxMp: 4, attack: 10, defense: 7, mind: 6, agility: 16 },
       rewards: { exp: 5, gold: 4, dropItemId: DEFAULT_ITEM_ID, dropRatePercent: 12 },
       actions: [
@@ -145,7 +145,7 @@ function defaultTroopRecords(): TroopRecord[] {
   return [
     normalizeTroopRecord({
       id: DEFAULT_TROOP_ID,
-      name: "말벌 정찰대",
+      name: "슬라임 정찰대",
       enemyIds: [DEFAULT_ENEMY_ID],
       members: [{ enemyId: DEFAULT_ENEMY_ID, x: 168, y: 112 }],
       autoAlign: false,
@@ -179,7 +179,7 @@ function defaultTroopRecords(): TroopRecord[] {
     }),
     normalizeTroopRecord({
       id: "troop_forest_hornets",
-      name: "숲의 말벌과 박쥐",
+      name: "숲의 슬라임과 박쥐",
       enemyIds: [DEFAULT_ENEMY_ID, "enemy_cave_bat", DEFAULT_ENEMY_ID],
       members: [
         { enemyId: DEFAULT_ENEMY_ID, x: 116, y: 128 },

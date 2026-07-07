@@ -38,7 +38,7 @@ function finalMsg(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
-const CONFIG = { baseUrl: "x", model: "google/gemini-3.1-flash-lite", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
+const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
 
 // 20×20 맵 m1이 있는 프로젝트.
 function projectWithMap() {
