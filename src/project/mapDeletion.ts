@@ -30,7 +30,7 @@ export interface MapDeletionImpact {
   readonly incomingCommandCount: number;
   /** 이 맵과 연결된 mapConnections 수(함께 제거됨). */
   readonly connectionCount: number;
-  /** 이 맵의 마을 정보 문서 수(함께 제거됨). */
+  /** 이 맵의 legacy worldview source document 수(함께 제거됨). */
   readonly villageInfoCount: number;
   /** 이 맵을 참조하는 퀘스트 수(함께 제거됨). */
   readonly questCount: number;

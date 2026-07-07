@@ -18,6 +18,11 @@ type PendingAiPreview = Extract<AiPreviewResult, { ok: true }> & {
   readonly sourceFingerprint: string;
 };
 
+type PreviewReportOptions = {
+  readonly beforeDetails: readonly string[];
+  readonly detailLines?: readonly string[];
+  readonly afterDetails?: readonly string[];
+};
 
 const PANEL_MARGIN = 8;
 const PANEL_POSITION_KEY = "rpg-zzu.aiAssistant.position";
@@ -28,7 +33,7 @@ export function renderAiAssistantPanel(): HTMLElement {
   const status = el("span", { class: "ai-assistant-status", text: "대기" });
   const previewStatus = el("div", {
     class: "ai-preview-status",
-    text: "AI 프리뷰를 생성하면 증거와 승인 버튼이 여기에 표시됩니다.",
+    text: "AI 프리뷰를 생성하면 변경 요약과 승인 버튼이 여기에 표시됩니다.",
     dataset: { testid: "ai-preview-status" },
   });
   const approveButton = el("button", {
@@ -133,21 +138,21 @@ export function renderAiAssistantPanel(): HTMLElement {
                   mapName: `AI Preview - ${goal}`.slice(0, 80),
                 });
                 if (!result.ok) {
-                  status.textContent = "증거 부족";
-                  renderPreviewLines(previewStatus, [
-                    "프리뷰 생성 실패: 고신뢰 증거가 부족합니다.",
-                    ...aiPreviewEvidenceLines(result),
-                  ]);
+                  status.textContent = "검증 필요";
+                  renderPreviewReport(previewStatus, {
+                    beforeDetails: ["프리뷰 생성 실패: 고신뢰 검증 정보가 부족합니다."],
+                    detailLines: aiPreviewEvidenceLines(result),
+                  });
                   return;
                 }
                 pendingPreview = { ...result, sourceFingerprint: aiPreviewSourceFingerprint(project) };
                 approveButton.removeAttribute("disabled");
                 status.textContent = "검토 대기";
-                renderPreviewLines(previewStatus, [
-                  ...aiPreviewDiffLines(project, result),
-                  ...aiPreviewEvidenceLines(result),
-                  "승인 전까지 원본 프로젝트는 변경되지 않습니다.",
-                ]);
+                renderPreviewReport(previewStatus, {
+                  beforeDetails: aiPreviewDiffLines(project, result),
+                  detailLines: aiPreviewEvidenceLines(result),
+                  afterDetails: ["승인 전까지 원본 프로젝트는 변경되지 않습니다."],
+                });
               },
             },
           }),
@@ -302,7 +307,34 @@ function writeAssistantDraft(input: HTMLTextAreaElement, status: HTMLElement, dr
   status.textContent = label;
 }
 function renderPreviewLines(container: HTMLElement, lines: readonly string[]): void {
-  container.replaceChildren(...lines.map((line) => el("p", { text: line })));
+  renderPreviewReport(container, { beforeDetails: lines });
+}
+
+export function renderPreviewReport(container: HTMLElement, options: PreviewReportOptions): void {
+  const children: HTMLElement[] = [
+    ...previewParagraphs(options.beforeDetails),
+  ];
+  if (options.detailLines && options.detailLines.length > 0) {
+    children.push(
+      el("details", {
+        class: "ai-preview-validation-details",
+        dataset: { testid: "ai-preview-validation-details" },
+        children: [
+          el("summary", {
+            text: "생성 검증 상세",
+            dataset: { testid: "ai-preview-validation-summary" },
+          }),
+          ...previewParagraphs(options.detailLines),
+        ],
+      })
+    );
+  }
+  children.push(...previewParagraphs(options.afterDetails ?? []));
+  container.replaceChildren(...children);
+}
+
+function previewParagraphs(lines: readonly string[]): HTMLElement[] {
+  return lines.map((line) => el("p", { text: line }));
 }
 
 export function aiPreviewDiffLines(sourceProject: Project, result: AiPreviewResult): string[] {

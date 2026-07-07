@@ -9,7 +9,7 @@ import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
-import { openVillageInfoModal } from "@/editor/panels/villageInfoModal";
+import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import { createSampleAdventureProject } from "@/project/defaults";
 import {
@@ -253,7 +253,7 @@ function menuCommands(
         { kind: "separator" },
         item("데이터베이스...", "menu-tools-database", () => openDatabaseModal()),
         item("리소스 관리자...", "menu-tools-resources", () => openResourceModal()),
-        item("마을 정보...", "menu-tools-village-info", () => openVillageInfoModal()),
+        item("세계관...", "menu-tools-world", () => openWorldPanel()),
       ];
     case "game":
       return [
@@ -301,8 +301,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     separator(),
     toolbarButton({ testId: "toolbar-database", label: "DB", title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
     toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
-    toolbarButton({ testId: "toolbar-village-info", label: "마을 정보", title: "마을 정보 문서", icon: "manual", onClick: () => openVillageInfoModal() }),
-    toolbarButton({ testId: "toolbar-evidence-packet", label: "증거 패킷", title: "브라우저 증거 패킷", icon: "manual", onClick: () => toast("브라우저 증거 패킷 준비됨", "ok") }),
+    toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
