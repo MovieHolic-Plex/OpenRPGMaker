@@ -4,9 +4,26 @@ import {
   aiPreviewEvidenceLines,
   aiPreviewSourceFingerprint,
   aiPreviewSourceMatches,
+  renderPreviewReport,
 } from "@/editor/panels/aiAssistantPanel";
 import { createAiPreviewProject } from "@/project/aiPreviewGenerator";
 import { createBlankProject } from "@/project/defaults";
+import { FakeElement, installFakeDom } from "./fakeDom";
+
+function withFakeDom<T>(run: () => T): T {
+  const restore = installFakeDom();
+  try {
+    return run();
+  } finally {
+    restore();
+  }
+}
+
+function directParagraphText(container: HTMLElement): string[] {
+  return (Array.from(container.childNodes) as unknown[])
+    .filter((node): node is FakeElement => node instanceof FakeElement && node.tagName === "P")
+    .map((node) => node.textContent);
+}
 
 describe("AI assistant preview summaries", () => {
   it("shows diff, evidence, and approval-relevant metadata for a successful preview", () => {
@@ -52,5 +69,55 @@ describe("AI assistant preview summaries", () => {
     source.meta.title = "changed after preview generation";
 
     expect(aiPreviewSourceMatches(source, fingerprint)).toBe(false);
+  });
+
+  it("renders technical preview evidence under a default-closed validation details block", () => {
+    withFakeDom(() => {
+      const container = document.createElement("div");
+
+      renderPreviewReport(container, {
+        beforeDetails: ["프리뷰 맵: 작은 항구"],
+        detailLines: ["ChipSet 증거: combined-town / high"],
+        afterDetails: ["승인 전까지 원본 프로젝트는 변경되지 않습니다."],
+      });
+
+      const details = container.querySelector("details");
+      expect(details?.getAttribute("open")).toBeNull();
+      expect(details?.querySelector("summary")?.textContent).toBe("생성 검증 상세");
+      expect(details?.textContent).toContain("ChipSet 증거");
+    });
+  });
+
+  it("keeps diff and approval lines visible while evidence text stays inside details", () => {
+    withFakeDom(() => {
+      const container = document.createElement("div");
+
+      renderPreviewReport(container, {
+        beforeDetails: ["프리뷰 맵: 작은 항구", "맵 수: 1 → 2"],
+        detailLines: ["CharSet 증거: easyrpg-charset-people"],
+        afterDetails: ["승인 전까지 원본 프로젝트는 변경되지 않습니다."],
+      });
+
+      expect(directParagraphText(container)).toEqual([
+        "프리뷰 맵: 작은 항구",
+        "맵 수: 1 → 2",
+        "승인 전까지 원본 프로젝트는 변경되지 않습니다.",
+      ]);
+      expect(directParagraphText(container).join("\n")).not.toContain("증거");
+      expect(container.querySelector("details")?.textContent).toContain("CharSet 증거");
+    });
+  });
+
+  it("omits the validation details block when there are no technical lines", () => {
+    withFakeDom(() => {
+      const container = document.createElement("div");
+
+      renderPreviewReport(container, {
+        beforeDetails: ["프리뷰 목표를 먼저 입력하세요."],
+      });
+
+      expect(container.querySelector("details")).toBeNull();
+      expect(directParagraphText(container)).toEqual(["프리뷰 목표를 먼저 입력하세요."]);
+    });
   });
 });

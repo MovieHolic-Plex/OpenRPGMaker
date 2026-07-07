@@ -133,6 +133,17 @@ body:has([data-testid='resource-modal']) .right-panel {
   line-height: 1.35;
   margin: 0;
 }
+.ai-preview-validation-details {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+  padding-top: 4px;
+}
+.ai-preview-validation-details summary {
+  color: var(--text-1);
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1.35;
+}
 /* 승인 = 주요 액션(primary) */
 .ai-preview-approve:not(:disabled) {
   background: var(--accent);

@@ -14,7 +14,7 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
   if (impact.treeChildCount > 0) lines.push(`· 맵 트리의 하위 맵 ${impact.treeChildCount}개는 상위로 이동해 보존됩니다.`);
   if (impact.incomingCommandCount > 0) lines.push(`· 이 맵으로 이동하는 명령 ${impact.incomingCommandCount}개가 제거됩니다.`);
   if (impact.connectionCount > 0) lines.push(`· 맵 연결 ${impact.connectionCount}개가 제거됩니다.`);
-  if (impact.villageInfoCount > 0) lines.push(`· 마을 정보 문서 ${impact.villageInfoCount}개가 제거됩니다.`);
+  if (impact.villageInfoCount > 0) lines.push(`· 세계관 문서 ${impact.villageInfoCount}개가 제거됩니다.`);
   if (impact.questCount > 0) lines.push(`· 이 맵을 참조하는 퀘스트 ${impact.questCount}개가 제거됩니다.`);
   if (impact.testPresetCount > 0) lines.push(`· 테스트 프리셋 ${impact.testPresetCount}개의 시작 위치가 해제됩니다.`);
   lines.push("", "삭제 후 Ctrl+Z로 되돌릴 수 있습니다.");

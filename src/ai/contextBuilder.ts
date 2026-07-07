@@ -130,7 +130,7 @@ function styleSection(project: Project, remaining: number, hasWorldDigest: boole
   if (hasWorldDigest) {
     return [
       "## 게임 스타일 문서(원문 보존)",
-      "세계관 다이제스트가 우선입니다. 기존 마을 정보 문서는 롤백을 위해 프로젝트에 보존됩니다.",
+      "세계관 다이제스트가 우선입니다. 기존 세계관 원문 문서는 롤백을 위해 프로젝트에 보존됩니다.",
       ...docs.slice(0, 12).map((doc) => `- ${doc.title} (${doc.mapId})`),
       docs.length > 12 ? `- …외 ${docs.length - 12}개` : "",
     ].filter((line) => line.length > 0).join("\n");

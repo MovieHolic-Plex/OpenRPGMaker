@@ -119,6 +119,7 @@ export class FakeElement extends FakeNode {
 
   dispatchEvent(event: Event): boolean {
     if (event.target === null) Object.defineProperty(event, "target", { configurable: true, value: this });
+    Object.defineProperty(event, "currentTarget", { configurable: true, value: this });
     for (const listener of this.listeners[event.type] ?? []) {
       if (typeof listener === "function") {
         listener(event);
