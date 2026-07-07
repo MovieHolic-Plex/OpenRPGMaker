@@ -268,6 +268,29 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("변경 제안");
   });
 
+  it("미니 스트림: 새 턴이 시작되면 이전 턴 버블에 is-prior-turn을 표시한다", async () => {
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "첫 응답." }));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+
+    input.value = "첫 요청";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+    input.value = "두번째 요청";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    const log = findByTestId(panel, "ai-chat-log") as FakeElement;
+    const bubbles = log.childNodes as unknown as FakeElement[];
+    // 첫 턴(사용자+어시스턴트)은 prior-turn, 두번째 턴은 현재 턴이라 표시 없음.
+    expect(bubbles.length).toBeGreaterThanOrEqual(4);
+    expect(bubbles[0]?.className).toContain("is-prior-turn");
+    expect(bubbles[1]?.className).toContain("is-prior-turn");
+    const current = bubbles.slice(-2);
+    for (const bubble of current) expect(bubble?.className ?? "").not.toContain("is-prior-turn");
+  });
+
   it("거부하면 원 응답에 폐기됨 배지를 붙이고 본문을 딤 처리한다", async () => {
     const mapId = store.getCurrent().startMapId;
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];

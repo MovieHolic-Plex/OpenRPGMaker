@@ -2081,8 +2081,20 @@ body.ai-command-bar-active .editor-layout {
 .ai-rising-overlay .ai-chat-log {
   background: color-mix(in srgb, var(--bg-inset) 88%, transparent);
   box-shadow: var(--shadow-pop);
-  max-height: min(36vh, 360px);
+  /* 미니 스트림: 현재 턴만 보이므로 낮은 상한으로 맵 가림 최소화. */
+  max-height: min(18vh, 200px);
   min-height: 0;
+}
+
+/* 미니 스트림: 떠오르는 오버레이에서는 이전 턴을 숨긴다(현재 턴만). 과거 대화는 ⌃ 전체 기록에서. */
+.ai-rising-overlay .ai-chat-log > .is-prior-turn {
+  display: none;
+}
+
+/* 전체 기록/스튜디오 뷰에서는 이전 턴도 전부 보인다. */
+.ai-history-log-mount .ai-chat-log > .is-prior-turn,
+.ai-chat-panel.is-studio .ai-chat-log > .is-prior-turn {
+  display: block;
 }
 
 .ai-rising-sticky-zone {

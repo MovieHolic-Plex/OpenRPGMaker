@@ -533,9 +533,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     volatileFadeTimer = null;
   };
 
+  // 미니 스트림: 새 턴이 시작되면(사용자 버블) 이전 턴 전부를 is-prior-turn으로 표시한다.
+  // 떠오르는 오버레이에서는 현재 턴만 보이고, 전체 기록 뷰에서는 전부 보인다(CSS 스코프).
+  const markPriorTurns = (): void => {
+    for (const child of Array.from(log.childNodes)) {
+      (child as HTMLElement).classList?.add?.("is-prior-turn");
+    }
+  };
   const appendBubble = (role: "user" | "assistant" | "tool" | "system", text: string): HTMLElement => {
     revealVolatileZone();
     removeStartScreen();
+    if (role === "user") markPriorTurns();
     const bubble = el("div", {
       class: `ai-chat-bubble ai-chat-${role}`,
       dataset: { testid: `ai-bubble-${role}` },
