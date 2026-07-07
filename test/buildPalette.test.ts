@@ -7,6 +7,7 @@ import {
 } from "@/editor/panels/buildPaletteCore";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { projectLint } from "@/project/lint/projectLint";
 
 const MAP_ID = "map_blank_start";
 
@@ -46,13 +47,77 @@ describe("build palette deterministic stamps", () => {
 
     const map = result.project.maps[MAP_ID];
     const at = (x: number, y: number) => y * map.width + x;
-    // 선택 (4,4) 6×5 → 지붕 2행(용마루 374 + 처마 405) + 벽 3행. 가로는 균일 반복, 파란 계열(406~) 금지.
+    // 선택 (4,4) 6×5 → 1층 벽 2행을 먼저 확보하고, 나머지 3행은 용마루/몸통/처마 지붕으로 채운다.
     for (let x = 4; x <= 9; x++) {
       expect(map.lowerTiles[at(x, 4)], `ridge(${x},4)`).toBe(374);
-      expect(map.lowerTiles[at(x, 5)], `eave(${x},5)`).toBe(405);
+      expect(map.lowerTiles[at(x, 5)], `body(${x},5)`).toBe(375);
+      expect(map.lowerTiles[at(x, 6)], `eave(${x},6)`).toBe(405);
     }
-    expect(map.lowerTiles[at(4, 6)]).not.toBe(0); // wall top-left
+    expect(map.lowerTiles[at(4, 7)]).not.toBe(0); // wall top-left
     expect(map.lowerTiles[at(7, 8)]).toBe(146); // door bottom
+  });
+
+  it("ㄱ자집 프리셋은 열별 yMax 기준으로 남쪽 노출면 두 곳에 벽을 깔고 지붕을 ㄱ자로 채운다", () => {
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 2, y: 2, width: 8, height: 8 }),
+      "house",
+      { housePresetId: "l-house-1f" }
+    );
+    expect(result.ok, result.summary).toBe(true);
+    const map = result.project.maps[MAP_ID];
+    const at = (x: number, y: number) => y * map.width + x;
+
+    // 왼쪽 위 열: splitY=6이므로 y=4..5가 1층 벽, 그 위 y=2..3이 지붕.
+    expect(map.lowerTiles[at(2, 2)]).toBe(374);
+    expect(map.lowerTiles[at(2, 3)]).toBe(405);
+    expect(map.lowerTiles[at(2, 4)]).not.toBe(0);
+    expect(map.lowerTiles[at(2, 5)]).not.toBe(0);
+
+    // 오른쪽 아래 열: 같은 열 규칙으로 하단 y=8..9가 벽, 위쪽은 긴 지붕 열이다.
+    expect(map.lowerTiles[at(8, 2)]).toBe(374);
+    expect(map.lowerTiles[at(8, 7)]).toBe(405);
+    expect(map.lowerTiles[at(8, 8)]).not.toBe(0);
+    expect(map.lowerTiles[at(8, 9)]).not.toBe(0);
+  });
+
+  it("2층집 프리셋은 벽 공간 4행을 먼저 확보한다", () => {
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 2, y: 2, width: 6, height: 7 }),
+      "house",
+      { housePresetId: "house-2f" }
+    );
+    expect(result.ok, result.summary).toBe(true);
+    const map = result.project.maps[MAP_ID];
+    const at = (x: number, y: number) => y * map.width + x;
+
+    expect(map.lowerTiles[at(2, 2)]).toBe(374);
+    expect(map.lowerTiles[at(2, 3)]).toBe(375);
+    expect(map.lowerTiles[at(2, 4)]).toBe(405);
+    for (let y = 5; y <= 8; y += 1) expect(map.lowerTiles[at(2, y)], `wall y=${y}`).not.toBe(0);
+  });
+
+  it("마을 프리미티브는 집을 2채 이상 배치한 뒤 문 앞 좌표 사이에 길을 연결하고 시작 위치를 막지 않는다", () => {
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 0, y: 0, width: 20, height: 15 }),
+      "village"
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toMatch(/마을 시공 완료: \d+채 중 \d+채/);
+    const doorResults = result.toolResults.filter((toolResult) => {
+      const data = toolResult.data as { at?: { x: number; y: number } } | undefined;
+      return Boolean(data?.at);
+    });
+    expect(doorResults.length).toBeGreaterThanOrEqual(2);
+
+    const pathMembers = new Set(result.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_PRESETS.path)?.tileIds ?? []);
+    const map = result.project.maps[MAP_ID];
+    const firstDoor = (doorResults[0].data as { at: { x: number; y: number } }).at;
+    const firstDoorFront = { x: firstDoor.x, y: Math.min(map.height - 1, firstDoor.y + 1) };
+    expect(pathMembers.has(map.lowerTiles[firstDoorFront.y * map.width + firstDoorFront.x])).toBe(true);
+    expect(projectLint(result.project).filter((issue) => issue.severity === "error" && issue.code === "start-position")).toHaveLength(0);
   });
 
   it("지붕 프리미티브는 용마루→몸통→처마 3단으로 채운다", () => {
