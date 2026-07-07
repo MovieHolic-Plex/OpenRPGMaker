@@ -1,0 +1,543 @@
+@layer editor {
+  .world-panel-backdrop {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .world-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(1180px, calc(100vw - 36px));
+    height: min(760px, calc(100vh - 36px));
+    overflow: hidden;
+    border: 1px solid rgba(210, 216, 228, 0.24);
+    border-radius: 8px;
+    background: #171a20;
+    color: #f1f5f9;
+    box-shadow: 0 22px 64px rgba(0, 0, 0, 0.46);
+  }
+
+  .world-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(210, 216, 228, 0.14);
+    background: #20242c;
+  }
+
+  .world-panel-title h2 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  .world-panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .world-search-input,
+  .world-add-type,
+  .world-edit-input,
+  .world-edit-body {
+    border: 1px solid rgba(210, 216, 228, 0.22);
+    border-radius: 6px;
+    background: #111318;
+    color: #f8fafc;
+    font: inherit;
+  }
+
+  .world-search-input {
+    width: min(320px, 34vw);
+    padding: 7px 10px;
+  }
+
+  .world-add-type,
+  .world-edit-input {
+    min-height: 32px;
+    padding: 6px 8px;
+  }
+
+  .world-panel-main {
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) minmax(360px, 0.86fr);
+    min-height: 0;
+    flex: 1;
+  }
+
+  .world-browser,
+  .world-wiki-view {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .world-browser {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border-right: 1px solid rgba(210, 216, 228, 0.14);
+    background: #13161b;
+  }
+
+  .world-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .world-tab,
+  .world-recent-chip,
+  .world-relation-chip,
+  .world-ref-chip {
+    border: 1px solid rgba(210, 216, 228, 0.2);
+    border-radius: 6px;
+    background: #20242c;
+    color: #e2e8f0;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .world-tab {
+    min-height: 32px;
+    padding: 6px 10px;
+  }
+
+  .world-tab.active {
+    border-color: rgba(72, 187, 120, 0.75);
+    background: #183125;
+    color: #effff5;
+  }
+
+  .world-overview {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid rgba(210, 216, 228, 0.14);
+    border-radius: 8px;
+    background: #1b1f27;
+  }
+
+  .world-counts {
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .world-recent,
+  .world-chip-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .world-recent-chip,
+  .world-relation-chip,
+  .world-ref-chip {
+    max-width: 100%;
+    padding: 5px 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px;
+    align-content: start;
+  }
+
+  .world-card-grid.empty {
+    display: block;
+    padding: 24px;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  .world-card {
+    display: grid;
+    grid-template-rows: 112px minmax(112px, auto);
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(210, 216, 228, 0.16);
+    border-radius: 8px;
+    background: #1e232b;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .world-card:hover,
+  .world-card:focus-visible,
+  .world-card.active {
+    border-color: rgba(72, 187, 120, 0.7);
+    outline: none;
+  }
+
+  .world-card-media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: #0f1217;
+  }
+
+  .world-card-map-thumb {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .world-card-map-canvas {
+    image-rendering: pixelated;
+  }
+
+  .world-card-sprite {
+    transform: scale(1.8);
+    transform-origin: center;
+    image-rendering: pixelated;
+  }
+
+  .world-card-placeholder {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid rgba(210, 216, 228, 0.2);
+    border-radius: 50%;
+    background: #29313b;
+    color: #f8fafc;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .world-card-placeholder.faction {
+    background: #263245;
+  }
+
+  .world-card-placeholder.event {
+    background: #3a2b35;
+  }
+
+  .world-card-placeholder.guideline {
+    background: #26372f;
+  }
+
+  .world-lint-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .world-lint-badge.error,
+  .world-lint-item.error {
+    background: #5b1b1b;
+    color: #fecaca;
+  }
+
+  .world-lint-badge.warning,
+  .world-lint-item.warning {
+    background: #4a3411;
+    color: #fde68a;
+  }
+
+  .world-lint-badge.info,
+  .world-lint-item.info {
+    background: #313946;
+    color: #cbd5e1;
+  }
+
+  .world-card-content {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .world-card-title-row,
+  .world-wiki-header,
+  .world-edit-row,
+  .world-edit-add-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .world-card-title-row {
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .world-card-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-card-summary {
+    min-height: 18px;
+    margin: 0;
+    overflow: hidden;
+    color: #cbd5e1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-card-badges,
+  .world-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .world-type-badge,
+  .world-origin-badge,
+  .world-tag {
+    max-width: 100%;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #2a3039;
+    color: #dbeafe;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .world-origin-badge {
+    color: #dcfce7;
+  }
+
+  .world-lock-button {
+    flex: 0 0 auto;
+    min-width: 42px;
+    min-height: 26px;
+    border: 1px solid rgba(210, 216, 228, 0.18);
+    border-radius: 6px;
+    background: #252b34;
+    color: #cbd5e1;
+    font: inherit;
+    font-size: 12px;
+  }
+
+  .world-lock-button.locked {
+    border-color: rgba(248, 113, 113, 0.55);
+    color: #fecaca;
+  }
+
+  .world-wiki-view {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    background: #181c23;
+  }
+
+  .world-wiki-view.empty {
+    color: #cbd5e1;
+  }
+
+  .world-wiki-header {
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .world-wiki-heading {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .world-wiki-heading h3 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  .world-wiki-heading p {
+    margin: 0;
+    color: #cbd5e1;
+  }
+
+  .world-wiki-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .world-lint-list {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid rgba(210, 216, 228, 0.14);
+    border-radius: 8px;
+    background: #111318;
+  }
+
+  .world-lint-list.empty {
+    color: #94a3b8;
+  }
+
+  .world-lint-list ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .world-lint-item {
+    padding: 6px 8px;
+    border-radius: 6px;
+    line-height: 1.4;
+  }
+
+  .world-markdown .md {
+    display: grid;
+    gap: 10px;
+    line-height: 1.6;
+  }
+
+  .world-markdown .md :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre) {
+    margin: 0;
+  }
+
+  .world-markdown .md pre {
+    overflow: auto;
+    padding: 10px;
+    border-radius: 6px;
+    background: #0d1117;
+  }
+
+  .world-relations,
+  .world-ref-jumps,
+  .world-edit-section {
+    display: grid;
+    gap: 8px;
+  }
+
+  .world-relations.empty,
+  .world-ref-jumps.empty,
+  .world-muted {
+    color: #94a3b8;
+  }
+
+  .world-edit-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .world-edit-field {
+    display: grid;
+    gap: 5px;
+    color: #cbd5e1;
+    font-size: 13px;
+  }
+
+  .world-edit-field.inline {
+    display: flex;
+    align-items: center;
+  }
+
+  .world-edit-field:has(.world-edit-body) {
+    grid-column: 1 / -1;
+  }
+
+  .world-edit-body {
+    min-height: 180px;
+    resize: vertical;
+    padding: 8px;
+    line-height: 1.5;
+  }
+
+  .world-edit-section {
+    padding-top: 10px;
+    border-top: 1px solid rgba(210, 216, 228, 0.12);
+  }
+
+  .world-edit-section h4 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .world-edit-list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .world-edit-row {
+    justify-content: space-between;
+    min-width: 0;
+    padding: 7px 8px;
+    border-radius: 6px;
+    background: #20242c;
+  }
+
+  .world-edit-row span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-edit-add-row {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .world-edit-add-row .world-edit-input {
+    min-width: 140px;
+    flex: 1 1 150px;
+  }
+
+  .world-edit-error {
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: #5b1b1b;
+    color: #fecaca;
+  }
+
+  @media (max-width: 820px) {
+    .world-panel {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+    }
+
+    .world-panel-header,
+    .world-panel-controls {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .world-search-input {
+      width: 100%;
+    }
+
+    .world-panel-main {
+      grid-template-columns: 1fr;
+    }
+
+    .world-browser {
+      border-right: 0;
+      border-bottom: 1px solid rgba(210, 216, 228, 0.14);
+      max-height: 52vh;
+    }
+
+    .world-edit-fields {
+      grid-template-columns: 1fr;
+    }
+  }
+}

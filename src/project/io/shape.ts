@@ -1,5 +1,6 @@
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
+import { normalizeWorld } from "../world/guards";
 import { assert, cloneJson, type JsonRecord, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateProjectReferences } from "./references";
 import {
@@ -72,6 +73,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   const project = cloneJson<Project>(data);
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
+  if (data.world !== undefined) project.world = normalizeWorld(data.world);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
   validateProjectReferences(project);
