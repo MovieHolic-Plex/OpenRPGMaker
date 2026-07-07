@@ -37,7 +37,13 @@ export function wobblePath(points: readonly Point[], naturalness: number, rng: R
   const padding = maxWobbleAmplitude(cells, n) + 2;
   const bounds = wobbleBounds(cells, padding);
   const controls = smoothControlPoints(wobbleControls(cells, n, bounds, rng), bounds);
-  const path = removeLoops(connectControls(controls, bounds, rng));
+  // 닫힌 폴리라인(시작=끝, 예: 광장 링)은 의도적 루프 — removeLoops가 경로 전체를
+  // 삼켜 1칸으로 퇴화시키던 버그(2026-07-08 마을 시공에서 발견). 열린 경로만 루프 제거.
+  const first = cells[0];
+  const last = cells[cells.length - 1];
+  const closed = cells.length > 2 && first.x === last.x && first.y === last.y;
+  const connected = connectControls(controls, bounds, rng);
+  const path = closed ? connected : removeLoops(connected);
   const widthCells = n >= 0.6 ? buildWidthCells(path, n, bounds, rng) : [];
   return { path, widthCells };
 }

@@ -223,3 +223,19 @@ describe("natural scatter tool integration", () => {
     expect(firstOrigin).toEqual(dataRecord<OriginData>(secondResult).origin);
   });
 });
+
+describe("wobblePath 닫힌 폴리라인 (2026-07-08 회귀)", () => {
+  it("닫힌 사각 루프 + naturalness>0이 1칸으로 퇴화하지 않는다", async () => {
+    const { wobblePath } = await import("@/editor/tools/naturalScatter");
+    const square = [
+      { x: 22, y: 22 }, { x: 29, y: 22 }, { x: 29, y: 29 }, { x: 22, y: 29 }, { x: 22, y: 22 },
+    ];
+    let seed = 7;
+    const rng = () => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return seed / 2147483648;
+    };
+    const result = wobblePath(square, 0.3, rng);
+    expect(result.path.length).toBeGreaterThanOrEqual(20); // 둘레(~28) 근처여야 정상
+  });
+});
