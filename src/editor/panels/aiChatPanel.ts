@@ -14,6 +14,7 @@ import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
 import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowserModal";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
+import type { ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { projectLint } from "@/project/lint/projectLint";
@@ -42,7 +43,14 @@ import {
 } from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { renderMarkdown } from "@/util/markdown";
-import { saveConversation, deriveTitle } from "@/ai/conversationStore";
+import {
+  deriveTitle,
+  loadConversation,
+  loadLatestConversation,
+  projectConversationContextKey,
+  saveConversation,
+  type ConversationRecord,
+} from "@/ai/conversationStore";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, pinnedSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { openSkillPalette, renderSkillDrawer, renderSlashList } from "@/editor/panels/aiSkillDrawer";
@@ -51,6 +59,12 @@ import { DEFAULT_BASE_URL, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, l
 const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
 const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
 const PANEL_SIZE_KEY = "rpg-zzu:ai-panel-size";
+const AI_PROGRESS_TOOL_LIMIT = 30;
+const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group"]);
+
+export interface AiChatPanelOptions {
+  readonly clock?: () => number;
+}
 
 type AiAssistDetail =
   | { readonly kind: "cluster-edit"; readonly tilesetId: string; readonly groupId: string }
@@ -89,6 +103,61 @@ export function loadPanelSize(): PanelSize | null {
 export function savePanelSize(size: PanelSize): void {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(clampPanelSize(size)));
+}
+
+export function formatAiRunningStatus(startedAt: number, now: number, toolCount: number, maxTools = AI_PROGRESS_TOOL_LIMIT): string {
+  const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
+  return `생각 중… ${elapsedSeconds}초 · 도구 ${toolCount}/${maxTools}`;
+}
+
+export function isDraftDestructiveTool(name: string): boolean {
+  return DRAFT_DESTRUCTIVE_TOOL_NAMES.has(name);
+}
+
+export function failedToolRetrySummary(summary: string): string {
+  const counts = [...summary.matchAll(/(\d+)회/gu)]
+    .map((match) => Number(match[1]))
+    .filter((count) => Number.isFinite(count) && count > 0);
+  const retryCount = counts.length > 0 ? Math.max(...counts) : 1;
+  return `내부 재시도 ${retryCount}회`;
+}
+
+export function formatToolActivityLine(name: string, result: ToolResult): string {
+  const mark = result.ok ? "✓" : "✗";
+  const draftPrefix = result.ok && isDraftDestructiveTool(name) ? "(초안) " : "";
+  return ruleToolRejectionText(name, result) ?? `${draftPrefix}${mark} ${name} — ${result.summary}`;
+}
+
+export function reasoningToggleText(count: number, collapsed: boolean): string {
+  const label = count > 1 ? `💭 추론 ${count}회` : "💭 추론";
+  return collapsed ? `${label} 보기 ▸` : `${label} ▾`;
+}
+
+export function isAiConfigReady(config: AiConfig): boolean {
+  return Boolean(config.baseUrl.trim() && config.model.trim() && config.apiKey.trim());
+}
+
+export function displayUserAuditText(text: string): string {
+  return text.split(/\n\n\[컨텍스트\]/u)[0] ?? text;
+}
+
+export function renderToolActivityEntry(name: string, result: ToolResult): HTMLElement {
+  if (result.ok) return el("div", { class: "ai-tool-activity-line", text: formatToolActivityLine(name, result) });
+  const draftPrefix = isDraftDestructiveTool(name) ? "(초안) " : "";
+  return el("details", {
+    class: "ai-tool-activity-line ai-tool-failure",
+    dataset: { testid: "ai-tool-failure" },
+    children: [
+      el("summary", {
+        text: `${draftPrefix}✗ ${name} — ${failedToolRetrySummary(result.summary)}`,
+        dataset: { testid: "ai-tool-failure-summary" },
+      }),
+      el("div", {
+        class: "ai-tool-failure-body",
+        text: "이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.",
+      }),
+    ],
+  });
 }
 
 function loadPanelCollapsed(): boolean {
@@ -270,11 +339,17 @@ function dropSession(controller: ChatController): void {
   clearAgentGhostPreview();
 }
 
-export function renderAiChatPanel(): HTMLElement {
+export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
+  const now = options.clock ?? (() => Date.now());
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
+  const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
+  const latestConversation = loadLatestConversation();
+  const autoRestoreConversation =
+    latestConversation?.projectContextKey === currentProjectContextKey ? latestConversation : null;
+  const resumeCandidate = autoRestoreConversation ? null : latestConversation;
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
   // '새 대화' 시 재발급된다.
-  let conversationId = genId("conv");
+  let conversationId = autoRestoreConversation?.id ?? genId("conv");
   // 현재까지의 전체 대화(폐기된 세션 + 현재 세션)를 대화 기록 저장소에 저장한다.
   const persistConversation = (): void => {
     const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
@@ -285,19 +360,30 @@ export function renderAiChatPanel(): HTMLElement {
       model: loadAiConfig().model,
       savedAt: Date.now(),
       entries: [...entries],
+      projectContextKey: projectConversationContextKey(store.getCurrent()),
     });
+    refreshExportButton();
   };
 
   const status = el("span", { class: "ai-assistant-status", text: "대기", dataset: { testid: "ai-status" } });
   // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 로그 export로 "검토 대기" 멈춤을 진단 가능.
-  const setStatus = (text: string): void => {
+  const setStatus = (text: string, record = true): void => {
     status.textContent = text;
-    controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
+    if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
   const proposalHost = el("div", { class: "ai-proposal-host", dataset: { testid: "ai-proposal-host" } });
   // 원탭 답변 칩(맵 인터뷰 등 "[선택지] a | b" 마커가 있는 응답에 표시).
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
+  let exportButton: HTMLButtonElement | null = null;
+  const hasExportableConversation = (): boolean =>
+    [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
+  const refreshExportButton = (): void => {
+    if (!exportButton) return;
+    const disabled = !hasExportableConversation();
+    exportButton.disabled = disabled;
+    exportButton.setAttribute("aria-disabled", String(disabled));
+  };
 
   const input = el("textarea", {
     class: "ai-assistant-input",
@@ -324,6 +410,14 @@ export function renderAiChatPanel(): HTMLElement {
     else settings.element.classList.add("ai-config-collapsed");
   };
   applySettingsOpen();
+  const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
+    settingsOpen = true;
+    settings.element.classList.remove("ai-config-collapsed");
+    settings.element.setAttribute("open", "");
+    (settings.element as HTMLDetailsElement).open = true;
+    if (focusTarget === "apiKey") settings.focusApiKey();
+    else settings.focusFirstInput();
+  };
 
   // 시작 화면(빈 대화) — 첫 콘텐츠가 붙는 순간 제거된다.
   let startScreen: HTMLElement | null = null;
@@ -352,17 +446,30 @@ export function renderAiChatPanel(): HTMLElement {
     if (bubble && raw.trim()) bubble.replaceChildren(renderMarkdown(raw));
   };
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
+  let lastReasoning: { box: HTMLElement; body: HTMLElement; toggle: HTMLElement; count: number } | null = null;
   const appendReasoning = (): { body: HTMLElement } => {
     removeStartScreen();
+    if (lastReasoning?.box.parentNode === log && log.childNodes[log.childNodes.length - 1] === lastReasoning.box) {
+      lastReasoning.count += 1;
+      lastReasoning.body.textContent = `${lastReasoning.body.textContent ?? ""}\n\n`;
+      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.count, lastReasoning.body.hidden);
+      log.scrollTop = log.scrollHeight;
+      return { body: lastReasoning.body };
+    }
     const body = el("div", { class: "ai-reasoning-body", dataset: { testid: "ai-reasoning-body" } });
     body.hidden = true;
-    const toggle = el("button", { class: "ai-reasoning-toggle", attrs: { type: "button", title: "모델의 추론 펼치기/접기" }, text: "💭 추론 보기 ▸" });
+    const toggle = el("button", {
+      class: "ai-reasoning-toggle",
+      attrs: { type: "button", title: "모델의 추론 펼치기/접기", "aria-label": "추론 펼치기/접기" },
+      text: reasoningToggleText(1, true),
+    });
     toggle.addEventListener("click", () => {
       body.hidden = !body.hidden;
-      toggle.textContent = body.hidden ? "💭 추론 보기 ▸" : "💭 추론 ▾";
+      toggle.textContent = reasoningToggleText(lastReasoning?.toggle === toggle ? lastReasoning.count : 1, body.hidden);
     });
     const box = el("div", { class: "ai-chat-bubble ai-reasoning", dataset: { testid: "ai-reasoning" }, children: [toggle, body] });
     log.append(box);
+    lastReasoning = { box, body, toggle, count: 1 };
     log.scrollTop = log.scrollHeight;
     return { body };
   };
@@ -373,28 +480,72 @@ export function renderAiChatPanel(): HTMLElement {
   const closeToolActivity = (): void => {
     toolActivity = null;
   };
-  const appendToolLine = (text: string): void => {
+  const appendToolLine = (name: string, result: ToolResult): void => {
     if (!toolActivity) {
       const list = el("div", { class: "ai-tool-activity-list" });
       list.hidden = true;
       const toggle = el("button", {
         class: "ai-tool-activity-toggle",
-        attrs: { type: "button", title: "툴 실행 내역 펼치기/접기" },
+        attrs: { type: "button", title: "툴 실행 내역 펼치기/접기", "aria-label": "도구 실행 내역 펼치기/접기" },
         dataset: { testid: "ai-tool-activity-toggle" },
       });
       const group = el("div", { class: "ai-chat-bubble ai-chat-tool-activity", dataset: { testid: "ai-tool-activity" }, children: [toggle, list] });
       const current = { list, toggle, count: 0 };
       toggle.addEventListener("click", () => {
         list.hidden = !list.hidden;
-        current.toggle.textContent = `🔧 툴 ${current.count}회 실행 ${list.hidden ? "▸" : "▾"}`;
+        current.toggle.textContent = `🔧 도구 ${current.count}회 실행 ${list.hidden ? "▸" : "▾"}`;
       });
       log.append(group);
       toolActivity = current;
     }
     toolActivity.count += 1;
-    toolActivity.list.append(el("div", { class: "ai-tool-activity-line", text }));
-    toolActivity.toggle.textContent = `🔧 툴 ${toolActivity.count}회 실행 ${toolActivity.list.hidden ? "▸" : "▾"}`;
+    toolActivity.list.append(renderToolActivityEntry(name, result));
+    toolActivity.toggle.textContent = `🔧 도구 ${toolActivity.count}회 실행 ${toolActivity.list.hidden ? "▸" : "▾"}`;
     log.scrollTop = log.scrollHeight;
+  };
+
+  const renderConversationEntry = (entry: AuditEntry): void => {
+    if (entry.kind === "user") {
+      closeToolActivity();
+      appendBubble("user", displayUserAuditText(entry.text));
+      return;
+    }
+    if (entry.kind === "assistant" && entry.text.trim()) {
+      closeToolActivity();
+      appendBubble("assistant", entry.text);
+      return;
+    }
+    if (entry.kind === "tool") {
+      appendToolLine(entry.name, {
+        ok: entry.ok,
+        summary: entry.summary,
+        issues: entry.issues?.map((message) => ({ severity: "error", code: "restored-tool", message })),
+      });
+    }
+  };
+
+  const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual"): void => {
+    dropSession(controller);
+    controller.auditHistory = [...record.entries];
+    conversationId = record.id;
+    proposalHost.replaceChildren();
+    chipsHost.replaceChildren();
+    log.replaceChildren();
+    startScreen = null;
+    closeToolActivity();
+    for (const entry of record.entries) renderConversationEntry(entry);
+    setStatus(source === "auto" ? "대화 복원됨" : "이전 대화");
+    refreshExportButton();
+    if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
+  };
+
+  const restoreConversationById = (id: string): void => {
+    const record = loadConversation(id);
+    if (!record) {
+      toast("이전 대화를 찾을 수 없습니다.", "error");
+      return;
+    }
+    restoreConversationRecord(record, "manual");
   };
 
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜). 사용자가 "어떤 타일인지"를
@@ -653,9 +804,79 @@ export function renderAiChatPanel(): HTMLElement {
     if (next) void sendText(next.text, next.displayAs);
   };
 
+  let keyPromptBubble: HTMLElement | null = null;
+  const appendOpenSettingsButton = (bubble: HTMLElement, focusTarget: "first" | "apiKey" = "apiKey"): void => {
+    const button = el("button", {
+      class: "ai-assistant-action ai-error-open-settings",
+      text: "설정 열기",
+      attrs: { type: "button", title: "어시스턴트 설정을 열고 API 키 입력으로 이동합니다" },
+      dataset: { testid: "ai-error-open-settings" },
+      on: { click: () => openAiSettings(focusTarget) },
+    });
+    bubble.append(el("div", { class: "ai-retry-row", children: [button] }));
+  };
+  const showMissingKeyPrompt = (): void => {
+    openAiSettings("apiKey");
+    if (keyPromptBubble?.parentNode) return;
+    keyPromptBubble = appendBubble("system", "API 키가 필요합니다. 설정을 열어 OpenRouter 키를 입력하세요.");
+    appendOpenSettingsButton(keyPromptBubble, "apiKey");
+  };
+  const ensureConfigReadyForSend = (): boolean => {
+    if (isAiConfigReady(loadAiConfig())) return true;
+    showMissingKeyPrompt();
+    toast("AI 설정에서 API 키를 먼저 입력하세요.", "error");
+    return false;
+  };
+  let abortButton: HTMLButtonElement | null = null;
+  let activeAbortController: AbortController | null = null;
+  let abortNoticeShown = false;
+  let runningProgress: { startedAt: number; toolCount: number } | null = null;
+  let progressTimer: number | null = null;
+  const refreshAbortButton = (): void => {
+    if (!abortButton) return;
+    const running = Boolean(activeAbortController && !activeAbortController.signal.aborted);
+    abortButton.hidden = !turnBusy;
+    abortButton.disabled = !running;
+    abortButton.setAttribute("aria-disabled", String(!running));
+  };
+  const refreshRunningStatus = (record = false): void => {
+    if (!runningProgress) return;
+    setStatus(formatAiRunningStatus(runningProgress.startedAt, now(), runningProgress.toolCount), record);
+  };
+  const beginTurnProgress = (): void => {
+    runningProgress = { startedAt: now(), toolCount: 0 };
+    refreshRunningStatus(true);
+    if (typeof window !== "undefined" && typeof window.setInterval === "function") {
+      progressTimer = window.setInterval(() => refreshRunningStatus(false), 1000);
+    }
+  };
+  const bumpToolProgress = (): void => {
+    if (!runningProgress) return;
+    runningProgress.toolCount += 1;
+    refreshRunningStatus(false);
+  };
+  const endTurnProgress = (): void => {
+    if (progressTimer !== null && typeof window !== "undefined") window.clearInterval(progressTimer);
+    progressTimer = null;
+    runningProgress = null;
+  };
+  const abortActiveTurn = (): void => {
+    if (!activeAbortController || activeAbortController.signal.aborted) return;
+    activeAbortController.abort();
+    pendingSends.length = 0;
+    refreshQueueIndicator();
+    if (!abortNoticeShown) {
+      appendBubble("system", "사용자가 중단했습니다.");
+      abortNoticeShown = true;
+    }
+    setStatus("중단 중…");
+    refreshAbortButton();
+  };
+
   const sendText = async (text: string, displayAs?: string): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
+    if (!ensureConfigReadyForSend()) return;
     if (turnBusy) {
       pendingSends.push({ text: trimmed, ...(displayAs !== undefined ? { displayAs } : {}) });
       refreshQueueIndicator();
@@ -665,8 +886,8 @@ export function renderAiChatPanel(): HTMLElement {
     closeToolActivity();
     appendBubble("user", displayAs ?? trimmed);
     const session = ensureSession();
-    await executeTurn(session, trimmed, (onEvent) =>
-      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent)
+    await executeTurn(session, trimmed, (onEvent, signal) =>
+      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal)
     );
   };
 
@@ -675,14 +896,18 @@ export function renderAiChatPanel(): HTMLElement {
   const executeTurn = async (
     session: AssistantSession,
     requestText: string,
-    exec: (onEvent: (event: SessionEvent) => void) => Promise<TurnResult>
+    exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>
   ): Promise<void> => {
     if (turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
     turnBusy = true;
-    setStatus("생각 중…");
+    const abortController = new AbortController();
+    activeAbortController = abortController;
+    abortNoticeShown = false;
+    beginTurnProgress();
+    refreshAbortButton();
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
@@ -706,8 +931,8 @@ export function renderAiChatPanel(): HTMLElement {
         assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
         log.scrollTop = log.scrollHeight;
       } else if (event.type === "tool_call") {
-        const mark = event.result.ok ? "✓" : "✗";
-        appendToolLine(ruleToolRejectionText(event.name, event.result) ?? `${mark} ${event.name} — ${event.result.summary}`);
+        bumpToolProgress();
+        appendToolLine(event.name, event.result);
         assistantBubble = null; // 툴 이후 새 assistant 응답은 새 버블.
         reasoningBox = null; // 툴 이후 새 추론은 새 상자.
         // 밑그림(스펙) 확정: 중간과정 가시화 — 에셋별 할당 영역을 카드로 보여준다.
@@ -769,7 +994,13 @@ export function renderAiChatPanel(): HTMLElement {
     };
 
     try {
-      const result = await exec(onEvent);
+      const result = await exec(onEvent, abortController.signal);
+      endTurnProgress();
+      if (result.stoppedReason === "aborted") {
+        setStatus("대기");
+        streamedBubbles.forEach(renderStreamedMarkdown);
+        return;
+      }
       const completenessWarnings = result.stoppedReason === "error"
         ? []
         : proposalCompletenessWarnings({
@@ -797,7 +1028,7 @@ export function renderAiChatPanel(): HTMLElement {
             ? "검토 대기"
             : completenessWarnings.length > 0
             ? "완료 — 변경 없음(린트 경고)"
-            : status.textContent === "생각 중…"
+            : !runningProgress
             ? "완료"
             : status.textContent ?? ""
         );
@@ -810,11 +1041,15 @@ export function renderAiChatPanel(): HTMLElement {
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
+      endTurnProgress();
       setStatus("오류");
       appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
     } finally {
+      endTurnProgress();
+      if (activeAbortController === abortController) activeAbortController = null;
       sendButton.disabled = false;
       turnBusy = false;
+      refreshAbortButton();
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
@@ -826,7 +1061,21 @@ export function renderAiChatPanel(): HTMLElement {
   // llmClient.chatCompletion이 이미 수행했고, 여기의 버튼은 그 이후의 수동 재개다.
   const appendErrorWithRetry = (message: string, session: AssistantSession, requestText: string): void => {
     const bubble = appendBubble("system", `오류: ${message}`);
-    if (!session.canRetryLastTurn()) return;
+    const actions: HTMLElement[] = [];
+    if (message.includes("API 키") || message.includes("인증 실패") || message.includes("401")) {
+      const settingsAction = el("button", {
+        class: "ai-assistant-action ai-error-open-settings",
+        text: "설정 열기",
+        attrs: { type: "button", title: "어시스턴트 설정을 열고 API 키 입력으로 이동합니다" },
+        dataset: { testid: "ai-error-open-settings" },
+        on: { click: () => openAiSettings("apiKey") },
+      });
+      actions.push(settingsAction);
+    }
+    if (!session.canRetryLastTurn()) {
+      if (actions.length > 0) bubble.append(el("div", { class: "ai-retry-row", children: actions }));
+      return;
+    }
     const retry = el("button", {
       class: "ai-assistant-action ai-retry-turn",
       text: "재시도",
@@ -835,11 +1084,12 @@ export function renderAiChatPanel(): HTMLElement {
       on: {
         click: () => {
           retry.disabled = true;
-          void executeTurn(session, requestText, (onEvent) => session.retryLastTurn(onEvent));
+          void executeTurn(session, requestText, (onEvent, signal) => session.retryLastTurn(onEvent, signal));
         },
       },
     }) as HTMLButtonElement;
-    bubble.append(el("div", { class: "ai-retry-row", children: [retry] }));
+    actions.unshift(retry);
+    bubble.append(el("div", { class: "ai-retry-row", children: actions }));
   };
 
   // 풀스크린 테스트 플레이 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
@@ -856,6 +1106,7 @@ export function renderAiChatPanel(): HTMLElement {
   const send = async (): Promise<void> => {
     const text = input.value.trim();
     if (!text) return;
+    if (!ensureConfigReadyForSend()) return;
     lastTypedMessage = text;
     input.value = "";
     refreshSlash();
@@ -987,12 +1238,22 @@ export function renderAiChatPanel(): HTMLElement {
         ],
       })
     );
+    const resume = resumeCandidate
+      ? [el("button", {
+          class: "ai-assistant-action ai-resume-conversation",
+          text: "이전 대화 이어가기",
+          attrs: { type: "button", title: "저장된 직전 AI 대화를 엽니다" },
+          dataset: { testid: "ai-resume-conversation" },
+          on: { click: () => restoreConversationById(resumeCandidate.id) },
+        })]
+      : [];
     return el("div", {
       class: "ai-start-screen",
       dataset: { testid: "ai-start-screen" },
       children: [
         el("div", { class: "ai-start-title", text: "무엇을 만들까요?" }),
         el("div", { class: "ai-start-sub", text: "자연어로 요청하거나, 스킬로 시작하세요. (입력창 / · Ctrl+K)" }),
+        ...resume,
         el("div", { class: "ai-start-grid", children: cards }),
         el("div", {
           class: "ai-start-guide",
@@ -1009,13 +1270,16 @@ export function renderAiChatPanel(): HTMLElement {
       ],
     });
   };
-  startScreen = buildStartScreen();
-  log.append(startScreen);
+  if (autoRestoreConversation) restoreConversationRecord(autoRestoreConversation, "auto");
+  else {
+    startScreen = buildStartScreen();
+    log.append(startScreen);
+  }
 
   const skillToggle = el("button", {
     class: "ai-assistant-action ai-skill-toggle",
     text: "+",
-    attrs: { type: "button", title: "스킬 서랍 열기 — 입력창에 /를 쳐도 검색됩니다" },
+    attrs: { type: "button", title: "스킬 서랍 열기 — 입력창에 /를 쳐도 검색됩니다", "aria-label": "스킬 서랍 열기" },
     dataset: { testid: "ai-skill-drawer-toggle" },
     on: { click: () => drawer.toggle() },
   });
@@ -1051,12 +1315,13 @@ export function renderAiChatPanel(): HTMLElement {
   };
   refreshContextChips();
   editorState.subscribe(() => refreshContextChips());
+  store.subscribe(() => refreshContextChips());
 
   // 접기 토글 — 상태는 localStorage에 유지되어 새로고침/모드 전환 후에도 기억된다.
   let collapsed = loadPanelCollapsed();
   const collapseButton = el("button", {
     class: "ai-chat-collapse",
-    attrs: { type: "button", title: "패널 접기/펼치기", "aria-expanded": String(!collapsed) },
+    attrs: { type: "button", title: "패널 접기/펼치기", "aria-label": "AI 패널 접기/펼치기", "aria-expanded": String(!collapsed) },
     dataset: { testid: "ai-collapse" },
   }) as HTMLButtonElement;
   const collapsedRestore = el("button", {
@@ -1075,27 +1340,24 @@ export function renderAiChatPanel(): HTMLElement {
   const toolsButton = el("button", {
     class: "ai-chat-tools-button",
     text: "🧰",
-    attrs: { type: "button", title: `AI가 쓸 수 있는 툴 ${totalToolCount()}개 보기` },
+    attrs: { type: "button", title: `AI가 쓸 수 있는 툴 ${totalToolCount()}개 보기`, "aria-label": "AI 도구 보기" },
     dataset: { testid: "ai-tools-browser" },
     on: { click: () => void openToolBrowserModal() },
   });
   const settingsButton = el("button", {
     class: "ai-chat-tools-button",
     text: "⚙",
-    attrs: { type: "button", title: "엔드포인트/모델/API 키 설정" },
+    attrs: { type: "button", title: "엔드포인트/모델/API 키 설정", "aria-label": "AI 설정 열기" },
     dataset: { testid: "ai-settings-toggle" },
     on: {
-      click: () => {
-        settingsOpen = !settingsOpen;
-        applySettingsOpen();
-      },
+      click: () => openAiSettings("first"),
     },
   });
   // 감사 로그 내보내기 — 도구줄에 라벨 달아 상주(중요 기능이라 잘 보이게, #5).
-  const exportButton = el("button", {
+  exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
-    text: "📥 로그",
-    attrs: { type: "button", title: "이 대화의 감사 로그를 JSON으로 내보내기 — 무엇을 했는지 기록" },
+    text: "내보내기",
+    attrs: { type: "button", title: "이 대화의 감사 로그를 JSON으로 내보내기 — 무엇을 했는지 기록", "aria-label": "대화 내보내기" },
     dataset: { testid: "ai-export" },
     on: {
       click: () => {
@@ -1107,7 +1369,8 @@ export function renderAiChatPanel(): HTMLElement {
         downloadJson("ai-session-audit.json", json);
       },
     },
-  });
+  }) as HTMLButtonElement;
+  refreshExportButton();
   const undoLastButton = el("button", {
     class: "ai-assistant-action ai-undo-last",
     text: "↶ 되돌리기",
@@ -1131,7 +1394,7 @@ export function renderAiChatPanel(): HTMLElement {
   const studioButton = el("button", {
     class: "ai-chat-tools-button",
     text: "⛶",
-    attrs: { type: "button", title: "AI 스튜디오 — 넓게 펼치기/되돌리기" },
+    attrs: { type: "button", title: "AI 스튜디오 — 넓게 펼치기/되돌리기", "aria-label": "AI 스튜디오 펼치기" },
     dataset: { testid: "ai-studio-toggle" },
   });
   // 오른쪽 사이드바(도킹) ↔ 떠 있는 말풍선 전환. 도킹이 기본값.
@@ -1140,7 +1403,7 @@ export function renderAiChatPanel(): HTMLElement {
   const dockButton = el("button", {
     class: "ai-chat-tools-button",
     text: "⇥",
-    attrs: { type: "button", title: "사이드바 도킹 ↔ 떠 있는 말풍선" },
+    attrs: { type: "button", title: "사이드바 도킹 ↔ 떠 있는 말풍선", "aria-label": "AI 패널 도킹 전환" },
     dataset: { testid: "ai-dock-toggle" },
   });
   // 새 대화(#6): 현재 대화를 기록에 저장하고 문맥을 비운다. 대화가 길수록 비용이 늘어나므로 새 주제는 새 대화로.
@@ -1161,14 +1424,30 @@ export function renderAiChatPanel(): HTMLElement {
         startScreen = buildStartScreen();
         log.append(startScreen);
         setStatus("새 대화");
+        refreshExportButton();
         toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
       },
     },
   });
+  abortButton = el("button", {
+    class: "ai-assistant-action ai-abort-button",
+    text: "중단",
+    attrs: { type: "button", title: "진행 중인 AI 응답을 중단합니다", "aria-label": "AI 응답 중단" },
+    dataset: { testid: "ai-abort" },
+    on: { click: abortActiveTurn },
+  }) as HTMLButtonElement;
+  abortButton.hidden = true;
+  abortButton.disabled = true;
+  abortButton.setAttribute("aria-disabled", "true");
   // 제목줄(항상 보임): 제목·상태·접기. 아이콘 뭉침을 걷어내 접었을 때도 깔끔하게.
+  const statusGroup = el("div", {
+    class: "ai-status-group",
+    dataset: { testid: "ai-status-group" },
+    children: [status, abortButton],
+  });
   const header = el("div", {
     class: "ai-chat-header",
-    children: [titleEl, status, collapseButton],
+    children: [titleEl, statusGroup, collapseButton],
   });
   // 도구줄(접으면 숨김): 주요 액션을 그룹으로 정리 — 새 대화 · 로그 | 설정 · 툴 | 도킹 · 스튜디오.
   const toolbar = el("div", {
@@ -1256,6 +1535,7 @@ export function renderAiChatPanel(): HTMLElement {
     else panel.classList.remove("is-collapsed");
     collapseButton.textContent = collapsed ? "▸" : "▾";
     collapseButton.setAttribute("title", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
+    collapseButton.setAttribute("aria-label", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
     collapseButton.setAttribute("aria-expanded", String(!collapsed));
     // 도킹 상태에서 접으면 에디터 인셋(우측 여백)을 해제한다.
     if (typeof document !== "undefined" && document.body) {
@@ -1297,10 +1577,12 @@ export function renderAiChatPanel(): HTMLElement {
       drawer.element.hidden = false;
       drawer.refresh();
       studioButton.textContent = "🗗";
+      studioButton.setAttribute("aria-label", "AI 스튜디오 되돌리기");
     } else {
       panel.classList.remove("is-studio");
       drawer.element.hidden = true;
       studioButton.textContent = "⛶";
+      studioButton.setAttribute("aria-label", "AI 스튜디오 펼치기");
       applyDock(docked); // 스튜디오 해제 시 도킹 선호를 복원(또는 떠 있는 말풍선).
     }
   };
@@ -1318,10 +1600,12 @@ export function renderAiChatPanel(): HTMLElement {
       panel.classList.add("is-docked");
       dockButton.textContent = "⇤";
       dockButton.setAttribute("title", "떠 있는 말풍선으로 전환");
+      dockButton.setAttribute("aria-label", "AI 패널을 떠 있는 말풍선으로 전환");
     } else {
       panel.classList.remove("is-docked");
       dockButton.textContent = "⇥";
       dockButton.setAttribute("title", "오른쪽 사이드바로 도킹");
+      dockButton.setAttribute("aria-label", "AI 패널을 오른쪽 사이드바로 도킹");
     }
     if (typeof document !== "undefined" && document.body) {
       document.body.classList[docked && !collapsed ? "add" : "remove"]("ai-panel-docked");
@@ -1333,12 +1617,6 @@ export function renderAiChatPanel(): HTMLElement {
   if (studio) applyStudio(true);
   else applyDock(docked);
 
-  const openAiSettings = (): void => {
-    settingsOpen = true;
-    settings.element.setAttribute("open", "");
-    applySettingsOpen();
-  };
-
   const handleAiAssist = (event: Event): void => {
     const detail = event instanceof CustomEvent ? event.detail : null;
     if (!isAiAssistDetail(detail)) return;
@@ -1348,8 +1626,8 @@ export function renderAiChatPanel(): HTMLElement {
       return;
     }
     const config = loadAiConfig();
-    if (!config.baseUrl.trim() || !config.model.trim() || !config.apiKey.trim()) {
-      openAiSettings();
+    if (!isAiConfigReady(config)) {
+      openAiSettings("apiKey");
       toast("AI 설정(엔드포인트/키)을 먼저 완료하세요", "error");
       return;
     }
@@ -1393,7 +1671,7 @@ const DOCK_MODE_KEY = "rpg-zzu:ai-panel-docked";
 // ── 설정 폼(접이식) ─────────────────────────────────────────────
 // 입력이 바뀌면 즉시 localStorage에 자동 저장한다 — "저장 버튼을 안 눌러서 날아가는" 문제 방지.
 // onSaved 콜백으로 진행 중인 세션에도 새 설정을 반영한다.
-function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTMLElement } {
+function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
   const config = loadAiConfig();
   const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
   const model = textField("모델", config.model, "ai-config-model", "text", DEFAULT_MODEL);
@@ -1502,7 +1780,11 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
       el("div", { class: "ai-config-actions", children: [saveButton, savedHint] }),
     ],
   });
-  return { element: details };
+  return {
+    element: details,
+    focusFirstInput: () => baseUrl.input.focus(),
+    focusApiKey: () => apiKey.input.focus(),
+  };
 }
 
 function textField(

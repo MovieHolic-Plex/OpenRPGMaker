@@ -182,13 +182,27 @@ body:has([data-testid='resource-modal']) .ai-chat-panel {
   margin: 0;
   user-select: none;
 }
+.ai-status-group {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
 .ai-chat-header .ai-assistant-status {
   background: var(--accent-muted);
   border-color: var(--accent-border);
   font-size: 11px;
   font-weight: 600;
-  margin-right: auto;
   padding: 2px 8px;
+}
+.ai-abort-button {
+  border-color: var(--danger, #d85c5c);
+  color: var(--danger, #d85c5c);
+  font-size: 11px;
+  min-height: 24px;
+  padding: 2px 8px;
+}
+.ai-abort-button[hidden] {
+  display: none;
 }
 .ai-chat-collapse {
   background: transparent;
@@ -230,6 +244,10 @@ body:has([data-testid='resource-modal']) .ai-chat-panel {
   min-height: 28px;
   padding: 4px 10px;
   white-space: nowrap;
+}
+.ai-export-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 .ai-new-session {
   border-color: var(--accent);
@@ -1392,6 +1410,16 @@ body.ai-panel-docked .editor-layout {
   font-size: 11px;
   line-height: 1.4;
 }
+.ai-tool-failure {
+  color: var(--text-3);
+}
+.ai-tool-failure summary {
+  cursor: pointer;
+}
+.ai-tool-failure-body {
+  color: var(--text-3);
+  padding: 3px 0 2px 12px;
+}
 
 /* ── AI 스튜디오 모드 + 시작 화면 + 핀 바 + 팔레트(2026-07-05) ───── */
 .ai-chat-body {
@@ -1568,6 +1596,10 @@ body.ai-panel-docked .editor-layout {
 
 .ai-skill-pin-more {
   color: var(--text-2);
+}
+.ai-resume-conversation {
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 /* Ctrl+K 스킬 팔레트 */

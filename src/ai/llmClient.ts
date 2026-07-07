@@ -127,6 +127,13 @@ export class LlmError extends Error {
   }
 }
 
+export class LlmAbortError extends Error {
+  constructor(message = "사용자가 중단했습니다") {
+    super(message);
+    this.name = "LlmAbortError";
+  }
+}
+
 function humanizeStatus(status: number, body: string): string {
   const detail = body ? ` — ${body.slice(0, 300)}` : "";
   switch (status) {
@@ -299,6 +306,10 @@ export function isRetryableLlmError(error: unknown): boolean {
   return error.status === undefined || error.status === 429 || error.status >= 500;
 }
 
+export function isLlmAbortError(error: unknown): boolean {
+  return error instanceof LlmAbortError || (error instanceof Error && error.name === "AbortError");
+}
+
 // Chat Completions 호출 + 일시 오류 자동 재시도 1회(지수 백오프).
 // 스트리밍 도중(토큰이 이미 UI로 나간 뒤) 끊긴 경우는 중복 출력을 피하기 위해 재시도하지 않는다.
 export async function chatCompletion(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
@@ -353,6 +364,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
       signal: req.signal,
     });
   } catch (cause) {
+    if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${config.baseUrl}). ${cause instanceof Error ? cause.message : ""}`);
   }
 
