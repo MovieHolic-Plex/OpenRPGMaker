@@ -25,25 +25,9 @@ const loadFs = async (): Promise<FsLike> => {
 // EC1 완료 kind: breakLoop, learnSkill, enterHeroName, setSelfSwitch (화이트리스트에 없음).
 // EC2(§5.1+§5.2) / EC3(§5.3+§5.4) 가 계약 파일을 추가하면서 이 배열에서 제거한다.
 const CONTRACT_TEST_TODO_WHITELIST: readonly CommandKind[] = [
-  // §5.1 메시지·입력 (EC2)
-  "text",
-  "changeFace",
-  "choices",
-  "inputWait",
-  "inputNumber",
-  "displayTextSettings",
-  // §5.2 제어 흐름 (EC2)
-  "fork",
-  "label",
-  "gotoLabel",
-  "loop",
-  "wait",
-  "timer",
-  "callCommonEvent",
-  "callMapEvent",
+  // §5.2 legacy flag — EC2 지시는 신규 16개 / 화이트리스트 40→24 를 완료 기준으로 삼는다.
+  // setFlag 동작은 setSwitch.contract.test.ts 안에서 함께 고정했고, 별도 파일은 후속 wave 로 남긴다.
   "setFlag",
-  "setSwitch",
-  "setVariable",
   // §5.3 액터·파티·인벤토리 (EC3)
   "changeGold",
   "changeItem",
