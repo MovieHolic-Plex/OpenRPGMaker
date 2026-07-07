@@ -5,6 +5,13 @@
 
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import {
+  applyBuildPalettePrimitive,
+  type BuildPaletteApplyOptions,
+  type BuildPalettePrimitive,
+  type BuildPaletteResult,
+  type BuildPaletteSelection,
+} from "@/editor/panels/buildPaletteCore";
 import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
@@ -26,6 +33,12 @@ type RegionTaskHarness = {
 type EditorToolHookWindow = Window & {
   __rpgzzuEditorTool?: (name: string, args: Record<string, unknown>) => ToolResult;
   __rpgzzuRegionTaskHarness?: RegionTaskHarness;
+  // 헤드리스 건축 팔레트 — UI 드래그 없이 프리미티브/프리셋 시공을 재현(스냅샷+store 반영+자동저장 동일).
+  __rpgzzuBuildPalette?: (
+    selection: BuildPaletteSelection,
+    primitive: BuildPalettePrimitive,
+    options?: BuildPaletteApplyOptions
+  ) => BuildPaletteResult;
 };
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
@@ -64,6 +77,9 @@ export function installEditorToolHook(): void {
     }
     return result;
   };
+
+  w.__rpgzzuBuildPalette = (selection, primitive, options = {}) =>
+    applyBuildPalettePrimitive(selection, primitive, options);
 
   w.__rpgzzuRegionTaskHarness = {
     setSelection: (selection) => editorState.set({ selection: selection ?? null }),
