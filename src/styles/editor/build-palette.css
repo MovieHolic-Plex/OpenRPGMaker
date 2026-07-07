@@ -36,6 +36,39 @@
   gap: 6px;
 }
 
+.build-house-preset-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.build-house-preset-button {
+  min-width: 0;
+  min-height: 26px;
+  padding: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #cbd5e1;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.1;
+  cursor: pointer;
+}
+
+.build-house-preset-button.active {
+  border-color: rgba(45, 212, 191, 0.9);
+  background: rgba(20, 83, 76, 0.95);
+  color: #f8fafc;
+}
+
+.build-house-preset-button:hover,
+.build-house-preset-button:focus-visible {
+  border-color: rgba(45, 212, 191, 0.85);
+  outline: none;
+}
+
 .build-palette-button {
   min-width: 0;
   min-height: 30px;

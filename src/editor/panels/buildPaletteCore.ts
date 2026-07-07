@@ -1,4 +1,12 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import {
+  buildHouseFootprintCells,
+  createHousePresets,
+  stampHousePlan,
+  validateHousePlanSelection,
+  type HousePreset,
+  type HousePresetId,
+} from "@/editor/panels/housePlan";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { buildEightNeighborVariantMap, derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
@@ -8,7 +16,7 @@ import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedT
 import { store } from "@/project/store";
 import type { MapId, Project, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 
-export type BuildPalettePrimitive = "house" | "river" | "path" | "roof" | "npc" | "tree" | "prop";
+export type BuildPalettePrimitive = "house" | "village" | "river" | "path" | "roof" | "npc" | "tree" | "prop";
 
 export interface BuildPaletteSelection {
   readonly mapId: MapId;
@@ -22,6 +30,10 @@ export interface BuildPaletteResult {
   readonly ok: boolean;
   readonly summary: string;
   readonly toolResults: readonly ToolResult[];
+}
+
+export interface BuildPaletteApplyOptions {
+  readonly housePresetId?: HousePresetId;
 }
 
 type PresetRole = "wall" | "door" | "window" | "roof" | "path" | "water" | "tree" | "prop";
@@ -43,6 +55,15 @@ export const BUILD_PALETTE_PRESETS: Record<PresetRole, string> = {
   prop: `${P}small-props`,
 };
 
+export const HOUSE_PRESETS = createHousePresets({
+  wall: BUILD_PALETTE_PRESETS.wall,
+  roof: BUILD_PALETTE_PRESETS.roof,
+  door: BUILD_PALETTE_PRESETS.door,
+  window: BUILD_PALETTE_PRESETS.window,
+});
+
+export const DEFAULT_HOUSE_PRESET_ID: HousePresetId = "cottage-1f";
+
 interface PresetClaim {
   readonly name: string;
   readonly role: TileGroupRole;
@@ -61,11 +82,11 @@ const PRESET_CLAIMS: Record<PresetRole, PresetClaim> = {
   prop: { name: "마을 소품", role: "prop", layerHome: "upper" },
 };
 
-export function applyBuildPalettePrimitive(selection: BuildPaletteSelection, primitive: BuildPalettePrimitive): BuildPaletteResult {
+export function applyBuildPalettePrimitive(selection: BuildPaletteSelection, primitive: BuildPalettePrimitive, options: BuildPaletteApplyOptions = {}): BuildPaletteResult {
   const current = store.getCurrent();
   if (!current.maps[selection.mapId]) return { ok: false, summary: "선택한 맵을 찾을 수 없습니다.", toolResults: [] };
   recordProjectSnapshot(`건축 팔레트: ${primitive}`, selection.mapId, { kind: "project" });
-  const result = applyBuildPalettePrimitiveToProject(structuredClone(current), selection, primitive);
+  const result = applyBuildPalettePrimitiveToProject(structuredClone(current), selection, primitive, options);
   if (result.ok) store.replace(result.project);
   return result;
 }
@@ -73,7 +94,8 @@ export function applyBuildPalettePrimitive(selection: BuildPaletteSelection, pri
 export function applyBuildPalettePrimitiveToProject(
   project: Project,
   selection: BuildPaletteSelection,
-  primitive: BuildPalettePrimitive
+  primitive: BuildPalettePrimitive,
+  options: BuildPaletteApplyOptions = {}
 ): BuildPaletteResult & { readonly project: Project } {
   const map = project.maps[selection.mapId];
   if (!map) return { ok: false, summary: "선택한 맵을 찾을 수 없습니다.", toolResults: [], project };
@@ -81,7 +103,8 @@ export function applyBuildPalettePrimitiveToProject(
   if (!tileset) return { ok: false, summary: "타일셋을 찾을 수 없습니다.", toolResults: [], project };
   const rect = clampSelection(selection, map.width, map.height);
   if (rect.width < 1 || rect.height < 1) return { ok: false, summary: "선택 영역이 맵 밖입니다.", toolResults: [], project };
-  const validationFailure = validateBuildPalettePrimitive(rect, primitive);
+  const housePreset = resolveHousePreset(options.housePresetId);
+  const validationFailure = validateBuildPalettePrimitive(rect, primitive, housePreset);
   if (validationFailure) return { ok: false, summary: validationFailure, toolResults: [], project };
   ensureBuildPalettePresets(tileset);
 
@@ -96,7 +119,12 @@ export function applyBuildPalettePrimitiveToProject(
   const runOptional = (name: string, args: Record<string, unknown>): boolean => runTool(ctx, name, args).ok;
 
   let ok = true;
-  if (primitive === "house") ok = stampHouse(ctx, rect, run, runOptional);
+  let villageBuilt: { built: number; requested: number } | null = null;
+  if (primitive === "house") ok = stampHouse(ctx, rect, housePreset, run, runOptional);
+  else if (primitive === "village") {
+    villageBuilt = stampVillage(ctx, rect, housePreset, run, runOptional);
+    ok = villageBuilt.built > 0;
+  }
   else if (primitive === "path") ok = stampPath(rect, run);
   else if (primitive === "river") ok = fillRoleTile(ctx.project, rect, "water");
   else if (primitive === "roof") ok = fillRoof(ctx.project, rect);
@@ -105,7 +133,11 @@ export function applyBuildPalettePrimitiveToProject(
   else if (primitive === "npc") ok = run("place_npc", { mapId: rect.mapId, x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2), name: "주민", pages: [{ lines: ["안녕하세요."] }] });
 
   const failed = toolResults.find((result) => !result.ok);
-  const summary = failed ? summarizeToolFailure(failed) : ok ? `${primitive} 시공 완료` : `${primitive} 시공에 실패했습니다.`;
+  const summary = failed
+    ? summarizeToolFailure(failed)
+    : villageBuilt
+      ? `마을 시공 완료: ${villageBuilt.requested}채 중 ${villageBuilt.built}채`
+      : ok ? `${primitive} 시공 완료` : `${primitive} 시공에 실패했습니다.`;
   return { ok: ok && !failed, summary, toolResults, project: ctx.project };
 }
 
@@ -153,12 +185,6 @@ const ROOF_RIDGE_TILE = 374;
 const ROOF_BODY_TILE = 375;
 const ROOF_EAVE_TILE = 405;
 
-// 지붕 행수: 집 높이의 약 1/3 (벽 최소 2행 보장). h=3→1, h=5→2, h=9→3.
-function roofRowsFor(height: number): number {
-  if (height < 3) return 0;
-  return Math.min(Math.max(1, Math.round(height * 0.34)), height - 2);
-}
-
 // rect 안에 직선 지붕을 칠한다: 상단 1행 용마루 → 몸통 → 최하단 1행 처마. 1행이면 처마만.
 function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: number, rows: number): void {
   for (let dy = 0; dy < rows; dy++) {
@@ -172,37 +198,104 @@ function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: 
 function stampHouse(
   ctx: ToolContext,
   rect: BuildPaletteSelection,
+  preset: HousePreset,
   run: (name: string, args: Record<string, unknown>) => boolean,
   runOptional: (name: string, args: Record<string, unknown>) => boolean
 ): boolean {
-  if (rect.width < 2 || rect.height < 2) return false;
-  const roofRows = roofRowsFor(rect.height);
-  const wallRect = { x: rect.x, y: rect.y + roofRows, w: rect.width, h: rect.height - roofRows };
-  const doorX = rect.x + Math.floor(rect.width / 2);
-  const doorY = rect.y + rect.height - 1;
-  const ok = run("build_wall", { mapId: rect.mapId, rect: wallRect, wallVocabId: BUILD_PALETTE_PRESETS.wall })
-    && run("place_door", { mapId: rect.mapId, at: { x: doorX, y: doorY }, doorVocabId: BUILD_PALETTE_PRESETS.door });
-  if (!ok) return false;
-  // 지붕은 벽 시공 후 직접 칠한다(오렌지 기와 다열 + 처마) — build_roof의 1행 처마보다 집답다.
-  // 주의: runTool 커밋이 ctx.project를 draft로 교체하므로 반드시 최신 ctx.project에 칠한다.
-  if (roofRows > 0) paintRoofRows(ctx.project.maps[rect.mapId], rect.x, rect.y, rect.width, roofRows);
-  // 창문: 벽이 충분히 넓고 높으면 문 좌우 대칭으로 장식(실패해도 집 자체는 성공).
-  if (rect.width >= 5 && wallRect.h >= 3) {
-    const windowY = wallRect.y + 1;
-    runOptional("place_window", { mapId: rect.mapId, at: { x: doorX - 2, y: windowY }, windowVocabId: BUILD_PALETTE_PRESETS.window });
-    runOptional("place_window", { mapId: rect.mapId, at: { x: doorX + 2, y: windowY }, windowVocabId: BUILD_PALETTE_PRESETS.window });
-  }
-  return true;
+  // 지붕은 벽/문 툴 커밋 후 직접 칠한다. runTool이 ctx.project를 draft로 교체하므로
+  // 열 단위 페인트는 housePlan 내부에서 항상 최신 ctx.project를 참조한다.
+  return stampHousePlan(ctx, rect, preset, { ridge: ROOF_RIDGE_TILE, body: ROOF_BODY_TILE, eave: ROOF_EAVE_TILE }, run, runOptional) !== null;
 }
 
-function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive): string | null {
-  if (primitive === "house" && (rect.width < 2 || rect.height < 2)) {
-    return "집은 최소 2×2 영역이 필요합니다.";
+function stampVillage(
+  ctx: ToolContext,
+  rect: BuildPaletteSelection,
+  preset: HousePreset,
+  run: (name: string, args: Record<string, unknown>) => boolean,
+  runOptional: (name: string, args: Record<string, unknown>) => boolean
+): { readonly requested: number; readonly built: number } {
+  const requested = Math.max(2, Math.min(5, Math.floor((rect.width * rect.height) / 70)));
+  const placements = planVillagePlacements(ctx.project, rect, preset, requested);
+  const doors: { x: number; y: number }[] = [];
+  for (const placement of placements) {
+    const stamped = stampHousePlan(ctx, placement, preset, { ridge: ROOF_RIDGE_TILE, body: ROOF_BODY_TILE, eave: ROOF_EAVE_TILE }, run, runOptional);
+    if (stamped) doors.push(stamped.door);
+  }
+  if (doors.length >= 2) {
+    const points = doors.map((door) => ({ x: door.x, y: Math.min(rect.y + rect.height - 1, door.y + 1) }));
+    run("lay_path", { mapId: rect.mapId, points, pathVocabId: BUILD_PALETTE_PRESETS.path, naturalness: 0, seed: seedFor(rect, "village-path") });
+  }
+  return { requested, built: doors.length };
+}
+
+function planVillagePlacements(project: Project, rect: BuildPaletteSelection, preset: HousePreset, requested: number): BuildPaletteSelection[] {
+  const map = project.maps[rect.mapId];
+  if (!map) return [];
+  const rng = seededRandom(seedFor(rect, "village"));
+  const houseW = Math.max(4, Math.min(6, Math.floor(rect.width / 3)));
+  const houseH = Math.max(preset.stories === 2 ? 5 : 4, Math.min(6, Math.floor(rect.height / 2)));
+  const occupied = new Set<string>();
+  const placements: BuildPaletteSelection[] = [];
+  const candidates: BuildPaletteSelection[] = [];
+  for (let y = rect.y; y <= rect.y + rect.height - houseH; y += 1) {
+    for (let x = rect.x; x <= rect.x + rect.width - houseW; x += 1) candidates.push({ mapId: rect.mapId, x, y, width: houseW, height: houseH });
+  }
+  candidates.sort(() => rng() - 0.5);
+  for (const candidate of candidates) {
+    if (placements.length >= requested) break;
+    if (footprintTouchesStart(project, candidate, preset)) continue;
+    if (footprintConflicts(candidate, preset, occupied)) continue;
+    placements.push(candidate);
+    reserveFootprint(candidate, preset, occupied);
+  }
+  return placements;
+}
+
+function footprintTouchesStart(project: Project, rect: BuildPaletteSelection, preset: HousePreset): boolean {
+  if (project.startMapId !== rect.mapId) return false;
+  return buildHouseFootprintCells(rect, preset).some((cell) => cell.x === project.startPos.x && cell.y === project.startPos.y);
+}
+
+function footprintConflicts(rect: BuildPaletteSelection, preset: HousePreset, occupied: Set<string>): boolean {
+  return buildHouseFootprintCells(rect, preset).some((cell) => occupied.has(cellKey(cell.x, cell.y)));
+}
+
+function reserveFootprint(rect: BuildPaletteSelection, preset: HousePreset, occupied: Set<string>): void {
+  for (const cell of buildHouseFootprintCells(rect, preset)) {
+    for (let y = cell.y - 1; y <= cell.y + 1; y += 1) {
+      for (let x = cell.x - 1; x <= cell.x + 1; x += 1) occupied.add(cellKey(x, y));
+    }
+  }
+}
+
+function cellKey(x: number, y: number): string {
+  return `${x},${y}`;
+}
+
+function seededRandom(seed: number): () => number {
+  let state = seed || 1;
+  return () => {
+    state = Math.imul(state ^ (state >>> 15), 1 | state);
+    state ^= state + Math.imul(state ^ (state >>> 7), 61 | state);
+    return ((state ^ (state >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive, housePreset: HousePreset): string | null {
+  if (primitive === "house") {
+    return validateHousePlanSelection(rect, housePreset);
+  }
+  if (primitive === "village" && (rect.width < 9 || rect.height < 6)) {
+    return "마을은 최소 9×6 영역이 필요합니다.";
   }
   if (primitive === "roof" && rect.width < 2) {
     return "지붕은 최소 2×1 영역이 필요합니다.";
   }
   return null;
+}
+
+function resolveHousePreset(id: HousePresetId | undefined): HousePreset {
+  return HOUSE_PRESETS.find((preset) => preset.id === id) ?? HOUSE_PRESETS.find((preset) => preset.id === DEFAULT_HOUSE_PRESET_ID) ?? HOUSE_PRESETS[0];
 }
 
 function summarizeToolFailure(result: ToolResult): string {
