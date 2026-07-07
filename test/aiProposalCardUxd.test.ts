@@ -250,6 +250,24 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-msg-badge-proposal")?.textContent).toBe("제안");
   });
 
+  it("턴 idle 후 채팅 존만 페이드되고 제안 카드는 sticky로 남는다", async () => {
+    const mapId = store.getCurrent().startMapId;
+    const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "초안";
+
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-rising-overlay")).toBeTruthy();
+    expect(findByTestId(panel, "ai-rising-volatile-zone")?.className).toContain("is-faded");
+    expect(findByTestId(panel, "ai-proposal-accept")).toBeTruthy();
+    expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("변경 제안");
+  });
+
   it("거부하면 원 응답에 폐기됨 배지를 붙이고 본문을 딤 처리한다", async () => {
     const mapId = store.getCurrent().startMapId;
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
