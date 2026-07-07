@@ -16,13 +16,12 @@ import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowse
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
-import { commitChangeset, runTool, summarizeChanges, toOpenAiTools, type ToolContext, type ToolResult } from "@/editor/tools";
+import { commitChangeset, summarizeChanges, toOpenAiTools, type ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import type { Project, TilesetDef } from "@/project/types";
-import { getGrammarProfile, type VocabularyProposalCard } from "@/editor/tools/v3";
+import type { Project } from "@/project/types";
 import { showConfirm } from "@/editor/ui/modal";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -32,16 +31,13 @@ import {
   METADATA_ONLY_TOOLS,
   proposalApprovalWarnings,
   proposalNeedsExplicitApproval,
-  ruleToolRejectionText,
   type AuditEntry,
-  type PendingBuild,
   type ProposedCall,
   type SessionEvent,
   type TurnResult,
 } from "@/ai/assistantSession";
 import type { BuildSpec } from "@/ai/buildSpec";
 import {
-  proposalCompletenessWarningLines,
   proposalCompletenessWarnings,
   proposalHasChangedMap,
   requestLikelyExpectsChange,
@@ -74,6 +70,34 @@ import {
   savePanelSize,
   type AiFontSize,
 } from "./aiPanelLayout";
+import {
+  enforceProposalDependencies,
+  mapIdCreatedByCall,
+  mapIdsReferencedByCall,
+  positive,
+  proposalDependencyIndexes,
+  proposalHumanSummaryLine,
+  proposalSummaryLines,
+  proposalTechnicalDetailLines,
+  reassembleSelectedProposalProject,
+} from "./aiProposalSummary";
+import {
+  collectPendingBuilds,
+  proposalAcceptButtonLabel,
+  rebindPendingBuildArgs,
+  runPendingBuilds,
+  type PendingBuildOutcome,
+} from "./aiProposalFusion";
+import {
+  callsWithVocabularyEdits,
+  formatAiRunningStatus,
+  hasVocabularyEdits,
+  renderToolActivityEntry,
+  renderVocabularyCardList,
+  reasoningToggleText,
+  vocabularyCardsData,
+  type VocabularyCardEdit,
+} from "./aiChatRenderers";
 export {
   AI_FONT_SIZE_KEY,
   AI_FONT_SIZE_SCALE,
@@ -93,13 +117,45 @@ export {
   type AiFontSize,
   type PanelSize,
 } from "./aiPanelLayout";
+export {
+  fallbackDiffParts,
+  proposalDependencyIndexes,
+  proposalHumanSummaryLine,
+  proposalSummaryLines,
+  proposalTechnicalDetailLines,
+  enforceProposalDependencies,
+  eventIdsCreatedByCall,
+  eventIdsReferencedByCall,
+  mapIdCreatedByCall,
+  mapIdsReferencedByCall,
+  reassembleSelectedProposalProject,
+} from "./aiProposalSummary";
+export {
+  collectPendingBuilds,
+  proposalAcceptButtonLabel,
+  rebindPendingBuildArgs,
+  runPendingBuilds,
+  type PendingBuildOutcome,
+  type SelectedPendingBuild,
+} from "./aiProposalFusion";
+export {
+  applyVocabularyCardEdits,
+  callsWithVocabularyEdits,
+  failedToolRetrySummary,
+  formatAiRunningStatus,
+  formatToolActivityLine,
+  hasVocabularyEdits,
+  isDraftDestructiveTool,
+  reasoningToggleText,
+  renderToolActivityEntry,
+  renderToolCallDetail,
+  renderVocabularyCardList,
+  vocabularyCardsData,
+  type ToolDetailSource,
+  type VocabularyCardEdit,
+} from "./aiChatRenderers";
 
 const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
-const AI_PROGRESS_TOOL_LIMIT = 30;
-const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group"]);
-const HOUSE_TOOLS = new Set(["build_house", "stamp_template_house"]);
-const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
-  HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && (call.args.kind === "house" || call.args.kind === "template_house"));
 const MAP_TILE_TOOLS = new Set([
   "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
@@ -117,106 +173,12 @@ type AiAssistDetail =
 
 let cleanupAiAssistBridge: (() => void) | null = null;
 
-export function formatAiRunningStatus(startedAt: number, now: number, toolCount: number, maxTools = AI_PROGRESS_TOOL_LIMIT): string {
-  const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
-  return `생각 중… ${elapsedSeconds}초 · 도구 ${toolCount}/${maxTools}`;
-}
-
-export function isDraftDestructiveTool(name: string): boolean {
-  return DRAFT_DESTRUCTIVE_TOOL_NAMES.has(name);
-}
-
-export function failedToolRetrySummary(summary: string): string {
-  const counts = [...summary.matchAll(/(\d+)회/gu)]
-    .map((match) => Number(match[1]))
-    .filter((count) => Number.isFinite(count) && count > 0);
-  const retryCount = counts.length > 0 ? Math.max(...counts) : 1;
-  return `내부 재시도 ${retryCount}회`;
-}
-
-export function formatToolActivityLine(name: string, result: ToolResult): string {
-  const mark = result.ok ? "✓" : "✗";
-  const draftPrefix = result.ok && isDraftDestructiveTool(name) ? "(초안) " : "";
-  return ruleToolRejectionText(name, result) ?? `${draftPrefix}${mark} ${name} — ${result.summary}`;
-}
-
-export function reasoningToggleText(count: number, collapsed: boolean): string {
-  const label = count > 1 ? `💭 추론 ${count}회` : "💭 추론";
-  return collapsed ? `${label} 보기 ▸` : `${label} ▾`;
-}
-
 export function isAiConfigReady(config: AiConfig): boolean {
   return Boolean(config.baseUrl.trim() && config.model.trim() && config.apiKey.trim());
 }
 
 export function displayUserAuditText(text: string): string {
   return text.split(/\n\n\[컨텍스트\]/u)[0] ?? text;
-}
-
-// 도구 상세 JSON 직렬화 — 직렬화 불가 값(순환 등)은 String 폴백으로 원문을 최대한 보존한다.
-function safeJsonStringify(value: unknown): string {
-  try {
-    return JSON.stringify(value, null, 2) ?? String(value);
-  } catch {
-    return String(value);
-  }
-}
-
-// 도구 호출 내부 열람(V3C) 데이터 소스 — 세션 tool_call 이벤트/audit 항목의 인자를 렌더 시 보존한다.
-export interface ToolDetailSource {
-  readonly args: Record<string, unknown> | undefined;
-  readonly index: number;
-}
-
-// 도구 로그 라인의 아코디언 본문: 호출 인자 JSON + 결과 원문(summary/warnings/data/오류 메시지).
-// 실패 호출은 오류 원문(재전송 예시 포함 summary/issues)을 가공 없이 그대로 보여준다.
-export function renderToolCallDetail(name: string, result: ToolResult, detail: ToolDetailSource): HTMLElement {
-  const resultRaw: Record<string, unknown> = { ok: result.ok, summary: result.summary };
-  if (result.issues && result.issues.length > 0) resultRaw.issues = result.issues;
-  const warnings = result.diff?.warnings ?? [];
-  if (warnings.length > 0) resultRaw.warnings = warnings;
-  if (result.data !== undefined) resultRaw.data = result.data;
-  return el("div", {
-    class: "ai-tool-detail",
-    dataset: { testid: `ai-tool-detail-${detail.index}` },
-    children: [
-      el("div", { class: "ai-tool-detail-label", text: `호출 인자 — ${name}` }),
-      el("pre", { class: "ai-tool-detail-pre", text: safeJsonStringify(detail.args ?? {}) }),
-      el("div", { class: "ai-tool-detail-label", text: result.ok ? "결과 원문" : "오류 원문" }),
-      el("pre", { class: "ai-tool-detail-pre", text: safeJsonStringify(resultRaw) }),
-    ],
-  });
-}
-
-export function renderToolActivityEntry(name: string, result: ToolResult, detail?: ToolDetailSource): HTMLElement {
-  if (result.ok) {
-    if (!detail) return el("div", { class: "ai-tool-activity-line", text: formatToolActivityLine(name, result) });
-    // 클릭(summary 토글) → 호출 인자/결과 원문 아코디언.
-    return el("details", {
-      class: "ai-tool-activity-line ai-tool-entry",
-      dataset: { testid: "ai-tool-entry" },
-      children: [
-        el("summary", { class: "ai-tool-entry-summary", text: formatToolActivityLine(name, result) }),
-        renderToolCallDetail(name, result, detail),
-      ],
-    });
-  }
-  const draftPrefix = isDraftDestructiveTool(name) ? "(초안) " : "";
-  return el("details", {
-    class: "ai-tool-activity-line ai-tool-failure",
-    dataset: { testid: "ai-tool-failure" },
-    children: [
-      el("summary", {
-        text: `${draftPrefix}✗ ${name} — ${failedToolRetrySummary(result.summary)}`,
-        dataset: { testid: "ai-tool-failure-summary" },
-      }),
-      el("div", {
-        class: "ai-tool-failure-body",
-        text: "이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.",
-      }),
-      ...(detail ? [renderToolCallDetail(name, result, detail)] : []),
-    ],
-  });
 }
 
 // 세션 시작 시 프로젝트 스냅샷 1회 백업(기존 자동저장과 별도 슬롯). 용량 초과 시 조용히 생략.
@@ -230,485 +192,6 @@ function backupProjectSnapshot(): void {
   } catch {
     /* quota 초과 등 — 백업 실패는 치명적이지 않으므로 무시 */
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function numberFromRecord(value: unknown, key: string): number | null {
-  if (!isRecord(value)) return null;
-  const raw = value[key];
-  return typeof raw === "number" && Number.isFinite(raw) ? raw : null;
-}
-
-function positive(value: number | null | undefined): number {
-  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
-}
-
-function countFromSummary(summary: string, pattern: RegExp): number {
-  const match = summary.match(pattern);
-  const value = match ? Number(match[1]) : 0;
-  return Number.isFinite(value) && value > 0 ? value : 0;
-}
-
-function isTreeScatter(call: ProposedCall): boolean {
-  if (call.name !== "scatter_object" && call.name !== "tile_scatter" && call.name !== "place_props") return false;
-  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : typeof call.args.propVocabId === "string" ? call.args.propVocabId : "";
-  const haystack = `${groupId} ${call.summary}`.toLowerCase();
-  return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
-}
-
-function countProposalHouses(calls: readonly ProposedCall[]): number {
-  return calls.reduce((total, call) => {
-    if (isHouseCall(call) || call.name === "build_wall") return total + 1;
-    if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return total + 1;
-    return total;
-  }, 0);
-}
-
-function countProposalRoadCells(calls: readonly ProposedCall[]): number {
-  return calls.reduce((total, call) => {
-    if (call.name === "lay_path") {
-      const fromData = positive(numberFromRecord(call.result.data, "pathCells"));
-      return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /길\s+(\d+)칸/u));
-    }
-    if (call.name === "paint_road" || call.name === "tile_road") {
-      const fromData = positive(numberFromRecord(call.result.data, "tilesTouched"));
-      return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /도로\s+(\d+)칸/u));
-    }
-    if ((call.name === "stamp_structure" || call.name === "tile_structure") && call.args.template === "road") {
-      return total + positive(call.result.diff?.tilesChanged);
-    }
-    return total;
-  }, 0);
-}
-
-function countProposalTrees(calls: readonly ProposedCall[]): number {
-  return calls.reduce((total, call) => {
-    if (!isTreeScatter(call)) return total;
-    const fromData = positive(numberFromRecord(call.result.data, "placed"));
-    return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /(\d+)개/u));
-  }, 0);
-}
-
-function formatCount(label: string, count: number, unit: string): string | null {
-  return count > 0 ? `${label} ${count}${unit}` : null;
-}
-
-function worldSummaryPart(added: number, modified: number): string | null {
-  if (added > 0 && modified > 0) return `세계관 추가 ${added}/수정 ${modified}`;
-  if (added > 0) return `세계관 ${added}건`;
-  if (modified > 0) return `세계관 수정 ${modified}건`;
-  return null;
-}
-
-function palettePresetSummaryPart(added: number, modified: number): string | null {
-  if (added > 0 && modified > 0) return `프리셋 추가 ${added}/수정 ${modified}`;
-  if (added > 0) return `프리셋 ${added}건`;
-  if (modified > 0) return `프리셋 수정 ${modified}건`;
-  return null;
-}
-
-function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
-  const diff = combineDiffs(calls.map((call) => call.result.diff));
-  return [
-    formatCount("타일", diff.tilesChanged, "칸"),
-    formatCount("맵", diff.mapsAdded, "개"),
-    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}개` : null,
-    formatCount("NPC", calls.filter((call) => call.name === "place_npc").length, "명"),
-    formatCount("이벤트", Math.max(0, diff.eventsAdded - calls.filter((call) => call.name === "place_npc").length), "개"),
-    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}개` : null,
-    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}개` : null,
-    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}건` : null,
-    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}건` : null,
-    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}개` : null,
-    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}개` : null,
-    worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
-    palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
-    diff.sessionChanged ? "세션 1건" : null,
-    diff.systemChanged ? "시스템 1건" : null,
-  ].filter((part): part is string => part !== null);
-}
-
-export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string {
-  if (calls.length === 0) return "변경 제안 없음";
-  const diff = combineDiffs(calls.map((call) => call.result.diff));
-  const houses = countProposalHouses(calls);
-  const roadCells = countProposalRoadCells(calls);
-  const trees = countProposalTrees(calls);
-  const semanticParts = [
-    formatCount("집", houses, "채"),
-    formatCount("길", roadCells, "칸"),
-    formatCount("나무", trees, "그루"),
-    worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
-    palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
-  ].filter((part): part is string => part !== null);
-  const remainingTileChanges = Math.max(0, diff.tilesChanged - roadCells);
-  const parts = [
-    ...semanticParts,
-    ...(semanticParts.length === 0 ? fallbackDiffParts(calls) : []),
-    semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 ? `타일 ${remainingTileChanges}칸` : null,
-  ].filter((part): part is string => part !== null);
-  return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}건`;
-}
-
-// 사람 언어 제안 요약 라인(테스트 가능하도록 순수 함수로 분리).
-export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnings: readonly string[] = []): string[] {
-  const summary = calls.length > 0 ? [proposalHumanSummaryLine(calls)] : [];
-  return [...summary, ...proposalCompletenessWarningLines(calls, extraWarnings)];
-}
-
-export function proposalTechnicalDetailLines(calls: readonly ProposedCall[]): string[] {
-  return calls.map((call) => {
-    const flag = call.destructive ? "⚠️ 파괴적 " : "";
-    return `${flag}${call.name} — ${call.summary}`;
-  });
-}
-
-function mapIdCreatedByCall(call: ProposedCall): string | null {
-  if (call.name !== "create_map") return null;
-  const fromData = isRecord(call.result.data) && typeof call.result.data.mapId === "string" ? call.result.data.mapId : null;
-  return fromData ?? (typeof call.args.id === "string" ? call.args.id : null);
-}
-
-function eventIdsCreatedByCall(call: ProposedCall): readonly string[] {
-  if (call.name === "place_npc" || call.name === "place_battle_blocker") {
-    const fromData = isRecord(call.result.data) && typeof call.result.data.eventId === "string" ? call.result.data.eventId : null;
-    const fromArgs = typeof call.args.id === "string" ? call.args.id : null;
-    return fromData ?? fromArgs ? [fromData ?? fromArgs ?? ""] : [];
-  }
-  if (call.name === "upsert_event" && isRecord(call.args.event) && typeof call.args.event.id === "string") return [call.args.event.id];
-  if (call.name === "duplicate_event") {
-    const fromData = isRecord(call.result.data) && typeof call.result.data.eventId === "string" ? call.result.data.eventId : null;
-    const fromArgs = typeof call.args.newId === "string" ? call.args.newId : null;
-    return fromData ?? fromArgs ? [fromData ?? fromArgs ?? ""] : [];
-  }
-  if (call.name === "create_transfer_pair" && isRecord(call.result.data)) {
-    return [call.result.data.eventIdA, call.result.data.eventIdB].filter((value): value is string => typeof value === "string");
-  }
-  return [];
-}
-
-function mapIdsReferencedByValue(value: unknown, refs: Set<string>): void {
-  if (!isRecord(value)) return;
-  for (const key of ["mapId", "toMapId"]) {
-    const ref = value[key];
-    if (typeof ref === "string") refs.add(ref);
-  }
-  for (const key of ["a", "b"]) mapIdsReferencedByValue(value[key], refs);
-  const event = value.event;
-  if (isRecord(event) && typeof value.mapId === "string") refs.add(value.mapId);
-}
-
-function mapIdsReferencedByCall(call: ProposedCall): readonly string[] {
-  const refs = new Set<string>();
-  mapIdsReferencedByValue(call.args, refs);
-  return [...refs];
-}
-
-function eventIdsReferencedByCall(call: ProposedCall): readonly string[] {
-  const refs = new Set<string>();
-  if (typeof call.args.eventId === "string") refs.add(call.args.eventId);
-  if (call.name === "link_world_ref" && isRecord(call.args.ref) && call.args.ref.kind === "event" && typeof call.args.ref.id === "string") {
-    refs.add(call.args.ref.id);
-  }
-  return [...refs];
-}
-
-export function proposalDependencyIndexes(calls: readonly ProposedCall[]): readonly (readonly number[])[] {
-  const mapCreators = new Map<string, number>();
-  const eventCreators = new Map<string, number>();
-  return calls.map((call, index) => {
-    const deps = new Set<number>();
-    for (const mapId of mapIdsReferencedByCall(call)) {
-      const creator = mapCreators.get(mapId);
-      if (creator !== undefined && creator !== index) deps.add(creator);
-    }
-    for (const eventId of eventIdsReferencedByCall(call)) {
-      const creator = eventCreators.get(eventId);
-      if (creator !== undefined && creator !== index) deps.add(creator);
-    }
-    const createdMapId = mapIdCreatedByCall(call);
-    if (createdMapId) mapCreators.set(createdMapId, index);
-    for (const eventId of eventIdsCreatedByCall(call)) eventCreators.set(eventId, index);
-    return [...deps].sort((left, right) => left - right);
-  });
-}
-
-export function enforceProposalDependencies(selected: readonly boolean[], dependencies: readonly (readonly number[])[]): boolean[] {
-  const next = [...selected];
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (let index = 0; index < next.length; index += 1) {
-      if (!next[index]) continue;
-      if (dependencies[index]?.some((dependency) => !next[dependency])) {
-        next[index] = false;
-        changed = true;
-      }
-    }
-  }
-  return next;
-}
-
-export function reassembleSelectedProposalProject(
-  baseline: Project,
-  calls: readonly ProposedCall[],
-  selected: readonly boolean[]
-): { ok: true; project: Project; results: readonly ToolResult[]; calls: readonly ProposedCall[] } | { ok: false; message: string; results: readonly ToolResult[] } {
-  const dependencies = proposalDependencyIndexes(calls);
-  const safeSelected = enforceProposalDependencies(selected, dependencies);
-  const selectedCalls = calls.filter((_, index) => safeSelected[index]);
-  const ctx: ToolContext = { project: structuredClone(baseline) };
-  const results: ToolResult[] = [];
-  for (const call of selectedCalls) {
-    const result = runTool(ctx, call.name, structuredClone(call.args), { dryRun: false });
-    results.push(result);
-    if (!result.ok) return { ok: false, message: result.summary, results };
-  }
-  return { ok: true, project: ctx.project, results, calls: selectedCalls };
-}
-
-// ─── 어휘 카드 인라인 편집 (타일 툴 v3 설계 축 6 — V3B) ────────────────────────
-// propose_tile_vocabulary의 data.cards를 카드 UI로 렌더하고, 편집값이 수락 시
-// 커밋되는 값이 되도록 args.items를 재조립해 UXD 부분 수락(재실행) 경로에 태운다.
-
-export interface VocabularyCardEdit {
-  name?: string;
-  role?: string;
-  patternKind?: string;
-  layerHome?: string;
-}
-
-interface VocabularyCardsData {
-  readonly tilesetId: string;
-  readonly grammarProfile: string;
-  readonly cards: readonly VocabularyProposalCard[];
-}
-
-export function vocabularyCardsData(call: Pick<ProposedCall, "name" | "result">): VocabularyCardsData | null {
-  if (call.name !== "propose_tile_vocabulary") return null;
-  const data = call.result.data;
-  if (typeof data !== "object" || data === null) return null;
-  const record = data as Partial<VocabularyCardsData>;
-  if (typeof record.tilesetId !== "string" || typeof record.grammarProfile !== "string" || !Array.isArray(record.cards)) return null;
-  return record as VocabularyCardsData;
-}
-
-// 카드 편집값을 propose_tile_vocabulary args.items에 반영한다(카드 i ↔ items[i] 1:1).
-// 수락 시 이 args로 베이스라인에서 재실행되므로 편집값이 곧 커밋값이다.
-export function applyVocabularyCardEdits(
-  args: Record<string, unknown>,
-  edits: ReadonlyMap<number, VocabularyCardEdit>
-): Record<string, unknown> {
-  if (edits.size === 0) return args;
-  const next = structuredClone(args);
-  const items = Array.isArray(next.items) ? (next.items as unknown[]) : [];
-  for (const [index, edit] of edits) {
-    const item = items[index];
-    if (typeof item !== "object" || item === null) continue;
-    const target = item as Record<string, unknown>;
-    if (edit.name !== undefined && edit.name.trim().length > 0) target.name = edit.name.trim();
-    if (edit.role !== undefined) target.role = edit.role;
-    if (edit.patternKind !== undefined) target.patternKind = edit.patternKind === "" ? undefined : edit.patternKind;
-    if (edit.layerHome !== undefined) target.layerHome = edit.layerHome;
-  }
-  return next;
-}
-
-// 프로포절 전체에 카드 편집을 적용한 유효 call 목록 — 수락 경로가 소비한다.
-export function callsWithVocabularyEdits(
-  calls: readonly ProposedCall[],
-  editsByCall: ReadonlyMap<number, ReadonlyMap<number, VocabularyCardEdit>>
-): readonly ProposedCall[] {
-  let touched = false;
-  const next = calls.map((call, index) => {
-    const edits = editsByCall.get(index);
-    if (!edits || edits.size === 0 || call.name !== "propose_tile_vocabulary") return call;
-    touched = true;
-    return { ...call, args: applyVocabularyCardEdits(call.args, edits) };
-  });
-  return touched ? next : calls;
-}
-
-export function hasVocabularyEdits(editsByCall: ReadonlyMap<number, ReadonlyMap<number, VocabularyCardEdit>>): boolean {
-  for (const edits of editsByCall.values()) if (edits.size > 0) return true;
-  return false;
-}
-
-// ─── 승인+시공 융합 (2026-07-07 타일 시공 흐름 재설계 §2.1.3) ────────────────────
-// 어휘 제안 카드에 첨부된 보류 시공(pendingBuild)을 수락 제스처 안에서 실행한다.
-// 모델 재호출 없음(결정적): 어휘 커밋이 반영된 draft에 프리미티브를 직접 실행하고 함께 커밋한다.
-
-export interface SelectedPendingBuild {
-  readonly callIndex: number;
-  readonly pending: PendingBuild;
-}
-
-export function collectPendingBuilds(calls: readonly ProposedCall[], selected?: readonly boolean[]): SelectedPendingBuild[] {
-  const out: SelectedPendingBuild[] = [];
-  calls.forEach((call, index) => {
-    if (selected && selected[index] !== true) return;
-    for (const pending of call.pendingBuilds ?? []) out.push({ callIndex: index, pending });
-  });
-  return out;
-}
-
-// 카드 교정으로 커밋된 그룹 id가 바뀐 경우(이름 교정 → 슬러그 재생성 등) 보류 시공의
-// 어휘 id 인자를 교정값으로 리바인드한다. originalCards[i] ↔ committedCards[i] 는 1:1.
-export function rebindPendingBuildArgs(
-  pending: PendingBuild,
-  originalCards: readonly VocabularyProposalCard[] | null,
-  committedCards: readonly VocabularyProposalCard[] | null
-): Record<string, unknown> {
-  const args = structuredClone(pending.args);
-  const original = originalCards ?? [];
-  const committed = committedCards ?? original;
-  let target: string | undefined;
-  const index = original.findIndex((card) => card.kind === "group" && card.groupId === pending.vocabId);
-  if (index >= 0) target = committed[index]?.groupId ?? pending.vocabId;
-  else {
-    // 모델이 다른 id(예: 자기가 만든 '흰-벽-2')를 썼어도 단일 그룹 제안이면 그 그룹으로 묶는다.
-    const groups = committed.filter((card) => card.kind === "group" && typeof card.groupId === "string");
-    if (groups.length === 1) target = groups[0].groupId;
-  }
-  if (target !== undefined) args[pending.vocabIdField] = target;
-  return args;
-}
-
-export interface PendingBuildOutcome {
-  readonly pending: PendingBuild;
-  readonly result: ToolResult;
-}
-
-// 어휘 커밋이 반영된 프로젝트에 보류 시공을 순서대로 실행한다. 실패한 시공은 draft가
-// 폐기되므로(runTool) 성공분만 프로젝트에 남는다 — 호출측이 실패 사유를 표시한다.
-export function runPendingBuilds(
-  project: Project,
-  builds: readonly { readonly pending: PendingBuild; readonly args: Record<string, unknown> }[]
-): { project: Project; outcomes: PendingBuildOutcome[] } {
-  const ctx: ToolContext = { project };
-  const outcomes: PendingBuildOutcome[] = [];
-  for (const { pending, args } of builds) {
-    const result = runTool(ctx, pending.tool, args, { dryRun: false });
-    outcomes.push({ pending, result });
-  }
-  return { project: ctx.project, outcomes };
-}
-
-// 버튼 라벨(§2.1.3): 보류 시공이 있으면 "승인하고 시공", 없으면 기존 "수락해서 적용".
-export function proposalAcceptButtonLabel(hasPendingBuild: boolean, selectedCount: number, total: number): string {
-  if (hasPendingBuild) return selectedCount === total ? "승인하고 시공" : `선택 ${selectedCount}건 승인하고 시공`;
-  return selectedCount === total ? "수락해서 적용" : `선택 ${selectedCount}건 적용`;
-}
-
-const VOCAB_ROLE_OPTIONS = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"] as const;
-const VOCAB_LAYER_OPTIONS = ["lower", "upper", "perCell"] as const;
-const VOCAB_THUMB_LIMIT = 9;
-const VOCAB_FACT_LIMIT = 4;
-
-function vocabSelect(testid: string, options: readonly string[], value: string, onChange: (next: string) => void): HTMLSelectElement {
-  const select = el("select", { class: "ai-vocab-edit-select", dataset: { testid } }) as HTMLSelectElement;
-  const values = options.includes(value) || value === "" ? [...options] : [value, ...options];
-  for (const option of values) {
-    const node = el("option", { text: option === "" ? "(없음)" : option, attrs: { value: option } }) as HTMLOptionElement;
-    if (option === value) node.selected = true;
-    select.append(node);
-  }
-  select.value = value;
-  select.addEventListener("change", () => onChange(select.value));
-  return select;
-}
-
-function vocabFieldRow(label: string, control: HTMLElement): HTMLElement {
-  return el("label", { class: "ai-vocab-field", children: [el("span", { class: "ai-vocab-field-label", text: label }), control] });
-}
-
-// 어휘 프로포절 카드 1건 렌더 — AI 추정(편집 가능) vs 사실 배지(결정론) 병기.
-function renderVocabularyCard(
-  tileset: TilesetDef | undefined,
-  card: VocabularyProposalCard,
-  cardNumber: number,
-  patternKindOptions: readonly string[],
-  onEdit: (field: keyof VocabularyCardEdit, value: string) => void
-): HTMLElement {
-  const thumbs = el("div", {
-    class: "ai-vocab-thumbs",
-    children: card.tileIds.slice(0, VOCAB_THUMB_LIMIT).map((tile) =>
-      el("span", {
-        class: "ai-vocab-thumb",
-        attrs: { title: `타일 ${tile}`, style: tileset ? tilesetTileBackgroundStyle(tileset, tile, 24) : "" },
-      })
-    ),
-  });
-  const nameInput = el("input", {
-    class: "ai-vocab-edit-input",
-    attrs: { type: "text", value: card.name, "aria-label": "어휘 이름(AI 추정 — 교정 가능)" },
-    dataset: { testid: `ai-vocab-edit-name-${cardNumber}` },
-  }) as HTMLInputElement;
-  nameInput.value = card.name;
-  nameInput.addEventListener("input", () => onEdit("name", nameInput.value));
-  nameInput.addEventListener("change", () => onEdit("name", nameInput.value));
-
-  const facts = card.facts.slice(0, VOCAB_FACT_LIMIT).map((fact) =>
-    el("span", {
-      class: "ai-vocab-fact",
-      text: `타일 ${fact.tileId}: ${fact.layerHome}·${fact.passable ? "통행" : "차단"}`,
-    })
-  );
-  const factSuffix = card.facts.length > VOCAB_FACT_LIMIT ? [el("span", { class: "ai-vocab-fact", text: `외 ${card.facts.length - VOCAB_FACT_LIMIT}` })] : [];
-
-  const editRows: HTMLElement[] = [
-    vocabFieldRow("이름", nameInput),
-    vocabFieldRow("role", vocabSelect(`ai-vocab-edit-role-${cardNumber}`, VOCAB_ROLE_OPTIONS, card.role, (next) => onEdit("role", next))),
-    vocabFieldRow("layerHome", vocabSelect(`ai-vocab-edit-layerHome-${cardNumber}`, VOCAB_LAYER_OPTIONS, card.layerHome, (next) => onEdit("layerHome", next))),
-  ];
-  if (card.kind === "group") {
-    editRows.push(vocabFieldRow("패턴", vocabSelect(`ai-vocab-edit-patternKind-${cardNumber}`, patternKindOptions, card.patternKind ?? "", (next) => onEdit("patternKind", next))));
-  }
-
-  return el("div", {
-    class: "ai-vocab-card",
-    dataset: { testid: `ai-vocab-card-${cardNumber}` },
-    children: [
-      el("div", {
-        class: "ai-vocab-card-head",
-        children: [
-          el("span", { class: "ai-vocab-badge is-estimate", text: "AI 추정" }),
-          el("span", { class: "ai-vocab-kind", text: card.kind === "group" ? `그룹${card.groupId ? ` ${card.groupId}` : ""}` : `낱개 타일 ${card.tileIds.join(",")}` }),
-          el("span", {
-            class: `ai-vocab-badge ${card.patternDefined ? "is-fact" : "is-warn"}`,
-            text: card.patternDefined ? "패턴 정의됨" : "패턴 미정의(T1b에서 파츠 필요)",
-          }),
-        ],
-      }),
-      thumbs,
-      el("div", { class: "ai-vocab-edits", children: editRows }),
-      el("div", { class: "ai-vocab-facts", children: [el("span", { class: "ai-vocab-badge is-fact", text: "사실" }), ...facts, ...factSuffix] }),
-      ...card.warnings.map((warning) => el("div", { class: "ai-vocab-warning", text: warning })),
-    ],
-  });
-}
-
-// propose_tile_vocabulary 항목 아래에 붙는 카드 목록. cardNumberStart는 프로포절 전체 연번(1-base).
-export function renderVocabularyCardList(
-  project: Project,
-  call: ProposedCall,
-  cardNumberStart: number,
-  onEdit: (cardIndex: number, field: keyof VocabularyCardEdit, value: string) => void
-): { element: HTMLElement; count: number } | null {
-  const data = vocabularyCardsData(call);
-  if (!data || data.cards.length === 0) return null;
-  const tileset = project.tilesets[data.tilesetId];
-  const patternKindOptions = ["", ...getGrammarProfile(data.grammarProfile).supportedPatternKinds];
-  const element = el("div", {
-    class: "ai-vocab-cards",
-    children: data.cards.map((card, cardIndex) =>
-      renderVocabularyCard(tileset, card, cardNumberStart + cardIndex, patternKindOptions, (field, value) => onEdit(cardIndex, field, value))
-    ),
-  });
-  return { element, count: data.cards.length };
 }
 
 export function proposalHasMapTileChanges(calls: readonly ProposedCall[]): boolean {
