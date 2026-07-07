@@ -293,7 +293,16 @@ function stopHeartbeat(): void {
 }
 
 function setStatus(next: MapEditLockStatus): void {
+  // 내용이 같은 상태(예: 45초 하트비트로 자기 락 expiresAt만 갱신)는 통지하지 않는다 —
+  // 통지가 좌측 팔레트/맵트리 전체 재구축으로 이어져 진행 중인 클릭을 증발시킨다.
+  // 타인 락(locked)은 expiresAt/updatedAt이 인수(takeover) UI에 쓰이므로 그대로 통지한다.
+  const sameIgnoringExpiry =
+    status.kind === next.kind &&
+    (status.kind === "idle" ||
+      (status.kind !== "locked" && "mapId" in status && "mapId" in next && status.mapId === next.mapId &&
+        (status.kind !== "unavailable" || (next.kind === "unavailable" && status.reason === next.reason))));
   status = next;
+  if (sameIgnoringExpiry) return;
   for (const listener of listeners) listener(status);
 }
 

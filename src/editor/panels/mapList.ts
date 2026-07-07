@@ -97,7 +97,15 @@ function renderNode(spec: RenderNodeSpec): void {
     },
     dataset: { testid: `map-tree-node-${node.mapId}` },
     on: {
-      click: () => selectEditorMap(node.mapId),
+      // click 대신 pointerup(주버튼) 선택 — click은 down~up 사이 트리 재구축 시 증발하고,
+      // pointerup은 커서 아래 노드에서 발화한다. 드래그(HTML5 DnD)가 시작되면 pointerup이
+      // 오지 않으므로 드래그 이동과도 충돌하지 않는다.
+      pointerup: (event) => {
+        if (event instanceof PointerEvent && event.button !== 0) return;
+        // 행 안의 액션 버튼/부모 select 위에서는 선택하지 않는다(각자 click 핸들러가 처리).
+        if (event.target instanceof Element && event.target.closest("button, select")) return;
+        selectEditorMap(node.mapId);
+      },
       contextmenu: (event) => {
         event.preventDefault();
         if (!(event instanceof MouseEvent)) return;

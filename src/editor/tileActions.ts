@@ -237,7 +237,24 @@ function showClusterRejectionToast(reason: string): void {
   toast(`클러스터 규칙 때문에 배치할 수 없습니다: ${reason}`, "error");
 }
 
+// 보호 셀 집합은 이벤트/시작점에서만 유도되고 타일 값과 무관하다. 페인트 드래그는 셀마다
+// 이 함수를 타므로, 전 맵 이벤트 순회를 매 셀 반복하지 않도록 캐시한다.
+// 무효화: 타일 전용 변경(scope map + cells)이 아닌 모든 store 변경.
+let protectedCellsCache: { readonly mapId: MapId; readonly cells: ReadonlySet<string> } | null = null;
+let protectedCellsInvalidatorInstalled = false;
+
+function installProtectedCellsInvalidator(): void {
+  if (protectedCellsInvalidatorInstalled) return;
+  protectedCellsInvalidatorInstalled = true;
+  store.subscribe((_project, change) => {
+    if (change.scope === "map" && change.cells?.length) return;
+    protectedCellsCache = null;
+  });
+}
+
 function protectedClusterCells(project: Project, map: GameMap): ReadonlySet<string> {
+  installProtectedCellsInvalidator();
+  if (protectedCellsCache?.mapId === map.id) return protectedCellsCache.cells;
   const blocked = new Set<string>();
   if (project.startMapId === map.id) blocked.add(coordKey(project.startPos.x, project.startPos.y));
   for (const event of map.events) {
@@ -253,6 +270,7 @@ function protectedClusterCells(project: Project, map: GameMap): ReadonlySet<stri
     }
   }
   for (const commonEvent of project.commonEvents) collectTransferTargets(commonEvent.commands, map.id, blocked);
+  protectedCellsCache = { cells: blocked, mapId: map.id };
   return blocked;
 }
 

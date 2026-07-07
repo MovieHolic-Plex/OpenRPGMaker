@@ -1326,7 +1326,10 @@ body.ai-panel-docked .editor-layout {
 
 /* 독 모드: 서랍을 열면 본문 위(헤더 아래)에 넓게 뜬다. */
 
-/* 스튜디오: 에디터를 덮는 넓은 워크스페이스. 좌 대화 / 우 스킬 레일. */
+/* 스튜디오: 에디터를 덮는 넓은 워크스페이스. 좌 대화 / 우 스킬 레일.
+   (2026-07-08 재설계) 이전엔 좁은 도킹 패널을 그대로 늘려 놓아 커맨드 바가 패널 위에
+   겹쳐 뜨고 스킬 레일은 투명 무장식이었다. 원칙: 디자인 토큰만 사용,
+   하단에 커맨드 바 전용 스트립 확보, 레일은 표면(surface) 위 카드로. */
 .ai-chat-panel.is-studio {
   left: 12px;
   right: 12px;
@@ -1336,19 +1339,68 @@ body.ai-panel-docked .editor-layout {
   max-width: none;
   max-height: none;
   z-index: 60;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+
+.ai-chat-panel.is-studio .ai-chat-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-2) var(--space-3);
+}
+
+.ai-chat-panel.is-studio .ai-chat-toolbar {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-1) var(--space-3);
+}
+
+/* 스튜디오의 아이콘 버튼은 실사용 히트 타깃 확보(글리프-만한 크기 금지). */
+.ai-chat-panel.is-studio .ai-chat-toolbar button,
+.ai-chat-panel.is-studio .ai-chat-header .ai-chat-tools-button {
+  min-height: 28px;
+  min-width: 28px;
+  padding: var(--space-1) var(--space-2);
 }
 
 .ai-chat-panel.is-studio .ai-chat-body {
   flex-direction: row;
+  gap: 0;
+  /* 하단 고정 커맨드 바(패널 자식, fixed)가 로그 마지막 줄을 가리지 않도록 스트립 확보. */
+  padding-bottom: 84px;
 }
-
 
 .ai-chat-panel.is-studio .ai-chat-log {
   max-height: none;
 }
 
 .ai-chat-panel.is-studio .ai-chat-bubble {
-  max-width: 720px;
+  max-width: 780px;
+}
+
+/* 커맨드 바를 스튜디오 하단 스트립의 일부처럼 정렬. */
+.ai-chat-panel.is-studio .ai-command-bar {
+  bottom: 26px;
+}
+
+/* 전체 로그가 이미 보이므로 미니 스트림(휘발 존)은 중복 — 숨긴다.
+   고정 존(제안 pill/알림)은 유지해 승인 대기를 잃지 않는다. */
+.ai-chat-panel.is-studio .ai-rising-volatile-zone {
+  display: none;
+}
+
+/* 빈 대화의 시작 화면은 세로 중앙에 — 전면 워크스페이스 상단에 몰려 휑하지 않게. */
+.ai-chat-panel.is-studio .ai-start-screen {
+  justify-content: center;
+  min-height: 60%;
+}
+
+/* 좁은 화면: 스킬 레일을 접어 대화에 전폭을 준다. */
+@media (max-width: 1100px) {
+  .ai-chat-panel.is-studio .ai-chat-body > .ai-skill-drawer {
+    display: none;
+  }
 }
 
 /* 시작 화면 — 빈 대화의 첫인상 */

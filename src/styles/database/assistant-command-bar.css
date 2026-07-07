@@ -1,6 +1,7 @@
 /* ── Command-bar AI IA (2026-07-07): bottom center bar + rising overlay ── */
 body.ai-command-bar-active {
-  --ai-command-bar-inset: 88px;
+  /* 컨텍스트 칩 스택 + 2줄 입력 포함 실측 높이(~110px)를 덮도록 — 88px는 하단과 겹쳤다. */
+  --ai-command-bar-inset: 116px;
 }
 
 body.ai-command-bar-active .editor-layout {
@@ -30,11 +31,20 @@ body.ai-command-bar-active .editor-layout {
   bottom: 18px;
   display: grid;
   gap: 8px;
-  grid-template-columns: 34px minmax(320px, min(760px, calc(100vw - 188px))) auto;
-  left: 50%;
+  grid-template-columns: 34px minmax(0, 760px) auto;
+  /* 좌측 타일 팔레트/맵트리를 수평으로 침범하지 않는다 — 캔버스 영역 안에서 중앙 정렬.
+     (뷰포트 ≤1284px에서 뷰포트-중앙 760px 바가 좌패널 하단을 덮던 버그 수정) */
+  justify-content: center;
+  left: calc(var(--editor-left-safe, 264px) + 12px);
   position: fixed;
-  transform: translateX(-50%);
+  right: 24px;
   z-index: 50;
+}
+
+/* 스튜디오에선 좌패널이 어차피 패널 뒤에 있으므로 스튜디오 폭 기준 중앙 정렬. */
+.ai-chat-panel.is-studio .ai-command-bar {
+  left: 36px;
+  right: 36px;
 }
 
 .ai-command-menu-toggle {

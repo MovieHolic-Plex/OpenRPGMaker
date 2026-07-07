@@ -95,17 +95,58 @@ export function repairProjectReferences(project: Project): void {
   for (const klass of project.database.classes) {
     if (klass.animationId && !animationIds.has(klass.animationId)) delete klass.animationId;
   }
+  // 삭제/미생성 맵을 가리키는 transfer·changeTile 과 생활 이동 목적지는 로드를 벽돌내는 대신
+  // 여기서 정리한다 — AI가 만들다 만 맵 참조가 저장본에 남아 프로젝트 전체가 열리지 않던 사고의 재발 방지.
+  const prune = new PruneStats();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      event.commands = pruneDanglingCommonEventCalls(event.commands, commonEventIds);
-      for (const page of event.pages ?? []) page.commands = pruneDanglingCommonEventCalls(page.commands, commonEventIds);
+      event.commands = pruneDanglingCommandRefs(event.commands, commonEventIds, mapIds, prune);
+      for (const page of event.pages ?? []) {
+        page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, prune);
+        repairLivingDestinations(page, mapIds, prune);
+      }
     }
   }
   for (const troop of project.database.troops) {
-    for (const page of troop.battleEventPages) page.commands = pruneDanglingCommonEventCalls(page.commands, commonEventIds);
+    for (const page of troop.battleEventPages) page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, prune);
   }
   for (const commonEvent of project.commonEvents) {
-    commonEvent.commands = pruneDanglingCommonEventCalls(commonEvent.commands, commonEventIds);
+    commonEvent.commands = pruneDanglingCommandRefs(commonEvent.commands, commonEventIds, mapIds, prune);
+  }
+  prune.warnIfAny();
+}
+
+class PruneStats {
+  removedMapCommands = 0;
+  removedLivingDestinations = 0;
+  removedCommonEventCalls = 0;
+
+  warnIfAny(): void {
+    const total = this.removedMapCommands + this.removedLivingDestinations + this.removedCommonEventCalls;
+    if (total === 0 || typeof console === "undefined") return;
+    console.warn(
+      `[project] 깨진 참조 ${total}건을 정리하고 로드했습니다 — ` +
+        `존재하지 않는 맵으로의 이동/타일변경 ${this.removedMapCommands}건, ` +
+        `생활 이동 목적지 ${this.removedLivingDestinations}건, ` +
+        `공통 이벤트 호출 ${this.removedCommonEventCalls}건`
+    );
+  }
+}
+
+function repairLivingDestinations(
+  page: { movement: { type: string; living?: { destinations: { mapId: string }[] } } },
+  mapIds: ReadonlySet<string>,
+  stats: PruneStats
+): void {
+  const living = page.movement.living;
+  if (!living) return;
+  const kept = living.destinations.filter((destination) => mapIds.has(destination.mapId));
+  stats.removedLivingDestinations += living.destinations.length - kept.length;
+  living.destinations = kept;
+  // 목적지가 모두 사라진 생활 이동은 제자리로 강등(빈 목적지 순회 방지 — mapDeletion과 동일 정책).
+  if (kept.length === 0 && page.movement.type === "living") {
+    page.movement.type = "fixed";
+    delete page.movement.living;
   }
 }
 
@@ -315,24 +356,41 @@ function elementIdExists(project: Project, elementId: string): boolean {
   return elementIds(project).has(elementId);
 }
 
-function pruneDanglingCommonEventCalls(commands: Command[], commonEventIds: ReadonlySet<string>): Command[] {
+function pruneDanglingCommandRefs(
+  commands: Command[],
+  commonEventIds: ReadonlySet<string>,
+  mapIds: ReadonlySet<string>,
+  stats: PruneStats
+): Command[] {
+  const recurse = (branch: Command[]): Command[] => pruneDanglingCommandRefs(branch, commonEventIds, mapIds, stats);
   const pruned: Command[] = [];
   for (const command of commands) {
-    if (command.kind === "callCommonEvent" && !commonEventIds.has(command.commonEventId)) continue;
+    if (command.kind === "callCommonEvent" && !commonEventIds.has(command.commonEventId)) {
+      stats.removedCommonEventCalls += 1;
+      continue;
+    }
+    if ((command.kind === "transfer" || command.kind === "changeTile") && !mapIds.has(command.mapId)) {
+      stats.removedMapCommands += 1;
+      continue;
+    }
     if (command.kind === "choices") {
       pruned.push({
         ...command,
-        options: command.options.map((option) => ({ ...option, branch: pruneDanglingCommonEventCalls(option.branch, commonEventIds) })),
-        cancelBranch: command.cancelBranch ? pruneDanglingCommonEventCalls(command.cancelBranch, commonEventIds) : undefined,
+        options: command.options.map((option) => ({ ...option, branch: recurse(option.branch) })),
+        cancelBranch: command.cancelBranch ? recurse(command.cancelBranch) : undefined,
       });
       continue;
     }
     if (command.kind === "fork") {
-      pruned.push({ ...command, then: pruneDanglingCommonEventCalls(command.then, commonEventIds), else: command.else ? pruneDanglingCommonEventCalls(command.else, commonEventIds) : undefined });
+      pruned.push({ ...command, then: recurse(command.then), else: command.else ? recurse(command.else) : undefined });
       continue;
     }
     if (command.kind === "loop") {
-      pruned.push({ ...command, body: pruneDanglingCommonEventCalls(command.body, commonEventIds) });
+      pruned.push({ ...command, body: recurse(command.body) });
+      continue;
+    }
+    if (command.kind === "shop" && command.transactionBranch) {
+      pruned.push({ ...command, transactionBranch: recurse(command.transactionBranch) });
       continue;
     }
     pruned.push(command);

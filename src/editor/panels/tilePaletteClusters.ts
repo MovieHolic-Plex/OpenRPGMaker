@@ -283,11 +283,12 @@ function renderClusterTile(args: RenderTilePaletteClustersArgs, tileId: number, 
     children: [el("span", { class: "quick-tile-index", text: String(tileId) })],
     dataset: { testid: `cluster-tile-${tileId}` },
     on: {
-      click: (event) => {
+      // 선택은 pointerdown에서 즉시 — click(down+up 쌍)은 도중에 패널이 재구축되면 증발한다.
+      pointerdown: (event) => {
         event.preventDefault();
         args.onSelectTile(tileId);
       },
-      pointerdown: (event) => event.preventDefault(),
+      click: (event) => event.preventDefault(),
     },
   });
 }

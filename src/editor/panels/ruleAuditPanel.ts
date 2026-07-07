@@ -25,8 +25,13 @@ let autoMountInstalled = false;
 let mountQueued = false;
 let observedPaletteRoot: HTMLElement | null = null;
 let paletteRootObserver: MutationObserver | null = null;
+// 패널이 재마운트될 때마다(팔레트 재구축 → MutationObserver 재마운트) 이전 구독을 반드시 해제한다.
+// 과거엔 마운트마다 store.subscribe가 누적되어, 편집 1회당 전체 projectLint가 N번 돌며
+// 세션이 길수록 렉이 심해지는 누수가 있었다(대량 편집 렉 보고의 원인 중 하나).
+let disposeActivePanel: (() => void) | null = null;
 
 export function renderRuleAuditPanel(): HTMLElement {
+  disposeActivePanel?.();
   const root = el("details", {
     class: "rule-audit-panel panel-section",
     attrs: { open: "", "aria-label": "규칙 감사" },
@@ -43,9 +48,38 @@ export function renderRuleAuditPanel(): HTMLElement {
     );
   };
 
+  // 전체 projectLint는 비싸다 — 연속 편집(페인트 드래그)을 trailing 디바운스로 합치고,
+  // 패널이 접혀 있으면 펼칠 때까지 미룬다.
+  let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  let staleWhileClosed = false;
+  const scheduleRefresh = (): void => {
+    if (root.getAttribute("open") === null) {
+      staleWhileClosed = true;
+      return;
+    }
+    if (refreshTimer) return;
+    refreshTimer = setTimeout(() => {
+      refreshTimer = null;
+      refresh();
+    }, 250);
+  };
+  root.addEventListener("toggle", () => {
+    if (root.getAttribute("open") !== null && staleWhileClosed) {
+      staleWhileClosed = false;
+      refresh();
+    }
+  });
+
   refresh();
-  if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, refresh);
-  store.subscribe(refresh);
+  if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, scheduleRefresh);
+  const unsubscribeStore = store.subscribe(scheduleRefresh);
+  disposeActivePanel = () => {
+    disposeActivePanel = null;
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = null;
+    if (typeof window !== "undefined") window.removeEventListener(MAP_EDIT_HISTORY_EVENT, scheduleRefresh);
+    unsubscribeStore();
+  };
   return root;
 }
 

@@ -225,6 +225,8 @@ function applyLayout(): void {
   if (leftFolded) {
     leftRoot.style.display = "none";
     leftResizer.style.display = "none";
+    // 좌패널이 접히면 오버레이 안전 영역도 해제(assistant-rising-overlay.css 참조).
+    setEditorLeftSafe("12px");
     return;
   }
   leftRoot.style.display = "";
@@ -249,6 +251,13 @@ function applyLayout(): void {
   leftRoot.style.width = `${effectiveLeftWidth}px`;
   leftRoot.style.setProperty("--map-tree-height", `${mapTreeHeight}px`);
   leftResizer.style.display = "";
+  // AI 미니 스트림/제안 오버레이가 좌패널을 덮지 않도록 실제 패널 폭을 전역 변수로 발행.
+  setEditorLeftSafe(`${effectiveLeftWidth + resizerWidth}px`);
+}
+
+// fakeDom(단위 테스트)에는 documentElement가 없으므로 옵셔널 체이닝으로 가드.
+function setEditorLeftSafe(px: string): void {
+  document.documentElement?.style?.setProperty?.("--editor-left-safe", px);
 }
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
@@ -453,13 +462,22 @@ function onTestPlayWindowRequest(): void {
   void openTestPlayModal();
 }
 
+// 프로젝트 전체 clone+stringify라 비싸다 — 페인트 드래그처럼 연속 변경 시 셀마다 실행하면
+// 그 자체가 렉의 주범이 된다(대량 편집 렉 보고의 1순위 원인). trailing 디바운스로 합친다.
+// 소비자는 E2E/내보내기 도구(숨은 <pre>)뿐이라 150ms 지연은 관측 불가.
+let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
+
 function updateProjectExport(): void {
-  if (!projectExportNode) return;
-  projectExportNode.textContent = JSON.stringify({
-    project: projectWithoutEventDrafts(store.getCurrent()),
-    editor: editorState.get(),
-    history: getMapEditHistoryState(),
-  });
+  if (projectExportTimer) return;
+  projectExportTimer = setTimeout(() => {
+    projectExportTimer = null;
+    if (!projectExportNode) return;
+    projectExportNode.textContent = JSON.stringify({
+      project: projectWithoutEventDrafts(store.getCurrent()),
+      editor: editorState.get(),
+      history: getMapEditHistoryState(),
+    });
+  }, 150);
 }
 
 function bindLeftResizer(): void {

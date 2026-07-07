@@ -91,7 +91,9 @@ export class TilePaintEngine {
 
     switch (tool) {
       case "paint":
-        recordTileEditSnapshot(mid);
+        // 스냅샷은 스트로크(드래그) 시작 시 1회만 — 셀마다 찍으면 드래그 한 번에 맵 clone+직렬화가
+        // N번 돌아 렉의 원인이 되고, undo도 셀 단위로 쪼개져 되돌리기가 고통스럽다.
+        if (firstStrokeTile) recordTileEditSnapshot(mid);
         {
           if (activePaletteStamp) {
             applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y });
@@ -123,7 +125,7 @@ export class TilePaintEngine {
         }
         break;
       case "erase":
-        recordTileEditSnapshot(mid);
+        if (firstStrokeTile) recordTileEditSnapshot(mid);
         applyBrush({
           centerX: x,
           centerY: y,

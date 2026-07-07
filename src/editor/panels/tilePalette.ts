@@ -347,11 +347,12 @@ function makeQuickTileCell(
     children: [el("span", { class: "quick-tile-index", text: String(index) })],
     dataset: { testid: `quick-tile-${index}` },
     on: {
-      pointerdown: (event) => event.preventDefault(),
-      click: (event) => {
+      // 선택은 pointerdown에서 즉시 — click은 도중 재구축 시 증발(클릭 불가 보고 원인).
+      pointerdown: (event) => {
         event.preventDefault();
         selectPaletteTile(index);
       },
+      click: (event) => event.preventDefault(),
     },
   });
 }

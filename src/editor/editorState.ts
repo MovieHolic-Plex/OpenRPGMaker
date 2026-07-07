@@ -93,6 +93,16 @@ class EditorStateStore {
   }
 
   set(patch: Partial<EditorState>): void {
+    // 무변경 set은 통지하지 않는다 — 통지마다 팔레트/맵트리가 전체 재구축되므로,
+    // pointerdown~pointerup 사이에 노드가 교체되면 사용자의 클릭이 증발한다(클릭 불가 보고 원인 중 하나).
+    let changed = false;
+    for (const key of Object.keys(patch) as (keyof EditorState)[]) {
+      if (this.state[key] !== patch[key]) {
+        changed = true;
+        break;
+      }
+    }
+    if (!changed) return;
     this.state = { ...this.state, ...patch };
     for (const l of this.listeners) l(this.state);
   }

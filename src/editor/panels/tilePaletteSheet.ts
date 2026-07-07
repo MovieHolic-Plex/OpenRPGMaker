@@ -53,7 +53,6 @@ type MakeChipsetSheetArgs = {
 };
 
 let paletteDragStartTile: number | null = null;
-let paletteDragHandled = false;
 let sheetRangeDrag: SheetRangeDrag | null = null;
 
 export function makeChipsetSheet(args: MakeChipsetSheetArgs): HTMLElement {
@@ -161,14 +160,12 @@ function makeChipsetCell(model: ChipsetCellModel): HTMLButtonElement {
         paletteDragStartTile = null;
       },
       pointerdown: (event) => startPaletteStampDrag(index, event),
-      pointerup: (event) => finishPaletteStampDrag(index, model.tileset, model.onCreatePaletteStamp, event),
+      pointerup: (event) =>
+        finishPaletteStampDrag(index, model.tileset, model.onCreatePaletteStamp, model.onSelectTile, event),
+      // 단일 선택도 pointerup(finishPaletteStampDrag)에서 처리한다 — click은 down~up 사이에
+      // 패널이 재구축되면 증발하지만 pointerup은 커서 아래의 새 노드에서 발화한다.
       click: (event) => {
         event.preventDefault();
-        if (paletteDragHandled) {
-          paletteDragHandled = false;
-          return;
-        }
-        model.onSelectTile(index);
       },
     },
   });
@@ -254,7 +251,6 @@ function installSheetRangeSelection(args: SheetRangeSelectionArgs): void {
     const active = drag.active || pointerDistance(drag, event) >= RANGE_DRAG_THRESHOLD_PX;
     sheetRangeDrag = { ...drag, active, currentTile };
     if (!active) return;
-    paletteDragHandled = true;
     const selection = sheetRangeSelection(args.tileset, args.layer, drag.startTile, currentTile);
     paintRangeCells(args.cells, selection.tileIds);
     updateMarquee(marquee, drag, event);
@@ -269,7 +265,6 @@ function installSheetRangeSelection(args: SheetRangeSelectionArgs): void {
     sheetRangeDrag = null;
     hideMarquee(marquee);
     if (!active) return;
-    paletteDragHandled = true;
     showSelection(sheetRangeSelection(args.tileset, args.layer, drag.startTile, currentTile));
     event.preventDefault();
   });
@@ -376,7 +371,6 @@ function hideMarquee(marquee: HTMLElement): void {
 function startPaletteStampDrag(index: number, event: Event): void {
   if (!isPrimaryButtonEvent(event)) return;
   paletteDragStartTile = index;
-  paletteDragHandled = false;
   event.preventDefault();
 }
 
@@ -384,20 +378,25 @@ function finishPaletteStampDrag(
   index: number,
   tileset: TilesetDef,
   onCreatePaletteStamp: (stamp: PaletteStamp) => void,
+  onSelectTile: (index: number) => void,
   event: Event
 ): void {
   if (!isPrimaryButtonEvent(event)) return;
   if (sheetRangeDrag?.active) {
     paletteDragStartTile = null;
-    paletteDragHandled = true;
     event.preventDefault();
     return;
   }
   const startTile = paletteDragStartTile;
   paletteDragStartTile = null;
-  if (startTile === null || startTile === index) return;
+  if (startTile === null) return;
+  if (startTile === index) {
+    // 같은 타일에서 down→up = 단일 선택. click 이벤트에 맡기지 않는다(재구축 시 증발).
+    onSelectTile(index);
+    event.preventDefault();
+    return;
+  }
   const stamp = createPaletteStampFromDrag({ endTile: index, startTile, tileset });
-  paletteDragHandled = true;
   onCreatePaletteStamp(stamp);
   event.preventDefault();
 }

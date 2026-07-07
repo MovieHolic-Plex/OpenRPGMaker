@@ -196,17 +196,21 @@
   order: -1;
 }
 
+/* 스튜디오 우측 스킬 레일 — 투명 무장식이던 것을 표면 위 정식 사이드 패널로. */
 .ai-chat-panel.is-studio .ai-chat-body > .ai-skill-drawer {
-  border-left: 1px solid var(--border-subtle);
+  border-left: 1px solid var(--border-default);
   border-radius: 0;
   border-top: none;
   border-bottom: none;
   border-right: none;
-  background: transparent;
-  flex: 0 0 300px;
+  background: var(--bg-raised);
+  flex: 0 0 320px;
   max-height: none;
   order: 2;
   overflow-y: auto;
+  padding: var(--space-3);
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
 }
 
 /* 핀 바 — 자주 쓰는 스킬 원클릭 */
