@@ -18,6 +18,11 @@
   color: #f8fafc;
 }
 
+.build-palette-popup.build-palette-floating {
+  right: auto;
+  top: auto;
+}
+
 .build-palette-title {
   margin: 0 0 6px;
   font-size: 11px;
