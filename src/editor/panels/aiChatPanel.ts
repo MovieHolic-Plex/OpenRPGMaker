@@ -110,6 +110,28 @@ export function savePanelSize(size: PanelSize): void {
   localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(clampPanelSize(size)));
 }
 
+// ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────
+// 채팅 로그·프로포절 카드·도구 로그가 패널의 data-ai-font-size + CSS 변수(--ai-font-scale)로 함께 스케일된다.
+export const AI_FONT_SIZE_KEY = "rpg-zzu:ai-font-size";
+export type AiFontSize = "small" | "normal" | "large";
+export const AI_FONT_SIZE_SCALE: Record<AiFontSize, string> = { small: "0.85", normal: "1", large: "1.2" };
+
+export function loadAiFontSize(): AiFontSize {
+  if (typeof localStorage === "undefined") return "normal";
+  const raw = localStorage.getItem(AI_FONT_SIZE_KEY);
+  return raw === "small" || raw === "large" ? raw : "normal";
+}
+
+export function saveAiFontSize(size: AiFontSize): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(AI_FONT_SIZE_KEY, size);
+}
+
+export function applyAiFontSize(target: HTMLElement, size: AiFontSize): void {
+  target.dataset.aiFontSize = size;
+  target.style.setProperty("--ai-font-scale", AI_FONT_SIZE_SCALE[size]);
+}
+
 export function formatAiRunningStatus(startedAt: number, now: number, toolCount: number, maxTools = AI_PROGRESS_TOOL_LIMIT): string {
   const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
   return `생각 중… ${elapsedSeconds}초 · 도구 ${toolCount}/${maxTools}`;
@@ -146,8 +168,54 @@ export function displayUserAuditText(text: string): string {
   return text.split(/\n\n\[컨텍스트\]/u)[0] ?? text;
 }
 
-export function renderToolActivityEntry(name: string, result: ToolResult): HTMLElement {
-  if (result.ok) return el("div", { class: "ai-tool-activity-line", text: formatToolActivityLine(name, result) });
+// 도구 상세 JSON 직렬화 — 직렬화 불가 값(순환 등)은 String 폴백으로 원문을 최대한 보존한다.
+function safeJsonStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value, null, 2) ?? String(value);
+  } catch {
+    return String(value);
+  }
+}
+
+// 도구 호출 내부 열람(V3C) 데이터 소스 — 세션 tool_call 이벤트/audit 항목의 인자를 렌더 시 보존한다.
+export interface ToolDetailSource {
+  readonly args: Record<string, unknown> | undefined;
+  readonly index: number;
+}
+
+// 도구 로그 라인의 아코디언 본문: 호출 인자 JSON + 결과 원문(summary/warnings/data/오류 메시지).
+// 실패 호출은 오류 원문(재전송 예시 포함 summary/issues)을 가공 없이 그대로 보여준다.
+export function renderToolCallDetail(name: string, result: ToolResult, detail: ToolDetailSource): HTMLElement {
+  const resultRaw: Record<string, unknown> = { ok: result.ok, summary: result.summary };
+  if (result.issues && result.issues.length > 0) resultRaw.issues = result.issues;
+  const warnings = result.diff?.warnings ?? [];
+  if (warnings.length > 0) resultRaw.warnings = warnings;
+  if (result.data !== undefined) resultRaw.data = result.data;
+  return el("div", {
+    class: "ai-tool-detail",
+    dataset: { testid: `ai-tool-detail-${detail.index}` },
+    children: [
+      el("div", { class: "ai-tool-detail-label", text: `호출 인자 — ${name}` }),
+      el("pre", { class: "ai-tool-detail-pre", text: safeJsonStringify(detail.args ?? {}) }),
+      el("div", { class: "ai-tool-detail-label", text: result.ok ? "결과 원문" : "오류 원문" }),
+      el("pre", { class: "ai-tool-detail-pre", text: safeJsonStringify(resultRaw) }),
+    ],
+  });
+}
+
+export function renderToolActivityEntry(name: string, result: ToolResult, detail?: ToolDetailSource): HTMLElement {
+  if (result.ok) {
+    if (!detail) return el("div", { class: "ai-tool-activity-line", text: formatToolActivityLine(name, result) });
+    // 클릭(summary 토글) → 호출 인자/결과 원문 아코디언.
+    return el("details", {
+      class: "ai-tool-activity-line ai-tool-entry",
+      dataset: { testid: "ai-tool-entry" },
+      children: [
+        el("summary", { class: "ai-tool-entry-summary", text: formatToolActivityLine(name, result) }),
+        renderToolCallDetail(name, result, detail),
+      ],
+    });
+  }
   const draftPrefix = isDraftDestructiveTool(name) ? "(초안) " : "";
   return el("details", {
     class: "ai-tool-activity-line ai-tool-failure",
@@ -161,6 +229,7 @@ export function renderToolActivityEntry(name: string, result: ToolResult): HTMLE
         class: "ai-tool-failure-body",
         text: "이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.",
       }),
+      ...(detail ? [renderToolCallDetail(name, result, detail)] : []),
     ],
   });
 }
@@ -705,9 +774,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 설정 저장 시 진행 중인 세션에도 즉시 반영한다 — 세션이 생성 시점 설정(빈 API 키 등)을
   // 계속 쓰는 바람에 키를 저장해도 인증 실패가 반복되던 문제를 막는다.
-  const settings = renderSettingsForm((config) => {
-    controller.session?.updateConfig(config);
-  });
+  const settings = renderSettingsForm(
+    (config) => {
+      controller.session?.updateConfig(config);
+    },
+    // 글자 크기 변경 즉시 패널에 반영(패널은 아래에서 생성되지만 콜백은 사용자 조작 시점에만 호출된다).
+    (size) => applyAiFontSize(panel, size)
+  );
   // 설정은 한 번 쓰고 안 쓰는 요소라 기본 접힘 — 헤더 ⚙로 펼친다(전면 재배치 2026-07-05).
   let settingsOpen = false;
   const applySettingsOpen = (): void => {
@@ -751,41 +824,49 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (bubble && raw.trim()) bubble.replaceChildren(renderMarkdown(raw));
   };
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
-  let lastReasoning: { box: HTMLElement; body: HTMLElement; toggle: HTMLElement; count: number } | null = null;
+  // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
+  let lastReasoning: { box: HTMLElement; body: HTMLElement; toggle: HTMLElement; state: { count: number } } | null = null;
+  const appendReasoningItem = (body: HTMLElement): HTMLElement => {
+    const item = el("div", { class: "ai-reasoning-item", dataset: { testid: "ai-reasoning-item" } });
+    body.append(item);
+    return item;
+  };
   const appendReasoning = (): { body: HTMLElement } => {
     removeStartScreen();
     if (lastReasoning?.box.parentNode === log && log.childNodes[log.childNodes.length - 1] === lastReasoning.box) {
-      lastReasoning.count += 1;
-      lastReasoning.body.textContent = `${lastReasoning.body.textContent ?? ""}\n\n`;
-      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.count, lastReasoning.body.hidden);
+      lastReasoning.state.count += 1;
+      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, lastReasoning.body.hidden);
       log.scrollTop = log.scrollHeight;
-      return { body: lastReasoning.body };
+      return { body: appendReasoningItem(lastReasoning.body) };
     }
     const body = el("div", { class: "ai-reasoning-body", dataset: { testid: "ai-reasoning-body" } });
     body.hidden = true;
+    const state = { count: 1 };
     const toggle = el("button", {
       class: "ai-reasoning-toggle",
-      attrs: { type: "button", title: "모델의 추론 펼치기/접기", "aria-label": "추론 펼치기/접기" },
+      attrs: { type: "button", title: "모델의 추론 원문 전체 펼치기/접기", "aria-label": "추론 펼치기/접기" },
       text: reasoningToggleText(1, true),
     });
     toggle.addEventListener("click", () => {
       body.hidden = !body.hidden;
-      toggle.textContent = reasoningToggleText(lastReasoning?.toggle === toggle ? lastReasoning.count : 1, body.hidden);
+      toggle.textContent = reasoningToggleText(state.count, body.hidden);
     });
     const box = el("div", { class: "ai-chat-bubble ai-reasoning", dataset: { testid: "ai-reasoning" }, children: [toggle, body] });
     log.append(box);
-    lastReasoning = { box, body, toggle, count: 1 };
+    lastReasoning = { box, body, toggle, state };
     log.scrollTop = log.scrollHeight;
-    return { body };
+    return { body: appendReasoningItem(body) };
   };
 
   // 툴콜을 원문 버블로 쏟지 않고 접이식 한 줄 요약("🔧 툴 N회 실행 ▸")으로 묶는다.
   // 어시스턴트 응답이 끼면 그룹을 끊어 다음 툴부터 새 그룹을 만든다.
   let toolActivity: { list: HTMLElement; toggle: HTMLElement; count: number } | null = null;
+  // 도구 상세 아코디언 testid 일련번호(ai-tool-detail-<n>) — 대화 로그 전체에서 1부터 증가.
+  let toolDetailSeq = 0;
   const closeToolActivity = (): void => {
     toolActivity = null;
   };
-  const appendToolLine = (name: string, result: ToolResult): void => {
+  const appendToolLine = (name: string, result: ToolResult, args?: Record<string, unknown>): void => {
     if (!toolActivity) {
       const list = el("div", { class: "ai-tool-activity-list" });
       list.hidden = true;
@@ -804,7 +885,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toolActivity = current;
     }
     toolActivity.count += 1;
-    toolActivity.list.append(renderToolActivityEntry(name, result));
+    toolDetailSeq += 1;
+    toolActivity.list.append(renderToolActivityEntry(name, result, { args, index: toolDetailSeq }));
     toolActivity.toggle.textContent = `🔧 도구 ${toolActivity.count}회 실행 ${toolActivity.list.hidden ? "▸" : "▾"}`;
     log.scrollTop = log.scrollHeight;
   };
@@ -821,11 +903,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     if (entry.kind === "tool") {
-      appendToolLine(entry.name, {
-        ok: entry.ok,
-        summary: entry.summary,
-        issues: entry.issues?.map((message) => ({ severity: "error", code: "restored-tool", message })),
-      });
+      appendToolLine(
+        entry.name,
+        {
+          ok: entry.ok,
+          summary: entry.summary,
+          issues: entry.issues?.map((message) => ({ severity: "error", code: "restored-tool", message })),
+        },
+        entry.args
+      );
     }
   };
 
@@ -1360,7 +1446,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         log.scrollTop = log.scrollHeight;
       } else if (event.type === "tool_call") {
         bumpToolProgress();
-        appendToolLine(event.name, event.result);
+        appendToolLine(event.name, event.result, event.args);
         assistantBubble = null; // 툴 이후 새 assistant 응답은 새 버블.
         reasoningBox = null; // 툴 이후 새 추론은 새 상자.
         // 밑그림(스펙) 확정: 중간과정 가시화 — 에셋별 할당 영역을 카드로 보여준다.
@@ -1928,6 +2014,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-panel" },
     children: [header, toolbar, body, collapsedRestore],
   });
+  // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
+  applyAiFontSize(panel, loadAiFontSize());
 
   // 크기 커스텀: 좌상단 코너 핸들 드래그(오른쪽·아래가 고정이라 왼쪽·위로 끌면 커진다).
   let panelSize = loadPanelSize();
@@ -2108,7 +2196,10 @@ const DOCK_MODE_KEY = "rpg-zzu:ai-panel-docked";
 // ── 설정 폼(접이식) ─────────────────────────────────────────────
 // 입력이 바뀌면 즉시 localStorage에 자동 저장한다 — "저장 버튼을 안 눌러서 날아가는" 문제 방지.
 // onSaved 콜백으로 진행 중인 세션에도 새 설정을 반영한다.
-function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
+function renderSettingsForm(
+  onSaved: (config: AiConfig) => void,
+  onFontSizeChange: (size: AiFontSize) => void = () => {}
+): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
   const config = loadAiConfig();
   const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
   const model = textField("모델", config.model, "ai-config-model", "text", DEFAULT_MODEL);
@@ -2136,6 +2227,29 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
     class: "ai-config-row",
     attrs: { title: "모델이 답/도구 사용 전에 추론(생각)하는 강도. 끔=추론 안 함." },
     children: [el("span", { class: "ai-config-label", text: "추론" }), reasoningSelect],
+  });
+
+  // 글자 크기 3단(V3C) — AiConfig와 별개로 localStorage(rpg-zzu:ai-font-size)에 즉시 영속.
+  const fontSizeSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-font-size" },
+    children: [
+      el("option", { attrs: { value: "small" }, text: "작게" }),
+      el("option", { attrs: { value: "normal" }, text: "보통" }),
+      el("option", { attrs: { value: "large" }, text: "크게" }),
+    ],
+  }) as HTMLSelectElement;
+  fontSizeSelect.value = loadAiFontSize();
+  fontSizeSelect.addEventListener("change", () => {
+    const raw = fontSizeSelect.value;
+    const size: AiFontSize = raw === "small" || raw === "large" ? raw : "normal";
+    saveAiFontSize(size);
+    onFontSizeChange(size);
+  });
+  const fontSizeRow = el("label", {
+    class: "ai-config-row",
+    attrs: { title: "채팅 로그·제안 카드·도구 로그의 글자 크기. 즉시 적용되고 저장됩니다." },
+    children: [el("span", { class: "ai-config-label", text: "글자 크기" }), fontSizeSelect],
   });
 
   const autoApprove = el("input", {
@@ -2213,6 +2327,7 @@ function renderSettingsForm(onSaved: (config: AiConfig) => void): { element: HTM
       apiKey.row,
       maxTokens.row,
       reasoningRow,
+      fontSizeRow,
       autoApproveRow,
       el("div", { class: "ai-config-actions", children: [saveButton, savedHint] }),
     ],
