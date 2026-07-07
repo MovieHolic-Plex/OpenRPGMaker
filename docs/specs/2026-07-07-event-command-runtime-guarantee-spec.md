@@ -232,6 +232,34 @@ export function runCommandContract(
 
 각 웨이브 착수 시 이 문서 전체를 codex에게 전달하고, 해당 웨이브 행만 "이번 범위"로 지정한다.
 
+## 10.1 EC1 실측 정정 (2026-07-07 — EC2 이후 웨이브는 이 절이 §5 표에 우선한다)
+
+EC1이 인터프리터 전 계층을 정독·실측한 결과 (상세: 감독 스크래치 `report-ec1.md`, 머지 커밋 참조):
+
+1. **kind 수 정정**: `COMMAND_KINDS`는 **44개**(m2Command 포함). 화이트리스트는 40에서 시작
+   (§10 표의 42/38은 산수 오류였다).
+2. **B/N 정의 재정립**: §5 표의 B/N은 "인터프리터 스텝에서 pause 발생 여부"로 읽어라.
+   실측상 timer(set/start/stop 전부), showPicture/erasePicture/playAudio/stopAudio,
+   shop/inn/battleProcessing/transfer/changeTile/moveEvent는 **모두 pause 핸드오프 1회 발생**
+   (효과 적용은 플레이어 계층). 계약 테스트의 pause 단언은 이 실측을 기준으로 한다.
+3. **결측 참조 경고의 실제 설계**: `[interpreter]` warn은 callCommonEvent/callMapEvent/
+   gotoLabel/m2 계열에만 존재. 나머지 kind는 참조 검증이 **저장 시점**(`deserialize`)에 몰려
+   있어 런타임은 무경고 진행이 설계다. §5 표의 "warn + 스킵" 폴백 기대는 **표 정정**으로
+   처리한다(런타임에 warn을 추가하지 마라). 계약 테스트의 결측 참조 케이스는
+   "크래시 없음 + 실측 동작 고정"으로 작성한다.
+4. **개별 정정(확정)**: wait=항상 pause(클램프 없음) / choices 빈 options=무경고 pause /
+   inputNumber 없는 변수=무경고 생성 / fork 결측 참조=기본값 평가(false/0 — `var==0`은 참) /
+   changeEquipment=인벤토리 반환 없음("" = 해제) / changeExp·Level=클램프만, 레벨업 파생 없음 /
+   changeGold·Item·Party=하한 0 확정, 결측 id 무경고 적용.
+5. **판정 보류 2건 (EC2/EC3에서 확정, 그 전까지 코드·표 유지)**:
+   - breakLoop 루프 밖: 실측 = 무경고 스택 전체 pop → 이벤트 종료. EasyRPG
+     `Game_Interpreter::CommandBreakLoop` 원문과 대조해 확정할 것.
+   - gameOver/ending/returnToTitle: 실측 = resume 시 다음 명령 계속 실행(종료 처리 없음).
+     "이후 명령 미실행"을 구현할지 표를 정정할지 감독자 결정 대기.
+6. **버그 후보 1건**: recoverAll이 `actorStateIds`(상태이상)를 해제하지 않음 — RM2003
+   의미론상 해제가 맞다. **EC3에서 §3 프로토콜로 판정 후 수정**.
+7. m2Command의 계약 파일은 EC4 §9 트리아지에서 다룬다(화이트리스트 상시 항목).
+
 ## 11. 회귀 게이트 (완성 후 상시 효력)
 
 1. 새 kind 추가 → `MINIMAL_COMMANDS` Record 컴파일 에러(기존) + 계약 파일 부재로
@@ -242,3 +270,6 @@ export function runCommandContract(
 
 ## 진행 기록
 - 2026-07-07: 스펙 작성 (Claude Fable 5 감독, 실측 기반). 웨이브 착수 대기.
+- 2026-07-07: **EC1 완료·머지** (Fable 5 서브에이전트, 신규 테스트 73, 런타임 수정 0건,
+  2022 passed). §5 표 대조 차이 20건 → §10.1 실측 정정 절 신설. 보류 2건(breakLoop/종료 3종),
+  버그 후보 1건(recoverAll 상태이상). 다음: EC2.
