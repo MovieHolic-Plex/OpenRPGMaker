@@ -15,10 +15,33 @@ function selection(patch: Partial<BuildPaletteSelection> = {}): BuildPaletteSele
 }
 
 describe("build palette deterministic stamps", () => {
+  it("집 프리미티브는 2×2 미만 선택 영역을 명확한 사유로 거부한다", () => {
+    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ width: 1, height: 1 }), "house");
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("최소 2×2");
+    expect(result.summary).not.toContain("완료");
+    expect(result.toolResults).toHaveLength(0);
+  });
+
+  it("집 프리미티브가 시작 위치를 덮으면 무결성 오류를 사용자 메시지로 요약한다", () => {
+    const project = createBlankProject();
+    const result = applyBuildPalettePrimitiveToProject(
+      project,
+      selection({ x: project.startPos.x, y: project.startPos.y - 1, width: 3, height: 4 }),
+      "house"
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("시작 위치");
+    expect(result.summary).not.toContain("커밋 거부");
+    expect(result.toolResults.some((toolResult) => toolResult.issues?.some((issue) => issue.code === "start-position"))).toBe(true);
+  });
+
   it("집 프리미티브는 LLM 없이 벽, 문, 지붕을 한 번에 시공한다", () => {
     const chat = vi.spyOn(llmClient, "chatCompletion");
     const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection(), "house");
     expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("완료");
     expect(chat).not.toHaveBeenCalled();
 
     const map = result.project.maps[MAP_ID];
