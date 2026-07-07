@@ -251,11 +251,14 @@ EC1이 인터프리터 전 계층을 정독·실측한 결과 (상세: 감독 �
    inputNumber 없는 변수=무경고 생성 / fork 결측 참조=기본값 평가(false/0 — `var==0`은 참) /
    changeEquipment=인벤토리 반환 없음("" = 해제) / changeExp·Level=클램프만, 레벨업 파생 없음 /
    changeGold·Item·Party=하한 0 확정, 결측 id 무경고 적용.
-5. **판정 보류 2건 (EC2/EC3에서 확정, 그 전까지 코드·표 유지)**:
-   - breakLoop 루프 밖: 실측 = 무경고 스택 전체 pop → 이벤트 종료. EasyRPG
-     `Game_Interpreter::CommandBreakLoop` 원문과 대조해 확정할 것.
+5. **판정 보류 (EC3에서 확정, 그 전까지 코드·표 유지)**:
+   - ~~breakLoop 루프 밖~~ → **EC2에서 확정**: EasyRPG `Game_Interpreter::CommandBreakLoop`
+     원문 대조 결과 "루프 없으면 이벤트 끝으로 점프"가 원작 의미론 — 실측(무경고 이벤트 종료)이
+     원작 호환으로 판정 완료. 표 정정, 코드 유지.
    - gameOver/ending/returnToTitle: 실측 = resume 시 다음 명령 계속 실행(종료 처리 없음).
      "이후 명령 미실행"을 구현할지 표를 정정할지 감독자 결정 대기.
+   - setFlag: EC2 완료 기준 산수 충돌로 파일 분리를 EC3로 이월(legacy 동작 자체는
+     setSwitch.contract.test.ts에서 고정됨). EC3 완료 기준은 화이트리스트 24→0 (setFlag 포함).
 6. **버그 후보 1건**: recoverAll이 `actorStateIds`(상태이상)를 해제하지 않음 — RM2003
    의미론상 해제가 맞다. **EC3에서 §3 프로토콜로 판정 후 수정**.
 7. m2Command의 계약 파일은 EC4 §9 트리아지에서 다룬다(화이트리스트 상시 항목).
@@ -273,3 +276,6 @@ EC1이 인터프리터 전 계층을 정독·실측한 결과 (상세: 감독 �
 - 2026-07-07: **EC1 완료·머지** (Fable 5 서브에이전트, 신규 테스트 73, 런타임 수정 0건,
   2022 passed). §5 표 대조 차이 20건 → §10.1 실측 정정 절 신설. 보류 2건(breakLoop/종료 3종),
   버그 후보 1건(recoverAll 상태이상). 다음: EC2.
+- 2026-07-07: **EC2 완료·머지** (codex xhigh, 신규 87, 화이트리스트 40→24, 2113 passed).
+  breakLoop 보류 확정(원작 호환), setFlag 파일 분리는 EC3로. 잔여 결정: 종료 3종 처리,
+  recoverAll 상태이상(EC3 §3 판정). 다음: EC3.

@@ -97,3 +97,6 @@ locked?: boolean;      // true면 AI 재감사가 덮어쓰기 금지 (거부 �
 
 ## 진행 기록
 - 2026-07-07: 설계 합의·문서화 (오인식 수정 UX를 1급 설계로 — 사용자 강조 반영). T1a 착수.
+- 2026-07-07: **T1a 완료·머지** (codex xhigh, 신규 테스트 28, 2050 passed). 모델/왕복,
+  lint 3종 run_lint 합류, query_tiles/upsert_palette_preset/다이제스트, 배치 4툴 preset 파라미터.
+  카테고리 비호환 행렬: water↔furniture·roof·wall, path↔furniture·roof. 다음: T1b (교정 UI).
