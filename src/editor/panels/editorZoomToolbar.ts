@@ -1,5 +1,6 @@
 import { EDITOR_ZOOM_LEVELS, editorState } from "@/editor/editorState";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
+import { renderBuildPalettePopup, renderBuildPaletteToggle } from "@/editor/panels/buildPalette";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -41,6 +42,13 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       }),
     ],
   });
+  const buildPalette = renderBuildPalettePopup();
+  const buildGroup = el("div", {
+    class: "canvas-toolbar-build-group",
+    attrs: { "aria-label": "건축 팔레트", role: "group" },
+    dataset: { testid: "editor-build-palette-group" },
+    children: [renderBuildPaletteToggle(), ...(buildPalette ? [buildPalette] : [])],
+  });
   const expandButton = el("button", {
       class: "canvas-toolbar-expand",
       text: "⋯",
@@ -53,7 +61,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
         },
       },
     });
-  container.append(zoomGroup, expandButton, saveAction);
+  container.append(zoomGroup, expandButton, buildGroup, saveAction);
 }
 
 async function downloadCurrentMapScreenshot(): Promise<void> {

@@ -252,6 +252,12 @@ function approveGroupItem(tileset: TilesetDef, item: Record<string, unknown>, in
   // (쓰기 draft는 runTool이 폐기하므로 부분 마킹이 남지 않는다).
   if (isExpandablePatternKind(claims.patternKind) && !group.patternGrammar) {
     group.patternGrammar = derivePatternGrammar(claims.patternKind, group.tileIds, tileset, { groupId: group.id, name: group.name });
+  } else if (claims.role === "roof" && !group.patternGrammar) {
+    const roofTiles = group.tileIds.length >= 3 ? group.tileIds.slice(0, 3) : group.tileIds.slice(0, 2);
+    if (roofTiles.length >= 2) {
+      group.patternGrammar = derivePatternGrammar("horizontal_expandable", roofTiles, tileset, { groupId: group.id, name: group.name });
+      warnings.push(`${claims.itemLabel}: 지붕 role은 시공 가능해야 하므로 horizontal_expandable 파츠를 자동 보정했습니다.`);
+    }
   }
   return {
     kind: "group",

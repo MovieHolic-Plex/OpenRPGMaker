@@ -201,8 +201,8 @@ export function expandWall(tileset: TilesetDef, group: TileGroupMetadata, rect: 
 // 지붕 전개: 벽 영역 바로 위에 얹는다. nine_slice = 지붕면 다열, horizontal = 처마 1행.
 // perCell 규약(프로파일 roof: perCell)에 따라 투명 오버레이 타일은 upper로 간다.
 export function expandRoof(tileset: TilesetDef, group: TileGroupMetadata, wallRegion: Rect, profile: GrammarProfile, example: Record<string, unknown>): Expansion {
-  const grammar = requireGrammar(group, example);
-  const home = vocabLayerHomeFor(group, profile);
+  const resolved = resolveRoofGrammar(tileset, group, profile, example);
+  const { grammar, home, group: roofGroup } = resolved;
   const rows = grammar.kind === "horizontal_expandable" ? 1 : Math.max(grammar.minHeight ?? 2, 1);
   const top = Math.max(0, wallRegion.y - rows);
   const height = wallRegion.y - top;
@@ -216,18 +216,60 @@ export function expandRoof(tileset: TilesetDef, group: TileGroupMetadata, wallRe
   if (grammar.kind === "nine_slice_expandable") {
     // 지붕면은 세로 최소치를 벽 위 공간에 맞춰 완화한다(1~2행 지붕이 일반적).
     const relaxed: PatternGrammar = { ...grammar, minWidth: Math.min(grammar.minWidth ?? 3, region.w), minHeight: Math.min(grammar.minHeight ?? 3, region.h) };
-    return { edits: expandNineSlice(tileset, group, relaxed, region, home, example), region };
+    return { edits: expandNineSlice(tileset, roofGroup, relaxed, region, home, example), region };
   }
   if (grammar.kind === "horizontal_expandable") {
-    return { edits: expandHorizontal(tileset, group, grammar, region, home, example), region };
+    return { edits: expandHorizontal(tileset, roofGroup, grammar, region, home, example), region };
   }
   if (grammar.kind === "vertical_expandable") {
-    return { edits: expandVertical(tileset, group, grammar, region, home, example), region };
+    return { edits: expandVertical(tileset, roofGroup, grammar, region, home, example), region };
   }
-  throw new ToolError(
-    `타일 그룹 '${group.name}'의 패턴 '${grammar.kind}'은(는) 지붕 전개를 지원하지 않습니다.`,
-    { code: "pattern-unsupported" }
-  );
+  return { edits: expandHorizontal(tileset, roofGroup, syntheticHorizontalRoofGrammar(roofGroup), region, home, example), region };
+}
+
+function resolveRoofGrammar(
+  tileset: TilesetDef,
+  group: TileGroupMetadata,
+  profile: GrammarProfile,
+  example: Record<string, unknown>
+): { readonly group: TileGroupMetadata; readonly grammar: PatternGrammar; readonly home: VocabLayerHome } {
+  const grammar = requireGrammar(group, example);
+  const home = vocabLayerHomeFor(group, profile);
+  if (grammar.kind === "nine_slice_expandable" || grammar.kind === "horizontal_expandable" || grammar.kind === "vertical_expandable") {
+    return { group, grammar, home };
+  }
+  const sibling = (tileset.tileGroups ?? []).find((candidate) => {
+    const kind = candidate.patternGrammar?.kind;
+    return candidate.id !== group.id
+      && candidate.role === "roof"
+      && (kind === "nine_slice_expandable" || kind === "horizontal_expandable" || kind === "vertical_expandable")
+      && (candidate.patternGrammar?.parts.length ?? 0) > 0;
+  });
+  if (sibling?.patternGrammar) {
+    return { group: sibling, grammar: sibling.patternGrammar, home: vocabLayerHomeFor(sibling, profile) };
+  }
+  return { group, grammar: syntheticHorizontalRoofGrammar(group), home };
+}
+
+function syntheticHorizontalRoofGrammar(group: TileGroupMetadata): PatternGrammar {
+  const first = group.tileIds[0];
+  const middle = group.tileIds[Math.floor(group.tileIds.length / 2)] ?? first;
+  const last = group.tileIds[group.tileIds.length - 1] ?? middle;
+  if (first === undefined || middle === undefined || last === undefined) {
+    throw new ToolError(`타일 그룹 '${group.name}'(${group.id})에 지붕 폴백으로 쓸 타일이 없습니다.`, { code: "pattern-underspecified" });
+  }
+  return {
+    axis: "horizontal",
+    kind: "horizontal_expandable",
+    minWidth: 1,
+    parts: [
+      { role: "leftCap", tileIds: [first] },
+      { role: "repeatBody", tileIds: [middle] },
+      { role: "rightCap", tileIds: [last] },
+    ],
+    preserveCaps: true,
+    repeat: "body",
+  };
 }
 
 export interface AutotilePoint {
