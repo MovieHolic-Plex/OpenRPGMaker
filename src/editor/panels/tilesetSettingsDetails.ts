@@ -1,6 +1,8 @@
 import { textControl } from "@/editor/panels/databaseControls";
+import { renderPalettePresetEditor } from "@/editor/panels/palettePresetEditor";
 import { renderTerrainTemplateSection } from "@/editor/panels/terrainTemplatePanel";
 import { renderTilesetCheckerSummary } from "@/editor/panels/tilesetCheckerSummary";
+import { openTilesetReviewWizard } from "@/editor/panels/tilesetReviewWizard";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import {
   getTilesetSectionTab,
@@ -111,7 +113,20 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
     });
   }
   if (tab === "knowledge") {
-    return el("aside", { class: "rm2k3-tileset-terrain-pane", children: [renderTilesetCheckerSummary(tileset)] });
+    return el("aside", {
+      class: "rm2k3-tileset-terrain-pane",
+      children: [
+        renderTilesetCheckerSummary(tileset),
+        el("button", {
+          class: "database-footer-button",
+          text: "AI 재감사",
+          attrs: { type: "button" },
+          dataset: { testid: "tileset-reaudit" },
+          on: { click: () => openTilesetReviewWizard(tileset.id) },
+        }),
+        renderPalettePresetEditor(tileset, rerender),
+      ],
+    });
   }
   return el("aside", {
     class: "rm2k3-tileset-terrain-pane",

@@ -32,6 +32,7 @@ const upsertPalettePreset: ToolDefinition = {
         code: "palette-preset-locked",
       });
     }
+    const preservedLockedCount = presets.filter((preset) => preset.locked === true && preset.id !== existing?.id).length;
 
     const next = existing
       ? mergeExistingPreset(existing, record, tileset)
@@ -43,9 +44,11 @@ const upsertPalettePreset: ToolDefinition = {
       tileset.palettePresets = [...presets, normalized];
     }
     const action = existing ? "수정" : "추가";
+    const preservedLine = preservedLockedCount > 0 ? `잠긴 항목 ${preservedLockedCount}개 보존됨` : null;
     return {
-      summary: `팔레트 프리셋 ${action}: ${normalized.name} (${normalized.id}, slot ${normalized.slots.length}개)`,
-      data: { tilesetId, presetId: normalized.id, action, slotCount: normalized.slots.length },
+      summary: `팔레트 프리셋 ${action}: ${normalized.name} (${normalized.id}, slot ${normalized.slots.length}개)${preservedLine ? ` · ${preservedLine}` : ""}`,
+      ...(preservedLine ? { warnings: [preservedLine] } : {}),
+      data: { tilesetId, presetId: normalized.id, action, slotCount: normalized.slots.length, preservedLockedCount },
     };
   },
 };

@@ -19,6 +19,7 @@ Pick validation based on the touched boundary:
 - `npm run build` must pass before merge-ready work.
 - `playwright` / `npm run test:e2e` covers browser `test/e2e` flows.
 - `vitest` is for focused unit tests and fast iteration.
+- Tileset intelligence UI changes should include focused Vitest coverage for review queue ordering/state transitions, correction save metadata and undo, locked AI-write preservation, mock re-audit candidate flow, and palette preset CRUD before running the full suite.
 - `npm run perf:bench` runs the Node headless performance budget harness and writes JSON evidence under `evidence/perf/`.
 - The perf benchmark measures data-pipeline paint latency, edit render diff planning, undo snapshot bytes, and deserialize+validate load time; it intentionally excludes Phaser render.
 - Do not add the perf benchmark as a CI gate unless the budget policy changes, because local timing is machine-dependent.

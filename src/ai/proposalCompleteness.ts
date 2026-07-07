@@ -44,7 +44,11 @@ export function proposalCompletenessWarningLines(
 }
 
 export function isProposalCompletenessWarning(warning: string): boolean {
-  return warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX) || warning.startsWith(PROPOSAL_SCOPE_WARNING_PREFIX);
+  return (
+    warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX) ||
+    warning.startsWith(PROPOSAL_SCOPE_WARNING_PREFIX) ||
+    /^잠긴 항목 \d+개 보존됨$/u.test(warning)
+  );
 }
 
 export function proposalScopeCarryoverWarning(planLabel: string): string {
