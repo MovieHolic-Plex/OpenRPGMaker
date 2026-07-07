@@ -9,8 +9,18 @@ import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";
 import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
+import {
+  confidenceScore,
+  normalizePalettePresetId,
+  paletteRolesForTile,
+  tileCategoriesForTile,
+  tileMetaLocked,
+  tileMetaOrigin,
+} from "@/project/tilesetPalette";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { lintWorld, normalizeProjectWorld } from "@/project/world";
+import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
+import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -253,6 +263,63 @@ const listResources: ToolDefinition = {
   },
 };
 
+const queryTiles: ToolDefinition = {
+  name: "query_tiles",
+  description: "타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋" },
+      role: { type: "string", description: "palette role 또는 tileMeta.role" },
+      category: { type: "string", description: "tileMeta category/role 또는 tileGroup role" },
+      presetId: { type: "string", description: "pp_ 프리셋 id(prefix 생략 가능)" },
+      limit: { type: "integer", description: "반환 개수 제한(기본 50, 최대 200)" },
+    },
+  },
+  run(project, args): ToolExecResult {
+    const tilesetId = typeof args.tilesetId === "string" ? args.tilesetId : project.maps[project.startMapId]?.tilesetId ?? DEFAULT_TILESET_ID;
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
+    const presetId = typeof args.presetId === "string" && args.presetId.trim().length > 0 ? normalizePalettePresetId(args.presetId) : undefined;
+    const preset = presetId ? (tileset.palettePresets ?? []).find((entry) => entry.id === presetId) : undefined;
+    if (presetId && !preset) throw new ToolError(`프리셋을 찾을 수 없습니다: ${presetId}`, { code: "palette-preset-not-found" });
+    const role = typeof args.role === "string" && args.role.trim().length > 0 ? args.role.trim() : undefined;
+    const category = typeof args.category === "string" && args.category.trim().length > 0 ? args.category.trim() : undefined;
+    const limit = typeof args.limit === "number" ? Math.max(1, Math.min(200, Math.floor(args.limit))) : 50;
+    const presetTileIds = preset ? new Set(preset.slots.flatMap((slot) => slot.tileIds)) : null;
+    const tiles = [];
+    for (let tile = 0; tile < tileset.count; tile += 1) {
+      if (presetTileIds && !presetTileIds.has(tile)) continue;
+      const meta = tileset.tileMeta?.[tile];
+      const paletteRoles = paletteRolesForTile(tileset, tile, presetId);
+      const categories = tileCategoriesForTile(tileset, tile);
+      if (role && meta?.role !== role && !(paletteRoles as readonly string[]).includes(role)) continue;
+      if (category && !categories.includes(category)) continue;
+      if (!meta && paletteRoles.length === 0 && categories.length === 0 && !presetTileIds) continue;
+      tiles.push({
+        tile,
+        label: meta?.label ?? "",
+        description: meta?.description ?? "",
+        role: meta?.role,
+        paletteRoles,
+        categories,
+        passage: tile >= 0 && tile < tileset.count ? passageMarkForTile(tileset, tile) : "x",
+        passable: tile >= 0 && tile < tileset.count ? passageMarkForTile(tileset, tile) !== "x" : false,
+        confidence: meta?.confidence,
+        confidenceScore: confidenceScore(meta?.confidence),
+        origin: tileMetaOrigin(meta),
+        locked: tileMetaLocked(meta),
+      });
+      if (tiles.length >= limit) break;
+    }
+    return {
+      summary: `타일 ${tiles.length}개 조회(${tilesetId}${presetId ? `, ${presetId}` : ""})`,
+      data: { tilesetId, presetId, tiles, total: tileset.count },
+    };
+  },
+};
+
 function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; targets: ReachPoint[] }> {
   if (!Array.isArray(value)) return [];
   return value as Array<{ mapId: string; from: ReachPoint; targets: ReachPoint[] }>;
@@ -260,7 +327,7 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
 
 const runLint: ToolDefinition = {
   name: "run_lint",
-  description: "projectLint와 세계관 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
+  description: "projectLint, 세계관 lint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -270,6 +337,7 @@ const runLint: ToolDefinition = {
     const issues: LintIssue[] = [
       ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
       ...lintWorld(normalizeProjectWorld(project), project),
+      ...lintTilesetPalettes(project),
     ];
     const errors = issues.filter((issue) => issue.severity === "error").length;
     const warnings = issues.filter((issue) => issue.severity === "warning").length;
@@ -372,6 +440,7 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   getEvent,
   findSwitchUsage,
   listResources,
+  queryTiles,
   getDatabaseRecords,
   runLint,
   checkReachabilityTool,

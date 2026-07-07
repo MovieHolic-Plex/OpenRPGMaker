@@ -25,6 +25,8 @@ function emptySummary(): ChangeSummary {
     variablesAdded: 0,
     worldEntitiesAdded: 0,
     worldEntitiesModified: 0,
+    palettePresetsAdded: 0,
+    palettePresetsModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
@@ -114,6 +116,20 @@ function diffWorld(before: Project, after: Project, summary: ChangeSummary): voi
   }
 }
 
+function diffPalettePresets(before: Project, after: Project, summary: ChangeSummary): void {
+  for (const [tilesetId, afterTileset] of Object.entries(after.tilesets)) {
+    const beforeTileset = before.tilesets[tilesetId];
+    const beforePresets = beforeTileset?.palettePresets ?? [];
+    const afterPresets = afterTileset.palettePresets ?? [];
+    const beforeById = new Map(beforePresets.map((preset) => [preset.id, JSON.stringify(preset)]));
+    for (const preset of afterPresets) {
+      const prev = beforeById.get(preset.id);
+      if (prev === undefined) summary.palettePresetsAdded += 1;
+      else if (prev !== JSON.stringify(preset)) summary.palettePresetsModified += 1;
+    }
+  }
+}
+
 // before → after 변경을 구조화 요약으로 계산한다.
 export function summarizeChanges(before: Project, after: Project): ChangeSummary {
   const summary = emptySummary();
@@ -137,6 +153,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
   diffWorld(before, after, summary);
+  diffPalettePresets(before, after, summary);
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
   return summary;

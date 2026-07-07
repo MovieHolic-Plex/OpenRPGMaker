@@ -63,7 +63,9 @@ export interface TileAiMetadata {
   defaultLayer?: TileGroupLayer;
   terrainTag?: number;
   passage?: "passable" | "solid" | "star";
-  confidence?: "high" | "low" | "medium";
+  confidence?: number | "high" | "low" | "medium";
+  origin?: "user" | "ai";
+  locked?: boolean;
   source?: TileMetadataSource;
   userLocked?: boolean;
 }
@@ -161,6 +163,30 @@ export interface TileGroupMetadata {
   rules?: ClusterRule[];
 }
 
+export type PaletteSlotRole =
+  | "ground"
+  | "path"
+  | "wall"
+  | "water"
+  | "decor"
+  | "boundary"
+  | "roof"
+  | "furniture";
+
+export interface PaletteSlot {
+  role: PaletteSlotRole;
+  tileIds: number[];
+  weight?: number;
+}
+
+export interface PalettePreset {
+  id: string;
+  name: string;
+  slots: PaletteSlot[];
+  origin: "user" | "ai";
+  locked?: boolean;
+}
+
 export interface TilesetDef {
   id: TilesetId;
   name: string;
@@ -173,6 +199,7 @@ export interface TilesetDef {
   terrain: number[];
   tileMeta?: TileAiMetadata[];
   tileGroups?: TileGroupMetadata[];
+  palettePresets?: PalettePreset[];
   suppressedHarnessGroupIds?: string[];
   terrainTemplates?: TerrainTemplateMetadata[];
   transparentColor?: string;

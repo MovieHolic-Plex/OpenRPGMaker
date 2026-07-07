@@ -11,6 +11,7 @@ import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { MAP_TOOLS } from "./mapTools";
+import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
 import { PLACEMENT_TOOLS } from "./placementTools";
 import { QUERY_TOOLS } from "./queryTools";
@@ -32,6 +33,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   ...EVENT_TOOLS,
   ...DB_TOOLS,
   ...WORLD_TOOLS,
+  ...PALETTE_PRESET_TOOLS,
   ...QUEST_TOOLS,
   ...BATTLE_TOOLS,
   ...REFACTOR_TOOLS,

@@ -16,7 +16,7 @@ import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/to
 import { dbHouseVariantDoorBottomOffset, stampDbHouseVariant, type DbHouseShapeVariant } from "@/project/defaults/dbExtractedHouseVariants";
 import type { SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
-import type { GameMap, Project } from "@/project/types";
+import type { GameMap, PaletteSlotRole, Project, TilesetDef } from "@/project/types";
 import {
   floodFillCells,
   inMapBounds,
@@ -29,6 +29,7 @@ import {
 import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterRulePlacement";
 import { jitterPlacement, wobblePath } from "./naturalScatter";
 import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool } from "./naturalToolArgs";
+import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 // 맵 테두리를 벽으로 두른다.
@@ -242,7 +243,7 @@ function coordKey(x: number, y: number): string {
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",
-  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 오토타일로 가장자리를 자동 성형한다. ${NATURALNESS_GUIDANCE}`,
+  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -250,34 +251,42 @@ const paintRoad: ToolDefinition = {
       mapId: { type: "string" },
       points: { type: "array", description: "[{x,y}...] 경로 꼭짓점", items: { type: "object" } },
       style: { type: "string", enum: ["dirt", "sand"] },
+      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
+      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
       naturalness: { type: "number", description: "0~1 자연도. 0은 기존 직선 세그먼트와 동일, 기본 0.5" },
       seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 자연 경로)" },
     },
-    required: ["mapId", "points", "style"],
+    required: ["mapId", "points"],
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const points = args.points as Point[];
-    const style = args.style as "dirt" | "sand";
+    const style = args.style as "dirt" | "sand" | undefined;
     const naturalness = naturalnessArg(args);
     if (points.length < 1) throw new ToolError("경로에는 최소 1개의 점이 필요합니다.");
+    const tileset = draft.tilesets[map.tilesetId];
+    const picker = tileset ? paletteTilePickerForTool(tileset, args, roadSeedSignature(map, points, naturalness)) : null;
+    if (!picker && style !== "dirt" && style !== "sand") {
+      throw new ToolError("paint_road에는 style(dirt/sand) 또는 presetId+paletteRole이 필요합니다.", { code: "invalid-args", mapId: map.id });
+    }
     const painted: Point[] = [];
-    const body = style === "dirt" ? DIRT_ROAD_TILE.BODY : SAND_TILE.BODY;
+    const body = picker ? () => picker.pick() : () => style === "dirt" ? DIRT_ROAD_TILE.BODY : SAND_TILE.BODY;
     const pathCells = naturalness === 0
       ? paintStraightRoad(map, points, body, painted)
       : paintNaturalRoad(map, points, body, naturalness, args, painted);
-    if (style === "dirt") shapeRoadAround(map, painted);
-    else shapeSandAround(map, painted);
-    return { summary: `${map.name}에 ${style} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸` };
+    if (!picker && style === "dirt") shapeRoadAround(map, painted);
+    else if (!picker && style === "sand") shapeSandAround(map, painted);
+    const source = picker ? `${picker.presetId}/${picker.role}` : style;
+    return { summary: `${map.name}에 ${source} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸` };
   },
 };
 
-function paintStraightRoad(map: GameMap, points: readonly Point[], body: number, painted: Point[]): number {
+function paintStraightRoad(map: GameMap, points: readonly Point[], body: () => number, painted: Point[]): number {
   let pathCells = 0;
   for (let i = 0; i < points.length; i += 1) {
     const segmentCells = i === 0 ? [points[0]] : lineCells(points[i - 1], points[i]);
     pathCells += segmentCells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-    for (const cell of segmentCells) paintRoadCell(map, cell, body, painted);
+    for (const cell of segmentCells) paintRoadCell(map, cell, body(), painted);
   }
   return pathCells;
 }
@@ -285,15 +294,15 @@ function paintStraightRoad(map: GameMap, points: readonly Point[], body: number,
 function paintNaturalRoad(
   map: GameMap,
   points: readonly Point[],
-  body: number,
+  body: () => number,
   naturalness: number,
   args: Record<string, unknown>,
   painted: Point[]
 ): number {
   const result = wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
   const pathCells = result.path.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-  for (const cell of result.path) paintRoadCell(map, cell, body, painted);
-  for (const cell of result.widthCells) paintRoadCell(map, cell, body, painted);
+  for (const cell of result.path) paintRoadCell(map, cell, body(), painted);
+  for (const cell of result.widthCells) paintRoadCell(map, cell, body(), painted);
   return pathCells;
 }
 
@@ -312,7 +321,7 @@ const STRUCTURE_STYLES: readonly TownCityPlotStyle[] = ["l", "courtyard", "multi
 
 const stampStructure: ToolDefinition = {
   name: "stamp_structure",
-  description: `집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 반환 diff에 문 좌표를 포함한다. ${NATURALNESS_GUIDANCE}`,
+  description: `집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 반환 diff에 문 좌표를 포함한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -320,6 +329,8 @@ const stampStructure: ToolDefinition = {
       mapId: { type: "string" },
       template: { type: "string", enum: STRUCTURE_STYLES as unknown as string[] },
       origin: { type: "object", description: "{x,y} 좌상단" },
+      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
+      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
       naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
       seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 지터)" },
     },
@@ -331,18 +342,24 @@ const stampStructure: ToolDefinition = {
     const requestedOrigin = args.origin as Point;
     const naturalness = naturalnessArg(args);
     if (!STRUCTURE_STYLES.includes(template)) throw new ToolError(`알 수 없는 구조물 템플릿: ${template}`);
+    const tileset = draft.tilesets[map.tilesetId];
+    const picker = tileset ? paletteTilePickerForTool(tileset, args, structureSeedSignature(map, template, requestedOrigin, naturalness)) : null;
     const origin = jitterPlacement(
       requestedOrigin,
       jitterMaxOffset(naturalness),
       rngForTool(args, structureSeedSignature(map, template, requestedOrigin, naturalness)),
       (candidate) => inMapBounds(map, candidate.x, candidate.y)
     );
+    const before = snapshotTiles(map);
     stampTownCityPlot(map, template, origin.x, origin.y);
+    const paletteTiles = picker && tileset
+      ? applyPaletteToChangedCells(map, tileset, before, { x: origin.x, y: origin.y, width: 18, height: 16 }, picker)
+      : 0;
     // 문 좌표는 대략적으로 구조물 하단 중앙으로 추정(정확 좌표는 템플릿별 상이).
     const door = { x: origin.x + 3, y: origin.y + 4 };
     return {
-      summary: `${map.name}에 '${template}' 구조물 스탬프(${origin.x},${origin.y}) — 자연도 ${naturalnessLabel(naturalness)}`,
-      data: { door, origin },
+      summary: `${map.name}에 '${template}' 구조물 스탬프(${origin.x},${origin.y}) — 자연도 ${naturalnessLabel(naturalness)}${picker ? ` — 프리셋 ${picker.presetId}/${picker.role} ${paletteTiles}칸` : ""}`,
+      data: { door, origin, paletteTiles },
     };
   },
 };
@@ -462,6 +479,87 @@ function pointSignature(point: Point): string {
   return `${point.x},${point.y}`;
 }
 
+type TileSnapshot = {
+  readonly lower: readonly number[];
+  readonly upper: readonly number[];
+};
+
+type PaletteApplyBounds = {
+  readonly height: number;
+  readonly width: number;
+  readonly x: number;
+  readonly y: number;
+};
+
+function snapshotTiles(map: GameMap): TileSnapshot {
+  return { lower: [...map.lowerTiles], upper: [...map.upperTiles] };
+}
+
+function applyPaletteToChangedCells(
+  map: GameMap,
+  tileset: TilesetDef,
+  before: TileSnapshot,
+  bounds: PaletteApplyBounds,
+  picker: PaletteTilePicker
+): number {
+  let applied = 0;
+  const x1 = Math.min(map.width, bounds.x + bounds.width);
+  const y1 = Math.min(map.height, bounds.y + bounds.height);
+  for (let y = Math.max(0, bounds.y); y < y1; y += 1) {
+    for (let x = Math.max(0, bounds.x); x < x1; x += 1) {
+      const index = y * map.width + x;
+      const lowerChanged = before.lower[index] !== map.lowerTiles[index];
+      const upperChanged = before.upper[index] !== map.upperTiles[index];
+      if (!lowerChanged && !upperChanged) continue;
+      if (!paletteRoleAppliesToCell(picker.role, y - bounds.y, bounds.height, lowerChanged, upperChanged)) continue;
+      placePaletteTile(map, tileset, x, y, picker.pick(), picker.role);
+      applied += 1;
+    }
+  }
+  return applied;
+}
+
+function paletteRoleAppliesToCell(
+  role: PaletteSlotRole,
+  relativeY: number,
+  height: number,
+  lowerChanged: boolean,
+  upperChanged: boolean
+): boolean {
+  switch (role) {
+    case "roof":
+      return upperChanged || relativeY < Math.min(4, height);
+    case "wall":
+      return lowerChanged && relativeY >= Math.min(3, height - 1);
+    case "path":
+    case "ground":
+    case "water":
+    case "boundary":
+      return lowerChanged;
+    case "decor":
+    case "furniture":
+      return upperChanged || !lowerChanged;
+  }
+}
+
+function placePaletteTile(map: GameMap, tileset: TilesetDef, x: number, y: number, tile: number, role: PaletteSlotRole): void {
+  const index = y * map.width + x;
+  const layer = paletteLayerForTile(tileset, tile, role);
+  if (layer === "upper") {
+    map.upperTiles[index] = tile;
+  } else {
+    setLower(map, x, y, tile);
+    map.upperTiles[index] = TILE.EMPTY;
+  }
+}
+
+function paletteLayerForTile(tileset: TilesetDef, tile: number, role: PaletteSlotRole): "lower" | "upper" {
+  if (role === "decor" || role === "furniture" || role === "roof") return "upper";
+  const home = tileLayerHome(tileset, tile);
+  if (home === "upper" || home === "lower") return home;
+  return "lower";
+}
+
 function stampBuildHouse(map: GameMap, { origin, width, height, material }: HouseBuildArgs): Point {
   const wallRows = height - 4;
   const doorX = Math.floor(width / 2);
@@ -539,7 +637,7 @@ const previewHouse: ToolDefinition = {
 const buildHouse: ToolDefinition = {
   name: "build_house",
   description:
-    `요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함. ${NATURALNESS_GUIDANCE}`,
+    `요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -549,6 +647,8 @@ const buildHouse: ToolDefinition = {
       width: { type: "integer", description: `가로 칸 수(${HOUSE_MIN_WIDTH}~${HOUSE_MAX_WIDTH})` },
       height: { type: "integer", description: `세로 칸 수(${HOUSE_MIN_HEIGHT}~${HOUSE_MAX_HEIGHT}, 지붕 4행 포함)` },
       material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
+      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
+      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
       naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
       seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 지터)" },
     },
@@ -558,6 +658,8 @@ const buildHouse: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const baseHouse = houseBuildArgs(map, args);
     const naturalness = naturalnessArg(args);
+    const tileset = draft.tilesets[map.tilesetId];
+    const picker = tileset ? paletteTilePickerForTool(tileset, args, houseSeedSignature(map, baseHouse, naturalness)) : null;
     const origin = jitterPlacement(
       baseHouse.origin,
       jitterMaxOffset(naturalness),
@@ -565,10 +667,14 @@ const buildHouse: ToolDefinition = {
       (candidate) => houseFits(map, candidate, baseHouse.width, baseHouse.height)
     );
     const house = { ...baseHouse, origin };
+    const before = snapshotTiles(map);
     const door = stampBuildHouse(map, house);
+    const paletteTiles = picker && tileset
+      ? applyPaletteToChangedCells(map, tileset, before, { x: house.origin.x, y: house.origin.y, width: house.width, height: house.height }, picker)
+      : 0;
     return {
-      summary: `${map.name}에 ${house.width}×${house.height} ${house.material} 집 건설(${house.origin.x},${house.origin.y}) — 문 (${door.x},${door.y}) — 자연도 ${naturalnessLabel(naturalness)}`,
-      data: { door, origin: house.origin, width: house.width, height: house.height, material: house.material },
+      summary: `${map.name}에 ${house.width}×${house.height} ${house.material} 집 건설(${house.origin.x},${house.origin.y}) — 문 (${door.x},${door.y}) — 자연도 ${naturalnessLabel(naturalness)}${picker ? ` — 프리셋 ${picker.presetId}/${picker.role} ${paletteTiles}칸` : ""}`,
+      data: { door, origin: house.origin, width: house.width, height: house.height, material: house.material, paletteTiles },
     };
   },
 };

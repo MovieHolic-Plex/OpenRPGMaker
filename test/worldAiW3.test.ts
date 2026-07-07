@@ -25,6 +25,8 @@ function changeSummary(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
     variablesAdded: 0,
     worldEntitiesAdded: 0,
     worldEntitiesModified: 0,
+    palettePresetsAdded: 0,
+    palettePresetsModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
