@@ -13,6 +13,7 @@ import type { Project } from "@/project/types";
 import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
   chatCompletion,
+  isLlmAbortError,
   loadAiConfig,
   type AiConfig,
   type ChatMessage,
@@ -54,7 +55,7 @@ export interface ProposedCall {
 export interface TurnResult {
   assistantText: string;
   proposedCalls: ProposedCall[]; // 성공한 쓰기 툴콜(수락 시 store에 적용할 시퀀스).
-  stoppedReason: "final" | "max-tool-calls" | "token-budget" | "error";
+  stoppedReason: "final" | "max-tool-calls" | "token-budget" | "error" | "aborted";
   error?: string;
 }
 
@@ -348,7 +349,8 @@ export class AssistantSession {
   // 한 턴 실행: 사용자 메시지 → (LLM ↔ 툴) 루프 → 최종 응답 + 제안 changeset.
   async sendUserMessage(
     text: string,
-    onEvent: (event: SessionEvent) => void = () => {}
+    onEvent: (event: SessionEvent) => void = () => {},
+    signal?: AbortSignal
   ): Promise<TurnResult> {
     this.messages.push({ role: "user", content: text });
     this.pushAudit({ kind: "user", text });
@@ -358,7 +360,7 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
 
-    return await this.runTurnLoop(onEvent);
+    return await this.runTurnLoop(onEvent, signal);
   }
 
   // 직전 턴이 LLM 오류로 끊긴 경우에만 재개 가능(도그푸딩 결함 ⑥ — 수동 재시도).
@@ -368,12 +370,12 @@ export class AssistantSession {
 
   // 오류로 끊긴 턴 재개: 새 사용자 메시지 없이 (LLM ↔ 툴) 루프만 다시 돈다.
   // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
-  async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}): Promise<TurnResult> {
+  async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
     if (!this.lastTurnFailed) {
       return { assistantText: "", proposedCalls: [...this.turnProposals.values()], stoppedReason: "final" };
     }
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
-    return await this.runTurnLoop(onEvent);
+    return await this.runTurnLoop(onEvent, signal);
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
@@ -381,7 +383,7 @@ export class AssistantSession {
     this.audit.push({ ...entry, at: new Date().toISOString() });
   }
 
-  private async runTurnLoop(onEvent: (event: SessionEvent) => void): Promise<TurnResult> {
+  private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
     const tools = [...toOpenAiTools(), SET_BUILD_SPEC_TOOL];
     const proposedByKey = this.turnProposals;
@@ -391,6 +393,10 @@ export class AssistantSession {
     let spentOutputTokens = 0;
 
     for (let round = 0; round < this.config.maxToolCalls; round += 1) {
+      if (signal?.aborted) {
+        this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
+        return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "aborted", error: "사용자가 중단했습니다" };
+      }
       let result: ChatResult;
       try {
         result = await this.chat(this.config, {
@@ -399,12 +405,17 @@ export class AssistantSession {
           tool_choice: "auto",
           onToken: (delta) => onEvent({ type: "assistant_token", delta }),
           onReasoning: (delta) => onEvent({ type: "reasoning_token", delta }),
+          signal,
         });
       } catch (cause) {
+        if (isLlmAbortError(cause) || signal?.aborted) {
+          this.lastTurnFailed = false;
+          this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
+          return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "aborted", error: "사용자가 중단했습니다" };
+        }
         const error = cause instanceof Error ? cause.message : String(cause);
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error}` });
-        onEvent({ type: "status", text: `오류: ${error}` });
         return { assistantText, proposedCalls: [...proposedByKey.values()], stoppedReason: "error", error };
       }
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);

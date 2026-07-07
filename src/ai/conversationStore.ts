@@ -1,7 +1,8 @@
 import type { AuditEntry } from "@/ai/assistantSession";
+import type { Project } from "@/project/types";
 
-export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; }
-export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; }
+export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
+export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
 
 const STORAGE_KEY = "rpg-zzu:ai-conversations";
 const MAX_CONVERSATIONS = 50;
@@ -48,6 +49,7 @@ function isConversationRecord(value: unknown): value is ConversationRecord {
     typeof value.title === "string" &&
     typeof value.model === "string" &&
     typeof value.savedAt === "number" &&
+    (value.projectContextKey === undefined || typeof value.projectContextKey === "string") &&
     Array.isArray(value.entries) &&
     value.entries.every(isAuditEntry)
   );
@@ -83,11 +85,21 @@ export function listConversations(): ConversationSummary[] {
     model: conversation.model,
     savedAt: conversation.savedAt,
     turnCount: conversation.entries.filter((entry) => entry.kind === "user").length,
+    ...(conversation.projectContextKey ? { projectContextKey: conversation.projectContextKey } : {}),
   }));
 }
 
 export function loadConversation(id: string): ConversationRecord | null {
   return readConversations().find((conversation) => conversation.id === id) ?? null;
+}
+
+export function loadLatestConversation(): ConversationRecord | null {
+  return readConversations()[0] ?? null;
+}
+
+export function projectConversationContextKey(project: Project): string {
+  const title = project.meta.title.trim() || "(untitled)";
+  return `${title}::${project.startMapId}`;
 }
 
 export function deleteConversation(id: string): void {

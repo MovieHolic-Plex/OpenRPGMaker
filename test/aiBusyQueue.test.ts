@@ -1,9 +1,9 @@
 // AI busy 중 입력 큐(도그푸딩 결함 ⑨) 회귀 테스트.
 // 처리 중 들어온 메시지는 동시 세션 실행(레이스) 대신 큐에 쌓여 "대기 중 N건"으로 표시되고,
-// 현재 턴이 끝나면 순서대로 전송된다. (API 키가 비어 있어 각 턴은 즉시 401 오류로 끝난다 —
-// 네트워크 없이 턴 수명주기를 돌리기 위한 장치.)
+// 현재 턴이 끝나면 순서대로 전송된다. 가짜 API 키와 지연 fetch로 실제 busy 상태를 만든다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -27,6 +27,7 @@ beforeEach(() => {
       clear: () => storage.clear(),
     },
   });
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
 });
 
 afterEach(() => {
@@ -42,6 +43,13 @@ async function flushAsync(): Promise<void> {
 
 describe("AI busy 입력 큐", () => {
   it("처리 중 두 번째 메시지는 큐에 쌓여 '대기 중 1건'으로 표시되고, 턴 종료 후 순서대로 전송된다", async () => {
+    const pendingResponses: Array<() => void> = [];
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((resolve) => {
+      pendingResponses.push(() => resolve(new Response('data: {"choices":[{"delta":{"content":"완료"}}]}\n\ndata: [DONE]\n\n', {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" },
+      })));
+    })));
     const panel = renderAiChatPanel() as unknown as FakeElement;
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send") as unknown as HTMLElement;
@@ -59,6 +67,9 @@ describe("AI busy 입력 큐", () => {
     expect(queue.hidden).toBe(false);
     expect(queue.textContent).toContain("대기 중 1건");
 
+    pendingResponses.shift()?.();
+    await flushAsync();
+    pendingResponses.shift()?.();
     await flushAsync();
 
     // 첫 턴 종료 후 큐가 비고, 두 번째 메시지가 사용자 버블로 전송됐다.
