@@ -31,6 +31,10 @@ function failureSummary(name: string, cause: unknown): string {
   return `'${name}' 실행 실패: ${message}`;
 }
 
+function argErrorMessage(message: string, example: Record<string, unknown> | undefined): string {
+  return example ? `${message} — 다시 보낼 형식 예시: ${JSON.stringify(example)}` : message;
+}
+
 export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
   const tool = getTool(name);
   if (!tool) return args;
@@ -54,7 +58,7 @@ export function runTool(
     return {
       ok: false,
       summary: `'${name}' 인자 검증 실패`,
-      issues: argErrors.map((message) => ({ severity: "error", code: "invalid-args", message })),
+      issues: argErrors.map((message) => ({ severity: "error", code: "invalid-args", message: argErrorMessage(message, tool.invalidArgsExample) })),
     };
   }
 

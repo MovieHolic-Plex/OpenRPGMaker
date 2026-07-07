@@ -99,6 +99,7 @@ const getMapRegion: ToolDefinition = {
   name: "get_map_region",
   description: "맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다.",
   mode: "read",
+  invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8 },
   parameters: {
     type: "object",
     properties: {

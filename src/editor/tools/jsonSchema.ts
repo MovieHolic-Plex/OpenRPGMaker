@@ -21,6 +21,85 @@ function parseJsonString(value: unknown, schema: JsonSchema): unknown {
   }
 }
 
+const COORDINATE_WRAPPER_KEYS = ["rect", "region", "area", "bounds", "at", "pos", "point"] as const;
+
+function dimensionAlias(key: string): string | null {
+  if (key === "w") return "width";
+  if (key === "h") return "height";
+  if (key === "width") return "w";
+  if (key === "height") return "h";
+  return null;
+}
+
+function coordinateValue(record: Record<string, unknown>, key: string): unknown {
+  const value = record[key];
+  if (value !== undefined) return value;
+  const alias = dimensionAlias(key);
+  return alias ? record[alias] : undefined;
+}
+
+function coordinateKeys(properties: Record<string, JsonSchema>): string[] {
+  return ["x", "y", "w", "h", "width", "height"].filter((key) => properties[key] !== undefined);
+}
+
+function isCoordinateObjectSchema(schema: JsonSchema): boolean {
+  if (schema.type !== "object") return false;
+  const properties = schema.properties ?? {};
+  return properties.x !== undefined && properties.y !== undefined;
+}
+
+function normalizeFlatCoordinateAliases(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
+  for (const key of coordinateKeys(properties)) {
+    if (args[key] !== undefined) continue;
+    const aliasValue = coordinateValue(args, key);
+    if (aliasValue !== undefined) args[key] = aliasValue;
+  }
+}
+
+function flattenCoordinateWrapper(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
+  const keys = coordinateKeys(properties);
+  if (!keys.includes("x") || !keys.includes("y")) return;
+
+  for (const wrapperKey of COORDINATE_WRAPPER_KEYS) {
+    const wrapper = args[wrapperKey];
+    if (!isRecord(wrapper)) continue;
+    for (const key of keys) {
+      if (args[key] !== undefined) continue;
+      const value = coordinateValue(wrapper, key);
+      if (value !== undefined) args[key] = value;
+    }
+    return;
+  }
+}
+
+function wrapFlatCoordinates(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
+  const coordinateFields = Object.entries(properties).filter(([, childSchema]) => isCoordinateObjectSchema(childSchema));
+  if (coordinateFields.length !== 1) return;
+
+  const [field, childSchema] = coordinateFields[0];
+  if (args[field] !== undefined) return;
+
+  const childProperties = childSchema.properties ?? {};
+  const keys = coordinateKeys(childProperties);
+  if (!keys.includes("x") || !keys.includes("y")) return;
+  const requiredKeys = childSchema.required?.length ? childSchema.required : keys;
+  if (!requiredKeys.every((key) => coordinateValue(args, key) !== undefined)) return;
+
+  const wrapped: Record<string, unknown> = {};
+  for (const key of keys) {
+    const value = coordinateValue(args, key);
+    if (value !== undefined) wrapped[key] = value;
+  }
+  args[field] = wrapped;
+}
+
+function normalizeCoordinateShape(schema: JsonSchema, args: Record<string, unknown>): void {
+  const properties = schema.properties ?? {};
+  normalizeFlatCoordinateAliases(properties, args);
+  flattenCoordinateWrapper(properties, args);
+  wrapFlatCoordinates(properties, args);
+}
+
 function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
   const parsed = parseJsonString(value, schema);
   switch (schema.type) {
@@ -29,6 +108,7 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
       if (!isRecord(unwrapped)) return unwrapped;
       const properties = schema.properties ?? {};
       const next: Record<string, unknown> = { ...unwrapped };
+      normalizeCoordinateShape(schema, next);
       for (const [key, childSchema] of Object.entries(properties)) {
         if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key]);
       }

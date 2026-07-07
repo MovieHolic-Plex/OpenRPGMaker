@@ -74,6 +74,8 @@ export interface ToolDefinition {
   readonly description: string;
   readonly mode: ToolMode;
   readonly parameters: JsonSchema;
+  // 스키마 검증 실패 시 모델이 바로 재시도할 수 있도록 붙이는 최소 정답 예시.
+  readonly invalidArgsExample?: Record<string, unknown>;
   // 툴 버전(기본 1). 2026-07-07 타일 계열 v2 재구축부터 사용. 3 = 승인 보캐뷸러리 계열(v3).
   readonly version?: 1 | 2 | 3;
   // true면 LLM 노출(toOpenAiTools)에서 제외된다. getTool/실행 호환은 유지(구 세션·테스트).
