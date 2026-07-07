@@ -104,6 +104,23 @@ describe("expandRoof / resolveAutotile", () => {
     expect(() => expandRoof(def, roof, { x: 0, y: 0, w: 4, h: 3 }, RM_TYPE_GRAMMAR_PROFILE, EXAMPLE)).toThrowError(/공간이 없습니다/u);
   });
 
+  it("overlay_detail 지붕 어휘도 throw하지 않고 장식 가로 지붕으로 폴백한다", () => {
+    const def = tileset();
+    const roof: TileGroupMetadata = {
+      id: "test-overlay-roof", name: "사선 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
+      tileIds: [374, 375, 376], description: "", placementRules: "",
+      patternGrammar: {
+        kind: "overlay_detail", preserveCaps: true, repeat: "source_order",
+        parts: [{ role: "center", tileIds: [374, 375, 376] }],
+      },
+    };
+    const { edits, region } = expandRoof(def, roof, { x: 3, y: 4, w: 4, h: 3 }, RM_TYPE_GRAMMAR_PROFILE, EXAMPLE);
+    expect(region).toEqual({ x: 3, y: 3, w: 4, h: 1 });
+    expect(edits).toHaveLength(4);
+    expect(edits[0]).toMatchObject({ x: 3, y: 3, tile: 374, layer: "upper" });
+    expect(edits[3]).toMatchObject({ x: 6, y: 3, tile: 376, layer: "upper" });
+  });
+
   it("resolveAutotile: 8-이웃 variantMap으로 inner corner(대각만 빈 셀)를 재계산한다", () => {
     const tiles = { body: 1, edgeN: 2, edgeS: 3, edgeW: 4, edgeE: 5, cornerNW: 6, cornerNE: 7, cornerSW: 8, cornerSE: 9 };
     const variantMap = buildEightNeighborVariantMap(tiles, { innerNW: 10, innerNE: 11, innerSW: 12, innerSE: 13 });

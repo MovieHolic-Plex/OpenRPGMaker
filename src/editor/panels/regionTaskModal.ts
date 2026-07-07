@@ -16,6 +16,8 @@ type RegionTaskRunner = (opts: {
 export interface RegionTaskModalOptions {
   readonly mapId: MapId;
   readonly region: RegionRect;
+  readonly initialInstruction?: string;
+  readonly autoRun?: boolean;
   // 테스트 주입: 기본은 실제 runRegionTask.
   readonly run?: RegionTaskRunner;
 }
@@ -54,6 +56,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     attrs: { placeholder: "이 영역에 무엇을 할까요? 예: 침엽수 숲으로 채워줘", rows: "3" },
     dataset: { testid: "region-task-input" },
   }) as HTMLTextAreaElement;
+  if (options.initialInstruction) textarea.value = options.initialInstruction;
 
   const log = el("div", { class: "region-task-log", dataset: { testid: "region-task-log" } });
   const summary = el("div", { class: "region-task-summary", dataset: { testid: "region-task-summary" } });
@@ -142,6 +145,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   document.body.append(backdrop);
   modalRoot = backdrop;
   textarea.focus();
+  if (options.autoRun) void execute();
   return backdrop;
 }
 
