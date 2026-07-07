@@ -1865,3 +1865,68 @@ body:has(.ai-skill-palette-backdrop) .ai-chat-panel {
     --ai-docked-panel-inset: calc(min(360px, 40vw) + 4px);
   }
 }
+
+/* ── 채팅 관측성(V3C): 글자 크기 3단 + 추론 원문 + 도구 호출 상세 ───── */
+/* 글자 크기 — 패널 data-ai-font-size(작게/보통/크게)가 --ai-font-scale 로 로그/제안 카드/도구 로그를 함께 스케일. */
+.ai-chat-panel[data-ai-font-size="small"] {
+  --ai-font-scale: 0.85;
+}
+.ai-chat-panel[data-ai-font-size="large"] {
+  --ai-font-scale: 1.2;
+}
+.ai-chat-bubble,
+.ai-proposal-card {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-title,
+.ai-proposal-summary {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-lines,
+.ai-tool-activity-line,
+.ai-tool-activity-toggle,
+.ai-reasoning-toggle,
+.ai-reasoning-body {
+  font-size: calc(11px * var(--ai-font-scale, 1));
+}
+
+/* 병합 추론 블록 — 각 추론의 원문 전체를 아이템으로 보존, 긴 원문은 스크롤(컨테이너 max-height). */
+.ai-reasoning-body {
+  max-height: 320px;
+}
+.ai-reasoning-item {
+  white-space: pre-wrap;
+}
+.ai-reasoning-item + .ai-reasoning-item {
+  border-top: 1px dashed var(--border-subtle);
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+/* 도구 로그 라인 클릭 → 호출 인자 JSON + 결과 원문 아코디언. */
+.ai-tool-entry summary,
+.ai-tool-entry-summary {
+  cursor: pointer;
+}
+.ai-tool-detail {
+  border-left: 2px solid var(--border-subtle);
+  margin: 4px 0 4px 4px;
+  padding-left: 8px;
+}
+.ai-tool-detail-label {
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin-top: 4px;
+}
+.ai-tool-detail-pre {
+  background: var(--bg-inset);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin: 2px 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px 6px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
