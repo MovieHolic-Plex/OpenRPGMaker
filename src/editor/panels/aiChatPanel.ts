@@ -12,14 +12,15 @@ import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demon
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
 import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowserModal";
+import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
-import type { ToolResult } from "@/editor/tools";
+import { commitChangeset, runTool, summarizeChanges, type ToolContext, type ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
-import { projectLint } from "@/project/lint/projectLint";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -61,6 +62,8 @@ const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
 const PANEL_SIZE_KEY = "rpg-zzu:ai-panel-size";
 const AI_PROGRESS_TOOL_LIMIT = 30;
 const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group"]);
+const HOUSE_TOOLS = new Set(["build_house", "stamp_template_house"]);
+const MAP_TILE_TOOLS = new Set(["paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map"]);
 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
@@ -183,13 +186,245 @@ function backupProjectSnapshot(): void {
   }
 }
 
-// 파괴적 작업 여부에 따라 제안 요약 라인을 만든다(테스트 가능하도록 순수 함수로 분리).
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function numberFromRecord(value: unknown, key: string): number | null {
+  if (!isRecord(value)) return null;
+  const raw = value[key];
+  return typeof raw === "number" && Number.isFinite(raw) ? raw : null;
+}
+
+function positive(value: number | null | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function countFromSummary(summary: string, pattern: RegExp): number {
+  const match = summary.match(pattern);
+  const value = match ? Number(match[1]) : 0;
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function isTreeScatter(call: ProposedCall): boolean {
+  if (call.name !== "scatter_object") return false;
+  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : "";
+  const haystack = `${groupId} ${call.summary}`.toLowerCase();
+  return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
+}
+
+function countProposalHouses(calls: readonly ProposedCall[]): number {
+  return calls.reduce((total, call) => {
+    if (HOUSE_TOOLS.has(call.name)) return total + 1;
+    if (call.name === "stamp_structure" && call.args.template !== "road") return total + 1;
+    return total;
+  }, 0);
+}
+
+function countProposalRoadCells(calls: readonly ProposedCall[]): number {
+  return calls.reduce((total, call) => {
+    if (call.name === "paint_road") {
+      const fromData = positive(numberFromRecord(call.result.data, "tilesTouched"));
+      return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /도로\s+(\d+)칸/u));
+    }
+    if (call.name === "stamp_structure" && call.args.template === "road") {
+      return total + positive(call.result.diff?.tilesChanged);
+    }
+    return total;
+  }, 0);
+}
+
+function countProposalTrees(calls: readonly ProposedCall[]): number {
+  return calls.reduce((total, call) => {
+    if (!isTreeScatter(call)) return total;
+    const fromData = positive(numberFromRecord(call.result.data, "placed"));
+    return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /(\d+)개/u));
+  }, 0);
+}
+
+function formatCount(label: string, count: number, unit: string): string | null {
+  return count > 0 ? `${label} ${count}${unit}` : null;
+}
+
+function worldSummaryPart(added: number, modified: number): string | null {
+  if (added > 0 && modified > 0) return `세계관 추가 ${added}/수정 ${modified}`;
+  if (added > 0) return `세계관 ${added}건`;
+  if (modified > 0) return `세계관 수정 ${modified}건`;
+  return null;
+}
+
+function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
+  const diff = combineDiffs(calls.map((call) => call.result.diff));
+  return [
+    formatCount("타일", diff.tilesChanged, "칸"),
+    formatCount("맵", diff.mapsAdded, "개"),
+    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}개` : null,
+    formatCount("NPC", calls.filter((call) => call.name === "place_npc").length, "명"),
+    formatCount("이벤트", Math.max(0, diff.eventsAdded - calls.filter((call) => call.name === "place_npc").length), "개"),
+    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}개` : null,
+    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}개` : null,
+    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}건` : null,
+    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}건` : null,
+    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}개` : null,
+    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}개` : null,
+    worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
+    diff.sessionChanged ? "세션 1건" : null,
+    diff.systemChanged ? "시스템 1건" : null,
+  ].filter((part): part is string => part !== null);
+}
+
+export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string {
+  if (calls.length === 0) return "변경 제안 없음";
+  const diff = combineDiffs(calls.map((call) => call.result.diff));
+  const houses = countProposalHouses(calls);
+  const roadCells = countProposalRoadCells(calls);
+  const trees = countProposalTrees(calls);
+  const semanticParts = [
+    formatCount("집", houses, "채"),
+    formatCount("길", roadCells, "칸"),
+    formatCount("나무", trees, "그루"),
+    worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
+  ].filter((part): part is string => part !== null);
+  const remainingTileChanges = Math.max(0, diff.tilesChanged - roadCells);
+  const parts = [
+    ...semanticParts,
+    ...(semanticParts.length === 0 ? fallbackDiffParts(calls) : []),
+    semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 ? `타일 ${remainingTileChanges}칸` : null,
+  ].filter((part): part is string => part !== null);
+  return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}건`;
+}
+
+// 사람 언어 제안 요약 라인(테스트 가능하도록 순수 함수로 분리).
 export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnings: readonly string[] = []): string[] {
-  const callLines = calls.map((call) => {
+  const summary = calls.length > 0 ? [proposalHumanSummaryLine(calls)] : [];
+  return [...summary, ...proposalCompletenessWarningLines(calls, extraWarnings)];
+}
+
+export function proposalTechnicalDetailLines(calls: readonly ProposedCall[]): string[] {
+  return calls.map((call) => {
     const flag = call.destructive ? "⚠️ 파괴적 " : "";
     return `${flag}${call.name} — ${call.summary}`;
   });
-  return [...callLines, ...proposalCompletenessWarningLines(calls, extraWarnings)];
+}
+
+function mapIdCreatedByCall(call: ProposedCall): string | null {
+  if (call.name !== "create_map") return null;
+  const fromData = isRecord(call.result.data) && typeof call.result.data.mapId === "string" ? call.result.data.mapId : null;
+  return fromData ?? (typeof call.args.id === "string" ? call.args.id : null);
+}
+
+function eventIdsCreatedByCall(call: ProposedCall): readonly string[] {
+  if (call.name === "place_npc" || call.name === "place_battle_blocker") {
+    const fromData = isRecord(call.result.data) && typeof call.result.data.eventId === "string" ? call.result.data.eventId : null;
+    const fromArgs = typeof call.args.id === "string" ? call.args.id : null;
+    return fromData ?? fromArgs ? [fromData ?? fromArgs ?? ""] : [];
+  }
+  if (call.name === "upsert_event" && isRecord(call.args.event) && typeof call.args.event.id === "string") return [call.args.event.id];
+  if (call.name === "duplicate_event") {
+    const fromData = isRecord(call.result.data) && typeof call.result.data.eventId === "string" ? call.result.data.eventId : null;
+    const fromArgs = typeof call.args.newId === "string" ? call.args.newId : null;
+    return fromData ?? fromArgs ? [fromData ?? fromArgs ?? ""] : [];
+  }
+  if (call.name === "create_transfer_pair" && isRecord(call.result.data)) {
+    return [call.result.data.eventIdA, call.result.data.eventIdB].filter((value): value is string => typeof value === "string");
+  }
+  return [];
+}
+
+function mapIdsReferencedByValue(value: unknown, refs: Set<string>): void {
+  if (!isRecord(value)) return;
+  for (const key of ["mapId", "toMapId"]) {
+    const ref = value[key];
+    if (typeof ref === "string") refs.add(ref);
+  }
+  for (const key of ["a", "b"]) mapIdsReferencedByValue(value[key], refs);
+  const event = value.event;
+  if (isRecord(event) && typeof value.mapId === "string") refs.add(value.mapId);
+}
+
+function mapIdsReferencedByCall(call: ProposedCall): readonly string[] {
+  const refs = new Set<string>();
+  mapIdsReferencedByValue(call.args, refs);
+  return [...refs];
+}
+
+function eventIdsReferencedByCall(call: ProposedCall): readonly string[] {
+  const refs = new Set<string>();
+  if (typeof call.args.eventId === "string") refs.add(call.args.eventId);
+  if (call.name === "link_world_ref" && isRecord(call.args.ref) && call.args.ref.kind === "event" && typeof call.args.ref.id === "string") {
+    refs.add(call.args.ref.id);
+  }
+  return [...refs];
+}
+
+export function proposalDependencyIndexes(calls: readonly ProposedCall[]): readonly (readonly number[])[] {
+  const mapCreators = new Map<string, number>();
+  const eventCreators = new Map<string, number>();
+  return calls.map((call, index) => {
+    const deps = new Set<number>();
+    for (const mapId of mapIdsReferencedByCall(call)) {
+      const creator = mapCreators.get(mapId);
+      if (creator !== undefined && creator !== index) deps.add(creator);
+    }
+    for (const eventId of eventIdsReferencedByCall(call)) {
+      const creator = eventCreators.get(eventId);
+      if (creator !== undefined && creator !== index) deps.add(creator);
+    }
+    const createdMapId = mapIdCreatedByCall(call);
+    if (createdMapId) mapCreators.set(createdMapId, index);
+    for (const eventId of eventIdsCreatedByCall(call)) eventCreators.set(eventId, index);
+    return [...deps].sort((left, right) => left - right);
+  });
+}
+
+export function enforceProposalDependencies(selected: readonly boolean[], dependencies: readonly (readonly number[])[]): boolean[] {
+  const next = [...selected];
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let index = 0; index < next.length; index += 1) {
+      if (!next[index]) continue;
+      if (dependencies[index]?.some((dependency) => !next[dependency])) {
+        next[index] = false;
+        changed = true;
+      }
+    }
+  }
+  return next;
+}
+
+export function reassembleSelectedProposalProject(
+  baseline: Project,
+  calls: readonly ProposedCall[],
+  selected: readonly boolean[]
+): { ok: true; project: Project; results: readonly ToolResult[]; calls: readonly ProposedCall[] } | { ok: false; message: string; results: readonly ToolResult[] } {
+  const dependencies = proposalDependencyIndexes(calls);
+  const safeSelected = enforceProposalDependencies(selected, dependencies);
+  const selectedCalls = calls.filter((_, index) => safeSelected[index]);
+  const ctx: ToolContext = { project: structuredClone(baseline) };
+  const results: ToolResult[] = [];
+  for (const call of selectedCalls) {
+    const result = runTool(ctx, call.name, structuredClone(call.args), { dryRun: false });
+    results.push(result);
+    if (!result.ok) return { ok: false, message: result.summary, results };
+  }
+  return { ok: true, project: ctx.project, results, calls: selectedCalls };
+}
+
+export function proposalHasMapTileChanges(calls: readonly ProposedCall[]): boolean {
+  return calls.some((call) => MAP_TILE_TOOLS.has(call.name) && positive(call.result.diff?.tilesChanged) > 0);
+}
+
+export function proposalPreviewMapId(calls: readonly ProposedCall[], before: Project, after: Project): string | null {
+  if (!proposalHasMapTileChanges(calls)) return null;
+  for (const call of calls) {
+    for (const mapId of mapIdsReferencedByCall(call)) {
+      if (before.maps[mapId] || after.maps[mapId]) return mapId;
+    }
+    const created = mapIdCreatedByCall(call);
+    if (created && after.maps[created]) return created;
+  }
+  return after.startMapId && after.maps[after.startMapId] ? after.startMapId : null;
 }
 
 export function hasDestructiveCall(calls: readonly ProposedCall[]): boolean {
@@ -295,6 +530,65 @@ export function renderEmptyProposalNotice(lines: readonly string[], onDismiss: (
       }),
     ],
   });
+}
+
+type AiMessageBadgeState = "proposal" | "applied" | "discarded" | "reverted";
+
+const AI_MESSAGE_BADGE_LABELS: Record<AiMessageBadgeState, string> = {
+  proposal: "제안",
+  applied: "적용됨",
+  discarded: "폐기됨",
+  reverted: "되돌려짐",
+};
+
+function setAssistantMessageBadge(bubble: HTMLElement | null, state: AiMessageBadgeState): void {
+  if (!bubble) return;
+  bubble.querySelector(".ai-msg-badge")?.remove();
+  bubble.classList.remove("is-proposal", "is-applied", "is-discarded", "is-reverted");
+  bubble.classList.add(`is-${state}`);
+  const badge = el("span", {
+    class: `ai-msg-badge is-${state}`,
+    text: AI_MESSAGE_BADGE_LABELS[state],
+    dataset: { testid: `ai-msg-badge-${state}` },
+  });
+  bubble.prepend(badge);
+}
+
+function appendSkillPromptToggle(bubble: HTMLElement, prompt: string): void {
+  const details = el("details", {
+    class: "ai-skill-prompt-details",
+    dataset: { testid: "ai-skill-prompt-details" },
+    children: [
+      el("summary", { text: "실제 지시 보기", dataset: { testid: "ai-skill-prompt-toggle" } }),
+      el("pre", { class: "ai-skill-prompt-raw", text: prompt, dataset: { testid: "ai-skill-prompt-raw" } }),
+    ],
+  });
+  bubble.append(details);
+}
+
+function renderProposalMapThumbnail(project: Project, mapId: string, kind: "before" | "after"): HTMLElement {
+  const map = project.maps[mapId];
+  const canvas = document.createElement("canvas") as HTMLCanvasElement;
+  canvas.className = "ai-proposal-thumb-canvas";
+  const wrap = el("div", {
+    class: "ai-proposal-thumb",
+    attrs: { role: "img", "aria-label": `${kind === "before" ? "현재" : "초안"} 미니맵` },
+    dataset: { testid: `ai-proposal-thumb-${kind}` },
+    children: [
+      el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "현재" : "초안" }),
+      canvas,
+    ],
+  });
+  if (!map || typeof canvas.getContext !== "function") {
+    wrap.dataset.fallback = "true";
+    return wrap;
+  }
+  const zoom = Math.min(1, 104 / Math.max(map.width * map.tileSize, map.height * map.tileSize, 1));
+  const selection = { x: -1, y: -1, zoom };
+  void drawTransferMapPreview({ canvas, project, mapId, selection, isCurrent: () => canvas.isConnected }).catch(() => {
+    drawTransferFallback({ canvas, map, selection });
+  });
+  return wrap;
 }
 
 interface ChatController {
@@ -528,6 +822,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dropSession(controller);
     controller.auditHistory = [...record.entries];
     conversationId = record.id;
+    pendingProposalMessage = null;
+    lastAppliedProposalMessage = null;
     proposalHost.replaceChildren();
     chipsHost.replaceChildren();
     log.replaceChildren();
@@ -588,7 +884,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return controller.session;
   };
 
-  const renderProposal = (result: TurnResult, extraWarnings: readonly string[] = []): void => {
+  type ProposalMessageState = {
+    readonly calls: readonly ProposedCall[];
+    readonly assistantBubble: HTMLElement | null;
+    readonly summary: string;
+  };
+  let pendingProposalMessage: ProposalMessageState | null = null;
+  let lastAppliedProposalMessage: ProposalMessageState | null = null;
+
+  const renderProposal = (result: TurnResult, extraWarnings: readonly string[] = [], assistantBubble: HTMLElement | null = null): void => {
     proposalHost.replaceChildren();
     const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
     if (result.proposedCalls.length === 0 && lines.length === 0) return;
@@ -605,6 +909,64 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
 
     const warnings = proposalApprovalWarnings(result.proposedCalls);
+    const beforeProject = store.getCurrent();
+    const afterProject = controller.session?.getProposedProject() ?? beforeProject;
+    const previewMapId = proposalPreviewMapId(result.proposedCalls, beforeProject, afterProject);
+    const dependencies = proposalDependencyIndexes(result.proposedCalls);
+    let selected = result.proposedCalls.map(() => true);
+    const itemRows: HTMLElement[] = [];
+    let acceptButton: HTMLButtonElement | null = null;
+
+    const refreshSelectionUi = (): void => {
+      selected = enforceProposalDependencies(selected, dependencies);
+      itemRows.forEach((row, index) => {
+        const checkbox = row.querySelector("input") as HTMLInputElement | null;
+        const note = row.querySelector(".ai-proposal-item-note") as HTMLElement | null;
+        const blockedBy = dependencies[index]?.filter((dependency) => !selected[dependency]) ?? [];
+        if (checkbox) {
+          checkbox.checked = selected[index] === true;
+          checkbox.disabled = blockedBy.length > 0;
+          checkbox.setAttribute("aria-disabled", String(blockedBy.length > 0));
+        }
+        if (note) {
+          note.textContent = blockedBy.length > 0 ? `상위 항목 ${blockedBy.map((dependency) => dependency + 1).join(", ")} 제외로 함께 제외됨` : "";
+          note.hidden = blockedBy.length === 0;
+        }
+        row.classList[blockedBy.length > 0 || !selected[index] ? "add" : "remove"]("is-excluded");
+      });
+      if (acceptButton) {
+        const count = selected.filter(Boolean).length;
+        acceptButton.disabled = count === 0;
+        acceptButton.textContent = count === result.proposedCalls.length ? "수락해서 적용" : `선택 ${count}건 적용`;
+      }
+    };
+
+    result.proposedCalls.forEach((call, index) => {
+      const checkbox = el("input", {
+        attrs: { type: "checkbox", "aria-label": `${index + 1}번 변경 포함` },
+        dataset: { testid: `ai-proposal-item-${index + 1}` },
+      }) as HTMLInputElement;
+      checkbox.checked = true;
+      checkbox.addEventListener("change", () => {
+        selected[index] = checkbox.checked;
+        if (!checkbox.checked) {
+          for (let candidate = 0; candidate < selected.length; candidate += 1) {
+            if (dependencies[candidate]?.includes(index)) selected[candidate] = false;
+          }
+        }
+        refreshSelectionUi();
+      });
+      const row = el("label", {
+        class: "ai-proposal-item",
+        children: [
+          checkbox,
+          el("span", { class: "ai-proposal-item-main", text: call.summary || call.name }),
+          el("span", { class: "ai-proposal-item-note", attrs: { hidden: "" } }),
+        ],
+      });
+      itemRows.push(row);
+    });
+
     const card = el("div", {
       class: `ai-proposal-card${hasDestructiveCall(result.proposedCalls) ? " is-destructive" : ""}`,
       dataset: { testid: "ai-proposal-card" },
@@ -616,19 +978,40 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           dataset: { testid: "ai-proposal-warning" },
         })),
         el("div", {
-          class: "ai-proposal-lines",
+          class: "ai-proposal-summary",
+          dataset: { testid: "ai-proposal-summary" },
           children: lines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
+        }),
+        ...(previewMapId
+          ? [el("div", {
+              class: "ai-proposal-thumbs",
+              children: [
+                renderProposalMapThumbnail(beforeProject, previewMapId, "before"),
+                renderProposalMapThumbnail(afterProject, previewMapId, "after"),
+              ],
+            })]
+          : []),
+        el("div", { class: "ai-proposal-items", children: itemRows }),
+        el("details", {
+          class: "ai-proposal-technical",
+          children: [
+            el("summary", { text: "기술 상세" }),
+            el("div", {
+              class: "ai-proposal-lines",
+              children: proposalTechnicalDetailLines(result.proposedCalls).map((line) => el("div", { class: "ai-proposal-line", text: line })),
+            }),
+          ],
         }),
         el("div", {
           class: "ai-proposal-actions",
           children: [
-            el("button", {
+            (acceptButton = el("button", {
               class: "ai-assistant-action ai-proposal-accept",
               text: "수락해서 적용",
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-accept" },
-              on: { click: () => acceptProposal(result.proposedCalls) },
-            }),
+              on: { click: () => acceptProposal(result.proposedCalls, selected) },
+            }) as HTMLButtonElement),
             el("button", {
               class: "ai-assistant-action ai-proposal-reject",
               text: "거부(초안 폐기)",
@@ -640,40 +1023,63 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }),
       ],
     });
+    pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: proposalHumanSummaryLine(result.proposedCalls) };
+    setAssistantMessageBadge(assistantBubble, "proposal");
+    refreshSelectionUi();
     proposalHost.append(card);
   };
 
-  const acceptProposal = (calls: readonly ProposedCall[]): void => {
+  const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[]): void => {
     // 프리뷰 == 적용: 세션이 누적한 draft를 그대로 적용한다(재실행에 따른 id 불일치 방지).
     const session = controller.session;
     if (!session) return;
-    const warnings = proposalApprovalWarnings(calls);
+    const selected = selectedState ? enforceProposalDependencies(selectedState, proposalDependencyIndexes(calls)) : calls.map(() => true);
+    const selectedCalls = calls.filter((_, index) => selected[index]);
+    if (selectedCalls.length === 0) return;
+    const warnings = proposalApprovalWarnings(selectedCalls);
     if (warnings.length > 0 && !confirmRuleApproval(warnings)) return;
-    const proposed = session.getProposedProject();
-    // 커밋 게이트: 합쳐진 최종 draft를 다시 lint. error가 있으면 반영 거부.
-    const errors = projectLint(proposed).filter((issue) => issue.severity === "error");
-    if (errors.length > 0) {
+    const before = store.getCurrent();
+    const fullAccept = selectedCalls.length === calls.length;
+    const reassembled = fullAccept
+      ? null
+      : reassembleSelectedProposalProject(session.baselineProject, calls, selected);
+    if (reassembled && !reassembled.ok) {
       setStatus("적용 실패");
-      toast(`적용 실패: ${errors[0].message}`, "error");
+      toast(`적용 실패: ${reassembled.message}`, "error");
       return;
     }
-    const before = store.getCurrent();
+    const proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
+    // 커밋 게이트: 합쳐진 최종 draft를 다시 lint. error가 있으면 반영 거부.
+    const commit = commitChangeset(proposed);
+    if (!commit.ok) {
+      setStatus("적용 실패");
+      const issue = commit.issues.find((entry) => entry.severity === "error");
+      toast(`적용 실패: ${issue?.message ?? "무결성 오류"}`, "error");
+      return;
+    }
     clearAgentGhostPreview();
-    recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId()); // 변경 이전 상태를 undo 스냅샷으로.
+    recordProjectSnapshot(aiHistoryLabel(selectedCalls), currentHistoryMapId()); // 변경 이전 상태를 undo 스냅샷으로.
     store.replace(proposed); // 자동 저장은 store가 스케줄.
     focusAcceptedAgentChanges(before, proposed);
+    const actualDiff = reassembled?.ok ? combineDiffs(reassembled.results.map((result) => result.diff)) : summarizeChanges(before, proposed);
     recordProjectCommitFireAndForget({
       project: proposed,
       identity: currentAgentEditorIdentity(loadAiConfig().model),
       reviewStatus: "approved",
-      summary: aiHistoryLabel(calls),
-      diff: combineDiffs(calls.map((call) => call.result.diff)),
-      toolNames: calls.map((call) => call.name),
+      summary: aiHistoryLabel(selectedCalls),
+      diff: actualDiff,
+      toolNames: selectedCalls.map((call) => call.name),
     });
     resetManualProjectCommitBaseline(proposed);
     proposalHost.replaceChildren();
     setStatus("적용됨");
-    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);
+    const messageState = pendingProposalMessage;
+    setAssistantMessageBadge(messageState?.assistantBubble ?? null, "applied");
+    lastAppliedProposalMessage = messageState
+      ? { ...messageState, calls: selectedCalls, summary: proposalHumanSummaryLine(selectedCalls) }
+      : { calls: selectedCalls, assistantBubble: null, summary: proposalHumanSummaryLine(selectedCalls) };
+    pendingProposalMessage = null;
+    appendBubble("system", `변경 ${selectedCalls.length}건을 프로젝트에 적용했습니다.`);
     toast("AI 변경안을 적용했습니다.", "ok");
     // 대화(기억)를 유지한 채 프로젝트 기준만 갱신한다(#6). 세션을 폐기하지 않으므로 문맥이 이어진다.
     controller.session?.rebaseProject(store.getCurrent());
@@ -683,6 +1089,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalHost.replaceChildren();
     clearAgentGhostPreview();
     setStatus("제안 거부됨");
+    setAssistantMessageBadge(pendingProposalMessage?.assistantBubble ?? null, "discarded");
+    pendingProposalMessage = null;
     appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
     // 오염된 draft만 store 기준으로 되돌리고 대화는 유지한다(#6).
     controller.session?.rebaseProject(store.getCurrent());
@@ -694,10 +1102,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const session = controller.session;
     if (!session) return;
     const proposed = session.getProposedProject();
-    const errors = projectLint(proposed).filter((issue) => issue.severity === "error");
-    if (errors.length > 0) {
+    const commit = commitChangeset(proposed);
+    if (!commit.ok) {
       setStatus("저장 실패");
-      toast(`저장 실패: ${errors[0].message}`, "error");
+      const issue = commit.issues.find((entry) => entry.severity === "error");
+      toast(`저장 실패: ${issue?.message ?? "무결성 오류"}`, "error");
       return;
     }
     const before = store.getCurrent();
@@ -721,14 +1130,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     chipsHost.replaceChildren();
     const options = parseQuickReplies(assistantText);
     if (options.length === 0) return;
-    for (const option of options) {
+    chipsHost.classList.add("ai-choice-block");
+    for (const [index, option] of options.entries()) {
       chipsHost.append(
         el("button", {
           class: "ai-quick-reply-chip",
           text: option,
           attrs: { type: "button" },
-          dataset: { testid: "ai-quick-reply" },
-          on: { click: () => void sendText(option) },
+          dataset: { testid: `ai-choice-${index + 1}` },
+          on: {
+            click: () => {
+              input.value = option;
+              void send();
+            },
+          },
         })
       );
     }
@@ -884,7 +1299,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     chipsHost.replaceChildren();
     closeToolActivity();
-    appendBubble("user", displayAs ?? trimmed);
+    const userBubble = appendBubble("user", displayAs ?? trimmed);
+    if (displayAs !== undefined && displayAs !== trimmed) appendSkillPromptToggle(userBubble, trimmed);
     const session = ensureSession();
     await executeTurn(session, trimmed, (onEvent, signal) =>
       session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal)
@@ -1007,10 +1423,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
             requestText,
             buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, result.proposedCalls, requestText),
             calls: result.proposedCalls,
-          });
+      });
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
       streamedBubbles.forEach(renderStreamedMarkdown); // 스트리밍 원문을 마크다운으로 다시 렌더.
-      if (result.assistantText && !assistantBubble) appendBubble("assistant", result.assistantText);
+      if (result.assistantText && !assistantBubble) assistantBubble = appendBubble("assistant", result.assistantText);
       if (result.proposedCalls.length > 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error" && isMetadataOnlyProposal(result.proposedCalls) && !proposalNeedsExplicitApproval(result.proposedCalls)) {
         // 타일 지식만 바뀌었으면 검토 카드 없이 저장하고 세션(인터뷰 대화)을 이어간다.
         applyMetadataKeepSession(result.proposedCalls);
@@ -1019,7 +1435,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         appendBubble("system", `자동 승인 — 변경 ${result.proposedCalls.length}건을 바로 적용합니다.`);
         acceptProposal(result.proposedCalls);
       } else {
-        renderProposal(result, result.proposedCalls.length === 0 ? completenessWarnings : []);
+        renderProposal(result, result.proposedCalls.length === 0 ? completenessWarnings : [], assistantBubble);
         // 0건 프로포절은 더 이상 "검토 대기"로 세션을 잡아두지 않는다(결함 ⑤ — 비블로킹).
         setStatus(
           result.stoppedReason === "error"
@@ -1378,7 +1794,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-undo-last" },
     on: {
       click: () => {
-        if (undoMapEdit()) toast("되돌렸습니다", "ok");
+        if (!undoMapEdit()) return;
+        const reverted = lastAppliedProposalMessage;
+        if (reverted) {
+          appendBubble("system", `제안 ${reverted.calls.length}건(${reverted.summary})을 되돌렸습니다.`);
+          setAssistantMessageBadge(reverted.assistantBubble, "reverted");
+          lastAppliedProposalMessage = null;
+        }
+        toast("되돌렸습니다", "ok");
       },
     },
   }) as HTMLButtonElement;
@@ -1418,6 +1841,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         dropSession(controller);
         controller.auditHistory = [];
         conversationId = genId("conv");
+        pendingProposalMessage = null;
+        lastAppliedProposalMessage = null;
         proposalHost.replaceChildren();
         chipsHost.replaceChildren();
         log.replaceChildren();

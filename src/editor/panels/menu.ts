@@ -57,12 +57,26 @@ export function renderTopbar(topbar: HTMLElement): void {
   for (const item of MENU_ITEMS) {
     menuBar.append(renderMenu(item.id, item.label, menuCommands(item.id, state, history, topbar)));
   }
-  menuBar.append(renderCommitHistoryButton(), renderIdentityTopbarControl(() => renderTopbar(topbar)));
+  menuBar.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
   menuBar.append(renderWindowControls());
 
   const toolbar = el("div", { class: "rm2k3-toolbar classic-toolbar", dataset: { testid: "rm2k3-toolbar" } });
   toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
   topbar.append(menuBar, toolbar);
+}
+
+export function readableTopbarIdentityLabel(label: string): string {
+  const browserSession = label.trim().match(/^브라우저\s+(.+)$/u)?.[1];
+  return browserSession ? `게스트 세션 ${browserSession}` : label.trim();
+}
+
+function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
+  const control = renderIdentityTopbarControl(() => renderTopbar(topbar));
+  const label = control.querySelector<HTMLElement>("[data-testid='topbar-identity-label']");
+  if (label) label.textContent = readableTopbarIdentityLabel(label.textContent ?? "");
+  control.querySelector(".team-identity-kind")?.remove();
+  control.querySelector(".team-identity-kind-text")?.remove();
+  return control;
 }
 
 function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[]): HTMLElement {
