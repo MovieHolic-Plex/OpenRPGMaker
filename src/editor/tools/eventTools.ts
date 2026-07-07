@@ -19,6 +19,10 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
 
+function knownIds(records: readonly { readonly id: string }[], limit = 8): string {
+  return records.slice(0, limit).map((record) => record.id).join(", ") || "(없음)";
+}
+
 // 맵의 이벤트를 id로 upsert(있으면 교체, 없으면 push).
 export function upsertEventIntoMap(map: GameMap, event: GameEvent): "added" | "modified" {
   const index = map.events.findIndex((entry) => entry.id === event.id);
@@ -243,6 +247,9 @@ const placeBattleBlocker: ToolDefinition = {
     const y = args.y as number;
     const troopId = args.troopId as string;
     if (!inMapBounds(map, x, y)) throw new ToolError(`블로커 위치가 맵 밖입니다: (${x}, ${y})`, { mapId: map.id, x, y });
+    if (!draft.database.troops.some((troop) => troop.id === troopId)) {
+      throw new ToolError(`존재하지 않는 troopId: ${troopId} — 허용 예시: ${knownIds(draft.database.troops)}`, { code: "troop-not-found", mapId: map.id, x, y });
+    }
     const id = (args.id as string | undefined) ?? genId("ev_battle");
     const clearSwitchId = (args.clearSwitchId as string | undefined) ?? `sw_${id}_clear`;
     ensureNamedSwitch(draft, clearSwitchId, `전투 완료: ${id}`);

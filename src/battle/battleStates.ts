@@ -47,18 +47,41 @@ function hpDamagePercentFrom(hpTurn: string): number {
 
 export function stateBehavior(record: StateRecord): StateBehavior {
   const resolved = resolvedStateValues(record.id, record.name, record);
+  const runtime = record.runtimeEffects;
   return {
     stateId: record.id,
     name: record.name,
-    restrictsAction: resolved.restriction.includes("행동"),
-    hpDamagePercentPerTurn: hpDamagePercentFrom(resolved.hpTurn),
-    attackMultiplier: resolved.actorStatus.includes("공격 2배") ? 2 : 1,
-    defenseMultiplier: resolved.actorStatus.includes("방어 절반") ? 0.5 : 1,
-    removeOnBattleEnd: !resolved.removalCondition.includes("유지"),
+    restrictsAction: runtime?.restrictsAction ?? restrictsActionFrom(record.id, resolved.restriction),
+    hpDamagePercentPerTurn: runtime?.hpDamagePercentPerTurn ?? hpDamagePercentFrom(resolved.hpTurn),
+    attackMultiplier: runtime?.attackMultiplier ?? attackMultiplierFrom(record.id, resolved.actorStatus),
+    defenseMultiplier: runtime?.defenseMultiplier ?? defenseMultiplierFrom(record.id, resolved.actorStatus),
+    removeOnBattleEnd: runtime?.removeOnBattleEnd ?? removeOnBattleEndFrom(record.id, resolved.removalCondition),
     recoverWhenHitChance: resolved.recoverWhenHitChance,
     recoverNaturallyFromTurn: resolved.recoverNaturallyFromTurn,
     recoverNaturallyChance: resolved.recoverNaturallyChance,
   };
+}
+
+function restrictsActionFrom(stateId: string, value: string): boolean {
+  if (stateId === "state_sleep") return true;
+  return /\b(cannot act|stun|sleep|paraly[sz]ed|immobilized)\b/i.test(value);
+}
+
+function attackMultiplierFrom(stateId: string, value: string): number {
+  if (stateId === "state_attack_up") return 2;
+  const match = /\battack\s*(?:x|×)\s*(\d+(?:\.\d+)?)\b/i.exec(value);
+  return match ? Math.max(0, Number(match[1])) : 1;
+}
+
+function defenseMultiplierFrom(stateId: string, value: string): number {
+  if (stateId === "state_defense_down") return 0.5;
+  const match = /\bdefen[cs]e\s*(?:x|×)\s*(\d+(?:\.\d+)?)\b/i.exec(value);
+  return match ? Math.max(0, Number(match[1])) : 1;
+}
+
+function removeOnBattleEndFrom(stateId: string, value: string): boolean {
+  if (stateId === "state_poison") return false;
+  return !/\b(persist|keep|remain)\b/i.test(value);
 }
 
 export function stateRecordsById(project: Project): Map<string, StateRecord> {

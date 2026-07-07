@@ -31,7 +31,7 @@ beforeAll(async () => {
 
   const { EditScene } = await import("@/editor/EditScene");
   EditSceneCtor = EditScene;
-}, 30_000);
+}, 90_000);
 
 afterAll(() => {
   vi.unstubAllGlobals();

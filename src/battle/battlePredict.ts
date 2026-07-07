@@ -147,9 +147,23 @@ export function predictSkillDamage(
   let magnitude = spec.power + Math.floor(sourceStat / 2);
   const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId);
   magnitude = Math.round(magnitude * elementMultiplier);
+  if (elementMultiplier === 0) magnitude = 0;
+  if (elementMultiplier < 0) {
+    const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
+    return {
+      amount: magnitude,
+      healing: false,
+      weak: false,
+      resistant: isResistance(grade),
+      elementName: spec.elementId ? elementNameFor(project, spec.elementId) : undefined,
+    };
+  }
   const targetStats = battlerStats(project, target);
-  magnitude -= Math.floor(targetStats.defense / 2);
-  if (target.defending) magnitude = Math.floor(magnitude / 2);
+  if (magnitude > 0) {
+    magnitude -= Math.floor(targetStats.defense / 2);
+    if (target.defending) magnitude = Math.floor(magnitude / 2);
+    magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
+  }
   const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
   return {
     amount: magnitude,

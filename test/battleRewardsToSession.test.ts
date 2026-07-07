@@ -89,4 +89,33 @@ describe("battle rewards to play session", () => {
     // Then: the newly learned skill is added to the session skill list.
     expect(session.actorSkillIds[actorId]).toContain("skill_heal");
   });
+
+  it("returns battle-end state ids to the play session", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0];
+    session.actorStateIds ??= {};
+    session.actorStateIds[actorId] = ["state_poison", "state_attack_up"];
+
+    applyBattleRewardsToSession(session, {
+      result: "victory",
+      rewards: { exp: 0, gold: 0, items: [] },
+      actors: [{
+        id: actorId,
+        recordId: actorId,
+        name: "Hero",
+        hp: 10,
+        maxHp: 10,
+        mp: 3,
+        maxMp: 3,
+        gauge: 0,
+        defeated: false,
+        defending: false,
+        stateIds: ["state_poison"],
+        skillIds: [],
+      }],
+    }, project);
+
+    expect(session.actorStateIds?.[actorId]).toEqual(["state_poison"]);
+  });
 });
