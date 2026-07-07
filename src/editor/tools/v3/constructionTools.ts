@@ -418,12 +418,64 @@ const placeProps: ToolDefinition = {
   },
 };
 
-export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps];
+const ERASE_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, layer: "both" };
+
+// tile_erase — 승인 어휘를 소비하지 않는 유일한 배치 툴(지우기는 어휘 결정이 없다).
+// v2 tile_paint의 erase 경로를 대체 — v3 시공 프리미티브에 없던 "되돌리기/청소" 수단.
+const tileErase: ToolDefinition = {
+  name: "tile_erase",
+  description:
+    "지정 사각형의 타일을 비운다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.",
+  mode: "write",
+  version: 3,
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      rect: {
+        type: "object", description: "비울 영역(맵 좌표)",
+        properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
+        required: ["x", "y", "w", "h"],
+      },
+      layer: { type: "string", enum: ["both", "lower", "upper"], description: "기본 both" },
+    },
+    required: ["mapId", "rect"],
+  },
+  run(draft: Project, args: Record<string, unknown>): ToolExecResult {
+    const { map } = requireMapContext(draft, args, ERASE_EXAMPLE);
+    if (typeof args.rect !== "object" || args.rect === null) failWithExample("rect({x,y,w,h})가 필요합니다", ERASE_EXAMPLE);
+    const r = args.rect as Record<string, unknown>;
+    const rect = {
+      x: coerceInt(r.x, "rect.x", ERASE_EXAMPLE), y: coerceInt(r.y, "rect.y", ERASE_EXAMPLE),
+      w: coerceInt(r.w, "rect.w", ERASE_EXAMPLE), h: coerceInt(r.h, "rect.h", ERASE_EXAMPLE),
+    };
+    const layer = args.layer === undefined ? "both" : args.layer;
+    if (layer !== "both" && layer !== "lower" && layer !== "upper") {
+      failWithExample("layer는 both/lower/upper 중 하나여야 합니다", ERASE_EXAMPLE);
+    }
+    let cleared = 0;
+    for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+      for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+        if (!inMapBounds(map, x, y)) continue;
+        const i = y * map.width + x;
+        if (layer === "both" || layer === "lower") map.lowerTiles[i] = TILE.EMPTY;
+        if (layer === "both" || layer === "upper") map.upperTiles[i] = TILE.EMPTY;
+        cleared += 1;
+      }
+    }
+    return {
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 비움(${layer}) — ${cleared}칸.`,
+      data: { cleared, layer },
+    };
+  },
+};
+
+export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps, tileErase];
 
 // v3가 대체하는 v2 배치 툴 → 대체 v3 툴 이름. 레지스트리가 이 표로 deprecated 마킹한다
 // (V1_TILE_SUPERSEDED와 동일 방식 — LLM 비노출, getTool/실행 호환 유지).
 export const V2_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
-  ["tile_paint", "lay_path"],
+  ["tile_paint", "tile_erase"],
   ["tile_road", "lay_path"],
   ["tile_scatter", "place_props"],
   ["tile_structure", "build_wall"],
