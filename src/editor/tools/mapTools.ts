@@ -685,6 +685,7 @@ const clearRegion: ToolDefinition = {
   description:
     "맵의 사각 영역을 정리한다: 상위 레이어는 비우고, 하위 레이어는 잔디(fill=grass, 기본) 또는 빈 칸(fill=empty)으로 되돌린다. 잘못 배치한 구조물을 지울 때 사용. 이벤트는 지우지 않고 경고로 알린다.",
   mode: "write",
+  invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8, layer: "both" },
   parameters: {
     type: "object",
     properties: {

@@ -17,6 +17,7 @@ const showMapRegion: ToolDefinition = {
   description:
     "맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라.",
   mode: "read",
+  invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8 },
   parameters: {
     type: "object",
     properties: {
