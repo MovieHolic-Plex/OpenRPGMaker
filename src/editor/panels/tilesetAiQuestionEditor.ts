@@ -13,6 +13,7 @@ import type {
 } from "@/editor/panels/tilesetAiMappingRules";
 import { resolveTilesetTileContext } from "@/editor/panels/tilesetTileContext";
 import { store } from "@/project/store";
+import { tileMetaLocked } from "@/project/tilesetPalette";
 import { harnessLayerForTile } from "@/project/tilesetHarness";
 import type { TileAiMetadata, TileGroupLayer, TileGroupRole, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
@@ -297,7 +298,7 @@ function applyStructuredMapping(tileset: TilesetDef, mapping: AiMappingResult, s
     if (!selectedTiles.has(block.tile)) continue;
     const fallback = resolveTilesetTileContext(tileset, block.tile);
     const meta = ensureTileMeta(tileset, block.tile);
-    if (meta.userLocked) continue;
+    if (tileMetaLocked(meta)) continue;
     const defaultLayer = harnessLayerForTile(tileset, block.tile) ?? block.defaultLayer;
     meta.label = block.label || fallback.currentLabel;
     meta.description = [
@@ -356,7 +357,7 @@ function applyFallbackMapping(tileset: TilesetDef, tiles: readonly number[], ans
   for (const tile of tiles) {
     const description = resolveTilesetTileContext(tileset, tile);
     const meta = ensureTileMeta(tileset, tile);
-    if (meta.userLocked) continue;
+    if (tileMetaLocked(meta)) continue;
     meta.label = description.currentLabel;
     meta.description = normalizedAnswer
       ? `${description.currentAiLabel}\nAI 원문 분석: ${shortAnswer(normalizedAnswer, 240)}`

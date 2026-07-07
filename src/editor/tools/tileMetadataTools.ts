@@ -10,6 +10,7 @@ import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runt
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness";
+import { tileMetaLocked } from "@/project/tilesetPalette";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
 import type { GameMap, Project, TileAiMetadata, TileGroupLayer, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
@@ -288,7 +289,7 @@ const setTileMetadata: ToolDefinition = {
       // 조용히 실패하던 패턴 방지(place_npc 대사 별칭과 같은 처방).
       const tile = requireTileIndex(tileset, entry.tile ?? entry.tileId ?? entry.index);
       const meta = ensureTileMetaSlot(tileset, tile);
-      if (meta.userLocked && !confirmed) {
+      if (tileMetaLocked(meta) && !confirmed) {
         skipped.push(tile);
         continue;
       }
@@ -298,10 +299,16 @@ const setTileMetadata: ToolDefinition = {
       if (typeof entry.role === "string") meta.role = entry.role;
       if (Array.isArray(entry.tags)) meta.tags = entry.tags.filter((tag): tag is string => typeof tag === "string");
       meta.source = confirmed ? "user" : "ai";
-      if (confirmed) meta.userLocked = true;
+      meta.origin = confirmed ? "user" : "ai";
+      if (confirmed) {
+        meta.confidence = 1;
+        meta.locked = true;
+        meta.userLocked = true;
+      }
       written.push(tile);
     }
     if (skipped.length > 0) {
+      warnings.push(`잠긴 항목 ${skipped.length}개 보존됨`);
       warnings.push(`사용자 확정(잠금) 메타데이터라 건너뜀: 타일 ${skipped.join(", ")} — confirmedByUser=true로만 수정 가능`);
     }
     return {
@@ -341,9 +348,15 @@ const setTileRules: ToolDefinition = {
       throw new ToolError("entries가 비어 있습니다.", { code: "invalid-args" });
     }
     const changes: string[] = [];
+    const skipped: number[] = [];
+    const warnings: string[] = [];
     for (const raw of rawEntries) {
       const entry = raw as Record<string, unknown>;
       const tile = requireTileIndex(tileset, entry.tile ?? entry.tileId ?? entry.index);
+      if (tileMetaLocked(tileset.tileMeta?.[tile]) && !confirmed) {
+        skipped.push(tile);
+        continue;
+      }
       const layer = entry.layer as string | undefined;
       if (layer !== undefined) {
         if (layer !== "auto" && layer !== "lower" && layer !== "upper") {
@@ -370,12 +383,17 @@ const setTileRules: ToolDefinition = {
         changes.push(`타일 ${tile} 지형 태그→${entry.terrainTag}`);
       }
     }
-    if (changes.length === 0) {
+    if (skipped.length > 0) {
+      warnings.push(`잠긴 항목 ${skipped.length}개 보존됨`);
+      warnings.push(`사용자 확정(잠금) 메타데이터라 건너뜀: 타일 ${skipped.join(", ")} — confirmedByUser=true로만 수정 가능`);
+    }
+    if (changes.length === 0 && skipped.length === 0) {
       throw new ToolError("entries에 적용할 규칙(layer/passable/terrainTag)이 없습니다.", { code: "invalid-args" });
     }
     return {
-      summary: `타일 규칙 ${changes.length}건 설정 — ${changes.slice(0, 4).join(", ")}${changes.length > 4 ? " 외" : ""}`,
-      data: { tilesetId: tileset.id, changes },
+      summary: `타일 규칙 ${changes.length}건 설정${skipped.length > 0 ? `, ${skipped.length}건 잠금 건너뜀` : ""}${changes.length > 0 ? ` — ${changes.slice(0, 4).join(", ")}${changes.length > 4 ? " 외" : ""}` : ""}`,
+      warnings,
+      data: { tilesetId: tileset.id, changes, skipped },
     };
   },
 };

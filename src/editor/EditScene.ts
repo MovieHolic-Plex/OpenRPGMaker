@@ -42,6 +42,7 @@ import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
 import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapSelectionContextMenu";
+import { tileFixFromCanvasMenuItem } from "@/editor/panels/tileMetaFixPopover";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
 import { placeStructureStamp, previewStructureStampCells } from "@/editor/structureStampTools";
@@ -279,6 +280,7 @@ export class EditScene extends PhaserRuntime.Scene {
           this.openEventLayerMenu(ptr);
         } else {
           this.pickTileAtPointer(ptr);
+          this.openCanvasTileFixMenu(ptr);
         }
         return;
       }
@@ -868,6 +870,36 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastPaintKey = "";
     this.lastPointerTile = { x, y };
     openEventLayerContextMenu({ mapId, point, x, y });
+  }
+
+  private openCanvasTileFixMenu(ptr: Phaser.Input.Pointer): void {
+    const mapId = this.mapId();
+    if (!mapId) return;
+    if (!canEditMap(mapId)) {
+      toast(mapEditLockNotice(mapId), "error");
+      return;
+    }
+    const { x, y } = this.pointerToTile(ptr);
+    const map = store.getCurrent().maps[mapId];
+    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
+    const pick = visibleTilePickAt(map, y * map.width + x);
+    if (!pick) return;
+    const point = this.pointerScreenPosition(ptr);
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.lastPointerTile = { x, y };
+    openMapContextMenu({
+      items: [
+        tileFixFromCanvasMenuItem({
+          point,
+          tile: pick.tile,
+          tilesetId: map.tilesetId,
+        }),
+      ],
+      mapId,
+      mapName: `${map.name} (${x},${y})`,
+      point,
+    });
   }
 
   private handleKeyDown(event: KeyboardEvent): void {

@@ -14,6 +14,7 @@ import {
   stopGroupDrag,
 } from "@/editor/panels/tilesetGroupEditor";
 import { cellTitle, hasAiMetadata, passageText } from "@/editor/panels/tilesetMetadataControls";
+import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContext";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -135,6 +136,7 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
     dataset: { testid: `tileset-db-cell-${index}` },
     on: {
       click: (event) => handleTileClick(model, index, event),
+      contextmenu: (event) => handleTileContextMenu(model, index, event),
       pointerdown: (event) => handlePointerDown(model, index, event),
       mousedown: (event) => {
         event.preventDefault();
@@ -153,6 +155,18 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
       },
       mouseup: stopAiSelectionDrag,
     },
+  });
+}
+
+function handleTileContextMenu(model: ChipsetPreviewModel, tile: number, event: Event): void {
+  event.preventDefault();
+  if (!(event instanceof MouseEvent)) return;
+  model.onSelectTile(tile);
+  openTilesetTileContextMenu({
+    point: { x: event.clientX, y: event.clientY },
+    rerender: () => stableRerender(model.rerender),
+    tile,
+    tileset: model.tileset,
   });
 }
 
