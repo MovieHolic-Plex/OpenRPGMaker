@@ -9,6 +9,7 @@ type MapEditLockRow = {
   readonly owner_label: string | null;
   readonly owner_session_id: string;
   readonly expires_at: string;
+  readonly updated_at: string | null;
 };
 
 export type MapEditLockStatus =
@@ -21,6 +22,7 @@ export type MapEditLockStatus =
       readonly mapName: string;
       readonly ownerLabel: string;
       readonly expiresAt: string;
+      readonly updatedAt?: string;
     }
   | {
       readonly kind: "unavailable";
@@ -38,6 +40,7 @@ const SESSION_KEY = "rpg-zzu-editor-session-id";
 const OWNER_LABEL_KEY = "rpg-zzu-editor-owner-label";
 const LOCK_TTL_MS = 2 * 60 * 1000;
 const HEARTBEAT_MS = 45 * 1000;
+export const MAP_EDIT_LOCK_IMMEDIATE_TAKEOVER_AFTER_MS = 90 * 1000;
 
 let status: MapEditLockStatus = { kind: "idle" };
 let requestVersion = 0;
@@ -72,6 +75,29 @@ export function mapEditLockNotice(mapId: MapId): string {
   return "이 맵은 지금 읽기 전용입니다.";
 }
 
+export function mapEditLockLastActivityAt(status: MapEditLockStatus): number | null {
+  if (status.kind !== "locked") return null;
+  const explicit = status.updatedAt ? Date.parse(status.updatedAt) : Number.NaN;
+  if (Number.isFinite(explicit)) return explicit;
+  const expiresAt = Date.parse(status.expiresAt);
+  if (!Number.isFinite(expiresAt)) return null;
+  return expiresAt - LOCK_TTL_MS;
+}
+
+export function mapEditLockLastActivityText(status: MapEditLockStatus, now = Date.now()): string {
+  const lastActivityAt = mapEditLockLastActivityAt(status);
+  if (lastActivityAt === null) return "활동 시각 알 수 없음";
+  const elapsedMs = Math.max(0, now - lastActivityAt);
+  if (elapsedMs < 60_000) return "방금 활동";
+  const minutes = Math.max(1, Math.floor(elapsedMs / 60_000));
+  return `${minutes}분 전 활동`;
+}
+
+export function isMapEditLockTakeoverImmediate(status: MapEditLockStatus, now = Date.now()): boolean {
+  const lastActivityAt = mapEditLockLastActivityAt(status);
+  return lastActivityAt !== null && now - lastActivityAt >= MAP_EDIT_LOCK_IMMEDIATE_TAKEOVER_AFTER_MS;
+}
+
 export function ensureCurrentMapLock(): void {
   const project = store.getCurrent();
   const mapId = editorState.get().currentMapId ?? project.startMapId;
@@ -104,7 +130,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
     if (version !== requestVersion) return;
     if (result.kind === "locked") {
       stopHeartbeat();
-      setStatus({ kind: "locked", mapId, mapName, ownerLabel: result.ownerLabel, expiresAt: result.expiresAt });
+      setStatus({ kind: "locked", mapId, mapName, ownerLabel: result.ownerLabel, expiresAt: result.expiresAt, updatedAt: result.updatedAt });
       return;
     }
     setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
@@ -143,7 +169,10 @@ async function acquireMapLock(
   config: SupabaseProjectConfig,
   mapId: MapId,
   mapName: string,
-): Promise<{ readonly kind: "held"; readonly expiresAt: string } | { readonly kind: "locked"; readonly ownerLabel: string; readonly expiresAt: string }> {
+): Promise<
+  | { readonly kind: "held"; readonly expiresAt: string }
+  | { readonly kind: "locked"; readonly ownerLabel: string; readonly expiresAt: string; readonly updatedAt?: string }
+> {
   const sessionId = editorSessionId();
   const existing = await loadMapLock(config, mapId);
   const now = Date.now();
@@ -152,6 +181,7 @@ async function acquireMapLock(
       kind: "locked",
       ownerLabel: existing.owner_label?.trim() || "다른 브라우저",
       expiresAt: existing.expires_at,
+      updatedAt: existing.updated_at ?? undefined,
     };
   }
   return upsertOwnMapLock(config, mapId, mapName);
@@ -169,7 +199,7 @@ async function upsertOwnMapLock(
 
 async function loadMapLock(config: SupabaseProjectConfig, mapId: MapId): Promise<MapEditLockRow | null> {
   const query = new URLSearchParams({
-    select: "owner_session_id,owner_label,expires_at",
+    select: "owner_session_id,owner_label,expires_at,updated_at",
     project_id: `eq.${config.projectId}`,
     map_id: `eq.${mapId}`,
     limit: "1",
@@ -186,6 +216,7 @@ async function loadMapLock(config: SupabaseProjectConfig, mapId: MapId): Promise
     owner_session_id: row.owner_session_id,
     owner_label: typeof row.owner_label === "string" ? row.owner_label : null,
     expires_at: row.expires_at,
+    updated_at: typeof row.updated_at === "string" ? row.updated_at : null,
   };
 }
 

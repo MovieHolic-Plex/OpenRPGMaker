@@ -1572,6 +1572,12 @@ body.ai-panel-docked .editor-layout {
 
 /* Ctrl+K 스킬 팔레트 */
 .ai-skill-palette-backdrop {
+  align-items: flex-start;
+  background: rgba(2, 6, 23, 0.42);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
   z-index: 80;
 }
 
@@ -1591,6 +1597,25 @@ body.ai-panel-docked .editor-layout {
 .ai-skill-palette-list {
   max-height: 320px;
   overflow-y: auto;
+}
+
+.ai-chat-panel:not(.is-docked):not(.is-studio) {
+  bottom: 64px;
+  max-height: min(420px, calc(100vh - 96px));
+  right: 12px;
+  width: min(320px, calc(100vw - 24px));
+}
+
+body:has(.ai-chat-panel:not(.is-docked):not(.is-studio):not(.is-collapsed)) {
+  --ai-floating-panel-inset: min(336px, 28vw);
+}
+
+body:has(.ai-chat-panel:not(.is-docked):not(.is-studio):not(.is-collapsed)) .editor-layout {
+  padding-right: var(--ai-floating-panel-inset);
+}
+
+body:has(.ai-skill-palette-backdrop) .ai-chat-panel {
+  filter: brightness(0.84);
 }
 
 /* ── UX 실사 픽스(2026-07-05): 헤더 톤/핀 바 1줄/시작 화면 정돈/빈 호스트 숨김 ── */

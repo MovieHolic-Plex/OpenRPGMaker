@@ -113,9 +113,8 @@ function openRequiredDbSettings(): void {
   });
 }
 
-// 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 도그푸딩 결함 ②.
-// "DB 연결이 필요합니다" 오진 대신 실제 원인을 보여주고 복구 액션 3종을 제공한다:
-// 1) 원격에서 다시 로드  2) 로컬 사본 폐기 후 새로 시작  3) 예제 프로젝트로 시작(메모리).
+// 프로젝트 로드 실패(데이터 무결성 오류) 화면.
+// 기존 저장본을 덮어쓰지 않는 메모리 폴백을 1차 CTA로 제공하고, 오류 원문은 접어 둔다.
 function renderLoadFailureScreen(error: unknown): void {
   if (!elements) return;
   elements.topbar.textContent = "RPG ZZU - 프로젝트 로드 실패";
@@ -127,20 +126,54 @@ function renderLoadFailureScreen(error: unknown): void {
   panel.dataset.testid = "project-load-error-panel";
 
   const title = document.createElement("h1");
-  title.textContent = "프로젝트 데이터를 불러올 수 없습니다";
+  title.textContent = "저장된 프로젝트를 바로 열 수 없습니다";
   const body = document.createElement("p");
-  body.textContent = "DB 연결 문제가 아닙니다 — 저장된 프로젝트 데이터가 무결성 검증에 실패했습니다.";
-  const detail = document.createElement("p");
-  detail.className = "project-load-error-message";
-  detail.dataset.testid = "project-load-error-message";
-  detail.textContent = error instanceof Error ? error.message : String(error);
+  body.textContent = "기존 저장본은 그대로 두고 예제나 새 프로젝트로 임시 시작할 수 있습니다.";
+  const detail = document.createElement("details");
+  detail.className = "project-load-error-details";
+  detail.dataset.testid = "project-load-error-details";
+  const detailSummary = document.createElement("summary");
+  detailSummary.textContent = "자세히 보기";
+  const detailMessage = document.createElement("p");
+  detailMessage.className = "project-load-error-message";
+  detailMessage.dataset.testid = "project-load-error-message";
+  detailMessage.textContent = error instanceof Error ? error.message : String(error);
+  detail.append(detailSummary, detailMessage);
 
   const actions = document.createElement("div");
   actions.className = "project-load-error-actions";
 
+  const sample = document.createElement("button");
+  sample.type = "button";
+  sample.className = "btn primary";
+  sample.dataset.testid = "load-error-start-sample";
+  sample.textContent = "예제 프로젝트로 시작";
+  sample.title = "깨진 프로젝트를 덮어쓰지 않고 예제를 메모리로 엽니다.";
+  sample.addEventListener("click", () => {
+    void import("@/project/defaults").then(async ({ createSampleAdventureProject }) => {
+      await store.loadFallbackProject(createSampleAdventureProject());
+      await finishEditorBoot(performance.now());
+    });
+  });
+  actions.append(sample);
+
+  const blank = document.createElement("button");
+  blank.type = "button";
+  blank.className = "btn";
+  blank.dataset.testid = "load-error-start-blank";
+  blank.textContent = "새 프로젝트로 시작";
+  blank.title = "깨진 프로젝트를 덮어쓰지 않고 빈 프로젝트를 메모리로 엽니다.";
+  blank.addEventListener("click", () => {
+    void import("@/project/defaults").then(async ({ createBlankProject }) => {
+      await store.loadFallbackProject(createBlankProject());
+      await finishEditorBoot(performance.now());
+    });
+  });
+  actions.append(blank);
+
   const retry = document.createElement("button");
   retry.type = "button";
-  retry.className = "btn primary";
+  retry.className = "btn";
   retry.dataset.testid = "load-error-retry";
   retry.textContent = "원격에서 다시 로드";
   retry.addEventListener("click", () => {
@@ -169,20 +202,6 @@ function renderLoadFailureScreen(error: unknown): void {
     actions.append(discard);
   });
 
-  const sample = document.createElement("button");
-  sample.type = "button";
-  sample.className = "btn";
-  sample.dataset.testid = "load-error-start-sample";
-  sample.textContent = "예제 프로젝트로 시작";
-  sample.title = "깨진 프로젝트를 덮어쓰지 않고 예제를 메모리로 엽니다(원격 저장 꺼짐).";
-  sample.addEventListener("click", () => {
-    void import("@/project/defaults").then(async ({ createSampleAdventureProject }) => {
-      await store.loadFallbackProject(createSampleAdventureProject());
-      await finishEditorBoot(performance.now());
-    });
-  });
-  actions.append(sample);
-
   const openDb = document.createElement("button");
   openDb.type = "button";
   openDb.className = "btn";
@@ -197,7 +216,7 @@ function renderLoadFailureScreen(error: unknown): void {
   });
   actions.append(openDb);
 
-  panel.append(title, body, detail, actions);
+  panel.append(title, body, actions, detail);
   elements.main.append(panel);
 }
 

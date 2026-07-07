@@ -26,6 +26,7 @@ import {
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
+import { eventLayerSwitchPrompt, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
 import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
@@ -285,6 +286,7 @@ export class EditScene extends PhaserRuntime.Scene {
         this.startPan(ptr);
         return;
       }
+      if (this.tryOfferEventLayerSwitchFromPointer(ptr)) return;
       if (this.beginDragOperation(ptr)) return;
       this.isPainting = true;
       this.lastPaintKey = "";
@@ -438,11 +440,13 @@ export class EditScene extends PhaserRuntime.Scene {
   private updateHoverPreview(ptr: Phaser.Input.Pointer): void {
     const { x, y } = this.pointerToTile(ptr);
     this.lastPointerTile = { x, y };
+    this.updateEventMarkerTooltip(x, y);
     this.renderHoverPreview(x, y);
   }
 
   private clearHoverPreview(): void {
     this.lastPointerTile = null;
+    this.clearEventMarkerTooltip();
     this.hoverPreviewLayer?.removeAll(true);
   }
 
@@ -688,12 +692,14 @@ export class EditScene extends PhaserRuntime.Scene {
     const tileset = this.currentTileset();
     const key = `${x},${y}`;
     const firstStrokeTile = this.lastPaintKey === "";
-    if (layer !== "event" && key === this.lastPaintKey) return;
-    this.lastPaintKey = key;
+    const repeatedNonEventCell = layer !== "event" && key === this.lastPaintKey;
     // event 레이어에선 타일 도구 동작 안 함.
     const tileLayer: "lower" | "upper" = layer === "upper" ? "upper" : "lower";
     const clickCount =
       layer === "event" ? this.eventLayerClickCount({ mapId: mid, ptr, x, y }) : this.pointerClickCount(ptr);
+    if (this.offerEventLayerSwitchAt(mid, x, y, layer, clickCount)) return;
+    if (repeatedNonEventCell) return;
+    this.lastPaintKey = key;
     if (layer === "event") this.showEventLayerClickFeedback(mid, x, y);
 
     if (layer === "event" && clickCount >= 2 && this.openExistingEventAt(mid, x, y)) {
@@ -1008,6 +1014,35 @@ export class EditScene extends PhaserRuntime.Scene {
     }
   }
 
+  private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
+    const map = store.getCurrent().maps[mapId];
+    const existing = map ? committedEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    if (!shouldOfferEventLayerSwitch({ activeLayer: layer as "lower" | "upper" | "event", clickCount, hasEvent: Boolean(existing) })) {
+      return false;
+    }
+    if (!existing) return false;
+    const confirmed = typeof window === "undefined" || window.confirm(eventLayerSwitchPrompt(existing));
+    if (!confirmed) {
+      toast("이벤트 레이어 전환을 취소했습니다.", "info");
+      return true;
+    }
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
+    openEventEditorModal(mapId, existing.id);
+    return true;
+  }
+
+  private tryOfferEventLayerSwitchFromPointer(ptr: Phaser.Input.Pointer): boolean {
+    const mapId = this.mapId();
+    if (!mapId) return false;
+    const layer = editorState.get().layer;
+    if (layer === "event") return false;
+    if (!canEditMap(mapId)) return false;
+    const { x, y } = this.pointerToTile(ptr);
+    return this.offerEventLayerSwitchAt(mapId, x, y, layer, this.pointerClickCount(ptr));
+  }
+
   private openExistingEventAt(mapId: MapId, x: number, y: number): boolean {
     const map = store.getCurrent().maps[mapId];
     const existing = map ? committedEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
@@ -1178,6 +1213,20 @@ export class EditScene extends PhaserRuntime.Scene {
       hasEvent ? `이벤트 ${x},${y} · 더블클릭 편집` : `빈 타일 ${x},${y} · 더블클릭 생성`
     );
     this.renderEventLayerClickFeedback();
+  }
+
+  private updateEventMarkerTooltip(x: number, y: number): void {
+    const mapId = this.mapId();
+    const canvas = this.game.canvas;
+    if (!mapId || !canvas) return;
+    const map = store.getCurrent().maps[mapId];
+    const existing = map ? committedEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    canvas.title = existing ? eventMarkerTooltip(existing) : "";
+  }
+
+  private clearEventMarkerTooltip(): void {
+    const canvas = this.game.canvas;
+    if (canvas) canvas.title = "";
   }
 
   private renderEventLayerClickFeedback(): void {

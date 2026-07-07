@@ -184,6 +184,8 @@ function mockEditorDependencies(renderTilePalette: (node: HTMLElement) => void):
   vi.doMock("@/editor/mapEditLocks", () => ({
     ensureCurrentMapLock: vi.fn(),
     getMapEditLockStatus: () => ({ kind: "idle" }),
+    isMapEditLockTakeoverImmediate: () => false,
+    mapEditLockLastActivityText: () => "방금 활동",
     subscribeMapEditLocks: vi.fn(() => () => undefined),
     takeoverMapLock: vi.fn(async () => undefined),
   }));

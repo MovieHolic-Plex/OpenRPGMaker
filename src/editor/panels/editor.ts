@@ -1,6 +1,14 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type Layer } from "@/editor/editorState";
-import { ensureCurrentMapLock, getMapEditLockStatus, subscribeMapEditLocks, takeoverMapLock, type MapEditLockStatus } from "@/editor/mapEditLocks";
+import {
+  ensureCurrentMapLock,
+  getMapEditLockStatus,
+  isMapEditLockTakeoverImmediate,
+  mapEditLockLastActivityText,
+  subscribeMapEditLocks,
+  takeoverMapLock,
+  type MapEditLockStatus,
+} from "@/editor/mapEditLocks";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -43,6 +51,7 @@ let leftResizer: HTMLElement | null = null;
 let mapTreeResizer: HTMLElement | null = null;
 let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
+let mapLockBannerRoot: HTMLElement | null = null;
 let statusBarRoot: HTMLElement | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
@@ -70,6 +79,10 @@ export function renderEditor(main: HTMLElement): void {
     class: "canvas-toolbar",
     dataset: { testid: "editor-zoom-controls" },
   });
+  const mapLockBanner = el("div", {
+    class: "map-lock-banner is-hidden",
+    dataset: { testid: "map-lock-banner" },
+  });
   const statusBar = el("div", {
     class: "editor-statusbar",
     dataset: { testid: "editor-statusbar" },
@@ -93,13 +106,16 @@ export function renderEditor(main: HTMLElement): void {
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
-  canvasArea.append(canvasScrollShell, canvasToolbar, statusBar);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar);
   layout.append(left, leftResizer, canvasArea);
-  main.append(layout, projectExportNodeElement(), renderAiChatPanel());
+  const aiPanel = renderAiChatPanel();
+  normalizeAiDockButtonChrome(aiPanel);
+  main.append(layout, projectExportNodeElement(), aiPanel);
 
   leftRoot = left;
   phaserHost = phaserContainer;
   canvasToolbarRoot = canvasToolbar;
+  mapLockBannerRoot = mapLockBanner;
   statusBarRoot = statusBar;
 
   applyLayout();
@@ -137,6 +153,7 @@ export function teardownEditor(): void {
   mapTreeResizer = null;
   phaserHost = null;
   canvasToolbarRoot = null;
+  mapLockBannerRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
 }
@@ -158,7 +175,7 @@ export function isLeftCollapsed(): boolean {
   return leftCollapsed;
 }
 
-// 저장 스킵/로컬 저장 모드 배너(도그푸딩 결함 ⑩): blankProject/freshProject 등에서
+// 저장 스킵/로컬 저장 모드 배너: 임시 URL 모드 등에서
 // 저장이 조용히 스킵되어 세션 작업물이 통째로 증발하던 문제 — 모드를 화면에 명시한다.
 function renderPersistenceModeBanner(): HTMLElement | null {
   const status = store.getDbPersistenceStatus();
@@ -168,9 +185,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
     return el("div", {
       class: `persistence-mode-banner ${saveSkipped ? "is-save-skipped" : "is-local-only"}`,
       dataset: { testid: "save-skip-banner" },
-      text: saveSkipped
-        ? "⚠ 이 모드(blankProject/freshProject)에서는 저장되지 않습니다 — 새로고침하면 작업물이 사라집니다. 보존하려면 '내보내기'를 사용하세요."
-        : "개발 모드 — 원격 DB 대신 이 브라우저에만 저장됩니다.",
+      text: persistenceModeBannerText(status.reason, saveSkipped),
     });
   }
   // load-failed(복구 모드): 원격 저장이 꺼진 채 편집 중임을 알린다.
@@ -179,6 +194,14 @@ function renderPersistenceModeBanner(): HTMLElement | null {
     dataset: { testid: "save-skip-banner" },
     text: "복구 모드 — 원격 DB 저장이 꺼져 있습니다. 상태바의 'DB 연동'에서 다시 연결하거나 '내보내기'로 백업하세요.",
   });
+}
+
+export function persistenceModeBannerText(reason: string, saveSkipped: boolean): string {
+  if (reason === "dev-showcase" && saveSkipped) {
+    return "임시 세션 — 작업이 저장되지 않습니다. 보존하려면 '내보내기'를 사용하세요.";
+  }
+  if (reason === "dev-showcase") return "개발 모드 — 원격 DB 대신 이 브라우저에만 저장됩니다.";
+  return "복구 모드 — 원격 DB 저장이 꺼져 있습니다. 상태바의 'DB 연동'에서 다시 연결하거나 '내보내기'로 백업하세요.";
 }
 
 function projectExportNodeElement(): HTMLElement {
@@ -228,14 +251,16 @@ function applyLayout(): void {
 }
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
-  if (!leftPaletteRoot || !leftMapRoot || !canvasToolbarRoot || !statusBarRoot) return;
+  if (!leftPaletteRoot || !leftMapRoot || !canvasToolbarRoot || !statusBarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {
     renderCanvasToolbar(canvasToolbarRoot);
+    renderMapEditLockBanner(mapLockBannerRoot);
     renderEditorStatusbar(statusBarRoot);
     updateProjectExport();
     return;
   }
   if (change?.scope === "database" || change?.scope === "system") {
+    renderMapEditLockBanner(mapLockBannerRoot);
     renderEditorStatusbar(statusBarRoot);
     updateProjectExport();
     return;
@@ -243,9 +268,36 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
   renderTilePalette(leftPaletteRoot);
   renderMapList(leftMapRoot);
   renderCanvasToolbar(canvasToolbarRoot);
+  renderMapEditLockBanner(mapLockBannerRoot);
   renderEditorStatusbar(statusBarRoot);
   updateProjectExport();
   fitCanvas();
+}
+
+function renderMapEditLockBanner(container: HTMLElement): void {
+  clearChildren(container);
+  const status = getMapEditLockStatus();
+  const project = store.getCurrent();
+  const mapId = editorState.get().currentMapId ?? project.startMapId;
+  container.className = "map-lock-banner is-hidden";
+  if (status.kind !== "locked" || status.mapId !== mapId) return;
+  container.className = "map-lock-banner locked";
+  container.append(
+    el("span", {
+      class: "map-lock-banner-text",
+      text: `${status.ownerLabel} 세션이 편집 중 · ${mapEditLockLastActivityText(status)}`,
+      dataset: { testid: "map-lock-banner-text" },
+    }),
+    el("button", {
+      class: "map-lock-takeover-button",
+      text: "편집 권한 가져오기",
+      attrs: { type: "button", title: "현재 맵 편집 권한 가져오기" },
+      dataset: { testid: "map-lock-banner-takeover" },
+      on: {
+        click: () => requestMapLockTakeover(status),
+      },
+    }),
+  );
 }
 
 function renderEditorStatusbar(container: HTMLElement): void {
@@ -289,23 +341,46 @@ function renderMapEditLockStatus(status: MapEditLockStatus, mapId: string): HTML
     cell.append(
       el("button", {
         class: "map-lock-takeover-button",
-        text: "가져오기",
+        text: "편집 권한 가져오기",
         attrs: { type: "button", title: "맵 편집 권한 가져오기" },
         dataset: { testid: "map-lock-takeover" },
         on: {
           click: (event) => {
             event.stopPropagation();
-            const confirmed = window.confirm(
-              `${status.ownerLabel} 세션이 편집 중입니다. 편집 권한을 강제로 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
-            );
-            if (!confirmed) return;
-            void takeoverMapLock(status.mapId, status.mapName).then(() => refreshPanels());
+            requestMapLockTakeover(status);
           },
         },
       }),
     );
   }
   return cell;
+}
+
+function requestMapLockTakeover(status: Extract<MapEditLockStatus, { readonly kind: "locked" }>): void {
+  const immediate = isMapEditLockTakeoverImmediate(status);
+  if (!immediate) {
+    const confirmed = window.confirm(
+      `${status.ownerLabel} 세션이 최근 활동했습니다. 편집 권한을 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
+    );
+    if (!confirmed) return;
+  }
+  void takeoverMapLock(status.mapId, status.mapName).then(() => refreshPanels());
+}
+
+export function normalizeAiDockButtonChrome(panel: HTMLElement): void {
+  const button = panel.querySelector<HTMLElement>('[data-testid="ai-dock-toggle"]');
+  if (!button) return;
+  const update = (): void => {
+    if (panel.classList.contains("is-docked")) {
+      button.setAttribute("title", "패널 분리");
+      button.setAttribute("aria-label", "패널 분리");
+    } else {
+      button.setAttribute("title", "오른쪽 사이드바에 고정");
+      button.setAttribute("aria-label", "오른쪽 사이드바에 고정");
+    }
+  };
+  button.addEventListener("click", update);
+  update();
 }
 
 function mapEditLockStatusText(status: MapEditLockStatus, mapId: string): string {
@@ -330,7 +405,7 @@ function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): strin
     case "held":
       return `${status.mapName} 편집 권한을 이 브라우저가 잡고 있습니다.`;
     case "locked":
-      return `${status.mapName} 맵은 ${status.ownerLabel} 세션이 편집 중입니다.`;
+      return `${status.mapName} 맵은 ${status.ownerLabel} 세션이 편집 중입니다. ${mapEditLockLastActivityText(status)}.`;
     case "unavailable":
       return `${status.mapName} 잠금 확인 실패: ${status.message}. 편집은 허용하지만 수동 저장 충돌 검사는 유지됩니다.`;
   }

@@ -119,8 +119,10 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
 }
 
 function eventEditorTitle(mapId: MapId, eventId: string): string {
-  const base = `이벤트 에디터 · ID:${displayEventNumber(mapId, eventId)}`;
   const event = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId);
+  const base = event?.draft?.kind === "new"
+    ? `새 이벤트 (저장 전) · ID:${displayEventNumber(mapId, eventId)}`
+    : `이벤트 에디터 · ID:${displayEventNumber(mapId, eventId)}`;
   if (!event) return base;
   const name = eventDisplayNameOf(event);
   return name ? `${base} · ${name} (${event.x},${event.y})` : `${base} (${event.x},${event.y})`;
@@ -136,9 +138,16 @@ function eventDisplayNameOf(event: { readonly pages?: readonly { readonly name: 
 }
 
 function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
+  const draftKind = store.getCurrent().maps[request.mapId]?.events.find((event) => event.id === request.eventId)?.draft?.kind;
+  const cancelHint = draftKind === "new" ? "취소하면 새 이벤트가 생성되지 않습니다." : "취소하면 저장 전 변경을 폐기합니다.";
   return el("div", {
     class: "event-editor-modal-footer",
     children: [
+      el("span", {
+        class: "event-editor-draft-status",
+        text: cancelHint,
+        dataset: { testid: "event-editor-draft-status" },
+      }),
       el("button", {
         class: "event-editor-footer-settings",
         text: "⚙",
