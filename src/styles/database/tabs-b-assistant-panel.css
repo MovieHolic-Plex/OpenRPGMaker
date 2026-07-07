@@ -645,6 +645,100 @@ body.ai-panel-docked .editor-layout {
   color: var(--text-3);
   opacity: 0.72;
 }
+/* 어휘 프로포절 카드 (타일 v3 — V3B): AI 추정 인라인 편집 + 사실 배지 병기 */
+.ai-vocab-cards {
+  display: grid;
+  gap: 6px;
+  margin: 2px 0 4px 20px;
+}
+.ai-vocab-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 5px;
+  padding: 7px;
+}
+.ai-vocab-card-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.ai-vocab-kind {
+  color: var(--text-2);
+  font-size: 10px;
+}
+.ai-vocab-badge {
+  border-radius: var(--radius-s);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+}
+.ai-vocab-badge.is-estimate {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  color: var(--warning);
+}
+.ai-vocab-badge.is-fact {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+.ai-vocab-badge.is-warn {
+  background: color-mix(in srgb, var(--danger, #d66) 15%, transparent);
+  color: var(--danger, #d66);
+}
+.ai-vocab-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.ai-vocab-thumb {
+  border: 1px solid var(--border-subtle);
+  display: inline-block;
+  height: 24px;
+  image-rendering: pixelated;
+  width: 24px;
+}
+.ai-vocab-edits {
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ai-vocab-field {
+  align-items: center;
+  display: grid;
+  font-size: 10px;
+  gap: 2px 6px;
+  grid-template-columns: 62px minmax(0, 1fr);
+}
+.ai-vocab-field-label {
+  color: var(--text-2);
+  font-weight: 700;
+}
+.ai-vocab-edit-input,
+.ai-vocab-edit-select {
+  background: var(--input-bg, var(--control-bg));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-size: 11px;
+  min-width: 0;
+  padding: 2px 4px;
+}
+.ai-vocab-facts {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ai-vocab-fact {
+  color: var(--text-2);
+  font-size: 10px;
+}
+.ai-vocab-warning {
+  color: var(--warning);
+  font-size: 10px;
+}
 .ai-proposal-technical {
   color: var(--text-2);
   font-size: 11px;

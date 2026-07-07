@@ -55,7 +55,9 @@ export interface SkillDef {
 const HONEST_REPORT_RULE =
   "작업이 끝나면 실제로 한 것만 보고하세요. 실패/위반이 남았으면 '조정 중' 같은 얼버무림 없이 남은 문제를 그대로 알리세요.";
 const SPEC_RULE =
-  "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/큰 경계 초과)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 페인트/배치 툴은 명세에 할당된 영역 안에서만 호출하되 경계 1~2칸 초과는 warning으로 통과합니다. tile_paint(action=erase)는 slack 없이 명세 안에서만 호출하세요. 사용자가 선택한 영역은 암묵적 명세입니다.";
+  "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/큰 경계 초과)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 페인트/배치 툴은 명세에 할당된 영역 안에서만 호출하되 경계 1~2칸 초과는 warning으로 통과합니다. 지우기(erase)는 slack 없이 명세 안에서만 호출하세요. 사용자가 선택한 영역은 암묵적 명세입니다.";
+const CONSTRUCTION_ORDER_RULE =
+  "시공 공정 순서(준수): 벽(build_wall) → 문/창(place_door/place_window) → 지붕(build_roof) → 길(lay_path) → 소품(place_props). 배치 프리미티브는 승인된 어휘만 소비합니다 — 미승인 어휘는 propose_tile_vocabulary로 사용자 합의를 먼저 받으세요(tile_query ask=unapproved로 조회).";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";
@@ -262,12 +264,14 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       `- 크기: ${args.width}×${args.height}, 재질: ${args.material}, 모양: ${args.shape === "l" ? "ㄴ자" : "직사각형"}`,
       `- 위치: ${args.where ? String(args.where) : "get_map_region으로 빈터를 찾아 자동 선정(기존 구조물·물·이벤트와 겹치지 않게)"}`,
       "",
-      "절차(준수):",
+      "절차(준수 — 공정 순서: 벽→문/창→지붕):",
       args.shape === "l"
-        ? "1. ㄴ자 집은 tile_structure(kind=template_house, variant=l)로 찍으세요(발자국 약 18×16 — 여유 확인). 크기 인자는 무시하고 위치만 맞추세요."
-        : "1. tile_structure(kind=house, mapId, origin, width, height, material)로 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
-      "2. 겹치는 기존 잔해가 있으면 먼저 tile_paint(action=erase, mode=rect)로 정리하세요.",
-      "3. 완성 후 문 좌표를 보고하고, 문 앞이 통행 가능한지 get_map_region으로 확인하세요.",
+        ? "1. ㄴ자 집은 build_wall(mapId, rect, wallVocabId)을 직교 rect 2개로 겹쳐 호출해 조합하세요. 절대 벽 타일을 직접 칠하지 마세요."
+        : "1. build_wall(mapId, rect{x,y,w,h}, wallVocabId)로 벽을 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
+      "2. place_door(mapId, at, doorVocabId)로 문을, place_window(mapId, at, windowVocabId)로 창문을 벽 셀에 다세요.",
+      "3. build_roof(mapId, roofVocabId)로 지붕을 얹으세요(wallRect 생략 시 벽 자동 감지).",
+      "4. 완성 후 문 좌표를 보고하고, 문 앞이 통행 가능한지 get_map_region으로 확인하세요.",
+      CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
       HONEST_REPORT_RULE,
     ].join("\n"),
@@ -314,10 +318,11 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "단계별로 진행하고, 각 단계가 끝날 때마다 한 줄로 보고하세요(전부 끝날 때까지 멈추지 마세요):",
       "1. 부지 계획 — get_map_region으로 지형을 읽고 집·길 배치를 정하세요.",
-      "2. 집 — tile_structure(kind=house, 크기 다양하게) 또는 tile_structure(kind=template_house, variant 섞어서)로 겹치지 않게 지으세요. 잔해가 있으면 tile_paint(action=erase) 먼저.",
-      "3. 길 — tile_road로 집 문 앞들을 잇는 길을 깔고, 문 앞 통행을 확인하세요.",
-      "4. NPC — place_npc로 테마에 맞는 이름·대사(2줄 이상)를 붙여 배치하세요. 통행 가능 칸에만.",
+      "2. 집 — 공정 순서대로 집마다 build_wall(크기 다양하게) → place_door/place_window → build_roof로 겹치지 않게 지으세요.",
+      "3. 길 — lay_path로 집 문 앞들을 잇는 길을 깔고, 문 앞 통행을 확인하세요.",
+      "4. 소품·NPC — place_props로 나무/소품을 산포하고, place_npc로 테마에 맞는 이름·대사(2줄 이상)를 붙여 통행 가능 칸에 배치하세요.",
       "5. 검증 — check_reachability로 모든 문 앞이 도달 가능한지 확인하고 문제를 고치세요.",
+      CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
       HONEST_REPORT_RULE,
     ].join("\n"),
@@ -370,8 +375,9 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "절차(준수):",
       "1. get_map_region으로 출발/경유/도착 지점의 실제 좌표를 파악하세요(추측 금지).",
-      `2. tile_road(style=${args.style})로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요.`,
+      `2. lay_path(mapId, points, pathVocabId)로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요(스타일 힌트: ${args.style}). 길 어휘가 미승인이면 propose_tile_vocabulary로 먼저 합의하세요.`,
       "3. 길이 문 앞과 이어지는지, 끊긴 곳이 없는지 get_map_region으로 재확인하세요.",
+      CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
       HONEST_REPORT_RULE,
     ].join("\n"),

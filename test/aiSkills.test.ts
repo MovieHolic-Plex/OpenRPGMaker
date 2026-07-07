@@ -59,14 +59,17 @@ describe("스킬 레지스트리", () => {
     }
   });
 
-  it("집 짓기 프롬프트는 크기/도구를 정확히 지시한다(직사각형=build_house, ㄴ자=variant l)", () => {
+  it("집 짓기 프롬프트는 크기/공정 순서를 정확히 지시한다(v3: build_wall→문/창→build_roof)", () => {
     const house = SYSTEM_SKILLS.find((skill) => skill.id === "build-house")!;
     const rect = house.buildPrompt!({ width: 12, height: 8, material: "wood", shape: "rect", where: "" }, CTX);
     expect(rect).toContain("12×8");
-    expect(rect).toContain("tile_structure(kind=house");
+    expect(rect).toContain("build_wall(mapId, rect{x,y,w,h}, wallVocabId)");
     expect(rect).toContain("벽 타일을 직접 칠해");
+    expect(rect).toContain("place_door");
+    expect(rect).toContain("build_roof");
+    expect(rect).toContain("공정 순서");
     const lShape = house.buildPrompt!({ width: 10, height: 10, material: "plaster", shape: "l", where: "" }, CTX);
-    expect(lShape).toContain("variant=l");
+    expect(lShape).toContain("직교 rect 2개");
   });
 
   it("검증/마을/움직임 프롬프트에 핵심 프로토콜이 들어 있다", () => {
@@ -76,7 +79,10 @@ describe("스킬 레지스트리", () => {
     expect(audit).toContain("얼버무림 없이");
     const village = SYSTEM_SKILLS.find((skill) => skill.id === "build-village")!.buildPrompt!({ theme: "어촌", houses: 3, npcs: 2 }, CTX);
     expect(village).toContain("단계");
-    expect(village).toContain("tile_paint(action=erase)");
+    expect(village).toContain("build_wall");
+    expect(village).toContain("lay_path");
+    expect(village).toContain("place_props");
+    expect(village).toContain("propose_tile_vocabulary");
     expect(village).toContain("자연스러움: 보통");
     const motion = SYSTEM_SKILLS.find((skill) => skill.id === "npc-motion")!.buildPrompt!({ brief: "주민 랜덤" }, CTX);
     expect(motion).toContain("get_event");

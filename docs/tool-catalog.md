@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 92개 툴 — 쓰기 61, 읽기 31.
+> 총 98개 툴 — 쓰기 67, 읽기 31.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -10,6 +10,12 @@
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
 | `propose_tile_vocabulary` | `tilesetId?: string`, `items: array` | 미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. 수락되면 origin:user로 승인 어휘에 편입된다(자동 승인 불가 — 반드시 사용자 수락 대기). 배치 프리미티브는 승인 어휘만 소비한다. |
+| `build_wall` | `mapId: string`, `rect: object`, `wallVocabId: string` | 승인된 벽 어휘로 벽을 시공한다(v3 공정 1단계). rect 영역에 9분할(nine_slice)/기둥(vertical) 패턴을 전개하며 레이어는 어휘의 layerHome이 결정한다(layer 인자 없음). 미승인 어휘는 거부 — 먼저 propose_tile_vocabulary로 승인을 받으라. 시공 후 place_door/place_window → build_roof 순서로 진행하라. |
+| `build_roof` | `mapId: string`, `roofVocabId: string`, `wallRect?: object` | 승인된 지붕 어휘로 벽 위에 지붕을 얹는다(v3 공정 3단계). wallRect 생략 시 맵의 벽 어휘 셀을 스캔해 자동 감지한다. 벽이 없으면 거부 — 먼저 build_wall로 벽을 지으라. 처마/사선 오버레이 레이어는 어휘 layerHome(perCell) 규약으로 자동 판정된다. |
+| `place_door` | `mapId: string`, `at: object`, `doorVocabId: string` | 승인된 문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(승인된 벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. |
+| `place_window` | `mapId: string`, `at: object`, `windowVocabId: string` | 승인된 창문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(승인된 벽 어휘 타일)이 아니면 거부. layer 인자 없음 — 창문 같은 투명 소품은 어휘 layerHome(upper/perCell)이 벽을 보존하며 겹친다. |
+| `lay_path` | `mapId: string`, `points: array`, `pathVocabId: string`, `naturalness?: number`, `seed?: integer` | 승인된 길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. |
+| `place_props` | `mapId: string`, `area: object`, `propVocabId: string`, `count: integer`, `minGap?: integer`, `naturalness?: number`, `seed?: integer` | 승인된 소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). propVocabId가 그룹이면 기존 산포 엔진(풋프린트 원자 배치·클러스터 hard 규칙·보호셀 회피)을 그대로 쓰고, 승인된 낱개 타일 id(숫자)면 포아송 산포로 배치한다. layer 인자 없음 — 어휘 layerHome이 결정. |
 | `tile_paint` | `mapId: string`, `action?: paint\|erase`, `layer?: lower\|upper`, `mode: rect\|line\|fill\|cells`, `tile?: integer`, `from?: object`, `to?: object`, `cells?: array` | 타일을 칠하거나 지운다(v2). action=paint(기본)는 tile 필수, action=erase는 tile 불필요. mode: rect(from/to)/line(from/to)/fill(from, lower 전용)/cells(cells 배열). 클러스터 hard 규칙 동반 배치와 통행성 경고는 자동. |
 | `tile_road` | `mapId: string`, `points: array`, `style?: dirt\|sand`, `presetId?: string`, `paletteRole?: ground\|path\|wall\|water\|decor\|boundary\|roof\|furniture`, `naturalness?: number`, `seed?: integer` | 길을 깐다(v2). points 폴리라인(2개 이상)을 잇고 오토타일 셰이핑까지 자동. naturalness 0~1(기본 0.5): 0=반듯한 직선, 0.8+=야생 구불길. 프리셋이 있으면 presetId+paletteRole(path)로 타일을 고른다. |
 | `tile_scatter` | `mapId: string`, `area: object`, `count: integer`, `groupId?: string`, `presetId?: string`, `paletteRole?: ground\|path\|wall\|water\|decor\|boundary\|roof\|furniture`, `minGap?: integer`, `naturalness?: number`, `seed?: integer` | 타일 그룹/프리셋 오브젝트를 area 안에 자연 산포한다(v2). groupId 또는 presetId+paletteRole 중 하나 필수. 풋프린트 원자 배치·보호셀 회피·클러스터 hard 규칙 자동. naturalness: <0.3 균일, 0.3~0.7 포아송, >0.7 군락. |
