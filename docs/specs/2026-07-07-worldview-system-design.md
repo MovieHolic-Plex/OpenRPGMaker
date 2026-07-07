@@ -85,3 +85,8 @@ type ProjectWorld = { entities: readonly WorldEntity[]; relations: readonly Worl
 
 ## 진행 기록
 - 2026-07-07: 설계 합의·문서화. W1 codex 착수 (worktree rpg-zzu-wt-world).
+- 2026-07-07: **W1~W4 전부 머지 — 시스템 완결.** W1 모델(301ed6f), W2 패널 UI(1ae0fbc, 테스트 1850),
+  W3 AI 배선(4d62042, 1874 — 툴 3종/다이제스트 주입/completeness/run_lint/villageInfoDocuments 마이그레이션),
+  W4 표면 교체(e520d19, 1882 — '증거 패킷'/'마을 정보' → '세계관' 버튼, 기술 증거 아코디언 격하).
+  인터뷰 seed는 신규 프로젝트 인터뷰 흐름 부재로 스킵(향후 인터뷰 도입 시 origin:"interview" 규약 그대로 적용).
+  '증거' 어휘는 사용자 표면에서 제거됨(legacy 모달/계약 내부만 잔존, 롤백 1버전 보존).
