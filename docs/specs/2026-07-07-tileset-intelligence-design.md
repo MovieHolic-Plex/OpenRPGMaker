@@ -100,3 +100,7 @@ locked?: boolean;      // true면 AI 재감사가 덮어쓰기 금지 (거부 �
 - 2026-07-07: **T1a 완료·머지** (codex xhigh, 신규 테스트 28, 2050 passed). 모델/왕복,
   lint 3종 run_lint 합류, query_tiles/upsert_palette_preset/다이제스트, 배치 4툴 preset 파라미터.
   카테고리 비호환 행렬: water↔furniture·roof·wall, path↔furniture·roof. 다음: T1b (교정 UI).
+- 2026-07-07: **T1b 완료·머지 — T1 이해 웨이브 완결** (codex xhigh, 신규 27, 2168 passed).
+  검토 위저드/인라인 교정/캔버스 신고/locked 보존(tileMetaLocked로 기존 userLocked 통합)/
+  mock 주입형 재감사(TilesetVisionClient)/프리셋 편집기. T3는 TilesetReviewCandidate[] →
+  openTilesetReviewWizard로 같은 검토 UX 재사용. 다음: T2 배치 실측(감독자 도그푸딩).
