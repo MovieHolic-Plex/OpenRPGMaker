@@ -46,11 +46,24 @@ describe("build palette deterministic stamps", () => {
 
     const map = result.project.maps[MAP_ID];
     const at = (x: number, y: number) => y * map.width + x;
-    expect(map.lowerTiles[at(4, 5)]).not.toBe(0); // wall top-left
+    // 선택 (4,4) 6×5 → 지붕 2행(용마루 374 + 처마 405) + 벽 3행. 가로는 균일 반복, 파란 계열(406~) 금지.
+    for (let x = 4; x <= 9; x++) {
+      expect(map.lowerTiles[at(x, 4)], `ridge(${x},4)`).toBe(374);
+      expect(map.lowerTiles[at(x, 5)], `eave(${x},5)`).toBe(405);
+    }
+    expect(map.lowerTiles[at(4, 6)]).not.toBe(0); // wall top-left
     expect(map.lowerTiles[at(7, 8)]).toBe(146); // door bottom
-    expect(map.lowerTiles[at(4, 4)]).toBe(404); // roof left cap
-    expect(map.lowerTiles[at(7, 4)]).toBe(405); // roof body
-    expect(map.lowerTiles[at(9, 4)]).toBe(406); // roof right cap
+  });
+
+  it("지붕 프리미티브는 용마루→몸통→처마 3단으로 채운다", () => {
+    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ x: 2, y: 10, width: 4, height: 3 }), "roof");
+    expect(result.ok, result.summary).toBe(true);
+    const map = result.project.maps[MAP_ID];
+    const at = (x: number, y: number) => y * map.width + x;
+    expect(map.lowerTiles[at(2, 10)]).toBe(374); // 용마루
+    expect(map.lowerTiles[at(3, 11)]).toBe(375); // 몸통
+    expect(map.lowerTiles[at(2, 12)]).toBe(405); // 처마(최하단)
+    expect(map.lowerTiles[at(5, 12)]).toBe(405);
   });
 
   it("길과 강 프리미티브도 선택 영역 기반으로 결정론 시공하고 LLM을 호출하지 않는다", () => {

@@ -92,9 +92,11 @@ export function applyBuildPalettePrimitiveToProject(
     toolResults.push(result);
     return result.ok;
   };
+  // 장식(창문 등) 전용: 실패해도 전체 시공을 실패로 만들지 않는다.
+  const runOptional = (name: string, args: Record<string, unknown>): boolean => runTool(ctx, name, args).ok;
 
   let ok = true;
-  if (primitive === "house") ok = stampHouse(rect, run);
+  if (primitive === "house") ok = stampHouse(ctx, rect, run, runOptional);
   else if (primitive === "path") ok = stampPath(rect, run);
   else if (primitive === "river") ok = fillRoleTile(ctx.project, rect, "water");
   else if (primitive === "roof") ok = fillRoof(ctx.project, rect);
@@ -128,11 +130,12 @@ export function ensureBuildPalettePresets(tileset: TilesetDef): void {
         repeat: "body",
       };
     } else if (role === "roof") {
+      // 처마(405)는 가로로 균일 반복되는 기와 — 캡 구분 없이 동일 타일. 파란 계열(406~) 혼입 금지.
       group.patternGrammar = {
         axis: "horizontal",
         kind: "horizontal_expandable",
         minWidth: 2,
-        parts: [{ role: "leftCap", tileIds: [404] }, { role: "repeatBody", tileIds: [405] }, { role: "rightCap", tileIds: [406] }],
+        parts: [{ role: "leftCap", tileIds: [ROOF_EAVE_TILE] }, { role: "repeatBody", tileIds: [ROOF_EAVE_TILE] }, { role: "rightCap", tileIds: [ROOF_EAVE_TILE] }],
         preserveCaps: true,
         repeat: "body",
       };
@@ -143,14 +146,53 @@ export function ensureBuildPalettePresets(tileset: TilesetDef): void {
   ensurePathAutotile(tileset);
 }
 
-function stampHouse(rect: BuildPaletteSelection, run: (name: string, args: Record<string, unknown>) => boolean): boolean {
+// 오렌지 직선 지붕 타일(타일시트 초확대 실측): 세로 3단 구조.
+// 374 = 상단 마감(용마루, 위 밝은 줄) · 375 = 몸통 기와(균일 반복) · 405 = 최하단 처마(아래 밝은 줄).
+// 404는 밝은 변형 몸통, 406부터는 파란 지붕 계열 — 섞으면 세로/색 줄무늬로 깨진다.
+const ROOF_RIDGE_TILE = 374;
+const ROOF_BODY_TILE = 375;
+const ROOF_EAVE_TILE = 405;
+
+// 지붕 행수: 집 높이의 약 1/3 (벽 최소 2행 보장). h=3→1, h=5→2, h=9→3.
+function roofRowsFor(height: number): number {
+  if (height < 3) return 0;
+  return Math.min(Math.max(1, Math.round(height * 0.34)), height - 2);
+}
+
+// rect 안에 직선 지붕을 칠한다: 상단 1행 용마루 → 몸통 → 최하단 1행 처마. 1행이면 처마만.
+function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: number, rows: number): void {
+  for (let dy = 0; dy < rows; dy++) {
+    const tile = dy === rows - 1 ? ROOF_EAVE_TILE : dy === 0 ? ROOF_RIDGE_TILE : ROOF_BODY_TILE;
+    for (let dx = 0; dx < w; dx++) {
+      map.lowerTiles[(y0 + dy) * map.width + (x0 + dx)] = tile;
+    }
+  }
+}
+
+function stampHouse(
+  ctx: ToolContext,
+  rect: BuildPaletteSelection,
+  run: (name: string, args: Record<string, unknown>) => boolean,
+  runOptional: (name: string, args: Record<string, unknown>) => boolean
+): boolean {
   if (rect.width < 2 || rect.height < 2) return false;
-  const wallRect = { x: rect.x, y: rect.y + 1, w: rect.width, h: rect.height - 1 };
+  const roofRows = roofRowsFor(rect.height);
+  const wallRect = { x: rect.x, y: rect.y + roofRows, w: rect.width, h: rect.height - roofRows };
   const doorX = rect.x + Math.floor(rect.width / 2);
   const doorY = rect.y + rect.height - 1;
-  return run("build_wall", { mapId: rect.mapId, rect: wallRect, wallVocabId: BUILD_PALETTE_PRESETS.wall })
-    && run("place_door", { mapId: rect.mapId, at: { x: doorX, y: doorY }, doorVocabId: BUILD_PALETTE_PRESETS.door })
-    && run("build_roof", { mapId: rect.mapId, roofVocabId: BUILD_PALETTE_PRESETS.roof, wallRect });
+  const ok = run("build_wall", { mapId: rect.mapId, rect: wallRect, wallVocabId: BUILD_PALETTE_PRESETS.wall })
+    && run("place_door", { mapId: rect.mapId, at: { x: doorX, y: doorY }, doorVocabId: BUILD_PALETTE_PRESETS.door });
+  if (!ok) return false;
+  // 지붕은 벽 시공 후 직접 칠한다(오렌지 기와 다열 + 처마) — build_roof의 1행 처마보다 집답다.
+  // 주의: runTool 커밋이 ctx.project를 draft로 교체하므로 반드시 최신 ctx.project에 칠한다.
+  if (roofRows > 0) paintRoofRows(ctx.project.maps[rect.mapId], rect.x, rect.y, rect.width, roofRows);
+  // 창문: 벽이 충분히 넓고 높으면 문 좌우 대칭으로 장식(실패해도 집 자체는 성공).
+  if (rect.width >= 5 && wallRect.h >= 3) {
+    const windowY = wallRect.y + 1;
+    runOptional("place_window", { mapId: rect.mapId, at: { x: doorX - 2, y: windowY }, windowVocabId: BUILD_PALETTE_PRESETS.window });
+    runOptional("place_window", { mapId: rect.mapId, at: { x: doorX + 2, y: windowY }, windowVocabId: BUILD_PALETTE_PRESETS.window });
+  }
+  return true;
 }
 
 function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive): string | null {
@@ -197,17 +239,9 @@ function fillRoleTile(project: Project, rect: BuildPaletteSelection, role: "wate
 
 function fillRoof(project: Project, rect: BuildPaletteSelection): boolean {
   const map = project.maps[rect.mapId];
-  const tileset = project.tilesets[map.tilesetId];
-  const group = tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS.roof);
-  const parts = group?.patternGrammar?.parts ?? [];
-  const left = parts.find((part) => part.role === "leftCap")?.tileIds[0] ?? group?.tileIds[0];
-  const body = parts.find((part) => part.role === "repeatBody")?.tileIds[0] ?? left;
-  const right = parts.find((part) => part.role === "rightCap")?.tileIds[0] ?? body;
-  if (left === undefined || body === undefined || right === undefined) return false;
-  forEachCell(rect, (x, y) => {
-    const tile = x === rect.x ? left : x === rect.x + rect.width - 1 ? right : body;
-    map.lowerTiles[y * map.width + x] = tile;
-  });
+  if (!map) return false;
+  // 직선 지붕: 위 (h-1)행은 지붕면 기와, 최하단 1행은 처마. 1행 선택이면 처마만.
+  paintRoofRows(map, rect.x, rect.y, rect.width, rect.height);
   return true;
 }
 
