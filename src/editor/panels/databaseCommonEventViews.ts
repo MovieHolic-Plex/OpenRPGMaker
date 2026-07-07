@@ -6,10 +6,12 @@ import {
 } from "@/editor/panels/databaseDisplay";
 import { emptyToUndefined } from "@/editor/panels/databaseControls";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
+import { commonEventReferenceMessage } from "@/editor/databaseReferences";
 import { store } from "@/project/store";
 import type { Command, CommonEvent } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
+import { toast } from "@/util/toast";
 
 let selectedCommonEventId: string | null = null;
 
@@ -172,6 +174,11 @@ function commonEventNameRow(commonEvent: CommonEvent, index: number, rerender: (
       });
     },
     () => {
+      const message = commonEventReferenceMessage(commonEvent.id);
+      if (message) {
+        toast(message, "error");
+        return;
+      }
       const remaining = store.getCurrent().commonEvents.filter((record) => record.id !== commonEvent.id);
       selectedCommonEventId = remaining[0]?.id ?? null;
       store.update((project) => {

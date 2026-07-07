@@ -178,6 +178,12 @@ body:has(.database-modal-backdrop) .ai-chat-panel,
 body:has([data-testid='resource-modal']) .ai-chat-panel {
   display: none;
 }
+body:has(.database-modal-backdrop) .ai-chat-panel {
+  display: flex;
+  right: 18px;
+  bottom: 18px;
+  z-index: 62;
+}
 .ai-chat-header {
   align-items: center;
   display: flex;

@@ -127,7 +127,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       dirtyPrompt,
       el("button", {
         class: "database-footer-button primary",
-        text: "OK",
+        text: "닫기",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
         on: { click: () => controller.requestClose("cancel") },

@@ -45,14 +45,14 @@
 | `duplicate_event` | `fromMapId: string`, `eventId: string`, `toMapId: string`, `x: integer`, `y: integer`, `newId?: string` | 이벤트를 다른 맵/좌표로 복제한다. |
 | `remove_event` | `mapId: string`, `eventId: string` | 맵에서 이벤트를 제거한다(파괴적). |
 | `move_event` | `mapId: string`, `eventId: string`, `x: integer`, `y: integer` | 이벤트를 같은 맵 내 다른 좌표로 옮긴다. |
-| `upsert_item` | `item: object` | 아이템 레코드를 등록/수정한다(normalizeItemRecord 경유). |
-| `upsert_enemy` | `enemy: object` | 적 레코드를 등록/수정한다(normalizeEnemyRecord 경유). |
-| `upsert_troop` | `troop: object` | 적 그룹(트룹) 레코드를 등록/수정한다(normalizeTroopRecord 경유). |
-| `upsert_actor` | `actor: object` | 아군 액터 레코드를 등록/수정한다(normalizeActorRecord 경유). |
-| `upsert_skill` | `skill: object` | 스킬 레코드를 등록/수정한다(normalizeSkillRecord 경유). |
-| `upsert_equipment` | `equipment: object` | 장비(무기/방어구) 레코드를 등록/수정한다(normalizeEquipmentRecord 경유). |
-| `upsert_class` | `class: object` | 직업(클래스) 레코드를 등록/수정한다(normalizeClassRecord 경유). |
-| `upsert_state` | `state: object` | 상태이상(State) 레코드를 등록/수정한다. 지정하지 않은 필드는 온톨로지 기본값을 따른다. |
+| `upsert_item` | `item: object` | 아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_enemy` | `enemy: object` | 적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_troop` | `troop: object` | 적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_actor` | `actor: object` | 아군 액터 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_skill` | `skill: object` | 스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_equipment` | `equipment: object` | 장비(무기/방어구) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_class` | `class: object` | 직업(클래스) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_state` | `state: object` | 상태이상(State) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 임의 필드는 거부한다. |
 | `upsert_common_event` | `id: string`, `name: string`, `trigger?: none\|auto\|parallel`, `conditionSwitchId?: string`, `commands: array` | 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능. |
 | `set_session_start` | `gold?: integer`, `inventory?: object`, `partyActorIds?: array` | 게임 시작 상태(골드/인벤토리/파티)를 설정한다. |
 | `set_title_screen` | `title: string`, `menuLabels?: object` | 타이틀 화면 제목/메뉴 라벨을 설정한다. |

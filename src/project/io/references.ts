@@ -1,4 +1,4 @@
-import type { Project } from "../types";
+import type { Command, Project } from "../types";
 import { assert } from "./guards";
 import {
   validateBattleEventPages,
@@ -20,6 +20,19 @@ import {
 } from "./resourceReferenceValidation";
 
 export function validateProjectReferences(project: Project): void {
+  const issues = collectProjectReferenceIssues(project);
+  assert(issues.length === 0, issues.join("\n"));
+}
+
+export function collectProjectReferenceIssues(project: Project): string[] {
+  const issues: string[] = [];
+  const check = (fn: () => void): void => {
+    try {
+      fn();
+    } catch (cause) {
+      issues.push(cause instanceof Error ? cause.message : String(cause));
+    }
+  };
   const switchIds = new Set(project.switches.map((record) => record.id));
   const variableIds = new Set(project.variables.map((record) => record.id));
   const actorIds = new Set(project.database.actors.map((record) => record.id));
@@ -47,33 +60,59 @@ export function validateProjectReferences(project: Project): void {
     resourceIds,
   };
 
-  validateActorRecords(project, classIds, animationIds, context);
-  validateClassRecords(project, classIds, actorIds, skillIds, equipmentIds);
-  validateSkillRecords(project, animationIds);
-  validateItemRecords(project, skillIds, animationIds, resourceIds);
-  validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds);
-  validateEnemyRecords(project, itemIds, skillIds, resourceIds);
-  validateTroopRecords(project, enemyIds, context);
-  for (const animation of project.database.battleAnimations) validateAnimationResource(animation, resourceIds);
-  for (const animation of project.database.battlerAnimations ?? []) validateBattlerAnimationResources(animation, resourceIds);
+  validateActorRecords(project, classIds, animationIds, context, issues);
+  validateClassRecords(project, classIds, actorIds, skillIds, equipmentIds, animationIds, issues);
+  validateSkillRecords(project, skillIds, animationIds, context, issues);
+  validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, issues);
+  validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues);
+  validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, issues);
+  validateTroopRecords(project, enemyIds, context, issues);
+  for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
+  for (const animation of project.database.battlerAnimations ?? []) check(() => validateBattlerAnimationResources(animation, resourceIds));
   for (const terrain of project.database.terrains ?? []) {
-    validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds);
-    validateOptionalResource(`terrain ${terrain.id}: footstepSoundResourceId`, terrain.footstepSoundResourceId, resourceIds);
+    check(() => validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds));
+    check(() => validateOptionalResource(`terrain ${terrain.id}: footstepSoundResourceId`, terrain.footstepSoundResourceId, resourceIds));
   }
 
-  requireExistingIds("system.startActorIds", project.system.startActorIds, actorIds);
-  if (project.system.initialTroopId) assert(troopIds.has(project.system.initialTroopId), "system.initialTroopId does not exist.");
-  validateSystemResources(project.system, resourceIds);
-  requireExistingIds("session.partyActorIds", project.session.partyActorIds, actorIds);
-  validateMapConnections(project, mapIds);
-  validateCommonEvents(project, switchIds, context);
-  validateMapRecords(project, switchIds, variableIds, resourceIds, context);
+  collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues);
+  if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
+  check(() => validateSystemResources(project.system, resourceIds));
+  collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
+  validateMapConnections(project, mapIds, issues);
+  validateCommonEvents(project, switchIds, context, issues);
+  validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
+  return issues;
 }
 
-function validateMapConnections(project: Project, mapIds: ReadonlySet<string>): void {
+export function repairProjectReferences(project: Project): void {
+  const mapIds = new Set(Object.keys(project.maps));
+  const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
+  const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
+  project.mapConnections = (project.mapConnections ?? []).filter((connection) => mapIds.has(connection.from.mapId) && mapIds.has(connection.to.mapId));
+  for (const actor of project.database.actors) {
+    if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) delete actor.unarmedAnimationId;
+  }
+  for (const klass of project.database.classes) {
+    if (klass.animationId && !animationIds.has(klass.animationId)) delete klass.animationId;
+  }
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      event.commands = pruneDanglingCommonEventCalls(event.commands, commonEventIds);
+      for (const page of event.pages ?? []) page.commands = pruneDanglingCommonEventCalls(page.commands, commonEventIds);
+    }
+  }
+  for (const troop of project.database.troops) {
+    for (const page of troop.battleEventPages) page.commands = pruneDanglingCommonEventCalls(page.commands, commonEventIds);
+  }
+  for (const commonEvent of project.commonEvents) {
+    commonEvent.commands = pruneDanglingCommonEventCalls(commonEvent.commands, commonEventIds);
+  }
+}
+
+function validateMapConnections(project: Project, mapIds: ReadonlySet<string>, issues: string[]): void {
   for (const connection of project.mapConnections ?? []) {
-    assert(mapIds.has(connection.from.mapId), `mapConnection ${connection.id}: from.mapId does not exist.`);
-    assert(mapIds.has(connection.to.mapId), `mapConnection ${connection.id}: to.mapId does not exist.`);
+    if (!mapIds.has(connection.from.mapId)) issues.push(`mapConnection ${connection.id}: from.mapId does not exist.`);
+    if (!mapIds.has(connection.to.mapId)) issues.push(`mapConnection ${connection.id}: to.mapId does not exist.`);
   }
 }
 
@@ -81,14 +120,15 @@ function validateActorRecords(
   project: Project,
   classIds: ReadonlySet<string>,
   animationIds: ReadonlySet<string>,
-  context: ReferenceContext
+  context: ReferenceContext,
+  issues: string[]
 ): void {
   for (const actor of project.database.actors) {
-    assert(classIds.has(actor.classId), `actor ${actor.id}: classId does not exist.`);
-    requireExistingIds(`actor ${actor.id}: skill`, actor.learnedSkills.map((entry) => entry.skillId), context.skillIds);
-    validateActorEquipment(actor.id, actor.initialEquipment, context.equipmentIds);
-    if (actor.unarmedAnimationId) assert(animationIds.has(actor.unarmedAnimationId), `actor ${actor.id}: unarmedAnimationId does not exist.`);
-    validateActorResources(actor, context.resourceIds);
+    if (!classIds.has(actor.classId)) issues.push(`actor ${actor.id}: classId does not exist.`);
+    collectExistingIdIssues(`actor ${actor.id}: skill`, actor.learnedSkills.map((entry) => entry.skillId), context.skillIds, issues);
+    validateActorEquipment(actor.id, actor.initialEquipment, context.equipmentIds, issues);
+    if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) issues.push(`actor ${actor.id}: unarmedAnimationId does not exist.`);
+    capture(issues, () => validateActorResources(actor, context.resourceIds));
   }
 }
 
@@ -97,33 +137,52 @@ function validateClassRecords(
   classIds: ReadonlySet<string>,
   actorIds: ReadonlySet<string>,
   skillIds: ReadonlySet<string>,
-  equipmentIds: ReadonlySet<string>
+  equipmentIds: ReadonlySet<string>,
+  animationIds: ReadonlySet<string>,
+  issues: string[]
 ): void {
   for (const klass of project.database.classes) {
-    requireExistingIds(`class ${klass.id}: skill`, klass.learnedSkills.map((entry) => entry.skillId), skillIds);
-    requireExistingIds(`class ${klass.id}: equipment`, klass.equipmentPermissions.equipmentIds, equipmentIds);
-    requireExistingIds(`class ${klass.id}: equipment actor`, klass.equipmentPermissions.actorIds, actorIds);
-    requireExistingIds(`class ${klass.id}: equipment class`, klass.equipmentPermissions.classIds, classIds);
+    if (klass.animationId && !animationIds.has(klass.animationId)) issues.push(`class ${klass.id}: animationId does not exist.`);
+    collectExistingIdIssues(`class ${klass.id}: skill`, klass.learnedSkills.map((entry) => entry.skillId), skillIds, issues);
+    collectExistingIdIssues(`class ${klass.id}: equipment`, klass.equipmentPermissions.equipmentIds, equipmentIds, issues);
+    collectExistingIdIssues(`class ${klass.id}: equipment actor`, klass.equipmentPermissions.actorIds, actorIds, issues);
+    collectExistingIdIssues(`class ${klass.id}: equipment class`, klass.equipmentPermissions.classIds, classIds, issues);
   }
 }
 
-function validateSkillRecords(project: Project, animationIds: ReadonlySet<string>): void {
+function validateSkillRecords(project: Project, skillIds: ReadonlySet<string>, animationIds: ReadonlySet<string>, context: ReferenceContext, issues: string[]): void {
   for (const skill of project.database.skills) {
-    if (skill.animationId) assert(animationIds.has(skill.animationId), `skill ${skill.id}: animationId does not exist.`);
+    if (skill.animationId && !animationIds.has(skill.animationId)) issues.push(`skill ${skill.id}: animationId does not exist.`);
+    if (skill.elementId && !elementIdExists(project, skill.elementId)) issues.push(`skill ${skill.id}: elementId does not exist.`);
+    for (const effect of skill.stateEffects ?? []) if (!stateIdExists(project, effect.stateId)) issues.push(`skill ${skill.id}: stateId does not exist.`);
+    if (skill.effect.kind === "switch" && skill.effect.switchId && !context.switchIds.has(skill.effect.switchId)) issues.push(`skill ${skill.id}: switchId does not exist.`);
   }
+  void skillIds;
 }
 
 function validateItemRecords(
   project: Project,
+  actorIds: ReadonlySet<string>,
+  classIds: ReadonlySet<string>,
   skillIds: ReadonlySet<string>,
   animationIds: ReadonlySet<string>,
-  resourceIds: ReadonlySet<string>
+  resourceIds: ReadonlySet<string>,
+  issues: string[]
 ): void {
   for (const item of project.database.items) {
-    if (item.skillId) assert(skillIds.has(item.skillId), `item ${item.id}: skillId does not exist.`);
-    if (item.animationId) assert(animationIds.has(item.animationId), `item ${item.id}: animationId does not exist.`);
-    validateItemResources(item, resourceIds);
-    for (const effect of item.stateEffects) assert(stateIdExists(project, effect.stateId), `item ${item.id}: stateId does not exist.`);
+    if (item.skillId && !skillIds.has(item.skillId)) issues.push(`item ${item.id}: skillId does not exist.`);
+    if (item.learnedSkillId && !skillIds.has(item.learnedSkillId)) issues.push(`item ${item.id}: learnedSkillId does not exist.`);
+    if (item.activateSkillId && !skillIds.has(item.activateSkillId)) issues.push(`item ${item.id}: activateSkillId does not exist.`);
+    if (item.animationId && !animationIds.has(item.animationId)) issues.push(`item ${item.id}: animationId does not exist.`);
+    capture(issues, () => validateItemResources(item, resourceIds));
+    for (const effect of item.stateEffects) if (!stateIdExists(project, effect.stateId)) issues.push(`item ${item.id}: stateId does not exist.`);
+    collectExistingIdIssues(`item ${item.id}: healState`, item.healStateIds, stateIds(project), issues);
+    collectExistingIdIssues(`item ${item.id}: usableActor`, item.usableActorIds, actorIds, issues);
+    collectExistingIdIssues(`item ${item.id}: usableClass`, item.usableClassIds, classIds, issues);
+    collectExistingIdIssues(`item ${item.id}: equipment class`, item.equipmentProfile.equippableClassIds, classIds, issues);
+    collectExistingIdIssues(`item ${item.id}: equipment actor`, item.equipmentProfile.equippableActorIds, actorIds, issues);
+    collectExistingIdIssues(`item ${item.id}: equipment state`, [...item.equipmentProfile.stateInflictIds, ...item.equipmentProfile.stateDefenseIds], stateIds(project), issues);
+    collectExistingIdIssues(`item ${item.id}: equipment element`, [...item.equipmentProfile.attackElementIds, ...item.equipmentProfile.elementalDefenseIds], elementIds(project), issues);
   }
 }
 
@@ -132,17 +191,16 @@ function validateEquipmentRecords(
   actorIds: ReadonlySet<string>,
   classIds: ReadonlySet<string>,
   skillIds: ReadonlySet<string>,
-  resourceIds: ReadonlySet<string>
+  resourceIds: ReadonlySet<string>,
+  issues: string[]
 ): void {
   for (const equipment of project.database.equipment) {
-    if (equipment.skillId) assert(skillIds.has(equipment.skillId), `equipment ${equipment.id}: skillId does not exist.`);
-    if (equipment.usableAsItemSkillId) {
-      assert(skillIds.has(equipment.usableAsItemSkillId), `equipment ${equipment.id}: usableAsItemSkillId does not exist.`);
-    }
-    validateEquipmentResources(equipment, resourceIds);
-    requireExistingIds(`equipment ${equipment.id}: actor`, equipment.equippableActorIds, actorIds);
-    requireExistingIds(`equipment ${equipment.id}: class`, equipment.equippableClassIds, classIds);
-    for (const stateId of equipment.stateInflictIds) assert(stateIdExists(project, stateId), `equipment ${equipment.id}: stateId does not exist.`);
+    if (equipment.skillId && !skillIds.has(equipment.skillId)) issues.push(`equipment ${equipment.id}: skillId does not exist.`);
+    if (equipment.usableAsItemSkillId && !skillIds.has(equipment.usableAsItemSkillId)) issues.push(`equipment ${equipment.id}: usableAsItemSkillId does not exist.`);
+    capture(issues, () => validateEquipmentResources(equipment, resourceIds));
+    collectExistingIdIssues(`equipment ${equipment.id}: actor`, equipment.equippableActorIds, actorIds, issues);
+    collectExistingIdIssues(`equipment ${equipment.id}: class`, equipment.equippableClassIds, classIds, issues);
+    collectExistingIdIssues(`equipment ${equipment.id}: state`, equipment.stateInflictIds, stateIds(project), issues);
   }
 }
 
@@ -150,29 +208,36 @@ function validateEnemyRecords(
   project: Project,
   itemIds: ReadonlySet<string>,
   skillIds: ReadonlySet<string>,
-  resourceIds: ReadonlySet<string>
+  resourceIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
+  issues: string[]
 ): void {
   for (const enemy of project.database.enemies) {
-    requireExistingIds(`enemy ${enemy.id}: skill`, enemy.actions.map((entry) => entry.skillId), skillIds);
-    if (enemy.rewards.dropItemId) assert(itemIds.has(enemy.rewards.dropItemId), `enemy ${enemy.id}: dropItemId does not exist.`);
-    validateEnemyResources(enemy, resourceIds);
+    collectExistingIdIssues(`enemy ${enemy.id}: skill`, enemy.actions.map((entry) => entry.skillId), skillIds, issues);
+    if (enemy.rewards.dropItemId && !itemIds.has(enemy.rewards.dropItemId)) issues.push(`enemy ${enemy.id}: dropItemId does not exist.`);
+    for (const action of enemy.actions) {
+      for (const effect of [action.switchOnAfterAction, action.switchOffAfterAction]) {
+        if (effect.enabled && effect.switchId && !switchIds.has(effect.switchId)) issues.push(`enemy ${enemy.id}: action switchId does not exist.`);
+      }
+    }
+    capture(issues, () => validateEnemyResources(enemy, resourceIds));
   }
 }
 
-function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, context: ReferenceContext): void {
+function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, context: ReferenceContext, issues: string[]): void {
   for (const troop of project.database.troops) {
-    requireExistingIds(`troop ${troop.id}: enemy`, troop.enemyIds, enemyIds);
-    if (troop.members) validateTroopMembers(troop.id, troop.members, enemyIds);
-    validateBattleEventPages(troop.battleEventPages, context);
+    collectExistingIdIssues(`troop ${troop.id}: enemy`, troop.enemyIds, enemyIds, issues);
+    if (troop.members) validateTroopMembers(troop.id, troop.members, enemyIds, issues);
+    capture(issues, () => validateBattleEventPages(troop.battleEventPages, context));
   }
 }
 
-function validateCommonEvents(project: Project, switchIds: ReadonlySet<string>, context: ReferenceContext): void {
+function validateCommonEvents(project: Project, switchIds: ReadonlySet<string>, context: ReferenceContext, issues: string[]): void {
   for (const commonEvent of project.commonEvents) {
     if (commonEvent.conditionSwitchId) {
-      assert(switchIds.has(commonEvent.conditionSwitchId), `commonEvent ${commonEvent.id}: conditionSwitchId does not exist.`);
+      if (!switchIds.has(commonEvent.conditionSwitchId)) issues.push(`commonEvent ${commonEvent.id}: conditionSwitchId does not exist.`);
     }
-    validateCommands(commonEvent.commands, context);
+    capture(issues, () => validateCommands(commonEvent.commands, context));
   }
 }
 
@@ -181,15 +246,17 @@ function validateMapRecords(
   switchIds: ReadonlySet<string>,
   variableIds: ReadonlySet<string>,
   resourceIds: ReadonlySet<string>,
-  context: ReferenceContext
+  context: ReferenceContext,
+  issues: string[]
 ): void {
   for (const map of Object.values(project.maps)) {
-    assert(project.tilesets[map.tilesetId] !== undefined, `map ${map.id}: tilesetId does not exist.`);
+    if (project.tilesets[map.tilesetId] === undefined) issues.push(`map ${map.id}: tilesetId does not exist.`);
     for (const event of map.events) {
-      validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds);
-      if (event.condition) validateCondition(event.condition, switchIds, variableIds);
-      validateCommands(event.commands, context);
-      validateEventPages(event.pages ?? [], context);
+      capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
+      const condition = event.condition;
+      if (condition) capture(issues, () => validateCondition(condition, switchIds, variableIds));
+      capture(issues, () => validateCommands(event.commands, context));
+      capture(issues, () => validateEventPages(event.pages ?? [], context));
     }
   }
 }
@@ -197,9 +264,10 @@ function validateMapRecords(
 function validateTroopMembers(
   troopId: string,
   members: readonly { readonly enemyId: string }[],
-  enemyIds: ReadonlySet<string>
+  enemyIds: ReadonlySet<string>,
+  issues: string[]
 ): void {
-  for (const member of members) assert(enemyIds.has(member.enemyId), `troop ${troopId}: member enemyId does not exist: ${member.enemyId}`);
+  for (const member of members) if (!enemyIds.has(member.enemyId)) issues.push(`troop ${troopId}: member enemyId does not exist: ${member.enemyId}`);
 }
 
 function validateActorEquipment(
@@ -211,10 +279,11 @@ function validateActorEquipment(
     readonly helmet?: string;
     readonly accessory?: string;
   },
-  equipmentIds: ReadonlySet<string>
+  equipmentIds: ReadonlySet<string>,
+  issues: string[]
 ): void {
   for (const id of Object.values(equipment)) {
-    if (id) assert(equipmentIds.has(id), `actor ${actorId}: initialEquipment does not exist: ${id}`);
+    if (id && !equipmentIds.has(id)) issues.push(`actor ${actorId}: initialEquipment does not exist: ${id}`);
   }
 }
 
@@ -222,6 +291,51 @@ function stateIdExists(project: Project, stateId: string): boolean {
   return stateId === "state_death" || project.database.states.some((state) => state.id === stateId);
 }
 
-function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {
-  for (const id of ids) assert(knownIds.has(id), `${label} does not exist: ${id}`);
+function collectExistingIdIssues(label: string, ids: readonly string[], knownIds: ReadonlySet<string>, issues: string[]): void {
+  for (const id of ids) if (!knownIds.has(id)) issues.push(`${label} does not exist: ${id}`);
+}
+
+function capture(issues: string[], fn: () => void): void {
+  try {
+    fn();
+  } catch (cause) {
+    issues.push(cause instanceof Error ? cause.message : String(cause));
+  }
+}
+
+function stateIds(project: Project): ReadonlySet<string> {
+  return new Set(["state_death", ...project.database.states.map((state) => state.id)]);
+}
+
+function elementIds(project: Project): ReadonlySet<string> {
+  return new Set((project.database.elements ?? []).map((element) => element.id));
+}
+
+function elementIdExists(project: Project, elementId: string): boolean {
+  return elementIds(project).has(elementId);
+}
+
+function pruneDanglingCommonEventCalls(commands: Command[], commonEventIds: ReadonlySet<string>): Command[] {
+  const pruned: Command[] = [];
+  for (const command of commands) {
+    if (command.kind === "callCommonEvent" && !commonEventIds.has(command.commonEventId)) continue;
+    if (command.kind === "choices") {
+      pruned.push({
+        ...command,
+        options: command.options.map((option) => ({ ...option, branch: pruneDanglingCommonEventCalls(option.branch, commonEventIds) })),
+        cancelBranch: command.cancelBranch ? pruneDanglingCommonEventCalls(command.cancelBranch, commonEventIds) : undefined,
+      });
+      continue;
+    }
+    if (command.kind === "fork") {
+      pruned.push({ ...command, then: pruneDanglingCommonEventCalls(command.then, commonEventIds), else: command.else ? pruneDanglingCommonEventCalls(command.else, commonEventIds) : undefined });
+      continue;
+    }
+    if (command.kind === "loop") {
+      pruned.push({ ...command, body: pruneDanglingCommonEventCalls(command.body, commonEventIds) });
+      continue;
+    }
+    pruned.push(command);
+  }
+  return pruned;
 }

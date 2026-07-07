@@ -20,7 +20,7 @@ import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
-import { validateProjectReferences } from "../io/references";
+import { collectProjectReferenceIssues } from "../io/references";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
 import { checkReachability, type ReachabilitySpec } from "./reachability";
@@ -69,13 +69,11 @@ function checkRoundtrip(project: Project, issues: LintIssue[]): void {
 
 // (b) 참조 검증: validateProjectReferences가 throw하면 error로 수집.
 function checkReferences(project: Project, issues: LintIssue[]): void {
-  try {
-    validateProjectReferences(project);
-  } catch (cause) {
+  for (const message of collectProjectReferenceIssues(project)) {
     issues.push({
       severity: "error",
       code: "reference-validation",
-      message: `참조 검증 실패: ${errorMessage(cause)}`,
+      message: `참조 검증 실패: ${message}`,
     });
   }
 }
