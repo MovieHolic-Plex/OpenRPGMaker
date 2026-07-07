@@ -31,6 +31,7 @@ import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
 import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapSelectionContextMenu";
+import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { tileFixFromCanvasMenuItem } from "@/editor/panels/tileMetaFixPopover";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
@@ -59,6 +60,61 @@ type EventLayerClickTarget = {
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+const BUILD_PALETTE_GAP_PX = 8;
+const BUILD_PALETTE_CANVAS_PADDING_PX = 8;
+
+type TileRect = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+};
+
+type CameraView = {
+  readonly scrollX: number;
+  readonly scrollY: number;
+  readonly zoom: number;
+};
+
+type PixelSize = {
+  readonly width: number;
+  readonly height: number;
+};
+
+type PixelPoint = {
+  readonly x: number;
+  readonly y: number;
+};
+
+export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize = TILE_SIZE): TileRect {
+  return {
+    x: Math.round((rect.x * tileSize - camera.scrollX) * camera.zoom),
+    y: Math.round((rect.y * tileSize - camera.scrollY) * camera.zoom),
+    width: Math.max(1, Math.round(rect.width * tileSize * camera.zoom)),
+    height: Math.max(1, Math.round(rect.height * tileSize * camera.zoom)),
+  };
+}
+
+export function anchoredBuildPalettePosition(input: {
+  readonly selectionRect: TileRect;
+  readonly popupSize: PixelSize;
+  readonly canvasSize: PixelSize;
+  readonly gap?: number;
+  readonly padding?: number;
+}): PixelPoint {
+  const gap = input.gap ?? BUILD_PALETTE_GAP_PX;
+  const padding = input.padding ?? BUILD_PALETTE_CANVAS_PADDING_PX;
+  const maxX = Math.max(padding, input.canvasSize.width - input.popupSize.width - padding);
+  const maxY = Math.max(padding, input.canvasSize.height - input.popupSize.height - padding);
+  const rightX = input.selectionRect.x + input.selectionRect.width + gap;
+  const leftX = input.selectionRect.x - input.popupSize.width - gap;
+  const preferredX = rightX + input.popupSize.width + padding <= input.canvasSize.width ? rightX : leftX;
+  const centeredY = input.selectionRect.y + input.selectionRect.height / 2 - input.popupSize.height / 2;
+  return {
+    x: clampNumber(preferredX, padding, maxX),
+    y: clampNumber(centeredY, padding, maxY),
+  };
+}
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
@@ -86,6 +142,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private cameraPanController: CameraPanController | null = null;
   private tilePaintEngine: TilePaintEngine | null = null;
   private dragOperationHandler: DragOperationHandler | null = null;
+  private buildPalettePopup: HTMLElement | null = null;
+  private buildPalettePopupKey = "";
+  private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
 
   constructor() {
     super({ key: "EditScene" });
@@ -118,7 +177,10 @@ export class EditScene extends PhaserRuntime.Scene {
         this.isPainting = false;
         this.lastPaintKey = "";
       },
-      onPanMove: () => this.refreshAgentGhostDomMarkers(),
+      onPanMove: () => {
+        this.refreshAgentGhostDomMarkers();
+        this.renderBuildPaletteOverlay();
+      },
     });
     this.eventClickFeedbackLayer = this.add.container(0, 0);
     this.eventClickFeedbackLayer.setDepth(12);
@@ -133,6 +195,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
 
     this.scale.on("resize", this.handleResize, this);
+    window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -152,6 +215,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubAgentFocus = null;
     this.clearAgentGhostPreviewLayer();
     this.clearAgentFocusHighlight();
+    window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    this.clearBuildPaletteOverlay();
   }
 
   private handleResize(): void {
@@ -666,6 +731,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderEventLayerClickFeedback();
     this.renderAgentGhostPreview();
     if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.renderBuildPaletteOverlay();
   }
 
   private canIncrementallyRenderCells(mapId: MapId): boolean {
@@ -689,6 +755,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileIndex: this.tileIndex,
     }, cells);
     if (this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.renderBuildPaletteOverlay();
     return stats;
   }
 
@@ -696,7 +763,10 @@ export class EditScene extends PhaserRuntime.Scene {
     const mid = this.mapId();
     if (!mid) return;
     const nextKey = this.renderStateKey(mid);
-    if (nextKey === this.lastRenderStateKey) return;
+    if (nextKey === this.lastRenderStateKey) {
+      this.renderBuildPaletteOverlay();
+      return;
+    }
     this.redraw();
   }
 
@@ -786,10 +856,79 @@ export class EditScene extends PhaserRuntime.Scene {
   private clearAgentFocusHighlight(): void {
     this.agentFocusRenderer?.clear();
   }
+
+  private renderBuildPaletteOverlay(): void {
+    if (typeof document === "undefined") return;
+    const selection = editorState.get().selection;
+    const mapId = this.mapId();
+    if (!isBuildPaletteEnabled() || !selection || selection.mapId !== mapId) {
+      this.clearBuildPaletteOverlay();
+      return;
+    }
+    const host = this.game.canvas.parentElement;
+    if (!host) {
+      this.clearBuildPaletteOverlay();
+      return;
+    }
+
+    const popupKey = `${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`;
+    if (!this.buildPalettePopup || this.buildPalettePopupKey !== popupKey || !this.buildPalettePopup.isConnected) {
+      this.clearBuildPaletteOverlay();
+      const popup = renderBuildPalettePopup();
+      if (!popup) return;
+      popup.classList.add("build-palette-floating");
+      popup.style.left = "0px";
+      popup.style.top = "0px";
+      popup.style.visibility = "hidden";
+      host.append(popup);
+      this.buildPalettePopup = popup;
+      this.buildPalettePopupKey = popupKey;
+    }
+    this.positionBuildPaletteOverlay(selection);
+  }
+
+  private positionBuildPaletteOverlay(selection: TileRect): void {
+    const popup = this.buildPalettePopup;
+    if (!popup) return;
+    const canvas = this.game.canvas;
+    const host = canvas.parentElement;
+    if (!host) return;
+    const camera = this.cameras.main;
+    const selectionRect = tileRectToScreenRect(selection, {
+      scrollX: camera.scrollX,
+      scrollY: camera.scrollY,
+      zoom: camera.zoom,
+    });
+    const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+    const popupSize = {
+      width: Math.max(1, popupRect.width || popup.offsetWidth || 184),
+      height: Math.max(1, popupRect.height || popup.offsetHeight || 140),
+    };
+    const canvasSize = {
+      width: Math.max(1, canvasRect.width || canvas.width),
+      height: Math.max(1, canvasRect.height || canvas.height),
+    };
+    const point = anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
+    popup.style.left = `${Math.round(canvasRect.left - hostRect.left + point.x)}px`;
+    popup.style.top = `${Math.round(canvasRect.top - hostRect.top + point.y)}px`;
+    popup.style.visibility = "";
+  }
+
+  private clearBuildPaletteOverlay(): void {
+    this.buildPalettePopup?.remove();
+    this.buildPalettePopup = null;
+    this.buildPalettePopupKey = "";
+  }
 }
 
 function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
   if (!node) return;
   node.textContent = text;
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
 }

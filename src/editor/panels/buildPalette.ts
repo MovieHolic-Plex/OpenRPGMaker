@@ -6,6 +6,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 let buildPaletteEnabled = true;
+export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
   { id: "house", label: "🏠집", title: "벽, 문, 지붕을 한 번에 시공" },
@@ -32,15 +33,17 @@ export function renderBuildPaletteToggle(): HTMLElement {
     on: {
       click: (event) => {
         buildPaletteEnabled = !buildPaletteEnabled;
-        const group = (event?.currentTarget as HTMLElement | null)?.closest(".canvas-toolbar-build-group");
-        if (group) {
-          group.querySelector(".build-palette-popup")?.remove();
-          const popup = renderBuildPalettePopup();
-          if (popup) group.append(popup);
-        }
+        const button = event?.currentTarget as HTMLElement | null;
+        button?.classList.toggle("active", buildPaletteEnabled);
+        button?.setAttribute("aria-pressed", String(buildPaletteEnabled));
+        window.dispatchEvent(new CustomEvent(BUILD_PALETTE_VISIBILITY_EVENT));
       },
     },
   });
+}
+
+export function isBuildPaletteEnabled(): boolean {
+  return buildPaletteEnabled;
 }
 
 export function renderBuildPalettePopup(): HTMLElement | null {
