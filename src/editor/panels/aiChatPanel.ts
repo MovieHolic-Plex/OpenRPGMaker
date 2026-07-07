@@ -63,7 +63,9 @@ const PANEL_SIZE_KEY = "rpg-zzu:ai-panel-size";
 const AI_PROGRESS_TOOL_LIMIT = 30;
 const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group"]);
 const HOUSE_TOOLS = new Set(["build_house", "stamp_template_house"]);
-const MAP_TILE_TOOLS = new Set(["paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map"]);
+const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
+  HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && (call.args.kind === "house" || call.args.kind === "template_house"));
+const MAP_TILE_TOOLS = new Set(["paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map", "tile_paint", "tile_road", "tile_scatter", "tile_structure"]);
 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
@@ -207,7 +209,7 @@ function countFromSummary(summary: string, pattern: RegExp): number {
 }
 
 function isTreeScatter(call: ProposedCall): boolean {
-  if (call.name !== "scatter_object") return false;
+  if (call.name !== "scatter_object" && call.name !== "tile_scatter") return false;
   const groupId = typeof call.args.groupId === "string" ? call.args.groupId : "";
   const haystack = `${groupId} ${call.summary}`.toLowerCase();
   return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
@@ -215,19 +217,19 @@ function isTreeScatter(call: ProposedCall): boolean {
 
 function countProposalHouses(calls: readonly ProposedCall[]): number {
   return calls.reduce((total, call) => {
-    if (HOUSE_TOOLS.has(call.name)) return total + 1;
-    if (call.name === "stamp_structure" && call.args.template !== "road") return total + 1;
+    if (isHouseCall(call)) return total + 1;
+    if ((call.name === "stamp_structure" || (call.name === "tile_structure" && call.args.kind === "structure")) && call.args.template !== "road") return total + 1;
     return total;
   }, 0);
 }
 
 function countProposalRoadCells(calls: readonly ProposedCall[]): number {
   return calls.reduce((total, call) => {
-    if (call.name === "paint_road") {
+    if (call.name === "paint_road" || call.name === "tile_road") {
       const fromData = positive(numberFromRecord(call.result.data, "tilesTouched"));
       return total + (fromData > 0 ? fromData : countFromSummary(call.summary, /도로\s+(\d+)칸/u));
     }
-    if (call.name === "stamp_structure" && call.args.template === "road") {
+    if ((call.name === "stamp_structure" || call.name === "tile_structure") && call.args.template === "road") {
       return total + positive(call.result.diff?.tilesChanged);
     }
     return total;

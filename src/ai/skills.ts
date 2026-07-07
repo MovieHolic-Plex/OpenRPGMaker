@@ -55,7 +55,7 @@ export interface SkillDef {
 const HONEST_REPORT_RULE =
   "작업이 끝나면 실제로 한 것만 보고하세요. 실패/위반이 남았으면 '조정 중' 같은 얼버무림 없이 남은 문제를 그대로 알리세요.";
 const SPEC_RULE =
-  "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/큰 경계 초과)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 페인트/배치 툴은 명세에 할당된 영역 안에서만 호출하되 경계 1~2칸 초과는 warning으로 통과합니다. clear_region은 slack 없이 명세 안에서만 호출하세요. 사용자가 선택한 영역은 암묵적 명세입니다.";
+  "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침/큰 경계 초과)는 좌표를 고쳐 재제출하고, 3회 실패하면 계획을 폐기하고 사용자에게 물으세요. 페인트/배치 툴은 명세에 할당된 영역 안에서만 호출하되 경계 1~2칸 초과는 warning으로 통과합니다. tile_paint(action=erase)는 slack 없이 명세 안에서만 호출하세요. 사용자가 선택한 영역은 암묵적 명세입니다.";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";
@@ -264,9 +264,9 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "절차(준수):",
       args.shape === "l"
-        ? "1. ㄴ자 집은 stamp_template_house(variant=l)로 찍으세요(발자국 약 18×16 — 여유 확인). 크기 인자는 무시하고 위치만 맞추세요."
-        : "1. build_house(mapId, origin, width, height, material)로 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
-      "2. 겹치는 기존 잔해가 있으면 먼저 clear_region으로 정리하세요.",
+        ? "1. ㄴ자 집은 tile_structure(kind=template_house, variant=l)로 찍으세요(발자국 약 18×16 — 여유 확인). 크기 인자는 무시하고 위치만 맞추세요."
+        : "1. tile_structure(kind=house, mapId, origin, width, height, material)로 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
+      "2. 겹치는 기존 잔해가 있으면 먼저 tile_paint(action=erase, mode=rect)로 정리하세요.",
       "3. 완성 후 문 좌표를 보고하고, 문 앞이 통행 가능한지 get_map_region으로 확인하세요.",
       SPEC_RULE,
       HONEST_REPORT_RULE,
@@ -314,8 +314,8 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "단계별로 진행하고, 각 단계가 끝날 때마다 한 줄로 보고하세요(전부 끝날 때까지 멈추지 마세요):",
       "1. 부지 계획 — get_map_region으로 지형을 읽고 집·길 배치를 정하세요.",
-      "2. 집 — build_house(크기 다양하게) 또는 stamp_template_house(variant 섞어서)로 겹치지 않게 지으세요. 잔해가 있으면 clear_region 먼저.",
-      "3. 길 — paint_road로 집 문 앞들을 잇는 길을 깔고, 문 앞 통행을 확인하세요.",
+      "2. 집 — tile_structure(kind=house, 크기 다양하게) 또는 tile_structure(kind=template_house, variant 섞어서)로 겹치지 않게 지으세요. 잔해가 있으면 tile_paint(action=erase) 먼저.",
+      "3. 길 — tile_road로 집 문 앞들을 잇는 길을 깔고, 문 앞 통행을 확인하세요.",
       "4. NPC — place_npc로 테마에 맞는 이름·대사(2줄 이상)를 붙여 배치하세요. 통행 가능 칸에만.",
       "5. 검증 — check_reachability로 모든 문 앞이 도달 가능한지 확인하고 문제를 고치세요.",
       SPEC_RULE,
@@ -370,7 +370,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "절차(준수):",
       "1. get_map_region으로 출발/경유/도착 지점의 실제 좌표를 파악하세요(추측 금지).",
-      `2. paint_road(style=${args.style})로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요.`,
+      `2. tile_road(style=${args.style})로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요.`,
       "3. 길이 문 앞과 이어지는지, 끊긴 곳이 없는지 get_map_region으로 재확인하세요.",
       SPEC_RULE,
       HONEST_REPORT_RULE,

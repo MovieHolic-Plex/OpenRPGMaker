@@ -21,13 +21,25 @@ import { REFACTOR_TOOLS } from "./refactorTools";
 import { TERRAIN_TEMPLATE_TOOLS } from "./terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import type { JsonSchema, ToolDefinition } from "./types";
+import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 
 export { PLACEMENT_TOOLS };
 
-// 레지스트리(순서 = 카탈로그 표시 순서).
-export const TOOL_REGISTRY: readonly ToolDefinition[] = [
+// v2 재구축(2026-07-07): 모든 기존 툴은 version 1로 태깅하고, 타일 계열 v1은 v2 대체와 함께
+// deprecated 처리한다(LLM 노출 제외 — getTool/실행 호환은 유지).
+function tagV1(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
+  return tools.map((tool) => {
+    const supersededBy = V1_TILE_SUPERSEDED.get(tool.name);
+    if (supersededBy) return { ...tool, version: 1 as const, deprecated: true, supersededBy };
+    return { ...tool, version: tool.version ?? (1 as const) };
+  });
+}
+
+// 레지스트리(순서 = 카탈로그 표시 순서). v2 타일 툴이 앞에 온다.
+export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
+  ...TILE_TOOLS_V2,
   ...MAP_TOOLS,
   ...MAP_GEN_TOOLS,
   ...EVENT_TOOLS,
@@ -48,7 +60,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   ...PLACEMENT_TOOLS,
   ...RANGE_CLASSIFY_TOOLS,
   ...TERRAIN_TEMPLATE_TOOLS,
-];
+]);
 
 const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) => [tool.name, tool]));
 
@@ -69,9 +81,9 @@ export interface OpenAiTool {
   };
 }
 
-// OpenAI Chat Completions `tools` 배열로 변환.
+// OpenAI Chat Completions `tools` 배열로 변환. deprecated 툴은 LLM에 노출하지 않는다.
 export function toOpenAiTools(tools: readonly ToolDefinition[] = TOOL_REGISTRY): OpenAiTool[] {
-  return tools.map((tool) => ({
+  return tools.filter((tool) => tool.deprecated !== true).map((tool) => ({
     type: "function",
     function: {
       name: tool.name,

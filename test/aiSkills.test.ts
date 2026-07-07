@@ -63,7 +63,7 @@ describe("스킬 레지스트리", () => {
     const house = SYSTEM_SKILLS.find((skill) => skill.id === "build-house")!;
     const rect = house.buildPrompt!({ width: 12, height: 8, material: "wood", shape: "rect", where: "" }, CTX);
     expect(rect).toContain("12×8");
-    expect(rect).toContain("build_house");
+    expect(rect).toContain("tile_structure(kind=house");
     expect(rect).toContain("벽 타일을 직접 칠해");
     const lShape = house.buildPrompt!({ width: 10, height: 10, material: "plaster", shape: "l", where: "" }, CTX);
     expect(lShape).toContain("variant=l");
@@ -76,7 +76,7 @@ describe("스킬 레지스트리", () => {
     expect(audit).toContain("얼버무림 없이");
     const village = SYSTEM_SKILLS.find((skill) => skill.id === "build-village")!.buildPrompt!({ theme: "어촌", houses: 3, npcs: 2 }, CTX);
     expect(village).toContain("단계");
-    expect(village).toContain("clear_region");
+    expect(village).toContain("tile_paint(action=erase)");
     expect(village).toContain("자연스러움: 보통");
     const motion = SYSTEM_SKILLS.find((skill) => skill.id === "npc-motion")!.buildPrompt!({ brief: "주민 랜덤" }, CTX);
     expect(motion).toContain("get_event");

@@ -149,7 +149,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "프리셋이 있으면 paint_road/scatter_object/build_house/stamp_structure에서 개별 tile id보다 presetId+paletteRole을 우선 사용하세요.",
+    "프리셋이 있으면 tile_road/tile_scatter/tile_structure에서 개별 tile id보다 presetId+paletteRole을 우선 사용하세요. 칠할 타일을 모르면 tile_query(ask=palette)로 먼저 찾으세요.",
     trimDigestLines(lines, 700),
   ].join("\n");
 }

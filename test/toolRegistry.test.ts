@@ -13,7 +13,10 @@ const NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 describe("toolRegistry", () => {
   it("모든 툴이 유효한 OpenAI 함수 스키마를 산출한다", () => {
     const openai = toOpenAiTools();
-    expect(openai.length).toBe(allTools().length);
+    // v2 재구축(2026-07-07): deprecated v1 타일 툴은 LLM에 노출되지 않는다.
+    const exposedCount = allTools().filter((tool) => tool.deprecated !== true).length;
+    expect(openai.length).toBe(exposedCount);
+    expect(allTools().length).toBeGreaterThan(exposedCount);
     const seen = new Set<string>();
     for (const tool of openai) {
       expect(tool.type).toBe("function");

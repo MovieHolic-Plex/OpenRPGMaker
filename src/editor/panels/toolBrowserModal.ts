@@ -11,6 +11,7 @@ import { GROUP_LAYOUT_TOOLS } from "@/editor/tools/groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
 import { HISTORY_TOOLS } from "@/editor/tools/historyTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
+import { TILE_TOOLS_V2 } from "@/editor/tools/v2";
 import { PALETTE_PRESET_TOOLS } from "@/editor/tools/palettePresetTools";
 import { PLAY_TOOLS } from "@/editor/tools/playTools";
 import { PLACEMENT_TOOLS } from "@/editor/tools/toolRegistry";
@@ -36,6 +37,7 @@ const PLACEMENT_CATEGORIES: readonly ToolCategory[] = PLACEMENT_TOOLS.length > 0
 
 // 레지스트리와 같은 원본 배열을 카테고리로 묶는다(추가 유지비 없음 — 배열이 곧 진실).
 export const TOOL_CATEGORIES: readonly ToolCategory[] = [
+  { label: "타일 v2", tools: TILE_TOOLS_V2 },
   { label: "맵 편집", tools: MAP_TOOLS },
   { label: "맵 생성", tools: MAP_GEN_TOOLS },
   ...PLACEMENT_CATEGORIES,

@@ -70,6 +70,12 @@ export interface ToolDefinition {
   readonly description: string;
   readonly mode: ToolMode;
   readonly parameters: JsonSchema;
+  // 툴 버전(기본 1). 2026-07-07 타일 계열 v2 재구축부터 사용.
+  readonly version?: 1 | 2;
+  // true면 LLM 노출(toOpenAiTools)에서 제외된다. getTool/실행 호환은 유지(구 세션·테스트).
+  readonly deprecated?: boolean;
+  // deprecated 툴을 대체하는 v2 툴 이름.
+  readonly supersededBy?: string;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
   run(draft: Project, args: Record<string, unknown>): ToolExecResult;
 }

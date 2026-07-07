@@ -156,11 +156,18 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   const mapId = stringValue(call.args.mapId);
   if (mapId === null) return null;
 
-  if (call.name === "paint_road") return roadRegions(mapId, call.args.points);
+  if (call.name === "paint_road" || call.name === "tile_road") return roadRegions(mapId, call.args.points);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
+  // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
+  if (call.name === "tile_structure") {
+    const kind = stringValue(call.args.kind);
+    if (kind === "house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
+    if (kind === "template_house") return originRect(mapId, call.args, TEMPLATE_HOUSE_FOOTPRINT.w, TEMPLATE_HOUSE_FOOTPRINT.h);
+    return originRect(mapId, call.args, 1, 1);
+  }
   if (call.name === "stamp_template_house") return originRect(mapId, call.args, TEMPLATE_HOUSE_FOOTPRINT.w, TEMPLATE_HOUSE_FOOTPRINT.h);
   if (call.name === "stamp_structure" || call.name === "stamp_terrain_template") return originRect(mapId, call.args, 1, 1);
-  if (call.name === "scatter_object") return scatterRegions(mapId, call.args, call.result.data);
+  if (call.name === "scatter_object" || call.name === "tile_scatter") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "place_npc") return [actualPointRegion(mapId, call)];
   if (call.name === "place_battle_blocker") return pointRegion(mapId, call.args.x, call.args.y);
 
@@ -278,13 +285,13 @@ function actualPlacementCount(calls: readonly ProposalCompletenessCall[]): numbe
 }
 
 function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
-  if (call.name === "scatter_object") {
+  if (call.name === "scatter_object" || call.name === "tile_scatter") {
     const data = isRecord(call.result.data) ? call.result.data : null;
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
   if (call.name === "place_npc" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
-  if (call.name === "build_house" || call.name === "stamp_template_house" || call.name === "stamp_structure" || call.name === "stamp_terrain_template") return 1;
-  if (call.name === "paint_tiles" && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
+  if (call.name === "build_house" || call.name === "stamp_template_house" || call.name === "stamp_structure" || call.name === "stamp_terrain_template" || call.name === "tile_structure") return 1;
+  if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
 }
 
