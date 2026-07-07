@@ -253,6 +253,13 @@ function worldSummaryPart(added: number, modified: number): string | null {
   return null;
 }
 
+function palettePresetSummaryPart(added: number, modified: number): string | null {
+  if (added > 0 && modified > 0) return `프리셋 추가 ${added}/수정 ${modified}`;
+  if (added > 0) return `프리셋 ${added}건`;
+  if (modified > 0) return `프리셋 수정 ${modified}건`;
+  return null;
+}
+
 function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
   const diff = combineDiffs(calls.map((call) => call.result.diff));
   return [
@@ -268,6 +275,7 @@ function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
     diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}개` : null,
     diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}개` : null,
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
+    palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
     diff.sessionChanged ? "세션 1건" : null,
     diff.systemChanged ? "시스템 1건" : null,
   ].filter((part): part is string => part !== null);
@@ -284,6 +292,7 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
     formatCount("길", roadCells, "칸"),
     formatCount("나무", trees, "그루"),
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
+    palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
   ].filter((part): part is string => part !== null);
   const remainingTileChanges = Math.max(0, diff.tilesChanged - roadCells);
   const parts = [

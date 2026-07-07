@@ -124,6 +124,8 @@ function emptySummary(): ChangeSummary {
     variablesAdded: 0,
     worldEntitiesAdded: 0,
     worldEntitiesModified: 0,
+    palettePresetsAdded: 0,
+    palettePresetsModified: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
@@ -152,6 +154,7 @@ function summarizeHeadlessChanges(before: Project, after: Project): ChangeSummar
   summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
   diffWorld(before, after, summary);
+  diffPalettePresets(before, after, summary);
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
   return summary;
@@ -235,5 +238,17 @@ function diffWorld(before: Project, after: Project, summary: ChangeSummary): voi
     const prev = beforeById.get(entity.id);
     if (prev === undefined) summary.worldEntitiesAdded += 1;
     else if (prev !== JSON.stringify(entity)) summary.worldEntitiesModified += 1;
+  }
+}
+
+function diffPalettePresets(before: Project, after: Project, summary: ChangeSummary): void {
+  for (const [tilesetId, afterTileset] of Object.entries(after.tilesets)) {
+    const beforePresets = before.tilesets[tilesetId]?.palettePresets ?? [];
+    const beforeById = new Map(beforePresets.map((preset) => [preset.id, JSON.stringify(preset)]));
+    for (const preset of afterTileset.palettePresets ?? []) {
+      const prev = beforeById.get(preset.id);
+      if (prev === undefined) summary.palettePresetsAdded += 1;
+      else if (prev !== JSON.stringify(preset)) summary.palettePresetsModified += 1;
+    }
   }
 }

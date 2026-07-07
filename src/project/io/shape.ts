@@ -2,6 +2,7 @@ import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { normalizeWorld } from "../world/guards";
 import type { ProjectWorld } from "../world/types";
+import { normalizePalettePresetId } from "../tilesetPalette";
 import { assert, cloneJson, sanitize, type JsonRecord, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateProjectReferences } from "./references";
 import {
@@ -74,12 +75,31 @@ export function validateProjectV3(data: JsonRecord): Project {
   const project = cloneJson<Project>(data);
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
+  normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
   validateProjectReferences(project);
   return project;
+}
+
+function normalizeTilesetPalettePresets(project: Project): void {
+  for (const tileset of Object.values(project.tilesets)) {
+    if (tileset.palettePresets === undefined) continue;
+    const usedIds = new Set<string>();
+    for (const preset of tileset.palettePresets) {
+      const base = normalizePalettePresetId(preset.id);
+      let id = base;
+      let suffix = 2;
+      while (usedIds.has(id)) {
+        id = `${base}_${suffix}`;
+        suffix += 1;
+      }
+      preset.id = id;
+      usedIds.add(id);
+    }
+  }
 }
 
 function migrateVillageInfoDocumentsToWorld(project: Project): void {

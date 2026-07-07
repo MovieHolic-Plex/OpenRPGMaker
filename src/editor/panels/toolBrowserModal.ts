@@ -11,6 +11,7 @@ import { GROUP_LAYOUT_TOOLS } from "@/editor/tools/groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
 import { HISTORY_TOOLS } from "@/editor/tools/historyTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
+import { PALETTE_PRESET_TOOLS } from "@/editor/tools/palettePresetTools";
 import { PLAY_TOOLS } from "@/editor/tools/playTools";
 import { PLACEMENT_TOOLS } from "@/editor/tools/toolRegistry";
 import { QUERY_TOOLS } from "@/editor/tools/queryTools";
@@ -47,6 +48,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "작업 기록", tools: HISTORY_TOOLS },
   { label: "플레이테스트", tools: PLAY_TOOLS },
   { label: "조회", tools: QUERY_TOOLS },
+  { label: "팔레트 프리셋", tools: PALETTE_PRESET_TOOLS },
   { label: "타일 지식(단어장)", tools: TILE_METADATA_TOOLS },
   { label: "클러스터 규칙", tools: CLUSTER_RULE_TOOLS },
   { label: "클러스터 구성", tools: GROUP_LAYOUT_TOOLS },

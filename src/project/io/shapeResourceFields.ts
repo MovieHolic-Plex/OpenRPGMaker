@@ -1,4 +1,5 @@
-import { assert, requireArray, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
+import { isPaletteSlotRole } from "../tilesetPalette";
+import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
 import { validateAssetRef } from "./shapeReferenceFields";
 
 export function validateMeta(value: unknown): void {
@@ -57,6 +58,27 @@ export function validateTileset(id: string, value: unknown): void {
       requireArray(`tileset ${id}.tileMeta`, tileset.tileMeta).length === count,
       `tileset ${id}: tileMeta 길이 불일치.`
     );
+    for (const [index, meta] of requireArray(`tileset ${id}.tileMeta`, tileset.tileMeta).entries()) {
+      if (meta === undefined || meta === null) continue;
+      const record = requireRecord(`tileset ${id}.tileMeta[${index}]`, meta);
+      if (record.confidence !== undefined) {
+        if (typeof record.confidence === "number") {
+          const confidence = requireNumber(`tileset ${id}.tileMeta[${index}].confidence`, record.confidence);
+          assert(confidence >= 0 && confidence <= 1, `tileset ${id}: tileMeta[${index}] confidence must be 0~1`);
+        } else {
+          const confidence = requireString(`tileset ${id}.tileMeta[${index}].confidence`, record.confidence);
+          assert(
+            confidence === "high" || confidence === "medium" || confidence === "low",
+            `tileset ${id}: tileMeta[${index}] confidence invalid`
+          );
+        }
+      }
+      if (record.origin !== undefined) {
+        const origin = requireString(`tileset ${id}.tileMeta[${index}].origin`, record.origin);
+        assert(origin === "user" || origin === "ai", `tileset ${id}: tileMeta[${index}] origin invalid`);
+      }
+      if (record.locked !== undefined) requireBoolean(`tileset ${id}.tileMeta[${index}].locked`, record.locked);
+    }
   }
   if (tileset.transparentColor !== undefined) {
     requireString(`tileset ${id}.transparentColor`, tileset.transparentColor);
@@ -140,6 +162,29 @@ export function validateTileset(id: string, value: unknown): void {
       for (const tileId of requireArray(`tileset ${id}.tileGroups[${index}].tileIds`, record.tileIds)) {
         const tileNumber = requireNumber(`tileset ${id}.tileGroups[${index}].tileIds[]`, tileId);
         assert(tileNumber >= 0 && tileNumber < count, `tileset ${id}: tileGroups[${index}] tileId out of range`);
+      }
+    }
+  }
+  if (tileset.palettePresets !== undefined) {
+    for (const [index, preset] of requireArray(`tileset ${id}.palettePresets`, tileset.palettePresets).entries()) {
+      const record = requireRecord(`tileset ${id}.palettePresets[${index}]`, preset);
+      requireString(`tileset ${id}.palettePresets[${index}].id`, record.id);
+      requireString(`tileset ${id}.palettePresets[${index}].name`, record.name);
+      const origin = requireString(`tileset ${id}.palettePresets[${index}].origin`, record.origin);
+      assert(origin === "user" || origin === "ai", `tileset ${id}: palettePresets[${index}] origin invalid`);
+      if (record.locked !== undefined) requireBoolean(`tileset ${id}.palettePresets[${index}].locked`, record.locked);
+      for (const [slotIndex, slot] of requireArray(`tileset ${id}.palettePresets[${index}].slots`, record.slots).entries()) {
+        const slotRecord = requireRecord(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}]`, slot);
+        const role = requireString(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].role`, slotRecord.role);
+        assert(isPaletteSlotRole(role), `tileset ${id}: palettePresets[${index}].slots[${slotIndex}] role invalid`);
+        for (const tileId of requireArray(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].tileIds`, slotRecord.tileIds)) {
+          const tileNumber = requireNumber(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].tileIds[]`, tileId);
+          assert(tileNumber >= 0 && tileNumber < count, `tileset ${id}: palettePresets[${index}] tileId out of range`);
+        }
+        if (slotRecord.weight !== undefined) {
+          const weight = requireNumber(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].weight`, slotRecord.weight);
+          assert(weight > 0, `tileset ${id}: palettePresets[${index}].slots[${slotIndex}] weight must be > 0`);
+        }
       }
     }
   }

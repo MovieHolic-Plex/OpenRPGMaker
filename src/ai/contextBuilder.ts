@@ -7,6 +7,7 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import type { Project, TileGroupMetadata } from "@/project/types";
+import { confidenceScore } from "@/project/tilesetPalette";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 
@@ -88,6 +89,7 @@ const INTRO = [
   "    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).",
   "20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)와 지형 템플릿은 데이터베이스의 타일셋/지형 템플릿",
   "    화면에 저장되어 사용자가 직접 관찰·수정할 수 있습니다. 그러니 라벨/설명/규칙을 성실히 남기세요.",
+  "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
 ].join("\n");
 
 function summarySection(project: Project): string {
@@ -124,6 +126,31 @@ function worldDigestSection(project: Project): string {
     "## 세계관 다이제스트",
     "새 NPC/맵/명명 아이템을 만들거나 바꾸면 upsert_world_entities와 link_world_ref로 세계관도 같은 제안에 갱신하세요.",
     digest,
+  ].join("\n");
+}
+
+function tileVocabularySection(project: Project, mapId: string | undefined): string {
+  const tilesetIds = currentTilesetIds(project, mapId);
+  const lines: string[] = [];
+  for (const tilesetId of tilesetIds) {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset || (tileset.palettePresets ?? []).length === 0) continue;
+    lines.push(`### ${tileset.name} (${tileset.id})`);
+    for (const preset of tileset.palettePresets ?? []) {
+      const slots = preset.slots.map((slot) => `${slot.role}:${slot.tileIds.length}`).join(", ");
+      lines.push(`- ${preset.name} (${preset.id}${preset.locked ? ", locked" : ""}, ${preset.origin}) — ${slots || "slot 없음"}`);
+    }
+    const lowConfidence = (tileset.tileMeta ?? []).filter((meta) => {
+      const score = confidenceScore(meta?.confidence);
+      return score !== null && score < 0.5;
+    }).length;
+    if (lowConfidence > 0) lines.push(`- 낮은 신뢰(confidence<0.5) 타일 ${lowConfidence}개`);
+  }
+  if (lines.length === 0) return "";
+  return [
+    "## 타일 어휘 다이제스트",
+    "프리셋이 있으면 paint_road/scatter_object/build_house/stamp_structure에서 개별 tile id보다 presetId+paletteRole을 우선 사용하세요.",
+    trimDigestLines(lines, 700),
   ].join("\n");
 }
 
@@ -283,6 +310,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   const sections: string[] = [INTRO, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);
+  const tileVocabulary = tileVocabularySection(project, options.currentMapId);
+  if (tileVocabulary) sections.push(tileVocabulary);
   const templateSection = terrainTemplateSection(project);
   if (templateSection) sections.push(templateSection);
   const clusterRulePreferences = clusterRulePreferenceSection(project, options.currentMapId);
@@ -304,4 +333,23 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
     assembled = `${assembled.slice(0, budget)}\n\n(컨텍스트가 예산을 초과해 일부 생략됨 — 필요한 정보는 조회 툴을 사용하세요.)`;
   }
   return assembled;
+}
+
+function trimDigestLines(lines: readonly string[], maxTokens: number): string {
+  const full = lines.join("\n");
+  if (estimateTokens(full) <= maxTokens) return full;
+  const included: string[] = [];
+  for (const line of lines) {
+    const remaining = lines.length - included.length - 1;
+    const candidate = [...included, line, ...(remaining > 0 ? [`…외 ${remaining}개`] : [])].join("\n");
+    if (estimateTokens(candidate) > maxTokens) break;
+    included.push(line);
+  }
+  const omitted = lines.length - included.length;
+  if (omitted <= 0) return included.join("\n");
+  return [...included, `…외 ${omitted}개`].join("\n");
+}
+
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
 }

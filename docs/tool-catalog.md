@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 80개 툴 — 쓰기 51, 읽기 29.
+> 총 82개 툴 — 쓰기 52, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -11,10 +11,10 @@
 | --- | --- | --- |
 | `create_map` | `name: string`, `width: integer`, `height: integer`, `id?: string` | 새 맵을 생성한다(잔디 바닥 + 테두리 벽, 최대 256×256). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. |
 | `paint_tiles` | `mapId: string`, `layer: lower\|upper`, `mode: rect\|line\|fill\|cells`, `tile: integer`, `from?: object`, `to?: object`, `cells?: array` | 타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. |
-| `paint_road` | `mapId: string`, `points: array`, `style: dirt\|sand`, `naturalness?: number`, `seed?: integer` | 폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 오토타일로 가장자리를 자동 성형한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
-| `stamp_structure` | `mapId: string`, `template: l\|courtyard\|multi\|road\|plaster\|stone`, `origin: object`, `naturalness?: number`, `seed?: integer` | 집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 반환 diff에 문 좌표를 포함한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
+| `paint_road` | `mapId: string`, `points: array`, `style?: dirt\|sand`, `presetId?: string`, `paletteRole?: string`, `naturalness?: number`, `seed?: integer` | 폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
+| `stamp_structure` | `mapId: string`, `template: l\|courtyard\|multi\|road\|plaster\|stone`, `origin: object`, `presetId?: string`, `paletteRole?: string`, `naturalness?: number`, `seed?: integer` | 집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 반환 diff에 문 좌표를 포함한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
 | `stamp_template_house` | `mapId: string`, `origin: object`, `variant: template\|wide\|compact\|l`, `material: plaster\|wood\|stone`, `includeFence?: boolean`, `approachHeight?: integer` | 지형 템플릿 기반 집을 찍는다. variant: template(small_house_01 표)/wide(넓은)/compact(작은)/l(ㄴ자 집), material: plaster(회벽)/wood(목재)/stone(석재). approachHeight로 문 앞 진입로를 깐다. 발자국 약 18×16 — 여유 있는 origin을 잡아라. 임의 크기 직사각형 집은 build_house를 써라. 반환 data에 문 좌표 포함. |
-| `build_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone`, `naturalness?: number`, `seed?: integer` | 요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
+| `build_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone`, `presetId?: string`, `paletteRole?: string`, `naturalness?: number`, `seed?: integer` | 요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
 | `clear_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer`, `layer?: lower\|upper\|both`, `fill?: grass\|empty` | 맵의 사각 영역을 정리한다: 상위 레이어는 비우고, 하위 레이어는 잔디(fill=grass, 기본) 또는 빈 칸(fill=empty)으로 되돌린다. 잘못 배치한 구조물을 지울 때 사용. 이벤트는 지우지 않고 경고로 알린다. |
 | `set_start_position` | `mapId: string`, `x: integer`, `y: integer` | 게임 시작 맵/좌표를 지정한다. 통행 불가 타일이면 실패한다. |
 | `set_tile_passability` | `tilesetId?: string`, `tile: integer`, `passable: boolean` | 타일셋의 특정 타일 통행 가능 여부를 설정한다(4방향 일괄). 겉보기와 실제 통행성이 다른 타일을 고칠 때 사용. |
@@ -42,6 +42,7 @@
 | `set_title_screen` | `title: string`, `menuLabels?: object` | 타이틀 화면 제목/메뉴 라벨을 설정한다. |
 | `upsert_world_entities` | `entities: array` | 세계관 개체를 배치 추가/수정한다. 새 NPC/맵/명명 아이템을 만들 때 같은 제안에 반드시 세계관 갱신을 동봉하라. 잠긴 세계관 개체는 AI가 수정할 수 없다. |
 | `link_world_ref` | `entityId: string`, `kind: map\|event\|item\|skill\|actor`, `id: string`, `action: link\|unlink` | 기존 세계관 개체에 게임 개체 ref(kind+id)를 연결하거나 해제한다. 새 NPC/맵/명명 아이템 생성 시 upsert_world_entities와 함께 실제 게임 id를 연결하라. |
+| `upsert_palette_preset` | `tilesetId?: string`, `preset: object` | 타일셋 팔레트 프리셋을 추가/수정한다. 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 잠긴 프리셋은 AI가 수정할 수 없다. |
 | `create_quest_flags` | `questKey: string`, `steps: integer` | 퀘스트용 스위치(sw_<key>_started/_done)와 진행 변수(var_<key>_progress)를 자동 등록한다. |
 | `create_quest` | `def: object` | 선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존. |
 | `tune_enemy` | `enemyId: string`, `targetHitsToKill: integer`, `targetDamageToHeroPerHit: integer`, `heroLevel?: integer` | 데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함. |
@@ -57,7 +58,7 @@
 | `delete_tile_group` | `tilesetId: string`, `groupId: string` | 타일셋의 시맨틱 타일 그룹을 삭제한다. 클러스터 해체처럼 사용자가 명시적으로 확인한 경우에만 호출. |
 | `set_cluster_rule` | `tilesetId: string`, `groupId: string`, `rule: object` | 타일 그룹의 클러스터 규칙을 추가하거나 갱신한다. hard는 projectLint error로 커밋 게이트에서 차단되고, medium/soft는 warning/info로 보고된다. |
 | `set_group_layout` | `tilesetId?: string`, `groupId: string`, `axis: vertical\|horizontal`, `top?: array`, `bottom?: array`, `left?: array`, `right?: array` | 타일 그룹의 실제 구성 문법(patternGrammar)을 저장한다. 세로는 위/아래, 가로는 좌/우 캡을 기록해 render_group_sample과 배치 툴이 같은 덩어리로 해석하게 한다. |
-| `scatter_object` | `mapId: string`, `groupId: string`, `area: object`, `count: integer`, `minGap?: integer`, `maxGap?: integer`, `naturalness?: number`, `mode?: uniform\|poisson\|cluster`, `seed?: integer`, `avoidProtected?: boolean`, `preferSoftRules?: boolean`, `applyStructure?: boolean` | 타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
+| `scatter_object` | `mapId: string`, `groupId?: string`, `presetId?: string`, `paletteRole?: string`, `area: object`, `count: integer`, `minGap?: integer`, `maxGap?: integer`, `naturalness?: number`, `mode?: uniform\|poisson\|cluster`, `seed?: integer`, `avoidProtected?: boolean`, `preferSoftRules?: boolean`, `applyStructure?: boolean` | 타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 프리셋이 있으면 groupId 대신 presetId+paletteRole을 우선 사용하라. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
 | `stamp_terrain_template` | `mapId: string`, `templateId: string`, `origin: object`, `material?: plaster\|wood\|stone`, `includeFence?: boolean`, `paintRoads?: boolean` | buildPlan이 있는 지형 템플릿을 맵에 결정적으로 찍는다(울타리+집+창문+문, paintRoads=true면 진입로까지). buildPlan이 없는 템플릿은 get_terrain_template의 grammar대로 paint_tiles로 조립하라. |
 | `upsert_terrain_template` | `tilesetId?: string`, `id?: string`, `name: string`, `sourceMapName?: string`, `rows?: array`, `grammar?: array`, `rules?: array`, `tags?: array`, `sourceRegion?: object`, `confirmedByUser?: boolean` | 지형 템플릿(구조물 지식)을 저장한다. 사용자가 인터뷰로 확정한 내용이면 confirmedByUser=true. 기존 템플릿 갱신은 confirmedByUser=true일 때만 허용된다. |
 
@@ -76,8 +77,9 @@
 | `get_event` | `mapId: string`, `eventId: string` | 이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. |
 | `find_switch_usage` | `switchId: string` | 스위치의 전 맵 이벤트/커먼이벤트/트룹 전투이벤트 역참조를 찾는다. |
 | `list_resources` | `kind: tile\|charset\|backdrop\|bgm\|se`, `query: string` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/backdrop/bgm/se. |
+| `query_tiles` | `tilesetId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라. |
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps` | 컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps. |
-| `run_lint` | `reachability?: array` | projectLint와 세계관 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
+| `run_lint` | `reachability?: array` | projectLint, 세계관 lint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
 | `list_project_commits` | `limit?: integer` | Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다. |
 | `get_tile_info` | `tileIds: array`, `tilesetId?: string` | 타일들의 의미(라벨/설명/태그)·시맨틱 그룹·배치 규칙(placementRules)·통행성·레이어를 조회한다. 타일을 깔기 전에 확인하는 용도. |

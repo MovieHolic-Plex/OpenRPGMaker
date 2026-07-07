@@ -1,11 +1,13 @@
 import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
 import { TILE } from "@/project/defaults/constants";
 import { isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
-import type { Command, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
+import type { Command, GameMap, PaletteSlotRole, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { inMapBounds, passabilityWarning, requireMap, setLower, type Point } from "./mapHelpers";
 import { hardClusterRuleCount, nonEmptyFootprintTileCount } from "./clusterRulePlacement";
 import { clusterScatter, poissonScatter, type ScatterBounds } from "./naturalScatter";
 import { naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool, seedForTool } from "./naturalToolArgs";
+import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { placementSoftPenalty } from "./placementScoring";
 import { resolvePlacementStructure, type StructureCellEdit } from "./placementStructure";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -16,7 +18,7 @@ type ScatterMode = "uniform" | "poisson" | "cluster";
 type RecordValue = { readonly [key: string]: unknown };
 type ScatterArgs = {
   readonly mapId: string;
-  readonly groupId: string;
+  readonly groupId?: string;
   readonly area: Area;
   readonly count: number;
   readonly minGap: number;
@@ -64,13 +66,15 @@ const AREA_SCHEMA: JsonSchema = {
 
 const scatterObject: ToolDefinition = {
   name: "scatter_object",
-  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다. ${NATURALNESS_GUIDANCE}`,
+  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 프리셋이 있으면 groupId 대신 presetId+paletteRole을 우선 사용하라. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       groupId: { type: "string" },
+      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 1×1 타일 산포" },
+      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
       area: AREA_SCHEMA,
       count: { type: "integer" },
       minGap: { type: "integer", description: "오브젝트 사이 최소 빈 칸 수(기본 1)" },
@@ -82,23 +86,24 @@ const scatterObject: ToolDefinition = {
       preferSoftRules: { type: "boolean", description: "soft/medium 규칙 만족을 우선(기본 true)" },
       applyStructure: { type: "boolean", description: "overlay/처마 생략 등 구조 규칙 자동 적용(기본 true)" },
     },
-    required: ["mapId", "groupId", "area", "count"],
+    required: ["mapId", "area", "count"],
   },
   run(draft, rawArgs): ToolExecResult {
     const args = parseArgs(rawArgs);
     const map = requireMap(draft, args.mapId);
     const tileset = draft.tilesets[map.tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${map.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
-    const group = groupById(map, draft, args.groupId);
-    const sample = buildGroupSample(tileset, {
+    const picker = paletteTilePickerForTool(tileset, rawArgs, scatterSeedSignature(map, args));
+    if (!picker && !args.groupId) throw new ToolError("scatter_object에는 groupId 또는 presetId+paletteRole이 필요합니다.", { code: "invalid-args", mapId: map.id });
+    const group = picker ? syntheticPaletteGroup(picker) : groupById(map, draft, args.groupId as string);
+    const footprint = picker ? singleTileFootprint() : oneInstance(buildGroupSample(tileset, {
       role: group.role,
       tileIds: group.tileIds,
       patternGrammar: group.patternGrammar,
-    });
-    const footprint = oneInstance(sample, group, tileset);
+    }), group, tileset);
     const blocked = args.avoidProtected ? blockedCells(draft, map) : new Set<string>();
     const candidates = origins(map, args.area, footprint).filter((origin) => clearAt(map, footprint, origin, blocked));
-    const legacySeed = `${map.id}|${group.id}|${args.area.x},${args.area.y},${args.area.w},${args.area.h}|${args.count}|${args.minGap}|${args.maxGap}`;
+    const legacySeed = scatterSeedSignature(map, args);
     const seed = args.seed === undefined ? legacySeed : String(args.seed);
     const ranked = args.mode === "uniform" ? null : rankedNaturalCandidates({ args, candidates, footprint, legacySeed, map });
     const placed: Rect[] = [];
@@ -111,18 +116,19 @@ const scatterObject: ToolDefinition = {
         : chooseUniform({ allowed, placed, footprint, minGap: args.minGap, maxGap: args.maxGap, seed, step, map, group, preferSoftRules: args.preferSoftRules });
       placed.push(rectAt(chosen, footprint));
     }
-    const touched = placed.flatMap((rect) => paint(map, footprint, rect));
+    const touched = placed.flatMap((rect) => picker ? paintPaletteTile(map, tileset, picker, rect) : paint(map, footprint, rect));
     const structureTouched = args.applyStructure && ((group.junctions?.length ?? 0) > 0 || (group.overlays?.length ?? 0) > 0)
       ? applyStructureEdits(map, resolvePlacementStructure({ map, tileset, group, placed }))
       : [];
     const skipped = args.count - placed.length;
     const warning = passabilityWarning(draft, map, [...touched, ...structureTouched]);
-    const atomicTileCount = nonEmptyFootprintTileCount(footprint);
-    const clusterNote = hardClusterRuleCount(group) > 0
+    const atomicTileCount = picker ? 1 : nonEmptyFootprintTileCount(footprint);
+    const clusterNote = !picker && hardClusterRuleCount(group) > 0
       ? ` = ${placed.length * atomicTileCount}타일(클러스터 동반 배치 포함)`
       : "";
+    const sourceName = picker ? `${picker.presetId}/${picker.role}` : group.name;
     return {
-      summary: `${map.name}에 ${group.name} ${placed.length}개${clusterNote} 배치(${args.mode}, 자연도 ${naturalnessLabel(args.naturalness)}, 간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
+      summary: `${map.name}에 ${sourceName} ${placed.length}개${clusterNote} 배치(${args.mode}, 자연도 ${naturalnessLabel(args.naturalness)}, 간격 ${args.minGap}~${args.maxGap})${skipped > 0 ? ` — ${skipped}개 건너뜀: 보호셀/간격/공간 부족` : ""}`,
       data: { mode: args.mode, naturalness: args.naturalness, placed: placed.length, requested: args.count, skipped, tilesPlaced: placed.length * atomicTileCount },
       warnings: warning ? [warning] : undefined,
     };
@@ -145,7 +151,7 @@ function parseArgs(args: Record<string, unknown>): ScatterArgs {
   if (minGap < 0 || maxGap < minGap) throw new ToolError("간격은 0 이상이고 maxGap은 minGap 이상이어야 합니다.", { code: "invalid-args" });
   return {
     mapId: str(args["mapId"], "mapId"),
-    groupId: str(args["groupId"], "groupId"),
+    ...(typeof args["groupId"] === "string" && args["groupId"].trim() !== "" ? { groupId: str(args["groupId"], "groupId") } : {}),
     area,
     count,
     minGap,
@@ -202,6 +208,39 @@ function groupById(map: GameMap, project: Project, groupId: string): TileGroupMe
   const group = project.tilesets[map.tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
   if (!group) throw new ToolError(`타일 그룹을 찾을 수 없습니다: ${groupId}`, { code: "group-not-found", mapId: map.id });
   return group;
+}
+
+function syntheticPaletteGroup(picker: PaletteTilePicker): TileGroupMetadata {
+  const role = paletteGroupRole(picker.role);
+  return {
+    id: `${picker.presetId}:${picker.role}`,
+    name: `${picker.presetId}/${picker.role}`,
+    role,
+    defaultLayer: role === "prop" || picker.role === "roof" ? "upper" : "lower",
+    tileIds: [],
+    description: "palette preset placement",
+    placementRules: "",
+  };
+}
+
+function paletteGroupRole(role: PaletteSlotRole): TileGroupMetadata["role"] {
+  switch (role) {
+    case "wall":
+      return "wall";
+    case "water":
+      return "water";
+    case "roof":
+      return "roof";
+    case "decor":
+    case "furniture":
+      return "prop";
+    default:
+      return "terrain";
+  }
+}
+
+function singleTileFootprint(): Footprint {
+  return { w: 1, h: 1, lower: [TILE.EMPTY], upper: [TILE.EMPTY] };
 }
 
 function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: TilesetDef): Footprint {
@@ -487,6 +526,25 @@ function paint(map: GameMap, footprint: Footprint, origin: Point): readonly Poin
   return touched;
 }
 
+function paintPaletteTile(map: GameMap, tileset: TilesetDef, picker: PaletteTilePicker, origin: Point): readonly Point[] {
+  const tile = picker.pick();
+  const index = origin.y * map.width + origin.x;
+  const layer = paletteLayerForTile(tileset, tile, picker.role);
+  if (layer === "upper") map.upperTiles[index] = tile;
+  else {
+    setLower(map, origin.x, origin.y, tile);
+    map.upperTiles[index] = TILE.EMPTY;
+  }
+  return [{ x: origin.x, y: origin.y }];
+}
+
+function paletteLayerForTile(tileset: TilesetDef, tile: number, role: PaletteSlotRole): "lower" | "upper" {
+  if (role === "decor" || role === "furniture" || role === "roof") return "upper";
+  const home = tileLayerHome(tileset, tile);
+  if (home === "upper" || home === "lower") return home;
+  return "lower";
+}
+
 function applyStructureEdits(map: GameMap, edits: readonly StructureCellEdit[]): readonly Point[] {
   const touched: Point[] = [];
   for (const edit of edits) {
@@ -505,4 +563,9 @@ function key(x: number, y: number): string {
 
 function pointKey(point: Point): string {
   return key(point.x, point.y);
+}
+
+function scatterSeedSignature(map: GameMap, args: ScatterArgs): string {
+  const source = args.groupId ?? "palette";
+  return `${map.id}|${source}|${args.area.x},${args.area.y},${args.area.w},${args.area.h}|${args.count}|${args.minGap}|${args.maxGap}`;
 }
