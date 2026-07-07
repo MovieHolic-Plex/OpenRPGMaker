@@ -169,3 +169,35 @@ describe("house kit — 하네싱 골든", () => {
     expect(rectHouseHeight({ stories: 2, roofBodyRows: 2, kitId: "bright-plaster" })).toBe(9);
   });
 });
+
+describe("build_house_kit AI 툴", () => {
+  it("에이전트 채팅 경로(runTool)로 하네싱 집을 짓는다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const project = createBlankProject();
+    const ctx = { project };
+    const mapId = project.startMapId;
+    project.maps[mapId].lowerTiles.fill(G);
+    const result = runTool(ctx, "build_house_kit", {
+      mapId,
+      kitId: "blue-stone",
+      wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(result.summary).toContain("하네싱");
+    const map = ctx.project.maps[mapId];
+    expect(map.lowerTiles[3 * map.width + 7]).toBe(407); // 몸통행 우측 끝
+    expect(map.upperTiles[2 * map.width + 2]).toBe(356); // NW 대각
+    expect(map.lowerTiles[7 * map.width + 4]).toBe(146); // 자동 문 하단
+  });
+
+  it("알 수 없는 키트는 학습되지 않은 재질로 거부한다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "build_house_kit", {
+      mapId: ctx.project.startMapId,
+      kitId: "thatched",
+      wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+    });
+    expect(result.ok).toBe(false);
+  });
+});

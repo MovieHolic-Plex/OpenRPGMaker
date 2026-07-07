@@ -10,6 +10,7 @@ import { MAP_GEN_TOOLS } from "./generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
+import { HOUSE_KIT_TOOLS } from "./houseKitTools";
 import { MAP_TOOLS } from "./mapTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
@@ -95,6 +96,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
+  ...withDomain(HOUSE_KIT_TOOLS, "tile"),
   ...withDomain(TILE_TOOLS_V2, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
