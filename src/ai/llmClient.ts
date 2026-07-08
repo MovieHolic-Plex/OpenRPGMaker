@@ -30,9 +30,9 @@ export interface ChatMessage {
 
 export interface AiConfig {
   baseUrl: string;
-  // 메인 세션 모델: 계획/공간추론/스펙 작성/자가수정 AssistantSession 대화 루프.
+  // 감독 모델: 계획/공간추론/스펙 작성/검수 AssistantSession 대화 루프.
   model: string;
-  // 반복/배치 보조 호출 모델. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
+  // 실행 모델: 쓰기 툴 루프와 반복/배치 보조 호출. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
   liteModel?: string;
   apiKey: string;
   // 라운드 안전핀(사용자 노출 X). 사용자 제한은 maxTokens(출력 토큰 예산) 하나다.
@@ -44,13 +44,11 @@ export interface AiConfig {
 }
 
 // 기본값. apiKey는 항상 빈값.
-// DEFAULT_MODEL: 타일 툴 v3 설계(2026-07-07) 합의 — 저가 모델 전제에서 재량을 회수했으므로
-// 기본 세션 모델을 minimax-m3로 전환한다. 저장된 사용자 지정 모델은 loadAiConfig가 존중한다.
+// DEFAULT_MODEL: 감독(계획·검수)은 minimax-m3. 저장된 사용자 지정 모델은 loadAiConfig가 존중한다.
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const DEFAULT_MODEL = "minimax/minimax-m3";
-// 정책(2026-07-07): 앱의 모든 LLM 호출은 minimax/minimax-m3 만 사용한다.
-// lite 경로도 별도 경량 모델을 쓰지 않고 동일 모델로 통일한다.
-export const DEFAULT_LITE_MODEL = "minimax/minimax-m3";
+// DEFAULT_LITE_MODEL: 실행(툴 루프)은 flash-lite로 분리해 긴 작업의 벽시계를 줄인다.
+export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
 
 export function defaultAiConfig(): AiConfig {
   return {

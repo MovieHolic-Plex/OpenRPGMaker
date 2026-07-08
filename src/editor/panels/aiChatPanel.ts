@@ -180,6 +180,12 @@ export function isAiConfigReady(config: AiConfig): boolean {
   return Boolean(config.baseUrl.trim() && config.model.trim() && config.apiKey.trim());
 }
 
+function phaseStatusText(phase: Extract<SessionEvent, { type: "phase" }>["value"]): string {
+  if (phase === "plan") return "계획 중(m3)";
+  if (phase === "execute") return "실행 중(flash)";
+  return "검수 중(m3)";
+}
+
 export function displayUserAuditText(text: string): string {
   return text.split(/\n\n\[컨텍스트\]/u)[0] ?? text;
 }
@@ -1285,6 +1291,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     let reasoningBox: { body: HTMLElement } | null = null;
     const streamedBubbles: HTMLElement[] = [];
     const onEvent = (event: SessionEvent): void => {
+      if (event.type === "phase") {
+        setStatus(phaseStatusText(event.value));
+        return;
+      }
       if (event.type === "reasoning_token") {
         if (!reasoningBox) reasoningBox = appendReasoning();
         reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
@@ -1492,6 +1502,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       controller.auditHistory.push({ kind: "assistant", text: content, at: new Date().toISOString() });
     };
     const onEvent = (event: SessionEvent): void => {
+      if (event.type === "phase") {
+        setStatus(phaseStatusText(event.value));
+        return;
+      }
       if (event.type === "reasoning_token") {
         if (!reasoningBox) reasoningBox = appendReasoning();
         reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
@@ -2391,8 +2405,8 @@ function renderSettingsForm(
 ): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
   const config = loadAiConfig();
   const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
-  const model = textField("모델", config.model, "ai-config-model", "text", DEFAULT_MODEL);
-  const liteModel = textField("보조 모델(반복 배치)", config.liteModel ?? DEFAULT_LITE_MODEL, "ai-config-lite-model", "text", DEFAULT_LITE_MODEL);
+  const model = textField("감독 모델(계획·검수)", config.model, "ai-config-model", "text", DEFAULT_MODEL);
+  const liteModel = textField("실행 모델(툴 작업)", config.liteModel ?? DEFAULT_LITE_MODEL, "ai-config-lite-model", "text", DEFAULT_LITE_MODEL);
   const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
   // 사용자 제한은 출력 토큰 예산 하나뿐 — 툴콜 깊이는 AI가 필요한 만큼 쓴다.
   const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");

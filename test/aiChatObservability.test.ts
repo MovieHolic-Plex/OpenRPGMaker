@@ -190,7 +190,7 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
 
 describe("실시간 고스트 프리뷰 연결", () => {
   it("채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다", async () => {
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), model: "ghost-test-model", liteModel: "ghost-test-model", apiKey: "sk-test" }));
     const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
     const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
     const bodies = [

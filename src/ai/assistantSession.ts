@@ -13,6 +13,7 @@ import type { Project } from "@/project/types";
 import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
   chatCompletion,
+  configForLiteModel,
   isLlmAbortError,
   isRetryableLlmError,
   LLM_RETRY_BACKOFF_MS,
@@ -34,7 +35,13 @@ import {
   validateBuildSpec,
   type BuildSpec,
 } from "./buildSpec";
-import { proposalHasChangedMap, proposalScopeCarryoverWarning } from "./proposalCompleteness";
+import {
+  PROPOSAL_COMPLETENESS_WARNING_PREFIX,
+  proposalCompletenessWarnings,
+  proposalHasChangedMap,
+  proposalScopeCarryoverWarning,
+  requestLikelyExpectsChange,
+} from "./proposalCompleteness";
 
 // UI 스트리밍/로그용 이벤트.
 export type SessionEvent =
@@ -42,6 +49,7 @@ export type SessionEvent =
   | { type: "reasoning_token"; delta: string }
   | { type: "assistant_message"; content: string }
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
+  | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string };
 
 // 승인+시공 융합(2026-07-07 §2.1.3): v3 프리미티브가 "미승인 어휘"로 실패한 호출을
@@ -127,6 +135,11 @@ export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_
 const VOCABULARY_APPROVAL_WARNING = "🔒 어휘 승인 제안: 수락하면 해당 타일/그룹이 승인 보캐뷸러리(origin:user)에 편입됩니다. 자동 승인은 적용되지 않습니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
+const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지";
+const REVIEW_REEXECUTE_PREFIX = "재실행:";
+const REVIEW_COMPLETE_PREFIX = "완료:";
+
+type AssistantPhase = "plan" | "execute" | "review";
 
 export function proposalNeedsExplicitApproval(calls: readonly ProposedCall[]): boolean {
   return calls.some((call) => call.requiresApproval === true);
@@ -286,6 +299,7 @@ export class AssistantSession {
   private turnPendingBuilds = new Map<string, PendingBuild>();
   private eventBaseProposalKeys = new Map<string, string>();
   private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
+  private currentTurnRequestText = "";
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
 
@@ -424,6 +438,7 @@ export class AssistantSession {
     this.pushAudit({ kind: "user", text });
     beginAssistantToolDomainTurn(text);
     this.currentTurnToolDomains = computeActiveToolDomains(text);
+    this.currentTurnRequestText = text;
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
@@ -516,25 +531,101 @@ export class AssistantSession {
     if (eventTarget !== null) this.eventBaseProposalKeys.set(eventTargetKey(eventTarget), key);
   }
 
+  private orchestrationEnabled(): boolean {
+    const main = this.config.model.trim();
+    const lite = this.config.liteModel?.trim();
+    return Boolean(main && lite && lite !== main);
+  }
+
+  private phaseConfig(phase: AssistantPhase): AiConfig {
+    return phase === "execute" ? configForLiteModel(this.config) : this.config;
+  }
+
+  private emitPhase(onEvent: (event: SessionEvent) => void, phase: AssistantPhase): void {
+    onEvent({ type: "phase", value: phase });
+    this.pushAudit({ kind: "status", text: `phase:${phase}` });
+  }
+
+  private addExecutionHintIfNeeded(): void {
+    if (this.messages.some((message) => message.role === "system" && message.content === EXECUTION_PHASE_HINT)) return;
+    this.messages.push({ role: "system", content: EXECUTION_PHASE_HINT });
+  }
+
+  private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
+    const currentSpec = this.activeSpec && this.activeSpecTurnIndex === this.currentTurnIndex ? this.activeSpec : null;
+    if (currentSpec && proposalHasChangedMap(calls, currentSpec.mapId)) return currentSpec;
+    if (this.turnImplicitSpec && proposalHasChangedMap(calls, this.turnImplicitSpec.mapId)) return this.turnImplicitSpec;
+    if (this.carryoverSpecForTurn && proposalHasChangedMap(calls, this.carryoverSpecForTurn.mapId)) return this.carryoverSpecForTurn;
+    if (
+      this.activeSpec &&
+      requestLikelyExpectsChange(this.currentTurnRequestText) &&
+      proposalHasChangedMap(calls, this.activeSpec.mapId)
+    ) {
+      return this.activeSpec;
+    }
+    return null;
+  }
+
+  private buildReviewPrompt(calls: readonly ProposedCall[], repairAlreadyUsed: boolean): { prompt: string; missingWarnings: string[] } {
+    const lintWarnings = proposalCompletenessWarnings({
+      requestText: this.currentTurnRequestText,
+      buildSpec: this.reviewBuildSpecForProposal(calls),
+      calls,
+    });
+    const diffWarnings = calls.flatMap((call) => call.result.diff?.warnings ?? []);
+    const allWarnings = [...new Set([...lintWarnings, ...diffWarnings])];
+    const missingWarnings = allWarnings.filter((warning) => warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX));
+    const lintBlock = allWarnings.length > 0 ? allWarnings.map((warning) => `- ${warning}`).join("\n") : "- 통과";
+    const diffBlock = calls.length > 0
+      ? calls.map((call, index) => `${index + 1}. ${call.name}: ${call.summary} / ${diffSummaryLine(call.result.diff)}`).join("\n")
+      : "- 변경 제안 없음";
+    const repairLine = repairAlreadyUsed
+      ? "재실행 기회는 이미 사용했습니다. 남은 부족분이 있어도 사용자에게 현재 상태와 부족분을 짧게 보고하세요."
+      : `부족분이 있으면 최종 답변 대신 정확히 "${REVIEW_REEXECUTE_PREFIX} <실행 모델에게 줄 보완 지시>" 형식 한 줄로 답하세요.`;
+    return {
+      prompt: [
+        "검수 단계: 완성도 린트 결과와 diff 요약을 기준으로 이번 턴 이행 여부를 확인하세요.",
+        repairLine,
+        `이행 완료면 "${REVIEW_COMPLETE_PREFIX} <최종 사용자 응답>" 형식 또는 자연스러운 최종 응답만 작성하세요.`,
+        "",
+        "## 사용자 요청",
+        this.currentTurnRequestText,
+        "",
+        "## 완성도 린트 결과",
+        lintBlock,
+        "",
+        "## diff 요약",
+        diffBlock,
+      ].join("\n"),
+      missingWarnings,
+    };
+  }
+
   private async chatWithTransientRetry(
+    config: AiConfig,
     req: ChatRequest,
     onEvent: (event: SessionEvent) => void,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    emitTokens = true
   ): Promise<ChatResult> {
     let attempt = 0;
     while (true) {
       let streamedAny = false;
       try {
-        return await this.chat(this.config, {
+        return await this.chat(config, {
           ...req,
-          onToken: (delta) => {
-            streamedAny = true;
-            onEvent({ type: "assistant_token", delta });
-          },
-          onReasoning: (delta) => {
-            streamedAny = true;
-            onEvent({ type: "reasoning_token", delta });
-          },
+          onToken: emitTokens
+            ? (delta) => {
+                streamedAny = true;
+                onEvent({ type: "assistant_token", delta });
+              }
+            : undefined,
+          onReasoning: emitTokens
+            ? (delta) => {
+                streamedAny = true;
+                onEvent({ type: "reasoning_token", delta });
+              }
+            : undefined,
           signal,
         });
       } catch (cause) {
@@ -561,6 +652,12 @@ export class AssistantSession {
     const tools = [...toOpenAiTools(undefined, { domains }), SET_BUILD_SPEC_TOOL];
     const proposedByKey = this.turnProposals;
     let assistantText = "";
+    const orchestrated = this.orchestrationEnabled();
+    let phase: AssistantPhase = "plan";
+    let executionStarted = false;
+    let reviewRepairUsed = false;
+    let reviewMissingWarnings: string[] = [];
+    if (orchestrated) this.emitPhase(onEvent, "plan");
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
     // (maxToolCalls 기본 200은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
     let spentOutputTokens = 0;
@@ -572,11 +669,15 @@ export class AssistantSession {
       }
       let result: ChatResult;
       try {
-        result = await this.chatWithTransientRetry({
-          messages: this.messages,
-          tools,
-          tool_choice: "auto",
-        }, onEvent, signal);
+        result = await this.chatWithTransientRetry(
+          this.phaseConfig(phase),
+          phase === "review"
+            ? { messages: this.messages, tool_choice: "none" }
+            : { messages: this.messages, tools, tool_choice: "auto" },
+          onEvent,
+          signal,
+          phase !== "execute"
+        );
       } catch (cause) {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
@@ -600,8 +701,33 @@ export class AssistantSession {
         toolCalls: assistantMsg.tool_calls?.map((tc) => ({ name: tc.function.name, args: tc.function.arguments })),
       });
 
+      if (phase === "review") {
+        const reviewText = messageText ?? "";
+        const repairInstruction = reviewRepairUsed ? null : reviewRepairInstruction(reviewText, reviewMissingWarnings);
+        if (repairInstruction !== null) {
+          reviewRepairUsed = true;
+          phase = "execute";
+          this.emitPhase(onEvent, "execute");
+          this.addExecutionHintIfNeeded();
+          this.messages.push({ role: "system", content: `검수 보완 지시: ${repairInstruction}` });
+          continue;
+        }
+        assistantText = stripReviewCompletePrefix(reviewText);
+        onEvent({ type: "assistant_message", content: assistantText });
+        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+      }
+
       const toolCalls = assistantMsg.tool_calls ?? [];
       if (toolCalls.length === 0) {
+        if (orchestrated && executionStarted) {
+          phase = "review";
+          this.emitPhase(onEvent, "review");
+          const review = this.buildReviewPrompt(this.finalizeProposals(proposedByKey), reviewRepairUsed);
+          reviewMissingWarnings = review.missingWarnings;
+          this.messages.push({ role: "system", content: review.prompt });
+          continue;
+        }
         // 최종 응답.
         assistantText = messageText ?? "";
         onEvent({ type: "assistant_message", content: assistantText });
@@ -609,6 +735,7 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
+      const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
@@ -690,6 +817,13 @@ export class AssistantSession {
         this.messages.push({ role: "user", content: parts });
       }
 
+      if (orchestrated && startsWriteThisRound && !executionStarted) {
+        executionStarted = true;
+        phase = "execute";
+        this.emitPhase(onEvent, "execute");
+        this.addExecutionHintIfNeeded();
+      }
+
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한이다.
       if (spentOutputTokens >= this.config.maxTokens) {
         onEvent({
@@ -722,6 +856,45 @@ function appendDiffWarning(result: ToolResult, warning: string): ToolResult {
   const diff = result.diff;
   if (!diff || diff.warnings.includes(warning)) return result;
   return { ...result, diff: { ...diff, warnings: [...diff.warnings, warning] } };
+}
+
+function diffSummaryLine(diff: ToolResult["diff"]): string {
+  if (!diff) return "diff 없음";
+  const parts = [
+    diff.tilesChanged > 0 ? `타일 ${diff.tilesChanged}` : null,
+    diff.eventsAdded > 0 ? `이벤트 추가 ${diff.eventsAdded}` : null,
+    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}` : null,
+    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}` : null,
+    diff.mapsAdded > 0 ? `맵 추가 ${diff.mapsAdded}` : null,
+    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}` : null,
+    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}` : null,
+    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}` : null,
+    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}` : null,
+    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}` : null,
+    diff.worldEntitiesAdded > 0 ? `세계관 추가 ${diff.worldEntitiesAdded}` : null,
+    diff.worldEntitiesModified > 0 ? `세계관 수정 ${diff.worldEntitiesModified}` : null,
+    diff.palettePresetsAdded > 0 ? `프리셋 추가 ${diff.palettePresetsAdded}` : null,
+    diff.palettePresetsModified > 0 ? `프리셋 수정 ${diff.palettePresetsModified}` : null,
+    diff.endingsChanged > 0 ? `엔딩 ${diff.endingsChanged}` : null,
+    diff.sessionChanged ? "세션" : null,
+    diff.systemChanged ? "시스템" : null,
+  ].filter((part): part is string => part !== null);
+  return parts.length > 0 ? parts.join(", ") : "구조 변경 0";
+}
+
+function reviewRepairInstruction(reviewText: string, missingWarnings: readonly string[]): string | null {
+  const trimmed = reviewText.trim();
+  const explicit = trimmed.match(/^재실행\s*[:：]\s*([\s\S]+)$/u);
+  if (explicit?.[1]?.trim()) return explicit[1].trim();
+  if (missingWarnings.length === 0) return null;
+  return [
+    "검수에서 아래 미이행이 발견되었습니다. 누락된 항목만 보완하고 새 질문 없이 완료하세요.",
+    ...missingWarnings.map((warning) => `- ${warning}`),
+  ].join("\n");
+}
+
+function stripReviewCompletePrefix(text: string): string {
+  return text.trim().replace(/^완료\s*[:：]\s*/u, "");
 }
 
 function buildSpecPlanLabel(spec: BuildSpec): string {

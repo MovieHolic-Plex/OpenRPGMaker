@@ -32,6 +32,7 @@ function assistantFinal(text: string): ChatResult {
 }
 
 const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512 };
+const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12 };
 
 describe("AssistantSession 툴콜 루프", () => {
   it("메인 세션은 config.model을 그대로 chat 함수에 전달한다", async () => {
@@ -132,5 +133,105 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(audit.entries[0]).toMatchObject({ kind: "user", text: "안녕" });
     expect(typeof audit.entries[0].at).toBe("string");
     expect(audit.entries.some((e: { kind: string }) => e.kind === "assistant")).toBe(true);
+  }, 30000);
+
+  it("쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 검수는 감독 모델로 돌아온다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps = [
+      assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
+      assistantFinal("실행 완료"),
+      assistantFinal("완료: 타이틀을 바꿨습니다."),
+    ];
+    let index = 0;
+    const seenModels: string[] = [];
+    const chat = async (config: { readonly model: string }): Promise<ChatResult> => {
+      seenModels.push(config.model);
+      if (index >= steps.length) throw new Error("scripted chat exhausted");
+      return steps[index++];
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const phases: string[] = [];
+
+    const result = await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", (event) => {
+      if (event.type === "phase") phases.push(event.value);
+    });
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.assistantText).toBe("타이틀을 바꿨습니다.");
+    expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
+    expect(seenModels).toEqual(["supervisor-model", "executor-model", "supervisor-model"]);
+    expect(phases).toEqual(["plan", "execute", "review"]);
+    expect(session.getMessages().some((message) => message.role === "system" && message.content === "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지")).toBe(true);
+  }, 30000);
+
+  it("검수가 미이행을 발견하면 실행 모델로 한 번 재투입한 뒤 감독 모델이 최종 응답한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const spec = {
+      mapId,
+      title: "길과 꽃",
+      assets: [
+        { id: "길", kind: "road", x: 1, y: 1, w: 2, h: 2 },
+        { id: "꽃", kind: "decor", x: 4, y: 1, w: 2, h: 2 },
+      ],
+    };
+    const steps = [
+      assistantToolCall("set_build_spec", spec, "c_spec"),
+      assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "lower", tile: 240, from: { x: 1, y: 1 }, to: { x: 2, y: 2 } }, "c_road"),
+      assistantFinal("1차 실행 완료"),
+      assistantFinal("재실행: 꽃 영역도 칠하세요."),
+      assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "upper", tile: 88, from: { x: 4, y: 1 }, to: { x: 5, y: 2 } }, "c_flowers"),
+      assistantFinal("보완 실행 완료"),
+      assistantFinal("완료: 길과 꽃을 모두 제안했습니다."),
+    ];
+    let index = 0;
+    const seenModels: string[] = [];
+    const chat = async (config: { readonly model: string }): Promise<ChatResult> => {
+      seenModels.push(config.model);
+      if (index >= steps.length) throw new Error("scripted chat exhausted");
+      return steps[index++];
+    };
+    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
+    const phases: string[] = [];
+
+    const result = await session.sendUserMessage("길과 꽃을 칠해줘", (event) => {
+      if (event.type === "phase") phases.push(event.value);
+    });
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.assistantText).toBe("길과 꽃을 모두 제안했습니다.");
+    expect(result.proposedCalls.map((call) => call.name)).toEqual(["paint_tiles", "paint_tiles"]);
+    expect(seenModels).toEqual([
+      "supervisor-model",
+      "supervisor-model",
+      "executor-model",
+      "supervisor-model",
+      "executor-model",
+      "executor-model",
+      "supervisor-model",
+    ]);
+    expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
+  }, 30000);
+
+  it("단순 대화 턴은 전환 없이 감독 모델 한 번으로 끝난다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const seenModels: string[] = [];
+    const chat = async (config: { readonly model: string }): Promise<ChatResult> => {
+      seenModels.push(config.model);
+      return assistantFinal("안녕하세요.");
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const phases: string[] = [];
+
+    const result = await session.sendUserMessage("안녕", (event) => {
+      if (event.type === "phase") phases.push(event.value);
+    });
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.assistantText).toBe("안녕하세요.");
+    expect(result.proposedCalls).toEqual([]);
+    expect(seenModels).toEqual(["supervisor-model"]);
+    expect(phases).toEqual(["plan"]);
   }, 30000);
 });

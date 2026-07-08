@@ -13,8 +13,7 @@ type ChatCompletionResponse = {
   }[];
 };
 
-// 정책(2026-07-07): 앱의 모든 LLM 호출은 minimax/minimax-m3 만 사용한다.
-// 메인 AI 설정(OpenRouter + minimax)을 우선 재사용하고, 아래 값은 폴백일 뿐이다.
+// CPEN 타일셋 매핑은 감독 모델 설정을 재사용하고, 아래 값은 폴백일 뿐이다.
 const DEFAULT_LLM_API_URL = "https://openrouter.ai/api/v1";
 const DEFAULT_LLM_MODEL = "minimax/minimax-m3";
 const MAX_INPUT_PER_1M = 0.1;

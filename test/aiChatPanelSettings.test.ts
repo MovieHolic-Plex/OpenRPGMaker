@@ -1,6 +1,6 @@
 // AI 어시스턴트 채팅 패널 — 접기 토글 + 설정 자동 저장 + 세션 설정 반영.
 // 사용자 불만 회귀 테스트: (1) 패널을 접을 수 없었다, (2) API 키/설정이 저장되지 않는 것처럼
-// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 minimax/minimax-m3 (v3 설계 합의).
+// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 감독 m3 / 실행 flash-lite.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AssistantSession } from "@/ai/assistantSession";
@@ -78,7 +78,7 @@ describe("설정 자동 저장", () => {
     expect(stored.apiKey).toBe("sk-or-test-abc");
   });
 
-  it("모델을 비우고 저장하면 기본값(minimax/minimax-m3 — v3 설계 합의)으로 저장된다", () => {
+  it("감독 모델을 비우고 저장하면 기본값(minimax/minimax-m3)으로 저장된다", () => {
     const panel = renderPanel();
     const model = findByTestId(panel, "ai-config-model");
     if (!model) throw new Error("model field missing");
@@ -103,7 +103,7 @@ describe("설정 자동 저장", () => {
     expect(stored.model).toBe("minimax/minimax-m3");
   });
 
-  it("보조 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
+  it("실행 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
     const panel = renderPanel();
     const liteModel = findByTestId(panel, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
@@ -112,10 +112,17 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
-    expect(DEFAULT_LITE_MODEL).toBe("minimax/minimax-m3");
+    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
   });
 
-  it("보조 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
+  it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
+    const panel = renderPanel();
+
+    expect(panel.textContent).toContain("감독 모델(계획·검수)");
+    expect(panel.textContent).toContain("실행 모델(툴 작업)");
+  });
+
+  it("실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
     const panel = renderPanel();
     const liteModel = findByTestId(panel, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
