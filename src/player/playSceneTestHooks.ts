@@ -14,7 +14,22 @@ export type RuntimeDebugHook = {
   teleport: (mapId: string, x: number, y: number) => void;
   applyPreset: (preset: StatePreset) => void;
   setSeed: (seed: number) => void;
-  readState: () => { currentMapId: string; x: number; y: number; gold: number; switches: Record<string, boolean>; variables: Record<string, number>; inventory: Record<string, number>; rng: RngState };
+  readState: () => {
+    currentMapId: string;
+    x: number;
+    y: number;
+    gold: number;
+    switches: Record<string, boolean>;
+    variables: Record<string, number>;
+    selfSwitches: PlaySession["selfSwitches"];
+    timers: Record<string, number>;
+    inventory: Record<string, number>;
+    partyActorIds: string[];
+    gameTime: PlaySession["gameTime"];
+    npcActivities: PlaySession["npcActivities"];
+    friendship: PlaySession["friendship"];
+    rng: RngState;
+  };
 };
 
 type TestHookWindow = Window & {
@@ -128,7 +143,13 @@ export function installPlaySceneTestHooks(
         gold: session.gold,
         switches: { ...session.switches },
         variables: { ...session.variables },
+        selfSwitches: structuredClone(session.selfSwitches),
+        timers: { ...session.timers },
         inventory: { ...session.inventory },
+        partyActorIds: [...session.partyActorIds],
+        gameTime: session.gameTime ? { ...session.gameTime } : undefined,
+        npcActivities: { ...(session.npcActivities ?? {}) },
+        friendship: { ...(session.friendship ?? {}) },
         rng: cloneRngState(normalizeRngState(session.rng)),
       };
     },

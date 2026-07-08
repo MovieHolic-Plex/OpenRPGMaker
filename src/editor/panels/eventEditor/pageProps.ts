@@ -10,7 +10,7 @@ import {
   updateEventPage,
 } from "@/editor/eventPages";
 import { editorState } from "@/editor/editorState";
-import { numberedName } from "@/editor/panels/databaseDisplay";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { openNewEventCommandKindDialog } from "./commandEditDialog";
@@ -156,9 +156,9 @@ function pageTabTooltip(page: EventPage, index: number): string {
 function pageConditionSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch":
-      return `스위치 [${definitionName(store.getCurrent().switches, condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+      return `스위치 [${switchVariableName("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
     case "variable":
-      return `변수 [${definitionName(store.getCurrent().variables, condition.variableId)}] ${condition.op} ${condition.value}`;
+      return `변수 [${switchVariableName("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
     case "selfSwitch":
       return `셀프 스위치 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
     case "actor":
@@ -206,9 +206,11 @@ function seasonLabel(season: Extract<EventPageCondition, { kind: "season" }>["se
   }
 }
 
-function definitionName(records: readonly { id: string; name: string }[], id: string): string {
+function switchVariableName(kind: "switch" | "variable", id: string): string {
+  const project = store.getCurrent();
+  const records = kind === "switch" ? project.switches : project.variables;
   const index = records.findIndex((record) => record.id === id);
-  return index >= 0 ? numberedName(index, records[index]?.name ?? "") : id;
+  return index >= 0 ? storyFlagOptionLabel(project, kind, records[index]!, index) : id;
 }
 
 function recordName(records: readonly { id: string; name: string }[], id: string): string {

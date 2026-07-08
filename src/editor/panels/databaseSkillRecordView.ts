@@ -1,7 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { BattleAnimationSheet, DatabaseStateEffect, SkillEffect, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -284,9 +284,10 @@ function bindAnimationPreviewRefresh(form: HTMLElement, rerender: () => void): v
 }
 
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
-  return store.getCurrent().switches.map((entry, index) => ({
+  const project = store.getCurrent();
+  return project.switches.map((entry, index) => ({
     id: entry.id,
-    name: `${ordinalLabel(index)}:${entry.name ? ` ${entry.name}` : ""}`,
+    name: storyFlagOptionLabel(project, "switch", entry, index),
   }));
 }
 

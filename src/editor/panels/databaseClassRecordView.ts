@@ -2,6 +2,7 @@ import { ACTOR_RATE_GRADES, stateRatePercentage } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { charsetFrameSource, EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -195,9 +196,9 @@ function promotionControls(record: ClassRecord): HTMLElement[] {
     const project = store.getCurrent();
     const toClass = recordSelect(promotion.toClassId, project.database.classes, index === 0 ? "db-picker-class-promotion-to" : undefined);
     const level = numberInput(promotion.requires.level, "레벨", index === 0 ? "db-field-class-promotion-level" : undefined);
-    const switchId = recordSelect(promotion.requires.switchId ?? "", project.switches, index === 0 ? "db-picker-class-promotion-switch" : undefined);
+    const switchId = recordSelect(promotion.requires.switchId ?? "", storyFlagRecords("switch"), index === 0 ? "db-picker-class-promotion-switch" : undefined);
     const itemId = recordSelect(promotion.requires.itemId ?? "", project.database.items, index === 0 ? "db-picker-class-promotion-item" : undefined);
-    const variableId = recordSelect(promotion.requires.variableId ?? "", project.variables, index === 0 ? "db-picker-class-promotion-variable" : undefined);
+    const variableId = recordSelect(promotion.requires.variableId ?? "", storyFlagRecords("variable"), index === 0 ? "db-picker-class-promotion-variable" : undefined);
     const atLeast = numberInput(promotion.requires.atLeast, "이상", index === 0 ? "db-field-class-promotion-at-least" : undefined);
     const remove = el("button", { class: "db-class-set-button", text: "삭제", attrs: { type: "button" } });
     const apply = (): void => savePromotion(record, index, {
@@ -312,6 +313,12 @@ function recordSelect(value: string, records: readonly { readonly id: string; re
   records.forEach((record) => select.append(el("option", { text: record.name, attrs: { value: record.id } })));
   select.value = value;
   return select;
+}
+
+function storyFlagRecords(kind: "switch" | "variable"): readonly { readonly id: string; readonly name: string }[] {
+  const project = store.getCurrent();
+  const records = kind === "switch" ? project.switches : project.variables;
+  return records.map((record, index) => ({ id: record.id, name: storyFlagOptionLabel(project, kind, record, index) }));
 }
 
 function kindSelect(value: ClassBattleCommandKind, testid?: string): HTMLSelectElement {

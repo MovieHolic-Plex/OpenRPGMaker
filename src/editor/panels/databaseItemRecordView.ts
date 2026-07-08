@@ -8,6 +8,7 @@ import {
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type {
   ActorId,
@@ -413,8 +414,10 @@ function resourceText(resourceId: string | undefined): string {
 }
 
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
-  const switches = store.getCurrent().switches;
-  if (switches.length > 0) return switches;
+  const project = store.getCurrent();
+  const switches = project.switches;
+  const labeled = switches.map((entry, index) => ({ id: entry.id, name: storyFlagOptionLabel(project, "switch", entry, index) }));
+  if (labeled.length > 0) return labeled;
   return [{ id: "switch_original", name: "0001:오리지널" }];
 }
 

@@ -22,6 +22,7 @@ import { QUERY_TOOLS } from "./queryTools";
 import { QUEST_TOOLS } from "./questTools";
 import { RANGE_CLASSIFY_TOOLS } from "./rangeClassifyTools";
 import { REFACTOR_TOOLS } from "./refactorTools";
+import { STORY_TOOLS } from "./storyTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import { TIME_TOOLS } from "./timeTools";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
@@ -90,6 +91,8 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
     ...tool,
     domains: CORE_TOOL_NAMES.has(tool.name)
       ? (["core"] as const)
+      : tool.domains
+        ? tool.domains
       : ([NAME_DOMAIN_OVERRIDES.get(tool.name) ?? domain] as const),
   }));
 }
@@ -111,6 +114,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(WORLD_TOOLS, "world"),
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
+  ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
@@ -207,9 +211,13 @@ function removableDomains(exposed: readonly ToolDefinition[], domains: ReadonlyS
 
 function applyExposureLimit(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain> | undefined): readonly ToolDefinition[] {
   if (domains === undefined || exposed.length <= MAX_EXPOSED_TOOLS) return exposed;
+  const removable = removableDomains(exposed, domains);
+  // 단일 활성 도메인(event/map 등)만 남은 상태에서는 제거할 약한 도메인이 없다.
+  // 여기서 slice 하면 조회 보조 툴이 잘려 원래 모드가 망가지므로 다도메인 폭주에만 상한을 적용한다.
+  if (removable.length <= 1) return exposed;
   const removed = new Set<ToolDomain>();
   let limited = [...exposed];
-  for (const domain of removableDomains(exposed, domains)) {
+  for (const domain of removable) {
     if (limited.length <= MAX_EXPOSED_TOOLS) break;
     removed.add(domain);
     limited = limited.filter((tool) => {

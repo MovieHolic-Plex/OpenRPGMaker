@@ -1,5 +1,5 @@
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import { numberedName } from "@/editor/panels/databaseDisplay";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, VariableOperand } from "@/project/types";
@@ -498,7 +498,7 @@ function recordName(kind: "switch" | "variable", id: string): string {
   const project = store.getCurrent();
   const collection = kind === "switch" ? project.switches : project.variables;
   const index = collection.findIndex((record) => record.id === id);
-  if (index >= 0) return `[${numberedName(index, collection[index]?.name ?? "")}]`;
+  if (index >= 0) return `[${storyFlagOptionLabel(project, kind, collection[index]!, index)}]`;
   const label = id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
   return `[${label}]`;
 }

@@ -1,5 +1,6 @@
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
+import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
 import { normalizeWorld } from "../world/guards";
 import type { ProjectWorld } from "../world/types";
 import { normalizePalettePresetId } from "../tilesetPalette";
@@ -40,6 +41,7 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   for (const [id, tileset] of Object.entries(tilesets)) validateTileset(id, tileset);
   validateSwitches(data.switches);
   validateVariables(data.variables);
+  validateStoryFlags(data.storyFlags, idSet(data.switches), idSet(data.variables));
   validateCommonEvents(data.commonEvents);
   const maps = validateMaps(data.maps);
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
@@ -82,6 +84,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   project.villageInfoDocuments ??= [];
   dropLegacyTerrainTemplates(project);
   normalizeEndings(project);
+  normalizeStoryFlags(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   migrateVillageInfoDocumentsToWorld(project);
@@ -90,6 +93,64 @@ export function validateProjectV3(data: JsonRecord): Project {
   repairProjectReferences(project);
   validateProjectReferences(project);
   return project;
+}
+
+function idSet(value: unknown): Set<string> {
+  if (!Array.isArray(value)) return new Set();
+  return new Set(value
+    .map((entry) => typeof entry === "object" && entry !== null && !Array.isArray(entry) ? (entry as { id?: unknown }).id : undefined)
+    .filter((id): id is string => typeof id === "string"));
+}
+
+function validateStoryFlags(
+  value: unknown,
+  switchIds: ReadonlySet<string>,
+  variableIds: ReadonlySet<string>
+): void {
+  if (value === undefined) return;
+  const seenIds = new Set<string>();
+  const activeTargets = new Set<string>();
+  for (const [index, entry] of requireArray("storyFlags", value).entries()) {
+    const flag = requireRecord(`storyFlags[${index}]`, entry);
+    const id = requireString(`storyFlags[${index}].id`, flag.id);
+    assert(STORY_FLAG_ID_PATTERN.test(id), `storyFlags[${index}].id는 kebab-case 슬러그여야 합니다: ${id}`);
+    assert(!seenIds.has(id), `storyFlags id가 중복됩니다: ${id}`);
+    seenIds.add(id);
+    const kind = requireString(`storyFlags[${index}].kind`, flag.kind);
+    assert(kind === "switch" || kind === "variable", `storyFlags[${index}].kind는 switch 또는 variable이어야 합니다.`);
+    const targetId = requireString(`storyFlags[${index}].targetId`, flag.targetId);
+    const targetIds = kind === "switch" ? switchIds : variableIds;
+    assert(targetIds.has(targetId), `storyFlags[${index}].targetId가 존재하지 않습니다: ${kind}:${targetId}`);
+    requireString(`storyFlags[${index}].description`, flag.description);
+    if (flag.questId !== undefined) requireString(`storyFlags[${index}].questId`, flag.questId);
+    if (flag.tags !== undefined) {
+      for (const [tagIndex, tag] of requireArray(`storyFlags[${index}].tags`, flag.tags).entries()) {
+        requireString(`storyFlags[${index}].tags[${tagIndex}]`, tag);
+      }
+    }
+    if (flag.retired !== undefined) requireBoolean(`storyFlags[${index}].retired`, flag.retired);
+    if (flag.retired === true) continue;
+    const targetKey = `${kind}:${targetId}`;
+    assert(!activeTargets.has(targetKey), `활성 storyFlags target이 중복됩니다: ${targetKey}`);
+    activeTargets.add(targetKey);
+  }
+}
+
+function normalizeStoryFlags(project: Project): void {
+  if (!project.storyFlags) return;
+  project.storyFlags = project.storyFlags.map((flag) => {
+    const questId = flag.questId?.trim();
+    const tags = [...new Set((flag.tags ?? []).map((tag) => tag.trim()).filter((tag) => tag.length > 0))];
+    return {
+      id: flag.id.trim().toLowerCase(),
+      kind: flag.kind,
+      targetId: flag.targetId.trim(),
+      description: flag.description.trim(),
+      ...(questId ? { questId } : {}),
+      ...(tags.length > 0 ? { tags } : {}),
+      ...(flag.retired === true ? { retired: true } : {}),
+    };
+  });
 }
 
 function validateEndings(value: unknown): void {

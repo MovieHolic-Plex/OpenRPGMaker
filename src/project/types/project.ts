@@ -171,6 +171,20 @@ export interface EndingDef {
   epilogue?: Record<string, unknown>[];
 }
 
+export type StoryFlagKind = "switch" | "variable";
+
+// 스위치/변수 번호에 붙는 서사 의미 레지스트리. 런타임 상태는 여전히 기존
+// Project.session/PlaySession.switches·variables가 소유하며, 이 구조는 메타데이터만 저장한다.
+export interface StoryFlagDef {
+  id: string;
+  kind: StoryFlagKind;
+  targetId: string;
+  description: string;
+  questId?: string;
+  tags?: string[];
+  retired?: boolean;
+}
+
 export interface Project {
   version: number;
   meta: { title: string; author: string; terms: Terms };
@@ -194,6 +208,8 @@ export interface Project {
   testPresets?: TestPreset[];
   // 세션 상태와 분리된 authored 엔딩 정의. 체크포인트와 달리 프로젝트 JSON에 저장된다.
   endings?: EndingDef[];
+  // 스위치/변수에 대한 서사 의미 레지스트리. 기존 상태 머신을 대체하지 않는다.
+  storyFlags?: StoryFlagDef[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

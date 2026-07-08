@@ -1,5 +1,6 @@
 import { el } from "@/util/dom";
 import { numberedName } from "@/editor/panels/databaseDisplay";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, SELF_SWITCH_KEY_OPTIONS } from "./options";
@@ -45,7 +46,7 @@ export function databasePicker(
   sel.append(el("option", { text: "(선택)", attrs: { value: "" } }));
   const list = kind === "switch" ? project.switches : project.variables;
   for (const [index, item] of list.entries()) {
-    sel.append(el("option", { text: numberedName(index, item.name), attrs: { value: item.id } }));
+    sel.append(el("option", { text: storyFlagOptionLabel(project, kind, item, index), attrs: { value: item.id } }));
   }
   sel.value = currentId;
   sel.addEventListener("change", () => onChange(sel.value));

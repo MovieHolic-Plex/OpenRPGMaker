@@ -12,6 +12,7 @@
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
 //  - map-size              (warning) 256×256 초과 맵
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
+//  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 
@@ -21,6 +22,8 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
 import { collectProjectReferenceIssues } from "../io/references";
+import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../storyFlags";
+import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
 import { checkReachability, type ReachabilitySpec } from "./reachability";
@@ -49,6 +52,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
+  checkStoryFlags(project, issues);
   checkClusterRules(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
@@ -274,6 +278,46 @@ function limitedRuntimeSupport(support: CommandRuntimeSupport): boolean {
 
 function runtimeSupportCommandKind(command: Command): string {
   return command.kind === "m2Command" ? command.commandId : command.kind;
+}
+
+function checkStoryFlags(project: Project, issues: LintIssue[]): void {
+  const index = buildStoryFlagUsageIndex(project);
+  for (const flag of project.storyFlags ?? []) {
+    if (flag.retired === true) continue;
+    const usage = usageBucketFor(index, flag.kind, flag.targetId);
+    const label = storyFlagListLabel(project, flag);
+    if (usage.reads.length > 0 && usage.writes.length === 0) {
+      issues.push({
+        severity: "warning",
+        code: "story-flag:read-without-write",
+        message: `서사 플래그가 읽히지만 쓰이지 않습니다: ${label} (read ${usage.reads.length}, write 0)`,
+      });
+    }
+    if (usage.writes.length > 0 && usage.reads.length === 0) {
+      issues.push({
+        severity: "warning",
+        code: "story-flag:write-without-read",
+        message: `서사 플래그가 쓰이지만 읽히지 않습니다: ${label} (read 0, write ${usage.writes.length})`,
+      });
+    }
+  }
+
+  if ((project.storyFlags ?? []).length === 0) return;
+  const declared = declaredStoryFlagTargets(project);
+  const warnedTargets = new Set<string>();
+  for (const site of index.sites) {
+    const targetKey = storyFlagTargetKey(site.kind, site.targetId);
+    if (declared.has(targetKey) || warnedTargets.has(targetKey)) continue;
+    const retired = storyFlagForTarget(project, site.kind, site.targetId, { includeRetired: true })?.retired === true;
+    issues.push({
+      severity: "warning",
+      code: retired ? "story-flag:retired-used" : "story-flag:undeclared",
+      message: retired
+        ? `retire된 서사 플래그 target이 아직 사용됩니다: ${targetKey} (${site.label})`
+        : `레지스트리 밖 스위치/변수 사용: ${targetKey} (${site.label})`,
+    });
+    warnedTargets.add(targetKey);
+  }
 }
 
 function checkClusterRules(project: Project, issues: LintIssue[]): void {

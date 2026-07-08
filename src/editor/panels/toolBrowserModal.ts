@@ -25,6 +25,7 @@ import { QUERY_TOOLS } from "@/editor/tools/queryTools";
 import { QUEST_TOOLS } from "@/editor/tools/questTools";
 import { RANGE_CLASSIFY_TOOLS } from "@/editor/tools/rangeClassifyTools";
 import { REFACTOR_TOOLS } from "@/editor/tools/refactorTools";
+import { STORY_TOOLS } from "@/editor/tools/storyTools";
 import { TILE_METADATA_TOOLS } from "@/editor/tools/tileMetadataTools";
 import { TIME_TOOLS } from "@/editor/tools/timeTools";
 import type { ToolDefinition } from "@/editor/tools/types";
@@ -59,6 +60,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "데이터베이스", tools: DB_TOOLS },
   { label: "세계관", tools: WORLD_TOOLS },
   { label: "퀘스트", tools: QUEST_TOOLS },
+  { label: "서사 상태", tools: STORY_TOOLS },
   { label: "전투", tools: BATTLE_TOOLS },
   { label: "리팩토링", tools: REFACTOR_TOOLS },
   { label: "작업 기록", tools: HISTORY_TOOLS },

@@ -1,12 +1,12 @@
 import {
   COMMON_EVENT_TRIGGER_OPTIONS,
   commonEventTriggerLabel,
-  numberedName,
   ordinalLabel,
 } from "@/editor/panels/databaseDisplay";
 import { emptyToUndefined } from "@/editor/panels/databaseControls";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
 import { commonEventReferenceMessage } from "@/editor/databaseReferences";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { Command, CommonEvent } from "@/project/types";
 import { el } from "@/util/dom";
@@ -208,7 +208,8 @@ function commonEventTriggerControl(commonEvent: CommonEvent): HTMLElement {
 
 function commonEventConditionSwitchControl(commonEvent: CommonEvent): HTMLElement {
   const checkbox = el("input", { attrs: { type: "checkbox" } });
-  const select = numberedSelect(store.getCurrent().switches, commonEvent.conditionSwitchId ?? "");
+  const project = store.getCurrent();
+  const select = numberedSelect(project.switches, commonEvent.conditionSwitchId ?? "");
   checkbox.checked = !!commonEvent.conditionSwitchId;
   select.disabled = !checkbox.checked;
   const apply = () => {
@@ -227,10 +228,11 @@ function commonEventConditionSwitchControl(commonEvent: CommonEvent): HTMLElemen
 }
 
 function numberedSelect(options: readonly { readonly id: string; readonly name: string }[], value: string): HTMLSelectElement {
+  const project = store.getCurrent();
   const select = el("select");
   select.append(el("option", { text: "(없음)", attrs: { value: "" } }));
   for (const [index, option] of options.entries()) {
-    select.append(el("option", { text: numberedName(index, option.name), attrs: { value: option.id } }));
+    select.append(el("option", { text: storyFlagOptionLabel(project, "switch", option, index), attrs: { value: option.id } }));
   }
   select.value = value;
   return select;

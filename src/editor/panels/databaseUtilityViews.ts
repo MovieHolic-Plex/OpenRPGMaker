@@ -5,6 +5,7 @@ import {
   textControl,
 } from "@/editor/panels/databaseControls";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { storyFlagForTarget, storyFlagListLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -16,6 +17,7 @@ let selectedVariableId = "";
 let utilitySearchTimer: number | null = null;
 
 type UtilityNamedRowsOptions = {
+  readonly kind: "switch" | "variable";
   readonly query: string;
   readonly records: readonly { readonly id: string; readonly name: string }[];
   readonly selectedId: string;
@@ -23,6 +25,7 @@ type UtilityNamedRowsOptions = {
 };
 
 type UtilityNamedRowOptions = {
+  readonly flagId?: string;
   readonly id: string;
   readonly index: number;
   readonly name: string;
@@ -58,11 +61,12 @@ export function renderSwitchesTab(host: HTMLElement, rerender: () => void): void
     switchSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ records, query: switchSearch, selectedId: selectedSwitchId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "switch", records, query: switchSearch, selectedId: selectedSwitchId, setSelectedId: (id) => {
     selectedSwitchId = id;
     rerender();
   } }));
   form.append(utilityDetail({ label: "스위치 이름", record: records.find((record) => record.id === selectedSwitchId), onName: renameSwitch, onDelete: deleteSwitch, rerender }));
+  form.append(storyFlagList());
 }
 
 export function renderVariablesTab(host: HTMLElement, rerender: () => void): void {
@@ -76,11 +80,12 @@ export function renderVariablesTab(host: HTMLElement, rerender: () => void): voi
     variableSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ records, query: variableSearch, selectedId: selectedVariableId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "variable", records, query: variableSearch, selectedId: selectedVariableId, setSelectedId: (id) => {
     selectedVariableId = id;
     rerender();
   } }));
   form.append(utilityDetail({ label: "변수 이름", record: records.find((record) => record.id === selectedVariableId), onName: renameVariable, onDelete: deleteVariable, rerender }));
+  form.append(storyFlagList());
 }
 
 export function renderTermsTab(host: HTMLElement): void {
@@ -141,11 +146,14 @@ function rangeControls(label: string, kind: "switch" | "variable", rerender: () 
 
 function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
   const list = el("div", { class: "db-utility-list" });
+  const project = store.getCurrent();
   let visibleCount = 0;
   for (const [index, record] of options.records.entries()) {
     if (options.query && !matchesNameOrId(record.name, record.id, options.query)) continue;
     visibleCount += 1;
+    const flag = storyFlagForTarget(project, options.kind, record.id);
     list.append(namedRow({
+      flagId: flag?.id,
       index,
       ordinal: ordinalLabel(index),
       id: record.id,
@@ -170,19 +178,40 @@ function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
 }
 
 function namedRow(options: UtilityNamedRowOptions): HTMLElement {
+  const name = options.flagId ? `${options.name} · ${options.flagId}` : options.name;
   return el("button", {
     class: `db-row db-utility-row${options.selected ? " active" : ""}`,
     attrs: { type: "button" },
     dataset: {
       recordId: options.id,
       recordIndex: String(options.index + 1),
-      recordName: options.name,
+      recordName: name,
       recordTotal: String(options.total),
     },
     on: { click: () => options.setSelectedId(options.id) },
     children: [
       el("span", { class: "db-id", text: `${options.ordinal}:` }),
-      el("span", { class: "db-list-name", text: options.name }),
+      el("span", { class: "db-list-name", text: name }),
+    ],
+  });
+}
+
+function storyFlagList(): HTMLElement {
+  const project = store.getCurrent();
+  const flags = project.storyFlags ?? [];
+  return el("section", {
+    class: "db-story-flag-list",
+    children: [
+      el("div", { class: "db-utility-heading", text: "스토리 플래그" }),
+      ...(flags.length > 0
+        ? flags.map((flag) => el("div", {
+          class: "db-row db-story-flag-row",
+          children: [
+            el("span", { class: "db-id", text: storyFlagListLabel(project, flag) }),
+            el("span", { class: "db-list-name", text: flag.description }),
+          ],
+        }))
+        : [el("div", { class: "empty-hint", text: "등록된 스토리 플래그 없음" })]),
     ],
   });
 }

@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { m2CommandById, type M2CommandFieldSpec } from "@/editor/eventCommands/m2Catalog";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { Command, M2CommandValue, ResourceKind, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
@@ -283,12 +284,12 @@ function fieldSemantic(request: FieldControlRequest): FieldSemantic | undefined 
   if (spec.key === "stateId") return recordSemantic("상태 선택", "상태 선택", namedRecords(project.database.states));
   if (spec.key === "enemyId") return recordSemantic("적 선택", "적 선택", namedRecords(project.database.enemies));
   if (spec.key === "troopId") return recordSemantic("적 그룹 선택", "적 그룹 선택", namedRecords(project.database.troops));
-  if (spec.key === "switchId") return recordSemantic("스위치 선택", "스위치 선택", namedRecords(project.switches));
+  if (spec.key === "switchId") return recordSemantic("스위치 선택", "스위치 선택", switchVariableRecords(project, "switch"));
   if (spec.key === "eventId") return recordSemantic("이벤트 선택", "이벤트 선택", eventRecords(project));
   if (spec.key === "commonEventId") return recordSemantic("공통 이벤트 선택", "공통 이벤트 선택", namedRecords(project.commonEvents));
   if (spec.key === "tilesetId") return recordSemantic("타일셋 선택", "타일셋 선택", namedRecords(Object.values(project.tilesets)));
   if (spec.key === "animationId") return recordSemantic("전투 애니메이션 선택", "전투 애니메이션 선택", namedRecords(project.database.battleAnimations));
-  if (spec.key === "variableId") return recordSemantic("변수 선택", "변수 선택", namedRecords(project.variables));
+  if (spec.key === "variableId") return recordSemantic("변수 선택", "변수 선택", switchVariableRecords(project, "variable"));
   if (spec.key === "mapId") return recordSemantic("맵 선택", "맵 선택", namedRecords(Object.values(project.maps)));
   if (spec.key === "target") {
     const semantic = targetSemantic(title, project);
@@ -341,6 +342,14 @@ function recordSemantic(label: string, emptyText: string, items: readonly Record
 
 function namedRecords(records: readonly { readonly id: string; readonly name?: string }[]): readonly RecordPickerItem[] {
   return records.map((record) => ({ id: record.id, name: record.name?.trim() || "(이름 없음)" }));
+}
+
+function switchVariableRecords(project: ReturnType<typeof store.getCurrent>, kind: "switch" | "variable"): readonly RecordPickerItem[] {
+  const records = kind === "switch" ? project.switches : project.variables;
+  return records.map((record, index) => ({
+    id: record.id,
+    name: storyFlagOptionLabel(project, kind, record, index),
+  }));
 }
 
 function eventRecords(project: ReturnType<typeof store.getCurrent>): readonly RecordPickerItem[] {
