@@ -108,6 +108,7 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   timePhase: "P",
   season: "S",
   npcActivity: "A",
+  friendshipAtLeast: "F",
 };
 
 function pageTabThumbnail(page: EventPage): HTMLElement {
@@ -174,6 +175,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `계절 ${seasonLabel(condition.season)}`;
     case "npcActivity":
       return `활동 ${condition.activity}`;
+    case "friendshipAtLeast":
+      return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
   }
 }
 

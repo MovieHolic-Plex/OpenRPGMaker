@@ -158,10 +158,26 @@ function validateEventShape(label: string, value: unknown): void {
   if (event.moveRoute !== undefined) validateMoveRoute(`${label}.moveRoute`, event.moveRoute);
   validateCommandArray(`${label}.commands`, event.commands);
   if (event.schedule !== undefined) validateNpcSchedule(`${label}.schedule`, event.schedule);
+  if (event.giftPrefs !== undefined) validateGiftPrefs(`${label}.giftPrefs`, event.giftPrefs);
+  if (event.giftResponses !== undefined) validateGiftResponses(`${label}.giftResponses`, event.giftResponses);
   if (event.pages !== undefined) {
     for (const [index, pageValue] of requireArray(`${label}.pages`, event.pages).entries()) {
       validatePageShape(`${label}.pages[${index}]`, pageValue);
     }
+  }
+}
+
+function validateGiftPrefs(label: string, value: unknown): void {
+  const prefs = requireRecord(label, value);
+  if (prefs.loved !== undefined) validateIdArray(`${label}.loved`, prefs.loved);
+  if (prefs.liked !== undefined) validateIdArray(`${label}.liked`, prefs.liked);
+  if (prefs.disliked !== undefined) validateIdArray(`${label}.disliked`, prefs.disliked);
+}
+
+function validateGiftResponses(label: string, value: unknown): void {
+  const responses = requireRecord(label, value);
+  for (const key of ["loved", "liked", "neutral", "disliked", "alreadyGifted", "noItems"]) {
+    if (responses[key] !== undefined) requireString(`${label}.${key}`, responses[key]);
   }
 }
 

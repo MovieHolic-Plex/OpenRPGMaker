@@ -66,6 +66,14 @@ function validateCommandShape(label: string, value: unknown): void {
     case "advanceCropGrowth":
       requireNumber(`${label}.days`, command.days);
       return;
+    case "changeFriendship":
+      if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
+      requireNumber(`${label}.delta`, command.delta);
+      return;
+    case "getFriendship":
+      if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
+      requireString(`${label}.variableId`, command.variableId);
+      return;
     case "setTime":
       requireNumber(`${label}.hour`, command.hour);
       if (command.minute !== undefined) requireNumber(`${label}.minute`, command.minute);
@@ -166,6 +174,18 @@ function validateCommandShape(label: string, value: unknown): void {
       validateShowAnimationTarget(`${label}.target`, command.target);
       requireString(`${label}.animationId`, command.animationId);
       if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
+      return;
+    case "shop":
+      for (const [index, itemId] of requireArray(`${label}.itemIds`, command.itemIds).entries()) {
+        requireString(`${label}.itemIds[${index}]`, itemId);
+      }
+      if (command.allowSell !== undefined) requireBoolean(`${label}.allowSell`, command.allowSell);
+      if (command.quantityMode !== undefined) requireString(`${label}.quantityMode`, command.quantityMode);
+      if (command.shopType !== undefined) requireString(`${label}.shopType`, command.shopType);
+      if (command.messageType !== undefined) requireString(`${label}.messageType`, command.messageType);
+      if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);
+      if (command.branchOnTransaction !== undefined) requireBoolean(`${label}.branchOnTransaction`, command.branchOnTransaction);
+      if (command.transactionBranch !== undefined) validateCommandArray(`${label}.transactionBranch`, command.transactionBranch);
       return;
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
@@ -318,8 +338,33 @@ export function validateConditionShape(label: string, value: unknown): void {
     case "npcActivity":
       requireString(`${label}.activity`, condition.activity);
       return;
+    case "friendshipAtLeast":
+      if (condition.npcKey !== undefined) requireString(`${label}.npcKey`, condition.npcKey);
+      requireNumber(`${label}.value`, condition.value);
+      return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
+}
+
+export function validateShopStock(label: string, value: unknown): void {
+  for (const [index, stockValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, stockValue);
+    requireString(`${label}[${index}].itemId`, entry.itemId);
+    if (entry.seasons !== undefined) {
+      for (const [seasonIndex, seasonValue] of requireArray(`${label}[${index}].seasons`, entry.seasons).entries()) {
+        const season = requireString(`${label}[${index}].seasons[${seasonIndex}]`, seasonValue);
+        if (!isSeason(season)) throw new ProjectFormatError(`${label}[${index}].seasons[${seasonIndex}]가 잘못되었습니다.`);
+      }
+    }
+    if (entry.priceOverride !== undefined) requireNumber(`${label}[${index}].priceOverride`, entry.priceOverride);
+    if (entry.priceBySeason !== undefined) {
+      const prices = requireRecord(`${label}[${index}].priceBySeason`, entry.priceBySeason);
+      for (const [season, price] of Object.entries(prices)) {
+        if (!isSeason(season)) throw new ProjectFormatError(`${label}[${index}].priceBySeason.${season} 계절이 잘못되었습니다.`);
+        requireNumber(`${label}[${index}].priceBySeason.${season}`, price);
+      }
+    }
+  }
 }
 
 export function validateMoveRoute(label: string, value: unknown): void {

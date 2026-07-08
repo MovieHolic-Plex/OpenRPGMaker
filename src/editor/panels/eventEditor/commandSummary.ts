@@ -188,6 +188,15 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(" "),
     valuePart(String(cmd.amount))
   ),
+  changeFriendship: (cmd) => commandLine(
+    "호감도 변경",
+    valuePart(cmd.npcKey || "이 이벤트"),
+    plainPart(" "),
+    opPart(cmd.delta >= 0 ? "+=" : "-="),
+    plainPart(" "),
+    valuePart(String(Math.abs(cmd.delta)))
+  ),
+  getFriendship: (cmd) => commandLine("호감도 변수 저장", valuePart(cmd.npcKey || "이 이벤트"), plainPart(" → "), valuePart(cmd.variableId || "변수 없음")),
   changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
   giveMonster: (cmd) => commandLine(
     "몬스터 지급",
@@ -431,6 +440,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>["conditi
       return `계절 ${condition.season}`;
     case "npcActivity":
       return `활동 ${condition.activity}`;
+    case "friendshipAtLeast":
+      return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
   }
 }
 

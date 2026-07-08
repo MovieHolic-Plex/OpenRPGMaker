@@ -645,6 +645,7 @@ export interface SystemRecords {
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
   monsterCollection?: boolean;
+  giftSystem?: boolean;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
 }

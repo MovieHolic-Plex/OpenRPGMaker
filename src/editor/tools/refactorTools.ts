@@ -55,6 +55,9 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
       refs.variables.add(command.variableId);
       if (typeof command.value === "object" && command.value.kind === "var") refs.variables.add(command.value.id);
       break;
+    case "getFriendship":
+      refs.variables.add(command.variableId);
+      break;
     case "fork":
       addConditionRefs(command.condition, refs);
       break;
@@ -66,6 +69,7 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
       break;
     case "shop":
       for (const itemId of command.itemIds) refs.items.add(itemId);
+      for (const entry of command.stock ?? []) refs.items.add(entry.itemId);
       break;
     default:
       break;
@@ -85,6 +89,7 @@ export function collectReferences(project: Project): ReferenceSets {
     for (const spawn of map.fieldSpawns ?? []) refs.troops.add(spawn.troopId);
     for (const event of map.events) {
       addConditionRefs(event.condition, refs);
+      addGiftPreferenceRefs(event, refs);
       for (const page of event.pages ?? []) {
         for (const condition of page.conditions) addConditionRefs(condition, refs);
       }
@@ -116,6 +121,12 @@ export function collectReferences(project: Project): ReferenceSets {
   if (project.system.initialTroopId) refs.troops.add(project.system.initialTroopId);
   for (const itemId of Object.keys(project.session.inventory)) refs.items.add(itemId);
   return refs;
+}
+
+function addGiftPreferenceRefs(event: GameEvent, refs: ReferenceSets): void {
+  for (const itemId of event.giftPrefs?.loved ?? []) refs.items.add(itemId);
+  for (const itemId of event.giftPrefs?.liked ?? []) refs.items.add(itemId);
+  for (const itemId of event.giftPrefs?.disliked ?? []) refs.items.add(itemId);
 }
 
 // --- rename_switch ---

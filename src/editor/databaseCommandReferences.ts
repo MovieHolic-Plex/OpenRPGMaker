@@ -1,5 +1,5 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
-import type { BattleEventCondition, Command, Condition, MoveCommand, Project } from "@/project/types";
+import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
 
 type CommandReferenceCollection = DatabaseCollection | "monsterSpecies";
 
@@ -10,6 +10,7 @@ export function commandsReference(project: Project, collection: CommandReference
       map.events.some(
         (event) =>
           conditionReferencesDatabase(event.condition, collection, id) ||
+          eventGiftPrefsReferences(event, collection, id) ||
           commandListReferences(event.commands, collection, id) ||
           (event.pages ?? []).some(
             (page) =>
@@ -85,7 +86,10 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
     case "loop":
       return commandListReferences(command.body, collection, id);
     case "shop":
-      return (collection === "items" && command.itemIds.includes(id)) || commandListReferences(command.transactionBranch ?? [], collection, id);
+      return (
+        collection === "items" &&
+          (command.itemIds.includes(id) || (command.stock ?? []).some((entry) => entry.itemId === id))
+      ) || commandListReferences(command.transactionBranch ?? [], collection, id);
     case "promoteActor":
       return (collection === "actors" && command.actorId === id) ||
         (collection === "classes" && command.toClassId === id) ||
@@ -114,6 +118,12 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
     default:
       return false;
   }
+}
+
+function eventGiftPrefsReferences(event: { readonly giftPrefs?: GiftPrefs }, collection: CommandReferenceCollection, id: string): boolean {
+  if (collection !== "items") return false;
+  const prefs = event.giftPrefs;
+  return Boolean(prefs && [...(prefs.loved ?? []), ...(prefs.liked ?? []), ...(prefs.disliked ?? [])].includes(id));
 }
 
 function conditionReferencesDatabase(condition: Condition | BattleEventCondition | undefined, collection: CommandReferenceCollection, id: string): boolean {
@@ -184,6 +194,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
       return commandListReferencesSwitchVariable(command.body, kind, id);
     case "shop":
       return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id);
+    case "getFriendship":
+      return kind === "variable" && command.variableId === id;
     case "promoteActor":
       return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
     case "evolveMonster":

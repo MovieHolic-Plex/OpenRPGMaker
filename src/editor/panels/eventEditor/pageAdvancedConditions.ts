@@ -2,6 +2,7 @@ import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import {
   renderActorCondition,
+  renderFriendshipAtLeastCondition,
   renderGoldCondition,
   renderItemCondition,
   renderNpcActivityCondition,
@@ -35,6 +36,7 @@ const ADVANCED_CONDITION_OPTIONS = [
   { value: "timePhase", label: "시간대" },
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
+  { value: "friendshipAtLeast", label: "호감도" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {
@@ -193,6 +195,12 @@ function renderAdvancedConditionContent(
         className: "event-advanced-condition-control npc-activity",
         activityTestId: `event-page-advanced-condition-npc-activity-${listIndex}`,
       });
+    case "friendshipAtLeast":
+      return renderFriendshipAtLeastCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control friendship",
+        npcKeyTestId: `event-page-advanced-condition-friendship-npc-key-${listIndex}`,
+        valueTestId: `event-page-advanced-condition-friendship-value-${listIndex}`,
+      });
   }
 }
 
@@ -218,5 +226,7 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "season", season: "spring" };
     case "npcActivity":
       return { kind: "npcActivity", activity: "work" };
+    case "friendshipAtLeast":
+      return { kind: "friendshipAtLeast", value: 100 };
   }
 }

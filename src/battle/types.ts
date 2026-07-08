@@ -75,6 +75,7 @@ export interface BattleSessionState {
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
   readonly gameTime?: GameTime;
+  readonly friendship?: Readonly<Record<string, number>>;
 }
 
 export interface BattlePartyProgress {

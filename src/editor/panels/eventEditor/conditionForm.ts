@@ -17,6 +17,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "timePhase", label: "시간대" },
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
+  { value: "friendshipAtLeast", label: "호감도" },
 ] as const;
 
 export const TIME_PHASE_OPTIONS = [
@@ -97,6 +98,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "npcActivity":
         onChange({ kind: "npcActivity", activity: "work" });
         return;
+      case "friendshipAtLeast":
+        onChange({ kind: "friendshipAtLeast", value: 100 });
+        return;
     }
   });
   wrap.append(mode);
@@ -130,6 +134,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "npcActivity":
       wrap.append(renderNpcActivityCondition(cond, onChange));
+      break;
+    case "friendshipAtLeast":
+      wrap.append(renderFriendshipAtLeastCondition(cond, onChange));
       break;
   }
   return wrap;
@@ -426,6 +433,35 @@ export function renderNpcActivityCondition(
     onChange({ kind: "npcActivity", activity: activity.value.trim() || cond.activity });
   });
   row.append(activity);
+  return row;
+}
+
+export function renderFriendshipAtLeastCondition(
+  cond: Extract<Condition, { kind: "friendshipAtLeast" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly npcKeyTestId?: string; readonly valueTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const npcKey = el("input", {
+    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    value: cond.npcKey ?? "",
+    dataset: { testid: options.npcKeyTestId ?? "event-condition-friendship-npc-key" },
+  }) as HTMLInputElement;
+  const value = el("input", {
+    attrs: { type: "number", min: "0", max: "1000" },
+    value: String(cond.value),
+    dataset: { testid: options.valueTestId ?? "event-condition-friendship-value" },
+  }) as HTMLInputElement;
+  const apply = () => {
+    onChange({
+      kind: "friendshipAtLeast",
+      npcKey: npcKey.value.trim() || undefined,
+      value: parseInt(value.value, 10) || 0,
+    });
+  };
+  npcKey.addEventListener("change", apply);
+  value.addEventListener("change", apply);
+  row.append(npcKey, value);
   return row;
 }
 

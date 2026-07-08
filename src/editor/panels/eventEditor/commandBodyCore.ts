@@ -54,6 +54,8 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   fork: forkBody,
   setSwitch: setSwitchBody,
   setVariable: setVariableBody,
+  changeFriendship: changeFriendshipBody,
+  getFriendship: getFriendshipBody,
   timer: timerBody,
   inputWait: inputWaitBody,
   inputNumber: inputNumberBody,
@@ -310,6 +312,58 @@ function inputWaitBody(context: CommandEditContext, cmd: Extract<Command, { kind
     context.actions.replaceCommand(context.path, { kind: "inputWait", variableId: currentVariableId });
   });
   wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "키 코드 저장 변수(선택)" }), variablePicker] }));
+  return wrap;
+}
+
+function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFriendship" }>): HTMLElement {
+  const wrap = el("div", { class: "event-command-record-form" });
+  const npcKey = el("input", {
+    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    value: cmd.npcKey ?? "",
+    dataset: { testid: "event-command-friendship-npc-key" },
+  }) as HTMLInputElement;
+  const delta = el("input", {
+    attrs: { type: "number", min: "-1000", max: "1000" },
+    value: String(cmd.delta),
+    dataset: { testid: "event-command-friendship-delta" },
+  }) as HTMLInputElement;
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "changeFriendship",
+      npcKey: npcKey.value.trim() || undefined,
+      delta: parseInt(delta.value, 10) || 0,
+    });
+  };
+  npcKey.addEventListener("change", apply);
+  delta.addEventListener("change", apply);
+  wrap.append(fieldControl("NPC 키", npcKey), fieldControl("변화량", delta));
+  return wrap;
+}
+
+function getFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { kind: "getFriendship" }>): HTMLElement {
+  const wrap = el("div", { class: "event-command-record-form" });
+  const npcKey = el("input", {
+    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    value: cmd.npcKey ?? "",
+    dataset: { testid: "event-command-get-friendship-npc-key" },
+  }) as HTMLInputElement;
+  let currentVariableId = cmd.variableId;
+  const variablePicker = databasePicker("variable", currentVariableId, (variableId) => {
+    currentVariableId = variableId;
+    context.actions.replaceCommand(context.path, {
+      kind: "getFriendship",
+      npcKey: npcKey.value.trim() || undefined,
+      variableId: currentVariableId,
+    });
+  });
+  npcKey.addEventListener("change", () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "getFriendship",
+      npcKey: npcKey.value.trim() || undefined,
+      variableId: currentVariableId,
+    });
+  });
+  wrap.append(fieldControl("NPC 키", npcKey), fieldControl("저장 변수", variablePicker), recordUsageHint("variable", cmd.variableId));
   return wrap;
 }
 

@@ -39,6 +39,8 @@ const EXPECTED_COMMAND_KINDS = [
   "enterHeroName",
   "changeGold",
   "changeItem",
+  "changeFriendship",
+  "getFriendship",
   "changeParty",
   "giveMonster",
   "moveMonster",

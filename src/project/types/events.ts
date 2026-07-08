@@ -40,7 +40,8 @@ export type Condition =
   | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
   | { kind: "timePhase"; phase: TimePhase }
   | { kind: "season"; season: Season }
-  | { kind: "npcActivity"; activity: string };
+  | { kind: "npcActivity"; activity: string }
+  | { kind: "friendshipAtLeast"; npcKey?: string; value: number };
 
 export type EventPageCondition = Condition;
 
@@ -90,6 +91,26 @@ export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
 export type ShopType = "normal" | "buyOnly" | "sellOnly";
 export type ShopMessageType = "welcome" | "business" | "direct";
+export type GiftPreferenceRank = "loved" | "liked" | "neutral" | "disliked";
+export interface GiftPrefs {
+  readonly loved?: readonly ItemId[];
+  readonly liked?: readonly ItemId[];
+  readonly disliked?: readonly ItemId[];
+}
+export interface GiftResponses {
+  readonly loved?: string;
+  readonly liked?: string;
+  readonly neutral?: string;
+  readonly disliked?: string;
+  readonly alreadyGifted?: string;
+  readonly noItems?: string;
+}
+export interface ShopStockEntry {
+  readonly itemId: ItemId;
+  readonly seasons?: readonly Season[];
+  readonly priceOverride?: number;
+  readonly priceBySeason?: Partial<Record<Season, number>>;
+}
 export type TransferDirection = "retain" | Dir;
 export type TransferFade = "black" | "white" | "none";
 // 전환 연출 종류. 기본 페이드 외에 모자이크(픽셀화)/블라인드 지원.
@@ -194,6 +215,8 @@ export type Command =
   | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
+  | { kind: "changeFriendship"; npcKey?: string; delta: number }
+  | { kind: "getFriendship"; npcKey?: string; variableId: string }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
   | { kind: "giveMonster"; speciesId: MonsterSpeciesId; level: number; nickname?: string }
   | { kind: "moveMonster"; instanceId: MonsterInstanceId; to: "party" | "box" }
@@ -229,6 +252,7 @@ export type Command =
       quantityMode?: "single" | "select";
       shopType?: ShopType;
       messageType?: ShopMessageType;
+      stock?: ShopStockEntry[];
       branchOnTransaction?: boolean;
       transactionBranch?: Command[];
     }
@@ -334,6 +358,8 @@ export interface GameEvent {
   commands: Command[];
   pages?: EventPage[];
   schedule?: NpcScheduleEntry[];
+  giftPrefs?: GiftPrefs;
+  giftResponses?: GiftResponses;
   draft?: EventDraftMeta;
 }
 

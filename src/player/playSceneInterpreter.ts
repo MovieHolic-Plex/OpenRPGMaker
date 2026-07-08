@@ -26,7 +26,7 @@ import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { applyWeatherStep } from "@/player/playSceneWeather";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap, type RuntimeEventView } from "@/player/runtimeEventState";
 import {
   CUTSCENE_END_LABEL,
   isCutsceneSkippable,
@@ -35,6 +35,8 @@ import {
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+import { isGiftableEvent, isGiftSystemEnabled } from "@/project/friendship";
+import { playGiftSelection } from "@/player/playSceneGift";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -54,7 +56,67 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     console.warn("[player] dialogue UI missing");
     return;
   }
-  await runCommands(scene, page?.commands ?? event.commands, eventId);
+  const commands = page?.commands ?? event.commands;
+  if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
+    const action = await showGiftMenu(scene, event, page?.name);
+    if (action === "talk") await runCommands(scene, commands, eventId);
+    if (action === "gift") await runGiftSelection(scene, event);
+    return;
+  }
+  await runCommands(scene, commands, eventId);
+}
+
+async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
+  scene.running = true;
+  scene.setInputEnabled(false);
+  try {
+    await playGiftSelection(scene, event);
+  } finally {
+    scene.running = previousRunning;
+    scene.lastActionTargetKey = "";
+    scene.setInputEnabled(previousInputEnabled);
+    dialogueUi(scene)?.hide();
+    scene.refreshRuntimeSurfaces();
+  }
+}
+
+function shouldOfferGiftMenu(event: CommandSourceEvent, page: RuntimeEventView["page"] | undefined, project: ReturnType<typeof store.getCurrent>): boolean {
+  const trigger = page?.trigger ?? event.trigger;
+  return trigger.kind === "action" && isGiftSystemEnabled(project) && isGiftableEvent(event);
+}
+
+type CommandSourceEvent = RuntimeEventView["event"];
+
+async function showGiftMenu(
+  scene: PlaySceneContext,
+  event: CommandSourceEvent,
+  speaker: string | undefined
+): Promise<"talk" | "gift" | "cancel"> {
+  const dialogue = dialogueUi(scene);
+  if (!dialogue) return "cancel";
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
+  scene.running = true;
+  scene.setInputEnabled(false);
+  try {
+    const choice = await dialogue.showChoices({
+      prompt: speaker ?? event.id,
+      options: [{ text: "대화하기" }, { text: "선물하기" }, { text: "취소" }],
+      settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+      cancelBehavior: "choice3",
+      textContext: { session: scene.session, project: store.getCurrent() },
+      playerTileY: scene.tileY,
+      mapHeight: scene.map.height,
+    });
+    if (choice === 1) return "gift";
+    if (choice === 0) return "talk";
+    return "cancel";
+  } finally {
+    scene.running = previousRunning;
+    scene.setInputEnabled(previousInputEnabled);
+  }
 }
 
 export async function runCommands(

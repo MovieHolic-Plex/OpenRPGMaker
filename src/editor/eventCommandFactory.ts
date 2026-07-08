@@ -75,6 +75,10 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeGold", op: "+=", amount: 10 };
     case "changeItem":
       return { kind: "changeItem", itemId: "", op: "+=", amount: 1 };
+    case "changeFriendship":
+      return { kind: "changeFriendship", npcKey: "", delta: 20 };
+    case "getFriendship":
+      return { kind: "getFriendship", npcKey: "", variableId: "" };
     case "changeParty":
       return { kind: "changeParty", actorId: "", action: "add" };
     case "giveMonster":

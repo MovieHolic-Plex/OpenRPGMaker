@@ -383,12 +383,25 @@ function validateMapRecords(
     }
     for (const event of map.events) {
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
+      validateGiftPreferenceReferences(event.id, event.giftPrefs, context.itemIds, issues);
       const condition = event.condition;
       if (condition) capture(issues, () => validateCondition(condition, switchIds, variableIds));
       capture(issues, () => validateCommands(event.commands, context));
       capture(issues, () => validateEventPages(event.pages ?? [], context));
     }
   }
+}
+
+function validateGiftPreferenceReferences(
+  eventId: string,
+  giftPrefs: { readonly loved?: readonly string[]; readonly liked?: readonly string[]; readonly disliked?: readonly string[] } | undefined,
+  itemIds: ReadonlySet<string>,
+  issues: string[]
+): void {
+  if (!giftPrefs) return;
+  collectExistingIdIssues(`event ${eventId}: giftPrefs.loved`, giftPrefs.loved ?? [], itemIds, issues);
+  collectExistingIdIssues(`event ${eventId}: giftPrefs.liked`, giftPrefs.liked ?? [], itemIds, issues);
+  collectExistingIdIssues(`event ${eventId}: giftPrefs.disliked`, giftPrefs.disliked ?? [], itemIds, issues);
 }
 
 function validateTroopMembers(

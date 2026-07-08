@@ -3,6 +3,7 @@ import type { MutableBattler } from "@/battle/battleBattlers";
 import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
+import { clampFriendship } from "@/project/session";
 import type { ActorId, Command, Condition, Project, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
@@ -14,6 +15,7 @@ export type BattleEventRuntimeState = {
   readonly gold?: number;
   readonly timers?: Record<string, number>;
   readonly gameTime?: GameTime;
+  readonly friendship?: Record<string, number>;
 };
 
 export type BattleEventContext = {
@@ -122,6 +124,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "timePhase":
       case "season":
       case "npcActivity":
+      case "friendshipAtLeast":
         return evaluateCondition(condition);
       case "turn":
         return condition.interval <= 0
@@ -190,6 +193,20 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "changeItem": {
         const current = options.state.inventory[command.itemId] ?? 0;
         options.state.inventory[command.itemId] = Math.max(0, applyNumberOperation(current, command.op, command.amount));
+        return false;
+      }
+      case "changeFriendship": {
+        const npcKey = command.npcKey?.trim();
+        if (!npcKey || !options.state.friendship) {
+          logUnsupported(page, context, command.kind);
+          return false;
+        }
+        options.state.friendship[npcKey] = clampFriendship((options.state.friendship[npcKey] ?? 0) + command.delta);
+        return false;
+      }
+      case "getFriendship": {
+        const npcKey = command.npcKey?.trim();
+        options.state.variables[command.variableId] = npcKey ? clampFriendship(options.state.friendship?.[npcKey] ?? 0) : 0;
         return false;
       }
       case "fork":
@@ -313,6 +330,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return conditionMatchesSeason(options.state.gameTime, condition.season);
       case "npcActivity":
         return false;
+      case "friendshipAtLeast": {
+        const npcKey = condition.npcKey?.trim();
+        if (!npcKey) return false;
+        return clampFriendship(options.state.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+      }
     }
   }
 

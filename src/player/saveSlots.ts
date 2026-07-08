@@ -1,5 +1,6 @@
 import { SCHEMA_VERSION, type ActorInitialEquipment, type Project } from "@/project/types";
 import {
+  clampFriendship,
   startSession,
   type AudioCommandState,
   type PictureState,
@@ -86,6 +87,8 @@ export type SaveSnapshot = {
     readonly npcActivities?: PlaySession["npcActivities"];
     readonly npcScheduleStates?: PlaySession["npcScheduleStates"];
     readonly farmPlots?: PlaySession["farmPlots"];
+    readonly friendship?: PlaySession["friendship"];
+    readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly followers?: PlaySession["followers"];
     readonly followerTrail?: PlaySession["followerTrail"];
     readonly currentMapId: string;
@@ -160,6 +163,8 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       npcActivities: structuredClone(session.npcActivities ?? {}),
       npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
       farmPlots: structuredClone(session.farmPlots ?? {}),
+      friendship: structuredClone(session.friendship ?? {}),
+      dailyGifts: structuredClone(session.dailyGifts ?? {}),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
@@ -253,6 +258,8 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
+  session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
+  session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
@@ -363,6 +370,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       npcActivities: isStringRecord(session.npcActivities) ? session.npcActivities : undefined,
       npcScheduleStates: isRuntimeNpcScheduleStateRecord(session.npcScheduleStates) ? session.npcScheduleStates : undefined,
       farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
+      friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
+      dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
       currentMapId: session.currentMapId,
@@ -403,6 +412,15 @@ function parseBattleResult(value: unknown): PlaySession["battleResult"] | "inval
   if (value === undefined) return undefined;
   if (value === "victory" || value === "defeat" || value === "escape") return value;
   return "invalid";
+}
+
+function normalizeFriendshipRecord(value: Record<string, number> | undefined): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const [npcKey, amount] of Object.entries(value ?? {})) {
+    if (!npcKey.trim()) continue;
+    result[npcKey] = clampFriendship(amount);
+  }
+  return result;
 }
 
 function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {

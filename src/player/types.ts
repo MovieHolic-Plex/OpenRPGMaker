@@ -277,6 +277,8 @@ export interface PlaySessionLike {
   npcActivities?: Record<string, string>;
   npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
   farmPlots?: FarmPlots;
+  friendship?: Record<string, number>;
+  dailyGifts?: Record<string, string>;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];
   playTimeSeconds?: number;

@@ -3,12 +3,12 @@
 //              / duplicate_event / remove_event / move_event.
 
 import { isPassable } from "@/project/collision";
-import { isSeason, isTimePhase } from "@/project/gameTime";
-import { validateCommandArray } from "@/project/io/shapeCommandFields";
+import { isSeason, isTimePhase, type Season } from "@/project/gameTime";
+import { validateCommandArray, validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, Dir, EventPage, EventPageCondition, GameEvent, GameMap, NpcScheduleEntry, NpcScheduleWhen, Project, TransferFade, Trigger } from "@/project/types";
+import type { Command, Dir, EventPage, EventPageCondition, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
@@ -52,6 +52,41 @@ const npcScheduleSchema = {
       activity: { type: "string" as const },
     },
   },
+};
+
+const shopStockSchema = {
+  type: "array" as const,
+  description: "ShopStockEntry[]: {itemId,seasons?,priceOverride?,priceBySeason?}",
+  items: {
+    type: "object" as const,
+    properties: {
+      itemId: { type: "string" as const },
+      seasons: { type: "array" as const, items: { type: "string" as const, enum: ["spring", "summer", "fall", "winter"] } },
+      priceOverride: { type: "integer" as const },
+      priceBySeason: {
+        type: "object" as const,
+        description: "{spring?:number,summer?:number,fall?:number,winter?:number}",
+        additionalProperties: true,
+      },
+    },
+    required: ["itemId"],
+  },
+};
+
+const giftPrefsSchema = {
+  type: "object" as const,
+  description: "{loved?:itemId[], liked?:itemId[], disliked?:itemId[]}",
+  properties: {
+    loved: { type: "array" as const, items: { type: "string" as const } },
+    liked: { type: "array" as const, items: { type: "string" as const } },
+    disliked: { type: "array" as const, items: { type: "string" as const } },
+  },
+};
+
+const giftResponsesSchema = {
+  type: "object" as const,
+  description: "{loved?, liked?, neutral?, disliked?, alreadyGifted?, noItems?}",
+  additionalProperties: true,
 };
 
 function knownIds(records: readonly { readonly id: string }[], limit = 8): string {
@@ -234,6 +269,13 @@ const makeVillager: ToolDefinition = {
       schedule: npcScheduleSchema,
       dailyRoutine: { type: "object", description: "{workAt:{mapId?,x,y},workHours:[start,end]}" },
       dialogue: { type: "array", description: "{when?,text}[]", items: { type: "object" } },
+      giftPrefs: giftPrefsSchema,
+      giftResponses: giftResponsesSchema,
+      shop: {
+        type: "object",
+        description: "{stock: ShopStockEntry[]} 상점 주민 옵션",
+        properties: { stock: shopStockSchema },
+      },
       id: { type: "string" },
     },
     required: ["mapId", "name", "home"],
@@ -260,6 +302,10 @@ const makeVillager: ToolDefinition = {
       movement: PASSIVE,
       warnings,
     });
+    const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");
+    const giftResponses = parseGiftResponses(args.giftResponses, "giftResponses");
+    const shopStock = parseOptionalShopStock(draft, (args.shop as Record<string, unknown> | undefined)?.stock, "shop.stock");
+    if (shopStock) appendShopCommandToFirstPage(pages, shopStock);
     const event: GameEvent = {
       id,
       x: home.x,
@@ -268,16 +314,203 @@ const makeVillager: ToolDefinition = {
       commands: [],
       pages,
       ...(schedule.length > 0 ? { schedule } : {}),
+      ...(giftPrefs ? { giftPrefs } : {}),
+      ...(giftResponses ? { giftResponses } : {}),
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name}에 주민 '${name}' 생성 (${home.x}, ${home.y}) — 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개`,
-      data: { eventId: id, scheduleCount: schedule.length, pageCount: pages.length },
+      summary: `${map.name}에 주민 '${name}' 생성 (${home.x}, ${home.y}) — 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}`,
+      data: { eventId: id, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0 },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
+
+const setShopStock: ToolDefinition = {
+  name: "set_shop_stock",
+  description:
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      eventId: { type: "string" },
+      stock: shopStockSchema,
+    },
+    required: ["mapId", "eventId", "stock"],
+  },
+  invalidArgsExample: {
+    mapId: "map_town",
+    eventId: "ev_merchant",
+    stock: [
+      { itemId: "item_spring_seed", seasons: ["spring"], priceBySeason: { spring: 18 } },
+      { itemId: "item_firewood", seasons: ["winter"], priceOverride: 30 },
+    ],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const event = map.events.find((entry) => entry.id === args.eventId);
+    if (!event) throw new ToolError(`상점 재고를 설정할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found", mapId: map.id });
+    const stock = parseShopStock(draft, args.stock, "stock");
+    const outcome = setShopStockOnEvent(event, stock);
+    assertEventShape(event);
+    return {
+      summary: `${map.name} 이벤트 '${event.id}' 상점 재고 ${stock.length}개 ${outcome === "added" ? "추가" : "설정"}`,
+      data: { eventId: event.id, stockCount: stock.length, outcome },
+    };
+  },
+};
+
+function parseGiftPrefs(project: Project, raw: unknown, label: string): GiftPrefs | undefined {
+  if (raw === undefined) return undefined;
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${label}는 객체여야 합니다.`, { code: "gift-prefs" });
+  }
+  const record = raw as Record<string, unknown>;
+  return {
+    ...(record.loved !== undefined ? { loved: parseItemIdArray(project, record.loved, `${label}.loved`) } : {}),
+    ...(record.liked !== undefined ? { liked: parseItemIdArray(project, record.liked, `${label}.liked`) } : {}),
+    ...(record.disliked !== undefined ? { disliked: parseItemIdArray(project, record.disliked, `${label}.disliked`) } : {}),
+  };
+}
+
+function parseGiftResponses(raw: unknown, label: string): GiftResponses | undefined {
+  if (raw === undefined) return undefined;
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${label}는 객체여야 합니다.`, { code: "gift-responses" });
+  }
+  const record = raw as Record<string, unknown>;
+  const responses: Record<string, string> = {};
+  for (const key of ["loved", "liked", "neutral", "disliked", "alreadyGifted", "noItems"]) {
+    const value = cleanOptionalString(record[key]);
+    if (value) responses[key] = value;
+  }
+  return responses as GiftResponses;
+}
+
+function parseOptionalShopStock(project: Project, raw: unknown, label: string): ShopStockEntry[] | undefined {
+  return raw === undefined ? undefined : parseShopStock(project, raw, label);
+}
+
+function parseShopStock(project: Project, raw: unknown, label: string): ShopStockEntry[] {
+  if (!Array.isArray(raw)) throw new ToolError(`${label}는 배열이어야 합니다.`, { code: "shop-stock" });
+  const stock = raw.map((value, index): ShopStockEntry => {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      throw new ToolError(`${label}[${index}]는 객체여야 합니다.`, { code: "shop-stock" });
+    }
+    const record = value as Record<string, unknown>;
+    const itemId = itemIdArg(project, record.itemId, `${label}[${index}].itemId`);
+    const seasons = record.seasons === undefined ? undefined : parseSeasonArray(record.seasons, `${label}[${index}].seasons`);
+    const priceOverride = record.priceOverride === undefined ? undefined : priceArg(record.priceOverride, `${label}[${index}].priceOverride`);
+    const priceBySeason = record.priceBySeason === undefined ? undefined : parsePriceBySeason(record.priceBySeason, `${label}[${index}].priceBySeason`);
+    return {
+      itemId,
+      ...(seasons ? { seasons } : {}),
+      ...(priceOverride !== undefined ? { priceOverride } : {}),
+      ...(priceBySeason ? { priceBySeason } : {}),
+    };
+  });
+  validateShopStock(label, stock);
+  return stock;
+}
+
+function parseItemIdArray(project: Project, raw: unknown, label: string): string[] {
+  if (!Array.isArray(raw)) throw new ToolError(`${label}는 itemId 배열이어야 합니다.`, { code: "item-id-array" });
+  return raw.map((value, index) => itemIdArg(project, value, `${label}[${index}]`));
+}
+
+function itemIdArg(project: Project, raw: unknown, label: string): string {
+  const itemId = stringArg(raw, label);
+  if (!project.database.items.some((item) => item.id === itemId)) {
+    throw new ToolError(`${label} 존재하지 않는 itemId: ${itemId} — 허용 예시: ${knownIds(project.database.items)}`, { code: "item-not-found" });
+  }
+  return itemId;
+}
+
+function parseSeasonArray(raw: unknown, label: string): Season[] {
+  if (!Array.isArray(raw)) throw new ToolError(`${label}는 계절 배열이어야 합니다.`, { code: "season-array" });
+  return raw.map((value, index) => parseSeasonArg(value, `${label}[${index}]`));
+}
+
+function parsePriceBySeason(raw: unknown, label: string): Partial<Record<Season, number>> {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${label}는 객체여야 합니다.`, { code: "price-by-season" });
+  }
+  const result: Partial<Record<Season, number>> = {};
+  for (const [season, value] of Object.entries(raw)) {
+    if (!isSeason(season)) throw new ToolError(`${label}.${season} 계절이 잘못되었습니다.`, { code: "season" });
+    result[season] = priceArg(value, `${label}.${season}`);
+  }
+  return result;
+}
+
+function priceArg(raw: unknown, label: string): number {
+  if (typeof raw !== "number" || !Number.isFinite(raw)) throw new ToolError(`${label} 숫자가 필요합니다.`, { code: "price" });
+  return Math.max(0, Math.trunc(raw));
+}
+
+function shopCommandFromStock(stock: readonly ShopStockEntry[]): Extract<Command, { kind: "shop" }> {
+  return {
+    kind: "shop",
+    itemIds: uniqueStockItemIds(stock),
+    stock: [...stock],
+    allowSell: true,
+    quantityMode: "select",
+    shopType: "normal",
+    messageType: "welcome",
+  };
+}
+
+function appendShopCommandToFirstPage(pages: EventPage[], stock: readonly ShopStockEntry[]): void {
+  const page = pages[0];
+  if (page) page.commands.push(shopCommandFromStock(stock));
+}
+
+function setShopStockOnEvent(event: GameEvent, stock: readonly ShopStockEntry[]): "added" | "modified" {
+  const existing = findFirstShopCommand(event.pages?.flatMap((page) => page.commands) ?? []) ?? findFirstShopCommand(event.commands);
+  if (existing) {
+    existing.itemIds = uniqueStockItemIds(stock);
+    existing.stock = [...stock];
+    return "modified";
+  }
+  const command = shopCommandFromStock(stock);
+  if (event.pages?.[0]) event.pages[0].commands.push(command);
+  else event.commands.push(command);
+  return "added";
+}
+
+function findFirstShopCommand(commands: readonly Command[]): Extract<Command, { kind: "shop" }> | undefined {
+  for (const command of commands) {
+    if (command.kind === "shop") return command;
+    if (command.kind === "choices") {
+      for (const option of command.options) {
+        const found = findFirstShopCommand(option.branch);
+        if (found) return found;
+      }
+      const cancelFound = findFirstShopCommand(command.cancelBranch ?? []);
+      if (cancelFound) return cancelFound;
+    } else if (command.kind === "fork") {
+      const found = findFirstShopCommand(command.then) ?? findFirstShopCommand(command.else ?? []);
+      if (found) return found;
+    } else if (command.kind === "loop") {
+      const found = findFirstShopCommand(command.body);
+      if (found) return found;
+    } else if (command.kind === "promoteActor") {
+      const found = findFirstShopCommand(command.successBranch ?? []) ?? findFirstShopCommand(command.failureBranch ?? []);
+      if (found) return found;
+    } else if (command.kind === "evolveMonster") {
+      const found = findFirstShopCommand(command.successBranch ?? []) ?? findFirstShopCommand(command.failureBranch ?? []);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
+function uniqueStockItemIds(stock: readonly ShopStockEntry[]): string[] {
+  return [...new Set(stock.map((entry) => entry.itemId))];
+}
 
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
 function nearestPassableCell(project: Project, map: GameMap, x: number, y: number, maxRadius: number): Point | null {
@@ -1068,6 +1301,7 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   placeNpc,
   setNpcSchedule,
   makeVillager,
+  setShopStock,
   createTransferPair,
   placeBattleBlocker,
   placeTrap,

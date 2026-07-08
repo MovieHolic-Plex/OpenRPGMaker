@@ -49,6 +49,8 @@ const BATTLE_EVENT_RUNTIME_FULL_KINDS: ReadonlySet<Command["kind"]> = new Set([
   "setSwitch",
   "setVariable",
   "changeItem",
+  "changeFriendship",
+  "getFriendship",
   "callCommonEvent",
   "changeActorHp",
   "changeActorMp",

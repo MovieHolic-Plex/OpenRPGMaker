@@ -67,6 +67,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "timer":
     case "advanceTime":
     case "advanceCropGrowth":
+    case "changeFriendship":
     case "setTime":
     case "sleepUntilMorning":
     case "moveEvent":
@@ -115,6 +116,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       if (typeof command.value !== "number") {
         assert(context.variableIds.has(command.value.id), `setVariable: operand variableId가 존재하지 않습니다: ${command.value.id}`);
       }
+      return;
+    case "getFriendship":
+      assert(context.variableIds.has(command.variableId), `getFriendship: variableId가 존재하지 않습니다: ${command.variableId}`);
       return;
     case "inputNumber":
       assert(context.variableIds.has(command.variableId), `inputNumber: variableId가 존재하지 않습니다: ${command.variableId}`);
@@ -194,6 +198,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "shop":
       requireExistingIds("shop: item", command.itemIds, context.itemIds);
+      if (command.stock) requireExistingIds("shop stock: item", command.stock.map((entry) => entry.itemId), context.itemIds);
       return;
   }
 }
@@ -216,6 +221,7 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "timePhase":
     case "season":
     case "npcActivity":
+    case "friendshipAtLeast":
       return;
   }
 }
@@ -236,6 +242,7 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "timePhase":
     case "season":
     case "npcActivity":
+    case "friendshipAtLeast":
       return;
     case "enemyHp":
     case "enemyTurn":

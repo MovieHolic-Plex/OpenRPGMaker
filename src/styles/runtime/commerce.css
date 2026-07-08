@@ -1,4 +1,5 @@
 .runtime-shop-overlay,
+.runtime-gift-overlay,
 .runtime-commerce-overlay {
   pointer-events: auto;
   z-index: 45;
@@ -310,4 +311,76 @@
   background: rgba(3, 18, 55, 0.82);
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+}
+
+/* ── 선물 선택 창: 대화 중 인벤토리에서 줄 아이템 선택 ── */
+.runtime-gift-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(360px, calc(100% - 24px));
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-gift-window {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  max-height: 190px;
+  overflow: hidden;
+}
+
+.runtime-gift-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+}
+
+.runtime-gift-list {
+  display: grid;
+  gap: 3px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.runtime-gift-item,
+.runtime-gift-cancel {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.runtime-gift-item:hover,
+.runtime-gift-item.selected,
+.runtime-gift-cancel:hover {
+  background: var(--runtime-window-selected-bg);
+  border-color: rgba(245, 251, 255, 0.76);
+}
+
+.runtime-gift-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runtime-gift-item-count {
+  color: var(--runtime-window-highlight);
 }

@@ -65,6 +65,8 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   enterHeroName: { kind: "enterHeroName", actorId: "actor1", maxLength: 6, showInitialName: false },
   changeGold: { kind: "changeGold", op: "+=", amount: 10 },
   changeItem: { kind: "changeItem", itemId: "item1", op: "+=", amount: 1 },
+  changeFriendship: { kind: "changeFriendship", npcKey: "ev1", delta: 10 },
+  getFriendship: { kind: "getFriendship", npcKey: "ev1", variableId: "var1" },
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
   giveMonster: { kind: "giveMonster", speciesId: "species1", level: 5 },
   moveMonster: { kind: "moveMonster", instanceId: "monster_1", to: "party" },
@@ -119,6 +121,7 @@ function buildMinimalConditions(ids: {
     timePhase: { kind: "timePhase", phase: "day" },
     season: { kind: "season", season: "spring" },
     npcActivity: { kind: "npcActivity", activity: "work" },
+    friendshipAtLeast: { kind: "friendshipAtLeast", value: 10 },
   };
 }
 

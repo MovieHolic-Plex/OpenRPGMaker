@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 117개 툴 — 쓰기 87, 읽기 30.
+> 총 118개 툴 — 쓰기 88, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -46,7 +46,8 @@
 | `upsert_event` | `mapId: string`, `event: object` | 저수준 만능 이벤트 툴. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용. |
 | `place_npc` | `mapId: string`, `x: integer`, `y: integer`, `name: string`, `graphic?: object`, `movement?: fixed\|random`, `pages: array`, `id?: string` | NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager\|people\|npc\|human\|사람\|주민\|actor\|hero\|animal\|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. |
 | `set_npc_schedule` | `mapId: string`, `eventId: string`, `schedule: array` | 기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다. |
-| `make_villager` | `mapId: string`, `name: string`, `graphic?: object`, `home: object`, `schedule?: array`, `dailyRoutine?: object`, `dialogue?: array`, `id?: string` | home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다. |
+| `make_villager` | `mapId: string`, `name: string`, `graphic?: object`, `home: object`, `schedule?: array`, `dailyRoutine?: object`, `dialogue?: array`, `giftPrefs?: object`, `giftResponses?: object`, `shop?: object`, `id?: string` | home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다. |
+| `set_shop_stock` | `mapId: string`, `eventId: string`, `stock: array` | 기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. |
 | `create_transfer_pair` | `a: object`, `b: object`, `fade?: black\|white\|none` | 두 맵 사이 양방향 출입구를 원자적으로 생성한다. 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지). |
 | `place_battle_blocker` | `mapId: string`, `x: integer`, `y: integer`, `troopId: string`, `clearSwitchId?: string`, `intro?: array`, `victory?: array`, `victoryItems?: array`, `graphic?: object`, `id?: string` | 전투 블로커를 배치한다(전투 페이지 + 승리 후 투명 페이지). clearSwitchId로 재전투를 막는다. |
 | `place_trap` | `mapId: string`, `at?: object`, `cells?: array`, `trigger: touch\|action`, `message?: string`, `respawnCheckpoint?: boolean`, `graphic?: object`, `idPrefix?: string` | 즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다. |
@@ -108,7 +109,7 @@
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer`, `battleFlow?: gauge\|strict`, `activeSlots?: integer`, `strictScript?: array` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
-| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'advanceDays',days}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount를 지원한다. |
+| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'gift',eventId?,itemId}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'advanceDays',days}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다. |
 | `get_project_summary` | (없음) | 제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다. |
 | `get_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다. |
 | `find_events` | `mapId?: string`, `nameContains?: string`, `commandKind?: string`, `referencesSwitch?: string` | 이벤트를 이름/커맨드 종류/스위치 참조로 검색한다. |

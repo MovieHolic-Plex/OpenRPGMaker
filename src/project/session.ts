@@ -102,6 +102,10 @@ export type FarmPlotState = {
 };
 
 export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
+export type DailyGiftLog = Record<string, string>;
+
+export const FRIENDSHIP_MIN = 0;
+export const FRIENDSHIP_MAX = 1000;
 
 export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
   format: "normal",
@@ -161,6 +165,8 @@ export interface PlaySession {
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
   mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
   farmPlots?: FarmPlots;
+  friendship?: Record<string, number>;
+  dailyGifts?: DailyGiftLog;
   // 레거시 호환(flags → switches로 마이그레이션됐지만 보존).
   flags: Record<string, boolean>;
   battleResult?: BattleResult;
@@ -238,6 +244,8 @@ export function startSession(project: Project, seed?: number): PlaySession {
     y: project.startPos.y,
     mapOverrides: {},
     farmPlots: {},
+    friendship: {},
+    dailyGifts: {},
     flags: { ...project.flags },
     audio: {},
     pictures: {},
@@ -367,6 +375,41 @@ export function learnSkill(session: PlaySessionLike, actorId: ActorId, skillId: 
   if (!learned.includes(skillId)) session.actorSkillIds[actorId] = [...learned, skillId];
 }
 
+export function friendshipKey(npcKey: string | undefined, eventId?: string): string | undefined {
+  const key = npcKey?.trim() || eventId?.trim();
+  return key || undefined;
+}
+
+export function getFriendship(session: PlaySessionLike, npcKey: string | undefined, eventId?: string): number {
+  const key = friendshipKey(npcKey, eventId);
+  if (!key) return 0;
+  return clampFriendship(session.friendship?.[key] ?? 0);
+}
+
+export function changeFriendship(
+  session: PlaySessionLike,
+  npcKey: string | undefined,
+  delta: number,
+  eventId?: string
+): number {
+  const key = friendshipKey(npcKey, eventId);
+  if (!key) return 0;
+  session.friendship ??= {};
+  const next = clampFriendship((session.friendship[key] ?? 0) + Math.trunc(Number.isFinite(delta) ? delta : 0));
+  session.friendship[key] = next;
+  return next;
+}
+
+export function clampFriendship(value: number): number {
+  if (!Number.isFinite(value)) return FRIENDSHIP_MIN;
+  return Math.max(FRIENDSHIP_MIN, Math.min(FRIENDSHIP_MAX, Math.trunc(value)));
+}
+
+export function giftDayKey(time: GameTime | undefined): string {
+  if (!time) return "no-time";
+  return `${time.year}:${time.season}:${time.day}`;
+}
+
 function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): number {
   switch (op) {
     case "=":
@@ -461,5 +504,7 @@ export function evalCondition(session: PlaySessionLike, condition: Condition | u
       return conditionMatchesSeason(session.gameTime, condition.season);
     case "npcActivity":
       return eventId ? session.npcActivities?.[eventId] === condition.activity : false;
+    case "friendshipAtLeast":
+      return getFriendship(session, condition.npcKey, eventId) >= clampFriendship(condition.value);
   }
 }

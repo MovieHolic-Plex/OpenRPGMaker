@@ -112,8 +112,13 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
 
 function shopItems(step: ShopStep): ItemRecord[] {
   const items = store.getCurrent().database.items;
-  return step.itemIds
-    .map((id) => items.find((item) => item.id === id))
+  const rows: readonly { readonly itemId: string; readonly price?: number }[] = step.items ?? step.itemIds.map((itemId) => ({ itemId }));
+  return rows
+    .map((row) => {
+      const item = items.find((entry) => entry.id === row.itemId);
+      if (!item) return undefined;
+      return row.price === undefined ? item : { ...item, price: row.price };
+    })
     .filter((item): item is ItemRecord => Boolean(item));
 }
 

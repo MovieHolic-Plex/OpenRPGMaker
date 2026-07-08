@@ -2,7 +2,7 @@ import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { CONDITION_OP_OPTIONS } from "./options";
-import { SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
+import { renderFriendshipAtLeastCondition, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
 import {
@@ -90,6 +90,13 @@ export function renderPageConditions(mapId: MapId, eventId: string, page: EventP
       page.conditions.some((item) => item.kind === "npcActivity"),
       "일 때",
       (enabled) => toggleSimpleCondition(context, "npcActivity", enabled)
+    ),
+    conditionRow(
+      "호감도",
+      friendshipConditionInputs(context),
+      page.conditions.some((item) => item.kind === "friendshipAtLeast"),
+      "이상",
+      (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled)
     ),
     renderAdvancedConditions(context),
   ];
@@ -289,4 +296,21 @@ function npcActivityConditionInputs(context: PageConditionContext): HTMLElement 
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   });
   return el("div", { class: "event-condition-control npc-activity", children: [activity] });
+}
+
+function friendshipConditionInputs(context: PageConditionContext): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "friendshipAtLeast");
+  return renderFriendshipAtLeastCondition(
+    condition?.kind === "friendshipAtLeast" ? condition : { kind: "friendshipAtLeast", value: 100 },
+    (next) => {
+      const existing = withoutFirstCondition(context.page.conditions, "friendshipAtLeast");
+      existing.push(next);
+      updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: existing });
+    },
+    {
+      className: "event-condition-control friendship",
+      npcKeyTestId: "event-page-friendship-condition-npc-key",
+      valueTestId: "event-page-friendship-condition-value",
+    }
+  );
 }

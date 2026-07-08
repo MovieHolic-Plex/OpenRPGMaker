@@ -7,6 +7,7 @@ import {
   erasePictureState,
   getSwitch,
   getVariable,
+  getFriendship,
   nextSessionRandom,
   setAudioState,
   showPictureState,
@@ -15,7 +16,7 @@ import {
 } from "@/project/session";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
-import type { Dir, GameMap, Project } from "@/project/types";
+import type { Command, Dir, GameMap, Project } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
@@ -70,6 +71,8 @@ import {
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { advanceFarmPlotsForDay, cropStageAt, interactWithFarmPlot } from "@/player/farming";
+import { giveGiftToNpc } from "@/project/friendship";
+import { resolveShopStock } from "@/project/shopStock";
 
 const TICK_MS = 16;
 
@@ -78,6 +81,7 @@ export type SceneStep =
   | { kind: "move"; dir: Dir; to?: never }
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
   | { kind: "interact" }
+  | { kind: "gift"; eventId?: string; itemId: string }
   | { kind: "choose"; index: number }
   | { kind: "retryCheckpoint" }
   | { kind: "advanceDays"; days: number }
@@ -112,6 +116,8 @@ export type SceneExpectStep = {
   timePhase?: TimePhase;
   cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
+  friendshipAtLeast?: { npcKey: string; value: number } | Record<string, number>;
+  shopStock?: { eventId: string; itemIds: readonly string[]; prices?: Record<string, number>; mapId?: string };
 };
 
 export interface SceneTestInput {
@@ -148,6 +154,7 @@ export interface SceneTestResult {
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
     readonly inventory: Record<string, number>;
+    readonly friendship: Record<string, number>;
     readonly playTimeSeconds: number;
     readonly gameTime?: GameTime;
     readonly timePhase?: TimePhase;
@@ -269,6 +276,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runMoveStep(state, step);
     case "interact":
       return runInteractStep(state);
+    case "gift":
+      return runGiftStep(state, step);
     case "choose":
       return runChooseStep(state, step.index);
     case "retryCheckpoint":
@@ -330,6 +339,33 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
+}
+
+function runGiftStep(state: RunnerState, step: Extract<SceneStep, { kind: "gift" }>): string | null {
+  if (state.gameOver) return "게임 오버 중에는 선물을 줄 수 없습니다.";
+  const view = findGiftTargetEvent(state, step.eventId);
+  if (!view) return step.eventId ? `선물 대상 이벤트 없음: ${step.eventId}` : "선물 대상 action 이벤트 없음";
+  const result = giveGiftToNpc(state.project, state.session, view.event, step.itemId);
+  state.log.push(
+    result.ok
+      ? `gift ${view.event.id} ${step.itemId}: ${result.rank} ${result.delta} => ${result.friendship}`
+      : `gift ${view.event.id} ${step.itemId}: ${result.reason}`
+  );
+  if (!result.ok && result.reason !== "already-gifted") return result.message;
+  return null;
+}
+
+function findGiftTargetEvent(state: RunnerState, eventId: string | undefined): RuntimeEventView | undefined {
+  const map = currentMap(state);
+  if (!map) return undefined;
+  const events = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions);
+  if (eventId) return events.find((view) => view.event.id === eventId);
+  const delta = directionDelta(state.facing);
+  const front = events.find(
+    (view) => view.trigger.kind === "action" && view.x === state.session.x + delta.x && view.y === state.session.y + delta.y
+  );
+  if (front) return front;
+  return events.find((view) => view.trigger.kind === "action" && view.x === state.session.x && view.y === state.session.y);
 }
 
 function runInteractStep(state: RunnerState): string | null {
@@ -537,10 +573,13 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "moveEvent":
       case "waitForAllMovement":
       case "stopAllMovement":
-      case "shop":
       case "inn":
       case "flashScreen":
       case "shakeScreen":
+        step = interp.resume(undefined);
+        break;
+      case "shop":
+        state.log.push(`shop: ${formatShopItems(step.items ?? step.itemIds.map((itemId) => ({ itemId })))}`);
         step = interp.resume(undefined);
         break;
       case "inputWait":
@@ -1086,6 +1125,14 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     const inventoryFailure = expectInventoryCount(state, step.inventoryCount);
     if (inventoryFailure) return inventoryFailure;
   }
+  if (step.friendshipAtLeast) {
+    const friendshipFailure = expectFriendshipAtLeast(state, step.friendshipAtLeast);
+    if (friendshipFailure) return friendshipFailure;
+  }
+  if (step.shopStock) {
+    const shopFailure = expectShopStock(state, step.shopStock);
+    if (shopFailure) return shopFailure;
+  }
   return null;
 }
 
@@ -1111,6 +1158,78 @@ function expectInventoryCount(
     if (actual !== count) return `인벤토리 ${itemId}: 기대 ${count}, 실제 ${actual}`;
   }
   return null;
+}
+
+function expectFriendshipAtLeast(
+  state: RunnerState,
+  expected: NonNullable<SceneExpectStep["friendshipAtLeast"]>
+): string | null {
+  const single = expected as { readonly npcKey?: unknown; readonly value?: unknown };
+  if (typeof single.npcKey === "string" && typeof single.value === "number") {
+    const actual = getFriendship(state.session, single.npcKey);
+    return actual >= single.value ? null : `호감도 ${single.npcKey}: 기대 >= ${single.value}, 실제 ${actual}`;
+  }
+  for (const [npcKey, value] of Object.entries(expected)) {
+    if (typeof value !== "number") continue;
+    const actual = getFriendship(state.session, npcKey);
+    if (actual < value) return `호감도 ${npcKey}: 기대 >= ${value}, 실제 ${actual}`;
+  }
+  return null;
+}
+
+function expectShopStock(
+  state: RunnerState,
+  expected: NonNullable<SceneExpectStep["shopStock"]>
+): string | null {
+  const mapId = expected.mapId ?? state.session.currentMapId;
+  const map = state.runtimeMaps[mapId];
+  if (!map) return `상점 재고 확인 맵 없음: ${mapId}`;
+  const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((entry) => entry.event.id === expected.eventId);
+  if (!view) return `상점 이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
+  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
+  const shop = findShopCommand(commands);
+  if (!shop) return `상점 커맨드 없음: ${expected.eventId}`;
+  const stock = resolveShopStock(state.project, state.session, shop);
+  const actualIds = stock.map((entry) => entry.itemId);
+  if (actualIds.join(",") !== expected.itemIds.join(",")) {
+    return `상점 재고 ${expected.eventId}: 기대 ${expected.itemIds.join(",")}, 실제 ${actualIds.join(",")}`;
+  }
+  for (const [itemId, price] of Object.entries(expected.prices ?? {})) {
+    const actual = stock.find((entry) => entry.itemId === itemId)?.price;
+    if (actual !== price) return `상점 가격 ${itemId}: 기대 ${price}, 실제 ${actual ?? "(기본)"}`;
+  }
+  return null;
+}
+
+function findShopCommand(commands: readonly Command[]): Extract<Command, { kind: "shop" }> | undefined {
+  for (const command of commands) {
+    if (command.kind === "shop") return command;
+    if (command.kind === "choices") {
+      for (const option of command.options) {
+        const found = findShopCommand(option.branch);
+        if (found) return found;
+      }
+      const cancelFound = findShopCommand(command.cancelBranch ?? []);
+      if (cancelFound) return cancelFound;
+    } else if (command.kind === "fork") {
+      const found = findShopCommand(command.then) ?? findShopCommand(command.else ?? []);
+      if (found) return found;
+    } else if (command.kind === "loop") {
+      const found = findShopCommand(command.body);
+      if (found) return found;
+    } else if (command.kind === "promoteActor") {
+      const found = findShopCommand(command.successBranch ?? []) ?? findShopCommand(command.failureBranch ?? []);
+      if (found) return found;
+    } else if (command.kind === "evolveMonster") {
+      const found = findShopCommand(command.successBranch ?? []) ?? findShopCommand(command.failureBranch ?? []);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
+function formatShopItems(items: readonly { readonly itemId: string; readonly price?: number }[]): string {
+  return items.map((entry) => entry.price === undefined ? entry.itemId : `${entry.itemId}=${entry.price}`).join(",");
 }
 
 function expectGameTimeAt(state: RunnerState, expected: Partial<GameTime>): string | null {
@@ -1364,6 +1483,7 @@ function runHeadlessBattle(
       variables: state.session.variables,
       inventory: state.session.inventory,
       gameTime: state.session.gameTime,
+      friendship: state.session.friendship,
     },
     rng: () => nextSessionRandom(state.session, "battle"),
   });
@@ -1521,6 +1641,7 @@ function result(
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
       inventory: { ...session.inventory },
+      friendship: { ...(session.friendship ?? {}) },
       playTimeSeconds: session.playTimeSeconds,
       gameTime: session.gameTime,
       timePhase: timePhaseFor(session.gameTime),

@@ -47,6 +47,8 @@ export const COMMAND_KINDS = [
   "enterHeroName",
   "changeGold",
   "changeItem",
+  "changeFriendship",
+  "getFriendship",
   "changeParty",
   "giveMonster",
   "moveMonster",
@@ -98,6 +100,7 @@ export const CONDITION_KINDS = [
   "timePhase",
   "season",
   "npcActivity",
+  "friendshipAtLeast",
 ] as const satisfies readonly Condition["kind"][];
 
 export type ConditionKind = (typeof CONDITION_KINDS)[number];

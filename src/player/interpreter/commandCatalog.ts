@@ -1,5 +1,5 @@
 import type { Command, EndingDef, M2CommandFields } from "@/project/types";
-import { changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, learnSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, learnSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
 import { syncActorVitals } from "@/project/sessionVitals";
@@ -20,6 +20,7 @@ import { addSessionLight, removeSessionLight, setSessionLighting } from "@/playe
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
 import { advanceFarmPlotsForDay } from "@/player/farming";
+import { resolveShopStock } from "@/project/shopStock";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -454,6 +455,7 @@ export function executeCommand(
       return pause("shop", {
         kind: "shop",
         itemIds: command.itemIds,
+        items: state.project ? resolveShopStock(state.project, state.session, command) : undefined,
         allowSell: command.allowSell,
         quantityMode: command.quantityMode,
         shopType: command.shopType,
@@ -527,6 +529,12 @@ export function executeCommand(
       return resumeNext(frame);
     case "changeItem":
       changeItem(state.session, command.itemId, command.op, command.amount);
+      return resumeNext(frame);
+    case "changeFriendship":
+      changeFriendship(state.session, command.npcKey, command.delta, state.currentEventId);
+      return resumeNext(frame);
+    case "getFriendship":
+      setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, state.currentEventId));
       return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);

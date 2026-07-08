@@ -95,6 +95,7 @@ export type StepResult =
   | {
       kind: "shop";
       itemIds: string[];
+      items?: readonly { readonly itemId: string; readonly price?: number }[];
       allowSell?: boolean;
       quantityMode?: "single" | "select";
       shopType?: ShopType;
