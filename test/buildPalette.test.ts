@@ -3,6 +3,7 @@ import * as llmClient from "@/ai/llmClient";
 import {
   applyBuildPalettePrimitiveToProject,
   BUILD_PALETTE_PRESETS,
+  ensureBuildPalettePresets,
   type BuildPaletteSelection,
 } from "@/editor/panels/buildPaletteCore";
 import { createBlankProject } from "@/project/defaults";
@@ -209,5 +210,18 @@ describe("build palette deterministic stamps", () => {
     const riverMap = rivered.project.maps[MAP_ID];
     const waterMembers = new Set(rivered.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_PRESETS.water)?.tileIds ?? []);
     expect(waterMembers.has(riverMap.lowerTiles[3 * riverMap.width + 3])).toBe(true);
+  });
+
+  it("모래 오토타일 하네스 그룹은 기존 프로젝트 팔레트에서 user 어휘로 승격된다", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const sand = tileset.tileGroups?.find((group) => group.id === "harness-combined-town-sand-autotile");
+    expect(sand).toBeTruthy();
+
+    ensureBuildPalettePresets(tileset);
+
+    expect(sand).toMatchObject({
+      origin: "user",
+      source: "user",
+    });
   });
 });

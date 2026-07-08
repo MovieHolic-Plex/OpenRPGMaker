@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { deserialize, serialize } from "@/project/io";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, COMBINED_TOWN_HARNESS_GROUPS, DUNGEON_HARNESS_PREFIX, harnessLayerForTile, INTERIOR_HARNESS_PREFIX, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
@@ -8,6 +9,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   it("seeds the default Combined Town tileset with grouped metadata and grammars", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
     const roadGroup = tileset.tileGroups?.find((group) => group.id.endsWith("dirt-road-autotile"));
+    const sandGroup = tileset.tileGroups?.find((group) => group.id.endsWith("sand-autotile"));
     const waterGroup = tileset.tileGroups?.find((group) => group.id.endsWith("lake-water-autotile"));
 
     expect(roadGroup).toMatchObject({
@@ -19,6 +21,16 @@ describe("EasyRPG Combined Town tileset harness", () => {
       role: "water",
       patternGrammar: { kind: "animated_terrain" },
     });
+    expect(sandGroup).toMatchObject({
+      defaultLayer: "lower",
+      id: "harness-combined-town-sand-autotile",
+      layerHome: "lower",
+      name: "모래",
+      patternGrammar: { kind: "autotile_3x3" },
+      role: "terrain",
+      source: "bundled-default",
+    });
+    expect(sandGroup?.tileIds).toEqual(CHIPSET_TILE_GROUPS.sandGround);
     expect(tileset.tileMeta?.[360]).toMatchObject({
       label: "흙길 중앙",
       repeatability: "auto",

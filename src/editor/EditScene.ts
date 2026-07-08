@@ -32,10 +32,8 @@ import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pas
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
 import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapSelectionContextMenu";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
-import { tileFixFromCanvasMenuItem } from "@/editor/panels/tileMetaFixPopover";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
-import { visibleTilePickAt } from "@/editor/tilePicking";
 import { TilePaintEngine } from "@/editor/TilePaintEngine";
 import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { committedEvents } from "@/project/eventDrafts";
@@ -249,9 +247,6 @@ export class EditScene extends PhaserRuntime.Scene {
         if (this.tryOpenRegionTaskMenu(ptr)) return; // 선택 영역 안 우클릭 → 영역 작업 메뉴
         if (editorState.get().layer === "event") {
           this.openEventLayerMenu(ptr);
-        } else {
-          this.pickTileAtPointer(ptr);
-          this.openCanvasTileFixMenu(ptr);
         }
         return;
       }
@@ -384,10 +379,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.getTilePaintEngine().applyAtPointer(ptr);
   }
 
-  private pickTileAtPointer(ptr: Phaser.Input.Pointer): void {
-    this.getTilePaintEngine().pickTileAtPointer(ptr);
-  }
-
   // 우클릭 셀이 현재 맵의 활성 선택 영역 안이면 "이 영역에 AI 작업…" 메뉴를 연다.
   // 이벤트 레이어에서는 기존 이벤트 항목도 함께 보여 아무것도 잃지 않는다. 편집 잠금
   // 맵이면 열지 않는다(false 반환 → 기존 우클릭 동작으로 폴백).
@@ -432,36 +423,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastPaintKey = "";
     this.lastPointerTile = { x, y };
     openEventLayerContextMenu({ mapId, point, x, y });
-  }
-
-  private openCanvasTileFixMenu(ptr: Phaser.Input.Pointer): void {
-    const mapId = this.mapId();
-    if (!mapId) return;
-    if (!canEditMap(mapId)) {
-      toast(mapEditLockNotice(mapId), "error");
-      return;
-    }
-    const { x, y } = this.pointerToTile(ptr);
-    const map = store.getCurrent().maps[mapId];
-    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
-    const pick = visibleTilePickAt(map, y * map.width + x);
-    if (!pick) return;
-    const point = this.pointerScreenPosition(ptr);
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    this.lastPointerTile = { x, y };
-    openMapContextMenu({
-      items: [
-        tileFixFromCanvasMenuItem({
-          point,
-          tile: pick.tile,
-          tilesetId: map.tilesetId,
-        }),
-      ],
-      mapId,
-      mapName: `${map.name} (${x},${y})`,
-      point,
-    });
   }
 
   private handleKeyDown(event: KeyboardEvent): void {

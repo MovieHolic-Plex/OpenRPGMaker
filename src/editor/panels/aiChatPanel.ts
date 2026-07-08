@@ -7,6 +7,7 @@
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
+import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
@@ -14,6 +15,7 @@ import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeac
 import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
 import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowserModal";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
+import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
 import { commitChangeset, summarizeChanges, type ToolResult } from "@/editor/tools";
@@ -161,6 +163,7 @@ const MAP_TILE_TOOLS = new Set([
 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
+  readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
 }
 
 type AiAssistDetail =
@@ -415,6 +418,7 @@ function dropSession(controller: ChatController): void {
 
 export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
   const now = options.clock ?? (() => Date.now());
+  const runRegion = options.regionTaskRunner ?? runRegionTask;
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
   const latestConversation = loadLatestConversation();
@@ -1110,6 +1114,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.scrollTop = log.scrollHeight;
   };
 
+  let selectionTaskActive = false;
+  const currentSelectionForRegionTask = ():
+    | { readonly mapId: string; readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number } }
+    | null => {
+    if (!selectionTaskActive) return null;
+    const state = editorState.get();
+    const project = store.getCurrent();
+    const mapId = state.currentMapId ?? project.startMapId ?? null;
+    const selection = state.selection;
+    if (!mapId || !selection || selection.mapId !== mapId || !project.maps[selection.mapId]) return null;
+    return {
+      mapId: selection.mapId,
+      region: { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
+    };
+  };
+
   // 사용자 메시지에 현재 맵/선택 영역을 자동 첨부한다 — "여기에 지어줘"의 '여기'를
   // 모델이 좌표로 받는다(공간 산파법의 짝: 사용자가 영역을 지정하면 그게 곧 답).
   const contextFooter = (): string => {
@@ -1118,7 +1138,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 선택 영역은 '현재 맵의 것'이고 맵 범위 안에 있을 때만 첨부한다.
     // 맵을 전환해도 남아 있던 이전 맵의 선택(예: 10×10 맵에 (11,9))이 모델에 새 좌표로 오인되던 문제(BUG F) 방지.
     const sel = ctx.selection;
-    if (sel && sel.mapId === ctx.mapId) {
+    if (selectionTaskActive && sel && sel.mapId === ctx.mapId) {
       const map = ctx.mapId ? store.getCurrent().maps[ctx.mapId] : undefined;
       const inBounds = !map || (sel.x >= 0 && sel.y >= 0 && sel.x < map.width && sel.y < map.height);
       if (inBounds) parts.push(`사용자 선택 영역: (${sel.x},${sel.y}) ${sel.width}×${sel.height}`);
@@ -1435,6 +1455,113 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     bubble.append(el("div", { class: "ai-retry-row", children: actions }));
   };
 
+  const sendSelectionRegionTask = async (text: string): Promise<void> => {
+    const selection = currentSelectionForRegionTask();
+    if (!selection) {
+      selectionTaskActive = false;
+      refreshContextChips();
+      await sendText(text);
+      return;
+    }
+    if (turnBusy) {
+      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+      return;
+    }
+    turnBusy = true;
+    sendButton.disabled = true;
+    revealVolatileZone();
+    closeToolActivity();
+    appendBubble("user", text);
+    controller.auditHistory.push({ kind: "user", text, at: new Date().toISOString() });
+    beginTurnProgress();
+    refreshAbortButton();
+    setStatus("영역 작업 중…");
+    let assistantBubble: HTMLElement | null = null;
+    let reasoningBox: { body: HTMLElement } | null = null;
+    let assistantMessageDisplayed = false;
+    const streamedBubbles: HTMLElement[] = [];
+    const appendAssistantText = (content: string): void => {
+      if (!content.trim()) return;
+      assistantMessageDisplayed = true;
+      closeToolActivity();
+      appendBubble("assistant", content);
+      controller.auditHistory.push({ kind: "assistant", text: content, at: new Date().toISOString() });
+    };
+    const onEvent = (event: SessionEvent): void => {
+      if (event.type === "reasoning_token") {
+        if (!reasoningBox) reasoningBox = appendReasoning();
+        reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
+        log.scrollTop = log.scrollHeight;
+        return;
+      }
+      if (event.type === "assistant_token") {
+        reasoningBox = null;
+        if (!assistantBubble) {
+          assistantBubble = appendBubble("assistant", "");
+          streamedBubbles.push(assistantBubble);
+          closeToolActivity();
+        }
+        assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
+        log.scrollTop = log.scrollHeight;
+        return;
+      }
+      if (event.type === "assistant_message") {
+        appendAssistantText(event.content);
+        return;
+      }
+      if (event.type === "tool_call") {
+        bumpToolProgress();
+        appendToolLine(event.name, event.result, event.args);
+        controller.auditHistory.push({
+          kind: "tool",
+          name: event.name,
+          args: event.args,
+          ok: event.result.ok,
+          summary: event.result.summary,
+          issues: event.result.issues?.map((issue) => issue.message),
+          at: new Date().toISOString(),
+        });
+        assistantBubble = null;
+        reasoningBox = null;
+        return;
+      }
+      if (event.type === "status") {
+        appendBubble("system", event.text);
+        controller.auditHistory.push({ kind: "status", text: event.text, at: new Date().toISOString() });
+      }
+    };
+
+    try {
+      const result = await runRegion({
+        mapId: selection.mapId,
+        region: selection.region,
+        instruction: text,
+        onEvent,
+      });
+      streamedBubbles.forEach(renderStreamedMarkdown);
+      if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(result.assistantText);
+      const summary = describeRegionTaskResult(result);
+      appendBubble("system", summary);
+      controller.auditHistory.push({ kind: "status", text: summary, at: new Date().toISOString() });
+      setStatus(result.ok ? (result.applied ? "적용됨" : "완료") : "오류");
+      if (!result.ok && result.error) toast(`영역 작업 실패: ${result.error}`, "error");
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : String(cause);
+      setStatus("오류");
+      appendBubble("system", `오류: ${message}`);
+      controller.auditHistory.push({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
+    } finally {
+      endTurnProgress();
+      sendButton.disabled = false;
+      turnBusy = false;
+      refreshAbortButton();
+      persistConversation();
+      notifyIfObscuredByTestPlay();
+      drainPendingSends();
+      if (pendingSends.length === 0) scheduleVolatileFade();
+    }
+  };
+
   // 풀스크린 테스트 플레이 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
   // (도그푸딩 결함 ④ — 모달 뒤에서 턴/프로포절이 조용히 진행되던 문제). 자동으로 창을
   // 닫거나 열지 않는다: 완료 알림 + 기존 수동 버튼(편집으로/닫기)으로 확인하게 한다.
@@ -1450,16 +1577,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const text = input.value.trim();
     if (!text) return;
     if (!ensureConfigReadyForSend()) return;
+    if (selectionTaskActive && currentSelectionForRegionTask() && turnBusy) {
+      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+      return;
+    }
     lastTypedMessage = text;
     input.value = "";
     refreshSlash();
-    await sendText(text);
+    if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
+    else await sendText(text);
   };
 
   sendButton.addEventListener("click", () => void send());
   input.addEventListener("keydown", (event) => {
     // 엔터 = 즉시 전송, Shift+Enter = 줄바꿈. IME 조합 중(한글 입력 확정)에는 전송하지 않는다.
     const composing = event.isComposing || (event as KeyboardEvent & { keyCode?: number }).keyCode === 229;
+    if (event.key === "Escape" && selectionTaskActive) {
+      event.preventDefault();
+      selectionTaskActive = false;
+      refreshContextChips();
+      return;
+    }
     if (input.value.startsWith("/") && !composing) {
       if (event.key === "ArrowDown") {
         event.preventDefault();
@@ -1690,18 +1828,66 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
+  const clearSelectionTaskContext = (): void => {
+    if (!selectionTaskActive) return;
+    selectionTaskActive = false;
+    refreshContextChips();
+  };
+  const renderSelectionTaskChip = (
+    selection: NonNullable<ReturnType<typeof currentSelectionForRegionTask>>
+  ): HTMLElement =>
+    el("span", {
+      class: "ai-context-chip ai-selection-chip",
+      dataset: { testid: "ai-selection-chip" },
+      children: [
+        el("span", { text: `선택 (${selection.region.x},${selection.region.y}) ${selection.region.width}×${selection.region.height}` }),
+        el("button", {
+          class: "ai-selection-chip-clear",
+          text: "×",
+          attrs: { type: "button", title: "선택 영역 AI 작업 해제", "aria-label": "선택 영역 AI 작업 해제" },
+          dataset: { testid: "ai-selection-chip-clear" },
+          on: {
+            click: (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              clearSelectionTaskContext();
+              input.focus();
+            },
+          },
+        }),
+      ],
+    });
   const refreshContextChips = (): void => {
     if (typeof document === "undefined") return; // fakeDom 해제 후 잔존 구독 가드(테스트).
     const ctx = getSkillContext();
     const chips = [el("span", { class: "ai-context-chip", text: `🗺 ${ctx.mapName ?? "맵 없음"}` })];
-    if (ctx.selection) {
-      chips.push(el("span", { class: "ai-context-chip", text: `▦ (${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` }));
+    const selection = currentSelectionForRegionTask();
+    if (selectionTaskActive && !selection) selectionTaskActive = false;
+    if (selection) {
+      chips.push(renderSelectionTaskChip(selection));
     }
     contextChips.replaceChildren(...chips);
   };
   refreshContextChips();
   editorState.subscribe(() => refreshContextChips());
   store.subscribe(() => refreshContextChips());
+  const activateSelectionTaskContext = (focus = true): void => {
+    if (!editorState.get().selection) return;
+    selectionTaskActive = true;
+    refreshContextChips();
+    if (focus) input.focus();
+  };
+  const handleSelectionContextEvent = (event: Event): void => {
+    const detail = aiSelectionContextDetail(event);
+    if (!detail?.selection) {
+      clearSelectionTaskContext();
+      return;
+    }
+    activateSelectionTaskContext(detail.focus !== false);
+  };
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);
+  }
 
   // 접기 토글 — 상태는 localStorage에 유지되어 새로고침/모드 전환 후에도 기억된다.
   let collapsed = loadPanelCollapsed();

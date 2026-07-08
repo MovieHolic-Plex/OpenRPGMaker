@@ -2,6 +2,7 @@ import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { editorState, type PaintShape } from "@/editor/editorState";
+import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectTileRegion } from "@/editor/mapClipboard";
@@ -182,6 +183,7 @@ export class DragOperationHandler {
     const point = this.deps.pointerToTile(ptr);
     if (operation.kind === "select") {
       this.updateSelectionDrag(operation, point);
+      requestAiSelectionContext(editorState.get().selection);
     } else if (operation.kind === "structure") {
       this.commitStructureDrag(operation, point);
     } else if (operation.kind === "eventMove") {

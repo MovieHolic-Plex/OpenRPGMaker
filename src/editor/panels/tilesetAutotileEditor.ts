@@ -7,6 +7,7 @@ import {
   setAutotileVariant,
   updateAutotileGroup,
 } from "@/editor/tilesetActions";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import type { EdgeCornerTileSet } from "@/project/defaults/autotileEngine";
 import { AUTOTILE_DIR } from "@/project/defaults/autotileEngine";
 import type { AutotileGroup, AutotileNeighborhood, TilesetDef } from "@/project/types";
@@ -44,7 +45,8 @@ function maskLabel(mask: number): string {
 }
 
 export function renderAutotileEditorPanel(tileset: TilesetDef, rerender: () => void): HTMLElement {
-  const groups = tileset.autotileGroups ?? [];
+  const customGroupIds = new Set((tileset.autotileGroups ?? []).map((group) => group.id));
+  const groups = autotileGroupsForTileset(tileset);
   return renderFieldset(
     "오토타일 그룹",
     el("div", {
@@ -59,7 +61,7 @@ export function renderAutotileEditorPanel(tileset: TilesetDef, rerender: () => v
         el("div", {
           class: "tileset-autotile-list",
           children: groups.length > 0
-            ? groups.map((group) => renderGroupCard(tileset, group, rerender))
+            ? groups.map((group) => renderGroupCard(tileset, group, rerender, !customGroupIds.has(group.id)))
             : [el("div", { class: "tileset-autotile-empty", text: "정의된 오토타일 그룹이 없습니다 (내장 기본값 사용 중)." })],
         }),
       ],
@@ -105,51 +107,62 @@ function renderAddRow(tilesetId: string, rerender: () => void): HTMLElement {
   });
 }
 
-function renderGroupCard(tileset: TilesetDef, group: AutotileGroup, rerender: () => void): HTMLElement {
+function renderGroupCard(tileset: TilesetDef, group: AutotileGroup, rerender: () => void, readOnly: boolean): HTMLElement {
   return el("fieldset", {
-    class: "tileset-autotile-group",
+    class: `tileset-autotile-group${readOnly ? " readonly" : ""}`,
     dataset: { testid: `tileset-autotile-group-${group.id}` },
     children: [
-      el("legend", { text: group.name }),
-      nameControl(tileset.id, group, rerender),
-      neighborhoodControl(tileset.id, group, rerender),
+      el("legend", {
+        children: [
+          el("span", { text: group.name }),
+          ...(readOnly
+            ? [el("span", { class: "tileset-autotile-builtin-badge", text: "내장", dataset: { testid: `tileset-autotile-builtin-${group.id}` } })]
+            : []),
+        ],
+      }),
+      nameControl(tileset.id, group, rerender, readOnly),
+      neighborhoodControl(tileset.id, group, rerender, readOnly),
       tileListControl("멤버 타일", group.memberTileIds, (ids) => {
         updateAutotileGroup(tileset.id, group.id, { memberTileIds: ids });
         rerender();
-      }, `tileset-autotile-members-${group.id}`),
+      }, `tileset-autotile-members-${group.id}`, readOnly),
       tileListControl("연결 타일(선택)", group.connectTileIds ?? [], (ids) => {
         updateAutotileGroup(tileset.id, group.id, { connectTileIds: ids });
         rerender();
-      }, `tileset-autotile-connect-${group.id}`),
-      renderFillRow(tileset.id, group, rerender),
-      renderVariantGrid(tileset.id, group, rerender),
-      el("button", {
-        class: "tileset-db-small-button danger",
-        text: "그룹 삭제",
-        attrs: { type: "button" },
-        dataset: { testid: `tileset-autotile-remove-${group.id}` },
-        on: {
-          click: () => {
-            removeAutotileGroup(tileset.id, group.id);
-            fillDrafts.delete(group.id);
-            rerender();
-          },
-        },
-      }),
+      }, `tileset-autotile-connect-${group.id}`, readOnly),
+      ...(readOnly ? [el("div", { class: "tileset-autotile-readonly-note", text: "내장 그룹은 기본값 불러오기로 복제한 뒤 편집할 수 있습니다." })] : [renderFillRow(tileset.id, group, rerender)]),
+      renderVariantGrid(tileset.id, group, rerender, readOnly),
+      ...(readOnly
+        ? []
+        : [el("button", {
+            class: "tileset-db-small-button danger",
+            text: "그룹 삭제",
+            attrs: { type: "button" },
+            dataset: { testid: `tileset-autotile-remove-${group.id}` },
+            on: {
+              click: () => {
+                removeAutotileGroup(tileset.id, group.id);
+                fillDrafts.delete(group.id);
+                rerender();
+              },
+            },
+          })]),
     ],
   });
 }
 
-function nameControl(tilesetId: string, group: AutotileGroup, rerender: () => void): HTMLElement {
+function nameControl(tilesetId: string, group: AutotileGroup, rerender: () => void, readOnly: boolean): HTMLElement {
   const input = el("input", { attrs: { type: "text" }, value: group.name });
+  input.disabled = readOnly;
   input.addEventListener("change", () => {
+    if (readOnly) return;
     updateAutotileGroup(tilesetId, group.id, { name: input.value });
     rerender();
   });
   return field("이름", input);
 }
 
-function neighborhoodControl(tilesetId: string, group: AutotileGroup, rerender: () => void): HTMLElement {
+function neighborhoodControl(tilesetId: string, group: AutotileGroup, rerender: () => void, readOnly: boolean): HTMLElement {
   const options: readonly AutotileNeighborhood[] = [4, 8];
   const current = group.neighborhood ?? 4;
   const select = el("select", {
@@ -157,7 +170,9 @@ function neighborhoodControl(tilesetId: string, group: AutotileGroup, rerender: 
       el("option", { text: `${value}방향`, attrs: value === current ? { value: String(value), selected: "true" } : { value: String(value) } })
     ),
   });
+  select.disabled = readOnly;
   select.addEventListener("change", () => {
+    if (readOnly) return;
     const value = Number(select.value) === 8 ? 8 : 4;
     updateAutotileGroup(tilesetId, group.id, { neighborhood: value });
     rerender();
@@ -166,10 +181,13 @@ function neighborhoodControl(tilesetId: string, group: AutotileGroup, rerender: 
 }
 
 // 쉼표/공백 구분 숫자 목록 편집 컨트롤.
-function tileListControl(label: string, ids: readonly number[], onChange: (ids: number[]) => void, testid: string): HTMLElement {
+function tileListControl(label: string, ids: readonly number[], onChange: (ids: number[]) => void, testid: string, readOnly: boolean): HTMLElement {
   const input = el("input", { attrs: { type: "text", placeholder: "예: 421, 390, 391" }, value: ids.join(", ") });
+  input.disabled = readOnly;
   input.dataset.testid = testid;
-  input.addEventListener("change", () => onChange(parseTileList(input.value)));
+  input.addEventListener("change", () => {
+    if (!readOnly) onChange(parseTileList(input.value));
+  });
   return field(label, input);
 }
 
@@ -241,10 +259,10 @@ function resolveFillTiles(draft: FillDraft): EdgeCornerTileSet | null {
   return resolved;
 }
 
-function renderVariantGrid(tilesetId: string, group: AutotileGroup, rerender: () => void): HTMLElement {
+function renderVariantGrid(tilesetId: string, group: AutotileGroup, rerender: () => void, readOnly: boolean): HTMLElement {
   const cells: HTMLElement[] = [];
   for (let mask = 0; mask < 16; mask += 1) {
-    cells.push(variantCell(tilesetId, group, mask, rerender));
+    cells.push(variantCell(tilesetId, group, mask, rerender, readOnly));
   }
   return el("div", {
     class: "tileset-autotile-variant-grid",
@@ -253,11 +271,13 @@ function renderVariantGrid(tilesetId: string, group: AutotileGroup, rerender: ()
   });
 }
 
-function variantCell(tilesetId: string, group: AutotileGroup, mask: number, rerender: () => void): HTMLElement {
+function variantCell(tilesetId: string, group: AutotileGroup, mask: number, rerender: () => void, readOnly: boolean): HTMLElement {
   const current = group.variantMap[String(mask)];
   const input = el("input", { attrs: { type: "number", min: "0" }, value: current !== undefined ? String(current) : "" });
+  input.disabled = readOnly;
   input.dataset.testid = `tileset-autotile-variant-${group.id}-${mask}`;
   input.addEventListener("change", () => {
+    if (readOnly) return;
     const parsed = Number.parseInt(input.value, 10);
     setAutotileVariant(tilesetId, group.id, mask, Number.isInteger(parsed) && parsed >= 0 ? parsed : null);
     rerender();

@@ -40,6 +40,15 @@ export interface RegionTaskResult {
   readonly error?: string;
 }
 
+export function describeRegionTaskResult(result: RegionTaskResult): string {
+  if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
+  if (!result.applied) {
+    return result.changedCells === 0 ? "이 영역에서 바뀐 것이 없습니다." : "적용할 변경이 없습니다.";
+  }
+  const clipped = result.clippedCells > 0 ? ` · 영역 밖 ${result.clippedCells}칸 차단` : "";
+  return `완료 — ${result.changedCells}칸 변경${clipped}`;
+}
+
 const defaultDeps: RegionTaskDeps = {
   getProject: () => store.getCurrent(),
   applyProject: (project, label, mapId) => {

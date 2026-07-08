@@ -1,5 +1,4 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { openTileMetaFixPopover } from "@/editor/panels/tileMetaFixPopover";
 import { ensureTileMeta } from "@/editor/panels/tilesetMetadataControls";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { confidenceScore, primaryTileRole, tileMetaOrigin } from "@/project/tilesetPalette";
@@ -184,17 +183,6 @@ export function renderTilesetReviewWizard(options: RenderTilesetReviewWizardOpti
         refresh();
         options.rerender?.();
       },
-      fix: (item) => {
-        openTileMetaFixPopover({
-          onSaved: () => {
-            state = transitionTilesetReviewQueue(state, "confirm", item.tile);
-            refresh();
-          },
-          rerender: options.rerender,
-          tile: item.tile,
-          tilesetId: options.tileset.id,
-        });
-      },
       skip: (item) => {
         state = transitionTilesetReviewQueue(state, "skip", item.tile);
         refresh();
@@ -302,7 +290,6 @@ function renderQueueCard(
   item: TilesetReviewItem | null,
   actions: {
     readonly confirm: (item: TilesetReviewItem) => void;
-    readonly fix: (item: TilesetReviewItem) => void;
     readonly skip: (item: TilesetReviewItem) => void;
   }
 ): HTMLElement {
@@ -337,13 +324,6 @@ function renderQueueCard(
             attrs: { type: "button" },
             dataset: { testid: "tileset-review-confirm" },
             on: { click: () => actions.confirm(item) },
-          }),
-          el("button", {
-            class: "database-footer-button",
-            text: "고치기",
-            attrs: { type: "button" },
-            dataset: { testid: "tileset-review-fix" },
-            on: { click: () => actions.fix(item) },
           }),
           el("button", {
             class: "database-footer-button",

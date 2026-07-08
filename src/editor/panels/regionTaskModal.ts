@@ -2,7 +2,7 @@
 // 지시를 받아 runRegionTask로 넘기고(사각형 하드 스코프), 진행/결과를 표시한다.
 import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
-import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { describeRegionTaskResult, runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import type { MapId } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -98,7 +98,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     };
     try {
       const result = await run({ mapId: options.mapId, region, instruction, onEvent });
-      setSummary(describeResult(result));
+      setSummary(describeRegionTaskResult(result));
     } catch (cause) {
       setSummary(`오류: ${cause instanceof Error ? cause.message : String(cause)}`);
     } finally {
@@ -147,13 +147,4 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   textarea.focus();
   if (options.autoRun) void execute();
   return backdrop;
-}
-
-function describeResult(result: RegionTaskResult): string {
-  if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
-  if (!result.applied) {
-    return result.changedCells === 0 ? "이 영역에서 바뀐 것이 없습니다." : "적용할 변경이 없습니다.";
-  }
-  const clipped = result.clippedCells > 0 ? ` · 영역 밖 ${result.clippedCells}칸 차단` : "";
-  return `완료 — ${result.changedCells}칸 변경${clipped}`;
 }

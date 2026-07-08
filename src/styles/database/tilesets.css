@@ -599,7 +599,6 @@
   overflow: auto;
 }
 
-.tile-meta-fix-popover,
 .tileset-review-wizard {
   background: var(--panel, #ffffff);
   border: 1px solid var(--border-subtle, #cfd6e3);
@@ -610,34 +609,23 @@
   z-index: 10000;
 }
 
-.tile-meta-fix-popover {
-  display: grid;
-  gap: 8px;
-  min-width: 260px;
-}
-
-.tile-meta-fix-title,
 .tileset-review-title,
 .palette-preset-header strong {
   font-weight: 700;
 }
 
-.tile-meta-fix-field,
 .palette-preset-name,
 .palette-preset-slots label {
   display: grid;
   gap: 4px;
 }
 
-.tile-meta-fix-field input,
-.tile-meta-fix-field select,
 .palette-preset-name input,
 .palette-preset-slots input,
 .palette-preset-slots select {
   min-width: 0;
 }
 
-.tile-meta-fix-actions,
 .palette-preset-header,
 .tileset-review-header,
 .tileset-review-card-actions,
@@ -647,15 +635,8 @@
   gap: 6px;
 }
 
-.tile-meta-fix-actions,
 .tileset-review-header {
   justify-content: space-between;
-}
-
-.tile-meta-fix-group-row {
-  align-items: center;
-  display: flex;
-  gap: 6px;
 }
 
 .tileset-review-wizard-host {

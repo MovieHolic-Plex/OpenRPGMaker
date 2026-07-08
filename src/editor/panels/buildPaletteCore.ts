@@ -189,7 +189,7 @@ export function ensureBuildPalettePresets(tileset: TilesetDef): void {
   ensurePathAutotile(tileset);
 }
 
-const EXTRA_APPROVED_GROUP_IDS = [`${P}timber-stone-wall-9slice`] as const;
+const EXTRA_APPROVED_GROUP_IDS = [`${P}timber-stone-wall-9slice`, `${P}sand-autotile`] as const;
 
 // 오렌지 직선 지붕 타일(타일시트 초확대 실측): 세로 3단 구조.
 // 374 = 상단 마감(용마루, 위 밝은 줄) · 375 = 몸통 기와(균일 반복) · 405 = 최하단 처마(아래 밝은 줄).

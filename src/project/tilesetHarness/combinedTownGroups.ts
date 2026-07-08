@@ -1,6 +1,6 @@
 import type { TileAiMetadata, TileGroupMetadata } from "@/project/types";
 import { TILE } from "@/project/defaults/constants";
-import { CHIPSET_TILE_GROUPS, DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
+import { CHIPSET_TILE_GROUPS, DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 
 export type CombinedTownHarnessGroup = Omit<TileGroupMetadata, "tileIds"> & {
@@ -64,6 +64,39 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
         { role: "bottomLeft", tileIds: [DIRT_ROAD_TILE.CORNER_SOUTH_WEST] },
         { role: "bottom", tileIds: [DIRT_ROAD_TILE.EDGE_SOUTH] },
         { role: "bottomRight", tileIds: [DIRT_ROAD_TILE.CORNER_SOUTH_EAST] },
+      ],
+      preserveCaps: true,
+      repeat: "center",
+    },
+  },
+  {
+    id: `${COMBINED_TOWN_HARNESS_PREFIX}sand-autotile`,
+    name: "모래",
+    role: "terrain",
+    defaultLayer: "lower",
+    layerHome: "lower",
+    tileIds: [...CHIPSET_TILE_GROUPS.sandGround],
+    description: "대표 모래를 칠하면 주변 모래/물과 연결되어 변, 모서리, 중앙, 오목 타일로 자동 정리됩니다.",
+    placementRules: "하위 레이어에서 한 칸 브러시로 칠하고, 연결 상태에 따라 외곽과 중앙을 자동 선택합니다.",
+    confidence: "high",
+    source: "bundled-default",
+    passage: "passable",
+    repeatability: "auto",
+    patternGrammar: {
+      axis: "both",
+      kind: "autotile_3x3",
+      minHeight: 1,
+      minWidth: 1,
+      parts: [
+        { role: "topLeft", tileIds: [SAND_TILE.CORNER_NORTH_WEST] },
+        { role: "top", tileIds: [SAND_TILE.EDGE_NORTH] },
+        { role: "topRight", tileIds: [SAND_TILE.CORNER_NORTH_EAST] },
+        { role: "left", tileIds: [SAND_TILE.EDGE_WEST] },
+        { role: "center", tileIds: [SAND_TILE.BODY, 364, SAND_TILE.ISOLATED, SAND_TILE.INNER_CORNER] },
+        { role: "right", tileIds: [SAND_TILE.EDGE_EAST] },
+        { role: "bottomLeft", tileIds: [SAND_TILE.CORNER_SOUTH_WEST] },
+        { role: "bottom", tileIds: [SAND_TILE.EDGE_SOUTH] },
+        { role: "bottomRight", tileIds: [SAND_TILE.CORNER_SOUTH_EAST] },
       ],
       preserveCaps: true,
       repeat: "center",

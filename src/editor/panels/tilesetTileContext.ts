@@ -1,7 +1,5 @@
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { LEGACY_RM_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
-import { openMapContextMenu, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
-import { tileInfoFixMenuItem } from "@/editor/panels/tileMetaFixPopover";
 import { tileMetaLocked } from "@/project/tilesetPalette";
 import type { TileMetadataSource, TilesetDef } from "@/project/types";
 
@@ -57,27 +55,6 @@ export function resolveTilesetTileContext(tileset: TilesetDef, tile: number): Ti
     metadataSource: "unknown",
     userLocked: false,
   };
-}
-
-export function openTilesetTileContextMenu(options: {
-  readonly point: MapContextMenuPoint;
-  readonly rerender: () => void;
-  readonly tile: number;
-  readonly tileset: TilesetDef;
-}): void {
-  openMapContextMenu({
-    items: [
-      tileInfoFixMenuItem({
-        point: options.point,
-        rerender: options.rerender,
-        tile: options.tile,
-        tilesetId: options.tileset.id,
-      }),
-    ],
-    mapId: options.tileset.id,
-    mapName: `${options.tileset.name} ${options.tile}번 타일`,
-    point: options.point,
-  });
 }
 
 export function isDefaultBundledTileset(tileset: TilesetDef): boolean {

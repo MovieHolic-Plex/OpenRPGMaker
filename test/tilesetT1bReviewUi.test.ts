@@ -8,13 +8,6 @@ import {
   togglePalettePresetSlotTile,
 } from "@/editor/panels/palettePresetEditor";
 import {
-  applyTileMetaFix,
-  saveTileMetaFixToStore,
-  tileFixFromCanvasMenuItem,
-  tileInfoFixMenuItem,
-  tileMetaFixDraft,
-} from "@/editor/panels/tileMetaFixPopover";
-import {
   approveAllReviewTiles,
   applyReviewConfirmation,
   buildTilesetReviewQueue,
@@ -23,14 +16,14 @@ import {
   transitionTilesetReviewQueue,
 } from "@/editor/panels/tilesetReviewWizard";
 import { reauditTileset, type TilesetVisionClient } from "@/editor/tilesetReaudit";
-import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { PalettePreset, Project, TileAiMetadata, TilesetDef } from "@/project/types";
-import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
 
@@ -88,7 +81,7 @@ describe("tileset review wizard", () => {
     expect(lowConfidenceReviewCount(buildTilesetReviewQueue(tileset))).toBe(1);
   });
 
-  it("위저드는 카드와 3버튼, overlay mode, 일괄 승인 버튼을 렌더한다", () => {
+  it("위저드는 카드와 확인/건너뛰기 버튼, overlay mode, 일괄 승인 버튼을 렌더한다", () => {
     const tileset = testTileset();
     setMeta(tileset, 1, { confidence: 0.3, label: "애매한 길", role: "path" });
 
@@ -97,7 +90,7 @@ describe("tileset review wizard", () => {
     expect(findByTestId(root, "tileset-review-wizard")).toBeTruthy();
     expect(findByTestId(root, "tileset-review-queue-card")?.textContent).toContain("신뢰도 30%");
     expect(findByTestId(root, "tileset-review-confirm")).toBeTruthy();
-    expect(findByTestId(root, "tileset-review-fix")).toBeTruthy();
+    expect(findByTestId(root, "tileset-review-fix")).toBeNull();
     expect(findByTestId(root, "tileset-review-skip")).toBeTruthy();
     expect(findByTestId(root, "tileset-review-overlay-passage")).toBeTruthy();
     expect(findByTestId(root, "tileset-review-overlay-role")).toBeTruthy();
@@ -138,86 +131,6 @@ describe("tileset review wizard", () => {
     expect(testTileset().tileMeta?.[2].confidence).toBe(1);
   });
 
-  it("고치기 버튼은 교정 팝오버를 연다", () => {
-    const tileset = testTileset();
-    setMeta(tileset, 1, { confidence: 0.2 });
-    const root = renderWithFakeDom(() => renderTilesetReviewWizard({ tileset }));
-
-    findByTestId(root, "tileset-review-fix")?.click();
-
-    expect(findByTestId(globalThis.document.body as unknown as FakeElement, "tile-meta-fix-popover")).toBeTruthy();
-  });
-});
-
-describe("tile metadata fix popover", () => {
-  it("초기 draft는 라벨, role, 통행, 그룹 소속을 읽는다", () => {
-    const tileset = testTileset();
-    tileset.tileGroups = [group("g_wall", [1]), group("g_water", [2])];
-    setMeta(tileset, 1, { label: "벽", role: "wall" });
-    tileset.passability[1] = { down: false, left: false, right: false, up: false };
-
-    expect(tileMetaFixDraft(tileset, 1)).toEqual({
-      groupIds: ["g_wall"],
-      label: "벽",
-      passage: "x",
-      role: "wall",
-    });
-  });
-
-  it("교정 저장은 사용자 origin, confidence 1, locked를 자동 마킹한다", () => {
-    const tileset = testTileset();
-    applyTileMetaFix(tileset, 1, { groupIds: [], label: "돌길", passage: "o", role: "path" });
-
-    expect(tileset.tileMeta?.[1]).toMatchObject({
-      confidence: 1,
-      label: "돌길",
-      locked: true,
-      origin: "user",
-      passage: "passable",
-      role: "path",
-      source: "user",
-      userLocked: true,
-    });
-  });
-
-  it("교정 저장은 그룹 소속을 추가하고 빠진 그룹에서는 제거한다", () => {
-    const tileset = testTileset();
-    tileset.tileGroups = [group("keep", [2]), group("drop", [1])];
-
-    applyTileMetaFix(tileset, 1, { groupIds: ["keep"], label: "장식", passage: "star", role: "decor" });
-
-    expect(tileset.tileGroups[0]?.tileIds).toContain(1);
-    expect(tileset.tileGroups[1]?.tileIds).not.toContain(1);
-  });
-
-  it("store 저장 경로는 undo 스냅샷으로 되돌릴 수 있다", () => {
-    const before = testTileset().tileMeta?.[1]?.label ?? "";
-
-    saveTileMetaFixToStore(DEFAULT_TILESET_ID, 1, { groupIds: [], label: "사용자 교정", passage: "x", role: "wall" });
-    expect(testTileset().tileMeta?.[1].label).toBe("사용자 교정");
-    expect(undoMapEdit()).toBe(true);
-
-    expect(testTileset().tileMeta?.[1]?.label ?? "").toBe(before);
-  });
-
-  it("캔버스 신고 메뉴 항목은 testid와 팝오버 진입을 제공한다", () => {
-    const item = tileFixFromCanvasMenuItem({ tile: 1, tilesetId: DEFAULT_TILESET_ID });
-
-    expect(item.label).toBe("이 타일 잘못 쓰임");
-    expect(item.testId).toBe("tile-fix-from-canvas");
-    item.action();
-
-    expect(findByTestId(globalThis.document.body as unknown as FakeElement, "tile-meta-fix-popover")).toBeTruthy();
-  });
-
-  it("타일셋 메뉴 항목은 타일 정보 수정 팝오버를 연다", () => {
-    const item = tileInfoFixMenuItem({ tile: 1, tilesetId: DEFAULT_TILESET_ID });
-
-    expect(item.label).toBe("타일 정보 수정");
-    item.action();
-
-    expect(findByTestId(globalThis.document.body as unknown as FakeElement, "tile-meta-fix-popover")).toBeTruthy();
-  });
 });
 
 describe("locked tile metadata guards", () => {
@@ -369,18 +282,6 @@ function setMeta(tileset: TilesetDef, tile: number, patch: Partial<TileAiMetadat
   while (tileset.tileMeta.length <= tile) tileset.tileMeta.push(undefined as unknown as TileAiMetadata);
   const current = tileset.tileMeta[tile] ?? {};
   tileset.tileMeta[tile] = { ...current, ...patch, label: patch.label ?? current.label ?? "", description: patch.description ?? current.description ?? "" };
-}
-
-function group(id: string, tileIds: readonly number[]) {
-  return {
-    defaultLayer: "lower" as const,
-    description: "",
-    id,
-    name: id,
-    placementRules: "",
-    role: "terrain" as const,
-    tileIds: [...tileIds],
-  };
 }
 
 function projectWithLockedTile(tile: number): Project {

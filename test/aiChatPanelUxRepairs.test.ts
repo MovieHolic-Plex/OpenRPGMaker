@@ -17,7 +17,9 @@ import {
   renderAiChatPanel,
   renderToolActivityEntry,
 } from "@/editor/panels/aiChatPanel";
+import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { editorState } from "@/editor/editorState";
+import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { clearConversations, projectConversationContextKey, saveConversation } from "@/ai/conversationStore";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -25,6 +27,7 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
+let restoreWindow: (() => void) | null = null;
 
 function installFakeLocalStorage(): void {
   storage = new Map();
@@ -44,8 +47,31 @@ async function flushAsync(): Promise<void> {
   for (let i = 0; i < 20; i += 1) await Promise.resolve();
 }
 
-function renderPanel(): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+function renderPanel(options: Parameters<typeof renderAiChatPanel>[0] = {}): FakeElement {
+  return renderAiChatPanel({ clock: () => 37_000, ...options }) as unknown as FakeElement;
+}
+
+function installFakeWindow(): void {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, "window");
+  const target = new EventTarget() as EventTarget & Partial<Window> & { __rpgzzuSkillHotkey?: boolean };
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: target,
+  });
+  restoreWindow = () => {
+    if (previous) Object.defineProperty(globalThis, "window", previous);
+    else Reflect.deleteProperty(globalThis, "window");
+    restoreWindow = null;
+  };
+}
+
+function dispatchInputKey(input: HTMLElement, key: string): void {
+  const event = new Event("keydown");
+  Object.defineProperty(event, "key", { configurable: true, value: key });
+  Object.defineProperty(event, "shiftKey", { configurable: true, value: false });
+  Object.defineProperty(event, "isComposing", { configurable: true, value: false });
+  input.dispatchEvent(event);
 }
 
 beforeEach(() => {
@@ -56,11 +82,76 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  restoreWindow?.();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+});
+
+describe("선택 영역 AI 직결 칩", () => {
+  it("드래그 완료 신호로 칩을 붙이고 선택 변경/X/Escape/선택 해제를 반영한다", () => {
+    installFakeWindow();
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    editorState.set({ currentMapId: mapId, selection: { mapId, x: 2, y: 3, width: 4, height: 5 } });
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+
+    requestAiSelectionContext(editorState.get().selection);
+
+    expect(findByTestId(panel, "ai-selection-chip")?.textContent).toContain("선택 (2,3) 4×5");
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(input);
+
+    editorState.set({ selection: { mapId, x: 7, y: 8, width: 2, height: 3 } });
+    expect(findByTestId(panel, "ai-selection-chip")?.textContent).toContain("선택 (7,8) 2×3");
+
+    findByTestId(panel, "ai-selection-chip-clear")?.click();
+    expect(findByTestId(panel, "ai-selection-chip")).toBeNull();
+
+    requestAiSelectionContext(editorState.get().selection);
+    dispatchInputKey(input, "Escape");
+    expect(findByTestId(panel, "ai-selection-chip")).toBeNull();
+
+    requestAiSelectionContext(editorState.get().selection);
+    expect(findByTestId(panel, "ai-selection-chip")).toBeTruthy();
+    editorState.set({ selection: null });
+    expect(findByTestId(panel, "ai-selection-chip")).toBeNull();
+  });
+
+  it("칩이 붙은 상태에서 Enter 제출은 runRegionTask 러너로 선택 영역을 넘긴다", async () => {
+    installFakeWindow();
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
+      options.onEvent?.({ type: "status", text: "영역 작업 시작" });
+      options.onEvent?.({ type: "tool_call", name: "paint_tiles", args: { count: 2 }, result: { ok: true, summary: "타일 2칸" } });
+      options.onEvent?.({ type: "assistant_message", content: "완료했습니다." });
+      return { ok: true, applied: true, changedCells: 2, clippedCells: 1, proposedCalls: 1, assistantText: "" };
+    });
+    editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
+    const panel = renderPanel({ regionTaskRunner: runner });
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    requestAiSelectionContext(editorState.get().selection);
+
+    input.value = "여기를 모래밭으로";
+    dispatchInputKey(input, "Enter");
+    await flushAsync();
+
+    expect(runner).toHaveBeenCalledTimes(1);
+    expect(runner.mock.calls[0]?.[0]).toMatchObject({
+      instruction: "여기를 모래밭으로",
+      mapId,
+      region: { x: 1, y: 2, width: 3, height: 4 },
+    });
+    const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(logText).toContain("영역 작업 시작");
+    expect(logText).toContain("paint_tiles");
+    expect(logText).toContain("완료했습니다.");
+    expect(logText).toContain("완료 — 2칸 변경 · 영역 밖 1칸 차단");
+  });
 });
 
 describe("진행 상태와 중단", () => {

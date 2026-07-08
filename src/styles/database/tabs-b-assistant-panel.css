@@ -1240,6 +1240,31 @@ body.ai-panel-docked .editor-layout {
   padding: 1px 8px;
 }
 
+.ai-selection-chip {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.ai-selection-chip-clear {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 14px;
+}
+
+.ai-selection-chip-clear:hover {
+  color: var(--text-1);
+}
+
 
 .ai-chat-tool-activity {
   padding: 2px 6px;

@@ -14,7 +14,6 @@ import {
   stopGroupDrag,
 } from "@/editor/panels/tilesetGroupEditor";
 import { cellTitle, hasAiMetadata, passageText } from "@/editor/panels/tilesetMetadataControls";
-import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContext";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -160,14 +159,7 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
 
 function handleTileContextMenu(model: ChipsetPreviewModel, tile: number, event: Event): void {
   event.preventDefault();
-  if (!(event instanceof MouseEvent)) return;
   model.onSelectTile(tile);
-  openTilesetTileContextMenu({
-    point: { x: event.clientX, y: event.clientY },
-    rerender: () => stableRerender(model.rerender),
-    tile,
-    tileset: model.tileset,
-  });
 }
 
 function handleTileClick(model: ChipsetPreviewModel, tile: number, event: Event): void {
