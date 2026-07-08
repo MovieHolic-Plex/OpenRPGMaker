@@ -118,6 +118,8 @@ function conditionReferencesDatabase(condition: Condition | BattleEventCondition
     case "enemyHp":
     case "enemyTurn":
       return collection === "enemies" && condition.enemyId === id;
+    case "enemyHpBelow":
+      return collection === "enemies" && condition.enemyId === id;
     default:
       return false;
   }

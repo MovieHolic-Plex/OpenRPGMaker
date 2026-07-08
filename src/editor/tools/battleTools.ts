@@ -20,19 +20,21 @@ const simulateBattleTool: ToolDefinition = {
       n: { type: "integer", description: "시뮬 횟수(기본 50)" },
       seed: { type: "integer", description: "PRNG 시드(재현성)" },
       battleFlow: { type: "string", enum: ["gauge", "strict"], description: "전투 흐름(gauge 기본, strict 엄격 턴제)" },
+      activeSlots: { type: "integer", description: "동시 참전 액터 수 override(미지정 시 시스템/트룹 설정)" },
       strictScript: {
         type: "array",
-        description: "strict 전용 라운드별 명령. 예: [[{actorId:'actor_hero', command:'attack', target:'enemy-1'}]]",
+        description: "strict 전용 라운드별 명령. 예: [[{actorId:'actor_hero', command:'attack', target:'enemy-1'}, {actorId:'actor_mage', command:'switch', switchActorId:'actor_healer'}]]",
         items: {
           type: "array",
           items: {
             type: "object",
             properties: {
               actorId: { type: "string" },
-              command: { type: "string", enum: ["attack", "skill", "item", "guard", "defend", "escape"] },
+              command: { type: "string", enum: ["attack", "skill", "item", "guard", "defend", "escape", "switch"] },
               skillId: { type: "string" },
               itemId: { type: "string" },
               target: { type: "string" },
+              switchActorId: { type: "string" },
             },
             required: ["actorId", "command"],
           },
@@ -55,6 +57,7 @@ const simulateBattleTool: ToolDefinition = {
       n: args.n as number | undefined,
       seed: args.seed as number | undefined,
       battleFlow: args.battleFlow as "gauge" | "strict" | undefined,
+      activeSlots: args.activeSlots as number | undefined,
       strictScript: args.strictScript as Parameters<typeof simulateBattle>[0]["strictScript"],
     });
     return {

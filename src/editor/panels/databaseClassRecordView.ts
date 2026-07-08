@@ -9,7 +9,7 @@ import { toast } from "@/util/toast";
 import { classCurveCards } from "./databaseClassCurveEditors";
 import { renderClassExperiencePanel } from "./databaseClassExperienceCurveEditor";
 
-const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "escape", "event"];
+const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "escape", "switch", "event"];
 const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   attack: "공격",
   skill: "특수기능",
@@ -18,7 +18,8 @@ const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   guard: "방어",
   item: "아이템",
   escape: "도망",
-  event: "교체",
+  switch: "교체",
+  event: "교체(구형)",
 };
 const FALLBACK_CLASS_COMMANDS: ClassRecord["battleCommands"] = [
   { id: "cmd_attack", name: "공격", kind: "attack" },
@@ -252,7 +253,7 @@ function gradeSelect(value: ActorRateGrade, testid: string): HTMLSelectElement {
 function classCommandsWithChange(record: ClassRecord): ClassRecord["battleCommands"] {
   const source = record.battleCommands.length > 0 ? record.battleCommands : FALLBACK_CLASS_COMMANDS;
   const editable = source.filter((command) => command.id !== "cmd_change").slice(0, 6);
-  return [...editable, { id: "cmd_change", name: "교체", kind: "event" }];
+  return [...editable, { id: "cmd_change", name: "교체", kind: "switch" }];
 }
 
 function replaceClassCommand(record: ClassRecord, index: number, command: ClassRecord["battleCommands"][number]): ClassRecord["battleCommands"] {

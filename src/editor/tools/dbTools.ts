@@ -192,6 +192,8 @@ const troopRecordSchema = objectSchema({
   members: arrayOf(troopMemberSchema),
   autoAlign: booleanSchema(),
   previewBackgroundResourceId: stringSchema(),
+  battleFlow: { type: "string", enum: ["gauge", "strict"] },
+  activeSlots: integerSchema(),
   battleEventPages: { type: "array", description: "BattleEventPageRecord[]", items: { type: "object", additionalProperties: true } },
 }) as RecordSchema;
 

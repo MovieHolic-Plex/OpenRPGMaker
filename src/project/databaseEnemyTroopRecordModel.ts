@@ -46,6 +46,7 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     autoAlign: record.autoAlign ?? true,
     previewBackgroundResourceId: cleanOptionalId(record.previewBackgroundResourceId),
     battleFlow: normalizeBattleFlow(record.battleFlow),
+    activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
     battleEventPages: record.battleEventPages ?? [],
   };
 }
@@ -54,6 +55,11 @@ function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow | undefi
   if (value === "strict") return "strict";
   if (value === "gauge") return "gauge";
   return undefined;
+}
+
+function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.max(1, Math.min(99, Math.trunc(value)));
 }
 
 function normalizeEnemyStats(stats: Partial<EnemyStats> | undefined): EnemyStats {

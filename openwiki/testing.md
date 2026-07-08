@@ -13,6 +13,8 @@ Pick validation based on the touched boundary:
 - Chat dock layout regressions have a standing Playwright spec at `test/e2e/chat-dock-switch.spec.ts`; it covers float default placement, side docking persistence, DOM preservation, collapsed float/side states, input focus, and viewport resize bounds. Run it when validating dock UI changes unless the task owner explicitly asks for spec authoring only.
 - Runtime/player/battle changes: run focused unit tests plus the smallest e2e or browser scenario that proves the behavior in play mode.
 - Battle flow changes should cover both `"gauge"` regression and `"strict"` round collection/resolution. For strict, assert actor command collection, enemy AI inclusion, agility ordering, actor-first/index tie breaks, round-unit state upkeep, hidden gauge UI, and `simulate_battle` round logs from a scripted replay.
+- Active-slot/switch battle changes should cover active/reserve snapshot composition, strict switch-first resolution, forced switch after active defeat, defeated reserve exclusion, gauge immediate switch/gauge reset, participant tracking, and `simulate_battle` strict scripts with `"switch"`.
+- Troop battle-event changes should cover page conditions for `onRound`/`everyRound`, `enemyHpBelow`, and switch state; `runOnce`; supported message/choices/common-event/vital commands; unsupported-command logs/lint; and event logs returned through runtime snapshots or `simulate_battle`.
 - Play status menu keyboard regressions are covered by `test/e2e/rm2k3-menu-keyboard-tour.spec.ts`; it is intentionally long (`test.setTimeout(120_000)`) and tours item use, skills, equipment, save/load, row, formation, quests, wait, and title return using keyboard navigation.
 - Wiki-only changes: run `npm run openwiki:verify`.
 

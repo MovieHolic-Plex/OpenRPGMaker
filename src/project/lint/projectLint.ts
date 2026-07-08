@@ -16,7 +16,7 @@
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import { commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
@@ -223,6 +223,16 @@ function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): voi
       pushRuntimeSupportCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` })
     );
   }
+  for (const troop of project.database.troops) {
+    for (const page of troop.battleEventPages ?? []) {
+      visitCommands(page.commands, (command) =>
+        pushRuntimeSupportCommandIssue(command, issues, {
+          owner: `트룹 ${troop.id}/${page.id}`,
+          support: battleEventCommandRuntimeSupport(command),
+        })
+      );
+    }
+  }
 }
 
 export function countLimitedRuntimeSupportCommands(commands: readonly Command[]): number {
@@ -244,9 +254,9 @@ export function countLimitedRuntimeSupportCommandsForEvent(event: GameEvent): nu
 function pushRuntimeSupportCommandIssue(
   command: Command,
   issues: LintIssue[],
-  context: { readonly owner: string; readonly mapId?: string; readonly x?: number; readonly y?: number }
+  context: { readonly owner: string; readonly mapId?: string; readonly x?: number; readonly y?: number; readonly support?: CommandRuntimeSupport }
 ): void {
-  const support = commandRuntimeSupport(command);
+  const support = context.support ?? commandRuntimeSupport(command);
   if (!limitedRuntimeSupport(support)) return;
   issues.push({
     severity: "warning",

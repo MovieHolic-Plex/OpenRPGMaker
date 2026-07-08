@@ -58,6 +58,7 @@ function impactLine(
 ): string {
   if (command.kind === "defend") return "받는 피해를 줄일 준비를 마쳤다.";
   if (command.kind === "escape") return "전장에서 벗어나려 한다.";
+  if (command.kind === "switch") return "전열을 교체했다.";
   if (result && !result.hit) return "공격이 빗나갔다!";
   if (result && result.critical && impact > 0) return `급소에 맞았다! ${target?.name ?? "적"}에게 ${impact} 피해!`;
   if (impact > 0) return `${target?.name ?? "적"}에게 ${impact} 피해!`;
@@ -87,6 +88,16 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
     lines: [resultLine(snapshot.result), rewardsLine(snapshot)],
     activeActorRecordId: previous.activeActorRecordId,
     targetId: previous.targetId,
+  };
+}
+
+export function battleEventDirectorState(snapshot: BattleSnapshot, previous: BattleDirectorState): BattleDirectorState {
+  const log = [...snapshot.eventLogs].reverse().find((entry) => entry.kind === "message" || entry.kind === "choices");
+  if (!log?.detail) return previous;
+  return {
+    ...previous,
+    step: "acting",
+    lines: [log.detail],
   };
 }
 
@@ -185,6 +196,7 @@ function commandTarget(
         ?? before.enemies.find((enemy) => enemy.id === command.targetEnemyId);
     case "defend":
     case "escape":
+    case "switch":
       return undefined;
   }
 }
@@ -202,6 +214,8 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
       return `${actorName}이 방어 태세를 취했다.`;
     case "escape":
       return `${actorName}이 후퇴를 시도했다.`;
+    case "switch":
+      return `${actorName}이 교체를 지시했다.`;
   }
 }
 

@@ -86,6 +86,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     partyActorIds: options.party?.partyActorIds,
   });
   const enemies = enemyBattlers(options.project, troopRecord);
+  const activeSlots = normalizeActiveSlots(options.activeSlots ?? troopRecord.activeSlots ?? options.project.system.activeSlots, actors.length);
+  let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
   let backdropResourceId = options.backdropResourceId ?? troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
 
   let phase: BattlePhase = battleFlow === "strict" ? "actorCommand" : "charging";
@@ -100,7 +102,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictActorCommands: StrictQueuedActorCommand[] = [];
   let strictPendingActorIds: ActorId[] = [];
   let strictCurrentRoundActions: BattleRoundActionLogSnapshot[] = [];
+  let strictCurrentRoundParticipantIds = new Set<ActorId>();
   const roundLogs: BattleRoundLogSnapshot[] = [];
+  const participatingActorIds = new Set<ActorId>();
   const rewards: { exp: number; gold: number; items: ItemId[]; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
   const sessionState = options.sessionState ?? startStateOf(options.project);
@@ -110,6 +114,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     inventory: { ...sessionState.inventory },
   };
   const battleEvents = createBattleEventRuntime({
+    project: options.project,
     troopRecord,
     actors,
     enemies,
@@ -120,17 +125,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       backdropResourceId = resourceId;
     },
   });
+  markActiveParticipants();
 
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
+    if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
-    const ready = nextReadyBattler(actors, enemiesInBattle, deltaMs);
+    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs);
     if (!ready) {
-      chargeBattlers(actors, enemiesInBattle, deltaMs);
+      chargeBattlers(activeActors(), enemiesInBattle, deltaMs);
       return;
     }
-    chargeBattlers(actors, enemiesInBattle, ready.timeMs);
+    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
@@ -150,6 +157,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performActorCommand(command: ActorCommand): void {
+    const forcedActor = forcedSwitchActor();
+    if (forcedActor) {
+      if (command.kind !== "switch") return;
+      if (!switchActiveActor(forcedActor.recordId, command.targetActorId)) return;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      if (battleFlow === "strict") startStrictRound();
+      else phase = "charging";
+      return;
+    }
     if (battleFlow === "strict") {
       collectStrictActorCommand(command);
       return;
@@ -157,6 +174,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (phase !== "actorCommand" || !activeActorId || result) return;
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor) return;
+    if (command.kind === "switch" && !canSwitchActor(actor.recordId, command.targetActorId)) return;
 
     applyActorCommandEffect(actor, command);
     if (escaped) {
@@ -174,6 +192,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       activeActorId = undefined;
       currentActorCommandKind = undefined;
       phase = "resolved";
+      return;
+    }
+    if (beginForcedSwitchIfNeeded()) {
+      actor.gauge = 0;
+      currentActorCommandKind = undefined;
       return;
     }
     if (battleEvents.consumeExtraActorAction(actor.recordId)) {
@@ -223,6 +246,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "escape":
         attemptEscape();
         break;
+      case "switch":
+        switchActiveActor(actor.recordId, command.targetActorId);
+        break;
     }
   }
 
@@ -249,7 +275,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function attemptEscape(): void {
     if (!options.canEscape) return;
     // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
-    const actorAgi = average(actors.filter((a) => a.hp > 0).map((a) => a.agility));
+    const actorAgi = average(activeActors().filter((a) => a.hp > 0).map((a) => a.agility));
     const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
     const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
     if (rng() < chance) {
@@ -262,6 +288,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     switch (command.kind) {
       case "defend":
       case "escape":
+      case "switch":
         performActorCommand(command);
         return;
       case "attack":
@@ -303,14 +330,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     strictActorCommands = [];
     strictPendingActorIds = [];
     strictCurrentRoundActions = [];
+    strictCurrentRoundParticipantIds = new Set<ActorId>();
+    markActiveParticipants();
 
-    for (const battler of [...actors, ...visibleEnemies()]) {
+    for (const battler of [...activeActors(), ...visibleEnemies()]) {
       if (battler.hp > 0) runStateUpkeep(options.project, battler, rng);
     }
     resolveOutcome();
     if (result) return;
+    if (beginForcedSwitchIfNeeded()) return;
 
-    strictPendingActorIds = actors
+    strictPendingActorIds = activeActors()
       .filter((actor) => actor.hp > 0 && canBattlerAct(options.project, actor))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
@@ -326,6 +356,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (phase !== "actorCommand" || !activeActorId || result) return;
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor || actor.hp <= 0) return;
+    if (command.kind === "switch" && !canSwitchActor(actor.recordId, command.targetActorId)) return;
     strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command }];
     strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId);
     actor.gauge = 0;
@@ -397,6 +428,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function compareStrictActions(left: StrictQueuedAction, right: StrictQueuedAction): number {
+    const leftSwitch = left.side === "actor" && left.command.kind === "switch";
+    const rightSwitch = right.side === "actor" && right.command.kind === "switch";
+    if (leftSwitch !== rightSwitch) return leftSwitch ? -1 : 1;
     if (left.speed !== right.speed) return right.speed - left.speed;
     if (left.side !== right.side) return left.side === "actor" ? -1 : 1;
     return left.index - right.index;
@@ -434,7 +468,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     roundLogs.push({
       round,
       actions: [...strictCurrentRoundActions],
-      actors: actors.map((actor) => ({ id: actor.id, hp: actor.hp, mp: actor.mp, stateIds: [...actor.stateIds] })),
+      participatingActorIds: [...strictCurrentRoundParticipantIds],
+      actors: activeActors().map((actor) => ({ id: actor.id, hp: actor.hp, mp: actor.mp, stateIds: [...actor.stateIds] })),
       enemies: visibleEnemies().map((enemy) => ({ id: enemy.id, hp: enemy.hp, mp: enemy.mp, stateIds: [...enemy.stateIds] })),
       result,
     });
@@ -492,7 +527,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function supportTargetFor(user: MutableBattler): MutableBattler {
-    const side = actors.some((entry) => entry.id === user.id) ? actors : visibleEnemies();
+    const side = actors.some((entry) => entry.id === user.id) ? activeActors() : visibleEnemies();
     return side
       .filter((entry) => entry.hp > 0)
       .sort((a, b) => (a.hp / Math.max(1, a.maxHp)) - (b.hp / Math.max(1, b.maxHp)))[0]
@@ -501,12 +536,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function snapshot(): BattleSnapshot {
     const enemiesInBattle = visibleEnemies();
+    const forcedActor = forcedSwitchActor();
     return {
       phase,
       battleFlow,
       activeActorId,
-      actors: actors.map(battlerSnapshot),
-      enemies: enemiesInBattle.map(battlerSnapshot),
+      activeSlots,
+      forcedSwitchActorId: forcedActor?.recordId,
+      switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
+      participatingActorIds: [...participatingActorIds],
+      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index))),
+      reserveActors: reserveActors().map((actor) => battlerSnapshot(actor)),
+      enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy)),
       lastAnimation,
       lastActionResult,
       result,
@@ -519,6 +560,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       eventState: battleEvents.snapshot(),
       targetSelection,
       roundLogs,
+      eventLogs: battleEvents.logs(),
     };
   }
 
@@ -537,6 +579,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       turn += 1;
       applyTroopEvents();
       resolveOutcome();
+      if (!result && beginForcedSwitchIfNeeded()) return;
       phase = result ? "resolved" : "charging";
       return;
     }
@@ -548,6 +591,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     turn += 1;
     applyTroopEvents();
     resolveOutcome();
+    if (!result && beginForcedSwitchIfNeeded()) return;
     phase = result ? "resolved" : "charging";
   }
 
@@ -561,7 +605,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyEnemyActionSwitchEffects(action);
       return;
     }
-    const target = actors.find((actor) => actor.hp > 0);
+    const target = activeActors().find((actor) => actor.hp > 0);
     if (!target) return;
     const result = applySkillLike(enemy, target, {
       power: enemy.attackPower,
@@ -677,7 +721,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (skill?.effect.kind === "healing" || skill?.effect.kind === "support" || skill?.scope === "self" || skill?.scope === "ally") {
       return supportTargetFor(enemy);
     }
-    return actors.find((actor) => actor.hp > 0);
+    return activeActors().find((actor) => actor.hp > 0);
   }
 
   function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId): void {
@@ -803,6 +847,69 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return enemies.filter((enemy) => !enemy.hidden);
   }
 
+  function activeActors(): readonly MutableBattler[] {
+    return activeActorIds.flatMap((actorId) => {
+      const actor = actors.find((entry) => entry.recordId === actorId);
+      return actor ? [actor] : [];
+    });
+  }
+
+  function reserveActors(): readonly MutableBattler[] {
+    const active = new Set(activeActorIds);
+    return actors.filter((actor) => !active.has(actor.recordId));
+  }
+
+  function switchCandidateActors(): readonly MutableBattler[] {
+    return reserveActors().filter((actor) => actor.hp > 0);
+  }
+
+  function forcedSwitchActor(): MutableBattler | undefined {
+    if (switchCandidateActors().length === 0) return undefined;
+    return activeActors().find((actor) => actor.hp <= 0);
+  }
+
+  function beginForcedSwitchIfNeeded(): boolean {
+    const forced = forcedSwitchActor();
+    if (!forced || result) return false;
+    phase = "actorCommand";
+    activeActorId = forced.recordId;
+    targetSelection = undefined;
+    currentActorCommandKind = undefined;
+    return true;
+  }
+
+  function switchActiveActor(fromActorId: ActorId, targetActorId: ActorId): boolean {
+    const slotIndex = activeActorIds.indexOf(fromActorId);
+    if (slotIndex < 0) return false;
+    const candidate = switchCandidateActors().find((actor) => actor.recordId === targetActorId);
+    const outgoing = actors.find((actor) => actor.recordId === fromActorId);
+    if (!candidate) return false;
+    activeActorIds = activeActorIds.map((actorId, index) => (index === slotIndex ? candidate.recordId : actorId));
+    if (outgoing) {
+      outgoing.gauge = 0;
+      outgoing.defending = false;
+    }
+    candidate.gauge = 0;
+    candidate.defending = false;
+    markActiveParticipants();
+    return true;
+  }
+
+  function canSwitchActor(fromActorId: ActorId, targetActorId: ActorId): boolean {
+    return activeActorIds.includes(fromActorId) && switchCandidateActors().some((actor) => actor.recordId === targetActorId);
+  }
+
+  function markActiveParticipants(): void {
+    for (const actor of activeActors()) {
+      participatingActorIds.add(actor.recordId);
+      strictCurrentRoundParticipantIds.add(actor.recordId);
+    }
+  }
+
+  function activeActorPosition(index: number): { readonly battleX: number; readonly battleY: number } {
+    return { battleX: 248 + (index % 2) * 32, battleY: 70 + index * 24 };
+  }
+
   function resolveOutcome(): void {
     if (result) return;
     if (visibleEnemies().every((enemy) => enemy.hp <= 0)) {
@@ -867,4 +974,10 @@ export function concreteTargetCommand(command: TargetedActorCommand, targetEnemy
     case "item":
       return { kind: "item", itemId: command.itemId, targetEnemyId };
   }
+}
+
+function normalizeActiveSlots(value: number | undefined, partySize: number): number {
+  if (partySize <= 0) return 0;
+  if (typeof value !== "number" || !Number.isFinite(value)) return partySize;
+  return Math.max(1, Math.min(partySize, Math.trunc(value)));
 }

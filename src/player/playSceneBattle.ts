@@ -54,7 +54,7 @@ export function playBattle(
       onResult: (result, snapshot) => {
         applyBattleRewardsToSession(
           scene.session,
-          { result, rewards: snapshot.rewards, actors: snapshot.actors, eventState: snapshot.eventState },
+          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState },
           store.getCurrent()
         );
         battleScene.destroy();

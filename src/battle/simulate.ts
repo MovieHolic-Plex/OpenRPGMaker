@@ -4,16 +4,17 @@
 //
 import { actorBattlers } from "@/battle/battleBattlers";
 import { createBattleRuntime } from "@/battle/runtime";
-import type { ActorCommand, BattleFlow, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
+import type { ActorCommand, BattleEventLogSnapshot, BattleFlow, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 
 export interface StrictBattleScriptCommand {
   readonly actorId: string;
-  readonly command: "attack" | "skill" | "item" | "guard" | "defend" | "escape";
+  readonly command: "attack" | "skill" | "item" | "guard" | "defend" | "escape" | "switch";
   readonly skillId?: SkillId;
   readonly itemId?: ItemId;
   readonly target?: string;
+  readonly switchActorId?: string;
 }
 
 export interface SimulateBattleInput {
@@ -27,6 +28,7 @@ export interface SimulateBattleInput {
   readonly n?: number;
   readonly seed?: number;
   readonly battleFlow?: BattleFlow;
+  readonly activeSlots?: number;
   readonly strictScript?: readonly (readonly StrictBattleScriptCommand[])[];
   readonly maxSteps?: number; // 무한 루프 방지 tick 상한(기본 4000)
 }
@@ -38,7 +40,9 @@ export interface SimulateBattleResult {
   readonly avgHpRemaining: number; // 종료 시 파티 총 HP 평균
   readonly samples: number;
   readonly battleFlow: BattleFlow;
+  readonly participatingActorIds: readonly string[];
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
+  readonly eventLogs: readonly BattleEventLogSnapshot[];
 }
 
 interface SingleRunResult {
@@ -46,7 +50,9 @@ interface SingleRunResult {
   readonly turns: number;
   readonly potionsUsed: number;
   readonly hpRemaining: number;
+  readonly participatingActorIds: readonly string[];
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
+  readonly eventLogs: readonly BattleEventLogSnapshot[];
 }
 
 // 회복 아이템을 가진 저HP 액터가 아이템을 쓰도록 하는 간단 AI로 한 판을 구동한다.
@@ -62,6 +68,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     canEscape: false,
     canLose: true,
     battleFlow: input.battleFlow,
+    activeSlots: input.activeSlots,
     party: { levels, experience: {}, partyActorIds: [...partyActorIds] },
     sessionState: { switches: {}, variables: {}, inventory },
     rng,
@@ -78,17 +85,22 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     if (snap.phase === "actorCommand") {
       const actor = snap.actors.find((entry) => entry.recordId === snap.activeActorId);
       const enemy = snap.enemies.find((entry) => !entry.defeated && entry.hp > 0);
+      const scripted = strictScriptCommand(input, snap);
+      if (scripted) {
+        turns += 1;
+        rt.performActorCommand(scripted);
+        if (scripted.kind === "item") potionsUsed += 1;
+        continue;
+      }
+      if (snap.forcedSwitchActorId && snap.switchCandidateActorIds[0]) {
+        rt.performActorCommand({ kind: "switch", targetActorId: snap.switchCandidateActorIds[0] });
+        continue;
+      }
       if (!enemy) {
         rt.tick(1000);
         continue;
       }
       turns += 1;
-      const scripted = strictScriptCommand(input, snap);
-      if (scripted) {
-        rt.performActorCommand(scripted);
-        if (scripted.kind === "item") potionsUsed += 1;
-        continue;
-      }
       const lowHp = actor !== undefined && actor.hp <= actor.maxHp * 0.3;
       const hasPotion = input.potionItemId !== undefined && (snap.eventState.inventory[input.potionItemId] ?? 0) > 0;
       if (lowHp && hasPotion && input.potionItemId) {
@@ -103,8 +115,16 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
   }
 
   const final = rt.snapshot();
-  const hpRemaining = final.actors.reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
-  return { victory: final.result === "victory", turns, potionsUsed, hpRemaining, roundLogs: final.roundLogs };
+  const hpRemaining = [...final.actors, ...final.reserveActors].reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
+  return {
+    victory: final.result === "victory",
+    turns,
+    potionsUsed,
+    hpRemaining,
+    participatingActorIds: final.participatingActorIds,
+    roundLogs: final.roundLogs,
+    eventLogs: final.eventLogs,
+  };
 }
 
 function strictScriptCommand(input: SimulateBattleInput, snapshot: BattleSnapshot): ActorCommand | undefined {
@@ -125,6 +145,10 @@ function strictScriptCommand(input: SimulateBattleInput, snapshot: BattleSnapsho
       return { kind: "defend" };
     case "escape":
       return { kind: "escape" };
+    case "switch": {
+      const targetActorId = entry.switchActorId ?? entry.target;
+      return targetActorId ? { kind: "switch", targetActorId } : undefined;
+    }
   }
 }
 
@@ -145,13 +169,19 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   let totalPotions = 0;
   let totalHp = 0;
   let roundLogs: readonly BattleRoundLogSnapshot[] = [];
+  let eventLogs: readonly BattleEventLogSnapshot[] = [];
+  let participatingActorIds: readonly string[] = [];
   for (let i = 0; i < n; i += 1) {
     const run = runSingleBattle(input, rng);
     if (run.victory) wins += 1;
     totalTurns += run.turns;
     totalPotions += run.potionsUsed;
     totalHp += run.hpRemaining;
-    if (i === 0) roundLogs = run.roundLogs;
+    if (i === 0) {
+      roundLogs = run.roundLogs;
+      eventLogs = run.eventLogs;
+      participatingActorIds = run.participatingActorIds;
+    }
   }
   return {
     winRate: wins / n,
@@ -160,7 +190,9 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     avgHpRemaining: totalHp / n,
     samples: n,
     battleFlow: input.battleFlow ?? input.project.database.troops.find((troop) => troop.id === input.troopId)?.battleFlow ?? input.project.system.battleFlow ?? "gauge",
+    participatingActorIds,
     roundLogs,
+    eventLogs,
   };
 }
 

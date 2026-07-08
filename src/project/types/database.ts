@@ -95,7 +95,7 @@ export interface ClassOptions {
 
 export type BattleFlow = "gauge" | "strict";
 
-export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "escape" | "event";
+export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "escape" | "switch" | "event";
 
 export interface ClassBattleCommand {
   id: string;
@@ -356,7 +356,10 @@ export type BattleEventSpan = "battle" | "turn" | "moment";
 export type BattleEventCondition =
   | Condition
   | { kind: "turn"; start: number; interval: number }
+  | { kind: "onRound"; round: number }
+  | { kind: "everyRound"; start?: number; interval?: number }
   | { kind: "enemyHp"; enemyId: EnemyId; minPercent: number; maxPercent: number }
+  | { kind: "enemyHpBelow"; enemyId?: EnemyId; percent: number }
   | { kind: "actorHp"; actorId: ActorId; minPercent: number; maxPercent: number }
   | { kind: "enemyTurn"; enemyId: EnemyId; turn: number }
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
@@ -367,6 +370,7 @@ export interface BattleEventPageRecord {
   name: string;
   conditions: BattleEventCondition[];
   span: BattleEventSpan;
+  runOnce?: boolean;
   commands: Command[];
 }
 
@@ -378,6 +382,7 @@ export interface TroopRecord {
   autoAlign: boolean;
   previewBackgroundResourceId?: string;
   battleFlow?: BattleFlow;
+  activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
 }
 
@@ -538,5 +543,6 @@ export interface SystemRecords {
   battleSystemResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
+  activeSlots?: number;
   titleScreen?: TitleScreenSettings;
 }

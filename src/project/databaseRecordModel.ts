@@ -42,6 +42,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
+    activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
   };
 }
@@ -184,13 +185,18 @@ function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "escape" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "escape" || kind === "switch" || kind === "event"
     ? kind
     : "attack";
 }
 
 function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow {
   return value === "strict" ? "strict" : "gauge";
+}
+
+function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.max(1, Math.min(99, Math.trunc(value)));
 }
 
 function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | undefined, legacy: readonly string[] = []): ActorLearnedSkill[] {

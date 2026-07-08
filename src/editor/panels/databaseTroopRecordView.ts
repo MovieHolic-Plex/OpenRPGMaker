@@ -257,6 +257,10 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
       rerender();
     }),
+    numberField("참전 수", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
+      updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
+      rerender();
+    }),
   ]);
 }
 
@@ -274,6 +278,11 @@ function checkboxField(label: string, testid: string, checked: boolean, onInput:
   input.checked = checked;
   input.addEventListener("change", () => onInput(input.checked));
   return el("label", { class: "actor-check", children: [input, el("span", { text: label })] });
+}
+
+function optionalPositiveInteger(value: number): number | undefined {
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  return Math.trunc(value);
 }
 
 function actionButton(label: string, testid: string, onClick: () => void): HTMLButtonElement {

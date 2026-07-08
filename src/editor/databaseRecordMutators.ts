@@ -145,6 +145,8 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("members" in patch && patch.members !== undefined) record.members = patch.members;
   if ("autoAlign" in patch && patch.autoAlign !== undefined) record.autoAlign = patch.autoAlign;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
+  if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
+  if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;
   database.troops[index] = normalizeTroopRecord(record);
 }

@@ -142,10 +142,10 @@ describe("projectLint", () => {
 
     const issues = projectLint(project).filter((issue) => issue.code === "runtime-support:m2-088-comment");
 
-    expect(issues).toHaveLength(2);
+    expect(issues).toHaveLength(3);
     expect(issues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 3, y: 4 });
     expect(issues.map((issue) => issue.message).join("\n")).toContain("커먼 이벤트 ce_editor_only");
-    expect(issues.map((issue) => issue.message).join("\n")).not.toContain("트룹");
+    expect(issues.map((issue) => issue.message).join("\n")).toContain("트룹");
   });
 
   it("256x256 초과 맵을 warning으로 보고한다", () => {

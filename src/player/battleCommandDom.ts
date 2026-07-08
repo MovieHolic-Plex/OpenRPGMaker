@@ -14,6 +14,7 @@ import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/batt
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
   | { readonly kind: "item" }
+  | { readonly kind: "switch" }
   | null;
 
 export interface BattleCommandPanelOptions {
@@ -64,8 +65,15 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(...itemSubmenu(snapshot, options));
     return menu;
   }
+  if (options.submenu?.kind === "switch") {
+    menu.append(...switchSubmenu(snapshot, options));
+    return menu;
+  }
 
-  for (const command of battleCommandsForActor(store.getCurrent(), actor?.recordId)) {
+  for (const command of battleCommandsForActor(store.getCurrent(), actor?.recordId, {
+    includeSwitch: snapshot.reserveActors.length > 0,
+    forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
+  })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }
   return menu;
@@ -111,6 +119,14 @@ function commandControl(
       return commandButton(command.name, commandTestId(command), "boot", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "escape" });
       }, targetMode);
+    case "switch": {
+      const candidates = switchCandidates(snapshot);
+      return commandButton(command.name, commandTestId(command), "switch", candidates.length > 0 ? `${candidates.length}명` : "없음", () => {
+        if (targetMode || candidates.length === 0) return;
+        options.setSubmenu({ kind: "switch" });
+        options.render();
+      }, targetMode || candidates.length === 0);
+    }
   }
 }
 
@@ -126,6 +142,8 @@ function commandTestId(command: RuntimeBattleCommand): string {
       return "actor-command-escape";
     case "skill":
       return command.skillId ? `actor-command-skill-${command.skillId}` : command.id === "cmd_skill" ? "actor-command-skill" : `actor-command-${command.id}`;
+    case "switch":
+      return "actor-command-switch";
   }
 }
 
@@ -218,6 +236,25 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   }
   nodes.push(submenuBackButton(options));
   return nodes;
+}
+
+function switchSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = snapshot.forcedSwitchActorId ? "교체 필요" : "교체";
+  const nodes: HTMLElement[] = [header];
+  for (const actor of switchCandidates(snapshot)) {
+    nodes.push(commandButton(actor.name, `actor-switch-${actor.recordId}`, "switch", `HP ${actor.hp}/${actor.maxHp}`, () => {
+      options.runActorCommand({ kind: "switch", targetActorId: actor.recordId });
+    }));
+  }
+  if (!snapshot.forcedSwitchActorId) nodes.push(submenuBackButton(options));
+  return nodes;
+}
+
+function switchCandidates(snapshot: BattleSnapshot): BattleBattlerSnapshot[] {
+  const candidateIds = new Set(snapshot.switchCandidateActorIds);
+  return snapshot.reserveActors.filter((actor) => candidateIds.has(actor.recordId) && !actor.defeated);
 }
 
 function submenuBackButton(options: BattleCommandPanelOptions): HTMLElement {

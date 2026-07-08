@@ -26,7 +26,7 @@ const STANDARD_BATTLE_COMMANDS = [
   { id: "cmd_defend", name: "방어", kind: "defend" },
   { id: "cmd_item", name: "아이템", kind: "item" },
   { id: "cmd_escape", name: "도주", kind: "escape" },
-  { id: "cmd_change", name: "교체", kind: "event" },
+  { id: "cmd_change", name: "교체", kind: "switch" },
 ] as const satisfies readonly ClassBattleCommand[];
 
 export function defaultClassRecords(): ClassRecord[] {

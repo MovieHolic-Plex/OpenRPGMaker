@@ -1,6 +1,6 @@
 import type { ClassBattleCommand, ClassBattleCommandKind, Project, SkillId } from "@/project/types";
 
-export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "defend" | "escape";
+export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "defend" | "escape" | "switch";
 
 export interface RuntimeBattleCommand {
   readonly id: string;
@@ -18,14 +18,22 @@ export const DEFAULT_RUNTIME_BATTLE_COMMANDS: readonly RuntimeBattleCommand[] = 
   { id: "cmd_escape", name: "도주", kind: "escape" },
 ];
 
-export function battleCommandsForActor(project: Project, actorRecordId: string | undefined): readonly RuntimeBattleCommand[] {
+export function battleCommandsForActor(
+  project: Project,
+  actorRecordId: string | undefined,
+  options: { readonly includeSwitch?: boolean; readonly forceSwitchOnly?: boolean } = {}
+): readonly RuntimeBattleCommand[] {
+  if (options.forceSwitchOnly) return [switchCommand()];
   const actor = actorRecordId ? project.database.actors.find((record) => record.id === actorRecordId) : undefined;
   const klass = actor ? project.database.classes.find((record) => record.id === actor.classId) : undefined;
   const source = klass?.battleCommands ?? [];
   const commands = source
     .map((command) => resolveClassBattleCommand(project, command))
-    .filter((command): command is RuntimeBattleCommand => command !== undefined);
-  return commands.length > 0 ? commands : DEFAULT_RUNTIME_BATTLE_COMMANDS;
+    .filter((command): command is RuntimeBattleCommand => command !== undefined)
+    .filter((command) => options.includeSwitch || command.kind !== "switch");
+  const base = commands.length > 0 ? commands : DEFAULT_RUNTIME_BATTLE_COMMANDS;
+  if (!options.includeSwitch || base.some((command) => command.kind === "switch")) return base;
+  return [...base, switchCommand()];
 }
 
 function resolveClassBattleCommand(project: Project, command: ClassBattleCommand): RuntimeBattleCommand | undefined {
@@ -54,13 +62,15 @@ function normalizeKind(kind: ClassBattleCommandKind): RuntimeBattleCommandKind |
     case "item":
     case "escape":
       return kind;
+    case "switch":
+      return "switch";
     case "skillSubset":
       return "skill";
     case "defend":
     case "guard":
       return "defend";
     case "event":
-      return undefined;
+      return "switch";
   }
 }
 
@@ -76,5 +86,11 @@ function fallbackCommandName(kind: RuntimeBattleCommandKind): string {
       return "방어";
     case "escape":
       return "도주";
+    case "switch":
+      return "교체";
   }
+}
+
+function switchCommand(): RuntimeBattleCommand {
+  return { id: "cmd_switch", name: "교체", kind: "switch" };
 }

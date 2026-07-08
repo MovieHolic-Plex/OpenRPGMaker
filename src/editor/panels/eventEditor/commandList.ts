@@ -22,7 +22,7 @@ import {
 } from "@/assets/easyrpgRtp";
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
@@ -41,7 +41,8 @@ export function renderCommandList(
   host: HTMLElement,
   commands: Command[],
   containerPath: number[],
-  actions: CommandListActions
+  actions: CommandListActions,
+  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport } = {}
 ): void {
   clearChildren(host);
   host.dataset.containerPath = JSON.stringify(containerPath);
@@ -54,7 +55,7 @@ export function renderCommandList(
   const faceState: FaceState = { current: undefined };
   commands.forEach((cmd, index) => {
     const path = [...containerPath, index];
-    renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState);
+    renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, options);
   });
 }
 
@@ -65,13 +66,14 @@ function renderCommandTree(
   containerPath: number[],
   actions: CommandListActions,
   depth: number,
-  faceState: FaceState
+  faceState: FaceState,
+  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
 ): void {
-  host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState));
+  host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState, options));
   if (cmd.kind === "changeFace") {
     faceState.current = cmd.resourceId ? { resourceId: cmd.resourceId, faceIndex: cmd.faceIndex } : undefined;
   }
-  appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState);
+  appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
 }
 
 function renderCommandItem(
@@ -80,7 +82,8 @@ function renderCommandItem(
   containerPath: number[],
   actions: CommandListActions,
   depth: number,
-  faceState: FaceState
+  faceState: FaceState,
+  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
 ): HTMLElement {
   // [중간-1] 카테고리 색 레일 + kind 아이콘용 시각 정보 (CSS 는 data-command-category 로 매칭).
   const categoryVisual = commandCategoryVisual(cmd);
@@ -111,7 +114,7 @@ function renderCommandItem(
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path);
-  const supportBadge = renderRuntimeSupportBadge(commandRuntimeSupport(cmd), `command-runtime-badge-list-${path.join("-")}`);
+  const supportBadge = renderRuntimeSupportBadge((options.runtimeSupport ?? commandRuntimeSupport)(cmd), `command-runtime-badge-list-${path.join("-")}`);
   // 문장 표시 줄: 직전 changeFace 상태를 화자 얼굴 16px 크롭으로 부가.
   const activeFaceForItem = faceState.current;
   const speakerFace =
@@ -285,13 +288,14 @@ function appendCommandChildren(
   containerPath: number[],
   actions: CommandListActions,
   depth: number,
-  faceState: FaceState
+  faceState: FaceState,
+  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
 ): void {
   if (cmd.kind === "choices") {
     cmd.options.forEach((option, optionIndex) => {
       host.append(renderMarkerLine(`: ${option.text || `선택지 ${optionIndex + 1}`}`, depth, "choices"));
       option.branch.forEach((child, childIndex) => {
-        renderCommandTree(host, child, [...path, optionIndex, childIndex], containerPath, actions, depth + 1, faceState);
+        renderCommandTree(host, child, [...path, optionIndex, childIndex], containerPath, actions, depth + 1, faceState, options);
       });
     });
     if (cmd.cancelBehavior === "branch") {
@@ -304,7 +308,8 @@ function appendCommandChildren(
             containerPath,
             actions,
             depth + 1,
-            faceState
+            faceState,
+            options
         );
       });
     }
@@ -321,7 +326,8 @@ function appendCommandChildren(
           containerPath,
           actions,
           depth + 1,
-          faceState
+          faceState,
+          options
       );
     });
     if (cmd.else) {
@@ -334,7 +340,8 @@ function appendCommandChildren(
             containerPath,
             actions,
             depth + 1,
-            faceState
+            faceState,
+            options
         );
       });
     }
@@ -351,7 +358,8 @@ function appendCommandChildren(
           containerPath,
           actions,
           depth + 1,
-          faceState
+          faceState,
+          options
       );
     });
     host.append(renderMarkerLine(": 상점 분기 종료", depth, "shop"));

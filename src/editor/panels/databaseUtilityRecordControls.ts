@@ -157,7 +157,7 @@ export function isTerrainDisplay(value: string): value is DatabaseTerrainCharact
 }
 
 export function isBattleCommandKind(value: string): value is ClassBattleCommandKind {
-  return value === "attack" || value === "skill" || value === "skillSubset" || value === "defend" || value === "guard" || value === "item" || value === "escape" || value === "event";
+  return value === "attack" || value === "skill" || value === "skillSubset" || value === "defend" || value === "guard" || value === "item" || value === "escape" || value === "switch" || value === "event";
 }
 
 function updateUtilityStatus(tab: "battleCommands" | "elements" | "terrain", index: number): void {

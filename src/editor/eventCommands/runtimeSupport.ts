@@ -41,9 +41,28 @@ const M2_EDITOR_ONLY_IDS: ReadonlySet<string> = new Set([
   "m2-106-call-common-event",
 ]);
 
+const BATTLE_EVENT_RUNTIME_FULL_KINDS: ReadonlySet<Command["kind"]> = new Set([
+  "text",
+  "choices",
+  "fork",
+  "setSwitch",
+  "setVariable",
+  "changeItem",
+  "callCommonEvent",
+  "changeActorHp",
+  "changeActorMp",
+  "recoverAll",
+  "m2Command",
+]);
+
 export function commandRuntimeSupport(command: Command): CommandRuntimeSupport {
   if (command.kind !== "m2Command") return "runtime-full";
   return m2CommandRuntimeSupport(command.commandId);
+}
+
+export function battleEventCommandRuntimeSupport(command: Command): CommandRuntimeSupport {
+  if (command.kind === "m2Command") return m2CommandRuntimeSupport(command.commandId);
+  return BATTLE_EVENT_RUNTIME_FULL_KINDS.has(command.kind) ? "runtime-full" : "runtime-partial";
 }
 
 export function m2CommandRuntimeSupport(commandId: string): CommandRuntimeSupport {

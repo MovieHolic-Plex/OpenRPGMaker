@@ -14,6 +14,7 @@ import {
   actorCommandDirectorState,
   applyBattleDirectorState,
   battleMessageWindow,
+  battleEventDirectorState,
   battleResultPanel,
   commandPromptState,
   initialBattleDirectorState,
@@ -145,6 +146,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function render(): void {
     const snapshot = options.runtime.snapshot();
     directorState = nextDirectorState(snapshot, directorState);
+    directorState = battleEventDirectorState(snapshot, directorState);
     activeAnimation?.destroy();
     activeAnimation = undefined;
     root.replaceChildren();

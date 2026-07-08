@@ -3,6 +3,7 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
+import type { CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import type { CommandListActions } from "./eventEditor/types";
@@ -11,6 +12,7 @@ export type DatabaseCommandArrayAdapter = {
   readonly commands: Command[];
   readonly replaceCommands: (commands: Command[]) => void;
   readonly rerender?: () => void;
+  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
 };
 
 export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAdapter): CommandListActions {
@@ -86,7 +88,7 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
 
 export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: DatabaseCommandArrayAdapter): void {
   const actions = createDatabaseCommandListActions(adapter);
-  renderCommandList(host, adapter.commands, [], actions);
+  renderCommandList(host, adapter.commands, [], actions, { runtimeSupport: adapter.runtimeSupport });
   if (host.firstElementChild?.classList.contains("empty-hint")) host.firstElementChild.remove();
   host.append(renderEmptyCommandLine(actions));
   host.addEventListener("dblclick", (event) => {

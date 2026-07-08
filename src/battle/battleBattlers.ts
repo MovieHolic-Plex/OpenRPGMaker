@@ -174,7 +174,10 @@ export function average(values: readonly number[]): number {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-export function battlerSnapshot(battler: MutableBattler): BattleBattlerSnapshot {
+export function battlerSnapshot(
+  battler: MutableBattler,
+  position?: { readonly battleX?: number; readonly battleY?: number }
+): BattleBattlerSnapshot {
   return {
     id: battler.id,
     recordId: battler.recordId,
@@ -184,8 +187,8 @@ export function battlerSnapshot(battler: MutableBattler): BattleBattlerSnapshot 
     mp: battler.mp,
     maxMp: battler.maxMp,
     gauge: battler.gauge,
-    battleX: battler.battleX,
-    battleY: battler.battleY,
+    battleX: position?.battleX ?? battler.battleX,
+    battleY: position?.battleY ?? battler.battleY,
     defeated: battler.hp <= 0,
     defending: battler.defending,
     stateIds: battler.stateIds,

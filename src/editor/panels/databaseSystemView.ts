@@ -53,6 +53,11 @@ export function renderSystemTab(host: HTMLElement): void {
           draft.system.initialTroopId = emptyToUndefined(value);
         });
       }),
+      numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
+        store.update((draft) => {
+          draft.system.activeSlots = optionalPositiveInteger(value);
+        });
+      }),
     ]),
     rm2k3Fieldset("게임 시작화면", [
       textControl("게임 타이틀", titleScreen.title, (value) => {
@@ -127,6 +132,11 @@ function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLEle
 function clampStageCoordinate(value: number, max: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(max, Math.trunc(value)));
+}
+
+function optionalPositiveInteger(value: number): number | undefined {
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  return Math.trunc(value);
 }
 
 function readonlyValue(label: string, value: string): HTMLElement {

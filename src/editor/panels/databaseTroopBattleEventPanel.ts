@@ -1,5 +1,6 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
+import { battleEventCommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { selectLiteral } from "@/editor/panels/databaseControls";
 import { battleEventCommandControls } from "@/editor/panels/databaseTroopBattleEventCommands";
 import {
@@ -143,6 +144,7 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
   renderDatabaseCommandListEditor(host, {
     commands: page.commands,
     rerender,
+    runtimeSupport: battleEventCommandRuntimeSupport,
     replaceCommands: (commands: Command[]) => updateTroopBattleEventPage(record, page, { commands }),
   });
   return el("div", {

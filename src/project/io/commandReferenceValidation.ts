@@ -199,12 +199,17 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "enemyTurn":
       assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
       return;
+    case "enemyHpBelow":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      return;
     case "actorHp":
     case "actorTurn":
     case "actorCommand":
       assert(context.actorIds.has(condition.actorId), `battle condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
       return;
     case "turn":
+    case "onRound":
+    case "everyRound":
       return;
   }
 }
