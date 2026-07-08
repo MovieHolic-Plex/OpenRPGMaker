@@ -24,6 +24,7 @@ import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, V2_TILE_SUPERSEDED, VOCABULARY_TOOLS_V3 } from "./v3";
+import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
@@ -97,6 +98,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_KIT_TOOLS, "tile"),
+  ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(TILE_TOOLS_V2, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
