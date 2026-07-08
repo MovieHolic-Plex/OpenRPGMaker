@@ -3,7 +3,7 @@ import { emptyToUndefined, numberField, textControl } from "@/editor/panels/data
 import { imageIconOf, recordIconElement } from "@/editor/panels/eventEditor/recordPicker";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { store } from "@/project/store";
-import type { ActorLearnedSkill, EnemyStats, MonsterSpeciesRecord } from "@/project/types";
+import type { ActorLearnedSkill, EnemyStats, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 
@@ -97,6 +97,9 @@ function speciesForm(record: MonsterSpeciesRecord): HTMLElement {
     textControl("몬스터 리소스", record.graphic.monsterResourceId ?? "", (value) => {
       updateSpecies(record.id, { graphic: { ...record.graphic, monsterResourceId: emptyToUndefined(value) } });
     }, "db-monster-species-resource"),
+    textControl("타입(최대 2, 쉼표 구분)", (record.types ?? []).join(", "), (value) => {
+      updateSpecies(record.id, { types: parseTypes(value) });
+    }, "db-monster-species-types"),
     numberField("그래픽 Hue", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
       updateSpecies(record.id, { graphic: { ...record.graphic, graphicHue: value } });
     }),
@@ -104,7 +107,8 @@ function speciesForm(record: MonsterSpeciesRecord): HTMLElement {
       updateSpecies(record.id, { captureRate: value });
     }),
     ...statFields(record),
-    skillsByLevelField(record)
+    skillsByLevelField(record),
+    evolutionsField(record)
   );
   return form;
 }
@@ -139,6 +143,59 @@ function parseSkillsByLevel(value: string): ActorLearnedSkill[] {
       const [levelText, skillId] = line.split(":").map((part) => part.trim());
       if (!skillId) return [];
       return [{ level: parseInt(levelText ?? "1", 10) || 1, skillId }];
+    });
+}
+
+function evolutionsField(record: MonsterSpeciesRecord): HTMLElement {
+  const textarea = el("textarea", {
+    value: (record.evolutions ?? []).map(formatEvolution).join("\n"),
+    attrs: { rows: "4" },
+    dataset: { testid: "db-monster-species-evolutions" },
+  }) as HTMLTextAreaElement;
+  textarea.addEventListener("change", () => updateSpecies(record.id, { evolutions: parseEvolutions(textarea.value) }));
+  return el("label", {
+    class: "db-field",
+    children: [
+      el("span", { text: "진화" }),
+      textarea,
+      el("small", { text: "예: species_king_slime | level=7 | item=item_stone | friendship=220" }),
+    ],
+  });
+}
+
+function parseTypes(value: string): string[] {
+  return [...new Set(value.split(",").map((entry) => entry.trim()).filter(Boolean))].slice(0, 2);
+}
+
+function formatEvolution(evolution: MonsterEvolutionRecord): string {
+  const parts = [evolution.toSpeciesId];
+  if (evolution.requires.level !== undefined) parts.push(`level=${evolution.requires.level}`);
+  if (evolution.requires.itemId) parts.push(`item=${evolution.requires.itemId}`);
+  if (evolution.requires.friendshipAtLeast !== undefined) parts.push(`friendship=${evolution.requires.friendshipAtLeast}`);
+  return parts.join(" | ");
+}
+
+function parseEvolutions(value: string): MonsterEvolutionRecord[] {
+  return value
+    .split(/\r?\n/)
+    .flatMap((line): MonsterEvolutionRecord[] => {
+      const parts = line.split("|").map((part) => part.trim()).filter(Boolean);
+      const toSpeciesId = parts[0];
+      if (!toSpeciesId) return [];
+      const requires: MonsterEvolutionRecord["requires"] = {};
+      for (const part of parts.slice(1)) {
+        const [key, raw] = part.split("=").map((entry) => entry.trim());
+        if (key === "level") {
+          const level = parseInt(raw ?? "", 10);
+          if (Number.isFinite(level) && level > 0) requires.level = level;
+        }
+        if ((key === "item" || key === "itemId") && raw) requires.itemId = raw;
+        if (key === "friendship" || key === "friendshipAtLeast") {
+          const friendship = parseInt(raw ?? "", 10);
+          if (Number.isFinite(friendship) && friendship > 0) requires.friendshipAtLeast = friendship;
+        }
+      }
+      return [{ toSpeciesId, requires }];
     });
 }
 

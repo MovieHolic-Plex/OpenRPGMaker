@@ -27,6 +27,11 @@ export function validateSystem(value: unknown): void {
   requireArray("system.startActorIds", system.startActorIds);
   if (system.titleScreen !== undefined) requireRecord("system.titleScreen", system.titleScreen);
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
+  if (system.typeChart !== undefined) {
+    const chart = requireRecord("system.typeChart", system.typeChart);
+    requireArray("system.typeChart.types", chart.types);
+    requireRecord("system.typeChart.multipliers", chart.multipliers);
+  }
 }
 
 export function validateSession(value: unknown): void {

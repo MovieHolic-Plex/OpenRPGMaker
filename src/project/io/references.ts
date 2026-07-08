@@ -308,8 +308,14 @@ function validateMonsterSpeciesRecords(
   resourceIds: ReadonlySet<string>,
   issues: string[]
 ): void {
+  const speciesIds = new Set((project.database.monsterSpecies ?? []).map((record) => record.id));
+  const itemIds = new Set(project.database.items.map((record) => record.id));
   for (const species of project.database.monsterSpecies ?? []) {
     collectExistingIdIssues(`monsterSpecies ${species.id}: skill`, (species.skillsByLevel ?? []).map((entry) => entry.skillId), skillIds, issues);
+    for (const evolution of species.evolutions ?? []) {
+      if (!speciesIds.has(evolution.toSpeciesId)) issues.push(`monsterSpecies ${species.id}: evolution toSpeciesId does not exist: ${evolution.toSpeciesId}`);
+      if (evolution.requires.itemId && !itemIds.has(evolution.requires.itemId)) issues.push(`monsterSpecies ${species.id}: evolution itemId does not exist: ${evolution.requires.itemId}`);
+    }
     capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.monsterResourceId`, species.graphic.monsterResourceId, resourceIds));
   }
 }
@@ -408,7 +414,10 @@ function stateIds(project: Project): ReadonlySet<string> {
 }
 
 function elementIds(project: Project): ReadonlySet<string> {
-  return new Set((project.database.elements ?? []).map((element) => element.id));
+  return new Set([
+    ...(project.database.elements ?? []).map((element) => element.id),
+    ...(project.system.typeChart?.types ?? []),
+  ]);
 }
 
 function elementIdExists(project: Project, elementId: string): boolean {

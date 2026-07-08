@@ -353,10 +353,28 @@ export interface MonsterSpeciesRecord {
   id: MonsterSpeciesId;
   name: string;
   graphic: MonsterSpeciesGraphic;
+  types?: string[];
   baseStats: EnemyStats;
   expCurve?: ActorExperienceCurve;
   captureRate: number;
   skillsByLevel?: ActorLearnedSkill[];
+  evolutions?: MonsterEvolutionRecord[];
+}
+
+export interface MonsterEvolutionRecord {
+  toSpeciesId: MonsterSpeciesId;
+  requires: MonsterEvolutionRequirement;
+}
+
+export interface MonsterEvolutionRequirement {
+  level?: number;
+  itemId?: ItemId;
+  friendshipAtLeast?: number;
+}
+
+export interface TypeChartRecord {
+  types: string[];
+  multipliers: Record<string, Record<string, number>>;
 }
 
 export interface EnemyRewards {
@@ -595,6 +613,7 @@ export interface SystemRecords {
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
   monsterCollection?: boolean;
+  typeChart?: TypeChartRecord;
 }
 
 export interface RewardPolicy {

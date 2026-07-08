@@ -73,6 +73,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "giveMonster", speciesId: "species_wild_slime", level: 5 };
     case "moveMonster":
       return { kind: "moveMonster", instanceId: "", to: "party" };
+    case "evolveMonster":
+      return { kind: "evolveMonster", instanceId: "", toSpeciesId: "", successBranch: [], failureBranch: [] };
     case "addFollower":
       return { kind: "addFollower", actorId: "", name: "" };
     case "removeFollower":

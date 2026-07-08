@@ -189,6 +189,7 @@ export type Command =
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
   | { kind: "giveMonster"; speciesId: MonsterSpeciesId; level: number; nickname?: string }
   | { kind: "moveMonster"; instanceId: MonsterInstanceId; to: "party" | "box" }
+  | { kind: "evolveMonster"; instanceId: MonsterInstanceId; toSpeciesId?: MonsterSpeciesId; successBranch?: Command[]; failureBranch?: Command[] }
   | { kind: "addFollower"; actorId?: ActorId; graphic?: EventPageGraphic; name?: string }
   | { kind: "removeFollower"; name?: string; all?: boolean }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs?: number }

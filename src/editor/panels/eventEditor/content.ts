@@ -249,6 +249,7 @@ function commandKindForTestId(testId: string): Command["kind"] | null {
     "command-add-item": "changeItem",
     "command-add-party": "changeParty",
     "command-add-give-monster": "giveMonster",
+    "command-add-evolve-monster": "evolveMonster",
     "command-add-set-lighting": "setLighting",
     "command-add-checkpoint-save": "checkpointSave",
     "command-add-kill-player": "killPlayer",

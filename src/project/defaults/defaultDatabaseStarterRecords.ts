@@ -45,7 +45,9 @@ export function defaultSkillRecords(): SkillRecord[] {
       mpCost: 4,
       variance: 10,
     }),
-    skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10 }),
+    skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
+    skill("skill_water", "물대포", "enemy", 28, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
+    skill("skill_leaf", "잎날", "enemy", 28, "anim_arrow", "풀 타입 공격에 대응하는 기본 기술입니다.", "attack", "hp", { mpCost: 3, variance: 10, elementId: "grass" }),
     skill("skill_heal", "치유", "ally", 32, "anim_heal", "아군 하나의 HP를 회복합니다.", "mind", "hp", { mpCost: 3, kind: "healing" }),
     skill("skill_poison_sting", "독침", "enemy", 8, "anim_poison", "독 상태를 노리는 찌르기 기술입니다.", "mind", "hp", {
       successRate: 85,
@@ -151,7 +153,7 @@ function skill(
   description: string,
   statistic: "attack" | "mind",
   affects: "hp" | "mp",
-  options: { readonly kind?: "damage" | "healing"; readonly mpCost?: number; readonly successRate?: number; readonly variance?: number; readonly hitRate?: number; readonly stateEffects?: DatabaseStateEffect[] } = {},
+  options: { readonly kind?: "damage" | "healing"; readonly mpCost?: number; readonly successRate?: number; readonly variance?: number; readonly hitRate?: number; readonly elementId?: string; readonly stateEffects?: DatabaseStateEffect[] } = {},
 ): SkillRecord {
   return normalizeSkillRecord({
     id,
@@ -165,6 +167,7 @@ function skill(
     variance: options.variance ?? 20,
     hitRate: options.hitRate ?? 100,
     effect: options.kind === "healing" ? { kind: "healing", statistic: "mind", affects } : { kind: "damage", statistic, affects },
+    elementId: options.elementId,
     stateEffects: options.stateEffects,
   });
 }

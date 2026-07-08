@@ -8,6 +8,7 @@ import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
+import { typeChartMultiplierFor } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
@@ -814,7 +815,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hitRate: combinedSkillHitRate(skill),
       variance: skill?.variance,
       criticalRate: criticalRateFor(user),
-      elementMultiplier: elementMultiplierFor(skill?.elementId, target),
+      elementMultiplier: elementMultiplierFor(skill?.elementId, user, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       rng,
@@ -873,24 +874,25 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   // 속성 상성 배율을 계산. skill.elementId 가 없거나 데이터가 없으면 1.0.
   // target 의 elementRates(등급 A~E) → DatabaseElementRecord.damageMultipliers(배율) 조회.
-  function elementMultiplierFor(elementId: string | undefined, target: MutableBattler): number {
+  function elementMultiplierFor(elementId: string | undefined, user: MutableBattler, target: MutableBattler): number {
     if (!elementId) return 1;
     const element = options.project.database.elements?.find((entry) => entry.id === elementId);
-    if (!element?.damageMultipliers) return 1;
+    const typeMultiplier = typeChartMultiplierFor(options.project, elementId, user.recordId, target.recordId);
+    if (!element?.damageMultipliers) return typeMultiplier;
     // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
     const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);
     const actor = options.project.database.actors.find((entry) => entry.id === target.recordId);
     const rates = enemy?.elementRates ?? actor?.elementRates;
-    if (!rates) return 1;
+    if (!rates) return typeMultiplier;
     const grade = rates[elementId];
-    if (!grade) return 1;
+    if (!grade) return typeMultiplier;
     const multiplier = element.damageMultipliers[grade];
-    if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return 1;
+    if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return typeMultiplier;
     // damageMultipliers 는 퍼센트 스케일(A=200,B=150,C=100,D=50,E=0)로 저장된다.
     // 데미지 배율로 쓰려면 100으로 나눈다: C=1.0(중립), A=2.0(약점), D=0.5(내성), E=0(무효),
     // 음수(-100 등)는 흡수(-1.0 = 회복)를 의미한다.
     const equipmentReduction = target.equipmentEffects?.elementalDefenseIds.includes(elementId) ? 0.5 : 1;
-    return (multiplier / 100) * equipmentReduction;
+    return (multiplier / 100) * equipmentReduction * typeMultiplier;
   }
 
   function applyTroopEvents(eventTurn: number = turn): void {

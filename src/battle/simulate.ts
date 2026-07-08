@@ -4,7 +4,7 @@
 //
 import { actorBattlers } from "@/battle/battleBattlers";
 import { createBattleRuntime } from "@/battle/runtime";
-import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
+import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 
@@ -46,6 +46,7 @@ export interface SimulateBattleResult {
   readonly eventLogs: readonly BattleEventLogSnapshot[];
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly capturedCount: number;
+  readonly firstRewards?: BattleRewardsSnapshot;
 }
 
 interface SingleRunResult {
@@ -57,6 +58,7 @@ interface SingleRunResult {
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
   readonly eventLogs: readonly BattleEventLogSnapshot[];
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
+  readonly rewards: BattleRewardsSnapshot;
 }
 
 // 회복 아이템을 가진 저HP 액터가 아이템을 쓰도록 하는 간단 AI로 한 판을 구동한다.
@@ -134,6 +136,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     roundLogs: final.roundLogs,
     eventLogs: final.eventLogs,
     capturedMonsters,
+    rewards: final.rewards,
   };
 }
 
@@ -187,6 +190,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   let participatingActorIds: readonly string[] = [];
   let capturedMonsters: readonly BattleCapturedMonsterSnapshot[] = [];
   let capturedCount = 0;
+  let firstRewards: BattleRewardsSnapshot | undefined;
   for (let i = 0; i < n; i += 1) {
     const run = runSingleBattle(input, rng);
     if (run.victory) wins += 1;
@@ -199,6 +203,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
       eventLogs = run.eventLogs;
       participatingActorIds = run.participatingActorIds;
       capturedMonsters = run.capturedMonsters;
+      firstRewards = run.rewards;
     }
   }
   return {
@@ -213,6 +218,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     eventLogs,
     capturedMonsters,
     capturedCount,
+    firstRewards,
   };
 }
 

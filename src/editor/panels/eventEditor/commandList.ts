@@ -395,6 +395,35 @@ function appendCommandChildren(
     });
     host.append(renderMarkerLine(": 승급 분기 종료", depth, "fork"));
   }
+  if (cmd.kind === "evolveMonster") {
+    host.append(renderMarkerLine(": 진화 성공", depth, "fork"));
+    (cmd.successBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, PROMOTE_SUCCESS_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 진화 실패", depth, "fork"));
+    (cmd.failureBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, PROMOTE_FAILURE_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 진화 분기 종료", depth, "fork"));
+  }
 }
 
 // 분기 마커 라인 (": 조건이 참일 때" 등). kind 별 클래스로 fork/choices/shop 마커를 톤으로 구분한다.

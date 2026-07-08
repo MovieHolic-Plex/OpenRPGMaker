@@ -18,7 +18,7 @@ import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/e
 import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
-import { giveMonster, moveMonster } from "@/project/monsterCollection";
+import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -517,6 +517,15 @@ export function executeCommand(
     case "moveMonster":
       moveMonster(state.session as PlaySession, command.instanceId, command.to);
       return resumeNext(frame);
+    case "evolveMonster": {
+      const result = state.project
+        ? evolveMonster(state.project, state.session as PlaySession, { instanceId: command.instanceId, toSpeciesId: command.toSpeciesId, allowItemEvolution: true })
+        : { ok: false as const };
+      state.session.flags.evolveMonsterSuccess = result.ok;
+      const branch = result.ok ? command.successBranch : command.failureBranch;
+      if (branch?.length && pushFrame(state, branch)) return { kind: "continue" };
+      return resumeNext(frame);
+    }
     case "addFollower":
       if (state.project) addFollowerToSession(state.project, state.session as PlaySession, command);
       return resumeNext(frame);

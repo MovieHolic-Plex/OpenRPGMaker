@@ -1,7 +1,9 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import type { BattleEventCondition, Command, Condition, MoveCommand, Project } from "@/project/types";
 
-export function commandsReference(project: Project, collection: DatabaseCollection, id: string): boolean {
+type CommandReferenceCollection = DatabaseCollection | "monsterSpecies";
+
+export function commandsReference(project: Project, collection: CommandReferenceCollection, id: string): boolean {
   return (
     project.commonEvents.some((event) => commandListReferences(event.commands, collection, id)) ||
     Object.values(project.maps).some((map) =>
@@ -70,11 +72,11 @@ export function switchVariableReferencedInProject(project: Project, kind: "switc
   );
 }
 
-function commandListReferences(commands: readonly Command[], collection: DatabaseCollection, id: string): boolean {
+function commandListReferences(commands: readonly Command[], collection: CommandReferenceCollection, id: string): boolean {
   return commands.some((command) => commandReferences(command, collection, id));
 }
 
-function commandReferences(command: Command, collection: DatabaseCollection, id: string): boolean {
+function commandReferences(command: Command, collection: CommandReferenceCollection, id: string): boolean {
   switch (command.kind) {
     case "choices":
       return command.options.some((option) => commandListReferences(option.branch, collection, id)) || commandListReferences(command.cancelBranch ?? [], collection, id);
@@ -87,6 +89,10 @@ function commandReferences(command: Command, collection: DatabaseCollection, id:
     case "promoteActor":
       return (collection === "actors" && command.actorId === id) ||
         (collection === "classes" && command.toClassId === id) ||
+        commandListReferences(command.successBranch ?? [], collection, id) ||
+        commandListReferences(command.failureBranch ?? [], collection, id);
+    case "evolveMonster":
+      return (collection === "monsterSpecies" && command.toSpeciesId === id) ||
         commandListReferences(command.successBranch ?? [], collection, id) ||
         commandListReferences(command.failureBranch ?? [], collection, id);
     case "learnSkill":
@@ -110,7 +116,7 @@ function commandReferences(command: Command, collection: DatabaseCollection, id:
   }
 }
 
-function conditionReferencesDatabase(condition: Condition | BattleEventCondition | undefined, collection: DatabaseCollection, id: string): boolean {
+function conditionReferencesDatabase(condition: Condition | BattleEventCondition | undefined, collection: CommandReferenceCollection, id: string): boolean {
   if (!condition) return false;
   switch (condition.kind) {
     case "actor":
@@ -150,6 +156,8 @@ function commandResourceReferences(command: Command, resourceId: string): boolea
       return commandListResourceReferences(command.transactionBranch ?? [], resourceId);
     case "promoteActor":
       return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
+    case "evolveMonster":
+      return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
     case "showPicture":
     case "playAudio":
       return command.resourceId === resourceId;
@@ -177,6 +185,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
     case "shop":
       return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id);
     case "promoteActor":
+      return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
+    case "evolveMonster":
       return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
     case "inputWait":
     case "inputNumber":

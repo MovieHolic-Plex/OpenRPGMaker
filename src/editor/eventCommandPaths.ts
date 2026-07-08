@@ -112,6 +112,8 @@ function resolveCommandBranch(
       return resolveShopBranch(command, branchIndex, missingBranchMode(options));
     case "promoteActor":
       return resolvePromoteActorBranch(command, branchIndex, missingBranchMode(options));
+    case "evolveMonster":
+      return resolveEvolveMonsterBranch(command, branchIndex, missingBranchMode(options));
     default:
       return null;
   }
@@ -154,6 +156,22 @@ function resolveShopBranch(
 
 function resolvePromoteActorBranch(
   command: Extract<Command, { kind: "promoteActor" }>,
+  branchIndex: number,
+  mode: MissingBranchMode
+): Command[] | null {
+  if (branchIndex === PROMOTE_SUCCESS_BRANCH_INDEX) {
+    if (!command.successBranch && mode === "create") command.successBranch = [];
+    return command.successBranch ?? null;
+  }
+  if (branchIndex === PROMOTE_FAILURE_BRANCH_INDEX) {
+    if (!command.failureBranch && mode === "create") command.failureBranch = [];
+    return command.failureBranch ?? null;
+  }
+  return null;
+}
+
+function resolveEvolveMonsterBranch(
+  command: Extract<Command, { kind: "evolveMonster" }>,
   branchIndex: number,
   mode: MissingBranchMode
 ): Command[] | null {

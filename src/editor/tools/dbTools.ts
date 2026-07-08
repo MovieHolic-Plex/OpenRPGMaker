@@ -6,7 +6,7 @@
 
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
-import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
+import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
@@ -103,6 +103,15 @@ const promotionRequiresSchema = objectSchema({
 const classPromotionSchema = objectSchema({
   toClassId: stringSchema(),
   requires: promotionRequiresSchema,
+});
+const monsterEvolutionRequiresSchema = objectSchema({
+  level: integerSchema(),
+  itemId: stringSchema(),
+  friendshipAtLeast: integerSchema(),
+});
+const monsterEvolutionSchema = objectSchema({
+  toSpeciesId: stringSchema(),
+  requires: monsterEvolutionRequiresSchema,
 });
 const itemEquipmentProfileSchema = objectSchema({
   statBonuses: statBonusesSchema,
@@ -227,10 +236,12 @@ const monsterSpeciesRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
   graphic: monsterSpeciesGraphicSchema,
+  types: stringArraySchema("최대 2개. system.typeChart.types 값과 매칭"),
   baseStats: enemyStatsSchema,
   expCurve: expCurveSchema,
   captureRate: numberSchema("0~1"),
   skillsByLevel: arrayOf(learnedSkillSchema),
+  evolutions: arrayOf(monsterEvolutionSchema),
 }) as RecordSchema;
 
 const actorRecordSchema = objectSchema({
@@ -461,8 +472,49 @@ const defineMonsterSpecies: ToolDefinition = {
     if (missingSkills.length > 0) {
       throw new ToolError(`존재하지 않는 species skillId: ${[...new Set(missingSkills)].join(", ")} — 허용 예시: ${knownIds(draft.database.skills)}`, { code: "skill-not-found" });
     }
+    const speciesIds = new Set(draft.database.monsterSpecies.map((species) => species.id));
+    const missingEvolutionSpecies = (record.evolutions ?? []).filter((evolution) => !speciesIds.has(evolution.toSpeciesId) && evolution.toSpeciesId !== record.id).map((evolution) => evolution.toSpeciesId);
+    if (missingEvolutionSpecies.length > 0) {
+      throw new ToolError(`존재하지 않는 진화 toSpeciesId: ${[...new Set(missingEvolutionSpecies)].join(", ")} — 허용 예시: ${knownIds(draft.database.monsterSpecies)}`, { code: "species-not-found" });
+    }
+    const itemIds = new Set(draft.database.items.map((item) => item.id));
+    const missingItems = (record.evolutions ?? []).flatMap((evolution) => evolution.requires.itemId && !itemIds.has(evolution.requires.itemId) ? [evolution.requires.itemId] : []);
+    if (missingItems.length > 0) {
+      throw new ToolError(`존재하지 않는 진화 itemId: ${[...new Set(missingItems)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
+    }
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return { summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+  },
+};
+
+const setTypeChart: ToolDefinition = {
+  name: "set_type_chart",
+  description: "포켓몬식 타입 상성표를 설정한다. types는 타입 id 배열이고 multipliers[공격][방어]는 데미지 배율이다.",
+  mode: "write",
+  domains: ["database"],
+  parameters: {
+    type: "object",
+    properties: {
+      types: stringArraySchema("예: ['fire','water','grass']"),
+      multipliers: { type: "object", description: "{ attackerType: { defenderType: multiplier } }", additionalProperties: true },
+    },
+    required: ["types", "multipliers"],
+    additionalProperties: false,
+  },
+  invalidArgsExample: {
+    types: ["fire", "water", "grass"],
+    multipliers: { fire: { grass: 2, water: 0.5, fire: 0.5 }, water: { fire: 2, grass: 0.5, water: 0.5 }, grass: { water: 2, fire: 0.5, grass: 0.5 } },
+  },
+  run(draft, args): ToolExecResult {
+    const chart = normalizeTypeChart({
+      types: Array.isArray(args.types) ? args.types as string[] : [],
+      multipliers: args.multipliers && typeof args.multipliers === "object" && !Array.isArray(args.multipliers)
+        ? args.multipliers as Record<string, Record<string, number>>
+        : {},
+    });
+    if (!chart) throw new ToolError("types에 최소 1개 타입 id가 필요합니다.", { code: "missing-type-chart-types" });
+    draft.system.typeChart = chart;
+    return { summary: `타입 상성표 설정(${chart.types.length}종)`, data: chart };
   },
 };
 
@@ -804,6 +856,7 @@ export const DB_TOOLS: readonly ToolDefinition[] = [
   upsertEnemy,
   upsertTroop,
   defineMonsterSpecies,
+  setTypeChart,
   giveStarterMonsters,
   upsertActor,
   upsertSkill,

@@ -53,6 +53,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeExp: { kind: "changeExp", actorId: "actor1", op: "+=", amount: 10 },
   changeLevel: { kind: "changeLevel", actorId: "actor1", op: "+=", amount: 1 },
   promoteActor: { kind: "promoteActor", actorId: "actor1", toClassId: "class1", successBranch: [], failureBranch: [] },
+  evolveMonster: { kind: "evolveMonster", instanceId: "monster_1", toSpeciesId: "species1", successBranch: [], failureBranch: [] },
   changeEquipment: { kind: "changeEquipment", actorId: "actor1", slot: "weapon", equipmentId: "eq1" },
   changeActorHp: { kind: "changeActorHp", actorId: "actor1", op: "+=", amount: 10 },
   changeActorMp: { kind: "changeActorMp", actorId: "actor1", op: "+=", amount: 10 },

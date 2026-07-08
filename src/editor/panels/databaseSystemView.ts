@@ -5,8 +5,10 @@ import {
   textControl,
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { store } from "@/project/store";
+import type { TypeChartRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
 export function renderSystemTab(host: HTMLElement): void {
@@ -64,6 +66,7 @@ export function renderSystemTab(host: HTMLElement): void {
         });
       }),
     ]),
+    typeChartFieldset(project.system.typeChart),
     rm2k3Fieldset("게임 시작화면", [
       textControl("게임 타이틀", titleScreen.title, (value) => {
         updateTitleScreen((titleScreenSettings) => {
@@ -121,6 +124,65 @@ export function renderSystemTab(host: HTMLElement): void {
     ]),
   );
   host.append(el("h3", { text: "시스템" }), form);
+}
+
+function typeChartFieldset(chart: TypeChartRecord | undefined): HTMLElement {
+  const types = chart?.types ?? [];
+  const typeInput = el("input", {
+    attrs: { type: "text", placeholder: "fire, water, grass" },
+    value: types.join(", "),
+    dataset: { testid: "db-field-system-type-chart-types" },
+  }) as HTMLInputElement;
+  typeInput.addEventListener("change", () => {
+    const nextTypes = parseTypes(typeInput.value);
+    store.update((draft) => {
+      const normalized = normalizeTypeChart({ types: nextTypes, multipliers: draft.system.typeChart?.multipliers ?? {} });
+      if (normalized) draft.system.typeChart = normalized;
+      else delete draft.system.typeChart;
+    });
+  });
+  const children: HTMLElement[] = [
+    el("label", { class: "db-field", children: [el("span", { text: "타입 목록" }), typeInput] }),
+  ];
+  if (types.length > 0) children.push(typeChartMatrix(chart));
+  return rm2k3Fieldset("타입 상성", children);
+}
+
+function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
+  const types = chart?.types ?? [];
+  const table = el("table", { class: "db-type-chart-matrix", dataset: { testid: "db-type-chart-matrix" } });
+  const head = el("tr", { children: [el("th", { text: "공\\방" }), ...types.map((type) => el("th", { text: type }))] });
+  table.append(el("thead", { children: [head] }));
+  const body = el("tbody");
+  for (const attacker of types) {
+    const row = el("tr", { children: [el("th", { text: attacker })] });
+    for (const defender of types) {
+      const input = el("input", {
+        attrs: { type: "number", step: "0.25", min: "0", max: "4" },
+        value: String(chart?.multipliers[attacker]?.[defender] ?? 1),
+        dataset: { testid: `db-type-chart-${attacker}-${defender}` },
+      }) as HTMLInputElement;
+      input.addEventListener("change", () => updateTypeChartCell(attacker, defender, parseFloat(input.value)));
+      row.append(el("td", { children: [input] }));
+    }
+    body.append(row);
+  }
+  table.append(body);
+  return el("div", { class: "db-type-chart-wrap", children: [table] });
+}
+
+function updateTypeChartCell(attacker: string, defender: string, value: number): void {
+  store.update((draft) => {
+    const chart = draft.system.typeChart;
+    if (!chart) return;
+    const multipliers = { ...chart.multipliers, [attacker]: { ...(chart.multipliers[attacker] ?? {}), [defender]: value } };
+    const normalized = normalizeTypeChart({ types: chart.types, multipliers });
+    if (normalized) draft.system.typeChart = normalized;
+  });
+}
+
+function parseTypes(value: string): string[] {
+  return [...new Set(value.split(",").map((entry) => entry.trim()).filter(Boolean))];
 }
 
 function updateTitleScreen(mutator: (settings: ReturnType<typeof defaultTitleScreenSettings>) => void): void {

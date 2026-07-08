@@ -81,6 +81,8 @@ export type MonsterInstance = {
   readonly nickname?: string;
   readonly level: number;
   readonly exp: number;
+  readonly currentHp?: number;
+  readonly skillIds?: readonly SkillId[];
   readonly ivs?: MonsterInstanceIvs;
   readonly friendship: number;
   readonly caughtAt: MonsterCaughtAt;

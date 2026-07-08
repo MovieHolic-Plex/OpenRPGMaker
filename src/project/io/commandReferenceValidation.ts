@@ -167,6 +167,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "moveMonster":
       return;
+    case "evolveMonster":
+      if (command.toSpeciesId && command.toSpeciesId.trim().length > 0) {
+        assert(context.speciesIds.has(command.toSpeciesId), `evolveMonster: toSpeciesId가 존재하지 않습니다: ${command.toSpeciesId}`);
+      }
+      validateCommands(command.successBranch ?? [], context);
+      validateCommands(command.failureBranch ?? [], context);
+      return;
     case "enterHeroName":
       if (command.actorId.trim().length > 0) {
         assert(context.actorIds.has(command.actorId), `enterHeroName: actorId가 존재하지 않습니다: ${command.actorId}`);

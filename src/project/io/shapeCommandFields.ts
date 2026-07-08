@@ -96,6 +96,12 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.instanceId`, command.instanceId);
       requireMonsterMoveTarget(`${label}.to`, command.to);
       return;
+    case "evolveMonster":
+      requireString(`${label}.instanceId`, command.instanceId);
+      if (command.toSpeciesId !== undefined) requireString(`${label}.toSpeciesId`, command.toSpeciesId);
+      if (command.successBranch !== undefined) validateCommandArray(`${label}.successBranch`, command.successBranch);
+      if (command.failureBranch !== undefined) validateCommandArray(`${label}.failureBranch`, command.failureBranch);
+      return;
     case "recoverAll":
       if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
       return;

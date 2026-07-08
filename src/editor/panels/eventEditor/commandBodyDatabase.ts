@@ -345,6 +345,41 @@ export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Comman
   return wrap;
 }
 
+export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "evolveMonster" }>): HTMLElement {
+  const project = store.getCurrent();
+  const instanceId = el("input", {
+    attrs: { type: "text", placeholder: "monster_1" },
+    value: cmd.instanceId,
+    dataset: { testid: "evolve-monster-instance-input" },
+  }) as HTMLInputElement;
+  const species = recordPickerWithPreview({
+    records: project.database.monsterSpecies ?? [],
+    selectedId: cmd.toSpeciesId ?? "",
+    placeholder: "조건 충족 첫 진화",
+    testid: "evolve-monster-species-select",
+    iconOf: (record) => imageIconOf(project, record.graphic.monsterResourceId),
+    subtitleOf: (record) => `HP ${record.baseStats.maxHp} · 포획률 ${Math.round(record.captureRate * 100)}%`,
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "evolveMonster",
+      instanceId: instanceId.value.trim(),
+      toSpeciesId: species.select.value || undefined,
+      successBranch: cmd.successBranch ?? [],
+      failureBranch: cmd.failureBranch ?? [],
+    });
+  };
+  instanceId.addEventListener("change", apply);
+  species.select.addEventListener("change", apply);
+  return el("span", {
+    class: "rich-command-form",
+    children: [
+      el("span", { class: "rich-form-row", children: [instanceId] }),
+      el("span", { class: "rich-form-row", children: [species.root] }),
+    ],
+  });
+}
+
 // 액터 카드 부제: 직업 이름(+ 초기 레벨). (learnSkill 등 다른 폼에서도 재사용)
 export function actorSubtitle(project: Project, record: ActorRecord): string | null {
   const className = project.database.classes.find((entry) => entry.id === record.classId)?.name;

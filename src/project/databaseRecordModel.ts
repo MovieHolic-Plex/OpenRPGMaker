@@ -10,7 +10,7 @@ import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEn
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -37,6 +37,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
 
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
+  const typeChart = normalizeTypeChart(system.typeChart);
   return {
     startActorIds: cleanIds(system.startActorIds),
     titleResourceId,
@@ -46,9 +47,23 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleFlow: normalizeBattleFlow(system.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
-    titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
+    ...(typeChart ? { typeChart } : {}),
+    titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
   };
+}
+
+export function normalizeTypeChart(chart: Partial<TypeChartRecord> | undefined): TypeChartRecord | undefined {
+  const types = uniqueCleanIds(chart?.types).slice(0, 32);
+  if (types.length === 0) return undefined;
+  const multipliers: Record<string, Record<string, number>> = {};
+  for (const attacker of types) {
+    const source = chart?.multipliers?.[attacker] ?? {};
+    const row: Record<string, number> = {};
+    for (const defender of types) row[defender] = clampNumber(source[defender] ?? 1, 0, 4);
+    multipliers[attacker] = row;
+  }
+  return { types, multipliers };
 }
 
 function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
@@ -376,6 +391,13 @@ function cleanIds(ids: readonly string[] | undefined): string[] {
   return [...new Set((ids ?? []).filter((id) => id.trim().length > 0))];
 }
 
+function uniqueCleanIds(ids: readonly string[] | undefined): string[] {
+  return [...new Set((ids ?? []).flatMap((id) => {
+    const trimmed = id.trim();
+    return trimmed ? [trimmed] : [];
+  }))];
+}
+
 function cleanOptionalId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
@@ -427,4 +449,9 @@ function normalizeConsumptionLimit(value: unknown): ItemConsumptionLimit {
 function clampInteger(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, Math.trunc(value)));
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(max, Math.max(min, value));
 }

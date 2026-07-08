@@ -6,6 +6,7 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { ActorId, EnemyId, Project, SkillId } from "@/project/types";
 import type { ActorRateGrade, EnemyRecord, SkillRecord } from "@/project/types/database";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
+import { typeChartMultiplierFor } from "@/battle/typeChart";
 
 export interface PredictedDamage {
   /** 분산/크리티컬/빗나감을 배제한 평균 기대 피해(또는 회복). 음수 = 흡수. */
@@ -145,7 +146,8 @@ export function predictSkillDamage(
   const userStats = battlerStats(project, user);
   const sourceStat = spec.statistic === "mind" ? userStats.mind : userStats.attack;
   let magnitude = spec.power + Math.floor(sourceStat / 2);
-  const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId);
+  const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId)
+    * typeChartMultiplierFor(project, spec.elementId, user.recordId, target.recordId);
   magnitude = Math.round(magnitude * elementMultiplier);
   if (elementMultiplier === 0) magnitude = 0;
   if (elementMultiplier < 0) {

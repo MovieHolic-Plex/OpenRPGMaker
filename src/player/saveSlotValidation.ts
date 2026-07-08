@@ -66,6 +66,8 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (instance.nickname !== undefined && typeof instance.nickname !== "string") return false;
     if (typeof instance.level !== "number" || !Number.isFinite(instance.level)) return false;
     if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
+    if (instance.currentHp !== undefined && (typeof instance.currentHp !== "number" || !Number.isFinite(instance.currentHp))) return false;
+    if (instance.skillIds !== undefined && !isStringArray(instance.skillIds)) return false;
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
     return instance.ivs === undefined || isMonsterIvs(instance.ivs);

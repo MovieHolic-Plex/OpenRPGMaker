@@ -3,6 +3,7 @@ import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnap
 import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, changeItem, type PlaySession } from "@/project/session";
+import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 
 export type BattleRewardsOutcome = {
@@ -47,6 +48,7 @@ export function applyBattleRewardsToSession(
   for (const itemId of outcome.rewards.items) {
     changeItem(session, itemId, "+=", 1);
   }
+  applyMonsterExperienceAndEvolution(project, session, earnedExp);
   return levelUps;
 }
 

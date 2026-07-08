@@ -57,6 +57,14 @@ export function defaultSystem(): SystemRecords {
     battleSystemResourceId: "easyrpg-system2-system2-c",
     initialTroopId: DEFAULT_TROOP_ID,
     battleFlow: "gauge",
+    typeChart: {
+      types: ["fire", "water", "grass"],
+      multipliers: {
+        fire: { fire: 0.5, water: 0.5, grass: 2 },
+        water: { fire: 2, water: 0.5, grass: 0.5 },
+        grass: { fire: 0.5, water: 2, grass: 0.5 },
+      },
+    },
     titleScreen: defaultTitleScreenSettings(),
   };
 }

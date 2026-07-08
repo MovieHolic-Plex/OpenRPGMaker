@@ -171,6 +171,9 @@ export function flattenScript(commands: readonly Command[]): ScriptStep[] {
       } else if (command.kind === "promoteActor") {
         walk(command.successBranch ?? [], depth + 1, "승급 성공");
         walk(command.failureBranch ?? [], depth + 1, "승급 실패");
+      } else if (command.kind === "evolveMonster") {
+        walk(command.successBranch ?? [], depth + 1, "진화 성공");
+        walk(command.failureBranch ?? [], depth + 1, "진화 실패");
       }
     }
   };
@@ -258,6 +261,12 @@ function flowBranchesOf(command: Command): FlowBranch[] {
     return [{ label: "구매/판매", commands: command.transactionBranch ?? [] }];
   }
   if (command.kind === "promoteActor") {
+    return [
+      { label: "성공", commands: command.successBranch ?? [] },
+      { label: "실패", commands: command.failureBranch ?? [] },
+    ];
+  }
+  if (command.kind === "evolveMonster") {
     return [
       { label: "성공", commands: command.successBranch ?? [] },
       { label: "실패", commands: command.failureBranch ?? [] },

@@ -13,7 +13,7 @@ import type {
 } from "@/project/types";
 import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
-import { MONSTER_PARTY_MAX, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
+import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 
 export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
@@ -274,10 +274,11 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     ...ids.flatMap((instanceId) => {
       const instance = options.session.monsterInstances[instanceId];
       if (!instance) return [];
-      const hp = monsterMaxHp(options.project, instance);
+      const maxHp = monsterMaxHp(options.project, instance);
+      const hp = monsterCurrentHp(options.project, instance);
       return [{
         label: monsterDisplayName(options.project, instance),
-        value: `Lv.${instance.level}  HP ${hp}/${hp}`,
+        value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
         description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
         testId: `status-menu-monster-${instanceId}`,
         onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,

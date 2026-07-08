@@ -46,6 +46,7 @@ export const COMMAND_KINDS = [
   "changeParty",
   "giveMonster",
   "moveMonster",
+  "evolveMonster",
   "addFollower",
   "removeFollower",
   "setLighting",
