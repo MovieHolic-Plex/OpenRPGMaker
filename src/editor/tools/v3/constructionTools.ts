@@ -7,6 +7,7 @@
 // 공정 순서: build_wall → place_door/place_window → build_roof → lay_path → place_props.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import {
   approvedVocabulary,
@@ -39,6 +40,7 @@ const DOOR_EXAMPLE = { mapId: "map_1", at: { x: 10, y: 9 }, doorVocabId: "wood-d
 const WINDOW_EXAMPLE = { mapId: "map_1", at: { x: 9, y: 7 }, windowVocabId: "house-window" };
 const PATH_EXAMPLE = { mapId: "map_1", points: [{ x: 2, y: 12 }, { x: 14, y: 12 }, { x: 20, y: 8 }], pathVocabId: "dirt-path", naturalness: 0.5 };
 const PROPS_EXAMPLE = { mapId: "map_1", area: { x: 2, y: 2, w: 18, h: 12 }, propVocabId: "conifer-tree", count: 8, naturalness: 0.6 };
+const FILL_EXAMPLE = { mapId: "map_1", rect: { x: 28, y: 28, w: 10, h: 8 }, tileVocabId: "lake-water-autotile", layer: "lower" };
 
 interface MapContext {
   readonly map: GameMap;
@@ -90,6 +92,97 @@ function applyEdits(map: GameMap, edits: readonly CellEdit[]): number {
     applied += 1;
   }
   return applied;
+}
+
+interface ProtectedCell {
+  readonly x: number;
+  readonly y: number;
+  readonly reason: string;
+}
+
+function cellsInRect(map: GameMap, rect: Rect): Point[] {
+  const cells: Point[] = [];
+  for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+    for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+      if (inMapBounds(map, x, y)) cells.push({ x, y });
+    }
+  }
+  return cells;
+}
+
+function protectedPassageCells(project: Project, map: GameMap): Map<string, string> {
+  const cells = new Map<string, string>();
+  if (project.startMapId === map.id) cells.set(pointKey(project.startPos), "시작 위치");
+  const transfers: Point[] = [];
+  for (const candidate of Object.values(project.maps)) {
+    for (const event of candidate.events) collectTransferTargets(event, map.id, transfers);
+  }
+  for (const commonEvent of project.commonEvents) collectTransferTargets(commonEvent, map.id, transfers);
+  for (const point of transfers) cells.set(pointKey(point), "transfer 목적지");
+  return cells;
+}
+
+function filterPassageProtectedCells(
+  project: Project,
+  map: GameMap,
+  cells: readonly Point[],
+  preview: (cell: Point) => void
+): { cells: Point[]; skipped: ProtectedCell[] } {
+  const protectedCells = protectedPassageCells(project, map);
+  if (protectedCells.size === 0) return { cells: [...cells], skipped: [] };
+  const kept: Point[] = [];
+  const skipped: ProtectedCell[] = [];
+  for (const cell of cells) {
+    const reason = protectedCells.get(pointKey(cell));
+    if (reason === undefined) {
+      kept.push(cell);
+      continue;
+    }
+    const index = cell.y * map.width + cell.x;
+    const lower = map.lowerTiles[index];
+    const upper = map.upperTiles[index];
+    preview(cell);
+    const passable = isPassable(project, map, cell.x, cell.y);
+    map.lowerTiles[index] = lower;
+    map.upperTiles[index] = upper;
+    if (passable) kept.push(cell);
+    else skipped.push({ ...cell, reason });
+  }
+  return { cells: kept, skipped };
+}
+
+function protectedSkipWarnings(skipped: readonly ProtectedCell[]): string[] | undefined {
+  if (skipped.length === 0) return undefined;
+  const seen = new Set<string>();
+  const unique = skipped.filter((cell) => {
+    const key = `${cell.x},${cell.y}:${cell.reason}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const samples = unique.slice(0, 3).map((cell) => `(${cell.x},${cell.y})은 ${cell.reason}라 제외했습니다`);
+  const extra = unique.length > samples.length ? ` 외 ${unique.length - samples.length}칸` : "";
+  return [`${samples.join(", ")}${extra}`];
+}
+
+function pointKey(point: Point): string {
+  return `${point.x},${point.y}`;
+}
+
+function collectTransferTargets(value: unknown, mapId: string, out: Point[]): void {
+  if (Array.isArray(value)) {
+    for (const item of value) collectTransferTargets(item, mapId, out);
+    return;
+  }
+  if (!isPlainRecord(value)) return;
+  if (value.kind === "transfer" && value.mapId === mapId && typeof value.x === "number" && typeof value.y === "number") {
+    out.push({ x: value.x, y: value.y });
+  }
+  for (const child of Object.values(value)) collectTransferTargets(child, mapId, out);
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 // 벽 어휘 셀 스캔 — build_roof(자동 감지)/place_door/place_window가 소비한다.
@@ -352,7 +445,7 @@ const layPath: ToolDefinition = {
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "승인된 소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). propVocabId가 그룹이면 기존 산포 엔진(풋프린트 원자 배치·클러스터 hard 규칙·보호셀 회피)을 그대로 쓰고, 승인된 낱개 타일 id(숫자)면 포아송 산포로 배치한다. layer 인자 없음 — 어휘 layerHome이 결정.",
+    "승인된 소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). 나무/바위/꽃처럼 떨어진 오브젝트 배치용이다. 호수·강·바닥·지면처럼 면을 채우는 작업은 fill_region을 사용하라. propVocabId가 그룹이면 기존 산포 엔진(풋프린트 원자 배치·클러스터 hard 규칙·보호셀 회피)을 그대로 쓰고, 승인된 낱개 타일 id(숫자)면 포아송 산포로 배치한다. layer 인자 없음 — 어휘 layerHome이 결정.",
   mode: "write",
   version: 3,
   parameters: {
@@ -418,6 +511,81 @@ const placeProps: ToolDefinition = {
   },
 };
 
+function fillBodyTile(group: TileGroupMetadata, autotile: AutotileGroup | null): number | null {
+  const center = group.patternGrammar?.parts.find((part) => part.role === "center")?.tileIds[0];
+  return center ?? (autotile ? autotile.variantMap[String(255)] : undefined) ?? group.tileIds[0] ?? null;
+}
+
+function assertFillRegionGroup(group: TileGroupMetadata, autotile: AutotileGroup | null): void {
+  const kind = group.patternGrammar?.kind;
+  if (autotile || kind === "autotile_3x3" || kind === "animated_terrain") return;
+  throw new ToolError(
+    `fill_region은 승인된 autotile_3x3/animated_terrain 지형 그룹만 채울 수 있습니다: ${group.name}(${group.id})`,
+    { code: "fill-needs-autotile-group" }
+  );
+}
+
+const fillRegion: ToolDefinition = {
+  name: "fill_region",
+  description:
+    "승인된 오토타일/애니메이션 지형 어휘 그룹으로 rect 전체를 채운다(v3). 호수·강·바닥·지면 같은 면 작업용이며, 나무/바위/꽃 산포는 place_props를 사용한다. lower 기본, 오토타일 경계는 기존 오토타일 재계산 로직으로 자동 정합한다. transfer 목적지/시작 위치가 통행 불가가 될 칸은 그 칸만 제외하고 warning으로 보고한다.",
+  mode: "write",
+  version: 3,
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      rect: {
+        type: "object", description: "채울 영역(맵 좌표)",
+        properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
+        required: ["x", "y", "w", "h"],
+      },
+      tileVocabId: { type: "string", description: "승인된 autotile_3x3/animated_terrain 지형 그룹 id" },
+      layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower. 수역/바닥은 lower를 사용한다" },
+    },
+    required: ["mapId", "rect", "tileVocabId"],
+  },
+  run(draft: Project, args: Record<string, unknown>): ToolExecResult {
+    const { map, tileset } = requireMapContext(draft, args, FILL_EXAMPLE);
+    const rect = coerceRect(args.rect, "rect", FILL_EXAMPLE);
+    requireRectInMap(map, rect, "rect", FILL_EXAMPLE);
+    const layer = args.layer === undefined ? "lower" : args.layer;
+    if (layer !== "lower" && layer !== "upper") failWithExample("layer는 lower/upper 중 하나여야 합니다", FILL_EXAMPLE);
+    const group = requireApprovedGroup(tileset, args.tileVocabId, "tileVocabId", FILL_EXAMPLE);
+    const autotile = autotileGroupForVocab(tileset, group);
+    assertFillRegionGroup(group, autotile);
+    const body = fillBodyTile(group, autotile);
+    if (body === null) {
+      throw new ToolError(`채울 타일을 찾을 수 없습니다: ${group.name}(${group.id})`, { code: "fill-empty-group", mapId: map.id });
+    }
+
+    const allCells = cellsInRect(map, rect);
+    const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
+      const index = cell.y * map.width + cell.x;
+      if (layer === "upper") map.upperTiles[index] = body;
+      else {
+        map.lowerTiles[index] = body;
+        map.upperTiles[index] = TILE.EMPTY;
+      }
+    });
+    for (const cell of filtered.cells) {
+      const index = cell.y * map.width + cell.x;
+      if (layer === "upper") map.upperTiles[index] = body;
+      else {
+        map.lowerTiles[index] = body;
+        map.upperTiles[index] = TILE.EMPTY;
+      }
+    }
+    const reshaped = layer === "lower" && autotile ? resolveAutotile(autotile, filtered.cells, map) : 0;
+    const skipped = filtered.skipped.length;
+    return {
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}을 '${group.name}'로 채움 — ${filtered.cells.length}/${allCells.length}칸, 오토타일 재계산 ${reshaped}칸${skipped > 0 ? `, 보호 ${skipped}칸 제외` : ""}.`,
+      warnings: protectedSkipWarnings(filtered.skipped),
+      data: { filled: filtered.cells.length, requested: allCells.length, reshaped, groupId: group.id, layer },
+    };
+  },
+};
+
 const ERASE_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, layer: "both" };
 
 // tile_erase — 승인 어휘를 소비하지 않는 유일한 배치 툴(지우기는 어휘 결정이 없다).
@@ -443,34 +611,33 @@ const tileErase: ToolDefinition = {
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map } = requireMapContext(draft, args, ERASE_EXAMPLE);
-    if (typeof args.rect !== "object" || args.rect === null) failWithExample("rect({x,y,w,h})가 필요합니다", ERASE_EXAMPLE);
-    const r = args.rect as Record<string, unknown>;
-    const rect = {
-      x: coerceInt(r.x, "rect.x", ERASE_EXAMPLE), y: coerceInt(r.y, "rect.y", ERASE_EXAMPLE),
-      w: coerceInt(r.w, "rect.w", ERASE_EXAMPLE), h: coerceInt(r.h, "rect.h", ERASE_EXAMPLE),
-    };
+    const rect = coerceRect(args.rect, "rect", ERASE_EXAMPLE);
     const layer = args.layer === undefined ? "both" : args.layer;
     if (layer !== "both" && layer !== "lower" && layer !== "upper") {
       failWithExample("layer는 both/lower/upper 중 하나여야 합니다", ERASE_EXAMPLE);
     }
+    const allCells = cellsInRect(map, rect);
+    const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
+      const index = cell.y * map.width + cell.x;
+      if (layer === "both" || layer === "lower") map.lowerTiles[index] = TILE.EMPTY;
+      if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
+    });
     let cleared = 0;
-    for (let y = rect.y; y < rect.y + rect.h; y += 1) {
-      for (let x = rect.x; x < rect.x + rect.w; x += 1) {
-        if (!inMapBounds(map, x, y)) continue;
-        const i = y * map.width + x;
-        if (layer === "both" || layer === "lower") map.lowerTiles[i] = TILE.EMPTY;
-        if (layer === "both" || layer === "upper") map.upperTiles[i] = TILE.EMPTY;
-        cleared += 1;
-      }
+    for (const cell of filtered.cells) {
+      const index = cell.y * map.width + cell.x;
+      if (layer === "both" || layer === "lower") map.lowerTiles[index] = TILE.EMPTY;
+      if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
+      cleared += 1;
     }
     return {
-      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 비움(${layer}) — ${cleared}칸.`,
-      data: { cleared, layer },
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 비움(${layer}) — ${cleared}/${allCells.length}칸${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
+      warnings: protectedSkipWarnings(filtered.skipped),
+      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer },
     };
   },
 };
 
-export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps, tileErase];
+export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps, fillRegion, tileErase];
 
 // v3가 대체하는 v2 배치 툴 → 대체 v3 툴 이름. 레지스트리가 이 표로 deprecated 마킹한다
 // (V1_TILE_SUPERSEDED와 동일 방식 — LLM 비노출, getTool/실행 호환 유지).

@@ -31,9 +31,13 @@ import {
   affectedRegions,
   boundarySlackForTool,
   checkRegionsAgainstSpecBoundary,
+  builtCellsInRegions,
   implicitSpecFromContext,
+  uncoveredRegionsBySpec,
   validateBuildSpec,
+  type AffectedRegion,
   type BuildSpec,
+  type SpecAsset,
 } from "./buildSpec";
 import {
   PROPOSAL_COMPLETENESS_WARNING_PREFIX,
@@ -104,6 +108,7 @@ export const V3_PRIMITIVE_VOCAB_FIELDS: ReadonlyMap<string, string> = new Map([
   ["place_window", "windowVocabId"],
   ["lay_path", "pathVocabId"],
   ["place_props", "propVocabId"],
+  ["fill_region", "tileVocabId"],
 ]);
 
 // 보류 시공 카드 라벨(예: "벽 (8,6) 6×5") — 사용자가 무엇이 시공될지 카드에서 본다.
@@ -123,6 +128,8 @@ export function pendingBuildLabel(tool: string, args: Record<string, unknown>): 
       return Array.isArray(args.points) ? `길 경유점 ${args.points.length}개` : "길";
     case "place_props":
       return typeof args.count === "number" ? `소품 ${args.count}개` : "소품";
+    case "fill_region":
+      return rect ? `영역 채우기 (${String(rect.x)},${String(rect.y)}) ${String(rect.w)}×${String(rect.h)}` : "영역 채우기";
     default:
       return tool;
   }
@@ -194,9 +201,9 @@ const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region",
 
 // ── 스펙 게이트(2026-07-05, '모호도' 대체) ────────────────────────
 // 자기 신고 수치([모호도 N%]) 대신 코드가 검증하는 밑그림(명세)을 쓴다:
-// 공간 쓰기 툴은 set_build_spec으로 제출되어 결정적으로 검증(경계/겹침)된 명세의
-// 할당 영역 안에서만 실행된다(구간 격리). 사용자가 맵에서 선택한 영역은 암묵적 명세.
-// 검증 3회 실패 시 그 계획은 폐기하고 사용자에게 묻도록 유도한다.
+// 공간 쓰기 툴은 set_build_spec으로 제출되어 결정적으로 검증(경계/겹침)된 명세를 기준으로 실행된다.
+// 명세 밖 빈 영역은 자동 확장 warning으로 통과하고, 기존 구조물 파괴 위험만 차단한다.
+// 사용자가 맵에서 선택한 영역은 암묵적 명세. 검증 3회 실패 시 그 계획은 폐기하고 새 명세로 재계획하게 한다.
 
 // 타일 지식 기록(인터뷰/시연의 답 기록)은 맵/이벤트를 바꾸지 않는 계열 —
 // 제안 카드 없이 즉시 저장되는 목록(패널이 자동 반영 판단에 공유한다).
@@ -214,7 +221,7 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
   function: {
     name: "set_build_spec",
     description:
-      "공간 빌드(집/마을/길/청소/NPC 배치) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후에만 공간 빌드 툴이 열린다. 페인트/배치 호출은 할당 영역 +2칸까지 warning으로 통과하지만, clear_region은 slack 없이 명세 안에서만 실행된다. 에셋마다 겹치지 않는 영역(x,y,w,h)을 배정하라.",
+      "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 페인트/배치 호출이 명세 밖 빈 영역을 쓰면 명세를 자동 확장해 warning으로 통과하지만, 기존 구조물 파괴 위험은 차단된다. 에셋마다 겹치지 않는 영역(x,y,w,h)을 배정하라.",
     parameters: {
       type: "object",
       properties: {
@@ -230,7 +237,7 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
         buildOrder: {
           type: "array",
           items: { type: "string" },
-          description: "건설 순서(kind 목록, 예: [\"road\",\"house\",\"prop\"]). 마을 같은 복합 건축은 먼저 순서를 정해 사용자에게 확인하라 — 길 먼저? 집 먼저? 소품 먼저?",
+          description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"prop\"]). clear가 먼저 오는 buildOrder에서는 후속 배치 에셋이 clear 영역을 덮을 수 있다.",
         },
         pathWidth: { type: "integer", description: "통로 너비(칸)" },
         density: { type: "string", enum: ["spacious", "normal", "dense"], description: "에셋 분배(넓찍/보통/다닥)" },
@@ -356,8 +363,8 @@ export class AssistantSession {
         severity: "error",
         code: "spec-invalid",
         message: discarded
-          ? `검증 ${this.specRejections}회 실패 — 이 계획은 폐기하세요. 툴 호출을 멈추고 사용자에게 [선택지]로 배치를 확인받으세요.`
-          : "겹치지 않게 좌표를 고쳐 set_build_spec을 재제출하세요.",
+          ? `검증 ${this.specRejections}회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.`
+          : "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.",
       });
       return {
         ok: false,
@@ -388,35 +395,70 @@ export class AssistantSession {
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
         "공간 빌드는 set_build_spec으로 밑그림을 제출해 검증을 통과한 뒤에만 실행됩니다.",
         "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
-        "사용자가 맵에서 선택한 영역([컨텍스트]의 '사용자 선택 영역')은 암묵적 명세로 인정됩니다 — 필요하면 영역 지정을 요청하세요.",
+        "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
       ]);
     }
     // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지를 판정한다.
     const assets = specs.flatMap((spec) => spec.assets);
     const slackCells = boundarySlackForTool(name);
     const coverage = checkRegionsAgainstSpecBoundary(assets, regions, slackCells);
-    if (!coverage.withinSlack) {
-      const sample = coverage.sample ? `, 예: (${coverage.sample.x},${coverage.sample.y})` : "";
-      const slackSummary = slackCells > 0 ? `허용 slack ±${slackCells}칸 초과` : "이 툴은 slack 없음";
-      const slackGuidance = slackCells > 0
-        ? `경계 근처 ${slackCells}칸까지는 warning으로 통과하지만, 이 호출은 허용 slack ±${slackCells}칸을 넘었습니다.`
-        : "정리/파괴성 호출은 slack 없이 밑그림에 할당된 영역 안에서만 실행됩니다.";
-      return specGateResult(`스펙 게이트: '${name}' 차단 — 할당 영역 밖(${coverage.outsideCells}칸${sample}, ${slackSummary})`, [
-        "이 호출의 좌표가 밑그림에 할당된 영역을 벗어났습니다(구간 격리).",
-        slackGuidance,
-        "좌표를 명세 안으로 고치거나, 필요한 영역을 에셋으로 추가해 set_build_spec을 재제출하세요.",
+    if (coverage.covered) return { warnings: [] };
+
+    const uncovered = uncoveredRegionsBySpec(assets, regions);
+    const map = this.ctx.project.maps[mapId];
+    const built = map ? builtCellsInRegions(map, uncovered) : { count: 0 };
+    if (built.count > 0) {
+      const at = built.sample ? `, 예: (${built.sample.x},${built.sample.y})` : "";
+      return specGateResult(`스펙 게이트: '${name}' 차단 — 자동 확장 대상에 기존 구조물 ${built.count}칸${at}`, [
+        "명세 밖 빈 영역은 자동 확장하지만, 기존 구조물 파괴 위험은 자동 보정하지 않습니다.",
+        "정리하려면 clear 에셋에 confirmDestroy:true를 명시하거나 배치 에셋에 overExisting을 스스로 판단해 지정한 새 명세를 제출하세요.",
       ]);
     }
-    if (slackCells > 0 && !coverage.covered && coverage.slackWarning) {
-      return {
-        warnings: [{
-          severity: "warning",
-          code: "spec-gate-slack",
-          message: coverage.slackWarning,
-        }],
-      };
+
+    const warnings = this.expandSpecWithRegions(mapId, name, regions, uncovered);
+    if (warnings.length > 0) return { warnings };
+    if (slackCells > 0 && coverage.slackWarning) {
+      return { warnings: [{ severity: "warning", code: "spec-gate-auto-expand", message: `명세를 자동 확장했습니다: ${coverage.slackWarning}` }] };
     }
     return { warnings: [] };
+  }
+
+  private expandSpecWithRegions(
+    mapId: string,
+    toolName: string,
+    regions: readonly AffectedRegion[],
+    uncovered: readonly AffectedRegion[]
+  ): LintIssue[] {
+    if (uncovered.length === 0) return [];
+    const target = this.activeSpec?.mapId === mapId
+      ? this.activeSpec
+      : this.turnImplicitSpec?.mapId === mapId
+      ? this.turnImplicitSpec
+      : null;
+    if (target === null) return [];
+
+    const additions = regions
+      .filter((region) => region.w > 0 && region.h > 0 && uncovered.some((cell) => regionContains(region, cell.x, cell.y)))
+      .map((region, index): SpecAsset => ({
+        id: `auto:${this.currentTurnIndex}:${toolName}:${target.assets.length + index + 1}`,
+        kind: autoExpandedAssetKind(toolName),
+        x: region.x,
+        y: region.y,
+        w: region.w,
+        h: region.h,
+        note: "스펙 게이트 자동 확장",
+      }));
+    if (additions.length === 0) return [];
+
+    this.activeSpec = { ...target, assets: [...target.assets, ...additions] };
+    this.activeSpecTurnIndex = this.currentTurnIndex;
+    const listed = additions.slice(0, 3).map((asset) => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ");
+    const extra = additions.length > 3 ? ` 외 ${additions.length - 3}개` : "";
+    return [{
+      severity: "warning",
+      code: "spec-gate-auto-expand",
+      message: `명세를 자동 확장했습니다: ${toolName} ${listed}${extra}.`,
+    }];
   }
 
   exportAudit(): string {
@@ -983,6 +1025,38 @@ function eventTargetKey(target: EventTargetKey): string {
 
 function isSpecGatePass(result: ToolResult | SpecGatePass): result is SpecGatePass {
   return "warnings" in result;
+}
+
+function regionContains(region: AffectedRegion, x: number, y: number): boolean {
+  return x >= region.x && y >= region.y && x < region.x + region.w && y < region.y + region.h;
+}
+
+function autoExpandedAssetKind(toolName: string): string {
+  switch (toolName) {
+    case "clear_region":
+    case "tile_erase":
+      return "clear";
+    case "paint_road":
+    case "tile_road":
+    case "lay_path":
+      return "road";
+    case "fill_region":
+    case "paint_tiles":
+    case "tile_paint":
+      return "terrain";
+    case "place_npc":
+      return "npc";
+    case "place_battle_blocker":
+    case "place_props":
+    case "tile_scatter":
+      return "prop";
+    case "build_house":
+    case "build_house_kit":
+    case "build_village":
+      return "house";
+    default:
+      return "structure";
+  }
 }
 
 function withSpecGateWarnings(result: ToolResult, warnings: readonly LintIssue[]): ToolResult {

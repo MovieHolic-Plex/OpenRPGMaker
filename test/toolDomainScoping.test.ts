@@ -18,7 +18,7 @@ import { el } from "@/util/dom";
 import { installFakeDom } from "./fakeDom";
 
 const OLD_TILE_TOOLS = [...LEGACY_TILE_KNOWLEDGE_SUPERSEDED.keys()];
-const V3_PRIMITIVES = ["build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "tile_erase"];
+const V3_PRIMITIVES = ["build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase"];
 const CORE_TOOLS = ["create_map", "resize_map", "get_project_summary", "list_resources", "tile_query"];
 
 function exposedNames(mode?: "tile" | "map" | "event" | "database"): Set<string> {
@@ -48,9 +48,9 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     for (const name of ["upsert_event", "place_npc", "upsert_item", "query_world", "create_quest"]) {
       expect(exposed.has(name), name).toBe(false);
     }
-    // ~12개 스코프(코어 5 + 타일 9 + set_build_spec 제외 레지스트리 기준).
+    // ~12개 스코프(코어 5 + 타일 10 + set_build_spec 제외 레지스트리 기준).
     expect(exposed.size).toBeGreaterThanOrEqual(12);
-    expect(exposed.size).toBeLessThanOrEqual(16);
+    expect(exposed.size).toBeLessThanOrEqual(17);
   });
 
   it("event 모드: 이벤트 툴 포함, 타일 프리미티브 제외, 코어는 상시", () => {
@@ -130,6 +130,13 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     for (const domain of ["core", "map", "battle", "database"] as const) expect(enemy.has(domain)).toBe(true);
     const wall = computeActiveToolDomains("벽 깔아줘");
     for (const domain of ["core", "map", "tile"] as const) expect(wall.has(domain)).toBe(true);
+  });
+
+  it("호수/수역 요청은 tile 도메인을 열어 fill_region을 노출한다", () => {
+    const domains = computeActiveToolDomains("오른쪽 아래에 호수 만들어줘");
+    expect(domains.has("tile")).toBe(true);
+    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+    expect(exposed.has("fill_region")).toBe(true);
   });
 
   it("부정 필터는 제외된 도메인 키워드를 활성화하지 않는다", () => {

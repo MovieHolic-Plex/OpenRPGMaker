@@ -9,13 +9,16 @@ import { getTool, runTool, toOpenAiTools, type ToolContext } from "@/editor/tool
 import { V2_TILE_SUPERSEDED } from "@/editor/tools/v3";
 import { buildEightNeighborVariantMap } from "@/editor/tools/v3/rmTypeExpander";
 import { DEFAULT_MODEL } from "@/ai/llmClient";
+import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { LAKE_AUTOTILE_TILE, isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
 
 const MAP_ID = "map_blank_start";
 const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
+const WATER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}lake-water-autotile`;
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
@@ -167,8 +170,81 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
   });
 });
 
+describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
+  it("fill_region: 10×8 rect를 물 오토타일로 채우면 80칸 전부 물이고 통행 불가, 경계 quarter가 정합된다", () => {
+    const { ctx, tileset } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    approve(tileset(), WATER_GROUP_ID);
+    const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 4, w: 10, h: 8 }, tileVocabId: WATER_GROUP_ID });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ filled: 80, requested: 80, groupId: WATER_GROUP_ID, layer: "lower" });
+    const map = ctx.project.maps[MAP_ID];
+    for (let y = 4; y < 12; y += 1) {
+      for (let x = 5; x < 15; x += 1) {
+        const tile = map.lowerTiles[y * map.width + x];
+        expect(isLakeAutotileTile(tile), `${x},${y}`).toBe(true);
+        expect(isPassable(ctx.project, map, x, y), `${x},${y}`).toBe(false);
+      }
+    }
+    expect(lakeAutotileQuarterSources(map, 5, 4).map((part) => part.tile)).toEqual([
+      LAKE_AUTOTILE_TILE.OUTER_CORNER,
+      LAKE_AUTOTILE_TILE.EDGE_NORTH,
+      LAKE_AUTOTILE_TILE.EDGE_WEST,
+      LAKE_AUTOTILE_TILE.BODY,
+    ]);
+  });
+
+  it("fill_region: transfer 목적지가 통행 불가가 될 때 해당 칸만 제외하고 warning으로 통과한다", () => {
+    const { ctx, tileset } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    approve(tileset(), WATER_GROUP_ID);
+    const map = ctx.project.maps[MAP_ID];
+    map.events.push({
+      id: "ev_transfer_source",
+      x: 0,
+      y: 0,
+      trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
+    });
+
+    const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 5, w: 5, h: 5 }, tileVocabId: WATER_GROUP_ID });
+    const after = ctx.project.maps[MAP_ID];
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
+    expect(result.data).toMatchObject({ filled: 24, requested: 25 });
+    expect(isLakeAutotileTile(after.lowerTiles[5 * after.width + 5])).toBe(true);
+    expect(isLakeAutotileTile(after.lowerTiles[7 * after.width + 7])).toBe(false);
+    expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
+  });
+
+  it("tile_erase: transfer 목적지 통행을 막는 셀만 제외하고 나머지는 지운다", () => {
+    const { ctx } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    const map = ctx.project.maps[MAP_ID];
+    map.events.push({
+      id: "ev_transfer_source",
+      x: 0,
+      y: 0,
+      trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
+    });
+    for (let y = 6; y < 9; y += 1) {
+      for (let x = 6; x < 9; x += 1) map.lowerTiles[y * map.width + x] = TILE.GRASS;
+    }
+
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "lower" });
+    const after = ctx.project.maps[MAP_ID];
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
+    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1 });
+    expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.EMPTY);
+    expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.GRASS);
+    expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
+  });
+});
+
 describe("v2 배치 4종 deprecated + 모델 전환 (V3B)", () => {
-  it("tile_paint/road/scatter/structure는 LLM 비노출·실행 호환·supersededBy 매핑, v3 6종은 노출된다", () => {
+  it("tile_paint/road/scatter/structure는 LLM 비노출·실행 호환·supersededBy 매핑, v3 툴은 노출된다", () => {
     const exposed = new Set(toOpenAiTools().map((tool) => tool.function.name));
     for (const [v2Name, v3Name] of V2_TILE_SUPERSEDED) {
       expect(exposed.has(v2Name), v2Name).toBe(false);
@@ -177,7 +253,7 @@ describe("v2 배치 4종 deprecated + 모델 전환 (V3B)", () => {
       expect(tool?.supersededBy, v2Name).toBe(v3Name);
       expect(tool?.version, v2Name).toBe(2);
     }
-    for (const name of ["build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props"]) {
+    for (const name of ["build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase"]) {
       expect(exposed.has(name), name).toBe(true);
       expect(getTool(name)?.version, name).toBe(3);
     }

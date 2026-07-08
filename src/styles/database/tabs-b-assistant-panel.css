@@ -543,6 +543,47 @@ body.ai-panel-docked .editor-layout {
   line-height: 1.2;
   writing-mode: vertical-rl;
 }
+
+/* 사이드 도크 접힘: 420px 컬럼이 통째로 남던 갭 — 기록 도크와 동일한 44px 레일로 축소한다. */
+.editor-layout .ai-chat-side-panel:has(.ai-chat-panel.is-collapsed) {
+  flex-basis: 44px;
+  min-width: 44px;
+  width: 44px;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed {
+  padding: 0;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore {
+  align-items: center;
+  background: var(--bg-raised);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  justify-content: flex-start;
+  padding: var(--space-3) 0;
+  width: 100%;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-float {
+  display: none;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-icon,
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-label {
+  display: inline-block;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-label {
+  color: var(--text-1);
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1.2;
+  writing-mode: vertical-rl;
+}
 .ai-config-actions {
   align-items: center;
   display: flex;

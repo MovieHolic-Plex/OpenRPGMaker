@@ -20,6 +20,7 @@ export interface ProposalCompletenessCall {
 
 export interface ProposalCompletenessInput {
   readonly requestText?: string;
+  readonly assistantText?: string;
   readonly buildSpec?: BuildSpec | null;
   readonly calls: readonly ProposalCompletenessCall[];
 }
@@ -27,7 +28,7 @@ export interface ProposalCompletenessInput {
 export function proposalCompletenessWarnings(input: ProposalCompletenessInput): string[] {
   const base = input.buildSpec
     ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
-    : heuristicCompletenessWarnings(input.requestText ?? "", input.calls);
+    : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "");
   return dedupe([...base, ...worldCompletenessWarnings(input.calls)]);
 }
 
@@ -71,13 +72,18 @@ function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly Pro
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} ${formatMissingSpecAssets(missing)}`];
 }
 
-function heuristicCompletenessWarnings(requestText: string, calls: readonly ProposalCompletenessCall[]): string[] {
+function heuristicCompletenessWarnings(requestText: string, calls: readonly ProposalCompletenessCall[], assistantText: string): string[] {
   const changedCalls = calls.filter((call) => call.result.ok && hasMeaningfulDiff(call.result.diff));
   const requestedCount = requestedPlacementCount(requestText);
   if (changedCalls.length === 0) {
-    return requestLikelyExpectsChange(requestText) || requestedCount !== null
-      ? [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실제 변경이 없습니다(체인지셋 0건).`]
-      : [];
+    const promised = endsWithProgressPromise(assistantText);
+    if (promised) {
+      return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 진행을 약속했지만 실제 변경이 없습니다(체인지셋 0건). 질문 대신 실행했어야 합니다.`];
+    }
+    const proceedInstruction = isProceedInstruction(requestText);
+    if (!proceedInstruction && !requestLikelyExpectsChange(requestText) && requestedCount === null) return [];
+    const hint = proceedInstruction ? " 진행 지시였으므로 질문 대신 실행했어야 합니다." : "";
+    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실제 변경이 없습니다(체인지셋 0건).${hint}`];
   }
 
   if (requestedCount === null) return [];
@@ -163,6 +169,7 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
     return at === null ? [] : [{ mapId, x: at.x, y: at.y, w: 1, h: 1 }];
   }
   if (call.name === "place_props") return scatterRegions(mapId, call.args, call.result.data);
+  if (call.name === "fill_region" || call.name === "tile_erase") return rectRegion(mapId, call.args.rect);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
   if (call.name === "build_house_kit") return wingRegions(mapId, call.args.wings);
   // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
@@ -337,6 +344,16 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
   if (call.name === "build_house" || call.name === "build_house_kit" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
+}
+
+function isProceedInstruction(text: string): boolean {
+  const normalized = text.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+  if (!normalized) return false;
+  return /(?:진행해|진행하라고|계속해|계속 진행|이어(?:서)? 해|그대로 해|좋아 진행|오케이 진행|ok 진행|정리하고 만들어)/u.test(normalized);
+}
+
+function endsWithProgressPromise(text: string): boolean {
+  return /(?:잠시만\s*기다려\s*주세요|잠시만요|다시\s*설계하겠습니다|설계하겠습니다|진행하겠습니다|처리하겠습니다|만들겠습니다|하겠습니다|하겠어요)[.!?。…\s]*$/u.test(text.trim());
 }
 
 function isClearlyShort(expected: number, actual: number): boolean {

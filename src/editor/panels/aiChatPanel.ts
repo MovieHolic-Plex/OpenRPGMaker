@@ -156,7 +156,7 @@ const MAP_TILE_TOOLS = new Set([
   "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   // 타일 v3 공정 프리미티브(V3B)
-  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
+  "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase",
 ]);
 
 function isWriteTool(name: string): boolean {
@@ -1378,6 +1378,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ? []
         : proposalCompletenessWarnings({
             requestText,
+            assistantText: result.assistantText,
             buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, result.proposedCalls, requestText),
             calls: result.proposedCalls,
       });

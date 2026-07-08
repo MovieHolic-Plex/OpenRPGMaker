@@ -13,7 +13,7 @@ export interface SpecAsset {
   note?: string;
   // 파괴(clear) 의도를 명시적으로 확인. 기존 구조물을 덮는 clear는 이 플래그가 있어야 통과한다.
   confirmDestroy?: boolean;
-  // 배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때, 사용자에게 정리 여부를 확인했다는 선언.
+  // 배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때, 모델이 정리 방침을 선언한다.
   // "clear"(정리하고 배치) 또는 "keep"(그대로 위에 배치). 없으면 배치가 거부된다.
   overExisting?: "clear" | "keep";
 }
@@ -21,7 +21,7 @@ export interface SpecAsset {
 // clear 영역이 이 칸 수 이상의 '지어진' 칸을 덮으면 구조물로 간주해 confirmDestroy를 요구한다.
 // (잔해 1~2칸 정리는 통과, 집 같은 구조물은 차단 — "집 주변 청소"가 집을 지워버린 사고 방지.)
 const STRUCTURE_MIN_CELLS = 6;
-// 배치 에셋 자리+주변(1칸 테두리)에 이 칸 수 이상의 기본-아닌 타일이 있으면 정리 확인(overExisting)을 요구한다.
+// 배치 에셋 자리+주변(1칸 테두리)에 이 칸 수 이상의 기본-아닌 타일이 있으면 정리 방침(overExisting)을 요구한다.
 const PLACEMENT_CONFLICT_MIN = 4;
 // 모델이 선형 도로/페인트를 경계에 딱 붙여 칠할 때 흔한 1~2칸 오차는 재계획 대신 경고로 흡수한다.
 // 구조물 삭제·기존 타일 보호 규칙에는 적용하지 않는, 확정 밑그림 대비 공간 쓰기 호출 경계 전용 slack이다.
@@ -61,18 +61,22 @@ interface CheckedAsset {
 
 // v3 공정 프리미티브(build_wall 등 6종)는 여기 넣지 않는다(2026-07-07 타일 시공 흐름 재설계 §2.1.1):
 // v3는 승인 어휘 자체가 명세이므로 set_build_spec 게이트가 불필요하고, 미승인 하드 차단은
-// 프리미티브 내부(assertApprovedOrFail)가 그대로 수행한다. 레거시 배치 툴만 게이트를 탄다.
+// 프리미티브 내부(assertApprovedOrFail)가 그대로 수행한다. 단, fill_region은 넓은 지형 쓰기라 스펙
+// 자동 확장/구조물 보호 관례를 탄다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",
   // 타일 v2 (2026-07-07 재구축)
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
+  // 타일 v3 영역 채우기
+  "fill_region",
 ]);
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_village", "stamp_structure",
   "place_npc", "place_battle_blocker",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
+  "fill_region",
 ]);
 
 export function boundarySlackForTool(toolName: string): number {
@@ -133,7 +137,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
     for (let right = left + 1; right < checkedAssets.length; right += 1) {
       const a = checkedAssets[left];
       const b = checkedAssets[right];
-      if (a === undefined || b === undefined || overlapAllowed(a, b)) continue;
+      if (a === undefined || b === undefined || overlapAllowed(a, b, buildOrder)) continue;
       const rect = intersection(a, b);
       if (rect === null) continue;
       issues.push({ severity: "error", message: `에셋 '${a.id}'와 '${b.id}'가 교차합니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}.` });
@@ -158,14 +162,14 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
         }
         continue;
       }
-      // 배치(비-clear) 에셋: 자리+주변에 기본 타일이 아닌 것이 있으면 사용자에게 정리 여부를 확인(overExisting)해야 한다.
+      // 배치(비-clear) 에셋: 자리+주변에 기본 타일이 아닌 것이 있으면 overExisting으로 정리 방침을 선언해야 한다.
       if (asset.overExisting) continue;
       const conflict = placementConflict(currentMap, asset, clearAssets);
       if (conflict.count >= PLACEMENT_CONFLICT_MIN) {
         const at = conflict.sample ? ` 예: (${conflict.sample.x},${conflict.sample.y})` : "";
         issues.push({
           severity: "error",
-          message: `에셋 '${asset.id}' 자리·주변에 기본 타일이 아닌 것이 ${conflict.count}칸 있습니다${at}. 그 위에 그냥 놓지 말고 사용자에게 정리할지 물어본 뒤, 이 에셋에 overExisting:"clear"(정리하고 배치) 또는 "keep"(그대로 위에 배치)을 넣어 재제출하세요.`,
+          message: `에셋 '${asset.id}' 자리·주변에 기본 타일이 아닌 것이 ${conflict.count}칸 있습니다${at}. 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:"clear"(정리하고 배치) 또는 "keep"(그대로 위에 배치)을 넣어 재제출하세요.`,
         });
       }
     }
@@ -191,12 +195,11 @@ function placementConflict(map: GameMap, asset: CheckedAsset, clearAssets: reado
 }
 
 export function affectedRegions(toolName: string, args: Record<string, unknown>): AffectedRegion[] {
-  void toolName;
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
   if (mapId === null) return [];
 
-  const wingRegion = wingsRegion(mapId, args.wings);
-  if (wingRegion !== null) return [wingRegion];
+  const wingRegionsForKit = wingsRegions(mapId, args.wings, toolName === "build_house_kit");
+  if (wingRegionsForKit !== null) return wingRegionsForKit;
 
   const cellRegions = pointRegions(mapId, args.cells);
   if (cellRegions !== null) return cellRegions;
@@ -206,6 +209,9 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
 
   const cornerRect = rectFromCorners(mapId, args.from, args.to);
   if (cornerRect !== null) return [cornerRect];
+
+  const rectArg = rectFromObject(mapId, args.rect);
+  if (rectArg !== null) return [rectArg];
 
   const xyRect = rectFromXY(mapId, args);
   if (xyRect !== null) return [xyRect];
@@ -229,6 +235,20 @@ export function regionsCoveredBySpec(assets: readonly SpecAsset[], regions: read
   }
 
   return sample === undefined ? { covered: true, outsideCells } : { covered: false, outsideCells, sample };
+}
+
+export function uncoveredRegionsBySpec(assets: readonly SpecAsset[], regions: readonly AffectedRegion[]): AffectedRegion[] {
+  const uncovered: AffectedRegion[] = [];
+  for (const region of regions) {
+    if (region.w <= 0 || region.h <= 0) continue;
+    for (let y = region.y; y < region.y + region.h; y += 1) {
+      for (let x = region.x; x < region.x + region.w; x += 1) {
+        if (assets.some((asset) => containsCell(asset, x, y))) continue;
+        uncovered.push({ mapId: region.mapId, x, y, w: 1, h: 1 });
+      }
+    }
+  }
+  return uncovered;
 }
 
 export function checkRegionsAgainstSpecBoundary(
@@ -405,6 +425,12 @@ function rectFromCorners(mapId: string, from: unknown, to: unknown): AffectedReg
   return { mapId, x: Math.min(from.x, to.x), y: Math.min(from.y, to.y), w: Math.abs(from.x - to.x) + 1, h: Math.abs(from.y - to.y) + 1 };
 }
 
+function rectFromObject(mapId: string, value: unknown): AffectedRegion | null {
+  if (!isRecord(value)) return null;
+  if (!isFiniteNumber(value.x) || !isFiniteNumber(value.y) || !isFiniteNumber(value.w) || !isFiniteNumber(value.h)) return null;
+  return { mapId, x: value.x, y: value.y, w: value.w, h: value.h };
+}
+
 function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegion | null {
   if (!isFiniteNumber(args.x) || !isFiniteNumber(args.y)) return null;
   if (isFiniteNumber(args.w) && isFiniteNumber(args.h)) return { mapId, x: args.x, y: args.y, w: args.w, h: args.h };
@@ -412,22 +438,19 @@ function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegio
   return { mapId, x: args.x, y: args.y, w: 1, h: 1 };
 }
 
-function wingsRegion(mapId: string, value: unknown): AffectedRegion | null {
+function wingsRegions(mapId: string, value: unknown, includeDoorFront: boolean): AffectedRegion[] | null {
   if (!Array.isArray(value) || value.length === 0) return null;
-  let x0 = Number.POSITIVE_INFINITY;
-  let y0 = Number.POSITIVE_INFINITY;
-  let x1 = Number.NEGATIVE_INFINITY;
-  let y1 = Number.NEGATIVE_INFINITY;
+  const regions: AffectedRegion[] = [];
   for (const wing of value) {
     if (typeof wing !== "object" || wing === null || Array.isArray(wing)) return null;
     const record = wing as Record<string, unknown>;
     if (!isFiniteNumber(record.x) || !isFiniteNumber(record.y) || !isFiniteNumber(record.w) || !isFiniteNumber(record.h)) return null;
-    x0 = Math.min(x0, record.x);
-    y0 = Math.min(y0, record.y);
-    x1 = Math.max(x1, record.x + record.w);
-    y1 = Math.max(y1, record.y + record.h);
+    regions.push({ mapId, x: record.x, y: record.y, w: record.w, h: record.h });
+    if (includeDoorFront) {
+      regions.push({ mapId, x: record.x + Math.floor((record.w - 1) / 2), y: record.y + record.h, w: 1, h: 1 });
+    }
   }
-  return { mapId, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  return regions;
 }
 
 function intersection(a: CheckedAsset, b: CheckedAsset): AffectedRegion | null {
@@ -442,8 +465,22 @@ function insideMap(asset: CheckedAsset, width: number, height: number): boolean 
   return asset.x >= 0 && asset.y >= 0 && asset.x + asset.w <= width && asset.y + asset.h <= height;
 }
 
-function overlapAllowed(a: CheckedAsset, b: CheckedAsset): boolean {
-  return (a.layer === "upper") !== (b.layer === "upper") || (a.kind === "road" && b.kind === "road");
+function overlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {
+  return (
+    (a.layer === "upper") !== (b.layer === "upper") ||
+    (a.kind === "road" && b.kind === "road") ||
+    clearThenBuildOverlapAllowed(a, b, buildOrder)
+  );
+}
+
+function clearThenBuildOverlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {
+  if (buildOrder === null) return false;
+  const clear = a.kind === "clear" ? a : b.kind === "clear" ? b : null;
+  const other = clear === a ? b : clear === b ? a : null;
+  if (clear === null || other === null || other.kind === "clear") return false;
+  const clearRank = buildOrder.indexOf("clear");
+  const otherRank = buildOrder.indexOf(other.kind);
+  return clearRank >= 0 && otherRank >= 0 && clearRank < otherRank;
 }
 
 function containsCell(asset: SpecAsset, x: number, y: number): boolean {

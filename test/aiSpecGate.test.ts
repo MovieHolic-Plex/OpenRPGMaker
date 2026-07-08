@@ -2,7 +2,7 @@
 // 코드가 결정적으로 검증(경계/겹침)한 밑그림(명세)의 할당 영역 안에서만 실행된다(구간 격리).
 // - 자기 신고 수치([모호도 N%]) 개념은 완전히 제거된다.
 // - 사용자가 맵에서 선택한 영역([컨텍스트] footer)은 암묵적 명세다.
-// - 명세 검증 3회 실패 시 그 계획은 폐기하고 사용자에게 묻도록 유도한다.
+// - 명세 검증 3회 실패 시 그 계획은 폐기하고 새 배치를 스스로 설계하게 유도한다.
 import { describe, expect, it } from "vitest";
 import { AssistantSession, METADATA_ONLY_TOOLS } from "@/ai/assistantSession";
 import {
@@ -102,6 +102,30 @@ describe("buildSpec 검증기(결정적)", () => {
     expect(validateBuildSpec(project, roads).filter((issue) => issue.severity === "error")).toEqual([]);
   });
 
+  it("buildOrder상 clear가 먼저 오면 clear와 후속 배치 에셋의 겹침은 허용한다", () => {
+    const project = projectWithMap();
+    const lake: BuildSpec = {
+      mapId: "m1",
+      buildOrder: ["clear", "water", "prop"],
+      assets: [
+        { id: "잔여물 정리", kind: "clear", x: 4, y: 4, w: 10, h: 8 },
+        { id: "호수", kind: "water", x: 4, y: 4, w: 10, h: 8 },
+        { id: "꽃", kind: "prop", x: 2, y: 2, w: 2, h: 2 },
+      ],
+    };
+    expect(validateBuildSpec(project, lake).filter((issue) => issue.severity === "error")).toEqual([]);
+
+    const bad: BuildSpec = {
+      mapId: "m1",
+      buildOrder: ["water", "prop"],
+      assets: [
+        { id: "호수", kind: "water", x: 4, y: 4, w: 10, h: 8 },
+        { id: "바위", kind: "prop", x: 6, y: 5, w: 2, h: 2 },
+      ],
+    };
+    expect(validateBuildSpec(project, bad).some((issue) => issue.severity === "error" && issue.message.includes("교차"))).toBe(true);
+  });
+
   it("없는 맵/빈 에셋/깨진 좌표는 error", () => {
     const project = projectWithMap();
     expect(validateBuildSpec(project, { mapId: "없는맵", assets: [{ id: "a", kind: "house", x: 0, y: 0, w: 2, h: 2 }] }).some((i) => i.severity === "error")).toBe(true);
@@ -122,6 +146,22 @@ describe("affectedRegions — 툴 인자에서 영향 영역 추출", () => {
       .toEqual([{ mapId: "m1", x: 5, y: 5, w: 1, h: 1 }]);
     expect(affectedRegions("paint_road", { mapId: "m1", points: [{ x: 0, y: 9 }, { x: 19, y: 9 }], style: "dirt" }))
       .toEqual([{ mapId: "m1", x: 0, y: 9, w: 1, h: 1 }, { mapId: "m1", x: 19, y: 9, w: 1, h: 1 }]);
+  });
+
+  it("build_house_kit wings는 합집합 bounding rect가 아니라 날개별 영역과 문 앞 1칸으로 추출한다", () => {
+    expect(affectedRegions("build_house_kit", {
+      mapId: "m1",
+      kitId: "blue-stone",
+      wings: [
+        { x: 2, y: 2, w: 5, h: 5 },
+        { x: 9, y: 2, w: 5, h: 5 },
+      ],
+    })).toEqual([
+      { mapId: "m1", x: 2, y: 2, w: 5, h: 5 },
+      { mapId: "m1", x: 4, y: 7, w: 1, h: 1 },
+      { mapId: "m1", x: 9, y: 2, w: 5, h: 5 },
+      { mapId: "m1", x: 11, y: 7, w: 1, h: 1 },
+    ]);
   });
 
   it("regionsCoveredBySpec — 영역 밖 셀 수와 예시 좌표", () => {
@@ -207,12 +247,12 @@ describe("세션 스펙 게이트", () => {
     expect(session.getActiveSpec()?.assets.length).toBe(2);
   });
 
-  it("할당 영역 밖 빌드는 차단된다(구간 격리)", async () => {
+  it("할당 영역 밖 빈 영역 빌드는 차단하지 않고 명세 자동 확장 warning으로 통과한다", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 15, y: 15 }, to: { x: 16, y: 16 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
-      finalMsg("좌표를 다시 잡겠습니다."),
+      finalMsg("명세를 넓혀 칠했습니다."),
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: { name: string; ok: boolean; summary: string }[] = [];
@@ -220,12 +260,11 @@ describe("세션 스펙 게이트", () => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
-    expect(paint.ok).toBe(false);
-    expect(paint.summary).toContain("밖");
-    expect(paint.summary).toContain("허용 slack ±2칸");
+    expect(paint.ok).toBe(true);
+    expect(session.getActiveSpec()?.assets.some((asset) => asset.id.startsWith("auto:") && asset.x === 15 && asset.y === 15)).toBe(true);
   });
 
-  it("할당 영역 동쪽 +1칸 초과는 차단하지 않고 slack warning으로 통과", async () => {
+  it("할당 영역 동쪽 +1칸 초과는 명세 자동 확장 warning으로 통과", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
@@ -248,14 +287,13 @@ describe("세션 스펙 게이트", () => {
     expect(paint.ok).toBe(true);
     expect(paint.issues).toContainEqual(expect.objectContaining({
       severity: "warning",
-      code: "spec-gate-slack",
-      message: expect.stringContaining("동쪽 1칸"),
+      code: "spec-gate-auto-expand",
+      message: expect.stringContaining("명세를 자동 확장했습니다"),
     }));
-    expect(paint.issues?.[0]?.message).toContain("slack 허용");
-    expect(paint.warnings?.some((warning) => warning.includes("동쪽 1칸"))).toBe(true);
+    expect(paint.warnings?.some((warning) => warning.includes("명세를 자동 확장했습니다"))).toBe(true);
   });
 
-  it("할당 영역 동쪽 +2칸 초과도 slack warning으로 통과", async () => {
+  it("할당 영역 동쪽 +2칸 초과도 명세 자동 확장 warning으로 통과", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
@@ -277,17 +315,17 @@ describe("세션 스펙 게이트", () => {
     expect(paint.ok).toBe(true);
     expect(paint.issues).toContainEqual(expect.objectContaining({
       severity: "warning",
-      code: "spec-gate-slack",
-      message: expect.stringContaining("동쪽 2칸"),
+      code: "spec-gate-auto-expand",
+      message: expect.stringContaining("명세를 자동 확장했습니다"),
     }));
   });
 
-  it("할당 영역 동쪽 +3칸 초과는 기존처럼 차단하고 허용 slack을 안내", async () => {
+  it("할당 영역 동쪽 +3칸 초과도 빈 영역이면 자동 확장으로 통과", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 7, y: 4 }, to: { x: 10, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
-      finalMsg("좌표를 줄이겠습니다."),
+      finalMsg("명세를 넓혀 칠했습니다."),
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; summary: string; issues?: Array<{ message: string }> }> = [];
@@ -302,17 +340,16 @@ describe("세션 스펙 게이트", () => {
       }
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
-    expect(paint.ok).toBe(false);
-    expect(paint.summary).toContain("허용 slack ±2칸");
-    expect(paint.issues?.some((issue) => issue.message.includes("허용 slack ±2칸"))).toBe(true);
+    expect(paint.ok).toBe(true);
+    expect(paint.issues?.some((issue) => issue.message.includes("명세를 자동 확장했습니다"))).toBe(true);
   });
 
-  it("clear_region은 정리/파괴성 호출이라 할당 영역 +1칸도 slack 없이 차단", async () => {
+  it("clear_region도 빈 영역 초과는 자동 확장 warning으로 통과한다", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "청소", kind: "clear", x: 5, y: 5, w: 3, h: 3 }] }, "c2"),
       toolCallMsg("clear_region", { mapId: "m1", x: 5, y: 5, w: 4, h: 3 }, "c3"),
-      finalMsg("정리 영역을 줄이겠습니다."),
+      finalMsg("정리 영역을 넓혔습니다."),
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     const events: Array<{ name: string; ok: boolean; summary: string; issues?: Array<{ message: string }> }> = [];
@@ -327,9 +364,8 @@ describe("세션 스펙 게이트", () => {
       }
     });
     const clear = events.find((e) => e.name === "clear_region")!;
-    expect(clear.ok).toBe(false);
-    expect(clear.summary).toContain("slack 없음");
-    expect(clear.issues?.some((issue) => issue.message.includes("slack 없이"))).toBe(true);
+    expect(clear.ok).toBe(true);
+    expect(clear.issues?.some((issue) => issue.message.includes("명세를 자동 확장했습니다"))).toBe(true);
   });
 
   it("확정된 스펙은 턴 간 유지된다 — 다음 턴 '계속해'에서 재제출 없이 빌드", async () => {
@@ -363,7 +399,7 @@ describe("세션 스펙 게이트", () => {
     expect(events).toEqual([true]);
   });
 
-  it("사용자 선택 영역 암묵 스펙도 경계 +2칸은 warning으로 통과한다", async () => {
+  it("사용자 선택 영역 암묵 스펙도 경계 밖 빈 영역은 자동 확장 warning으로 통과한다", async () => {
     const project = projectWithMap();
     const chat = scriptedChat([
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 7, y: 4 }, to: { x: 9, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c1"),
@@ -381,9 +417,59 @@ describe("세션 스펙 게이트", () => {
     });
     expect(events[0]?.ok).toBe(true);
     expect(events[0]?.issues).toContainEqual(expect.objectContaining({
-      code: "spec-gate-slack",
-      message: expect.stringContaining("동쪽 2칸"),
+      code: "spec-gate-auto-expand",
+      message: expect.stringContaining("명세를 자동 확장했습니다"),
     }));
+  });
+
+  it("16×16 맵에서 스펙과 동일한 3개 wings build_house_kit은 bounding rect 오차단 없이 통과한다", async () => {
+    const spec = {
+      mapId: "m1",
+      title: "작은 집 3채",
+      assets: [
+        { id: "house1", kind: "house", x: 2, y: 2, w: 5, h: 5 },
+        { id: "house2", kind: "house", x: 9, y: 2, w: 5, h: 5 },
+        { id: "house3", kind: "house", x: 2, y: 9, w: 5, h: 5 },
+      ],
+    };
+    const wings = spec.assets.map(({ x, y, w, h }) => ({ x, y, w, h }));
+    const chat = scriptedChat([
+      toolCallMsg("create_map", { id: "m1", name: "작은 맵", width: 16, height: 16 }, "c1"),
+      toolCallMsg("set_build_spec", spec, "c2"),
+      toolCallMsg("build_house_kit", { mapId: "m1", kitId: "blue-stone", wings, interior: false, windows: false }, "c3"),
+      finalMsg("집 3채를 배치했습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; summary: string }> = [];
+    await session.sendUserMessage("작은 집 3개 만들어줘", (e) => {
+      if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
+    });
+    const house = events.find((event) => event.name === "build_house_kit")!;
+    expect(house.ok, house.summary).toBe(true);
+    expect(house.summary).not.toContain("할당 영역 밖");
+  });
+
+  it("자동 확장 대상에 기존 구조물이 있으면 계속 차단한다", async () => {
+    const project = (() => {
+      const ctx = { project: createBlankProject() };
+      expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 20 }).ok).toBe(true);
+      expect(runTool(ctx, "build_house", { mapId: "m1", origin: { x: 3, y: 3 }, width: 6, height: 7, material: "plaster", naturalness: 0 }).ok).toBe(true);
+      return ctx.project;
+    })();
+    const chat = scriptedChat([
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "빈터", kind: "terrain", x: 12, y: 12, w: 3, h: 3 }] }, "c1"),
+      toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 3, y: 3 }, to: { x: 4, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c2"),
+      finalMsg("기존 구조물은 보존했습니다."),
+    ]);
+    const session = new AssistantSession(project, { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; summary: string; issues?: string[] }> = [];
+    await session.sendUserMessage("빈터 칠해줘", (e) => {
+      if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary, issues: e.result.issues?.map((issue) => issue.message) });
+    });
+    const paint = events.find((event) => event.name === "paint_tiles")!;
+    expect(paint.ok).toBe(false);
+    expect(paint.summary).toContain("기존 구조물");
+    expect(paint.issues?.join(" ")).toContain("자동 보정하지 않습니다");
   });
 
   it("스펙 검증 3회 실패 → 폐기 안내, 공간 툴은 계속 차단", async () => {
@@ -476,8 +562,8 @@ describe("스펙 게이트 — 구조물 보호(집 삭제 방지)", () => {
   });
 });
 
-// 배치 전 정리 확인(사용자 요청): 타일/구조물을 놓을 영역·주변에 기본 타일이 아닌 것이 있으면
-// 그냥 덮지 말고 사용자에게 정리 여부를 물은 뒤 overExisting을 선언해야 통과한다.
+// 배치 전 정리 방침: 타일/구조물을 놓을 영역·주변에 기본 타일이 아닌 것이 있으면
+// 모델이 overExisting을 선언해야 통과한다.
 describe("스펙 게이트 — 배치 전 주변 정리 확인", () => {
   function projectWithHouse() {
     const ctx = { project: createBlankProject() };
@@ -486,14 +572,17 @@ describe("스펙 게이트 — 배치 전 주변 정리 확인", () => {
     return ctx.project;
   }
 
-  it("기존 구조물 위/근처에 배치하려는 비-clear 에셋은 overExisting 없이는 거부(정리 확인 유도)", () => {
+  it("기존 구조물 위/근처에 배치하려는 비-clear 에셋은 overExisting 없이는 거부(자율 판단 지시)", () => {
     const project = projectWithHouse();
     const spec: BuildSpec = { mapId: "m1", assets: [{ id: "새집", kind: "house", x: 3, y: 3, w: 6, h: 7 }] };
     const issues = validateBuildSpec(project, spec);
-    expect(issues.some((i) => i.severity === "error" && i.message.includes("overExisting") && i.message.includes("정리"))).toBe(true);
+    const message = issues.find((i) => i.severity === "error" && i.message.includes("overExisting"))?.message ?? "";
+    expect(message).toContain("스스로 판단");
+    expect(message).not.toContain("물어");
+    expect(message).not.toContain("사용자에게");
   });
 
-  it("overExisting을 선언하면(사용자에게 확인함) 통과", () => {
+  it("overExisting을 선언하면 통과", () => {
     const project = projectWithHouse();
     const keep: BuildSpec = { mapId: "m1", assets: [{ id: "새집", kind: "house", x: 3, y: 3, w: 6, h: 7, overExisting: "keep" }] };
     expect(validateBuildSpec(project, keep).filter((i) => i.severity === "error")).toEqual([]);

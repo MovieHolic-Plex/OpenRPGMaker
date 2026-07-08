@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 103개 툴 — 쓰기 73, 읽기 30.
+> 총 104개 툴 — 쓰기 74, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -15,7 +15,8 @@
 | `place_door` | `mapId: string`, `at: object`, `doorVocabId: string` | 승인된 문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(승인된 벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. |
 | `place_window` | `mapId: string`, `at: object`, `windowVocabId: string` | 승인된 창문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(승인된 벽 어휘 타일)이 아니면 거부. layer 인자 없음 — 창문 같은 투명 소품은 어휘 layerHome(upper/perCell)이 벽을 보존하며 겹친다. |
 | `lay_path` | `mapId: string`, `points: array`, `pathVocabId: string`, `naturalness?: number`, `seed?: integer` | 승인된 길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. |
-| `place_props` | `mapId: string`, `area: object`, `propVocabId: string`, `count: integer`, `minGap?: integer`, `naturalness?: number`, `seed?: integer` | 승인된 소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). propVocabId가 그룹이면 기존 산포 엔진(풋프린트 원자 배치·클러스터 hard 규칙·보호셀 회피)을 그대로 쓰고, 승인된 낱개 타일 id(숫자)면 포아송 산포로 배치한다. layer 인자 없음 — 어휘 layerHome이 결정. |
+| `place_props` | `mapId: string`, `area: object`, `propVocabId: string`, `count: integer`, `minGap?: integer`, `naturalness?: number`, `seed?: integer` | 승인된 소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). 나무/바위/꽃처럼 떨어진 오브젝트 배치용이다. 호수·강·바닥·지면처럼 면을 채우는 작업은 fill_region을 사용하라. propVocabId가 그룹이면 기존 산포 엔진(풋프린트 원자 배치·클러스터 hard 규칙·보호셀 회피)을 그대로 쓰고, 승인된 낱개 타일 id(숫자)면 포아송 산포로 배치한다. layer 인자 없음 — 어휘 layerHome이 결정. |
+| `fill_region` | `mapId: string`, `rect: object`, `tileVocabId: string`, `layer?: lower\|upper` | 승인된 오토타일/애니메이션 지형 어휘 그룹으로 rect 전체를 채운다(v3). 호수·강·바닥·지면 같은 면 작업용이며, 나무/바위/꽃 산포는 place_props를 사용한다. lower 기본, 오토타일 경계는 기존 오토타일 재계산 로직으로 자동 정합한다. transfer 목적지/시작 위치가 통행 불가가 될 칸은 그 칸만 제외하고 warning으로 보고한다. |
 | `tile_erase` | `mapId: string`, `rect: object`, `layer?: both\|lower\|upper` | 지정 사각형의 타일을 비운다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다. |
 | `build_house_kit` | `mapId: string`, `kitId: blue-stone\|bright-plaster`, `wings: array`, `door?: boolean`, `doorEvent?: boolean`, `interior?: boolean`, `ownerName?: string`, `windows?: object` | 하네싱 집 키트로 집을 짓는다(권장 정공법). 건물 = 날개 사각형(wings)들의 합집합 — 직사각·ㄱ/ㄴ/ㄷ/ㅁ/O자 등 임의 평면 가능. 벽 3행(상·중·하 나인슬라이스)과 지붕 3단, 상위 레이어 마감(대각/용마루/트림)은 스크립트가 자동으로 정확히 깐다 — 타일 ID를 직접 고르지 말 것. 키트: blue-stone(파랑 지붕+석벽) \| bright-plaster(밝은 오렌지 지붕+흰 회벽). 이 두 키트에 없는 재질(통나무·초가 등)을 요청받으면 지어내지 말고 '아직 학습되지 않은 재질'이라고 답할 것. 제약: 날개 폭 ≥3, 각 열 구간 높이 ≥5(벽3+지붕2). 문은 남쪽 외벽 중앙에 자동 배치된다. 창문은 기본 활성으로 각 벽 중단 행에 1칸 인셋 후 spacing+1 간격으로 상위 레이어에 배치하며 문 열±1은 비운다. |
 | `build_village` | `mapId?: string`, `name?: string`, `width?: integer`, `height?: integer`, `bounds?: object`, `houses?: integer`, `seed?: integer`, `interior?: boolean`, `doorEvent?: boolean`, `windows?: object`, `npcs?: array` | 하네싱 집 키트 기반 50x50 마을을 한 번에 시공한다. 인자 없이 호출해도 50x50 마을이 완성된다. 기존 맵에서는 bounds를 지정해 그 사각형 안에 광장·집·길·NPC를 배치할 수 있다(최소 36x36). 배치·집·길·NPC 배치는 결정론 코드가 수행하고, interior/doorEvent/windows로 내부·문 이벤트·창문 생성을 제어한다. npcs 로 이름/대사만 지정 가능하다. 기본 결과: 집 8채, 중앙 광장과 전부 연결된 흙길, 집마다 주민 1명과 광장 주민 2명. |

@@ -86,6 +86,25 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건)."]);
   });
 
+  it("진행 지시에서 체인지셋이 비면 질문 대신 실행 힌트를 붙인다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "진행하라고",
+      calls: [],
+    });
+
+    expect(warnings).toEqual(["⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건). 진행 지시였으므로 질문 대신 실행했어야 합니다."]);
+  });
+
+  it("진행 약속으로 끝났는데 쓰기 툴이 없으면 약속-후-침묵 경고를 낸다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "오른쪽 아래에 호수 만들어줘",
+      assistantText: "다시 설계하겠습니다. 잠시만 기다려 주세요!",
+      calls: [],
+    });
+
+    expect(warnings).toEqual(["⚠ 미이행: 진행을 약속했지만 실제 변경이 없습니다(체인지셋 0건). 질문 대신 실행했어야 합니다."]);
+  });
+
   it("스펙이 없고 요청 수량보다 실제 배치가 크게 적으면 경고한다", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "나무 10개 배치해줘",
