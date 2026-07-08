@@ -7,6 +7,8 @@ export const PHASE6A_CHASER_ID = "ev_phase6a_chaser";
 export const PHASE6A_TRANSITION_EVENT_ID = "ev_phase6a_transition";
 export const PHASE6A_REMOVE_LIGHTS_EVENT_ID = "ev_phase6a_remove_lights";
 export const PHASE6A_FLASHLIGHT_ID = "phase6a_flashlight";
+export const PHASE6B_MAP_ID = "map_phase6b_storm_fog_corridor";
+export const PHASE6B_STORM_AUTO_EVENT_ID = "ev_phase6b_storm_auto";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 
@@ -38,6 +40,28 @@ export function createHorrorPhase6aFixture(): Project {
     transitionEvent(),
     removeLightsEvent(),
     chaserEvent(PHASE6A_CHASER_ID, 13, 3, [{ kind: "killPlayer", message: "어둠 속에서 붙잡혔다." }]),
+  ];
+  return project;
+}
+
+export function createHorrorPhase6bFixture(): Project {
+  const project = createHorrorPhase6aFixture();
+  const map = project.maps[PHASE6A_MAP_ID];
+  map.id = PHASE6B_MAP_ID;
+  map.name = "Phase 6b 폭풍 안개 복도";
+  project.maps = { [PHASE6B_MAP_ID]: map };
+  project.startMapId = PHASE6B_MAP_ID;
+  project.mapTree = { mapId: PHASE6B_MAP_ID, children: [] };
+  map.events = [
+    stormAutoEvent(),
+    ...map.events.map((event) =>
+      event.id === PHASE6A_TRANSITION_EVENT_ID
+        ? lightingActionEvent(PHASE6A_TRANSITION_EVENT_ID, 1, 4, [
+            { kind: "setWeather", weather: "fog", intensity: 0.55, transitionMs: 160 },
+            { kind: "setLighting", ambient: 0.45, color: "#04080f", transitionMs: 96 },
+          ])
+        : event
+    ),
   ];
   return project;
 }
@@ -79,6 +103,30 @@ function checkpointEvent(map: GameMap): GameEvent {
           { kind: "setSelfSwitch", key: "A", value: true },
           { kind: "checkpointSave", label: "phase6a-entry" },
         ],
+      },
+    ],
+  };
+}
+
+function stormAutoEvent(): GameEvent {
+  return {
+    id: PHASE6B_STORM_AUTO_EVENT_ID,
+    x: 0,
+    y: 0,
+    trigger: { kind: "auto" },
+    commands: [],
+    pages: [
+      {
+        id: `${PHASE6B_STORM_AUTO_EVENT_ID}_page`,
+        name: "폭풍 시작",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "auto" },
+        priority: "below",
+        overlapForbidden: false,
+        animationType: "fixedGraphic",
+        movement: PASSIVE,
+        commands: [{ kind: "setWeather", weather: "storm", intensity: 0.7, transitionMs: 0 }],
       },
     ],
   };

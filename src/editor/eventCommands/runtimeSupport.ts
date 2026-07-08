@@ -18,6 +18,7 @@ const M2_RUNTIME_FULL_IDS: ReadonlySet<string> = new Set([
   "m2-047-flash-screen",
   "m2-048-shake-screen",
   "m2-049-scroll-map",
+  "m2-050-set-weather-effects",
   "m2-052-move-picture",
   "m2-058-wait-for-all-movement",
   "m2-098-change-enemy-hp",

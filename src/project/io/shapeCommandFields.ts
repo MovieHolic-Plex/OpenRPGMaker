@@ -118,6 +118,19 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.id !== undefined) requireString(`${label}.id`, command.id);
       if (command.all !== undefined) requireBoolean(`${label}.all`, command.all);
       return;
+    case "setWeather":
+      requireWeatherKind(`${label}.weather`, command.weather);
+      if (command.intensity !== undefined) {
+        const intensity = requireNumber(`${label}.intensity`, command.intensity);
+        if (intensity < 0 || intensity > 1) throw new ProjectFormatError(`${label}.intensity는 0~1이어야 합니다.`);
+      }
+      if (command.transitionMs !== undefined) requireNumber(`${label}.transitionMs`, command.transitionMs);
+      return;
+    case "showAnimation":
+      validateShowAnimationTarget(`${label}.target`, command.target);
+      requireString(`${label}.animationId`, command.animationId);
+      if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
+      return;
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
@@ -178,6 +191,23 @@ function requireTransferFade(label: string, value: unknown): void {
   const fade = requireString(label, value);
   if (fade === "black" || fade === "white" || fade === "none") return;
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireWeatherKind(label: string, value: unknown): void {
+  const kind = requireString(label, value);
+  if (kind === "none" || kind === "rain" || kind === "storm" || kind === "snow" || kind === "fog") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function validateShowAnimationTarget(label: string, value: unknown): void {
+  if (value === "player") return;
+  const target = requireRecord(label, value);
+  if (target.eventId !== undefined) {
+    requireString(`${label}.eventId`, target.eventId);
+    return;
+  }
+  requireNumber(`${label}.x`, target.x);
+  requireNumber(`${label}.y`, target.y);
 }
 
 function requireCutsceneControlMode(label: string, value: unknown): void {

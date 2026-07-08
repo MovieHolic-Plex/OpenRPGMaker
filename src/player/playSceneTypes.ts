@@ -8,6 +8,7 @@ import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
 import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, TransferTransition, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import type { LightingAmbientTransition } from "@/player/lighting";
+import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
   down: 0,
@@ -121,6 +122,15 @@ export interface PlaySceneContext extends Phaser.Scene {
   lightingFixedAccumulatorMs: number;
   lightingTransition: LightingAmbientTransition | null;
   lightingTransitionWaiters: Array<() => void>;
+  weatherLayer?: Phaser.GameObjects.Container;
+  weatherGraphics?: Phaser.GameObjects.Graphics;
+  weatherClockMs: number;
+  weatherFixedAccumulatorMs: number;
+  weatherDisplayed: WeatherParams;
+  weatherTargetSignature: string;
+  weatherTransition: WeatherTransition | null;
+  mapAnimationLayer?: Phaser.GameObjects.Container;
+  activeMapAnimations: Set<Phaser.GameObjects.Container>;
   getMapId(): MapId;
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void;
   renderTiles(): void;

@@ -158,6 +158,7 @@ function buildReferenceContext(project: Project): ReferenceContext {
     itemIds: new Set(project.database.items.map((record) => record.id)),
     equipmentIds: new Set(project.database.equipment.map((record) => record.id)),
     skillIds: new Set(project.database.skills.map((record) => record.id)),
+    animationIds: new Set(project.database.battleAnimations.map((record) => record.id)),
     switchIds: new Set(project.switches.map((record) => record.id)),
     variableIds: new Set(project.variables.map((record) => record.id)),
     commonEventIds: new Set(project.commonEvents.map((record) => record.id)),

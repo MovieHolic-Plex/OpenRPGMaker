@@ -83,6 +83,10 @@ export function renderAdvancedCommandBody(
       return addLightBody(context, cmd);
     case "removeLight":
       return removeLightBody(context, cmd);
+    case "setWeather":
+      return setWeatherBody(context, cmd);
+    case "showAnimation":
+      return showAnimationBody(context, cmd);
     case "changeGold":
       return changeGoldBody(context, cmd);
     case "changeItem":
@@ -394,6 +398,82 @@ function removeLightBody(context: CommandEditContext, cmd: Extract<Command, { ki
   return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [all, id] })] });
 }
 
+function setWeatherBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setWeather" }>): HTMLElement {
+  const kind = selectWithOptions(
+    [
+      { value: "none", label: "없음" },
+      { value: "rain", label: "비" },
+      { value: "storm", label: "폭풍" },
+      { value: "snow", label: "눈" },
+      { value: "fog", label: "안개" },
+    ],
+    cmd.weather,
+    "set-weather-kind-select"
+  );
+  const intensity = numberInput(cmd.intensity ?? 0.5, "강도(0~1)", "set-weather-intensity-input");
+  intensity.setAttribute("step", "0.05");
+  intensity.setAttribute("min", "0");
+  intensity.setAttribute("max", "1");
+  const transitionMs = numberInput(cmd.transitionMs ?? 0, "전환 시간(ms)", "set-weather-transition-input");
+  transitionMs.setAttribute("min", "0");
+  const apply = () => {
+    const nextTransition = Math.max(0, parseInt(transitionMs.value, 10) || 0);
+    context.actions.replaceCommand(context.path, {
+      kind: "setWeather",
+      weather: kind.value as Extract<Command, { kind: "setWeather" }>["weather"],
+      intensity: clamp01(parseFloat(intensity.value)),
+      ...(nextTransition > 0 ? { transitionMs: nextTransition } : {}),
+    });
+  };
+  for (const control of [kind, intensity, transitionMs]) {
+    control.addEventListener("change", apply);
+    control.addEventListener("input", apply);
+  }
+  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [kind, intensity, transitionMs] })] });
+}
+
+function showAnimationBody(context: CommandEditContext, cmd: Extract<Command, { kind: "showAnimation" }>): HTMLElement {
+  const project = store.getCurrent();
+  const targetKind = selectWithOptions(
+    [
+      { value: "player", label: "플레이어" },
+      { value: "event", label: "이벤트" },
+      { value: "position", label: "좌표" },
+    ],
+    showAnimationTargetKind(cmd.target),
+    "show-animation-target-kind-select"
+  );
+  const eventId = textInput(cmd.target !== "player" && "eventId" in cmd.target ? cmd.target.eventId : "", "이벤트 ID", "show-animation-event-id-input");
+  const x = numberInput(cmd.target !== "player" && "x" in cmd.target ? cmd.target.x : 0, "X", "show-animation-x-input");
+  const y = numberInput(cmd.target !== "player" && "y" in cmd.target ? cmd.target.y : 0, "Y", "show-animation-y-input");
+  const wait = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.wait === true), "show-animation-wait-select");
+  const animation = recordPickerWithPreview({
+    records: project.database.battleAnimations,
+    selectedId: cmd.animationId,
+    placeholder: "전투 애니메이션",
+    testid: "show-animation-animationId-select",
+    subtitleOf: (record) => record.resourceId ?? null,
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "showAnimation",
+      target: showAnimationTargetFromControls(targetKind.value, eventId.value, x.value, y.value),
+      animationId: animation.select.value || project.database.battleAnimations[0]?.id || "",
+      ...(wait.value === "true" ? { wait: true } : {}),
+    });
+  };
+  for (const control of [targetKind, eventId, x, y, wait, animation.select]) {
+    control.addEventListener("change", apply);
+    control.addEventListener("input", apply);
+  }
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [targetKind, eventId, x, y, wait] }),
+    el("span", { class: "rich-form-row", children: [animation.root] })
+  );
+  return wrap;
+}
+
 function endingBody(context: CommandEditContext, cmd: Extract<Command, { kind: "ending" }>): HTMLElement {
   const title = textInput(cmd.title, "엔딩 제목", "ending-title-input");
   const message = el("textarea", {
@@ -466,6 +546,23 @@ function lightAnchorKind(anchor: Extract<Command, { kind: "addLight" }>["source"
 }
 
 function lightAnchorFromControls(kind: string, eventId: string, xValue: string, yValue: string): Extract<Command, { kind: "addLight" }>["source"]["at"] {
+  if (kind === "player") return "player";
+  if (kind === "event") return { eventId: eventId.trim() };
+  return { x: parseInt(xValue, 10) || 0, y: parseInt(yValue, 10) || 0 };
+}
+
+function showAnimationTargetKind(target: Extract<Command, { kind: "showAnimation" }>["target"]): "player" | "event" | "position" {
+  if (target === "player") return "player";
+  if ("eventId" in target) return "event";
+  return "position";
+}
+
+function showAnimationTargetFromControls(
+  kind: string,
+  eventId: string,
+  xValue: string,
+  yValue: string
+): Extract<Command, { kind: "showAnimation" }>["target"] {
   if (kind === "player") return "player";
   if (kind === "event") return { eventId: eventId.trim() };
   return { x: parseInt(xValue, 10) || 0, y: parseInt(yValue, 10) || 0 };

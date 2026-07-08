@@ -62,7 +62,8 @@ function renderParticles(overlay: HTMLElement, params: WeatherParams): void {
     clearChildren(overlay);
     for (let i = 0; i < count; i++) {
       const particle = document.createElement("div");
-      particle.className = `weather-particle weather-particle-${params.kind}`;
+      const particleKind = params.kind === "storm" ? "rain" : params.kind;
+      particle.className = `weather-particle weather-particle-${particleKind}`;
       // 위치/지연을 결정론적으로 분산(랜덤 미사용: 저장/재현 안정성).
       particle.style.left = `${round((i * 37) % 100)}%`;
       particle.style.setProperty("--weather-delay", `${round((i % 20) * 0.15)}s`);

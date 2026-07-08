@@ -227,6 +227,8 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.pageMoveRouteEventIds.clear();
   scene.commandMoveRouteEventIds.clear();
   scene.autonomousNPCs.clear();
+  for (const animation of scene.activeMapAnimations) animation.destroy(true);
+  scene.activeMapAnimations.clear();
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
 }

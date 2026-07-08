@@ -6,9 +6,11 @@ import type {
   MessageWindowSettings,
   MoveCommand,
   Project,
+  ShowAnimationTarget,
   TransferFade,
   TransferTransition,
   TransferDirection,
+  WeatherKind,
   ShopMessageType,
   ShopType,
 } from "@/project/types";
@@ -61,6 +63,8 @@ export type StepResult =
   | { kind: "playAudio"; resourceId: string; loop: boolean }
   | { kind: "stopAudio" }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
+  | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }
+  | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: string; wait: boolean }
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
   | { kind: "shakeScreen"; intensity: number; durationMs: number }
   | {

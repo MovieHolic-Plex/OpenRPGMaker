@@ -12,8 +12,10 @@ import {
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import {
   createHorrorPhase6aFixture,
+  createHorrorPhase6bFixture,
   PHASE6A_FLASHLIGHT_ID,
   PHASE6A_MAP_ID,
+  PHASE6B_MAP_ID,
 } from "./fixtures/horrorPhase6aFixture";
 
 describe("runtime lighting helpers", () => {
@@ -135,6 +137,34 @@ describe("set_lighting_volume tool", () => {
   });
 });
 
+describe("set_scene_mood tool", () => {
+  it("weather와 lighting 인자를 playerTouch 분위기 이벤트 명령으로 합성한다", () => {
+    const ctx = { project: createBlankProject() };
+    const mapId = ctx.project.startMapId;
+
+    const result = runTool(ctx, "set_scene_mood", {
+      mapId,
+      weather: { kind: "fog", intensity: 0.45, transitionMs: 200 },
+      lighting: {
+        ambient: 0.75,
+        color: "#05070a",
+        sources: [{ id: "lamp", at: { x: 2, y: 2 }, radius: 3, intensity: 0.8 }],
+        area: { x: 1, y: 1, w: 1, h: 1 },
+      },
+      applyMode: "event",
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const created = ctx.project.maps[mapId].events.filter((event) => event.id.startsWith("ev_scene_mood"));
+    expect(created).toHaveLength(1);
+    expect(created[0]?.pages?.[0]?.commands).toEqual([
+      { kind: "setWeather", weather: "fog", intensity: 0.45, transitionMs: 200 },
+      { kind: "setLighting", ambient: 0.75, color: "#05070a" },
+      { kind: "addLight", source: { id: "lamp", at: { x: 2, y: 2 }, radius: 3, intensity: 0.8 } },
+    ]);
+  });
+});
+
 describe("run_scene_test lighting integration", () => {
   it("어두운 복도에서 player 부착 손전등이 이동 좌표를 따라간다", () => {
     const result = runSceneTest(createHorrorPhase6aFixture(), {
@@ -177,5 +207,63 @@ describe("run_scene_test lighting integration", () => {
 
     expect(result.ok, result.failureReason).toBe(true);
     expect(result.finalState.lightCount).toBe(0);
+  });
+
+  it("Phase 6b 데모 복도는 자동으로 storm 날씨를 적용한다", () => {
+    const result = runSceneTest(createHorrorPhase6bFixture(), {
+      mapId: PHASE6B_MAP_ID,
+      start: { x: 1, y: 3 },
+      steps: [
+        { kind: "expect", weatherKind: "storm", lightingAmbient: 0.85 },
+      ],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.finalState.weatherKind).toBe("storm");
+  });
+
+  it("showAnimation wait 중에는 다음 커맨드 진행이 보류되고 완료 후 진행된다", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const switchId = project.switches[0]?.id ?? "sw_show_animation_done";
+    if (!project.switches.some((entry) => entry.id === switchId)) {
+      project.switches.push({ id: switchId, name: "애니메이션 완료" });
+    }
+    project.maps[mapId].events.push({
+      id: "ev_show_animation_wait",
+      x: 1,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [
+        { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: true },
+        { kind: "setSwitch", switchId, value: true },
+      ],
+    });
+
+    const result = runSceneTest(project, {
+      mapId,
+      start: { x: 1, y: 1 },
+      steps: [
+        { kind: "interact" },
+        { kind: "expect", animationPlaying: true, switchOff: switchId },
+        { kind: "wait", ticks: 30 },
+        { kind: "expect", animationPlaying: false, switchOn: switchId },
+      ],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+  });
+
+  it("Phase 6b 조명 전환 이벤트는 fog와 6a 라이팅을 동시에 적용한다", () => {
+    const result = runSceneTest(createHorrorPhase6bFixture(), {
+      mapId: PHASE6B_MAP_ID,
+      start: { x: 1, y: 3 },
+      steps: [
+        { kind: "interact" },
+        { kind: "expect", weatherKind: "fog", lightingAmbient: { value: 0.45, tolerance: 0.001 } },
+      ],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
   });
 });

@@ -53,6 +53,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     itemIds,
     equipmentIds,
     skillIds,
+    animationIds,
     switchIds,
     variableIds,
     commonEventIds,

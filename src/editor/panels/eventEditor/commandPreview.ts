@@ -59,6 +59,8 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   setLighting: (cmd) => screenMock(`DARK ${Math.round(cmd.ambient * 100)}%`, "title"),
   addLight: (cmd) => screenMock(cmd.source.id || "LIGHT", "title"),
   removeLight: (cmd) => screenMock(cmd.all === true ? "LIGHTS OFF" : "LIGHT OFF", "title"),
+  setWeather: (cmd) => screenMock(cmd.weather.toUpperCase(), "title"),
+  showAnimation: (cmd) => screenMock(cmd.animationId || "ANIMATION", "title"),
   changeGold: goldStage,
   battleProcessing: battleStage,
   setSwitch: (cmd) => lampStage(switchName(cmd.switchId), cmd.value),

@@ -24,6 +24,8 @@ import type { Command } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
+import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { applyWeatherStep } from "@/player/playSceneWeather";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 import {
   CUTSCENE_END_LABEL,
@@ -289,6 +291,18 @@ async function consumeBlockingStep(
     case "setLighting":
       await applyLightingStep(scene, step);
       return resumeAfterSurface(scene, interpreter);
+    case "setWeather":
+      applyWeatherStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "showAnimation": {
+      const done = playMapAnimation(scene, step, currentEventId);
+      if (step.wait) {
+        await Promise.race([done, skipController.waitForSkip()]);
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
+      return resumeAfterSurface(scene, interpreter);
+    }
     case "spawnEvent":
       refreshSpawnedEvent(scene, step.eventId);
       return resumeAfterSurface(scene, interpreter);

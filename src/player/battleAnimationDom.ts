@@ -2,6 +2,7 @@ import type { BattleSnapshot } from "@/battle/runtime";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import type { BattleAnimationRecord } from "@/project/types";
+import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
 
 type CellSourceRect = {
   readonly x: number;
@@ -73,7 +74,7 @@ function startPlayback(element: HTMLElement, record: BattleAnimationRecord, time
       return;
     }
     setActiveAnimationFrame(element, record, index);
-  }, 120);
+  }, BATTLE_ANIMATION_FRAME_MS);
   timers.add(timer);
 }
 

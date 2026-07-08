@@ -218,6 +218,8 @@ function drain(
       r.kind === "shakeScreen" ||
       r.kind === "scrollMap" ||
       r.kind === "cameraControl" ||
+      r.kind === "setWeather" ||
+      r.kind === "showAnimation" ||
       r.kind === "spawnEvent" ||
       r.kind === "removeEvent"
     ) {

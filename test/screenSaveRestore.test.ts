@@ -118,17 +118,17 @@ describe("세이브/로드 — 화면 색조/날씨 복원", () => {
     }
   });
 
-  it("storage 왕복(직렬화)에서도 화면 상태가 유지된다", () => {
+  it("storage 왕복(직렬화)에서도 fog 날씨 상태가 유지된다", () => {
     const project = createBlankProject();
     const session = mkSession();
-    ensureM2Runtime(session).screen.weather = "snow,8";
+    ensureM2Runtime(session).screen.weather = "fog,0.4";
     const storage = new MemoryStorage();
     saveToSlot(storage, 1, createSaveSnapshot(project, session));
     const result = readSaveSlot(storage, 1);
     expect(result.kind).toBe("present");
     if (result.kind === "present") {
       const restored = applySaveSnapshot(project, result.snapshot);
-      expect(restored.m2Runtime?.screen.weather).toBe("snow,8");
+      expect(restored.m2Runtime?.screen.weather).toBe("fog,0.4");
     }
   });
 });

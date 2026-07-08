@@ -39,6 +39,9 @@ import {
   type RuntimeEventView,
 } from "@/player/runtimeEventState";
 import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
+import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 
 const TICK_MS = 16;
 
@@ -65,6 +68,8 @@ export type SceneExpectStep = {
   lightingAmbient?: number | { value: number; tolerance?: number };
   lightAt?: { x: number; y: number; expected?: boolean };
   lightCount?: number;
+  weatherKind?: "none" | "rain" | "storm" | "snow" | "fog";
+  animationPlaying?: boolean;
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
@@ -94,6 +99,8 @@ export interface SceneTestResult {
     readonly camera: { readonly cx: number; readonly cy: number; readonly session?: RuntimeCameraSessionState };
     readonly lightingAmbient: number;
     readonly lightCount: number;
+    readonly weatherKind: "none" | "rain" | "storm" | "snow" | "fog";
+    readonly animationPlaying: boolean;
     readonly spawnedCount: number;
     readonly followerCount: number;
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
@@ -113,6 +120,7 @@ export interface SceneTestResult {
 type PumpStop =
   | { stop: "done" }
   | { stop: "choices" }
+  | { stop: "animation" }
   | { stop: "failed"; reason: string };
 
 type CameraTween = {
@@ -141,11 +149,12 @@ interface RunnerState {
   lightingClockMs: number;
   lightingFixedAccumulatorMs: number;
   lightingTransition: LightingAmbientTransition | null;
+  activeAnimations: Array<{ readonly animationId: string; remainingMs: number }>;
   readonly autoStartedKeys: Set<string>;
   readonly chasers: Map<string, ChaseRuntimeState>;
   facing: Dir;
   gameOver: boolean;
-  held: { interp: Interpreter } | null;
+  held: { interp: Interpreter; mode: "choices" | "animation"; currentEventId?: string } | null;
   runtimeFailure: string | null;
 }
 
@@ -154,7 +163,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   const map = project.maps[input.mapId];
   const log: string[] = [];
   if (!map) {
-    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, false);
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, false, false);
   }
   session.currentMapId = input.mapId;
   session.x = input.start.x;
@@ -169,6 +178,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     lightingClockMs: 0,
     lightingFixedAccumulatorMs: 0,
     lightingTransition: null,
+    activeAnimations: [],
     autoStartedKeys: new Set(),
     chasers: new Map(),
     facing: "down",
@@ -180,7 +190,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.gameOver);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.gameOver, state.activeAnimations.length > 0);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
@@ -192,11 +202,11 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.gameOver);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.gameOver, state.activeAnimations.length > 0);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.gameOver);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.gameOver, state.activeAnimations.length > 0);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -300,10 +310,10 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
 }
 
 function runChooseStep(state: RunnerState, index: number): string | null {
-  if (!state.held) return "choose를 처리할 대기 중 선택지가 없습니다.";
+  if (!state.held || state.held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   const interp = state.held.interp;
   const stop = pump(state, interp, interp.resume(index));
-  state.held = stop.stop === "choices" ? { interp } : null;
+  updateHeldInterpreter(state, interp, stop, state.held.currentEventId);
   return stop.stop === "failed" ? stop.reason : null;
 }
 
@@ -317,9 +327,22 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id });
   state.log.push(`event ${view.event.id} start`);
   const stop = pump(state, interp, interp.start());
-  if (stop.stop !== "choices") releaseCutsceneControlForOwner(state.session, view.event.id);
-  state.held = stop.stop === "choices" ? { interp } : null;
+  updateHeldInterpreter(state, interp, stop, view.event.id);
   return stop.stop === "failed" ? stop.reason : null;
+}
+
+function updateHeldInterpreter(
+  state: RunnerState,
+  interp: Interpreter,
+  stop: PumpStop,
+  currentEventId: string | undefined
+): void {
+  if (stop.stop === "choices" || stop.stop === "animation") {
+    state.held = { interp, mode: stop.stop, currentEventId };
+    return;
+  }
+  if (currentEventId) releaseCutsceneControlForOwner(state.session, currentEventId);
+  state.held = null;
 }
 
 function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpStop {
@@ -399,6 +422,17 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         {
           const failure = advanceUntilLightingSettled(state);
           if (failure) return { stop: "failed", reason: failure };
+        }
+        step = interp.resume(undefined);
+        break;
+      case "setWeather":
+        applyWeatherStepToRunner(state, step);
+        step = interp.resume(undefined);
+        break;
+      case "showAnimation":
+        startSceneAnimation(state, step.animationId);
+        if (step.wait) {
+          return { stop: "animation" };
         }
         step = interp.resume(undefined);
         break;
@@ -559,6 +593,19 @@ function advanceUntilLightingSettled(state: RunnerState): string | null {
   return state.lightingTransition ? "조명 전환 가드 도달" : null;
 }
 
+function applyWeatherStepToRunner(
+  state: RunnerState,
+  step: Extract<StepResult, { kind: "setWeather" }>
+): void {
+  const weather = normalizeWeatherParams({ kind: step.weather, intensity: step.intensity });
+  ensureM2Runtime(state.session).screen.weather = weatherToRuntimeString(weather);
+}
+
+function startSceneAnimation(state: RunnerState, animationId: string): void {
+  const record = state.project.database.battleAnimations.find((entry) => entry.id === animationId);
+  state.activeAnimations.push({ animationId, remainingMs: battleAnimationDurationMs(record) });
+}
+
 function advanceTime(state: RunnerState, ms: number): string | null {
   let remaining = Math.max(0, Math.round(ms));
   if (remaining === 0) {
@@ -571,10 +618,27 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     state.session.playTimeSeconds += delta / 1000;
     advanceCamera(state, delta);
     advanceLighting(state, delta);
+    advanceAnimations(state, delta);
+    resumeHeldAnimationIfReady(state);
     advanceChasers(state, delta);
     if (state.runtimeFailure) return state.runtimeFailure;
   }
   return null;
+}
+
+function advanceAnimations(state: RunnerState, deltaMs: number): void {
+  for (const animation of state.activeAnimations) {
+    animation.remainingMs -= deltaMs;
+  }
+  state.activeAnimations = state.activeAnimations.filter((animation) => animation.remainingMs > 0);
+}
+
+function resumeHeldAnimationIfReady(state: RunnerState): void {
+  if (!state.held || state.held.mode !== "animation" || state.activeAnimations.length > 0) return;
+  const held = state.held;
+  const stop = pump(state, held.interp, held.interp.resume(undefined));
+  updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
+  if (stop.stop === "failed") state.runtimeFailure = stop.reason;
 }
 
 function advanceLighting(state: RunnerState, deltaMs: number): void {
@@ -696,6 +760,14 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.lightCount !== undefined) {
     const count = normalizeLightingState(state.session.lighting).sources.length;
     if (count !== step.lightCount) return `광원 수: 기대 ${step.lightCount}, 실제 ${count}`;
+  }
+  if (step.weatherKind !== undefined) {
+    const actual = parseWeather(state.session.m2Runtime?.screen.weather).kind;
+    if (actual !== step.weatherKind) return `날씨: 기대 ${step.weatherKind}, 실제 ${actual}`;
+  }
+  if (step.animationPlaying !== undefined) {
+    const actual = state.activeAnimations.length > 0;
+    if (actual !== step.animationPlaying) return `애니메이션 재생: 기대 ${step.animationPlaying}, 실제 ${actual}`;
   }
   if (step.spawnedCount !== undefined && spawnedCount(state.session) !== step.spawnedCount) {
     return `스폰 이벤트 수: 기대 ${step.spawnedCount}, 실제 ${spawnedCount(state.session)}`;
@@ -929,7 +1001,8 @@ function result(
   stepsRun: number,
   failedStep: SceneStep | undefined,
   failureReason: string | undefined,
-  gameOver: boolean
+  gameOver: boolean,
+  animationPlaying: boolean
 ): SceneTestResult {
   void project;
   void eventPositions;
@@ -948,6 +1021,8 @@ function result(
       camera: { cx: camera.cx, cy: camera.cy, session: session.camera },
       lightingAmbient: lighting.ambient,
       lightCount: lighting.sources.length,
+      weatherKind: parseWeather(session.m2Runtime?.screen.weather).kind,
+      animationPlaying,
       spawnedCount: spawnedCount(session),
       followerCount: session.followers?.length ?? 0,
       followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),

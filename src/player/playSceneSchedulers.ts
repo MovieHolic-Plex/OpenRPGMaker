@@ -18,6 +18,8 @@ import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
+import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { applyWeatherStep } from "@/player/playSceneWeather";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -216,6 +218,12 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "setLighting":
       void applyLightingStep(scene, step);
+      return true;
+    case "setWeather":
+      applyWeatherStep(scene, step);
+      return true;
+    case "showAnimation":
+      void playMapAnimation(scene, { ...step, wait: false }, currentEventId);
       return true;
     case "spawnEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);

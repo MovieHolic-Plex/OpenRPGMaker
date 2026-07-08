@@ -63,6 +63,8 @@ import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, g
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/player/lighting";
+import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
+import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -107,6 +109,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   lightingFixedAccumulatorMs = 0;
   lightingTransition: LightingAmbientTransition | null = null;
   lightingTransitionWaiters: Array<() => void> = [];
+  weatherClockMs = 0;
+  weatherFixedAccumulatorMs = 0;
+  weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
+  weatherTargetSignature = "none:0";
+  weatherTransition: WeatherTransition | null = null;
+  mapAnimationLayer?: Phaser.GameObjects.Container;
+  activeMapAnimations: Set<Phaser.GameObjects.Container> = new Set();
 
   constructor() {
     super({ key: "PlayScene" });
@@ -138,6 +147,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.playerSprite.idleFrameFor("down")
     );
     placeCharacterSprite(this.player, "same");
+    installWeatherLayer(this);
     installLightingLayer(this);
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     syncFollowerSprites(this);
@@ -160,6 +170,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
+    updateWeather(this, deltaMs);
     updateLighting(this, deltaMs);
   }
 
@@ -199,12 +210,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     refreshSceneRuntimeSurfaces(this);
     syncFollowerSprites(this);
     applyStoredCameraState(this);
+    syncWeatherLayer(this);
     syncLightingLayer(this);
   }
 
   centerCamera(): void {
     centerRuntimeCamera(this.cameras.main, this.map, this.player);
     applyStoredCameraState(this);
+    syncWeatherLayer(this);
     syncLightingLayer(this);
   }
 
@@ -292,6 +305,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     this.player.setPosition(characterSpriteX(this.tileX), characterSpriteY(this.tileY));
     placeCharacterSprite(this.player, "same");
+    for (const animation of this.activeMapAnimations) animation.destroy(true);
+    this.activeMapAnimations.clear();
     this.runtimeTimers.clear();
     this.moving = false;
     this.centerCamera();

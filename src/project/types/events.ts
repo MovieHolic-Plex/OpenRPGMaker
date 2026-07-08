@@ -1,6 +1,7 @@
 import type {
   ActorId,
   AssetRef,
+  BattleAnimationId,
   Dir,
   EquipmentId,
   FlagName,
@@ -125,6 +126,13 @@ export type LightingState = {
   readonly sources: readonly LightSource[];
 };
 
+export type WeatherKind = "none" | "rain" | "storm" | "snow" | "fog";
+
+export type ShowAnimationTarget =
+  | "player"
+  | { readonly eventId: string }
+  | { readonly x: number; readonly y: number };
+
 export type Command =
   | { kind: "text"; speaker?: string; body: string }
   | ({ kind: "changeFace" } & FaceGraphic)
@@ -181,6 +189,8 @@ export type Command =
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs?: number }
   | { kind: "addLight"; source: LightSource }
   | { kind: "removeLight"; id?: string; all?: boolean }
+  | { kind: "setWeather"; weather: WeatherKind; intensity?: number; transitionMs?: number }
+  | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: BattleAnimationId; wait?: boolean }
   | {
       kind: "showPicture";
       pictureId: string;

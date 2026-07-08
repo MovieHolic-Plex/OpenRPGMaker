@@ -40,6 +40,8 @@ const EXPECTED_COMMAND_KINDS = [
   "setLighting",
   "addLight",
   "removeLight",
+  "setWeather",
+  "showAnimation",
   "showPicture",
   "erasePicture",
   "playAudio",

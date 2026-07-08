@@ -77,6 +77,10 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "addLight", source: { id: "light_1", at: "player", radius: 4, intensity: 1 } };
     case "removeLight":
       return { kind: "removeLight", all: true };
+    case "setWeather":
+      return { kind: "setWeather", weather: "rain", intensity: 0.5, transitionMs: 0 };
+    case "showAnimation":
+      return { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: false };
     case "showPicture":
       return { kind: "showPicture", pictureId: "pic1", resourceId: "tex_tiles_default", x: 0, y: 0 };
     case "erasePicture":

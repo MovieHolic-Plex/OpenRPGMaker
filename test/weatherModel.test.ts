@@ -4,6 +4,7 @@ import {
   isWeatherActive,
   NO_WEATHER,
   parseWeather,
+  stormFlashOpacity,
   weatherParticleCount,
 } from "@/player/weather/weatherModel";
 
@@ -16,6 +17,7 @@ describe("parseWeather", () => {
 
   it("종류만 있으면 기본 강도 0.5", () => {
     expect(parseWeather("rain")).toEqual({ kind: "rain", intensity: 0.5 });
+    expect(parseWeather("storm")).toEqual({ kind: "storm", intensity: 0.5 });
     expect(parseWeather("snow")).toEqual({ kind: "snow", intensity: 0.5 });
     expect(parseWeather("fog")).toEqual({ kind: "fog", intensity: 0.5 });
   });
@@ -35,6 +37,7 @@ describe("parseWeather", () => {
 
   it("한국어 별칭 지원", () => {
     expect(parseWeather("비")).toEqual({ kind: "rain", intensity: 0.5 });
+    expect(parseWeather("폭풍,7")).toEqual({ kind: "storm", intensity: 0.7 });
     expect(parseWeather("눈,3")).toEqual({ kind: "snow", intensity: 0.3 });
     expect(parseWeather("안개")).toEqual({ kind: "fog", intensity: 0.5 });
   });
@@ -43,6 +46,7 @@ describe("parseWeather", () => {
 describe("weatherParticleCount", () => {
   it("강도에 비례한 파티클 수(rain/snow)", () => {
     expect(weatherParticleCount({ kind: "rain", intensity: 1 }, 80)).toBe(80);
+    expect(weatherParticleCount({ kind: "storm", intensity: 0.5 }, 80)).toBe(40);
     expect(weatherParticleCount({ kind: "rain", intensity: 0.5 }, 80)).toBe(40);
   });
 
@@ -53,6 +57,18 @@ describe("weatherParticleCount", () => {
   it("안개/없음은 파티클 0", () => {
     expect(weatherParticleCount({ kind: "fog", intensity: 1 }, 80)).toBe(0);
     expect(weatherParticleCount(NO_WEATHER, 80)).toBe(0);
+  });
+});
+
+describe("stormFlashOpacity", () => {
+  it("RNG 없이 timeMs와 intensity만으로 결정론적 flash를 계산한다", () => {
+    const params = { kind: "storm" as const, intensity: 0.8 };
+    const seriesA = [0, 120, 290, 1000, 2520].map((timeMs) => stormFlashOpacity(params, timeMs));
+    const seriesB = [0, 120, 290, 1000, 2520].map((timeMs) => stormFlashOpacity(params, timeMs));
+
+    expect(seriesA).toEqual(seriesB);
+    expect(stormFlashOpacity(params, 120)).toBeGreaterThan(0);
+    expect(stormFlashOpacity(params, 1000)).toBe(0);
   });
 });
 

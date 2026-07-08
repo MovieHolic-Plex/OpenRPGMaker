@@ -9,12 +9,14 @@ import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { RuntimeCameraTarget } from "@/player/types";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
 import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
 import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
+import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -168,6 +170,16 @@ function executeM2Command(
       wait: fieldBoolean(command.fields, "wait", true),
       returnToPlayer: fieldBoolean(command.fields, "return", false) || fieldString(command.fields, "mode", "") === "return",
       lock: fieldBoolean(command.fields, "lock", false) || fieldString(command.fields, "mode", "") === "lock",
+    });
+  }
+
+  if (entry.title === "Set Weather Effects" && executeM2RuntimeCommand(state.session, entry, command)) {
+    const weather = parseWeather(fieldString(command.fields, "value", "none"));
+    return pause("setWeather", {
+      kind: "setWeather",
+      weather: weather.kind,
+      intensity: weather.intensity,
+      transitionMs: Math.max(0, Math.round(fieldNumber(command.fields, "transitionMs", fieldNumber(command.fields, "durationMs", 0)))),
     });
   }
 
@@ -511,6 +523,23 @@ export function executeCommand(
     case "removeLight":
       removeSessionLight(state.session, command);
       return resumeNext(frame);
+    case "setWeather": {
+      const weather = normalizeWeatherParams({ kind: command.weather, intensity: command.intensity });
+      ensureM2Runtime(state.session).screen.weather = weatherToRuntimeString(weather);
+      return pause("setWeather", {
+        kind: "setWeather",
+        weather: weather.kind,
+        intensity: weather.intensity,
+        transitionMs: Math.max(0, Math.round(command.transitionMs ?? 0)),
+      });
+    }
+    case "showAnimation":
+      return pause("showAnimation", {
+        kind: "showAnimation",
+        target: command.target,
+        animationId: command.animationId,
+        wait: command.wait === true,
+      });
     case "setFlag":
       state.session.flags[command.flag] = command.value;
       return resumeNext(frame);

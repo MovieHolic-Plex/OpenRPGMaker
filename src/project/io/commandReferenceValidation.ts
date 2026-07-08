@@ -15,6 +15,7 @@ export type ReferenceContext = {
   itemIds: ReadonlySet<string>;
   equipmentIds: ReadonlySet<string>;
   skillIds: ReadonlySet<string>;
+  animationIds: ReadonlySet<string>;
   switchIds: ReadonlySet<string>;
   variableIds: ReadonlySet<string>;
   commonEventIds: ReadonlySet<string>;
@@ -75,6 +76,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "setLighting":
     case "addLight":
     case "removeLight":
+    case "setWeather":
     case "gameOver":
     case "ending":
     case "returnToTitle":
@@ -160,6 +162,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "playAudio":
       assert(context.resourceIds.has(command.resourceId), `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId}`);
+      return;
+    case "showAnimation":
+      assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
     case "shop":
       requireExistingIds("shop: item", command.itemIds, context.itemIds);

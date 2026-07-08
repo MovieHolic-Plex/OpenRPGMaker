@@ -9,7 +9,7 @@ import {
   TRANSPARENT_TINT,
   type Rgba,
 } from "@/player/screen/tintModel";
-import { syncWeatherOverlay } from "@/player/weather/weatherOverlay";
+import { removeWeatherOverlay } from "@/player/weather/weatherOverlay";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 // tint/hide screen 같은 "지속형" 화면 효과와 날씨를 DOM 오버레이로 반영한다.
@@ -24,8 +24,8 @@ export function syncScreenEffects(scene: PlaySceneContext): void {
 
   const screen = scene.session.m2Runtime?.screen;
 
-  // 날씨 오버레이(비/눈/안개)는 색조와 독립적으로 유지.
-  syncWeatherOverlay(host, screen?.weather);
+  // 날씨는 Phaser 레이어(조명 마스크 아래)에서 렌더한다. 예전 DOM 레이어가 있으면 제거한다.
+  removeWeatherOverlay(host);
 
   const hidden = screen?.hidden === true;
   // 우선순위: 화면 숨김(즉시, 불투명 검정) > 색조(트윈 가능).

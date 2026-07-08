@@ -193,6 +193,20 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   ),
   addLight: (cmd) => commandLine("광원 추가", valuePart(cmd.source.id), plainPart(" / "), valuePart(lightAnchorSummary(cmd.source.at)), plainPart(" r"), valuePart(String(cmd.source.radius))),
   removeLight: (cmd) => commandLine("광원 제거", valuePart(cmd.all === true ? "전체" : cmd.id || "id 없음")),
+  setWeather: (cmd) => commandLine(
+    "날씨 설정",
+    valuePart(weatherLabel(cmd.weather)),
+    plainPart(" "),
+    valuePart(String(cmd.intensity ?? 0.5)),
+    ...(cmd.transitionMs ? [plainPart(" / "), valuePart(`${cmd.transitionMs}ms`)] : [])
+  ),
+  showAnimation: (cmd) => commandLine(
+    "애니메이션 표시",
+    valuePart(animationTargetSummary(cmd.target)),
+    plainPart(" / "),
+    valuePart(cmd.animationId || "(선택 없음)"),
+    ...(cmd.wait ? [plainPart(" / "), valuePart("대기")] : [])
+  ),
   showPicture: (cmd) => commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
   erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
@@ -285,6 +299,22 @@ function lightAnchorSummary(anchor: Extract<Command, { kind: "addLight" }>["sour
   if (anchor === "player") return "플레이어";
   if ("eventId" in anchor) return `이벤트 ${anchor.eventId}`;
   return `(${anchor.x},${anchor.y})`;
+}
+
+function animationTargetSummary(target: Extract<Command, { kind: "showAnimation" }>["target"]): string {
+  if (target === "player") return "플레이어";
+  if ("eventId" in target) return `이벤트 ${target.eventId || "현재"}`;
+  return `(${target.x},${target.y})`;
+}
+
+function weatherLabel(kind: Extract<Command, { kind: "setWeather" }>["weather"]): string {
+  switch (kind) {
+    case "none": return "없음";
+    case "rain": return "비";
+    case "storm": return "폭풍";
+    case "snow": return "눈";
+    case "fog": return "안개";
+  }
 }
 
 function tileLayerSummary(layer: "lower" | "upper"): string {
