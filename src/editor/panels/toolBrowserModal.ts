@@ -26,6 +26,7 @@ import { QUEST_TOOLS } from "@/editor/tools/questTools";
 import { RANGE_CLASSIFY_TOOLS } from "@/editor/tools/rangeClassifyTools";
 import { REFACTOR_TOOLS } from "@/editor/tools/refactorTools";
 import { TILE_METADATA_TOOLS } from "@/editor/tools/tileMetadataTools";
+import { TIME_TOOLS } from "@/editor/tools/timeTools";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { VISION_QUERY_TOOLS } from "@/editor/tools/visionQueryTools";
 import { WORLD_TOOLS } from "@/editor/tools/worldTools";
@@ -53,6 +54,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "이벤트/NPC", tools: EVENT_TOOLS },
   { label: "조사/퍼즐", tools: INVESTIGATION_TOOLS },
   { label: "조명/호러", tools: LIGHTING_TOOLS },
+  { label: "시간/달력", tools: TIME_TOOLS },
   { label: "엔딩", tools: ENDING_TOOLS },
   { label: "데이터베이스", tools: DB_TOOLS },
   { label: "세계관", tools: WORLD_TOOLS },

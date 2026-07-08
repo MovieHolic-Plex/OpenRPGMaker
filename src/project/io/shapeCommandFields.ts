@@ -1,6 +1,7 @@
 import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
+import { isSeason, isTimePhase } from "@/project/gameTime";
 
 export function validateCommandArray(label: string, value: unknown): void {
   for (const [index, command] of requireArray(label, value).entries()) {
@@ -56,6 +57,17 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.variableId`, command.variableId);
       requireString(`${label}.op`, command.op);
       validateVariableOperand(`${label}.value`, command.value);
+      return;
+    case "advanceTime":
+      if (command.minutes !== undefined) requireNumber(`${label}.minutes`, command.minutes);
+      if (command.hours !== undefined) requireNumber(`${label}.hours`, command.hours);
+      if (command.days !== undefined) requireNumber(`${label}.days`, command.days);
+      return;
+    case "setTime":
+      requireNumber(`${label}.hour`, command.hour);
+      if (command.minute !== undefined) requireNumber(`${label}.minute`, command.minute);
+      return;
+    case "sleepUntilMorning":
       return;
     case "transfer":
       if (command.direction !== undefined) requireTransferDirection(`${label}.direction`, command.direction);
@@ -290,6 +302,16 @@ export function validateConditionShape(label: string, value: unknown): void {
       requireString(`${label}.timerId`, condition.timerId);
       requireNumber(`${label}.seconds`, condition.seconds);
       return;
+    case "timePhase": {
+      const phase = requireString(`${label}.phase`, condition.phase);
+      if (isTimePhase(phase)) return;
+      break;
+    }
+    case "season": {
+      const season = requireString(`${label}.season`, condition.season);
+      if (isSeason(season)) return;
+      break;
+    }
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
 }

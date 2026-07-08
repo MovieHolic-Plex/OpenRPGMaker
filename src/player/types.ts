@@ -4,6 +4,7 @@
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
 import type { MonsterInstance } from "@/project/session";
+import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
 
@@ -271,6 +272,7 @@ export interface PlaySessionLike {
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];
   playTimeSeconds?: number;
+  gameTime?: GameTime;
   currentMapId: MapId;
   x: number;
   y: number;

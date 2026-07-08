@@ -7,6 +7,7 @@ import {
 } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { normalizeGameTime } from "@/project/gameTime";
 import {
   isActorEquipmentRecord,
   isActorParamBonusRecord,
@@ -17,6 +18,7 @@ import {
   isActorVitalsRecord,
   isBooleanRecord,
   isLightingState,
+  isGameTime,
   isMonsterInstancesRecord,
   isNumberRecord,
   isPictureRecord,
@@ -97,6 +99,7 @@ export type SaveSnapshot = {
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
     readonly actorStateIds?: PlaySession["actorStateIds"];
     readonly playTimeSeconds?: number;
+    readonly gameTime?: PlaySession["gameTime"];
     readonly rng?: RngState;
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
@@ -167,6 +170,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
+      gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
       rng: cloneRngState(normalizeRngState(session.rng)),
       screen: pickScreenState(session),
     },
@@ -256,6 +260,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
+  if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   return session;
@@ -362,6 +367,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
+      gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
       rng: isRngState(session.rng) ? session.rng : undefined,
       screen: parseScreenState(session.screen),
     },

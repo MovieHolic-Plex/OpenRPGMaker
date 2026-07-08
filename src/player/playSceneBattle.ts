@@ -45,6 +45,7 @@ export function playBattle(
       switches: scene.session.switches,
       variables: scene.session.variables,
       inventory: scene.session.inventory,
+      gameTime: scene.session.gameTime,
     },
     captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
     onMonsterCaptured: (capture) => {

@@ -36,6 +36,9 @@ export type StepResult =
   | { kind: "inputNumber"; variableId: string; digits: number; settings: MessageWindowSettings }
   | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
+  | { kind: "advanceTime"; minutes?: number; days?: number }
+  | { kind: "setTime"; hour: number; minute?: number }
+  | { kind: "sleepUntilMorning" }
   | {
       kind: "changeTile";
       mapId: MapId;

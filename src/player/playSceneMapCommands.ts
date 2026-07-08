@@ -33,7 +33,7 @@ type FadeColor = {
   readonly blue: number;
 };
 
-const TRANSFER_FADE_DURATION_MS = 500;
+export const TRANSFER_FADE_DURATION_MS = 500;
 
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
   const project = store.getCurrent();
@@ -85,15 +85,15 @@ function transferFadeColor(fade: TransferFade): FadeColor | null {
   }
 }
 
-function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: FadeColor): Promise<void> {
+export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: FadeColor, durationMs = TRANSFER_FADE_DURATION_MS): Promise<void> {
   return new Promise((resolve) => {
     const eventName = phase === "out" ? "camerafadeoutcomplete" : "camerafadeincomplete";
     scene.cameras.main.once(eventName, () => resolve());
     if (phase === "out") {
-      scene.cameras.main.fadeOut(TRANSFER_FADE_DURATION_MS, color.red, color.green, color.blue);
+      scene.cameras.main.fadeOut(durationMs, color.red, color.green, color.blue);
       return;
     }
-    scene.cameras.main.fadeIn(TRANSFER_FADE_DURATION_MS, color.red, color.green, color.blue);
+    scene.cameras.main.fadeIn(durationMs, color.red, color.green, color.blue);
   });
 }
 

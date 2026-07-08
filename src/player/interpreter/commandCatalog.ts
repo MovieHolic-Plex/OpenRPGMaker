@@ -216,6 +216,12 @@ function saveCheckpoint(state: InterpreterState): void {
   saveSessionCheckpoint(state.project, state.session as PlaySession);
 }
 
+function advanceCommandMinutes(command: Extract<Command, { kind: "advanceTime" }>): number {
+  const minutes = Number.isFinite(command.minutes ?? 0) ? command.minutes ?? 0 : 0;
+  const hours = Number.isFinite(command.hours ?? 0) ? command.hours ?? 0 : 0;
+  return Math.max(0, Math.trunc(minutes + hours * 60));
+}
+
 function killParty(state: InterpreterState): void {
   for (const actorId of state.session.partyActorIds) {
     if (state.project) syncActorVitals(state.project, state.session.actorVitals, actorId);
@@ -332,6 +338,16 @@ export function executeCommand(
       if (command.action === "start" && command.seconds !== undefined) setTimer(state.session, timerId, command.seconds);
       return pause("timer", { kind: "timer", action: command.action, seconds: command.seconds, timerId });
     }
+    case "advanceTime":
+      return pause("advanceTime", {
+        kind: "advanceTime",
+        minutes: advanceCommandMinutes(command),
+        days: command.days,
+      });
+    case "setTime":
+      return pause("setTime", { kind: "setTime", hour: command.hour, minute: command.minute });
+    case "sleepUntilMorning":
+      return pause("sleepUntilMorning", { kind: "sleepUntilMorning" });
     case "inputWait":
       return pause("inputWait", { kind: "inputWait", variableId: command.variableId });
     case "inputNumber":

@@ -15,6 +15,7 @@ import type {
 } from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
+import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type GameTime } from "@/project/gameTime";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
@@ -154,6 +155,7 @@ export interface PlaySession {
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
   playTimeSeconds: number;
   rng?: RngState;
+  gameTime?: GameTime;
 }
 
 // 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
@@ -222,6 +224,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     messageWindowSettings: { ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
     playTimeSeconds: 0,
     rng: createRngState(seed),
+    gameTime: initialGameTime(project.system.timeSystem),
   };
 }
 
@@ -432,5 +435,9 @@ export function evalCondition(session: PlaySessionLike, condition: Condition | u
       const remaining = session.timers[condition.timerId] ?? 0;
       return remaining <= condition.seconds;
     }
+    case "timePhase":
+      return conditionMatchesTimePhase(session.gameTime, condition.phase);
+    case "season":
+      return conditionMatchesSeason(session.gameTime, condition.season);
   }
 }

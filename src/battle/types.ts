@@ -13,6 +13,7 @@ import type {
   SkillId,
   TroopId,
 } from "@/project/types";
+import type { GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstanceIvs } from "@/project/session";
 import type { Rng } from "@/util/rng";
 
@@ -73,6 +74,7 @@ export interface BattleSessionState {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly gameTime?: GameTime;
 }
 
 export interface BattlePartyProgress {

@@ -39,6 +39,12 @@ export function renderAdvancedCommandBody(
       return transferBody(context, cmd);
     case "wait":
       return waitBody(context, cmd);
+    case "advanceTime":
+      return advanceTimeBody(context, cmd);
+    case "setTime":
+      return setTimeBody(context, cmd);
+    case "sleepUntilMorning":
+      return terminalHint("sleep-until-morning-editor", "페이드 아웃 후 하루 종료 훅을 실행하고 다음날 아침으로 이동합니다.");
     case "moveEvent":
       return moveEventBody(context, cmd);
     case "setEventGraphicPattern":
@@ -177,6 +183,49 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
     });
   });
   return ms;
+}
+
+function advanceTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: "advanceTime" }>): HTMLElement {
+  const days = numberInput(cmd.days ?? 0, "일", "advance-time-days-input");
+  const hours = numberInput(cmd.hours ?? 0, "시간", "advance-time-hours-input");
+  const minutes = numberInput(cmd.minutes ?? 0, "분", "advance-time-minutes-input");
+  const apply = () => {
+    const nextDays = Math.max(0, parseInt(days.value, 10) || 0);
+    const nextHours = Math.max(0, parseInt(hours.value, 10) || 0);
+    const nextMinutes = Math.max(0, parseInt(minutes.value, 10) || 0);
+    context.actions.replaceCommand(context.path, {
+      kind: "advanceTime",
+      ...(nextDays > 0 ? { days: nextDays } : {}),
+      ...(nextHours > 0 ? { hours: nextHours } : {}),
+      ...(nextMinutes > 0 ? { minutes: nextMinutes } : {}),
+    });
+  };
+  for (const control of [days, hours, minutes]) {
+    control.addEventListener("change", apply);
+    control.addEventListener("input", apply);
+  }
+  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days, hours, minutes] })] });
+}
+
+function setTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setTime" }>): HTMLElement {
+  const hour = numberInput(cmd.hour, "시", "set-time-hour-input");
+  hour.setAttribute("min", "0");
+  hour.setAttribute("max", "48");
+  const minute = numberInput(cmd.minute ?? 0, "분", "set-time-minute-input");
+  minute.setAttribute("min", "0");
+  minute.setAttribute("max", "59");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "setTime",
+      hour: Math.max(0, parseInt(hour.value, 10) || 0),
+      minute: Math.max(0, Math.min(59, parseInt(minute.value, 10) || 0)),
+    });
+  };
+  for (const control of [hour, minute]) {
+    control.addEventListener("change", apply);
+    control.addEventListener("input", apply);
+  }
+  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [hour, minute] })] });
 }
 
 function setEventGraphicPatternBody(

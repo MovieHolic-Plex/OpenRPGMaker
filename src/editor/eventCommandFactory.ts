@@ -31,6 +31,12 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "setVariable", variableId: "", op: "=", value: 0 };
     case "timer":
       return { kind: "timer", action: "set", seconds: 60, timerId: "timer1" };
+    case "advanceTime":
+      return { kind: "advanceTime", minutes: 10 };
+    case "setTime":
+      return { kind: "setTime", hour: 6, minute: 0 };
+    case "sleepUntilMorning":
+      return { kind: "sleepUntilMorning" };
     case "transfer":
       return { kind: "transfer", mapId: "", x: 0, y: 0, direction: "retain", fade: "black" };
     case "moveEvent":

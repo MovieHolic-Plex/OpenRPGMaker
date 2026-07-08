@@ -4,8 +4,10 @@ import {
   renderActorCondition,
   renderGoldCondition,
   renderItemCondition,
+  renderSeasonCondition,
   renderSelfSwitchCondition,
   renderSwitchCondition,
+  renderTimePhaseCondition,
   renderTimerCondition,
   renderVariableCondition,
 } from "./conditionForm";
@@ -29,6 +31,8 @@ const ADVANCED_CONDITION_OPTIONS = [
   { value: "actor", label: "주인공" },
   { value: "gold", label: "소지금" },
   { value: "timer", label: "타이머" },
+  { value: "timePhase", label: "시간대" },
+  { value: "season", label: "계절" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {
@@ -172,6 +176,16 @@ function renderAdvancedConditionContent(
         minutesTestId: `event-page-advanced-condition-timer-minutes-${listIndex}`,
         secondsTestId: `event-page-advanced-condition-timer-seconds-${listIndex}`,
       });
+    case "timePhase":
+      return renderTimePhaseCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control time-phase",
+        phaseTestId: `event-page-advanced-condition-time-phase-${listIndex}`,
+      });
+    case "season":
+      return renderSeasonCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control season",
+        seasonTestId: `event-page-advanced-condition-season-${listIndex}`,
+      });
   }
 }
 
@@ -191,5 +205,9 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "gold", op: ">=", amount: 0 };
     case "timer":
       return { kind: "timer", timerId: "timer1", seconds: 0 };
+    case "timePhase":
+      return { kind: "timePhase", phase: "day" };
+    case "season":
+      return { kind: "season", season: "spring" };
   }
 }

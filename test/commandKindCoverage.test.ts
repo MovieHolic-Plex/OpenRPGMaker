@@ -42,6 +42,9 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   setSwitch: { kind: "setSwitch", switchId: "sw1", value: true },
   setVariable: { kind: "setVariable", variableId: "var1", op: "=", value: 1 },
   timer: { kind: "timer", action: "set", seconds: 5, timerId: "timer1" },
+  advanceTime: { kind: "advanceTime", minutes: 10 },
+  setTime: { kind: "setTime", hour: 6, minute: 0 },
+  sleepUntilMorning: { kind: "sleepUntilMorning" },
   transfer: { kind: "transfer", mapId: "map1", x: 0, y: 0 },
   moveEvent: { kind: "moveEvent", eventId: "ev1", route: { moves: [], repeat: false } },
   setEventGraphicPattern: { kind: "setEventGraphicPattern", eventId: "ev1", pattern: 0 },
@@ -112,6 +115,8 @@ function buildMinimalConditions(ids: {
     item: { kind: "item", itemId: ids.itemId, present: true },
     gold: { kind: "gold", op: ">=", amount: 0 },
     timer: { kind: "timer", timerId: "timer1", seconds: 10 },
+    timePhase: { kind: "timePhase", phase: "day" },
+    season: { kind: "season", season: "spring" },
   };
 }
 

@@ -65,6 +65,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "label":
     case "gotoLabel":
     case "timer":
+    case "advanceTime":
+    case "setTime":
+    case "sleepUntilMorning":
     case "moveEvent":
     case "setEventGraphicPattern":
     case "setFlag":
@@ -206,7 +209,11 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "item":
       assert(context.itemIds.has(condition.itemId), `page condition: itemId가 존재하지 않습니다: ${condition.itemId}`);
       return;
+    case "selfSwitch":
+    case "gold":
     case "timer":
+    case "timePhase":
+    case "season":
       return;
   }
 }
@@ -216,6 +223,16 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "switch":
     case "variable":
       validateCondition(condition, context.switchIds, context.variableIds);
+      return;
+    case "actor":
+      assert(context.actorIds.has(condition.actorId), `battle condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
+      return;
+    case "item":
+    case "selfSwitch":
+    case "gold":
+    case "timer":
+    case "timePhase":
+    case "season":
       return;
     case "enemyHp":
     case "enemyTurn":
@@ -248,7 +265,7 @@ export function validateCondition(
   if (condition.kind === "variable") {
     assert(variableIds.has(condition.variableId), `condition: variableId가 존재하지 않습니다: ${condition.variableId}`);
   }
-  // selfSwitch/actor/item/gold/timer 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
+  // selfSwitch/actor/item/gold/timer/timePhase/season 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
 }
 
 function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {

@@ -39,7 +39,7 @@ export function withoutCondition(
 
 export function withoutFirstCondition(
   conditions: readonly EventPageCondition[],
-  kind: "actor" | "item" | "variable"
+  kind: EventPageCondition["kind"]
 ): EventPageCondition[] {
   let removed = false;
   return conditions.filter((condition) => {
@@ -75,7 +75,7 @@ export function toggleSwitchCondition(
 
 export function toggleSimpleCondition(
   context: PageConditionContext,
-  kind: "actor" | "item" | "variable",
+  kind: "actor" | "item" | "variable" | "timePhase" | "season",
   enabled: boolean
 ): void {
   const condition = context.page.conditions.find((item) => item.kind === kind);
@@ -96,7 +96,7 @@ export function toggleTimerCondition(
 }
 
 export function advancedConditionEntries(page: EventPage): AdvancedConditionEntry[] {
-  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timer1: 0, timer2: 0 };
+  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, timer1: 0, timer2: 0 };
   const entries: AdvancedConditionEntry[] = [];
   page.conditions.forEach((condition, index) => {
     if (condition.kind === "switch") {
@@ -117,6 +117,16 @@ export function advancedConditionEntries(page: EventPage): AdvancedConditionEntr
     if (condition.kind === "actor") {
       seen.actor += 1;
       if (seen.actor > 1) entries.push({ index, condition });
+      return;
+    }
+    if (condition.kind === "timePhase") {
+      seen.timePhase += 1;
+      if (seen.timePhase > 1) entries.push({ index, condition });
+      return;
+    }
+    if (condition.kind === "season") {
+      seen.season += 1;
+      if (seen.season > 1) entries.push({ index, condition });
       return;
     }
     if (condition.kind === "timer") {

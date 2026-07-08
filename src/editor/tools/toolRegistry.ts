@@ -23,6 +23,7 @@ import { QUEST_TOOLS } from "./questTools";
 import { RANGE_CLASSIFY_TOOLS } from "./rangeClassifyTools";
 import { REFACTOR_TOOLS } from "./refactorTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
+import { TIME_TOOLS } from "./timeTools";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, V2_TILE_SUPERSEDED, VOCABULARY_TOOLS_V3 } from "./v3";
@@ -113,6 +114,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
+  ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"), // 혼합 패밀리 — NAME_DOMAIN_OVERRIDES가 우선한다.
   ...withDomain(TILE_METADATA_TOOLS, "tile"),

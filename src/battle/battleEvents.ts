@@ -2,6 +2,7 @@ import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2Com
 import type { MutableBattler } from "@/battle/battleBattlers";
 import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
 import { compareVariableValue } from "@/project/conditionEvaluation";
+import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import type { ActorId, Command, Condition, Project, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
@@ -12,6 +13,7 @@ export type BattleEventRuntimeState = {
   readonly partyActorIds?: readonly string[];
   readonly gold?: number;
   readonly timers?: Record<string, number>;
+  readonly gameTime?: GameTime;
 };
 
 export type BattleEventContext = {
@@ -117,6 +119,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "item":
       case "gold":
       case "timer":
+      case "timePhase":
+      case "season":
         return evaluateCondition(condition);
       case "turn":
         return condition.interval <= 0
@@ -302,6 +306,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const remaining = (options.state.timers ?? {})[condition.timerId] ?? 0;
         return remaining <= condition.seconds;
       }
+      case "timePhase":
+        return conditionMatchesTimePhase(options.state.gameTime, condition.phase);
+      case "season":
+        return conditionMatchesSeason(options.state.gameTime, condition.season);
     }
   }
 

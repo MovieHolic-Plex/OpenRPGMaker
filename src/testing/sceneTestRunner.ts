@@ -45,6 +45,7 @@ import {
 import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
+import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import {
   advanceFieldSpawns,
@@ -56,6 +57,17 @@ import {
   syncFieldSpawnEventsIntoMap,
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
+import {
+  advanceGameTime,
+  initialGameTime,
+  minutesUntilDayEnd,
+  resolveTimeSystem,
+  setGameTimeClock,
+  sleepGameTimeUntilMorning,
+  timePhaseFor,
+  type GameTime,
+  type TimePhase,
+} from "@/project/gameTime";
 
 const TICK_MS = 16;
 
@@ -66,6 +78,7 @@ export type SceneStep =
   | { kind: "interact" }
   | { kind: "choose"; index: number }
   | { kind: "retryCheckpoint" }
+  | { kind: "advanceDays"; days: number }
   | SceneExpectStep;
 
 export type SceneExpectStep = {
@@ -92,6 +105,8 @@ export type SceneExpectStep = {
   endingReached?: string;
   cutsceneLocked?: boolean;
   mapId?: string;
+  gameTimeAt?: Partial<GameTime>;
+  timePhase?: TimePhase;
 };
 
 export interface SceneTestInput {
@@ -128,6 +143,8 @@ export interface SceneTestResult {
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
     readonly playTimeSeconds: number;
+    readonly gameTime?: GameTime;
+    readonly timePhase?: TimePhase;
   };
   readonly log: readonly string[];
   readonly session: PlaySession;
@@ -167,9 +184,12 @@ interface RunnerState {
   lightingClockMs: number;
   lightingFixedAccumulatorMs: number;
   lightingTransition: LightingAmbientTransition | null;
+  timeFixedAccumulatorMs: number;
+  timeMinuteAccumulator: number;
   activeAnimations: Array<{ readonly animationId: string; remainingMs: number }>;
   readonly autoStartedKeys: Set<string>;
   readonly chasers: Map<string, ChaseRuntimeState>;
+  encounterAccumulator: number;
   facing: Dir;
   gameOver: boolean;
   held: { interp: Interpreter; mode: "choices" | "animation"; currentEventId?: string } | null;
@@ -199,9 +219,12 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     lightingClockMs: 0,
     lightingFixedAccumulatorMs: 0,
     lightingTransition: null,
+    timeFixedAccumulatorMs: 0,
+    timeMinuteAccumulator: 0,
     activeAnimations: [],
     autoStartedKeys: new Set(),
     chasers: new Map(),
+    encounterAccumulator: 0,
     facing: "down",
     gameOver: false,
     held: null,
@@ -243,6 +266,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runChooseStep(state, step.index);
     case "retryCheckpoint":
       return runRetryCheckpointStep(state);
+    case "advanceDays":
+      return advanceDaysForRunner(state, step.days);
     case "expect":
       return runExpectStep(state, step);
   }
@@ -282,7 +307,7 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   syncFollowCamera(state);
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
-  return null;
+  return maybeTriggerRandomEncounterForRunner(state);
 }
 
 function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): string | null {
@@ -297,7 +322,7 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   syncFollowCamera(state);
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
-  return null;
+  return maybeTriggerRandomEncounterForRunner(state);
 }
 
 function runInteractStep(state: RunnerState): string | null {
@@ -330,6 +355,7 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
   state.eventPositions = emptyEventPositionsFromMaps(state.runtimeMaps);
   initializeFieldSpawnsForRunner(state);
   state.camera = emptyCamera(state.session);
+  state.encounterAccumulator = 0;
   refreshChasers(state);
   syncFollowCamera(state);
   state.log.push("checkpoint retry");
@@ -387,6 +413,24 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "wait":
         {
           const failure = advanceTime(state, step.ms);
+          if (failure) return { stop: "failed", reason: failure };
+        }
+        step = interp.resume(undefined);
+        break;
+      case "advanceTime":
+        {
+          const failure = advanceCommandTimeForRunner(state, step);
+          if (failure) return { stop: "failed", reason: failure };
+        }
+        step = interp.resume(undefined);
+        break;
+      case "setTime":
+        setClockForRunner(state, step.hour, step.minute);
+        step = interp.resume(undefined);
+        break;
+      case "sleepUntilMorning":
+        {
+          const failure = sleepUntilMorningForRunner(state);
           if (failure) return { stop: "failed", reason: failure };
         }
         step = interp.resume(undefined);
@@ -655,6 +699,8 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     const delta = Math.min(TICK_MS, remaining);
     remaining -= delta;
     state.session.playTimeSeconds += delta / 1000;
+    const timeFailure = advanceGameTimeByRealDelta(state, delta);
+    if (timeFailure) return timeFailure;
     advanceCamera(state, delta);
     advanceLighting(state, delta);
     advanceAnimations(state, delta);
@@ -663,6 +709,103 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     advanceChasers(state, delta);
     if (state.runtimeFailure) return state.runtimeFailure;
   }
+  return null;
+}
+
+function advanceGameTimeByRealDelta(state: RunnerState, deltaMs: number): string | null {
+  const system = resolveTimeSystem(state.project);
+  if (!system) return null;
+  state.session.gameTime ??= initialGameTime(system);
+  if (!state.session.gameTime || isCutsceneInputLocked(state.session)) return null;
+  state.timeFixedAccumulatorMs += Math.max(0, deltaMs);
+  while (state.timeFixedAccumulatorMs >= 1000) {
+    state.timeFixedAccumulatorMs -= 1000;
+    state.timeMinuteAccumulator += system.minutesPerRealSecond;
+    const wholeMinutes = Math.floor(state.timeMinuteAccumulator);
+    if (wholeMinutes <= 0) continue;
+    state.timeMinuteAccumulator -= wholeMinutes;
+    const failure = advanceGameMinutesForRunner(state, wholeMinutes);
+    if (failure) return failure;
+  }
+  return null;
+}
+
+function advanceCommandTimeForRunner(
+  state: RunnerState,
+  step: Extract<StepResult, { kind: "advanceTime" }>
+): string | null {
+  const days = Math.max(0, Math.trunc(step.days ?? 0));
+  for (let index = 0; index < days; index += 1) {
+    const failure = sleepUntilMorningForRunner(state);
+    if (failure) return failure;
+  }
+  const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
+  return minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null;
+}
+
+function advanceDaysForRunner(state: RunnerState, days: number): string | null {
+  const count = Math.max(0, Math.trunc(days));
+  for (let index = 0; index < count; index += 1) {
+    const failure = sleepUntilMorningForRunner(state);
+    if (failure) return failure;
+  }
+  return null;
+}
+
+function advanceGameMinutesForRunner(state: RunnerState, minutes: number): string | null {
+  const system = resolveTimeSystem(state.project);
+  if (!system) return null;
+  state.session.gameTime ??= initialGameTime(system);
+  if (!state.session.gameTime) return null;
+  let remaining = Math.max(0, Math.trunc(minutes));
+  while (remaining > 0) {
+    const untilEnd = minutesUntilDayEnd(state.session.gameTime, system);
+    if (untilEnd > remaining) {
+      state.session.gameTime = advanceGameTime(state.session.gameTime, remaining, system).time;
+      return null;
+    }
+    if (system.forceSleep) return sleepUntilMorningForRunner(state);
+    remaining -= untilEnd;
+    const hookFailure = runDayEndHookForRunner(state);
+    if (hookFailure) return hookFailure;
+    state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
+    if (untilEnd <= 0) remaining = 0;
+  }
+  return null;
+}
+
+function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): void {
+  const system = resolveTimeSystem(state.project);
+  if (!system) return;
+  state.session.gameTime ??= initialGameTime(system);
+  if (!state.session.gameTime) return;
+  state.session.gameTime = setGameTimeClock(state.session.gameTime, hour, minute, system);
+}
+
+function sleepUntilMorningForRunner(state: RunnerState): string | null {
+  const system = resolveTimeSystem(state.project);
+  if (!system) return null;
+  state.session.gameTime ??= initialGameTime(system);
+  if (!state.session.gameTime) return null;
+  const hookFailure = runDayEndHookForRunner(state);
+  if (hookFailure) return hookFailure;
+  state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
+  state.timeFixedAccumulatorMs = 0;
+  state.timeMinuteAccumulator = 0;
+  state.log.push(`sleep until morning: ${state.session.gameTime.season} ${state.session.gameTime.day} ${state.session.gameTime.hour}:00`);
+  return null;
+}
+
+function runDayEndHookForRunner(state: RunnerState): string | null {
+  const system = resolveTimeSystem(state.project);
+  const hook = system?.onDayEnd ? state.project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
+  if (!hook?.commands.length) return null;
+  state.log.push(`onDayEnd ${hook.id} start`);
+  const interp = createInterpreter([...hook.commands], state.session, state.project);
+  const stop = pump(state, interp, interp.start());
+  if (stop.stop === "failed") return stop.reason;
+  if (stop.stop === "choices" || stop.stop === "animation") return `onDayEnd ${hook.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
+  state.log.push(`onDayEnd ${hook.id} done`);
   return null;
 }
 
@@ -833,6 +976,25 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.cutsceneLocked !== undefined && isCutsceneInputLocked(state.session) !== step.cutsceneLocked) {
     return `컷신 잠금: 기대 ${step.cutsceneLocked}, 실제 ${isCutsceneInputLocked(state.session)}`;
   }
+  if (step.gameTimeAt) {
+    const timeFailure = expectGameTimeAt(state, step.gameTimeAt);
+    if (timeFailure) return timeFailure;
+  }
+  if (step.timePhase !== undefined) {
+    const actual = timePhaseFor(state.session.gameTime);
+    if (actual !== step.timePhase) return `시간대: 기대 ${step.timePhase}, 실제 ${actual ?? "(none)"}`;
+  }
+  return null;
+}
+
+function expectGameTimeAt(state: RunnerState, expected: Partial<GameTime>): string | null {
+  const actual = state.session.gameTime;
+  if (!actual) return "게임 시간이 없습니다.";
+  for (const key of ["hour", "minute", "day", "season", "year"] as const) {
+    const target = expected[key];
+    if (target === undefined) continue;
+    if (actual[key] !== target) return `게임 시간 ${key}: 기대 ${target}, 실제 ${actual[key]}`;
+  }
   return null;
 }
 
@@ -968,6 +1130,7 @@ function resetRuntimeMapForRunner(state: RunnerState, mapId: string): void {
   const source = state.project.maps[mapId];
   if (!source) return;
   state.runtimeMaps[mapId] = structuredClone(source);
+  state.encounterAccumulator = 0;
   for (const key of Object.keys(state.eventPositions)) {
     if (key.startsWith("__field_spawn__")) delete state.eventPositions[key];
   }
@@ -1013,6 +1176,31 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
   return null;
 }
 
+function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null {
+  const map = currentMap(state);
+  if (!map || state.gameOver || state.runtimeFailure) return null;
+  const rate = map.encounterRate ?? 0;
+  if (rate <= 0) return null;
+  const position = { x: state.session.x, y: state.session.y };
+  const hasCandidates = map.encounterTable && map.encounterTable.length > 0
+    ? eligibleEncounterEntries(map, state.session, position).length > 0
+    : (map.troopIds?.length ?? 0) > 0;
+  if (!hasCandidates) return null;
+  state.encounterAccumulator += rate;
+  if (state.encounterAccumulator < 1000 && nextSessionRandom(state.session, "encounter") * 1000 >= state.encounterAccumulator) return null;
+  state.encounterAccumulator = 0;
+  const troopId = pickEncounterTroopForMap(map, state.session, position);
+  if (!troopId) return null;
+  const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+  state.session.battleResult = outcome;
+  state.log.push(`random encounter ${troopId}: ${outcome}`);
+  if (outcome === "defeat") {
+    killPartyForRunner(state);
+    state.gameOver = true;
+  }
+  return null;
+}
+
 function runHeadlessBattle(
   state: RunnerState,
   step: Extract<StepResult, { kind: "battleProcessing" }>
@@ -1039,6 +1227,7 @@ function runHeadlessBattle(
       switches: state.session.switches,
       variables: state.session.variables,
       inventory: state.session.inventory,
+      gameTime: state.session.gameTime,
     },
     rng: () => nextSessionRandom(state.session, "battle"),
   });
@@ -1196,6 +1385,8 @@ function result(
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
       playTimeSeconds: session.playTimeSeconds,
+      gameTime: session.gameTime,
+      timePhase: timePhaseFor(session.gameTime),
     },
     log,
     session,

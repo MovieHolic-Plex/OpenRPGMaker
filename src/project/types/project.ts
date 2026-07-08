@@ -26,6 +26,7 @@ import type {
   Trigger,
   LightingState,
 } from "./events";
+import type { Season, TimePhase } from "../gameTime";
 
 export interface GameMap {
   id: MapId;
@@ -66,6 +67,8 @@ export interface EncounterConditions {
   minPartyLevel?: number;
   maxPartyLevel?: number;
   region?: Rect;
+  timePhase?: TimePhase;
+  season?: Season;
 }
 
 export interface FieldSpawnDef {

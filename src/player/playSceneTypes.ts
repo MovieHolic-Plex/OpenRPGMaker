@@ -10,6 +10,7 @@ import type { PlaySession } from "@/project/session";
 import type { LightingAmbientTransition } from "@/player/lighting";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
+import type { TimePhase } from "@/project/gameTime";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
   down: 0,
@@ -64,6 +65,18 @@ export type AutonomousMoveTween = {
 export type RuntimeTimer = {
   remaining: number;
   active: boolean;
+};
+
+export type TimeTintVisual = {
+  readonly color: number;
+  readonly alpha: number;
+};
+
+export type TimeTintTransition = {
+  readonly from: TimeTintVisual;
+  readonly to: TimeTintVisual;
+  readonly durationMs: number;
+  elapsedMs: number;
 };
 
 export type TransferRequest = {
@@ -131,6 +144,13 @@ export interface PlaySceneContext extends Phaser.Scene {
   weatherDisplayed: WeatherParams;
   weatherTargetSignature: string;
   weatherTransition: WeatherTransition | null;
+  timeFixedAccumulatorMs: number;
+  timeMinuteAccumulator: number;
+  timeSleepInProgress: boolean;
+  timeTintGraphics?: Phaser.GameObjects.Graphics;
+  timeTintPhase?: TimePhase;
+  timeTintDisplayed?: TimeTintVisual;
+  timeTintTransition: TimeTintTransition | null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
   getMapId(): MapId;
@@ -177,6 +197,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateAutonomousNPCs(deltaMs: number): void;
   updateTimers(deltaMs: number): void;
   updateFieldSpawns(deltaMs: number): void;
+  sleepUntilMorning(): Promise<void>;
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
   showGameOverScreen(message?: string): void;

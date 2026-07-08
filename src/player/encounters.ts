@@ -1,6 +1,7 @@
 import type { EncounterTableEntry, GameMap } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
 import { nextSessionRandom } from "@/project/session";
+import { conditionMatchesSeason, conditionMatchesTimePhase } from "@/project/gameTime";
 import type { Rng } from "@/util/rng";
 
 export interface EncounterPosition {
@@ -28,6 +29,8 @@ export function eligibleEncounterEntries(
     if (conditions.minPartyLevel !== undefined && partyLevel < conditions.minPartyLevel) return false;
     if (conditions.maxPartyLevel !== undefined && partyLevel > conditions.maxPartyLevel) return false;
     if (conditions.region && !pointInRect(position, conditions.region)) return false;
+    if (conditions.timePhase && !conditionMatchesTimePhase(session.gameTime, conditions.timePhase)) return false;
+    if (conditions.season && !conditionMatchesSeason(session.gameTime, conditions.season)) return false;
     return true;
   });
 }

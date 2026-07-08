@@ -1,6 +1,7 @@
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
+import { normalizeGameTime } from "@/project/gameTime";
 import type {
   RuntimeCameraSessionState,
   RuntimeCameraTarget,
@@ -133,6 +134,10 @@ export function isLightingState(value: unknown): value is LightingState {
   if (value.color !== undefined && typeof value.color !== "string") return false;
   if (!Array.isArray(value.sources)) return false;
   return value.sources.every(isLightSource);
+}
+
+export function isGameTime(value: unknown): value is PlaySession["gameTime"] {
+  return normalizeGameTime(value) !== undefined;
 }
 
 function isLightSource(value: unknown): value is LightSource {

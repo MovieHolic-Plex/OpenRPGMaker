@@ -83,6 +83,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
 
   collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues);
   if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
+  if (project.system.timeSystem?.enabled && project.system.timeSystem.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) issues.push("system.timeSystem.onDayEnd does not exist.");
   check(() => validateSystemResources(project.system, resourceIds));
   collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
   validateEndings(project, switchIds, variableIds, issues);
@@ -112,6 +113,10 @@ export function repairProjectReferences(project: Project): void {
   const mapIds = new Set(Object.keys(project.maps));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
+  if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
+    const { onDayEnd: _removed, ...rest } = project.system.timeSystem;
+    project.system.timeSystem = rest;
+  }
   project.mapConnections = (project.mapConnections ?? []).filter((connection) => mapIds.has(connection.from.mapId) && mapIds.has(connection.to.mapId));
   for (const actor of project.database.actors) {
     if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) delete actor.unarmedAnimationId;

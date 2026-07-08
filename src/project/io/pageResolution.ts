@@ -1,8 +1,11 @@
 import { compareVariableValue } from "../conditionEvaluation";
+import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
 import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
-  Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold">>;
+  Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold">> & {
+    readonly gameTime?: GameTime;
+  };
 
 export function resolveEventPage(
   event: GameEvent,
@@ -38,5 +41,9 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       return compareVariableValue(session.gold ?? 0, condition.op, condition.amount);
     case "timer":
       return ((session.timers ?? {})[condition.timerId] ?? 0) <= condition.seconds;
+    case "timePhase":
+      return conditionMatchesTimePhase(session.gameTime, condition.phase);
+    case "season":
+      return conditionMatchesSeason(session.gameTime, condition.season);
   }
 }

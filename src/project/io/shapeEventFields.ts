@@ -2,6 +2,7 @@ import { assert, requireArray, requireBoolean, requireNumber, requireRecord, req
 import { validateCommandArray, validateConditionShape, validateMoveRoute } from "./shapeCommandFields";
 import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
+import { isSeason, isTimePhase } from "@/project/gameTime";
 
 export function validateCommonEvents(value: unknown): void {
   for (const [index, entry] of requireArray("commonEvents", value).entries()) {
@@ -63,6 +64,14 @@ function validateEncounterConditions(label: string, value: unknown): void {
   if (conditions.minPartyLevel !== undefined) requireNumber(`${label}.minPartyLevel`, conditions.minPartyLevel);
   if (conditions.maxPartyLevel !== undefined) requireNumber(`${label}.maxPartyLevel`, conditions.maxPartyLevel);
   if (conditions.region !== undefined) validateRect(`${label}.region`, conditions.region);
+  if (conditions.timePhase !== undefined) {
+    const phase = requireString(`${label}.timePhase`, conditions.timePhase);
+    assert(isTimePhase(phase), `${label}.timePhase가 잘못되었습니다.`);
+  }
+  if (conditions.season !== undefined) {
+    const season = requireString(`${label}.season`, conditions.season);
+    assert(isSeason(season), `${label}.season이 잘못되었습니다.`);
+  }
 }
 
 function validateFieldSpawns(label: string, value: unknown): void {

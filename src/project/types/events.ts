@@ -12,6 +12,7 @@ import type {
   SkillId,
   TroopId,
 } from "./base";
+import type { Season, TimePhase } from "../gameTime";
 
 export type Trigger =
   | { kind: "action" }
@@ -36,7 +37,9 @@ export type Condition =
   | { kind: "actor"; actorId: ActorId; present: boolean }
   | { kind: "item"; itemId: ItemId; present: boolean }
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
-  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number };
+  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
+  | { kind: "timePhase"; phase: TimePhase }
+  | { kind: "season"; season: Season };
 
 export type EventPageCondition = Condition;
 
@@ -161,6 +164,9 @@ export type Command =
       value: VariableOperand;
     }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
+  | { kind: "advanceTime"; minutes?: number; hours?: number; days?: number }
+  | { kind: "setTime"; hour: number; minute?: number }
+  | { kind: "sleepUntilMorning" }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }

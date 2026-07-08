@@ -9,6 +9,12 @@ import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from 
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import {
+  DEFAULT_DAY_END_HOUR,
+  DEFAULT_DAY_START_HOUR,
+  DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
+  type TimeSystemConfig,
+} from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings, TypeChartRecord } from "@/project/types";
 
@@ -38,6 +44,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
+  const timeSystem = normalizeTimeSystemConfig(system.timeSystem);
   return {
     startActorIds: cleanIds(system.startActorIds),
     titleResourceId,
@@ -49,7 +56,25 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
     ...(typeChart ? { typeChart } : {}),
+    ...(timeSystem ? { timeSystem } : {}),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+  };
+}
+
+export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | undefined): TimeSystemConfig | undefined {
+  if (!config) return undefined;
+  const enabled = config.enabled === true;
+  const dayStartHour = clampInteger(config.dayStartHour ?? DEFAULT_DAY_START_HOUR, 0, 23);
+  const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
+  const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
+  const onDayEnd = cleanOptionalId(config.onDayEnd);
+  return {
+    enabled,
+    minutesPerRealSecond: positiveNumber(config.minutesPerRealSecond, DEFAULT_TIME_MINUTES_PER_REAL_SECOND),
+    dayStartHour,
+    dayEndHour,
+    forceSleep: config.forceSleep === true,
+    ...(onDayEnd ? { onDayEnd } : {}),
   };
 }
 
@@ -254,6 +279,11 @@ function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow {
 function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
   if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
   return Math.max(1, Math.min(99, Math.trunc(value)));
+}
+
+function positiveNumber(value: number | undefined, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return fallback;
+  return value;
 }
 
 function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | undefined, legacy: readonly string[] = []): ActorLearnedSkill[] {

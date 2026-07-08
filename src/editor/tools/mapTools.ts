@@ -33,6 +33,7 @@ import { jitterPlacement, wobblePath } from "./naturalScatter";
 import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool } from "./naturalToolArgs";
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -748,6 +749,8 @@ const encounterConditionsSchema: JsonSchema = {
     minPartyLevel: { type: "integer" },
     maxPartyLevel: { type: "integer" },
     region: rectSchema,
+    timePhase: { type: "string", enum: TIME_PHASES },
+    season: { type: "string", enum: SEASONS },
   },
 };
 
@@ -804,6 +807,16 @@ function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, 
     throw new ToolError(`${label}: minPartyLevel이 maxPartyLevel보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
   }
   if (input.region !== undefined) conditions.region = parseRect(input.region, `${label}.region`, map);
+  if (input.timePhase !== undefined) {
+    const timePhase = stringField(input, "timePhase", label);
+    if (!isTimePhase(timePhase)) throw new ToolError(`${label}.timePhase가 잘못되었습니다: ${timePhase}`, { code: "invalid-time-phase", mapId: map.id });
+    conditions.timePhase = timePhase;
+  }
+  if (input.season !== undefined) {
+    const season = stringField(input, "season", label);
+    if (!isSeason(season)) throw new ToolError(`${label}.season이 잘못되었습니다: ${season}`, { code: "invalid-season", mapId: map.id });
+    conditions.season = season;
+  }
   return conditions;
 }
 

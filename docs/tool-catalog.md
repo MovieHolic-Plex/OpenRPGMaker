@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 112개 툴 — 쓰기 82, 읽기 30.
+> 총 113개 툴 — 쓰기 83, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -82,6 +82,7 @@
 | `rename_variable` | `fromId?: string`, `fromName?: string`, `to: string` | 변수 id를 전 맵/커먼이벤트/트룹에서 일괄 치환한다(정의·세션·setVariable·조건·숫자입력 참조 포함). fromId 또는 fromName으로 대상 지정. |
 | `prune_unused` | `apply?: boolean` | 미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. |
 | `revert_last_edit` | `steps?: integer` | 최근 편집 히스토리의 이전 상태로 되돌린다. 사용자가 '되돌려/취소/이전으로/undo'라고 하면 이 툴을 호출하라. 절대 clear_region 등으로 직접 지우지 말 것. |
+| `configure_time_system` | `enabled: boolean`, `minutesPerRealSecond?: number`, `dayStartHour?: integer`, `dayEndHour?: integer`, `forceSleep?: boolean`, `onDayEnd?: string` | 게임 시간/달력 시스템을 설정한다. enabled:false면 system.timeSystem을 제거해 기존 프로젝트와 같은 완전 비활성 상태로 둔다. |
 | `set_tile_metadata` | `tilesetId?: string`, `entries: array`, `confirmedByUser?: boolean` | 타일의 라벨/설명/태그/역할을 기록한다. 사용자가 답으로 확정한 내용이면 confirmedByUser=true(잠금·최우선). 잠긴 타일은 confirmedByUser=true로만 수정 가능. |
 | `set_tile_rules` | `tilesetId?: string`, `entries: array`, `confirmedByUser?: boolean` | 타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지형 태그). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에. |
 | `upsert_tile_group` | `tilesetId?: string`, `id?: string`, `name: string`, `role: building\|castle\|fence\|roof\|terrain\|water\|wall\|prop`, `tileIds: array`, `defaultLayer?: lower\|upper\|event\|mixed`, `description?: string`, `placementRules?: string`, `junctions?: array`, `overlays?: array`, `rules?: array` | 여러 타일이 하나의 구조(지붕/울타리/길 등)를 이룰 때 시맨틱 그룹과 배치 규칙(placementRules)을 기록한다. id가 기존 그룹이면 갱신. |
@@ -103,7 +104,7 @@
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer`, `battleFlow?: gauge\|strict`, `activeSlots?: integer`, `strictScript?: array` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
-| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId를 지원한다. |
+| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'advanceDays',days}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase를 지원한다. |
 | `get_project_summary` | (없음) | 제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다. |
 | `get_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다. |
 | `find_events` | `mapId?: string`, `nameContains?: string`, `commandKind?: string`, `referencesSwitch?: string` | 이벤트를 이름/커맨드 종류/스위치 참조로 검색한다. |

@@ -19,6 +19,7 @@ import {
 } from "@/player/pictures/pictureTween";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
 
 type RuntimeAssetProject = Pick<Project, "assets">;
 
@@ -84,6 +85,8 @@ export interface RuntimeStateSnapshot {
   readonly events: Record<string, RuntimeEventSnapshot>;
   readonly movers: Record<string, RuntimeMoverSnapshot>;
   readonly battleResult?: BattleResult;
+  readonly gameTime?: GameTime;
+  readonly timePhase?: TimePhase;
 }
 
 export class RuntimeDomOverlay {
@@ -175,6 +178,7 @@ export class RuntimeDomOverlay {
     }
     node.textContent = JSON.stringify(snapshot);
     this.syncTimerHud(snapshot.timers, snapshot.timerActive);
+    this.syncTimeHud(snapshot.gameTime, snapshot.timePhase);
   }
 
   syncAudioState(audio: AudioCommandState): void {
@@ -355,6 +359,24 @@ export class RuntimeDomOverlay {
       host.append(node);
     }
     node.textContent = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
+  }
+
+  private syncTimeHud(gameTime: GameTime | undefined, phase: TimePhase | undefined): void {
+    const host = this.host();
+    if (!host) return;
+    const existing = host.querySelector("[data-testid='runtime-time-hud']");
+    if (!gameTime) {
+      existing?.remove();
+      return;
+    }
+    const node = existing instanceof HTMLElement ? existing : document.createElement("div");
+    if (!existing) {
+      node.className = "runtime-time-hud";
+      node.dataset.testid = "runtime-time-hud";
+      host.append(node);
+    }
+    node.dataset.phase = phase ?? "";
+    node.textContent = formatGameTime(gameTime);
   }
 }
 

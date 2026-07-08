@@ -34,6 +34,11 @@ import {
 } from "@/player/cutsceneControl";
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
+import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+
+export type RunCommandsOptions = {
+  readonly allowNested?: boolean;
+};
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
@@ -55,14 +60,17 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
 export async function runCommands(
   scene: PlaySceneContext,
   commands: readonly Command[],
-  currentEventId?: string
+  currentEventId?: string,
+  options: RunCommandsOptions = {}
 ): Promise<void> {
-  if (scene.running) return;
+  if (scene.running && options.allowNested !== true) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
     console.warn("[player] dialogue UI missing");
     return;
   }
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
   scene.setInputEnabled(false);
   const project = store.getCurrent();
@@ -78,9 +86,9 @@ export async function runCommands(
   } finally {
     skipController.dispose();
     releaseCutsceneControlForOwner(scene.session, currentEventId);
-    scene.running = false;
+    scene.running = options.allowNested === true ? previousRunning : false;
     scene.lastActionTargetKey = "";
-    scene.setInputEnabled(true);
+    scene.setInputEnabled(options.allowNested === true ? previousInputEnabled : true);
     dialogue.hide();
     scene.refreshRuntimeSurfaces();
   }
@@ -216,6 +224,15 @@ async function consumeBlockingStep(
     }
     case "timer":
       applyTimerStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "advanceTime":
+      await applyAdvanceTimeStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "setTime":
+      applySetTimeStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "sleepUntilMorning":
+      await scene.sleepUntilMorning();
       return resumeAfterSurface(scene, interpreter);
     case "transfer":
       dialogue.hide();

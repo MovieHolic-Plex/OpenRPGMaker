@@ -21,6 +21,7 @@ import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/play
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
+import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/player/lighting";
@@ -290,6 +291,8 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),
     battleResult: scene.session.battleResult,
+    gameTime: resolveTimeSystem(store.getCurrent()) ? scene.session.gameTime : undefined,
+    timePhase: resolveTimeSystem(store.getCurrent()) ? timePhaseFor(scene.session.gameTime) : undefined,
   });
   scene.runtimeDom.syncAudioState(scene.session.audio);
   scene.runtimeDom.syncPictureLayer(scene.session.pictures);

@@ -120,6 +120,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
     inventory: { ...sessionState.inventory },
+    gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
   };
   const battleEvents = createBattleEventRuntime({
     project: options.project,

@@ -12,6 +12,7 @@ import type {
   TroopId,
 } from "./base";
 import type { Command, Condition } from "./events";
+import type { TimeSystemConfig } from "../gameTime";
 
 export interface ActorRecord {
   id: ActorId;
@@ -614,6 +615,7 @@ export interface SystemRecords {
   titleScreen?: TitleScreenSettings;
   monsterCollection?: boolean;
   typeChart?: TypeChartRecord;
+  timeSystem?: TimeSystemConfig;
 }
 
 export interface RewardPolicy {

@@ -4,7 +4,7 @@ import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, SELF_SWITCH_KEY_OPTIONS } from "./options";
 import { openSwitchVariablePicker } from "./recordPickerDialog";
-import type { ActorId, Condition, ItemId } from "@/project/types";
+import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
 
 const CONDITION_MODE_OPTIONS = [
   { value: "switch", label: "스위치" },
@@ -14,7 +14,23 @@ const CONDITION_MODE_OPTIONS = [
   { value: "item", label: "아이템" },
   { value: "gold", label: "소지금" },
   { value: "timer", label: "타이머" },
+  { value: "timePhase", label: "시간대" },
+  { value: "season", label: "계절" },
 ] as const;
+
+export const TIME_PHASE_OPTIONS = [
+  { value: "morning", label: "아침" },
+  { value: "day", label: "낮" },
+  { value: "evening", label: "저녁" },
+  { value: "night", label: "밤" },
+] as const satisfies readonly { readonly value: TimePhase; readonly label: string }[];
+
+export const SEASON_OPTIONS = [
+  { value: "spring", label: "봄" },
+  { value: "summer", label: "여름" },
+  { value: "fall", label: "가을" },
+  { value: "winter", label: "겨울" },
+] as const satisfies readonly { readonly value: Season; readonly label: string }[];
 
 export function databasePicker(
   kind: "switch" | "variable",
@@ -71,6 +87,12 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "timer":
         onChange({ kind: "timer", timerId: "timer1", seconds: 60 });
         return;
+      case "timePhase":
+        onChange({ kind: "timePhase", phase: "day" });
+        return;
+      case "season":
+        onChange({ kind: "season", season: "spring" });
+        return;
     }
   });
   wrap.append(mode);
@@ -95,6 +117,12 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "timer":
       wrap.append(renderTimerCondition(cond, onChange));
+      break;
+    case "timePhase":
+      wrap.append(renderTimePhaseCondition(cond, onChange));
+      break;
+    case "season":
+      wrap.append(renderSeasonCondition(cond, onChange));
       break;
   }
   return wrap;
@@ -345,6 +373,34 @@ export function renderTimerCondition(
   timerId.addEventListener("change", apply);
   seconds.addEventListener("change", apply);
   row.append(timerId, seconds);
+  return row;
+}
+
+export function renderTimePhaseCondition(
+  cond: Extract<Condition, { kind: "timePhase" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly phaseTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const phase = selectWithOptions(TIME_PHASE_OPTIONS, cond.phase, options.phaseTestId ?? "event-condition-time-phase");
+  phase.addEventListener("change", () => {
+    onChange({ kind: "timePhase", phase: selectedOptionValue(phase, TIME_PHASE_OPTIONS, cond.phase) });
+  });
+  row.append(phase);
+  return row;
+}
+
+export function renderSeasonCondition(
+  cond: Extract<Condition, { kind: "season" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly seasonTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const season = selectWithOptions(SEASON_OPTIONS, cond.season, options.seasonTestId ?? "event-condition-season");
+  season.addEventListener("change", () => {
+    onChange({ kind: "season", season: selectedOptionValue(season, SEASON_OPTIONS, cond.season) });
+  });
+  row.append(season);
   return row;
 }
 

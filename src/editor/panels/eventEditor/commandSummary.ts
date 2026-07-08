@@ -119,6 +119,9 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(operandSummary(cmd.value))
   ),
   timer: (cmd) => commandLine("타이머 조작", valuePart(cmd.action), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : [])),
+  advanceTime: (cmd) => commandLine("시간 진행", valuePart(advanceTimeSummary(cmd))),
+  setTime: (cmd) => commandLine("시간 설정", valuePart(`${String(cmd.hour).padStart(2, "0")}:${String(cmd.minute ?? 0).padStart(2, "0")}`)),
+  sleepUntilMorning: () => [commandPart("다음날 아침까지 취침")],
   transfer: (cmd) => cmd.direction && cmd.direction !== "retain"
     ? commandLine(
         "장소 이동",
@@ -246,6 +249,14 @@ function opPart(op: string): CommandSummaryPart {
   if (op.startsWith("-")) return { text: op, tone: "op-sub" };
   if (op === "=") return { text: op, tone: "op-set" };
   return valuePart(op);
+}
+
+function advanceTimeSummary(cmd: Extract<Command, { kind: "advanceTime" }>): string {
+  const parts: string[] = [];
+  if (cmd.days) parts.push(`${cmd.days}일`);
+  if (cmd.hours) parts.push(`${cmd.hours}시간`);
+  if (cmd.minutes) parts.push(`${cmd.minutes}분`);
+  return parts.length > 0 ? parts.join(" ") : "0분";
 }
 
 // 스위치/플래그 ON·OFF 배지 토큰. 텍스트는 기존 "ON"/"OFF" 그대로.
@@ -413,6 +424,10 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>["conditi
       return `소지금 ${condition.op} ${condition.amount}`;
     case "timer":
       return `${condition.timerId} <= ${condition.seconds}초`;
+    case "timePhase":
+      return `시간대 ${condition.phase}`;
+    case "season":
+      return `계절 ${condition.season}`;
   }
 }
 

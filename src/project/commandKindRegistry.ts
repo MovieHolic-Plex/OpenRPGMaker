@@ -25,6 +25,9 @@ export const COMMAND_KINDS = [
   "setSwitch",
   "setVariable",
   "timer",
+  "advanceTime",
+  "setTime",
+  "sleepUntilMorning",
   "transfer",
   "moveEvent",
   "setEventGraphicPattern",
@@ -91,6 +94,8 @@ export const CONDITION_KINDS = [
   "item",
   "gold",
   "timer",
+  "timePhase",
+  "season",
 ] as const satisfies readonly Condition["kind"][];
 
 export type ConditionKind = (typeof CONDITION_KINDS)[number];

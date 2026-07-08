@@ -67,6 +67,7 @@ import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/p
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
+import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -117,6 +118,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
   weatherTargetSignature = "none:0";
   weatherTransition: WeatherTransition | null = null;
+  timeFixedAccumulatorMs = 0;
+  timeMinuteAccumulator = 0;
+  timeSleepInProgress = false;
+  timeTintGraphics?: Phaser.GameObjects.Graphics;
+  timeTintPhase?: import("@/project/gameTime").TimePhase;
+  timeTintDisplayed?: import("@/player/playSceneTypes").TimeTintVisual;
+  timeTintTransition: import("@/player/playSceneTypes").TimeTintTransition | null = null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container> = new Set();
 
@@ -151,6 +159,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     );
     placeCharacterSprite(this.player, "same");
     installWeatherLayer(this);
+    installTimeTintLayer(this);
     installLightingLayer(this);
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     syncFollowerSprites(this);
@@ -173,7 +182,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
+    updateGameTime(this, deltaMs);
     updateWeather(this, deltaMs);
+    updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
   }
 
@@ -214,6 +225,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncFollowerSprites(this);
     applyStoredCameraState(this);
     syncWeatherLayer(this);
+    installTimeTintLayer(this);
     syncLightingLayer(this);
   }
 
@@ -221,6 +233,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     centerRuntimeCamera(this.cameras.main, this.map, this.player);
     applyStoredCameraState(this);
     syncWeatherLayer(this);
+    installTimeTintLayer(this);
     syncLightingLayer(this);
   }
 
@@ -247,6 +260,21 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
       return playBattle(this, step, startedAt);
     });
+  }
+
+  async sleepUntilMorning(): Promise<void> {
+    await sleepUntilMorningScene(this, async (commands) => {
+      const { runCommands } = await import("@/player/playSceneInterpreter");
+      await runCommands(this, commands, undefined, { allowNested: true });
+    });
+  }
+
+  applyAdvanceTimeStep(step: Extract<StepResult, { kind: "advanceTime" }>): Promise<void> {
+    return applyAdvanceTimeStep(this, step);
+  }
+
+  applySetTimeStep(step: Extract<StepResult, { kind: "setTime" }>): void {
+    applySetTimeStep(this, step);
   }
 
   showRuntimeOverlay(testId: string, text: string): void {

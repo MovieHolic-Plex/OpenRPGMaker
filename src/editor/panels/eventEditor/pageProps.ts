@@ -105,6 +105,8 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   item: "I",
   gold: "G",
   timer: "T",
+  timePhase: "P",
+  season: "S",
 };
 
 function pageTabThumbnail(page: EventPage): HTMLElement {
@@ -165,6 +167,36 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `소지금 ${condition.op} ${condition.amount}`;
     case "timer":
       return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+    case "timePhase":
+      return `시간대 ${timePhaseLabel(condition.phase)}`;
+    case "season":
+      return `계절 ${seasonLabel(condition.season)}`;
+  }
+}
+
+function timePhaseLabel(phase: Extract<EventPageCondition, { kind: "timePhase" }>["phase"]): string {
+  switch (phase) {
+    case "morning":
+      return "아침";
+    case "day":
+      return "낮";
+    case "evening":
+      return "저녁";
+    case "night":
+      return "밤";
+  }
+}
+
+function seasonLabel(season: Extract<EventPageCondition, { kind: "season" }>["season"]): string {
+  switch (season) {
+    case "spring":
+      return "봄";
+    case "summer":
+      return "여름";
+    case "fall":
+      return "가을";
+    case "winter":
+      return "겨울";
   }
 }
 
