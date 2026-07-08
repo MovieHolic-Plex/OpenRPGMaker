@@ -72,6 +72,16 @@ describe("get_event", () => {
     expect(result.data).toMatchObject({ unsupportedCommands: 1 });
     expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
   });
+
+  it("upsert_event 인자 누락은 NPC 배치용 place_npc 힌트를 돌려준다", () => {
+    const { context, mapId } = ctxWithMap();
+    const result = runTool(context, "upsert_event", { mapId });
+
+    expect(result.ok).toBe(false);
+    expect(result.summary).toBe("'upsert_event' 인자 검증 실패");
+    expect(result.issues?.[0]?.message).toContain("필수 인자 누락: event");
+    expect(result.issues?.[0]?.message).toContain("NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요");
+  });
 });
 
 describe("set_map_properties", () => {

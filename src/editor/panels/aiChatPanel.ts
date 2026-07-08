@@ -137,6 +137,7 @@ export {
   applyVocabularyCardEdits,
   callsWithVocabularyEdits,
   failedToolRetrySummary,
+  failedToolVisibleSummary,
   formatAiRunningStatus,
   formatToolActivityLine,
   hasVocabularyEdits,
@@ -2427,7 +2428,7 @@ function renderSettingsForm(
   const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
   maxTokens.input.setAttribute("max", "1000000");
-  maxTokens.input.setAttribute("title", "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산(기본 10240). 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.");
+  maxTokens.input.setAttribute("title", "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산(기본 32768). 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.");
 
   // 추론(reasoning) 강도 — 모델이 답하기 전에 생각하는 정도. 기본 '보통'(reasoning 켜짐).
   const reasoningSelect = el("select", {

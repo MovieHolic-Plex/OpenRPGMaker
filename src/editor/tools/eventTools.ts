@@ -25,6 +25,7 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
+const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
 
 function knownIds(records: readonly { readonly id: string }[], limit = 8): string {
   return records.slice(0, limit).map((record) => record.id).join(", ") || "(없음)";
@@ -72,7 +73,7 @@ function passableLanding(project: Project, map: GameMap, x: number, y: number): 
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: "저수준 만능 이벤트 툴. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다.",
+  description: "저수준 만능 이벤트 툴. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용.",
   mode: "write",
   parameters: {
     type: "object",
@@ -82,6 +83,7 @@ const upsertEvent: ToolDefinition = {
     },
     required: ["mapId", "event"],
   },
+  invalidArgsHint: UPSERT_EVENT_NPC_HINT,
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const event = args.event as GameEvent;
@@ -101,7 +103,7 @@ const upsertEvent: ToolDefinition = {
 
 const placeNpc: ToolDefinition = {
   name: "place_npc",
-  description: "NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가 칸이면 실패.",
+  description: "NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",

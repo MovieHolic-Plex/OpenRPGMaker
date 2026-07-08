@@ -33,6 +33,18 @@ export function failedToolRetrySummary(summary: string): string {
   return `내부 재시도 ${retryCount}회`;
 }
 
+function truncateFailureSummary(text: string): string {
+  return text.length > 120 ? `${text.slice(0, 120)}…` : text;
+}
+
+export function failedToolVisibleSummary(result: Pick<ToolResult, "summary" | "issues">): string {
+  const issueMessage = result.issues?.[0]?.message?.trim() ?? "";
+  const merged = issueMessage && !result.summary.includes(issueMessage)
+    ? `${result.summary}: ${issueMessage}`
+    : result.summary;
+  return `${truncateFailureSummary(merged)} (${failedToolRetrySummary(result.summary)})`;
+}
+
 export function formatToolActivityLine(name: string, result: ToolResult): string {
   const mark = result.ok ? "✓" : "✗";
   const draftPrefix = result.ok && isDraftDestructiveTool(name) ? "(초안) " : "";
@@ -93,7 +105,7 @@ export function renderToolActivityEntry(name: string, result: ToolResult, detail
     dataset: { testid: "ai-tool-failure" },
     children: [
       el("summary", {
-        text: `${draftPrefix}✗ ${name} — ${failedToolRetrySummary(result.summary)}`,
+        text: `${draftPrefix}✗ ${name} — ${failedToolVisibleSummary(result)}`,
         dataset: { testid: "ai-tool-failure-summary" },
       }),
       el("div", {

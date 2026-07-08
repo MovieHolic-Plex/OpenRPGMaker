@@ -54,13 +54,13 @@ afterEach(() => {
 describe("aiConfig 저장/로드", () => {
   it("기본값을 반환하고 저장값을 병합한다", async () => {
     installLocalStorage();
-    const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MODEL } = await loadClient();
+    const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL } = await loadClient();
 
     const initial = loadAiConfig();
     expect(initial.model).toBe(DEFAULT_MODEL);
     expect(initial.liteModel).toBe(DEFAULT_LITE_MODEL);
     expect(initial.apiKey).toBe(""); // 키 기본값은 항상 빈값.
-    expect(initial.maxTokens).toBe(10240); // 사용자 제한은 출력 토큰 예산 하나(기본 10240).
+    expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
 
     saveAiConfig({ ...initial, apiKey: "sk-user", maxTokens: 4000, autoApprove: true });
     const reloaded = loadAiConfig();
@@ -102,11 +102,13 @@ describe("aiConfig 저장/로드", () => {
     expect(loadAiConfig().maxToolCalls).toBe(3);
   });
 
-  it("옛 기본값 maxTokens 2048은 새 기본(10240)으로 승격된다", async () => {
+  it("옛 기본값 maxTokens 2048/10240은 새 기본으로 승격된다", async () => {
     installLocalStorage();
-    const { loadAiConfig, saveAiConfig, defaultAiConfig } = await loadClient();
+    const { loadAiConfig, saveAiConfig, defaultAiConfig, DEFAULT_MAX_TOKENS } = await loadClient();
     saveAiConfig({ ...defaultAiConfig(), maxTokens: 2048 });
-    expect(loadAiConfig().maxTokens).toBe(10240);
+    expect(loadAiConfig().maxTokens).toBe(DEFAULT_MAX_TOKENS);
+    saveAiConfig({ ...defaultAiConfig(), maxTokens: 10240 });
+    expect(loadAiConfig().maxTokens).toBe(DEFAULT_MAX_TOKENS);
   });
 });
 

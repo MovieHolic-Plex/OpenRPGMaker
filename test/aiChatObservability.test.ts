@@ -122,7 +122,10 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
       },
       { args: { id: "dup" }, index: 7 }
     ) as unknown as FakeElement;
-    expect(findByTestId(entry, "ai-tool-failure-summary")?.textContent).toContain("내부 재시도 2회");
+    const summary = findByTestId(entry, "ai-tool-failure-summary")?.textContent ?? "";
+    expect(summary).toContain("밑그림 검증 실패(2회) — id를 생략하고 다시 보내세요");
+    expect(summary).toContain("id 필드는 서버가 발급합니다");
+    expect(summary).toContain("내부 재시도 2회");
     const detail = findByTestId(entry, "ai-tool-detail-7");
     const text = detail?.textContent ?? "";
     expect(text).toContain("id를 생략하고 다시 보내세요"); // 오류 원문(재전송 예시) 그대로.

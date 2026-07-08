@@ -79,6 +79,12 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("오브젝트 산포만 place_props");
   });
 
+  it("routes NPC placement to place_npc instead of low-level upsert_event", () => {
+    const text = prompt();
+    expect(text).toContain("NPC/주민 배치 = place_npc");
+    expect(text).toContain("저수준 upsert_event 금지");
+  });
+
   it("requires honest disclosure when only preparation work happened", () => {
     const text = prompt();
     expect(text).toContain("준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면");

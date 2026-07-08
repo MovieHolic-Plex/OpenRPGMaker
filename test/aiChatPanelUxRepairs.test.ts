@@ -10,6 +10,7 @@ import {
 } from "@/ai/llmClient";
 import {
   failedToolRetrySummary,
+  failedToolVisibleSummary,
   formatAiRunningStatus,
   formatToolActivityLine,
   isAiConfigReady,
@@ -209,20 +210,23 @@ describe("도구 로그와 추론 표시", () => {
     expect(formatToolActivityLine("paint_road", { ok: true, summary: "길 5칸" })).not.toContain("(초안)");
   });
 
-  it("실패 도구 요약은 내부 재시도 횟수를 추출한다", () => {
+  it("실패 도구 요약은 원문과 첫 issue를 노출하고 내부 재시도 횟수를 덧붙인다", () => {
     expect(failedToolRetrySummary("밑그림 검증 실패(3회) — 계획 폐기")).toBe("내부 재시도 3회");
-    expect(failedToolRetrySummary("실행 실패")).toBe("내부 재시도 1회");
+    expect(failedToolVisibleSummary({
+      summary: "'upsert_event' 인자 검증 실패",
+      issues: [{ severity: "error", code: "invalid-args", message: "필수 인자 누락: event" }],
+    })).toBe("'upsert_event' 인자 검증 실패: 필수 인자 누락: event (내부 재시도 1회)");
   });
 
-  it("실패 도구 행은 details로 접히고 원시 실패 문구를 기본 문구에 드러내지 않는다", () => {
+  it("실패 도구 행은 details로 접히고 원시 실패 문구를 기본 문구에 드러낸다", () => {
     const entry = renderToolActivityEntry("set_build_spec", {
       ok: false,
       summary: "밑그림 검증 실패(3회) — id를 생략하세요",
     }) as unknown as FakeElement;
     const summary = findByTestId(entry, "ai-tool-failure-summary");
     expect(entry.tagName).toBe("DETAILS");
+    expect(summary?.textContent).toContain("밑그림 검증 실패(3회) — id를 생략하세요");
     expect(summary?.textContent).toContain("내부 재시도 3회");
-    expect(entry.textContent).not.toContain("id를 생략하세요");
   });
 
   it("연속 추론 토글 문구는 병합 횟수를 표시한다", () => {

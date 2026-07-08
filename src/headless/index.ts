@@ -63,7 +63,11 @@ export function runHeadlessTool(project: Project, name: string, args: Record<str
     return {
       ok: false,
       summary: `'${name}' 인자 검증 실패`,
-      issues: argErrors.map((message) => ({ severity: "error", code: "invalid-args", message })),
+      issues: argErrors.map((message) => ({
+        severity: "error",
+        code: "invalid-args",
+        message: tool.invalidArgsHint ? `${message} — ${tool.invalidArgsHint}` : message,
+      })),
     };
   }
 

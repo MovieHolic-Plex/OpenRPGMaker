@@ -49,6 +49,7 @@ export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const DEFAULT_MODEL = "minimax/minimax-m3";
 // DEFAULT_LITE_MODEL: 실행(툴 루프)은 flash-lite로 분리해 긴 작업의 벽시계를 줄인다.
 export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
+export const DEFAULT_MAX_TOKENS = 32768;
 
 export function defaultAiConfig(): AiConfig {
   return {
@@ -57,7 +58,7 @@ export function defaultAiConfig(): AiConfig {
     liteModel: DEFAULT_LITE_MODEL,
     apiKey: "",
     maxToolCalls: 200,
-    maxTokens: 10240,
+    maxTokens: DEFAULT_MAX_TOKENS,
     reasoningEffort: "medium",
     autoApprove: false,
   };
@@ -82,8 +83,10 @@ export function loadAiConfig(): AiConfig {
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
         ? Math.floor(Number(parsed.maxToolCalls))
         : base.maxToolCalls,
-      // 옛 기본값 2048이 저장돼 있으면 미설정으로 간주하고 새 기본(10240)으로 승격.
-      maxTokens: Number.isFinite(parsed.maxTokens) && Number(parsed.maxTokens) !== 2048 ? Number(parsed.maxTokens) : base.maxTokens,
+      // 옛 기본값 2048/10240이 저장돼 있으면 미설정으로 간주하고 새 기본으로 승격.
+      maxTokens: Number.isFinite(parsed.maxTokens) && Number(parsed.maxTokens) !== 2048 && Number(parsed.maxTokens) !== 10240
+        ? Number(parsed.maxTokens)
+        : base.maxTokens,
       reasoningEffort:
         parsed.reasoningEffort === "off" || parsed.reasoningEffort === "low" || parsed.reasoningEffort === "medium" || parsed.reasoningEffort === "high"
           ? parsed.reasoningEffort
