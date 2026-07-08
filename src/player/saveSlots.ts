@@ -136,7 +136,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
-      mapOverrides: structuredClone(session.mapOverrides),
+      mapOverrides: structuredClone(session.mapOverrides ?? {}),
       flags: structuredClone(session.flags),
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),

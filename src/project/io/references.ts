@@ -44,6 +44,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const troopIds = new Set(project.database.troops.map((record) => record.id));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
+  const endingIds = new Set((project.endings ?? []).map((record) => record.id));
   const mapIds = new Set(Object.keys(project.maps));
   const resourceIds = collectResourceIds(project);
   const context: ReferenceContext = {
@@ -55,6 +56,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     switchIds,
     variableIds,
     commonEventIds,
+    endingIds,
     mapIds,
     troopIds,
     resourceIds,
@@ -78,10 +80,27 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
   check(() => validateSystemResources(project.system, resourceIds));
   collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
+  validateEndings(project, switchIds, variableIds, issues);
   validateMapConnections(project, mapIds, issues);
   validateCommonEvents(project, switchIds, context, issues);
   validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
   return issues;
+}
+
+function validateEndings(
+  project: Project,
+  switchIds: ReadonlySet<string>,
+  variableIds: ReadonlySet<string>,
+  issues: string[]
+): void {
+  const seen = new Set<string>();
+  for (const ending of project.endings ?? []) {
+    if (seen.has(ending.id)) issues.push(`ending ${ending.id}: duplicate id.`);
+    seen.add(ending.id);
+    for (const condition of ending.conditions) {
+      capture(issues, () => validateCondition(condition, switchIds, variableIds));
+    }
+  }
 }
 
 export function repairProjectReferences(project: Project): void {

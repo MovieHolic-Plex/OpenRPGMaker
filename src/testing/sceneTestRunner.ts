@@ -14,6 +14,7 @@ import {
 import type { Dir, GameMap, Project } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
+import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/player/types";
 import {
   findBlockingRuntimeEventAtInMap,
@@ -33,6 +34,7 @@ export type SceneStep =
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
   | { kind: "interact" }
   | { kind: "choose"; index: number }
+  | { kind: "retryCheckpoint" }
   | SceneExpectStep;
 
 export type SceneExpectStep = {
@@ -47,6 +49,7 @@ export type SceneExpectStep = {
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
   gameOver?: boolean;
+  endingReached?: string;
   cutsceneLocked?: boolean;
   mapId?: string;
 };
@@ -73,6 +76,7 @@ export interface SceneTestResult {
     readonly picturesVisible: readonly string[];
     readonly bgm?: string;
     readonly gameOver: boolean;
+    readonly endingsReached: readonly string[];
     readonly cutsceneLocked: boolean;
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
@@ -106,10 +110,11 @@ interface CameraModel {
 
 interface RunnerState {
   readonly project: Project;
-  readonly session: PlaySession;
-  readonly eventPositions: RuntimeEventPositions;
+  session: PlaySession;
+  eventPositions: RuntimeEventPositions;
   readonly log: string[];
-  readonly camera: CameraModel;
+  camera: CameraModel;
+  readonly autoStartedKeys: Set<string>;
   facing: Dir;
   gameOver: boolean;
   held: { interp: Interpreter } | null;
@@ -131,11 +136,16 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     eventPositions: emptyEventPositions(project),
     log,
     camera: emptyCamera(session),
+    autoStartedKeys: new Set(),
     facing: "down",
     gameOver: false,
     held: null,
   };
   syncFollowCamera(state);
+  const autoReason = runAutoTriggers(state);
+  if (autoReason !== null) {
+    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.gameOver);
+  }
 
   for (let i = 0; i < input.steps.length; i += 1) {
     const step = input.steps[i];
@@ -146,11 +156,11 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.gameOver);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.gameOver);
     }
   }
 
-  return result(true, project, session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.gameOver);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.gameOver);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -164,12 +174,15 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runInteractStep(state);
     case "choose":
       return runChooseStep(state, step.index);
+    case "retryCheckpoint":
+      return runRetryCheckpointStep(state);
     case "expect":
       return runExpectStep(state, step);
   }
 }
 
 function runMoveStep(state: RunnerState, step: Extract<SceneStep, { kind: "move" }>): string | null {
+  if (state.gameOver) return "게임 오버 중에는 retryCheckpoint 또는 타이틀 복귀만 가능합니다.";
   if (isCutsceneInputLocked(state.session)) return "컷신 입력 잠금 중에는 플레이어 이동을 할 수 없습니다.";
   if (step.dir) {
     state.facing = step.dir;
@@ -214,6 +227,7 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
 }
 
 function runInteractStep(state: RunnerState): string | null {
+  if (state.gameOver) return "게임 오버 중에는 이벤트를 조사할 수 없습니다.";
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   const delta = directionDelta(state.facing);
@@ -229,6 +243,20 @@ function runInteractStep(state: RunnerState): string | null {
   const target = front ?? findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
   if (!target) return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
   return runEventView(state, target);
+}
+
+function runRetryCheckpointStep(state: RunnerState): string | null {
+  if (!state.gameOver) return "게임 오버 상태가 아니어서 체크포인트 리트라이를 실행할 수 없습니다.";
+  const restored = restoreSessionCheckpoint(state.project, state.session);
+  if (!restored) return "복원할 체크포인트가 없습니다.";
+  state.session = restored;
+  state.gameOver = false;
+  state.held = null;
+  state.eventPositions = emptyEventPositions(state.project);
+  state.camera = emptyCamera(state.session);
+  syncFollowCamera(state);
+  state.log.push("checkpoint retry");
+  return null;
 }
 
 function runChooseStep(state: RunnerState, index: number): string | null {
@@ -274,6 +302,11 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         state.session.x = step.x;
         state.session.y = step.y;
         syncFollowCamera(state);
+        state.autoStartedKeys.clear();
+        {
+          const autoReason = runAutoTriggers(state);
+          if (autoReason) return { stop: "failed", reason: autoReason };
+        }
         step = interp.resume(undefined);
         break;
       case "showPicture":
@@ -340,6 +373,21 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
     }
   }
   return { stop: "failed", reason: "인터프리터 무한루프 가드 도달" };
+}
+
+function runAutoTriggers(state: RunnerState): string | null {
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  const autos = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)
+    .filter((event) => event.trigger.kind === "auto");
+  for (const event of autos) {
+    const key = `${state.session.currentMapId}:${event.event.id}:${event.pageId ?? "legacy"}`;
+    if (state.autoStartedKeys.has(key)) continue;
+    state.autoStartedKeys.add(key);
+    const failure = runEventView(state, event);
+    if (failure) return failure;
+  }
+  return null;
 }
 
 function startCameraControl(
@@ -519,6 +567,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.gameOver !== undefined && state.gameOver !== step.gameOver) {
     return `게임 오버: 기대 ${step.gameOver}, 실제 ${state.gameOver}`;
   }
+  if (step.endingReached !== undefined && state.session.flags[`ending:${step.endingReached}`] !== true) {
+    return `엔딩 도달: 기대 ${step.endingReached}, 실제 ${endingFlags(state.session).join(", ") || "(none)"}`;
+  }
   if (step.cutsceneLocked !== undefined && isCutsceneInputLocked(state.session) !== step.cutsceneLocked) {
     return `컷신 잠금: 기대 ${step.cutsceneLocked}, 실제 ${isCutsceneInputLocked(state.session)}`;
   }
@@ -595,6 +646,12 @@ function spawnedCount(session: PlaySession): number {
   return Object.keys(session.spawnedEvents ?? {}).length;
 }
 
+function endingFlags(session: PlaySession): string[] {
+  return Object.keys(session.flags)
+    .filter((key) => key.startsWith("ending:") && session.flags[key])
+    .map((key) => key.slice("ending:".length));
+}
+
 function result(
   ok: boolean,
   project: Project,
@@ -626,6 +683,7 @@ function result(
       picturesVisible: Object.keys(session.pictures),
       bgm: session.audio.bgm?.resourceId,
       gameOver,
+      endingsReached: endingFlags(session),
       cutsceneLocked: isCutsceneInputLocked(session),
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },

@@ -98,6 +98,12 @@ export function newCommand(kind: Command["kind"]): Command {
       };
     case "inn":
       return { kind: "inn", price: 0 };
+    case "checkpointSave":
+      return { kind: "checkpointSave" };
+    case "killPlayer":
+      return { kind: "killPlayer", message: "" };
+    case "triggerEnding":
+      return { kind: "triggerEnding" };
     case "gameOver":
       return { kind: "gameOver" };
     case "ending":

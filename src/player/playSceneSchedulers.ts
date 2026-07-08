@@ -226,7 +226,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showRuntimeOverlay("inn-scene", commerceOverlayText(step));
       return true;
     case "gameOver":
-      scene.showGameOverScreen();
+      scene.showGameOverScreen(step.message);
       return true;
     case "returnToTitle":
       scene.returnToTitle();

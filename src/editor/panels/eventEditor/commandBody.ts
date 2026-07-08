@@ -46,6 +46,12 @@ function terminalFallbackBody(cmd: Command): HTMLElement | undefined {
       return terminalHint("stop-audio-editor", "설정 없음. 현재 재생 중인 오디오를 정지합니다.");
     case "cutsceneControl":
       return terminalHint("cutscene-control-editor", "컷신 동안 플레이어 이동과 메뉴를 잠그거나 해제합니다.");
+    case "checkpointSave":
+      return terminalHint("checkpoint-save-editor", "현재 런타임 세션을 세션 한정 체크포인트로 저장합니다.");
+    case "killPlayer":
+      return terminalHint("kill-player-editor", "파티를 전멸시키고 게임 오버 화면을 엽니다.");
+    case "triggerEnding":
+      return terminalHint("trigger-ending-editor", "지정 엔딩 또는 조건을 만족하는 최우선 엔딩을 실행합니다.");
     case "gameOver":
       return terminalHint("game-over-editor", "설정 없음. 게임 오버 화면을 엽니다.");
     case "returnToTitle":

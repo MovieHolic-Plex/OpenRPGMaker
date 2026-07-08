@@ -278,6 +278,7 @@ function changeSummary(): ChangeSummary {
     worldEntitiesModified: 0,
     palettePresetsAdded: 0,
     palettePresetsModified: 0,
+    endingsChanged: 0,
     warnings: [],
   };
 }

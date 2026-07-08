@@ -3,8 +3,9 @@ import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRec
 import { normalizeWorld } from "../world/guards";
 import type { ProjectWorld } from "../world/types";
 import { normalizePalettePresetId } from "../tilesetPalette";
-import { assert, cloneJson, sanitize, type JsonRecord, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
+import { validateConditionShape } from "./shapeCommandFields";
 import {
   requirePosition,
   validateAssets,
@@ -68,6 +69,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   validateVillageInfoDocuments(data.villageInfoDocuments, new Set(Object.keys(maps)));
   validateQuests(data.quests, new Set(Object.keys(maps)));
   validateTestPresets(data.testPresets, new Set(Object.keys(maps)));
+  validateEndings(data.endings);
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
   assert(startMapId in maps, "startMapId가 maps에 없습니다.");
@@ -79,6 +81,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
   dropLegacyTerrainTemplates(project);
+  normalizeEndings(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   migrateVillageInfoDocumentsToWorld(project);
@@ -87,6 +90,36 @@ export function validateProjectV3(data: JsonRecord): Project {
   repairProjectReferences(project);
   validateProjectReferences(project);
   return project;
+}
+
+function validateEndings(value: unknown): void {
+  if (value === undefined) return;
+  for (const [index, entry] of requireArray("endings", value).entries()) {
+    const ending = requireRecord(`endings[${index}]`, entry);
+    requireString(`endings[${index}].id`, ending.id);
+    requireString(`endings[${index}].name`, ending.name);
+    for (const [conditionIndex, condition] of requireArray(`endings[${index}].conditions`, ending.conditions).entries()) {
+      validateConditionShape(`endings[${index}].conditions[${conditionIndex}]`, condition);
+      const kind = (condition as { kind?: unknown }).kind;
+      assert(kind === "switch" || kind === "variable", `endings[${index}].conditions[${conditionIndex}]는 switch 또는 variable 조건이어야 합니다.`);
+    }
+    if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
+    if (ending.epilogue !== undefined) {
+      for (const [beatIndex, beat] of requireArray(`endings[${index}].epilogue`, ending.epilogue).entries()) {
+        requireRecord(`endings[${index}].epilogue[${beatIndex}]`, beat);
+      }
+    }
+  }
+}
+
+function normalizeEndings(project: Project): void {
+  if (!project.endings) return;
+  project.endings = project.endings.map((ending) => ({
+    ...ending,
+    priority: Number.isFinite(ending.priority) ? Math.trunc(ending.priority) : 0,
+    conditions: [...ending.conditions],
+    epilogue: ending.epilogue ? [...ending.epilogue] : undefined,
+  }));
 }
 
 function dropLegacyTerrainTemplates(project: Project): void {

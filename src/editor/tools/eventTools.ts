@@ -313,6 +313,148 @@ const placeBattleBlocker: ToolDefinition = {
   },
 };
 
+const placeTrap: ToolDefinition = {
+  name: "place_trap",
+  description:
+    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      at: { type: "object", description: "{x,y} 단일 좌표" },
+      cells: { type: "array", description: "{x,y}[] 여러 좌표", items: { type: "object" } },
+      trigger: { type: "string", enum: ["touch", "action"] },
+      message: { type: "string" },
+      respawnCheckpoint: { type: "boolean" },
+      graphic: { type: "object", description: "선택 그래픽 {query} 또는 {textureKey,characterIndex}. 생략 시 투명." },
+      idPrefix: { type: "string" },
+    },
+    required: ["mapId", "trigger"],
+  },
+  invalidArgsExample: {
+    mapId: "map1",
+    cells: [{ x: 4, y: 5 }],
+    trigger: "touch",
+    message: "바닥이 꺼졌다.",
+    respawnCheckpoint: true,
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const cells = trapCells(map, args);
+    const trigger = trapTrigger(args.trigger);
+    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    const idPrefix = typeof args.idPrefix === "string" && args.idPrefix.trim() ? args.idPrefix.trim() : "ev_trap";
+    const eventIds: string[] = [];
+    for (const [index, cell] of cells.entries()) {
+      const id = cells.length === 1 ? genId(idPrefix) : genId(`${idPrefix}_${index + 1}`);
+      const event = trapEvent(id, cell.x, cell.y, trigger, graphic, typeof args.message === "string" ? args.message : undefined);
+      assertEventShape(event);
+      upsertEventIntoMap(map, event);
+      eventIds.push(id);
+    }
+    const checkpointEventId = args.respawnCheckpoint === true ? ensureMapCheckpointEvent(map) : undefined;
+    return {
+      summary: `${map.name}에 즉사 트랩 ${eventIds.length}개 배치${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      data: { eventIds, checkpointEventId },
+    };
+  },
+};
+
+function trapCells(map: GameMap, args: Record<string, unknown>): Point[] {
+  const cells: Point[] = [];
+  if (args.at !== undefined) cells.push(pointFromRecord(args.at, "at"));
+  if (Array.isArray(args.cells)) {
+    args.cells.forEach((entry, index) => cells.push(pointFromRecord(entry, `cells[${index}]`)));
+  }
+  if (cells.length === 0) throw new ToolError("at 또는 cells 중 하나가 필요합니다.", { code: "trap-cells", mapId: map.id });
+  for (const cell of cells) {
+    if (!inMapBounds(map, cell.x, cell.y)) {
+      throw new ToolError(`트랩 위치가 맵 밖입니다: (${cell.x}, ${cell.y})`, { code: "trap-out-of-bounds", mapId: map.id, x: cell.x, y: cell.y });
+    }
+  }
+  return cells;
+}
+
+function pointFromRecord(value: unknown, label: string): Point {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError(`${label}는 {x,y} 객체여야 합니다.`, { code: "trap-point" });
+  }
+  const record = value as { x?: unknown; y?: unknown };
+  if (typeof record.x !== "number" || typeof record.y !== "number") {
+    throw new ToolError(`${label}.x/y 숫자가 필요합니다.`, { code: "trap-point" });
+  }
+  return { x: Math.trunc(record.x), y: Math.trunc(record.y) };
+}
+
+function trapTrigger(value: unknown): Trigger {
+  if (value === "touch") return { kind: "touch" };
+  if (value === "action") return { kind: "action" };
+  throw new ToolError("trigger는 touch 또는 action이어야 합니다.", { code: "trap-trigger" });
+}
+
+function trapEvent(
+  id: string,
+  x: number,
+  y: number,
+  trigger: Trigger,
+  graphic: EventPage["graphic"],
+  message: string | undefined
+): GameEvent {
+  return {
+    id,
+    x,
+    y,
+    trigger,
+    commands: [],
+    pages: [
+      {
+        id: `${id}_page`,
+        name: "즉사 트랩",
+        conditions: [],
+        graphic,
+        trigger,
+        priority: "below",
+        overlapForbidden: false,
+        animationType: "fixedGraphic",
+        movement: PASSIVE,
+        commands: [{ kind: "killPlayer", ...(message ? { message } : {}) }],
+      },
+    ],
+  };
+}
+
+function ensureMapCheckpointEvent(map: GameMap): string {
+  const existing = map.events.find((event) => event.id === `${map.id}_checkpoint_auto`);
+  if (existing) return existing.id;
+  const id = `${map.id}_checkpoint_auto`;
+  map.events.push({
+    id,
+    x: 0,
+    y: 0,
+    trigger: { kind: "auto" },
+    commands: [],
+    pages: [
+      {
+        id: `${id}_page`,
+        name: "진입 체크포인트",
+        conditions: [{ kind: "selfSwitch", key: "A", value: false }],
+        graphic: { transparent: true },
+        trigger: { kind: "auto" },
+        priority: "below",
+        overlapForbidden: false,
+        animationType: "fixedGraphic",
+        movement: PASSIVE,
+        commands: [
+          { kind: "setSelfSwitch", key: "A", value: true },
+          { kind: "checkpointSave", label: "map-entry" },
+        ],
+      },
+    ],
+  });
+  return id;
+}
+
 const duplicateEvent: ToolDefinition = {
   name: "duplicate_event",
   description: "이벤트를 다른 맵/좌표로 복제한다.",
@@ -503,6 +645,7 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   placeNpc,
   createTransferPair,
   placeBattleBlocker,
+  placeTrap,
   duplicateEvent,
   removeEvent,
   moveEvent,

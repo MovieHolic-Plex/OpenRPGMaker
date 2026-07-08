@@ -18,6 +18,7 @@ export type ReferenceContext = {
   switchIds: ReadonlySet<string>;
   variableIds: ReadonlySet<string>;
   commonEventIds: ReadonlySet<string>;
+  endingIds: ReadonlySet<string>;
   mapIds: ReadonlySet<string>;
   troopIds: ReadonlySet<string>;
   resourceIds: ReadonlySet<string>;
@@ -68,9 +69,15 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "stopAudio":
     case "cutsceneControl":
     case "inn":
+    case "checkpointSave":
+    case "killPlayer":
     case "gameOver":
+    case "ending":
     case "returnToTitle":
     case "displayTextSettings":
+      return;
+    case "triggerEnding":
+      if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);
       return;
     case "changeFace":
       validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);

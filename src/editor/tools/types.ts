@@ -36,6 +36,7 @@ export interface ChangeSummary {
   worldEntitiesModified: number;
   palettePresetsAdded: number;
   palettePresetsModified: number;
+  endingsChanged: number;
   sessionChanged: boolean;
   systemChanged: boolean;
   warnings: string[];

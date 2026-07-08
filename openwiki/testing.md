@@ -20,7 +20,8 @@ Pick validation based on the touched boundary:
 - `npm run build` must pass before merge-ready work.
 - `playwright` / `npm run test:e2e` covers browser `test/e2e` flows.
 - `vitest` is for focused unit tests and fast iteration.
-- `run_scene_test` is the headless tick-based scene harness for authored runtime moments that need camera/spawn/picture/audio/session assertions. Use it when `play_walkthrough` is too coarse for cutscenes or timed scenes; it is a read tool and uses a session copy only.
+- `run_scene_test` is the headless tick-based scene harness for authored runtime moments that need camera/spawn/picture/audio/session assertions. Use it when `play_walkthrough` is too coarse for cutscenes, timed scenes, trap retry loops, or ending selection; it is a read tool and uses a session copy only. It supports `retryCheckpoint` steps plus `gameOver`, `playerAt`, and `endingReached` expectations.
+- Checkpoint/trap/ending runtime changes should include focused Vitest for checkpoint save/restore, `killPlayer` game-over retry, `triggerEnding` priority choice, and ending-tool warnings, plus a `run_scene_test` fixture that walks into a trap, retries, and reaches an ending.
 - Cutscene timeline work should cover `test/cutsceneCompiler.test.ts` for beat-to-command snapshots, begin/end and validation failures, plus a `run_scene_test` integration fixture that proves camera/picture state and post-cutscene input unlock. Use `cutsceneLocked` expectations for explicit lock assertions.
 - Tileset intelligence UI changes should include focused Vitest coverage for review queue ordering/state transitions, correction save metadata and undo, locked AI-write preservation, mock re-audit candidate flow, and palette preset CRUD before running the full suite.
 - `npm run perf:bench` runs the Node headless performance budget harness and writes JSON evidence under `evidence/perf/`.

@@ -147,7 +147,9 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateParallelEvents(deltaMs: number): void;
   updateAutonomousNPCs(deltaMs: number): void;
   updateTimers(deltaMs: number): void;
-  showGameOverScreen(): void;
+  hasCheckpoint(): boolean;
+  restoreCheckpoint(): void;
+  showGameOverScreen(message?: string): void;
   showEndingScreen(title: string, message: string): void;
   returnToTitle(): void;
 }

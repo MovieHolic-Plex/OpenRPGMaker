@@ -184,6 +184,9 @@ export type Command =
       transactionBranch?: Command[];
     }
   | { kind: "inn"; price: number }
+  | { kind: "checkpointSave"; label?: string }
+  | { kind: "killPlayer"; message?: string }
+  | { kind: "triggerEnding"; endingId?: string }
   | { kind: "gameOver" }
   | { kind: "ending"; title: string; message: string }
   | { kind: "returnToTitle" }

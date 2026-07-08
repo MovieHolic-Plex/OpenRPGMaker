@@ -94,7 +94,7 @@ export type StepResult =
       branchOnTransaction?: boolean;
     }
   | { kind: "inn"; price: number }
-  | { kind: "gameOver" }
+  | { kind: "gameOver"; message?: string }
   | { kind: "returnToTitle"; title?: string; message?: string };
 
 export type ResumeValue = number | boolean | string | undefined | void;

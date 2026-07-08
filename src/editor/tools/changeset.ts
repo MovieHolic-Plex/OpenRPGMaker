@@ -27,6 +27,7 @@ function emptySummary(): ChangeSummary {
     worldEntitiesModified: 0,
     palettePresetsAdded: 0,
     palettePresetsModified: 0,
+    endingsChanged: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],
@@ -154,9 +155,24 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
   diffWorld(before, after, summary);
   diffPalettePresets(before, after, summary);
+  summary.endingsChanged = countRecordChanges(before.endings ?? [], after.endings ?? []);
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
   return summary;
+}
+
+function countRecordChanges(before: readonly { id: string }[], after: readonly { id: string }[]): number {
+  const beforeById = new Map(before.map((record) => [record.id, JSON.stringify(record)]));
+  const afterById = new Map(after.map((record) => [record.id, JSON.stringify(record)]));
+  let changed = 0;
+  for (const [id, json] of afterById) {
+    const prev = beforeById.get(id);
+    if (prev === undefined || prev !== json) changed += 1;
+  }
+  for (const id of beforeById.keys()) {
+    if (!afterById.has(id)) changed += 1;
+  }
+  return changed;
 }
 
 export interface CommitResult {

@@ -71,6 +71,7 @@ export function summaryForDiff(diff: ChangeSummary): string {
     diff.worldEntitiesModified > 0 ? `세계관 수정 ${diff.worldEntitiesModified}` : null,
     diff.palettePresetsAdded > 0 ? `프리셋 추가 ${diff.palettePresetsAdded}` : null,
     diff.palettePresetsModified > 0 ? `프리셋 수정 ${diff.palettePresetsModified}` : null,
+    diff.endingsChanged > 0 ? `엔딩 ${diff.endingsChanged}` : null,
     diff.sessionChanged ? "세션" : null,
     diff.systemChanged ? "시스템" : null,
   ].filter((part): part is string => part !== null);
@@ -94,6 +95,7 @@ export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): Cha
     combined.worldEntitiesModified += diff.worldEntitiesModified;
     combined.palettePresetsAdded += diff.palettePresetsAdded;
     combined.palettePresetsModified += diff.palettePresetsModified;
+    combined.endingsChanged += diff.endingsChanged;
     combined.sessionChanged = combined.sessionChanged || diff.sessionChanged;
     combined.systemChanged = combined.systemChanged || diff.systemChanged;
     combined.warnings.push(...diff.warnings);
@@ -123,6 +125,7 @@ function emptyDiffSummary(): ChangeSummary {
     worldEntitiesModified: 0,
     palettePresetsAdded: 0,
     palettePresetsModified: 0,
+    endingsChanged: 0,
     sessionChanged: false,
     systemChanged: false,
     warnings: [],

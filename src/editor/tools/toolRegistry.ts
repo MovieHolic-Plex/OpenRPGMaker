@@ -5,6 +5,7 @@
 import { BATTLE_TOOLS } from "./battleTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
+import { ENDING_TOOLS } from "./endingTools";
 import { EVENT_TOOLS } from "./eventTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
@@ -100,6 +101,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(MAP_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
   ...withDomain(WORLD_TOOLS, "world"),
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),

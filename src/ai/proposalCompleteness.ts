@@ -308,6 +308,7 @@ function hasMeaningfulDiff(diff: ChangeSummary | undefined): boolean {
     diff.worldEntitiesModified > 0 ||
     diff.palettePresetsAdded > 0 ||
     diff.palettePresetsModified > 0 ||
+    diff.endingsChanged > 0 ||
     diff.sessionChanged ||
     diff.systemChanged
   );

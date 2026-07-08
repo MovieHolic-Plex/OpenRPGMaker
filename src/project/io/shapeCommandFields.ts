@@ -87,6 +87,15 @@ function validateCommandShape(label: string, value: unknown): void {
       requireCutsceneControlMode(`${label}.mode`, command.mode);
       if (command.skippable !== undefined) requireBoolean(`${label}.skippable`, command.skippable);
       return;
+    case "checkpointSave":
+      if (command.label !== undefined) requireString(`${label}.label`, command.label);
+      return;
+    case "killPlayer":
+      if (command.message !== undefined) requireString(`${label}.message`, command.message);
+      return;
+    case "triggerEnding":
+      if (command.endingId !== undefined) requireString(`${label}.endingId`, command.endingId);
+      return;
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);

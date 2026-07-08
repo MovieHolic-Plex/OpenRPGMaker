@@ -102,6 +102,7 @@ export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
     diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}개` : null,
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
     palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
+    diff.endingsChanged > 0 ? `엔딩 ${diff.endingsChanged}건` : null,
     diff.sessionChanged ? "세션 1건" : null,
     diff.systemChanged ? "시스템 1건" : null,
   ].filter((part): part is string => part !== null);

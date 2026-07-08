@@ -270,6 +270,9 @@ function ensureTerminalRowHint(item: HTMLElement, cmd: Command): void {
 function terminalEditorHint(cmd: Command): { readonly testId: string; readonly text: string } | undefined {
   const kind = String(cmd.kind);
   if (kind.includes("stopAudio")) return { testId: "stop-audio-editor", text: "설정 없음. 현재 재생 중인 오디오를 정지합니다." };
+  if (kind.includes("checkpointSave")) return { testId: "checkpoint-save-editor", text: "현재 런타임 세션을 체크포인트로 저장합니다." };
+  if (kind.includes("killPlayer")) return { testId: "kill-player-editor", text: "파티를 전멸시키고 게임 오버 화면을 엽니다." };
+  if (kind.includes("triggerEnding")) return { testId: "trigger-ending-editor", text: "엔딩 레지스트리에서 실행할 엔딩을 고릅니다." };
   if (kind.includes("gameOver")) return { testId: "game-over-editor", text: "설정 없음. 게임 오버 화면을 엽니다." };
   if (kind.includes("returnToTitle")) return { testId: "return-to-title-editor", text: "설정 없음. 타이틀 화면으로 돌아갑니다." };
   return undefined;

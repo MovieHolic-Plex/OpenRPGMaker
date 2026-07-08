@@ -67,6 +67,12 @@ export function renderAdvancedCommandBody(
       return shopBody(context, cmd);
     case "inn":
       return innBody(context, cmd);
+    case "checkpointSave":
+      return terminalHint("checkpoint-save-editor", "현재 런타임 세션을 세션 한정 체크포인트로 저장합니다.");
+    case "killPlayer":
+      return terminalHint("kill-player-editor", "파티를 전멸시키고 게임 오버 화면을 엽니다.");
+    case "triggerEnding":
+      return terminalHint("trigger-ending-editor", "지정 엔딩 또는 조건을 만족하는 최우선 엔딩을 실행합니다.");
     case "changeGold":
       return changeGoldBody(context, cmd);
     case "changeItem":

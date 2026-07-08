@@ -1,14 +1,18 @@
-import type { Command, M2CommandFields } from "@/project/types";
-import { changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, learnSkill, setSwitch, setTimer, setVariable } from "@/project/session";
+import type { Command, EndingDef, M2CommandFields } from "@/project/types";
+import { changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, learnSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
+import { syncActorVitals } from "@/project/sessionVitals";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { resolveEventPage } from "@/project/io";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import type { RuntimeCameraTarget } from "@/player/types";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
+import { saveSessionCheckpoint } from "@/player/checkpoints";
+import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -165,6 +169,11 @@ function executeM2Command(
     });
   }
 
+  if (entry.title === "Checkpoint Save" && executeM2RuntimeCommand(state.session, entry, command)) {
+    saveCheckpoint(state);
+    return resumeNext(frame);
+  }
+
   if (executeM2RuntimeCommand(state.session, entry, command)) {
     return resumeNext(frame);
   }
@@ -179,6 +188,76 @@ function executeM2Command(
     case "runtime-full":
       console.warn(`[interpreter] M2 runtime command should use native command kind: ${entry.label}`);
       return resumeNext(frame);
+  }
+}
+
+function saveCheckpoint(state: InterpreterState): void {
+  if (!state.project) {
+    console.warn("[interpreter] checkpointSave skipped: project context missing");
+    return;
+  }
+  saveSessionCheckpoint(state.project, state.session as PlaySession);
+}
+
+function killParty(state: InterpreterState): void {
+  for (const actorId of state.session.partyActorIds) {
+    if (state.project) syncActorVitals(state.project, state.session.actorVitals, actorId);
+    const vitals = state.session.actorVitals[actorId];
+    if (vitals) vitals.hp = 0;
+    state.session.actorStateIds ??= {};
+    const states = new Set(state.session.actorStateIds[actorId] ?? []);
+    states.add("state_death");
+    state.session.actorStateIds[actorId] = [...states];
+  }
+}
+
+function triggerEnding(
+  state: InterpreterState,
+  endingId: string | undefined
+): CommandExecution {
+  const project = state.project;
+  const ending = project ? selectEnding(project.endings ?? [], state, endingId) : undefined;
+  if (!ending) {
+    console.warn(`[interpreter] 엔딩을 선택할 수 없습니다: ${endingId ?? "(auto)"}`);
+    return pause("returnToTitle", { kind: "returnToTitle", title: "엔딩", message: "조건에 맞는 엔딩이 없습니다." });
+  }
+
+  state.session.flags[`ending:${ending.id}`] = true;
+  const finalCommand: Command = { kind: "ending", title: ending.name, message: "" };
+  const epilogueCommands = compileEndingEpilogue(state, ending);
+  if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
+    return { kind: "continue" };
+  }
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "" });
+}
+
+function selectEnding(
+  endings: readonly EndingDef[],
+  state: InterpreterState,
+  endingId: string | undefined
+): EndingDef | undefined {
+  if (endingId) return endings.find((ending) => ending.id === endingId);
+  return endings
+    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, state.currentEventId)))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+}
+
+function compileEndingEpilogue(state: InterpreterState, ending: EndingDef): Command[] {
+  if (!state.project || !ending.epilogue || ending.epilogue.length === 0) return [];
+  const eventIds = new Set<string>();
+  for (const map of Object.values(state.project.maps)) {
+    for (const event of map.events) eventIds.add(event.id);
+  }
+  try {
+    return compileCutscene(ending.epilogue as CutsceneBeat[], {
+      context: { eventIds, resourceIds: collectResourceIds(state.project) },
+    });
+  } catch (cause) {
+    if (cause instanceof CutsceneValidationError) {
+      console.warn(`[interpreter] 엔딩 에필로그 검증 실패(${ending.id}): ${cause.reasons.join(" / ")}`);
+      return [];
+    }
+    throw cause;
   }
 }
 
@@ -345,6 +424,14 @@ export function executeCommand(
       });
     case "inn":
       return pause("inn", { kind: "inn", price: command.price });
+    case "checkpointSave":
+      saveCheckpoint(state);
+      return resumeNext(frame);
+    case "killPlayer":
+      killParty(state);
+      return pause("gameOver", { kind: "gameOver", message: command.message });
+    case "triggerEnding":
+      return triggerEnding(state, command.endingId);
     case "gameOver":
       return pause("gameOver", { kind: "gameOver" });
     case "ending":

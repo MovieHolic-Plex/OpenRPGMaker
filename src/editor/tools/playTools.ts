@@ -55,8 +55,8 @@ const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
-    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'move',dir|to}|{kind:'interact'}|{kind:'choose',index}|{kind:'expect',...}]}." +
-    " expect는 playerAt, switchOn/Off, variableEquals, eventAt, cameraAt, spawnedCount, pictureVisible, bgmPlaying, gameOver, cutsceneLocked, mapId를 지원한다.",
+    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'move',dir|to}|{kind:'interact'}|{kind:'choose',index}|{kind:'retryCheckpoint'}|{kind:'expect',...}]}." +
+    " expect는 playerAt, switchOn/Off, variableEquals, eventAt, cameraAt, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId를 지원한다.",
   mode: "read",
   parameters: {
     type: "object",

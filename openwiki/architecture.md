@@ -20,13 +20,14 @@
   - `src/player/player.ts` is the player shell: title screen, load UI, status menu, dialogue overlay wiring, and start/stop of play sessions.
   - It creates the play surface, starts `PlayScene`, bridges UI events to scene/session actions, and handles save-slot restore.
   - `src/player/PlayScene.ts` is the actual in-game runtime: map loading, movement, events, overlays, battle entry, and test hooks.
+  - Session-only retry checkpoints are owned by `src/player/checkpoints.ts` and are restored through `PlayScene`; they must stay outside project JSON and save-slot persistence.
 
 - `src/project` data/persistence:
   - `src/project/store.ts` is the canonical project store. It loads the project, normalizes defaults, emits updates, autosaves, and flushes to local or remote persistence.
   - Store subscribers receive a `ProjectChangeDescriptor` alongside the project. Omitted descriptors fall back to `scope: "project"` for full-refresh compatibility; editor map/tile paths use narrower map/database scopes to avoid unnecessary Phaser and panel redraws.
   - Persistence can come from Supabase, browser overrides, or dev-showcase overrides depending on environment/config.
   - Local dev `?blankProject=1` means a true blank project. `?freshProject=1` keeps its legacy meaning (sample adventure, no persisted override) because 32+ e2e specs and playtest drivers depend on it; example flags `sampleAdventure=1`/`defaultAdventure=1`/`defaultAdventureVisual` also remain.
-  - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems.
+  - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems, including authored ending definitions consumed by the player interpreter.
 
 - `src/battle` boundary:
   - `src/battle/runtime.ts` is the battle state machine and should be treated as the core battle boundary.

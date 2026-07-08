@@ -19,6 +19,7 @@ import type { ProjectWorld } from "../world/types";
 import type {
   CommandV1,
   CommonEvent,
+  Condition,
   ConditionV1,
   GameEvent,
   Trigger,
@@ -111,6 +112,18 @@ export interface TestPreset {
   startPos?: { x: number; y: number };
 }
 
+export type EndingCondition = Extract<Condition, { kind: "switch" | "variable" }>;
+
+// 선언형 엔딩 레지스트리. switch/variable conditions가 모두 참인 엔딩 중 priority가
+// 가장 높은 항목을 triggerEnding이 선택한다. epilogue는 script_cutscene과 같은 beat 배열이다.
+export interface EndingDef {
+  id: string;
+  name: string;
+  conditions: EndingCondition[];
+  priority: number;
+  epilogue?: Record<string, unknown>[];
+}
+
 export interface Project {
   version: number;
   meta: { title: string; author: string; terms: Terms };
@@ -132,6 +145,8 @@ export interface Project {
   quests?: QuestDef[];
   // 테스트 상태 프리셋(Phase 4-1). 에디터 디버그 패널이 저장/적용한다. optional.
   testPresets?: TestPreset[];
+  // 세션 상태와 분리된 authored 엔딩 정의. 체크포인트와 달리 프로젝트 JSON에 저장된다.
+  endings?: EndingDef[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

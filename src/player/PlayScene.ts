@@ -59,6 +59,7 @@ import {
 } from "@/player/playSceneOverlays";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
+import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -283,8 +284,20 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.refreshRuntimeSurfaces();
   }
 
-  showGameOverScreen(): void {
-    showSceneGameOverScreen(this);
+  hasCheckpoint(): boolean {
+    return hasSessionCheckpoint(this.session);
+  }
+
+  restoreCheckpoint(): void {
+    const snapshot = getSessionCheckpoint(this.session);
+    const restored = restoreSessionCheckpoint(store.getCurrent(), this.session);
+    if (!restored || !snapshot) return;
+    this.applySession(restored);
+    setSessionCheckpoint(this.session, snapshot);
+  }
+
+  showGameOverScreen(message?: string): void {
+    showSceneGameOverScreen(this, message);
   }
 
   showEndingScreen(title: string, message: string): void {

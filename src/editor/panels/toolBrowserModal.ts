@@ -5,6 +5,7 @@
 import { BATTLE_TOOLS } from "@/editor/tools/battleTools";
 import { CLUSTER_RULE_TOOLS } from "@/editor/tools/clusterRuleTools";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
+import { ENDING_TOOLS } from "@/editor/tools/endingTools";
 import { EVENT_TOOLS } from "@/editor/tools/eventTools";
 import { MAP_GEN_TOOLS } from "@/editor/tools/generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "@/editor/tools/groupLayoutTools";
@@ -48,6 +49,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "맵 생성", tools: MAP_GEN_TOOLS },
   ...PLACEMENT_CATEGORIES,
   { label: "이벤트/NPC", tools: EVENT_TOOLS },
+  { label: "엔딩", tools: ENDING_TOOLS },
   { label: "데이터베이스", tools: DB_TOOLS },
   { label: "세계관", tools: WORLD_TOOLS },
   { label: "퀘스트", tools: QUEST_TOOLS },
