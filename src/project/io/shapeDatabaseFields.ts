@@ -20,6 +20,7 @@ export function validateDatabase(value: unknown): void {
   if (database.battleCommands !== undefined) requireArray("database.battleCommands", database.battleCommands);
   if (database.battlerAnimations !== undefined) requireArray("database.battlerAnimations", database.battlerAnimations);
   if (database.monsterSpecies !== undefined) requireArray("database.monsterSpecies", database.monsterSpecies);
+  if (database.crops !== undefined) requireArray("database.crops", database.crops);
 }
 
 export function validateSystem(value: unknown): void {

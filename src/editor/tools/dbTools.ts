@@ -7,6 +7,7 @@
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { normalizeCropRecord } from "@/project/farmModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
@@ -15,6 +16,7 @@ import type {
   ClassRecord,
   Command,
   CommonEvent,
+  CropRecord,
   EnemyRecord,
   EquipmentRecord,
   GameEvent,
@@ -190,6 +192,7 @@ const itemRecordSchema = objectSchema({
   occasionBattle: booleanSchema(),
   seedParameterBonuses: statBonusesSchema,
   equipmentProfile: itemEquipmentProfileSchema,
+  farmTool: { type: "string", enum: ["hoe", "wateringCan"] },
   captureProfile: captureProfileSchema,
 }) as RecordSchema;
 
@@ -242,6 +245,25 @@ const monsterSpeciesRecordSchema = objectSchema({
   captureRate: numberSchema("0~1"),
   skillsByLevel: arrayOf(learnedSkillSchema),
   evolutions: arrayOf(monsterEvolutionSchema),
+}) as RecordSchema;
+
+const cropStageSchema = objectSchema({ days: integerSchema("단계 소요일") });
+const cropGraphicStageSchema = objectSchema({
+  resourceId: stringSchema(),
+  frame: stringSchema("스프라이트 프레임 이름/번호"),
+  label: stringSchema("리소스 없을 때 단계 배지 라벨"),
+});
+const cropRegrowSchema = objectSchema({ days: integerSchema("재수확 대기일") });
+const cropRecordSchema = objectSchema({
+  id: stringSchema(),
+  name: stringSchema(),
+  seedItemId: stringSchema(),
+  harvestItemId: stringSchema(),
+  harvestCount: integerSchema("수확 수량. 기본 1"),
+  stages: arrayOf(cropStageSchema),
+  seasons: stringArraySchema("spring/summer/fall/winter"),
+  regrow: cropRegrowSchema,
+  graphicStages: arrayOf(cropGraphicStageSchema),
 }) as RecordSchema;
 
 const actorRecordSchema = objectSchema({
@@ -484,6 +506,40 @@ const defineMonsterSpecies: ToolDefinition = {
     }
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return { summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+  },
+};
+
+const defineCrop: ToolDefinition = {
+  name: "define_crop",
+  description: "작물 레코드를 등록/수정한다. seedItemId는 심을 때 1개 소모되고 harvestItemId는 수확 시 지급된다.",
+  mode: "write",
+  parameters: parametersForRecord("crop", cropRecordSchema, {
+    id: "crop_potato",
+    name: "감자",
+    seedItemId: "item_potato_seed",
+    harvestItemId: "item_potato",
+    stages: [{ days: 1 }, { days: 2 }],
+    seasons: ["spring"],
+  }),
+  run(draft, args): ToolExecResult {
+    draft.database.crops ??= [];
+    const example = {
+      id: "crop_potato",
+      name: "감자",
+      seedItemId: "item_potato_seed",
+      harvestItemId: "item_potato",
+      stages: [{ days: 1 }, { days: 2 }],
+      seasons: ["spring"],
+    };
+    const merged = mergeRecord(draft.database.crops, args.crop, "crop", cropRecordSchema, example, ["name", "seedItemId", "harvestItemId", "stages", "seasons"]);
+    const record = normalizeCropRecord(merged as Partial<CropRecord> & Pick<CropRecord, "id" | "name">);
+    const itemIds = new Set(draft.database.items.map((item) => item.id));
+    const missing = [record.seedItemId, record.harvestItemId].filter((itemId) => !itemIds.has(itemId));
+    if (missing.length > 0) {
+      throw new ToolError(`존재하지 않는 crop itemId: ${[...new Set(missing)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
+    }
+    const outcome = upsertById(draft.database.crops, record);
+    return { summary: `작물 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
   },
 };
 
@@ -856,6 +912,7 @@ export const DB_TOOLS: readonly ToolDefinition[] = [
   upsertEnemy,
   upsertTroop,
   defineMonsterSpecies,
+  defineCrop,
   setTypeChart,
   giveStarterMonsters,
   upsertActor,

@@ -120,6 +120,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   ),
   timer: (cmd) => commandLine("타이머 조작", valuePart(cmd.action), ...(cmd.seconds !== undefined ? [plainPart(" "), valuePart(String(cmd.seconds)), plainPart("초")] : [])),
   advanceTime: (cmd) => commandLine("시간 진행", valuePart(advanceTimeSummary(cmd))),
+  advanceCropGrowth: (cmd) => commandLine("작물 성장 진행", valuePart(`${cmd.days}일`)),
   setTime: (cmd) => commandLine("시간 설정", valuePart(`${String(cmd.hour).padStart(2, "0")}:${String(cmd.minute ?? 0).padStart(2, "0")}`)),
   sleepUntilMorning: () => [commandPart("다음날 아침까지 취침")],
   transfer: (cmd) => cmd.direction && cmd.direction !== "retain"

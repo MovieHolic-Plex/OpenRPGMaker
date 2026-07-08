@@ -41,6 +41,8 @@ export function renderAdvancedCommandBody(
       return waitBody(context, cmd);
     case "advanceTime":
       return advanceTimeBody(context, cmd);
+    case "advanceCropGrowth":
+      return advanceCropGrowthBody(context, cmd);
     case "setTime":
       return setTimeBody(context, cmd);
     case "sleepUntilMorning":
@@ -205,6 +207,19 @@ function advanceTimeBody(context: CommandEditContext, cmd: Extract<Command, { ki
     control.addEventListener("input", apply);
   }
   return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days, hours, minutes] })] });
+}
+
+function advanceCropGrowthBody(context: CommandEditContext, cmd: Extract<Command, { kind: "advanceCropGrowth" }>): HTMLElement {
+  const days = numberInput(cmd.days ?? 1, "일", "advance-crop-growth-days-input");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "advanceCropGrowth",
+      days: Math.max(0, parseInt(days.value, 10) || 0),
+    });
+  };
+  days.addEventListener("change", apply);
+  days.addEventListener("input", apply);
+  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [days] })] });
 }
 
 function setTimeBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setTime" }>): HTMLElement {

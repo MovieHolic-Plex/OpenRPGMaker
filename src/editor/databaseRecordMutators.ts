@@ -89,6 +89,7 @@ export function updateItemRecord(database: DatabaseRecords, id: string, patch: P
   if ("occasionBattle" in patch && patch.occasionBattle !== undefined) record.occasionBattle = patch.occasionBattle;
   if ("seedParameterBonuses" in patch && patch.seedParameterBonuses !== undefined) record.seedParameterBonuses = patch.seedParameterBonuses;
   if ("equipmentProfile" in patch && patch.equipmentProfile !== undefined) record.equipmentProfile = patch.equipmentProfile;
+  if ("farmTool" in patch) record.farmTool = patch.farmTool;
   if ("captureProfile" in patch) record.captureProfile = patch.captureProfile;
   database.items[index] = normalizeItemRecord(record);
 }

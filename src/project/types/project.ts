@@ -50,6 +50,8 @@ export interface GameMap {
   fieldSpawns?: FieldSpawnDef[];
   // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
   safeZones?: Rect[];
+  // 경작 가능한 영역 선언. 경작/물/작물 상태는 PlaySession.farmPlots에만 저장한다.
+  farmableArea?: Rect[];
   // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.
   defaultLighting?: LightingState;
 }

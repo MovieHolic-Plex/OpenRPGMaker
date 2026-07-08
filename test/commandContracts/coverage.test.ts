@@ -56,6 +56,7 @@ const CONTRACT_TEST_TODO_WHITELIST: readonly CommandKind[] = [
   "setEventGraphicPattern",
   "changeTile",
   "advanceTime",
+  "advanceCropGrowth",
   "setTime",
   "sleepUntilMorning",
   "gameOver",

@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/commonEvents 포함.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
-import type { MonsterInstance } from "@/project/session";
+import type { FarmPlots, MonsterInstance } from "@/project/session";
 import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
@@ -269,6 +269,7 @@ export interface PlaySessionLike {
   camera?: RuntimeCameraSessionState;
   lighting?: LightingState;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
+  farmPlots?: FarmPlots;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];
   playTimeSeconds?: number;

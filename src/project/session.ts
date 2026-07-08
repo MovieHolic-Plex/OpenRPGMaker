@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type {
   M2RuntimeState,
   PlaySessionLike,
@@ -15,7 +15,7 @@ import type {
 } from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
-import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type GameTime } from "@/project/gameTime";
+import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type GameTime, type Season } from "@/project/gameTime";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
@@ -89,6 +89,19 @@ export type MonsterInstance = {
   readonly caughtAt: MonsterCaughtAt;
 };
 
+export type FarmPlotState = {
+  readonly tilled: boolean;
+  readonly watered: boolean;
+  readonly cropId?: CropId;
+  readonly plantedDay?: { readonly day: number; readonly season: Season; readonly year: number };
+  readonly stage?: number;
+  readonly dead?: boolean;
+  // 단계별 소요일을 결정적으로 누적하기 위한 런타임 진행도. 저장/로드 대상이다.
+  readonly growthDays?: number;
+};
+
+export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
+
 export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
   format: "normal",
   position: "bottom",
@@ -144,6 +157,7 @@ export interface PlaySession {
   y: number;
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
   mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
+  farmPlots?: FarmPlots;
   // 레거시 호환(flags → switches로 마이그레이션됐지만 보존).
   flags: Record<string, boolean>;
   battleResult?: BattleResult;
@@ -218,6 +232,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     x: project.startPos.x,
     y: project.startPos.y,
     mapOverrides: {},
+    farmPlots: {},
     flags: { ...project.flags },
     audio: {},
     pictures: {},

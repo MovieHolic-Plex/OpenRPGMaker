@@ -43,6 +43,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   setVariable: { kind: "setVariable", variableId: "var1", op: "=", value: 1 },
   timer: { kind: "timer", action: "set", seconds: 5, timerId: "timer1" },
   advanceTime: { kind: "advanceTime", minutes: 10 },
+  advanceCropGrowth: { kind: "advanceCropGrowth", days: 1 },
   setTime: { kind: "setTime", hour: 6, minute: 0 },
   sleepUntilMorning: { kind: "sleepUntilMorning" },
   transfer: { kind: "transfer", mapId: "map1", x: 0, y: 0 },

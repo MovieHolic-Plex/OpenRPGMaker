@@ -26,6 +26,7 @@ export const COMMAND_KINDS = [
   "setVariable",
   "timer",
   "advanceTime",
+  "advanceCropGrowth",
   "setTime",
   "sleepUntilMorning",
   "transfer",

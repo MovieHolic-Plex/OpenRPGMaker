@@ -19,6 +19,7 @@ import { addFollowerToSession, removeFollowerFromSession } from "@/player/follow
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
+import { advanceFarmPlotsForDay } from "@/player/farming";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -344,6 +345,9 @@ export function executeCommand(
         minutes: advanceCommandMinutes(command),
         days: command.days,
       });
+    case "advanceCropGrowth":
+      if (state.project) advanceFarmPlotsForDay(state.project, state.session as PlaySession, command.days);
+      return resumeNext(frame);
     case "setTime":
       return pause("setTime", { kind: "setTime", hour: command.hour, minute: command.minute });
     case "sleepUntilMorning":

@@ -66,6 +66,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "gotoLabel":
     case "timer":
     case "advanceTime":
+    case "advanceCropGrowth":
     case "setTime":
     case "sleepUntilMorning":
     case "moveEvent":

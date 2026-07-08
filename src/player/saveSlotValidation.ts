@@ -1,7 +1,7 @@
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
-import { normalizeGameTime } from "@/project/gameTime";
+import { isSeason, normalizeGameTime } from "@/project/gameTime";
 import type {
   RuntimeCameraSessionState,
   RuntimeCameraTarget,
@@ -75,6 +75,14 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
   });
 }
 
+export function isFarmPlotsRecord(value: unknown): value is PlaySession["farmPlots"] {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((plots) => {
+    if (!isRecord(plots)) return false;
+    return Object.entries(plots).every(([key, plot]) => isFarmPlotKey(key) && isFarmPlotState(plot));
+  });
+}
+
 function isMonsterIvs(value: unknown): boolean {
   if (!isRecord(value)) return false;
   return ["hp", "atk", "def", "spd"].every((key) => {
@@ -86,6 +94,28 @@ function isMonsterIvs(value: unknown): boolean {
 function isMonsterCaughtAt(value: unknown): boolean {
   if (!isRecord(value)) return false;
   return typeof value.mapId === "string" && typeof value.x === "number" && Number.isFinite(value.x) && typeof value.y === "number" && Number.isFinite(value.y);
+}
+
+function isFarmPlotKey(value: string): boolean {
+  const parts = value.split(",");
+  if (parts.length !== 2) return false;
+  return parts.every((part) => Number.isInteger(Number(part)));
+}
+
+function isFarmPlotState(value: unknown): value is NonNullable<PlaySession["farmPlots"]>[string][string] {
+  if (!isRecord(value)) return false;
+  if (typeof value.tilled !== "boolean" || typeof value.watered !== "boolean") return false;
+  if (value.cropId !== undefined && typeof value.cropId !== "string") return false;
+  if (value.stage !== undefined && !isFiniteInteger(value.stage)) return false;
+  if (value.growthDays !== undefined && !isFiniteInteger(value.growthDays)) return false;
+  if (value.dead !== undefined && typeof value.dead !== "boolean") return false;
+  if (value.plantedDay !== undefined && !isFarmPlotDate(value.plantedDay)) return false;
+  return true;
+}
+
+function isFarmPlotDate(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return isFiniteInteger(value.day) && isSeason(value.season) && isFiniteInteger(value.year);
 }
 
 export function isRngState(value: unknown): value is RngState {
@@ -318,6 +348,10 @@ export function isStringArray(value: unknown): value is readonly string[] {
 
 function optionalFiniteNumber(value: unknown): boolean {
   return value === undefined || (typeof value === "number" && Number.isFinite(value));
+}
+
+function isFiniteInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value);
 }
 
 function isDirection(value: unknown): value is "down" | "left" | "right" | "up" {

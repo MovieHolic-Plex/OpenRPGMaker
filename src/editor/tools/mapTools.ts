@@ -1020,6 +1020,31 @@ const makeHuntingGround: ToolDefinition = {
   },
 };
 
+const createFarmPlot: ToolDefinition = {
+  name: "create_farm_plot",
+  description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      area: rectSchema,
+    },
+    required: ["mapId", "area"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const area = parseRect(args.area, "area", map);
+    map.farmableArea ??= [];
+    const duplicate = map.farmableArea.some((rect) => rect.x === area.x && rect.y === area.y && rect.w === area.w && rect.h === area.h);
+    if (!duplicate) map.farmableArea.push(area);
+    return {
+      summary: `맵 '${map.name}' 경작 가능 영역 선언 (${area.x},${area.y},${area.w}x${area.h})${duplicate ? " — 기존 영역 재사용" : ""}`,
+      data: { mapId: map.id, area },
+    };
+  },
+};
+
 // 맵 크기 변경(좌상단 기준 유지, 확장부는 잔디/빈 칸). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
@@ -1107,7 +1132,7 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, resizeMapTool, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, createFarmPlot, resizeMapTool, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };

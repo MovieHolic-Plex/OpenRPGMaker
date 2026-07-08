@@ -26,6 +26,7 @@ import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/player/lighting";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
+import { renderFarmOverlays } from "@/player/playSceneFarming";
 import {
   initialRuntimeEventPositions,
   runtimeEventViewsForMap,
@@ -55,7 +56,7 @@ interface RenderTilesSceneContext<
   readonly eventPositions: PlaySceneContext["eventPositions"];
   readonly tileLayer: {
     removeAll(removeChildren?: boolean): void;
-    add(image: TImage | TSprite): unknown;
+    add(image: TImage | TSprite | unknown): unknown;
   };
   readonly eventSprites: {
     values(): IterableIterator<TSprite>;
@@ -70,6 +71,8 @@ interface RenderTilesSceneContext<
   readonly add: {
     image(x: number, y: number, texture: string, frame?: string | number): TImage;
     sprite(x: number, y: number, texture: string, frame?: string | number): TSprite;
+    rectangle?(x: number, y: number, width: number, height: number, fillColor?: number, fillAlpha?: number): RenderedTileImage;
+    text?(x: number, y: number, text: string, style?: Record<string, string>): RenderedTileImage;
   };
   readonly resolveTilesetTexture?: (tileset: TilesetDef) => string;
   runEvent(eventId: string): Promise<void>;
@@ -115,6 +118,7 @@ export function renderTiles<
       for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile);
     }
   }
+  renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderEvents(scene);
 }
 

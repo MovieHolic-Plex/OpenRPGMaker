@@ -63,6 +63,9 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.hours !== undefined) requireNumber(`${label}.hours`, command.hours);
       if (command.days !== undefined) requireNumber(`${label}.days`, command.days);
       return;
+    case "advanceCropGrowth":
+      requireNumber(`${label}.days`, command.days);
+      return;
     case "setTime":
       requireNumber(`${label}.hour`, command.hour);
       if (command.minute !== undefined) requireNumber(`${label}.minute`, command.minute);

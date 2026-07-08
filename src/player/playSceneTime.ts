@@ -12,6 +12,7 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { StepResult } from "@/player/interpreter";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
+import { advanceFarmPlotsForDay } from "@/player/farming";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { fadeCamera, TRANSFER_FADE_DURATION_MS } from "@/player/playSceneMapCommands";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
@@ -117,9 +118,12 @@ export async function sleepUntilMorningScene(
     await fadeCamera(scene, "out", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
     const hook = system.onDayEnd ? project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
     if (hook?.commands.length) await runDayEndCommands(hook.commands);
-    scene.session.gameTime = sleepGameTimeUntilMorning(scene.session.gameTime, system).time;
+    const nextTime = sleepGameTimeUntilMorning(scene.session.gameTime, system).time;
+    advanceFarmPlotsForDay(project, scene.session, 1, nextTime.season);
+    scene.session.gameTime = nextTime;
     scene.timeFixedAccumulatorMs = 0;
     scene.timeMinuteAccumulator = 0;
+    scene.refreshRuntimeSurfaces();
     scene.syncRuntimeState();
     await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
   } finally {

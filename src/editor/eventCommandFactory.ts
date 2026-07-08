@@ -33,6 +33,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "timer", action: "set", seconds: 60, timerId: "timer1" };
     case "advanceTime":
       return { kind: "advanceTime", minutes: 10 };
+    case "advanceCropGrowth":
+      return { kind: "advanceCropGrowth", days: 1 };
     case "setTime":
       return { kind: "setTime", hour: 6, minute: 0 };
     case "sleepUntilMorning":

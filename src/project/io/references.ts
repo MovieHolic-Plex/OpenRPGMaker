@@ -73,6 +73,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues);
   validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, speciesIds, issues);
   validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues);
+  validateCropRecords(project, itemIds, resourceIds, issues);
   validateTroopRecords(project, enemyIds, context, issues);
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
   for (const animation of project.database.battlerAnimations ?? []) check(() => validateBattlerAnimationResources(animation, resourceIds));
@@ -322,6 +323,24 @@ function validateMonsterSpeciesRecords(
       if (evolution.requires.itemId && !itemIds.has(evolution.requires.itemId)) issues.push(`monsterSpecies ${species.id}: evolution itemId does not exist: ${evolution.requires.itemId}`);
     }
     capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.monsterResourceId`, species.graphic.monsterResourceId, resourceIds));
+  }
+}
+
+function validateCropRecords(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  resourceIds: ReadonlySet<string>,
+  issues: string[]
+): void {
+  const seen = new Set<string>();
+  for (const crop of project.database.crops ?? []) {
+    if (seen.has(crop.id)) issues.push(`crop ${crop.id}: duplicate id.`);
+    seen.add(crop.id);
+    if (!itemIds.has(crop.seedItemId)) issues.push(`crop ${crop.id}: seedItemId does not exist: ${crop.seedItemId}`);
+    if (!itemIds.has(crop.harvestItemId)) issues.push(`crop ${crop.id}: harvestItemId does not exist: ${crop.harvestItemId}`);
+    for (const [index, graphic] of (crop.graphicStages ?? []).entries()) {
+      capture(issues, () => validateOptionalResource(`crop ${crop.id}: graphicStages[${index}].resourceId`, graphic.resourceId, resourceIds));
+    }
   }
 }
 

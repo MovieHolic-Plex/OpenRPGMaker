@@ -56,6 +56,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
             rerender();
           }),
           consumptionLimitField(record),
+          farmToolField(record),
         ]),
         ...typePanels(record),
       ],
@@ -362,6 +363,12 @@ function consumptionLimitField(record: ItemRecord): HTMLElement {
     updateDatabaseRecord("items", record.id, { consumptionLimit: parseConsumptionLimit(select.value) });
   });
   return field("사용 횟수", select);
+}
+
+function farmToolField(record: ItemRecord): HTMLElement {
+  return selectLiteral("농사 도구", "db-field-item-farm-tool", record.farmTool ?? "", ["", "hoe", "wateringCan"] as const, (farmTool) => {
+    updateDatabaseRecord("items", record.id, { farmTool: farmTool || undefined });
+  });
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onInput: (value: boolean) => void): HTMLElement {

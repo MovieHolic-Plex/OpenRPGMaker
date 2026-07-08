@@ -22,6 +22,7 @@ import { recordFollowerPlayerStep } from "@/player/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
+import { interactWithFarmPlot } from "@/player/farming";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -36,6 +37,8 @@ type ActionEventSceneContext = Pick<
   | "tileY"
 > & {
   readonly eventSprites: { get(eventId: string): AutonomousNpcSprite | undefined };
+  refreshRuntimeSurfaces?(): void;
+  syncRuntimeState?(): void;
 };
 
 export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void {
@@ -242,18 +245,35 @@ export function handleAction(scene: ActionEventSceneContext): void {
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
   const key = `${tx},${ty}`;
-  if (key === scene.lastActionTargetKey) return;
-  scene.lastActionTargetKey = key;
   const event = findRuntimeEventInScene(scene, tx, ty, "action");
   if (event) {
+    if (key === scene.lastActionTargetKey) return;
+    scene.lastActionTargetKey = key;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
     return;
   }
+  if (tryFarmInteraction(scene, tx, ty)) return;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
-  if (underfoot) void scene.runEvent(underfoot.event.id);
+  if (underfoot) {
+    const underfootKey = `${scene.tileX},${scene.tileY}`;
+    if (underfootKey === scene.lastActionTargetKey) return;
+    scene.lastActionTargetKey = underfootKey;
+    void scene.runEvent(underfoot.event.id);
+    return;
+  }
+  void tryFarmInteraction(scene, scene.tileX, scene.tileY);
+}
+
+function tryFarmInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {
+  const result = interactWithFarmPlot(store.getCurrent(), scene.session, scene.map, x, y);
+  if (result.kind === "ignored") return false;
+  scene.lastActionTargetKey = "";
+  scene.refreshRuntimeSurfaces?.();
+  scene.syncRuntimeState?.();
+  return true;
 }
 
 function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): void {

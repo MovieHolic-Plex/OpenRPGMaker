@@ -16,11 +16,12 @@ import {
   type TimeSystemConfig,
 } from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings, TypeChartRecord } from "@/project/types";
+import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains" | "monsterSpecies">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains" | "monsterSpecies" | "crops">>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -38,6 +39,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     battleCommands: normalizeGlobalBattleCommands(database.battleCommands),
     battlerAnimations: (database.battlerAnimations ?? []).map(normalizeBattlerAnimationRecord),
     monsterSpecies: (database.monsterSpecies ?? []).map(normalizeMonsterSpeciesRecord),
+    crops: (database.crops ?? []).map((crop) => normalizeCropRecord(crop as Partial<CropRecord> & Pick<CropRecord, "id" | "name">)),
   };
 }
 
@@ -203,6 +205,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     occasionBattle: record.occasionBattle ?? (record.occasion === "battle" || record.occasion === "always"),
     seedParameterBonuses: normalizeSeedBonuses(record.seedParameterBonuses),
     equipmentProfile: normalizeItemEquipmentProfile(record.equipmentProfile),
+    farmTool: isFarmTool(record.farmTool) ? record.farmTool : undefined,
     captureProfile: normalizeCaptureProfile(record.captureProfile),
   };
 }

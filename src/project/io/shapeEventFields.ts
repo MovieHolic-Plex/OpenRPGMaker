@@ -34,6 +34,7 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.encounterTable !== undefined) validateEncounterTable(`map ${id}.encounterTable`, map.encounterTable);
     if (map.fieldSpawns !== undefined) validateFieldSpawns(`map ${id}.fieldSpawns`, map.fieldSpawns);
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
+    if (map.farmableArea !== undefined) validateRectArray(`map ${id}.farmableArea`, map.farmableArea);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
       validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
@@ -94,6 +95,10 @@ function validateFieldSpawns(label: string, value: unknown): void {
 }
 
 function validateSafeZones(label: string, value: unknown): void {
+  validateRectArray(label, value);
+}
+
+function validateRectArray(label: string, value: unknown): void {
   for (const [index, rectValue] of requireArray(label, value).entries()) {
     validateRect(`${label}[${index}]`, rectValue);
   }

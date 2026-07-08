@@ -5,6 +5,7 @@ export type ActorId = string;
 export type ClassId = string;
 export type SkillId = string;
 export type ItemId = string;
+export type CropId = string;
 export type EquipmentId = string;
 export type EnemyId = string;
 export type TroopId = string;

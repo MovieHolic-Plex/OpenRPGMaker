@@ -68,6 +68,7 @@ import {
   type GameTime,
   type TimePhase,
 } from "@/project/gameTime";
+import { advanceFarmPlotsForDay, cropStageAt, interactWithFarmPlot } from "@/player/farming";
 
 const TICK_MS = 16;
 
@@ -107,6 +108,8 @@ export type SceneExpectStep = {
   mapId?: string;
   gameTimeAt?: Partial<GameTime>;
   timePhase?: TimePhase;
+  cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
+  inventoryCount?: { itemId: string; count: number } | Record<string, number>;
 };
 
 export interface SceneTestInput {
@@ -142,6 +145,7 @@ export interface SceneTestResult {
     readonly cutsceneLocked: boolean;
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
+    readonly inventory: Record<string, number>;
     readonly playTimeSeconds: number;
     readonly gameTime?: GameTime;
     readonly timePhase?: TimePhase;
@@ -339,9 +343,20 @@ function runInteractStep(state: RunnerState): string | null {
     state.session.y + delta.y,
     "action"
   );
-  const target = front ?? findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
-  if (!target) return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
-  return runEventView(state, target);
+  if (front) return runEventView(state, front);
+  const farmFront = interactWithFarmPlot(state.project, state.session, map, state.session.x + delta.x, state.session.y + delta.y);
+  if (farmFront.kind !== "ignored") {
+    state.log.push(`farm ${farmFront.kind}: ${map.id} (${farmFront.x},${farmFront.y})${farmFront.cropId ? ` ${farmFront.cropId}` : ""}`);
+    return null;
+  }
+  const underfoot = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
+  if (underfoot) return runEventView(state, underfoot);
+  const farmUnderfoot = interactWithFarmPlot(state.project, state.session, map, state.session.x, state.session.y);
+  if (farmUnderfoot.kind !== "ignored") {
+    state.log.push(`farm ${farmUnderfoot.kind}: ${map.id} (${farmUnderfoot.x},${farmUnderfoot.y})${farmUnderfoot.cropId ? ` ${farmUnderfoot.cropId}` : ""}`);
+    return null;
+  }
+  return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
 }
 
 function runRetryCheckpointStep(state: RunnerState): string | null {
@@ -759,16 +774,20 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
   if (!state.session.gameTime) return null;
   let remaining = Math.max(0, Math.trunc(minutes));
   while (remaining > 0) {
-    const untilEnd = minutesUntilDayEnd(state.session.gameTime, system);
+    const currentTime: GameTime | undefined = state.session.gameTime;
+    if (!currentTime) return null;
+    const untilEnd = minutesUntilDayEnd(currentTime, system);
     if (untilEnd > remaining) {
-      state.session.gameTime = advanceGameTime(state.session.gameTime, remaining, system).time;
+      state.session.gameTime = advanceGameTime(currentTime, remaining, system).time;
       return null;
     }
     if (system.forceSleep) return sleepUntilMorningForRunner(state);
     remaining -= untilEnd;
     const hookFailure = runDayEndHookForRunner(state);
     if (hookFailure) return hookFailure;
-    state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
+    const nextTime: GameTime = sleepGameTimeUntilMorning(currentTime, system).time;
+    advanceFarmPlotsForDay(state.project, state.session, 1, nextTime.season);
+    state.session.gameTime = nextTime;
     if (untilEnd <= 0) remaining = 0;
   }
   return null;
@@ -789,7 +808,9 @@ function sleepUntilMorningForRunner(state: RunnerState): string | null {
   if (!state.session.gameTime) return null;
   const hookFailure = runDayEndHookForRunner(state);
   if (hookFailure) return hookFailure;
-  state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
+  const nextTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
+  advanceFarmPlotsForDay(state.project, state.session, 1, nextTime.season);
+  state.session.gameTime = nextTime;
   state.timeFixedAccumulatorMs = 0;
   state.timeMinuteAccumulator = 0;
   state.log.push(`sleep until morning: ${state.session.gameTime.season} ${state.session.gameTime.day} ${state.session.gameTime.hour}:00`);
@@ -983,6 +1004,38 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.timePhase !== undefined) {
     const actual = timePhaseFor(state.session.gameTime);
     if (actual !== step.timePhase) return `시간대: 기대 ${step.timePhase}, 실제 ${actual ?? "(none)"}`;
+  }
+  if (step.cropStageAt) {
+    const cropFailure = expectCropStageAt(state, step.cropStageAt);
+    if (cropFailure) return cropFailure;
+  }
+  if (step.inventoryCount) {
+    const inventoryFailure = expectInventoryCount(state, step.inventoryCount);
+    if (inventoryFailure) return inventoryFailure;
+  }
+  return null;
+}
+
+function expectCropStageAt(
+  state: RunnerState,
+  expected: { readonly x: number; readonly y: number; readonly stage: number; readonly mapId?: string }
+): string | null {
+  const mapId = expected.mapId ?? state.session.currentMapId;
+  const actual = cropStageAt(state.session, mapId, expected.x, expected.y);
+  return actual === expected.stage ? null : `작물 단계 ${mapId} (${expected.x},${expected.y}): 기대 ${expected.stage}, 실제 ${actual ?? "(none)"}`;
+}
+
+function expectInventoryCount(
+  state: RunnerState,
+  expected: NonNullable<SceneExpectStep["inventoryCount"]>
+): string | null {
+  if ("itemId" in expected && typeof expected.itemId === "string") {
+    const actual = state.session.inventory[expected.itemId] ?? 0;
+    return actual === expected.count ? null : `인벤토리 ${expected.itemId}: 기대 ${expected.count}, 실제 ${actual}`;
+  }
+  for (const [itemId, count] of Object.entries(expected)) {
+    const actual = state.session.inventory[itemId] ?? 0;
+    if (actual !== count) return `인벤토리 ${itemId}: 기대 ${count}, 실제 ${actual}`;
   }
   return null;
 }
@@ -1384,6 +1437,7 @@ function result(
       cutsceneLocked: isCutsceneInputLocked(session),
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
+      inventory: { ...session.inventory },
       playTimeSeconds: session.playTimeSeconds,
       gameTime: session.gameTime,
       timePhase: timePhaseFor(session.gameTime),

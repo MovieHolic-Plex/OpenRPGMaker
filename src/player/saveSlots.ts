@@ -19,6 +19,7 @@ import {
   isBooleanRecord,
   isLightingState,
   isGameTime,
+  isFarmPlotsRecord,
   isMonsterInstancesRecord,
   isNumberRecord,
   isPictureRecord,
@@ -81,6 +82,7 @@ export type SaveSnapshot = {
     readonly camera?: PlaySession["camera"];
     readonly lighting?: PlaySession["lighting"];
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
+    readonly farmPlots?: PlaySession["farmPlots"];
     readonly followers?: PlaySession["followers"];
     readonly followerTrail?: PlaySession["followerTrail"];
     readonly currentMapId: string;
@@ -152,6 +154,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       camera: structuredClone(session.camera),
       lighting: structuredClone(normalizeLightingState(session.lighting)),
       npcTravelStates: structuredClone(session.npcTravelStates),
+      farmPlots: structuredClone(session.farmPlots ?? {}),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
@@ -242,6 +245,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.camera) session.camera = structuredClone(snapshot.session.camera);
   if (snapshot.session.lighting) session.lighting = normalizeLightingState(snapshot.session.lighting);
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
+  session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
@@ -349,6 +353,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       camera: isRuntimeCameraState(session.camera) ? session.camera : undefined,
       lighting: isLightingState(session.lighting) ? normalizeLightingState(session.lighting) : undefined,
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
+      farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
       currentMapId: session.currentMapId,

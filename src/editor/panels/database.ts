@@ -1,5 +1,6 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
+import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
@@ -25,6 +26,7 @@ export type DatabaseTab =
   | "battleScreen"
   | "battlerAnimations"
   | "commonEvents"
+  | "crops"
   | "elements"
   | "monsterSpecies"
   | "system"
@@ -44,6 +46,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템", testid: "db-tab-items" },
+  { id: "crops", label: "작물", testid: "db-tab-crops" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "Species", testid: "db-tab-monster-species" },
@@ -63,6 +66,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "classes",
   "skills",
   "items",
+  "crops",
   "equipment",
   "enemies",
   "monsterSpecies",
@@ -192,6 +196,9 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       return;
     case "monsterSpecies":
       renderMonsterSpeciesTab(body, rerender);
+      return;
+    case "crops":
+      renderCropTab(body, rerender);
       return;
     case "switches":
       renderSwitchesTab(body, rerender);

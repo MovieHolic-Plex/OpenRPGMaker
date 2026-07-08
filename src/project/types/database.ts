@@ -3,6 +3,7 @@ import type {
   BattleAnimationId,
   BattlerAnimationId,
   ClassId,
+  CropId,
   EnemyId,
   EquipmentId,
   ItemId,
@@ -12,7 +13,7 @@ import type {
   TroopId,
 } from "./base";
 import type { Command, Condition } from "./events";
-import type { TimeSystemConfig } from "../gameTime";
+import type { Season, TimeSystemConfig } from "../gameTime";
 
 export interface ActorRecord {
   id: ActorId;
@@ -225,12 +226,15 @@ export interface ItemRecord {
   occasionBattle: boolean;
   seedParameterBonuses: EquipmentStatBonuses;
   equipmentProfile: ItemEquipmentProfile;
+  farmTool?: FarmTool;
   captureProfile?: ItemCaptureProfile;
 }
 
 export interface ItemCaptureProfile {
   multiplier: number;
 }
+
+export type FarmTool = "hoe" | "wateringCan";
 
 export type ItemScope = "none" | "ally" | "allAllies" | "enemy";
 export type ItemType =
@@ -360,6 +364,32 @@ export interface MonsterSpeciesRecord {
   captureRate: number;
   skillsByLevel?: ActorLearnedSkill[];
   evolutions?: MonsterEvolutionRecord[];
+}
+
+export interface CropStageRecord {
+  days: number;
+}
+
+export interface CropGraphicStage {
+  resourceId?: string;
+  frame?: string | number;
+  label?: string;
+}
+
+export interface CropRegrowRecord {
+  days: number;
+}
+
+export interface CropRecord {
+  id: CropId;
+  name: string;
+  seedItemId: ItemId;
+  harvestItemId: ItemId;
+  harvestCount: number;
+  stages: CropStageRecord[];
+  seasons: Season[];
+  regrow?: CropRegrowRecord;
+  graphicStages?: CropGraphicStage[];
 }
 
 export interface MonsterEvolutionRecord {
@@ -581,6 +611,7 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   battleCommands?: DatabaseBattleCommandRecord[];
   battlerAnimations?: BattlerAnimationRecord[];
   monsterSpecies?: MonsterSpeciesRecord[];
+  crops?: CropRecord[];
 }
 
 export interface TitleScreenLayout {

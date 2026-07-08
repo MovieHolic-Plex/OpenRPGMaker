@@ -60,6 +60,7 @@ export {
 export {
   createBlankProject,
   createDbExtractedHouseTemplateProject,
+  createFarmingDemoProject,
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createMarketTownProject,
