@@ -3,6 +3,7 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { searchResources, type ResourceSearchKind } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -243,6 +244,31 @@ const findSwitchUsage: ToolDefinition = {
 
 const RESOURCE_KINDS: readonly ResourceSearchKind[] = ["tile", "charset", "backdrop", "bgm", "se"];
 
+const listNpcGraphics: ToolDefinition = {
+  name: "list_npc_graphics",
+  description: "NPC/캐릭터셋 그래픽 후보를 조회한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      query: { type: "string", description: "선택 검색어. 생략하면 기본 NPC 후보를 반환한다." },
+    },
+  },
+  run(_project, args): ToolExecResult {
+    const query = typeof args.query === "string" ? args.query : undefined;
+    const matches = queryNpcGraphics(query, 20).map((match) => ({
+      textureKey: match.entry.textureKey,
+      characterIndex: match.entry.characterIndex,
+      label: match.entry.label,
+      gender: match.entry.gender,
+      age: match.entry.age,
+      tags: match.entry.tags,
+    }));
+    const label = query && query.trim().length > 0 ? `"${query}"` : "기본";
+    return { summary: `NPC 그래픽 ${matches.length}개 조회(${label})`, data: { matches } };
+  },
+};
+
 const listResources: ToolDefinition = {
   name: "list_resources",
   description: "리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/backdrop/bgm/se.",
@@ -440,6 +466,7 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   findEvents,
   getEvent,
   findSwitchUsage,
+  listNpcGraphics,
   listResources,
   queryTiles,
   getDatabaseRecords,

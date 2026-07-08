@@ -1,6 +1,7 @@
 // editor/tools/villageBuilder.ts
 // 약한 LLM은 테마/이름/대사만 고르고, 50x50 마을 배치·시공은 전부 결정론 코드가 맡는다.
 
+import { findCharsetSemantic, type CharsetSemanticEntry } from "@/assets/charsetSemantics";
 import { stampFootprintHouseKit, type FootprintWing, type HouseKitId } from "@/editor/houseKit";
 import { createHouseDoorEvent, createHouseInteriorMap } from "@/editor/houseInteriors";
 import { appendToTree } from "@/editor/mapTreeActions";
@@ -25,6 +26,26 @@ const DOOR_TOP_TILE = 116;
 const DOOR_BOTTOM_TILE = 146;
 const WINDOW_TILES = new Set<number>([85, 87]);
 const ROAD_TILES = new Set<number>(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
+const VILLAGE_NPC_GRAPHIC_REFS: readonly (readonly [textureKey: string, characterIndex: number])[] = [
+  ["tex_easyrpg_charset_people1", 0],
+  ["tex_easyrpg_charset_people2", 0],
+  ["tex_easyrpg_charset_people3", 4],
+  ["tex_easyrpg_charset_people4", 3],
+  ["tex_easyrpg_charset_people5", 6],
+  ["tex_easyrpg_charset_people1", 1],
+  ["tex_easyrpg_charset_people2", 1],
+  ["tex_easyrpg_charset_people3", 6],
+  ["tex_easyrpg_charset_people4", 6],
+  ["tex_easyrpg_charset_people5", 1],
+  ["tex_easyrpg_charset_people1", 3],
+  ["tex_easyrpg_charset_people2", 3],
+  ["tex_easyrpg_charset_people5", 3],
+  ["tex_easyrpg_charset_people1", 5],
+  ["tex_easyrpg_charset_people5", 5],
+  ["tex_easyrpg_charset_people1", 6],
+  ["tex_easyrpg_charset_people5", 7],
+  ["tex_easyrpg_charset_people1", 7],
+];
 
 interface Rect {
   readonly x: number;
@@ -527,20 +548,31 @@ function placeVillageNpcs(
     { x: plaza.centerX - 1, y: plaza.centerRow },
     { x: plaza.centerX + 1, y: plaza.centerRow },
   ];
+  const graphics = seededVillageNpcGraphics(seed);
   for (let index = 0; index < placements.length; index += 1) {
     const point = placements[index] as Point;
     const text = npcText(index, overrides);
+    const graphic = graphics[index % graphics.length] as CharsetSemanticEntry;
     runNested(placeNpcTool, draft, {
       mapId: map.id,
       x: point.x,
       y: point.y,
       name: text.name,
-      graphic: { query: "주민" },
+      graphic: { textureKey: graphic.textureKey, characterIndex: graphic.characterIndex },
       movement: "random",
       pages: [{ lines: text.lines }],
       id: uniqueEventId(draft, map.id, seed, index),
     }, warnings);
   }
+}
+
+function seededVillageNpcGraphics(seed: number): readonly CharsetSemanticEntry[] {
+  const entries = VILLAGE_NPC_GRAPHIC_REFS.map(([textureKey, characterIndex]) => findCharsetSemantic(textureKey, characterIndex))
+    .filter((entry): entry is CharsetSemanticEntry => entry !== undefined);
+  if (entries.length === 0) throw new Error("마을 NPC 그래픽 후보가 비어 있습니다.");
+  const rng = mulberry32((seed ^ 0x6d2b79f5) >>> 0);
+  const offset = Math.floor(rng() * entries.length);
+  return [...entries.slice(offset), ...entries.slice(0, offset)];
 }
 
 function npcPointNearHouseFront(map: GameMap, house: BuiltHouse, index: number, occupied: Set<string>): Point {

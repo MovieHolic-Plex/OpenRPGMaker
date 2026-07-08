@@ -1,9 +1,9 @@
 // editor/tools/eventCompile.ts
 // place_npc 등이 받는 고수준 입력(SimplePage/graphic.query)을 EventPage/graphic으로 컴파일한다.
-// graphic.query 해석은 0-4 시맨틱(charsetSemantics)에 위임한다.
-// (resourceSearch.ts가 도입되면 이 모듈의 resolveGraphic만 교체하면 된다.)
+// graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { npcGraphicExampleLabels, resolveNpcGraphic } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
@@ -105,23 +105,17 @@ export function charsetGraphic(textureKey: string, characterIndex: number | unde
   };
 }
 
-// query 문자열을 시맨틱 검색(resourceSearch)으로 해석해 charset 그래픽을 만든다.
-// 결과 id 형식: "charset:<textureKey>:<characterIndex>".
+// query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
 export function resolveGraphicQuery(query: string): EventPageGraphic {
-  const top = searchResources("charset", query)[0];
-  if (!top) {
+  const entry = resolveNpcGraphic(query);
+  if (!entry) {
+    const examples = npcGraphicExampleLabels(12).join(", ");
     throw new ToolError(
-      `그래픽 검색어에 맞는 charset 리소스를 찾지 못했습니다: "${query}". list_resources(kind:"charset")로 후보를 조회하거나 graphic을 {textureKey, characterIndex}로 직접 지정하세요.`,
+      `그래픽 검색어에 맞는 charset 리소스를 찾지 못했습니다: "${query}". 후보 라벨 예시: ${examples}. list_npc_graphics 또는 list_resources(kind:"charset")로 후보를 조회하거나 graphic을 {textureKey, characterIndex}로 직접 지정하세요.`,
       { code: "graphic-not-found" }
     );
   }
-  const parts = top.id.split(":");
-  const textureKey = parts[1];
-  const characterIndex = Number(parts[2]);
-  if (!textureKey || !Number.isInteger(characterIndex)) {
-    throw new ToolError(`charset 검색 결과 형식이 올바르지 않습니다: ${top.id}`, { code: "graphic-not-found" });
-  }
-  return charsetGraphic(textureKey, characterIndex);
+  return charsetGraphic(entry.textureKey, entry.characterIndex);
 }
 
 // GraphicSpec을 EventPageGraphic으로 변환.

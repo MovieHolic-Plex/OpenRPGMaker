@@ -78,6 +78,7 @@ const NAME_DOMAIN_OVERRIDES: ReadonlyMap<string, ToolDomain> = new Map([
   ["find_events", "event"],
   ["get_event", "event"],
   ["find_switch_usage", "event"],
+  ["list_npc_graphics", "event"],
   ["get_database_records", "database"],
   ["query_tiles", "tile"],
   ["run_lint", "system"],

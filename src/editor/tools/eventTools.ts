@@ -90,7 +90,7 @@ const upsertEvent: ToolDefinition = {
 
 const placeNpc: ToolDefinition = {
   name: "place_npc",
-  description: "NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 반드시 유효 별칭만: villager|people|npc|human|사람|주민|actor|hero|animal|monster (자유 문구 예: 'old woman'은 실패한다). pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가 칸이면 실패.",
+  description: "NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가 칸이면 실패.",
   mode: "write",
   parameters: {
     type: "object",

@@ -7,6 +7,7 @@ import { allTools, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { ToolContext } from "@/editor/tools/types";
+import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 
 const NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 
@@ -109,6 +110,22 @@ describe("toolRegistry", () => {
     const matches = (result.data as { matches: Array<{ id: string; label: string }> }).matches;
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0]?.id.startsWith("charset:")).toBe(true);
+  });
+
+  it("list_npc_graphics가 자유 질의로 구조화 메타데이터를 반환한다", () => {
+    expect(allTools().map((tool) => tool.name)).toContain("list_npc_graphics");
+    expect(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("list_npc_graphics");
+    const project = createEmptyToolProject();
+    const ctx: ToolContext = { project };
+    const result = runTool(ctx, "list_npc_graphics", { query: "old woman" }, {});
+    expect(result.ok, result.summary).toBe(true);
+    const matches = (result.data as {
+      matches: Array<{ textureKey: string; characterIndex: number; label: string; gender?: string; age?: string; tags: readonly string[] }>;
+    }).matches;
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches[0]).toMatchObject({ gender: "female", age: "elder" });
+    expect(matches[0]?.textureKey).toMatch(/^tex_easyrpg_charset_/);
+    expect(typeof matches[0]?.characterIndex).toBe("number");
   });
 
   it("place_npc의 graphic.query가 charset 시맨틱으로 해석된다", () => {

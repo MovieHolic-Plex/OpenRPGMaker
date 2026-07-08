@@ -6,6 +6,8 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import type { MapTreeNode } from "@/project/types";
@@ -123,6 +125,24 @@ describe("build_village", () => {
     expect(different.lowerTiles).not.toEqual(first.lowerTiles);
   });
 
+  it("NPC 그래픽을 주민형 후보에서 다양하게 순환 배정하고 같은 seed에서 고정한다", () => {
+    const first = buildVillage(7);
+    const second = buildVillage(7);
+    const firstKeys = villageNpcGraphicKeys(first.context, first.data.mapId);
+    const secondKeys = villageNpcGraphicKeys(second.context, second.data.mapId);
+    expect(secondKeys).toEqual(firstKeys);
+    expect(new Set(firstKeys).size).toBeGreaterThan(4);
+    expect(new Set(firstKeys.map((key) => key.split(":")[0])).size).toBeGreaterThanOrEqual(4);
+    expect(firstKeys.every((key) => /^tex_easyrpg_charset_people[1-5]:/.test(key))).toBe(true);
+
+    const entries = firstKeys.map((key) => {
+      const [textureKey, indexText] = key.split(":");
+      return findCharsetSemantic(textureKey ?? "", Number(indexText));
+    });
+    expect(new Set(entries.map((entry) => entry?.gender).filter(Boolean))).toEqual(new Set(["male", "female"]));
+    expect(new Set(entries.map((entry) => entry?.age).filter(Boolean)).size).toBeGreaterThanOrEqual(3);
+  });
+
   it("집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다", () => {
     const { context, data } = buildVillage(7);
     const map = context.project.maps[data.mapId];
@@ -226,6 +246,18 @@ describe("build_village", () => {
 function treeChildIds(root: MapTreeNode, parentId: string): string[] {
   const node = findTreeNode(root, parentId);
   return node?.children.map((child) => child.mapId) ?? [];
+}
+
+function villageNpcGraphicKeys(context: ToolContext, mapId: string): string[] {
+  const map = context.project.maps[mapId];
+  return map.events
+    .filter((event) => event.id.startsWith("ev_village_"))
+    .map((event) => {
+      const graphic = event.pages?.[0]?.graphic;
+      const textureKey = graphic?.sprite?.id ?? "";
+      const characterIndex = decodeCharsetFrameIndex(graphic?.pattern ?? 0).characterIndex;
+      return `${textureKey}:${characterIndex}`;
+    });
 }
 
 function findTreeNode(node: MapTreeNode, mapId: string): MapTreeNode | null {
