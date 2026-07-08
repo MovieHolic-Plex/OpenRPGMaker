@@ -2,7 +2,7 @@
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, MessageWindowSettings, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
 
@@ -261,6 +261,7 @@ export interface PlaySessionLike {
   removedEventIds?: RuntimeRemovedEventIds;
   spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
   camera?: RuntimeCameraSessionState;
+  lighting?: LightingState;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];

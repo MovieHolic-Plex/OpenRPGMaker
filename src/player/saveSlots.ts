@@ -16,6 +16,7 @@ import {
   isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
+  isLightingState,
   isNumberRecord,
   isPictureRecord,
   isRecord,
@@ -33,6 +34,7 @@ import {
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
+import { normalizeLightingState } from "@/player/lighting";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 export {
   createSystemShellState,
@@ -71,6 +73,7 @@ export type SaveSnapshot = {
     readonly removedEventIds?: PlaySession["removedEventIds"];
     readonly spawnedEvents?: PlaySession["spawnedEvents"];
     readonly camera?: PlaySession["camera"];
+    readonly lighting?: PlaySession["lighting"];
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
     readonly followers?: PlaySession["followers"];
     readonly followerTrail?: PlaySession["followerTrail"];
@@ -136,6 +139,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       removedEventIds: structuredClone(session.removedEventIds),
       spawnedEvents: structuredClone(session.spawnedEvents),
       camera: structuredClone(session.camera),
+      lighting: structuredClone(normalizeLightingState(session.lighting)),
       npcTravelStates: structuredClone(session.npcTravelStates),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
@@ -220,6 +224,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
   if (snapshot.session.spawnedEvents) session.spawnedEvents = structuredClone(snapshot.session.spawnedEvents);
   if (snapshot.session.camera) session.camera = structuredClone(snapshot.session.camera);
+  if (snapshot.session.lighting) session.lighting = normalizeLightingState(snapshot.session.lighting);
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
@@ -321,6 +326,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,
       spawnedEvents: isRuntimeSpawnedEventRecord(session.spawnedEvents) ? session.spawnedEvents : undefined,
       camera: isRuntimeCameraState(session.camera) ? session.camera : undefined,
+      lighting: isLightingState(session.lighting) ? normalizeLightingState(session.lighting) : undefined,
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,

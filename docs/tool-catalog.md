@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 104개 툴 — 쓰기 74, 읽기 30.
+> 총 105개 툴 — 쓰기 75, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -52,6 +52,7 @@
 | `script_cutscene` | `mapId: string`, `eventId?: string`, `x?: integer`, `y?: integer`, `trigger?: action\|auto\|parallel`, `beats: array`, `skippable?: boolean` | 한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. beat 종류: say{speaker,face,text\|lines}, moveActor{target:'player'\|eventId,moves,wait}, camera{mode:'pan\|follow\|fixed\|return',target\|x,y,durationMs,wait}, picture{action:'show\|move\|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm\|se\|fade\|stop',resourceId}, tint{color\|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. 예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]} |
 | `place_examine_hotspots` | `mapId: string`, `hotspots: array` | 조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다. |
 | `compile_puzzle` | `mapId: string`, `puzzleId: string`, `kind: switch-sequence\|password\|item-gate\|push-switches`, `onSolve: object`, `reset?: boolean`, `nodes?: array`, `order?: array`, `at?: object`, `name?: string`, `answer?: string`, `prompt?: string`, `requiredItemId?: string`, `consumeItem?: boolean`, `lockedMessage?: string`, `unlockedMessage?: string`, `plates?: array`, `all?: boolean` | 선언형 퍼즐을 이벤트로 컴파일한다. 공통 {mapId,puzzleId,kind,onSolve:{setSwitch?,beats?,message?},reset?}. kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다. |
+| `set_lighting_volume` | `mapId: string`, `ambient: number`, `color?: string`, `sources?: array`, `applyMode?: map\|event`, `area?: object` | 맵 또는 지정 영역에 암전/광원 설정을 한 번에 적용한다. applyMode='map'은 map.defaultLighting을 설정하고, applyMode='event'는 area 내부 칸마다 투명 playerTouch 이벤트를 생성한다. |
 | `define_ending` | `id: string`, `name: string`, `conditions: array`, `priority?: integer`, `epilogue?: array` | 프로젝트 엔딩을 선언한다. conditions는 switch/variable 조건 배열이며, triggerEnding은 조건을 만족한 엔딩 중 priority가 가장 높은 엔딩을 선택한다. epilogue는 script_cutscene beat 배열이다. |
 | `upsert_item` | `item: object` | 아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `upsert_enemy` | `enemy: object` | 적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
@@ -95,7 +96,7 @@
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
-| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId를 지원한다. |
+| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId를 지원한다. |
 | `get_project_summary` | (없음) | 제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다. |
 | `get_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다. |
 | `find_events` | `mapId?: string`, `nameContains?: string`, `commandKind?: string`, `referencesSwitch?: string` | 이벤트를 이름/커맨드 종류/스위치 참조로 검색한다. |

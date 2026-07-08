@@ -56,6 +56,9 @@ function buildKindIndex(): Map<string, CategoryVisual> {
   index.set("setEventGraphicPattern", groupVisual("맵/이동"));
   index.set("addFollower", groupVisual("맵/이동"));
   index.set("removeFollower", groupVisual("맵/이동"));
+  index.set("setLighting", groupVisual("화면/연출"));
+  index.set("addLight", groupVisual("화면/연출"));
+  index.set("removeLight", groupVisual("화면/연출"));
   index.set("checkpointSave", groupVisual("시스템/고급"));
   index.set("killPlayer", groupVisual("시스템/고급"));
   index.set("triggerEnding", groupVisual("시스템/고급"));

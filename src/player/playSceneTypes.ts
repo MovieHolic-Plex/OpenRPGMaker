@@ -7,6 +7,7 @@ import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
 import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, TransferTransition, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import type { LightingAmbientTransition } from "@/player/lighting";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
   down: 0,
@@ -113,8 +114,15 @@ export interface PlaySceneContext extends Phaser.Scene {
   playerRoute: PlayerRouteState | null;
   autonomousNPCs: Map<string, AutonomousMover>;
   runtimeTimers: Map<string, RuntimeTimer>;
+  lightingOverlayImage?: Phaser.GameObjects.Image;
+  lightingMaskTexture?: Phaser.Textures.CanvasTexture;
+  lightingMaskSignature: string;
+  lightingClockMs: number;
+  lightingFixedAccumulatorMs: number;
+  lightingTransition: LightingAmbientTransition | null;
+  lightingTransitionWaiters: Array<() => void>;
   getMapId(): MapId;
-  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean }): void;
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void;
   renderTiles(): void;
   syncRuntimeState(): void;
   refreshRuntimeSurfaces(): void;

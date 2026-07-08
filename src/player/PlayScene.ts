@@ -61,6 +61,8 @@ import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
+import type { LightingAmbientTransition } from "@/player/lighting";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -98,6 +100,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   playerRoute: PlayerRouteState | null = null;
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
+  lightingOverlayImage?: Phaser.GameObjects.Image;
+  lightingMaskTexture?: Phaser.Textures.CanvasTexture;
+  lightingMaskSignature = "";
+  lightingClockMs = 0;
+  lightingFixedAccumulatorMs = 0;
+  lightingTransition: LightingAmbientTransition | null = null;
+  lightingTransitionWaiters: Array<() => void> = [];
 
   constructor() {
     super({ key: "PlayScene" });
@@ -119,7 +128,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     this.session = this.initialSession(project);
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true });
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
@@ -129,6 +138,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.playerSprite.idleFrameFor("down")
     );
     placeCharacterSprite(this.player, "same");
+    installLightingLayer(this);
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     syncFollowerSprites(this);
     this.centerCamera();
@@ -150,13 +160,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
+    updateLighting(this, deltaMs);
   }
 
   getMapId(): MapId {
     return this.session.currentMapId;
   }
 
-  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean }): void {
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void {
     loadSceneMap(this, mapId, options);
     resetEncounterCounter();
   }
@@ -188,11 +199,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     refreshSceneRuntimeSurfaces(this);
     syncFollowerSprites(this);
     applyStoredCameraState(this);
+    syncLightingLayer(this);
   }
 
   centerCamera(): void {
     centerRuntimeCamera(this.cameras.main, this.map, this.player);
     applyStoredCameraState(this);
+    syncLightingLayer(this);
   }
 
   setInputEnabled(enabled: boolean): void {
@@ -272,7 +285,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.session = structuredClone(session);
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true });
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);

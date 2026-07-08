@@ -77,6 +77,12 @@ export function renderAdvancedCommandBody(
       return terminalHint("add-follower-editor", "동행 NPC를 세션에 추가합니다. actorId 또는 graphic을 사용합니다.");
     case "removeFollower":
       return terminalHint("remove-follower-editor", "동행 NPC를 이름으로 제거하거나 all=true로 모두 제거합니다.");
+    case "setLighting":
+      return setLightingBody(context, cmd);
+    case "addLight":
+      return addLightBody(context, cmd);
+    case "removeLight":
+      return removeLightBody(context, cmd);
     case "changeGold":
       return changeGoldBody(context, cmd);
     case "changeItem":
@@ -301,6 +307,93 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   return wrap;
 }
 
+function setLightingBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setLighting" }>): HTMLElement {
+  const ambient = numberInput(cmd.ambient, "암전 정도(0~1)", "set-lighting-ambient-input");
+  ambient.setAttribute("step", "0.05");
+  ambient.setAttribute("min", "0");
+  ambient.setAttribute("max", "1");
+  const color = textInput(cmd.color ?? "#000000", "마스크 색상", "set-lighting-color-input");
+  const transitionMs = numberInput(cmd.transitionMs ?? 0, "전환 시간(ms)", "set-lighting-transition-input");
+  transitionMs.setAttribute("min", "0");
+  const apply = () => {
+    const nextTransition = Math.max(0, parseInt(transitionMs.value, 10) || 0);
+    context.actions.replaceCommand(context.path, {
+      kind: "setLighting",
+      ambient: clamp01(parseFloat(ambient.value)),
+      color: color.value.trim() || undefined,
+      ...(nextTransition > 0 ? { transitionMs: nextTransition } : {}),
+    });
+  };
+  for (const control of [ambient, color, transitionMs]) {
+    control.addEventListener("change", apply);
+    control.addEventListener("input", apply);
+  }
+  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [ambient, color, transitionMs] })] });
+}
+
+function addLightBody(context: CommandEditContext, cmd: Extract<Command, { kind: "addLight" }>): HTMLElement {
+  const id = textInput(cmd.source.id, "광원 ID", "add-light-id-input");
+  const anchorKind = selectWithOptions(
+    [
+      { value: "player", label: "플레이어" },
+      { value: "event", label: "이벤트" },
+      { value: "position", label: "좌표" },
+    ],
+    lightAnchorKind(cmd.source.at),
+    "add-light-anchor-kind-select"
+  );
+  const eventId = textInput(cmd.source.at !== "player" && "eventId" in cmd.source.at ? cmd.source.at.eventId : "", "이벤트 ID", "add-light-event-id-input");
+  const x = numberInput(cmd.source.at !== "player" && "x" in cmd.source.at ? cmd.source.at.x : 0, "X", "add-light-x-input");
+  const y = numberInput(cmd.source.at !== "player" && "y" in cmd.source.at ? cmd.source.at.y : 0, "Y", "add-light-y-input");
+  const radius = numberInput(cmd.source.radius, "반경(타일)", "add-light-radius-input");
+  radius.setAttribute("min", "0");
+  const intensity = numberInput(cmd.source.intensity ?? 1, "세기(0~1)", "add-light-intensity-input");
+  intensity.setAttribute("step", "0.05");
+  intensity.setAttribute("min", "0");
+  intensity.setAttribute("max", "1");
+  const color = textInput(cmd.source.color ?? "", "광원 색상", "add-light-color-input");
+  const flicker = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.source.flicker === true), "add-light-flicker-select");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "addLight",
+      source: {
+        id: id.value.trim() || "light_1",
+        at: lightAnchorFromControls(anchorKind.value, eventId.value, x.value, y.value),
+        radius: Math.max(0, parseFloat(radius.value) || 0),
+        intensity: clamp01(parseFloat(intensity.value)),
+        ...(color.value.trim() ? { color: color.value.trim() } : {}),
+        ...(flicker.value === "true" ? { flicker: true } : {}),
+      },
+    });
+  };
+  for (const control of [id, anchorKind, eventId, x, y, radius, intensity, color, flicker]) {
+    control.addEventListener("change", apply);
+    control.addEventListener("input", apply);
+  }
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [id, anchorKind, eventId] }),
+    el("span", { class: "rich-form-row", children: [x, y, radius, intensity] }),
+    el("span", { class: "rich-form-row", children: [color, flicker] })
+  );
+  return wrap;
+}
+
+function removeLightBody(context: CommandEditContext, cmd: Extract<Command, { kind: "removeLight" }>): HTMLElement {
+  const all = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.all === true), "remove-light-all-select");
+  const id = textInput(cmd.id ?? "", "광원 ID", "remove-light-id-input");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "removeLight",
+      ...(all.value === "true" ? { all: true } : { id: id.value.trim() }),
+    });
+  };
+  all.addEventListener("change", apply);
+  id.addEventListener("change", apply);
+  id.addEventListener("input", apply);
+  return el("span", { class: "rich-command-form", children: [el("span", { class: "rich-form-row", children: [all, id] })] });
+}
+
 function endingBody(context: CommandEditContext, cmd: Extract<Command, { kind: "ending" }>): HTMLElement {
   const title = textInput(cmd.title, "엔딩 제목", "ending-title-input");
   const message = el("textarea", {
@@ -359,4 +452,21 @@ export function numberInput(value: number, title: string, testId: string): HTMLI
     value: String(value),
     dataset: { testid: testId },
   }) as HTMLInputElement;
+}
+
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(1, value));
+}
+
+function lightAnchorKind(anchor: Extract<Command, { kind: "addLight" }>["source"]["at"]): "player" | "event" | "position" {
+  if (anchor === "player") return "player";
+  if ("eventId" in anchor) return "event";
+  return "position";
+}
+
+function lightAnchorFromControls(kind: string, eventId: string, xValue: string, yValue: string): Extract<Command, { kind: "addLight" }>["source"]["at"] {
+  if (kind === "player") return "player";
+  if (kind === "event") return { eventId: eventId.trim() };
+  return { x: parseInt(xValue, 10) || 0, y: parseInt(yValue, 10) || 0 };
 }

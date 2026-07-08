@@ -72,6 +72,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "checkpointSave":
     case "killPlayer":
     case "removeFollower":
+    case "setLighting":
+    case "addLight":
+    case "removeLight":
     case "gameOver":
     case "ending":
     case "returnToTitle":

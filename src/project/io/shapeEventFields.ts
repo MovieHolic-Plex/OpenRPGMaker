@@ -1,5 +1,6 @@
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateCommandArray, validateConditionShape, validateMoveRoute } from "./shapeCommandFields";
+import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
 
 export function validateCommonEvents(value: unknown): void {
@@ -28,6 +29,7 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
     if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
+    if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
       validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
     }

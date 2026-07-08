@@ -62,6 +62,9 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
   addFollower: { kind: "addFollower", actorId: "actor1", name: "동행자" },
   removeFollower: { kind: "removeFollower", all: true },
+  setLighting: { kind: "setLighting", ambient: 0.8, color: "#000000", transitionMs: 0 },
+  addLight: { kind: "addLight", source: { id: "light1", at: "player", radius: 4, intensity: 1, flicker: true } },
+  removeLight: { kind: "removeLight", all: true },
   showPicture: { kind: "showPicture", pictureId: "pic1", resourceId: "res1", x: 0, y: 0 },
   erasePicture: { kind: "erasePicture", pictureId: "pic1" },
   playAudio: { kind: "playAudio", resourceId: "res1", loop: false },
@@ -124,6 +127,7 @@ function mkSession(): PlaySessionLike {
     y: 0,
     audio: {},
     pictures: {},
+    lighting: { ambient: 0, sources: [] },
   };
 }
 

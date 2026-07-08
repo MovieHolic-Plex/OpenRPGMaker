@@ -16,6 +16,7 @@ import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { TILE_TOOLS_V2 } from "@/editor/tools/v2";
 import { HOUSE_KIT_TOOLS } from "@/editor/tools/houseKitTools";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "@/editor/tools/v3";
+import { LIGHTING_TOOLS } from "@/editor/tools/lightingTools";
 import { VILLAGE_TOOLS } from "@/editor/tools/villageBuilder";
 import { PALETTE_PRESET_TOOLS } from "@/editor/tools/palettePresetTools";
 import { PLAY_TOOLS } from "@/editor/tools/playTools";
@@ -51,6 +52,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   ...PLACEMENT_CATEGORIES,
   { label: "이벤트/NPC", tools: EVENT_TOOLS },
   { label: "조사/퍼즐", tools: INVESTIGATION_TOOLS },
+  { label: "조명/호러", tools: LIGHTING_TOOLS },
   { label: "엔딩", tools: ENDING_TOOLS },
   { label: "데이터베이스", tools: DB_TOOLS },
   { label: "세계관", tools: WORLD_TOOLS },

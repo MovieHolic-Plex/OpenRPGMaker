@@ -14,6 +14,7 @@ import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneContr
 import { saveSessionCheckpoint } from "@/player/checkpoints";
 import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
 import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
+import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -490,6 +491,25 @@ export function executeCommand(
       return resumeNext(frame);
     case "removeFollower":
       removeFollowerFromSession(state.session as PlaySession, command);
+      return resumeNext(frame);
+    case "setLighting": {
+      const transitionMs = Math.max(0, Math.round(command.transitionMs ?? 0));
+      if (transitionMs > 0) {
+        return pause("setLighting", {
+          kind: "setLighting",
+          ambient: command.ambient,
+          color: command.color,
+          transitionMs,
+        });
+      }
+      setSessionLighting(state.session, command);
+      return resumeNext(frame);
+    }
+    case "addLight":
+      addSessionLight(state.session, command.source);
+      return resumeNext(frame);
+    case "removeLight":
+      removeSessionLight(state.session, command);
       return resumeNext(frame);
     case "setFlag":
       state.session.flags[command.flag] = command.value;

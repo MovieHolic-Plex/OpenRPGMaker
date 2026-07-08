@@ -1,5 +1,6 @@
 import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import { validateLightSource } from "./shapeLightingFields";
 
 export function validateCommandArray(label: string, value: unknown): void {
   for (const [index, command] of requireArray(label, value).entries()) {
@@ -103,6 +104,18 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "removeFollower":
       if (command.name !== undefined) requireString(`${label}.name`, command.name);
+      if (command.all !== undefined) requireBoolean(`${label}.all`, command.all);
+      return;
+    case "setLighting":
+      requireNumber(`${label}.ambient`, command.ambient);
+      if (command.color !== undefined) requireString(`${label}.color`, command.color);
+      if (command.transitionMs !== undefined) requireNumber(`${label}.transitionMs`, command.transitionMs);
+      return;
+    case "addLight":
+      validateLightSource(`${label}.source`, command.source);
+      return;
+    case "removeLight":
+      if (command.id !== undefined) requireString(`${label}.id`, command.id);
       if (command.all !== undefined) requireBoolean(`${label}.all`, command.all);
       return;
     case "enterHeroName": {

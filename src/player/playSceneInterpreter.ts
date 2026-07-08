@@ -23,6 +23,7 @@ import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { applyCameraControl } from "@/player/playSceneCamera";
+import { applyLightingStep } from "@/player/playSceneLighting";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 import {
   CUTSCENE_END_LABEL,
@@ -284,6 +285,9 @@ async function consumeBlockingStep(
       return resumeAfterSurface(scene, interpreter);
     case "cameraControl":
       await applyCameraControl(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "setLighting":
+      await applyLightingStep(scene, step);
       return resumeAfterSurface(scene, interpreter);
     case "spawnEvent":
       refreshSpawnedEvent(scene, step.eventId);

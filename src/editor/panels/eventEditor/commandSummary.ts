@@ -186,6 +186,13 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
   addFollower: (cmd) => commandLine("동행자 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
   removeFollower: (cmd) => commandLine("동행자 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
+  setLighting: (cmd) => commandLine(
+    "조명 설정",
+    valuePart(cmd.ambient.toFixed(2)),
+    ...(cmd.transitionMs ? [plainPart(" / "), valuePart(`${cmd.transitionMs}ms`)] : [])
+  ),
+  addLight: (cmd) => commandLine("광원 추가", valuePart(cmd.source.id), plainPart(" / "), valuePart(lightAnchorSummary(cmd.source.at)), plainPart(" r"), valuePart(String(cmd.source.radius))),
+  removeLight: (cmd) => commandLine("광원 제거", valuePart(cmd.all === true ? "전체" : cmd.id || "id 없음")),
   showPicture: (cmd) => commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
   erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
@@ -272,6 +279,12 @@ function transferDirectionSummary(direction: "retain" | "up" | "right" | "down" 
     case "left":
       return "왼쪽";
   }
+}
+
+function lightAnchorSummary(anchor: Extract<Command, { kind: "addLight" }>["source"]["at"]): string {
+  if (anchor === "player") return "플레이어";
+  if ("eventId" in anchor) return `이벤트 ${anchor.eventId}`;
+  return `(${anchor.x},${anchor.y})`;
 }
 
 function tileLayerSummary(layer: "lower" | "upper"): string {

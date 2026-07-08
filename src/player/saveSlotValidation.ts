@@ -1,4 +1,4 @@
-import type { ActorInitialEquipment, ActorParameterKey } from "@/project/types";
+import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type {
@@ -96,6 +96,32 @@ export function isRuntimeCameraState(value: unknown): value is RuntimeCameraSess
     optionalFiniteNumber(value.offsetY) &&
     optionalFiniteNumber(value.zoom)
   );
+}
+
+export function isLightingState(value: unknown): value is LightingState {
+  if (!isRecord(value)) return false;
+  if (typeof value.ambient !== "number" || !Number.isFinite(value.ambient)) return false;
+  if (value.color !== undefined && typeof value.color !== "string") return false;
+  if (!Array.isArray(value.sources)) return false;
+  return value.sources.every(isLightSource);
+}
+
+function isLightSource(value: unknown): value is LightSource {
+  if (!isRecord(value)) return false;
+  if (typeof value.id !== "string") return false;
+  if (!isLightAnchor(value.at)) return false;
+  if (typeof value.radius !== "number" || !Number.isFinite(value.radius)) return false;
+  if (value.intensity !== undefined && (typeof value.intensity !== "number" || !Number.isFinite(value.intensity))) return false;
+  if (value.color !== undefined && typeof value.color !== "string") return false;
+  if (value.flicker !== undefined && typeof value.flicker !== "boolean") return false;
+  return true;
+}
+
+function isLightAnchor(value: unknown): value is LightSource["at"] {
+  if (value === "player") return true;
+  if (!isRecord(value)) return false;
+  if (typeof value.eventId === "string") return true;
+  return typeof value.x === "number" && Number.isFinite(value.x) && typeof value.y === "number" && Number.isFinite(value.y);
 }
 
 function isRuntimeCameraTarget(value: unknown): value is RuntimeCameraTarget {

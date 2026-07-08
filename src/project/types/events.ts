@@ -105,6 +105,26 @@ export type FaceGraphic = {
   readonly flipHorizontally: boolean;
 };
 
+export type LightSourceAnchor =
+  | { readonly x: number; readonly y: number }
+  | { readonly eventId: string }
+  | "player";
+
+export type LightSource = {
+  readonly id: string;
+  readonly at: LightSourceAnchor;
+  readonly radius: number;
+  readonly intensity?: number;
+  readonly color?: string;
+  readonly flicker?: boolean;
+};
+
+export type LightingState = {
+  readonly ambient: number;
+  readonly color?: string;
+  readonly sources: readonly LightSource[];
+};
+
 export type Command =
   | { kind: "text"; speaker?: string; body: string }
   | ({ kind: "changeFace" } & FaceGraphic)
@@ -158,6 +178,9 @@ export type Command =
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
   | { kind: "addFollower"; actorId?: ActorId; graphic?: EventPageGraphic; name?: string }
   | { kind: "removeFollower"; name?: string; all?: boolean }
+  | { kind: "setLighting"; ambient: number; color?: string; transitionMs?: number }
+  | { kind: "addLight"; source: LightSource }
+  | { kind: "removeLight"; id?: string; all?: boolean }
   | {
       kind: "showPicture";
       pictureId: string;

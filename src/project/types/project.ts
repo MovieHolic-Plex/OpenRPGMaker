@@ -23,6 +23,7 @@ import type {
   ConditionV1,
   GameEvent,
   Trigger,
+  LightingState,
 } from "./events";
 
 export interface GameMap {
@@ -43,6 +44,8 @@ export interface GameMap {
   troopIds?: TroopId[];
   // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
   safeZones?: Rect[];
+  // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.
+  defaultLighting?: LightingState;
 }
 
 export interface Rect {

@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, EventPageGraphic, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, EventPageGraphic, LightingState, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type {
   M2RuntimeState,
   PlaySessionLike,
@@ -18,6 +18,7 @@ import { compareVariableValue } from "@/project/conditionEvaluation";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
+import { normalizeLightingState } from "@/player/lighting";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -91,6 +92,7 @@ export interface PlaySession {
   removedEventIds?: RuntimeRemovedEventIds;
   spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
   camera?: RuntimeCameraSessionState;
+  lighting: LightingState;
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
   followers: RuntimeFollower[];
   followerTrail: RuntimeFollowerTrailPoint[];
@@ -165,6 +167,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     removedEventIds: {},
     spawnedEvents: {},
     camera: { mode: "follow", target: { kind: "player" } },
+    lighting: normalizeLightingState(project.maps[project.startMapId]?.defaultLighting),
     npcTravelStates: {},
     followers: [],
     followerTrail: [],

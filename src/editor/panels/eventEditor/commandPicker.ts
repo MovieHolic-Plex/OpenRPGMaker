@@ -41,6 +41,39 @@ const PICKER_VIEW_MODE_KEY = "rpgzzu.eventCommandPicker.viewMode";
 const PICKER_PAGES: readonly M2CommandPickerPage[] = [1, 2, 3, 4];
 const EXTRA_COMMAND_ENTRIES: readonly CommandEntry[] = [
   {
+    label: "조명 설정",
+    kind: "setLighting",
+    commandId: "setLighting",
+    group: "화면/연출",
+    index: 110,
+    testId: "command-picker-add-setLighting",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 3,
+  },
+  {
+    label: "광원 추가",
+    kind: "addLight",
+    commandId: "addLight",
+    group: "화면/연출",
+    index: 111,
+    testId: "command-picker-add-addLight",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 3,
+  },
+  {
+    label: "광원 제거",
+    kind: "removeLight",
+    commandId: "removeLight",
+    group: "화면/연출",
+    index: 112,
+    testId: "command-picker-add-removeLight",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 3,
+  },
+  {
     label: "엔딩",
     kind: "ending",
     commandId: "ending",
@@ -58,7 +91,7 @@ const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
     ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && isM2CatalogEntrySelectableInMap(entry)).map(
       commandEntryFromCatalog
     ),
-    ...(page === 4 ? EXTRA_COMMAND_ENTRIES : []),
+    ...EXTRA_COMMAND_ENTRIES.filter((entry) => entry.page === page),
   ],
 }));
 

@@ -17,6 +17,7 @@ import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
+import { applyLightingStep } from "@/player/playSceneLighting";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -212,6 +213,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "cameraControl":
       void applyCameraControl(scene, { ...step, wait: false });
+      return true;
+    case "setLighting":
+      void applyLightingStep(scene, step);
       return true;
     case "spawnEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);

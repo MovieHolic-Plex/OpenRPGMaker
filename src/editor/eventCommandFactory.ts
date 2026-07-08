@@ -71,6 +71,12 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "addFollower", actorId: "", name: "" };
     case "removeFollower":
       return { kind: "removeFollower", all: true };
+    case "setLighting":
+      return { kind: "setLighting", ambient: 0.85, color: "#000000", transitionMs: 0 };
+    case "addLight":
+      return { kind: "addLight", source: { id: "light_1", at: "player", radius: 4, intensity: 1 } };
+    case "removeLight":
+      return { kind: "removeLight", all: true };
     case "showPicture":
       return { kind: "showPicture", pictureId: "pic1", resourceId: "tex_tiles_default", x: 0, y: 0 };
     case "erasePicture":

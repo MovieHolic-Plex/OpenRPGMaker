@@ -23,6 +23,7 @@ import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
+import { applyMapDefaultLighting } from "@/player/lighting";
 import {
   initialRuntimeEventPositions,
   runtimeEventViewsForMap,
@@ -73,7 +74,7 @@ interface RenderTilesSceneContext<
   syncRuntimeState(): void;
 }
 
-export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readonly preserveErasedEvents?: boolean } = {}): void {
+export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean } = {}): void {
   const map = store.getCurrent().maps[mapId];
   if (!map) {
     console.warn(`[player] map not found: ${mapId}`);
@@ -81,6 +82,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   }
   scene.map = mapWithCommittedEvents(map);
   scene.session.currentMapId = mapId;
+  if (options.applyDefaultLighting !== false) applyMapDefaultLighting(scene.session, scene.map);
   if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
   applyMapOverrides(scene);
@@ -273,6 +275,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     removedEventIds: scene.session.removedEventIds,
     spawnedEvents: scene.session.spawnedEvents,
     camera: scene.session.camera,
+    lighting: scene.session.lighting,
     actorEquipment: scene.session.actorEquipment,
     actorRows: scene.session.actorRows,
     audio: scene.session.audio,

@@ -27,6 +27,7 @@ function mkSession(): PlaySession {
     currentMapId: "m1",
     x: 0,
     y: 0,
+    lighting: { ambient: 0, sources: [] },
     mapOverrides: {},
     flags: {},
     audio: {},

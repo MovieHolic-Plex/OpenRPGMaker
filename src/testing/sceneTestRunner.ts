@@ -20,6 +20,17 @@ import { followerPositions, recordFollowerPlayerStep, resetFollowerTrailNearPlay
 import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/player/types";
 import {
+  advanceLightingAmbientTransition,
+  applyMapDefaultLighting,
+  lightAtTile,
+  LIGHTING_FIXED_STEP_MS,
+  normalizeLightingState,
+  setSessionLighting,
+  type LightingAmbientTransition,
+  type LightTilePosition,
+} from "@/player/lighting";
+import type { LightSourceAnchor } from "@/project/types";
+import {
   findBlockingRuntimeEventAtInMap,
   findRuntimeEventAtInMap,
   initialRuntimeEventPositions,
@@ -51,6 +62,9 @@ export type SceneExpectStep = {
   followerCount?: number;
   followerAt?: { name: string; x: number; y: number };
   cameraAt?: { cx: number; cy: number; tolerance?: number };
+  lightingAmbient?: number | { value: number; tolerance?: number };
+  lightAt?: { x: number; y: number; expected?: boolean };
+  lightCount?: number;
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
@@ -78,6 +92,8 @@ export interface SceneTestResult {
     readonly x: number;
     readonly y: number;
     readonly camera: { readonly cx: number; readonly cy: number; readonly session?: RuntimeCameraSessionState };
+    readonly lightingAmbient: number;
+    readonly lightCount: number;
     readonly spawnedCount: number;
     readonly followerCount: number;
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
@@ -122,6 +138,9 @@ interface RunnerState {
   eventPositions: RuntimeEventPositions;
   readonly log: string[];
   camera: CameraModel;
+  lightingClockMs: number;
+  lightingFixedAccumulatorMs: number;
+  lightingTransition: LightingAmbientTransition | null;
   readonly autoStartedKeys: Set<string>;
   readonly chasers: Map<string, ChaseRuntimeState>;
   facing: Dir;
@@ -140,12 +159,16 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   session.currentMapId = input.mapId;
   session.x = input.start.x;
   session.y = input.start.y;
+  applyMapDefaultLighting(session, map);
   const state: RunnerState = {
     project,
     session,
     eventPositions: emptyEventPositions(project),
     log,
     camera: emptyCamera(session),
+    lightingClockMs: 0,
+    lightingFixedAccumulatorMs: 0,
+    lightingTransition: null,
     autoStartedKeys: new Set(),
     chasers: new Map(),
     facing: "down",
@@ -321,6 +344,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
         state.session.y = step.y;
+        {
+          const targetMap = state.project.maps[step.mapId];
+          if (targetMap) applyMapDefaultLighting(state.session, targetMap);
+        }
         resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
         refreshChasers(state);
         syncFollowCamera(state);
@@ -363,6 +390,14 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         startScrollMap(state, step);
         if (step.wait) {
           const failure = advanceUntilCameraSettled(state);
+          if (failure) return { stop: "failed", reason: failure };
+        }
+        step = interp.resume(undefined);
+        break;
+      case "setLighting":
+        startLightingTransition(state, step);
+        {
+          const failure = advanceUntilLightingSettled(state);
           if (failure) return { stop: "failed", reason: failure };
         }
         step = interp.resume(undefined);
@@ -493,6 +528,37 @@ function advanceUntilCameraSettled(state: RunnerState): string | null {
   return null;
 }
 
+function startLightingTransition(
+  state: RunnerState,
+  step: Extract<StepResult, { kind: "setLighting" }>
+): void {
+  const current = normalizeLightingState(state.session.lighting);
+  const durationMs = Math.max(0, Math.round(step.transitionMs));
+  if (durationMs <= 0) {
+    setSessionLighting(state.session, { ambient: step.ambient, color: step.color });
+    state.lightingTransition = null;
+    return;
+  }
+  state.lightingTransition = {
+    fromAmbient: current.ambient,
+    toAmbient: normalizeLightingState({ ambient: step.ambient, color: step.color, sources: current.sources }).ambient,
+    fromColor: current.color,
+    toColor: step.color,
+    durationMs,
+    elapsedMs: 0,
+  };
+}
+
+function advanceUntilLightingSettled(state: RunnerState): string | null {
+  let guard = 0;
+  while (state.lightingTransition && guard < 10000) {
+    guard += 1;
+    const failure = advanceTime(state, TICK_MS);
+    if (failure) return failure;
+  }
+  return state.lightingTransition ? "조명 전환 가드 도달" : null;
+}
+
 function advanceTime(state: RunnerState, ms: number): string | null {
   let remaining = Math.max(0, Math.round(ms));
   if (remaining === 0) {
@@ -504,10 +570,27 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     remaining -= delta;
     state.session.playTimeSeconds += delta / 1000;
     advanceCamera(state, delta);
+    advanceLighting(state, delta);
     advanceChasers(state, delta);
     if (state.runtimeFailure) return state.runtimeFailure;
   }
   return null;
+}
+
+function advanceLighting(state: RunnerState, deltaMs: number): void {
+  state.lightingFixedAccumulatorMs += Math.max(0, deltaMs);
+  while (state.lightingFixedAccumulatorMs >= LIGHTING_FIXED_STEP_MS) {
+    state.lightingFixedAccumulatorMs -= LIGHTING_FIXED_STEP_MS;
+    state.lightingClockMs += LIGHTING_FIXED_STEP_MS;
+    const transition = state.lightingTransition;
+    if (!transition) continue;
+    const next = advanceLightingAmbientTransition(transition, LIGHTING_FIXED_STEP_MS);
+    setSessionLighting(state.session, { ambient: next.ambient, color: next.color });
+    if (next.done) {
+      setSessionLighting(state.session, { ambient: transition.toAmbient, color: transition.toColor });
+      state.lightingTransition = null;
+    }
+  }
 }
 
 function advanceCamera(state: RunnerState, deltaMs: number): void {
@@ -602,6 +685,18 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
       return `카메라 위치: 기대 (${step.cameraAt.cx},${step.cameraAt.cy})±${tolerance}, 실제 (${state.camera.cx},${state.camera.cy})`;
     }
   }
+  if (step.lightingAmbient !== undefined) {
+    const ambientFailure = expectLightingAmbient(state, step.lightingAmbient);
+    if (ambientFailure) return ambientFailure;
+  }
+  if (step.lightAt) {
+    const lightFailure = expectLightAt(state, step.lightAt);
+    if (lightFailure) return lightFailure;
+  }
+  if (step.lightCount !== undefined) {
+    const count = normalizeLightingState(state.session.lighting).sources.length;
+    if (count !== step.lightCount) return `광원 수: 기대 ${step.lightCount}, 실제 ${count}`;
+  }
   if (step.spawnedCount !== undefined && spawnedCount(state.session) !== step.spawnedCount) {
     return `스폰 이벤트 수: 기대 ${step.spawnedCount}, 실제 ${spawnedCount(state.session)}`;
   }
@@ -624,6 +719,57 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     return `컷신 잠금: 기대 ${step.cutsceneLocked}, 실제 ${isCutsceneInputLocked(state.session)}`;
   }
   return null;
+}
+
+function expectLightingAmbient(
+  state: RunnerState,
+  expected: NonNullable<SceneExpectStep["lightingAmbient"]>
+): string | null {
+  const target = typeof expected === "number" ? expected : expected.value;
+  const tolerance = typeof expected === "number" ? 0.001 : expected.tolerance ?? 0.001;
+  const actual = normalizeLightingState(state.session.lighting).ambient;
+  if (Math.abs(actual - target) > tolerance) {
+    return `조명 ambient: 기대 ${target}±${tolerance}, 실제 ${actual}`;
+  }
+  return null;
+}
+
+function expectLightAt(
+  state: RunnerState,
+  expected: NonNullable<SceneExpectStep["lightAt"]>
+): string | null {
+  const lit = lightAtTile(
+    state.session.lighting,
+    expected.x,
+    expected.y,
+    (anchor, _source) => resolveLightAnchorForRunner(state, anchor),
+    state.lightingClockMs
+  );
+  const target = expected.expected ?? true;
+  if (lit !== target) {
+    return `조명 좌표 (${expected.x},${expected.y}): 기대 ${target ? "lit" : "dark"}, 실제 ${lit ? "lit" : "dark"}`;
+  }
+  return null;
+}
+
+function resolveLightAnchorForRunner(
+  state: RunnerState,
+  anchor: LightSourceAnchor
+): LightTilePosition | undefined {
+  if (anchor === "player") return { x: state.session.x, y: state.session.y };
+  if ("eventId" in anchor) {
+    const follower = followerPositions(state.session).find((entry) =>
+      entry.follower.eventId === anchor.eventId || entry.follower.name === anchor.eventId
+    );
+    if (follower) return { x: follower.x, y: follower.y };
+    const map = currentMap(state);
+    const view = map
+      ? runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)
+          .find((entry) => entry.event.id === anchor.eventId)
+      : undefined;
+    return view ? { x: view.x, y: view.y } : undefined;
+  }
+  return { x: anchor.x, y: anchor.y };
 }
 
 function expectVariables(
@@ -787,6 +933,7 @@ function result(
 ): SceneTestResult {
   void project;
   void eventPositions;
+  const lighting = normalizeLightingState(session.lighting);
   return {
     ok,
     stepsRun,
@@ -799,6 +946,8 @@ function result(
       x: session.x,
       y: session.y,
       camera: { cx: camera.cx, cy: camera.cy, session: session.camera },
+      lightingAmbient: lighting.ambient,
+      lightCount: lighting.sources.length,
       spawnedCount: spawnedCount(session),
       followerCount: session.followers?.length ?? 0,
       followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
