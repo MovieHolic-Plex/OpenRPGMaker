@@ -1,8 +1,8 @@
 .status-menu-command-rail {
   align-content: start;
   display: grid;
-  gap: 3px;
-  grid-auto-rows: minmax(15px, max-content);
+  gap: 1px;
+  grid-auto-rows: minmax(13px, max-content);
   grid-column: 1;
   grid-row: 1;
   grid-template-columns: minmax(0, 1fr);
@@ -17,16 +17,19 @@
   box-shadow: none;
   color: var(--rm2k3-status-text);
   font: inherit;
-  min-height: 15px;
+  line-height: 1.08;
+  min-height: 13px;
   overflow: hidden;
-  padding: 1px 4px;
+  padding: 0 3px;
   text-shadow: none;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .status-menu-command.selected,
 .status-menu-detail-action.selected {
-  background: var(--runtime-window-selected-bg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(20, 54, 150, 0.08)),
+    var(--runtime-window-selected-bg);
   border-color: rgba(255, 255, 255, 0.9);
   box-shadow: inset 0 0 0 1px rgba(245, 251, 255, 0.36);
 }
@@ -35,33 +38,9 @@
   gap: 4px;
   grid-column: 2;
   grid-row: 1;
-  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-columns: 120px minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
-}
-.rm2k3-status-menu.status-menu-function-screen {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;
-}
-.status-menu-fullscreen-scene {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
-  box-shadow: none;
-  box-sizing: border-box;
-  display: grid;
-  gap: 4px;
-  grid-column: 1 / -1;
-  grid-row: 1;
-  grid-template-rows: auto minmax(0, 1fr);
-  min-height: 0;
-  overflow: hidden;
-  padding: 4px;
-  text-shadow: none;
 }
 .status-menu-scene-header {
   align-items: end;

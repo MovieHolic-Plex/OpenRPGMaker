@@ -53,7 +53,6 @@ export function createPlayerStatusMenuSnapshot(
   options: StatusMenuSnapshotOptions = {}
 ): PlayerStatusMenuSnapshot {
   const actorsById = new Map(project.database.actors.map((actor) => [actor.id, actor]));
-  const levelTerm = project.meta.terms.level ?? "레벨";
   const hpTerm = project.meta.terms.hp ?? "HP";
   const mpTerm = project.meta.terms.mp ?? "MP";
   const partyRows = session.partyActorIds.flatMap((actorId): PlayerStatusMenuPartyRow[] => {
@@ -64,7 +63,7 @@ export function createPlayerStatusMenuSnapshot(
     return [{
       actorId,
       name: actor.name,
-      levelLabel: `${levelTerm} ${level}`,
+      levelLabel: `L${level}`,
       condition: "정상",
       faceResourceId: actor.faceResourceId ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,

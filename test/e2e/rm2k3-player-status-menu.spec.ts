@@ -16,6 +16,8 @@ import {
 } from "./rm2k3PlayerStatusMenuHelpers";
 
 test("Korean command panels work from the X-key actual play menu", async ({ page }) => {
+  // 명령 패널 전 항목 + 스크린샷 캡처를 순회하는 롱 스펙 — swiftshader에서 30초 기본 한도를 넘는다.
+  test.setTimeout(90_000);
   await startActualPlay(page);
 
   await page.keyboard.press("X");
@@ -28,8 +30,10 @@ test("Korean command panels work from the X-key actual play menu", async ({ page
   for (const [commandId, label] of COMMAND_LABELS) {
     await expect(page.getByTestId(`status-menu-command-${commandId}`)).toHaveText(label);
   }
+  expect(await statusMenuCommandsFullyVisible(page)).toBe(true);
   await expect(page.getByTestId("status-menu-command-save")).toBeVisible();
   await expect(page.getByTestId("status-menu-command-to-title")).toBeVisible();
+  await expectClassicStatusMenuGone(page);
   for (let index = 0; index < 4; index += 1) {
     const row = page.getByTestId(`status-menu-party-row-${index}`);
     await expect(row).toBeVisible();
@@ -48,53 +52,63 @@ test("Korean command panels work from the X-key actual play menu", async ({ page
   expect(await doesMenuFillPlayStage(page)).toBe(true);
 
   await selectCommand(page, "items", "아이템");
-  await expect(page.getByTestId("status-menu-command-rail")).toHaveCount(0);
-  await expect(page.getByTestId("status-menu-fullscreen-items")).toContainText("회복약");
-  await expect(page.getByTestId("status-menu-fullscreen-items")).toContainText("2개");
-  await screenshotMenu(page, COMMAND_SCREENSHOTS.items);
-  await page.keyboard.press("X");
   await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
+  await expect(page.getByTestId("status-menu-detail")).toContainText("회복약");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("2개");
+  await screenshotMenu(page, COMMAND_SCREENSHOTS.items);
 
   await selectCommand(page, "skills", "스킬");
-  await expect(page.getByTestId("status-menu-fullscreen-skills")).toContainText("주인공");
-  await expect(page.getByTestId("status-menu-classic-actor-select-skills")).toBeVisible();
+  await expect(page.getByTestId("status-menu-detail")).toContainText("주인공");
   await page.getByTestId("status-menu-skill-actor-actor_hero").click();
-  await expect(page.getByTestId("status-menu-fullscreen-skills")).toContainText("공격");
+  await expect(page.getByTestId("status-menu-detail-title")).toContainText("스킬: 주인공");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("공격");
   expect(await detailRowsStayInsidePanel(page)).toBe(true);
   await screenshotMenu(page, COMMAND_SCREENSHOTS.skills);
 
   await selectCommand(page, "equipment", "장비");
-  await expect(page.getByTestId("status-menu-classic-actor-select-equipment")).toBeVisible();
   await page.getByTestId("status-menu-equipment-actor-actor_hero").click();
-  await expect(page.getByTestId("status-menu-fullscreen-equipment")).toContainText("청동 검");
-  await expect(page.getByTestId("status-menu-fullscreen-equipment")).toContainText(/ATK|DEF|INT|AGI/);
+  await expect(page.getByTestId("status-menu-detail")).toContainText("무기");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("청동 검");
+  await page.getByTestId("status-menu-equipment-slot-weapon").click();
+  await expect(page.getByTestId("status-menu-detail")).toContainText(/공격|방어|정신|민첩/);
   await screenshotMenu(page, COMMAND_SCREENSHOTS.equipment);
 
   await selectCommand(page, "status", "상태");
-  await expect(page.getByTestId("status-menu-fullscreen-status")).toContainText("HP");
+  await expect(page.getByTestId("status-menu-detail")).toContainText(/HP \d+\/\d+/);
+  await expect(page.getByTestId("status-menu-detail")).toContainText(/MP \d+\/\d+/);
   await screenshotMenu(page, COMMAND_SCREENSHOTS.status);
 
   await selectCommand(page, "row", "열");
-  await expect(page.getByTestId("status-menu-fullscreen-row")).toContainText("전열");
-  await expect(page.getByTestId("status-menu-fullscreen-row")).toContainText("전투");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("전열");
   await screenshotMenu(page, COMMAND_SCREENSHOTS.row);
 
   await selectCommand(page, "formation", "진형");
-  await expect(page.getByTestId("status-menu-fullscreen-formation")).toContainText("1.");
-  await expect(page.getByTestId("status-menu-fullscreen-formation").getByTestId("status-menu-entry-icon").first()).toBeVisible();
+  await expect(page.getByTestId("status-menu-detail")).toContainText("1.");
+  await page.getByTestId("status-menu-formation-actor-actor_guardian").click();
+  await expect(page.getByTestId("status-menu-detail")).toContainText("이동 중");
   await expect(page.getByTestId("status-menu-formation-move-up")).toHaveCount(0);
   await expect(page.getByTestId("status-menu-formation-move-down")).toHaveCount(0);
   await screenshotMenu(page, COMMAND_SCREENSHOTS.formation);
 
   await selectCommand(page, "save", "저장");
-  await expect(page.getByTestId("status-menu-fullscreen-save")).toContainText("1번 슬롯");
+  await expect(page.getByTestId("save-slot-1")).toContainText("1번 저장");
+  await expect(page.getByTestId("save-slot-1")).toContainText("비어 있음");
+  await expect(page.getByTestId("save-slot-1")).toHaveClass(/selected/);
+  await expect(page.getByTestId("status-menu-classic-save-party-faces")).toHaveCount(0);
   await screenshotMenu(page, COMMAND_SCREENSHOTS.save);
+
+  await selectCommand(page, "load", "로드");
+  await expect(page.getByTestId("load-slot-1")).toContainText("비어 있음");
+
+  await selectCommand(page, "quests", "임무");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("등록된 임무가 없습니다");
 
   await selectCommand(page, "wait", "대기");
   await expect(page.getByTestId("status-menu-detail")).toContainText("대기 방식을 OFF로 전환했습니다");
   await expect(page.getByTestId("status-menu-command-wait")).toContainText("대기 OFF");
   await screenshotMenu(page, COMMAND_SCREENSHOTS.wait);
 
+  await expectClassicStatusMenuGone(page);
   await menu.screenshot({ path: C001_SCREENSHOT });
 });
 
@@ -104,171 +118,20 @@ test("status menu layout keeps actor faces and detail rows readable at compact v
 
   await page.keyboard.press("X");
   await expect(page.getByTestId("main-menu")).toBeVisible();
+  expect(await statusMenuCommandsFullyVisible(page)).toBe(true);
   expect(await partyRowsKeepFacesClearOfText(page)).toBe(true);
   expect(await statusMenuUsesWindowFillInsteadOfSystemSheet(page)).toBe(true);
   expect(await statusMenuUsesRuntimeWindowChrome(page)).toBe(true);
   expect(await statusMenuCommandRailUsesLeftColumn(page)).toBe(true);
 
-  await selectCommand(page, "skills", "스킬");
+  await selectCommand(page, "status", "상태");
   expect(await detailRowsStayInsidePanel(page)).toBe(true);
+  expect(await importantStatusMenuTextFits(page)).toEqual([]);
 
   await mkdir("evidence/browser-screenshots", { recursive: true });
   await page.getByTestId("main-menu").screenshot({
     path: "evidence/browser-screenshots/rm2k3-status-menu-compact-layout.png",
   });
-});
-
-test("status menu commands open RPG 2003 style full-screen function scenes", async ({ page }) => {
-  await startActualPlay(page);
-
-  await page.keyboard.press("X");
-  await expect(page.getByTestId("main-menu")).toBeVisible();
-
-  await openFunctionScene(page, "items");
-  await expect(page.getByTestId("status-menu-command-rail")).toHaveCount(0);
-  await expect(page.getByTestId("status-menu-fullscreen-items")).toBeVisible();
-  await expect(page.getByTestId("status-menu-fullscreen-items").getByTestId("status-menu-entry-icon").first()).toBeVisible();
-  await expect(page.getByTestId("status-menu-fullscreen-items").getByTestId("status-menu-entry-effect").first()).toBeVisible();
-  await expect(page.getByTestId("status-menu-fullscreen-items").getByTestId("status-menu-entry-performance").first()).toBeVisible();
-  await page.keyboard.press("X");
-  await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
-
-  await openFunctionScene(page, "skills");
-  await page.getByTestId("status-menu-skill-actor-actor_hero").click();
-  await expect(page.getByTestId("status-menu-fullscreen-skills").getByTestId("status-menu-entry-effect").first()).toBeVisible();
-  await expect(page.getByTestId("status-menu-fullscreen-skills").getByTestId("status-menu-entry-performance").first()).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
-
-  await openFunctionScene(page, "equipment");
-  await page.getByTestId("status-menu-equipment-actor-actor_hero").click();
-  await expect(page.getByTestId("status-menu-fullscreen-equipment").getByTestId("status-menu-entry-icon").first()).toBeVisible();
-  await expect(page.getByTestId("status-menu-fullscreen-equipment").getByTestId("status-menu-entry-performance").first()).toContainText(/\+/);
-  await expect(page.getByTestId("status-menu-fullscreen-equipment")).toContainText(/ATK|DEF|INT|AGI/);
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "status");
-  await expect(page.getByTestId("status-menu-fullscreen-status")).toContainText("HP");
-  await expect(page.getByTestId("status-menu-fullscreen-status")).toContainText("MP");
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "row");
-  await expect(page.getByTestId("status-menu-fullscreen-row")).toContainText(/전열|후열/);
-  await expect(page.getByTestId("status-menu-fullscreen-row")).toContainText("전투");
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "save");
-  await expect(page.getByTestId("status-menu-fullscreen-save")).toBeVisible();
-  await expect(page.getByTestId("save-slot-1")).toBeVisible();
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "load");
-  await expect(page.getByTestId("status-menu-fullscreen-load")).toBeVisible();
-  await expect(page.getByTestId("load-slot-1")).toBeVisible();
-});
-
-test("function scenes follow the RPG 2003 reference menu flow", async ({ page }) => {
-  await startActualPlay(page);
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "items");
-  await expect(page.getByTestId("status-menu-classic-items")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-description")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-item-grid")).toBeVisible();
-  await expect(page.getByTestId("status-menu-entry-icon").first()).toBeVisible();
-  expect(await hasAtLeastTwoColumns(page, "status-menu-classic-item-grid")).toBe(true);
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "skills");
-  await expect(page.getByTestId("status-menu-classic-actor-select-skills")).toBeVisible();
-  await page.getByTestId("status-menu-skill-actor-actor_hero").click();
-  await expect(page.getByTestId("status-menu-classic-skill-detail")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-actor-strip")).toContainText("HP");
-  await expect(page.getByTestId("status-menu-classic-skill-list")).toBeVisible();
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "equipment");
-  await expect(page.getByTestId("status-menu-classic-actor-select-equipment")).toBeVisible();
-  await page.getByTestId("status-menu-equipment-actor-actor_hero").click();
-  await expect(page.getByTestId("status-menu-classic-equipment-detail")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-equipment-stats")).toContainText(/ATK|공격/);
-  await expect(page.getByTestId("status-menu-classic-equipment-slots")).toContainText(/Weapon|무기/);
-  await expect(page.getByTestId("status-menu-classic-equipment-list")).toBeVisible();
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "save");
-  await expect(page.getByTestId("status-menu-classic-save")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-save-prompt")).toContainText("Save");
-  await expect(page.getByTestId("status-menu-classic-save-slot-1")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-save-party-faces").first()).toBeVisible();
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "status");
-  await expect(page.getByTestId("status-menu-classic-status")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-status-left")).toContainText("Name");
-  await expect(page.getByTestId("status-menu-classic-status-vitals")).toContainText("HP");
-  await expect(page.getByTestId("status-menu-classic-status-equipment")).toContainText(/Weapon|무기/);
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "row");
-  await expect(page.getByTestId("status-menu-classic-row")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-row")).toContainText(/전열|후열/);
-  await page.keyboard.press("X");
-
-  await openFunctionScene(page, "formation");
-  await expect(page.getByTestId("status-menu-classic-formation")).toBeVisible();
-  await expect(page.getByTestId("status-menu-classic-formation")).toContainText(/순서|Order|Formation/);
-  await expect(page.getByTestId("status-menu-formation-move-up")).toHaveCount(0);
-  await expect(page.getByTestId("status-menu-formation-move-down")).toHaveCount(0);
-});
-
-test("captures full-screen status command screenshot evidence", async ({ page }) => {
-  await mkdir("evidence/browser-screenshots/status-menu-fullscreen", { recursive: true });
-  await startActualPlay(page);
-
-  await page.keyboard.press("X");
-  for (const commandId of ["items", "skills", "equipment", "status", "row", "formation", "save", "load"]) {
-    await openFunctionScene(page, commandId);
-    await expect(page.getByTestId(`status-menu-fullscreen-${commandId}`)).toBeVisible();
-    await page.screenshot({
-      path: `evidence/browser-screenshots/status-menu-fullscreen/${commandId}.png`,
-    });
-    await page.getByTestId("main-menu").screenshot({
-      path: `evidence/browser-screenshots/status-menu-fullscreen/menu-only-${commandId}.png`,
-    });
-    if (commandId === "skills") {
-      await page.getByTestId("status-menu-skill-actor-actor_hero").click();
-      await expect(page.getByTestId("status-menu-classic-skill-detail")).toBeVisible();
-      await page.screenshot({
-        path: "evidence/browser-screenshots/status-menu-fullscreen/skills-detail.png",
-      });
-      await page.getByTestId("main-menu").screenshot({
-        path: "evidence/browser-screenshots/status-menu-fullscreen/menu-only-skills-detail.png",
-      });
-    }
-    if (commandId === "equipment") {
-      await page.getByTestId("status-menu-equipment-actor-actor_hero").click();
-      await expect(page.getByTestId("status-menu-classic-equipment-detail")).toBeVisible();
-      await page.screenshot({
-        path: "evidence/browser-screenshots/status-menu-fullscreen/equipment-detail.png",
-      });
-      await page.getByTestId("main-menu").screenshot({
-        path: "evidence/browser-screenshots/status-menu-fullscreen/menu-only-equipment-detail.png",
-      });
-    }
-    if (commandId === "formation") {
-      await expect(page.getByTestId("status-menu-formation-move-up")).toHaveCount(0);
-      await expect(page.getByTestId("status-menu-formation-move-down")).toHaveCount(0);
-      await page.getByTestId("status-menu-formation-actor-actor_guardian").click();
-      await expect(page.getByTestId("status-menu-formation-move-up")).toHaveCount(0);
-      await expect(page.getByTestId("status-menu-formation-move-down")).toHaveCount(0);
-      await page.getByTestId("main-menu").screenshot({
-        path: "evidence/browser-screenshots/status-menu-fullscreen/menu-only-formation-selected.png",
-      });
-    }
-    await page.keyboard.press("X");
-    await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
-  }
 });
 
 async function partyRowsKeepFacesClearOfText(page: Page): Promise<boolean> {
@@ -288,22 +151,11 @@ async function partyRowsKeepFacesClearOfText(page: Page): Promise<boolean> {
 
 async function detailRowsStayInsidePanel(page: Page): Promise<boolean> {
   return page.evaluate(() => {
-    const panel = document.querySelector<HTMLElement>("[data-testid='status-menu-detail']")
-      ?? document.querySelector<HTMLElement>(".status-menu-fullscreen-scene");
+    const panel = document.querySelector<HTMLElement>("[data-testid='status-menu-detail']");
     if (!panel) return false;
     const panelRect = panel.getBoundingClientRect();
     const tolerance = 1;
-    const rows = Array.from(panel.querySelectorAll<HTMLElement>([
-      ".status-menu-detail-row",
-      ".status-menu-scene-row",
-      ".status-menu-classic-item",
-      ".status-menu-classic-skill-row",
-      ".status-menu-classic-equipment-item",
-      ".status-menu-classic-equipment-slot",
-      ".status-menu-classic-save-slot",
-      ".status-menu-classic-actor-row",
-      ".status-menu-classic-formation-row",
-    ].join(", ")));
+    const rows = Array.from(panel.querySelectorAll<HTMLElement>(".status-menu-detail-row"));
     if (rows.length === 0) return false;
     return rows.every((row) => {
       const rowRect = row.getBoundingClientRect();
@@ -350,22 +202,46 @@ async function statusMenuCommandRailUsesLeftColumn(page: Page): Promise<boolean>
   });
 }
 
-async function hasAtLeastTwoColumns(page: Page, testId: string): Promise<boolean> {
-  return page.evaluate((id) => {
-    const grid = document.querySelector<HTMLElement>(`[data-testid='${id}']`);
-    if (!grid) return false;
-    const children = Array.from(grid.children).filter((node): node is HTMLElement => node instanceof HTMLElement);
-    if (children.length < 2) return false;
-    return Math.abs(children[0].getBoundingClientRect().top - children[1].getBoundingClientRect().top) <= 2;
-  }, testId);
+async function statusMenuCommandsFullyVisible(page: Page): Promise<boolean> {
+  return page.evaluate((expectedCount) => {
+    const rail = document.querySelector<HTMLElement>("[data-testid='status-menu-command-rail']");
+    if (!rail) return false;
+    const railRect = rail.getBoundingClientRect();
+    const buttons = Array.from(rail.querySelectorAll<HTMLElement>("[data-testid^='status-menu-command-']"));
+    if (buttons.length !== expectedCount) return false;
+    const tolerance = 1;
+    return buttons.every((button) => {
+      const rect = button.getBoundingClientRect();
+      return button.offsetParent !== null
+        && rect.height > 0
+        && rect.top >= railRect.top - tolerance
+        && rect.bottom <= railRect.bottom + tolerance;
+    });
+  }, COMMAND_LABELS.length);
 }
 
-async function openFunctionScene(page: Page, commandId: string): Promise<void> {
-  if ((await page.getByTestId("status-menu-command-rail").count()) === 0) {
-    await page.keyboard.press("X");
-    await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
-  }
-  await page.getByTestId(`status-menu-command-${commandId}`).click();
+async function importantStatusMenuTextFits(page: Page): Promise<readonly string[]> {
+  return page.evaluate(() => {
+    const menu = document.querySelector<HTMLElement>("[data-testid='main-menu']");
+    if (!menu) return ["missing main menu"];
+    return Array.from(menu.querySelectorAll<HTMLElement>([
+      ".status-menu-command",
+      ".status-menu-actor-name",
+      ".status-menu-actor-subline",
+      ".status-menu-actor-vitals",
+      ".status-menu-detail-label",
+      ".status-menu-detail-value",
+      ".status-menu-detail-description",
+    ].join(",")))
+      .filter((node) => node.offsetParent !== null && node.textContent?.trim())
+      .filter((node) => node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1)
+      .map((node) => node.textContent?.trim() ?? node.className);
+  });
+}
+
+async function expectClassicStatusMenuGone(page: Page): Promise<void> {
+  await expect(page.locator("[data-testid^='status-menu-classic-']")).toHaveCount(0);
+  await expect(page.locator("[data-testid^='status-menu-fullscreen-']")).toHaveCount(0);
 }
 
 test("does not open status menu on title screen", async ({ page }) => {

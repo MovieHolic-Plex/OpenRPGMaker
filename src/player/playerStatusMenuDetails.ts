@@ -5,6 +5,7 @@ import type { PlaySession } from "@/project/session";
 import type {
   ActorInitialEquipment,
   ActorRecord,
+  EquipmentStatBonuses,
   EquipmentRecord,
   Project,
   SkillRecord,
@@ -22,13 +23,20 @@ const EQUIPMENT_SLOTS = [
   { id: "accessory", label: "장식품" },
 ] as const satisfies readonly { readonly id: keyof ActorInitialEquipment; readonly label: string }[];
 
+const STAT_LABELS = [
+  ["attack", "공격"],
+  ["defense", "방어"],
+  ["mind", "정신"],
+  ["agility", "민첩"],
+] as const satisfies readonly (readonly [keyof EquipmentStatBonuses, string])[];
+
 export function createStatusMenuDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
-    case "skills": return skillDetail(options.project, options.session);
+    case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
     case "save": return saveDetail(options.slots, options.onSaveSlot);
-    case "load": return { title: "로드", entries: [], hint: "저장된 진행 상황을 불러옵니다." };
+    case "load": return loadDetail(options.slots, options.onLoadSlot);
     case "status": return statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -51,7 +59,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         return {
           label: actor.name,
           value: vitals ? `HP ${vitals.hp}/${vitals.maxHp}` : "HP 0/0",
-          description: "사용할 대상을 선택하세요",
+          description: vitals ? `MP ${vitals.mp}/${vitals.maxMp} / 사용할 대상을 선택하세요` : "MP 0/0 / 사용할 대상을 선택하세요",
           testId: `status-menu-item-target-${actor.id}`,
           onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, actor.id) : undefined,
         };
@@ -65,24 +73,45 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     label: item.name,
     value: `${inventory.get(item.id) ?? 0}개`,
     description: item.description,
-    testId: `status-menu-use-${item.id}`,
-    onActivate: item.scope === "ally" && options.onSelectItemTarget
+    testId: `status-menu-item-${item.id}`,
+    onActivate: (item.scope === "ally" || item.scope === "allAllies") && options.onSelectItemTarget
       ? () => options.onSelectItemTarget?.(item.id)
       : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
   }));
   return { title: "아이템", entries, emptyLabel: "아이템이 없습니다" };
 }
 
-function skillDetail(project: Project, session: PlaySession): StatusMenuDetail {
+function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const { project, session } = options;
+  if (options.skillActorId) {
+    const actor = partyActors(project, session).find((record) => record.id === options.skillActorId);
+    if (!actor) return { title: "스킬", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
+    const skills = learnedSkills(project, session, actor);
+    return {
+      title: `스킬: ${actor.name}`,
+      entries: skills.map((skill) => ({
+        label: skill.name,
+        value: `MP ${skill.mpCost.flat}`,
+        description: `${skill.description || skillKindLabel(skill)} / 위력 ${skill.power} / 성공 ${skill.successRate}%`,
+        testId: `status-menu-skill-${actor.id}-${skill.id}`,
+        onActivate: options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,
+      })),
+      emptyLabel: "사용할 수 있는 스킬이 없습니다",
+      hint: options.selectedSkillId ? "선택한 스킬 정보를 확인했습니다." : "스킬을 선택하면 설명을 확인합니다.",
+    };
+  }
+
   const entries = partyActors(project, session).map((actor) => {
     const skills = learnedSkills(project, session, actor);
     return {
       label: actor.name,
       value: skills.length > 0 ? skills.map((skill) => skill.name).join(", ") : "스킬 없음",
-      description: actor.nickname,
+      description: actor.nickname || "스킬 목록을 봅니다",
+      testId: `status-menu-skill-actor-${actor.id}`,
+      onActivate: options.onSelectSkillActor ? () => options.onSelectSkillActor?.(actor.id) : undefined,
     };
   });
-  return { title: "스킬", entries, emptyLabel: "스킬이 없습니다" };
+  return { title: "스킬", entries, emptyLabel: "스킬을 볼 파티원이 없습니다", hint: "파티원을 선택하세요." };
 }
 
 function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
@@ -118,13 +147,14 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       && (session.inventory[equipment.id] ?? 0) > 0
       && canEquip(project, actor, equipment);
   });
+  const currentStats = equipmentStats(project, actorEquipment(session, actor.id)[options.equipmentSlotId]);
   return {
     title: `${actor.name}: ${slotLabel(options.equipmentSlotId)}`,
     entries: choices.map((equipment) => ({
       label: equipment.name,
       value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
-      description: equipment.description,
-      testId: `status-menu-equip-${equipment.id}`,
+      description: `${equipment.description || "장비"} / ${statDiffLine(equipment.statBonuses, currentStats)}`,
+      testId: `status-menu-equipment-item-${equipment.id}`,
       onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, equipment.id) : undefined,
     })),
     emptyLabel: "장비할 수 있는 소지품이 없습니다",
@@ -145,6 +175,20 @@ function saveDetail(slots: readonly SaveSlotReadResult[], onSaveSlot: ((slot: Sa
   };
 }
 
+function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined): StatusMenuDetail {
+  return {
+    title: "로드",
+    entries: slots.map((slot) => ({
+      label: `${slot.slot}번 저장`,
+      value: saveSlotStatus(slot),
+      testId: `load-slot-${slot.slot}`,
+      onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
+      disabled: slot.kind !== "present",
+    })),
+    hint: "불러올 저장 칸을 선택하세요.",
+  };
+}
+
 function statusDetail(project: Project, session: PlaySession): StatusMenuDetail {
   const entries = partyActors(project, session).map((actor) => {
     const vitals = session.actorVitals[actor.id];
@@ -152,9 +196,10 @@ function statusDetail(project: Project, session: PlaySession): StatusMenuDetail 
     const level = actorLevel(session, actor);
     return {
       label: actor.name,
-      value: vitals
-        ? `${className} L${level} / HP ${vitals.hp}/${vitals.maxHp} / MP ${vitals.mp}/${vitals.maxMp} / 정상`
-        : `${className} L${level} / HP 0/0 / MP 0/0 / 정상`,
+      value: `${className} L${level}`,
+      description: vitals
+        ? `HP ${vitals.hp}/${vitals.maxHp} / MP ${vitals.mp}/${vitals.maxMp} / 정상`
+        : "HP 0/0 / MP 0/0 / 정상",
     };
   });
   return { title: "상태", entries, emptyLabel: "상태를 볼 파티원이 없습니다" };
@@ -165,24 +210,29 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     label: actor.name,
     value: (options.session.actorRows[actor.id] ?? "front") === "front" ? "전열" : "후열",
     description: "선택하면 전열/후열을 전환합니다",
-    testId: `status-menu-row-toggle-${actor.id}`,
+    testId: `status-menu-row-${actor.id}`,
     onActivate: options.onToggleRow ? () => options.onToggleRow?.(actor.id) : undefined,
   }));
   return { title: "열", entries, emptyLabel: "열을 바꿀 파티원이 없습니다" };
 }
 
 function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
-  const entries = partyActors(options.project, options.session).map((actor, index) => ({
+  const actors = partyActors(options.project, options.session);
+  const selectedIndex = actors.findIndex((actor) => actor.id === options.formationActorId);
+  const entries = actors.map((actor, index) => ({
     label: `${index + 1}. ${actor.name}`,
-    value: options.project.database.classes.find((record) => record.id === actor.classId)?.name ?? "Class none",
-    description: "Open Formation for the RPG 2003 order-change screen.",
+    value: options.project.database.classes.find((record) => record.id === actor.classId)?.name ?? "직업 없음",
+    description: formationDescription(index, selectedIndex),
     testId: `status-menu-formation-actor-${actor.id}`,
+    onActivate: formationActivate(options, actor.id, index, selectedIndex),
   }));
   return {
-    title: "Formation",
+    title: "진형",
     entries,
-    emptyLabel: "No party members to reorder.",
-    hint: "Choose Formation to move party members by selecting a member, then the target position.",
+    emptyLabel: "순서를 바꿀 파티원이 없습니다",
+    hint: selectedIndex >= 0
+      ? `${actors[selectedIndex]?.name ?? "선택한 파티원"}을 이동할 위치를 선택하세요.`
+      : "먼저 이동할 파티원을 선택하세요.",
   };
 }
 
@@ -190,12 +240,26 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
   const quests = buildQuestLog(project, session);
   return {
     title: "임무",
-    entries: quests.map((quest) => ({
-      label: quest.title,
-      value: `${questStateLabel(quest.state)} (${quest.completedSteps}/${quest.totalSteps})`,
-      description: quest.summary,
-      testId: `status-menu-quest-entry-${quest.key}`,
-    })),
+    entries: quests.flatMap((quest) => [
+      {
+        label: quest.title,
+        value: quest.summary,
+        description: "임무 요약",
+        testId: `status-menu-quest-${quest.key}`,
+      },
+      {
+        label: "진행",
+        value: `${questStateLabel(quest.state)} (${quest.completedSteps}/${quest.totalSteps})`,
+        description: "완료한 단계 / 전체 단계",
+        testId: `status-menu-quest-state-${quest.key}`,
+      },
+      ...quest.steps.map((step) => ({
+        label: `${step.index + 1}. ${step.done ? "완료" : "진행"}`,
+        value: step.label,
+        description: step.done ? "완료됨" : "대기 중",
+        testId: `status-menu-quest-step-${quest.key}-${step.index}`,
+      })),
+    ]),
     emptyLabel: "등록된 임무가 없습니다",
     hint: "선택하면 임무 진행 상황을 봅니다.",
   };
@@ -240,6 +304,10 @@ function actorEquipment(session: PlaySession, actorId: string): ActorInitialEqui
   return session.actorEquipment[actorId] ?? {};
 }
 
+function equipmentStats(project: Project, equipmentId: string | undefined): EquipmentStatBonuses {
+  return project.database.equipment.find((record) => record.id === equipmentId)?.statBonuses ?? zeroStats();
+}
+
 function equipmentName(equipmentById: ReadonlyMap<string, EquipmentRecord>, equipmentId: string | undefined): string {
   if (!equipmentId) return "없음";
   return equipmentById.get(equipmentId)?.name ?? "없음";
@@ -253,9 +321,63 @@ function saveSlotStatus(slot: SaveSlotReadResult): string {
   switch (slot.kind) {
     case "empty": return "비어 있음";
     case "corrupt": return "손상됨";
-    case "present": return slot.snapshot.projectTitle;
+    case "present": {
+      const parts = [slot.snapshot.projectTitle];
+      if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
+      if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
+      return parts.join(" / ");
+    }
     default: return assertNever(slot);
   }
+}
+
+function formationActivate(
+  options: StatusMenuDetailOptions,
+  actorId: string,
+  index: number,
+  selectedIndex: number
+): (() => void) | undefined {
+  if (selectedIndex >= 0 && index !== selectedIndex && options.formationActorId && options.onMoveFormationActor) {
+    return () => options.onMoveFormationActor?.(options.formationActorId as string, index);
+  }
+  return options.onSelectFormationActor ? () => options.onSelectFormationActor?.(actorId) : undefined;
+}
+
+function formationDescription(index: number, selectedIndex: number): string {
+  if (selectedIndex < 0) return "선택";
+  if (index === selectedIndex) return "이동 중";
+  return index < selectedIndex ? "위로 이동" : "아래로 이동";
+}
+
+function skillKindLabel(skill: SkillRecord): string {
+  switch (skill.effect.kind) {
+    case "damage": return "공격";
+    case "healing": return "회복";
+    case "support": return "보조";
+    case "switch": return "스위치";
+    default: return assertNever(skill.effect);
+  }
+}
+
+function statDiffLine(next: EquipmentStatBonuses, current: EquipmentStatBonuses): string {
+  return STAT_LABELS.map(([key, label]) => `${label} ${signed(next[key] - current[key])}`).join(" / ");
+}
+
+function zeroStats(): EquipmentStatBonuses {
+  return { attack: 0, defense: 0, mind: 0, agility: 0 };
+}
+
+function signed(value: number): string {
+  return `${value >= 0 ? "+" : ""}${value}`;
+}
+
+function formatPlayTime(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  if (hours > 0) return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
 }
 
 function assertNever(value: never): never {

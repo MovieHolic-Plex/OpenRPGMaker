@@ -9,7 +9,6 @@ import {
 } from "@/player/playerStatusMenuModel";
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
-import { renderStatusMenuFunctionScene } from "@/player/playerStatusMenuFunctionScene";
 import { applySystemGraphic } from "@/player/systemGraphics";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
@@ -39,54 +38,42 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   });
   applySystemGraphic(panel);
 
-  if (mode === "function") {
-    panel.classList.add("status-menu-function-screen");
-    panel.append(renderStatusMenuFunctionScene({
+  if (mode === "function") panel.classList.add("status-menu-detail-focus");
+  const detail = createStatusMenuDetail({
+    project: options.project,
+    session: options.session,
+    selectedCommand,
+    slots: options.slots,
+    waitModeEnabled,
+    targetItemId: options.targetItemId,
+    skillActorId: options.skillActorId,
+    selectedSkillId: options.selectedSkillId,
+    equipmentActorId: options.equipmentActorId,
+    equipmentSlotId: options.equipmentSlotId,
+    formationActorId: options.formationActorId,
+    onSaveSlot: options.actions.onSaveSlot,
+    onLoadSlot: options.actions.onLoadSlot,
+    onSelectItemTarget: options.actions.onSelectItemTarget,
+    onUseItem: options.actions.onUseItem,
+    onSelectSkillActor: options.actions.onSelectSkillActor,
+    onSelectSkill: options.actions.onSelectSkill,
+    onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
+    onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
+    onEquipItem: options.actions.onEquipItem,
+    onToggleRow: options.actions.onToggleRow,
+    onSelectFormationActor: options.actions.onSelectFormationActor,
+    onMoveFormationActor: options.actions.onMoveFormationActor,
+  });
+  panel.append(
+    renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
+    renderStatusMenuBody({
       project: options.project,
-      session: options.session,
-      commandId: selectedCommand,
-      slots: options.slots,
-      selectedActionIndex: options.selectedDetailActionIndex,
-      targetItemId: options.targetItemId,
-      skillActorId: options.skillActorId,
-      selectedSkillId: options.selectedSkillId,
-      equipmentActorId: options.equipmentActorId,
-      equipmentSlotId: options.equipmentSlotId,
-      formationActorId: options.formationActorId,
-      actions: options.actions,
-    }), renderFooter(snapshot, options.message));
-  } else {
-    const detail = createStatusMenuDetail({
-      project: options.project,
-      session: options.session,
-      selectedCommand,
-      slots: options.slots,
-      waitModeEnabled,
-      targetItemId: options.targetItemId,
-      equipmentActorId: options.equipmentActorId,
-      equipmentSlotId: options.equipmentSlotId,
-      formationActorId: options.formationActorId,
-      onSaveSlot: options.actions.onSaveSlot,
-      onSelectItemTarget: options.actions.onSelectItemTarget,
-      onUseItem: options.actions.onUseItem,
-      onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
-      onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
-      onEquipItem: options.actions.onEquipItem,
-      onToggleRow: options.actions.onToggleRow,
-      onSelectFormationActor: options.actions.onSelectFormationActor,
-      onMoveFormationActor: options.actions.onMoveFormationActor,
-    });
-    panel.append(
-      renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
-      renderStatusMenuBody({
-        project: options.project,
-        snapshot,
-        detail,
-        selectedDetailActionIndex: options.selectedDetailActionIndex,
-      }),
-      renderFooter(snapshot, options.message)
-    );
-  }
+      snapshot,
+      detail,
+      selectedDetailActionIndex: mode === "function" ? options.selectedDetailActionIndex : undefined,
+    }),
+    renderFooter(snapshot, options.message)
+  );
   panel.append(statusMenuDebug(selectedCommand, mode));
   return panel;
 }

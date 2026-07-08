@@ -1,5 +1,4 @@
 import { listSaveSlots, type SaveSlotIndex, type SaveSlotReadResult } from "@/player/saveSlots";
-import { slotStatus } from "@/player/playerStatusMenuFunctionData";
 import { applyTitleScreenBackground } from "@/player/systemGraphics";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { store } from "@/project/store";
@@ -89,7 +88,7 @@ function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
 function slotButtonText(slot: SaveSlotReadResult, label: string): string {
   switch (slot.kind) {
     case "present":
-      return `${label}: ${slotStatus(slot)}`;
+      return `${label}: ${saveSlotStatus(slot)}`;
     case "corrupt":
       return `${label}: 이상함`;
     case "empty":
@@ -97,6 +96,22 @@ function slotButtonText(slot: SaveSlotReadResult, label: string): string {
     default:
       return assertNever(slot);
   }
+}
+
+function saveSlotStatus(slot: Extract<SaveSlotReadResult, { readonly kind: "present" }>): string {
+  const parts = [slot.snapshot.projectTitle];
+  if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
+  if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
+  return parts.join(" / ");
+}
+
+function formatPlayTime(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  if (hours > 0) return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
 }
 
 function slotStateClass(slot: SaveSlotReadResult): string {

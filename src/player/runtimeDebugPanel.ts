@@ -30,7 +30,7 @@ function ensureDebugPanelStyles(): void {
   style.id = "runtime-debug-panel-style";
   // 디자인 토큰(src/styles/tokens.css) 참조 — 하드코딩 색 없음. 토큰 미로드 환경 폴백값 포함.
   style.textContent = `
-.runtime-debug-panel{position:absolute;right:8px;bottom:8px;z-index:60;max-width:340px;max-height:70vh;overflow:auto;
+.runtime-debug-panel{position:absolute;right:8px;bottom:32px;z-index:60;max-width:340px;max-height:calc(70vh - 24px);overflow:auto;
   background:var(--bg-overlay,#232838);color:var(--text-1,#e9ecf3);border:1px solid var(--border-strong,rgba(255,255,255,.17));
   border-radius:var(--radius-m,10px);padding:var(--space-2,8px);font-size:12px;box-shadow:var(--shadow-pop,0 4px 12px rgba(0,0,0,.28));
   font-family:var(--font-ui,system-ui,sans-serif)}

@@ -28,6 +28,23 @@ describe("play pointer blocker", () => {
     expect(activations).toBe(1);
     cleanup();
   });
+
+  it("자동화(webdriver)에서는 허용하되 __rpgzzuForcePointerBlock 강제 시 다시 차단한다", () => {
+    const g = globalThis as { __rpgzzuForcePointerBlock?: boolean };
+    const nav = navigator as unknown as Record<string, unknown>;
+    const original = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(nav), "webdriver");
+    Object.defineProperty(navigator, "webdriver", { configurable: true, value: true });
+    try {
+      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1 })).toBe(false);
+      expect(shouldBlockPlayPointerEvent({ type: "pointerdown" })).toBe(false);
+      g.__rpgzzuForcePointerBlock = true;
+      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1 })).toBe(true);
+    } finally {
+      delete g.__rpgzzuForcePointerBlock;
+      if (original) Object.defineProperty(Object.getPrototypeOf(nav), "webdriver", original);
+      else Object.defineProperty(navigator, "webdriver", { configurable: true, value: undefined });
+    }
+  });
 });
 
 function detailedClick(detail: number): Event {

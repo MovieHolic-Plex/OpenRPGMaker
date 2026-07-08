@@ -3,6 +3,10 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { makeCommerceProject, runtimeState, tapKey } from "./rm2k3-commerce-fixtures";
 
 test("runtime shop ignores mouse clicks but buys through keyboard", async ({ page }) => {
+  // 자동화 예외(webdriver 허용)를 끄고 실사용자와 동일한 차단 동작을 검증한다.
+  await page.addInitScript(() => {
+    (globalThis as { __rpgzzuForcePointerBlock?: boolean }).__rpgzzuForcePointerBlock = true;
+  });
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProjectFromSupabaseCanonical(page, makeCommerceProject());
   await page.getByTestId("mode-play").click();

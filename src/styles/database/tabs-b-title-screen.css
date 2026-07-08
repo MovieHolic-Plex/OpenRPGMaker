@@ -279,7 +279,7 @@
   display: grid;
   font: 700 var(--runtime-font-size-9)/1.2 var(--runtime-pixel-font);
   gap: 4px;
-  grid-template-columns: 70px minmax(0, 1fr);
+  grid-template-columns: 60px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
   height: 100%;
   left: 0;
