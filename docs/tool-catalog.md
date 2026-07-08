@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 102개 툴 — 쓰기 72, 읽기 30.
+> 총 103개 툴 — 쓰기 73, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -44,6 +44,7 @@
 | `create_transfer_pair` | `a: object`, `b: object`, `fade?: black\|white\|none` | 두 맵 사이 양방향 출입구를 원자적으로 생성한다. 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지). |
 | `place_battle_blocker` | `mapId: string`, `x: integer`, `y: integer`, `troopId: string`, `clearSwitchId?: string`, `intro?: array`, `victory?: array`, `victoryItems?: array`, `graphic?: object`, `id?: string` | 전투 블로커를 배치한다(전투 페이지 + 승리 후 투명 페이지). clearSwitchId로 재전투를 막는다. |
 | `place_trap` | `mapId: string`, `at?: object`, `cells?: array`, `trigger: touch\|action`, `message?: string`, `respawnCheckpoint?: boolean`, `graphic?: object`, `idPrefix?: string` | 즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다. |
+| `make_chase_scene` | `mapId: string`, `chaser: object`, `killOnTouch?: boolean`, `safeZone?: object`, `activateSwitch?: string`, `checkpointOnEntry?: boolean` | 장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. |
 | `duplicate_event` | `fromMapId: string`, `eventId: string`, `toMapId: string`, `x: integer`, `y: integer`, `newId?: string` | 이벤트를 다른 맵/좌표로 복제한다. |
 | `remove_event` | `mapId: string`, `eventId: string` | 맵에서 이벤트를 제거한다(파괴적). |
 | `move_event` | `mapId: string`, `eventId: string`, `x: integer`, `y: integer` | 이벤트를 같은 맵 내 다른 좌표로 옮긴다. |
@@ -93,7 +94,7 @@
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
-| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, cameraAt, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId를 지원한다. |
+| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId를 지원한다. |
 | `get_project_summary` | (없음) | 제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다. |
 | `get_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다. |
 | `find_events` | `mapId?: string`, `nameContains?: string`, `commandKind?: string`, `referencesSwitch?: string` | 이벤트를 이름/커맨드 종류/스위치 참조로 검색한다. |

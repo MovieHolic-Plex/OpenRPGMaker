@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, EventPageGraphic, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type {
   M2RuntimeState,
   PlaySessionLike,
@@ -49,6 +49,18 @@ export type PictureState = {
 
 export type ActorRowPosition = "front" | "back";
 
+export type RuntimeFollower = {
+  readonly eventId?: string;
+  readonly graphic: EventPageGraphic;
+  readonly name: string;
+};
+
+export type RuntimeFollowerTrailPoint = {
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: "down" | "left" | "right" | "up";
+};
+
 export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
   format: "normal",
   position: "bottom",
@@ -80,6 +92,8 @@ export interface PlaySession {
   spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
   camera?: RuntimeCameraSessionState;
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
+  followers: RuntimeFollower[];
+  followerTrail: RuntimeFollowerTrailPoint[];
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
   // 런타임 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 미설정 시 DB 이름 사용.
@@ -152,6 +166,8 @@ export function startSession(project: Project, seed?: number): PlaySession {
     spawnedEvents: {},
     camera: { mode: "follow", target: { kind: "player" } },
     npcTravelStates: {},
+    followers: [],
+    followerTrail: [],
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),
     actorNames: {},

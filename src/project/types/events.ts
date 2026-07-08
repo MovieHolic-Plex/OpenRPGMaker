@@ -156,6 +156,8 @@ export type Command =
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
+  | { kind: "addFollower"; actorId?: ActorId; graphic?: EventPageGraphic; name?: string }
+  | { kind: "removeFollower"; name?: string; all?: boolean }
   | {
       kind: "showPicture";
       pictureId: string;
@@ -195,7 +197,7 @@ export type Command =
   | { kind: "m2Command"; commandId: string; fields: M2CommandFields };
 
 export type EventPriority = "below" | "same" | "above";
-export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living";
+export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
 export type EventAnimationType =
   | "normal"
   | "step"
@@ -230,6 +232,9 @@ export interface EventPageMovement {
   frequency: number;
   route?: MoveRoute;
   living?: NpcLivingMovement;
+  sightRange?: number;
+  giveUpRange?: number;
+  pathfind?: boolean;
 }
 
 export interface EventPage {

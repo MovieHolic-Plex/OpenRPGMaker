@@ -21,6 +21,8 @@ import {
   isRecord,
   isRuntimeCameraState,
   isRuntimeEventLocationRecord,
+  isRuntimeFollowerArray,
+  isRuntimeFollowerTrail,
   isRuntimeNpcTravelStateRecord,
   isRuntimeRemovedEventIds,
   isRuntimeSpawnedEventRecord,
@@ -70,6 +72,8 @@ export type SaveSnapshot = {
     readonly spawnedEvents?: PlaySession["spawnedEvents"];
     readonly camera?: PlaySession["camera"];
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
+    readonly followers?: PlaySession["followers"];
+    readonly followerTrail?: PlaySession["followerTrail"];
     readonly currentMapId: string;
     readonly x: number;
     readonly y: number;
@@ -133,6 +137,8 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       spawnedEvents: structuredClone(session.spawnedEvents),
       camera: structuredClone(session.camera),
       npcTravelStates: structuredClone(session.npcTravelStates),
+      followers: structuredClone(session.followers),
+      followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -215,6 +221,8 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.spawnedEvents) session.spawnedEvents = structuredClone(snapshot.session.spawnedEvents);
   if (snapshot.session.camera) session.camera = structuredClone(snapshot.session.camera);
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
+  if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
+  if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
   session.y = snapshot.session.y;
@@ -314,6 +322,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       spawnedEvents: isRuntimeSpawnedEventRecord(session.spawnedEvents) ? session.spawnedEvents : undefined,
       camera: isRuntimeCameraState(session.camera) ? session.camera : undefined,
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
+      followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
+      followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,

@@ -13,6 +13,7 @@ import type { RuntimeCameraTarget } from "@/player/types";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
 import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
+import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -483,6 +484,12 @@ export function executeCommand(
       return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);
+      return resumeNext(frame);
+    case "addFollower":
+      if (state.project) addFollowerToSession(state.project, state.session as PlaySession, command);
+      return resumeNext(frame);
+    case "removeFollower":
+      removeFollowerFromSession(state.session as PlaySession, command);
       return resumeNext(frame);
     case "setFlag":
       state.session.flags[command.flag] = command.value;

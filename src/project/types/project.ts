@@ -41,6 +41,15 @@ export interface GameMap {
   encounterRate?: number;
   // 인카운트로 등장할 적 그룹 목록. encounterRate > 0 일 때만 사용.
   troopIds?: TroopId[];
+  // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
+  safeZones?: Rect[];
+}
+
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
 export interface MapTreeNode {

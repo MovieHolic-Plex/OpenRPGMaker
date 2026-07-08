@@ -67,6 +67,10 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeItem", itemId: "", op: "+=", amount: 1 };
     case "changeParty":
       return { kind: "changeParty", actorId: "", action: "add" };
+    case "addFollower":
+      return { kind: "addFollower", actorId: "", name: "" };
+    case "removeFollower":
+      return { kind: "removeFollower", all: true };
     case "showPicture":
       return { kind: "showPicture", pictureId: "pic1", resourceId: "tex_tiles_default", x: 0, y: 0 };
     case "erasePicture":

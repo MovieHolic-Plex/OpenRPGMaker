@@ -130,6 +130,8 @@ function movementTitle(movementType: AutonomousMovement): string {
       return "랜덤 이동 미리보기";
     case "approach":
       return "접근 이동 미리보기";
+    case "chase":
+      return "추격 이동 미리보기";
     case "custom":
       return "사용자 지정 이동 미리보기";
     case "living":

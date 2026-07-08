@@ -9,6 +9,7 @@ import {
 } from "@/player/playSceneAutonomousCommands";
 import { canNpcMove } from "@/player/playSceneAutonomousMapActions";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
+import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import {
   moveRuntimeEventPosition,
@@ -21,6 +22,10 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
   for (const [eventId, mover] of scene.autonomousNPCs) {
     if (mover.activeMove) {
       updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
+      continue;
+    }
+    if (mover.strategy === "chase") {
+      updateChaseNpc(scene, eventId, mover, deltaMs);
       continue;
     }
     if (mover.moves.length === 0) {
@@ -77,6 +82,50 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     }
     completeRouteCommand(mover);
   }
+}
+
+function updateChaseNpc(
+  scene: AutonomousNpcSceneContext,
+  eventId: string,
+  mover: AutonomousMover,
+  deltaMs: number
+): void {
+  const project = store.getCurrent();
+  const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
+    .find((entry) => entry.event.id === eventId);
+  if (!view) return;
+  const decision = nextChaseDecision({
+    project,
+    map: scene.map,
+    from: { x: view.x, y: view.y },
+    player: { x: scene.tileX, y: scene.tileY },
+    deltaMs,
+    mover,
+    sightRange: mover.sightRange,
+    giveUpRange: mover.giveUpRange,
+    pathfind: mover.pathfind,
+  });
+  const baseFrame = view.page?.graphic.pattern ?? 0;
+  const sprite = scene.eventSprites.get(eventId);
+  if (decision.kind === "wait") {
+    setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
+    return;
+  }
+  const frameDir = applyFacing(mover, decision.dir);
+  if (decision.kind === "touch") {
+    fireEventTouch(scene, eventId, view.trigger.kind);
+    setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+    return;
+  }
+  moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
+  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0 };
+  if (sprite) {
+    sprite.setPosition(characterSpriteX(view.x), characterSpriteY(view.y));
+    updateCharacterDepth(sprite, view.priority);
+    applySpriteAlpha(sprite, mover.opacity);
+    setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
+  }
+  scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
 }
 
 function moveAutonomousRuntimePosition(

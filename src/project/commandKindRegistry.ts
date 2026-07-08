@@ -43,6 +43,8 @@ export const COMMAND_KINDS = [
   "changeGold",
   "changeItem",
   "changeParty",
+  "addFollower",
+  "removeFollower",
   "showPicture",
   "erasePicture",
   "playAudio",

@@ -15,6 +15,9 @@ import type { Dir, GameMap, Project } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
+import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
+import { followerPositions, recordFollowerPlayerStep, resetFollowerTrailNearPlayer } from "@/player/followers";
+import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/player/types";
 import {
   findBlockingRuntimeEventAtInMap,
@@ -44,6 +47,9 @@ export type SceneExpectStep = {
   switchOff?: string | readonly string[];
   variableEquals?: { variableId: string; value: number } | Record<string, number>;
   eventAt?: { eventId: string; x: number; y: number; mapId?: string };
+  eventDistanceToPlayerLessThan?: { eventId: string; distance: number; mapId?: string };
+  followerCount?: number;
+  followerAt?: { name: string; x: number; y: number };
   cameraAt?: { cx: number; cy: number; tolerance?: number };
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
@@ -73,6 +79,8 @@ export interface SceneTestResult {
     readonly y: number;
     readonly camera: { readonly cx: number; readonly cy: number; readonly session?: RuntimeCameraSessionState };
     readonly spawnedCount: number;
+    readonly followerCount: number;
+    readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
     readonly picturesVisible: readonly string[];
     readonly bgm?: string;
     readonly gameOver: boolean;
@@ -115,9 +123,11 @@ interface RunnerState {
   readonly log: string[];
   camera: CameraModel;
   readonly autoStartedKeys: Set<string>;
+  readonly chasers: Map<string, ChaseRuntimeState>;
   facing: Dir;
   gameOver: boolean;
   held: { interp: Interpreter } | null;
+  runtimeFailure: string | null;
 }
 
 export function runSceneTest(project: Project, input: SceneTestInput): SceneTestResult {
@@ -137,11 +147,14 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     log,
     camera: emptyCamera(session),
     autoStartedKeys: new Set(),
+    chasers: new Map(),
     facing: "down",
     gameOver: false,
     held: null,
+    runtimeFailure: null,
   };
   syncFollowCamera(state);
+  refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
     return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.gameOver);
@@ -166,8 +179,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
 function runStep(state: RunnerState, step: SceneStep): string | null {
   switch (step.kind) {
     case "wait":
-      advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
-      return null;
+      return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
     case "move":
       return runMoveStep(state, step);
     case "interact":
@@ -205,8 +217,10 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
     }
     return `이동 대상에 막는 이벤트가 있습니다: ${blocking.event.id} (${x},${y})`;
   }
+  const previous = { x: state.session.x, y: state.session.y };
   state.session.x = x;
   state.session.y = y;
+  recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
@@ -218,8 +232,10 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   const reach = checkReachability(state.project, map.id, { x: state.session.x, y: state.session.y }, [{ x, y }]);
   if (!reach.reachable) return `이동 대상 도달 불가: ${map.id} (${state.session.x},${state.session.y}) -> (${x},${y})`;
+  const previous = { x: state.session.x, y: state.session.y };
   state.session.x = x;
   state.session.y = y;
+  recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, ["touch", "playerTouch"]);
   if (touch) return runEventView(state, touch);
@@ -254,6 +270,7 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
   state.held = null;
   state.eventPositions = emptyEventPositions(state.project);
   state.camera = emptyCamera(state.session);
+  refreshChasers(state);
   syncFollowCamera(state);
   state.log.push("checkpoint retry");
   return null;
@@ -294,13 +311,18 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "wait":
-        advanceTime(state, step.ms);
+        {
+          const failure = advanceTime(state, step.ms);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "transfer":
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
         state.session.y = step.y;
+        resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
+        refreshChasers(state);
         syncFollowCamera(state);
         state.autoStartedKeys.clear();
         {
@@ -311,7 +333,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         break;
       case "showPicture":
         showPictureState(state.session, step);
-        if (step.waitForPicture === true) advanceTime(state, step.durationMs ?? 0);
+        if (step.waitForPicture === true) {
+          const failure = advanceTime(state, step.durationMs ?? 0);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "erasePicture":
@@ -328,12 +353,18 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         break;
       case "cameraControl":
         startCameraControl(state, step);
-        if (step.wait) advanceUntilCameraSettled(state);
+        if (step.wait) {
+          const failure = advanceUntilCameraSettled(state);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "scrollMap":
         startScrollMap(state, step);
-        if (step.wait) advanceUntilCameraSettled(state);
+        if (step.wait) {
+          const failure = advanceUntilCameraSettled(state);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "spawnEvent":
@@ -452,26 +483,31 @@ function startCameraTween(
   };
 }
 
-function advanceUntilCameraSettled(state: RunnerState): void {
+function advanceUntilCameraSettled(state: RunnerState): string | null {
   let guard = 0;
   while (state.camera.tween && guard < 10000) {
     guard += 1;
-    advanceTime(state, TICK_MS);
+    const failure = advanceTime(state, TICK_MS);
+    if (failure) return failure;
   }
+  return null;
 }
 
-function advanceTime(state: RunnerState, ms: number): void {
+function advanceTime(state: RunnerState, ms: number): string | null {
   let remaining = Math.max(0, Math.round(ms));
   if (remaining === 0) {
     syncFollowCamera(state);
-    return;
+    return state.runtimeFailure;
   }
   while (remaining > 0) {
     const delta = Math.min(TICK_MS, remaining);
     remaining -= delta;
     state.session.playTimeSeconds += delta / 1000;
     advanceCamera(state, delta);
+    advanceChasers(state, delta);
+    if (state.runtimeFailure) return state.runtimeFailure;
   }
+  return null;
 }
 
 function advanceCamera(state: RunnerState, deltaMs: number): void {
@@ -546,6 +582,20 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     const eventFailure = expectEventAt(state, step.eventAt);
     if (eventFailure) return eventFailure;
   }
+  if (step.eventDistanceToPlayerLessThan) {
+    const distanceFailure = expectEventDistance(state, step.eventDistanceToPlayerLessThan);
+    if (distanceFailure) return distanceFailure;
+  }
+  if (step.followerCount !== undefined && (state.session.followers?.length ?? 0) !== step.followerCount) {
+    return `동행자 수: 기대 ${step.followerCount}, 실제 ${state.session.followers?.length ?? 0}`;
+  }
+  if (step.followerAt) {
+    const actual = followerPositions(state.session).find((entry) => entry.follower.name === step.followerAt?.name);
+    if (!actual) return `동행자 없음: ${step.followerAt.name}`;
+    if (actual.x !== step.followerAt.x || actual.y !== step.followerAt.y) {
+      return `동행자 ${step.followerAt.name}: 기대 (${step.followerAt.x},${step.followerAt.y}), 실제 (${actual.x},${actual.y})`;
+    }
+  }
   if (step.cameraAt) {
     const tolerance = step.cameraAt.tolerance ?? 0;
     if (Math.abs(state.camera.cx - step.cameraAt.cx) > tolerance || Math.abs(state.camera.cy - step.cameraAt.cy) > tolerance) {
@@ -607,6 +657,22 @@ function expectEventAt(
   return null;
 }
 
+function expectEventDistance(
+  state: RunnerState,
+  expected: { readonly eventId: string; readonly distance: number; readonly mapId?: string }
+): string | null {
+  const mapId = expected.mapId ?? state.session.currentMapId;
+  const map = state.project.maps[mapId];
+  if (!map) return `이벤트 거리 확인 맵 없음: ${mapId}`;
+  const event = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((view) => view.event.id === expected.eventId);
+  if (!event) return `이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
+  const distance = Math.abs(event.x - state.session.x) + Math.abs(event.y - state.session.y);
+  if (distance >= expected.distance) {
+    return `이벤트 ${expected.eventId} 거리: 기대 < ${expected.distance}, 실제 ${distance}`;
+  }
+  return null;
+}
+
 function toStringList(value: string | readonly string[] | undefined): readonly string[] {
   if (value === undefined) return [];
   return typeof value === "string" ? [value] : value;
@@ -652,6 +718,60 @@ function endingFlags(session: PlaySession): string[] {
     .map((key) => key.slice("ending:".length));
 }
 
+function refreshChasers(state: RunnerState): void {
+  const map = currentMap(state);
+  if (!map) {
+    state.chasers.clear();
+    return;
+  }
+  const active = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)
+    .filter((view) => view.movement.type === "chase");
+  const activeIds = new Set(active.map((view) => view.event.id));
+  for (const key of [...state.chasers.keys()]) {
+    if (!activeIds.has(key)) state.chasers.delete(key);
+  }
+  for (const view of active) {
+    const existing = state.chasers.get(view.event.id);
+    if (existing) {
+      existing.moveIntervalMs = npcMoveIntervalMs(view.movement.frequency);
+      continue;
+    }
+    state.chasers.set(view.event.id, {
+      timer: 0,
+      moveIntervalMs: npcMoveIntervalMs(view.movement.frequency),
+    });
+  }
+}
+
+function advanceChasers(state: RunnerState, deltaMs: number): void {
+  if (state.gameOver || state.runtimeFailure) return;
+  refreshChasers(state);
+  const map = currentMap(state);
+  if (!map) return;
+  for (const [eventId, mover] of state.chasers) {
+    const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)
+      .find((entry) => entry.event.id === eventId);
+    if (!view) continue;
+    const decision = nextChaseDecision({
+      project: state.project,
+      map,
+      from: { x: view.x, y: view.y },
+      player: { x: state.session.x, y: state.session.y },
+      deltaMs,
+      mover,
+      sightRange: view.movement.sightRange,
+      giveUpRange: view.movement.giveUpRange,
+      pathfind: view.movement.pathfind,
+    });
+    if (decision.kind === "move") {
+      state.eventPositions[eventId] = { x: decision.x, y: decision.y, direction: decision.dir };
+    } else if (decision.kind === "touch" && view.trigger.kind === "eventTouch") {
+      state.runtimeFailure = runEventView(state, view);
+      if (state.runtimeFailure) return;
+    }
+  }
+}
+
 function result(
   ok: boolean,
   project: Project,
@@ -680,6 +800,8 @@ function result(
       y: session.y,
       camera: { cx: camera.cx, cy: camera.cy, session: session.camera },
       spawnedCount: spawnedCount(session),
+      followerCount: session.followers?.length ?? 0,
+      followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
       picturesVisible: Object.keys(session.pictures),
       bgm: session.audio.bgm?.resourceId,
       gameOver,

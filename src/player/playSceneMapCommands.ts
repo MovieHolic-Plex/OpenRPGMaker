@@ -9,6 +9,8 @@ import { dialogueHost } from "@/player/playSceneDom";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
+import { resetFollowerTrailNearPlayer } from "@/player/followers";
+import { syncFollowerSprites } from "@/player/playSceneFollowers";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
 type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
@@ -56,10 +58,12 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   scene.tileY = destination.y;
   scene.session.x = destination.x;
   scene.session.y = destination.y;
+  resetFollowerTrailNearPlayer(scene.session, targetMap);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   scene.player.setPosition(characterSpriteX(destination.x), characterSpriteY(destination.y));
   updateCharacterDepth(scene.player, "same");
+  syncFollowerSprites(scene);
   scene.moving = false;
   scene.centerCamera();
   if (host) {

@@ -18,6 +18,8 @@ import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { EventAnimationType } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
+import { recordFollowerPlayerStep } from "@/player/followers";
+import { syncFollowerSprites } from "@/player/playSceneFollowers";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -91,10 +93,12 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     scene.tileY = scene.movingTo.y;
     scene.session.x = scene.tileX;
     scene.session.y = scene.tileY;
+    recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
     scene.moving = false;
     scene.player.x = characterSpriteX(scene.tileX);
     scene.player.y = characterSpriteY(scene.tileY);
     updateCharacterDepth(scene.player, "same");
+    syncFollowerSprites(scene);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
     return;

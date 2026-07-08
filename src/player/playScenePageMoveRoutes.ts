@@ -81,6 +81,8 @@ function routeForPageMovement(
       return { moves: [...DIRECTIONAL_MOVES], repeat: true, strategy: "random" };
     case "approach":
       return { moves: [...DIRECTIONAL_MOVES], repeat: true, strategy: "approach" };
+    case "chase":
+      return { moves: [], repeat: true, strategy: "chase" };
     case "custom":
       return movement.route
         ? { moves: [...movement.route.moves], repeat: movement.route.repeat, strategy: "sequence" }
@@ -100,6 +102,9 @@ function configurePageMover(
   mover.frequencyRank = clampSetting(movement.frequency);
   mover.moveDurationMs = npcMoveDurationMs(movement.speed);
   mover.moveIntervalMs = npcMoveIntervalMs(movement.frequency);
+  mover.sightRange = normalizeOptionalRange(movement.sightRange);
+  mover.giveUpRange = normalizeOptionalRange(movement.giveUpRange);
+  mover.pathfind = movement.pathfind !== false;
 }
 
 function removePageRouteForEvent(scene: PageMoveRouteSceneContext, eventId: string): void {
@@ -112,4 +117,9 @@ function removePageRouteForEvent(scene: PageMoveRouteSceneContext, eventId: stri
 function clampSetting(value: number): number {
   if (!Number.isFinite(value)) return 3;
   return Math.min(8, Math.max(1, Math.trunc(value)));
+}
+
+function normalizeOptionalRange(value: number | undefined): number | undefined {
+  if (value === undefined || !Number.isFinite(value)) return undefined;
+  return Math.max(0, Math.trunc(value));
 }

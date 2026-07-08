@@ -60,6 +60,8 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeGold: { kind: "changeGold", op: "+=", amount: 10 },
   changeItem: { kind: "changeItem", itemId: "item1", op: "+=", amount: 1 },
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
+  addFollower: { kind: "addFollower", actorId: "actor1", name: "동행자" },
+  removeFollower: { kind: "removeFollower", all: true },
   showPicture: { kind: "showPicture", pictureId: "pic1", resourceId: "res1", x: 0, y: 0 },
   erasePicture: { kind: "erasePicture", pictureId: "pic1" },
   playAudio: { kind: "playAudio", resourceId: "res1", loop: false },

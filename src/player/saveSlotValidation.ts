@@ -134,6 +134,38 @@ export function isRuntimeNpcTravelStateRecord(value: unknown): value is Record<s
   );
 }
 
+export function isRuntimeFollowerArray(value: unknown): value is PlaySession["followers"] {
+  if (!Array.isArray(value)) return false;
+  return value.every((follower) => {
+    if (!isRecord(follower)) return false;
+    if (follower.eventId !== undefined && typeof follower.eventId !== "string") return false;
+    if (typeof follower.name !== "string") return false;
+    if (!isRecord(follower.graphic)) return false;
+    const graphic = follower.graphic;
+    if (graphic.transparent !== undefined && typeof graphic.transparent !== "boolean") return false;
+    if (graphic.direction !== undefined && !isDirection(graphic.direction)) return false;
+    if (graphic.pattern !== undefined && typeof graphic.pattern !== "number" && typeof graphic.pattern !== "string") return false;
+    if (graphic.sprite !== undefined) {
+      if (!isRecord(graphic.sprite)) return false;
+      if (graphic.sprite.type !== "bundled" && graphic.sprite.type !== "uploaded") return false;
+      if (typeof graphic.sprite.id !== "string") return false;
+    }
+    return true;
+  });
+}
+
+export function isRuntimeFollowerTrail(value: unknown): value is PlaySession["followerTrail"] {
+  if (!Array.isArray(value)) return false;
+  return value.every((point) => {
+    if (!isRecord(point)) return false;
+    return (
+      typeof point.x === "number" &&
+      typeof point.y === "number" &&
+      (point.direction === undefined || isDirection(point.direction))
+    );
+  });
+}
+
 export function parseMapOverrides(value: Record<string, unknown>): PlaySession["mapOverrides"] {
   const parsed: PlaySession["mapOverrides"] = {};
   for (const [mapId, layers] of Object.entries(value)) {
@@ -226,6 +258,10 @@ export function isStringArray(value: unknown): value is readonly string[] {
 
 function optionalFiniteNumber(value: unknown): boolean {
   return value === undefined || (typeof value === "number" && Number.isFinite(value));
+}
+
+function isDirection(value: unknown): value is "down" | "left" | "right" | "up" {
+  return value === "down" || value === "left" || value === "right" || value === "up";
 }
 
 type ParsedAudioTrack =

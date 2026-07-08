@@ -69,6 +69,8 @@ export interface RuntimeStateSnapshot {
   readonly actorLevels: Record<string, number>;
   readonly actorVitals: Record<string, ActorVitals>;
   readonly eventLocations: PlaySession["eventLocations"];
+  readonly followers?: PlaySession["followers"];
+  readonly followerTrail?: PlaySession["followerTrail"];
   readonly removedEventIds?: PlaySession["removedEventIds"];
   readonly spawnedEvents?: PlaySession["spawnedEvents"];
   readonly camera?: PlaySession["camera"];

@@ -21,6 +21,8 @@ function mkSession(): PlaySession {
     eventLocations: {},
     erasedEventIds: [],
     npcTravelStates: {},
+    followers: [],
+    followerTrail: [],
     actorEquipment: {},
     actorRows: {},
     currentMapId: "m1",

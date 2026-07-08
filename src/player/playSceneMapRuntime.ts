@@ -217,6 +217,8 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
 export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.eventPositions = initialRuntimeEventPositions(scene.map.events);
   scene.eventSprites.clear();
+  for (const sprite of scene.followerSprites.values()) sprite.destroy();
+  scene.followerSprites.clear();
   scene.parallelProcesses.clear();
   scene.autoStartedKeys.clear();
   scene.pageMoveRouteKeys.clear();
@@ -266,6 +268,8 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     actorLevels: scene.session.actorLevels,
     actorVitals: scene.session.actorVitals,
     eventLocations: scene.session.eventLocations,
+    followers: scene.session.followers,
+    followerTrail: scene.session.followerTrail,
     removedEventIds: scene.session.removedEventIds,
     spawnedEvents: scene.session.spawnedEvents,
     camera: scene.session.camera,

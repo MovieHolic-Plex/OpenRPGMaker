@@ -32,6 +32,8 @@ const CONTRACT_TEST_TODO_WHITELIST: readonly CommandKind[] = [
   "changeGold",
   "changeItem",
   "changeParty",
+  "addFollower",
+  "removeFollower",
   "changeExp",
   "changeLevel",
   "changeEquipment",

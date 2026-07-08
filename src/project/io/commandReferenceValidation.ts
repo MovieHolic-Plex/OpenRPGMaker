@@ -71,6 +71,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "inn":
     case "checkpointSave":
     case "killPlayer":
+    case "removeFollower":
     case "gameOver":
     case "ending":
     case "returnToTitle":
@@ -78,6 +79,10 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "triggerEnding":
       if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);
+      return;
+    case "addFollower":
+      if ((command.actorId ?? "").trim().length > 0) assert(context.actorIds.has(command.actorId ?? ""), `addFollower: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
+      if (command.graphic?.sprite?.id) validateOptionalCommandResource("addFollower: graphic.sprite", command.graphic.sprite.id, context.resourceIds);
       return;
     case "changeFace":
       validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);

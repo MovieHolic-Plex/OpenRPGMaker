@@ -184,6 +184,8 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(String(cmd.amount))
   ),
   changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
+  addFollower: (cmd) => commandLine("동행자 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
+  removeFollower: (cmd) => commandLine("동행자 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
   showPicture: (cmd) => commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
   erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),

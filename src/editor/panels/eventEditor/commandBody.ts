@@ -52,6 +52,10 @@ function terminalFallbackBody(cmd: Command): HTMLElement | undefined {
       return terminalHint("kill-player-editor", "파티를 전멸시키고 게임 오버 화면을 엽니다.");
     case "triggerEnding":
       return terminalHint("trigger-ending-editor", "지정 엔딩 또는 조건을 만족하는 최우선 엔딩을 실행합니다.");
+    case "addFollower":
+      return terminalHint("add-follower-editor", "동행 NPC를 세션에 추가합니다. actorId 또는 graphic을 사용합니다.");
+    case "removeFollower":
+      return terminalHint("remove-follower-editor", "동행 NPC를 이름으로 제거하거나 all=true로 모두 제거합니다.");
     case "gameOver":
       return terminalHint("game-over-editor", "설정 없음. 게임 오버 화면을 엽니다.");
     case "returnToTitle":

@@ -27,11 +27,22 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     assert(requireArray(`map ${id}.upperTiles`, map.upperTiles).length === expected, `map ${id}: upperTiles 길이 불일치.`);
     if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
     if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
+    if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
       validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
     }
   }
   return maps;
+}
+
+function validateSafeZones(label: string, value: unknown): void {
+  for (const [index, rectValue] of requireArray(label, value).entries()) {
+    const rect = requireRecord(`${label}[${index}]`, rectValue);
+    requireNumber(`${label}[${index}].x`, rect.x);
+    requireNumber(`${label}[${index}].y`, rect.y);
+    requireNumber(`${label}[${index}].w`, rect.w);
+    requireNumber(`${label}[${index}].h`, rect.h);
+  }
 }
 
 function validateTileStacks(label: string, value: unknown, cellCount: number): void {
@@ -78,13 +89,17 @@ function validatePageShape(label: string, value: unknown): void {
       movementType === "random" ||
       movementType === "approach" ||
       movementType === "custom" ||
-      movementType === "living",
+      movementType === "living" ||
+      movementType === "chase",
     `${label}.movement.type이 잘못되었습니다.`
   );
   requireNumber(`${label}.movement.speed`, movement.speed);
   requireNumber(`${label}.movement.frequency`, movement.frequency);
   if (movement.route !== undefined) validateMoveRoute(`${label}.movement.route`, movement.route);
   if (movement.living !== undefined) validateLivingMovement(`${label}.movement.living`, movement.living);
+  if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
+  if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
+  if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
   validateCommandArray(`${label}.commands`, page.commands);
 }
 

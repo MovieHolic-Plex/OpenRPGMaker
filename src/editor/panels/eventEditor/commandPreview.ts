@@ -54,6 +54,8 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeItem: itemStage,
   shop: shopStage,
   changeParty: (cmd) => actorStage(cmd.actorId, cmd.action === "add" ? "파티에 추가" : "파티에서 제외"),
+  addFollower: (cmd) => screenMock(cmd.name || cmd.actorId || "FOLLOWER", "title"),
+  removeFollower: (cmd) => screenMock(cmd.all === true ? "FOLLOWERS OFF" : "FOLLOWER OFF", "title"),
   changeGold: goldStage,
   battleProcessing: battleStage,
   setSwitch: (cmd) => lampStage(switchName(cmd.switchId), cmd.value),

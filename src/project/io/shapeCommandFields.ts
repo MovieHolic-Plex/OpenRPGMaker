@@ -96,6 +96,15 @@ function validateCommandShape(label: string, value: unknown): void {
     case "triggerEnding":
       if (command.endingId !== undefined) requireString(`${label}.endingId`, command.endingId);
       return;
+    case "addFollower":
+      if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
+      if (command.name !== undefined) requireString(`${label}.name`, command.name);
+      if (command.graphic !== undefined) requireRecord(`${label}.graphic`, command.graphic);
+      return;
+    case "removeFollower":
+      if (command.name !== undefined) requireString(`${label}.name`, command.name);
+      if (command.all !== undefined) requireBoolean(`${label}.all`, command.all);
+      return;
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);

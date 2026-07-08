@@ -60,6 +60,7 @@ import {
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
+import { syncFollowerSprites } from "@/player/playSceneFollowers";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -74,6 +75,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   running = false;
   eventPositions: RuntimeEventPositions = {};
   eventSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  followerSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   declare runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess> = new Map();
   autoStartedKeys: Set<string> = new Set();
@@ -128,6 +130,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     );
     placeCharacterSprite(this.player, "same");
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
+    syncFollowerSprites(this);
     this.centerCamera();
     // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
     // (runEvent가 dialogue 없으면 즉시 return하므로). dialogue는 player.ts가
@@ -183,6 +186,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     }
     refreshSceneRuntimeSurfaces(this);
+    syncFollowerSprites(this);
     applyStoredCameraState(this);
   }
 
@@ -282,6 +286,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     stopAllAudio();
     resumeAudioState(this.session.audio, project);
     this.refreshRuntimeSurfaces();
+    syncFollowerSprites(this);
   }
 
   hasCheckpoint(): boolean {

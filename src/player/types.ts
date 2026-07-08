@@ -2,7 +2,7 @@
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, MapId, Command, MessageWindowSettings, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, MessageWindowSettings, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
 
@@ -222,6 +222,18 @@ export type RuntimeNpcTravelState = {
   readonly destinationIndex: number;
 };
 
+export type RuntimeFollowerLike = {
+  readonly eventId?: string;
+  readonly graphic: EventPageGraphic;
+  readonly name: string;
+};
+
+export type RuntimeFollowerTrailPointLike = {
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
+};
+
 // 인터프리터가 요구하는 세션 인터페이스.
 // project/session.ts의 PlaySession이 이를 만족.
 export interface PlaySessionLike {
@@ -250,6 +262,8 @@ export interface PlaySessionLike {
   spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
   camera?: RuntimeCameraSessionState;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
+  followers?: RuntimeFollowerLike[];
+  followerTrail?: RuntimeFollowerTrailPointLike[];
   playTimeSeconds?: number;
   currentMapId: MapId;
   x: number;

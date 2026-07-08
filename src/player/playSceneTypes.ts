@@ -28,7 +28,7 @@ export type AutonomousMover = {
   step: number;
   timer: number;
   repeat: boolean;
-  strategy: "sequence" | "random" | "approach";
+  strategy: "sequence" | "random" | "approach" | "chase";
   facing: Dir;
   directionFix: boolean;
   through: boolean;
@@ -39,6 +39,13 @@ export type AutonomousMover = {
   moveIntervalMs: number;
   moveDurationMs: number;
   activeMove: AutonomousMoveTween | null;
+  sightRange?: number;
+  giveUpRange?: number;
+  pathfind?: boolean;
+  chaseRepathTimerMs?: number;
+  chasePath?: { readonly x: number; readonly y: number }[];
+  chaseActive?: boolean;
+  chaseHome?: { readonly x: number; readonly y: number };
 };
 
 export type AutonomousMoveTween = {
@@ -82,6 +89,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   running: boolean;
   eventPositions: RuntimeEventPositions;
   eventSprites: Map<string, Phaser.GameObjects.Sprite>;
+  followerSprites: Map<string, Phaser.GameObjects.Sprite>;
   runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess>;
   autoStartedKeys: Set<string>;

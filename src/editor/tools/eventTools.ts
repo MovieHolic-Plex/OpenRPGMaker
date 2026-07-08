@@ -361,6 +361,117 @@ const placeTrap: ToolDefinition = {
   },
 };
 
+const makeChaseScene: ToolDefinition = {
+  name: "make_chase_scene",
+  description:
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      chaser: { type: "object", description: "{at:{x,y},graphic,speed?,sightRange?}" },
+      killOnTouch: { type: "boolean" },
+      safeZone: { type: "object", description: "{x,y,w,h}" },
+      activateSwitch: { type: "string" },
+      checkpointOnEntry: { type: "boolean" },
+    },
+    required: ["mapId", "chaser"],
+  },
+  invalidArgsExample: {
+    mapId: "map1",
+    chaser: { at: { x: 8, y: 4 }, graphic: { query: "monster" }, speed: 6, sightRange: 8 },
+    killOnTouch: true,
+    safeZone: { x: 1, y: 1, w: 3, h: 2 },
+    activateSwitch: "sw_chase_on",
+    checkpointOnEntry: true,
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const chaser = chaseSpec(args.chaser);
+    if (!inMapBounds(map, chaser.at.x, chaser.at.y)) {
+      throw new ToolError(`추격자 위치가 맵 밖입니다: (${chaser.at.x}, ${chaser.at.y})`, { code: "chaser-out-of-bounds", mapId: map.id, x: chaser.at.x, y: chaser.at.y });
+    }
+    const graphic = resolveGraphic(chaser.graphic as GraphicSpec | undefined);
+    const id = genId("ev_chaser");
+    const activateSwitch = typeof args.activateSwitch === "string" && args.activateSwitch.trim()
+      ? args.activateSwitch.trim()
+      : undefined;
+    if (activateSwitch) ensureNamedSwitch(draft, activateSwitch, `추격 활성: ${id}`);
+    const safeZone = args.safeZone === undefined ? undefined : rectFromRecord(args.safeZone, "safeZone");
+    if (safeZone) {
+      map.safeZones = [...(map.safeZones ?? []), safeZone];
+    }
+    const speed = Number.isFinite(chaser.speed) ? Math.max(1, Math.min(8, Math.trunc(chaser.speed ?? 6))) : 6;
+    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
+    const event: GameEvent = {
+      id,
+      x: chaser.at.x,
+      y: chaser.at.y,
+      trigger: { kind: "eventTouch" },
+      commands: [],
+      pages: [
+        {
+          id: `${id}_chase`,
+          name: "추격자",
+          conditions: activateSwitch ? [{ kind: "switch", switchId: activateSwitch, value: true }] : [],
+          graphic,
+          trigger: { kind: "eventTouch" },
+          priority: "same",
+          overlapForbidden: true,
+          animationType: "normal",
+          movement: {
+            type: "chase",
+            speed,
+            frequency: speed,
+            ...(chaser.sightRange !== undefined ? { sightRange: Math.max(0, Math.trunc(chaser.sightRange)) } : {}),
+            pathfind: true,
+          },
+          commands,
+        },
+      ],
+    };
+    assertEventShape(event);
+    upsertEventIntoMap(map, event);
+    const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(map) : undefined;
+    return {
+      summary: `${map.name}에 추격자 '${id}' 생성 (${chaser.at.x}, ${chaser.at.y})${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      data: { eventId: id, safeZone, activateSwitch, checkpointEventId },
+    };
+  },
+};
+
+function chaseSpec(value: unknown): {
+  readonly at: Point;
+  readonly graphic?: unknown;
+  readonly speed?: number;
+  readonly sightRange?: number;
+} {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?} 객체여야 합니다.", { code: "chaser-spec" });
+  }
+  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown };
+  return {
+    at: pointFromRecord(record.at, "chaser.at"),
+    graphic: record.graphic,
+    speed: typeof record.speed === "number" ? record.speed : undefined,
+    sightRange: typeof record.sightRange === "number" ? record.sightRange : undefined,
+  };
+}
+
+function rectFromRecord(value: unknown, label: string): { x: number; y: number; w: number; h: number } {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError(`${label}는 {x,y,w,h} 객체여야 합니다.`, { code: "rect" });
+  }
+  const record = value as { x?: unknown; y?: unknown; w?: unknown; h?: unknown; width?: unknown; height?: unknown };
+  const w = typeof record.w === "number" ? record.w : record.width;
+  const h = typeof record.h === "number" ? record.h : record.height;
+  if (typeof record.x !== "number" || typeof record.y !== "number" || typeof w !== "number" || typeof h !== "number") {
+    throw new ToolError(`${label}.x/y/w/h 숫자가 필요합니다.`, { code: "rect" });
+  }
+  return { x: Math.trunc(record.x), y: Math.trunc(record.y), w: Math.max(0, Math.trunc(w)), h: Math.max(0, Math.trunc(h)) };
+}
+
 function trapCells(map: GameMap, args: Record<string, unknown>): Point[] {
   const cells: Point[] = [];
   if (args.at !== undefined) cells.push(pointFromRecord(args.at, "at"));
@@ -646,6 +757,7 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   createTransferPair,
   placeBattleBlocker,
   placeTrap,
+  makeChaseScene,
   duplicateEvent,
   removeEvent,
   moveEvent,
