@@ -3,6 +3,8 @@ import {
   CHOICE_CANCEL_BRANCH_INDEX,
   FORK_ELSE_BRANCH_INDEX,
   FORK_THEN_BRANCH_INDEX,
+  PROMOTE_FAILURE_BRANCH_INDEX,
+  PROMOTE_SUCCESS_BRANCH_INDEX,
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { openEventCommandEditDialog } from "./commandEditDialog";
@@ -363,6 +365,35 @@ function appendCommandChildren(
       );
     });
     host.append(renderMarkerLine(": 상점 분기 종료", depth, "shop"));
+  }
+  if (cmd.kind === "promoteActor") {
+    host.append(renderMarkerLine(": 승급 성공", depth, "fork"));
+    (cmd.successBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+          child,
+          [...path, PROMOTE_SUCCESS_BRANCH_INDEX, childIndex],
+          containerPath,
+          actions,
+          depth + 1,
+          faceState,
+          options
+      );
+    });
+    host.append(renderMarkerLine(": 승급 실패", depth, "fork"));
+    (cmd.failureBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+          child,
+          [...path, PROMOTE_FAILURE_BRANCH_INDEX, childIndex],
+          containerPath,
+          actions,
+          depth + 1,
+          faceState,
+          options
+      );
+    });
+    host.append(renderMarkerLine(": 승급 분기 종료", depth, "fork"));
   }
 }
 

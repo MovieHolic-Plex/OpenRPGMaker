@@ -77,6 +77,7 @@ export interface RuntimeStateSnapshot {
   readonly lighting?: PlaySession["lighting"];
   readonly actorEquipment: PlaySession["actorEquipment"];
   readonly actorRows: PlaySession["actorRows"];
+  readonly classOverrides: PlaySession["classOverrides"];
   readonly audio: AudioCommandState;
   readonly pictures: Record<string, PictureState>;
   readonly m2Runtime?: M2RuntimeState;

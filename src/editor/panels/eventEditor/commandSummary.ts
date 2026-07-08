@@ -160,6 +160,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   learnSkill: (cmd) => commandLine("특수기 변경", valuePart(actorName(cmd.actorId)), plainPart(" / "), valuePart(skillName(cmd.skillId))),
   changeExp: (cmd) => commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
   changeLevel: (cmd) => commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  promoteActor: (cmd) => commandLine("승급", valuePart(actorName(cmd.actorId)), plainPart(" → "), valuePart(cmd.toClassId ? className(cmd.toClassId) : "자동 선택")),
   changeEquipment: (cmd) => commandLine(
     "장비 변경",
     valuePart(actorName(cmd.actorId)),
@@ -439,6 +440,11 @@ function itemName(id: string): string {
 function equipmentName(id: string): string {
   const project = store.getCurrent();
   return id ? project.database.equipment.find((equipment) => equipment.id === id)?.name ?? id : "(장비 해제)";
+}
+
+function className(id: string): string {
+  const project = store.getCurrent();
+  return project.database.classes.find((record) => record.id === id)?.name ?? id;
 }
 
 function equipmentSlotLabel(slot: Extract<Command, { kind: "changeEquipment" }>["slot"]): string {

@@ -1,6 +1,7 @@
 // 자동 레벨업 순수 로직. 누적 경험치를 expCurve 와 대조해 레벨을 올리고,
 // 파라미터 곡선으로 능력치 성장분을 산출하며, 새로 습득하는 스킬을 모은다.
 import { ACTOR_LEVEL_MAX, normalizeActorRecord, parameterValueAtLevel, totalExpForLevel } from "@/project/actorModel";
+import { classLearnedSkillIdsUpToLevel, hasActorClassOverride } from "@/project/sessionClass";
 import type { Project, SkillId } from "@/project/types";
 
 export interface BattleLevelUpResult {
@@ -25,11 +26,15 @@ export function computeActorLevelUp(
   project: Project,
   actorId: string,
   currentLevel: number,
-  totalExp: number
+  totalExp: number,
+  options: { readonly classOverrides?: Readonly<Record<string, string>> } = {}
 ): BattleLevelUpResult | null {
   const record = project.database.actors.find((entry) => entry.id === actorId);
   if (!record) return null;
   const actor = normalizeActorRecord(record);
+  const classId = options.classOverrides?.[actorId];
+  const klass = classId ? project.database.classes.find((entry) => entry.id === classId) : undefined;
+  const useClassGrowth = hasActorClassOverride({ classOverrides: options.classOverrides ? { ...options.classOverrides } : undefined }, actorId) && klass !== undefined;
   const maxLevel = actor.maxLevel;
   let level = Math.max(1, Math.min(currentLevel, maxLevel));
   const fromLevel = level;
@@ -39,11 +44,18 @@ export function computeActorLevelUp(
   }
   if (level === fromLevel) return null;
 
-  const curves = actor.parameterCurves;
+  const curves = useClassGrowth && klass ? klass.parameterCurves : actor.parameterCurves;
   const gainOf = (curve: readonly number[]) => parameterValueAtLevel(curve, level) - parameterValueAtLevel(curve, fromLevel);
-  const learnedSkillIds = actor.learnedSkills
-    .filter((entry) => entry.level > fromLevel && entry.level <= level)
-    .map((entry) => entry.skillId);
+  const learnedSkillIds = new Set<SkillId>(
+    actor.learnedSkills
+      .filter((entry) => entry.level > fromLevel && entry.level <= level)
+      .map((entry) => entry.skillId)
+  );
+  if (useClassGrowth && klass) {
+    for (const skillId of classLearnedSkillIdsUpToLevel(project, klass.id, level)) {
+      if (!classLearnedSkillIdsUpToLevel(project, klass.id, fromLevel).includes(skillId)) learnedSkillIds.add(skillId);
+    }
+  }
 
   return {
     actorId,
@@ -56,6 +68,6 @@ export function computeActorLevelUp(
     defenseGain: gainOf(curves.defense),
     mindGain: gainOf(curves.mind),
     agilityGain: gainOf(curves.agility),
-    learnedSkillIds,
+    learnedSkillIds: [...learnedSkillIds],
   };
 }

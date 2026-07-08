@@ -176,6 +176,7 @@ export type Command =
   | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId }
   | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "changeLevel"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "promoteActor"; actorId: ActorId; toClassId?: string; successBranch?: Command[]; failureBranch?: Command[] }
   | { kind: "changeEquipment"; actorId: ActorId; slot: ActorEquipmentSlot; equipmentId: EquipmentId }
   | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number }

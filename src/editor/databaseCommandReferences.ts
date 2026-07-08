@@ -84,6 +84,11 @@ function commandReferences(command: Command, collection: DatabaseCollection, id:
       return commandListReferences(command.body, collection, id);
     case "shop":
       return (collection === "items" && command.itemIds.includes(id)) || commandListReferences(command.transactionBranch ?? [], collection, id);
+    case "promoteActor":
+      return (collection === "actors" && command.actorId === id) ||
+        (collection === "classes" && command.toClassId === id) ||
+        commandListReferences(command.successBranch ?? [], collection, id) ||
+        commandListReferences(command.failureBranch ?? [], collection, id);
     case "learnSkill":
       return (collection === "actors" && command.actorId === id) || (collection === "skills" && command.skillId === id);
     case "battleProcessing":
@@ -143,6 +148,8 @@ function commandResourceReferences(command: Command, resourceId: string): boolea
       return moveRouteResourceReferences(command.route.moves, resourceId);
     case "shop":
       return commandListResourceReferences(command.transactionBranch ?? [], resourceId);
+    case "promoteActor":
+      return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
     case "showPicture":
     case "playAudio":
       return command.resourceId === resourceId;
@@ -169,6 +176,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
       return commandListReferencesSwitchVariable(command.body, kind, id);
     case "shop":
       return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id);
+    case "promoteActor":
+      return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
     case "inputWait":
     case "inputNumber":
       return kind === "variable" && command.variableId === id;

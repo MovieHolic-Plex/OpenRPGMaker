@@ -14,6 +14,7 @@ function mkSession(): PlaySession {
     gold: 750,
     inventory: { potion: 3 },
     partyActorIds: [],
+    classOverrides: {},
     actorSkillIds: {},
     actorExperience: {},
     actorLevels: {},

@@ -15,6 +15,7 @@ import {
   changeLevelBody,
   changePartyBody,
   enterHeroNameBody,
+  promoteActorBody,
   recoverAllBody,
 } from "./commandBodyDatabase";
 import { facesetIconOf, recordPickerWithPreview } from "./recordPicker";
@@ -53,6 +54,8 @@ export function renderAdvancedCommandBody(
       return changeExpBody(context, cmd);
     case "changeLevel":
       return changeLevelBody(context, cmd);
+    case "promoteActor":
+      return promoteActorBody(context, cmd);
     case "changeEquipment":
       return changeEquipmentBody(context, cmd);
     case "changeActorHp":

@@ -21,11 +21,11 @@ export const DEFAULT_RUNTIME_BATTLE_COMMANDS: readonly RuntimeBattleCommand[] = 
 export function battleCommandsForActor(
   project: Project,
   actorRecordId: string | undefined,
-  options: { readonly includeSwitch?: boolean; readonly forceSwitchOnly?: boolean } = {}
+  options: { readonly includeSwitch?: boolean; readonly forceSwitchOnly?: boolean; readonly classId?: string } = {}
 ): readonly RuntimeBattleCommand[] {
   if (options.forceSwitchOnly) return [switchCommand()];
   const actor = actorRecordId ? project.database.actors.find((record) => record.id === actorRecordId) : undefined;
-  const klass = actor ? project.database.classes.find((record) => record.id === actor.classId) : undefined;
+  const klass = actor ? project.database.classes.find((record) => record.id === (options.classId ?? actor.classId)) : undefined;
   const source = klass?.battleCommands ?? [];
   const commands = source
     .map((command) => resolveClassBattleCommand(project, command))

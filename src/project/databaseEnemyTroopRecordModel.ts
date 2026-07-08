@@ -21,6 +21,7 @@ export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRe
   return {
     id: record.id,
     name: record.name,
+    level: typeof record.level === "number" && Number.isFinite(record.level) ? clampInteger(record.level, 1, 99) : undefined,
     monsterResourceId: cleanOptionalId(record.monsterResourceId),
     graphicHue: clampInteger(record.graphicHue ?? 0, 0, 360),
     transparent: record.transparent ?? false,

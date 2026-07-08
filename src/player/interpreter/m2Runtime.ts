@@ -1,6 +1,7 @@
 import type { M2CommandCatalogEntry } from "@/editor/eventCommands/m2Catalog";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
-import type { ActorParameterKey, M2CommandFields } from "@/project/types";
+import { changeActorClass } from "@/project/sessionClass";
+import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/player/types";
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
@@ -15,7 +16,7 @@ export function executeM2RuntimeCommand(
   session: PlaySessionLike,
   entry: M2CommandCatalogEntry,
   command: M2RuntimeCommand,
-  context: { readonly currentEventId?: string } = {}
+  context: { readonly currentEventId?: string; readonly project?: Project } = {}
 ): boolean {
   // 배틀 전용 명령(index 98~108)은 맵 인터프리터에서 실행할 수 없다.
   // false를 반환하면 commandCatalog.ts의 support 등급 기반 경고/스킵이 담당한다.
@@ -31,7 +32,7 @@ function executeByTitle(
   session: PlaySessionLike,
   entry: M2CommandCatalogEntry,
   command: M2RuntimeCommand,
-  context: { readonly currentEventId?: string }
+  context: { readonly currentEventId?: string; readonly project?: Project }
 ): void {
   const runtime = ensureM2Runtime(session);
   const fields = command.fields;
@@ -99,11 +100,11 @@ function executeByTitle(
     return;
   }
   if (title.startsWith("Change Actor ")) {
-    mutateActorState(session, runtime, title, fields);
+    mutateActorState(session, runtime, title, fields, context);
     return;
   }
   if (title === "Change Parameters" || title === "Change State" || title === "Damage Processing") {
-    mutateActorState(session, runtime, title, fields);
+    mutateActorState(session, runtime, title, fields, context);
     return;
   }
   if (title.startsWith("Get ")) {
@@ -186,7 +187,13 @@ function accessKey(title: string): keyof M2RuntimeState["access"] {
   return "menu";
 }
 
-function mutateActorState(session: PlaySessionLike, runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
+function mutateActorState(
+  session: PlaySessionLike,
+  runtime: M2RuntimeState,
+  title: string,
+  fields: M2CommandFields,
+  context: { readonly project?: Project } = {}
+): void {
   const actorId = fieldString(fields, "target", "party");
   runtime.actors[actorId] ??= {};
   const actor = runtime.actors[actorId];
@@ -212,7 +219,13 @@ function mutateActorState(session: PlaySessionLike, runtime: M2RuntimeState, tit
     return;
   }
   if (title === "Change Actor Class") {
-    actor.classId = fieldString(fields, "value", "");
+    const classId = fieldString(fields, "value", "");
+    actor.classId = classId;
+    if (context.project && classId) {
+      for (const targetActorId of resolveActorTargets(session, actorId)) {
+        changeActorClass(session, context.project, targetActorId, classId);
+      }
+    }
     return;
   }
   if (title === "Change Battle Commands") {

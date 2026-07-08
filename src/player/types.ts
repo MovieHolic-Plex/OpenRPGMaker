@@ -253,6 +253,7 @@ export interface PlaySessionLike {
   actorEquipment?: Record<string, ActorInitialEquipment>;
   actorNames?: Record<ActorId, string>;
   actorCharacterResourceIds?: Record<ActorId, string>;
+  classOverrides?: Record<ActorId, string>;
   actorParamBonuses?: Record<ActorId, Partial<Record<ActorParameterKey, number>>>;
   actorStateIds?: Record<ActorId, string[]>;
   actorVitals: Record<string, ActorVitals>;

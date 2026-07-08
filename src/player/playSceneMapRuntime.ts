@@ -280,6 +280,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     lighting: scene.session.lighting,
     actorEquipment: scene.session.actorEquipment,
     actorRows: scene.session.actorRows,
+    classOverrides: scene.session.classOverrides,
     audio: scene.session.audio,
     pictures: scene.session.pictures,
     m2Runtime: scene.session.m2Runtime,

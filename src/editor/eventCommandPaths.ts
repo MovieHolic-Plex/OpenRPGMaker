@@ -5,6 +5,8 @@ export const FORK_THEN_BRANCH_INDEX = -2;
 export const FORK_ELSE_BRANCH_INDEX = -3;
 export const CHOICE_CANCEL_BRANCH_INDEX = -4;
 export const LOOP_BODY_BRANCH_INDEX = -5;
+export const PROMOTE_SUCCESS_BRANCH_INDEX = -6;
+export const PROMOTE_FAILURE_BRANCH_INDEX = -7;
 
 type MissingBranchMode = "read" | "create";
 
@@ -108,6 +110,8 @@ function resolveCommandBranch(
       return branchIndex === LOOP_BODY_BRANCH_INDEX ? command.body : null;
     case "shop":
       return resolveShopBranch(command, branchIndex, missingBranchMode(options));
+    case "promoteActor":
+      return resolvePromoteActorBranch(command, branchIndex, missingBranchMode(options));
     default:
       return null;
   }
@@ -146,4 +150,20 @@ function resolveShopBranch(
   if (branchIndex !== SHOP_TRANSACTION_BRANCH_INDEX) return null;
   if (!command.transactionBranch && mode === "create") command.transactionBranch = [];
   return command.transactionBranch ?? null;
+}
+
+function resolvePromoteActorBranch(
+  command: Extract<Command, { kind: "promoteActor" }>,
+  branchIndex: number,
+  mode: MissingBranchMode
+): Command[] | null {
+  if (branchIndex === PROMOTE_SUCCESS_BRANCH_INDEX) {
+    if (!command.successBranch && mode === "create") command.successBranch = [];
+    return command.successBranch ?? null;
+  }
+  if (branchIndex === PROMOTE_FAILURE_BRANCH_INDEX) {
+    if (!command.failureBranch && mode === "create") command.failureBranch = [];
+    return command.failureBranch ?? null;
+  }
+  return null;
 }

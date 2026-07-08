@@ -79,11 +79,25 @@ export interface ClassRecord {
   skillIds: SkillId[];
   battleCommands: ClassBattleCommand[];
   learnedSkills: ActorLearnedSkill[];
+  promotions?: ClassPromotion[];
   equipmentPermissions: ClassEquipmentPermissions;
   parameterCurves: ActorParameterCurves;
   expCurve: ActorExperienceCurve;
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+}
+
+export interface ClassPromotion {
+  toClassId: ClassId;
+  requires: ClassPromotionRequirement;
+}
+
+export interface ClassPromotionRequirement {
+  level?: number;
+  switchId?: string;
+  itemId?: ItemId;
+  variableId?: string;
+  atLeast?: number;
 }
 
 export interface ClassOptions {
@@ -271,7 +285,14 @@ export interface EquipmentRecord {
   cursed: boolean;
   twoHanded: boolean;
   usableAsItemSkillId?: SkillId;
+  attackElementIds: string[];
   stateInflictIds: StateId[];
+  stateInflictionChance: number;
+  effectFlags: ItemEquipmentEffectFlags;
+  elementalDefenseIds: string[];
+  stateDefenseIds: StateId[];
+  stateDefenseMode: "resist" | "inflict";
+  stateResistanceChance: number;
 }
 
 export interface EquipmentStatBonuses {
@@ -290,6 +311,7 @@ export interface DatabaseStateEffect {
 export interface EnemyRecord {
   id: EnemyId;
   name: string;
+  level?: number;
   monsterResourceId?: string;
   graphicHue: number;
   transparent: boolean;
@@ -544,5 +566,11 @@ export interface SystemRecords {
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   activeSlots?: number;
+  rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
+}
+
+export interface RewardPolicy {
+  participationOnly?: boolean;
+  levelGapPenalty?: boolean;
 }

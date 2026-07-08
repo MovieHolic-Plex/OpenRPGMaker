@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 106개 툴 — 쓰기 76, 읽기 30.
+> 총 107개 툴 — 쓰기 77, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -62,6 +62,7 @@
 | `upsert_skill` | `skill: object` | 스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `upsert_equipment` | `equipment: object` | 장비(무기/방어구) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `upsert_class` | `class: object` | 직업(클래스) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `define_promotion` | `classId: string`, `toClassId: string`, `requires: object` | 직업 승급 조건을 정의한다. 같은 toClassId 승급은 덮어쓰며 레벨/스위치/아이템 소모/변수 조건을 지원한다. |
 | `upsert_state` | `state: object` | 상태이상(State) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 임의 필드는 거부한다. |
 | `upsert_common_event` | `id: string`, `name: string`, `trigger?: none\|auto\|parallel`, `conditionSwitchId?: string`, `commands: array` | 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능. |
 | `set_session_start` | `gold?: integer`, `inventory?: object`, `partyActorIds?: array` | 게임 시작 상태(골드/인벤토리/파티)를 설정한다. |

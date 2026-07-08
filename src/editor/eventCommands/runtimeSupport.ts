@@ -21,6 +21,7 @@ const M2_RUNTIME_FULL_IDS: ReadonlySet<string> = new Set([
   "m2-050-set-weather-effects",
   "m2-052-move-picture",
   "m2-058-wait-for-all-movement",
+  "m2-091-change-actor-class",
   "m2-098-change-enemy-hp",
   "m2-201-camera-control",
   "m2-203-spawn-event",

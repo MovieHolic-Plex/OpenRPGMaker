@@ -9,6 +9,7 @@ import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
+import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import {
   applyStateEffects,
   attackMultiplierForStates,
@@ -82,6 +83,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     paramBonuses: options.party?.paramBonuses,
     equipment: options.party?.equipment,
     skillIds: options.party?.skillIds,
+    classOverrides: options.party?.classOverrides,
     stateIds: options.party?.stateIds,
     partyActorIds: options.party?.partyActorIds,
   });
@@ -105,7 +107,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictCurrentRoundParticipantIds = new Set<ActorId>();
   const roundLogs: BattleRoundLogSnapshot[] = [];
   const participatingActorIds = new Set<ActorId>();
-  const rewards: { exp: number; gold: number; items: ItemId[]; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
+  const rewards: { exp: number; gold: number; items: ItemId[]; enemyLevel?: number; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
   const sessionState = options.sessionState ?? startStateOf(options.project);
   const battleEventState: BattleEventRuntimeState = {
@@ -258,6 +260,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       currentActorCommandKind = undefined;
       return;
     }
+    const attackCount = actor.equipmentEffects?.doubleAttack ? 2 : 1;
+    for (let index = 0; index < attackCount; index += 1) {
+      if (target.hp <= 0) return;
+      applySingleActorAttack(actor, target);
+    }
+  }
+
+  function applySingleActorAttack(actor: MutableBattler, target: MutableBattler): void {
     const result = applySkillLike(actor, target, {
       power: actor.attackPower,
       statistic: "attack",
@@ -817,7 +827,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // damageMultipliers 는 퍼센트 스케일(A=200,B=150,C=100,D=50,E=0)로 저장된다.
     // 데미지 배율로 쓰려면 100으로 나눈다: C=1.0(중립), A=2.0(약점), D=0.5(내성), E=0(무효),
     // 음수(-100 등)는 흡수(-1.0 = 회복)를 의미한다.
-    return multiplier / 100;
+    const equipmentReduction = target.equipmentEffects?.elementalDefenseIds.includes(elementId) ? 0.5 : 1;
+    return (multiplier / 100) * equipmentReduction;
   }
 
   function applyTroopEvents(eventTurn: number = turn): void {
@@ -935,24 +946,26 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const collected = collectBattleRewards(options.project, enemies, rng);
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
+    rewards.enemyLevel = collected.enemyLevel;
     rewards.items = [...collected.items];
-    rewards.levelUps = computeLevelUpPreview(collected.exp);
+    rewards.levelUps = computeLevelUpPreview(collected.exp, collected.enemyLevel);
   }
 
   // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).
   // 실제 세션 적립/성장은 battleRewardsToSession 이 담당하며 동일 로직으로 일치한다.
-  function computeLevelUpPreview(earnedExp: number): BattleLevelUpResult[] {
+  function computeLevelUpPreview(earnedExp: number, enemyLevel: number | undefined): BattleLevelUpResult[] {
     const party = options.party;
     if (!party) return [];
     const results: BattleLevelUpResult[] = [];
     const seen = new Set<string>();
-    for (const actor of actors) {
-      const actorId = actor.recordId;
+    const actorIds = rewardActorIds(options.project, party.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    for (const actorId of actorIds) {
       if (seen.has(actorId)) continue;
       seen.add(actorId);
       const level = party.levels[actorId] ?? 1;
-      const totalExp = (party.experience[actorId] ?? 0) + earnedExp;
-      const result = computeActorLevelUp(options.project, actorId, level, totalExp);
+      const adjustedExp = expForRewardActor(earnedExp, level, enemyLevel, options.project.system.rewardPolicy);
+      const totalExp = (party.experience[actorId] ?? 0) + adjustedExp;
+      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: party.classOverrides });
       if (result) results.push(result);
     }
     return results;

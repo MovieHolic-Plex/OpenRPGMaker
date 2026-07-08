@@ -76,6 +76,12 @@ function validateCommandShape(label: string, value: unknown): void {
       requireActorAmountOp(`${label}.op`, command.op);
       requireNumber(`${label}.amount`, command.amount);
       return;
+    case "promoteActor":
+      requireString(`${label}.actorId`, command.actorId);
+      if (command.toClassId !== undefined) requireString(`${label}.toClassId`, command.toClassId);
+      if (command.successBranch !== undefined) validateCommandArray(`${label}.successBranch`, command.successBranch);
+      if (command.failureBranch !== undefined) validateCommandArray(`${label}.failureBranch`, command.failureBranch);
+      return;
     case "changeEquipment":
       requireString(`${label}.actorId`, command.actorId);
       requireEquipmentSlot(`${label}.slot`, command.slot);

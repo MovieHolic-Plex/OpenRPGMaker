@@ -9,7 +9,7 @@ import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from 
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -43,7 +43,16 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+  };
+}
+
+function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
+  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined)) return undefined;
+  return {
+    participationOnly: policy.participationOnly === true,
+    levelGapPenalty: policy.levelGapPenalty === true,
   };
 }
 
@@ -79,6 +88,7 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     skillIds: learnedSkills.map((skill) => skill.skillId),
     battleCommands: normalizeBattleCommands(record.battleCommands),
     learnedSkills,
+    promotions: normalizePromotions(record.promotions),
     equipmentPermissions: {
       actorIds: cleanIds(record.equipmentPermissions?.actorIds),
       classIds: cleanIds(record.equipmentPermissions?.classIds),
@@ -169,7 +179,35 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     cursed: record.cursed ?? false,
     twoHanded: record.twoHanded ?? false,
     usableAsItemSkillId: cleanOptionalId(record.usableAsItemSkillId),
+    attackElementIds: cleanIds(record.attackElementIds),
     stateInflictIds: cleanIds(record.stateInflictIds),
+    stateInflictionChance: clampInteger(record.stateInflictionChance ?? 100, 0, 100),
+    effectFlags: normalizeItemEquipmentEffectFlags(record.effectFlags),
+    elementalDefenseIds: cleanIds(record.elementalDefenseIds),
+    stateDefenseIds: cleanIds(record.stateDefenseIds),
+    stateDefenseMode: record.stateDefenseMode === "inflict" ? "inflict" : "resist",
+    stateResistanceChance: clampInteger(record.stateResistanceChance ?? 0, 0, 100),
+  };
+}
+
+function normalizePromotions(promotions: readonly Partial<ClassPromotion>[] | undefined): ClassPromotion[] | undefined {
+  const normalized = (promotions ?? [])
+    .flatMap((promotion): ClassPromotion[] => {
+      const toClassId = cleanOptionalId(promotion.toClassId);
+      if (!toClassId) return [];
+      return [{ toClassId, requires: normalizePromotionRequirement(promotion.requires) }];
+    });
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+function normalizePromotionRequirement(requires: Partial<ClassPromotionRequirement> | undefined): ClassPromotionRequirement {
+  const variableId = cleanOptionalId(requires?.variableId);
+  return {
+    level: typeof requires?.level === "number" ? clampInteger(requires.level, 1, ACTOR_LEVEL_MAX) : undefined,
+    switchId: cleanOptionalId(requires?.switchId),
+    itemId: cleanOptionalId(requires?.itemId),
+    variableId,
+    atLeast: variableId && typeof requires?.atLeast === "number" ? clampInteger(requires.atLeast, -999999, 999999) : undefined,
   };
 }
 

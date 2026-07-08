@@ -102,6 +102,8 @@ export interface PlaySession {
   actorNames?: Record<string, string>;
   // 런타임 주인공 그래픽 오버라이드(Change Actor Graphic). actorId → charset resourceId.
   actorCharacterResourceIds?: Record<string, string>;
+  // 런타임 직업 오버라이드(Change Actor Class/승급). actorId → classId.
+  classOverrides: Record<string, string>;
   // 런타임 능력치 영구 보정(Change Parameters). actorId → parameterKey → delta.
   actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;
   // 필드/전투로 이어지는 런타임 상태 이상(Change State).
@@ -175,6 +177,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     actorRows: initialActorRows(project),
     actorNames: {},
     actorCharacterResourceIds: {},
+    classOverrides: {},
     actorParamBonuses: {},
     actorStateIds: {},
     currentMapId: project.startMapId,

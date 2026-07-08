@@ -1,6 +1,7 @@
 import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
+import { classLearnedSkillIdsUpToLevel, effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import type { BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
@@ -20,6 +21,7 @@ export interface ActorBattlerOverrides {
   readonly paramBonuses?: Readonly<Record<string, Partial<Record<ActorParameterKey, number>>>>;
   readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  readonly classOverrides?: Readonly<Record<string, string>>;
   // 필드에서 이어지는 런타임 상태 이상(Change State).
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
@@ -30,6 +32,7 @@ export interface ActorBattlerOverrides {
 export interface MutableBattler {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
+  readonly classId?: string;
   readonly name: string;
   readonly maxHp: number;
   readonly maxMp: number;
@@ -47,6 +50,7 @@ export interface MutableBattler {
   mp: number;
   gauge: number;
   stateIds: string[];
+  equipmentEffects?: EquipmentRuntimeEffects;
   // 상태별 경과 턴 수(stateId → 턴). 자연 회복/지속 피해 판정용.
   stateTurns: Record<string, number>;
   defending: boolean;
@@ -61,16 +65,21 @@ export function actorBattlers(
     const actor = project.database.actors.find((record) => record.id === actorId);
     if (!actor) throw new Error(`Missing actor: ${actorId}`);
     const normalizedActor = normalizeActorRecord(actor);
+    const effectiveClassId = effectiveActorClassId(project, { classOverrides: overrides?.classOverrides ? { ...overrides.classOverrides } : undefined }, actorId);
+    const effectiveClass = project.database.classes.find((record) => record.id === effectiveClassId);
+    const usesOverrideCurves = hasActorClassOverride({ classOverrides: overrides?.classOverrides ? { ...overrides.classOverrides } : undefined }, actorId) && effectiveClass !== undefined;
+    const curves = usesOverrideCurves && effectiveClass ? effectiveClass.parameterCurves : normalizedActor.parameterCurves;
     // 세션 레벨(레벨업 반영값)이 있으면 그 레벨로 파라미터 곡선을 조회. 없으면 DB initialLevel.
     const level = clampLevel(overrides?.levels?.[actorId] ?? normalizedActor.initialLevel);
     const bonuses = overrides?.paramBonuses?.[actorId];
-    const equipmentBonuses = totalEquipmentBonuses(project, overrides?.equipment?.[actorId] ?? normalizedActor.initialEquipment);
-    const maxHp = parameterWithBonus(normalizedActor.parameterCurves.maxHp, level, bonuses?.maxHp, 1);
-    const maxMp = parameterWithBonus(normalizedActor.parameterCurves.maxMp, level, bonuses?.maxMp, 0);
-    const attack = parameterWithBonus(normalizedActor.parameterCurves.attack, level, (bonuses?.attack ?? 0) + equipmentBonuses.attack, 1);
-    const defense = parameterWithBonus(normalizedActor.parameterCurves.defense, level, (bonuses?.defense ?? 0) + equipmentBonuses.defense, 1);
-    const mind = parameterWithBonus(normalizedActor.parameterCurves.mind, level, (bonuses?.mind ?? 0) + equipmentBonuses.mind, 1);
-    const agility = parameterWithBonus(normalizedActor.parameterCurves.agility, level, (bonuses?.agility ?? 0) + equipmentBonuses.agility, 1);
+    const actorEquipment = overrides?.equipment?.[actorId] ?? normalizedActor.initialEquipment;
+    const equipmentBonuses = totalEquipmentBonuses(project, actorEquipment);
+    const maxHp = parameterWithBonus(curves.maxHp, level, bonuses?.maxHp, 1);
+    const maxMp = parameterWithBonus(curves.maxMp, level, bonuses?.maxMp, 0);
+    const attack = parameterWithBonus(curves.attack, level, (bonuses?.attack ?? 0) + equipmentBonuses.attack, 1);
+    const defense = parameterWithBonus(curves.defense, level, (bonuses?.defense ?? 0) + equipmentBonuses.defense, 1);
+    const mind = parameterWithBonus(curves.mind, level, (bonuses?.mind ?? 0) + equipmentBonuses.mind, 1);
+    const agility = parameterWithBonus(curves.agility, level, (bonuses?.agility ?? 0) + equipmentBonuses.agility, 1);
     // 세션 현재 바이탈이 있으면 그 값을 이어받되(필드에서 이어지는 부상 상태 유지),
     // 이 전투 레벨 기준 최대치로 클램프. 없으면 완충 상태로 시작.
     const sessionVitals = overrides?.vitals?.[actorId];
@@ -79,6 +88,7 @@ export function actorBattlers(
     return {
       id: actor.id,
       recordId: actor.id,
+      classId: effectiveClassId,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
       maxHp,
       hp,
@@ -93,20 +103,36 @@ export function actorBattlers(
       battleY: 70 + index * 24,
       gauge: 0,
       stateIds: [...(overrides?.stateIds?.[actorId] ?? [])],
+      equipmentEffects: equipmentRuntimeEffects(project, actorEquipment),
       stateTurns: {},
       defending: false,
-      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId]),
+      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], effectiveClassId, usesOverrideCurves),
       hidden: false,
     };
   });
 }
 
-function learnedSkillIds(project: Project, actor: ReturnType<typeof normalizeActorRecord>, level: number, sessionSkillIds: readonly SkillId[] | undefined): SkillId[] {
+function learnedSkillIds(
+  project: Project,
+  actor: ReturnType<typeof normalizeActorRecord>,
+  level: number,
+  sessionSkillIds: readonly SkillId[] | undefined,
+  effectiveClassId: string | undefined,
+  overrideClassSkills: boolean
+): SkillId[] {
   const ids = new Set<SkillId>(sessionSkillIds ?? []);
   for (const entry of actor.learnedSkills) if (entry.level <= level) ids.add(entry.skillId);
-  const klass = project.database.classes.find((record) => record.id === actor.classId);
-  for (const entry of klass?.learnedSkills ?? []) if (entry.level <= level) ids.add(entry.skillId);
+  const classId = overrideClassSkills ? effectiveClassId : actor.classId;
+  for (const skillId of classLearnedSkillIdsUpToLevel(project, classId ?? actor.classId, level)) ids.add(skillId);
   return [...ids];
+}
+
+export interface EquipmentRuntimeEffects {
+  readonly doubleAttack: boolean;
+  readonly elementalDefenseIds: readonly string[];
+  readonly stateDefenseIds: readonly string[];
+  readonly stateDefenseMode: "resist" | "inflict";
+  readonly stateResistanceChance: number;
 }
 
 function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipment): { attack: number; defense: number; mind: number; agility: number } {
@@ -121,6 +147,31 @@ function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipmen
     total.agility += record.statBonuses.agility;
   }
   return total;
+}
+
+function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipment): EquipmentRuntimeEffects {
+  const elementalDefenseIds = new Set<string>();
+  const stateDefenseIds = new Set<string>();
+  let doubleAttack = false;
+  let stateResistanceChance = 0;
+  let stateDefenseMode: "resist" | "inflict" = "resist";
+  for (const equipmentId of Object.values(equipment)) {
+    if (!equipmentId) continue;
+    const record = project.database.equipment.find((entry) => entry.id === equipmentId);
+    if (!record) continue;
+    if (record.effectFlags.doubleAttack) doubleAttack = true;
+    for (const elementId of record.elementalDefenseIds) elementalDefenseIds.add(elementId);
+    for (const stateId of record.stateDefenseIds) stateDefenseIds.add(stateId);
+    if (record.stateDefenseMode === "inflict") stateDefenseMode = "inflict";
+    stateResistanceChance = Math.max(stateResistanceChance, record.stateResistanceChance);
+  }
+  return {
+    doubleAttack,
+    elementalDefenseIds: [...elementalDefenseIds],
+    stateDefenseIds: [...stateDefenseIds],
+    stateDefenseMode,
+    stateResistanceChance,
+  };
 }
 
 function clampVital(value: number, max: number): number {
@@ -182,6 +233,7 @@ export function battlerSnapshot(
     id: battler.id,
     recordId: battler.recordId,
     name: battler.name,
+    classId: battler.classId,
     hp: battler.hp,
     maxHp: battler.maxHp,
     mp: battler.mp,

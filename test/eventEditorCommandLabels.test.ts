@@ -27,6 +27,7 @@ const EXPECTED_COMMAND_KINDS = [
   "learnSkill",
   "changeExp",
   "changeLevel",
+  "promoteActor",
   "changeEquipment",
   "changeActorHp",
   "changeActorMp",

@@ -11,6 +11,7 @@ import { validateOptionalResource } from "./resourceReferenceValidation";
 
 export type ReferenceContext = {
   actorIds: ReadonlySet<string>;
+  classIds: ReadonlySet<string>;
   enemyIds: ReadonlySet<string>;
   itemIds: ReadonlySet<string>;
   equipmentIds: ReadonlySet<string>;
@@ -134,6 +135,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "changeLevel":
       assert(context.actorIds.has(command.actorId), `changeLevel: actorId가 존재하지 않습니다: ${command.actorId}`);
+      return;
+    case "promoteActor":
+      assert(context.actorIds.has(command.actorId), `promoteActor: actorId가 존재하지 않습니다: ${command.actorId}`);
+      if (command.toClassId && command.toClassId.trim().length > 0) {
+        assert(context.classIds.has(command.toClassId), `promoteActor: toClassId가 존재하지 않습니다: ${command.toClassId}`);
+      }
+      validateCommands(command.successBranch ?? [], context);
+      validateCommands(command.failureBranch ?? [], context);
       return;
     case "changeEquipment":
       assert(context.actorIds.has(command.actorId), `changeEquipment: actorId가 존재하지 않습니다: ${command.actorId}`);

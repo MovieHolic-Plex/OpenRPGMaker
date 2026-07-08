@@ -1,6 +1,6 @@
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
-//            / upsert_equipment / upsert_class / upsert_state / upsert_common_event
+//            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
 //            / set_session_start / set_title_screen.
 // 모든 레코드는 기존 레코드와 병합한 뒤 normalize* 계열을 거쳐 id로 upsert한다.
 
@@ -90,6 +90,17 @@ const actorInitialEquipmentSchema = objectSchema({
 });
 const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
+const promotionRequiresSchema = objectSchema({
+  level: integerSchema(),
+  switchId: stringSchema(),
+  itemId: stringSchema(),
+  variableId: stringSchema(),
+  atLeast: integerSchema(),
+});
+const classPromotionSchema = objectSchema({
+  toClassId: stringSchema(),
+  requires: promotionRequiresSchema,
+});
 const itemEquipmentProfileSchema = objectSchema({
   statBonuses: statBonusesSchema,
   equippableActorIds: stringArraySchema(),
@@ -178,6 +189,7 @@ const enemyRecordSchema = objectSchema({
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
+  level: integerSchema(),
   stats: enemyStatsSchema,
   rewards: enemyRewardsSchema,
   actions: arrayOf(enemyActionSchema),
@@ -253,6 +265,23 @@ const equipmentRecordSchema = objectSchema({
   twoHanded: booleanSchema(),
   usableAsItemSkillId: stringSchema(),
   stateInflictIds: stringArraySchema(),
+  attackElementIds: stringArraySchema(),
+  stateInflictionChance: integerSchema(),
+  effectFlags: objectSchema({
+    preemptive: booleanSchema(),
+    doubleAttack: booleanSchema(),
+    attackAll: booleanSchema(),
+    ignoreDodge: booleanSchema(),
+    preventCriticalHits: booleanSchema(),
+    increasePhysicalDodge: booleanSchema(),
+    halfMpCost: booleanSchema(),
+    negateTerrainDamage: booleanSchema(),
+    fixedEquipment: booleanSchema(),
+  }),
+  elementalDefenseIds: stringArraySchema(),
+  stateDefenseIds: stringArraySchema(),
+  stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
+  stateResistanceChance: integerSchema(),
 }) as RecordSchema;
 
 const classRecordSchema = objectSchema({
@@ -268,6 +297,7 @@ const classRecordSchema = objectSchema({
   expCurve: expCurveSchema,
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
+  promotions: arrayOf(classPromotionSchema),
 }) as RecordSchema;
 
 const stateRecordSchema = objectSchema({
@@ -437,6 +467,57 @@ const upsertClass: ToolDefinition = {
   },
 };
 
+const definePromotion: ToolDefinition = {
+  name: "define_promotion",
+  description: "직업 승급 조건을 정의한다. 같은 toClassId 승급은 덮어쓰며 레벨/스위치/아이템 소모/변수 조건을 지원한다.",
+  mode: "write",
+  domains: ["database"],
+  parameters: {
+    type: "object",
+    properties: {
+      classId: stringSchema("승급 출발 직업 id"),
+      toClassId: stringSchema("승급 도착 직업 id"),
+      requires: promotionRequiresSchema,
+    },
+    required: ["classId", "toClassId", "requires"],
+    additionalProperties: false,
+  },
+  invalidArgsExample: {
+    classId: "class_apprentice_warrior",
+    toClassId: "class_warrior",
+    requires: { level: 5, itemId: "item_warrior_badge" },
+  },
+  run(draft, args): ToolExecResult {
+    const classId = typeof args.classId === "string" ? args.classId.trim() : "";
+    const toClassId = typeof args.toClassId === "string" ? args.toClassId.trim() : "";
+    if (!classId) throw new ToolError("classId(문자열)가 필요합니다.", { code: "missing-class-id" });
+    if (!toClassId) throw new ToolError("toClassId(문자열)가 필요합니다.", { code: "missing-to-class-id" });
+    const source = draft.database.classes.find((record) => record.id === classId);
+    if (!source) {
+      throw new ToolError(`존재하지 않는 classId: ${classId} — 허용 예시: ${knownIds(draft.database.classes)}`, { code: "class-not-found" });
+    }
+    if (!draft.database.classes.some((record) => record.id === toClassId)) {
+      throw new ToolError(`존재하지 않는 toClassId: ${toClassId} — 허용 예시: ${knownIds(draft.database.classes)}`, { code: "class-not-found" });
+    }
+    const requires = args.requires && typeof args.requires === "object" && !Array.isArray(args.requires)
+      ? (args.requires as Record<string, unknown>)
+      : {};
+    const record = normalizeClassRecord({
+      ...source,
+      promotions: [
+        ...(source.promotions ?? []).filter((promotion) => promotion.toClassId !== toClassId),
+        { toClassId, requires },
+      ],
+    });
+    upsertById(draft.database.classes, record);
+    const targetName = draft.database.classes.find((entry) => entry.id === toClassId)?.name ?? toClassId;
+    return {
+      summary: `승급 '${source.name}' → '${targetName}' 정의`,
+      data: (record.promotions ?? []).find((promotion) => promotion.toClassId === toClassId),
+    };
+  },
+};
+
 const upsertState: ToolDefinition = {
   name: "upsert_state",
   description: "상태이상(State) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 임의 필드는 거부한다.",
@@ -551,6 +632,7 @@ export const DB_TOOLS: readonly ToolDefinition[] = [
   upsertSkill,
   upsertEquipment,
   upsertClass,
+  definePromotion,
   upsertState,
   upsertCommonEvent,
   setSessionStart,

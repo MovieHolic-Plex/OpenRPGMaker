@@ -82,6 +82,8 @@ export interface BattlePartyProgress {
   readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 이벤트/레벨업으로 세션에 직접 습득된 스킬.
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  // 런타임 직업 오버라이드(Change Actor Class/승급).
+  readonly classOverrides?: Readonly<Record<string, string>>;
   // 세션 상태 이상(Change State). 전투 진입 시 초기 stateIds 로 반영.
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
@@ -91,6 +93,7 @@ export interface BattlePartyProgress {
 export interface BattleBattlerSnapshot {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
+  readonly classId?: string;
   readonly name: string;
   readonly hp: number;
   readonly maxHp: number;
@@ -178,6 +181,7 @@ export interface BattleRewardsSnapshot {
   readonly exp: number;
   readonly gold: number;
   readonly items: readonly ItemId[];
+  readonly enemyLevel?: number;
   // 승리 시 파티 정보가 주어졌다면 산출되는 레벨업 미리보기(결과 화면 연출용).
   readonly levelUps?: readonly BattleLevelUpPreview[];
 }

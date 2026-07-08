@@ -1,6 +1,7 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip } from "@/player/playerEquipmentRules";
 import { resolveActorName } from "@/project/sessionActorCommands";
+import { effectiveActorClassId } from "@/project/sessionClass";
 import type { PlaySession } from "@/project/session";
 import type {
   ActorInitialEquipment,
@@ -148,7 +149,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const choices = project.database.equipment.filter((equipment) => {
     return equipment.slot === options.equipmentSlotId
       && (session.inventory[equipment.id] ?? 0) > 0
-      && canEquip(project, actor, equipment);
+      && canEquip(project, actor, equipment, effectiveActorClassId(project, session, actor.id));
   });
   const currentStats = equipmentStats(project, currentEquipmentId);
   const unequipEntry = currentEquipmentId
@@ -167,7 +168,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ...choices.map((equipment) => ({
         label: equipment.name,
         value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
-        description: `${equipment.description || "장비"} / ${statDiffLine(equipment.statBonuses, currentStats)}`,
+        description: equipmentDetailLine(equipment, currentStats),
         testId: `status-menu-equipment-item-${equipment.id}`,
         onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, equipment.id) : undefined,
       })),
@@ -212,7 +213,7 @@ function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: Sa
 function statusDetail(project: Project, session: PlaySession): StatusMenuDetail {
   const entries = partyActors(project, session).map((actor) => {
     const vitals = session.actorVitals[actor.id];
-    const className = project.database.classes.find((record) => record.id === actor.classId)?.name ?? "직업 없음";
+    const className = classNameFor(project, session, actor);
     const level = actorLevel(session, actor);
     return {
       label: actor.name,
@@ -241,7 +242,7 @@ function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const selectedIndex = actors.findIndex((actor) => actor.id === options.formationActorId);
   const entries = actors.map((actor, index) => ({
     label: `${index + 1}. ${actor.name}`,
-    value: options.project.database.classes.find((record) => record.id === actor.classId)?.name ?? "직업 없음",
+    value: classNameFor(options.project, options.session, actor),
     description: formationDescription(index, selectedIndex),
     testId: `status-menu-formation-actor-${actor.id}`,
     onActivate: formationActivate(options, actor.id, index, selectedIndex),
@@ -308,7 +309,7 @@ function partyActors(project: Project, session: PlaySession): readonly ActorReco
 
 function learnedSkills(project: Project, session: PlaySession, actor: ActorRecord): readonly SkillRecord[] {
   const skillIds = new Set<string>();
-  const classRecord = project.database.classes.find((record) => record.id === actor.classId);
+  const classRecord = project.database.classes.find((record) => record.id === effectiveActorClassId(project, session, actor.id));
   const level = actorLevel(session, actor);
   for (const learned of classRecord?.learnedSkills ?? []) if (learned.level <= level) skillIds.add(learned.skillId);
   for (const learned of actor.learnedSkills) if (learned.level <= level) skillIds.add(learned.skillId);
@@ -346,6 +347,11 @@ function recoveryAmount(recovery: Project["database"]["items"][number]["hpRecove
 
 function actorLevel(session: PlaySession, actor: ActorRecord): number {
   return session.actorLevels[actor.id] ?? actor.initialLevel;
+}
+
+function classNameFor(project: Project, session: PlaySession, actor: ActorRecord): string {
+  const classId = effectiveActorClassId(project, session, actor.id);
+  return project.database.classes.find((record) => record.id === classId)?.name ?? "직업 없음";
 }
 
 function actorEquipment(session: PlaySession, actorId: string): ActorInitialEquipment {
@@ -417,6 +423,22 @@ function skillKindLabel(skill: SkillRecord): string {
 
 function statDiffLine(next: EquipmentStatBonuses, current: EquipmentStatBonuses): string {
   return STAT_LABELS.map(([key, label]) => `${label} ${signed(next[key] - current[key])}`).join(" / ");
+}
+
+function equipmentDetailLine(equipment: EquipmentRecord, currentStats: EquipmentStatBonuses): string {
+  return [
+    equipment.description || "장비",
+    statDiffLine(equipment.statBonuses, currentStats),
+    ...equipmentEffectLabels(equipment),
+  ].join(" / ");
+}
+
+function equipmentEffectLabels(equipment: EquipmentRecord): string[] {
+  const labels: string[] = [];
+  if (equipment.effectFlags.doubleAttack) labels.push("더블어택");
+  if (equipment.elementalDefenseIds.length > 0) labels.push(`속성 방어 ${equipment.elementalDefenseIds.length}`);
+  if (equipment.stateDefenseIds.length > 0 && equipment.stateDefenseMode === "resist") labels.push(`상태 방어 ${equipment.stateResistanceChance}%`);
+  return labels;
 }
 
 function zeroStats(): EquipmentStatBonuses {

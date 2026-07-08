@@ -35,6 +35,7 @@ export function playBattle(
       paramBonuses: scene.session.actorParamBonuses,
       equipment: scene.session.actorEquipment,
       skillIds: scene.session.actorSkillIds,
+      classOverrides: scene.session.classOverrides,
       stateIds: scene.session.actorStateIds,
       // 플레이 중 파티 편성(라이브 세션). 없으면 전투가 에디터 시작 상태 파티를 쓴다.
       partyActorIds: scene.session.partyActorIds,
@@ -54,7 +55,7 @@ export function playBattle(
       onResult: (result, snapshot) => {
         applyBattleRewardsToSession(
           scene.session,
-          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState },
+          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds },
           store.getCurrent()
         );
         battleScene.destroy();

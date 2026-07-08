@@ -285,6 +285,49 @@ export function changeLevelBody(context: CommandEditContext, cmd: Extract<Comman
   return actorAmountBody(context, cmd);
 }
 
+export function promoteActorBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "promoteActor" }>
+): HTMLElement {
+  const project = store.getCurrent();
+  const actor = recordPickerWithPreview({
+    records: project.database.actors,
+    selectedId: cmd.actorId,
+    placeholder: "주인공 선택",
+    testid: "promote-actor-select",
+    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
+    subtitleOf: (record) => actorSubtitle(project, record),
+  });
+  const klass = recordPickerWithPreview({
+    records: project.database.classes,
+    selectedId: cmd.toClassId ?? "",
+    placeholder: "조건 충족 첫 승급",
+    testid: "promote-class-select",
+    subtitleOf: (record) => {
+      const from = project.database.classes.find((source) => (source.promotions ?? []).some((promotion) => promotion.toClassId === record.id));
+      return from ? `${from.name}에서 승급 가능` : "수동 목표";
+    },
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "promoteActor",
+      actorId: actor.select.value,
+      toClassId: klass.select.value || undefined,
+      successBranch: cmd.successBranch ?? [],
+      failureBranch: cmd.failureBranch ?? [],
+    });
+  };
+  actor.select.addEventListener("change", apply);
+  klass.select.addEventListener("change", apply);
+  return el("span", {
+    class: "rich-command-form",
+    children: [
+      el("span", { class: "rich-form-row", children: [actor.root] }),
+      el("span", { class: "rich-form-row", children: [klass.root] }),
+    ],
+  });
+}
+
 export function changeActorHpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeActorHp" }>): HTMLElement {
   return actorAmountBody(context, cmd);
 }

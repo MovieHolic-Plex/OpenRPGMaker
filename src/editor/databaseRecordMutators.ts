@@ -27,6 +27,7 @@ export function updateClassRecord(database: DatabaseRecords, id: string, patch: 
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("battleCommands" in patch && patch.battleCommands !== undefined) record.battleCommands = patch.battleCommands;
   if ("learnedSkills" in patch && patch.learnedSkills !== undefined) record.learnedSkills = patch.learnedSkills;
+  if ("promotions" in patch && patch.promotions !== undefined) record.promotions = patch.promotions;
   if ("equipmentPermissions" in patch && patch.equipmentPermissions !== undefined) record.equipmentPermissions = patch.equipmentPermissions;
   if ("parameterCurves" in patch && patch.parameterCurves !== undefined) record.parameterCurves = patch.parameterCurves;
   if ("expCurve" in patch && patch.expCurve !== undefined) record.expCurve = patch.expCurve;
@@ -108,7 +109,14 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("cursed" in patch && patch.cursed !== undefined) record.cursed = patch.cursed;
   if ("twoHanded" in patch && patch.twoHanded !== undefined) record.twoHanded = patch.twoHanded;
   if ("usableAsItemSkillId" in patch) record.usableAsItemSkillId = patch.usableAsItemSkillId;
+  if ("attackElementIds" in patch && patch.attackElementIds !== undefined) record.attackElementIds = patch.attackElementIds;
   if ("stateInflictIds" in patch && patch.stateInflictIds !== undefined) record.stateInflictIds = patch.stateInflictIds;
+  if ("stateInflictionChance" in patch && patch.stateInflictionChance !== undefined) record.stateInflictionChance = patch.stateInflictionChance;
+  if ("effectFlags" in patch && patch.effectFlags !== undefined) record.effectFlags = patch.effectFlags;
+  if ("elementalDefenseIds" in patch && patch.elementalDefenseIds !== undefined) record.elementalDefenseIds = patch.elementalDefenseIds;
+  if ("stateDefenseIds" in patch && patch.stateDefenseIds !== undefined) record.stateDefenseIds = patch.stateDefenseIds;
+  if ("stateDefenseMode" in patch && patch.stateDefenseMode !== undefined) record.stateDefenseMode = patch.stateDefenseMode;
+  if ("stateResistanceChance" in patch && patch.stateResistanceChance !== undefined) record.stateResistanceChance = patch.stateResistanceChance;
   database.equipment[index] = normalizeEquipmentRecord(record);
 }
 

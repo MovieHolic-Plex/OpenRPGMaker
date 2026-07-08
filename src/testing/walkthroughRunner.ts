@@ -134,7 +134,13 @@ function runOneBattle(
     }
     const final = rt.snapshot();
     // 보상을 세션에 반영(경험치→레벨업, 골드, 드롭). 승리 시에만 의미.
-    applyBattleRewardsToSession(session, { result: final.result ?? "defeat", rewards: final.rewards, actors: final.actors, eventState: final.eventState }, project);
+    applyBattleRewardsToSession(session, {
+      result: final.result ?? "defeat",
+      rewards: final.rewards,
+      actors: final.actors,
+      eventState: final.eventState,
+      participatingActorIds: final.participatingActorIds,
+    }, project);
     return final.result === "victory" ? "victory" : "defeat";
   } finally {
     Math.random = originalRandom;

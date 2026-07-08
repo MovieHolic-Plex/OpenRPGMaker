@@ -61,6 +61,7 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
       panel("전투 명령", battleCommandControls(record)),
       panel("옵션", optionControls(record)),
       panel("스킬", [skillTable(record)]),
+      panel("승급", promotionControls(record)),
       panel("상태 유효도", rateRows(record, "state")),
       panel("속성 유효도", rateRows(record, "element")),
       panel("장비", [equipmentSelect(record)]),
@@ -185,6 +186,82 @@ function equipmentSelect(record: ClassRecord): HTMLElement {
   return selectFromRecords("허용 장비", "db-picker-class-equipment", record.equipmentPermissions.equipmentIds[0] ?? "", store.getCurrent().database.equipment, (equipmentId) =>
     updateDatabaseRecord("classes", record.id, { equipmentPermissions: { ...record.equipmentPermissions, equipmentIds: equipmentId ? [equipmentId] : [] } })
   );
+}
+
+function promotionControls(record: ClassRecord): HTMLElement[] {
+  const promotions = record.promotions?.length ? record.promotions : [{ toClassId: "", requires: {} }];
+  const rows = promotions.map((promotion, index) => {
+    const project = store.getCurrent();
+    const toClass = recordSelect(promotion.toClassId, project.database.classes, index === 0 ? "db-picker-class-promotion-to" : undefined);
+    const level = numberInput(promotion.requires.level, "레벨", index === 0 ? "db-field-class-promotion-level" : undefined);
+    const switchId = recordSelect(promotion.requires.switchId ?? "", project.switches, index === 0 ? "db-picker-class-promotion-switch" : undefined);
+    const itemId = recordSelect(promotion.requires.itemId ?? "", project.database.items, index === 0 ? "db-picker-class-promotion-item" : undefined);
+    const variableId = recordSelect(promotion.requires.variableId ?? "", project.variables, index === 0 ? "db-picker-class-promotion-variable" : undefined);
+    const atLeast = numberInput(promotion.requires.atLeast, "이상", index === 0 ? "db-field-class-promotion-at-least" : undefined);
+    const remove = el("button", { class: "db-class-set-button", text: "삭제", attrs: { type: "button" } });
+    const apply = (): void => savePromotion(record, index, {
+      toClassId: toClass.value,
+      requires: {
+        level: optionalNumber(level),
+        switchId: switchId.value || undefined,
+        itemId: itemId.value || undefined,
+        variableId: variableId.value || undefined,
+        atLeast: optionalNumber(atLeast),
+      },
+    });
+    for (const input of [toClass, level, switchId, itemId, variableId, atLeast]) {
+      input.addEventListener("change", apply);
+      input.addEventListener("input", apply);
+    }
+    remove.addEventListener("click", () => {
+      const next = [...(currentClass(record).promotions ?? [])];
+      next.splice(index, 1);
+      updateDatabaseRecord("classes", record.id, { promotions: next });
+    });
+    return el("div", {
+      class: "db-class-command-row",
+      children: [toClass, level, switchId, itemId, variableId, atLeast, remove],
+    });
+  });
+  const add = el("button", {
+    class: "db-class-set-button",
+    text: "승급 추가",
+    attrs: { type: "button" },
+    on: {
+      click: () => updateDatabaseRecord("classes", record.id, {
+        promotions: [...(currentClass(record).promotions ?? []), { toClassId: firstPromotionTarget(record), requires: {} }],
+      }),
+    },
+  });
+  return [add, el("div", { class: "db-class-command-rows", children: rows })];
+}
+
+function savePromotion(record: ClassRecord, index: number, promotion: NonNullable<ClassRecord["promotions"]>[number]): void {
+  const source = currentClass(record).promotions ?? [];
+  const next = [...source];
+  if (!promotion.toClassId) next.splice(index, 1);
+  else next[index] = promotion;
+  updateDatabaseRecord("classes", record.id, { promotions: next });
+}
+
+function currentClass(record: ClassRecord): ClassRecord {
+  return store.getCurrent().database.classes.find((entry) => entry.id === record.id) ?? record;
+}
+
+function firstPromotionTarget(record: ClassRecord): string {
+  return store.getCurrent().database.classes.find((entry) => entry.id !== record.id)?.id ?? "";
+}
+
+function numberInput(value: number | undefined, title: string, testid?: string): HTMLInputElement {
+  return el("input", {
+    value: value ?? "",
+    dataset: testid ? { testid } : undefined,
+    attrs: { type: "number", min: "0", title, placeholder: title },
+  }) as HTMLInputElement;
+}
+
+function optionalNumber(input: HTMLInputElement): number | undefined {
+  return input.value.trim().length > 0 && Number.isFinite(input.valueAsNumber) ? Math.trunc(input.valueAsNumber) : undefined;
 }
 
 function rateRows(record: ClassRecord, kind: "state" | "element"): HTMLElement[] {

@@ -1,5 +1,6 @@
 import type { Command, EndingDef, M2CommandFields } from "@/project/types";
 import { changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, learnSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
@@ -66,6 +67,7 @@ function executeM2Command(
     console.warn(`[interpreter] M2 command is unclassified: ${command.commandId}`);
     return resumeNext(frame);
   }
+  const m2Context = { currentEventId: state.currentEventId, project: state.project };
 
   if (entry.existingKind === "displayTextSettings") {
     state.session.messageWindowSettings = {
@@ -77,19 +79,19 @@ function executeM2Command(
     return resumeNext(frame);
   }
 
-  if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+  if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("cameraControl", cameraControlStep(command.fields, state.currentEventId));
   }
 
-  if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+  if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("spawnEvent", { kind: "spawnEvent", eventId: spawnEventId(command.fields) });
   }
 
-  if (entry.title === "Remove Event" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+  if (entry.title === "Remove Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("removeEvent", { kind: "removeEvent", eventId: removeEventId(command.fields, state.currentEventId) });
   }
 
-  if (entry.title === "Move Picture" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+  if (entry.title === "Move Picture" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     const pictureId = fieldString(command.fields, "pictureId", "pic1");
     const picture = state.session.pictures?.[pictureId];
     if (picture && shouldWaitForPicture(command.fields)) {
@@ -98,7 +100,7 @@ function executeM2Command(
     return resumeNext(frame);
   }
 
-  if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("text", {
       kind: "text",
       speaker: fieldString(command.fields, "speaker", ""),
@@ -107,7 +109,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("playAudio", {
       kind: "playAudio",
       resourceId: fieldString(command.fields, "resourceId", ""),
@@ -115,7 +117,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Wait Until" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Wait Until" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     const condition = fieldString(command.fields, "condition", "switchOn");
     const target = fieldString(command.fields, "target", "");
     if (state.session.flags[`m2-wait:${condition}:${target}`] !== true) {
@@ -125,24 +127,24 @@ function executeM2Command(
   }
 
   if (entry.title === "End Event Processing") {
-    executeM2RuntimeCommand(state.session, entry, command);
+    executeM2RuntimeCommand(state.session, entry, command, m2Context);
     return { kind: "done" };
   }
 
-  if (entry.title === "Erase Event" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Erase Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("eraseEvent", { kind: "eraseEvent", eventId: state.currentEventId });
   }
 
-  if (entry.title === "Wait for All Movement" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Wait for All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("waitForAllMovement", { kind: "waitForAllMovement" });
   }
 
-  if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("stopAllMovement", { kind: "stopAllMovement" });
   }
 
   // 일회성 화면 효과: 상태 기록(executeM2RuntimeCommand) 후 블로킹 pause 로 플레이어에 위임.
-  if (entry.title === "Flash Screen" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Flash Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     const rgb = screenColorToRgb(fieldString(command.fields, "color", "white"));
     return pause("flashScreen", {
       kind: "flashScreen",
@@ -153,7 +155,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Shake Screen" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Shake Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("shakeScreen", {
       kind: "shakeScreen",
       intensity: fieldNumber(command.fields, "intensity", 3),
@@ -161,7 +163,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Scroll Map" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Scroll Map" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("scrollMap", {
       kind: "scrollMap",
       direction: scrollDirection(fieldString(command.fields, "direction", fieldString(command.fields, "target", "down"))),
@@ -173,7 +175,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Set Weather Effects" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Set Weather Effects" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     const weather = parseWeather(fieldString(command.fields, "value", "none"));
     return pause("setWeather", {
       kind: "setWeather",
@@ -183,12 +185,12 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Checkpoint Save" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Checkpoint Save" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     saveCheckpoint(state);
     return resumeNext(frame);
   }
 
-  if (executeM2RuntimeCommand(state.session, entry, command)) {
+  if (executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return resumeNext(frame);
   }
 
@@ -470,6 +472,15 @@ export function executeCommand(
     case "changeLevel":
       changeActorLevel(state.session, command);
       return resumeNext(frame);
+    case "promoteActor": {
+      const result = state.project
+        ? promoteActor(state.session, state.project, command.actorId, command.toClassId || undefined)
+        : { ok: false as const, actorId: command.actorId, reason: "project-not-available" };
+      state.session.flags.promoteActorSuccess = result.ok;
+      const branch = result.ok ? command.successBranch : command.failureBranch;
+      if (branch?.length && pushFrame(state, branch)) return { kind: "continue" };
+      return resumeNext(frame);
+    }
     case "changeEquipment":
       changeActorEquipment(state.session, command);
       return resumeNext(frame);

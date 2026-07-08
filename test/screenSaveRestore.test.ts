@@ -13,6 +13,7 @@ function mkSession(): PlaySession {
     gold: 0,
     inventory: {},
     partyActorIds: [],
+    classOverrides: {},
     actorSkillIds: {},
     actorExperience: {},
     actorLevels: {},

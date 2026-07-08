@@ -71,6 +71,7 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   }
 
   for (const command of battleCommandsForActor(store.getCurrent(), actor?.recordId, {
+    classId: actor?.classId,
     includeSwitch: snapshot.reserveActors.length > 0,
     forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
   })) {

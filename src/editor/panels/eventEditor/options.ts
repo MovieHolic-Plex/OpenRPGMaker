@@ -45,6 +45,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "learnSkill", label: "특수기 습득" },
   { value: "changeExp", label: "경험치 변경" },
   { value: "changeLevel", label: "레벨 변경" },
+  { value: "promoteActor", label: "승급" },
   { value: "changeEquipment", label: "장비 변경" },
   { value: "changeActorHp", label: "HP 변경" },
   { value: "changeActorMp", label: "MP 변경" },

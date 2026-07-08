@@ -3,7 +3,7 @@ import type { Command, EventPage, Project } from "@/project/types";
 import fixture from "./fixtures/projects/editor-authored-demo-v3.json";
 
 function demoProject(): Project {
-  return fixture as Project;
+  return fixture as unknown as Project;
 }
 
 function commands(project: Project): readonly Command[] {

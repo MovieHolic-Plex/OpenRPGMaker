@@ -154,6 +154,7 @@ function extractJsonArrayText(text: string): string | null {
 function buildReferenceContext(project: Project): ReferenceContext {
   return {
     actorIds: new Set(project.database.actors.map((record) => record.id)),
+    classIds: new Set(project.database.classes.map((record) => record.id)),
     enemyIds: new Set(project.database.enemies.map((record) => record.id)),
     itemIds: new Set(project.database.items.map((record) => record.id)),
     equipmentIds: new Set(project.database.equipment.map((record) => record.id)),

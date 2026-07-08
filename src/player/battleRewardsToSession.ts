@@ -1,6 +1,7 @@
 import type { BattleResult } from "@/battle/runtime";
 import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
 import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLevelUp";
+import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, changeItem, type PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 
@@ -12,6 +13,7 @@ export type BattleRewardsOutcome = {
   // 전투 종료 시점 스위치/변수/인벤토리(전투 개시 때 세션에서 시드됨).
   // 전투 중 아이템 소모와 전투 이벤트의 스위치/변수 변경을 세션에 되돌려 쓴다.
   readonly eventState?: BattleEventStateSnapshot;
+  readonly participatingActorIds?: readonly string[];
 };
 
 // 승리 보상을 세션에 적립하고, 누적 경험치 기준 자동 레벨업을 판정/반영한다.
@@ -31,8 +33,11 @@ export function applyBattleRewardsToSession(
   const earnedExp = Math.max(0, Math.trunc(outcome.rewards.exp));
   const levelUps: BattleLevelUpResult[] = [];
   const processed = new Set<string>();
-  for (const actorId of session.partyActorIds) {
-    session.actorExperience[actorId] = (session.actorExperience[actorId] ?? 0) + earnedExp;
+  const rewardActorIdList = rewardActorIds(project, session.partyActorIds, outcome.participatingActorIds);
+  for (const actorId of rewardActorIdList) {
+    const actorLevel = session.actorLevels[actorId] ?? 1;
+    const actorExp = expForRewardActor(earnedExp, actorLevel, outcome.rewards.enemyLevel, project.system.rewardPolicy);
+    session.actorExperience[actorId] = (session.actorExperience[actorId] ?? 0) + actorExp;
     if (processed.has(actorId)) continue;
     processed.add(actorId);
     const levelUp = applyActorLevelUp(session, project, actorId);
@@ -78,7 +83,7 @@ function applyBattleVitalsToSession(session: PlaySession, actors: readonly Battl
 function applyActorLevelUp(session: PlaySession, project: Project, actorId: string): BattleLevelUpResult | null {
   const currentLevel = session.actorLevels[actorId] ?? 1;
   const totalExp = session.actorExperience[actorId] ?? 0;
-  const result = computeActorLevelUp(project, actorId, currentLevel, totalExp);
+  const result = computeActorLevelUp(project, actorId, currentLevel, totalExp, { classOverrides: session.classOverrides });
   if (!result) return null;
 
   session.actorLevels[actorId] = result.toLevel;

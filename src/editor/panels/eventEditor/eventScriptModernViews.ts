@@ -168,6 +168,9 @@ export function flattenScript(commands: readonly Command[]): ScriptStep[] {
         walk(command.body, depth + 1, "반복");
       } else if (command.kind === "shop" && command.branchOnTransaction) {
         walk(command.transactionBranch ?? [], depth + 1, "구매/판매");
+      } else if (command.kind === "promoteActor") {
+        walk(command.successBranch ?? [], depth + 1, "승급 성공");
+        walk(command.failureBranch ?? [], depth + 1, "승급 실패");
       }
     }
   };
@@ -253,6 +256,12 @@ function flowBranchesOf(command: Command): FlowBranch[] {
   if (command.kind === "loop") return [{ label: "반복", commands: command.body }];
   if (command.kind === "shop" && command.branchOnTransaction) {
     return [{ label: "구매/판매", commands: command.transactionBranch ?? [] }];
+  }
+  if (command.kind === "promoteActor") {
+    return [
+      { label: "성공", commands: command.successBranch ?? [] },
+      { label: "실패", commands: command.failureBranch ?? [] },
+    ];
   }
   return [];
 }

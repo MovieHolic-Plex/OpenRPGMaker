@@ -49,6 +49,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const resourceIds = collectResourceIds(project);
   const context: ReferenceContext = {
     actorIds,
+    classIds,
     enemyIds,
     itemIds,
     equipmentIds,
@@ -202,6 +203,9 @@ function validateClassRecords(
   animationIds: ReadonlySet<string>,
   issues: string[]
 ): void {
+  const switchIds = new Set(project.switches.map((record) => record.id));
+  const variableIds = new Set(project.variables.map((record) => record.id));
+  const itemIds = new Set(project.database.items.map((record) => record.id));
   for (const klass of project.database.classes) {
     if (klass.animationId && !animationIds.has(klass.animationId)) issues.push(`class ${klass.id}: animationId does not exist.`);
     collectExistingIdIssues(`class ${klass.id}: skill`, klass.learnedSkills.map((entry) => entry.skillId), skillIds, issues);
@@ -209,6 +213,12 @@ function validateClassRecords(
     collectExistingIdIssues(`class ${klass.id}: equipment`, klass.equipmentPermissions.equipmentIds, equipmentIds, issues);
     collectExistingIdIssues(`class ${klass.id}: equipment actor`, klass.equipmentPermissions.actorIds, actorIds, issues);
     collectExistingIdIssues(`class ${klass.id}: equipment class`, klass.equipmentPermissions.classIds, classIds, issues);
+    for (const promotion of klass.promotions ?? []) {
+      if (!classIds.has(promotion.toClassId)) issues.push(`class ${klass.id}: promotion toClassId does not exist: ${promotion.toClassId}`);
+      if (promotion.requires.switchId && !switchIds.has(promotion.requires.switchId)) issues.push(`class ${klass.id}: promotion switchId does not exist: ${promotion.requires.switchId}`);
+      if (promotion.requires.itemId && !itemIds.has(promotion.requires.itemId)) issues.push(`class ${klass.id}: promotion itemId does not exist: ${promotion.requires.itemId}`);
+      if (promotion.requires.variableId && !variableIds.has(promotion.requires.variableId)) issues.push(`class ${klass.id}: promotion variableId does not exist: ${promotion.requires.variableId}`);
+    }
   }
 }
 
@@ -262,7 +272,8 @@ function validateEquipmentRecords(
     capture(issues, () => validateEquipmentResources(equipment, resourceIds));
     collectExistingIdIssues(`equipment ${equipment.id}: actor`, equipment.equippableActorIds, actorIds, issues);
     collectExistingIdIssues(`equipment ${equipment.id}: class`, equipment.equippableClassIds, classIds, issues);
-    collectExistingIdIssues(`equipment ${equipment.id}: state`, equipment.stateInflictIds, stateIds(project), issues);
+    collectExistingIdIssues(`equipment ${equipment.id}: state`, [...equipment.stateInflictIds, ...equipment.stateDefenseIds], stateIds(project), issues);
+    collectExistingIdIssues(`equipment ${equipment.id}: element`, [...equipment.attackElementIds, ...equipment.elementalDefenseIds], elementIds(project), issues);
   }
 }
 

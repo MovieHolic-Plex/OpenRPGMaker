@@ -136,6 +136,7 @@ export function applyStateEffects(
       }
       continue;
     }
+    if (equipmentResistsState(target, effect.stateId, rng)) continue;
     const resistance = stateResistancePercent(project, target, effect.stateId);
     const chance = (effect.chance * resistance) / 100;
     if (rollPercent(chance, rng) && !target.stateIds.includes(effect.stateId)) {
@@ -144,6 +145,13 @@ export function applyStateEffects(
     }
   }
   return { added, removed };
+}
+
+function equipmentResistsState(target: MutableBattler, stateId: string, rng: Rng): boolean {
+  const effects = target.equipmentEffects;
+  if (!effects || effects.stateDefenseMode !== "resist") return false;
+  if (!effects.stateDefenseIds.includes(stateId)) return false;
+  return rollPercent(effects.stateResistanceChance, rng);
 }
 
 export interface UpkeepResult {
