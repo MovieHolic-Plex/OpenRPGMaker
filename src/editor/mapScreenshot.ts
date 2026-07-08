@@ -1,5 +1,6 @@
 import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
+import { isTerrainInnerCornerTile, terrainInnerCornerQuarterSources } from "@/project/defaults/terrainQuarterAutotile";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
@@ -76,6 +77,10 @@ function drawLayer(
       drawLakeAutotile(context, image, map, tileset, x, y);
       continue;
     }
+    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
+      drawTerrainInnerCorner(context, image, map, tileset, x, y);
+      continue;
+    }
     drawRawTile(context, image, tileset, tile, x, y);
   }
 }
@@ -89,6 +94,26 @@ function drawLakeAutotile(
   y: number,
 ): void {
   for (const part of lakeAutotileQuarterSources(map, x, y)) {
+    const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
+    const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
+    const targetX = (x * tileset.tileSize + part.offsetX) * SCREENSHOT_SCALE;
+    const targetY = (y * tileset.tileSize + part.offsetY) * SCREENSHOT_SCALE;
+    const quarterSize = tileset.tileSize / 2;
+    const drawSize = quarterSize * SCREENSHOT_SCALE;
+    context.drawImage(image, sourceX, sourceY, quarterSize, quarterSize, targetX, targetY, drawSize, drawSize);
+  }
+}
+
+// 오목 코너 합성 타일(365/362): 잔디 대각 귀퉁이만 오목 쿼터, 나머지는 몸통 쿼터.
+function drawTerrainInnerCorner(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  map: GameMap,
+  tileset: TilesetDef,
+  x: number,
+  y: number,
+): void {
+  for (const part of terrainInnerCornerQuarterSources(map, x, y) ?? []) {
     const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
     const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
     const targetX = (x * tileset.tileSize + part.offsetX) * SCREENSHOT_SCALE;

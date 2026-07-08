@@ -1,5 +1,6 @@
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
+import { isTerrainInnerCornerTile, terrainInnerCornerQuarterSources } from "@/project/defaults/terrainQuarterAutotile";
 import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
 import type { GameMap, MapId, Project, TilesetDef } from "@/project/types";
 
@@ -74,6 +75,12 @@ function drawLayer(
     const y = Math.floor(index / map.width);
     if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
       for (const part of lakeAutotileQuarterSources(map, x, y)) {
+        drawRawTile(context, image, tileset, part.tile, x, y, part.offsetX, part.offsetY, tileset.tileSize / 2);
+      }
+      continue;
+    }
+    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
+      for (const part of terrainInnerCornerQuarterSources(map, x, y) ?? []) {
         drawRawTile(context, image, tileset, part.tile, x, y, part.offsetX, part.offsetY, tileset.tileSize / 2);
       }
       continue;

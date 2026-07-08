@@ -6,6 +6,10 @@ import {
   lakeAutotileQuarterSources,
   type LakeAutotileQuarter,
 } from "@/project/defaults/lakeAutotile";
+import {
+  isTerrainInnerCornerTile,
+  terrainInnerCornerQuarterSources,
+} from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
@@ -121,6 +125,10 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     renderLakeAutotile(scene, textureKey, x, y);
     return;
   }
+  if (isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
+    renderTerrainInnerCorner(scene, textureKey, x, y);
+    return;
+  }
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
@@ -142,6 +150,25 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
     const image = animationKey
       ? scene.add.sprite(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName).play(animationKey)
       : scene.add.image(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName);
+    image.setOrigin(0, 0);
+    scene.tileLayer.add(image);
+  }
+}
+
+// 오목 코너 합성 타일(365/362): 잔디 대각 귀퉁이만 오목 쿼터, 나머지는 몸통 쿼터.
+function renderTerrainInnerCorner<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  textureKey: string,
+  x: number,
+  y: number
+): void {
+  for (const part of terrainInnerCornerQuarterSources(scene.map, x, y) ?? []) {
+    const image = scene.add.image(
+      x * TILE_SIZE + part.offsetX,
+      y * TILE_SIZE + part.offsetY,
+      textureKey,
+      `tile_${part.tile}_${part.quarter}`
+    );
     image.setOrigin(0, 0);
     scene.tileLayer.add(image);
   }

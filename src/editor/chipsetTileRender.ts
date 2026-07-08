@@ -9,6 +9,10 @@ import {
   type LakeAutotileQuarterSource,
 } from "@/project/defaults/lakeAutotile";
 import { roadAutotileTileForCell } from "@/project/defaults/roadAutotile";
+import {
+  isTerrainInnerCornerTile,
+  terrainInnerCornerQuarterSources,
+} from "@/project/defaults/terrainQuarterAutotile";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
 
@@ -47,6 +51,9 @@ export function createChipsetTileObject(
   const { tile, tileset, x, y } = resolved;
   if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
+  }
+  if (isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
+    return createTerrainInnerCornerObject(scene, map, tileset, x, y);
   }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
@@ -103,6 +110,25 @@ function createLakeQuarterObject(
     : scene.add.image(part.offsetX, part.offsetY, textureKey, frameName);
   image.setOrigin(0, 0);
   return image;
+}
+
+// 오목 코너 합성 타일(365/362): 잔디 대각 귀퉁이만 오목 쿼터, 나머지는 몸통 쿼터로 합성.
+function createTerrainInnerCornerObject(
+  scene: Phaser.Scene,
+  map: GameMap,
+  tileset: TilesetDef,
+  x: number,
+  y: number
+): Phaser.GameObjects.Container {
+  const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
+  container.setSize(TILE_SIZE, TILE_SIZE);
+  const textureKey = ensureTilesetTexture(scene, tileset);
+  for (const part of terrainInnerCornerQuarterSources(map, x, y) ?? []) {
+    const image = scene.add.image(part.offsetX, part.offsetY, textureKey, `tile_${part.tile}_${part.quarter}`);
+    image.setOrigin(0, 0);
+    container.add(image);
+  }
+  return container;
 }
 
 function createRawTileObject(scene: Phaser.Scene, tileset: TilesetDef, pixelX: number, pixelY: number, tile: number): ChipsetTilePiece {
