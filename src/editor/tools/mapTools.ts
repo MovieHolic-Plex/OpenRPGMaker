@@ -7,6 +7,8 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { shapeRoadAround } from "@/project/defaults/roadAutotile";
 import { shapeSandAround } from "@/project/defaults/sandAutotile";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
@@ -110,7 +112,7 @@ const createMap: ToolDefinition = {
 
 const paintTiles: ToolDefinition = {
   name: "paint_tiles",
-  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다.",
+  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함).",
   mode: "write",
   parameters: {
     type: "object",
@@ -169,6 +171,12 @@ const paintTiles: ToolDefinition = {
     }
 
     const paintResult = applyClusterAwarePaint(map, tileset, layer, tile, targetCells);
+    // 에디터 수동 페인트와 동일하게 지형 오토타일(흙길/모래 등)을 재성형한다 —
+    // 편집 주변의 그룹 멤버 셀만 바뀌므로 비멤버 페인트에는 사실상 no-op.
+    if (paintResult.lowerTouched.size > 0) {
+      const lowerPoints = paintResult.touched.filter((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)));
+      for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(map, group, lowerPoints);
+    }
     const warning = paintResult.touched.some((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)))
       ? passabilityWarning(draft, map, paintResult.touched)
       : null;

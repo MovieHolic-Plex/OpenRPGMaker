@@ -306,7 +306,8 @@ describe("small house variants", () => {
 
     expect(map.lowerTiles[at(map, 14, 10)]).toBe(DIRT_ROAD_TILE.CORNER_NORTH_WEST);
     expect(map.lowerTiles[at(map, 15, 10)]).toBe(DIRT_ROAD_TILE.CORNER_NORTH_EAST);
-    expect(map.lowerTiles[at(map, 14, 15)]).toBe(DIRT_ROAD_TILE.BODY);
+    // 마당 길 합류부 안쪽은 8방 오토타일에서 오목 코너(362).
+    expect(map.lowerTiles[at(map, 14, 15)]).toBe(DIRT_ROAD_TILE.INNER_CORNER);
     expect(map.lowerTiles[at(map, 11, 15)]).toBe(DIRT_ROAD_TILE.EDGE_NORTH);
     expect(map.lowerTiles[at(map, 11, 16)]).toBe(DIRT_ROAD_TILE.EDGE_SOUTH);
     expect(map.lowerTiles[at(map, 14, 17)]).toBe(DIRT_ROAD_TILE.CORNER_SOUTH_WEST);

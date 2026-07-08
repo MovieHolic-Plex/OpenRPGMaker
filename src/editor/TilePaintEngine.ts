@@ -96,7 +96,7 @@ export class TilePaintEngine {
         if (firstStrokeTile) recordTileEditSnapshot(mid);
         {
           if (activePaletteStamp) {
-            applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y });
+            applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y, autoConnect: autoConnectMode });
             break;
           }
           if (activeStructureStampId) {
@@ -222,15 +222,21 @@ function applyStamp(input: {
 }
 
 function applyPaletteStamp(input: {
+  readonly autoConnect: boolean;
   readonly mapId: MapId;
   readonly stamp: PaletteStamp;
   readonly x: number;
   readonly y: number;
 }): void {
+  // 여러 칸 스탬프는 "고른 그대로" 찍는다 — 클러스터 동반 확장이 셀마다 발화해
+  // 스탬프 밖 이웃의 상위 레이어를 덮어쓰던 문제 차단 + 의도한 배열 보존.
+  // 1칸 스탬프는 지형 오토타일(흙길/모래 등)이 기대대로 성형되도록 autoConnect 를 존중한다.
+  const single = input.stamp.cells.length === 1;
   for (const cell of input.stamp.cells) {
-    // 스탬프는 "고른 그대로" 찍는다 — 클러스터 동반 확장이 셀마다 발화해
-    // 스탬프 밖 이웃의 상위 레이어를 덮어쓰던 문제 차단.
-    paintTile(input.mapId, cell.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: false, clusterExpand: false });
+    paintTile(input.mapId, cell.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, {
+      autoConnect: single ? input.autoConnect : false,
+      clusterExpand: false,
+    });
   }
 }
 

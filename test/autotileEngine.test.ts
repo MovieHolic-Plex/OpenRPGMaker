@@ -150,20 +150,73 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
   });
 
   it("모래는 인접 물을 연결된 이웃으로 취급한다", () => {
-    // 중앙 모래의 서쪽만 물, 나머지는 모래 → 물이 연결로 취급되어 사방 연결 = 몸통.
+    // 중앙 모래의 서쪽 열이 전부 물, 나머지는 모래 → 물이 연결로 취급되어 8방 전부 연결 = 몸통.
     const map = mapFromRows([
-      [99, TILE.SAND, 99],
       [TILE.WATER, TILE.SAND, TILE.SAND],
-      [99, TILE.SAND, 99],
+      [TILE.WATER, TILE.SAND, TILE.SAND],
+      [TILE.WATER, TILE.SAND, TILE.SAND],
     ]);
     expect(autotileVariantForCell(map, DEFAULT_SAND_AUTOTILE_GROUP, 1, 1)).toBe(SAND_TILE.BODY);
     // 물을 비멤버(잔디)로 바꾸면 서쪽 연결이 끊겨 서쪽 변이 된다.
     const landMap = mapFromRows([
-      [99, TILE.SAND, 99],
       [TILE.GRASS, TILE.SAND, TILE.SAND],
-      [99, TILE.SAND, 99],
+      [TILE.GRASS, TILE.SAND, TILE.SAND],
+      [TILE.GRASS, TILE.SAND, TILE.SAND],
     ]);
     expect(autotileVariantForCell(landMap, DEFAULT_SAND_AUTOTILE_GROUP, 1, 1)).toBe(SAND_TILE.EDGE_WEST);
+  });
+
+  it("외딴 1칸 모래/흙길은 외딴 점 타일이 되고, 외딴 점을 칠하면 그대로 유지된다", () => {
+    const map = mapFromRows([
+      [TILE.GRASS, TILE.GRASS, TILE.GRASS],
+      [TILE.GRASS, TILE.SAND, TILE.GRASS],
+      [TILE.GRASS, TILE.GRASS, TILE.GRASS],
+    ]);
+    expect(autotileVariantForCell(map, DEFAULT_SAND_AUTOTILE_GROUP, 1, 1)).toBe(SAND_TILE.ISOLATED);
+    const roadMap = mapFromRows([
+      [TILE.GRASS, TILE.GRASS, TILE.GRASS],
+      [TILE.GRASS, DIRT_ROAD_TILE.BODY, TILE.GRASS],
+      [TILE.GRASS, TILE.GRASS, TILE.GRASS],
+    ]);
+    expect(autotileVariantForCell(roadMap, DEFAULT_ROAD_AUTOTILE_GROUP, 1, 1)).toBe(DIRT_ROAD_TILE.ISOLATED);
+    // "363을 깔면 알아서 오토타일" 요건: 외딴 점 타일 자체를 칠해도 성형 후 그대로.
+    const dotMap = mapFromRows([
+      [TILE.GRASS, TILE.GRASS, TILE.GRASS],
+      [TILE.GRASS, SAND_TILE.ISOLATED, TILE.GRASS],
+      [TILE.GRASS, TILE.GRASS, TILE.GRASS],
+    ]);
+    shapeAutotileGroupAround(dotMap, DEFAULT_SAND_AUTOTILE_GROUP, [{ x: 1, y: 1 }]);
+    expect(at(dotMap, 1, 1)).toBe(SAND_TILE.ISOLATED);
+  });
+
+  it("십자 교차로의 오목 코너 4칸은 합성 오목 타일이 된다", () => {
+    // 3칸 폭 십자: 가로 rows 3~5, 세로 cols 3~5 (9x9).
+    const S = TILE.SAND;
+    const grid: number[][] = Array.from({ length: 9 }, () => Array<number>(9).fill(TILE.GRASS));
+    for (let x = 0; x < 9; x++) for (let y = 3; y <= 5; y++) grid[y][x] = S;
+    for (let y = 0; y < 9; y++) for (let x = 3; x <= 5; x++) grid[y][x] = S;
+    const map = mapFromRows(grid);
+    const points: { x: number; y: number }[] = [];
+    for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) if (at(map, x, y) === S) points.push({ x, y });
+    shapeAutotileGroupAround(map, DEFAULT_SAND_AUTOTILE_GROUP, points);
+    // 오목 4칸: 4방 모래 + 대각 1곳 잔디.
+    for (const [x, y] of [[3, 3], [5, 3], [3, 5], [5, 5]] as const) {
+      expect(at(map, x, y), `(${x},${y})`).toBe(SAND_TILE.INNER_CORNER);
+    }
+    // 교차 중심은 대각까지 전부 모래 → 몸통 유지.
+    expect(at(map, 4, 4)).toBe(SAND_TILE.BODY);
+    // 팔 끝 볼록 모서리는 기존 9-슬라이스 유지.
+    expect(at(map, 3, 0)).toBe(SAND_TILE.CORNER_NORTH_WEST);
+    expect(at(map, 5, 0)).toBe(SAND_TILE.CORNER_NORTH_EAST);
+  });
+
+  it("대각에 접한 셀만 편집해도 이웃 몸통이 오목 코너로 재성형된다(8방 재검사)", () => {
+    const grid: number[][] = Array.from({ length: 5 }, () => Array<number>(5).fill(SAND_TILE.BODY));
+    const map = mapFromRows(grid);
+    // (0,0)을 잔디로 바꾼 편집 — 대각 이웃 (1,1)은 몸통에서 오목 코너로 바뀌어야 한다.
+    map.lowerTiles[0] = TILE.GRASS;
+    shapeAutotileGroupAround(map, DEFAULT_SAND_AUTOTILE_GROUP, [{ x: 0, y: 0 }]);
+    expect(at(map, 1, 1)).toBe(SAND_TILE.INNER_CORNER);
   });
 
   it("autotileGroupsForTileset 는 기본 Combined Town에서만 내장 그룹으로 폴백한다", () => {
@@ -171,6 +224,13 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
     const project = createBlankProject();
     expect(autotileGroupsForTileset(project.tilesets[DEFAULT_TILESET_ID])).toHaveLength(2);
     expect(autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon)).toHaveLength(0);
+    // 병합 폴백: 흙길만 덮는 사용자 그룹이 영속돼 있어도 내장 모래 그룹은 살아있어야 한다.
+    const withCustomRoad = structuredClone(project.tilesets[DEFAULT_TILESET_ID]!);
+    withCustomRoad.autotileGroups = [
+      { id: "custom_road", name: "커스텀 흙길", neighborhood: 8, memberTileIds: [DIRT_ROAD_TILE.BODY], variantMap: {} },
+    ];
+    const merged = autotileGroupsForTileset(withCustomRoad);
+    expect(merged.map((group) => group.id)).toEqual(["custom_road", "builtin_sand"]);
     const cloned = cloneDefaultAutotileGroups();
     expect(cloned).toHaveLength(2);
     expect(cloned[0]?.memberTileIds).not.toBe(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);

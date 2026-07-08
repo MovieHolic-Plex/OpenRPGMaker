@@ -1,5 +1,10 @@
 import type { GameMap } from "../types";
+import { autotileNeighborMask, autotileVariantForMask, shapeAutotileGroupAround } from "./autotileEngine";
+import { DEFAULT_ROAD_AUTOTILE_GROUP } from "./autotileGroups";
 import { DIRT_ROAD_TILE } from "./chipsetMapping";
+
+// 흙길 셰이핑 — 내장 오토타일 그룹(builtin_dirt_road)에 위임한다.
+// 8방향 판정: 볼록 9-슬라이스 + 외딴 점(360) + 오목 코너(362)까지 자동 성형.
 
 export type RoadRect = {
   readonly x: number;
@@ -14,34 +19,10 @@ export type RoadPoint = {
 };
 type Point = RoadPoint;
 
-type RoadNeighbors = {
-  readonly north: boolean;
-  readonly south: boolean;
-  readonly west: boolean;
-  readonly east: boolean;
-};
-
-const ROAD_SURFACE_TILES = [
-  DIRT_ROAD_TILE.BODY,
-  DIRT_ROAD_TILE.BODY_ALT,
-  DIRT_ROAD_TILE.EDGE_NORTH,
-  DIRT_ROAD_TILE.EDGE_SOUTH,
-  DIRT_ROAD_TILE.EDGE_WEST,
-  DIRT_ROAD_TILE.EDGE_EAST,
-  DIRT_ROAD_TILE.CORNER_NORTH_WEST,
-  DIRT_ROAD_TILE.CORNER_NORTH_EAST,
-  DIRT_ROAD_TILE.CORNER_SOUTH_WEST,
-  DIRT_ROAD_TILE.CORNER_SOUTH_EAST,
-] as const;
-
-const ROAD_SURFACE_TILE_SET = new Set<number>(ROAD_SURFACE_TILES);
-const ROAD_RECHECK_OFFSETS = [
-  { x: 0, y: 0 },
-  { x: 0, y: -1 },
-  { x: 0, y: 1 },
-  { x: -1, y: 0 },
-  { x: 1, y: 0 },
-] as const;
+const ROAD_SURFACE_TILE_SET = new Set<number>(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
+const ROAD_CONNECT_TILE_SET = new Set<number>(
+  DEFAULT_ROAD_AUTOTILE_GROUP.connectTileIds ?? DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds
+);
 
 export function paintRoadRect(map: GameMap, rect: RoadRect): void {
   forEachRoadPoint(rect, (point) => {
@@ -55,29 +36,24 @@ export function isRoadTile(tile: number): boolean {
 
 export function roadAutotileTileForCell(map: GameMap, point: Point): number | null {
   if (lowerAt(map, point) !== DIRT_ROAD_TILE.BODY_ALT) return null;
-  return tileForRoadCell(roadNeighbors(map, point));
+  return roadVariantAt(map, point);
 }
 
 export function shapeRoadEdges(map: GameMap, rects: readonly RoadRect[]): void {
   for (const rect of rects) {
     forEachRoadPoint(rect, (point) => {
-      setLower(map, point, tileForRoadCell(roadNeighbors(map, point)));
+      setLower(map, point, roadVariantAt(map, point));
     });
   }
 }
 
 export function shapeRoadAround(map: GameMap, points: readonly Point[]): void {
-  const visited = new Set<string>();
-  for (const point of points) {
-    for (const offset of ROAD_RECHECK_OFFSETS) {
-      const candidate = { x: point.x + offset.x, y: point.y + offset.y };
-      const key = `${candidate.x},${candidate.y}`;
-      if (visited.has(key)) continue;
-      visited.add(key);
-      if (!isRoadSurface(map, candidate)) continue;
-      setLower(map, candidate, tileForRoadCell(roadNeighbors(map, candidate)));
-    }
-  }
+  shapeAutotileGroupAround(map, DEFAULT_ROAD_AUTOTILE_GROUP, points);
+}
+
+function roadVariantAt(map: GameMap, point: Point): number {
+  const mask = autotileNeighborMask(map, point.x, point.y, (tile) => ROAD_CONNECT_TILE_SET.has(tile), DEFAULT_ROAD_AUTOTILE_GROUP.neighborhood ?? 4);
+  return autotileVariantForMask(DEFAULT_ROAD_AUTOTILE_GROUP, mask) ?? DIRT_ROAD_TILE.BODY;
 }
 
 function forEachRoadPoint(rect: RoadRect, visit: (point: Point) => void): void {
@@ -86,37 +62,6 @@ function forEachRoadPoint(rect: RoadRect, visit: (point: Point) => void): void {
       visit({ x, y });
     }
   }
-}
-
-function tileForRoadCell(neighbors: RoadNeighbors): number {
-  const missingNorth = !neighbors.north;
-  const missingSouth = !neighbors.south;
-  const missingWest = !neighbors.west;
-  const missingEast = !neighbors.east;
-
-  if (missingNorth && missingWest) return DIRT_ROAD_TILE.CORNER_NORTH_WEST;
-  if (missingNorth && missingEast) return DIRT_ROAD_TILE.CORNER_NORTH_EAST;
-  if (missingSouth && missingWest) return DIRT_ROAD_TILE.CORNER_SOUTH_WEST;
-  if (missingSouth && missingEast) return DIRT_ROAD_TILE.CORNER_SOUTH_EAST;
-  if (missingNorth) return DIRT_ROAD_TILE.EDGE_NORTH;
-  if (missingSouth) return DIRT_ROAD_TILE.EDGE_SOUTH;
-  if (missingWest) return DIRT_ROAD_TILE.EDGE_WEST;
-  if (missingEast) return DIRT_ROAD_TILE.EDGE_EAST;
-  return DIRT_ROAD_TILE.BODY;
-}
-
-function roadNeighbors(map: GameMap, point: Point): RoadNeighbors {
-  return {
-    north: isRoadSurface(map, { x: point.x, y: point.y - 1 }),
-    south: isRoadSurface(map, { x: point.x, y: point.y + 1 }),
-    west: isRoadSurface(map, { x: point.x - 1, y: point.y }),
-    east: isRoadSurface(map, { x: point.x + 1, y: point.y }),
-  };
-}
-
-function isRoadSurface(map: GameMap, point: Point): boolean {
-  const tile = lowerAt(map, point);
-  return tile !== undefined && ROAD_SURFACE_TILE_SET.has(tile);
 }
 
 function lowerAt(map: GameMap, point: Point): number | undefined {

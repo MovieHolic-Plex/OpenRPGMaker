@@ -40,7 +40,8 @@ describe("house template gallery project", () => {
     if (!map) return;
     expect(map.upperTiles.every((tile) => tile !== TILE.FLOWERS && tile !== TILE.TREE && tile !== 260 && tile !== 288 && tile !== 289 && tile !== 290)).toBe(true);
     expect(Object.values(map.upperTileStacks ?? {}).flat().length).toBe(0);
-    expect(map.lowerTiles).toContain(DIRT_ROAD_TILE.BODY);
+    // 2칸 폭 L자 길: 굽이 안쪽 두 칸은 8방 오토타일에서 오목 코너(362)가 된다 — 몸통(421)은 더 이상 없음.
+    expect(map.lowerTiles).toContain(DIRT_ROAD_TILE.INNER_CORNER);
     expect(map.lowerTiles).toContain(DIRT_ROAD_TILE.EDGE_SOUTH);
     expect(map.lowerTiles).toContain(DIRT_ROAD_TILE.CORNER_SOUTH_EAST);
     for (let index = 0; index < map.lowerTiles.length; index += 1) {

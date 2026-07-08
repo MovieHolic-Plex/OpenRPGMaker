@@ -54,6 +54,9 @@ export const DIRT_ROAD_TILE = {
   CORNER_NORTH_EAST: 392,
   CORNER_SOUTH_WEST: 450,
   CORNER_SOUTH_EAST: 452,
+  // 블록 윗줄(12행): 외딴 1칸 웅덩이 / 네 귀퉁이 잔디 바이트가 합성된 오목 코너.
+  ISOLATED: 360,
+  INNER_CORNER: 362,
 } as const;
 
 const DIRT_ROAD_SIDE_EDGES = [
@@ -80,6 +83,9 @@ export const SAND_TILE = {
   CORNER_NORTH_EAST: 395,
   CORNER_SOUTH_WEST: 453,
   CORNER_SOUTH_EAST: 455,
+  // 블록 윗줄(12행): 외딴 1칸 웅덩이 / 네 귀퉁이 잔디 바이트가 합성된 오목 코너.
+  ISOLATED: 363,
+  INNER_CORNER: 365,
 } as const;
 
 const SAND_SIDE_EDGES = [

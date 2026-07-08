@@ -10,7 +10,8 @@ import {
   type RoofMaterialSet,
 } from "@/editor/panels/housePlan";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
-import { buildEightNeighborVariantMap, derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
+import { derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
+import { buildEdgeCornerInnerVariantMap } from "@/project/defaults/autotileEngine";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import type { LintIssue } from "@/project/lint/projectLint";
@@ -378,17 +379,19 @@ function fillRoof(project: Project, rect: BuildPaletteSelection): boolean {
 
 function ensurePathAutotile(tileset: TilesetDef): void {
   const id = `${P}build-palette-dirt-road-8`;
-  if (tileset.autotileGroups?.some((group) => group.id === id)) return;
-  tileset.autotileGroups = [...(tileset.autotileGroups ?? []), {
+  // 항상 최신 정의로 재생성한다(멱등) — 오목 코너(362)/외딴 점(360)이 없는
+  // 구버전 정의가 프로젝트에 영속돼 있으면 여기서 교체된다.
+  const next = {
     id,
     name: "건축 팔레트 흙길 8방향",
-    neighborhood: 8,
+    neighborhood: 8 as const,
     memberTileIds: [
       DIRT_ROAD_TILE.CORNER_NORTH_WEST, DIRT_ROAD_TILE.EDGE_NORTH, DIRT_ROAD_TILE.CORNER_NORTH_EAST,
       DIRT_ROAD_TILE.EDGE_WEST, DIRT_ROAD_TILE.BODY, DIRT_ROAD_TILE.EDGE_EAST,
       DIRT_ROAD_TILE.CORNER_SOUTH_WEST, DIRT_ROAD_TILE.EDGE_SOUTH, DIRT_ROAD_TILE.CORNER_SOUTH_EAST, DIRT_ROAD_TILE.BODY_ALT,
+      DIRT_ROAD_TILE.ISOLATED, DIRT_ROAD_TILE.INNER_CORNER,
     ],
-    variantMap: buildEightNeighborVariantMap({
+    variantMap: buildEdgeCornerInnerVariantMap({
       body: DIRT_ROAD_TILE.BODY,
       edgeN: DIRT_ROAD_TILE.EDGE_NORTH,
       edgeS: DIRT_ROAD_TILE.EDGE_SOUTH,
@@ -398,8 +401,16 @@ function ensurePathAutotile(tileset: TilesetDef): void {
       cornerNE: DIRT_ROAD_TILE.CORNER_NORTH_EAST,
       cornerSW: DIRT_ROAD_TILE.CORNER_SOUTH_WEST,
       cornerSE: DIRT_ROAD_TILE.CORNER_SOUTH_EAST,
+      isolated: DIRT_ROAD_TILE.ISOLATED,
+      inner: DIRT_ROAD_TILE.INNER_CORNER,
     }),
-  }];
+  };
+  const existingIndex = (tileset.autotileGroups ?? []).findIndex((group) => group.id === id);
+  if (existingIndex >= 0) {
+    tileset.autotileGroups = tileset.autotileGroups!.map((group, index) => (index === existingIndex ? next : group));
+    return;
+  }
+  tileset.autotileGroups = [...(tileset.autotileGroups ?? []), next];
 }
 
 function clampSelection(selection: BuildPaletteSelection, mapWidth: number, mapHeight: number): BuildPaletteSelection {

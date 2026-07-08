@@ -37,6 +37,15 @@ const RECHECK_OFFSETS: readonly AutotilePoint[] = [
   { x: 1, y: 0 },
 ];
 
+// 8방향 그룹은 대각 이웃의 오목 코너 판정도 바뀌므로 대각까지 재검사한다.
+const RECHECK_OFFSETS_8: readonly AutotilePoint[] = [
+  ...RECHECK_OFFSETS,
+  { x: 1, y: -1 },
+  { x: 1, y: 1 },
+  { x: -1, y: 1 },
+  { x: -1, y: -1 },
+];
+
 // 9분류(몸통/4변/4모서리) 오토타일 타일 매핑 기술자.
 export interface EdgeCornerTileSet {
   readonly body: number;
@@ -77,6 +86,40 @@ export function buildEdgeCornerVariantMap(tiles: EdgeCornerTileSet): Record<stri
     const east = (mask & AUTOTILE_DIR.E) !== 0;
     const south = (mask & AUTOTILE_DIR.S) !== 0;
     const west = (mask & AUTOTILE_DIR.W) !== 0;
+    variantMap[String(mask)] = edgeCornerTile(tiles, north, east, south, west);
+  }
+  return variantMap;
+}
+
+// 11분류(9분류 + 외딴 점 + 오목 코너) 오토타일 매핑 기술자.
+// isolated: 상하좌우가 전부 결손인 1칸 웅덩이(예: 모래 363, 흙길 360).
+// inner: 상하좌우는 전부 연결인데 대각선에 결손이 있는 오목 코너 합성 타일(예: 모래 365, 흙길 362).
+export interface EdgeCornerInnerTileSet extends EdgeCornerTileSet {
+  readonly isolated: number;
+  readonly inner: number;
+}
+
+// 11분류 기술자로 256개(8비트) variantMap 을 생성한다. neighborhood: 8 그룹 전용.
+export function buildEdgeCornerInnerVariantMap(tiles: EdgeCornerInnerTileSet): Record<string, number> {
+  const variantMap: Record<string, number> = {};
+  for (let mask = 0; mask < 256; mask += 1) {
+    const north = (mask & AUTOTILE_DIR.N) !== 0;
+    const east = (mask & AUTOTILE_DIR.E) !== 0;
+    const south = (mask & AUTOTILE_DIR.S) !== 0;
+    const west = (mask & AUTOTILE_DIR.W) !== 0;
+    if (!north && !east && !south && !west) {
+      variantMap[String(mask)] = tiles.isolated;
+      continue;
+    }
+    if (north && east && south && west) {
+      const allDiagonals =
+        (mask & AUTOTILE_DIR.NE) !== 0 &&
+        (mask & AUTOTILE_DIR.SE) !== 0 &&
+        (mask & AUTOTILE_DIR.SW) !== 0 &&
+        (mask & AUTOTILE_DIR.NW) !== 0;
+      variantMap[String(mask)] = allDiagonals ? tiles.body : tiles.inner;
+      continue;
+    }
     variantMap[String(mask)] = edgeCornerTile(tiles, north, east, south, west);
   }
   return variantMap;
@@ -160,9 +203,10 @@ export function shapeAutotileGroupAround(
   const connect = connectSet(group);
   const isConnected = (tile: number): boolean => connect.has(tile);
   const neighborhood = group.neighborhood ?? 4;
+  const offsets = neighborhood === 8 ? RECHECK_OFFSETS_8 : RECHECK_OFFSETS;
   const visited = new Set<string>();
   for (const point of points) {
-    for (const offset of RECHECK_OFFSETS) {
+    for (const offset of offsets) {
       const cx = point.x + offset.x;
       const cy = point.y + offset.y;
       const key = `${cx},${cy}`;
