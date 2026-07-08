@@ -19,8 +19,11 @@ import {
   isNumberRecord,
   isPictureRecord,
   isRecord,
+  isRuntimeCameraState,
   isRuntimeEventLocationRecord,
   isRuntimeNpcTravelStateRecord,
+  isRuntimeRemovedEventIds,
+  isRuntimeSpawnedEventRecord,
   isRngState,
   isSelfSwitchesRecord,
   isStringArray,
@@ -63,6 +66,9 @@ export type SaveSnapshot = {
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly eventLocations?: PlaySession["eventLocations"];
     readonly erasedEventIds?: readonly string[];
+    readonly removedEventIds?: PlaySession["removedEventIds"];
+    readonly spawnedEvents?: PlaySession["spawnedEvents"];
+    readonly camera?: PlaySession["camera"];
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
     readonly currentMapId: string;
     readonly x: number;
@@ -123,6 +129,9 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorVitals: structuredClone(session.actorVitals),
       eventLocations: structuredClone(session.eventLocations),
       erasedEventIds: structuredClone(session.erasedEventIds),
+      removedEventIds: structuredClone(session.removedEventIds),
+      spawnedEvents: structuredClone(session.spawnedEvents),
+      camera: structuredClone(session.camera),
       npcTravelStates: structuredClone(session.npcTravelStates),
       currentMapId: session.currentMapId,
       x: session.x,
@@ -202,6 +211,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
   if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
+  if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
+  if (snapshot.session.spawnedEvents) session.spawnedEvents = structuredClone(snapshot.session.spawnedEvents);
+  if (snapshot.session.camera) session.camera = structuredClone(snapshot.session.camera);
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
@@ -298,6 +310,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
       erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
+      removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,
+      spawnedEvents: isRuntimeSpawnedEventRecord(session.spawnedEvents) ? session.spawnedEvents : undefined,
+      camera: isRuntimeCameraState(session.camera) ? session.camera : undefined,
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
       currentMapId: session.currentMapId,
       x: session.x,

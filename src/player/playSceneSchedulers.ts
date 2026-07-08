@@ -15,6 +15,7 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { applyCameraControl } from "@/player/playSceneCamera";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -101,7 +102,9 @@ function createParallelProcess(
   const process = {
     pageId,
     currentEventId: event.event.id,
-    interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent()),
+    interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
+      currentEventId: event.event.id,
+    }),
     waitMs: 0,
     started: false,
   };
@@ -203,6 +206,15 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "scrollMap":
       void scene.panScreen({ ...step, wait: false });
       return true;
+    case "cameraControl":
+      void applyCameraControl(scene, { ...step, wait: false });
+      return true;
+    case "spawnEvent":
+      removeRuntimeEventSurfaces(scene, step.eventId);
+      return true;
+    case "removeEvent":
+      removeRuntimeEventSurfaces(scene, step.eventId);
+      return true;
     case "shop":
       scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
       return true;
@@ -249,9 +261,16 @@ function isParallelBlockingStep(step: StepResult): boolean {
 function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
   if (!eventId) return;
   scene.session.erasedEventIds = [...new Set([...(scene.session.erasedEventIds ?? []), eventId])];
+  removeRuntimeEventSurfaces(scene, eventId);
+}
+
+function removeRuntimeEventSurfaces(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
   scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.delete(eventId);
   scene.pageMoveRouteEventIds.delete(eventId);
+  scene.eventSprites.get(eventId)?.destroy();
+  scene.eventSprites.delete(eventId);
 }
 
 function applyEventGraphicPatternStep(

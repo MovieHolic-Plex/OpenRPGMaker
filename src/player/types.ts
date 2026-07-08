@@ -194,6 +194,30 @@ export type RuntimeEventLocation = {
   readonly direction?: Dir;
 };
 
+export type RuntimeCameraTarget =
+  | { readonly kind: "player" }
+  | { readonly kind: "event"; readonly eventId: string }
+  | { readonly kind: "position"; readonly x: number; readonly y: number };
+
+export type RuntimeCameraSessionState = {
+  readonly mode: "follow" | "fixed";
+  readonly target: RuntimeCameraTarget;
+  readonly offsetX?: number;
+  readonly offsetY?: number;
+  readonly zoom?: number;
+};
+
+export type RuntimeSpawnedEventState = {
+  readonly templateMapId: MapId;
+  readonly templateEventId: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
+};
+
+export type RuntimeRemovedEventIds = Record<MapId, readonly string[]>;
+
 export type RuntimeNpcTravelState = {
   readonly destinationIndex: number;
 };
@@ -222,6 +246,9 @@ export interface PlaySessionLike {
   actorVitals: Record<string, ActorVitals>;
   eventLocations?: Record<string, RuntimeEventLocation>;
   erasedEventIds?: readonly string[];
+  removedEventIds?: RuntimeRemovedEventIds;
+  spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
+  camera?: RuntimeCameraSessionState;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
   playTimeSeconds?: number;
   currentMapId: MapId;

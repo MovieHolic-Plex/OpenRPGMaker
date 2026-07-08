@@ -175,7 +175,10 @@ describe("m2 event command catalog", () => {
 
     for (const title of modernTitles) {
       const entry = requireEntry(title);
-      expect(entry.runtimeSupport).toBe("runtime-partial");
+      const expectedSupport = ["Camera Control", "Spawn Event", "Remove Event"].includes(title)
+        ? "runtime-full"
+        : "runtime-partial";
+      expect(entry.runtimeSupport).toBe(expectedSupport);
       expect(entry.bodyStrategy).toBe("generic");
       expect(entry.pickerPage).toBe(4);
       expect(isM2CatalogEntrySelectableInMap(entry)).toBe(true);

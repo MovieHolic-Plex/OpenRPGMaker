@@ -22,12 +22,16 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { applyCameraControl } from "@/player/playSceneCamera";
+import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
-  const event = scene.map.events.find((entry) => entry.id === eventId);
-  if (!event) return;
-  const page = resolveEventPage(event, scene.session);
+  const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
+    .find((entry) => entry.event.id === eventId);
+  if (!view) return;
+  const event = view.event;
+  const page = view.page ?? resolveEventPage(event, scene.session);
   if (!page && event.condition && !evalCondition(scene.session, event.condition)) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
@@ -202,6 +206,15 @@ async function consumeBlockingStep(
     case "scrollMap":
       await scene.panScreen(step);
       return resumeAfterSurface(scene, interpreter);
+    case "cameraControl":
+      await applyCameraControl(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "spawnEvent":
+      refreshSpawnedEvent(scene, step.eventId);
+      return resumeAfterSurface(scene, interpreter);
+    case "removeEvent":
+      removeRuntimeEvent(scene, step.eventId);
+      return resumeAfterSurface(scene, interpreter);
     case "shop":
       return resumeWithValue(scene, interpreter, await playShop(scene, step));
     case "inn":
@@ -298,9 +311,23 @@ function waitForPlayerRouteComplete(scene: PlaySceneContext): Promise<void> {
 function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
   if (!eventId) return;
   scene.session.erasedEventIds = [...new Set([...(scene.session.erasedEventIds ?? []), eventId])];
+  removeRuntimeEvent(scene, eventId);
+}
+
+function refreshSpawnedEvent(scene: PlaySceneContext, eventId: string): void {
+  if (!eventId) return;
   scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.delete(eventId);
   scene.pageMoveRouteEventIds.delete(eventId);
+}
+
+function removeRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.delete(eventId);
+  scene.pageMoveRouteEventIds.delete(eventId);
+  scene.eventSprites.get(eventId)?.destroy();
+  scene.eventSprites.delete(eventId);
 }
 
 function stopCommandMovement(scene: PlaySceneContext): void {

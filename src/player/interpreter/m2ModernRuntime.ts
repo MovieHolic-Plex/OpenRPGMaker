@@ -8,7 +8,8 @@ export function executeModernCommand(
   session: PlaySessionLike,
   runtime: M2RuntimeState,
   title: string,
-  fields: M2CommandFields
+  fields: M2CommandFields,
+  context: { readonly currentEventId?: string } = {}
 ): boolean {
   switch (title) {
     case "Camera Control":
@@ -32,7 +33,7 @@ export function executeModernCommand(
       recordSpawnEvent(session, runtime, fields);
       return true;
     case "Remove Event":
-      recordRemoveEvent(session, runtime, fields);
+      recordRemoveEvent(session, runtime, fields, context);
       return true;
     case "Pathfind Move":
       runtime.pathfinding.push({
@@ -153,18 +154,38 @@ function recordUiCommand(session: PlaySessionLike, runtime: M2RuntimeState, fiel
 }
 
 function recordSpawnEvent(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
-  const eventId = fieldString(fields, "eventId", "spawned-event");
-  const mapId = fieldString(fields, "mapId", "");
+  const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
+  const eventId = fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
+  const mapId = fieldString(fields, "mapId", session.currentMapId) || session.currentMapId;
+  const templateMapId = fieldString(fields, "templateMapId", fieldString(fields, "sourceMapId", session.currentMapId)) || session.currentMapId;
   const x = fieldNumber(fields, "x", 0);
   const y = fieldNumber(fields, "y", 0);
-  runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), prefabId: fieldString(fields, "prefabId", ""), mapId, x, y };
+  runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), prefabId: templateEventId, mapId, x, y };
+  session.spawnedEvents ??= {};
+  session.spawnedEvents[eventId] = { templateMapId, templateEventId, mapId, x, y };
   session.eventLocations ??= {};
   session.eventLocations[eventId] = { mapId, x, y };
 }
 
-function recordRemoveEvent(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
-  const eventId = fieldString(fields, "eventId", "");
+function recordRemoveEvent(
+  session: PlaySessionLike,
+  runtime: M2RuntimeState,
+  fields: M2CommandFields,
+  context: { readonly currentEventId?: string }
+): void {
+  const eventId = fieldString(fields, "eventId", context.currentEventId ?? "");
+  if (!eventId) return;
+  const spawned = session.spawnedEvents?.[eventId];
+  const mapId = spawned?.mapId ?? (fieldString(fields, "mapId", session.currentMapId) || session.currentMapId);
   runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), removed: true };
+  if (spawned) {
+    delete session.spawnedEvents?.[eventId];
+  } else {
+    session.removedEventIds ??= {};
+    const removed = new Set(session.removedEventIds[mapId] ?? []);
+    removed.add(eventId);
+    session.removedEventIds[mapId] = [...removed];
+  }
   delete session.eventLocations?.[eventId];
   session.flags[`event-removed:${eventId}`] = true;
 }

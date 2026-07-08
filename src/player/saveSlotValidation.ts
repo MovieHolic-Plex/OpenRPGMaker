@@ -1,7 +1,14 @@
 import type { ActorInitialEquipment, ActorParameterKey } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
-import type { RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
+import type {
+  RuntimeCameraSessionState,
+  RuntimeCameraTarget,
+  RuntimeEventLocation,
+  RuntimeNpcTravelState,
+  RuntimeRemovedEventIds,
+  RuntimeSpawnedEventState,
+} from "@/player/types";
 import { RNG_STREAMS, type RngState } from "@/util/rng";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
@@ -78,6 +85,46 @@ export function isRuntimeEventLocationRecord(value: unknown): value is Record<st
       (direction === undefined || direction === "left" || direction === "right" || direction === "up" || direction === "down")
     );
   });
+}
+
+export function isRuntimeCameraState(value: unknown): value is RuntimeCameraSessionState {
+  if (!isRecord(value)) return false;
+  if (value.mode !== "follow" && value.mode !== "fixed") return false;
+  if (!isRuntimeCameraTarget(value.target)) return false;
+  return (
+    optionalFiniteNumber(value.offsetX) &&
+    optionalFiniteNumber(value.offsetY) &&
+    optionalFiniteNumber(value.zoom)
+  );
+}
+
+function isRuntimeCameraTarget(value: unknown): value is RuntimeCameraTarget {
+  if (!isRecord(value)) return false;
+  if (value.kind === "player") return true;
+  if (value.kind === "event") return typeof value.eventId === "string";
+  if (value.kind === "position") return typeof value.x === "number" && typeof value.y === "number";
+  return false;
+}
+
+export function isRuntimeSpawnedEventRecord(value: unknown): value is Record<string, RuntimeSpawnedEventState> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((spawn) => {
+    if (!isRecord(spawn)) return false;
+    const direction = spawn.direction;
+    return (
+      typeof spawn.templateMapId === "string" &&
+      typeof spawn.templateEventId === "string" &&
+      typeof spawn.mapId === "string" &&
+      typeof spawn.x === "number" &&
+      typeof spawn.y === "number" &&
+      (direction === undefined || direction === "left" || direction === "right" || direction === "up" || direction === "down")
+    );
+  });
+}
+
+export function isRuntimeRemovedEventIds(value: unknown): value is RuntimeRemovedEventIds {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every(isStringArray);
 }
 
 export function isRuntimeNpcTravelStateRecord(value: unknown): value is Record<string, RuntimeNpcTravelState> {
@@ -175,6 +222,10 @@ export function isStringRecord(value: unknown): value is Record<string, string> 
 
 export function isStringArray(value: unknown): value is readonly string[] {
   return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+function optionalFiniteNumber(value: unknown): boolean {
+  return value === undefined || (typeof value === "number" && Number.isFinite(value));
 }
 
 type ParsedAudioTrack =

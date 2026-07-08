@@ -7,6 +7,7 @@ import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
+import type { RuntimeCameraTarget } from "@/player/types";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -65,6 +66,18 @@ function executeM2Command(
       allowEventMovementDuringWait: false,
     };
     return resumeNext(frame);
+  }
+
+  if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+    return pause("cameraControl", cameraControlStep(command.fields, state.currentEventId));
+  }
+
+  if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+    return pause("spawnEvent", { kind: "spawnEvent", eventId: spawnEventId(command.fields) });
+  }
+
+  if (entry.title === "Remove Event" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+    return pause("removeEvent", { kind: "removeEvent", eventId: removeEventId(command.fields, state.currentEventId) });
   }
 
   if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command)) {
@@ -432,4 +445,102 @@ function scrollDurationMs(fields: M2CommandFields): number {
   const distance = Math.max(0, fieldNumber(fields, "distance", fieldNumber(fields, "value", 0)));
   const speed = Math.max(1, Math.min(6, fieldNumber(fields, "speed", 4)));
   return clampMs(distance * (700 - speed * 80));
+}
+
+function cameraControlStep(
+  fields: M2CommandFields,
+  currentEventId: string | undefined
+): Extract<StepResult, { kind: "cameraControl" }> {
+  const mode = cameraControlMode(fieldString(fields, "mode", "panTo"));
+  return {
+    kind: "cameraControl",
+    mode,
+    target: cameraTarget(fields, currentEventId, mode),
+    durationMs: cameraDurationMs(fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 300))),
+    wait: fieldBoolean(fields, "wait", true),
+    returnToPlayer: mode === "return" || fieldBoolean(fields, "return", false),
+    offsetX: optionalNumberField(fields, "offsetX"),
+    offsetY: optionalNumberField(fields, "offsetY"),
+    zoom: optionalNumberField(fields, "zoom"),
+  };
+}
+
+function cameraControlMode(value: string): Extract<StepResult, { kind: "cameraControl" }>["mode"] {
+  switch (value) {
+    case "follow":
+      return "follow";
+    case "lock":
+    case "fixed":
+      return "fixed";
+    case "return":
+    case "restore":
+    case "followPlayer":
+      return "return";
+    case "panTo":
+    case "pan":
+    case "zoom":
+    default:
+      return "pan";
+  }
+}
+
+function cameraTarget(
+  fields: M2CommandFields,
+  currentEventId: string | undefined,
+  mode: Extract<StepResult, { kind: "cameraControl" }>["mode"]
+): RuntimeCameraTarget {
+  if (mode === "return") return { kind: "player" };
+  const target = fieldString(fields, "target", "player");
+  const x = fieldNumber(fields, "x", 0);
+  const y = fieldNumber(fields, "y", 0);
+  if (usesCoordinateTarget(fields, target, mode, x, y)) return { kind: "position", x, y };
+  const eventId = explicitCameraEventId(fields, target, currentEventId);
+  if (eventId) return { kind: "event", eventId };
+  return { kind: "player" };
+}
+
+function usesCoordinateTarget(
+  fields: M2CommandFields,
+  target: string,
+  mode: Extract<StepResult, { kind: "cameraControl" }>["mode"],
+  x: number,
+  y: number
+): boolean {
+  if (target === "screen" || target === "position" || target === "fixed") return true;
+  return mode === "pan" && (x !== 0 || y !== 0) && !hasM2Field(fields, "targetEventId") && !hasM2Field(fields, "eventId");
+}
+
+function explicitCameraEventId(
+  fields: M2CommandFields,
+  target: string,
+  currentEventId: string | undefined
+): string {
+  const fieldEventId = fieldString(fields, "targetEventId", fieldString(fields, "eventId", ""));
+  if (fieldEventId) return fieldEventId;
+  if (target === "this-event") return currentEventId ?? "";
+  if (target.startsWith("event:")) return target.slice("event:".length);
+  if (target && target !== "player" && target !== "screen" && target !== "position" && target !== "fixed") return target;
+  return "";
+}
+
+function cameraDurationMs(value: number): number {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return Math.min(60_000, Math.round(value));
+}
+
+function optionalNumberField(fields: M2CommandFields, key: string): number | undefined {
+  return hasM2Field(fields, key) ? fieldNumber(fields, key, 0) : undefined;
+}
+
+function spawnEventId(fields: M2CommandFields): string {
+  const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
+  return fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
+}
+
+function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
+  return fieldString(fields, "eventId", currentEventId ?? "");
+}
+
+function hasM2Field(fields: M2CommandFields, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
 }

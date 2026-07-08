@@ -215,7 +215,11 @@ function drain(
       r.kind === "gameOver" ||
       r.kind === "returnToTitle" ||
       r.kind === "flashScreen" ||
-      r.kind === "shakeScreen"
+      r.kind === "shakeScreen" ||
+      r.kind === "scrollMap" ||
+      r.kind === "cameraControl" ||
+      r.kind === "spawnEvent" ||
+      r.kind === "removeEvent"
     ) {
       r = it.resume(undefined);
     } else {
@@ -900,6 +904,22 @@ describe("M2 generic map runtime executor", () => {
       wait: true,
       returnToPlayer: true,
       lock: true,
+    });
+  });
+
+  it("emits a cameraControl step with pan target and wait options", () => {
+    const session = mkM2Session();
+    const interpreter = createInterpreter([
+      modernM2Command("Camera Control", { mode: "panTo", target: "screen", x: 10, y: 12, durationMs: 450, wait: true }),
+    ], session);
+
+    expect(interpreter.start()).toMatchObject({
+      kind: "cameraControl",
+      mode: "pan",
+      target: { kind: "position", x: 10, y: 12 },
+      durationMs: 450,
+      wait: true,
+      returnToPlayer: false,
     });
   });
 

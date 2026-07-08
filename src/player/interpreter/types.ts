@@ -13,6 +13,7 @@ import type {
   ShopType,
 } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
+import type { RuntimeCameraTarget } from "@/player/types";
 
 export type StepResult =
   | { kind: "done" }
@@ -59,6 +60,19 @@ export type StepResult =
       returnToPlayer: boolean;
       lock: boolean;
     }
+  | {
+      kind: "cameraControl";
+      mode: "pan" | "follow" | "fixed" | "return";
+      target: RuntimeCameraTarget;
+      durationMs: number;
+      wait: boolean;
+      returnToPlayer: boolean;
+      offsetX?: number;
+      offsetY?: number;
+      zoom?: number;
+    }
+  | { kind: "spawnEvent"; eventId: string }
+  | { kind: "removeEvent"; eventId: string }
   | {
       kind: "shop";
       itemIds: string[];

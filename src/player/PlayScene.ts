@@ -58,7 +58,7 @@ import {
   returnToTitle as returnSceneToTitle,
 } from "@/player/playSceneOverlays";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
-import { centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
+import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -182,10 +182,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     }
     refreshSceneRuntimeSurfaces(this);
+    applyStoredCameraState(this);
   }
 
   centerCamera(): void {
     centerRuntimeCamera(this.cameras.main, this.map, this.player);
+    applyStoredCameraState(this);
   }
 
   setInputEnabled(enabled: boolean): void {

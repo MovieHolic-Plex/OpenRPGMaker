@@ -4,7 +4,15 @@
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
-import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
+import type {
+  M2RuntimeState,
+  PlaySessionLike,
+  RuntimeCameraSessionState,
+  RuntimeEventLocation,
+  RuntimeNpcTravelState,
+  RuntimeRemovedEventIds,
+  RuntimeSpawnedEventState,
+} from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
@@ -67,6 +75,10 @@ export interface PlaySession {
   eventLocations: Record<string, RuntimeEventLocation>;
   // Erase Event 런타임 소거 목록. 맵을 다시 로드/진입하면 RM2003 관례대로 초기화된다.
   erasedEventIds: string[];
+  // Persistent Modern Remove Event state. Erase Event remains map-entry scoped.
+  removedEventIds?: RuntimeRemovedEventIds;
+  spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
+  camera?: RuntimeCameraSessionState;
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
@@ -136,6 +148,9 @@ export function startSession(project: Project, seed?: number): PlaySession {
     actorVitals: initialActorVitals(project),
     eventLocations: {},
     erasedEventIds: [],
+    removedEventIds: {},
+    spawnedEvents: {},
+    camera: { mode: "follow", target: { kind: "player" } },
     npcTravelStates: {},
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),

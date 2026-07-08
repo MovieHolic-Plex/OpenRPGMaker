@@ -14,7 +14,8 @@ type M2RuntimeCommand = {
 export function executeM2RuntimeCommand(
   session: PlaySessionLike,
   entry: M2CommandCatalogEntry,
-  command: M2RuntimeCommand
+  command: M2RuntimeCommand,
+  context: { readonly currentEventId?: string } = {}
 ): boolean {
   // 배틀 전용 명령(index 98~108)은 맵 인터프리터에서 실행할 수 없다.
   // false를 반환하면 commandCatalog.ts의 support 등급 기반 경고/스킵이 담당한다.
@@ -22,11 +23,16 @@ export function executeM2RuntimeCommand(
   if (entry.index >= 98 && entry.index <= 108) return false;
   if (entry.title === "Comment") return true;
 
-  executeByTitle(session, entry, command);
+  executeByTitle(session, entry, command, context);
   return true;
 }
 
-function executeByTitle(session: PlaySessionLike, entry: M2CommandCatalogEntry, command: M2RuntimeCommand): void {
+function executeByTitle(
+  session: PlaySessionLike,
+  entry: M2CommandCatalogEntry,
+  command: M2RuntimeCommand,
+  context: { readonly currentEventId?: string }
+): void {
   const runtime = ensureM2Runtime(session);
   const fields = command.fields;
   const title = entry.title;
@@ -35,7 +41,7 @@ function executeByTitle(session: PlaySessionLike, entry: M2CommandCatalogEntry, 
     upsertPicture(session, fields);
     return;
   }
-  if (executeModernCommand(session, runtime, title, fields)) return;
+  if (executeModernCommand(session, runtime, title, fields, context)) return;
   if (title === "Hide Screen" || title === "Show Screen") {
     runtime.screen.hidden = title === "Hide Screen";
     return;

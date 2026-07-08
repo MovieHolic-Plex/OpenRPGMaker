@@ -3,11 +3,16 @@ import type { EventPage, GameEvent } from "@/project/types";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { startSession } from "@/project/session";
+import { createSaveSnapshot, applySaveSnapshot } from "@/player/saveSlots";
+import { createInterpreter } from "@/player/interpreter";
+import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import type { Command, M2CommandFields } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
 import { renderTiles } from "@/player/playSceneMapRuntime";
 import {
   eventBlocksPlayerAt,
   findBlockingRuntimeEventAt,
+  findBlockingRuntimeEventAtInMap,
   findRuntimeEventAt,
   initialRuntimeEventPositions,
   moveRuntimeEventPosition,
@@ -123,6 +128,21 @@ function sceneWithEventSprite(spriteId: string): Parameters<typeof renderTiles>[
   };
 }
 
+function modernM2Command(title: string, fields: M2CommandFields): Command {
+  const entry = M2_COMMAND_CATALOG.find((item) => item.title === title);
+  if (!entry) throw new Error(`missing M2 command: ${title}`);
+  return { kind: "m2Command", commandId: entry.id, fields };
+}
+
+function drainInterpreter(interpreter: ReturnType<typeof createInterpreter>): void {
+  let result = interpreter.start();
+  let guard = 0;
+  while (result.kind !== "done" && guard < 20) {
+    guard += 1;
+    result = interpreter.resume(undefined);
+  }
+}
+
 describe("runtime event state", () => {
   it("blocks player movement only for same-priority active events", () => {
     const events = [
@@ -181,5 +201,115 @@ describe("runtime event state", () => {
     renderTiles(scene);
 
     expect(scene.missingResources.has("tex_tiles_default")).toBe(true);
+  });
+
+  it("spawns, triggers, removes, and restores runtime event instances", () => {
+    const project = createBlankProject();
+    project.switches = [{ id: "spawn_talked", name: "Spawn Talked" }];
+    const map = project.maps[project.startMapId]!;
+    const templatePage = page("template_page", "same", { kind: "action" });
+    templatePage.graphic.sprite = { type: "bundled", id: "tex_easyrpg_charset_people1" };
+    templatePage.commands = [{ kind: "setSwitch", switchId: "spawn_talked", value: true }];
+    templatePage.movement = {
+      type: "custom",
+      speed: 3,
+      frequency: 3,
+      route: { moves: [{ kind: "turn", dir: "left" }], repeat: true },
+    };
+    map.events = [event("template_npc", 0, 0, [templatePage])];
+    const otherMap = { ...map, id: "map_other", name: "Other", events: [] };
+    project.maps[otherMap.id] = otherMap;
+    store.replace(project);
+
+    const playSession = startSession(project);
+    const positions = initialRuntimeEventPositions(map.events);
+    drainInterpreter(createInterpreter([
+      modernM2Command("Spawn Event", {
+        prefabId: "template_npc",
+        eventId: "spawn_npc",
+        mapId: map.id,
+        x: 2,
+        y: 3,
+      }),
+    ], playSession, project));
+
+    const spawnedView = runtimeEventViewsForMap(project, map, playSession, positions)
+      .find((view) => view.event.id === "spawn_npc");
+    expect(spawnedView).toMatchObject({
+      x: 2,
+      y: 3,
+      trigger: { kind: "action" },
+      priority: "same",
+    });
+    expect(findBlockingRuntimeEventAtInMap(project, map, playSession, positions, 2, 3)?.event.id).toBe("spawn_npc");
+    expect(runtimeEventViewsForMap(project, otherMap, playSession, {}).some((view) => view.event.id === "spawn_npc")).toBe(false);
+
+    const renderScene = {
+      map,
+      session: playSession,
+      eventPositions: positions,
+      tileLayer: {
+        removeAll: () => undefined,
+        add: () => undefined,
+      },
+      eventSprites: new Map<string, MockSprite>(),
+      runtimeDom: {
+        clearEventMarkers: () => undefined,
+        upsertEventMarker: () => undefined,
+        syncMissingResourceError: () => undefined,
+      },
+      missingResources: new Set<string>(),
+      add: {
+        image: () => mockTileImage(),
+        sprite: (x: number, y: number, texture: string, frame?: string | number) => {
+          const sprite = mockSprite();
+          sprite.setPosition(x, y);
+          if (frame !== undefined) sprite.setFrame(frame);
+          void texture;
+          return sprite;
+        },
+      },
+      runEvent: async () => undefined,
+      syncRuntimeState: () => undefined,
+    };
+    renderTiles(renderScene);
+    expect(renderScene.eventSprites.has("spawn_npc")).toBe(true);
+
+    drainInterpreter(createInterpreter(spawnedView?.page?.commands ?? [], playSession, project, { currentEventId: "spawn_npc" }));
+    expect(playSession.switches.spawn_talked).toBe(true);
+
+    const snapshot = createSaveSnapshot(project, playSession);
+    const restored = applySaveSnapshot(project, snapshot);
+    expect(restored.spawnedEvents?.spawn_npc).toMatchObject({ templateEventId: "template_npc", mapId: map.id, x: 2, y: 3 });
+    expect(runtimeEventViewsForMap(project, map, restored, positions).some((view) => view.event.id === "spawn_npc")).toBe(true);
+
+    drainInterpreter(createInterpreter([
+      modernM2Command("Remove Event", { eventId: "spawn_npc" }),
+    ], restored, project));
+
+    const removedSnapshot = createSaveSnapshot(project, restored);
+    const restoredAfterRemove = applySaveSnapshot(project, removedSnapshot);
+    expect(restoredAfterRemove.spawnedEvents?.spawn_npc).toBeUndefined();
+    expect(runtimeEventViewsForMap(project, map, restoredAfterRemove, positions).some((view) => view.event.id === "spawn_npc")).toBe(false);
+  });
+
+  it("removes authored events through persistent Modern Remove Event state", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    map.events = [event("authored_npc", 1, 1, [page("authored_page", "same", { kind: "action" })])];
+    store.replace(project);
+    const playSession = startSession(project);
+    const positions = initialRuntimeEventPositions(map.events);
+
+    drainInterpreter(createInterpreter([
+      modernM2Command("Remove Event", { eventId: "authored_npc" }),
+    ], playSession, project));
+
+    expect(playSession.removedEventIds?.[map.id]).toEqual(["authored_npc"]);
+    expect(runtimeEventViewsForMap(project, map, playSession, positions).some((view) => view.event.id === "authored_npc")).toBe(false);
+
+    const restored = applySaveSnapshot(project, createSaveSnapshot(project, playSession));
+    expect(restored.removedEventIds?.[map.id]).toEqual(["authored_npc"]);
+    expect(runtimeEventViewsForMap(project, map, restored, positions).some((view) => view.event.id === "authored_npc")).toBe(false);
   });
 });

@@ -110,8 +110,10 @@ export function runtimeEventViewsForMap(
   const views: RuntimeEventView[] = [];
   const included = new Set<string>();
   const erased = new Set(session.erasedEventIds ?? []);
+  const removedOnCurrentMap = removedEventSet(session, map.id);
   for (const event of map.events) {
     if (erased.has(event.id)) continue;
+    if (removedOnCurrentMap.has(event.id)) continue;
     const location = session.eventLocations?.[event.id];
     if (location && location.mapId !== map.id) continue;
     views.push(runtimeEventView(event, session, positions));
@@ -119,15 +121,60 @@ export function runtimeEventViewsForMap(
   }
   for (const sourceMap of Object.values(project.maps)) {
     if (sourceMap.id === map.id) continue;
+    const removedOnSourceMap = removedEventSet(session, sourceMap.id);
     for (const event of sourceMap.events) {
       if (included.has(event.id)) continue;
       if (erased.has(event.id)) continue;
+      if (removedOnSourceMap.has(event.id)) continue;
       if (session.eventLocations?.[event.id]?.mapId !== map.id) continue;
       views.push(runtimeEventView(event, session, positions));
       included.add(event.id);
     }
   }
+  for (const [spawnedEventId, spawn] of Object.entries(session.spawnedEvents ?? {})) {
+    if (included.has(spawnedEventId)) continue;
+    if (spawn.mapId !== map.id) continue;
+    const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
+    if (!event) continue;
+    views.push(runtimeEventView(event, session, positions));
+    included.add(spawnedEventId);
+  }
   return views;
+}
+
+function removedEventSet(session: PlaySessionLike, mapId: string): ReadonlySet<string> {
+  return new Set(session.removedEventIds?.[mapId] ?? []);
+}
+
+function materializeSpawnedEvent(
+  project: Pick<Project, "maps">,
+  eventId: string,
+  spawn: NonNullable<PlaySessionLike["spawnedEvents"]>[string]
+): GameEvent | null {
+  const template = findTemplateEvent(project, spawn.templateMapId, spawn.templateEventId);
+  if (!template) return null;
+  return {
+    ...template,
+    id: eventId,
+    x: spawn.x,
+    y: spawn.y,
+    pages: template.pages?.map((page) => ({ ...page, commands: [...page.commands] })),
+    commands: [...template.commands],
+  };
+}
+
+function findTemplateEvent(
+  project: Pick<Project, "maps">,
+  templateMapId: string,
+  templateEventId: string
+): GameEvent | undefined {
+  const preferred = project.maps[templateMapId]?.events.find((event) => event.id === templateEventId);
+  if (preferred) return preferred;
+  for (const map of Object.values(project.maps)) {
+    const event = map.events.find((entry) => entry.id === templateEventId);
+    if (event) return event;
+  }
+  return undefined;
 }
 
 function legacyMovement(event: GameEvent): EventPageMovement {
