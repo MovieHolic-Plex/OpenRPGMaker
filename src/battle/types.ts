@@ -5,6 +5,7 @@ import type {
   BattleAnimationId,
   BattleAnimationPosition,
   BattleAnimationScope,
+  BattleFlow,
   EnemyId,
   ItemId,
   Project,
@@ -13,7 +14,9 @@ import type {
 } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
-export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "resolved";
+export type { BattleFlow } from "@/project/types";
+
+export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
 export type BattleResult = "victory" | "defeat" | "escape";
 
 export type TargetedActorCommand =
@@ -44,6 +47,7 @@ export interface BattleRuntimeOptions {
   readonly troopId: TroopId;
   readonly canEscape: boolean;
   readonly canLose: boolean;
+  readonly battleFlow?: BattleFlow;
   // 현재 플레이 세션의 파티 레벨/경험치. 승리 시 레벨업 미리보기(rewards.levelUps) 산출에 사용.
   // 없으면 레벨업 미리보기를 계산하지 않는다(세션 적립은 별도 파이프라인이 담당).
   readonly party?: BattlePartyProgress;
@@ -122,6 +126,28 @@ export interface BattleActionResultSnapshot {
   readonly skillName?: string;
 }
 
+export interface BattleRoundActionLogSnapshot {
+  readonly round: number;
+  readonly order: number;
+  readonly side: "actor" | "enemy";
+  readonly userId: string;
+  readonly userRecordId: string;
+  readonly commandKind: ActorCommand["kind"] | "enemyAttack" | "enemySkill";
+  readonly targetId?: string;
+  readonly hit?: boolean;
+  readonly amount?: number;
+  readonly critical?: boolean;
+  readonly skillName?: string;
+}
+
+export interface BattleRoundLogSnapshot {
+  readonly round: number;
+  readonly actions: readonly BattleRoundActionLogSnapshot[];
+  readonly actors: readonly { readonly id: string; readonly hp: number; readonly mp: number; readonly stateIds: readonly string[] }[];
+  readonly enemies: readonly { readonly id: string; readonly hp: number; readonly mp: number; readonly stateIds: readonly string[] }[];
+  readonly result?: BattleResult;
+}
+
 export interface BattleLevelUpPreview {
   readonly actorId: string;
   readonly actorName: string;
@@ -152,6 +178,7 @@ export interface BattleEventStateSnapshot {
 
 export interface BattleSnapshot {
   readonly phase: BattlePhase;
+  readonly battleFlow: BattleFlow;
   readonly activeActorId?: ActorId;
   readonly actors: readonly BattleBattlerSnapshot[];
   readonly enemies: readonly BattleBattlerSnapshot[];
@@ -166,6 +193,7 @@ export interface BattleSnapshot {
   readonly turn: number;
   readonly eventState: BattleEventStateSnapshot;
   readonly targetSelection?: BattleTargetSelectionSnapshot;
+  readonly roundLogs: readonly BattleRoundLogSnapshot[];
 }
 
 export interface BattleRuntime {

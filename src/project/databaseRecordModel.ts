@@ -9,7 +9,7 @@ import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from 
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, ClassBattleCommand, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -41,6 +41,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     systemResourceId: cleanOptionalId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
+    battleFlow: normalizeBattleFlow(system.battleFlow),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
   };
 }
@@ -172,15 +173,24 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
 }
 
 function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[] | undefined): ClassBattleCommand[] {
-  const source: readonly Partial<ClassBattleCommand>[] = commands?.length
-    ? commands
-    : [{ id: "cmd_attack", name: "Attack", kind: "attack" }];
+  const source: readonly Partial<ClassBattleCommand>[] = commands?.length ? commands : [];
   return source.map((command, index) => ({
     id: cleanOptionalId(command.id) ?? `cmd_${index + 1}`,
     name: command.name ?? "Command",
-    kind: command.kind ?? "attack",
+    kind: normalizeBattleCommandKind(command.kind),
     skillSubsetName: cleanOptionalId(command.skillSubsetName),
+    skillId: cleanOptionalId(command.skillId),
   }));
+}
+
+function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "escape" || kind === "event"
+    ? kind
+    : "attack";
+}
+
+function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow {
+  return value === "strict" ? "strict" : "gauge";
 }
 
 function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | undefined, legacy: readonly string[] = []): ActorLearnedSkill[] {

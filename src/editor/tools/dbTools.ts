@@ -259,7 +259,7 @@ const classRecordSchema = objectSchema({
   options: actorOptionsSchema,
   animationId: stringSchema(),
   skillIds: stringArraySchema(),
-  battleCommands: arrayOf(objectSchema({ id: stringSchema(), name: stringSchema(), kind: stringSchema(), skillSubsetName: stringSchema() })),
+  battleCommands: arrayOf(objectSchema({ id: stringSchema(), name: stringSchema(), kind: stringSchema(), skillSubsetName: stringSchema(), skillId: stringSchema() })),
   learnedSkills: arrayOf(learnedSkillSchema),
   equipmentPermissions: objectSchema({ actorIds: stringArraySchema(), classIds: stringArraySchema(), equipmentIds: stringArraySchema() }),
   parameterCurves: parameterCurvesSchema,

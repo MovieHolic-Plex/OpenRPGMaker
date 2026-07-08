@@ -15,7 +15,7 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
 }
 
 export function battlePartyStatus(snapshot: BattleSnapshot): HTMLElement {
-  return partyStatusGroup(snapshot.actors);
+  return partyStatusGroup(snapshot.actors, snapshot.battleFlow);
 }
 
 function battleBackdrop(resourceId: string | undefined): HTMLElement {
@@ -102,12 +102,12 @@ function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement
   return group;
 }
 
-function partyStatusGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement {
+function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-party";
   group.dataset.testid = "battle-party";
   for (const actor of actors) {
-    group.append(actorStatusRow(actor));
+    group.append(actorStatusRow(actor, battleFlow));
   }
   return group;
 }
@@ -145,7 +145,7 @@ function clampBattleCoordinate(value: number, min: number, max: number): number 
   return Math.max(min, Math.min(max, value));
 }
 
-function actorStatusRow(actor: BattleBattlerSnapshot): HTMLElement {
+function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
   const row = document.createElement("div");
   row.className = "battle-actor-status";
   row.dataset.recordId = actor.recordId;
@@ -162,7 +162,8 @@ function actorStatusRow(actor: BattleBattlerSnapshot): HTMLElement {
   gauge.className = "battle-actor-gauge";
   gauge.append(atbLabel(), atbBar(actor.gauge));
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
-  row.append(name, hp, mp, hpGauge, gauge);
+  row.append(name, hp, mp, hpGauge);
+  if (battleFlow === "gauge") row.append(gauge);
   return row;
 }
 

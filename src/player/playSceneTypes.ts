@@ -164,6 +164,7 @@ export interface PlaySceneContext extends Phaser.Scene {
     troopId: string;
     canEscape: boolean;
     canLose: boolean;
+    battleFlow?: "gauge" | "strict";
   }): Promise<"victory" | "defeat" | "escape">;
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;

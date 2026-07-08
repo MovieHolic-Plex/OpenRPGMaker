@@ -93,13 +93,16 @@ export interface ClassOptions {
   mightyGuard: boolean;
 }
 
-export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "item" | "escape" | "event";
+export type BattleFlow = "gauge" | "strict";
+
+export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "escape" | "event";
 
 export interface ClassBattleCommand {
   id: string;
   name: string;
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
+  skillId?: SkillId;
 }
 
 export type DatabaseElementKind = "physical" | "magical";
@@ -374,6 +377,7 @@ export interface TroopRecord {
   members?: TroopMemberRecord[];
   autoAlign: boolean;
   previewBackgroundResourceId?: string;
+  battleFlow?: BattleFlow;
   battleEventPages: BattleEventPageRecord[];
 }
 
@@ -533,5 +537,6 @@ export interface SystemRecords {
   systemResourceId?: string;
   battleSystemResourceId?: string;
   initialTroopId?: TroopId;
+  battleFlow?: BattleFlow;
   titleScreen?: TitleScreenSettings;
 }

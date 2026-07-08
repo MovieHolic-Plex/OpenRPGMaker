@@ -393,6 +393,7 @@ export function executeCommand(
         troopId: command.troopId,
         canEscape: command.canEscape,
         canLose: command.canLose,
+        battleFlow: command.battleFlow,
       });
     case "showPicture":
       return pause("showPicture", {

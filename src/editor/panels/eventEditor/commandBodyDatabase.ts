@@ -27,6 +27,12 @@ const PARTY_ACTION_OPTIONS = [
   { value: "remove", label: "파티에서 제거" },
 ] as const;
 
+const BATTLE_FLOW_OPTIONS = [
+  { value: "inherit", label: "시스템/트룹 설정" },
+  { value: "gauge", label: "게이지" },
+  { value: "strict", label: "엄격 턴제" },
+] as const;
+
 const EQUIPMENT_SLOT_OPTIONS = [
   { value: "weapon", label: "무기" },
   { value: "shield", label: "방패" },
@@ -57,21 +63,25 @@ export function battleProcessingBody(
   });
   const canEscape = checkbox("탈출 허용", cmd.canEscape, "battle-processing-escape-checkbox");
   const canLose = checkbox("패배 허용", cmd.canLose, "battle-processing-lose-checkbox");
+  const flow = selectWithOptions(BATTLE_FLOW_OPTIONS, cmd.battleFlow ?? "inherit", "battle-processing-flow-select");
   const apply = () => {
+    const battleFlow = selectedOptionValue(flow, BATTLE_FLOW_OPTIONS, "inherit");
     context.actions.replaceCommand(context.path, {
       kind: "battleProcessing",
       troopId: troop.select.value,
       canEscape: canEscape.input.checked,
       canLose: canLose.input.checked,
+      battleFlow: battleFlow === "inherit" ? undefined : battleFlow,
     });
   };
   troop.select.addEventListener("change", apply);
   canEscape.input.addEventListener("change", apply);
   canLose.input.addEventListener("change", apply);
+  flow.addEventListener("change", apply);
   const wrap = el("span", { class: "rich-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [troop.root] }),
-    el("span", { class: "rich-form-row", children: [canEscape.label, canLose.label] })
+    el("span", { class: "rich-form-row", children: [canEscape.label, canLose.label, flow] })
   );
   return wrap;
 }

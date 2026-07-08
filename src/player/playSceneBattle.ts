@@ -26,6 +26,7 @@ export function playBattle(
     troopId: step.troopId,
     canEscape: step.canEscape,
     canLose: step.canLose,
+    battleFlow: step.battleFlow,
     party: {
       levels: scene.session.actorLevels,
       experience: scene.session.actorExperience,

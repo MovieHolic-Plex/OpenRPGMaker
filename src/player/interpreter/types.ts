@@ -46,7 +46,7 @@ export type StepResult =
     }
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
-  | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean }
+  | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean; battleFlow?: "gauge" | "strict" }
   | {
       kind: "showPicture";
       pictureId: string;

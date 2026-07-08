@@ -88,7 +88,7 @@ function normalizeTerrainDisplay(display: DatabaseTerrainCharacterDisplay | unde
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommandKind | undefined): ClassBattleCommandKind {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "item" || kind === "escape" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "escape" || kind === "event"
     ? kind
     : "attack";
 }

@@ -8,6 +8,7 @@ import type {
   EnemyRecord,
   EnemyRewards,
   EnemyStats,
+  BattleFlow,
   TroopMemberRecord,
   TroopRecord,
 } from "@/project/types";
@@ -44,8 +45,15 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     members,
     autoAlign: record.autoAlign ?? true,
     previewBackgroundResourceId: cleanOptionalId(record.previewBackgroundResourceId),
+    battleFlow: normalizeBattleFlow(record.battleFlow),
     battleEventPages: record.battleEventPages ?? [],
   };
+}
+
+function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow | undefined {
+  if (value === "strict") return "strict";
+  if (value === "gauge") return "gauge";
+  return undefined;
 }
 
 function normalizeEnemyStats(stats: Partial<EnemyStats> | undefined): EnemyStats {

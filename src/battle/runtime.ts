@@ -24,7 +24,10 @@ import type {
   ActorCommandDraft,
   BattleActionResultSnapshot,
   BattleAnimationSnapshot,
+  BattleFlow,
   BattlePhase,
+  BattleRoundActionLogSnapshot,
+  BattleRoundLogSnapshot,
   BattleResult,
   BattleRuntime,
   BattleRuntimeOptions,
@@ -50,11 +53,27 @@ export type {
 
 const FALLBACK_SKILL_POWER = 12;
 
+type EnemyActionChoice = {
+  readonly skillId: SkillId;
+  readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string };
+  readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string };
+};
+
+type StrictQueuedActorCommand = {
+  readonly actorId: ActorId;
+  readonly command: ActorCommand;
+};
+
+type StrictQueuedAction =
+  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly actor: MutableBattler; readonly command: ActorCommand }
+  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
+
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
   const rng: Rng = options.rng ?? mulberry32(1);
+  const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
   const actors = actorBattlers(options.project, {
     names: options.party?.names,
@@ -69,7 +88,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const enemies = enemyBattlers(options.project, troopRecord);
   let backdropResourceId = options.backdropResourceId ?? troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
 
-  let phase: BattlePhase = "charging";
+  let phase: BattlePhase = battleFlow === "strict" ? "actorCommand" : "charging";
   let activeActorId: ActorId | undefined;
   let lastAnimation: BattleAnimationSnapshot | undefined;
   let lastActionResult: BattleActionResultSnapshot | undefined;
@@ -78,6 +97,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
+  let strictActorCommands: StrictQueuedActorCommand[] = [];
+  let strictPendingActorIds: ActorId[] = [];
+  let strictCurrentRoundActions: BattleRoundActionLogSnapshot[] = [];
+  const roundLogs: BattleRoundLogSnapshot[] = [];
   const rewards: { exp: number; gold: number; items: ItemId[]; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
   const sessionState = options.sessionState ?? startStateOf(options.project);
@@ -99,6 +122,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   });
 
   function tick(deltaMs: number): void {
+    if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
     const enemiesInBattle = visibleEnemies();
     const ready = nextReadyBattler(actors, enemiesInBattle, deltaMs);
@@ -126,70 +150,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performActorCommand(command: ActorCommand): void {
+    if (battleFlow === "strict") {
+      collectStrictActorCommand(command);
+      return;
+    }
     if (phase !== "actorCommand" || !activeActorId || result) return;
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor) return;
 
-    currentActorCommandKind = command.kind;
-    switch (command.kind) {
-      case "attack": {
-        const target = visibleEnemies().find((entry) => entry.id === command.targetEnemyId);
-        if (!target || target.hp <= 0) {
-          currentActorCommandKind = undefined;
-          return;
-        }
-        const result = applySkillLike(actor, target, {
-          power: actor.attackPower,
-          statistic: "attack",
-          effect: "damage",
-          criticalRate: criticalRateFor(actor),
-          hitRate: normalAttackHitRate(actor, target),
-          attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
-          targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
-          rng,
-        });
-        if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
-        lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
-        break;
-      }
-      case "skill": {
-        const skill = lookupSkill(command.skillId);
-        if (!canUseSkill(actor, command.skillId)) {
-          performFallbackAttack(actor, command.targetEnemyId);
-          break;
-        }
-        consumeSkillMp(actor, command.skillId);
-        if (skill?.scope === "allEnemies") {
-          for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
-            applySkill(actor, target, command.skillId);
-          }
-          break;
-        }
-        const target = resolveSkillTarget(command.skillId, command.targetEnemyId, actor);
-        applySkill(actor, target, command.skillId);
-        break;
-      }
-      case "item": {
-        const target = resolveSkillTarget(command.itemId, command.targetEnemyId, actor);
-        applyItem(command.itemId, target, actor);
-        break;
-      }
-      case "defend": {
-        actor.defending = true;
-        break;
-      }
-      case "escape": {
-        if (!options.canEscape) break;
-        // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
-        const actorAgi = average(actors.filter((a) => a.hp > 0).map((a) => a.agility));
-        const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
-        const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
-        if (rng() < chance) {
-          escaped = true;
-        }
-        break;
-      }
-    }
+    applyActorCommandEffect(actor, command);
     if (escaped) {
       actor.gauge = 0;
       activeActorId = undefined;
@@ -218,6 +187,74 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     activeActorId = undefined;
     currentActorCommandKind = undefined;
     phase = "charging";
+  }
+
+  function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
+    currentActorCommandKind = command.kind;
+    switch (command.kind) {
+      case "attack":
+        applyActorAttack(actor, command.targetEnemyId);
+        break;
+      case "skill": {
+        const skill = lookupSkill(command.skillId);
+        if (!canUseSkill(actor, command.skillId)) {
+          performFallbackAttack(actor, command.targetEnemyId);
+          break;
+        }
+        consumeSkillMp(actor, command.skillId);
+        if (skill?.scope === "allEnemies") {
+          for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
+            applySkill(actor, target, command.skillId);
+          }
+          break;
+        }
+        const target = resolveSkillTarget(command.skillId, command.targetEnemyId, actor);
+        applySkill(actor, target, command.skillId);
+        break;
+      }
+      case "item": {
+        const target = resolveSkillTarget(command.itemId, command.targetEnemyId, actor);
+        applyItem(command.itemId, target, actor);
+        break;
+      }
+      case "defend":
+        actor.defending = true;
+        break;
+      case "escape":
+        attemptEscape();
+        break;
+    }
+  }
+
+  function applyActorAttack(actor: MutableBattler, targetEnemyId: string): void {
+    const target = visibleEnemies().find((entry) => entry.id === targetEnemyId);
+    if (!target || target.hp <= 0) {
+      currentActorCommandKind = undefined;
+      return;
+    }
+    const result = applySkillLike(actor, target, {
+      power: actor.attackPower,
+      statistic: "attack",
+      effect: "damage",
+      criticalRate: criticalRateFor(actor),
+      hitRate: normalAttackHitRate(actor, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
+    });
+    if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+  }
+
+  function attemptEscape(): void {
+    if (!options.canEscape) return;
+    // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
+    const actorAgi = average(actors.filter((a) => a.hp > 0).map((a) => a.agility));
+    const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
+    const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
+    if (rng() < chance) {
+      escaped = true;
+    }
   }
 
   function beginActorCommand(command: ActorCommandDraft): void {
@@ -255,6 +292,153 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (phase !== "targetSelect") return;
     targetSelection = undefined;
     phase = "actorCommand";
+  }
+
+  function startStrictRound(): void {
+    if (result) return;
+    phase = "roundResolve";
+    activeActorId = undefined;
+    targetSelection = undefined;
+    currentActorCommandKind = undefined;
+    strictActorCommands = [];
+    strictPendingActorIds = [];
+    strictCurrentRoundActions = [];
+
+    for (const battler of [...actors, ...visibleEnemies()]) {
+      if (battler.hp > 0) runStateUpkeep(options.project, battler, rng);
+    }
+    resolveOutcome();
+    if (result) return;
+
+    strictPendingActorIds = actors
+      .filter((actor) => actor.hp > 0 && canBattlerAct(options.project, actor))
+      .map((actor) => actor.recordId);
+    for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
+    if (strictPendingActorIds.length > 0) {
+      activeActorId = strictPendingActorIds[0];
+      phase = "actorCommand";
+      return;
+    }
+    resolveStrictRound();
+  }
+
+  function collectStrictActorCommand(command: ActorCommand): void {
+    if (phase !== "actorCommand" || !activeActorId || result) return;
+    const actor = actors.find((entry) => entry.recordId === activeActorId);
+    if (!actor || actor.hp <= 0) return;
+    strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command }];
+    strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId);
+    actor.gauge = 0;
+    activeActorId = strictPendingActorIds[0];
+    if (activeActorId) return;
+    resolveStrictRound();
+  }
+
+  function resolveStrictRound(): void {
+    if (result) return;
+    phase = "roundResolve";
+    targetSelection = undefined;
+    activeActorId = undefined;
+    currentActorCommandKind = undefined;
+    const round = turn + 1;
+    const actions = strictRoundActions();
+    for (const [index, action] of actions.entries()) {
+      if (result) break;
+      if (action.side === "actor") {
+        if (action.actor.hp <= 0) continue;
+        activeActorId = action.actor.recordId;
+        const beforeResult = lastActionResult;
+        applyActorCommandEffect(action.actor, action.command);
+        logStrictAction(round, index + 1, action, beforeResult);
+        if (escaped) {
+          result = "escape";
+          phase = "resolved";
+          break;
+        }
+        applyTroopEvents(round);
+        resolveOutcome();
+        continue;
+      }
+      if (action.enemy.hp <= 0 || !visibleEnemies().some((enemy) => enemy.id === action.enemy.id)) continue;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      const beforeResult = lastActionResult;
+      executeEnemyAction(action.enemy, action.action);
+      logStrictAction(round, index + 1, action, beforeResult);
+      applyTroopEvents(round);
+      resolveOutcome();
+    }
+
+    for (const actor of actors) actor.defending = false;
+    for (const battler of [...actors, ...enemies]) battler.gauge = 0;
+    activeActorId = undefined;
+    currentActorCommandKind = undefined;
+    turn = round;
+    finishStrictRoundLog(round);
+    if (result) {
+      phase = "resolved";
+      return;
+    }
+    startStrictRound();
+  }
+
+  function strictRoundActions(): StrictQueuedAction[] {
+    const actorActions: StrictQueuedAction[] = strictActorCommands.flatMap((entry) => {
+      const actor = actors.find((candidate) => candidate.recordId === entry.actorId);
+      if (!actor) return [];
+      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, actor, command: entry.command }];
+    });
+    const enemyActions: StrictQueuedAction[] = visibleEnemies()
+      .flatMap((enemy, index) => {
+        if (enemy.hp <= 0 || !canBattlerAct(options.project, enemy)) return [];
+        return [{ side: "enemy", index, speed: enemy.agility, enemy, action: chooseEnemyAction(enemy) }];
+      });
+    return [...actorActions, ...enemyActions].sort(compareStrictActions);
+  }
+
+  function compareStrictActions(left: StrictQueuedAction, right: StrictQueuedAction): number {
+    if (left.speed !== right.speed) return right.speed - left.speed;
+    if (left.side !== right.side) return left.side === "actor" ? -1 : 1;
+    return left.index - right.index;
+  }
+
+  function logStrictAction(
+    round: number,
+    order: number,
+    action: StrictQueuedAction,
+    beforeResult: BattleActionResultSnapshot | undefined
+  ): void {
+    const resultForLog = lastActionResult !== beforeResult ? lastActionResult : undefined;
+    const user = action.side === "actor" ? action.actor : action.enemy;
+    strictCurrentRoundActions.push({
+      round,
+      order,
+      side: action.side,
+      userId: user.id,
+      userRecordId: user.recordId,
+      commandKind: strictCommandKindForLog(action),
+      targetId: resultForLog?.targetId,
+      hit: resultForLog?.hit,
+      amount: resultForLog?.amount,
+      critical: resultForLog?.critical,
+      skillName: resultForLog?.skillName,
+    });
+  }
+
+  function strictCommandKindForLog(action: StrictQueuedAction): BattleRoundActionLogSnapshot["commandKind"] {
+    if (action.side === "actor") return action.command.kind;
+    return action.action?.skillId ? "enemySkill" : "enemyAttack";
+  }
+
+  function finishStrictRoundLog(round: number): void {
+    roundLogs.push({
+      round,
+      actions: [...strictCurrentRoundActions],
+      actors: actors.map((actor) => ({ id: actor.id, hp: actor.hp, mp: actor.mp, stateIds: [...actor.stateIds] })),
+      enemies: visibleEnemies().map((enemy) => ({ id: enemy.id, hp: enemy.hp, mp: enemy.mp, stateIds: [...enemy.stateIds] })),
+      result,
+    });
+    strictCurrentRoundActions = [];
   }
 
   function beginTargetSelection(command: TargetedActorCommand): void {
@@ -319,6 +503,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const enemiesInBattle = visibleEnemies();
     return {
       phase,
+      battleFlow,
       activeActorId,
       actors: actors.map(battlerSnapshot),
       enemies: enemiesInBattle.map(battlerSnapshot),
@@ -333,6 +518,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       turn,
       eventState: battleEvents.snapshot(),
       targetSelection,
+      roundLogs,
     };
   }
 
@@ -354,30 +540,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = result ? "resolved" : "charging";
       return;
     }
-    const action = chooseEnemyAction(enemy);
-    const skillId = action?.skillId;
-    if (skillId) {
-      const target = resolveEnemySkillTarget(enemy, skillId);
-      if (!target) return;
-      consumeSkillMp(enemy, skillId);
-      applySkill(enemy, target, skillId);
-      applyEnemyActionSwitchEffects(action);
-    } else {
-      const target = actors.find((actor) => actor.hp > 0);
-      if (!target) return;
-      const result = applySkillLike(enemy, target, {
-        power: enemy.attackPower,
-        statistic: "attack",
-        effect: "damage",
-        criticalRate: criticalRateFor(enemy),
-        hitRate: normalAttackHitRate(enemy, target),
-        attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
-        targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
-        rng,
-      });
-      if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
-      lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
-    }
+    executeEnemyAction(enemy, chooseEnemyAction(enemy));
     enemy.gauge = 0;
     // 적 턴이 끝나면 아군의 방어(defending) 상태를 해제한다.
     // RM2K3: 방어는 다음 적 턴까지만 유효(1턴 가드).
@@ -386,6 +549,32 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     applyTroopEvents();
     resolveOutcome();
     phase = result ? "resolved" : "charging";
+  }
+
+  function executeEnemyAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    const skillId = action?.skillId;
+    if (skillId) {
+      const target = resolveEnemySkillTarget(enemy, skillId);
+      if (!target) return;
+      consumeSkillMp(enemy, skillId);
+      applySkill(enemy, target, skillId);
+      applyEnemyActionSwitchEffects(action);
+      return;
+    }
+    const target = actors.find((actor) => actor.hp > 0);
+    if (!target) return;
+    const result = applySkillLike(enemy, target, {
+      power: enemy.attackPower,
+      statistic: "attack",
+      effect: "damage",
+      criticalRate: criticalRateFor(enemy),
+      hitRate: normalAttackHitRate(enemy, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
+    });
+    if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
   }
 
   function lookupSkill(skillId: SkillId) {
@@ -453,7 +642,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return user.mp >= skillMpCost(user, skillId);
   }
 
-  function chooseEnemyAction(enemy: MutableBattler): { readonly skillId: SkillId; readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string }; readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string } } | undefined {
+  function chooseEnemyAction(enemy: MutableBattler): EnemyActionChoice | undefined {
     const actionTurn = turn + 1;
     const candidates = (enemy.enemyActions ?? [])
       .filter((action) => enemyActionConditionMet(action.condition, actionTurn))
@@ -587,8 +776,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return multiplier / 100;
   }
 
-  function applyTroopEvents(): void {
-    const eventResult = battleEvents.applyTroopEvents({ turn, activeActorId, currentActorCommandKind });
+  function applyTroopEvents(eventTurn: number = turn): void {
+    const eventResult = battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind });
     if (!eventResult.forceEscape) return;
     escaped = true;
     result = "escape";
@@ -661,6 +850,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     return results;
   }
+
+  if (battleFlow === "strict") startStrictRound();
 
   return { tick, beginActorCommand, selectTargetEnemy, setSelectedTargetEnemy, cancelTargetSelection, performActorCommand, snapshot };
 }

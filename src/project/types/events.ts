@@ -172,7 +172,7 @@ export type Command =
     }
   | { kind: "callCommonEvent"; commonEventId: string }
   | { kind: "callMapEvent"; eventId: string }
-  | { kind: "battleProcessing"; troopId: TroopId; canEscape: boolean; canLose: boolean }
+  | { kind: "battleProcessing"; troopId: TroopId; canEscape: boolean; canLose: boolean; battleFlow?: "gauge" | "strict" }
   | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId }
   | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "changeLevel"; actorId: ActorId; op: ActorAmountOp; amount: number }

@@ -45,5 +45,7 @@ function resolveAlias(path) {
   const resolved = resolve(REPO_ROOT, "src", path.slice(2));
   if (extname(resolved)) return resolved;
   const typedPath = `${resolved}.ts`;
-  return existsSync(typedPath) ? typedPath : resolved;
+  if (existsSync(typedPath)) return typedPath;
+  const indexPath = resolve(resolved, "index.ts");
+  return existsSync(indexPath) ? indexPath : resolved;
 }

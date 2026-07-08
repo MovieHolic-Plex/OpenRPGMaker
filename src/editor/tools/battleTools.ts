@@ -19,6 +19,25 @@ const simulateBattleTool: ToolDefinition = {
       potionItemId: { type: "string", description: "저HP 시 사용할 회복 아이템 id" },
       n: { type: "integer", description: "시뮬 횟수(기본 50)" },
       seed: { type: "integer", description: "PRNG 시드(재현성)" },
+      battleFlow: { type: "string", enum: ["gauge", "strict"], description: "전투 흐름(gauge 기본, strict 엄격 턴제)" },
+      strictScript: {
+        type: "array",
+        description: "strict 전용 라운드별 명령. 예: [[{actorId:'actor_hero', command:'attack', target:'enemy-1'}]]",
+        items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              actorId: { type: "string" },
+              command: { type: "string", enum: ["attack", "skill", "item", "guard", "defend", "escape"] },
+              skillId: { type: "string" },
+              itemId: { type: "string" },
+              target: { type: "string" },
+            },
+            required: ["actorId", "command"],
+          },
+        },
+      },
     },
     required: ["troopId", "heroLevel"],
   },
@@ -35,6 +54,8 @@ const simulateBattleTool: ToolDefinition = {
       potionItemId: args.potionItemId as string | undefined,
       n: args.n as number | undefined,
       seed: args.seed as number | undefined,
+      battleFlow: args.battleFlow as "gauge" | "strict" | undefined,
+      strictScript: args.strictScript as Parameters<typeof simulateBattle>[0]["strictScript"],
     });
     return {
       summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타`,

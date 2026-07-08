@@ -205,6 +205,7 @@ function validateClassRecords(
   for (const klass of project.database.classes) {
     if (klass.animationId && !animationIds.has(klass.animationId)) issues.push(`class ${klass.id}: animationId does not exist.`);
     collectExistingIdIssues(`class ${klass.id}: skill`, klass.learnedSkills.map((entry) => entry.skillId), skillIds, issues);
+    collectExistingIdIssues(`class ${klass.id}: battle command skill`, klass.battleCommands.flatMap((command) => command.skillId ? [command.skillId] : []), skillIds, issues);
     collectExistingIdIssues(`class ${klass.id}: equipment`, klass.equipmentPermissions.equipmentIds, equipmentIds, issues);
     collectExistingIdIssues(`class ${klass.id}: equipment actor`, klass.equipmentPermissions.actorIds, actorIds, issues);
     collectExistingIdIssues(`class ${klass.id}: equipment class`, klass.equipmentPermissions.classIds, classIds, issues);

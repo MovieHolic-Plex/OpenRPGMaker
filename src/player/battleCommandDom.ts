@@ -9,8 +9,12 @@ import { commandPromptState, type BattleDirectorState } from "@/player/battleDir
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
 import { activeActor } from "@/battle/battlePredict";
+import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
 
-export type BattleCommandSubmenu = "skill" | "item" | null;
+export type BattleCommandSubmenu =
+  | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
+  | { readonly kind: "item" }
+  | null;
 
 export interface BattleCommandPanelOptions {
   readonly runtime: BattleRuntime;
@@ -52,40 +56,77 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   menu.className = "battle-command-menu";
   menu.dataset.testid = "battle-command-grid";
 
-  if (options.submenu === "skill") {
+  if (options.submenu?.kind === "skill") {
     menu.append(...skillSubmenu(snapshot, options));
     return menu;
   }
-  if (options.submenu === "item") {
+  if (options.submenu?.kind === "item") {
     menu.append(...itemSubmenu(snapshot, options));
     return menu;
   }
 
-  menu.append(commandButton("공격", "actor-command-attack", "sword", "", () => {
-    options.beginTargetCommand({ kind: "attack" });
-  }, targetMode));
-  menu.append(commandButton("스킬", "actor-command-skill", "fire", actor ? `${usableSkills(actor).length}개` : "", () => {
-    const skills = usableSkills(actor);
-    if (skills.length === 1) {
-      options.beginTargetCommand({ kind: "skill", skillId: skills[0] });
-      return;
-    }
-    options.setSubmenu("skill");
-    options.render();
-  }));
-  const items = battleItems(snapshot);
-  menu.append(commandButton("아이템", "actor-command-item", "bag", items.length > 0 ? `${items.length}종` : "없음", () => {
-    if (targetMode || battleItems(snapshot).length === 0) return;
-    options.setSubmenu("item");
-    options.render();
-  }, targetMode));
-  menu.append(commandButton("방어", "actor-command-defend", "shield", "", () => {
-    if (!targetMode) options.runActorCommand({ kind: "defend" });
-  }, targetMode));
-  menu.append(commandButton("도주", "actor-command-escape", "boot", "", () => {
-    if (!targetMode) options.runActorCommand({ kind: "escape" });
-  }, targetMode));
+  for (const command of battleCommandsForActor(store.getCurrent(), actor?.recordId)) {
+    menu.append(commandControl(snapshot, options, command, actor, targetMode));
+  }
   return menu;
+}
+
+function commandControl(
+  snapshot: BattleSnapshot,
+  options: BattleCommandPanelOptions,
+  command: RuntimeBattleCommand,
+  actor: BattleBattlerSnapshot | undefined,
+  targetMode: boolean
+): HTMLElement {
+  switch (command.kind) {
+    case "attack":
+      return commandButton(command.name, commandTestId(command), "sword", "", () => {
+        options.beginTargetCommand({ kind: "attack" });
+      }, targetMode);
+    case "skill": {
+      const skills = usableSkills(actor, command);
+      return commandButton(command.name, commandTestId(command), "fire", skills.length > 0 ? `${skills.length}개` : "없음", () => {
+        if (targetMode || skills.length === 0) return;
+        if (command.skillId && skills.length === 1) {
+          options.beginTargetCommand({ kind: "skill", skillId: skills[0] });
+          return;
+        }
+        options.setSubmenu({ kind: "skill", command });
+        options.render();
+      }, targetMode || skills.length === 0);
+    }
+    case "item": {
+      const items = battleItems(snapshot);
+      return commandButton(command.name, commandTestId(command), "bag", items.length > 0 ? `${items.length}종` : "없음", () => {
+        if (targetMode || items.length === 0) return;
+        options.setSubmenu({ kind: "item" });
+        options.render();
+      }, targetMode || items.length === 0);
+    }
+    case "defend":
+      return commandButton(command.name, commandTestId(command), "shield", "", () => {
+        if (!targetMode) options.runActorCommand({ kind: "defend" });
+      }, targetMode);
+    case "escape":
+      return commandButton(command.name, commandTestId(command), "boot", "", () => {
+        if (!targetMode) options.runActorCommand({ kind: "escape" });
+      }, targetMode);
+  }
+}
+
+function commandTestId(command: RuntimeBattleCommand): string {
+  switch (command.kind) {
+    case "attack":
+      return "actor-command-attack";
+    case "item":
+      return "actor-command-item";
+    case "defend":
+      return "actor-command-defend";
+    case "escape":
+      return "actor-command-escape";
+    case "skill":
+      return command.skillId ? `actor-command-skill-${command.skillId}` : command.id === "cmd_skill" ? "actor-command-skill" : `actor-command-${command.id}`;
+  }
 }
 
 function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
@@ -102,10 +143,16 @@ function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
   return list;
 }
 
-function usableSkills(actor: BattleBattlerSnapshot | undefined): SkillId[] {
+function usableSkills(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
   if (!actor) return [];
   const skills = store.getCurrent().database.skills;
-  return actor.skillIds.filter((id) => skills.some((skill) => skill.id === id));
+  return actor.skillIds.filter((id) => {
+    const skill = skills.find((record) => record.id === id);
+    if (!skill) return false;
+    if (command?.skillId) return skill.id === command.skillId;
+    if (command?.skillSubsetName) return skill.type === command.skillSubsetName;
+    return true;
+  });
 }
 
 // 전투 아이템 목록은 전투 런타임의 이벤트 상태(현재 플레이 세션에서 시드됨)를 기준으로 한다.
@@ -121,11 +168,12 @@ function battleItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; 
 function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = "스킬";
+  header.textContent = options.submenu?.kind === "skill" ? options.submenu.command.name : "스킬";
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
-  for (const skillId of usableSkills(actor)) {
+  const command = options.submenu?.kind === "skill" ? options.submenu.command : undefined;
+  for (const skillId of usableSkills(actor, command)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const detail = skill ? skillDetailFor(project, skill) : "스킬";
     nodes.push(commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {

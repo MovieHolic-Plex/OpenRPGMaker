@@ -55,6 +55,7 @@ export function defaultSystem(): SystemRecords {
     systemResourceId: "easyrpg-system-system",
     battleSystemResourceId: "easyrpg-system2-system2-c",
     initialTroopId: DEFAULT_TROOP_ID,
+    battleFlow: "gauge",
     titleScreen: defaultTitleScreenSettings(),
   };
 }
