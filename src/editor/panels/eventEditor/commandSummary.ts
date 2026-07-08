@@ -185,6 +185,14 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(String(cmd.amount))
   ),
   changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
+  giveMonster: (cmd) => commandLine(
+    "몬스터 지급",
+    valuePart(monsterSpeciesName(cmd.speciesId)),
+    plainPart(" Lv."),
+    valuePart(String(cmd.level)),
+    ...(cmd.nickname ? [plainPart(" / "), valuePart(cmd.nickname)] : [])
+  ),
+  moveMonster: (cmd) => commandLine("몬스터 이동", valuePart(cmd.instanceId || "(instanceId 없음)"), plainPart(" → "), valuePart(cmd.to === "party" ? "파티" : "보관함")),
   addFollower: (cmd) => commandLine("동행자 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
   removeFollower: (cmd) => commandLine("동행자 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
   setLighting: (cmd) => commandLine(
@@ -435,6 +443,11 @@ function skillName(id: string): string {
 function itemName(id: string): string {
   const project = store.getCurrent();
   return id ? project.database.items.find((item) => item.id === id)?.name ?? id : "(아이템 선택)";
+}
+
+function monsterSpeciesName(id: string): string {
+  const project = store.getCurrent();
+  return id ? (project.database.monsterSpecies ?? []).find((species) => species.id === id)?.name ?? id : "(species 선택)";
 }
 
 function equipmentName(id: string): string {

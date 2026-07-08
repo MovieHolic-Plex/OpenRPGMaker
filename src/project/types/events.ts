@@ -7,6 +7,8 @@ import type {
   FlagName,
   ItemId,
   MapId,
+  MonsterInstanceId,
+  MonsterSpeciesId,
   SkillId,
   TroopId,
 } from "./base";
@@ -185,6 +187,8 @@ export type Command =
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
+  | { kind: "giveMonster"; speciesId: MonsterSpeciesId; level: number; nickname?: string }
+  | { kind: "moveMonster"; instanceId: MonsterInstanceId; to: "party" | "box" }
   | { kind: "addFollower"; actorId?: ActorId; graphic?: EventPageGraphic; name?: string }
   | { kind: "removeFollower"; name?: string; all?: boolean }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs?: number }

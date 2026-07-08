@@ -30,9 +30,10 @@ const simulateBattleTool: ToolDefinition = {
             type: "object",
             properties: {
               actorId: { type: "string" },
-              command: { type: "string", enum: ["attack", "skill", "item", "guard", "defend", "escape", "switch"] },
+              command: { type: "string", enum: ["attack", "skill", "item", "capture", "guard", "defend", "escape", "switch"] },
               skillId: { type: "string" },
               itemId: { type: "string" },
+              captureItemId: { type: "string" },
               target: { type: "string" },
               switchActorId: { type: "string" },
             },

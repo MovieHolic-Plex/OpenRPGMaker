@@ -122,6 +122,8 @@ function emptyActions() {
     onToggleRow: noop,
     onSelectFormationActor: noop,
     onMoveFormationActor: noop,
+    onToggleMonsterView: noop,
+    onMoveMonster: noop,
     onToggleWait: noop,
     onToTitle: noop,
   };

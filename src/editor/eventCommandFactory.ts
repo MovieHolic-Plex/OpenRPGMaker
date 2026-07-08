@@ -69,6 +69,10 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeItem", itemId: "", op: "+=", amount: 1 };
     case "changeParty":
       return { kind: "changeParty", actorId: "", action: "add" };
+    case "giveMonster":
+      return { kind: "giveMonster", speciesId: "species_wild_slime", level: 5 };
+    case "moveMonster":
+      return { kind: "moveMonster", instanceId: "", to: "party" };
     case "addFollower":
       return { kind: "addFollower", actorId: "", name: "" };
     case "removeFollower":

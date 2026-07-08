@@ -1,16 +1,19 @@
-import type { EnemyActionCondition, EnemyActionPattern, EnemyRecord, TroopRecord } from "../types";
+import type { EnemyActionCondition, EnemyActionPattern, EnemyRecord, MonsterSpeciesRecord, TroopRecord } from "../types";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "../databaseRecordModel";
+import { normalizeMonsterSpeciesRecord } from "../monsterCollection";
 import { DEFAULT_ENEMY_ID, DEFAULT_ITEM_ID, DEFAULT_SKILL_ID, DEFAULT_TROOP_ID } from "./constants";
 
 type BattleRecords = {
   readonly enemies: EnemyRecord[];
   readonly troops: TroopRecord[];
+  readonly monsterSpecies: MonsterSpeciesRecord[];
 };
 
 export function defaultBattleRecords(): BattleRecords {
   return {
     enemies: defaultEnemyRecords(),
     troops: defaultTroopRecords(),
+    monsterSpecies: defaultMonsterSpeciesRecords(),
   };
 }
 
@@ -19,6 +22,7 @@ function defaultEnemyRecords(): EnemyRecord[] {
     normalizeEnemyRecord({
       id: DEFAULT_ENEMY_ID,
       name: "슬라임",
+      speciesId: "species_wild_slime",
       monsterResourceId: "generated-enemy-slime-01",
       stats: { maxHp: 18, maxMp: 4, attack: 10, defense: 7, mind: 6, agility: 16 },
       rewards: { exp: 5, gold: 4, dropItemId: DEFAULT_ITEM_ID, dropRatePercent: 12 },
@@ -30,6 +34,7 @@ function defaultEnemyRecords(): EnemyRecord[] {
     normalizeEnemyRecord({
       id: "enemy_meadow_slime",
       name: "초원 슬라임",
+      speciesId: "species_wild_slime",
       monsterResourceId: "generated-enemy-slime-01",
       stats: { maxHp: 24, maxMp: 3, attack: 8, defense: 11, mind: 5, agility: 6 },
       rewards: { exp: 6, gold: 5, dropItemId: DEFAULT_ITEM_ID, dropRatePercent: 18 },
@@ -209,8 +214,46 @@ function defaultTroopRecords(): TroopRecord[] {
       enemyIds: ["enemy_dragon"],
       members: [{ enemyId: "enemy_dragon", x: 168, y: 104, hidden: false }],
       autoAlign: false,
+      uncapturable: true,
       previewBackgroundResourceId: "easyrpg-backdrop-dimension-rift",
       battleEventPages: [],
+    }),
+  ];
+}
+
+function defaultMonsterSpeciesRecords(): MonsterSpeciesRecord[] {
+  return [
+    normalizeMonsterSpeciesRecord({
+      id: "species_leafling",
+      name: "리프링",
+      graphic: { monsterResourceId: "easyrpg-monster-hornet", graphicHue: 90, transparent: false, flying: false },
+      baseStats: { maxHp: 22, maxMp: 6, attack: 9, defense: 12, mind: 9, agility: 8 },
+      captureRate: 0.45,
+      skillsByLevel: [{ level: 1, skillId: DEFAULT_SKILL_ID }],
+    }),
+    normalizeMonsterSpeciesRecord({
+      id: "species_sparkit",
+      name: "스파킷",
+      graphic: { monsterResourceId: "generated-enemy-bat-01", graphicHue: 30, transparent: false, flying: false },
+      baseStats: { maxHp: 18, maxMp: 8, attack: 12, defense: 7, mind: 11, agility: 14 },
+      captureRate: 0.45,
+      skillsByLevel: [{ level: 1, skillId: DEFAULT_SKILL_ID }],
+    }),
+    normalizeMonsterSpeciesRecord({
+      id: "species_aqualing",
+      name: "아쿠아링",
+      graphic: { monsterResourceId: "generated-enemy-slime-01", graphicHue: 190, transparent: false, flying: false },
+      baseStats: { maxHp: 24, maxMp: 8, attack: 8, defense: 10, mind: 12, agility: 9 },
+      captureRate: 0.45,
+      skillsByLevel: [{ level: 1, skillId: DEFAULT_SKILL_ID }],
+    }),
+    normalizeMonsterSpeciesRecord({
+      id: "species_wild_slime",
+      name: "야생 슬라임",
+      graphic: { monsterResourceId: "generated-enemy-slime-01", graphicHue: 0, transparent: false, flying: false },
+      baseStats: { maxHp: 18, maxMp: 4, attack: 10, defense: 7, mind: 6, agility: 16 },
+      captureRate: 0.7,
+      skillsByLevel: [{ level: 1, skillId: DEFAULT_SKILL_ID }],
     }),
   ];
 }

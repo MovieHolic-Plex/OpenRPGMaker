@@ -15,6 +15,8 @@ import {
   changeLevelBody,
   changePartyBody,
   enterHeroNameBody,
+  giveMonsterBody,
+  moveMonsterBody,
   promoteActorBody,
   recoverAllBody,
 } from "./commandBodyDatabase";
@@ -96,6 +98,10 @@ export function renderAdvancedCommandBody(
       return changeItemBody(context, cmd);
     case "changeParty":
       return changePartyBody(context, cmd);
+    case "giveMonster":
+      return giveMonsterBody(context, cmd);
+    case "moveMonster":
+      return moveMonsterBody(context, cmd);
     case "showPicture":
       return showPictureBody(context, cmd);
     case "erasePicture":

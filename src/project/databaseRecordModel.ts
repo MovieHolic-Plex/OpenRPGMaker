@@ -9,11 +9,12 @@ import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from 
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
+import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains" | "monsterSpecies">>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -30,6 +31,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     terrains: normalizeTerrainRecords(database.terrains),
     battleCommands: normalizeGlobalBattleCommands(database.battleCommands),
     battlerAnimations: (database.battlerAnimations ?? []).map(normalizeBattlerAnimationRecord),
+    monsterSpecies: (database.monsterSpecies ?? []).map(normalizeMonsterSpeciesRecord),
   };
 }
 
@@ -45,6 +47,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+    ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
   };
 }
 
@@ -160,6 +163,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     occasionBattle: record.occasionBattle ?? (record.occasion === "battle" || record.occasion === "always"),
     seedParameterBonuses: normalizeSeedBonuses(record.seedParameterBonuses),
     equipmentProfile: normalizeItemEquipmentProfile(record.equipmentProfile),
+    captureProfile: normalizeCaptureProfile(record.captureProfile),
   };
 }
 
@@ -223,7 +227,7 @@ function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "escape" || kind === "switch" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
     ? kind
     : "attack";
 }
@@ -303,6 +307,14 @@ function normalizeSeedBonuses(bonuses: Partial<EquipmentStatBonuses> | undefined
     mind: clampInteger(bonuses?.mind ?? 0, -50, 50),
     agility: clampInteger(bonuses?.agility ?? 0, -50, 50),
   };
+}
+
+function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefined): ItemCaptureProfile | undefined {
+  if (!profile) return undefined;
+  const multiplier = typeof profile.multiplier === "number" && Number.isFinite(profile.multiplier)
+    ? Math.max(0.01, Math.min(100, profile.multiplier))
+    : 1;
+  return { multiplier };
 }
 
 function normalizeItemEquipmentProfile(profile: Partial<ItemEquipmentProfile> | undefined): ItemEquipmentProfile {

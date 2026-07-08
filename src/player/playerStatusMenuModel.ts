@@ -6,6 +6,7 @@ export const STATUS_MENU_COMMAND_IDS = [
   "items",
   "skills",
   "equipment",
+  "monsters",
   "save",
   "load",
   "status",
@@ -90,6 +91,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "items": return "아이템";
     case "skills": return "스킬";
     case "equipment": return "장비";
+    case "monsters": return "몬스터";
     case "save": return "저장";
     case "load": return "로드";
     case "status": return "상태";

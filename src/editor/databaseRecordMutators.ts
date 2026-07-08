@@ -89,6 +89,7 @@ export function updateItemRecord(database: DatabaseRecords, id: string, patch: P
   if ("occasionBattle" in patch && patch.occasionBattle !== undefined) record.occasionBattle = patch.occasionBattle;
   if ("seedParameterBonuses" in patch && patch.seedParameterBonuses !== undefined) record.seedParameterBonuses = patch.seedParameterBonuses;
   if ("equipmentProfile" in patch && patch.equipmentProfile !== undefined) record.equipmentProfile = patch.equipmentProfile;
+  if ("captureProfile" in patch) record.captureProfile = patch.captureProfile;
   database.items[index] = normalizeItemRecord(record);
 }
 
@@ -125,6 +126,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if (index < 0) return;
   const record = { ...database.enemies[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+  if ("speciesId" in patch) record.speciesId = patch.speciesId;
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;
@@ -152,6 +154,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("enemyIds" in patch && patch.enemyIds !== undefined) record.enemyIds = patch.enemyIds;
   if ("members" in patch && patch.members !== undefined) record.members = patch.members;
   if ("autoAlign" in patch && patch.autoAlign !== undefined) record.autoAlign = patch.autoAlign;
+  if ("uncapturable" in patch && patch.uncapturable !== undefined) record.uncapturable = patch.uncapturable;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;

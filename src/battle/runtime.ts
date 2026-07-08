@@ -1,6 +1,6 @@
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, ItemId, SkillId } from "@/project/types";
+import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, type MutableBattler } from "@/battle/battleBattlers";
@@ -10,6 +10,7 @@ import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
+import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
 import {
   applyStateEffects,
   attackMultiplierForStates,
@@ -25,6 +26,8 @@ import type {
   ActorCommandDraft,
   BattleActionResultSnapshot,
   BattleAnimationSnapshot,
+  BattleCapturedMonsterSnapshot,
+  BattleCaptureResultSnapshot,
   BattleFlow,
   BattlePhase,
   BattleRoundActionLogSnapshot,
@@ -100,12 +103,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let escaped = false;
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
+  let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
   let strictActorCommands: StrictQueuedActorCommand[] = [];
   let strictPendingActorIds: ActorId[] = [];
   let strictCurrentRoundActions: BattleRoundActionLogSnapshot[] = [];
   let strictCurrentRoundParticipantIds = new Set<ActorId>();
   const roundLogs: BattleRoundLogSnapshot[] = [];
+  const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
   const participatingActorIds = new Set<ActorId>();
   const rewards: { exp: number; gold: number; items: ItemId[]; enemyLevel?: number; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
@@ -216,6 +221,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
     currentActorCommandKind = command.kind;
+    lastCaptureResult = undefined;
     switch (command.kind) {
       case "attack":
         applyActorAttack(actor, command.targetEnemyId);
@@ -242,6 +248,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         applyItem(command.itemId, target, actor);
         break;
       }
+      case "capture":
+        applyCapture(command.captureItemId, command.targetEnemyId);
+        break;
       case "defend":
         actor.defending = true;
         break;
@@ -304,6 +313,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "attack":
       case "skill":
       case "item":
+      case "capture":
         beginTargetSelection(command);
         return;
     }
@@ -521,6 +531,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const skill = lookupItemSkill(command.itemId);
         return skill?.scope !== "self" && skill?.scope !== "ally";
       }
+      case "capture":
+        return true;
     }
   }
 
@@ -560,6 +572,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy)),
       lastAnimation,
       lastActionResult,
+      lastCaptureResult,
+      capturedMonsters,
       result,
       rewards,
       canEscape: options.canEscape,
@@ -669,6 +683,54 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (item.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
     }
+  }
+
+  function applyCapture(captureItemId: ItemId, targetEnemyId: string): void {
+    const target = visibleEnemies().find((entry) => entry.id === targetEnemyId && entry.hp > 0);
+    if (!target) {
+      lastCaptureResult = { targetId: targetEnemyId, captureItemId, success: false, rate: 0, blockedReason: "missingTarget" };
+      return;
+    }
+    if (troopRecord.uncapturable === true) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "uncapturable" };
+      return;
+    }
+    const item = options.project.database.items.find((record) => record.id === captureItemId);
+    const count = battleEventState.inventory[captureItemId] ?? 0;
+    if (!item?.captureProfile || count <= 0) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingItem" };
+      return;
+    }
+    const enemyRecord = options.project.database.enemies.find((record) => record.id === target.recordId);
+    const species = monsterSpeciesForEnemy(options.project, enemyRecord);
+    if (!species) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingSpecies" };
+      return;
+    }
+    battleEventState.inventory[captureItemId] = count - 1;
+    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item));
+    const roll = rng();
+    if (roll >= rate) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate, roll, speciesId: species.id };
+      return;
+    }
+    const caughtAt = options.captureLocation ?? { mapId: options.project.startMapId, x: options.project.startPos.x, y: options.project.startPos.y };
+    const capture: BattleCapturedMonsterSnapshot = {
+      targetId: target.id,
+      enemyId: target.recordId as EnemyId,
+      speciesId: species.id,
+      level: Math.max(1, Math.min(99, Math.trunc(enemyRecord?.level ?? 1))),
+      caughtAt,
+      ivs: rollMonsterIvs(rng),
+      captureItemId,
+    };
+    target.captured = true;
+    target.hidden = true;
+    target.hp = 0;
+    target.gauge = 0;
+    capturedMonsters.push(capture);
+    options.onMonsterCaptured?.(capture);
+    lastCaptureResult = { targetId: target.id, captureItemId, success: true, rate, roll, speciesId: species.id };
   }
 
   // 스킬 MP 소비. flat + percentMax(최대 MP 기준 비율). 부족해도 일단 차감(최소 0).
@@ -986,6 +1048,8 @@ export function concreteTargetCommand(command: TargetedActorCommand, targetEnemy
       return { kind: "skill", skillId: command.skillId, targetEnemyId };
     case "item":
       return { kind: "item", itemId: command.itemId, targetEnemyId };
+    case "capture":
+      return { kind: "capture", captureItemId: command.captureItemId, targetEnemyId };
   }
 }
 

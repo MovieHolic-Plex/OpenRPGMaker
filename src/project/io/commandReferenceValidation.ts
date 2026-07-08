@@ -23,6 +23,7 @@ export type ReferenceContext = {
   endingIds: ReadonlySet<string>;
   mapIds: ReadonlySet<string>;
   troopIds: ReadonlySet<string>;
+  speciesIds: ReadonlySet<string>;
   resourceIds: ReadonlySet<string>;
 };
 
@@ -160,6 +161,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       if ((command.actorId ?? "").trim().length > 0) {
         assert(context.actorIds.has(command.actorId ?? ""), `recoverAll: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
       }
+      return;
+    case "giveMonster":
+      assert(context.speciesIds.has(command.speciesId), `giveMonster: speciesId가 존재하지 않습니다: ${command.speciesId}`);
+      return;
+    case "moveMonster":
       return;
     case "enterHeroName":
       if (command.actorId.trim().length > 0) {

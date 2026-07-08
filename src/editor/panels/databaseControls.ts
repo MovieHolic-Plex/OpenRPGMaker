@@ -173,6 +173,8 @@ function literalLabel(value: string): string {
       return "방어";
     case "item":
       return "아이템";
+    case "capture":
+      return "포획";
     case "event":
       return "이벤트";
     case "physical":

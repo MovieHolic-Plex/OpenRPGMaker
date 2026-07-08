@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, EventPageGraphic, LightingState, MapId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type {
   M2RuntimeState,
   PlaySessionLike,
@@ -62,6 +62,30 @@ export type RuntimeFollowerTrailPoint = {
   readonly direction?: "down" | "left" | "right" | "up";
 };
 
+export type MonsterInstanceIvs = {
+  readonly hp: number;
+  readonly atk: number;
+  readonly def: number;
+  readonly spd: number;
+};
+
+export type MonsterCaughtAt = {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+};
+
+export type MonsterInstance = {
+  readonly instanceId: MonsterInstanceId;
+  readonly speciesId: MonsterSpeciesId;
+  readonly nickname?: string;
+  readonly level: number;
+  readonly exp: number;
+  readonly ivs?: MonsterInstanceIvs;
+  readonly friendship: number;
+  readonly caughtAt: MonsterCaughtAt;
+};
+
 export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
   format: "normal",
   position: "bottom",
@@ -81,6 +105,9 @@ export interface PlaySession {
   gold: number;
   inventory: Record<string, number>;
   partyActorIds: string[];
+  monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
+  monsterParty: MonsterInstanceId[];
+  monsterBox: MonsterInstanceId[];
   actorSkillIds: Record<ActorId, SkillId[]>;
   actorExperience: Record<string, number>;
   actorLevels: Record<string, number>;
@@ -160,6 +187,9 @@ export function startSession(project: Project, seed?: number): PlaySession {
     gold: Math.max(0, start.gold ?? 0),
     inventory: { ...start.inventory },
     partyActorIds: [...start.partyActorIds],
+    monsterInstances: {},
+    monsterParty: [],
+    monsterBox: [],
     actorSkillIds: {},
     actorExperience: initialActorExperience(project),
     actorLevels: initialActorLevels(project),

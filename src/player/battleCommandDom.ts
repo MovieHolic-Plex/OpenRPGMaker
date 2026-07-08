@@ -14,6 +14,7 @@ import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/batt
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
   | { readonly kind: "item" }
+  | { readonly kind: "capture" }
   | { readonly kind: "switch" }
   | null;
 
@@ -65,6 +66,10 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(...itemSubmenu(snapshot, options));
     return menu;
   }
+  if (options.submenu?.kind === "capture") {
+    menu.append(...captureSubmenu(snapshot, options));
+    return menu;
+  }
   if (options.submenu?.kind === "switch") {
     menu.append(...switchSubmenu(snapshot, options));
     return menu;
@@ -112,6 +117,14 @@ function commandControl(
         options.render();
       }, targetMode || items.length === 0);
     }
+    case "capture": {
+      const items = captureItems(snapshot);
+      return commandButton(command.name, commandTestId(command), "target", items.length > 0 ? `${items.length}종` : "없음", () => {
+        if (targetMode || items.length === 0) return;
+        options.setSubmenu({ kind: "capture" });
+        options.render();
+      }, targetMode || items.length === 0);
+    }
     case "defend":
       return commandButton(command.name, commandTestId(command), "shield", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "defend" });
@@ -137,6 +150,8 @@ function commandTestId(command: RuntimeBattleCommand): string {
       return "actor-command-attack";
     case "item":
       return "actor-command-item";
+    case "capture":
+      return "actor-command-capture";
     case "defend":
       return "actor-command-defend";
     case "escape":
@@ -182,6 +197,14 @@ function battleItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; 
   return project.database.items
     .filter((item) => item.skillId && (inventory[item.id] ?? 0) > 0)
     .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0 }));
+}
+
+function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number }[] {
+  const project = store.getCurrent();
+  const inventory = snapshot.eventState.inventory;
+  return project.database.items
+    .filter((item) => item.captureProfile && (inventory[item.id] ?? 0) > 0)
+    .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1 }));
 }
 
 function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
@@ -233,6 +256,21 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   for (const item of battleItems(snapshot)) {
     nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", "아이템 사용", () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
+    }));
+  }
+  nodes.push(submenuBackButton(options));
+  return nodes;
+}
+
+function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = "포획";
+  const nodes: HTMLElement[] = [header];
+  for (const item of captureItems(snapshot)) {
+    const detail = item.multiplier === 1 ? "포획" : `x${item.multiplier}`;
+    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
+      options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
     }));
   }
   nodes.push(submenuBackButton(options));

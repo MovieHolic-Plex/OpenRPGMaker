@@ -9,7 +9,7 @@ import { toast } from "@/util/toast";
 import { classCurveCards } from "./databaseClassCurveEditors";
 import { renderClassExperiencePanel } from "./databaseClassExperienceCurveEditor";
 
-const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "escape", "switch", "event"];
+const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"];
 const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   attack: "공격",
   skill: "특수기능",
@@ -17,6 +17,7 @@ const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   defend: "방어",
   guard: "방어",
   item: "아이템",
+  capture: "포획",
   escape: "도망",
   switch: "교체",
   event: "교체(구형)",

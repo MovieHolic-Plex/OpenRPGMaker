@@ -21,6 +21,8 @@ const noopActions: PlayerStatusMenuActions = {
   onToggleRow: () => undefined,
   onSelectFormationActor: () => undefined,
   onMoveFormationActor: () => undefined,
+  onToggleMonsterView: () => undefined,
+  onMoveMonster: () => undefined,
   onToggleWait: () => undefined,
   onToTitle: () => undefined,
 };
@@ -50,7 +52,7 @@ describe("player status menu", () => {
     }
   });
 
-  it("renders all 11 commands and full party vitals", () => {
+  it("renders all 12 commands and full party vitals", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -63,7 +65,7 @@ describe("player status menu", () => {
         }),
       );
 
-      for (const commandId of ["items", "skills", "equipment", "save", "load", "status", "row", "formation", "quests", "wait", "to-title"]) {
+      for (const commandId of ["items", "skills", "equipment", "monsters", "save", "load", "status", "row", "formation", "quests", "wait", "to-title"]) {
         expect(findByTestId(menu, `status-menu-command-${commandId}`)).not.toBeNull();
       }
       expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toMatch(/HP \d+\/\d+/);

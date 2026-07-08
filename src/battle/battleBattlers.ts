@@ -46,6 +46,7 @@ export interface MutableBattler {
   readonly battleX?: number;
   readonly battleY?: number;
   hidden: boolean;
+  captured?: boolean;
   hp: number;
   mp: number;
   gauge: number;
@@ -216,6 +217,7 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       skillIds: normalizedEnemy.skillIds,
       enemyActions: normalizedEnemy.actions,
       hidden: member.hidden ?? false,
+      captured: false,
     };
   });
 }
@@ -245,6 +247,7 @@ export function battlerSnapshot(
     defending: battler.defending,
     stateIds: battler.stateIds,
     skillIds: battler.skillIds,
+    captured: battler.captured === true ? true : undefined,
   };
 }
 

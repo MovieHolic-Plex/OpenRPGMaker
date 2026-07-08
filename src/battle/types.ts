@@ -8,10 +8,12 @@ import type {
   BattleFlow,
   EnemyId,
   ItemId,
+  MonsterSpeciesId,
   Project,
   SkillId,
   TroopId,
 } from "@/project/types";
+import type { MonsterCaughtAt, MonsterInstanceIvs } from "@/project/session";
 import type { Rng } from "@/util/rng";
 
 export type { BattleFlow } from "@/project/types";
@@ -22,7 +24,8 @@ export type BattleResult = "victory" | "defeat" | "escape";
 export type TargetedActorCommand =
   | { readonly kind: "attack" }
   | { readonly kind: "skill"; readonly skillId: SkillId }
-  | { readonly kind: "item"; readonly itemId: ItemId };
+  | { readonly kind: "item"; readonly itemId: ItemId }
+  | { readonly kind: "capture"; readonly captureItemId: ItemId };
 
 export type ActorCommandDraft =
   | TargetedActorCommand
@@ -34,6 +37,7 @@ export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
   | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string }
   | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string }
+  | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
   | { readonly kind: "switch"; readonly targetActorId: ActorId };
@@ -60,6 +64,8 @@ export interface BattleRuntimeOptions {
   // 현재 플레이 세션의 스위치/변수/인벤토리. 전투 이벤트 조건과 아이템 목록/소모의 기준.
   // 없으면 project.session(에디터 시작 상태)을 사용한다 — 에디터 전투 테스트 경로용.
   readonly sessionState?: BattleSessionState;
+  readonly captureLocation?: MonsterCaughtAt;
+  readonly onMonsterCaptured?: (capture: BattleCapturedMonsterSnapshot) => void;
   readonly rng?: Rng;
 }
 
@@ -106,6 +112,7 @@ export interface BattleBattlerSnapshot {
   readonly defending: boolean;
   readonly stateIds: readonly string[];
   readonly skillIds: readonly SkillId[];
+  readonly captured?: boolean;
 }
 
 export interface BattleAnimationSnapshot {
@@ -130,6 +137,28 @@ export interface BattleActionResultSnapshot {
   readonly amount: number;
   readonly critical: boolean;
   readonly skillName?: string;
+}
+
+export interface BattleCapturedMonsterSnapshot {
+  readonly targetId: string;
+  readonly enemyId: EnemyId;
+  readonly speciesId: MonsterSpeciesId;
+  readonly level: number;
+  readonly caughtAt: MonsterCaughtAt;
+  readonly ivs: MonsterInstanceIvs;
+  readonly captureItemId: ItemId;
+}
+
+export type BattleCaptureBlockedReason = "uncapturable" | "missingTarget" | "missingItem" | "missingSpecies";
+
+export interface BattleCaptureResultSnapshot {
+  readonly targetId: string;
+  readonly captureItemId: ItemId;
+  readonly success: boolean;
+  readonly rate: number;
+  readonly roll?: number;
+  readonly speciesId?: MonsterSpeciesId;
+  readonly blockedReason?: BattleCaptureBlockedReason;
 }
 
 export interface BattleRoundActionLogSnapshot {
@@ -205,6 +234,8 @@ export interface BattleSnapshot {
   readonly enemies: readonly BattleBattlerSnapshot[];
   readonly lastAnimation?: BattleAnimationSnapshot;
   readonly lastActionResult?: BattleActionResultSnapshot;
+  readonly lastCaptureResult?: BattleCaptureResultSnapshot;
+  readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly result?: BattleResult;
   readonly rewards: BattleRewardsSnapshot;
   readonly canEscape: boolean;

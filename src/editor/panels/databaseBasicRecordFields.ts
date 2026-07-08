@@ -23,6 +23,9 @@ export function itemFields(form: HTMLElement, id: string): void {
   form.append(selectLiteral("범위", "db-field-scope", item.scope, ["none", "ally", "allAllies", "enemy"], (value) =>
     updateDatabaseRecord("items", id, { scope: value })
   ));
+  form.append(numberField("포획 배율", "db-field-item-capture-multiplier", item.captureProfile?.multiplier ?? 0, (value) =>
+    updateDatabaseRecord("items", id, { captureProfile: value > 0 ? { multiplier: value } : undefined })
+  ));
   skillPicker(form, "items", id);
 }
 

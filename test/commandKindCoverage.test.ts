@@ -61,6 +61,8 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeGold: { kind: "changeGold", op: "+=", amount: 10 },
   changeItem: { kind: "changeItem", itemId: "item1", op: "+=", amount: 1 },
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
+  giveMonster: { kind: "giveMonster", speciesId: "species1", level: 5 },
+  moveMonster: { kind: "moveMonster", instanceId: "monster_1", to: "party" },
   addFollower: { kind: "addFollower", actorId: "actor1", name: "동행자" },
   removeFollower: { kind: "removeFollower", all: true },
   setLighting: { kind: "setLighting", ambient: 0.8, color: "#000000", transitionMs: 0 },

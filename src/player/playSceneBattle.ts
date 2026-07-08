@@ -8,6 +8,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
+import { giveMonster } from "@/project/monsterCollection";
 import { nextSessionRandom } from "@/project/session";
 
 export function showBattleScene(scene: PlaySceneContext, troopId: string): void {
@@ -44,6 +45,15 @@ export function playBattle(
       switches: scene.session.switches,
       variables: scene.session.variables,
       inventory: scene.session.inventory,
+    },
+    captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
+    onMonsterCaptured: (capture) => {
+      giveMonster(store.getCurrent(), scene.session, {
+        speciesId: capture.speciesId,
+        level: capture.level,
+        caughtAt: capture.caughtAt,
+        ivs: capture.ivs,
+      });
     },
     rng: () => nextSessionRandom(scene.session, "battle"),
   });

@@ -87,6 +87,15 @@ function validateCommandShape(label: string, value: unknown): void {
       requireEquipmentSlot(`${label}.slot`, command.slot);
       requireString(`${label}.equipmentId`, command.equipmentId);
       return;
+    case "giveMonster":
+      requireString(`${label}.speciesId`, command.speciesId);
+      requireNumber(`${label}.level`, command.level);
+      if (command.nickname !== undefined) requireString(`${label}.nickname`, command.nickname);
+      return;
+    case "moveMonster":
+      requireString(`${label}.instanceId`, command.instanceId);
+      requireMonsterMoveTarget(`${label}.to`, command.to);
+      return;
     case "recoverAll":
       if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
       return;
@@ -231,6 +240,12 @@ function requireEquipmentSlot(label: string, value: unknown): void {
     slot === "helmet" ||
     slot === "accessory"
   ) return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireMonsterMoveTarget(label: string, value: unknown): void {
+  const target = requireString(label, value);
+  if (target === "party" || target === "box") return;
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 

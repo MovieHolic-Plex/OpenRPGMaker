@@ -13,6 +13,7 @@ import type {
 } from "@/project/types";
 import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
+import { MONSTER_PARTY_MAX, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 
 export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
@@ -36,6 +37,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "items": return itemDetail(options);
     case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
+    case "monsters": return monsterDetail(options);
     case "save": return saveDetail(options);
     case "load": return loadDetail(options.slots, options.onLoadSlot);
     case "status": return statusDetail(options.project, options.session);
@@ -254,6 +256,40 @@ function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     hint: selectedIndex >= 0
       ? `${actors[selectedIndex]?.name ?? "선택한 파티원"}을 이동할 위치를 선택하세요.`
       : "먼저 이동할 파티원을 선택하세요.",
+  };
+}
+
+function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const view = options.monsterView ?? "party";
+  const ids = view === "party" ? options.session.monsterParty : options.session.monsterBox;
+  const target = view === "party" ? "box" : "party";
+  const entries = [
+    {
+      label: view === "party" ? "보관함 보기" : "파티 보기",
+      value: view === "party" ? `${options.session.monsterBox.length}마리` : `${options.session.monsterParty.length}/${MONSTER_PARTY_MAX}`,
+      description: "선택하면 목록을 전환합니다",
+      testId: "status-menu-monster-toggle",
+      onActivate: options.onToggleMonsterView,
+    },
+    ...ids.flatMap((instanceId) => {
+      const instance = options.session.monsterInstances[instanceId];
+      if (!instance) return [];
+      const hp = monsterMaxHp(options.project, instance);
+      return [{
+        label: monsterDisplayName(options.project, instance),
+        value: `Lv.${instance.level}  HP ${hp}/${hp}`,
+        description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
+        testId: `status-menu-monster-${instanceId}`,
+        onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
+        disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
+      }];
+    }),
+  ];
+  return {
+    title: view === "party" ? "몬스터: 파티" : "몬스터: 보관함",
+    entries,
+    emptyLabel: "몬스터가 없습니다",
+    hint: view === "party" ? `파티 ${options.session.monsterParty.length}/${MONSTER_PARTY_MAX}` : `보관함 ${options.session.monsterBox.length}마리`,
   };
 }
 

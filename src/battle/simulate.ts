@@ -4,15 +4,16 @@
 //
 import { actorBattlers } from "@/battle/battleBattlers";
 import { createBattleRuntime } from "@/battle/runtime";
-import type { ActorCommand, BattleEventLogSnapshot, BattleFlow, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
+import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 
 export interface StrictBattleScriptCommand {
   readonly actorId: string;
-  readonly command: "attack" | "skill" | "item" | "guard" | "defend" | "escape" | "switch";
+  readonly command: "attack" | "skill" | "item" | "capture" | "guard" | "defend" | "escape" | "switch";
   readonly skillId?: SkillId;
   readonly itemId?: ItemId;
+  readonly captureItemId?: ItemId;
   readonly target?: string;
   readonly switchActorId?: string;
 }
@@ -43,6 +44,8 @@ export interface SimulateBattleResult {
   readonly participatingActorIds: readonly string[];
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
   readonly eventLogs: readonly BattleEventLogSnapshot[];
+  readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
+  readonly capturedCount: number;
 }
 
 interface SingleRunResult {
@@ -53,6 +56,7 @@ interface SingleRunResult {
   readonly participatingActorIds: readonly string[];
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
   readonly eventLogs: readonly BattleEventLogSnapshot[];
+  readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
 }
 
 // 회복 아이템을 가진 저HP 액터가 아이템을 쓰도록 하는 간단 AI로 한 판을 구동한다.
@@ -61,6 +65,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
   const partyActorIds = input.partyActorIds ?? input.project.session.partyActorIds;
   const levels: Record<string, number> = {};
   for (const actorId of partyActorIds) levels[actorId] = input.heroLevel;
+  const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
 
   const options: BattleRuntimeOptions = {
     project: input.project,
@@ -71,6 +76,10 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     activeSlots: input.activeSlots,
     party: { levels, experience: {}, partyActorIds: [...partyActorIds] },
     sessionState: { switches: {}, variables: {}, inventory },
+    captureLocation: { mapId: input.project.startMapId, x: input.project.startPos.x, y: input.project.startPos.y },
+    onMonsterCaptured: (capture) => {
+      capturedMonsters.push(capture);
+    },
     rng,
   };
 
@@ -124,6 +133,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     participatingActorIds: final.participatingActorIds,
     roundLogs: final.roundLogs,
     eventLogs: final.eventLogs,
+    capturedMonsters,
   };
 }
 
@@ -140,6 +150,10 @@ function strictScriptCommand(input: SimulateBattleInput, snapshot: BattleSnapsho
       return entry.skillId ? { kind: "skill", skillId: entry.skillId, targetEnemyId } : { kind: "attack", targetEnemyId };
     case "item":
       return entry.itemId ? { kind: "item", itemId: entry.itemId, targetEnemyId } : { kind: "attack", targetEnemyId };
+    case "capture": {
+      const captureItemId = entry.captureItemId ?? entry.itemId;
+      return captureItemId ? { kind: "capture", captureItemId, targetEnemyId } : { kind: "attack", targetEnemyId };
+    }
     case "guard":
     case "defend":
       return { kind: "defend" };
@@ -171,16 +185,20 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   let roundLogs: readonly BattleRoundLogSnapshot[] = [];
   let eventLogs: readonly BattleEventLogSnapshot[] = [];
   let participatingActorIds: readonly string[] = [];
+  let capturedMonsters: readonly BattleCapturedMonsterSnapshot[] = [];
+  let capturedCount = 0;
   for (let i = 0; i < n; i += 1) {
     const run = runSingleBattle(input, rng);
     if (run.victory) wins += 1;
     totalTurns += run.turns;
     totalPotions += run.potionsUsed;
     totalHp += run.hpRemaining;
+    capturedCount += run.capturedMonsters.length;
     if (i === 0) {
       roundLogs = run.roundLogs;
       eventLogs = run.eventLogs;
       participatingActorIds = run.participatingActorIds;
+      capturedMonsters = run.capturedMonsters;
     }
   }
   return {
@@ -193,6 +211,8 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     participatingActorIds,
     roundLogs,
     eventLogs,
+    capturedMonsters,
+    capturedCount,
   };
 }
 

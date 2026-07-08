@@ -6,6 +6,7 @@ import type {
   EnemyId,
   EquipmentId,
   ItemId,
+  MonsterSpeciesId,
   SkillId,
   StateId,
   TroopId,
@@ -109,7 +110,7 @@ export interface ClassOptions {
 
 export type BattleFlow = "gauge" | "strict";
 
-export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "escape" | "switch" | "event";
+export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event";
 
 export interface ClassBattleCommand {
   id: string;
@@ -223,6 +224,11 @@ export interface ItemRecord {
   occasionBattle: boolean;
   seedParameterBonuses: EquipmentStatBonuses;
   equipmentProfile: ItemEquipmentProfile;
+  captureProfile?: ItemCaptureProfile;
+}
+
+export interface ItemCaptureProfile {
+  multiplier: number;
 }
 
 export type ItemScope = "none" | "ally" | "allAllies" | "enemy";
@@ -311,6 +317,7 @@ export interface DatabaseStateEffect {
 export interface EnemyRecord {
   id: EnemyId;
   name: string;
+  speciesId?: MonsterSpeciesId;
   level?: number;
   monsterResourceId?: string;
   graphicHue: number;
@@ -333,6 +340,23 @@ export interface EnemyStats {
   defense: number;
   mind: number;
   agility: number;
+}
+
+export interface MonsterSpeciesGraphic {
+  monsterResourceId?: string;
+  graphicHue: number;
+  transparent: boolean;
+  flying: boolean;
+}
+
+export interface MonsterSpeciesRecord {
+  id: MonsterSpeciesId;
+  name: string;
+  graphic: MonsterSpeciesGraphic;
+  baseStats: EnemyStats;
+  expCurve?: ActorExperienceCurve;
+  captureRate: number;
+  skillsByLevel?: ActorLearnedSkill[];
 }
 
 export interface EnemyRewards {
@@ -402,6 +426,7 @@ export interface TroopRecord {
   enemyIds: EnemyId[];
   members?: TroopMemberRecord[];
   autoAlign: boolean;
+  uncapturable?: boolean;
   previewBackgroundResourceId?: string;
   battleFlow?: BattleFlow;
   activeSlots?: number;
@@ -536,6 +561,7 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   terrains?: DatabaseTerrainRecord[];
   battleCommands?: DatabaseBattleCommandRecord[];
   battlerAnimations?: BattlerAnimationRecord[];
+  monsterSpecies?: MonsterSpeciesRecord[];
 }
 
 export interface TitleScreenLayout {
@@ -568,6 +594,7 @@ export interface SystemRecords {
   activeSlots?: number;
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
+  monsterCollection?: boolean;
 }
 
 export interface RewardPolicy {

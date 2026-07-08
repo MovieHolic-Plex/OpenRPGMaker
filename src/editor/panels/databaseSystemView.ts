@@ -58,6 +58,11 @@ export function renderSystemTab(host: HTMLElement): void {
           draft.system.activeSlots = optionalPositiveInteger(value);
         });
       }),
+      checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
+        store.update((draft) => {
+          draft.system.monsterCollection = checked;
+        });
+      }),
     ]),
     rm2k3Fieldset("게임 시작화면", [
       textControl("게임 타이틀", titleScreen.title, (value) => {
@@ -144,6 +149,13 @@ function readonlyValue(label: string, value: string): HTMLElement {
     class: "db-readonly-row",
     children: [el("span", { text: label }), el("code", { text: value })],
   });
+}
+
+function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
+  const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+  input.checked = checked;
+  input.addEventListener("change", () => onChange(input.checked));
+  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
 }
 
 function systemPreviewWell(label: string, resourceId: string | undefined): HTMLElement {

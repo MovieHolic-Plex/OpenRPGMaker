@@ -58,6 +58,33 @@ export function isActorStateIdsRecord(value: unknown): value is Record<string, s
   return Object.values(value).every((states) => Array.isArray(states) && states.every((stateId) => typeof stateId === "string"));
 }
 
+export function isMonsterInstancesRecord(value: unknown): value is PlaySession["monsterInstances"] {
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([instanceId, instance]) => {
+    if (!isRecord(instance)) return false;
+    if (instance.instanceId !== instanceId || typeof instance.speciesId !== "string") return false;
+    if (instance.nickname !== undefined && typeof instance.nickname !== "string") return false;
+    if (typeof instance.level !== "number" || !Number.isFinite(instance.level)) return false;
+    if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
+    if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
+    if (!isMonsterCaughtAt(instance.caughtAt)) return false;
+    return instance.ivs === undefined || isMonsterIvs(instance.ivs);
+  });
+}
+
+function isMonsterIvs(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return ["hp", "atk", "def", "spd"].every((key) => {
+    const amount = value[key];
+    return typeof amount === "number" && Number.isFinite(amount) && amount >= 0 && amount <= 15;
+  });
+}
+
+function isMonsterCaughtAt(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return typeof value.mapId === "string" && typeof value.x === "number" && Number.isFinite(value.x) && typeof value.y === "number" && Number.isFinite(value.y);
+}
+
 export function isRngState(value: unknown): value is RngState {
   if (!isRecord(value)) return false;
   if (typeof value.seed !== "number" || !Number.isFinite(value.seed)) return false;

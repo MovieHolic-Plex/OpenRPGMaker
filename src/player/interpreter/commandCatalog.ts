@@ -18,6 +18,7 @@ import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/e
 import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { giveMonster, moveMonster } from "@/project/monsterCollection";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -509,6 +510,12 @@ export function executeCommand(
       return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);
+      return resumeNext(frame);
+    case "giveMonster":
+      if (state.project) giveMonster(state.project, state.session as PlaySession, command);
+      return resumeNext(frame);
+    case "moveMonster":
+      moveMonster(state.session as PlaySession, command.instanceId, command.to);
       return resumeNext(frame);
     case "addFollower":
       if (state.project) addFollowerToSession(state.project, state.session as PlaySession, command);

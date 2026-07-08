@@ -1,4 +1,4 @@
-import { requireArray, requireRecord } from "./guards";
+import { requireArray, requireBoolean, requireRecord } from "./guards";
 
 export function validateDatabase(value: unknown): void {
   const database = requireRecord("database", value);
@@ -19,12 +19,14 @@ export function validateDatabase(value: unknown): void {
   if (database.terrains !== undefined) requireArray("database.terrains", database.terrains);
   if (database.battleCommands !== undefined) requireArray("database.battleCommands", database.battleCommands);
   if (database.battlerAnimations !== undefined) requireArray("database.battlerAnimations", database.battlerAnimations);
+  if (database.monsterSpecies !== undefined) requireArray("database.monsterSpecies", database.monsterSpecies);
 }
 
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
   if (system.titleScreen !== undefined) requireRecord("system.titleScreen", system.titleScreen);
+  if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
 }
 
 export function validateSession(value: unknown): void {

@@ -51,6 +51,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     equipmentActorId: options.equipmentActorId,
     equipmentSlotId: options.equipmentSlotId,
     formationActorId: options.formationActorId,
+    monsterView: options.monsterView,
     confirmSaveSlot: options.confirmSaveSlot,
     saveEnabled: options.saveEnabled,
     onSaveSlot: options.actions.onSaveSlot,
@@ -66,6 +67,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onToggleRow: options.actions.onToggleRow,
     onSelectFormationActor: options.actions.onSelectFormationActor,
     onMoveFormationActor: options.actions.onMoveFormationActor,
+    onToggleMonsterView: options.actions.onToggleMonsterView,
+    onMoveMonster: options.actions.onMoveMonster,
   });
   panel.append(
     renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
@@ -118,6 +121,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "items":
     case "skills":
     case "equipment":
+    case "monsters":
     case "save":
     case "load":
     case "status":

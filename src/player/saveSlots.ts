@@ -17,6 +17,7 @@ import {
   isActorVitalsRecord,
   isBooleanRecord,
   isLightingState,
+  isMonsterInstancesRecord,
   isNumberRecord,
   isPictureRecord,
   isRecord,
@@ -64,6 +65,9 @@ export type SaveSnapshot = {
     readonly gold: number;
     readonly inventory?: Record<string, number>;
     readonly partyActorIds?: readonly string[];
+    readonly monsterInstances?: PlaySession["monsterInstances"];
+    readonly monsterParty?: readonly string[];
+    readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
     readonly actorExperience?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
@@ -131,6 +135,9 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       gold: session.gold,
       inventory: structuredClone(session.inventory),
       partyActorIds: structuredClone(session.partyActorIds),
+      monsterInstances: structuredClone(session.monsterInstances),
+      monsterParty: structuredClone(session.monsterParty),
+      monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
@@ -217,6 +224,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.gold = snapshot.session.gold;
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
+  if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
+  if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
+  if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
@@ -320,6 +330,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       gold: session.gold,
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
+      monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
+      monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
+      monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,

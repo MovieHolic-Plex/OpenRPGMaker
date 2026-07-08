@@ -5,7 +5,7 @@ import type { Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
 export function collectBattleRewards(project: Project, enemies: readonly MutableBattler[], rng: Rng = () => 0.5): BattleRewardsSnapshot {
-  const rewardedEnemies = enemies.filter((enemy) => !enemy.hidden);
+  const rewardedEnemies = enemies.filter((enemy) => !enemy.hidden && enemy.captured !== true);
   return {
     exp: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),
     gold: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0),

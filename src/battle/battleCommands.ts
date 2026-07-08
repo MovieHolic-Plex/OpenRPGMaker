@@ -1,6 +1,6 @@
 import type { ClassBattleCommand, ClassBattleCommandKind, Project, SkillId } from "@/project/types";
 
-export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "defend" | "escape" | "switch";
+export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "capture" | "defend" | "escape" | "switch";
 
 export interface RuntimeBattleCommand {
   readonly id: string;
@@ -30,8 +30,9 @@ export function battleCommandsForActor(
   const commands = source
     .map((command) => resolveClassBattleCommand(project, command))
     .filter((command): command is RuntimeBattleCommand => command !== undefined)
+    .filter((command) => project.system.monsterCollection === true || command.kind !== "capture")
     .filter((command) => options.includeSwitch || command.kind !== "switch");
-  const base = commands.length > 0 ? commands : DEFAULT_RUNTIME_BATTLE_COMMANDS;
+  const base = withMonsterCaptureCommand(project, commands.length > 0 ? commands : DEFAULT_RUNTIME_BATTLE_COMMANDS);
   if (!options.includeSwitch || base.some((command) => command.kind === "switch")) return base;
   return [...base, switchCommand()];
 }
@@ -60,6 +61,7 @@ function normalizeKind(kind: ClassBattleCommandKind): RuntimeBattleCommandKind |
     case "attack":
     case "skill":
     case "item":
+    case "capture":
     case "escape":
       return kind;
     case "switch":
@@ -82,6 +84,8 @@ function fallbackCommandName(kind: RuntimeBattleCommandKind): string {
       return "스킬";
     case "item":
       return "아이템";
+    case "capture":
+      return "포획";
     case "defend":
       return "방어";
     case "escape":
@@ -93,4 +97,13 @@ function fallbackCommandName(kind: RuntimeBattleCommandKind): string {
 
 function switchCommand(): RuntimeBattleCommand {
   return { id: "cmd_switch", name: "교체", kind: "switch" };
+}
+
+function captureCommand(): RuntimeBattleCommand {
+  return { id: "cmd_capture", name: "포획", kind: "capture" };
+}
+
+function withMonsterCaptureCommand(project: Project, commands: readonly RuntimeBattleCommand[]): readonly RuntimeBattleCommand[] {
+  if (project.system.monsterCollection !== true || commands.some((command) => command.kind === "capture")) return commands;
+  return [...commands, captureCommand()];
 }

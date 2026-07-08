@@ -7,6 +7,7 @@
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
+import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import type {
@@ -16,7 +17,9 @@ import type {
   CommonEvent,
   EnemyRecord,
   EquipmentRecord,
+  GameEvent,
   ItemRecord,
+  MonsterSpeciesRecord,
   Project,
   SkillRecord,
   StateRecord,
@@ -128,6 +131,7 @@ const itemEquipmentProfileSchema = objectSchema({
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
 });
+const captureProfileSchema = objectSchema({ multiplier: numberSchema("포획 확률 배율. 생략 시 1") });
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
 const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema() });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
@@ -177,11 +181,13 @@ const itemRecordSchema = objectSchema({
   occasionBattle: booleanSchema(),
   seedParameterBonuses: statBonusesSchema,
   equipmentProfile: itemEquipmentProfileSchema,
+  captureProfile: captureProfileSchema,
 }) as RecordSchema;
 
 const enemyRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
+  speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
@@ -203,10 +209,28 @@ const troopRecordSchema = objectSchema({
   enemyIds: stringArraySchema(),
   members: arrayOf(troopMemberSchema),
   autoAlign: booleanSchema(),
+  uncapturable: booleanSchema(),
   previewBackgroundResourceId: stringSchema(),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   battleEventPages: { type: "array", description: "BattleEventPageRecord[]", items: { type: "object", additionalProperties: true } },
+}) as RecordSchema;
+
+const monsterSpeciesGraphicSchema = objectSchema({
+  monsterResourceId: stringSchema(),
+  graphicHue: integerSchema(),
+  transparent: booleanSchema(),
+  flying: booleanSchema(),
+});
+
+const monsterSpeciesRecordSchema = objectSchema({
+  id: stringSchema(),
+  name: stringSchema(),
+  graphic: monsterSpeciesGraphicSchema,
+  baseStats: enemyStatsSchema,
+  expCurve: expCurveSchema,
+  captureRate: numberSchema("0~1"),
+  skillsByLevel: arrayOf(learnedSkillSchema),
 }) as RecordSchema;
 
 const actorRecordSchema = objectSchema({
@@ -415,6 +439,83 @@ const upsertTroop: ToolDefinition = {
   },
 };
 
+const defineMonsterSpecies: ToolDefinition = {
+  name: "define_monster_species",
+  description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다.",
+  mode: "write",
+  parameters: parametersForRecord("species", monsterSpeciesRecordSchema, {
+    id: "species_wild_slime",
+    name: "야생 슬라임",
+    baseStats: { maxHp: 18, maxMp: 4, attack: 10, defense: 7, mind: 6, agility: 16 },
+    captureRate: 0.7,
+  }),
+  run(draft, args): ToolExecResult {
+    draft.database.monsterSpecies ??= [];
+    const merged = mergeRecord(draft.database.monsterSpecies, args.species, "species", monsterSpeciesRecordSchema, {
+      id: "species_wild_slime",
+      name: "야생 슬라임",
+    });
+    const record = normalizeMonsterSpeciesRecord(merged as Partial<MonsterSpeciesRecord> & Pick<MonsterSpeciesRecord, "id" | "name">);
+    const skillIds = new Set(draft.database.skills.map((skill) => skill.id));
+    const missingSkills = (record.skillsByLevel ?? []).filter((entry) => !skillIds.has(entry.skillId)).map((entry) => entry.skillId);
+    if (missingSkills.length > 0) {
+      throw new ToolError(`존재하지 않는 species skillId: ${[...new Set(missingSkills)].join(", ")} — 허용 예시: ${knownIds(draft.database.skills)}`, { code: "skill-not-found" });
+    }
+    const outcome = upsertById(draft.database.monsterSpecies, record);
+    return { summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+  },
+};
+
+const giveStarterMonsters: ToolDefinition = {
+  name: "give_starter_monsters",
+  description: "스타팅 몬스터 3종 선택 이벤트를 생성한다. 각 선택지는 giveMonster를 실행하고 셀프스위치 A로 재지급을 막는다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      speciesIds: { type: "array", items: { type: "string" }, description: "선택지로 제공할 species id 목록" },
+      actorEvent: objectSchema({
+        mapId: stringSchema("생성/수정할 맵 id. 생략 시 시작 맵"),
+        eventId: stringSchema("생성/수정할 이벤트 id. 생략 시 ev_starter_monsters"),
+        x: integerSchema(),
+        y: integerSchema(),
+        name: stringSchema(),
+      }),
+    },
+    required: ["speciesIds"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const speciesIds = Array.isArray(args.speciesIds) ? (args.speciesIds as string[]).filter((id) => id.trim().length > 0) : [];
+    if (speciesIds.length === 0) throw new ToolError("speciesIds가 필요합니다.", { code: "missing-species" });
+    const speciesRecords = draft.database.monsterSpecies ?? [];
+    const missing = speciesIds.filter((id) => !speciesRecords.some((species) => species.id === id));
+    if (missing.length > 0) {
+      throw new ToolError(`존재하지 않는 speciesId: ${missing.join(", ")} — 허용 예시: ${knownIds(speciesRecords)}`, { code: "species-not-found" });
+    }
+    const eventArgs = parseStarterEventArgs(args.actorEvent);
+    const mapId = eventArgs.mapId ?? draft.startMapId;
+    const map = draft.maps[mapId];
+    if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found" });
+    const eventId = eventArgs.eventId ?? uniqueEventId(map.events, "ev_starter_monsters");
+    const event = starterMonsterEvent(draft, {
+      mapId,
+      eventId,
+      x: eventArgs.x ?? Math.min(map.width - 1, draft.startPos.x + 1),
+      y: eventArgs.y ?? draft.startPos.y,
+      name: eventArgs.name ?? "스타팅 몬스터",
+      speciesIds,
+    });
+    const index = map.events.findIndex((entry) => entry.id === eventId);
+    if (index >= 0) map.events[index] = event;
+    else map.events.push(event);
+    return {
+      summary: `스타팅 몬스터 선택 이벤트 '${event.id}' 생성(${speciesIds.length}종)`,
+      data: { mapId, eventId: event.id, speciesIds },
+    };
+  },
+};
+
 const upsertActor: ToolDefinition = {
   name: "upsert_actor",
   description: "아군 액터 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -619,6 +720,80 @@ const setTitleScreen: ToolDefinition = {
   },
 };
 
+function parseStarterEventArgs(value: unknown): { mapId?: string; eventId?: string; x?: number; y?: number; name?: string } {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return {};
+  const record = value as Record<string, unknown>;
+  return {
+    mapId: typeof record.mapId === "string" && record.mapId.trim() ? record.mapId.trim() : undefined,
+    eventId: typeof record.eventId === "string" && record.eventId.trim() ? record.eventId.trim() : undefined,
+    x: typeof record.x === "number" && Number.isFinite(record.x) ? Math.trunc(record.x) : undefined,
+    y: typeof record.y === "number" && Number.isFinite(record.y) ? Math.trunc(record.y) : undefined,
+    name: typeof record.name === "string" && record.name.trim() ? record.name.trim() : undefined,
+  };
+}
+
+function starterMonsterEvent(
+  project: Project,
+  input: { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly name: string; readonly speciesIds: readonly string[] }
+): GameEvent {
+  const options = input.speciesIds.map((speciesId) => {
+    const species = project.database.monsterSpecies?.find((entry) => entry.id === speciesId);
+    return {
+      text: species?.name ?? speciesId,
+      branch: [
+        { kind: "giveMonster", speciesId, level: 5, nickname: species?.name },
+        { kind: "text", body: `${species?.name ?? speciesId}와 함께 여행을 시작합니다.` },
+        { kind: "setSelfSwitch", key: "A", value: true },
+      ] satisfies Command[],
+    };
+  });
+  return {
+    id: input.eventId,
+    x: Math.max(0, input.x),
+    y: Math.max(0, input.y),
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: `${input.eventId}_choose`,
+        name: input.name,
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          {
+            kind: "choices",
+            prompt: "처음 함께할 몬스터를 고르세요.",
+            options,
+            cancelBehavior: "disallow",
+          },
+        ],
+      },
+      {
+        id: `${input.eventId}_claimed`,
+        name: `${input.name} 완료`,
+        conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+        graphic: { transparent: true },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [],
+      },
+    ],
+  };
+}
+
+function uniqueEventId(events: readonly GameEvent[], baseId: string): string {
+  if (!events.some((event) => event.id === baseId)) return baseId;
+  let index = 2;
+  while (events.some((event) => event.id === `${baseId}_${index}`)) index += 1;
+  return `${baseId}_${index}`;
+}
+
 // (프로그램 소비용) 세션 시작에 아이템을 병합하는 헬퍼.
 export function mergeSessionInventory(project: Project, inventory: Record<string, number>): void {
   project.session.inventory = { ...project.session.inventory, ...inventory };
@@ -628,6 +803,8 @@ export const DB_TOOLS: readonly ToolDefinition[] = [
   upsertItem,
   upsertEnemy,
   upsertTroop,
+  defineMonsterSpecies,
+  giveStarterMonsters,
   upsertActor,
   upsertSkill,
   upsertEquipment,

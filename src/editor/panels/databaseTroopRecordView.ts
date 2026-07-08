@@ -261,6 +261,10 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
       rerender();
     }),
+    checkboxField("포획 불가", "db-field-troop-uncapturable", record.uncapturable === true, (uncapturable) => {
+      updateDatabaseRecord("troops", record.id, { uncapturable });
+      rerender();
+    }),
   ]);
 }
 

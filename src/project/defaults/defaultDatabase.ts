@@ -45,6 +45,7 @@ export function defaultDatabase(): ProjectDatabaseRecords {
     terrains: defaultTerrainRecords(),
     battleCommands: defaultBattleCommandRecords(),
     battlerAnimations: defaultBattlerAnimationRecords(),
+    monsterSpecies: battle.monsterSpecies,
   };
 }
 

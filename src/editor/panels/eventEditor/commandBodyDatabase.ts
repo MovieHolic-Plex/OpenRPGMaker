@@ -27,6 +27,11 @@ const PARTY_ACTION_OPTIONS = [
   { value: "remove", label: "파티에서 제거" },
 ] as const;
 
+const MONSTER_MOVE_TARGET_OPTIONS = [
+  { value: "party", label: "파티" },
+  { value: "box", label: "보관함" },
+] as const;
+
 const BATTLE_FLOW_OPTIONS = [
   { value: "inherit", label: "시스템/트룹 설정" },
   { value: "gauge", label: "게이지" },
@@ -266,6 +271,76 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
     el("span", { class: "rich-form-row", children: [actor.root] }),
     el("span", { class: "rich-form-row", children: [action.root] }),
     preview.root
+  );
+  return wrap;
+}
+
+export function giveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "giveMonster" }>): HTMLElement {
+  const project = store.getCurrent();
+  const speciesRecords = project.database.monsterSpecies ?? [];
+  const species = recordPickerWithPreview({
+    records: speciesRecords,
+    selectedId: cmd.speciesId,
+    placeholder: "species 선택",
+    testid: "give-monster-species-select",
+    iconOf: (record) => imageIconOf(project, record.graphic.monsterResourceId),
+    subtitleOf: (record) => `포획률 ${Math.round(record.captureRate * 100)}% · HP ${record.baseStats.maxHp}`,
+  });
+  const level = numberInput(cmd.level, "레벨", "give-monster-level-input");
+  level.min = "1";
+  level.max = "99";
+  const nickname = el("input", {
+    attrs: { type: "text", placeholder: "별명(선택)" },
+    value: cmd.nickname ?? "",
+    dataset: { testid: "give-monster-nickname-input" },
+  }) as HTMLInputElement;
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "giveMonster",
+      speciesId: species.select.value,
+      level: Math.max(1, Math.min(99, parseInt(level.value, 10) || 1)),
+      nickname: nickname.value.trim() || undefined,
+    });
+  };
+  species.select.addEventListener("change", apply);
+  level.addEventListener("change", apply);
+  nickname.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [species.root] }),
+    el("span", { class: "rich-form-row", children: [amountStepper(level, { testidBase: "give-monster-level" }), nickname] })
+  );
+  return wrap;
+}
+
+export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "moveMonster" }>): HTMLElement {
+  const instanceId = el("input", {
+    attrs: { type: "text", placeholder: "monster_1" },
+    value: cmd.instanceId,
+    dataset: { testid: "move-monster-instance-input" },
+  }) as HTMLInputElement;
+  const target = segmentedSelect({
+    options: [
+      { value: "party", label: "파티", key: "party" },
+      { value: "box", label: "보관함", key: "box" },
+    ],
+    value: cmd.to,
+    testid: "move-monster-target-select",
+    ariaLabel: "몬스터 이동 대상",
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "moveMonster",
+      instanceId: instanceId.value.trim(),
+      to: selectedOptionValue(target.select, MONSTER_MOVE_TARGET_OPTIONS, cmd.to),
+    });
+  };
+  instanceId.addEventListener("change", apply);
+  target.select.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [instanceId] }),
+    el("span", { class: "rich-form-row", children: [target.root] })
   );
   return wrap;
 }

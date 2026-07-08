@@ -42,6 +42,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const enemyIds = new Set(project.database.enemies.map((record) => record.id));
   const equipmentIds = new Set(project.database.equipment.map((record) => record.id));
   const troopIds = new Set(project.database.troops.map((record) => record.id));
+  const speciesIds = new Set((project.database.monsterSpecies ?? []).map((record) => record.id));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
   const endingIds = new Set((project.endings ?? []).map((record) => record.id));
@@ -61,6 +62,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     endingIds,
     mapIds,
     troopIds,
+    speciesIds,
     resourceIds,
   };
 
@@ -69,7 +71,8 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateSkillRecords(project, skillIds, animationIds, context, issues);
   validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, issues);
   validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues);
-  validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, issues);
+  validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, speciesIds, issues);
+  validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues);
   validateTroopRecords(project, enemyIds, context, issues);
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
   for (const animation of project.database.battlerAnimations ?? []) check(() => validateBattlerAnimationResources(animation, resourceIds));
@@ -283,9 +286,11 @@ function validateEnemyRecords(
   skillIds: ReadonlySet<string>,
   resourceIds: ReadonlySet<string>,
   switchIds: ReadonlySet<string>,
+  speciesIds: ReadonlySet<string>,
   issues: string[]
 ): void {
   for (const enemy of project.database.enemies) {
+    if (enemy.speciesId && !speciesIds.has(enemy.speciesId)) issues.push(`enemy ${enemy.id}: speciesId does not exist.`);
     collectExistingIdIssues(`enemy ${enemy.id}: skill`, enemy.actions.map((entry) => entry.skillId), skillIds, issues);
     if (enemy.rewards.dropItemId && !itemIds.has(enemy.rewards.dropItemId)) issues.push(`enemy ${enemy.id}: dropItemId does not exist.`);
     for (const action of enemy.actions) {
@@ -294,6 +299,18 @@ function validateEnemyRecords(
       }
     }
     capture(issues, () => validateEnemyResources(enemy, resourceIds));
+  }
+}
+
+function validateMonsterSpeciesRecords(
+  project: Project,
+  skillIds: ReadonlySet<string>,
+  resourceIds: ReadonlySet<string>,
+  issues: string[]
+): void {
+  for (const species of project.database.monsterSpecies ?? []) {
+    collectExistingIdIssues(`monsterSpecies ${species.id}: skill`, (species.skillsByLevel ?? []).map((entry) => entry.skillId), skillIds, issues);
+    capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.monsterResourceId`, species.graphic.monsterResourceId, resourceIds));
   }
 }
 

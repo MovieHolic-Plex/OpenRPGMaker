@@ -11,6 +11,8 @@ export type TroopId = string;
 export type StateId = string;
 export type BattleAnimationId = string;
 export type BattlerAnimationId = string;
+export type MonsterSpeciesId = string;
+export type MonsterInstanceId = string;
 
 export type Dir = "down" | "left" | "right" | "up";
 

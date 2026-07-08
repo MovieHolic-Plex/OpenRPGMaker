@@ -5,6 +5,7 @@ import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeK
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import { moveMonster } from "@/project/monsterCollection";
 import { currentStatusMenu, statusMenuDetailActionButtons, wrapStatusMenuIndex } from "@/player/playerStatusMenuControllerDom";
 import type { PlayerStatusMenuController, PlayerStatusMenuControllerOptions } from "@/player/playerStatusMenuControllerTypes";
 import {
@@ -27,6 +28,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentActorId: string | undefined;
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
+  let monsterView: "party" | "box" = "party";
   let confirmSaveSlot: SaveSlotIndex | undefined;
   let waitModeEnabled = true;
 
@@ -47,6 +49,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentActorId = undefined;
     equipmentSlotId = undefined;
     formationActorId = undefined;
+    monsterView = "party";
     confirmSaveSlot = undefined;
   };
 
@@ -76,6 +79,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentActorId,
       equipmentSlotId,
       formationActorId,
+      monsterView,
       confirmSaveSlot,
       saveEnabled: isSaveEnabled(session),
       waitModeEnabled,
@@ -122,6 +126,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "formation"));
         },
         onMoveFormationActor: moveFormationActor,
+        onToggleMonsterView: toggleMonsterView,
+        onMoveMonster: moveMonsterFromMenu,
         onToggleWait: toggleWaitMode,
         onToTitle: confirmToTitle,
       },
@@ -247,6 +253,22 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     emitMutationResult(result, renderMenu(result.message, "formation"));
   }
 
+  function toggleMonsterView(): void {
+    monsterView = monsterView === "party" ? "box" : "party";
+    options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+  }
+
+  function moveMonsterFromMenu(instanceId: string, to: "party" | "box"): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
+    const result = moveMonster(scene.getSession(), instanceId, to);
+    const message = result.ok
+      ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
+      : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
+    options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+  }
+
   function enterCommand(commandId: StatusMenuCommandId): void {
     selectedCommand = commandId;
     switch (commandId) {
@@ -270,6 +292,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "items":
       case "skills":
       case "equipment":
+      case "monsters":
       case "load":
       case "status":
       case "row":
@@ -342,6 +365,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           formationActorId = undefined;
           return true;
         }
+        return false;
+      case "monsters":
         return false;
       case "load":
       case "quests":
@@ -431,6 +456,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `equipment:${equipmentActorId}:${equipmentSlotId}:choices`;
       case "formation":
         return formationActorId ? "formation:moving" : "formation:list";
+      case "monsters":
+        return `monsters:${monsterView}`;
       case "save":
       case "load":
       case "quests":

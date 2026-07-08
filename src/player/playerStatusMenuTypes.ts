@@ -18,6 +18,8 @@ export type PlayerStatusMenuActions = {
   readonly onToggleRow: (actorId: string) => void;
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
+  readonly onToggleMonsterView: () => void;
+  readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
   readonly onToggleWait: () => void;
   readonly onToTitle: () => void;
 };
@@ -37,6 +39,7 @@ export type PlayerStatusMenuOptions = {
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
+  readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly saveEnabled?: boolean;
   readonly waitModeEnabled?: boolean;

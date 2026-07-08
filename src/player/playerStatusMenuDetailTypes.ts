@@ -36,6 +36,7 @@ export type StatusMenuDetailOptions = {
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
+  readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly saveEnabled?: boolean;
   readonly onSaveSlot?: (slot: SaveSlotIndex) => void;
@@ -51,4 +52,6 @@ export type StatusMenuDetailOptions = {
   readonly onToggleRow?: (actorId: string) => void;
   readonly onSelectFormationActor?: (actorId: string) => void;
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
+  readonly onToggleMonsterView?: () => void;
+  readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
 };
