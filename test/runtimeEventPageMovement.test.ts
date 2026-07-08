@@ -48,7 +48,7 @@ describe("runtime event page movement", () => {
 
     updateAutonomousNPCs(runtimeScene, npcMoveIntervalMs(6));
 
-    expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1 });
+    expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1, direction: "right" });
     expect(scene.autonomousNPCs.get("npc")?.activeMove?.toX).toBe(2);
 
     updateAutonomousNPCs(runtimeScene, npcMoveDurationMs(6));

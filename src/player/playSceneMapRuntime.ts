@@ -16,7 +16,7 @@ import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
-import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
@@ -200,11 +200,12 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     if (!sprite) continue;
     const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, view.page?.graphic.pattern);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
+    const frame = eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     const marker = scene.add.sprite(
       characterSpriteX(view.x),
       characterSpriteY(view.y),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
-      spriteTexture?.frame ?? 0
+      frame
     );
     placeCharacterSprite(marker, view.priority);
     scene.eventSprites.set(event.id, marker);
@@ -243,6 +244,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
       pageId: view.pageId,
       priority: view.priority,
       trigger: view.trigger.kind,
+      direction: view.direction,
     };
   }
   scene.runtimeDom.syncRuntimeState({

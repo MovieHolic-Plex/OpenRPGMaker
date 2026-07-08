@@ -1,6 +1,7 @@
 import { resolveEventPage } from "@/project/io";
 import type {
   AssetRef,
+  Dir,
   EventAnimationType,
   EventPage,
   EventPageMovement,
@@ -21,6 +22,7 @@ const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
 export interface RuntimeEventPosition {
   readonly x: number;
   readonly y: number;
+  readonly direction?: Dir;
 }
 
 export type RuntimeEventPositions = Record<string, RuntimeEventPosition>;
@@ -38,6 +40,8 @@ export interface RuntimeEventView {
   readonly animationType: EventAnimationType;
   readonly movement: EventPageMovement;
   readonly sprite: AssetRef | undefined;
+  readonly direction: Dir | undefined;
+  readonly runtimeDirection: Dir | undefined;
 }
 
 export function initialRuntimeEventPositions(events: readonly GameEvent[]): RuntimeEventPositions {
@@ -52,9 +56,20 @@ export function moveRuntimeEventPosition(
   positions: RuntimeEventPositions,
   eventId: string,
   x: number,
-  y: number
+  y: number,
+  direction?: Dir
 ): void {
-  positions[eventId] = { x, y };
+  positions[eventId] = { x, y, direction: direction ?? positions[eventId]?.direction };
+}
+
+export function setRuntimeEventPositionDirection(
+  positions: RuntimeEventPositions,
+  eventId: string,
+  direction: Dir
+): void {
+  const position = positions[eventId];
+  if (!position) return;
+  positions[eventId] = { ...position, direction };
 }
 
 export function runtimeEventView(
@@ -64,7 +79,9 @@ export function runtimeEventView(
 ): RuntimeEventView {
   const page = resolveEventPage(event, session);
   const location = session.eventLocations?.[event.id];
-  const position = location ? { x: location.x, y: location.y } : positions[event.id] ?? { x: event.x, y: event.y };
+  const runtimePosition = positions[event.id];
+  const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
+  const runtimeDirection = location?.direction ?? runtimePosition?.direction;
   const transparent = page?.graphic.transparent === true;
   return {
     event,
@@ -79,6 +96,8 @@ export function runtimeEventView(
     animationType: page?.animationType ?? "normal",
     movement: page?.movement ?? legacyMovement(event),
     sprite: transparent ? undefined : page?.graphic.sprite ?? event.sprite,
+    direction: runtimeDirection ?? page?.graphic.direction,
+    runtimeDirection,
   };
 }
 

@@ -47,6 +47,7 @@ export interface RuntimeEventSnapshot {
   readonly pageId?: string;
   readonly priority: string;
   readonly trigger: string;
+  readonly direction?: string;
 }
 
 export interface RuntimeStateSnapshot {

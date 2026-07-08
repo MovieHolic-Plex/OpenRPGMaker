@@ -19,7 +19,7 @@ export function calculatePlaySurfaceScale(
   const safeViewportH = nonNegativeFinite(viewportH);
   const safeLogicalW = positiveFiniteOr(logicalW, PLAY_RESOLUTION.width);
   const safeLogicalH = positiveFiniteOr(logicalH, PLAY_RESOLUTION.height);
-  return Math.max(1, Math.ceil(safeViewportW / safeLogicalW), Math.ceil(safeViewportH / safeLogicalH));
+  return Math.max(1, Math.floor(Math.min(safeViewportW / safeLogicalW, safeViewportH / safeLogicalH)));
 }
 
 export function calculatePlaySurfaceCropMetrics(

@@ -91,7 +91,7 @@ function moveAutonomousRuntimePosition(
     scene.session.eventLocations[eventId] = { ...location, x, y, direction };
     return;
   }
-  moveRuntimeEventPosition(scene.eventPositions, eventId, x, y);
+  moveRuntimeEventPosition(scene.eventPositions, eventId, x, y, direction);
 }
 
 function fireEventTouch(scene: AutonomousNpcSceneContext, eventId: string, triggerKind: string): void {

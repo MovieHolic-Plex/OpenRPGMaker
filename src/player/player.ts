@@ -25,6 +25,7 @@ import {
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import { renderTitleScreen } from "@/player/titleScreen";
+import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 
 let teardownShell: (() => void) | null = null;
 
@@ -52,6 +53,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
   const layout = el("div", { class: "player-layout system-shell" });
+  const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   main.append(layout);
 
   const stopGame = (): void => {
@@ -299,6 +301,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   document.addEventListener("keydown", onKeyDown);
   teardownShell = () => {
     document.removeEventListener("keydown", onKeyDown);
+    cleanupPointerBlocker();
     stopGame();
     clearChildren(layout);
   };

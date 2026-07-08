@@ -3,12 +3,17 @@ import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import { applyFacing } from "@/player/playSceneAutonomousCommands";
+import { facingForDelta } from "@/player/playSceneAutonomousRouteDirection";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
 import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
-import { findBlockingRuntimeEventAtInMap, findRuntimeEventAtInMap } from "@/player/runtimeEventState";
+import {
+  findBlockingRuntimeEventAtInMap,
+  findRuntimeEventAtInMap,
+  setRuntimeEventPositionDirection,
+} from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { EventAnimationType } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
@@ -245,9 +250,9 @@ export function handleAction(scene: ActionEventSceneContext): void {
 function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): void {
   if (!canActionTurn(event.animationType)) return;
   const direction = directionTowardPlayer(scene, event);
-  if (!direction) return;
   const mover = scene.autonomousNPCs.get(event.event.id);
   const frameDirection = mover ? applyFacing(mover, direction) : direction;
+  setActionEventRuntimeDirection(scene, event, frameDirection);
   setNpcIdleFrame(
     scene.eventSprites.get(event.event.id),
     event.page?.graphic.pattern ?? 0,
@@ -258,6 +263,8 @@ function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: Runt
 }
 
 function canActionTurn(animationType: EventAnimationType): boolean {
+  // 스펙 확인: 페이지 graphic에는 별도 directionFix 필드가 없고, 고정 방향은
+  // fixedDirection 계열 animationType 및 Move Route의 setDirectionFix(mover.directionFix)로 표현된다.
   switch (animationType) {
     case "normal":
     case "step":
@@ -272,12 +279,21 @@ function canActionTurn(animationType: EventAnimationType): boolean {
   }
 }
 
-function directionTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): Dir | null {
-  const dx = scene.tileX - event.x;
-  const dy = scene.tileY - event.y;
-  if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) return dx > 0 ? "right" : "left";
-  if (dy !== 0) return dy > 0 ? "down" : "up";
-  return null;
+function directionTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): Dir {
+  return facingForDelta(scene.tileX - event.x, scene.tileY - event.y, event.direction ?? "down");
+}
+
+function setActionEventRuntimeDirection(
+  scene: ActionEventSceneContext,
+  event: RuntimeEventView,
+  direction: Dir
+): void {
+  const location = scene.session.eventLocations?.[event.event.id];
+  if (location?.mapId === scene.session.currentMapId) {
+    scene.session.eventLocations[event.event.id] = { ...location, direction };
+    return;
+  }
+  setRuntimeEventPositionDirection(scene.eventPositions, event.event.id, direction);
 }
 
 function fireTouchTriggers(scene: PlaySceneContext): void {

@@ -1,5 +1,7 @@
 import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
 import type { Project } from "@/project/types";
+import type { Dir } from "@/player/input";
+import { charsetIdleFrameIndex, isEasyRpgCharsetTextureKey } from "@/player/charsetMotion";
 
 export type EventSpriteTexture = {
   readonly texture: string;
@@ -26,6 +28,17 @@ export function resolveEventSpriteTexture(
     (sprite) => sprite.image.type === "bundled" && sprite.image.id === spriteId
   );
   return bundledSprite ? { texture: spriteId, frame } : null;
+}
+
+export function eventSpriteFrameForDirection(
+  texture: EventSpriteTexture | null,
+  direction: Dir | undefined
+): string | number | undefined {
+  if (!texture) return undefined;
+  if (!direction) return texture.frame;
+  if (typeof texture.frame !== "number") return texture.frame;
+  if (!isEasyRpgCharsetTextureKey(texture.texture)) return texture.frame;
+  return charsetIdleFrameIndex(texture.frame, direction);
 }
 
 function isSpriteLikeUpload(kind: string | undefined): boolean {

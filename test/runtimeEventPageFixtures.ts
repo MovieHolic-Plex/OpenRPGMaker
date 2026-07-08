@@ -168,7 +168,11 @@ export function renderSceneWith(overrides: Partial<EventPage>): Parameters<typeo
     missingResources: new Set(),
     add: {
       image: () => mockTileImage(),
-      sprite: (x, y) => mockSprite(x, y),
+      sprite: (x, y, texture, frame) => {
+        const sprite = mockSprite(x, y, texture);
+        if (frame !== undefined) sprite.frame = frame;
+        return sprite;
+      },
     },
     runEvent: async () => undefined,
     syncRuntimeState: () => undefined,
