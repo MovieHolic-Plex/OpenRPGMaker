@@ -28,6 +28,10 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     assert(requireArray(`map ${id}.upperTiles`, map.upperTiles).length === expected, `map ${id}: upperTiles 길이 불일치.`);
     if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
     if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
+    if (map.encounterRate !== undefined) requireNumber(`map ${id}.encounterRate`, map.encounterRate);
+    if (map.troopIds !== undefined) validateIdArray(`map ${id}.troopIds`, map.troopIds);
+    if (map.encounterTable !== undefined) validateEncounterTable(`map ${id}.encounterTable`, map.encounterTable);
+    if (map.fieldSpawns !== undefined) validateFieldSpawns(`map ${id}.fieldSpawns`, map.fieldSpawns);
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
@@ -37,13 +41,81 @@ export function validateMaps(value: unknown): Record<string, unknown> {
   return maps;
 }
 
+function validateEncounterTable(label: string, value: unknown): void {
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    requireString(`${label}[${index}].troopId`, entry.troopId);
+    const weight = requireNumber(`${label}[${index}].weight`, entry.weight);
+    assert(Number.isInteger(weight) && weight > 0, `${label}[${index}].weight는 1 이상의 정수여야 합니다.`);
+    if (entry.conditions !== undefined) validateEncounterConditions(`${label}[${index}].conditions`, entry.conditions);
+  }
+}
+
+function validateEncounterConditions(label: string, value: unknown): void {
+  const conditions = requireRecord(label, value);
+  if (conditions.switchId !== undefined) requireString(`${label}.switchId`, conditions.switchId);
+  if (conditions.variableId !== undefined) {
+    requireString(`${label}.variableId`, conditions.variableId);
+    requireNumber(`${label}.atLeast`, conditions.atLeast);
+  } else if (conditions.atLeast !== undefined) {
+    requireNumber(`${label}.atLeast`, conditions.atLeast);
+  }
+  if (conditions.minPartyLevel !== undefined) requireNumber(`${label}.minPartyLevel`, conditions.minPartyLevel);
+  if (conditions.maxPartyLevel !== undefined) requireNumber(`${label}.maxPartyLevel`, conditions.maxPartyLevel);
+  if (conditions.region !== undefined) validateRect(`${label}.region`, conditions.region);
+}
+
+function validateFieldSpawns(label: string, value: unknown): void {
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    requireString(`${label}[${index}].id`, entry.id);
+    requireString(`${label}[${index}].troopId`, entry.troopId);
+    validateRect(`${label}[${index}].area`, entry.area);
+    if (entry.maxAlive !== undefined) {
+      const maxAlive = requireNumber(`${label}[${index}].maxAlive`, entry.maxAlive);
+      assert(Number.isInteger(maxAlive) && maxAlive > 0, `${label}[${index}].maxAlive는 1 이상의 정수여야 합니다.`);
+    }
+    if (entry.respawnSec !== undefined) {
+      const respawnSec = requireNumber(`${label}[${index}].respawnSec`, entry.respawnSec);
+      assert(respawnSec >= 0, `${label}[${index}].respawnSec는 0 이상이어야 합니다.`);
+    }
+    if (entry.chase !== undefined) requireBoolean(`${label}[${index}].chase`, entry.chase);
+    if (entry.graphic !== undefined) validateEventGraphic(`${label}[${index}].graphic`, entry.graphic);
+  }
+}
+
 function validateSafeZones(label: string, value: unknown): void {
   for (const [index, rectValue] of requireArray(label, value).entries()) {
-    const rect = requireRecord(`${label}[${index}]`, rectValue);
-    requireNumber(`${label}[${index}].x`, rect.x);
-    requireNumber(`${label}[${index}].y`, rect.y);
-    requireNumber(`${label}[${index}].w`, rect.w);
-    requireNumber(`${label}[${index}].h`, rect.h);
+    validateRect(`${label}[${index}]`, rectValue);
+  }
+}
+
+function validateRect(label: string, value: unknown): void {
+  const rect = requireRecord(label, value);
+  requireNumber(`${label}.x`, rect.x);
+  requireNumber(`${label}.y`, rect.y);
+  requireNumber(`${label}.w`, rect.w);
+  requireNumber(`${label}.h`, rect.h);
+}
+
+function validateEventGraphic(label: string, value: unknown): void {
+  const graphic = requireRecord(label, value);
+  if (graphic.sprite !== undefined) {
+    const sprite = requireRecord(`${label}.sprite`, graphic.sprite);
+    requireString(`${label}.sprite.type`, sprite.type);
+    requireString(`${label}.sprite.id`, sprite.id);
+  }
+  if (graphic.direction !== undefined) {
+    const direction = requireString(`${label}.direction`, graphic.direction);
+    assert(direction === "left" || direction === "right" || direction === "up" || direction === "down", `${label}.direction이 잘못되었습니다.`);
+  }
+  if (graphic.pattern !== undefined) requireNumber(`${label}.pattern`, graphic.pattern);
+  if (graphic.transparent !== undefined) requireBoolean(`${label}.transparent`, graphic.transparent);
+}
+
+function validateIdArray(label: string, value: unknown): void {
+  for (const [index, id] of requireArray(label, value).entries()) {
+    requireString(`${label}[${index}]`, id);
   }
 }
 

@@ -249,6 +249,8 @@ function mapMetadataChanged(before: GameMap, after: GameMap): boolean {
     before.tilesetId !== after.tilesetId ||
     before.tileSize !== after.tileSize ||
     before.encounterRate !== after.encounterRate ||
-    JSON.stringify(before.troopIds ?? []) !== JSON.stringify(after.troopIds ?? [])
+    JSON.stringify(before.troopIds ?? []) !== JSON.stringify(after.troopIds ?? []) ||
+    JSON.stringify(before.encounterTable ?? []) !== JSON.stringify(after.encounterTable ?? []) ||
+    JSON.stringify(before.fieldSpawns ?? []) !== JSON.stringify(after.fieldSpawns ?? [])
   );
 }

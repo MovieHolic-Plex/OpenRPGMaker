@@ -1,7 +1,9 @@
-import { resizeMap, renameMap, setMapTileset, setStartMap, setStartPos } from "@/editor/actions";
+import { resizeMap, renameMap, setMapEncounterTable, setMapFieldSpawns, setMapTileset, setStartMap, setStartPos } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
+import type { EncounterTableEntry, FieldSpawnDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 export function renderMapProps(container: HTMLElement): void {
   clearChildren(container);
@@ -87,6 +89,26 @@ export function renderMapProps(container: HTMLElement): void {
   sizeRow.append(sizeLine);
   section.append(sizeRow);
 
+  section.append(jsonArrayField(
+    "인카운터 테이블",
+    "map-encounter-table-input",
+    map.encounterTable ?? [],
+    (entries) => {
+      setMapEncounterTable(map.id, entries as EncounterTableEntry[]);
+      renderMapProps(container);
+    }
+  ));
+
+  section.append(jsonArrayField(
+    "필드 스폰",
+    "map-field-spawns-input",
+    map.fieldSpawns ?? [],
+    (entries) => {
+      setMapFieldSpawns(map.id, entries as FieldSpawnDef[]);
+      renderMapProps(container);
+    }
+  ));
+
   section.append(
     el("button", {
       class: "btn",
@@ -104,4 +126,39 @@ export function renderMapProps(container: HTMLElement): void {
   );
 
   container.append(section);
+}
+
+function jsonArrayField(
+  label: string,
+  testid: string,
+  value: readonly unknown[],
+  onApply: (entries: unknown[]) => void
+): HTMLElement {
+  const row = el("div", { class: "field" });
+  row.append(el("label", { text: label }));
+  const textarea = el("textarea", {
+    value: JSON.stringify(value, null, 2),
+    attrs: { rows: "6", spellcheck: "false" },
+    dataset: { testid },
+  }) as HTMLTextAreaElement;
+  const button = el("button", {
+    class: "btn",
+    text: "적용",
+    dataset: { testid: `${testid}-apply` },
+    on: {
+      click: () => {
+        try {
+          const parsed = JSON.parse(textarea.value) as unknown;
+          if (!Array.isArray(parsed)) throw new Error("배열 JSON이 필요합니다.");
+          onApply(parsed);
+        } catch (error) {
+          toast(error instanceof Error ? error.message : "JSON을 해석할 수 없습니다.", "error");
+        }
+      },
+    },
+  });
+  const stack = el("div", { class: "map-json-field" });
+  stack.append(textarea, button);
+  row.append(stack);
+  return row;
 }

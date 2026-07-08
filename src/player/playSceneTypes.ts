@@ -9,6 +9,7 @@ import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, Tran
 import type { PlaySession } from "@/project/session";
 import type { LightingAmbientTransition } from "@/player/lighting";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
+import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
   down: 0,
@@ -115,6 +116,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   playerRoute: PlayerRouteState | null;
   autonomousNPCs: Map<string, AutonomousMover>;
   runtimeTimers: Map<string, RuntimeTimer>;
+  fieldSpawnState: FieldSpawnRuntimeState | null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature: string;
@@ -174,6 +176,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateParallelEvents(deltaMs: number): void;
   updateAutonomousNPCs(deltaMs: number): void;
   updateTimers(deltaMs: number): void;
+  updateFieldSpawns(deltaMs: number): void;
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
   showGameOverScreen(message?: string): void;

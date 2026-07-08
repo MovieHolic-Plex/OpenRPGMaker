@@ -65,6 +65,8 @@ import { installLightingLayer, syncLightingLayer, updateLighting } from "@/playe
 import type { LightingAmbientTransition } from "@/player/lighting";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
+import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
+import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -102,6 +104,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   playerRoute: PlayerRouteState | null = null;
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
+  fieldSpawnState: FieldSpawnRuntimeState | null = null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature = "";
@@ -272,6 +275,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   updateTimers(deltaMs: number): void {
     updateSceneTimers(this, deltaMs);
+  }
+
+  updateFieldSpawns(deltaMs: number): void {
+    updateFieldSpawnsForScene(this, deltaMs);
   }
 
   transferTo(request: TransferRequest): Promise<void> {

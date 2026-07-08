@@ -21,6 +21,7 @@ import type {
   CommonEvent,
   Condition,
   ConditionV1,
+  EventPageGraphic,
   GameEvent,
   Trigger,
   LightingState,
@@ -42,10 +43,39 @@ export interface GameMap {
   encounterRate?: number;
   // 인카운트로 등장할 적 그룹 목록. encounterRate > 0 일 때만 사용.
   troopIds?: TroopId[];
+  // 조건/가중치 기반 인카운트 테이블. 있으면 troopIds보다 우선한다.
+  encounterTable?: EncounterTableEntry[];
+  // 필드 몬스터 스폰 정의. 런타임 생존/리스폰 상태는 세이브하지 않고 맵 로드 때 초기화한다.
+  fieldSpawns?: FieldSpawnDef[];
   // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
   safeZones?: Rect[];
   // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.
   defaultLighting?: LightingState;
+}
+
+export interface EncounterTableEntry {
+  troopId: TroopId;
+  weight: number;
+  conditions?: EncounterConditions;
+}
+
+export interface EncounterConditions {
+  switchId?: string;
+  variableId?: string;
+  atLeast?: number;
+  minPartyLevel?: number;
+  maxPartyLevel?: number;
+  region?: Rect;
+}
+
+export interface FieldSpawnDef {
+  id: string;
+  troopId: TroopId;
+  area: Rect;
+  maxAlive?: number;
+  respawnSec?: number;
+  graphic?: EventPageGraphic;
+  chase?: boolean;
 }
 
 export interface Rect {

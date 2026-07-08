@@ -18,7 +18,7 @@ import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import type { SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
-import type { GameMap, PaletteSlotRole, Project, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, TilesetDef } from "@/project/types";
 import {
   floodFillCells,
   inMapBounds,
@@ -728,6 +728,174 @@ const setTilePassability: ToolDefinition = {
   },
 };
 
+const rectSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    x: { type: "integer" },
+    y: { type: "integer" },
+    w: { type: "integer" },
+    h: { type: "integer" },
+  },
+  required: ["x", "y", "w", "h"],
+};
+
+const encounterConditionsSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    switchId: { type: "string" },
+    variableId: { type: "string" },
+    atLeast: { type: "integer" },
+    minPartyLevel: { type: "integer" },
+    maxPartyLevel: { type: "integer" },
+    region: rectSchema,
+  },
+};
+
+const encounterEntrySchema: JsonSchema = {
+  type: "object",
+  properties: {
+    troopId: { type: "string" },
+    weight: { type: "integer" },
+    conditions: encounterConditionsSchema,
+  },
+  required: ["troopId", "weight"],
+};
+
+const fieldGraphicSchema: JsonSchema = {
+  type: "object",
+  description: "EventPageGraphic 형태. 예: {sprite:{type:'uploaded',id:'...'},direction:'down',pattern:0}",
+  additionalProperties: true,
+};
+
+function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): EncounterTableEntry[] {
+  if (!Array.isArray(value)) throw new ToolError("entries는 배열이어야 합니다.", { code: "invalid-entries", mapId: map.id });
+  return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
+}
+
+function parseEncounterEntry(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry {
+  const entry = requireRecordValue(value, label);
+  const troopId = stringField(entry, "troopId", label);
+  assertKnownTroop(draft, troopId);
+  const weight = integerField(entry, "weight", label);
+  if (weight <= 0) throw new ToolError(`${label}.weight는 1 이상이어야 합니다.`, { code: "invalid-weight", mapId: map.id });
+  const conditions = entry.conditions === undefined ? undefined : parseEncounterConditions(draft, map, entry.conditions, `${label}.conditions`);
+  return conditions ? { troopId, weight, conditions } : { troopId, weight };
+}
+
+function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry["conditions"] {
+  const input = requireRecordValue(value, label);
+  const conditions: NonNullable<EncounterTableEntry["conditions"]> = {};
+  if (input.switchId !== undefined) {
+    conditions.switchId = stringField(input, "switchId", label);
+    if (!draft.switches.some((sw) => sw.id === conditions.switchId)) {
+      throw new ToolError(`${label}.switchId가 존재하지 않습니다: ${conditions.switchId}`, { code: "switch-not-found", mapId: map.id });
+    }
+  }
+  if (input.variableId !== undefined) {
+    conditions.variableId = stringField(input, "variableId", label);
+    if (!draft.variables.some((variable) => variable.id === conditions.variableId)) {
+      throw new ToolError(`${label}.variableId가 존재하지 않습니다: ${conditions.variableId}`, { code: "variable-not-found", mapId: map.id });
+    }
+    conditions.atLeast = integerField(input, "atLeast", label);
+  }
+  if (input.minPartyLevel !== undefined) conditions.minPartyLevel = integerField(input, "minPartyLevel", label);
+  if (input.maxPartyLevel !== undefined) conditions.maxPartyLevel = integerField(input, "maxPartyLevel", label);
+  if (conditions.minPartyLevel !== undefined && conditions.maxPartyLevel !== undefined && conditions.minPartyLevel > conditions.maxPartyLevel) {
+    throw new ToolError(`${label}: minPartyLevel이 maxPartyLevel보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
+  }
+  if (input.region !== undefined) conditions.region = parseRect(input.region, `${label}.region`, map);
+  return conditions;
+}
+
+function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: string): FieldSpawnDef {
+  const input = requireRecordValue(value, label);
+  const id = stringField(input, "id", label).trim();
+  if (!id) throw new ToolError(`${label}.id는 비울 수 없습니다.`, { code: "invalid-spawn-id", mapId: map.id });
+  const troopId = stringField(input, "troopId", label);
+  assertKnownTroop(draft, troopId);
+  const spawn: FieldSpawnDef = {
+    id,
+    troopId,
+    area: parseRect(input.area, `${label}.area`, map),
+  };
+  if (input.maxAlive !== undefined) {
+    const maxAlive = integerField(input, "maxAlive", label);
+    if (maxAlive <= 0) throw new ToolError(`${label}.maxAlive는 1 이상이어야 합니다.`, { code: "invalid-max-alive", mapId: map.id });
+    spawn.maxAlive = maxAlive;
+  }
+  if (input.respawnSec !== undefined) {
+    const respawnSec = numberField(input, "respawnSec", label);
+    if (respawnSec < 0) throw new ToolError(`${label}.respawnSec는 0 이상이어야 합니다.`, { code: "invalid-respawn", mapId: map.id });
+    spawn.respawnSec = respawnSec;
+  }
+  if (input.chase !== undefined) spawn.chase = booleanField(input, "chase", label);
+  if (input.graphic !== undefined) spawn.graphic = structuredClone(input.graphic) as FieldSpawnDef["graphic"];
+  return spawn;
+}
+
+function parseRect(value: unknown, label: string, map: GameMap): Rect {
+  const input = requireRecordValue(value, label);
+  const rect = {
+    x: integerField(input, "x", label),
+    y: integerField(input, "y", label),
+    w: integerField(input, "w", label),
+    h: integerField(input, "h", label),
+  };
+  if (rect.w <= 0 || rect.h <= 0) throw new ToolError(`${label}.w/h는 1 이상이어야 합니다.`, { code: "invalid-rect", mapId: map.id });
+  if (rect.x < 0 || rect.y < 0 || rect.x + rect.w > map.width || rect.y + rect.h > map.height) {
+    throw new ToolError(`${label}가 맵 범위를 벗어납니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}`, { code: "rect-out-of-bounds", mapId: map.id });
+  }
+  return rect;
+}
+
+function assertKnownTroop(project: Project, troopId: string): void {
+  if (!project.database.troops.some((troop) => troop.id === troopId)) {
+    throw new ToolError(`존재하지 않는 트룹 id: ${troopId} — get_database_records(troops)로 확인하세요.`, { code: "troop-not-found" });
+  }
+}
+
+function requireRecordValue(value: unknown, label: string): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError(`${label}는 객체여야 합니다.`, { code: "invalid-object" });
+  }
+  return value as Record<string, unknown>;
+}
+
+function stringField(record: Record<string, unknown>, key: string, label: string): string {
+  const value = record[key];
+  if (typeof value !== "string") throw new ToolError(`${label}.${key}는 문자열이어야 합니다.`, { code: "invalid-field" });
+  return value;
+}
+
+function numberField(record: Record<string, unknown>, key: string, label: string): number {
+  const value = record[key];
+  if (typeof value !== "number" || !Number.isFinite(value)) throw new ToolError(`${label}.${key}는 숫자여야 합니다.`, { code: "invalid-field" });
+  return value;
+}
+
+function integerField(record: Record<string, unknown>, key: string, label: string): number {
+  const value = numberField(record, key, label);
+  if (!Number.isInteger(value)) throw new ToolError(`${label}.${key}는 정수여야 합니다.`, { code: "invalid-field" });
+  return value;
+}
+
+function booleanField(record: Record<string, unknown>, key: string, label: string): boolean {
+  const value = record[key];
+  if (typeof value !== "boolean") throw new ToolError(`${label}.${key}는 boolean이어야 합니다.`, { code: "invalid-field" });
+  return value;
+}
+
+function nextFieldSpawnId(map: GameMap, troopId: string): string {
+  const base = `hunt_${troopId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+  const used = new Set((map.fieldSpawns ?? []).map((spawn) => spawn.id));
+  if (!used.has(base)) return base;
+  for (let index = 2; index < 1000; index += 1) {
+    const id = `${base}_${index}`;
+    if (!used.has(id)) return id;
+  }
+  throw new ToolError(`스폰 id를 만들 수 없습니다: ${base}`, { code: "spawn-id-exhausted", mapId: map.id });
+}
+
 // 맵 속성(이름/인카운트) 설정. 크기 변경은 resize_map으로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
@@ -767,6 +935,75 @@ const setMapProperties: ToolDefinition = {
     }
     if (changed.length === 0) throw new ToolError("바꿀 속성이 없습니다(name/encounterRate/troopIds 중 하나 이상).");
     return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id } };
+  },
+};
+
+const setEncounterTable: ToolDefinition = {
+  name: "set_encounter_table",
+  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      entries: { type: "array", items: encounterEntrySchema },
+    },
+    required: ["mapId", "entries"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const entries = parseEncounterEntries(draft, map, args.entries);
+    if (entries.length > 0) map.encounterTable = entries;
+    else delete map.encounterTable;
+    return {
+      summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정`,
+      data: { mapId: map.id, entries },
+    };
+  },
+};
+
+const makeHuntingGround: ToolDefinition = {
+  name: "make_hunting_ground",
+  description: "사냥터 구획을 만든다. fieldSpawns 항목을 추가하고, encounterEntries가 있으면 encounterTable로 설정한다(없으면 area region의 단일 인카운터를 설정).",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      area: rectSchema,
+      troopId: { type: "string" },
+      maxAlive: { type: "integer" },
+      respawnSec: { type: "integer" },
+      chase: { type: "boolean" },
+      graphic: fieldGraphicSchema,
+      encounterEntries: { type: "array", items: encounterEntrySchema },
+    },
+    required: ["mapId", "area", "troopId"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const troopId = args.troopId as string;
+    assertKnownTroop(draft, troopId);
+    const area = parseRect(args.area, "area", map);
+    const spawn = parseFieldSpawn(draft, map, {
+      id: nextFieldSpawnId(map, troopId),
+      troopId,
+      area,
+      ...(args.maxAlive !== undefined ? { maxAlive: args.maxAlive } : {}),
+      ...(args.respawnSec !== undefined ? { respawnSec: args.respawnSec } : {}),
+      chase: args.chase === true,
+      ...(args.graphic !== undefined ? { graphic: args.graphic } : {}),
+    }, "fieldSpawn");
+    map.fieldSpawns = [...(map.fieldSpawns ?? []), spawn];
+    const entries = args.encounterEntries !== undefined
+      ? parseEncounterEntries(draft, map, args.encounterEntries)
+      : [{ troopId, weight: 1, conditions: { region: area } }];
+    if (entries.length > 0) map.encounterTable = entries;
+    else delete map.encounterTable;
+    return {
+      summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개`,
+      data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries },
+    };
   },
 };
 
@@ -857,7 +1094,7 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, resizeMapTool, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, resizeMapTool, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };

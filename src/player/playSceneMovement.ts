@@ -20,6 +20,8 @@ import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/player/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -62,6 +64,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.updateParallelEvents(deltaMs);
   }
   scene.updateTimers(deltaMs);
+  scene.updateFieldSpawns(deltaMs);
   scene.syncRuntimeState();
 }
 
@@ -325,6 +328,10 @@ function findBlockingRuntimeEventInScene(
 }
 
 function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: string): void {
+  if (isFieldSpawnEventId(eventId) && triggerKind === "eventTouch") {
+    void scene.runEvent(eventId);
+    return;
+  }
   if (triggerKind === "touch" || triggerKind === "playerTouch") void scene.runEvent(eventId);
 }
 
@@ -356,8 +363,12 @@ function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
   const map = scene.map;
   const rate = map.encounterRate ?? 0;
-  const troops = map.troopIds;
-  if (rate <= 0 || !troops || troops.length === 0) return;
+  if (rate <= 0) return;
+  const position = { x: scene.tileX, y: scene.tileY };
+  const hasCandidates = map.encounterTable && map.encounterTable.length > 0
+    ? eligibleEncounterEntries(map, scene.session, position).length > 0
+    : (map.troopIds?.length ?? 0) > 0;
+  if (!hasCandidates) return;
   encounterStepCounter += 1;
   encounterAccumulator += rate;
   // 누적 가중치가 임계(1000)를 넘으면 인카운트 발생. 매 스텝마다 rate가 쌓여
@@ -365,7 +376,7 @@ function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (!rollRandomEncounter(scene.session, encounterAccumulator)) return;
   encounterStepCounter = 0;
   encounterAccumulator = 0;
-  const troopId = pickRandomEncounterTroop(scene.session, troops);
+  const troopId = pickEncounterTroopForMap(map, scene.session, position);
   if (!troopId) return;
   // 전투 시작(비동기). scene.running 가드로 재진입 방지.
   void scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });

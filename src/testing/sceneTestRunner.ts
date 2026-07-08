@@ -1,4 +1,5 @@
 import { canMove } from "@/project/collision";
+import { createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
 import {
@@ -6,11 +7,14 @@ import {
   erasePictureState,
   getSwitch,
   getVariable,
+  nextSessionRandom,
   setAudioState,
   showPictureState,
   startSession,
   type PlaySession,
 } from "@/project/session";
+import { syncActorVitals } from "@/project/sessionVitals";
+import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import type { Dir, GameMap, Project } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
@@ -42,6 +46,16 @@ import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import {
+  advanceFieldSpawns,
+  createFieldSpawnRuntime,
+  fieldSpawnAliveCount,
+  fieldSpawnTroopId,
+  isFieldSpawnEventId,
+  resolveFieldSpawnVictory,
+  syncFieldSpawnEventsIntoMap,
+  type FieldSpawnRuntimeState,
+} from "@/player/fieldSpawns";
 
 const TICK_MS = 16;
 
@@ -70,6 +84,7 @@ export type SceneExpectStep = {
   lightCount?: number;
   weatherKind?: "none" | "rain" | "storm" | "snow" | "fog";
   animationPlaying?: boolean;
+  fieldSpawnCount?: number;
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
@@ -101,6 +116,7 @@ export interface SceneTestResult {
     readonly lightCount: number;
     readonly weatherKind: "none" | "rain" | "storm" | "snow" | "fog";
     readonly animationPlaying: boolean;
+    readonly fieldSpawnCount: number;
     readonly spawnedCount: number;
     readonly followerCount: number;
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
@@ -142,8 +158,10 @@ interface CameraModel {
 
 interface RunnerState {
   readonly project: Project;
+  readonly runtimeMaps: Record<string, GameMap>;
   session: PlaySession;
   eventPositions: RuntimeEventPositions;
+  fieldSpawnState: FieldSpawnRuntimeState | null;
   readonly log: string[];
   camera: CameraModel;
   lightingClockMs: number;
@@ -159,11 +177,12 @@ interface RunnerState {
 }
 
 export function runSceneTest(project: Project, input: SceneTestInput): SceneTestResult {
-  const session = startSession(project);
-  const map = project.maps[input.mapId];
+  const session = startSession(project, 1);
+  const runtimeMaps = structuredClone(project.maps);
+  const map = runtimeMaps[input.mapId];
   const log: string[] = [];
   if (!map) {
-    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, false, false);
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), log, input.steps, 0, input.steps[0], `맵 없음: ${input.mapId}`, null, false, false);
   }
   session.currentMapId = input.mapId;
   session.x = input.start.x;
@@ -171,8 +190,10 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   applyMapDefaultLighting(session, map);
   const state: RunnerState = {
     project,
+    runtimeMaps,
     session,
-    eventPositions: emptyEventPositions(project),
+    eventPositions: emptyEventPositionsFromMaps(runtimeMaps),
+    fieldSpawnState: null,
     log,
     camera: emptyCamera(session),
     lightingClockMs: 0,
@@ -186,11 +207,12 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     held: null,
     runtimeFailure: null,
   };
+  initializeFieldSpawnsForRunner(state);
   syncFollowCamera(state);
   refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.gameOver, state.activeAnimations.length > 0);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
@@ -202,11 +224,11 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.gameOver, state.activeAnimations.length > 0);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.gameOver, state.activeAnimations.length > 0);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -245,6 +267,9 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   }
   const blocking = findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y);
   if (blocking) {
+    if (isFieldSpawnEventId(blocking.event.id) && blocking.trigger.kind === "eventTouch") {
+      return runEventView(state, blocking);
+    }
     if (blocking.trigger.kind === "touch" || blocking.trigger.kind === "playerTouch") {
       return runEventView(state, blocking);
     }
@@ -301,7 +326,9 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
   state.session = restored;
   state.gameOver = false;
   state.held = null;
-  state.eventPositions = emptyEventPositions(state.project);
+  resetRuntimeMapForRunner(state, state.session.currentMapId);
+  state.eventPositions = emptyEventPositionsFromMaps(state.runtimeMaps);
+  initializeFieldSpawnsForRunner(state);
   state.camera = emptyCamera(state.session);
   refreshChasers(state);
   syncFollowCamera(state);
@@ -318,6 +345,7 @@ function runChooseStep(state: RunnerState, index: number): string | null {
 }
 
 function runEventView(state: RunnerState, view: RuntimeEventView): string | null {
+  if (isFieldSpawnEventId(view.event.id)) return runFieldSpawnBattleForRunner(state, view.event.id);
   const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
   if (commands.length === 0) {
     state.held = null;
@@ -368,7 +396,8 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         state.session.x = step.x;
         state.session.y = step.y;
         {
-          const targetMap = state.project.maps[step.mapId];
+          resetRuntimeMapForRunner(state, step.mapId);
+          const targetMap = currentMap(state);
           if (targetMap) applyMapDefaultLighting(state.session, targetMap);
         }
         resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
@@ -458,7 +487,17 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume("");
         break;
       case "battleProcessing":
-        return { stop: "failed", reason: `run_scene_test는 battleProcessing을 지원하지 않습니다: ${step.troopId}` };
+        {
+          const outcome = runHeadlessBattle(state, step);
+          state.session.battleResult = outcome;
+          state.log.push(`battle ${step.troopId}: ${outcome}`);
+          if (outcome === "defeat" && !step.canLose) {
+            killPartyForRunner(state);
+            state.gameOver = true;
+          }
+        }
+        step = interp.resume(undefined);
+        break;
       case "eraseEvent":
         if (step.eventId) state.session.erasedEventIds = [...new Set([...(state.session.erasedEventIds ?? []), step.eventId])];
         step = interp.resume(undefined);
@@ -620,6 +659,7 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     advanceLighting(state, delta);
     advanceAnimations(state, delta);
     resumeHeldAnimationIfReady(state);
+    advanceFieldSpawnsForRunner(state, delta);
     advanceChasers(state, delta);
     if (state.runtimeFailure) return state.runtimeFailure;
   }
@@ -769,6 +809,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     const actual = state.activeAnimations.length > 0;
     if (actual !== step.animationPlaying) return `애니메이션 재생: 기대 ${step.animationPlaying}, 실제 ${actual}`;
   }
+  if (step.fieldSpawnCount !== undefined && fieldSpawnAliveCount(state.fieldSpawnState) !== step.fieldSpawnCount) {
+    return `필드 스폰 수: 기대 ${step.fieldSpawnCount}, 실제 ${fieldSpawnAliveCount(state.fieldSpawnState)}`;
+  }
   if (step.spawnedCount !== undefined && spawnedCount(state.session) !== step.spawnedCount) {
     return `스폰 이벤트 수: 기대 ${step.spawnedCount}, 실제 ${spawnedCount(state.session)}`;
   }
@@ -865,7 +908,7 @@ function expectEventAt(
   expected: { readonly eventId: string; readonly x: number; readonly y: number; readonly mapId?: string }
 ): string | null {
   const mapId = expected.mapId ?? state.session.currentMapId;
-  const map = state.project.maps[mapId];
+  const map = state.runtimeMaps[mapId];
   if (!map) return `이벤트 위치 확인 맵 없음: ${mapId}`;
   const event = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((view) => view.event.id === expected.eventId);
   if (!event) return `이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
@@ -880,7 +923,7 @@ function expectEventDistance(
   expected: { readonly eventId: string; readonly distance: number; readonly mapId?: string }
 ): string | null {
   const mapId = expected.mapId ?? state.session.currentMapId;
-  const map = state.project.maps[mapId];
+  const map = state.runtimeMaps[mapId];
   if (!map) return `이벤트 거리 확인 맵 없음: ${mapId}`;
   const event = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((view) => view.event.id === expected.eventId);
   if (!event) return `이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
@@ -897,7 +940,7 @@ function toStringList(value: string | readonly string[] | undefined): readonly s
 }
 
 function currentMap(state: RunnerState): GameMap | undefined {
-  return state.project.maps[state.session.currentMapId];
+  return state.runtimeMaps[state.session.currentMapId];
 }
 
 function directionDelta(dir: Dir): { readonly x: number; readonly y: number } {
@@ -915,6 +958,123 @@ function directionDelta(dir: Dir): { readonly x: number; readonly y: number } {
 
 function emptyEventPositions(project: Project): RuntimeEventPositions {
   return Object.assign({}, ...Object.values(project.maps).map((map) => initialRuntimeEventPositions(map.events))) as RuntimeEventPositions;
+}
+
+function emptyEventPositionsFromMaps(maps: Record<string, GameMap>): RuntimeEventPositions {
+  return Object.assign({}, ...Object.values(maps).map((map) => initialRuntimeEventPositions(map.events))) as RuntimeEventPositions;
+}
+
+function resetRuntimeMapForRunner(state: RunnerState, mapId: string): void {
+  const source = state.project.maps[mapId];
+  if (!source) return;
+  state.runtimeMaps[mapId] = structuredClone(source);
+  for (const key of Object.keys(state.eventPositions)) {
+    if (key.startsWith("__field_spawn__")) delete state.eventPositions[key];
+  }
+  Object.assign(state.eventPositions, initialRuntimeEventPositions(state.runtimeMaps[mapId].events));
+  initializeFieldSpawnsForRunner(state);
+}
+
+function initializeFieldSpawnsForRunner(state: RunnerState): void {
+  const map = currentMap(state);
+  if (!map) {
+    state.fieldSpawnState = null;
+    return;
+  }
+  state.fieldSpawnState = createFieldSpawnRuntime(state.project, map, { x: state.session.x, y: state.session.y });
+  syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
+}
+
+function advanceFieldSpawnsForRunner(state: RunnerState, deltaMs: number): void {
+  if (state.gameOver || state.runtimeFailure) return;
+  const map = currentMap(state);
+  if (!map) return;
+  const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs);
+  if (!changed) return;
+  syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
+  refreshChasers(state);
+}
+
+function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): string | null {
+  const troopId = fieldSpawnTroopId(state.fieldSpawnState, eventId);
+  if (!troopId) return `필드 스폰 전투 대상 없음: ${eventId}`;
+  const result = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: true });
+  state.session.battleResult = result;
+  state.log.push(`field spawn ${eventId}: ${result}`);
+  if (result === "victory") {
+    resolveFieldSpawnVictory(state.fieldSpawnState, eventId);
+    const map = currentMap(state);
+    if (map) syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
+    refreshChasers(state);
+  } else if (result === "defeat") {
+    killPartyForRunner(state);
+    state.gameOver = true;
+  }
+  return null;
+}
+
+function runHeadlessBattle(
+  state: RunnerState,
+  step: Extract<StepResult, { kind: "battleProcessing" }>
+): BattleResult {
+  const runtime = createBattleRuntime({
+    project: state.project,
+    troopId: step.troopId,
+    canEscape: step.canEscape,
+    canLose: step.canLose,
+    battleFlow: step.battleFlow,
+    party: {
+      levels: state.session.actorLevels,
+      experience: state.session.actorExperience,
+      names: state.session.actorNames,
+      vitals: state.session.actorVitals,
+      paramBonuses: state.session.actorParamBonuses,
+      equipment: state.session.actorEquipment,
+      skillIds: state.session.actorSkillIds,
+      classOverrides: state.session.classOverrides,
+      stateIds: state.session.actorStateIds,
+      partyActorIds: state.session.partyActorIds,
+    },
+    sessionState: {
+      switches: state.session.switches,
+      variables: state.session.variables,
+      inventory: state.session.inventory,
+    },
+    rng: () => nextSessionRandom(state.session, "battle"),
+  });
+  for (let guard = 0; guard < 8000; guard += 1) {
+    const snapshot = runtime.snapshot();
+    if (snapshot.result) break;
+    if (snapshot.phase === "actorCommand") {
+      const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
+      if (enemy) runtime.performActorCommand({ kind: "attack", targetEnemyId: enemy.id });
+      else runtime.tick(1000);
+    } else {
+      runtime.tick(1000);
+    }
+  }
+  const final = runtime.snapshot();
+  const result = final.result ?? "defeat";
+  applyBattleRewardsToSession(state.session, {
+    result,
+    rewards: final.rewards,
+    actors: [...final.actors, ...final.reserveActors],
+    eventState: final.eventState,
+    participatingActorIds: final.participatingActorIds,
+  }, state.project);
+  return result;
+}
+
+function killPartyForRunner(state: RunnerState): void {
+  for (const actorId of state.session.partyActorIds) {
+    syncActorVitals(state.project, state.session.actorVitals, actorId);
+    const vitals = state.session.actorVitals[actorId];
+    if (vitals) vitals.hp = 0;
+    state.session.actorStateIds ??= {};
+    const states = new Set(state.session.actorStateIds[actorId] ?? []);
+    states.add("state_death");
+    state.session.actorStateIds[actorId] = [...states];
+  }
 }
 
 function emptyCamera(session: PlaySession): CameraModel {
@@ -1001,6 +1161,7 @@ function result(
   stepsRun: number,
   failedStep: SceneStep | undefined,
   failureReason: string | undefined,
+  fieldSpawnState: FieldSpawnRuntimeState | null,
   gameOver: boolean,
   animationPlaying: boolean
 ): SceneTestResult {
@@ -1023,6 +1184,7 @@ function result(
       lightCount: lighting.sources.length,
       weatherKind: parseWeather(session.m2Runtime?.screen.weather).kind,
       animationPlaying,
+      fieldSpawnCount: fieldSpawnAliveCount(fieldSpawnState),
       spawnedCount: spawnedCount(session),
       followerCount: session.followers?.length ?? 0,
       followers: followerPositions(session).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),

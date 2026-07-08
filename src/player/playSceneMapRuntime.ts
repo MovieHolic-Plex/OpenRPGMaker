@@ -24,6 +24,7 @@ import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/player/lighting";
+import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import {
   initialRuntimeEventPositions,
   runtimeEventViewsForMap,
@@ -86,6 +87,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
   applyMapOverrides(scene);
+  initializeFieldSpawnsForScene(scene);
   scene.renderTiles();
   scene.registerPageMoveRoutes();
   scene.syncRuntimeState();
@@ -227,6 +229,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.pageMoveRouteEventIds.clear();
   scene.commandMoveRouteEventIds.clear();
   scene.autonomousNPCs.clear();
+  scene.fieldSpawnState = null;
   for (const animation of scene.activeMapAnimations) animation.destroy(true);
   scene.activeMapAnimations.clear();
   scene.runtimeDom.clearEventMarkers();

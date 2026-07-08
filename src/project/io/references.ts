@@ -324,6 +324,16 @@ function validateMapRecords(
 ): void {
   for (const map of Object.values(project.maps)) {
     if (project.tilesets[map.tilesetId] === undefined) issues.push(`map ${map.id}: tilesetId does not exist.`);
+    collectExistingIdIssues(`map ${map.id}: troopIds`, map.troopIds ?? [], context.troopIds, issues);
+    for (const [index, entry] of (map.encounterTable ?? []).entries()) {
+      if (!context.troopIds.has(entry.troopId)) issues.push(`map ${map.id}: encounterTable[${index}].troopId does not exist: ${entry.troopId}`);
+      if (entry.conditions?.switchId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.switchId`, [entry.conditions.switchId], switchIds, issues);
+      if (entry.conditions?.variableId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.variableId`, [entry.conditions.variableId], variableIds, issues);
+    }
+    for (const [index, spawn] of (map.fieldSpawns ?? []).entries()) {
+      if (!context.troopIds.has(spawn.troopId)) issues.push(`map ${map.id}: fieldSpawns[${index}].troopId does not exist: ${spawn.troopId}`);
+      capture(issues, () => validateOptionalResource(`map ${map.id}: fieldSpawns[${index}].graphic.sprite`, spawn.graphic?.sprite?.id, resourceIds));
+    }
     for (const event of map.events) {
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
       const condition = event.condition;

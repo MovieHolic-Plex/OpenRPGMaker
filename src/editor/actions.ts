@@ -17,7 +17,7 @@ import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
 import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 export { eraseTile, eraseVisibleTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
-import type { MapId, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapId, TilesetDef } from "@/project/types";
 
 // ── 맵 CRUD ──
 export function addMap(name: string, width = 16, height = 16): MapId {
@@ -164,6 +164,26 @@ export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
         editorState.set({ activePaletteStamp: null, activeStampId: null, selectedTile: 0 });
       }
     }
+  }, { scope: "map", mapId });
+}
+
+export function setMapEncounterTable(mapId: MapId, entries: EncounterTableEntry[]): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (entries.length > 0) map.encounterTable = structuredClone(entries);
+    else delete map.encounterTable;
+  }, { scope: "map", mapId });
+}
+
+export function setMapFieldSpawns(mapId: MapId, spawns: FieldSpawnDef[]): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (spawns.length > 0) map.fieldSpawns = structuredClone(spawns);
+    else delete map.fieldSpawns;
   }, { scope: "map", mapId });
 }
 

@@ -32,9 +32,12 @@ import {
   isCutsceneSkippable,
   releaseCutsceneControlForOwner,
 } from "@/player/cutsceneControl";
+import { isFieldSpawnEventId } from "@/player/fieldSpawns";
+import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
+  if (isFieldSpawnEventId(eventId) && await runFieldSpawnEventBattle(scene, eventId)) return;
   const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
     .find((entry) => entry.event.id === eventId);
   if (!view) return;

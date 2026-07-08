@@ -77,6 +77,12 @@ export function collectReferences(project: Project): ReferenceSets {
   const refs: ReferenceSets = { switches: new Set(), variables: new Set(), items: new Set(), troops: new Set(), enemies: new Set() };
   for (const map of Object.values(project.maps)) {
     for (const troopId of map.troopIds ?? []) refs.troops.add(troopId);
+    for (const entry of map.encounterTable ?? []) {
+      refs.troops.add(entry.troopId);
+      if (entry.conditions?.switchId) refs.switches.add(entry.conditions.switchId);
+      if (entry.conditions?.variableId) refs.variables.add(entry.conditions.variableId);
+    }
+    for (const spawn of map.fieldSpawns ?? []) refs.troops.add(spawn.troopId);
     for (const event of map.events) {
       addConditionRefs(event.condition, refs);
       for (const page of event.pages ?? []) {
@@ -145,6 +151,12 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
     }
   };
   for (const map of Object.values(project.maps)) {
+    for (const entry of map.encounterTable ?? []) {
+      if (entry.conditions?.switchId === oldId) {
+        entry.conditions.switchId = newId;
+        count += 1;
+      }
+    }
     for (const event of map.events) {
       count += renameConditionSwitch(event.condition, oldId, newId);
       for (const page of event.pages ?? []) {
@@ -263,6 +275,12 @@ export function renameVariableEverywhere(project: Project, oldId: string, newId:
     }
   };
   for (const map of Object.values(project.maps)) {
+    for (const entry of map.encounterTable ?? []) {
+      if (entry.conditions?.variableId === oldId) {
+        entry.conditions.variableId = newId;
+        count += 1;
+      }
+    }
     for (const event of map.events) {
       count += renameConditionVariable(event.condition, oldId, newId);
       for (const page of event.pages ?? []) {
