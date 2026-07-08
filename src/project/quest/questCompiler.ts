@@ -17,6 +17,7 @@ import {
   type QuestGate,
   type QuestNpcSpec,
   type QuestStep,
+  questDefId,
 } from "./questDef";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
@@ -347,7 +348,7 @@ export function compileQuest(project: Project, def: QuestDef): QuestCompileResul
   });
 
   // 5) 메타 보존.
-  project.quests = [...(project.quests ?? []).filter((quest) => quest.key !== def.key), def];
+  project.quests = [...(project.quests ?? []).filter((quest) => questDefId(quest) !== def.key), def];
 
   // drop 소스가 만든 클리어 스위치까지 대략 반영(정확 카운트는 중요치 않음).
   switchesRegistered += def.steps.filter((step) => step.kind === "collect").reduce((sum, step) => sum + (step.kind === "collect" ? step.sources.filter((s) => s.kind === "drop").length : 0), 0);

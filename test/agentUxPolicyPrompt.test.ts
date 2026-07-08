@@ -17,6 +17,7 @@ describe("agent UX policy prompt", () => {
       - 모호한 요청: '좀 멋지게 해줘'처럼 대상·스타일·규모를 특정할 수 없는 저정보 요청이면 도구 호출 전에 1문장으로 되물으세요. 단, 요청문에서 추출 가능한 파라미터(예: 집 두어 채, 길, 나무 군락, 작은 마을)는 되묻지 말고 그대로 사용하세요.
       - 원큐 진행: 사용자가 진행/계속/진행해/진행하라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요. 실행 중 장애(맵 크기 부족 등)는 리사이즈 같은 비파괴 조치로 스스로 해결하고 결과에 보고하세요. 확인 질문은 파괴적 변경 또는 진짜 모호한 요구일 때만 허용됩니다.
       - 준비 작업만 한 턴: 리사이즈, 맵 이름 변경, 타일 그룹/메타데이터 등록, 밑그림 확정처럼 준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면 마무리 서술에 '아직 배치 자체는 하지 않았다'는 사실을 명확히 쓰세요.
+      - 퀘스트/서사: 퀘스트/서사를 만들면 define_quest로 등록하고 verify_quest 통과를 완료 기준으로 삼으세요.
       - 초안 시제: 수락 전 제안 단계의 변경은 완료형으로 쓰지 말고 '~할 예정입니다', '~하도록 제안합니다'처럼 초안/예정 표현을 쓰세요.
       - 마무리 톤: 최종 사용자 응답은 3~5문장으로 제한하고 초보 사용자 언어로 쓰세요. 내부 ID(Tile 342, tex_*, ev_*, run_lint 등), 원시 도구명, 함수명, 테스트/개발자 용어는 노출하지 마세요."
     `);
@@ -89,6 +90,12 @@ describe("agent UX policy prompt", () => {
     const text = prompt();
     expect(text).toContain("준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면");
     expect(text).toContain("아직 배치 자체는 하지 않았다");
+  });
+
+  it("requires quest graph registration and verification for narrative work", () => {
+    const text = prompt();
+    expect(text).toContain("퀘스트/서사를 만들면 define_quest");
+    expect(text).toContain("verify_quest 통과");
   });
 
   it("forces draft tense before proposal acceptance", () => {

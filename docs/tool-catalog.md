@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 122개 툴 — 쓰기 89, 읽기 33.
+> 총 126개 툴 — 쓰기 90, 읽기 36.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -82,6 +82,7 @@
 | `upsert_palette_preset` | `tilesetId?: string`, `preset: object` | 타일셋 팔레트 프리셋을 추가/수정한다. 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 잠긴 프리셋은 AI가 수정할 수 없다. |
 | `create_quest_flags` | `questKey: string`, `steps: integer` | 퀘스트용 스위치(sw_<key>_started/_done)와 진행 변수(var_<key>_progress)를 자동 등록한다. |
 | `create_quest` | `def: object` | 선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존. |
+| `define_quest` | `id: string`, `title: string`, `summary?: string`, `nodes: array`, `edges: array` | 퀘스트 그래프를 등록한다. 노드 completesWhen은 switch/variable 조건 또는 storyFlag 참조를 받으며, 그래프는 DAG만 허용한다. |
 | `declare_story_flag` | `action?: declare\|rename\|retire`, `id: string`, `newId?: string`, `kind?: switch\|variable`, `description?: string`, `questId?: string`, `targetId?: string`, `tags?: array` | 스위치/변수 번호에 서사 의미를 등록한다. action=declare/rename/retire 지원. targetId 생략 시 미사용 슬롯을 자동 할당한다. |
 | `tune_enemy` | `enemyId: string`, `targetHitsToKill: integer`, `targetDamageToHeroPerHit: integer`, `heroLevel?: integer` | 데미지 공식을 역산해 적의 maxHp/attack을 목표(처치 타수/영웅 피해량)에 맞춘다. 반환 data에 산출 근거 포함. |
 | `rename_switch` | `fromId?: string`, `fromName?: string`, `to: string` | 스위치 id를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). fromId 또는 fromName으로 대상 지정. |
@@ -107,13 +108,16 @@
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `list_endings` | (없음) | 프로젝트 엔딩 레지스트리를 나열하고 조건 충돌/priority 그림자 warning을 함께 반환한다. |
 | `query_world` | `type?: character\|place\|faction\|event\|item\|concept\|guideline`, `tags?: array`, `text?: string`, `limit?: integer` | 세계관 개체와 관계를 조회한다. type/tags/text로 필터링해 상세(body/refs/relations)를 읽고, 세계관을 수정하기 전 현재 내용을 확인하라. |
+| `lint_quest` | `questId: string` | 퀘스트 그래프 하나의 dead-end, 도달 불가, 고아 노드 lint를 반환한다. |
+| `generate_walkthrough` | `questId: string` | 퀘스트 그래프를 위상 순서로 따라가며 run_scene_test 입력 JSON을 생성한다. 자동 유도 불가 구간은 manualHint가 붙은 set 스텝으로 폴백한다. |
+| `verify_quest` | `questId: string` | generate_walkthrough 결과를 즉시 run_scene_test로 실행해 성공/실패와 실패 스텝을 반환한다. |
 | `get_story_state` | (없음) | 서사 플래그 레지스트리를 한 줄 요약으로 반환한다(설명, 현재 값, read/write 수). 이벤트 JSON 원문 조회를 줄이는 용도. |
 | `find_flag_usage` | `flagId?: string`, `switchId?: string`, `variableId?: string` | 서사 플래그 또는 스위치/변수 target의 read/write 사용처를 전 맵/공통 이벤트/트룹 이벤트에서 찾는다. |
 | `explain_event` | `mapId: string`, `eventId: string` | 맵 이벤트 페이지 조건을 현재 세션값(없으면 에디터 기본값)으로 평가해 비활성 원인과 최종 활성 페이지를 설명한다. |
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer`, `battleFlow?: gauge\|strict`, `activeSlots?: integer`, `strictScript?: array` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
-| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'gift',eventId?,itemId}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'advanceDays',days}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다. |
+| `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'face',dir}\|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'gift',eventId?,itemId}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'advanceDays',days}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다. |
 | `get_project_summary` | (없음) | 제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다. |
 | `get_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다. |
 | `find_events` | `mapId?: string`, `nameContains?: string`, `commandKind?: string`, `referencesSwitch?: string` | 이벤트를 이름/커맨드 종류/스위치 참조로 검색한다. |

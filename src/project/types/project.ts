@@ -14,7 +14,7 @@ import type {
   VariableDef,
 } from "./base";
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
-import type { QuestDef } from "../quest/questDef";
+import type { AnyQuestDef } from "../quest/questDef";
 import type { ProjectWorld } from "../world/types";
 import type {
   CommandV1,
@@ -203,7 +203,7 @@ export interface Project {
   world?: ProjectWorld;
   // 선언적 퀘스트 정의(Phase 3). questCompiler가 스위치/변수/이벤트로 컴파일하며,
   // 플레이어 퀘스트 로그가 이 메타 + 세션 상태로 단계를 표시한다. optional이라 마이그레이션 불필요.
-  quests?: QuestDef[];
+  quests?: AnyQuestDef[];
   // 테스트 상태 프리셋(Phase 4-1). 에디터 디버그 패널이 저장/적용한다. optional.
   testPresets?: TestPreset[];
   // 세션 상태와 분리된 authored 엔딩 정의. 체크포인트와 달리 프로젝트 JSON에 저장된다.

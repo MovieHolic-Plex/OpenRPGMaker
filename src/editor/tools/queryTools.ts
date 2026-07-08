@@ -9,6 +9,7 @@ import { isPassable } from "@/project/collision";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";
+import { questDefId } from "@/project/quest/questDef";
 import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import {
   confidenceScore,
@@ -435,7 +436,7 @@ function collectionEntries(project: Project, collection: DbCollection): { id: st
     case "switches": return named(project.switches);
     case "variables": return named(project.variables);
     case "commonEvents": return named(project.commonEvents);
-    case "quests": return (project.quests ?? []).map((quest) => ({ id: quest.key, name: quest.title }));
+    case "quests": return (project.quests ?? []).map((quest) => ({ id: questDefId(quest), name: quest.title }));
     case "maps": return Object.values(project.maps).map((map) => ({ id: map.id, name: map.name }));
     default: return named(project.database[collection] ?? []);
   }

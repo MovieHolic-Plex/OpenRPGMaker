@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { buildQuestLog, questLogEntry } from "@/player/questLog";
 import { renderPlayerStatusMenu, STATUS_MENU_COMMAND_IDS, statusMenuCommandLabel } from "@/player/playerStatusMenu";
 import type { QuestDef } from "@/project/quest/questDef";
+import { isStepQuestDef } from "@/project/quest/questDef";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { startSession } from "@/project/session";
@@ -66,7 +67,9 @@ describe("questLog", () => {
     const session: PlaySession = startSession(project);
     session.switches.sw_q_demo_started = true;
     session.switches.sw_q_demo_step0 = true;
-    const entry = questLogEntry(project.quests![0], session);
+    const quest = project.quests![0];
+    if (!isStepQuestDef(quest)) throw new Error("step quest expected");
+    const entry = questLogEntry(quest, session);
     expect(entry.state).toBe("active");
     expect(entry.steps[0].done).toBe(true);
     expect(entry.steps[1].done).toBe(false);
@@ -76,7 +79,9 @@ describe("questLog", () => {
   it("완료 퀘스트는 모든 단계를 완료로 본다", () => {
     const session = startSession(project);
     session.switches.sw_q_demo_done = true;
-    const entry = questLogEntry(project.quests![0], session);
+    const quest = project.quests![0];
+    if (!isStepQuestDef(quest)) throw new Error("step quest expected");
+    const entry = questLogEntry(quest, session);
     expect(entry.state).toBe("done");
     expect(entry.steps.every((step) => step.done)).toBe(true);
   });

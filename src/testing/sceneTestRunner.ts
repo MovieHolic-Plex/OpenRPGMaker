@@ -78,6 +78,19 @@ const TICK_MS = 16;
 
 export type SceneStep =
   | { kind: "wait"; ticks: number }
+  | { kind: "face"; dir: Dir }
+  | {
+      kind: "set";
+      mapId?: string;
+      x?: number;
+      y?: number;
+      facing?: Dir;
+      switches?: Record<string, boolean> | readonly string[];
+      variables?: Record<string, number>;
+      inventory?: Record<string, number>;
+      gold?: number;
+      manualHint?: string;
+    }
   | { kind: "move"; dir: Dir; to?: never }
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
   | { kind: "interact" }
@@ -93,6 +106,7 @@ export type SceneExpectStep = {
   switchOn?: string | readonly string[];
   switchOff?: string | readonly string[];
   variableEquals?: { variableId: string; value: number } | Record<string, number>;
+  variableAtLeast?: { variableId: string; value: number } | Record<string, number>;
   eventAt?: { eventId: string; x: number; y: number; mapId?: string };
   eventOnMap?: { eventId: string; mapId: string };
   eventDistanceToPlayerLessThan?: { eventId: string; distance: number; mapId?: string };
@@ -272,6 +286,11 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
   switch (step.kind) {
     case "wait":
       return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
+    case "face":
+      state.facing = step.dir;
+      return null;
+    case "set":
+      return runSetStep(state, step);
     case "move":
       return runMoveStep(state, step);
     case "interact":
@@ -287,6 +306,31 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "expect":
       return runExpectStep(state, step);
   }
+}
+
+function runSetStep(state: RunnerState, step: Extract<SceneStep, { kind: "set" }>): string | null {
+  if (step.mapId !== undefined) {
+    if (!state.project.maps[step.mapId]) return `set 대상 맵 없음: ${step.mapId}`;
+    state.session.currentMapId = step.mapId;
+    resetRuntimeMapForRunner(state, step.mapId);
+    applyMapDefaultLighting(state.session, state.project.maps[step.mapId]);
+    applyNpcSchedulesForRunner(state);
+    refreshChasers(state);
+  }
+  if (step.x !== undefined) state.session.x = Math.trunc(step.x);
+  if (step.y !== undefined) state.session.y = Math.trunc(step.y);
+  if (step.facing !== undefined) state.facing = step.facing;
+  if (Array.isArray(step.switches)) {
+    for (const switchId of step.switches) state.session.switches[switchId] = true;
+  } else if (step.switches) {
+    for (const [switchId, value] of Object.entries(step.switches)) state.session.switches[switchId] = value;
+  }
+  for (const [variableId, value] of Object.entries(step.variables ?? {})) state.session.variables[variableId] = value;
+  for (const [itemId, count] of Object.entries(step.inventory ?? {})) state.session.inventory[itemId] = count;
+  if (step.gold !== undefined) state.session.gold = step.gold;
+  syncFollowCamera(state);
+  state.log.push(`set${step.manualHint ? `: ${step.manualHint}` : ""}`);
+  return null;
 }
 
 function runMoveStep(state: RunnerState, step: Extract<SceneStep, { kind: "move" }>): string | null {
@@ -1037,6 +1081,8 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   }
   const variableFailure = expectVariables(state, step.variableEquals);
   if (variableFailure) return variableFailure;
+  const variableAtLeastFailure = expectVariablesAtLeast(state, step.variableAtLeast);
+  if (variableAtLeastFailure) return variableAtLeastFailure;
   if (step.eventAt) {
     const eventFailure = expectEventAt(state, step.eventAt);
     if (eventFailure) return eventFailure;
@@ -1303,9 +1349,25 @@ function expectVariables(
     const got = getVariable(state.session, expected.variableId);
     return got === expected.value ? null : `변수 ${expected.variableId}: 기대 ${expected.value}, 실제 ${got}`;
   }
-  for (const [variableId, value] of Object.entries(expected)) {
+  for (const [variableId, value] of Object.entries(expected as Record<string, number>)) {
     const got = getVariable(state.session, variableId);
     if (got !== value) return `변수 ${variableId}: 기대 ${value}, 실제 ${got}`;
+  }
+  return null;
+}
+
+function expectVariablesAtLeast(
+  state: RunnerState,
+  expected: SceneExpectStep["variableAtLeast"]
+): string | null {
+  if (!expected) return null;
+  if ("variableId" in expected && typeof expected.variableId === "string") {
+    const got = getVariable(state.session, expected.variableId);
+    return got >= expected.value ? null : `변수 ${expected.variableId}: 기대 >= ${expected.value}, 실제 ${got}`;
+  }
+  for (const [variableId, value] of Object.entries(expected as Record<string, number>)) {
+    const got = getVariable(state.session, variableId);
+    if (got < value) return `변수 ${variableId}: 기대 >= ${value}, 실제 ${got}`;
   }
   return null;
 }

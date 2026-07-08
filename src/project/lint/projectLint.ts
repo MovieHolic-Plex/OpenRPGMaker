@@ -13,6 +13,7 @@
 //  - map-size              (warning) 256×256 초과 맵
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
+//  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 
@@ -22,6 +23,8 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
 import { collectProjectReferenceIssues } from "../io/references";
+import { isQuestGraphDef } from "../quest/questDef";
+import { lintQuestGraph } from "../quest/questGraph";
 import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../storyFlags";
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
@@ -53,6 +56,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
   checkStoryFlags(project, issues);
+  checkQuestGraphs(project, issues);
   checkClusterRules(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
@@ -317,6 +321,19 @@ function checkStoryFlags(project: Project, issues: LintIssue[]): void {
         : `레지스트리 밖 스위치/변수 사용: ${targetKey} (${site.label})`,
     });
     warnedTargets.add(targetKey);
+  }
+}
+
+function checkQuestGraphs(project: Project, issues: LintIssue[]): void {
+  for (const quest of project.quests ?? []) {
+    if (!isQuestGraphDef(quest)) continue;
+    for (const issue of lintQuestGraph(project, quest)) {
+      issues.push({
+        severity: issue.severity,
+        code: issue.code,
+        message: issue.message,
+      });
+    }
   }
 }
 

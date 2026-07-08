@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { deserialize, serialize } from "@/project/io";
 import { projectLint } from "@/project/lint/projectLint";
 import type { ReachabilitySpec } from "@/project/lint/reachability";
-import type { QuestDef } from "@/project/quest/questDef";
+import { isStepQuestDef, type QuestDef } from "@/project/quest/questDef";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { Project } from "@/project/types";
@@ -78,8 +78,11 @@ describe("questCompiler", () => {
     expect(project.quests?.length).toBe(1);
     const round = deserialize(serialize(project));
     expect(round.quests?.length).toBe(1);
-    expect(round.quests?.[0]?.key).toBe("q_furnace");
-    expect(round.quests?.[0]?.steps.length).toBe(3);
+    const quest = round.quests?.[0];
+    expect(isStepQuestDef(quest)).toBe(true);
+    if (!isStepQuestDef(quest)) throw new Error("step quest expected");
+    expect(quest.key).toBe("q_furnace");
+    expect(quest.steps.length).toBe(3);
   });
 
   it("퀘스트 이벤트가 시작 지점에서 도달 가능하다", () => {

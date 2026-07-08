@@ -5,6 +5,7 @@
 import { projectLint } from "@/project/lint/projectLint";
 import type { ReachabilitySpec } from "@/project/lint/reachability";
 import type { Command, GameEvent, Project } from "@/project/types";
+import { questDefId } from "@/project/quest/questDef";
 
 // 최종 프로젝트가 만족해야 할 사양 하나.
 export interface SpecMatcher {
@@ -70,7 +71,7 @@ export function troopExists(id: string): SpecMatcher {
 }
 
 export function questExists(key: string): SpecMatcher {
-  return { describe: `퀘스트 ${key} 존재`, check: (project) => (project.quests ?? []).some((quest) => quest.key === key) };
+  return { describe: `퀘스트 ${key} 존재`, check: (project) => (project.quests ?? []).some((quest) => questDefId(quest) === key) };
 }
 
 // 어떤 맵에든 특정 kind의 커맨드를 가진 이벤트가 존재하는지.

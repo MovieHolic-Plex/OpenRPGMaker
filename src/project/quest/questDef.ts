@@ -2,7 +2,7 @@
 // 퀘스트 선언적 DSL(handoff §5-1). "무엇을"만 선언하고 "어떻게"(스위치/변수/이벤트 배선)는
 // questCompiler가 결정적으로 컴파일한다. 스키마 v3에 optional 필드 `quests?: QuestDef[]`로 보존된다.
 
-import type { ItemId, MapId, TroopId } from "@/project/types";
+import type { Condition, ItemId, MapId, TroopId } from "@/project/types";
 
 // 기존 이벤트 참조.
 export interface EventRef {
@@ -81,6 +81,72 @@ export interface QuestDef {
   readonly steps: readonly QuestStep[];
   readonly rewards?: QuestReward;
   readonly gates?: readonly QuestGate[];
+}
+
+export type QuestVariableOp = Extract<Condition, { kind: "variable" }>["op"];
+
+export type QuestGraphSwitchCondition =
+  | Extract<Condition, { kind: "switch" }>
+  | { readonly kind: "switch"; readonly storyFlagId: string; readonly value?: boolean };
+
+export type QuestGraphVariableCondition =
+  | Extract<Condition, { kind: "variable" }>
+  | { readonly kind: "variable"; readonly storyFlagId: string; readonly op?: QuestVariableOp; readonly value: number };
+
+export interface QuestGraphStoryFlagCondition {
+  readonly kind: "storyFlag";
+  readonly flagId: string;
+  readonly op?: QuestVariableOp;
+  readonly value?: boolean | number;
+}
+
+export type QuestGraphCondition =
+  | QuestGraphSwitchCondition
+  | QuestGraphVariableCondition
+  | QuestGraphStoryFlagCondition;
+
+export interface QuestGraphConditionAll {
+  readonly all: readonly QuestGraphCondition[];
+}
+
+export type QuestGraphConditionExpression =
+  | QuestGraphCondition
+  | QuestGraphConditionAll
+  | readonly QuestGraphCondition[];
+
+export interface QuestGraphNode {
+  readonly id: string;
+  readonly description: string;
+  readonly completesWhen: QuestGraphConditionExpression;
+  readonly activatesFlags?: readonly string[];
+}
+
+export interface QuestGraphEdge {
+  readonly from: string;
+  readonly to: string;
+}
+
+export interface QuestGraphDef {
+  readonly kind: "graph";
+  readonly id: string;
+  readonly title: string;
+  readonly summary?: string;
+  readonly nodes: readonly QuestGraphNode[];
+  readonly edges: readonly QuestGraphEdge[];
+}
+
+export type AnyQuestDef = QuestDef | QuestGraphDef;
+
+export function isQuestGraphDef(quest: AnyQuestDef | unknown): quest is QuestGraphDef {
+  return typeof quest === "object" && quest !== null && !Array.isArray(quest) && (quest as { kind?: unknown }).kind === "graph";
+}
+
+export function isStepQuestDef(quest: AnyQuestDef | unknown): quest is QuestDef {
+  return typeof quest === "object" && quest !== null && !Array.isArray(quest) && Array.isArray((quest as { steps?: unknown }).steps);
+}
+
+export function questDefId(quest: AnyQuestDef): string {
+  return isQuestGraphDef(quest) ? quest.id : quest.key;
 }
 
 // 컴파일러가 산출하는 스위치/변수 id 규약.

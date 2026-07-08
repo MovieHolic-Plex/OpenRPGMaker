@@ -3,7 +3,18 @@
 // DOM 비의존 — 렌더러(playerStatusMenuQuestScene)와 테스트가 함께 소비한다.
 
 import type { PlaySession } from "@/project/session";
-import { questFlagIds, type QuestDef, type QuestStep } from "@/project/quest/questDef";
+import {
+  extractQuestGraphConditions,
+  questGraphConditionMet,
+} from "@/project/quest/questGraph";
+import {
+  isQuestGraphDef,
+  questFlagIds,
+  type AnyQuestDef,
+  type QuestDef,
+  type QuestGraphDef,
+  type QuestStep,
+} from "@/project/quest/questDef";
 import type { Project } from "@/project/types";
 
 export type QuestState = "not-started" | "active" | "done";
@@ -65,9 +76,41 @@ export function questLogEntry(def: QuestDef, session: PlaySession): QuestLogEntr
   };
 }
 
+function graphQuestLogEntry(project: Project, def: QuestGraphDef, session: PlaySession): QuestLogEntry {
+  const steps = def.nodes.map((node, index): QuestLogStep => {
+    const done = extractQuestGraphConditions(node.completesWhen).every((condition) => {
+      try {
+        return questGraphConditionMet(project, session, condition);
+      } catch {
+        return false;
+      }
+    });
+    return {
+      index,
+      label: `${index + 1}. ${node.description}`,
+      done,
+    };
+  });
+  const completedSteps = steps.filter((step) => step.done).length;
+  const state: QuestState = completedSteps === 0 ? "not-started" : completedSteps === steps.length ? "done" : "active";
+  return {
+    key: def.id,
+    title: def.title,
+    summary: def.summary ?? "",
+    state,
+    steps,
+    completedSteps,
+    totalSteps: steps.length,
+  };
+}
+
+function questLogEntryForProject(project: Project, def: AnyQuestDef, session: PlaySession): QuestLogEntry {
+  return isQuestGraphDef(def) ? graphQuestLogEntry(project, def, session) : questLogEntry(def, session);
+}
+
 // 프로젝트의 모든 퀘스트 로그를 계산한다(미시작 퀘스트도 포함해 목록에 표시).
 export function buildQuestLog(project: Project, session: PlaySession): QuestLogEntry[] {
-  return (project.quests ?? []).map((def) => questLogEntry(def, session));
+  return (project.quests ?? []).map((def) => questLogEntryForProject(project, def, session));
 }
 
 // 상태 라벨(한국어).

@@ -29,7 +29,7 @@ export function proposalCompletenessWarnings(input: ProposalCompletenessInput): 
   const base = input.buildSpec
     ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
     : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "");
-  return dedupe([...base, ...worldCompletenessWarnings(input.calls)]);
+  return dedupe([...base, ...worldCompletenessWarnings(input.calls), ...questGraphCompletenessWarnings(input.calls)]);
 }
 
 export function proposalCompletenessWarningLines(
@@ -103,6 +103,17 @@ function worldCompletenessWarnings(calls: readonly ProposalCompletenessCall[]): 
   ].filter((kind): kind is string => kind !== null);
   if (missingKinds.length === 0) return [];
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 세계관 미기재 — ${missingKinds.join("/")} 생성·수정 제안에 세계관 업데이트가 없습니다.`];
+}
+
+function questGraphCompletenessWarnings(calls: readonly ProposalCompletenessCall[]): string[] {
+  if (calls.some((call) => call.result.ok && call.name === "define_quest")) return [];
+  const newStoryFlags = calls.filter((call) => {
+    if (!call.result.ok || call.name !== "declare_story_flag") return false;
+    const action = typeof call.args.action === "string" ? call.args.action : "declare";
+    return action === "declare";
+  }).length;
+  if (newStoryFlags < 3) return [];
+  return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 퀘스트 그래프 등록 권장 — 이번 턴에서 storyFlag ${newStoryFlags}개를 새로 등록했지만 define_quest가 없습니다.`];
 }
 
 function isNpcWorldRelevantCall(call: ProposalCompletenessCall): boolean {

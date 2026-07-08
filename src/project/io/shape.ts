@@ -278,12 +278,20 @@ function validateVillageInfoDocuments(value: unknown, mapIds: ReadonlySet<string
   }
 }
 
-// 퀘스트 정의(선언적 메타). 상세 step 구조는 questCompiler가 소비하므로 여기선 최상위 형태만 검증한다.
+// 퀘스트 정의(선언적 메타). step형은 questCompiler가, graph형은 questGraph가 상세 검증한다.
 function validateQuests(value: unknown, mapIds: ReadonlySet<string>): void {
   if (value === undefined) return;
   assert(Array.isArray(value), "quests는 배열이어야 합니다.");
   for (const [index, entry] of value.entries()) {
     const quest = requireRecord(`quests[${index}]`, entry);
+    if (quest.kind === "graph") {
+      requireString(`quests[${index}].id`, quest.id);
+      requireString(`quests[${index}].title`, quest.title);
+      if (quest.summary !== undefined) requireString(`quests[${index}].summary`, quest.summary);
+      assert(Array.isArray(quest.nodes), `quests[${index}].nodes는 배열이어야 합니다.`);
+      assert(Array.isArray(quest.edges), `quests[${index}].edges는 배열이어야 합니다.`);
+      continue;
+    }
     requireString(`quests[${index}].key`, quest.key);
     requireString(`quests[${index}].title`, quest.title);
     requireString(`quests[${index}].summary`, quest.summary);

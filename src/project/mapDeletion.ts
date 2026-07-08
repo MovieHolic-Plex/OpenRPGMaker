@@ -13,7 +13,7 @@
 
 import { deserialize, serialize } from "./io";
 import type { Command, EventPage, MapId, MapTreeNode, Project } from "./types";
-import type { QuestDef } from "./quest/questDef";
+import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
 
 export interface MapDeletionImpact {
   readonly mapId: MapId;
@@ -228,7 +228,8 @@ function countIncomingCommands(project: Project, mapId: MapId): number {
   return count;
 }
 
-function questReferencesMap(quest: QuestDef, mapId: MapId): boolean {
+function questReferencesMap(quest: AnyQuestDef, mapId: MapId): boolean {
+  if (isQuestGraphDef(quest)) return false;
   const giver = quest.giver as { mapId?: unknown; create?: { mapId?: unknown } };
   if (giver?.mapId === mapId) return true;
   if (giver?.create?.mapId === mapId) return true;
