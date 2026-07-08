@@ -338,10 +338,12 @@ function checkAsset(rawAsset: unknown, index: number, issues: SpecIssue[]): Chec
   const missing: string[] = [];
   const id = typeof rawAsset.id === "string" ? rawAsset.id : null;
   const kind = typeof rawAsset.kind === "string" ? rawAsset.kind : null;
-  const x = rawAsset.x;
-  const y = rawAsset.y;
-  const w = rawAsset.w;
-  const h = rawAsset.h;
+  // set_build_spec은 세션이 직접 처리해 runTool의 스키마 정규화를 안 거친다 —
+  // 모델이 좌표를 "22" 같은 숫자 문자열로 보내는 케이스를 여기서 수용한다.
+  const x = coerceInteger(rawAsset.x);
+  const y = coerceInteger(rawAsset.y);
+  const w = coerceInteger(rawAsset.w);
+  const h = coerceInteger(rawAsset.h);
   if (id === null) missing.push("id");
   if (kind === null) missing.push("kind");
   if (!isInteger(x)) missing.push("x");
@@ -355,6 +357,11 @@ function checkAsset(rawAsset: unknown, index: number, issues: SpecIssue[]): Chec
 
   const overExisting = rawAsset.overExisting === "clear" || rawAsset.overExisting === "keep" ? rawAsset.overExisting : undefined;
   return { id, kind, x, y, w, h, layer: rawAsset.layer === "upper" ? "upper" : "lower", confirmDestroy: rawAsset.confirmDestroy === true, overExisting };
+}
+
+function coerceInteger(value: unknown): unknown {
+  if (typeof value === "string" && /^-?\d+$/.test(value.trim())) return Number(value.trim());
+  return value;
 }
 
 function checkBuildOrder(rawBuildOrder: unknown, issues: SpecIssue[]): string[] | null {

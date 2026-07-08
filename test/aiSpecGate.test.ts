@@ -58,6 +58,16 @@ describe("buildSpec 검증기(결정적)", () => {
     expect(issues.some((issue) => issue.severity === "error" && issue.message.includes("집A"))).toBe(true);
   });
 
+  it("모델이 좌표를 숫자 문자열로 보내도 수용한다 — set_build_spec 은 runTool 정규화를 안 거침", () => {
+    const project = projectWithMap();
+    const spec = {
+      mapId: "m1",
+      assets: [{ id: "집S", kind: "house", x: "2", y: "3", w: "6", h: "6" }],
+    } as unknown as BuildSpec;
+    const issues = validateBuildSpec(project, spec);
+    expect(issues.filter((issue) => issue.severity === "error")).toEqual([]);
+  });
+
   it("같은 층(lower) 에셋 겹침은 error — 두 id를 모두 언급", () => {
     const project = projectWithMap();
     const spec: BuildSpec = {
