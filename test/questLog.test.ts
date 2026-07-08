@@ -118,6 +118,7 @@ function emptyActions() {
     onSelectEquipmentActor: noop,
     onSelectEquipmentSlot: noop,
     onEquipItem: noop,
+    onUnequipItem: noop,
     onToggleRow: noop,
     onSelectFormationActor: noop,
     onMoveFormationActor: noop,

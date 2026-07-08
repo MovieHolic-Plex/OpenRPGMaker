@@ -33,6 +33,12 @@ describe("runtime keyboard menus", () => {
 
     state = reduceStatusMenuKeyboard(state, "Escape");
     expect(state).toEqual({ selectedCommand: "skills", mode: "main", action: "back-to-main" });
+
+    expect(reduceStatusMenuKeyboard(state, "z")).toEqual({
+      selectedCommand: "skills",
+      mode: "function",
+      action: "enter-function",
+    });
   });
 
   it("backs out of X-menu function mode with the cancel key before closing", () => {

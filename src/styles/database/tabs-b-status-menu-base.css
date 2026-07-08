@@ -2,7 +2,7 @@
   align-content: start;
   display: grid;
   gap: 1px;
-  grid-auto-rows: minmax(13px, max-content);
+  grid-auto-rows: minmax(var(--rm2k3-menu-row-height, 15px), max-content);
   grid-column: 1;
   grid-row: 1;
   grid-template-columns: minmax(0, 1fr);
@@ -18,7 +18,7 @@
   color: var(--rm2k3-status-text);
   font: inherit;
   line-height: 1.08;
-  min-height: 13px;
+  min-height: var(--rm2k3-menu-row-height, 15px);
   overflow: hidden;
   padding: 0 3px;
   text-shadow: none;
@@ -32,6 +32,12 @@
     var(--runtime-window-selected-bg);
   border-color: rgba(255, 255, 255, 0.9);
   box-shadow: inset 0 0 0 1px rgba(245, 251, 255, 0.36);
+}
+.rm2k3-status-menu.status-menu-detail-focus .status-menu-command.selected,
+.rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: none;
 }
 .status-menu-body {
   display: grid;

@@ -100,6 +100,7 @@ function slotButtonText(slot: SaveSlotReadResult, label: string): string {
 
 function saveSlotStatus(slot: Extract<SaveSlotReadResult, { readonly kind: "present" }>): string {
   const parts = [slot.snapshot.projectTitle];
+  if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
   if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
   if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
   return parts.join(" / ");

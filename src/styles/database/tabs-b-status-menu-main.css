@@ -55,7 +55,7 @@
 .status-menu-footer {
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .status-menu-party-info {
@@ -81,6 +81,8 @@
   font-size: 13px;
   line-height: 1.12;
   margin: 0 0 2px;
+  white-space: normal;
+  word-break: keep-all;
 }
 .status-menu-detail-list {
   align-content: start;
@@ -93,10 +95,12 @@
   box-sizing: border-box;
   display: grid;
   gap: 2px;
-  grid-template-columns: minmax(36px, 0.35fr) minmax(0, 1fr);
-  min-height: 15px;
+  /* max-content 는 긴 value 가 label 칼럼을 0 으로 붕괴시켜 겹침 — auto 로 컨테이너 안에 가둔다. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  min-height: var(--rm2k3-menu-row-height, 15px);
   padding: 1px 2px;
   text-shadow: none;
+  white-space: normal;
 }
 .status-menu-detail-row.with-face {
   grid-template-columns: 32px minmax(0, 1fr);
@@ -106,8 +110,17 @@
 .status-menu-detail-description {
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: normal;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+.status-menu-detail-label {
+  justify-self: start;
+}
+.status-menu-detail-value {
+  justify-self: end;
+  text-align: right;
 }
 .status-menu-detail-description {
   display: none;
@@ -119,13 +132,17 @@
 }
 .status-menu-detail-row.has-description .status-menu-detail-description {
   color: #d8ebff;
-  display: block;
+  display: -webkit-box;
   grid-column: 1 / -1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   line-height: 1.1;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  overflow-wrap: normal;
   text-overflow: clip;
   white-space: normal;
+  word-break: keep-all;
 }
 .status-menu-detail-row.disabled {
   color: rgba(255, 255, 255, 0.62);
@@ -133,7 +150,8 @@
 .status-menu-detail-copy {
   display: grid;
   gap: 1px 2px;
-  grid-template-columns: minmax(36px, 0.35fr) minmax(0, 1fr);
+  /* max-content 는 긴 value 가 label 칼럼을 0 으로 붕괴시켜 겹침 — auto 로 컨테이너 안에 가둔다. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
 }
 .status-menu-footer {
   align-items: center;
@@ -147,12 +165,24 @@
   border-image-width: var(--runtime-window-border-tight);
   border-radius: 0;
   box-shadow: none;
-  display: flex;
+  display: grid;
   gap: 4px;
   grid-column: 1 / -1;
   grid-row: 2;
-  justify-content: space-between;
+  grid-template-columns: max-content minmax(0, 1fr);
   padding: 1px 4px;
+}
+.status-menu-footer-meta {
+  display: flex;
+  gap: 4px;
+  min-width: max-content;
+}
+.status-menu-message {
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 .main-menu-button {
   position: absolute;

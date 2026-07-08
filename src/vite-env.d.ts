@@ -28,6 +28,7 @@ type RpgZzuRuntimeJuiceEvent =
   | "menu-back"
   | "menu-close"
   | "menu-confirm"
+  | "menu-invalid"
   | "menu-open"
   | "menu-select"
   | "title-confirm"

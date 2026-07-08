@@ -47,6 +47,7 @@ export type SaveSnapshot = {
   readonly projectTitle: string;
   readonly savedAt: string;
   readonly mapName?: string;
+  readonly partyLevel?: number;
   readonly playTimeSeconds?: number;
   readonly session: {
     readonly switches: Record<string, boolean>;
@@ -106,6 +107,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
+    partyLevel: leadPartyLevel(project, session),
     playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
     session: {
       switches: structuredClone(session.switches),
@@ -246,10 +248,18 @@ function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadRes
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
+      partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
       session: parsed.session,
     },
   };
+}
+
+function leadPartyLevel(project: Project, session: PlaySession): number | undefined {
+  const actorId = session.partyActorIds[0];
+  if (!actorId) return undefined;
+  const actor = project.database.actors.find((record) => record.id === actorId);
+  return session.actorLevels[actorId] ?? actor?.initialLevel;
 }
 
 type ParsedSessionResult =

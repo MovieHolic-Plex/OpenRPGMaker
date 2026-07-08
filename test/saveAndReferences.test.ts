@@ -84,6 +84,18 @@ describe("세이브 직렬화 — gold/selfSwitches", () => {
     expect(snapshot.mapName).toBe("시작 마을");
   });
 
+  it("대표 파티 레벨이 슬롯 메타데이터에 저장된다", () => {
+    const project = createBlankProject();
+    const actorId = project.database.actors[0]!.id;
+    const session = mkSession();
+    session.partyActorIds = [actorId];
+    session.actorLevels = { [actorId]: 7 };
+
+    const snapshot = createSaveSnapshot(project, session);
+
+    expect(snapshot.partyLevel).toBe(7);
+  });
+
   it("erasedEventIds 가 스냅샷에 저장되고 로드 후 복원된다", () => {
     const project = createBlankProject();
     const session = mkSession();

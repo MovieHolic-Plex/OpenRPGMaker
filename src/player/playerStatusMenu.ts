@@ -51,6 +51,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     equipmentActorId: options.equipmentActorId,
     equipmentSlotId: options.equipmentSlotId,
     formationActorId: options.formationActorId,
+    confirmSaveSlot: options.confirmSaveSlot,
+    saveEnabled: options.saveEnabled,
     onSaveSlot: options.actions.onSaveSlot,
     onLoadSlot: options.actions.onLoadSlot,
     onSelectItemTarget: options.actions.onSelectItemTarget,
@@ -60,6 +62,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
     onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
     onEquipItem: options.actions.onEquipItem,
+    onUnequipItem: options.actions.onUnequipItem,
     onToggleRow: options.actions.onToggleRow,
     onSelectFormationActor: options.actions.onSelectFormationActor,
     onMoveFormationActor: options.actions.onMoveFormationActor,
@@ -70,7 +73,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       project: options.project,
       snapshot,
       detail,
-      selectedDetailActionIndex: mode === "function" ? options.selectedDetailActionIndex : undefined,
+      selectedDetailActionIndex: options.selectedDetailActionIndex,
     }),
     renderFooter(snapshot, options.message)
   );
@@ -213,25 +216,27 @@ function renderFooter(
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
-    class: "status-menu-gold",
-    text: snapshot.goldLabel,
-    attrs: { title: snapshot.goldLabel },
-    dataset: { testid: "status-menu-gold" },
+    class: "status-menu-footer-meta",
+    children: [
+      el("span", {
+        class: "status-menu-gold",
+        text: snapshot.goldLabel,
+        attrs: { title: snapshot.goldLabel },
+        dataset: { testid: "status-menu-gold" },
+      }),
+      el("span", {
+        class: "status-menu-time",
+        text: snapshot.timeLabel,
+        dataset: { testid: "status-menu-time" },
+      }),
+    ],
   }));
-  if (message) {
-    footer.append(el("div", {
-      class: "status-menu-message",
-      text: message,
-      attrs: { role: "status" },
-      dataset: { testid: "status-menu-message" },
-    }));
-  } else {
-    footer.append(el("div", {
-      class: "status-menu-time",
-      text: snapshot.timeLabel,
-      dataset: { testid: "status-menu-time" },
-    }));
-  }
+  footer.append(el("div", {
+    class: "status-menu-message",
+    text: message ?? "",
+    attrs: { role: "status" },
+    dataset: { testid: "status-menu-message" },
+  }));
   return footer;
 }
 

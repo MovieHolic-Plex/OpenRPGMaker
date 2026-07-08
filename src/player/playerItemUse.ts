@@ -19,11 +19,26 @@ export function useItemFromMenu(
     ? session.partyActorIds
     : [targetActorId].filter((actorId): actorId is string => Boolean(actorId));
   if (targets.length === 0) return { kind: "unusable", message: "대상을 선택하세요" };
-  const changed = targets.some((actorId) => applyRecovery(item, session, actorId));
+  let changed = false;
+  for (const actorId of targets) {
+    if (!canApplyRecovery(item, session, actorId)) continue;
+    changed = applyRecovery(item, session, actorId) || changed;
+  }
   if (!changed) return { kind: "unusable", message: `${item.name}의 효과가 없습니다` };
 
   if (item.consumable) changeItem(session, item.id, "-=", 1);
   return { kind: "used", message: `${item.name}을 사용했습니다` };
+}
+
+function canApplyRecovery(item: ItemRecord, session: PlaySession, actorId: string): boolean {
+  const vitals = session.actorVitals[actorId];
+  if (!vitals) return false;
+  const dead = vitals.hp <= 0;
+  if (item.onlyEffectiveOnDeadActors) return dead;
+  if (dead) return false;
+  const hp = recoveryAmount(item.hpRecovery, vitals.maxHp);
+  const mp = recoveryAmount(item.mpRecovery, vitals.maxMp);
+  return (hp > 0 && vitals.hp < vitals.maxHp) || (mp > 0 && vitals.mp < vitals.maxMp);
 }
 
 function canUseItemInMenu(item: ItemRecord): boolean {

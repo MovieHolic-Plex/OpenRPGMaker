@@ -17,6 +17,7 @@ const noopActions: PlayerStatusMenuActions = {
   onSelectEquipmentActor: () => undefined,
   onSelectEquipmentSlot: () => undefined,
   onEquipItem: () => undefined,
+  onUnequipItem: () => undefined,
   onToggleRow: () => undefined,
   onSelectFormationActor: () => undefined,
   onMoveFormationActor: () => undefined,
@@ -135,6 +136,63 @@ describe("player status menu", () => {
       );
 
       expect(findByTestId(menu, "status-menu-row-actor_hero")).not.toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("shows the unequip candidate when an equipped slot is opened", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const actorId = session.partyActorIds[0]!;
+      const weapon = project.database.equipment.find((record) => record.slot === "weapon");
+      if (!weapon) throw new Error("missing weapon fixture");
+      session.actorEquipment[actorId] = { weapon: weapon.id };
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "equipment",
+          mode: "function",
+          equipmentActorId: actorId,
+          equipmentSlotId: "weapon",
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-equipment-item-none")?.textContent).toContain("해제");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps item target rows to name, HP, and MP without repeated guidance", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const item = project.database.items.find((record) => record.id === "item_potion") ?? project.database.items[0]!;
+      item.name = "테스트 회복약";
+      session.actorVitals[session.partyActorIds[0]!]!.hp = 10;
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "items",
+          mode: "function",
+          targetItemId: item.id,
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("대상 선택: 테스트 회복약");
+      const target = findByTestId(menu, `status-menu-item-target-${session.partyActorIds[0]}`);
+      expect(target?.textContent).toMatch(/HP \d+\/\d+.*MP \d+\/\d+/);
+      expect(target?.textContent).not.toContain("사용할 대상을 선택하세요");
     } finally {
       restoreDom();
     }

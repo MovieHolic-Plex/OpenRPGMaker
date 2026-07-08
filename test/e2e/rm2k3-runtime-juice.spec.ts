@@ -12,6 +12,7 @@ type RuntimeJuiceEvent =
   | "menu-back"
   | "menu-close"
   | "menu-confirm"
+  | "menu-invalid"
   | "menu-open"
   | "menu-select"
   | "title-confirm"
@@ -84,10 +85,9 @@ test("keyboard to-title command confirms on the live status menu before transiti
   await page.waitForTimeout(120);
   await triggerAndExpectLiveJuiceClass(page, "main-menu", "juice-menu-open", () => page.keyboard.press("x"));
 
-  for (let index = 0; index < 8; index += 1) {
-    await page.keyboard.press("ArrowDown");
-    await page.waitForTimeout(30);
-  }
+  // to-title 은 레일 마지막 항목 — items 에서 ArrowUp 1회 랩으로 도달 (커맨드 추가에 강건).
+  await page.keyboard.press("ArrowUp");
+  await page.waitForTimeout(30);
   await triggerAndExpectLiveJuiceClass(page, "main-menu", "juice-menu-confirm", () => page.keyboard.press("Enter"));
   await expect(page.getByTestId("title-screen").last()).toBeVisible({ timeout: 5000 });
 });

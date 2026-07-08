@@ -11,6 +11,7 @@ Pick validation based on the touched boundary:
 - Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must still produce a `projectLint` error, `commitChangeset` must return `ok:true` for cluster-rule-only hard violations, and the fixed map should return `ok:true` without cluster-rule issues.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
 - Runtime/player/battle changes: run focused unit tests plus the smallest e2e or browser scenario that proves the behavior in play mode.
+- Play status menu keyboard regressions are covered by `test/e2e/rm2k3-menu-keyboard-tour.spec.ts`; it is intentionally long (`test.setTimeout(120_000)`) and tours item use, skills, equipment, save/load, row, formation, quests, wait, and title return using keyboard navigation.
 - Wiki-only changes: run `npm run openwiki:verify`.
 
 - `npm test` runs the Vitest unit suite.

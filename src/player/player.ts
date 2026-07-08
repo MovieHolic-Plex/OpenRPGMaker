@@ -245,6 +245,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const onKeyDown = (event: KeyboardEvent): void => {
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    const menu = layout.querySelector<HTMLElement>("[data-testid='main-menu']");
+    if (menu && event.key === "Tab") {
+      event.preventDefault();
+      event.stopPropagation();
+      emitRuntimeJuice({ event: "menu-invalid", target: menu });
+      return;
+    }
     if (!isRuntimeMenuKey(key)) return;
     if (isDialogueSurfaceActive() || isModalOverlayActive()) return;
     if (handleTitleKey(key) || statusMenu.handleKey(key)) {
@@ -317,7 +324,9 @@ export function teardownPlayer(): void {
 }
 
 function isRuntimeMenuKey(key: string): key is RuntimeMenuKey {
-  return key === "ArrowDown" ||
+  return key === "ArrowLeft" ||
+    key === "ArrowRight" ||
+    key === "ArrowDown" ||
     key === "ArrowUp" ||
     key === "Enter" ||
     key === " " ||

@@ -35,7 +35,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "items": return itemDetail(options);
     case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
-    case "save": return saveDetail(options.slots, options.onSaveSlot);
+    case "save": return saveDetail(options);
     case "load": return loadDetail(options.slots, options.onLoadSlot);
     case "status": return statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
@@ -56,15 +56,17 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       title: `대상 선택: ${item.name}`,
       entries: partyActors(project, session).map((actor) => {
         const vitals = session.actorVitals[actor.id];
+        const eligible = itemTargetEligibility(item, session, actor.id);
         return {
           label: actor.name,
-          value: vitals ? `HP ${vitals.hp}/${vitals.maxHp}` : "HP 0/0",
-          description: vitals ? `MP ${vitals.mp}/${vitals.maxMp} / 사용할 대상을 선택하세요` : "MP 0/0 / 사용할 대상을 선택하세요",
+          value: vitals ? `HP ${vitals.hp}/${vitals.maxHp}  MP ${vitals.mp}/${vitals.maxMp}` : "HP 0/0  MP 0/0",
           testId: `status-menu-item-target-${actor.id}`,
-          onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, actor.id) : undefined,
+          onActivate: options.onUseItem && eligible ? () => options.onUseItem?.(item.id, actor.id) : undefined,
+          disabled: !eligible,
         };
       }),
       emptyLabel: "대상이 없습니다",
+      hint: itemTargetHint(item),
     };
   }
 
@@ -142,36 +144,54 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     return { title: `장비: ${resolveActorName(session, actor)}`, entries, hint: "바꿀 부위를 선택하세요." };
   }
 
+  const currentEquipmentId = actorEquipment(session, actor.id)[options.equipmentSlotId];
   const choices = project.database.equipment.filter((equipment) => {
     return equipment.slot === options.equipmentSlotId
       && (session.inventory[equipment.id] ?? 0) > 0
       && canEquip(project, actor, equipment);
   });
-  const currentStats = equipmentStats(project, actorEquipment(session, actor.id)[options.equipmentSlotId]);
+  const currentStats = equipmentStats(project, currentEquipmentId);
+  const unequipEntry = currentEquipmentId
+    ? [{
+        label: "해제",
+        value: equipmentName(equipmentById, currentEquipmentId),
+        description: `현재 장비를 벗습니다 / ${statDiffLine(zeroStats(), currentStats)}`,
+        testId: "status-menu-equipment-item-none",
+        onActivate: options.onUnequipItem ? () => options.onUnequipItem?.(actor.id, options.equipmentSlotId as keyof ActorInitialEquipment) : undefined,
+      }]
+    : [];
   return {
     title: `${actor.name}: ${slotLabel(options.equipmentSlotId)}`,
-    entries: choices.map((equipment) => ({
-      label: equipment.name,
-      value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
-      description: `${equipment.description || "장비"} / ${statDiffLine(equipment.statBonuses, currentStats)}`,
-      testId: `status-menu-equipment-item-${equipment.id}`,
-      onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, equipment.id) : undefined,
-    })),
+    entries: [
+      ...unequipEntry,
+      ...choices.map((equipment) => ({
+        label: equipment.name,
+        value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
+        description: `${equipment.description || "장비"} / ${statDiffLine(equipment.statBonuses, currentStats)}`,
+        testId: `status-menu-equipment-item-${equipment.id}`,
+        onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, equipment.id) : undefined,
+      })),
+    ],
     emptyLabel: "장비할 수 있는 소지품이 없습니다",
-    hint: "데이터베이스 착용 가능 설정을 따릅니다.",
+    hint: "후보 이동 시 현재 장비 대비 능력치 증감을 표시합니다.",
   };
 }
 
-function saveDetail(slots: readonly SaveSlotReadResult[], onSaveSlot: ((slot: SaveSlotIndex) => void) | undefined): StatusMenuDetail {
+function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   return {
     title: "저장",
-    entries: slots.map((slot) => ({
+    entries: options.slots.map((slot) => ({
       label: `${slot.slot}번 저장`,
-      value: saveSlotStatus(slot),
+      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot),
       testId: `save-slot-${slot.slot}`,
-      onActivate: onSaveSlot ? () => onSaveSlot(slot.slot) : undefined,
+      onActivate: options.onSaveSlot && options.saveEnabled !== false ? () => options.onSaveSlot?.(slot.slot) : undefined,
+      disabled: options.saveEnabled === false,
     })),
-    hint: "저장할 슬롯을 선택하세요.",
+    hint: options.saveEnabled === false
+      ? "지금은 저장할 수 없습니다."
+      : options.confirmSaveSlot
+        ? "이미 저장된 칸입니다. 같은 슬롯을 다시 선택하면 덮어씁니다."
+        : "저장할 슬롯을 선택하세요.",
   };
 }
 
@@ -180,7 +200,7 @@ function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: Sa
     title: "로드",
     entries: slots.map((slot) => ({
       label: `${slot.slot}번 저장`,
-      value: saveSlotStatus(slot),
+      ...saveSlotEntryParts(slot, false),
       testId: `load-slot-${slot.slot}`,
       onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
       disabled: slot.kind !== "present",
@@ -296,6 +316,34 @@ function learnedSkills(project: Project, session: PlaySession, actor: ActorRecor
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
 }
 
+function itemTargetEligibility(item: Project["database"]["items"][number], session: PlaySession, actorId: string): boolean {
+  const vitals = session.actorVitals[actorId];
+  if (!vitals) return false;
+  const dead = vitals.hp <= 0;
+  if (item.onlyEffectiveOnDeadActors) return dead && hasRecoveryEffect(item);
+  if (dead) return false;
+  const hp = recoveryAmount(item.hpRecovery, vitals.maxHp);
+  const mp = recoveryAmount(item.mpRecovery, vitals.maxMp);
+  return (hp > 0 && vitals.hp < vitals.maxHp) || (mp > 0 && vitals.mp < vitals.maxMp);
+}
+
+function itemTargetHint(item: Project["database"]["items"][number]): string {
+  if (item.scope === "allAllies") return "전체 효과는 사용 가능한 파티원에게만 적용됩니다.";
+  if (item.onlyEffectiveOnDeadActors) return "전투불능 대상에게만 사용할 수 있습니다.";
+  return "HP/MP가 이미 가득 찬 대상이나 전투불능 대상은 선택할 수 없습니다.";
+}
+
+function hasRecoveryEffect(item: Project["database"]["items"][number]): boolean {
+  return item.hpRecovery.flat > 0 ||
+    item.hpRecovery.percentMax > 0 ||
+    item.mpRecovery.flat > 0 ||
+    item.mpRecovery.percentMax > 0;
+}
+
+function recoveryAmount(recovery: Project["database"]["items"][number]["hpRecovery"], maxValue: number): number {
+  return Math.max(0, Math.floor(maxValue * recovery.percentMax / 100) + recovery.flat);
+}
+
 function actorLevel(session: PlaySession, actor: ActorRecord): number {
   return session.actorLevels[actor.id] ?? actor.initialLevel;
 }
@@ -317,15 +365,23 @@ function slotLabel(slotId: keyof ActorInitialEquipment): string {
   return EQUIPMENT_SLOTS.find((slot) => slot.id === slotId)?.label ?? "장비";
 }
 
-function saveSlotStatus(slot: SaveSlotReadResult): string {
+// 메타가 길면 value(우측 1줄)가 아니라 description(전폭 2줄) 행으로 내려 라벨과 겹치지 않게 한다.
+function saveSlotEntryParts(
+  slot: SaveSlotReadResult,
+  confirmingOverwrite: boolean
+): { value: string; description?: string } {
   switch (slot.kind) {
-    case "empty": return "비어 있음";
-    case "corrupt": return "손상됨";
+    case "empty": return { value: "비어 있음" };
+    case "corrupt": return { value: "손상됨" };
     case "present": {
       const parts = [slot.snapshot.projectTitle];
+      if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
       if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
       if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
-      return parts.join(" / ");
+      return {
+        value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨",
+        description: parts.join(" / "),
+      };
     }
     default: return assertNever(slot);
   }

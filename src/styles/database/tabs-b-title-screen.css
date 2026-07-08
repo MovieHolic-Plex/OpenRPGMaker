@@ -257,6 +257,10 @@
   z-index: 35;
 }
 .rm2k3-status-menu.main-menu {
+  --rm2k3-logical-width: 320px;
+  --rm2k3-logical-height: 240px;
+  --rm2k3-stage-scale: 2;
+  --rm2k3-menu-row-height: 15px;
   --rm2k3-status-window-hi: var(--rm2k3-title-window-hi, #356fd4);
   --rm2k3-status-window: var(--rm2k3-title-window, #123c9a);
   --rm2k3-status-window-deep: var(--rm2k3-title-window-deep, #071e68);

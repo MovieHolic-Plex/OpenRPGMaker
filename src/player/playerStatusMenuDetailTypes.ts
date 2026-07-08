@@ -36,6 +36,8 @@ export type StatusMenuDetailOptions = {
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
+  readonly confirmSaveSlot?: SaveSlotIndex;
+  readonly saveEnabled?: boolean;
   readonly onSaveSlot?: (slot: SaveSlotIndex) => void;
   readonly onLoadSlot?: (slot: SaveSlotIndex) => void;
   readonly onSelectItemTarget?: (itemId: string) => void;
@@ -45,6 +47,7 @@ export type StatusMenuDetailOptions = {
   readonly onSelectEquipmentActor?: (actorId: string) => void;
   readonly onSelectEquipmentSlot?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onEquipItem?: (actorId: string, equipmentId: string) => void;
+  readonly onUnequipItem?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onToggleRow?: (actorId: string) => void;
   readonly onSelectFormationActor?: (actorId: string) => void;
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;

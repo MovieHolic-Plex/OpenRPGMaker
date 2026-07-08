@@ -203,6 +203,7 @@ describe("T12 RM2K3 player status menu", () => {
           onSelectEquipmentActor: () => undefined,
           onSelectEquipmentSlot: () => undefined,
           onEquipItem: () => undefined,
+          onUnequipItem: () => undefined,
           onToggleRow: () => undefined,
           onSelectFormationActor: () => undefined,
           onMoveFormationActor: () => undefined,

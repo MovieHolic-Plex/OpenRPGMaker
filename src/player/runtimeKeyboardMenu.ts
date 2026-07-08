@@ -3,6 +3,8 @@ import { STATUS_MENU_COMMAND_IDS, type StatusMenuCommandId } from "@/player/play
 export const TITLE_MENU_ITEM_COUNT = 3;
 
 export type RuntimeMenuKey =
+  | "ArrowLeft"
+  | "ArrowRight"
   | "ArrowDown"
   | "ArrowUp"
   | "Enter"
@@ -47,7 +49,7 @@ export function reduceStatusMenuKeyboard(
       action: "select",
     };
   }
-  if (key === "Enter" || key === " " || key === "e") {
+  if (key === "Enter" || key === " " || key === "e" || key === "z") {
     return {
       selectedCommand: state.selectedCommand,
       mode: state.mode === "main" ? "function" : state.mode,

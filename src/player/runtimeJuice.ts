@@ -5,6 +5,7 @@ export type RuntimeJuiceEvent =
   | "menu-back"
   | "menu-close"
   | "menu-confirm"
+  | "menu-invalid"
   | "menu-open"
   | "menu-select"
   | "title-confirm"
@@ -31,6 +32,7 @@ const RUNTIME_JUICE_SPECS = {
   "menu-back": { event: "menu-back", soundResourceId: "easyrpg-sound-cancel1", motionClass: "juice-menu-back", durationMs: 220 },
   "menu-close": { event: "menu-close", soundResourceId: "easyrpg-sound-close1", motionClass: "juice-menu-close", durationMs: 240 },
   "menu-confirm": { event: "menu-confirm", soundResourceId: "easyrpg-sound-decision1", motionClass: "juice-menu-confirm", durationMs: 240 },
+  "menu-invalid": { event: "menu-invalid", soundResourceId: "easyrpg-sound-buzzer1", motionClass: "juice-menu-invalid", durationMs: 180 },
   "menu-open": { event: "menu-open", soundResourceId: "easyrpg-sound-chime2", motionClass: "juice-menu-open", durationMs: 240 },
   "menu-select": { event: "menu-select", soundResourceId: "easyrpg-sound-cursor1", motionClass: "juice-menu-select", durationMs: 220 },
   "title-confirm": { event: "title-confirm", soundResourceId: "easyrpg-sound-decision2", motionClass: "juice-title-confirm", durationMs: 260 },
