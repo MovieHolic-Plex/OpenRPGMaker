@@ -64,6 +64,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   erasePicture: { kind: "erasePicture", pictureId: "pic1" },
   playAudio: { kind: "playAudio", resourceId: "res1", loop: false },
   stopAudio: { kind: "stopAudio" },
+  cutsceneControl: { kind: "cutsceneControl", mode: "begin", skippable: true },
   displayTextSettings: {
     kind: "displayTextSettings",
     format: "normal",

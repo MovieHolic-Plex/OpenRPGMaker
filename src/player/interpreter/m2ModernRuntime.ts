@@ -3,6 +3,7 @@ import type { M2RuntimeState, PlaySessionLike } from "@/player/types";
 import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 
 export function executeModernCommand(
   session: PlaySessionLike,
@@ -131,6 +132,10 @@ function recordCutsceneControl(session: PlaySessionLike, runtime: M2RuntimeState
   const enabled = fieldBoolean(fields, "enabled", true);
   runtime.cutscene[action] = enabled;
   session.flags[`cutscene:${action}`] = enabled;
+  if (action === "lockPlayer") {
+    if (enabled) beginCutsceneControl(session, undefined, fieldBoolean(fields, "skippable", false));
+    else endCutsceneControl(session);
+  }
 }
 
 function recordCheckpoint(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {

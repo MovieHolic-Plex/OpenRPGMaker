@@ -75,6 +75,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "playAudio", resourceId: "", loop: false };
     case "stopAudio":
       return { kind: "stopAudio" };
+    case "cutsceneControl":
+      return { kind: "cutsceneControl", mode: "begin", skippable: false };
     case "displayTextSettings":
       return {
         kind: "displayTextSettings",

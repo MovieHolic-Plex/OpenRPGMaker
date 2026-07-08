@@ -16,6 +16,7 @@ import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMove
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
 import { applyCameraControl } from "@/player/playSceneCamera";
+import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -155,7 +156,10 @@ function consumeParallelSteps(
     process.waitMs = 100;
     return;
   }
-  if (result.kind === "done") scene.parallelProcesses.delete(key);
+  if (result.kind === "done") {
+    releaseCutsceneControlForOwner(scene.session, process.currentEventId);
+    scene.parallelProcesses.delete(key);
+  }
 }
 
 export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, currentEventId?: string): boolean {

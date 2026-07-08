@@ -17,6 +17,7 @@ import {
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { EventAnimationType } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
+import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -41,17 +42,18 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   }
   scene.session.playTimeSeconds += deltaMs / 1000;
   const input = scene.input_.update();
+  const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
   if (!scene.moving) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
-    else if (input.x !== 0 || input.y !== 0) tryStartMove(scene, input);
+    else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
     updatePlayerMovement(scene, deltaMs);
   } else {
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
-  if (input.actionPressed && !scene.moving) handleAction(scene);
+  if (!cutsceneInputLocked && input.actionPressed && !scene.moving) handleAction(scene);
   scene.input_.resetEdges();
   if (canUpdateWaitingEvents(scene)) {
     scene.updateAutonomousNPCs(deltaMs);

@@ -156,10 +156,22 @@ export type Command =
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
-  | { kind: "showPicture"; pictureId: string; resourceId: string; x: number; y: number }
+  | {
+      kind: "showPicture";
+      pictureId: string;
+      resourceId: string;
+      x: number;
+      y: number;
+      scale?: number;
+      opacity?: number;
+      rotation?: number;
+      durationMs?: number;
+      waitForPicture?: boolean;
+    }
   | { kind: "erasePicture"; pictureId: string }
   | { kind: "playAudio"; resourceId: string; loop: boolean }
   | { kind: "stopAudio" }
+  | { kind: "cutsceneControl"; mode: "begin" | "end"; skippable?: boolean }
   | ({ kind: "displayTextSettings" } & MessageWindowSettings)
   | {
       kind: "shop";

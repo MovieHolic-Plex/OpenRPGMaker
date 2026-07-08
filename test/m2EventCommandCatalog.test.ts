@@ -57,7 +57,7 @@ describe("m2 event command catalog", () => {
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Break Loop"))).toBe(true);
     expect(requireEntry("Loop").existingKind).toBe("loop");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Loop"))).toBe(true);
-    expect(requireEntry("Move Picture").runtimeSupport).toBe("runtime-partial");
+    expect(requireEntry("Move Picture").runtimeSupport).toBe("runtime-full");
     expect(requireEntry("Move Picture").bodyStrategy).toBe("generic");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Move Picture"))).toBe(true);
     expect(requireEntry("Change Enemy HP").runtimeSupport).toBe("runtime-full");

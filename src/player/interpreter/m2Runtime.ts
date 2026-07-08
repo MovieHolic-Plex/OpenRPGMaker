@@ -144,8 +144,10 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
   if (hasField(fields, "rotation") || hasField(fields, "angle")) {
     (picture as { rotation?: number }).rotation = fieldNumber(fields, hasField(fields, "rotation") ? "rotation" : "angle", 0);
   }
-  if (hasField(fields, "duration")) {
-    (picture as { durationMs?: number }).durationMs = toDurationMs(fieldNumber(fields, "duration", 0));
+  if (hasField(fields, "duration") || hasField(fields, "durationMs")) {
+    (picture as { durationMs?: number }).durationMs = hasField(fields, "durationMs")
+      ? Math.max(0, Math.round(fieldNumber(fields, "durationMs", 0)))
+      : toDurationMs(fieldNumber(fields, "duration", 0));
   }
   session.pictures ??= {};
   session.pictures[pictureId] = picture;

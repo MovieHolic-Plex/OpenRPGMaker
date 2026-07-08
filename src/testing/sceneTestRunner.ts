@@ -23,6 +23,7 @@ import {
   type RuntimeEventPositions,
   type RuntimeEventView,
 } from "@/player/runtimeEventState";
+import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 
 const TICK_MS = 16;
 
@@ -46,6 +47,7 @@ export type SceneExpectStep = {
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
   gameOver?: boolean;
+  cutsceneLocked?: boolean;
   mapId?: string;
 };
 
@@ -71,6 +73,7 @@ export interface SceneTestResult {
     readonly picturesVisible: readonly string[];
     readonly bgm?: string;
     readonly gameOver: boolean;
+    readonly cutsceneLocked: boolean;
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
     readonly playTimeSeconds: number;
@@ -167,6 +170,7 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
 }
 
 function runMoveStep(state: RunnerState, step: Extract<SceneStep, { kind: "move" }>): string | null {
+  if (isCutsceneInputLocked(state.session)) return "컷신 입력 잠금 중에는 플레이어 이동을 할 수 없습니다.";
   if (step.dir) {
     state.facing = step.dir;
     const delta = directionDelta(step.dir);
@@ -245,6 +249,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id });
   state.log.push(`event ${view.event.id} start`);
   const stop = pump(state, interp, interp.start());
+  if (stop.stop !== "choices") releaseCutsceneControlForOwner(state.session, view.event.id);
   state.held = stop.stop === "choices" ? { interp } : null;
   return stop.stop === "failed" ? stop.reason : null;
 }
@@ -273,6 +278,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         break;
       case "showPicture":
         showPictureState(state.session, step);
+        if (step.waitForPicture === true) advanceTime(state, step.durationMs ?? 0);
         step = interp.resume(undefined);
         break;
       case "erasePicture":
@@ -513,6 +519,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.gameOver !== undefined && state.gameOver !== step.gameOver) {
     return `게임 오버: 기대 ${step.gameOver}, 실제 ${state.gameOver}`;
   }
+  if (step.cutsceneLocked !== undefined && isCutsceneInputLocked(state.session) !== step.cutsceneLocked) {
+    return `컷신 잠금: 기대 ${step.cutsceneLocked}, 실제 ${isCutsceneInputLocked(state.session)}`;
+  }
   return null;
 }
 
@@ -617,6 +626,7 @@ function result(
       picturesVisible: Object.keys(session.pictures),
       bgm: session.audio.bgm?.resourceId,
       gameOver,
+      cutsceneLocked: isCutsceneInputLocked(session),
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
       playTimeSeconds: session.playTimeSeconds,

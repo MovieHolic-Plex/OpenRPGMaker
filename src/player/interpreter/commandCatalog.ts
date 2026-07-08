@@ -8,6 +8,7 @@ import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpr
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import type { RuntimeCameraTarget } from "@/player/types";
+import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -78,6 +79,15 @@ function executeM2Command(
 
   if (entry.title === "Remove Event" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
     return pause("removeEvent", { kind: "removeEvent", eventId: removeEventId(command.fields, state.currentEventId) });
+  }
+
+  if (entry.title === "Move Picture" && executeM2RuntimeCommand(state.session, entry, command, { currentEventId: state.currentEventId })) {
+    const pictureId = fieldString(command.fields, "pictureId", "pic1");
+    const picture = state.session.pictures?.[pictureId];
+    if (picture && shouldWaitForPicture(command.fields)) {
+      return pause("showPicture", { kind: "showPicture", ...picture, waitForPicture: true });
+    }
+    return resumeNext(frame);
   }
 
   if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command)) {
@@ -298,6 +308,11 @@ export function executeCommand(
         resourceId: command.resourceId,
         x: command.x,
         y: command.y,
+        scale: command.scale,
+        opacity: command.opacity,
+        rotation: command.rotation,
+        durationMs: command.durationMs,
+        waitForPicture: command.waitForPicture,
       });
     case "erasePicture":
       return pause("erasePicture", { kind: "erasePicture", pictureId: command.pictureId });
@@ -305,6 +320,10 @@ export function executeCommand(
       return pause("playAudio", { kind: "playAudio", resourceId: command.resourceId, loop: command.loop });
     case "stopAudio":
       return pause("stopAudio", { kind: "stopAudio" });
+    case "cutsceneControl":
+      if (command.mode === "begin") beginCutsceneControl(state.session, state.currentEventId, command.skippable === true);
+      else endCutsceneControl(state.session);
+      return resumeNext(frame);
     case "displayTextSettings": {
       state.session.messageWindowSettings = {
         format: command.format,
@@ -530,6 +549,10 @@ function cameraDurationMs(value: number): number {
 
 function optionalNumberField(fields: M2CommandFields, key: string): number | undefined {
   return hasM2Field(fields, key) ? fieldNumber(fields, key, 0) : undefined;
+}
+
+function shouldWaitForPicture(fields: M2CommandFields): boolean {
+  return fieldBoolean(fields, "waitForPicture", fieldBoolean(fields, "wait", false));
 }
 
 function spawnEventId(fields: M2CommandFields): string {

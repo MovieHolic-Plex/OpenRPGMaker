@@ -66,6 +66,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "setFlag":
     case "erasePicture":
     case "stopAudio":
+    case "cutsceneControl":
     case "inn":
     case "gameOver":
     case "returnToTitle":

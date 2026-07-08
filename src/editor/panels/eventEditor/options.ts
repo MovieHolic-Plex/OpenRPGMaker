@@ -57,6 +57,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "erasePicture", label: "그림 삭제" },
   { value: "playAudio", label: "소리 재생" },
   { value: "stopAudio", label: "소리 정지" },
+  { value: "cutsceneControl", label: "컷신 제어" },
   { value: "shop", label: "상점 처리" },
   { value: "inn", label: "여관 처리" },
   { value: "gameOver", label: "게임 오버" },

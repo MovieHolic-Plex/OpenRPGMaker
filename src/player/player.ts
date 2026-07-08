@@ -26,6 +26,7 @@ import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import { renderTitleScreen } from "@/player/titleScreen";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
+import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 
 let teardownShell: (() => void) | null = null;
 
@@ -254,6 +255,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (!isRuntimeMenuKey(key)) return;
     if (isDialogueSurfaceActive() || isModalOverlayActive()) return;
+    if (activeScene() && isCutsceneInputLocked(activeScene()!.session)) {
+      if (key === "x" || key === "Escape") event.preventDefault();
+      return;
+    }
     if (handleTitleKey(key) || statusMenu.handleKey(key)) {
       event.preventDefault();
       return;

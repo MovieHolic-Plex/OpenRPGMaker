@@ -21,6 +21,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "set_map_properties",
   "place_npc",
   "upsert_event",
+  "script_cutscene",
   "move_event",
   "remove_event",
 ]);

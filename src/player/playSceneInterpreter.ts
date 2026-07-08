@@ -24,6 +24,11 @@ import type { Command } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import {
+  CUTSCENE_END_LABEL,
+  isCutsceneSkippable,
+  releaseCutsceneControlForOwner,
+} from "@/player/cutsceneControl";
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
@@ -57,13 +62,16 @@ export async function runCommands(
   const project = store.getCurrent();
   scene.session.commonEvents = project.commonEvents;
   const interpreter = createInterpreter([...commands], scene.session, project, { currentEventId });
+  const skipController = createCutsceneSkipController(scene, interpreter);
   try {
     let result = interpreter.start();
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done") {
-      result = await consumeBlockingStep(scene, interpreter, result, currentEventId);
+      result = await consumeBlockingStep(scene, interpreter, result, currentEventId, skipController);
     }
   } finally {
+    skipController.dispose();
+    releaseCutsceneControlForOwner(scene.session, currentEventId);
     scene.running = false;
     scene.lastActionTargetKey = "";
     scene.setInputEnabled(true);
@@ -72,11 +80,65 @@ export async function runCommands(
   }
 }
 
+type CutsceneSkipController = {
+  dispose(): void;
+  takeResult(): StepResult | null;
+  waitForSkip(): Promise<void>;
+};
+
+function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Interpreter): CutsceneSkipController {
+  let lastEscapeAt = 0;
+  let result: StepResult | null = null;
+  let waiters: Array<() => void> = [];
+  const notify = (): void => {
+    const pending = waiters;
+    waiters = [];
+    for (const resolve of pending) resolve();
+  };
+  const requestSkip = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape" || !isCutsceneSkippable(scene.session) || result) return;
+    const now = performance.now();
+    const secondEscape = now - lastEscapeAt <= 900;
+    lastEscapeAt = now;
+    if (!secondEscape) return;
+    event.preventDefault();
+    result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
+    scene.refreshRuntimeSurfaces();
+    notify();
+  };
+  document.addEventListener("keydown", requestSkip);
+  return {
+    dispose(): void {
+      document.removeEventListener("keydown", requestSkip);
+      waiters = [];
+    },
+    takeResult(): StepResult | null {
+      const next = result;
+      result = null;
+      return next;
+    },
+    waitForSkip(): Promise<void> {
+      if (result) return Promise.resolve();
+      return new Promise((resolve) => waiters.push(resolve));
+    },
+  };
+}
+
+function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController): Promise<void> {
+  const duration = Math.max(0, Math.round(ms));
+  if (duration === 0) return Promise.resolve();
+  return Promise.race([
+    new Promise<void>((resolve) => window.setTimeout(resolve, duration)),
+    skipController.waitForSkip(),
+  ]);
+}
+
 async function consumeBlockingStep(
   scene: PlaySceneContext,
   interpreter: Interpreter,
   step: Exclude<StepResult, { kind: "done" }>,
-  currentEventId: string | undefined
+  currentEventId: string | undefined,
+  skipController: CutsceneSkipController
 ): Promise<StepResult> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
@@ -91,12 +153,14 @@ async function consumeBlockingStep(
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
       });
+      {
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
       return resumeAfterSurface(scene, interpreter);
     case "choices":
-      return resumeWithChoice(
-        scene,
-        interpreter,
-        await dialogue.showChoices({
+      {
+        const choice = await dialogue.showChoices({
           prompt: step.prompt,
           options: step.options,
           settings: step.settings,
@@ -104,10 +168,17 @@ async function consumeBlockingStep(
           textContext: { session: scene.session, project: store.getCurrent() },
           playerTileY: scene.tileY,
           mapHeight: scene.map.height,
-        })
-      );
+        });
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+        return resumeWithChoice(scene, interpreter, choice);
+      }
     case "wait":
-      await new Promise<void>((resolve) => window.setTimeout(resolve, step.ms));
+      await waitWithCutsceneSkip(step.ms, skipController);
+      {
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
       return resumeAfterSurface(scene, interpreter);
     case "inputWait": {
       const keyCode = await waitForKey();
@@ -179,6 +250,11 @@ async function consumeBlockingStep(
       showPictureState(scene.session, step);
       scene.showRuntimeOverlay("picture-overlay", resourceDisplayName(step.resourceId, step.pictureId || step.resourceId));
       scene.syncRuntimeState();
+      if (step.waitForPicture === true) {
+        await waitWithCutsceneSkip(step.durationMs ?? 0, skipController);
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
       return resumeInterpreter(interpreter);
     case "erasePicture":
       erasePictureState(scene.session, step.pictureId);

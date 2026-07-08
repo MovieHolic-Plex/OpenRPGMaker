@@ -188,6 +188,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
   stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
+  cutsceneControl: (cmd) => commandLine("컷신 제어", valuePart(cmd.mode === "begin" ? "시작" : "종료"), ...(cmd.skippable ? [plainPart(" / "), valuePart("스킵 가능")] : [])),
   shop: (cmd) => commandLine("상점 처리", valuePart(String(cmd.itemIds.length)), plainPart("개")),
   inn: (cmd) => commandLine("여관 처리", valuePart(String(cmd.price)), plainPart("G")),
   gameOver: () => [commandPart("게임 오버")],

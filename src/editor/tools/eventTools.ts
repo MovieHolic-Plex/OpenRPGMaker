@@ -4,9 +4,15 @@
 
 import { isPassable } from "@/project/collision";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, EventPage, GameEvent, GameMap, Project, TransferFade } from "@/project/types";
+import type { Command, EventPage, GameEvent, GameMap, Project, TransferFade, Trigger } from "@/project/types";
+import {
+  compileCutscene,
+  CutsceneValidationError,
+  type CutsceneBeat,
+} from "@/editor/cutscene";
 import {
   charsetGraphic,
   compileSimplePages,
@@ -375,6 +381,120 @@ const moveEvent: ToolDefinition = {
   },
 };
 
+function triggerFromArg(value: unknown): Trigger {
+  switch (value) {
+    case "auto":
+      return { kind: "auto" };
+    case "parallel":
+      return { kind: "parallel" };
+    case "action":
+    case undefined:
+    case null:
+      return { kind: "action" };
+    default:
+      throw new ToolError("trigger는 action, auto, parallel 중 하나여야 합니다.", { code: "cutscene-trigger" });
+  }
+}
+
+function cutsceneEventPosition(project: Project, map: GameMap, args: Record<string, unknown>): Point {
+  const x = typeof args.x === "number" ? args.x : map.id === project.startMapId ? project.startPos.x : 0;
+  const y = typeof args.y === "number" ? args.y : map.id === project.startMapId ? project.startPos.y : 0;
+  if (!inMapBounds(map, x, y)) throw new ToolError(`컷신 이벤트 위치가 맵 밖입니다: (${x}, ${y})`, { code: "cutscene-out-of-bounds", mapId: map.id, x, y });
+  return { x, y };
+}
+
+function cutscenePage(
+  pageId: string,
+  name: string,
+  trigger: Trigger,
+  commands: Command[]
+): EventPage {
+  return {
+    id: pageId,
+    name,
+    conditions: [],
+    graphic: { transparent: true },
+    trigger,
+    priority: "below",
+    overlapForbidden: false,
+    animationType: "fixedGraphic",
+    movement: PASSIVE,
+    commands,
+  };
+}
+
+const scriptCutscene: ToolDefinition = {
+  name: "script_cutscene",
+  description:
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. beat 종류: " +
+    "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves,wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait}, " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. " +
+    "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      eventId: { type: "string", description: "기존 이벤트 id. 없으면 새 투명 이벤트를 생성합니다." },
+      x: { type: "integer", description: "새 이벤트 생성 시 X. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
+      y: { type: "integer", description: "새 이벤트 생성 시 Y. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
+      trigger: { type: "string", enum: ["action", "auto", "parallel"], description: "기본 action" },
+      beats: { type: "array", description: "CutsceneBeat[]", items: { type: "object" } },
+      skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
+    },
+    required: ["mapId", "beats"],
+  },
+  invalidArgsExample: {
+    mapId: "map1",
+    eventId: "ev_memory",
+    trigger: "action",
+    skippable: true,
+    beats: [
+      { kind: "camera", mode: "pan", x: 8, y: 6, durationMs: 600, wait: true },
+      { kind: "say", speaker: "나", text: "그날을 기억한다." },
+      { kind: "camera", mode: "return", durationMs: 300 },
+    ],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const trigger = triggerFromArg(args.trigger);
+    const beats = args.beats as CutsceneBeat[];
+    const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
+    const eventIds = new Set(map.events.map((event) => event.id));
+    eventIds.add(eventId);
+    let commands: Command[];
+    try {
+      commands = compileCutscene(beats, {
+        skippable: args.skippable === true,
+        context: { eventIds, resourceIds: collectResourceIds(draft) },
+      });
+    } catch (cause) {
+      if (cause instanceof CutsceneValidationError) {
+        throw new ToolError(`컷신 검증 실패: ${cause.reasons.join(" / ")}`, { code: "cutscene-validation", mapId: map.id });
+      }
+      throw cause;
+    }
+    const existing = map.events.find((event) => event.id === eventId);
+    const page = cutscenePage(`${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`, "컷신", trigger, commands);
+    const outcome = existing ? "modified" : "added";
+    let event: GameEvent;
+    if (existing) {
+      existing.pages = [...(existing.pages ?? []), page];
+      event = existing;
+    } else {
+      const pos = cutsceneEventPosition(draft, map, args);
+      event = { id: eventId, x: pos.x, y: pos.y, trigger, commands: [], pages: [page] };
+      map.events.push(event);
+    }
+    assertEventShape(event);
+    const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
+    return {
+      summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,
+      data: { eventId, pageId: page.id, commandCount: commands.length, unsupportedCommands },
+    };
+  },
+};
+
 export { charsetGraphic };
 // 스위치 등록 헬퍼는 중립 모듈(flagHelpers)로 이전. 호환을 위해 재수출.
 export { ensureNamedSwitch };
@@ -386,4 +506,5 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   duplicateEvent,
   removeEvent,
   moveEvent,
+  scriptCutscene,
 ];

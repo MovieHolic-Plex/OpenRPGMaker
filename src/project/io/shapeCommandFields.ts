@@ -83,6 +83,10 @@ function validateCommandShape(label: string, value: unknown): void {
     case "recoverAll":
       if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
       return;
+    case "cutsceneControl":
+      requireCutsceneControlMode(`${label}.mode`, command.mode);
+      if (command.skippable !== undefined) requireBoolean(`${label}.skippable`, command.skippable);
+      return;
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
@@ -142,6 +146,12 @@ function requireActorAmountOp(label: string, value: unknown): void {
 function requireTransferFade(label: string, value: unknown): void {
   const fade = requireString(label, value);
   if (fade === "black" || fade === "white" || fade === "none") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function requireCutsceneControlMode(label: string, value: unknown): void {
+  const mode = requireString(label, value);
+  if (mode === "begin" || mode === "end") return;
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 

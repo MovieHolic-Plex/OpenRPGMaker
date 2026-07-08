@@ -45,7 +45,18 @@ export type StepResult =
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean }
-  | { kind: "showPicture"; pictureId: string; resourceId: string; x: number; y: number }
+  | {
+      kind: "showPicture";
+      pictureId: string;
+      resourceId: string;
+      x: number;
+      y: number;
+      scale?: number;
+      opacity?: number;
+      rotation?: number;
+      durationMs?: number;
+      waitForPicture?: boolean;
+    }
   | { kind: "erasePicture"; pictureId: string }
   | { kind: "playAudio"; resourceId: string; loop: boolean }
   | { kind: "stopAudio" }
@@ -118,6 +129,8 @@ export interface Interpreter {
   // 병렬 이벤트 등에서 현재 pending(블로킹) 단계를 건너뛰고 다음 명령으로 진행한다.
   // 메인 이벤트 흐름에서는 사용하지 않는다.
   skip(): StepResult;
+  // 컷신 스킵처럼 외부 입력이 현재 큐를 특정 라벨로 보낼 때 사용한다.
+  jumpToLabel(name: string): StepResult;
   isDone(): boolean;
 }
 
