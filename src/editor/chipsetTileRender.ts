@@ -10,8 +10,9 @@ import {
 } from "@/project/defaults/lakeAutotile";
 import { roadAutotileTileForCell } from "@/project/defaults/roadAutotile";
 import {
-  isTerrainInnerCornerTile,
-  terrainInnerCornerQuarterSources,
+  isTerrainQuarterTile,
+  terrainQuarterSources,
+  type TerrainQuarterSource,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
@@ -52,8 +53,9 @@ export function createChipsetTileObject(
   if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
   }
-  if (isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
-    return createTerrainInnerCornerObject(scene, map, tileset, x, y);
+  if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
+    const terrainQuarters = terrainQuarterSources(map, x, y);
+    if (terrainQuarters) return createTerrainQuarterObject(scene, tileset, x, y, terrainQuarters);
   }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
@@ -112,18 +114,18 @@ function createLakeQuarterObject(
   return image;
 }
 
-// 오목 코너 합성 타일(365/362): 잔디 대각 귀퉁이만 오목 쿼터, 나머지는 몸통 쿼터로 합성.
-function createTerrainInnerCornerObject(
+// 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
+function createTerrainQuarterObject(
   scene: Phaser.Scene,
-  map: GameMap,
   tileset: TilesetDef,
   x: number,
-  y: number
+  y: number,
+  sources: readonly TerrainQuarterSource[]
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
   container.setSize(TILE_SIZE, TILE_SIZE);
   const textureKey = ensureTilesetTexture(scene, tileset);
-  for (const part of terrainInnerCornerQuarterSources(map, x, y) ?? []) {
+  for (const part of sources) {
     const image = scene.add.image(part.offsetX, part.offsetY, textureKey, `tile_${part.tile}_${part.quarter}`);
     image.setOrigin(0, 0);
     container.add(image);

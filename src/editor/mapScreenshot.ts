@@ -1,6 +1,10 @@
 import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
-import { isTerrainInnerCornerTile, terrainInnerCornerQuarterSources } from "@/project/defaults/terrainQuarterAutotile";
+import {
+  isTerrainQuarterTile,
+  terrainQuarterSources,
+  type TerrainQuarterSource,
+} from "@/project/defaults/terrainQuarterAutotile";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
@@ -77,9 +81,12 @@ function drawLayer(
       drawLakeAutotile(context, image, map, tileset, x, y);
       continue;
     }
-    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
-      drawTerrainInnerCorner(context, image, map, tileset, x, y);
-      continue;
+    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
+      const terrainQuarters = terrainQuarterSources(map, x, y);
+      if (terrainQuarters) {
+        drawTerrainQuarter(context, image, tileset, x, y, terrainQuarters);
+        continue;
+      }
     }
     drawRawTile(context, image, tileset, tile, x, y);
   }
@@ -104,16 +111,16 @@ function drawLakeAutotile(
   }
 }
 
-// 오목 코너 합성 타일(365/362): 잔디 대각 귀퉁이만 오목 쿼터, 나머지는 몸통 쿼터.
-function drawTerrainInnerCorner(
+// 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
+function drawTerrainQuarter(
   context: CanvasRenderingContext2D,
   image: HTMLImageElement,
-  map: GameMap,
   tileset: TilesetDef,
   x: number,
   y: number,
+  sources: readonly TerrainQuarterSource[]
 ): void {
-  for (const part of terrainInnerCornerQuarterSources(map, x, y) ?? []) {
+  for (const part of sources) {
     const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
     const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
     const targetX = (x * tileset.tileSize + part.offsetX) * SCREENSHOT_SCALE;

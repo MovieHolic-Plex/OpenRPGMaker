@@ -7,8 +7,9 @@ import {
   type LakeAutotileQuarter,
 } from "@/project/defaults/lakeAutotile";
 import {
-  isTerrainInnerCornerTile,
-  terrainInnerCornerQuarterSources,
+  isTerrainQuarterTile,
+  terrainQuarterSources,
+  type TerrainQuarterSource,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
@@ -125,9 +126,12 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     renderLakeAutotile(scene, textureKey, x, y);
     return;
   }
-  if (isDefaultTilesetTexture(tileset) && isTerrainInnerCornerTile(tile)) {
-    renderTerrainInnerCorner(scene, textureKey, x, y);
-    return;
+  if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
+    const terrainQuarters = terrainQuarterSources(scene.map, x, y);
+    if (terrainQuarters) {
+      renderTerrainQuarter(scene, textureKey, x, y, terrainQuarters);
+      return;
+    }
   }
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
@@ -155,14 +159,15 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   }
 }
 
-// 오목 코너 합성 타일(365/362): 잔디 대각 귀퉁이만 오목 쿼터, 나머지는 몸통 쿼터.
-function renderTerrainInnerCorner<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+// 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
+function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
   textureKey: string,
   x: number,
-  y: number
+  y: number,
+  sources: readonly TerrainQuarterSource[]
 ): void {
-  for (const part of terrainInnerCornerQuarterSources(scene.map, x, y) ?? []) {
+  for (const part of sources) {
     const image = scene.add.image(
       x * TILE_SIZE + part.offsetX,
       y * TILE_SIZE + part.offsetY,

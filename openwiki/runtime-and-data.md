@@ -20,6 +20,7 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 - Battle DOM is intentionally presentation-only and compact: render the field, message window, command list, party status, target prompt/brackets, and result rewards without duplicating runtime predictions into extra analysis panels.
 
 - `PlayScene` is the play-mode scene entry point. It wires map loading, player input, runtime overlays, battle entry, and scene-level helpers, but it should not own game rules.
+- Play-mode map rendering shares default Combined Town terrain quarter composition with editor previews through `src/project/defaults/terrainQuarterAutotile.ts`; `terrainQuarterSources()` returning `null` means the saved tile should be drawn as one raw tile.
 - Play mode uses a 320x240 logical play stage scaled by the smallest integer that covers the available viewport. The viewport is the crop container (`overflow:hidden`), the scaled stage stays centered, and stage-mounted DOM overlays should respect the crop-safe CSS variables from `playSurface.ts`.
 - The interpreter is the command executor for in-play events. Keep command resolution, branching, pauses, and step results in the interpreter layer; let `PlayScene` only consume those results.
 - Battle runtime lives under `src/battle` and should stay self-contained. `PlayScene` can launch battles and render the battle UI, but battle state, turn flow, damage, rewards, and result resolution belong in battle runtime.
