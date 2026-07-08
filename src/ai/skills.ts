@@ -291,7 +291,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "절차(준수):",
       "1. run_lint로 프로젝트 전반 문제를 확인하세요.",
       "2. check_reachability로 현재 맵의 도달 불가 지점을 확인하세요.",
-      "3. list_terrain_templates에 템플릿이 있으면, 맵의 구조물 영역에 validate_structure를 실행하세요.",
+      "3. 하네싱 집 키트로 지은 구조물은 문/길 연결과 통행성을 실제 맵 조회로 확인하세요.",
       "4. 발견한 문제를 심각도 순으로 나열하고, 자동으로 고칠 수 있는 것은 고친 뒤 같은 검사를 재실행해 해소를 증명하세요.",
       "5. 고칠 수 없는 것은 이유와 함께 남기세요.",
       SPEC_RULE,

@@ -13,7 +13,7 @@ const FRAMED_DOOR_TOP = 116;
 const FRAMED_DOOR_BOTTOM = 146;
 const ROOF_LEFT = 354;
 const ROOF_RIGHT = 355;
-const WINDOW = 87;
+const WINDOW = 85;
 const INTERIOR_WALL_TOP_LEFT = 102;
 const INTERIOR_FLOOR = 138;
 const INTERIOR_BOOKSHELF_LEFT = 48;
@@ -29,7 +29,8 @@ describe("structure stamp tools", () => {
 
     expect(map.upperTiles[at(map, 8, 5)]).toBe(ROOF_LEFT);
     expect(map.upperTiles[at(map, 18, 5)]).toBe(ROOF_RIGHT);
-    expect(map.upperTiles[at(map, 11, 10)]).toBe(WINDOW);
+    expect(map.upperTiles[at(map, 9, 10)]).toBe(WINDOW);
+    expect(map.upperTiles[at(map, 15, 10)]).toBe(WINDOW);
     expect(map.lowerTiles[at(map, 14, 10)]).toBe(FRAMED_DOOR_TOP);
     expect(map.lowerTiles[at(map, 14, 11)]).toBe(FRAMED_DOOR_BOTTOM);
   });
@@ -41,7 +42,7 @@ describe("structure stamp tools", () => {
 
     expect(cells).toEqual(expect.arrayContaining([
       { layer: "upper", tile: ROOF_LEFT, x: 8, y: 5 },
-      { layer: "upper", tile: WINDOW, x: 11, y: 10 },
+      { layer: "upper", tile: WINDOW, x: 9, y: 10 },
       { layer: "lower", tile: FRAMED_DOOR_BOTTOM, x: 14, y: 11 },
     ]));
     expect(map.upperTiles[at(map, 8, 5)]).toBe(TILE.EMPTY);

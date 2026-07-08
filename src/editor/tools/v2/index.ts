@@ -17,9 +17,7 @@ export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["scatter_object", "tile_scatter"],
   ["build_house", "tile_structure"],
   ["stamp_structure", "tile_structure"],
-  ["stamp_template_house", "tile_structure"],
   ["preview_house", "tile_structure"],
-  ["stamp_terrain_template", "tile_structure"],
   ["set_tile_metadata", "tile_metadata"],
   ["set_tile_rules", "tile_metadata"],
   ["set_tile_passability", "tile_metadata"],
@@ -34,6 +32,4 @@ export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["query_tiles", "tile_query"],
   ["analyze_map_tile_usage", "tile_query"],
   ["find_similar_tiles", "tile_query"],
-  ["list_terrain_templates", "tile_query"],
-  ["get_terrain_template", "tile_query"],
 ]);

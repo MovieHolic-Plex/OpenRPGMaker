@@ -35,8 +35,7 @@
 LLM 에 **70개** 노출(등록 99, deprecated 29). deprecated 는 옛 배치 4종·palette 뿐이고,
 v3 와 경쟁하는 옛 타일 지식 툴이 살아있다: `tile_group`·`set_group_layout`·
 `suggest_group_from_range`·`tile_metadata`·`tile_cluster_rule`·`render_group_sample`·
-`show_tile_grid`·`show_tiles`·`extract_terrain_template`·`upsert_terrain_template`·
-`validate_structure`. minimax-m3 같은 작은 모델은 이 70개 안에서 v3 정공법 대신 옛 툴로 샌다.
+`show_tile_grid`·`show_tiles`. minimax-m3 같은 작은 모델은 이 70개 안에서 v3 정공법 대신 옛 툴로 샌다.
 
 ### 실패 C — 사이드바 IA 붕괴
 
@@ -108,8 +107,7 @@ v3 와 경쟁하는 옛 타일 지식 툴이 살아있다: `tile_group`·`set_gr
 **2.2.1 잔존 옛 타일 툴 deprecated (무조건)**
 - `toolRegistry.ts` `tagV1()`/superseded 맵에 추가로 다음을 deprecated 마킹:
   `tile_group, set_group_layout, suggest_group_from_range, tile_metadata, tile_cluster_rule,
-  render_group_sample, show_tile_grid, show_tiles, extract_terrain_template,
-  upsert_terrain_template, validate_structure`.
+  render_group_sample, show_tile_grid, show_tiles`.
   (getTool/실행 호환은 유지 — LLM 노출만 제외. 70 → ~59.)
 
 **2.2.2 활성 탭 기반 모드 스코핑**

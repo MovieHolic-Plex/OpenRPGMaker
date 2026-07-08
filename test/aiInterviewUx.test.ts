@@ -51,27 +51,29 @@ describe("buildInterviewKickoff", () => {
     expect(buildInterviewKickoff(null)).toContain("시작 맵");
   });
 
-  it("구조물 발견 시 템플릿 학습 프로토콜(그리드→초안→검토 창, 텍스트 덤프 금지)을 담는다", () => {
+  it("구조물 발견 시 키트/메타데이터 학습 프로토콜(그리드→키트 판단→템플릿 저장 금지)을 담는다", () => {
     const kickoff = buildInterviewKickoff("map_v");
     expect(kickoff).toContain("show_tile_grid");
-    expect(kickoff).toContain("extract_terrain_template");
-    expect(kickoff).toContain("검토");
-    expect(kickoff).toContain("나열하지 마세요");
+    expect(kickoff).toContain("build_house_kit");
+    expect(kickoff).toContain("별도 템플릿을 저장하지 않습니다");
   });
 });
 
 describe("buildStructureLearnKickoff (📐 선택 영역 학습)", () => {
-  it("그림 먼저 + 채팅 텍스트 덤프 금지 + 저장은 검토 창에서(순서 강제)", () => {
+  it("그림 먼저 + 하네싱 키트 판단 + 타일/그룹만 저장한다(순서 강제)", () => {
     const kickoff = buildStructureLearnKickoff("map_v", { x: 3, y: 4, width: 10, height: 8 });
     const gridAt = kickoff.indexOf("show_tile_grid");
-    const extractAt = kickoff.indexOf("extract_terrain_template");
-    const noDumpAt = kickoff.indexOf("나열하지 마세요");
+    const highlightAt = kickoff.indexOf("highlight_map_region");
+    const kitAt = kickoff.indexOf("build_house_kit");
+    const noDumpAt = kickoff.indexOf("나열하지 말고");
     expect(gridAt).toBeGreaterThan(-1);
-    expect(extractAt).toBeGreaterThan(gridAt);
-    expect(noDumpAt).toBeGreaterThan(extractAt); // 좌표·번호 목록을 채팅에 쏟지 않는다.
+    expect(highlightAt).toBeGreaterThan(gridAt);
+    expect(kitAt).toBeGreaterThan(highlightAt);
+    expect(noDumpAt).toBeGreaterThan(kitAt); // 좌표·번호 목록을 채팅에 쏟지 않는다.
     expect(kickoff).toContain("x=3, y=4, w=10, h=8");
-    expect(kickoff).toContain("검토"); // 저장은 검토 창에서.
-    expect(kickoff).toContain("직접 호출하지 마세요");
+    expect(kickoff).toContain("set_tile_metadata");
+    expect(kickoff).toContain("upsert_tile_group");
+    expect(kickoff).toContain("지형 템플릿은 만들지 마세요");
   });
 });
 
@@ -102,7 +104,6 @@ describe("isMetadataOnlyProposal", () => {
 
   it("타일 지식 툴만 있으면 true — 제안 카드 없이 즉시 저장 대상", () => {
     expect(isMetadataOnlyProposal([call("set_tile_metadata"), call("upsert_tile_group"), call("set_tile_passability")])).toBe(true);
-    expect(isMetadataOnlyProposal([call("upsert_terrain_template")])).toBe(true); // 구조물 지식도 즉시 저장.
   });
 
   it("맵/이벤트 변경이 섞이면 false — 기존 검토 절차 유지", () => {

@@ -12,10 +12,10 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
-import { stampTerrainTemplateHouse } from "@/project/defaults/terrainTemplateHouseStamp";
+import { stampRectHouseKit } from "@/editor/houseKit";
+import { kitIdForSmallHouseMaterial } from "@/project/defaults/terrainTemplateHouseStamp";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
-import { dbHouseVariantDoorBottomOffset, stampDbHouseVariant, type DbHouseShapeVariant } from "@/project/defaults/dbExtractedHouseVariants";
 import type { SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
 import type { GameMap, PaletteSlotRole, Project, TilesetDef } from "@/project/types";
@@ -374,61 +374,9 @@ const stampStructure: ToolDefinition = {
   },
 };
 
-// 지형 템플릿(small_house_01 표) 기반 집 스탬프. stamp_structure(townHousePatterns)와 별개로
-// DB 추출 지형 템플릿 계열(재질 3종 × 변형 4종)을 챗봇/헤드리스에서 쓸 수 있게 노출한다.
-const HOUSE_VARIANTS: readonly DbHouseShapeVariant[] = ["template", "wide", "compact", "l"];
 const HOUSE_MATERIALS: readonly SmallHouseMaterial[] = ["plaster", "wood", "stone"];
-// 울타리 포함 최대 발자국(변형 플랜 기준 18×16) — 이 여유가 없으면 잘려 찍힌다.
-const HOUSE_FOOTPRINT = { width: 18, height: 16 } as const;
-
-const stampTemplateHouse: ToolDefinition = {
-  name: "stamp_template_house",
-  description:
-    "지형 템플릿 기반 집을 찍는다. variant: template(small_house_01 표)/wide(넓은)/compact(작은)/l(ㄴ자 집), material: plaster(회벽)/wood(목재)/stone(석재). approachHeight로 문 앞 진입로를 깐다. 발자국 약 18×16 — 여유 있는 origin을 잡아라. 임의 크기 직사각형 집은 build_house를 써라. 반환 data에 문 좌표 포함.",
-  mode: "write",
-  parameters: {
-    type: "object",
-    properties: {
-      mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 좌상단" },
-      variant: { type: "string", enum: HOUSE_VARIANTS as unknown as string[] },
-      material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
-      includeFence: { type: "boolean", description: "울타리 포함(기본 true)" },
-      approachHeight: { type: "integer", description: "문 아래로 깔 진입로 길이(칸)" },
-    },
-    required: ["mapId", "origin", "variant", "material"],
-  },
-  run(draft, args): ToolExecResult {
-    const map = requireMap(draft, args.mapId as string);
-    const variant = args.variant as DbHouseShapeVariant;
-    const material = args.material as SmallHouseMaterial;
-    if (!HOUSE_VARIANTS.includes(variant)) throw new ToolError(`알 수 없는 집 변형: ${String(args.variant)} (${HOUSE_VARIANTS.join("/")})`);
-    if (!HOUSE_MATERIALS.includes(material)) throw new ToolError(`알 수 없는 재질: ${String(args.material)} (${HOUSE_MATERIALS.join("/")})`);
-    const origin = args.origin as Point;
-    if (!inMapBounds(map, origin.x, origin.y)) {
-      throw new ToolError(`origin이 맵 밖입니다: (${origin.x},${origin.y})`, { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y });
-    }
-    if (origin.x + HOUSE_FOOTPRINT.width > map.width || origin.y + HOUSE_FOOTPRINT.height > map.height) {
-      throw new ToolError(
-        `집 발자국(${HOUSE_FOOTPRINT.width}×${HOUSE_FOOTPRINT.height})이 맵을 벗어납니다 — origin (${origin.x},${origin.y}), 맵 ${map.width}×${map.height}`,
-        { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y }
-      );
-    }
-    stampDbHouseVariant(map, {
-      material,
-      origin,
-      variant,
-      includeFence: args.includeFence === undefined ? true : args.includeFence === true,
-      approachHeight: typeof args.approachHeight === "number" ? args.approachHeight : undefined,
-    });
-    const doorOffset = dbHouseVariantDoorBottomOffset(variant);
-    const door = { x: origin.x + doorOffset.x, y: origin.y + doorOffset.y };
-    return {
-      summary: `${map.name}에 지형 템플릿 집(${variant}/${material}) 스탬프(${origin.x},${origin.y}) — 문 (${door.x},${door.y})`,
-      data: { door, variant, material },
-    };
-  },
-};
+const HOUSE_DOOR_TOP = 116;
+const HOUSE_DOOR_BOTTOM = 146;
 
 // 임의 크기 집 생성 — 벽 타일로 사각형을 채우는 오답("10x10 집" 사고)을 막는 정공법.
 // 파라메트릭 buildPlan(지붕 4행 + 벽 N행 + 문 + 창문)을 합성해 스탬프 실행기에 넘긴다.
@@ -571,31 +519,19 @@ function paletteLayerForTile(tileset: TilesetDef, tile: number, role: PaletteSlo
 }
 
 function stampBuildHouse(map: GameMap, { origin, width, height, material }: HouseBuildArgs): Point {
-  const wallRows = height - 4;
-  const doorX = Math.floor(width / 2);
-  const windows: { x: number; y: number }[] = [];
-  if (wallRows >= 3) {
-    for (let x = 2; x <= width - 3; x += 3) {
-      if (Math.abs(x - doorX) > 1) windows.push({ x, y: 5 });
-    }
-  }
-  stampTerrainTemplateHouse(map, {
-    buildPlan: {
-      fence: { x: 0, y: 0, width: 0, height: 0 },
-      roads: [],
-      house: {
-        roof: { origin: { x: 0, y: 0 }, width },
-        wall: { origin: { x: 0, y: 4 }, width, rows: wallRows },
-        door: { x: doorX, topY: 4 + wallRows - 2, bottomY: 4 + wallRows - 1 },
-        windows,
-      },
-    },
-    material,
-    origin,
-    includeFence: false,
-    paintRoads: false,
+  const result = stampRectHouseKit(map, {
+    x: origin.x,
+    y: origin.y,
+    width,
+    stories: 1,
+    roofBodyRows: Math.max(1, height - 5),
+    kitId: kitIdForSmallHouseMaterial(material),
   });
-  return { x: origin.x + doorX, y: origin.y + 4 + wallRows - 1 };
+  if (!result.ok || !result.doorAt) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: map.id });
+  const door = result.doorAt;
+  map.lowerTiles[(door.y - 1) * map.width + door.x] = HOUSE_DOOR_TOP;
+  map.lowerTiles[door.y * map.width + door.x] = HOUSE_DOOR_BOTTOM;
+  return door;
 }
 
 function houseGrid(map: GameMap, origin: Point, width: number, height: number): { readonly lower: number[][]; readonly upper: number[][] } {
@@ -921,7 +857,7 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, stampTemplateHouse, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, resizeMapTool, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, resizeMapTool, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };

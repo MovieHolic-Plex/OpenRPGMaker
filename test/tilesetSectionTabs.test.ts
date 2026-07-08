@@ -136,13 +136,12 @@ describe("타일셋 섹션 3탭 UI", () => {
     expect(findByTestId(editor, "tileset-layer-warning")).toBeTruthy(); // 투명 칩 하위 경고.
   });
 
-  it("구성 탭에는 지형 템플릿(교과서) 섹션이 렌더된다", () => {
+  it("구성 탭에는 오토타일 섹션만 렌더된다", () => {
     setTilesetSectionTab("compose", () => {});
     const editor = renderEditor();
     expect(getTilesetSectionTab()).toBe("compose");
-    expect(findByTestId(editor, "terrain-template-section")).toBeTruthy();
-    // 내장 작은 집 템플릿이 목록에 보인다.
-    expect(findByTestId(editor, "terrain-template-section-list")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-autotile-editor")).toBeTruthy();
+    expect(findByTestId(editor, "terrain-template-section")).toBeNull();
     setTilesetMetadataEditMode("passage", () => {}); // 다른 테스트를 위해 복귀.
   });
 });

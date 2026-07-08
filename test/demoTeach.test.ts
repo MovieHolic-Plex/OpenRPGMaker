@@ -50,7 +50,7 @@ describe("buildDemonstrationMessage", () => {
     expect(message).toContain("1) lower (1,0) ← 타일 290"); // 붓질 순서 보존.
     expect(message).toContain("set_tile_metadata");
     expect(message).toContain("upsert_tile_group");
-    expect(message).toContain("upsert_terrain_template");
+    expect(message).toContain("집 구조물 문법은 하네싱 키트가 담당");
     expect(message).toContain("map_v"); // 시드 출처 + 실제 맵 불변 안내.
     expect(message).toContain("실제 맵은 바뀌지 않았음");
     expect(message).toContain("[선택지]"); // 배운 내용 확인 칩.

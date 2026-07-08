@@ -51,8 +51,9 @@ T2 도그푸딩(에이전트 마을 생성 실측)에서 v1 툴 계약의 구조
 - `area{x,y,w,h}` **스키마에 완전 명세**(v1의 구멍), `count`, `groupId` 또는 `presetId+paletteRole` 중 하나 필수(사전 검증).
 - naturalness에 따라 uniform/poisson/cluster 자동, 풋프린트 원자 배치·보호셀 회피.
 
-**tile_structure** — 구조물 통합. (v1 대체: build_house, stamp_template_house, stamp_structure, stamp_terrain_template, preview_house)
-- `kind` enum 4종: house(width 5~30/height 6~24/material plaster|wood|stone — **실한계를 스키마에 명시**), template_house(variant/material), structure(template 이름), terrain_template(templateId).
+**tile_structure** — 구조물 통합. (v1 대체: build_house, stamp_structure, preview_house)
+- `kind` enum 2종: house(width 5~30/height 6~24/material plaster|wood|stone — **실한계를 스키마에 명시**), structure(template 이름).
+- 집 구조 문법은 v1/v2의 지형 템플릿이 아니라 하네싱 키트(`build_house_kit`)가 담당한다.
 - kind별 필수 인자를 사전 검증하고 부족하면 kind에 맞는 완성 예시를 동봉해 거부.
 
 ### 지식 계열 (tileKnowledgeV2.ts)
@@ -71,8 +72,8 @@ T2 도그푸딩(에이전트 마을 생성 실측)에서 v1 툴 계약의 구조
 **tile_palette_preset** — 팔레트 프리셋. (v1 대체: upsert_palette_preset)
 - 핫픽스로 보강한 완전 스키마(slots/role enum/tileIds) 승계. locked 프리셋 upsert 거부.
 
-**tile_query** — 조회 통합 (read). (v1 대체: get_tile_info, list_unclassified_tiles, query_tiles, analyze_map_tile_usage, find_similar_tiles, list_terrain_templates, get_terrain_template)
-- `ask` enum 7종: tile_info/unclassified/palette/usage/similar/terrain_templates/terrain_template.
+**tile_query** — 조회 통합 (read). (v1 대체: get_tile_info, list_unclassified_tiles, query_tiles, analyze_map_tile_usage, find_similar_tiles)
+- `ask` enum 5종: tile_info/unclassified/palette/usage/similar.
 - 툴 설명에 "칠할 타일을 모를 때 여기부터"를 명시 — 배치 툴 오류 예시들도 tile_query를 가리킨다.
 
 ## 5. 주변 배선 (v2 이름 병행 인식)

@@ -5,7 +5,6 @@
 import type { Project } from "@/project/types";
 import { MAP_TOOLS } from "../mapTools";
 import { PLACEMENT_TOOLS } from "../placementTools";
-import { TERRAIN_TEMPLATE_TOOLS } from "../terrainTemplateTools";
 import type { ToolDefinition, ToolExecResult } from "../types";
 import {
   byName, coerceEnum, coerceInt, coercePoint, coercePointArray, compactArgs, failWithExample, optionalEnum,
@@ -16,9 +15,7 @@ const v1ClearRegion = byName(MAP_TOOLS, "clear_region");
 const v1PaintRoad = byName(MAP_TOOLS, "paint_road");
 const v1BuildHouse = byName(MAP_TOOLS, "build_house");
 const v1StampStructure = byName(MAP_TOOLS, "stamp_structure");
-const v1StampTemplateHouse = byName(MAP_TOOLS, "stamp_template_house");
 const v1Scatter = byName(PLACEMENT_TOOLS, "scatter_object");
-const v1StampTerrainTemplate = byName(TERRAIN_TEMPLATE_TOOLS, "stamp_terrain_template");
 
 const PAINT_EXAMPLE = { mapId: "map_1", mode: "rect", tile: 360, from: { x: 2, y: 3 }, to: { x: 6, y: 5 } };
 const ERASE_EXAMPLE = { mapId: "map_1", action: "erase", mode: "rect", from: { x: 2, y: 3 }, to: { x: 6, y: 5 } };
@@ -164,12 +161,12 @@ const tileScatter: ToolDefinition = {
   },
 };
 
-const STRUCTURE_KINDS = ["house", "template_house", "structure", "terrain_template"] as const;
+const STRUCTURE_KINDS = ["house", "structure"] as const;
 
 const tileStructure: ToolDefinition = {
   name: "tile_structure",
   description:
-    "구조물을 짓는다(v2). kind=house(맞춤 집: width/height/material), template_house(기성 집: variant/material), structure(내장 구조물: template 이름), terrain_template(지형 템플릿: templateId). 벽 타일을 직접 칠하지 말고 항상 이 툴을 쓰라.",
+    "구조물을 짓는다(v2). kind=house(맞춤 집: width/height/material), structure(내장 구조물: template 이름). 복잡한 집은 build_house_kit을 쓰고, 벽 타일을 직접 칠하지 말라.",
   mode: "write",
   version: 2,
   parameters: {
@@ -181,9 +178,7 @@ const tileStructure: ToolDefinition = {
       width: { type: "integer", description: "kind=house 필수. 5~30" },
       height: { type: "integer", description: "kind=house 필수. 6~24(지붕 4행 포함)" },
       material: { type: "string", enum: ["plaster", "wood", "stone"], description: "kind=house/template_house: 벽 재질" },
-      variant: { type: "string", description: "kind=template_house: 기성 변형 이름" },
       template: { type: "string", description: "kind=structure: 내장 구조물 이름" },
-      templateId: { type: "string", description: "kind=terrain_template: 템플릿 id(tile_query ask=terrain_templates로 조회)" },
       includeFence: { type: "boolean" },
       naturalness: { type: "number", description: "0~1 위치 지터(기본 0.5)" },
       seed: { type: "integer" },
@@ -203,22 +198,13 @@ const tileStructure: ToolDefinition = {
       }
       return v1BuildHouse.run(draft, compactArgs({ ...base, width: args.width, height: args.height, material: args.material }));
     }
-    if (kind === "template_house") {
-      if (typeof args.variant !== "string" || typeof args.material !== "string") {
-        failWithExample("kind=template_house는 variant/material이 필요합니다", { mapId: "map_1", kind: "template_house", origin: { x: 8, y: 6 }, variant: "small_a", material: "wood" });
-      }
-      return v1StampTemplateHouse.run(draft, compactArgs({ mapId: args.mapId, origin: args.origin, variant: args.variant, material: args.material, includeFence: args.includeFence }));
-    }
     if (kind === "structure") {
       if (typeof args.template !== "string") {
         failWithExample("kind=structure는 template(구조물 이름)이 필요합니다", { mapId: "map_1", kind: "structure", origin: { x: 10, y: 8 }, template: "well" });
       }
       return v1StampStructure.run(draft, compactArgs({ ...base, template: args.template }));
     }
-    if (typeof args.templateId !== "string") {
-      failWithExample("kind=terrain_template는 templateId가 필요합니다. tile_query ask=terrain_templates로 목록을 조회하세요", { mapId: "map_1", kind: "terrain_template", origin: { x: 0, y: 0 }, templateId: "tt_village_core" });
-    }
-    return v1StampTerrainTemplate.run(draft, compactArgs({ mapId: args.mapId, templateId: args.templateId, origin: args.origin, material: args.material, includeFence: args.includeFence }));
+    return failWithExample("알 수 없는 구조물 kind입니다", STRUCTURE_EXAMPLE);
   },
 };
 

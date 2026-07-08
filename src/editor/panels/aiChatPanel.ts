@@ -12,12 +12,10 @@ import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
-import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
 import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowserModal";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
 import { commitChangeset, getTool, summarizeChanges, type ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
@@ -155,7 +153,7 @@ export {
 const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
 const VOLATILE_OVERLAY_IDLE_MS = 6000;
 const MAP_TILE_TOOLS = new Set([
-  "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "stamp_template_house", "build_house", "clear_region", "resize_map",
+  "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   // 타일 v3 공정 프리미티브(V3B)
   "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
@@ -1339,23 +1337,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 맵 영역 그리드 표시: 하위+상위 합성 이미지로 렌더(구조물 학습의 시각 자료).
         if (event.name === "show_tile_grid" && event.result.ok) {
           appendTileGrid(event.result.data as TileGridData);
-        }
-        // 구조물 초안 추출 → 넓은 검토 모달 자동 오픈. 좌표·번호 텍스트가 채팅에
-        // 쏟아지는 대신, 사용자는 그리드+행 카드에서 확인·수정·저장한다.
-        if (event.name === "extract_terrain_template" && event.result.ok) {
-          const draft = (event.result.data as { draft: TerrainTemplateDraft }).draft;
-          openStructureReviewModal({
-            draft,
-            onDemoRequest: (region) => startDemoTeach(region),
-            onSaved: (saved) => {
-              appendBubble("system", `템플릿 '${saved.name}' 저장됨(행 ${saved.savedRows}개, 사용자 확정) — 다음 대화부터 이 지식을 사용합니다.`);
-              setStatus("템플릿 저장됨");
-              // 세션 draft는 저장 전 스냅샷 기반이라, 이후 제안 수락이 템플릿을 되돌리지 않도록 세션을 정리한다.
-              dropSession(controller);
-              proposalHost.replaceChildren();
-              closeProposalModal();
-            },
-          });
         }
         // 인터뷰 진행률: 분석 결과의 커버리지를 상태줄에 표시.
         if (event.name === "analyze_map_tile_usage" && event.result.ok) {

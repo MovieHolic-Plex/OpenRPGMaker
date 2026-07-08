@@ -22,7 +22,6 @@ import { QUERY_TOOLS } from "@/editor/tools/queryTools";
 import { QUEST_TOOLS } from "@/editor/tools/questTools";
 import { RANGE_CLASSIFY_TOOLS } from "@/editor/tools/rangeClassifyTools";
 import { REFACTOR_TOOLS } from "@/editor/tools/refactorTools";
-import { TERRAIN_TEMPLATE_TOOLS } from "@/editor/tools/terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "@/editor/tools/tileMetadataTools";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { VISION_QUERY_TOOLS } from "@/editor/tools/visionQueryTools";
@@ -64,7 +63,6 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "타일 샘플 조회", tools: GROUP_SAMPLE_TOOLS },
   { label: "맵 비전 조회", tools: VISION_QUERY_TOOLS },
   { label: "타일 범위 제안", tools: RANGE_CLASSIFY_TOOLS },
-  { label: "지형 템플릿(교과서)", tools: TERRAIN_TEMPLATE_TOOLS },
 ];
 
 export function totalToolCount(): number {

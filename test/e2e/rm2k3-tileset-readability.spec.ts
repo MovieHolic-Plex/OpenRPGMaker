@@ -51,10 +51,10 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await expect(page.getByTestId("tileset-selected-tags")).toContainText("terrain");
   await expect(page.getByTestId("tileset-selected-rules")).not.toContainText("No placement rule");
 
-  // ── 구성 탭: 오토타일 + 지형 템플릿(교과서) ──────────────────────
+  // ── 구성 탭: 오토타일 ──────────────────────
   await page.getByTestId("tileset-section-tab-compose").click();
-  await expect(page.getByTestId("terrain-template-section")).toBeVisible();
-  await expect(page.getByTestId("terrain-template-section-list")).toBeVisible();
+  await expect(page.getByTestId("tileset-autotile-editor")).toBeVisible();
+  await expect(page.getByTestId("terrain-template-section")).toHaveCount(0);
 
   await page.screenshot({ path: testInfo.outputPath("database-tileset-readable.png"), fullPage: true });
 });

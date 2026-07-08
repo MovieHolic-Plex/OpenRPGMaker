@@ -20,7 +20,7 @@
 | 2 | `AutotileGroup.variantMap` (진짜 페인트 셰이핑) | `src/project/defaults/autotileGroups.ts` | 수동 연필/채우기/지우개 (`src/editor/tileActions.ts:200-210`) | 없음 |
 | 3 | 호수 4분할 렌더 (하드코딩) | `src/project/defaults/lakeAutotile.ts`, `src/editor/chipsetTileRender.ts:48-49` | 에디터/플레이 렌더러만 | 없음 |
 | 4 | `ClusterRule` (hard/medium/soft) | `src/project/types/base.ts:92-100` | lint(`clusterRuleValidators`), AI `paint_tiles` 동반 확장(`clusterRulePlacement.ts:33`), scatter 소프트 벌점(`placementScoring.ts`) | 부분(2번 회피용 예외만) |
-| 5 | `TerrainTemplateMetadata.grammar` | `src/project/types/base.ts:202-262` | 지형 템플릿 도구 | 없음 |
+| 5 | House harness kits | `src/editor/houseKit.ts` | `build_house_kit`, `build_village`, showcase defaults | 클러스터 어휘와 분리된 유일한 집 구조 문법 |
 | 6 | 타일 스탬프 휴리스틱 (문자열 매칭) | `src/editor/tileStampBrushes.ts:99-146` | 팔레트 스탬프 | 그룹 이름/설명을 **키워드로** 훑음 |
 
 흙길은 1번과 2번에 **이중 정의**되어 있고(같은 타일, 다른 스키마, 링크 없음), 물은 1번(문법)과 3번(렌더)에 정의되어 있으며 서로 무관하다. 침엽수는 어디에도 없다(기확정 결함).

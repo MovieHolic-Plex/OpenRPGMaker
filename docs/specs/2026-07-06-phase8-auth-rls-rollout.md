@@ -55,7 +55,7 @@ Move RPG ZZU from the current "anon key has full CRUD and RLS is off" model to S
 | `saveProjectMapPatchToSupabase` | Reads latest snapshot, checks conflicts, then writes project/maps | Every internal read/write in the patch loop must carry the same user token so conflict resolution sees the member-visible canonical state. |
 | `recordSupabaseAiAnalysisRun` | `POST /rest/v1/ai_analysis_runs` with anon bearer | Editor or owner required; the run records a human-session action even if the assistant generated the analysis. |
 | `saveProjectSnapshotToSupabase` | `POST` for new row or conditional `PATCH` by sha | Editor or owner required; conditional update failures must still distinguish conflict from auth denial. |
-| `saveProjectChildRows`, `replaceRows`, `saveChangedMapRows`, `saveChangedMapRowsFromCanonical` | Delete/upsert child rows for maps, tilesets, terrain templates | Child table deletes/upserts require editor or owner; partial failures need user-facing auth errors because RLS can reject child rows after project snapshot success. |
+| `saveProjectChildRows`, `replaceRows`, `saveChangedMapRows`, `saveChangedMapRowsFromCanonical` | Delete/upsert child rows for maps and tilesets | Child table deletes/upserts require editor or owner; partial failures need user-facing auth errors because RLS can reject child rows after project snapshot success. |
 | `deleteProjectRows`, `deleteMapRows`, `upsertRows` | Shared low-level DELETE/POST helpers | Must use token-aware headers and preserve `Accept-Profile` / `Content-Profile: rpg_zzu`. |
 | `supabaseJsonHeaders` | Sets `apikey` and `Authorization` to `anonKey` | Must become the single place that separates public `apikey` from user/session `Authorization`. |
 

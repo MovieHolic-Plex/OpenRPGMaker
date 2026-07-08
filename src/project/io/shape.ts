@@ -78,6 +78,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
+  dropLegacyTerrainTemplates(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   migrateVillageInfoDocumentsToWorld(project);
@@ -86,6 +87,12 @@ export function validateProjectV3(data: JsonRecord): Project {
   repairProjectReferences(project);
   validateProjectReferences(project);
   return project;
+}
+
+function dropLegacyTerrainTemplates(project: Project): void {
+  for (const tileset of Object.values(project.tilesets)) {
+    delete (tileset as { terrainTemplates?: unknown }).terrainTemplates;
+  }
 }
 
 function normalizeTilesetPalettePresets(project: Project): void {

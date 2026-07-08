@@ -56,12 +56,11 @@ export const ONTOLOGY_CAPABILITIES = [
     id: "TilesetSemantics",
     label: "Tileset Semantics",
     purpose: "Tile metadata, tile groups, pattern grammar, terrain tags, passability, and AI tile meaning.",
-    entities: ["TilesetDef", "Tile", "TileAiMetadata", "TileGroupMetadata", "TerrainTemplateMetadata"],
+    entities: ["TilesetDef", "Tile", "TileAiMetadata", "TileGroupMetadata"],
     typeSurfaces: ["src/project/types/base.ts"],
     uiSurfaces: [
       "src/editor/panels/tilesetMetadataEditor.ts",
       "src/editor/panels/tilesetAiQuestionEditor.ts",
-      "src/editor/panels/terrainTemplatePanel.ts",
     ],
     runtimeSurfaces: ["src/project/tilesetPassage.ts", "src/project/aiPreviewGenerator.ts", "src/project/aiPreviewContracts.ts"],
     storageSurfaces: ["src/project/io/guards.ts", "src/project/io/shapeResourceFields.ts", "src/project/tileMetadataDb.ts"],
@@ -71,7 +70,7 @@ export const ONTOLOGY_CAPABILITIES = [
       {
         id: "tileset-semantics-improve-classification",
         label: "Improve tile meaning classification",
-        taskAliases: ["tile meaning", "tileset semantics", "improve tile classification", "terrain template"],
+        taskAliases: ["tile meaning", "tileset semantics", "improve tile classification"],
         checkSurfaces: ["type", "ui", "runtime", "storage", "tests"],
         implementationOrder: ["metadata shape", "AI mapping", "editor controls", "runtime consumers", "tests"],
         requiredTests: ["test/aiPreviewContracts.test.ts", "test/tileMetadataDb.test.ts"],

@@ -131,7 +131,6 @@ describe("tile_road / tile_scatter / tile_structure", () => {
     expect(result.summary.length).toBeGreaterThan(0);
     expectExampleError(() => runV2("tile_structure", project, { mapId, kind: "house", origin: { x: 3, y: 3 } }));
     expectExampleError(() => runV2("tile_structure", project, { mapId, kind: "structure", origin: { x: 3, y: 3 } }));
-    expectExampleError(() => runV2("tile_structure", project, { mapId, kind: "terrain_template", origin: { x: 0, y: 0 } }));
   });
 });
 
@@ -181,13 +180,11 @@ describe("tile_query", () => {
     expectExampleError(() => runV2("tile_query", project, { ask: "tile_info" }));
     expectExampleError(() => runV2("tile_query", project, { ask: "usage" }));
     expectExampleError(() => runV2("tile_query", project, { ask: "similar" }));
-    expectExampleError(() => runV2("tile_query", project, { ask: "terrain_template" }));
   });
 
-  it("ask=palette / terrain_templates / tile_info가 v1 읽기와 동일하게 동작한다", () => {
+  it("ask=palette / tile_info가 v1 읽기와 동일하게 동작한다", () => {
     const { project } = freshProject();
     expect(runV2("tile_query", project, { ask: "palette", limit: 5 }).summary.length).toBeGreaterThan(0);
-    expect(runV2("tile_query", project, { ask: "terrain_templates" }).summary.length).toBeGreaterThan(0);
     expect(runV2("tile_query", project, { ask: "tile_info", tileIds: [260] }).summary.length).toBeGreaterThan(0);
   });
 });

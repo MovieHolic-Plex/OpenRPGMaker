@@ -36,18 +36,18 @@ describe("build_house", () => {
     // 지붕 사선 양끝(상위) — 354/355는 투명 칩이라 상위에 있어야 한다.
     expect(map.upperTiles[at(2, 2)]).toBe(354);
     expect(map.upperTiles[at(11, 2)]).toBe(355);
-    // 지붕면(하위, y=origin+3)과 벽 상단 행(y=origin+4, plaster 15/16/17).
-    expect(map.lowerTiles[at(6, 5)]).toBe(405);
-    expect(map.lowerTiles[at(2, 6)]).toBe(15);
-    expect(map.lowerTiles[at(6, 6)]).toBe(16);
-    expect(map.lowerTiles[at(11, 6)]).toBe(17);
+    // 높이 10은 키트의 지붕 몸통 행을 늘린다. 처마 아래에는 bright-plaster 벽 3행이 온다.
+    expect(map.lowerTiles[at(6, 8)]).toBe(405);
+    expect(map.lowerTiles[at(2, 9)]).toBe(12);
+    expect(map.lowerTiles[at(6, 9)]).toBe(13);
+    expect(map.lowerTiles[at(11, 9)]).toBe(14);
     // 문 2칸(하위) — 문 좌표는 반환 data와 일치.
     const door = (result.data as { door: { x: number; y: number } }).door;
     expect(door).toEqual({ x: 7, y: 11 });
     expect(map.lowerTiles[at(7, 10)]).toBe(116);
     expect(map.lowerTiles[at(7, 11)]).toBe(146);
-    // 창문(상위 87) 최소 1개.
-    expect(map.upperTiles[at(4, 7)]).toBe(87);
+    // bright-plaster 키트 창문(상위 85) 최소 1개.
+    expect(map.upperTiles[at(3, 10)]).toBe(85);
   });
 
   it("최소 크기 미만/맵 밖은 거부한다", () => {

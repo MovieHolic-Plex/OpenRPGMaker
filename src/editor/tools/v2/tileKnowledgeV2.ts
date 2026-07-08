@@ -7,7 +7,6 @@ import type { Project } from "@/project/types";
 import { CLUSTER_RULE_TOOLS } from "../clusterRuleTools";
 import { PALETTE_PRESET_TOOLS } from "../palettePresetTools";
 import { QUERY_TOOLS } from "../queryTools";
-import { TERRAIN_TEMPLATE_TOOLS } from "../terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "../tileMetadataTools";
 import { VISION_QUERY_TOOLS } from "../visionQueryTools";
 import type { ToolDefinition, ToolExecResult } from "../types";
@@ -26,8 +25,6 @@ const v1ListUnclassified = byName(TILE_METADATA_TOOLS, "list_unclassified_tiles"
 const v1AnalyzeUsage = byName(TILE_METADATA_TOOLS, "analyze_map_tile_usage");
 const v1QueryTiles = byName(QUERY_TOOLS, "query_tiles");
 const v1FindSimilar = byName(VISION_QUERY_TOOLS, "find_similar_tiles");
-const v1ListTemplates = byName(TERRAIN_TEMPLATE_TOOLS, "list_terrain_templates");
-const v1GetTemplate = byName(TERRAIN_TEMPLATE_TOOLS, "get_terrain_template");
 
 const META_EXAMPLE = {
   tilesetId: "tiles_default",
@@ -211,12 +208,12 @@ const tilePalettePreset: ToolDefinition = {
   },
 };
 
-const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "terrain_templates", "terrain_template", "unapproved"] as const;
+const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "unapproved"] as const;
 
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회(v2). ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), terrain_templates(템플릿 목록), terrain_template(템플릿 상세: templateId), unapproved(미승인 어휘 요약 — 배치 전 propose_tile_vocabulary 대상 확인).",
+    "타일 지식 통합 조회(v2). ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약 — 배치 전 propose_tile_vocabulary 대상 확인).",
   mode: "read",
   version: 2,
   parameters: {
@@ -230,7 +227,6 @@ const tileQuery: ToolDefinition = {
       role: { type: "string", description: "ask=palette: 팔레트 role 또는 타일 role" },
       category: { type: "string", description: "ask=palette" },
       presetId: { type: "string", description: "ask=palette" },
-      templateId: { type: "string", description: "ask=terrain_template 전용" },
       limit: { type: "integer" },
     },
     required: ["ask"],
@@ -263,9 +259,7 @@ const tileQuery: ToolDefinition = {
         data: { tilesetId, ...summary },
       };
     }
-    if (ask === "terrain_templates") return v1ListTemplates.run(draft, {});
-    if (typeof args.templateId !== "string") failWithExample("ask=terrain_template에는 templateId가 필요합니다", { ask, templateId: "tt_village_core" });
-    return v1GetTemplate.run(draft, compactArgs({ templateId: args.templateId, tilesetId: args.tilesetId }));
+    return failWithExample("알 수 없는 tile_query ask입니다", QUERY_EXAMPLE);
   },
 };
 

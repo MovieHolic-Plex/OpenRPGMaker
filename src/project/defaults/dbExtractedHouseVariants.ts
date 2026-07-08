@@ -2,8 +2,7 @@ import type { GameMap } from "../types";
 import { SAND_TILE } from "./chipsetMapping";
 import { TILE } from "./constants";
 import type { SmallHouseMaterial, TilePoint } from "./dbExtractedHouseTemplate";
-import { SMALL_HOUSE_01_TERRAIN_TEMPLATE } from "./smallHouse01TerrainTemplate";
-import { stampTerrainTemplateHouse, terrainTemplateDoorBottomOffset } from "./terrainTemplateHouseStamp";
+import { SMALL_HOUSE_01_HOUSE_KIT_PLAN, stampTerrainTemplateHouse, terrainTemplateDoorBottomOffset } from "./terrainTemplateHouseStamp";
 import { paintTownPathNetwork } from "./townPathAutotile";
 
 type TileLayerName = "lower" | "upper";
@@ -104,7 +103,7 @@ const VARIANT_PLANS: Record<PlannedHouseVariant, HouseVariantPlan> = {
 export function dbHouseVariantDoorBottomOffset(variant: DbHouseShapeVariant): TilePoint {
   switch (variant) {
     case "template":
-      return terrainTemplateDoorBottomOffset(SMALL_HOUSE_01_TERRAIN_TEMPLATE.buildPlan);
+      return terrainTemplateDoorBottomOffset(SMALL_HOUSE_01_HOUSE_KIT_PLAN);
     case "wide":
     case "compact":
     case "l":
@@ -118,7 +117,7 @@ export function stampDbHouseVariant(map: GameMap, input: DbHouseVariantStampInpu
   switch (input.variant) {
     case "template":
       stampTerrainTemplateHouse(map, {
-        buildPlan: SMALL_HOUSE_01_TERRAIN_TEMPLATE.buildPlan,
+        buildPlan: SMALL_HOUSE_01_HOUSE_KIT_PLAN,
         includeFence: input.includeFence,
         material: input.material,
         origin: input.origin,

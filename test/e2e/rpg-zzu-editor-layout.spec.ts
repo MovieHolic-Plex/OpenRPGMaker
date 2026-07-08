@@ -80,38 +80,6 @@ test("editor sidebars avoid document overflow and keep key controls clickable", 
   await expectNoDocumentHorizontalOverflow(page);
 });
 
-// 지형 템플릿은 DB → 타일셋 → 구성 탭으로 이사했다(2026-07-05). 툴바 "템플릿" 버튼이 그 탭을 연다.
-test("template toolbar button opens the tileset compose tab with the terrain template section", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 820 });
-  await page.goto("/?freshProject=1&toolbarSurfaceSplit=1");
-
-  await page.getByTestId("toolbar-title-screen").click();
-  await expect(page.getByTestId("database-modal")).toBeVisible();
-  await expect(page.getByTestId("db-tab-tilesets")).toHaveClass(/active/);
-  await expect(page.getByTestId("tileset-section-tab-compose")).toHaveClass(/active/);
-  await expect(page.getByTestId("terrain-template-modal")).toHaveCount(0);
-
-  const terrainTemplateStyles = await page.getByTestId("terrain-template-section").evaluate((node) => {
-    const chip = node.querySelector(".terrain-template-tile-chip");
-    const swatch = node.querySelector(".terrain-template-tile-swatch");
-    if (!(chip instanceof HTMLElement) || !(swatch instanceof HTMLElement)) return null;
-    const chipBox = chip.getBoundingClientRect();
-    const swatchBox = swatch.getBoundingClientRect();
-    return {
-      chipDisplay: getComputedStyle(chip).display,
-      chipHeight: chipBox.height,
-      swatchHeight: swatchBox.height,
-      swatchWidth: swatchBox.width,
-    };
-  });
-  expect(terrainTemplateStyles).toEqual({
-    chipDisplay: "grid",
-    chipHeight: 32,
-    swatchHeight: 32,
-    swatchWidth: 32,
-  });
-});
-
 test("chipset palette exposes category-only vertical scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&paletteVerticalCategoryScroll=1");

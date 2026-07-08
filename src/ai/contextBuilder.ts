@@ -6,6 +6,7 @@
 
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
+import { HOUSE_KITS } from "@/editor/houseKit";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
@@ -47,9 +48,8 @@ const INTRO = [
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
-  "11. 집/구조물은 절대 벽 타일로 사각형을 채워 만들지 마세요. 크기가 지정된 집(예: 10x10)은 build_house,",
-  "    ㄴ자 집은 stamp_template_house(variant=l) 또는 stamp_structure(template=l), 표준 집은 stamp_terrain_template를 쓰세요.",
-  "    grammar로 직접 조립했다면 validate_structure로 검사해 위반을 전부 고치고 재검증하세요.",
+  "11. 집/구조물은 절대 벽 타일로 사각형을 채워 만들지 마세요. 집은 build_house_kit을 우선 사용하고,",
+  "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
   "    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다.",
@@ -87,8 +87,8 @@ const INTRO = [
   "    장식 타일은 대개 상위(upper) 레이어입니다 — 바닥을 통행 불가로 덮지 않도록 레이어를 확인하세요.",
   "19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워",
   "    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).",
-  "20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)와 지형 템플릿은 데이터베이스의 타일셋/지형 템플릿",
-  "    화면에 저장되어 사용자가 직접 관찰·수정할 수 있습니다. 그러니 라벨/설명/규칙을 성실히 남기세요.",
+  "20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)는 데이터베이스의 타일셋 지식 화면에 저장됩니다.",
+  "    구조물 문법은 하네싱 키트가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
   "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
 ].join("\n");
 
@@ -218,19 +218,12 @@ function tileSemanticsSection(project: Project): string {
   return ["## 타일 지식(사용자가 가르침 — 타일 깔 때 최우선 근거)", ...lines].join("\n");
 }
 
-// 지형 템플릿(구조물 지식뱅크) 한 줄 목록 — 상세는 get_terrain_template로 조회 유도.
-function terrainTemplateSection(project: Project): string {
-  const lines: string[] = [];
-  for (const tileset of Object.values(project.tilesets)) {
-    for (const template of tileset.terrainTemplates ?? []) {
-      lines.push(`- ${template.id}: ${template.name}${template.buildPlan ? " (stamp_terrain_template 가능)" : " (grammar 조립)"}`);
-    }
-  }
-  if (lines.length === 0) return "";
+function houseKitSection(): string {
+  const lines = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
   return [
-    "## 지형 템플릿(구조물 교과서)",
+    "## 하네싱 키트 요약",
     ...lines,
-    "구조물을 짓기 전 get_terrain_template로 문법을 읽고, 조립했다면 validate_structure로 검사하세요.",
+    "길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.",
   ].join("\n");
 }
 
@@ -312,8 +305,7 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   if (tileSemantics) sections.push(tileSemantics);
   const tileVocabulary = tileVocabularySection(project, options.currentMapId);
   if (tileVocabulary) sections.push(tileVocabulary);
-  const templateSection = terrainTemplateSection(project);
-  if (templateSection) sections.push(templateSection);
+  sections.push(houseKitSection());
   const clusterRulePreferences = clusterRulePreferenceSection(project, options.currentMapId);
   if (clusterRulePreferences) sections.push(clusterRulePreferences);
   const worldDigest = worldDigestSection(project);

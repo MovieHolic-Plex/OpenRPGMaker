@@ -1,6 +1,5 @@
 import { textControl } from "@/editor/panels/databaseControls";
 import { renderPalettePresetEditor } from "@/editor/panels/palettePresetEditor";
-import { renderTerrainTemplateSection } from "@/editor/panels/terrainTemplatePanel";
 import { renderTilesetCheckerSummary } from "@/editor/panels/tilesetCheckerSummary";
 import { openTilesetReviewWizard } from "@/editor/panels/tilesetReviewWizard";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
@@ -35,8 +34,6 @@ export function renderTilesetEditor(tileset: TilesetDef, rerender: () => void): 
         class: "rm2k3-tileset-main",
         children: [renderTilesetMetadataEditor(tileset, rerender), renderTabSidePanel(tileset, tab, rerender)],
       }),
-      // 구성 탭: 이 타일셋의 지형 템플릿(교과서)을 여기서 관리한다.
-      ...(tab === "compose" ? [renderTerrainTemplateSection(tileset)] : []),
     ],
   });
 }

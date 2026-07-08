@@ -63,15 +63,15 @@ interface CheckedAsset {
 // v3는 승인 어휘 자체가 명세이므로 set_build_spec 게이트가 불필요하고, 미승인 하드 차단은
 // 프리미티브 내부(assertApprovedOrFail)가 그대로 수행한다. 레거시 배치 툴만 게이트를 탄다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
-  "stamp_template_house", "clear_region", "place_npc", "place_battle_blocker",
+  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_village", "stamp_structure",
+  "clear_region", "place_npc", "place_battle_blocker",
   // 타일 v2 (2026-07-07 재구축)
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
 ]);
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "stamp_terrain_template", "stamp_structure",
-  "stamp_template_house", "place_npc", "place_battle_blocker",
+  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_village", "stamp_structure",
+  "place_npc", "place_battle_blocker",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
 ]);
 
@@ -194,6 +194,9 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
   void toolName;
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
   if (mapId === null) return [];
+
+  const wingRegion = wingsRegion(mapId, args.wings);
+  if (wingRegion !== null) return [wingRegion];
 
   const cellRegions = pointRegions(mapId, args.cells);
   if (cellRegions !== null) return cellRegions;
@@ -400,6 +403,24 @@ function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegio
   if (isFiniteNumber(args.w) && isFiniteNumber(args.h)) return { mapId, x: args.x, y: args.y, w: args.w, h: args.h };
   if (isFiniteNumber(args.width) && isFiniteNumber(args.height)) return { mapId, x: args.x, y: args.y, w: args.width, h: args.height };
   return { mapId, x: args.x, y: args.y, w: 1, h: 1 };
+}
+
+function wingsRegion(mapId: string, value: unknown): AffectedRegion | null {
+  if (!Array.isArray(value) || value.length === 0) return null;
+  let x0 = Number.POSITIVE_INFINITY;
+  let y0 = Number.POSITIVE_INFINITY;
+  let x1 = Number.NEGATIVE_INFINITY;
+  let y1 = Number.NEGATIVE_INFINITY;
+  for (const wing of value) {
+    if (typeof wing !== "object" || wing === null || Array.isArray(wing)) return null;
+    const record = wing as Record<string, unknown>;
+    if (!isFiniteNumber(record.x) || !isFiniteNumber(record.y) || !isFiniteNumber(record.w) || !isFiniteNumber(record.h)) return null;
+    x0 = Math.min(x0, record.x);
+    y0 = Math.min(y0, record.y);
+    x1 = Math.max(x1, record.x + record.w);
+    y1 = Math.max(y1, record.y + record.h);
+  }
+  return { mapId, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 
 function intersection(a: CheckedAsset, b: CheckedAsset): AffectedRegion | null {

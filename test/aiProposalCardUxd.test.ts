@@ -141,7 +141,7 @@ describe("UXD proposal summary helpers", () => {
   it("집·길·나무·세계관을 사람 언어 요약으로 집계한다", () => {
     const calls = [
       proposed("build_house", { mapId: "m1" }, { tilesChanged: 40 }, "집 A"),
-      proposed("stamp_template_house", { mapId: "m1" }, { tilesChanged: 50 }, "집 B"),
+      proposed("build_house_kit", { mapId: "m1" }, { tilesChanged: 50 }, "집 B"),
       proposed("paint_road", { mapId: "m1" }, { tilesChanged: 33 }, "마을에 dirt 도로 33칸 — 자연도 보통"),
       proposed("scatter_object", { mapId: "m1", groupId: "broadleaf_tree" }, { tilesChanged: 32 }, "활엽수 16개", { placed: 16 }),
       proposed("upsert_world_entities", {}, { worldEntitiesAdded: 1 }, "세계관 추가 1"),

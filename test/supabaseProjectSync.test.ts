@@ -188,9 +188,7 @@ describe("Supabase project sync", () => {
     expect(String(calls[3]?.input)).toContain("/rest/v1/tilesets?");
     expect(calls[3]?.init?.method).toBe("DELETE");
     expect(String(calls[4]?.input)).toContain("/rest/v1/tilesets?");
-    expect(String(calls[5]?.input)).toContain("/rest/v1/terrain_templates?");
-    expect(calls[5]?.init?.method).toBe("DELETE");
-    expect(String(calls[6]?.input)).toContain("/rest/v1/terrain_templates?");
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/terrain_templates?"))).toBe(false);
     expect(calls[0]?.init?.method).toBe("POST");
     expect(calls[0]?.init?.headers).toMatchObject({
       "Content-Profile": "rpg_zzu",
@@ -426,7 +424,7 @@ describe("Supabase project sync", () => {
     const result = await recordSupabaseAiAnalysisRun({
       tilesetId: "easyrpg_chipset_combined_town",
       selectedTiles: [240, 405],
-      promptContext: { intent: "terrain-template" },
+      promptContext: { intent: "house-kit" },
       result: { status: "ok" },
     }, TEST_CONFIG);
     const body = calls[0]?.init?.body;
@@ -444,7 +442,7 @@ describe("Supabase project sync", () => {
     expect(payload.project_id).toBe(TEST_CONFIG.projectId);
     expect(payload.tileset_id).toBe("easyrpg_chipset_combined_town");
     expect(payload.selected_tile_ids_json).toEqual([240, 405]);
-    expect(payload.prompt_context_json).toEqual({ intent: "terrain-template" });
+    expect(payload.prompt_context_json).toEqual({ intent: "house-kit" });
     expect(payload.result_json).toEqual({ status: "ok" });
   });
 

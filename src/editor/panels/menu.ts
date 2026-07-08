@@ -9,7 +9,6 @@ import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
-import { setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import { createSampleAdventureProject, createTrainingExamplesProject } from "@/project/defaults";
@@ -322,18 +321,6 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
-    // 지형 템플릿은 타일셋의 지식뱅크이므로 DB → 타일셋 → 구성 탭으로 안내한다(2026-07-05 이사).
-    // testId는 e2e 호환을 위해 유지한다.
-    toolbarButton({
-      testId: "toolbar-title-screen",
-      label: "템플릿",
-      title: "지형 템플릿 (DB → 타일셋 → 구성 탭)",
-      icon: "title",
-      onClick: () => {
-        setTilesetSectionTab("compose", () => {});
-        openDatabaseModal("tilesets");
-      },
-    }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
   return row;

@@ -42,7 +42,7 @@ const assistantMock = vi.hoisted(() => {
 
 vi.mock("@/ai/assistantSession", () => ({
   AssistantSession: assistantMock.MockAssistantSession,
-  METADATA_ONLY_TOOLS: new Set(["set_tile_metadata", "set_tile_rules", "upsert_tile_group", "upsert_terrain_template"]),
+  METADATA_ONLY_TOOLS: new Set(["set_tile_metadata", "set_tile_rules", "upsert_tile_group"]),
 }));
 
 const CTX: SkillRunContext = {

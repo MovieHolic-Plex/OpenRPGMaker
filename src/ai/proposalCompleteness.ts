@@ -8,8 +8,6 @@ import type { ChangeSummary } from "@/editor/tools/types";
 export const PROPOSAL_COMPLETENESS_WARNING_PREFIX = "⚠ 미이행:";
 export const PROPOSAL_SCOPE_WARNING_PREFIX = "⚠ 범위:";
 
-const TEMPLATE_HOUSE_FOOTPRINT = { w: 18, h: 16 } as const;
-
 export interface ProposalCompletenessCall {
   readonly name: string;
   readonly args: Record<string, unknown>;
@@ -166,15 +164,14 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   }
   if (call.name === "place_props") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
+  if (call.name === "build_house_kit") return wingRegions(mapId, call.args.wings);
   // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
   if (call.name === "tile_structure") {
     const kind = stringValue(call.args.kind);
     if (kind === "house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
-    if (kind === "template_house") return originRect(mapId, call.args, TEMPLATE_HOUSE_FOOTPRINT.w, TEMPLATE_HOUSE_FOOTPRINT.h);
     return originRect(mapId, call.args, 1, 1);
   }
-  if (call.name === "stamp_template_house") return originRect(mapId, call.args, TEMPLATE_HOUSE_FOOTPRINT.w, TEMPLATE_HOUSE_FOOTPRINT.h);
-  if (call.name === "stamp_structure" || call.name === "stamp_terrain_template") return originRect(mapId, call.args, 1, 1);
+  if (call.name === "stamp_structure") return originRect(mapId, call.args, 1, 1);
   if (call.name === "scatter_object" || call.name === "tile_scatter") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "place_npc") return [actualPointRegion(mapId, call)];
   if (call.name === "place_battle_blocker") return pointRegion(mapId, call.args.x, call.args.y);
@@ -190,6 +187,27 @@ function originRect(mapId: string, args: Record<string, unknown>, w: number | nu
   const origin = pointValue(args.origin);
   if (origin === null || w === null || h === null) return [];
   return [{ mapId, x: origin.x, y: origin.y, w, h }];
+}
+
+function wingRegions(mapId: string, value: unknown): AffectedRegion[] {
+  if (!Array.isArray(value) || value.length === 0) return [];
+  let x0 = Number.POSITIVE_INFINITY;
+  let y0 = Number.POSITIVE_INFINITY;
+  let x1 = Number.NEGATIVE_INFINITY;
+  let y1 = Number.NEGATIVE_INFINITY;
+  for (const wing of value) {
+    if (!isRecord(wing)) return [];
+    const x = numberValue(wing.x);
+    const y = numberValue(wing.y);
+    const w = numberValue(wing.w);
+    const h = numberValue(wing.h);
+    if (x === null || y === null || w === null || h === null) return [];
+    x0 = Math.min(x0, x);
+    y0 = Math.min(y0, y);
+    x1 = Math.max(x1, x + w);
+    y1 = Math.max(y1, y + h);
+  }
+  return [{ mapId, x: x0, y: y0, w: x1 - x0, h: y1 - y0 }];
 }
 
 // {x,y,w,h} 값(인자 rect/데이터 영역)을 AffectedRegion으로. 형식이 아니면 빈 배열.
@@ -315,7 +333,7 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
   if (call.name === "place_npc" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
-  if (call.name === "build_house" || call.name === "stamp_template_house" || call.name === "stamp_structure" || call.name === "stamp_terrain_template" || call.name === "tile_structure" || call.name === "build_wall") return 1;
+  if (call.name === "build_house" || call.name === "build_house_kit" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
 }

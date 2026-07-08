@@ -55,7 +55,6 @@ export interface ThrottledAgentGhostPreviewUpdater {
   readonly cancel: () => void;
 }
 
-const TEMPLATE_HOUSE_FOOTPRINT = { width: 18, height: 16 } as const;
 const STRUCTURE_FOOTPRINT = { width: 18, height: 16 } as const;
 export const AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS = 150;
 
@@ -199,14 +198,11 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "build_house":
       pushArea(rectArea(project, mapId, rectFromOriginSize(args), "build_house", "집 건설"));
       break;
-    case "stamp_template_house":
-      pushArea(rectArea(project, mapId, rectFromOriginFixed(args, TEMPLATE_HOUSE_FOOTPRINT), "stamp_template_house", "집 스탬프"));
+    case "build_house_kit":
+      pushArea(rectArea(project, mapId, rectFromWings(args.wings), "build_house_kit", "하네싱 집"));
       break;
     case "stamp_structure":
       pushArea(rectArea(project, mapId, rectFromOriginFixed(args, STRUCTURE_FOOTPRINT), "stamp_structure", "구조물 스탬프"));
-      break;
-    case "stamp_terrain_template":
-      pushArea(rectArea(project, mapId, rectFromOriginFixed(args, TEMPLATE_HOUSE_FOOTPRINT), "stamp_terrain_template", "템플릿 스탬프"));
       break;
     case "scatter_object":
       pushArea(rectArea(project, mapId, rectValue(args.area), "scatter_object", "오브젝트 배치"));
@@ -607,6 +603,28 @@ function rectFromOriginSize(args: Record<string, unknown>): AgentGhostBounds | n
   const height = numberValue(args.height);
   if (!origin || width === null || height === null) return null;
   return { x: origin.x, y: origin.y, width, height };
+}
+
+function rectFromWings(value: unknown): AgentGhostBounds | null {
+  if (!Array.isArray(value) || value.length === 0) return null;
+  let x0 = Number.POSITIVE_INFINITY;
+  let y0 = Number.POSITIVE_INFINITY;
+  let x1 = Number.NEGATIVE_INFINITY;
+  let y1 = Number.NEGATIVE_INFINITY;
+  for (const wing of value) {
+    const record = recordValue(wing);
+    if (!record) return null;
+    const x = numberValue(record.x);
+    const y = numberValue(record.y);
+    const w = numberValue(record.w);
+    const h = numberValue(record.h);
+    if (x === null || y === null || w === null || h === null) return null;
+    x0 = Math.min(x0, x);
+    y0 = Math.min(y0, y);
+    x1 = Math.max(x1, x + w);
+    y1 = Math.max(y1, y + h);
+  }
+  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
 function rectFromOriginFixed(

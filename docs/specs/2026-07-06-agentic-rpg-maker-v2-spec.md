@@ -31,8 +31,8 @@ v2의 방향: **"단일 어시스턴트가 달린 에디터" → "게임을 만�
 - **툴 레지스트리**: 76툴(쓰기 49/읽기 27) + set_build_spec. 순수함수, 헤드리스 실행 가능 설계. `src/editor/tools/toolRegistry.ts:28`, `toOpenAiTools()`.
 - **안전 파이프라인**: dry-run → structuredClone draft → `commitChangeset`(`changeset.ts:137`) → projectLint 게이트(error 시 거부) → undo 체크포인트.
 - **AssistantSession**(`src/ai/assistantSession.ts:191`): proposal/수락 모델, 자가수정(lint issues 재반환), 스펙 게이트(공간 작업 구역 격리, 3실패 폐기), 멀티모달 비전(타일/맵 이미지 주입), 감사 로그(리플레이 가능).
-- **검증 툴**: run_lint, check_reachability, simulate_battle(mulberry32 시드), tune_enemy(데미지 공식 역산), play_walkthrough(브라우저 없는 완주 검증), validate_structure.
-- **지식 축적**: 타일 시맨틱/지형 템플릿/클러스터 규칙을 인터뷰·시연으로 학습해 프로젝트에 저장하는 툴군(테치-바이-데모 포함).
+- **검증 툴**: run_lint, check_reachability, simulate_battle(mulberry32 시드), tune_enemy(데미지 공식 역산), play_walkthrough(브라우저 없는 완주 검증), houseKit 골든/감사 테스트.
+- **지식 축적**: 타일 시맨틱/클러스터 규칙을 인터뷰·시연으로 학습해 프로젝트에 저장하고, 집 구조 문법은 하네싱 키트로 단일화한다(테치-바이-데모 포함).
 - **evals**: 골든 10종 + 오프라인 CI 채점 + 라이브 러너. 라이브 passRate 0.25 (gemini-3.1-flash-lite, 4태스크).
 - **인터프리터 코어**: 스택 머신(중첩/루프/라벨/병렬/자동/커먼이벤트), 컴파일타임 kind 레지스트리(`commandKindRegistry.ts`), 순수·동기·완전 단위테스트.
 
@@ -162,6 +162,7 @@ v2의 방향: **"단일 어시스턴트가 달린 에디터" → "게임을 만�
 
 ### 진행 기록
 - **2026-07-07 8-스트림 대웨이브 완료** (`feat/phase-6a` edf3bb2, **1831 tests green**, perf 전 PASS, 9988 재서빙): ①클러스터 3단계 규칙(강/중/약) 복원+배치 강제(사용자 필수 지시 — 침엽수 260↑290 hard 등 seed, scatter/paint/수동 연필 자동 동반, fable-village 나무 retrofit) ②클러스터 비판 리뷰(`docs/2026-07-07-cluster-concept-review.md`)+잔여 결함 수정(하네스 tombstone 보존, spacing 인스턴스 기준, hard의 저장 게이트 차단 해제) ③1280px UX(캔버스 344→520px) ④DB 편집기 정비(미작동 12건+썸네일, `docs/2026-07-07-database-audit.md`) ⑤도그푸딩 13건 전량(맵 삭제 벽돌 가드, 내보내기 무반응 근본 원인=메뉴 pointerdown 경쟁, LLM 재시도, 세션 로그 export) ⑥이벤트 편집기 모던화 16결함+P0~P2 ⑦신규: **세계관 시스템** W1(`docs/specs/2026-07-07-worldview-system-design.md` — villageInfoDocuments 재개념화, W2~W4 잔여) ⑧신규: **자연산포**(`docs/specs/2026-07-07-natural-scatter-design.md` — naturalness 결정론 유기 배치, 실측: 길 십자 탈피 crossRatio 0.29 + 침엽수 12그루 페어 고아 0). e2e 부채 ~26건 목록화(사전 존재 — 구식 testid/헤드리스/캐노니컬 드리프트).
+- **2026-07-08 개정: 지형 템플릿 폐기** — 구조 지식은 하네싱 키트(집/지형 오토타일)로 단일화, 클러스터는 어휘 계층으로 존속. 근거: 문법 이원화 충돌(사용자 결정).
 - **2026-07-07 C.2 웨이브 2 완료** (`feat/phase-6a` c3ed979, 1685 tests green, perf:bench 전 PASS): ①스펙 게이트 경계 slack ±2칸(공간 쓰기 8툴 한정, clear/파괴 방지 규칙은 유지 — 재계획 루프 대신 warning 흡수) ②공간 고스트 프리뷰(agentGhostPreview.ts, write 툴 20종, 수락 시 agentFocus 하이라이트로 인계) ③완성도 인지 린트(proposalCompleteness.ts — BuildSpec 영역 대조 결정적 1순위, "⚠ 미이행" 프로포절 노출) ④흙길 오토타일 보라→갈색 교정+시맨틱 수정(감독 직접, scripts/recolor-dirt-road.py). 웨이브 3(모델 계층화: 메인=gemini-3.5-flash / 보조=flash-lite, 사용자 결정) 진행 중.
 - **2026-07-07 C.2 웨이브 1 완료** (`feat/phase-6a` 4700149, 1666 tests green, perf:bench 전 항목 PASS): 에이전트 QA 백로그 3건 — ①AI 프로포절 수락 시 대상 맵 자동 포커스+편집 영역 하이라이트(agentFocus.ts, 수동 편집 무영향, 실수락 경로 프로브 실증) ②진짜 빈 프로젝트(createBlankProject 20×15 빈 맵 1개, 예제는 createSampleAdventureProject/"예제로 시작" 분리) ③place_npc SimplePage 관용 파싱+모델 친화 에러(정규화 warning 노출). 감독 통합 교정 2건: bare ?freshProject=1 레거시(예제) 계약 복원 — 빈 프로젝트는 ?blankProject=1 신설(e2e 32개 스펙 보호), W5 로그인 모달이 자동화 부팅에서 클릭 가로채던 회귀 억제. codex 워커 반려 1건(vitest 타임아웃 완화). 잔여 백로그: 흙길 타일, 스펙 게이트 slack, 모델 계층화, 고스트 프리뷰, 완성도 린트.
 - **2026-07-07 W5 팀 워크플로 UI 완료** (`feat/phase-6a` 486a46d, 1649 tests green, 비전 QA 11/11 PASS): 로그인 목업 모달(이메일/OAuth 이름/게스트 — 실 인증 없음, 신원 label localStorage만), topbar 신원 표시+라벨 편집 메뉴, 커밋 히스토리 패널(list_project_commits 읽기 전용, 실 Supabase 20행 확인), 맵 잠금 배지 라벨 구체화. 감독 비전 QA 적발 1건 수정: 신원 메뉴 내부 클릭이 document pointerdown 닫기에 삼켜져 라벨 변경/재로그인 불능(실브라우저 전용 — 유닛 fake DOM 미검출). Phase 8 실 Auth/RLS 스위치오버 전까지 목업 전용.

@@ -192,7 +192,6 @@ export const METADATA_ONLY_TOOLS = new Set([
   "set_tile_rules",
   "upsert_tile_group",
   "set_tile_passability",
-  "upsert_terrain_template",
 ]);
 
 // 세션 전용 툴: 공간 빌드 전 밑그림 제출. 레지스트리 툴이 아니라(프로젝트를 바꾸지 않음)

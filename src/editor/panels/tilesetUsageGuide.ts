@@ -1,7 +1,7 @@
 export type TilesetEditMode = "ai" | "autotile" | "group" | "passage" | "terrain";
 
 // 타일셋 섹션 3탭 — 기능 과다를 성격별로 분리한다(2026-07-05 재편).
-// rules: 지도 만들 때 쓰는 규칙(통행·지형·레이어). knowledge: AI 지식(단어장). compose: 구성(오토타일·지형 템플릿).
+// rules: 지도 만들 때 쓰는 규칙(통행·지형·레이어). knowledge: AI 지식(단어장). compose: 구성(오토타일).
 export type TilesetSectionTab = "compose" | "knowledge" | "rules";
 
 type ModeGuide = {

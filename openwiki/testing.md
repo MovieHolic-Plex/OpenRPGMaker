@@ -26,6 +26,7 @@ Pick validation based on the touched boundary:
 - Do not add the perf benchmark as a CI gate unless the budget policy changes, because local timing is machine-dependent.
 - For focused selection, run a single file, pattern, or test name instead of the full suite.
 - House-harness door/interior changes should cover `test/houseKit.test.ts`, `test/villageBuilder.test.ts`, interpreter command coverage, and `test/e2e/village-house-interior-transfer.spec.ts` for the play-mode action transfer round trip.
+- Terrain-template tests should not be reintroduced. When changing persistence around old project JSON, prove legacy `terrainTemplates` are dropped on load and absent after serialize.
 
 Evidence expectations:
 - Record the exact command run.

@@ -19,7 +19,6 @@ import { QUERY_TOOLS } from "./queryTools";
 import { QUEST_TOOLS } from "./questTools";
 import { RANGE_CLASSIFY_TOOLS } from "./rangeClassifyTools";
 import { REFACTOR_TOOLS } from "./refactorTools";
-import { TERRAIN_TEMPLATE_TOOLS } from "./terrainTemplateTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
 import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
@@ -42,9 +41,6 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
   ["render_group_sample", "tile_query"],
   ["show_tile_grid", "tile_query"],
   ["show_tiles", "tile_query"],
-  ["extract_terrain_template", "propose_tile_vocabulary"],
-  ["upsert_terrain_template", "propose_tile_vocabulary"],
-  ["validate_structure", "tile_query"],
 ]);
 
 // v2 재구축(2026-07-07): 모든 기존 툴은 version 1로 태깅하고, 타일 계열 v1은 v2 대체와 함께
@@ -120,7 +116,6 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(VISION_QUERY_TOOLS, "map"),
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
-  ...withDomain(TERRAIN_TEMPLATE_TOOLS, "tile"),
 ]);
 
 const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) => [tool.name, tool]));

@@ -13,7 +13,7 @@ import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
 import type { ChangeSummary } from "@/editor/tools/types";
 import type { EditorIdentity } from "./editorIdentity";
-import type { GameMap, MapTreeNode, Project, TerrainTemplateMetadata, TilesetDef } from "./types";
+import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
 const DEFAULT_PROJECT_TITLE = "RPG Zzu";
@@ -37,7 +37,7 @@ type SupabaseProjectListRow = {
   readonly title: string | null;
 };
 
-type SupabaseChildTable = "ai_analysis_runs" | "maps" | "terrain_templates" | "tilesets";
+type SupabaseChildTable = "ai_analysis_runs" | "maps" | "tilesets";
 type SupabaseCommitTable = "project_changes" | "project_commits";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
@@ -405,14 +405,12 @@ async function projectUpsertPayload(projectId: string, project: Project, seriali
     current_sha256: await sha256Hex(serialized),
     map_count: Object.keys(project.maps).length,
     tileset_count: Object.keys(project.tilesets).length,
-    terrain_template_count: terrainTemplateCount(project),
   };
 }
 
 async function saveProjectChildRows(config: SupabaseProjectConfig, project: Project): Promise<void> {
   await replaceRows(config, "maps", "project_id,map_id", await Promise.all(Object.values(project.maps).map((map) => mapRow(config.projectId, map))));
   await replaceRows(config, "tilesets", "project_id,tileset_id", Object.values(project.tilesets).map((tileset) => tilesetRow(config.projectId, tileset)));
-  await replaceRows(config, "terrain_templates", "project_id,tileset_id,template_id", terrainTemplateRows(config.projectId, project));
 }
 
 async function saveChangedMapRows(
@@ -543,23 +541,6 @@ function tilesetRow(projectId: string, tileset: TilesetDef): Record<string, unkn
   };
 }
 
-function terrainTemplateRows(projectId: string, project: Project): readonly Record<string, unknown>[] {
-  return Object.values(project.tilesets).flatMap((tileset) =>
-    (tileset.terrainTemplates ?? []).map((template) => terrainTemplateRow(projectId, tileset.id, template)),
-  );
-}
-
-function terrainTemplateRow(projectId: string, tilesetId: string, template: TerrainTemplateMetadata): Record<string, unknown> {
-  return {
-    project_id: projectId,
-    tileset_id: tilesetId,
-    template_id: template.id,
-    name: template.name,
-    category: null,
-    template_json: template,
-  };
-}
-
 function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput): Record<string, unknown> {
   return {
     run_id: randomUuid(),
@@ -631,10 +612,6 @@ function parseProjectCommitRows(parsed: unknown): readonly SupabaseProjectCommit
 
 async function sha256Hex(value: string): Promise<string> {
   return sha256HexText(value);
-}
-
-function terrainTemplateCount(project: Project): number {
-  return Object.values(project.tilesets).reduce((count, tileset) => count + (tileset.terrainTemplates?.length ?? 0), 0);
 }
 
 function changedMapIdsBetween(baseProject: Project, project: Project): readonly string[] {

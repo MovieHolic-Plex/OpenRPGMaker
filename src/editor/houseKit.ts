@@ -9,7 +9,7 @@
 // 3) 마감은 전부 상위 레이어, "빈 칸에만" 얹는다(이웃 오브젝트 보존).
 // 4) 세트 혼합 금지 — 벽·지붕은 키트로 페어 고정.
 
-import { TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults/constants";
 import { createHouseDoorEvent } from "@/editor/houseInteriors";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 

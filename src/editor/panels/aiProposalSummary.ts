@@ -4,9 +4,9 @@ import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { combineDiffs } from "@/project/projectCommitLog";
 import type { Project } from "@/project/types";
 
-const HOUSE_TOOLS = new Set(["build_house", "stamp_template_house"]);
+const HOUSE_TOOLS = new Set(["build_house", "build_house_kit"]);
 const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
-  HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && (call.args.kind === "house" || call.args.kind === "template_house"));
+  HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && call.args.kind === "house");
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);

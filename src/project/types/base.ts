@@ -208,7 +208,6 @@ export interface TilesetDef {
   tileGroups?: TileGroupMetadata[];
   palettePresets?: PalettePreset[];
   suppressedHarnessGroupIds?: string[];
-  terrainTemplates?: TerrainTemplateMetadata[];
   transparentColor?: string;
   // 범용 오토타일(지형 자동 연결) 그룹 정의. 없으면 내장 기본 그룹(흙길/모래)을 사용한다.
   autotileGroups?: AutotileGroup[];
@@ -235,77 +234,6 @@ export interface AutotileGroup {
   triggerTileIds?: number[];
   // 이웃 비트마스크(10진수 문자열) → 배치할 타일 인덱스 매핑.
   variantMap: Record<string, number>;
-}
-
-export interface TerrainTemplateMetadata {
-  id: string;
-  name: string;
-  sourceMapName: string;
-  buildPlan?: TerrainTemplateBuildPlan;
-  grammar?: readonly TerrainTemplateGrammarRule[];
-  rows: readonly TerrainTemplateRow[];
-  rules: readonly string[];
-  // 지식뱅크 확장(2026-07-05): 출처 추적 + 검색 태그 + 추출 원본 영역.
-  source?: TileMetadataSource;
-  tags?: string[];
-  sourceRegion?: { mapId: string; x: number; y: number; w: number; h: number };
-}
-
-export interface TerrainTemplateBuildPlan {
-  fence: TerrainTemplateRect;
-  house: TerrainTemplateHouseBuildPlan;
-  roads: readonly TerrainTemplateRect[];
-}
-
-export interface TerrainTemplateHouseBuildPlan {
-  door: {
-    readonly bottomY: number;
-    readonly topY: number;
-    readonly x: number;
-  };
-  roof: TerrainTemplateSpan;
-  wall: TerrainTemplateWallSpan;
-  windows: readonly TerrainTemplatePoint[];
-}
-
-export interface TerrainTemplatePoint {
-  readonly x: number;
-  readonly y: number;
-}
-
-export interface TerrainTemplateRect extends TerrainTemplatePoint {
-  readonly height: number;
-  readonly width: number;
-}
-
-export interface TerrainTemplateSpan {
-  readonly origin: TerrainTemplatePoint;
-  readonly width: number;
-}
-
-export interface TerrainTemplateWallSpan extends TerrainTemplateSpan {
-  readonly rows: number;
-}
-
-export interface TerrainTemplateGrammarRule {
-  kind: "overlay" | "roof-row" | "wall-row";
-  role: string;
-  layer: TileGroupLayer;
-  left?: number;
-  middle?: number;
-  right?: number;
-  tiles?: readonly number[];
-  meaning: string;
-  mustTouch?: string;
-}
-
-export interface TerrainTemplateRow {
-  section: string;
-  coord: string;
-  lower: readonly number[];
-  upper: readonly number[];
-  stack: readonly number[];
-  meaning: string;
 }
 
 export interface SpriteDef {

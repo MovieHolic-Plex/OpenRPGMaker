@@ -559,46 +559,6 @@
   margin-top: 4px;
 }
 
-/* 구성 탭의 지형 템플릿(교과서) 섹션 */
-.terrain-template-section {
-  border-top: 1px solid var(--border-subtle, #2a2f3a);
-  margin-top: 10px;
-  padding-top: 8px;
-}
-
-.terrain-template-section-title {
-  font: 700 14px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  margin: 0 0 6px;
-}
-
-.terrain-template-section-layout {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 220px minmax(0, 1fr);
-}
-
-.terrain-template-section-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.terrain-template-section-row {
-  text-align: left;
-}
-
-.terrain-template-section-row.active {
-  background: #eef4ff;
-  border-color: var(--accent-border);
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.terrain-template-section-detail {
-  max-height: 420px;
-  overflow: auto;
-}
-
 .tileset-review-wizard {
   background: var(--panel, #ffffff);
   border: 1px solid var(--border-subtle, #cfd6e3);

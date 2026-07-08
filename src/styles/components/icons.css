@@ -94,32 +94,6 @@
   width: 6px;
 }
 
-.rm-tool-icon-terrain-template::before {
-  background: #6fa047;
-  border: 1px solid #2f3b45;
-  box-shadow:
-    4px 0 0 #d8c36a,
-    8px 0 0 #6fa047,
-    0 4px 0 #b89558,
-    4px 4px 0 #6fa047,
-    8px 4px 0 #d8c36a,
-    0 8px 0 #6fa047,
-    4px 8px 0 #b89558,
-    8px 8px 0 #6fa047;
-  height: 3px;
-  left: 2px;
-  top: 2px;
-  width: 3px;
-}
-
-.rm-tool-icon-terrain-template::after {
-  background: #2f3b45;
-  height: 2px;
-  left: 11px;
-  top: 11px;
-  width: 3px;
-}
-
 .rm-tool-icon-new,
 .rm-tool-icon-open,
 .rm-tool-icon-save,

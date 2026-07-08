@@ -204,44 +204,6 @@ describe("highlight_map_region", () => {
   });
 });
 
-describe("stamp_template_house", () => {
-  it("지형 템플릿 집을 재질/변형별로 찍고 문 좌표를 돌려준다", () => {
-    const context = ctx();
-    const created = runTool(context, "create_map", { name: "집 데모", width: 40, height: 36, id: "map_houses" });
-    expect(created.ok, created.summary).toBe(true);
-    const template = runTool(context, "stamp_template_house", {
-      mapId: "map_houses",
-      origin: { x: 1, y: 1 },
-      variant: "template",
-      material: "plaster",
-    });
-    expect(template.ok, template.summary).toBe(true);
-    expect(template.diff?.tilesChanged ?? 0).toBeGreaterThan(0);
-    expect((template.data as { door: { x: number; y: number } }).door).toBeDefined();
-    const wide = runTool(context, "stamp_template_house", {
-      mapId: "map_houses",
-      origin: { x: 20, y: 18 },
-      variant: "wide",
-      material: "wood",
-      approachHeight: 3,
-    });
-    expect(wide.ok, wide.summary).toBe(true);
-  });
-
-  it("발자국이 맵을 벗어나면 거부한다", () => {
-    const context = ctx();
-    runTool(context, "create_map", { name: "좁은 맵", width: 12, height: 12, id: "map_small" });
-    const result = runTool(context, "stamp_template_house", {
-      mapId: "map_small",
-      origin: { x: 2, y: 2 },
-      variant: "wide",
-      material: "stone",
-    });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("맵을 벗어");
-  });
-});
-
 describe("타일 지식 배선(검색·시스템 프롬프트)", () => {
   it("가르친 라벨이 list_resources(tile) 검색에 히트한다", () => {
     const context = ctx();
