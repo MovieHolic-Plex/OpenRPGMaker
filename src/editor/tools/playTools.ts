@@ -1,8 +1,7 @@
 // editor/tools/playTools.ts
-// 플레이 검증 툴: play_walkthrough — 헤드리스 워크스루 러너를 프로젝트에 실행해 완주 가능성을 검증한다.
-// 읽기 툴(프로젝트 불변). 러너는 자체 세션을 만들어 진행하므로 draft를 변형하지 않는다.
-// 이 툴로 AI 어시스턴트가 자기가 만든 콘텐츠를 스스로 완주 검증하는 루프가 완성된다.
+// Play validation tools. They create their own runtime sessions and never mutate the project.
 
+import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 import { runWalkthrough, type WalkthroughStep } from "@/testing/walkthroughRunner";
 import type { ToolDefinition, ToolExecResult } from "./types";
 
@@ -52,4 +51,45 @@ const playWalkthrough: ToolDefinition = {
   },
 };
 
-export const PLAY_TOOLS: readonly ToolDefinition[] = [playWalkthrough];
+const runSceneTestTool: ToolDefinition = {
+  name: "run_scene_test",
+  description:
+    "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
+    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'move',dir|to}|{kind:'interact'}|{kind:'choose',index}|{kind:'expect',...}]}." +
+    " expect는 playerAt, switchOn/Off, variableEquals, eventAt, cameraAt, spawnedCount, pictureVisible, bgmPlaying, gameOver, mapId를 지원한다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      start: { type: "object", description: "{x,y}" },
+      steps: { type: "array", description: "SceneStep[]", items: { type: "object" } },
+    },
+    required: ["mapId", "start", "steps"],
+  },
+  run(project, args): ToolExecResult {
+    const input = {
+      mapId: args.mapId as string,
+      start: args.start as { x: number; y: number },
+      steps: Array.isArray(args.steps) ? (args.steps as SceneStep[]) : [],
+    };
+    const result = runSceneTest(project, input);
+    return {
+      summary: result.ok
+        ? `scene test 성공 (${result.stepsRun}/${result.totalSteps} 스텝)`
+        : `scene test 실패: 스텝 ${result.failedStepIndex} — ${result.failureReason}`,
+      data: {
+        ok: result.ok,
+        stepsRun: result.stepsRun,
+        totalSteps: result.totalSteps,
+        failedStepIndex: result.failedStepIndex,
+        failedStep: result.failedStep,
+        failureReason: result.failureReason,
+        finalState: result.finalState,
+        log: result.log,
+      },
+    };
+  },
+};
+
+export const PLAY_TOOLS: readonly ToolDefinition[] = [playWalkthrough, runSceneTestTool];

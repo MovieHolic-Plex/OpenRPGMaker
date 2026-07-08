@@ -26,3 +26,5 @@ export { commitChangeset, createDraft, summarizeChanges, type CommitResult } fro
 export { validateArgs } from "./jsonSchema";
 export { createEmptyToolProject } from "./emptyProject";
 export { applyToolToStore, applyToolSequenceToStore, previewTool } from "./applyChangesetToStore";
+
+export { allTools as listTools } from "./toolRegistry";

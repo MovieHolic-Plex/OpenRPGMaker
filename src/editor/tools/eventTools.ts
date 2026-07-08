@@ -4,6 +4,7 @@
 
 import { isPassable } from "@/project/collision";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
+import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
 import type { Command, EventPage, GameEvent, GameMap, Project, TransferFade } from "@/project/types";
 import {
@@ -84,7 +85,11 @@ const upsertEvent: ToolDefinition = {
     if (!Array.isArray(event.commands)) (event as GameEvent).commands = [];
     assertEventShape(event);
     const outcome = upsertEventIntoMap(map, event);
-    return { summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"}`, data: { eventId: event.id } };
+    const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
+    return {
+      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
+      data: { eventId: event.id, unsupportedCommands },
+    };
   },
 };
 

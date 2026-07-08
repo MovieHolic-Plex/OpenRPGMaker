@@ -57,7 +57,7 @@ describe("DB upsert 확장 툴", () => {
     expect(record?.commands).toHaveLength(1);
   });
 
-  it("upsert_common_event와 run_lint가 editor-only 명령 warning을 노출한다", () => {
+  it("upsert_common_event와 run_lint가 런타임 지원 제한 warning을 노출한다", () => {
     const context = ctx();
     const result = runTool(context, "upsert_common_event", {
       id: "ce_comment",
@@ -67,12 +67,14 @@ describe("DB upsert 확장 툴", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "command-editor-only")).toBe(true);
+    expect(result.summary).toContain("미지원 커맨드 1건");
+    expect(result.data).toMatchObject({ unsupportedCommands: 1 });
+    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
 
     const lint = runTool(context, "run_lint", {});
     expect(lint.ok, lint.summary).toBe(true);
     const data = lint.data as { issues: Array<{ code: string; severity: string }> };
-    expect(data.issues.some((issue) => issue.severity === "warning" && issue.code === "command-editor-only")).toBe(true);
+    expect(data.issues.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
   });
 
   it("upsert_common_event는 잘못된 커맨드를 거부한다", () => {

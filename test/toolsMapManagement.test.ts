@@ -27,7 +27,7 @@ describe("get_event", () => {
     expect(missing.summary).toContain("ev_npc");
   });
 
-  it("place_npc가 editor-only 페이지 명령 warning을 ToolResult.issues에 담는다", () => {
+  it("place_npc가 런타임 지원 제한 페이지 명령 warning을 ToolResult.issues에 담는다", () => {
     const { context, mapId } = ctxWithMap();
     const result = runTool(context, "place_npc", {
       mapId,
@@ -39,10 +39,10 @@ describe("get_event", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "command-editor-only")).toBe(true);
+    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
   });
 
-  it("upsert_event가 editor-only 페이지 명령 warning을 ToolResult.issues에 담는다", () => {
+  it("upsert_event가 런타임 지원 제한 페이지 명령 warning과 요약 count를 담는다", () => {
     const { context, mapId } = ctxWithMap();
     const result = runTool(context, "upsert_event", {
       mapId,
@@ -68,7 +68,9 @@ describe("get_event", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "command-editor-only")).toBe(true);
+    expect(result.summary).toContain("미지원 커맨드 1건");
+    expect(result.data).toMatchObject({ unsupportedCommands: 1 });
+    expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
   });
 });
 

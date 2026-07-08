@@ -8,6 +8,7 @@ import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
+import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import type {
   ActorRecord,
   ClassRecord,
@@ -478,7 +479,11 @@ const upsertCommonEvent: ToolDefinition = {
       commands: [...(args.commands as Command[])],
     };
     const outcome = upsertById(draft.commonEvents, record);
-    return { summary: `커먼 이벤트 '${record.name}'(${trigger}) ${outcome === "added" ? "추가" : "수정"}`, data: { id: record.id } };
+    const unsupportedCommands = countLimitedRuntimeSupportCommands(record.commands);
+    return {
+      summary: `커먼 이벤트 '${record.name}'(${trigger}) ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
+      data: { id: record.id, unsupportedCommands },
+    };
   },
 };
 

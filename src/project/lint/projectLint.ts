@@ -11,12 +11,12 @@
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
 //  - map-size              (warning) 256×256 초과 맵
-//  - command-editor-only   (warning) 저작은 가능하지만 런타임에서 실행되지 않는 커맨드
+//  - runtime-support:*     (warning) command is not fully supported by the map runtime
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
@@ -48,7 +48,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkTransfers(project, issues);
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
-  checkEditorOnlyCommands(project, issues);
+  checkRuntimeSupportCommands(project, issues);
   checkClusterRules(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
@@ -200,15 +200,15 @@ function checkMapSizes(project: Project, issues: LintIssue[]): void {
   }
 }
 
-function checkEditorOnlyCommands(project: Project, issues: LintIssue[]): void {
+function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       visitCommands(event.commands, (command) =>
-        pushEditorOnlyCommandIssue(command, issues, { mapId: map.id, x: event.x, y: event.y, owner: `맵 이벤트 ${event.id}` })
+        pushRuntimeSupportCommandIssue(command, issues, { mapId: map.id, x: event.x, y: event.y, owner: `맵 이벤트 ${event.id}` })
       );
       for (const page of event.pages ?? []) {
         visitCommands(page.commands, (command) =>
-          pushEditorOnlyCommandIssue(command, issues, {
+          pushRuntimeSupportCommandIssue(command, issues, {
             mapId: map.id,
             x: event.x,
             y: event.y,
@@ -220,32 +220,50 @@ function checkEditorOnlyCommands(project: Project, issues: LintIssue[]): void {
   }
   for (const commonEvent of project.commonEvents) {
     visitCommands(commonEvent.commands, (command) =>
-      pushEditorOnlyCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` })
+      pushRuntimeSupportCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` })
     );
-  }
-  for (const troop of project.database.troops) {
-    for (const page of troop.battleEventPages) {
-      visitCommands(page.commands, (command) =>
-        pushEditorOnlyCommandIssue(command, issues, { owner: `트룹 ${troop.id}/${page.id}` })
-      );
-    }
   }
 }
 
-function pushEditorOnlyCommandIssue(
+export function countLimitedRuntimeSupportCommands(commands: readonly Command[]): number {
+  let count = 0;
+  visitCommands(commands, (command) => {
+    if (limitedRuntimeSupport(commandRuntimeSupport(command))) count += 1;
+  });
+  return count;
+}
+
+export function countLimitedRuntimeSupportCommandsForEvent(event: GameEvent): number {
+  let count = countLimitedRuntimeSupportCommands(event.commands);
+  for (const page of event.pages ?? []) {
+    count += countLimitedRuntimeSupportCommands(page.commands);
+  }
+  return count;
+}
+
+function pushRuntimeSupportCommandIssue(
   command: Command,
   issues: LintIssue[],
   context: { readonly owner: string; readonly mapId?: string; readonly x?: number; readonly y?: number }
 ): void {
-  if (commandRuntimeSupport(command) !== "editor-only") return;
+  const support = commandRuntimeSupport(command);
+  if (!limitedRuntimeSupport(support)) return;
   issues.push({
     severity: "warning",
-    code: "command-editor-only",
+    code: `runtime-support:${runtimeSupportCommandKind(command)}`,
     mapId: context.mapId,
     x: context.x,
     y: context.y,
-    message: `${context.owner}에 런타임에서 실행되지 않는 명령이 있습니다: ${commandLabel(command)}`,
+    message: `${context.owner}에 런타임 지원이 제한된 명령이 있습니다(${support}): ${commandLabel(command)}`,
   });
+}
+
+function limitedRuntimeSupport(support: CommandRuntimeSupport): boolean {
+  return support !== "runtime-full";
+}
+
+function runtimeSupportCommandKind(command: Command): string {
+  return command.kind === "m2Command" ? command.commandId : command.kind;
 }
 
 function checkClusterRules(project: Project, issues: LintIssue[]): void {

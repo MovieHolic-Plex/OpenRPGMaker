@@ -106,7 +106,7 @@ describe("projectLint", () => {
     expect(errors.some((issue) => issue.code === "transfer-bounds"), JSON.stringify(errors)).toBe(true);
   });
 
-  it("editor-only 명령을 맵/커먼/트룹 이벤트 warning으로 보고한다", () => {
+  it("런타임 지원 제한 명령을 맵/커먼 이벤트 warning으로 보고한다", () => {
     const project = cloneProject(createBlankProject());
     const map = project.maps[project.startMapId];
     if (!map) throw new Error("start map missing");
@@ -140,12 +140,12 @@ describe("projectLint", () => {
       commands: [comment],
     });
 
-    const issues = projectLint(project).filter((issue) => issue.code === "command-editor-only");
+    const issues = projectLint(project).filter((issue) => issue.code === "runtime-support:m2-088-comment");
 
-    expect(issues).toHaveLength(3);
+    expect(issues).toHaveLength(2);
     expect(issues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 3, y: 4 });
     expect(issues.map((issue) => issue.message).join("\n")).toContain("커먼 이벤트 ce_editor_only");
-    expect(issues.map((issue) => issue.message).join("\n")).toContain("트룹");
+    expect(issues.map((issue) => issue.message).join("\n")).not.toContain("트룹");
   });
 
   it("256x256 초과 맵을 warning으로 보고한다", () => {
