@@ -107,8 +107,9 @@ function normalizeCoordinateShape(schema: JsonSchema, args: Record<string, unkno
 function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
   const parsed = parseJsonString(value, schema);
   const schemaTypes = Array.isArray(schema.type) ? schema.type : [schema.type];
-  if (schemaTypes.includes("object") && isRecord(Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed)) {
-    const unwrapped = Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed;
+  const objectCandidate = coerceBooleanEnabledObject(schema, parsed);
+  if (schemaTypes.includes("object") && isRecord(Array.isArray(objectCandidate) && objectCandidate.length === 1 ? objectCandidate[0] : objectCandidate)) {
+    const unwrapped = Array.isArray(objectCandidate) && objectCandidate.length === 1 ? objectCandidate[0] : objectCandidate;
     const properties = schema.properties ?? {};
     const next: Record<string, unknown> = { ...unwrapped };
     normalizeCoordinateShape(schema, next);
@@ -130,7 +131,8 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
   if (schemaTypes.length > 1) return parsed;
   switch (schemaTypes[0]) {
     case "object": {
-      const unwrapped = Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed;
+      const candidate = coerceBooleanEnabledObject(schema, parsed);
+      const unwrapped = Array.isArray(candidate) && candidate.length === 1 ? candidate[0] : candidate;
       if (!isRecord(unwrapped)) return unwrapped;
       const properties = schema.properties ?? {};
       const next: Record<string, unknown> = { ...unwrapped };
@@ -158,6 +160,14 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
       return parsed;
   }
   return parsed;
+}
+
+function coerceBooleanEnabledObject(schema: JsonSchema, value: unknown): unknown {
+  if (typeof value !== "boolean") return value;
+  if (!schemaHasType(schema, "object")) return value;
+  const enabled = schema.properties?.enabled;
+  if (!enabled || !schemaHasType(enabled, "boolean")) return value;
+  return { enabled: value };
 }
 
 // LLM 툴콜에서 흔히 나오는 무해한 표현 흔들림을 스키마 검증 전에 정규화한다.

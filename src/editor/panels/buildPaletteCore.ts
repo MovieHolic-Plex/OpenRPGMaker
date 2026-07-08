@@ -228,7 +228,7 @@ function stampHouse(
   };
   if (options.doorEvent !== undefined) args.doorEvent = options.doorEvent;
   if (options.interior !== undefined) args.interior = options.interior;
-  if (options.windows !== undefined) args.windows = options.windows;
+  if (options.windows !== undefined) args.windows = normalizeWindowsArg(options.windows);
   return run("build_house_kit", args);
 }
 
@@ -244,7 +244,7 @@ function stampVillage(
   };
   if (options.doorEvent !== undefined) args.doorEvent = options.doorEvent;
   if (options.interior !== undefined) args.interior = options.interior;
-  if (options.windows !== undefined) args.windows = options.windows;
+  if (options.windows !== undefined) args.windows = normalizeWindowsArg(options.windows);
   return run("build_village", args);
 }
 
@@ -308,6 +308,13 @@ function validateWingColumnIntervals(wings: readonly FootprintWing[]): string | 
     if (current && current.bottom - current.top + 1 < 5) return "집은 각 열 구간 높이 5 이상이 필요합니다.";
   }
   return null;
+}
+
+// 툴 스키마는 Gemini 호환을 위해 object 단일 타입 — 토글 boolean 을 {enabled} 로 변환한다.
+function normalizeWindowsArg(value: HouseKitWindowsOption | boolean): Record<string, unknown> {
+  if (value === true) return {};
+  if (value === false) return { enabled: false };
+  return { ...value };
 }
 
 function resolveHouseShapeId(id: BuildHouseShapeId | undefined): BuildHouseShapeId {

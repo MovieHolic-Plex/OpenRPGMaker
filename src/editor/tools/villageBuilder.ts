@@ -198,9 +198,12 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         interior: { type: "boolean", description: "집마다 내부 맵과 Object1 문 이벤트를 생성(기본 true). false면 기존 외장/문 타일만 만든다." },
         doorEvent: { type: "boolean", description: "Object1 문 이벤트와 내부 맵을 생성(기본 true, interior:false면 비활성)" },
         windows: {
-          type: ["boolean", "object"],
-          description: "창문 자동 배치(기본 true). false면 끄고, {spacing}이면 창문 사이 벽 칸 수를 지정(기본 2)",
-          properties: { spacing: { type: "integer", description: "창문 사이 벽 칸 수(기본 2)" } },
+          type: "object",
+          description: "창문 자동 배치 옵션(기본: 켜짐). {enabled:false}로 끄고, {spacing:N}으로 창문 사이 벽 칸 수 지정(기본 2). boolean 도 하위 호환으로 수용.",
+          properties: {
+            enabled: { type: "boolean", description: "창문 배치 여부(기본 true)" },
+            spacing: { type: "integer", description: "창문 사이 벽 칸 수(기본 2)" },
+          },
         },
         npcs: {
           type: "array",
@@ -314,8 +317,9 @@ function coerceWindows(value: unknown): HouseKitWindowsOption | undefined {
   if (value === undefined || value === true) return undefined;
   if (value === false) return false;
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new ToolError("windows는 boolean 또는 {spacing} 객체여야 합니다.", { code: "invalid-args" });
+    throw new ToolError("windows는 boolean 또는 {enabled?, spacing?} 객체여야 합니다.", { code: "invalid-args" });
   }
+  if ((value as Record<string, unknown>).enabled === false) return false;
   const spacing = (value as Record<string, unknown>).spacing;
   if (spacing === undefined) return {};
   if (typeof spacing !== "number" || !Number.isInteger(spacing) || spacing < 0) {
