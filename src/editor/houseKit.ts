@@ -10,7 +10,8 @@
 // 4) 세트 혼합 금지 — 벽·지붕은 키트로 페어 고정.
 
 import { TILE } from "@/project/defaults";
-import type { GameMap } from "@/project/types";
+import { createHouseDoorEvent } from "@/editor/houseInteriors";
+import type { GameEvent, GameMap, MapId } from "@/project/types";
 
 export type HouseKitId = "blue-stone" | "bright-plaster";
 
@@ -185,6 +186,14 @@ export interface FootprintHousePlan {
   readonly kitId: HouseKitId;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
+  /** 내부 맵으로 이어지는 문 이벤트. 도구 계층에서 내부 맵을 만든 뒤 주입한다. */
+  readonly doorEvent?: FootprintHouseDoorEventPlan | false;
+}
+
+export interface FootprintHouseDoorEventPlan {
+  readonly eventId: string;
+  readonly interiorMapId: MapId;
+  readonly name?: string;
 }
 
 const WALL_BAND_ROWS = 3; // 하네싱 불변식: 벽 = 상단+중단+하단
@@ -325,7 +334,23 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
   }
   const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
   placeWindowsOnWallRuns(map, kit, wallMidRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
+  if (doorAt && plan.doorEvent) {
+    upsertEvent(map, createHouseDoorEvent({
+      eventId: plan.doorEvent.eventId,
+      x: doorAt.x,
+      y: doorAt.y,
+      interiorMapId: plan.doorEvent.interiorMapId,
+      kitId: plan.kitId,
+      name: plan.doorEvent.name,
+    }));
+  }
   return { ok: true, doorAt };
+}
+
+function upsertEvent(map: GameMap, event: GameEvent): void {
+  const index = map.events.findIndex((candidate) => candidate.id === event.id);
+  if (index >= 0) map.events[index] = event;
+  else map.events.push(event);
 }
 
 // 직사각 집을 하네싱 규칙 그대로 전개한다. map을 직접 변경(호출측이 draft/스냅샷 관리).

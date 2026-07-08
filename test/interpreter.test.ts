@@ -651,7 +651,7 @@ describe("label / gotoLabel — 루프", () => {
         r = it.resume(undefined);
       } else if (r.kind === "choices") {
         r = it.resume(0);
-      } else if (r.kind === "wait" || r.kind === "inputWait" || r.kind === "timer" || r.kind === "changeTile" || r.kind === "moveEvent") {
+      } else if (r.kind === "wait" || r.kind === "inputWait" || r.kind === "timer" || r.kind === "changeTile" || r.kind === "moveEvent" || r.kind === "setEventGraphicPattern") {
         r = it.resume(undefined);
       } else if (r.kind === "transfer") {
         r = it.resume(undefined);
@@ -662,7 +662,7 @@ describe("label / gotoLabel — 루프", () => {
   });
 });
 
-describe("changeTile / moveEvent — 요청 반환", () => {
+describe("changeTile / moveEvent / setEventGraphicPattern — 요청 반환", () => {
   it("changeTile은 요청을 반환하고 resume 후 계속", () => {
     const cmds: Command[] = [
       { kind: "changeTile", mapId: "m1", layer: "lower", x: 1, y: 2, tile: 5 },
@@ -685,6 +685,18 @@ describe("changeTile / moveEvent — 요청 반환", () => {
     const it = createInterpreter(cmds, mkSession());
     const r = it.start();
     expect(r.kind).toBe("moveEvent");
+  });
+
+  it("setEventGraphicPattern은 프레임 변경 요청을 반환하고 resume 후 계속한다", () => {
+    const cmds: Command[] = [
+      { kind: "setEventGraphicPattern", eventId: "ev_door", pattern: 14 },
+      { kind: "text", body: "열림" },
+    ];
+    const it = createInterpreter(cmds, mkSession());
+    let r = it.start();
+    expect(r).toEqual({ kind: "setEventGraphicPattern", eventId: "ev_door", pattern: 14 });
+    r = it.resume(undefined);
+    expect(expectTextResult(r).body).toBe("열림");
   });
 });
 

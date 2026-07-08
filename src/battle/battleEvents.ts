@@ -157,6 +157,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "text":
       case "transfer":
       case "moveEvent":
+      case "setEventGraphicPattern":
       case "changeTile":
       case "callCommonEvent":
       case "battleProcessing":

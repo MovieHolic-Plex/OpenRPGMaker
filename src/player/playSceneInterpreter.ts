@@ -143,6 +143,9 @@ async function consumeBlockingStep(
     case "changeTile":
       scene.applyChangeTileStep(step);
       return resumeAfterSurface(scene, interpreter);
+    case "setEventGraphicPattern":
+      applyEventGraphicPatternStep(scene, step, currentEventId);
+      return resumeInterpreter(interpreter);
     case "moveEvent": {
       const target = resolveMoveEventTarget(step.eventId, currentEventId);
       if (target === PLAYER_MOVE_TARGET) {
@@ -221,6 +224,17 @@ async function consumeBlockingStep(
 
 function resolveMoveEventTarget(eventId: string, currentEventId: string | undefined): string {
   return eventId || currentEventId || "";
+}
+
+function applyEventGraphicPatternStep(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "setEventGraphicPattern" }>,
+  currentEventId: string | undefined
+): void {
+  const eventId = step.eventId || currentEventId;
+  if (!eventId) return;
+  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  scene.syncRuntimeState();
 }
 
 // moveEvent 의 wait 옵션: mover 가 활동을 마칠 때(autonomousNPCs 에서 제거될 때)까지 대기.

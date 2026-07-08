@@ -133,6 +133,7 @@ export type Command =
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
+  | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
       kind: "changeTile";
       mapId: MapId;

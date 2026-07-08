@@ -265,6 +265,12 @@ export function executeCommand(
         repeat: command.route.repeat,
         wait: command.route.wait === true,
       });
+    case "setEventGraphicPattern":
+      return pause("setEventGraphicPattern", {
+        kind: "setEventGraphicPattern",
+        eventId: command.eventId,
+        pattern: command.pattern,
+      });
     case "battleProcessing":
       return pause("battleProcessing", {
         kind: "battleProcessing",

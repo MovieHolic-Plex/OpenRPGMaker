@@ -4,7 +4,9 @@
 // 정본 명세: docs/knowledge/images/2026-07-08-house-harness-design.png
 
 import { HOUSE_KITS, stampFootprintHouseKit, type FootprintWing, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
-import type { Project } from "@/project/types";
+import { createHouseDoorEvent, createHouseInteriorMap } from "@/editor/houseInteriors";
+import { appendToTree } from "@/editor/mapTreeActions";
+import type { GameEvent, MapId, MapTreeNode, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const DOOR_TOP_TILE = 116;
@@ -51,6 +53,9 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
           },
         },
         door: { type: "boolean", description: "남쪽 외벽 중앙에 문 자동 배치(기본 true)" },
+        doorEvent: { type: "boolean", description: "Object1 문 이벤트와 열림 모션 생성(기본 true, interior:false면 비활성)" },
+        interior: { type: "boolean", description: "집 내부 맵 자동 생성(기본 true). false면 내부/문 이벤트 없이 외장만 만든다." },
+        ownerName: { type: "string", description: "내부 맵 이름에 쓸 집주인 이름(기본: 대상 맵 이름)" },
         windows: {
           type: ["boolean", "object"],
           description: "창문 자동 배치(기본 true). false면 끄고, {spacing}이면 창문 사이 벽 칸 수를 지정(기본 2)",
@@ -76,17 +81,52 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       const result = stampFootprintHouseKit(map, { kitId, wings, windows });
       if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId });
       let doorNote = "문 없음";
+      let interiorData: {
+        interiorMapId: MapId;
+        doorEventId: string;
+        exitEventId: string;
+      } | null = null;
       if (args.door !== false && result.doorAt) {
         const { x, y } = result.doorAt;
         map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;
         map.lowerTiles[y * map.width + x] = DOOR_BOTTOM_TILE;
         doorNote = `문 (${x},${y})`;
+        if (args.interior !== false && args.doorEvent !== false) {
+          const base = `${map.id}_${kitId}_${x}_${y}`;
+          const interiorMapId = uniqueProjectId(draft, "map_house_interior", base);
+          const doorEventId = uniqueProjectId(draft, "ev_house_door", base);
+          const exitEventId = uniqueProjectId(draft, "ev_house_exit", base);
+          const ownerName = typeof args.ownerName === "string" && args.ownerName.trim().length > 0
+            ? args.ownerName.trim()
+            : map.name;
+          const interior = createHouseInteriorMap({
+            id: interiorMapId,
+            name: `${ownerName}의 집 내부`,
+            returnMapId: map.id,
+            returnX: x,
+            returnY: y + 1,
+            exitEventId,
+            seed: seedFromString(base),
+          });
+          draft.maps[interiorMapId] = interior.map;
+          appendTreeChildOnce(draft.mapTree, interiorMapId, map.id);
+          upsertEvent(map.events, createHouseDoorEvent({
+            eventId: doorEventId,
+            x,
+            y,
+            interiorMapId,
+            kitId,
+            name: `${ownerName}의 집 문`,
+          }));
+          interiorData = { interiorMapId, doorEventId, exitEventId };
+          doorNote = `${doorNote}, 내부 ${interiorMapId}`;
+        }
       }
       const kit = HOUSE_KITS[kitId];
       const windowNote = windows === false ? "창문 없음" : "창문 자동";
       return {
         summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${wings.length}개, ${doorNote}, ${windowNote}. 하네싱 규칙 적용 완료.`,
-        data: { doorAt: result.doorAt ?? null, kitId, wings },
+        data: { doorAt: result.doorAt ?? null, kitId, wings, ...(interiorData ?? {}) },
       };
     },
   },
@@ -119,4 +159,40 @@ function coerceWindows(value: unknown): HouseKitWindowsOption | undefined {
     throw new ToolError("windows.spacing은 0 이상의 정수여야 합니다.", { code: "invalid-args" });
   }
   return { spacing };
+}
+
+function uniqueProjectId(draft: Project, prefix: string, body: string): string {
+  const cleanBody = body.replace(/[^a-zA-Z0-9_]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 64) || "1";
+  let id = `${prefix}_${cleanBody}`;
+  let suffix = 2;
+  const eventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.map((event) => event.id)));
+  while (draft.maps[id] || eventIds.has(id)) {
+    id = `${prefix}_${cleanBody}_${suffix}`;
+    suffix += 1;
+  }
+  return id;
+}
+
+function appendTreeChildOnce(root: MapTreeNode, mapId: MapId, parentId: MapId): void {
+  if (treeContains(root, mapId)) return;
+  appendToTree(root, mapId, parentId);
+}
+
+function treeContains(node: MapTreeNode, mapId: MapId): boolean {
+  return node.mapId === mapId || node.children.some((child) => treeContains(child, mapId));
+}
+
+function upsertEvent(events: GameEvent[], event: GameEvent): void {
+  const index = events.findIndex((entry) => entry.id === event.id);
+  if (index >= 0) events[index] = event;
+  else events.push(event);
+}
+
+function seedFromString(value: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
 }

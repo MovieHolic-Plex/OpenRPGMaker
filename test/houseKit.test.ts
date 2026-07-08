@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, houseDoorFrameIndex } from "@/editor/houseInteriors";
 import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
+import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
 import { createBlankProject, TILE } from "@/project/defaults";
-import type { GameMap } from "@/project/types";
+import type { GameMap, MapTreeNode } from "@/project/types";
 
 // 하네싱 골든 테스트 — 키트 전개 결과가 사용자 기준 집(fable-village 연습04)의
 // 실데이터와 "셀 단위로" 일치해야 한다. 정본: docs/knowledge/images/2026-07-08-house-harness-design.png
@@ -226,6 +228,42 @@ describe("house kit — 창문 자동 배치", () => {
     expect(map.upperTiles[6 * map.width + 3]).toBe(260);
     expect(map.upperTiles[6 * map.width + 9]).toBe(87);
   });
+
+  it("문 이벤트 옵션은 Object1 그래픽과 열림 프레임→transfer 명령을 만든다", () => {
+    const map = freshMap();
+    map.events = [];
+    const result = stampFootprintHouseKit(map, {
+      kitId: "bright-plaster",
+      windows: false,
+      wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+      doorEvent: { eventId: "ev_house_door", interiorMapId: "map_inside", name: "민재의 집 문" },
+    });
+    expect(result.ok, result.reason).toBe(true);
+    expect(result.doorAt).toEqual({ x: 4, y: 7 });
+
+    const door = map.events.find((event) => event.id === "ev_house_door");
+    expect(door?.x).toBe(4);
+    expect(door?.y).toBe(7);
+    const page = door?.pages?.[0];
+    expect(page?.trigger.kind).toBe("action");
+    expect(page?.priority).toBe("same");
+    expect(page?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
+    expect(page?.graphic.pattern).toBe(houseDoorFrameIndex("bright-plaster", 0));
+    expect(page?.commands.map((command) => command.kind)).toEqual([
+      "setEventGraphicPattern",
+      "wait",
+      "setEventGraphicPattern",
+      "wait",
+      "setEventGraphicPattern",
+      "wait",
+      "transfer",
+    ]);
+    expect(page?.commands[0]).toMatchObject({ kind: "setEventGraphicPattern", eventId: "ev_house_door", pattern: houseDoorFrameIndex("bright-plaster", 0) });
+    expect(page?.commands[1]).toEqual({ kind: "wait", ms: HOUSE_DOOR_FRAME_WAIT_MS });
+    expect(page?.commands[2]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 1) });
+    expect(page?.commands[4]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 2) });
+    expect(page?.commands[6]).toMatchObject({ kind: "transfer", mapId: "map_inside", x: 6, y: 6 });
+  });
 });
 
 describe("build_house_kit AI 툴", () => {
@@ -247,6 +285,21 @@ describe("build_house_kit AI 툴", () => {
     expect(map.upperTiles[2 * map.width + 2]).toBe(356); // NW 대각
     expect(map.upperTiles[6 * map.width + 6]).toBe(87); // 기본 창문
     expect(map.lowerTiles[7 * map.width + 4]).toBe(146); // 자동 문 하단
+    const data = result.data as { interiorMapId: string; doorEventId: string; exitEventId: string };
+    expect(data.interiorMapId).toMatch(/^map_house_interior_/);
+    expect(data.doorEventId).toMatch(/^ev_house_door_/);
+    const interior = ctx.project.maps[data.interiorMapId];
+    expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
+    expect(interior.width).toBe(13);
+    expect(interior.height).toBe(10);
+    expect(treeContains(ctx.project.mapTree, data.interiorMapId)).toBe(true);
+    const door = map.events.find((event) => event.id === data.doorEventId);
+    expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: data.interiorMapId, x: 6, y: 6 });
+    const exit = interior.events.find((event) => event.id === data.exitEventId);
+    expect(exit?.x).toBe(6);
+    expect(exit?.y).toBe(7);
+    expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
+    expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId, x: 4, y: 8, fade: "black" }]);
   });
 
   it("windows:false 인자로 창문 자동 배치를 끈다", async () => {
@@ -275,4 +328,26 @@ describe("build_house_kit AI 툴", () => {
     });
     expect(result.ok).toBe(false);
   });
+
+  it("interior:false는 내부 맵과 문 이벤트를 만들지 않는다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const project = createBlankProject();
+    const ctx = { project };
+    const mapId = project.startMapId;
+    const beforeMapCount = Object.keys(project.maps).length;
+    const result = runTool(ctx, "build_house_kit", {
+      mapId,
+      kitId: "blue-stone",
+      interior: false,
+      wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(Object.keys(ctx.project.maps)).toHaveLength(beforeMapCount);
+    expect(result.data).not.toHaveProperty("interiorMapId");
+    expect(ctx.project.maps[mapId].events.some((event) => event.id.startsWith("ev_house_door_"))).toBe(false);
+  });
 });
+
+function treeContains(node: MapTreeNode, mapId: string): boolean {
+  return node.mapId === mapId || node.children.some((child) => treeContains(child, mapId));
+}

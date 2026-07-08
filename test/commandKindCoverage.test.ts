@@ -44,6 +44,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   timer: { kind: "timer", action: "set", seconds: 5, timerId: "timer1" },
   transfer: { kind: "transfer", mapId: "map1", x: 0, y: 0 },
   moveEvent: { kind: "moveEvent", eventId: "ev1", route: { moves: [], repeat: false } },
+  setEventGraphicPattern: { kind: "setEventGraphicPattern", eventId: "ev1", pattern: 0 },
   changeTile: { kind: "changeTile", mapId: "map1", layer: "lower", x: 0, y: 0, tile: 1 },
   callCommonEvent: { kind: "callCommonEvent", commonEventId: "ce1" },
   callMapEvent: { kind: "callMapEvent", eventId: "ev1" },

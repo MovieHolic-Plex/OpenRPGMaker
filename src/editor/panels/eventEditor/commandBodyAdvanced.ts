@@ -37,6 +37,8 @@ export function renderAdvancedCommandBody(
       return waitBody(context, cmd);
     case "moveEvent":
       return moveEventBody(context, cmd);
+    case "setEventGraphicPattern":
+      return setEventGraphicPatternBody(context, cmd);
     case "changeTile":
       return changeTileBody(context, cmd);
     case "callCommonEvent":
@@ -143,6 +145,28 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
     });
   });
   return ms;
+}
+
+function setEventGraphicPatternBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "setEventGraphicPattern" }>
+): HTMLElement {
+  const eventId = textInput(cmd.eventId, "이벤트 ID(빈 값=이 이벤트)", "set-event-graphic-pattern-event-input");
+  const pattern = numberInput(cmd.pattern, "프레임 인덱스", "set-event-graphic-pattern-frame-input");
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "setEventGraphicPattern",
+      eventId: eventId.value.trim(),
+      pattern: parseInt(pattern.value, 10) || 0,
+    });
+  };
+  eventId.addEventListener("change", apply);
+  eventId.addEventListener("input", apply);
+  pattern.addEventListener("change", apply);
+  pattern.addEventListener("input", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(el("span", { class: "rich-form-row", children: [eventId, pattern] }));
+  return wrap;
 }
 
 function callCommonEventBody(

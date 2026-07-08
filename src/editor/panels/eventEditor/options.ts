@@ -37,6 +37,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "breakLoop", label: "반복 탈출" },
   { value: "transfer", label: "장소 이동" },
   { value: "moveEvent", label: "이벤트 이동" },
+  { value: "setEventGraphicPattern", label: "이벤트 프레임 변경" },
   { value: "changeTile", label: "지형 변경" },
   { value: "callCommonEvent", label: "공통 이벤트 호출" },
   { value: "callMapEvent", label: "맵 이벤트 호출" },

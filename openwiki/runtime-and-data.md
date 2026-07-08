@@ -55,6 +55,7 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 
 - `End Event Processing` terminates the current interpreter run, including common-event and map-event call frames.
 - `Erase Event` emits a scene step that records the current event id in `session.erasedEventIds`, removes its active movement routes, and refreshes runtime surfaces.
+- `setEventGraphicPattern` is a native event command for runtime-only sprite frame changes. The interpreter emits a scene step, `PlayScene` applies `sprite.setFrame(pattern)` to the targeted event (empty `eventId` means the current event), and authored event-page graphics stay unchanged so map reload/page refresh returns to the saved graphic.
 - `Wait for All Movement` waits for command-issued `moveEvent` routes and forced player routes to finish; page autonomous movement is not treated as a blocking command route.
 - `Stop All Movement` cancels command-issued event routes and forced player routes without mutating authored page movement.
 - `Scroll Map` emits a `scrollMap` scene step. The camera stops following the player while the pan tween runs; `mode: "return"` pans back to the player and resumes follow, `mode: "lock"` leaves follow disabled at the panned position, and the default non-lock path resumes follow after the pan. `wait` controls whether the interpreter blocks for the pan.

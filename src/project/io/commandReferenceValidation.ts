@@ -62,6 +62,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "gotoLabel":
     case "timer":
     case "moveEvent":
+    case "setEventGraphicPattern":
     case "setFlag":
     case "erasePicture":
     case "stopAudio":

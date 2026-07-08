@@ -5,8 +5,8 @@
 // 파일 존재를 강제한다. 아직 미작성인 kind 는 아래 TODO 화이트리스트에 명시적으로 남는다.
 // 화이트리스트는 줄어들 수만 있다: 파일이 생겼는데 화이트리스트에 남아 있으면 실패한다.
 //
-// 실측 메모: 스펙 §10 은 "화이트리스트=38"을 예상했지만, 실제 COMMAND_KINDS 는 44개
-// (m2Command 포함)라 EC1 4개 제외 시 40개가 남는다. 레지스트리를 기계적 진실로 삼는다
+// 실측 메모: 스펙 §10 은 "화이트리스트=38"을 예상했지만, 실제 COMMAND_KINDS 는 45개
+// (m2Command, setEventGraphicPattern 포함)라 레지스트리를 기계적 진실로 삼는다
 // (차이는 EC1 보고서 "표 대조 결과"에 기록).
 import { describe, expect, it } from "vitest";
 import { COMMAND_KINDS, type CommandKind } from "@/project/commandKindRegistry";
@@ -48,6 +48,7 @@ const CONTRACT_TEST_TODO_WHITELIST: readonly CommandKind[] = [
   "battleProcessing",
   "transfer",
   "moveEvent",
+  "setEventGraphicPattern",
   "changeTile",
   "gameOver",
   "ending",

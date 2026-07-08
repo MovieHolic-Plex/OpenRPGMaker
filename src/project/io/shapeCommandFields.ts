@@ -63,6 +63,10 @@ function validateCommandShape(label: string, value: unknown): void {
     case "moveEvent":
       validateMoveRoute(`${label}.route`, command.route);
       return;
+    case "setEventGraphicPattern":
+      requireString(`${label}.eventId`, command.eventId);
+      requireNumber(`${label}.pattern`, command.pattern);
+      return;
     case "changeExp":
     case "changeLevel":
     case "changeActorHp":

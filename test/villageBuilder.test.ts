@@ -1,10 +1,28 @@
 import { describe, expect, it } from "vitest";
+import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
+import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { deserialize, serialize } from "@/project/io";
+import type { MapTreeNode } from "@/project/types";
+
+interface VillageHouseData {
+  readonly index: number;
+  readonly kitId: string;
+  readonly doorAt: { readonly x: number; readonly y: number };
+  readonly front: { readonly x: number; readonly y: number };
+  readonly ownerName: string;
+  readonly interiorMapId?: string;
+  readonly doorEventId?: string;
+  readonly exitEventId?: string;
+  readonly entry?: { readonly x: number; readonly y: number };
+  readonly exit?: { readonly x: number; readonly y: number };
+  readonly returnTo?: { readonly x: number; readonly y: number };
+}
 
 interface VillageData {
   readonly mapId: string;
@@ -12,12 +30,17 @@ interface VillageData {
   readonly doorsConnected: number;
   readonly roadComponents: number;
   readonly npcCount: number;
+  readonly interiorCount: number;
+  readonly doorEventCount: number;
+  readonly houses: readonly VillageHouseData[];
 }
 
 interface VillageSnapshot {
   readonly lowerTiles: readonly number[];
   readonly upperTiles: readonly number[];
-  readonly events: readonly { readonly x: number; readonly y: number }[];
+  readonly events: readonly { readonly id: string; readonly x: number; readonly y: number; readonly commandKinds: readonly string[] }[];
+  readonly mapIds: readonly string[];
+  readonly mapTree: string;
 }
 
 function villageData(value: unknown): VillageData {
@@ -31,7 +54,10 @@ function isVillageData(value: unknown): value is VillageData {
     && typeof Reflect.get(value, "housesBuilt") === "number"
     && typeof Reflect.get(value, "doorsConnected") === "number"
     && typeof Reflect.get(value, "roadComponents") === "number"
-    && typeof Reflect.get(value, "npcCount") === "number";
+    && typeof Reflect.get(value, "npcCount") === "number"
+    && typeof Reflect.get(value, "interiorCount") === "number"
+    && typeof Reflect.get(value, "doorEventCount") === "number"
+    && Array.isArray(Reflect.get(value, "houses"));
 }
 
 function buildVillage(seed: number): { readonly context: ToolContext; readonly data: VillageData; readonly snapshot: VillageSnapshot } {
@@ -47,7 +73,14 @@ function buildVillage(seed: number): { readonly context: ToolContext; readonly d
     snapshot: {
       lowerTiles: [...map.lowerTiles],
       upperTiles: [...map.upperTiles],
-      events: map.events.map((event) => ({ x: event.x, y: event.y })),
+      events: map.events.map((event) => ({
+        id: event.id,
+        x: event.x,
+        y: event.y,
+        commandKinds: event.pages?.[0]?.commands.map((command) => command.kind) ?? event.commands.map((command) => command.kind),
+      })),
+      mapIds: Object.keys(context.project.maps).sort(),
+      mapTree: JSON.stringify(context.project.mapTree),
     },
   };
 }
@@ -62,6 +95,8 @@ describe("build_village", () => {
     expect(data.doorsConnected).toBe(8);
     expect(data.roadComponents).toBe(1);
     expect(data.npcCount).toBe(10);
+    expect(data.interiorCount).toBe(8);
+    expect(data.doorEventCount).toBe(8);
     // 문 타일 무결성: 진입로가 집을 관통해 문을 덮으면 146 개수가 줄어든다 (회귀 방지).
     expect(map.lowerTiles.filter((tile) => tile === 146)).toHaveLength(8);
     expect(map.lowerTiles.filter((tile) => tile === 116)).toHaveLength(8);
@@ -83,7 +118,79 @@ describe("build_village", () => {
     expect(second.lowerTiles).toEqual(first.lowerTiles);
     expect(second.upperTiles).toEqual(first.upperTiles);
     expect(second.events).toEqual(first.events);
+    expect(second.mapIds).toEqual(first.mapIds);
+    expect(second.mapTree).toEqual(first.mapTree);
     expect(different.lowerTiles).not.toEqual(first.lowerTiles);
+  });
+
+  it("집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다", () => {
+    const { context, data } = buildVillage(7);
+    const map = context.project.maps[data.mapId];
+    const childIds = treeChildIds(context.project.mapTree, data.mapId);
+    expect(data.houses).toHaveLength(8);
+    for (const house of data.houses) {
+      expect(house.interiorMapId).toBeTruthy();
+      expect(house.doorEventId).toBeTruthy();
+      expect(house.exitEventId).toBeTruthy();
+      expect(childIds).toContain(house.interiorMapId);
+      const door = map.events.find((event) => event.id === house.doorEventId);
+      expect(door?.x).toBe(house.doorAt.x);
+      expect(door?.y).toBe(house.doorAt.y);
+      expect(door?.pages?.[0]?.trigger.kind).toBe("action");
+      expect(door?.pages?.[0]?.priority).toBe("same");
+      expect(door?.pages?.[0]?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
+      expect(door?.pages?.[0]?.commands.map((command) => command.kind)).toEqual([
+        "setEventGraphicPattern",
+        "wait",
+        "setEventGraphicPattern",
+        "wait",
+        "setEventGraphicPattern",
+        "wait",
+        "transfer",
+      ]);
+      expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: house.interiorMapId, x: 6, y: 6 });
+
+      const interior = context.project.maps[house.interiorMapId as string];
+      expect(interior.name).toBe(`${house.ownerName}의 집 내부`);
+      expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
+      expect(interior.width).toBe(13);
+      expect(interior.height).toBe(10);
+      const exit = interior.events.find((event) => event.id === house.exitEventId);
+      expect(exit?.x).toBe(6);
+      expect(exit?.y).toBe(7);
+      expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
+      expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId: data.mapId, x: house.front.x, y: house.front.y, fade: "black" }]);
+      expect(map.events.some((event) => event.x === house.front.x && event.y === house.front.y)).toBe(false);
+    }
+  });
+
+  it("interior:false면 내부 맵과 문 이벤트를 만들지 않는다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("외장만 마을") };
+    const result = runTool(context, "build_village", { seed: 7, interior: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = villageData(result.data);
+    const map = context.project.maps[data.mapId];
+    expect(data.housesBuilt).toBe(8);
+    expect(data.interiorCount).toBe(0);
+    expect(data.doorEventCount).toBe(0);
+    expect(Object.values(context.project.maps).filter((candidate) => candidate.tilesetId === INTERIOR_HOUSE_TILESET_ID)).toHaveLength(0);
+    expect(map.events.some((event) => event.id.startsWith("ev_house_door_"))).toBe(false);
+    expect(map.lowerTiles.filter((tile) => tile === 146)).toHaveLength(8);
+  });
+
+  it("내부 맵 삭제 시 외부 문 transfer dangling 참조가 정리된다", () => {
+    const { context, data } = buildVillage(7);
+    const firstHouse = data.houses[0];
+    expect(firstHouse?.interiorMapId).toBeTruthy();
+    if (!firstHouse?.interiorMapId) throw new Error("first house interior missing");
+    const removedMapId = firstHouse.interiorMapId as string;
+    const result = runTool(context, "remove_map", { mapId: removedMapId });
+    expect(result.ok, result.summary).toBe(true);
+    expect(context.project.maps[removedMapId]).toBeUndefined();
+    const map = context.project.maps[data.mapId];
+    const door = map.events.find((event) => event.id === firstHouse.doorEventId);
+    expect(door?.pages?.[0]?.commands.some((command) => command.kind === "transfer" && command.mapId === removedMapId)).toBe(false);
+    expect(() => deserialize(serialize(context.project))).not.toThrow();
   });
 
   it("하네싱 창문을 상위 레이어에 배치한다", () => {
@@ -115,3 +222,17 @@ describe("build_village", () => {
     expect(villageData(result.data).roadComponents).toBe(1);
   });
 });
+
+function treeChildIds(root: MapTreeNode, parentId: string): string[] {
+  const node = findTreeNode(root, parentId);
+  return node?.children.map((child) => child.mapId) ?? [];
+}
+
+function findTreeNode(node: MapTreeNode, mapId: string): MapTreeNode | null {
+  if (node.mapId === mapId) return node;
+  for (const child of node.children) {
+    const found = findTreeNode(child, mapId);
+    if (found) return found;
+  }
+  return null;
+}

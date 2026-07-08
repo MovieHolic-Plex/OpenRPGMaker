@@ -42,6 +42,7 @@ export type StepResult =
       tile: number;
     }
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
+  | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean }
   | { kind: "showPicture"; pictureId: string; resourceId: string; x: number; y: number }
   | { kind: "erasePicture"; pictureId: string }

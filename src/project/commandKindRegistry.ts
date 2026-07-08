@@ -27,6 +27,7 @@ export const COMMAND_KINDS = [
   "timer",
   "transfer",
   "moveEvent",
+  "setEventGraphicPattern",
   "changeTile",
   "callCommonEvent",
   "callMapEvent",

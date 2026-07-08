@@ -24,6 +24,7 @@ Pick validation based on the touched boundary:
 - The perf benchmark measures data-pipeline paint latency, edit render diff planning, undo snapshot bytes, and deserialize+validate load time; it intentionally excludes Phaser render.
 - Do not add the perf benchmark as a CI gate unless the budget policy changes, because local timing is machine-dependent.
 - For focused selection, run a single file, pattern, or test name instead of the full suite.
+- House-harness door/interior changes should cover `test/houseKit.test.ts`, `test/villageBuilder.test.ts`, interpreter command coverage, and `test/e2e/village-house-interior-transfer.spec.ts` for the play-mode action transfer round trip.
 
 Evidence expectations:
 - Record the exact command run.

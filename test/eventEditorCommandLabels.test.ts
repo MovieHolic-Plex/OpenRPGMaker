@@ -19,6 +19,7 @@ const EXPECTED_COMMAND_KINDS = [
   "breakLoop",
   "transfer",
   "moveEvent",
+  "setEventGraphicPattern",
   "changeTile",
   "callCommonEvent",
   "callMapEvent",

@@ -138,6 +138,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(String(cmd.route.moves.length)),
     plainPart("개)")
   ),
+  setEventGraphicPattern: (cmd) => commandLine(
+    "이벤트 프레임 변경",
+    valuePart(cmd.eventId || "이 이벤트"),
+    plainPart(" = "),
+    valuePart(String(cmd.pattern))
+  ),
   changeTile: (cmd) => commandLine(
     "타일 변경",
     valuePart(mapName(cmd.mapId)),

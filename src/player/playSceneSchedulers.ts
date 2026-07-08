@@ -160,6 +160,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "changeTile":
       scene.applyChangeTileStep(step);
       return true;
+    case "setEventGraphicPattern":
+      applyEventGraphicPatternStep(scene, step, currentEventId);
+      return true;
     case "moveEvent":
       scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
       scene.commandMoveRouteEventIds.add(step.eventId || currentEventId || "");
@@ -249,6 +252,17 @@ function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined)
   scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.delete(eventId);
   scene.pageMoveRouteEventIds.delete(eventId);
+}
+
+function applyEventGraphicPatternStep(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "setEventGraphicPattern" }>,
+  currentEventId: string | undefined
+): void {
+  const eventId = step.eventId || currentEventId;
+  if (!eventId) return;
+  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  scene.syncRuntimeState();
 }
 
 function stopCommandMovement(scene: PlaySceneContext): void {
