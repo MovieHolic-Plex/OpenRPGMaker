@@ -116,6 +116,17 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 요청 수량 10개 대비 실제 배치 3개입니다."]);
   });
 
+  it("집 3채 NPC 5명 요청에서 집 1채뿐이면 수량 미이행 경고를 낸다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "40x40 맵에 작은 집 3채 NPC 5명 배치해줘",
+      calls: [
+        call("build_house_kit", { mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }] }, { tilesChanged: 36 }),
+      ],
+    });
+
+    expect(warnings).toEqual(["⚠ 미이행: 요청 수량 8개 대비 실제 배치 1개입니다."]);
+  });
+
   it("스펙이 없고 수량에 근접하게 배치했으면 침묵한다", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "나무 10개 배치해줘",

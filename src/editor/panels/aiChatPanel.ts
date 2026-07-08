@@ -475,6 +475,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const closeProposalModal = proposalModal.close;
   let turnBusy = false;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
+  let runningPhaseStatus: string | null = null;
   let volatileFadeTimer: number | null = null;
   let volatileZone: HTMLElement | null = null;
   const revealVolatileZone = (): void => {
@@ -1209,9 +1210,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const refreshRunningStatus = (record = false): void => {
     if (!runningProgress) return;
     // 분모는 세션의 실제 안전핀(config.maxToolCalls) — 하드코딩 30은 실한도(200)와 어긋나 "77/30" 같은 모순 표기를 냈다.
-    setStatus(formatAiRunningStatus(runningProgress.startedAt, now(), runningProgress.toolCount, loadAiConfig().maxToolCalls), record);
+    setStatus(formatAiRunningStatus(runningProgress.startedAt, now(), runningProgress.toolCount, loadAiConfig().maxToolCalls, runningPhaseStatus), record);
   };
   const beginTurnProgress = (): void => {
+    runningPhaseStatus = null;
     runningProgress = { startedAt: now(), toolCount: 0 };
     refreshRunningStatus(true);
     if (typeof window !== "undefined" && typeof window.setInterval === "function") {
@@ -1227,6 +1229,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (progressTimer !== null && typeof window !== "undefined") window.clearInterval(progressTimer);
     progressTimer = null;
     runningProgress = null;
+    runningPhaseStatus = null;
   };
   const abortActiveTurn = (): void => {
     if (!activeAbortController || activeAbortController.signal.aborted) return;
@@ -1292,7 +1295,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const streamedBubbles: HTMLElement[] = [];
     const onEvent = (event: SessionEvent): void => {
       if (event.type === "phase") {
-        setStatus(phaseStatusText(event.value));
+        runningPhaseStatus = phaseStatusText(event.value);
+        if (runningProgress) refreshRunningStatus(true);
+        else setStatus(runningPhaseStatus);
         return;
       }
       if (event.type === "reasoning_token") {
@@ -1310,6 +1315,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }
         assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
         log.scrollTop = log.scrollHeight;
+      } else if (event.type === "assistant_message") {
+        if (!event.content.trim()) return;
+        if (!assistantBubble) {
+          assistantBubble = appendBubble("assistant", event.content);
+        } else {
+          assistantBubble.textContent = event.content;
+        }
       } else if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
@@ -1504,7 +1516,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
     const onEvent = (event: SessionEvent): void => {
       if (event.type === "phase") {
-        setStatus(phaseStatusText(event.value));
+        runningPhaseStatus = phaseStatusText(event.value);
+        if (runningProgress) refreshRunningStatus(true);
+        else setStatus(runningPhaseStatus);
         return;
       }
       if (event.type === "reasoning_token") {

@@ -159,6 +159,11 @@ describe("진행 상태와 중단", () => {
     expect(formatAiRunningStatus(0, 37_400, 5)).toBe("생각 중… 37초 · 도구 5/30");
   });
 
+  it("오케스트레이션 phase가 있으면 진행 배지에 phase 라벨을 합쳐 표시한다", () => {
+    expect(formatAiRunningStatus(0, 12_400, 3, 200, "계획 중(m3)")).toBe("계획 중(m3) … 12초 · 도구 3/200");
+    expect(formatAiRunningStatus(0, 45_900, 12, 200, "실행 중(flash)")).toBe("실행 중(flash) … 45초 · 도구 12/200");
+  });
+
   it("진행 배지는 음수 경과시간을 0초로 보정한다", () => {
     expect(formatAiRunningStatus(10_000, 9_000, 0)).toBe("생각 중… 0초 · 도구 0/30");
   });

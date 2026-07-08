@@ -8,9 +8,17 @@ import { el } from "@/util/dom";
 const AI_PROGRESS_TOOL_LIMIT = 30;
 const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group"]);
 
-export function formatAiRunningStatus(startedAt: number, now: number, toolCount: number, maxTools = AI_PROGRESS_TOOL_LIMIT): string {
+export function formatAiRunningStatus(
+  startedAt: number,
+  now: number,
+  toolCount: number,
+  maxTools = AI_PROGRESS_TOOL_LIMIT,
+  phaseLabel?: string | null
+): string {
   const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
-  return `생각 중… ${elapsedSeconds}초 · 도구 ${toolCount}/${maxTools}`;
+  const label = phaseLabel?.trim();
+  const prefix = label ? `${label} …` : "생각 중…";
+  return `${prefix} ${elapsedSeconds}초 · 도구 ${toolCount}/${maxTools}`;
 }
 
 export function isDraftDestructiveTool(name: string): boolean {

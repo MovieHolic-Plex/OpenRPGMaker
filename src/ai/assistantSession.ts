@@ -143,8 +143,11 @@ const VOCABULARY_APPROVAL_WARNING = "🔒 어휘 승인 제안: 수락하면 해
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지";
+const ORCHESTRATION_PREFIX = "[오케스트레이션] ";
 const REVIEW_REEXECUTE_PREFIX = "재실행:";
 const REVIEW_COMPLETE_PREFIX = "완료:";
+const RAW_TOOL_CALL_OMISSION_NOTICE = "…(형식 오류로 일부 생략)";
+const RAW_STREAM_GUARD_CHARS = 64;
 
 type AssistantPhase = "plan" | "execute" | "review";
 
@@ -180,6 +183,82 @@ function approvalWarningFor(name: string, args: Record<string, unknown>): string
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function rawToolCallMarkupIndex(text: string): number {
+  const lower = text.toLowerCase();
+  const indexes = [
+    lower.indexOf("<tool_call>"),
+    lower.indexOf("]<]minimax[>["),
+  ].filter((index) => index >= 0);
+  const invoke = /<invoke\s+name\s*=/iu.exec(text);
+  if (invoke?.index !== undefined) indexes.push(invoke.index);
+  return indexes.length === 0 ? -1 : Math.min(...indexes);
+}
+
+export function hasRawToolCallMarkup(text: string): boolean {
+  return rawToolCallMarkupIndex(text) >= 0;
+}
+
+export function sanitizeAssistantText(text: string): string {
+  const index = rawToolCallMarkupIndex(text);
+  if (index < 0) return text;
+  const safePrefix = text.slice(0, index).trimEnd();
+  return `${safePrefix}${RAW_TOOL_CALL_OMISSION_NOTICE}`;
+}
+
+function orchestrationContent(content: string): string {
+  return `${ORCHESTRATION_PREFIX}${content}`;
+}
+
+function isOrchestrationMessage(message: ChatMessage, index: number): boolean {
+  if (index === 0) return false;
+  if (typeof message.content !== "string") return false;
+  if (message.role === "user" && message.content.startsWith(ORCHESTRATION_PREFIX)) return true;
+  // 핫픽스 전 세션에 남아 있을 수 있는 mid-history system 주입도 턴 종료 시 제거한다.
+  if (message.role !== "system") return false;
+  return (
+    message.content === EXECUTION_PHASE_HINT ||
+    message.content.startsWith("검수 단계:") ||
+    message.content.startsWith("검수 보완 지시:")
+  );
+}
+
+function createRawMarkupTokenGuard(emit: (delta: string) => void): { feed(delta: string): void; flush(): void } {
+  let pending = "";
+  let blocked = false;
+  const emitSafe = (text: string): void => {
+    if (text) emit(text);
+  };
+  return {
+    feed(delta: string): void {
+      if (blocked || !delta) return;
+      pending += delta;
+      const rawIndex = rawToolCallMarkupIndex(pending);
+      if (rawIndex >= 0) {
+        emitSafe(pending.slice(0, rawIndex));
+        pending = "";
+        blocked = true;
+        return;
+      }
+      if (pending.length <= RAW_STREAM_GUARD_CHARS) return;
+      const emitLength = pending.length - RAW_STREAM_GUARD_CHARS;
+      emitSafe(pending.slice(0, emitLength));
+      pending = pending.slice(emitLength);
+    },
+    flush(): void {
+      if (blocked) return;
+      const rawIndex = rawToolCallMarkupIndex(pending);
+      if (rawIndex >= 0) {
+        emitSafe(pending.slice(0, rawIndex));
+        pending = "";
+        blocked = true;
+        return;
+      }
+      emitSafe(pending);
+      pending = "";
+    },
+  };
 }
 
 // ── 비전(BUG C) ───────────────────────────────────────────────────
@@ -494,7 +573,11 @@ export class AssistantSession {
     this.turnPendingBuilds = new Map();
     this.eventBaseProposalKeys = new Map();
 
-    return await this.runTurnLoop(onEvent, signal);
+    try {
+      return await this.runTurnLoop(onEvent, signal);
+    } finally {
+      this.removeOrchestrationMessages();
+    }
   }
 
   // 직전 턴이 LLM 오류로 끊긴 경우에만 재개 가능(도그푸딩 결함 ⑥ — 수동 재시도).
@@ -509,7 +592,11 @@ export class AssistantSession {
       return { assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" };
     }
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
-    return await this.runTurnLoop(onEvent, signal);
+    try {
+      return await this.runTurnLoop(onEvent, signal);
+    } finally {
+      this.removeOrchestrationMessages();
+    }
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
@@ -588,9 +675,20 @@ export class AssistantSession {
     this.pushAudit({ kind: "status", text: `phase:${phase}` });
   }
 
+  private pushOrchestrationMessage(content: string): void {
+    this.messages.push({ role: "user", content: orchestrationContent(content) });
+  }
+
+  private removeOrchestrationMessages(): void {
+    for (let index = this.messages.length - 1; index >= 0; index -= 1) {
+      if (isOrchestrationMessage(this.messages[index], index)) this.messages.splice(index, 1);
+    }
+  }
+
   private addExecutionHintIfNeeded(): void {
-    if (this.messages.some((message) => message.role === "system" && message.content === EXECUTION_PHASE_HINT)) return;
-    this.messages.push({ role: "system", content: EXECUTION_PHASE_HINT });
+    const content = orchestrationContent(EXECUTION_PHASE_HINT);
+    if (this.messages.some((message) => message.role === "user" && message.content === content)) return;
+    this.pushOrchestrationMessage(EXECUTION_PHASE_HINT);
   }
 
   private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
@@ -653,14 +751,17 @@ export class AssistantSession {
     let attempt = 0;
     while (true) {
       let streamedAny = false;
+      const tokenGuard = emitTokens
+        ? createRawMarkupTokenGuard((delta) => {
+            streamedAny = true;
+            onEvent({ type: "assistant_token", delta });
+          })
+        : null;
       try {
-        return await this.chat(config, {
+        const result = await this.chat(config, {
           ...req,
           onToken: emitTokens
-            ? (delta) => {
-                streamedAny = true;
-                onEvent({ type: "assistant_token", delta });
-              }
+            ? (delta) => tokenGuard?.feed(delta)
             : undefined,
           onReasoning: emitTokens
             ? (delta) => {
@@ -670,6 +771,8 @@ export class AssistantSession {
             : undefined,
           signal,
         });
+        tokenGuard?.flush();
+        return result;
       } catch (cause) {
         if (
           signal?.aborted ||
@@ -714,7 +817,7 @@ export class AssistantSession {
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
           phase === "review"
-            ? { messages: this.messages, tool_choice: "none" }
+            ? { messages: this.messages }
             : { messages: this.messages, tools, tool_choice: "auto" },
           onEvent,
           signal,
@@ -734,9 +837,13 @@ export class AssistantSession {
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
 
       const assistantMsg = result.message;
-      this.messages.push(assistantMsg);
       // assistant 응답은 항상 문자열 content다(멀티모달 파트는 우리가 넣는 user 메시지 전용).
       const messageText = typeof assistantMsg.content === "string" ? assistantMsg.content : null;
+      this.messages.push(
+        messageText !== null && hasRawToolCallMarkup(messageText)
+          ? { ...assistantMsg, content: sanitizeAssistantText(messageText) }
+          : assistantMsg
+      );
       this.pushAudit({
         kind: "assistant",
         text: messageText ?? "",
@@ -751,10 +858,10 @@ export class AssistantSession {
           phase = "execute";
           this.emitPhase(onEvent, "execute");
           this.addExecutionHintIfNeeded();
-          this.messages.push({ role: "system", content: `검수 보완 지시: ${repairInstruction}` });
+          this.pushOrchestrationMessage(`검수 보완 지시: ${repairInstruction}`);
           continue;
         }
-        assistantText = stripReviewCompletePrefix(reviewText);
+        assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -767,11 +874,11 @@ export class AssistantSession {
           this.emitPhase(onEvent, "review");
           const review = this.buildReviewPrompt(this.finalizeProposals(proposedByKey), reviewRepairUsed);
           reviewMissingWarnings = review.missingWarnings;
-          this.messages.push({ role: "system", content: review.prompt });
+          this.pushOrchestrationMessage(review.prompt);
           continue;
         }
         // 최종 응답.
-        assistantText = messageText ?? "";
+        assistantText = sanitizeAssistantText(messageText ?? "");
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -926,6 +1033,15 @@ function diffSummaryLine(diff: ToolResult["diff"]): string {
 
 function reviewRepairInstruction(reviewText: string, missingWarnings: readonly string[]): string | null {
   const trimmed = reviewText.trim();
+  if (hasRawToolCallMarkup(trimmed)) {
+    const lines = [
+      "검수 응답이 툴콜 원시 마크업으로 깨졌습니다. 사용자 요청과 현재 제안 diff를 기준으로 누락된 항목을 실제 도구 호출로 보완하고 새 질문 없이 완료하세요.",
+    ];
+    if (missingWarnings.length > 0) {
+      lines.push("아래 미이행 경고를 우선 보완하세요.", ...missingWarnings.map((warning) => `- ${warning}`));
+    }
+    return lines.join("\n");
+  }
   const explicit = trimmed.match(/^재실행\s*[:：]\s*([\s\S]+)$/u);
   if (explicit?.[1]?.trim()) return explicit[1].trim();
   if (missingWarnings.length === 0) return null;
