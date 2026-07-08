@@ -162,6 +162,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
 export interface CommitResult {
   ok: boolean;
   issues: LintIssue[];
+  blocking: LintIssue[];
 }
 
 // 커밋 게이트: draft에 projectLint를 돌려 차단 error가 있으면 반영 거부.
@@ -178,7 +179,7 @@ export function commitChangeset(draft: Project, baseline?: Project): CommitResul
     const baselineKeys = new Set(projectLint(baseline).filter(isBlocking).map(issueKey));
     blocking = blocking.filter((issue) => !baselineKeys.has(issueKey(issue)));
   }
-  return { ok: blocking.length === 0, issues };
+  return { ok: blocking.length === 0, issues, blocking };
 }
 
 function issueKey(issue: LintIssue): string {

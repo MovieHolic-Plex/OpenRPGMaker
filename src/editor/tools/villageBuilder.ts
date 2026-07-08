@@ -2,7 +2,7 @@
 // 약한 LLM은 테마/이름/대사만 고르고, 50x50 마을 배치·시공은 전부 결정론 코드가 맡는다.
 
 import { findCharsetSemantic, type CharsetSemanticEntry } from "@/assets/charsetSemantics";
-import { stampFootprintHouseKit, type FootprintWing, type HouseKitId } from "@/editor/houseKit";
+import { stampFootprintHouseKit, type FootprintWing, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { createHouseDoorEvent, createHouseInteriorMap } from "@/editor/houseInteriors";
 import { appendToTree } from "@/editor/mapTreeActions";
 import { DEFAULT_ROAD_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -171,8 +171,9 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
     name: "build_village",
     description:
       "하네싱 집 키트 기반 50x50 마을을 한 번에 시공한다. 인자 없이 호출해도 50x50 마을이 완성된다. " +
-      "배치·집·길·NPC 배치는 결정론 코드가 수행하고, npcs 로 이름/대사만 지정 가능하다. " +
-      "기본 결과: 집 8채, 중앙 광장과 전부 연결된 흙길, 집마다 주민 1명과 광장 주민 2명.",
+      "기존 맵에서는 bounds를 지정해 그 사각형 안에 광장·집·길·NPC를 배치할 수 있다(최소 36x36). " +
+      "배치·집·길·NPC 배치는 결정론 코드가 수행하고, interior/doorEvent/windows로 내부·문 이벤트·창문 생성을 제어한다. " +
+      "npcs 로 이름/대사만 지정 가능하다. 기본 결과: 집 8채, 중앙 광장과 전부 연결된 흙길, 집마다 주민 1명과 광장 주민 2명.",
     mode: "write",
     parameters: {
       type: "object",
@@ -181,9 +182,26 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         name: { type: "string", description: "새 맵 이름(기본: 마을 50x50)" },
         width: { type: "integer", description: "새 맵 가로(기본 50, 36~256)" },
         height: { type: "integer", description: "새 맵 세로(기본 50, 36~256)" },
+        bounds: {
+          type: "object",
+          description: "기존 맵 안에서 마을을 배치할 경계 사각형. 지정 시 그 안에 광장/집/길/NPC를 배치한다.",
+          properties: {
+            x: { type: "integer" },
+            y: { type: "integer" },
+            w: { type: "integer" },
+            h: { type: "integer" },
+          },
+          required: ["x", "y", "w", "h"],
+        },
         houses: { type: "integer", description: "목표 집 수(기본 8, 4~12)" },
         seed: { type: "integer", description: "결정론 PRNG 시드(기본 1)" },
         interior: { type: "boolean", description: "집마다 내부 맵과 Object1 문 이벤트를 생성(기본 true). false면 기존 외장/문 타일만 만든다." },
+        doorEvent: { type: "boolean", description: "Object1 문 이벤트와 내부 맵을 생성(기본 true, interior:false면 비활성)" },
+        windows: {
+          type: ["boolean", "object"],
+          description: "창문 자동 배치(기본 true). false면 끄고, {spacing}이면 창문 사이 벽 칸 수를 지정(기본 2)",
+          properties: { spacing: { type: "integer", description: "창문 사이 벽 칸 수(기본 2)" } },
+        },
         npcs: {
           type: "array",
           description: "선택 이름/대사 오버라이드. [{name, lines:string[]}] 순서대로 소비한다.",
@@ -202,26 +220,29 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       const seed = integerArg(args, "seed", 1);
       const targetHouses = integerArg(args, "houses", DEFAULT_HOUSES, MIN_HOUSES, MAX_HOUSES);
       const interiorEnabled = args.interior !== false;
+      const doorEventEnabled = args.doorEvent !== false;
+      const windows = coerceWindows(args.windows);
       const overrides = npcOverrides(args.npcs);
       const warnings: string[] = [];
       const mapId = typeof args.mapId === "string" && args.mapId.trim().length > 0
         ? args.mapId.trim()
         : createVillageMap(draft, args, seed);
       const map = requireVillageMap(draft, mapId);
-      assertExistingMapSize(map);
+      const area = villageBuildArea(map, args.bounds);
+      assertBuildAreaSize(map, area);
 
       const upperBefore = [...map.upperTiles];
       const rng = mulberry32(seed);
-      const plaza = villagePlaza(map);
-      paintPlazaAndAvenue(draft, map, plaza, warnings);
-      const houses = buildHouses(map, plaza, targetHouses, rng, warnings);
-      connectHousesToRoads(draft, map, plaza, houses, warnings);
-      const houseInteriors = interiorEnabled
+      const plaza = villagePlaza(area);
+      paintPlazaAndAvenue(draft, map, plaza, area, warnings);
+      const houses = buildHouses(map, area, plaza, targetHouses, rng, windows, warnings);
+      connectHousesToRoads(draft, map, area, plaza, houses, warnings);
+      const houseInteriors = interiorEnabled && doorEventEnabled
         ? createVillageHouseInteriors(draft, map, houses, overrides, seed)
         : [];
-      placeVillageNpcs(draft, map, houses, plaza, overrides, seed, warnings);
+      placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings);
 
-      const audit = auditVillage(map, houses, upperBefore);
+      const audit = auditVillage(map, houses, upperBefore, area);
       if (houses.length < targetHouses) warnings.push(`집 수 미달: ${houses.length}/${targetHouses}`);
       if (audit.doorsConnected < houses.length) warnings.push(`문 연결 미달: ${audit.doorsConnected}/${houses.length}`);
       if (audit.doorsIntact < houses.length) warnings.push(`문 타일 훼손: ${houses.length - audit.doorsIntact}곳`);
@@ -237,6 +258,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           `길 성분 ${audit.roadComponents}, NPC ${audit.npcCount}, 내부 ${houseInteriors.length} (창문 ${audit.windowCount}).`,
         data: {
           mapId,
+          bounds: area,
           housesBuilt: houses.length,
           doorsConnected: audit.doorsConnected,
           doorsIntact: audit.doorsIntact,
@@ -288,6 +310,20 @@ function integerArg(args: Record<string, unknown>, key: string, fallback: number
   return value;
 }
 
+function coerceWindows(value: unknown): HouseKitWindowsOption | undefined {
+  if (value === undefined || value === true) return undefined;
+  if (value === false) return false;
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError("windows는 boolean 또는 {spacing} 객체여야 합니다.", { code: "invalid-args" });
+  }
+  const spacing = (value as Record<string, unknown>).spacing;
+  if (spacing === undefined) return {};
+  if (typeof spacing !== "number" || !Number.isInteger(spacing) || spacing < 0) {
+    throw new ToolError("windows.spacing은 0 이상의 정수여야 합니다.", { code: "invalid-args" });
+  }
+  return { spacing };
+}
+
 function createVillageMap(draft: Project, args: Record<string, unknown>, seed: number): string {
   const width = integerArg(args, "width", DEFAULT_SIZE, MIN_SIZE, MAX_SIZE);
   const height = integerArg(args, "height", DEFAULT_SIZE, MIN_SIZE, MAX_SIZE);
@@ -303,10 +339,30 @@ function requireVillageMap(draft: Project, mapId: string): GameMap {
   return map;
 }
 
-function assertExistingMapSize(map: GameMap): void {
-  if (map.width < MIN_SIZE || map.height < MIN_SIZE) {
-    throw new ToolError(`build_village는 최소 ${MIN_SIZE}x${MIN_SIZE} 맵이 필요합니다: ${map.width}x${map.height}`, {
-      code: "map-too-small",
+function villageBuildArea(map: GameMap, value: unknown): Rect {
+  if (value === undefined) return { x: 0, y: 0, w: map.width, h: map.height };
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError("bounds는 {x,y,w,h} 객체여야 합니다.", { code: "invalid-args", mapId: map.id });
+  }
+  const bounds = value as Record<string, unknown>;
+  for (const field of ["x", "y", "w", "h"] as const) {
+    if (typeof bounds[field] !== "number" || !Number.isInteger(bounds[field]) || !Number.isFinite(bounds[field])) {
+      throw new ToolError(`bounds.${field}는 정수여야 합니다.`, { code: "invalid-args", mapId: map.id });
+    }
+  }
+  return { x: bounds.x as number, y: bounds.y as number, w: bounds.w as number, h: bounds.h as number };
+}
+
+function assertBuildAreaSize(map: GameMap, area: Rect): void {
+  if (area.x < 0 || area.y < 0 || area.x + area.w > map.width || area.y + area.h > map.height) {
+    throw new ToolError(`build_village bounds가 맵 경계를 벗어납니다: ${area.x},${area.y},${area.w}x${area.h}`, {
+      code: "bounds-out-of-map",
+      mapId: map.id,
+    });
+  }
+  if (area.w < MIN_SIZE || area.h < MIN_SIZE) {
+    throw new ToolError(`build_village는 최소 ${MIN_SIZE}x${MIN_SIZE} 영역이 필요합니다: ${area.w}x${area.h}`, {
+      code: area.w === map.width && area.h === map.height ? "map-too-small" : "bounds-too-small",
       mapId: map.id,
     });
   }
@@ -324,9 +380,9 @@ function uniqueId(draft: Project, prefix: string, body: string): string {
   return id;
 }
 
-function villagePlaza(map: GameMap): Plaza {
-  const x = Math.floor(map.width / 2) - Math.floor(PLAZA_WIDTH / 2);
-  const y = Math.floor(map.height / 2) - Math.floor(PLAZA_HEIGHT / 2);
+function villagePlaza(area: Rect): Plaza {
+  const x = area.x + Math.floor(area.w / 2) - Math.floor(PLAZA_WIDTH / 2);
+  const y = area.y + Math.floor(area.h / 2) - Math.floor(PLAZA_HEIGHT / 2);
   return {
     rect: { x, y, w: PLAZA_WIDTH, h: PLAZA_HEIGHT },
     centerRow: y + Math.floor(PLAZA_HEIGHT / 2),
@@ -334,7 +390,7 @@ function villagePlaza(map: GameMap): Plaza {
   };
 }
 
-function paintPlazaAndAvenue(draft: Project, map: GameMap, plaza: Plaza, warnings: string[]): void {
+function paintPlazaAndAvenue(draft: Project, map: GameMap, plaza: Plaza, area: Rect, warnings: string[]): void {
   const x0 = plaza.rect.x;
   const y0 = plaza.rect.y;
   const x1 = plaza.rect.x + plaza.rect.w - 1;
@@ -356,8 +412,8 @@ function paintPlazaAndAvenue(draft: Project, map: GameMap, plaza: Plaza, warning
     style: "dirt",
     naturalness: 0,
     points: [
-      { x: 2, y: plaza.centerRow },
-      { x: map.width - 3, y: plaza.centerRow },
+      { x: area.x + 2, y: plaza.centerRow },
+      { x: area.x + area.w - 3, y: plaza.centerRow },
     ],
   }, warnings);
 }
@@ -368,16 +424,25 @@ function runNested(tool: ToolDefinition, draft: Project, args: Record<string, un
   return result;
 }
 
-function buildHouses(map: GameMap, plaza: Plaza, target: number, rng: Rng, warnings: string[]): BuiltHouse[] {
-  const candidates = shuffled(houseCandidates(map, plaza, target), rng);
+function buildHouses(
+  map: GameMap,
+  area: Rect,
+  plaza: Plaza,
+  target: number,
+  rng: Rng,
+  windows: HouseKitWindowsOption | undefined,
+  warnings: string[]
+): BuiltHouse[] {
+  const candidates = shuffled(houseCandidates(area, plaza, target), rng);
   const houses: BuiltHouse[] = [];
   for (const candidate of candidates) {
     if (houses.length >= target) break;
-    if (!canPlaceHouse(map, plaza.rect, houses, candidate.bbox)) continue;
+    if (!canPlaceHouse(area, plaza.rect, houses, candidate.bbox)) continue;
     const kitId: HouseKitId = houses.length % 2 === 0 ? "blue-stone" : "bright-plaster";
     const result = stampFootprintHouseKit(map, {
       kitId,
       wings: candidate.template.wingsAt(candidate.bbox.x, candidate.bbox.y),
+      windows,
     });
     if (!result.ok || !result.doorAt) {
       warnings.push(`집 시공 실패(${candidate.template.name}): ${result.reason ?? "문 좌표 없음"}`);
@@ -391,16 +456,16 @@ function buildHouses(map: GameMap, plaza: Plaza, target: number, rng: Rng, warni
   return houses;
 }
 
-function houseCandidates(map: GameMap, plaza: Plaza, target: number): HouseCandidate[] {
+function houseCandidates(area: Rect, plaza: Plaza, target: number): HouseCandidate[] {
   const minTemplateWidth = Math.min(...HOUSE_TEMPLATES.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
-  const maxColumns = Math.max(1, Math.floor((map.width - HOUSE_MARGIN * 2 + HOUSE_MARGIN * 2) / (minTemplateWidth + HOUSE_MARGIN * 2)));
+  const maxColumns = Math.max(1, Math.floor(area.w / (minTemplateWidth + HOUSE_MARGIN * 2)));
   const columns = Math.max(1, Math.min(wantedColumns, maxColumns));
-  const allTemplatesFit = columns * 8 + (columns - 1) * HOUSE_MARGIN * 2 + HOUSE_MARGIN * 2 <= map.width;
+  const allTemplatesFit = columns * 8 + (columns - 1) * HOUSE_MARGIN * 2 + HOUSE_MARGIN * 2 <= area.w;
   const slotWidth = allTemplatesFit ? 8 : minTemplateWidth;
   const templates = HOUSE_TEMPLATES.filter((template) => template.w <= slotWidth);
   const span = columns * slotWidth + (columns - 1) * HOUSE_MARGIN * 2;
-  const xStart = Math.max(HOUSE_MARGIN, Math.floor((map.width - span) / 2));
+  const xStart = area.x + Math.max(HOUSE_MARGIN, Math.floor((area.w - span) / 2));
   const candidates: HouseCandidate[] = [];
   for (let col = 0; col < columns; col += 1) {
     const slotX = xStart + col * (slotWidth + HOUSE_MARGIN * 2);
@@ -413,10 +478,10 @@ function houseCandidates(map: GameMap, plaza: Plaza, target: number): HouseCandi
   return candidates;
 }
 
-function canPlaceHouse(map: GameMap, plaza: Rect, houses: readonly BuiltHouse[], bbox: Rect): boolean {
-  if (bbox.x < HOUSE_MARGIN || bbox.y < HOUSE_MARGIN) return false;
-  if (bbox.x + bbox.w > map.width - HOUSE_MARGIN) return false;
-  if (bbox.y + bbox.h > map.height - HOUSE_MARGIN) return false;
+function canPlaceHouse(area: Rect, plaza: Rect, houses: readonly BuiltHouse[], bbox: Rect): boolean {
+  if (bbox.x < area.x + HOUSE_MARGIN || bbox.y < area.y + HOUSE_MARGIN) return false;
+  if (bbox.x + bbox.w > area.x + area.w - HOUSE_MARGIN) return false;
+  if (bbox.y + bbox.h > area.y + area.h - HOUSE_MARGIN) return false;
   if (rectsOverlap(bbox, expandRect(plaza, HOUSE_MARGIN))) return false;
   return houses.every((house) => !rectsOverlap(expandRect(bbox, HOUSE_MARGIN), house.bbox));
 }
@@ -440,7 +505,7 @@ function shuffled<T>(values: readonly T[], rng: Rng): T[] {
   return copy;
 }
 
-function connectHousesToRoads(draft: Project, map: GameMap, plaza: Plaza, houses: readonly BuiltHouse[], warnings: string[]): void {
+function connectHousesToRoads(draft: Project, map: GameMap, area: Rect, plaza: Plaza, houses: readonly BuiltHouse[], warnings: string[]): void {
   const leftEdge = plaza.rect.x;
   const rightEdge = plaza.rect.x + plaza.rect.w - 1;
   const plazaTop = plaza.rect.y;
@@ -454,7 +519,7 @@ function connectHousesToRoads(draft: Project, map: GameMap, plaza: Plaza, houses
       // 광장 아래 밴드: 문은 집 남쪽에 있으므로 곧장 광장으로 올리면 집을 관통한다.
       // 집 옆(마진 보장) 복도 열로 우회해 광장 아래 변으로 올라간다.
       const rightCorridor = house.bbox.x + house.bbox.w;
-      const corridorX = rightCorridor <= map.width - 2 ? rightCorridor : house.bbox.x - 1;
+      const corridorX = rightCorridor <= area.x + area.w - 2 ? rightCorridor : house.bbox.x - 1;
       points.push(
         { x: corridorX, y: house.front.y },
         { x: corridorX, y: plazaBottom },
@@ -536,6 +601,7 @@ function clamp(value: number, min: number, max: number): number {
 function placeVillageNpcs(
   draft: Project,
   map: GameMap,
+  area: Rect,
   houses: readonly BuiltHouse[],
   plaza: Plaza,
   overrides: readonly Partial<NpcText>[],
@@ -544,7 +610,7 @@ function placeVillageNpcs(
 ): void {
   const occupied = new Set<string>();
   const placements = [
-    ...houses.map((house, index) => npcPointNearHouseFront(map, house, index, occupied)),
+    ...houses.map((house, index) => npcPointNearHouseFront(map, area, house, index, occupied)),
     { x: plaza.centerX - 1, y: plaza.centerRow },
     { x: plaza.centerX + 1, y: plaza.centerRow },
   ];
@@ -575,7 +641,7 @@ function seededVillageNpcGraphics(seed: number): readonly CharsetSemanticEntry[]
   return [...entries.slice(offset), ...entries.slice(0, offset)];
 }
 
-function npcPointNearHouseFront(map: GameMap, house: BuiltHouse, index: number, occupied: Set<string>): Point {
+function npcPointNearHouseFront(map: GameMap, area: Rect, house: BuiltHouse, index: number, occupied: Set<string>): Point {
   const leftFirst = index % 2 === 0;
   const candidates = leftFirst
     ? [
@@ -594,6 +660,7 @@ function npcPointNearHouseFront(map: GameMap, house: BuiltHouse, index: number, 
       ];
   for (const point of candidates) {
     if (!pointInMap(map, point)) continue;
+    if (!pointInRect(point, area)) continue;
     if (point.x === house.front.x && point.y === house.front.y) continue;
     if (point.x === house.doorAt.x && point.y === house.doorAt.y) continue;
     if (pointInRect(point, house.bbox)) continue;
@@ -659,7 +726,7 @@ function npcText(index: number, overrides: readonly Partial<NpcText>[]): NpcText
   return { name, lines };
 }
 
-function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[]): VillageAudit {
+function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[], area: Rect): VillageAudit {
   const doorsConnected = houses.filter((house) => doorHasRoad(map, house.doorAt)).length;
   // 문 타일 자체가 살아있는지(도로 관통 등으로 덮이지 않았는지)도 직접 검사한다.
   const lowerAt = (x: number, y: number): number => map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
@@ -674,7 +741,7 @@ function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: 
       }
     }
   }
-  const roadComponents = countRoadComponents(map);
+  const roadComponents = countRoadComponents(map, area);
   const npcEvents = map.events.filter(isNpcEvent);
   const npcsWithText = npcEvents.filter(eventHasText).length;
   let windowCount = 0;
@@ -694,10 +761,10 @@ function doorHasRoad(map: GameMap, door: Point): boolean {
   return false;
 }
 
-function countRoadComponents(map: GameMap): number {
+function countRoadComponents(map: GameMap, area: Rect): number {
   const road = new Set<string>();
-  for (let y = 0; y < map.height; y += 1) {
-    for (let x = 0; x < map.width; x += 1) {
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
       if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) road.add(coordKey(x, y));
     }
   }

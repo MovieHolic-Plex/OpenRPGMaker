@@ -1,14 +1,5 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import {
-  buildHouseFootprintCells,
-  createHousePresets,
-  stampHousePlan,
-  validateHousePlanSelection,
-  type HousePreset,
-  type HousePresetId,
-  type RoofMaterialId,
-  type RoofMaterialSet,
-} from "@/editor/panels/housePlan";
+import type { FootprintWing, HouseKitId, HouseKitWindowsOption } from "@/editor/houseKit";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
 import { buildEdgeCornerInnerVariantMap } from "@/project/defaults/autotileEngine";
@@ -35,8 +26,24 @@ export interface BuildPaletteResult {
   readonly toolResults: readonly ToolResult[];
 }
 
+export type BuildHouseShapeId = "rect" | "l" | "u";
+
+export interface BuildHouseShapePreset {
+  readonly id: BuildHouseShapeId;
+  readonly name: string;
+}
+
+export interface BuildHouseKitCard {
+  readonly id: HouseKitId;
+  readonly name: string;
+}
+
 export interface BuildPaletteApplyOptions {
-  readonly housePresetId?: HousePresetId;
+  readonly houseShapeId?: BuildHouseShapeId;
+  readonly houseKitId?: HouseKitId;
+  readonly doorEvent?: boolean;
+  readonly interior?: boolean;
+  readonly windows?: HouseKitWindowsOption | boolean;
 }
 
 type PresetRole = "wall" | "door" | "window" | "roof" | "path" | "water" | "tree" | "prop";
@@ -45,6 +52,7 @@ const P = COMBINED_TOWN_HARNESS_PREFIX;
 
 const LINT_FAILURE_MESSAGES: Record<string, string> = {
   "start-position": "시작 위치를 덮을 수 없습니다. 다른 영역을 선택하세요.",
+  "transfer-impassable": "문 앞이 통행 불가 타일입니다. 문 앞이 트인 곳에 짓거나 앞의 장애물을 지워주세요.",
 };
 
 export const BUILD_PALETTE_PRESETS: Record<PresetRole, string> = {
@@ -58,14 +66,19 @@ export const BUILD_PALETTE_PRESETS: Record<PresetRole, string> = {
   prop: `${P}small-props`,
 };
 
-export const HOUSE_PRESETS = createHousePresets({
-  wall: BUILD_PALETTE_PRESETS.wall,
-  roof: BUILD_PALETTE_PRESETS.roof,
-  door: BUILD_PALETTE_PRESETS.door,
-  window: BUILD_PALETTE_PRESETS.window,
-});
+export const HOUSE_SHAPE_PRESETS: readonly BuildHouseShapePreset[] = [
+  { id: "rect", name: "직사각" },
+  { id: "l", name: "ㄱ자" },
+  { id: "u", name: "ㄷ자" },
+];
 
-export const DEFAULT_HOUSE_PRESET_ID: HousePresetId = "cottage-1f";
+export const HOUSE_KIT_CARDS: readonly BuildHouseKitCard[] = [
+  { id: "blue-stone", name: "파랑 지붕+석벽" },
+  { id: "bright-plaster", name: "밝은 오렌지 지붕+흰 회벽" },
+];
+
+export const DEFAULT_HOUSE_SHAPE_ID: BuildHouseShapeId = "rect";
+export const DEFAULT_HOUSE_KIT_ID: HouseKitId = "blue-stone";
 
 interface PresetClaim {
   readonly name: string;
@@ -106,8 +119,9 @@ export function applyBuildPalettePrimitiveToProject(
   if (!tileset) return { ok: false, summary: "타일셋을 찾을 수 없습니다.", toolResults: [], project };
   const rect = clampSelection(selection, map.width, map.height);
   if (rect.width < 1 || rect.height < 1) return { ok: false, summary: "선택 영역이 맵 밖입니다.", toolResults: [], project };
-  const housePreset = resolveHousePreset(options.housePresetId);
-  const validationFailure = validateBuildPalettePrimitive(rect, primitive, housePreset);
+  const houseShape = resolveHouseShapeId(options.houseShapeId);
+  const houseKit = resolveHouseKitId(options.houseKitId);
+  const validationFailure = validateBuildPalettePrimitive(rect, primitive, houseShape);
   if (validationFailure) return { ok: false, summary: validationFailure, toolResults: [], project };
   ensureBuildPalettePresets(tileset);
 
@@ -118,16 +132,10 @@ export function applyBuildPalettePrimitiveToProject(
     toolResults.push(result);
     return result.ok;
   };
-  // 장식(창문 등) 전용: 실패해도 전체 시공을 실패로 만들지 않는다.
-  const runOptional = (name: string, args: Record<string, unknown>): boolean => runTool(ctx, name, args).ok;
 
   let ok = true;
-  let villageBuilt: { built: number; requested: number } | null = null;
-  if (primitive === "house") ok = stampHouse(ctx, rect, housePreset, run, runOptional);
-  else if (primitive === "village") {
-    villageBuilt = stampVillage(ctx, rect, housePreset, run, runOptional);
-    ok = villageBuilt.built > 0;
-  }
+  if (primitive === "house") ok = stampHouse(rect, houseShape, houseKit, options, run);
+  else if (primitive === "village") ok = stampVillage(rect, options, run);
   else if (primitive === "path") ok = stampPath(rect, run);
   else if (primitive === "river") ok = fillRoleTile(ctx.project, rect, "water");
   else if (primitive === "roof") ok = fillRoof(ctx.project, rect);
@@ -138,9 +146,7 @@ export function applyBuildPalettePrimitiveToProject(
   const failed = toolResults.find((result) => !result.ok);
   const summary = failed
     ? summarizeToolFailure(failed)
-    : villageBuilt
-      ? `마을 시공 완료: ${villageBuilt.requested}채 중 ${villageBuilt.built}채`
-      : ok ? `${primitive} 시공 완료` : `${primitive} 시공에 실패했습니다.`;
+    : ok ? summarizeBuildPaletteSuccess(primitive, toolResults) : `${primitive} 시공에 실패했습니다.`;
   return { ok: ok && !failed, summary, toolResults, project: ctx.project };
 }
 
@@ -198,32 +204,6 @@ const ROOF_RIDGE_TILE = 374;
 const ROOF_BODY_TILE = 375;
 const ROOF_EAVE_TILE = 405;
 
-// 지붕 재질 세트 — 사용자 예시 맵(fable-village 연습02/08) 학습 결과.
-// 상세 문법: docs/knowledge/2026-07-08-roof-tile-semantics-learned.md
-const ROOF_MATERIAL_SETS: Record<RoofMaterialId, RoofMaterialSet> = {
-  "orange-classic": { id: "orange-classic", kind: "classic", ridge: ROOF_RIDGE_TILE, body: ROOF_BODY_TILE, eave: ROOF_EAVE_TILE },
-  "orange-bright": {
-    id: "orange-bright",
-    kind: "bright",
-    body: 404,
-    eave: 405,
-    upper: { ridgeLine: 374, ridgeCapLeft: 354, ridgeCapRight: 355, trimLeft: 376, trimRight: 377, trimCapLeft: 384, trimCapRight: 385 },
-  },
-  blue: {
-    id: "blue",
-    kind: "blue",
-    body: 406,
-    eave: 467,
-    leftEdge: 437,
-    rightEdge: 407,
-    upper: { cornerNW: 356, cornerNE: 357, cornerSW: 386, cornerSE: 387 },
-  },
-};
-
-function roofMaterialForPreset(preset: HousePreset): RoofMaterialSet {
-  return ROOF_MATERIAL_SETS[preset.roofMaterial];
-}
-
 // rect 안에 직선 지붕을 칠한다: 상단 1행 용마루 → 몸통 → 최하단 1행 처마. 1행이면 처마만.
 function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: number, rows: number): void {
   for (let dy = 0; dy < rows; dy++) {
@@ -235,97 +215,63 @@ function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: 
 }
 
 function stampHouse(
-  ctx: ToolContext,
   rect: BuildPaletteSelection,
-  preset: HousePreset,
-  run: (name: string, args: Record<string, unknown>) => boolean,
-  runOptional: (name: string, args: Record<string, unknown>) => boolean
+  shapeId: BuildHouseShapeId,
+  kitId: HouseKitId,
+  options: BuildPaletteApplyOptions,
+  run: (name: string, args: Record<string, unknown>) => boolean
 ): boolean {
-  // 지붕은 벽/문 툴 커밋 후 직접 칠한다. runTool이 ctx.project를 draft로 교체하므로
-  // 열 단위 페인트는 housePlan 내부에서 항상 최신 ctx.project를 참조한다.
-  return stampHousePlan(ctx, rect, preset, roofMaterialForPreset(preset), run, runOptional) !== null;
+  const args: Record<string, unknown> = {
+    mapId: rect.mapId,
+    kitId,
+    wings: houseKitWingsFromSelection(rect, shapeId),
+  };
+  if (options.doorEvent !== undefined) args.doorEvent = options.doorEvent;
+  if (options.interior !== undefined) args.interior = options.interior;
+  if (options.windows !== undefined) args.windows = options.windows;
+  return run("build_house_kit", args);
 }
 
 function stampVillage(
-  ctx: ToolContext,
   rect: BuildPaletteSelection,
-  preset: HousePreset,
-  run: (name: string, args: Record<string, unknown>) => boolean,
-  runOptional: (name: string, args: Record<string, unknown>) => boolean
-): { readonly requested: number; readonly built: number } {
-  const requested = Math.max(2, Math.min(5, Math.floor((rect.width * rect.height) / 70)));
-  const placements = planVillagePlacements(ctx.project, rect, preset, requested);
-  const doors: { x: number; y: number }[] = [];
-  for (const placement of placements) {
-    const stamped = stampHousePlan(ctx, placement, preset, roofMaterialForPreset(preset), run, runOptional);
-    if (stamped) doors.push(stamped.door);
-  }
-  if (doors.length >= 2) {
-    const points = doors.map((door) => ({ x: door.x, y: Math.min(rect.y + rect.height - 1, door.y + 1) }));
-    run("lay_path", { mapId: rect.mapId, points, pathVocabId: BUILD_PALETTE_PRESETS.path, naturalness: 0, seed: seedFor(rect, "village-path") });
-  }
-  return { requested, built: doors.length };
-}
-
-function planVillagePlacements(project: Project, rect: BuildPaletteSelection, preset: HousePreset, requested: number): BuildPaletteSelection[] {
-  const map = project.maps[rect.mapId];
-  if (!map) return [];
-  const rng = seededRandom(seedFor(rect, "village"));
-  const houseW = Math.max(4, Math.min(6, Math.floor(rect.width / 3)));
-  const houseH = Math.max(preset.stories === 2 ? 5 : 4, Math.min(6, Math.floor(rect.height / 2)));
-  const occupied = new Set<string>();
-  const placements: BuildPaletteSelection[] = [];
-  const candidates: BuildPaletteSelection[] = [];
-  for (let y = rect.y; y <= rect.y + rect.height - houseH; y += 1) {
-    for (let x = rect.x; x <= rect.x + rect.width - houseW; x += 1) candidates.push({ mapId: rect.mapId, x, y, width: houseW, height: houseH });
-  }
-  candidates.sort(() => rng() - 0.5);
-  for (const candidate of candidates) {
-    if (placements.length >= requested) break;
-    if (footprintTouchesStart(project, candidate, preset)) continue;
-    if (footprintConflicts(candidate, preset, occupied)) continue;
-    placements.push(candidate);
-    reserveFootprint(candidate, preset, occupied);
-  }
-  return placements;
-}
-
-function footprintTouchesStart(project: Project, rect: BuildPaletteSelection, preset: HousePreset): boolean {
-  if (project.startMapId !== rect.mapId) return false;
-  return buildHouseFootprintCells(rect, preset).some((cell) => cell.x === project.startPos.x && cell.y === project.startPos.y);
-}
-
-function footprintConflicts(rect: BuildPaletteSelection, preset: HousePreset, occupied: Set<string>): boolean {
-  return buildHouseFootprintCells(rect, preset).some((cell) => occupied.has(cellKey(cell.x, cell.y)));
-}
-
-function reserveFootprint(rect: BuildPaletteSelection, preset: HousePreset, occupied: Set<string>): void {
-  for (const cell of buildHouseFootprintCells(rect, preset)) {
-    for (let y = cell.y - 1; y <= cell.y + 1; y += 1) {
-      for (let x = cell.x - 1; x <= cell.x + 1; x += 1) occupied.add(cellKey(x, y));
-    }
-  }
-}
-
-function cellKey(x: number, y: number): string {
-  return `${x},${y}`;
-}
-
-function seededRandom(seed: number): () => number {
-  let state = seed || 1;
-  return () => {
-    state = Math.imul(state ^ (state >>> 15), 1 | state);
-    state ^= state + Math.imul(state ^ (state >>> 7), 61 | state);
-    return ((state ^ (state >>> 14)) >>> 0) / 4294967296;
+  options: BuildPaletteApplyOptions,
+  run: (name: string, args: Record<string, unknown>) => boolean
+): boolean {
+  const args: Record<string, unknown> = {
+    mapId: rect.mapId,
+    bounds: toToolRect(rect),
+    seed: seedFor(rect, "village"),
   };
+  if (options.doorEvent !== undefined) args.doorEvent = options.doorEvent;
+  if (options.interior !== undefined) args.interior = options.interior;
+  if (options.windows !== undefined) args.windows = options.windows;
+  return run("build_village", args);
 }
 
-function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive, housePreset: HousePreset): string | null {
-  if (primitive === "house") {
-    return validateHousePlanSelection(rect, housePreset);
+export function houseKitWingsFromSelection(rect: BuildPaletteSelection, shapeId: BuildHouseShapeId): FootprintWing[] {
+  if (shapeId === "rect") return [{ x: rect.x, y: rect.y, w: rect.width, h: rect.height }];
+  const topHeight = Math.min(rect.height, Math.max(5, Math.floor(rect.height * 0.62)));
+  if (shapeId === "l") {
+    const sideWidth = Math.min(rect.width, Math.max(3, Math.floor(rect.width / 2)));
+    return [
+      { x: rect.x, y: rect.y, w: rect.width, h: topHeight },
+      { x: rect.x, y: rect.y, w: sideWidth, h: rect.height },
+    ];
   }
-  if (primitive === "village" && (rect.width < 9 || rect.height < 6)) {
-    return "마을은 최소 9×6 영역이 필요합니다.";
+  const sideWidth = Math.min(3, rect.width);
+  return [
+    { x: rect.x, y: rect.y, w: rect.width, h: topHeight },
+    { x: rect.x, y: rect.y, w: sideWidth, h: rect.height },
+    { x: rect.x + rect.width - sideWidth, y: rect.y, w: sideWidth, h: rect.height },
+  ];
+}
+
+function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive, houseShape: BuildHouseShapeId): string | null {
+  if (primitive === "house") {
+    return validateHouseKitSelection(rect, houseShape);
+  }
+  if (primitive === "village" && (rect.width < 36 || rect.height < 36)) {
+    return "마을은 최소 36×36 영역이 필요합니다.";
   }
   if (primitive === "roof" && rect.width < 2) {
     return "지붕은 최소 2×1 영역이 필요합니다.";
@@ -333,8 +279,49 @@ function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: B
   return null;
 }
 
-function resolveHousePreset(id: HousePresetId | undefined): HousePreset {
-  return HOUSE_PRESETS.find((preset) => preset.id === id) ?? HOUSE_PRESETS.find((preset) => preset.id === DEFAULT_HOUSE_PRESET_ID) ?? HOUSE_PRESETS[0];
+export function validateHouseKitSelection(rect: BuildPaletteSelection, shapeId: BuildHouseShapeId): string | null {
+  if (rect.width < 3 || rect.height < 5) return "집은 최소 3×5 영역이 필요합니다.";
+  if (shapeId === "l" && (rect.width < 6 || rect.height < 6)) return "ㄱ자 집은 최소 6×6 영역이 필요합니다.";
+  if (shapeId === "u" && (rect.width < 9 || rect.height < 6)) return "ㄷ자 집은 최소 9×6 영역이 필요합니다.";
+  const intervalFailure = validateWingColumnIntervals(houseKitWingsFromSelection(rect, shapeId));
+  return intervalFailure ?? null;
+}
+
+function validateWingColumnIntervals(wings: readonly FootprintWing[]): string | null {
+  if (wings.some((wing) => wing.w < 3)) return "집 날개는 최소 폭 3이 필요합니다.";
+  const xMin = Math.min(...wings.map((wing) => wing.x));
+  const xMax = Math.max(...wings.map((wing) => wing.x + wing.w - 1));
+  for (let x = xMin; x <= xMax; x += 1) {
+    const spans = wings
+      .filter((wing) => x >= wing.x && x < wing.x + wing.w)
+      .map((wing) => ({ top: wing.y, bottom: wing.y + wing.h - 1 }))
+      .sort((a, b) => a.top - b.top);
+    let current: { top: number; bottom: number } | null = null;
+    for (const span of spans) {
+      if (!current || span.top > current.bottom + 1) {
+        if (current && current.bottom - current.top + 1 < 5) return "집은 각 열 구간 높이 5 이상이 필요합니다.";
+        current = { ...span };
+      } else {
+        current.bottom = Math.max(current.bottom, span.bottom);
+      }
+    }
+    if (current && current.bottom - current.top + 1 < 5) return "집은 각 열 구간 높이 5 이상이 필요합니다.";
+  }
+  return null;
+}
+
+function resolveHouseShapeId(id: BuildHouseShapeId | undefined): BuildHouseShapeId {
+  return HOUSE_SHAPE_PRESETS.some((preset) => preset.id === id) ? id as BuildHouseShapeId : DEFAULT_HOUSE_SHAPE_ID;
+}
+
+function resolveHouseKitId(id: HouseKitId | undefined): HouseKitId {
+  return HOUSE_KIT_CARDS.some((kit) => kit.id === id) ? id as HouseKitId : DEFAULT_HOUSE_KIT_ID;
+}
+
+function summarizeBuildPaletteSuccess(primitive: BuildPalettePrimitive, toolResults: readonly ToolResult[]): string {
+  const last = toolResults.at(-1);
+  if ((primitive === "house" || primitive === "village") && last?.summary) return last.summary;
+  return `${primitive} 시공 완료`;
 }
 
 function summarizeToolFailure(result: ToolResult): string {

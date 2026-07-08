@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, houseDoorFrameIndex } from "@/editor/houseInteriors";
 import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
 import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
+import { projectLint } from "@/project/lint/projectLint";
 import type { GameMap, MapTreeNode } from "@/project/types";
 
 // 하네싱 골든 테스트 — 키트 전개 결과가 사용자 기준 집(fable-village 연습04)의
@@ -345,6 +346,51 @@ describe("build_house_kit AI 툴", () => {
     expect(Object.keys(ctx.project.maps)).toHaveLength(beforeMapCount);
     expect(result.data).not.toHaveProperty("interiorMapId");
     expect(ctx.project.maps[mapId].events.some((event) => event.id.startsWith("ev_house_door_"))).toBe(false);
+  });
+
+  it("문 앞 침엽수는 지면으로 정리하고 내부 복귀 transfer를 통행 가능하게 유지한다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const project = createBlankProject();
+    const mapId = "map_mist_forest";
+    const map = createBlankMap("안개 숲", 32, 30);
+    map.id = mapId;
+    map.lowerTiles.fill(G);
+    map.upperTiles.fill(E);
+    project.maps = { [mapId]: map };
+    project.startMapId = mapId;
+    project.startPos = { x: 1, y: 1 };
+    project.mapTree = { mapId, children: [] };
+    const front = { x: 20, y: 22 };
+    map.lowerTiles[front.y * map.width + front.x] = 290;
+    map.upperTiles[front.y * map.width + front.x] = 260;
+    const ctx = { project };
+
+    const result = runTool(ctx, "build_house_kit", {
+      mapId,
+      kitId: "blue-stone",
+      wings: [{ x: 18, y: 15, w: 6, h: 7 }],
+    });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const built = ctx.project.maps[mapId];
+    expect((result.data as { doorAt: { x: number; y: number } }).doorAt).toEqual({ x: 20, y: 21 });
+    expect(built.lowerTiles[front.y * built.width + front.x]).toBe(G);
+    expect(built.upperTiles[front.y * built.width + front.x]).toBe(E);
+    expect(result.diff?.warnings).toContain("문 앞 (20,22) 통행 확보 — 지면으로 정리");
+    expect(projectLint(ctx.project).some((issue) => issue.code === "transfer-impassable")).toBe(false);
+  });
+
+  it("문 앞이 맵 밖이면 남쪽 여유 안내와 함께 실패한다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const project = createBlankProject();
+    const result = runTool({ project }, "build_house_kit", {
+      mapId: project.startMapId,
+      kitId: "blue-stone",
+      wings: [{ x: 2, y: 9, w: 6, h: 6 }],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]).toMatchObject({ code: "house-door-front-out-of-bounds", message: "문 앞이 맵 밖입니다 — 남쪽에 여유를 두세요" });
   });
 });
 

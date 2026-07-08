@@ -1,11 +1,15 @@
 import { editorState } from "@/editor/editorState";
 import {
   applyBuildPalettePrimitive,
-  DEFAULT_HOUSE_PRESET_ID,
-  HOUSE_PRESETS,
+  DEFAULT_HOUSE_KIT_ID,
+  DEFAULT_HOUSE_SHAPE_ID,
+  HOUSE_KIT_CARDS,
+  HOUSE_SHAPE_PRESETS,
+  type BuildHouseShapeId,
   type BuildPalettePrimitive,
+  type BuildPaletteApplyOptions,
 } from "@/editor/panels/buildPaletteCore";
-import type { HousePresetId } from "@/editor/panels/housePlan";
+import type { HouseKitId } from "@/editor/houseKit";
 import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -15,8 +19,8 @@ let buildPaletteEnabled = false;
 export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
-  { id: "house", label: "🏠집", title: "선택한 집 프리셋으로 벽, 문, 지붕을 한 번에 시공" },
-  { id: "village", label: "🏘️마을", title: "선택 영역에 집을 먼저 배치한 뒤 문 앞 길을 연결" },
+  { id: "house", label: "🏠집", title: "선택한 키트와 형태로 하네싱 집을 시공" },
+  { id: "village", label: "🏘️마을", title: "선택 영역 안에 하네싱 마을을 시공" },
   { id: "river", label: "🌊강", title: "선택 영역을 물로 채우기" },
   { id: "path", label: "🛣️길", title: "선택 영역 중앙에 길 놓기" },
   { id: "roof", label: "🔺지붕", title: "선택 영역을 지붕 줄로 채우기" },
@@ -26,7 +30,15 @@ const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly
   { id: "ai", label: "✨AI로 채우기", title: "기존 영역 AI 작업 경로로 보내기" },
 ];
 
-const HOUSE_PRESET_STORAGE_KEY = "rpg-zzu:build-palette:house-preset";
+const HOUSE_SHAPE_STORAGE_KEY = "rpg-zzu:build-palette:house-shape";
+const HOUSE_KIT_STORAGE_KEY = "rpg-zzu:build-palette:house-kit";
+const HOUSE_OPTION_STORAGE_KEYS = {
+  doorEvent: "rpg-zzu:build-palette:door-event",
+  interior: "rpg-zzu:build-palette:interior",
+  windows: "rpg-zzu:build-palette:windows",
+} as const;
+
+export type HouseOptionKey = keyof typeof HOUSE_OPTION_STORAGE_KEYS;
 
 export function renderBuildPaletteToggle(): HTMLElement {
   return el("button", {
@@ -75,27 +87,79 @@ export function renderBuildPalettePopup(): HTMLElement | null {
     text: `(${selection.x},${selection.y}) ${selection.width}×${selection.height}`,
     dataset: { testid: "build-palette-selection-label" },
   });
-  const selectedHousePreset = getSelectedHousePresetId();
-  const presetButtons = HOUSE_PRESETS.map((preset) =>
+  const selectedHouseShape = getSelectedHouseShapeId();
+  const selectedHouseKit = getSelectedHouseKitId();
+  const houseOptions = getBuildPaletteHouseOptions();
+  const shapeButtons = HOUSE_SHAPE_PRESETS.map((preset) =>
     el("button", {
-      class: "build-house-preset-button" + (preset.id === selectedHousePreset ? " active" : ""),
+      class: "build-house-preset-button" + (preset.id === selectedHouseShape ? " active" : ""),
       text: preset.name,
       attrs: {
         type: "button",
-        "aria-pressed": String(preset.id === selectedHousePreset),
-        title: `${preset.name} 프리셋 선택`,
+        "aria-pressed": String(preset.id === selectedHouseShape),
+        title: `${preset.name} 형태 선택`,
       },
-      dataset: { testid: `build-house-preset-${preset.id}` },
+      dataset: { testid: `build-shape-${preset.id}` },
       on: {
         click: (event) => {
-          setSelectedHousePresetId(preset.id);
+          setSelectedHouseShapeId(preset.id);
           const group = (event.currentTarget as HTMLElement).parentElement;
           group?.querySelectorAll<HTMLElement>(".build-house-preset-button").forEach((button) => {
-            const active = button.dataset.testid === `build-house-preset-${preset.id}`;
+            const active = button.dataset.testid === `build-shape-${preset.id}`;
             if (active) button.classList.add("active");
             else button.classList.remove("active");
             button.setAttribute("aria-pressed", String(active));
           });
+        },
+      },
+    })
+  );
+  const kitButtons = HOUSE_KIT_CARDS.map((kit) =>
+    el("button", {
+      class: "build-house-kit-button" + (kit.id === selectedHouseKit ? " active" : ""),
+      text: kit.name,
+      attrs: {
+        type: "button",
+        "aria-pressed": String(kit.id === selectedHouseKit),
+        title: `${kit.name} 키트 선택`,
+      },
+      dataset: { testid: `build-kit-${kit.id}` },
+      on: {
+        click: (event) => {
+          setSelectedHouseKitId(kit.id);
+          const group = (event.currentTarget as HTMLElement).parentElement;
+          group?.querySelectorAll<HTMLElement>(".build-house-kit-button").forEach((button) => {
+            const active = button.dataset.testid === `build-kit-${kit.id}`;
+            if (active) button.classList.add("active");
+            else button.classList.remove("active");
+            button.setAttribute("aria-pressed", String(active));
+          });
+        },
+      },
+    })
+  );
+  const optionButtons = ([
+    ["doorEvent", "문 이벤트"],
+    ["interior", "내부"],
+    ["windows", "창문"],
+  ] as const).map(([key, label]) =>
+    el("button", {
+      class: "build-house-option-button" + (houseOptions[key] ? " active" : ""),
+      text: label,
+      attrs: {
+        type: "button",
+        "aria-pressed": String(houseOptions[key]),
+        title: `${label} 옵션`,
+      },
+      dataset: { testid: `build-option-${optionTestId(key)}` },
+      on: {
+        click: (event) => {
+          const button = event.currentTarget as HTMLElement;
+          const active = button.getAttribute("aria-pressed") !== "true";
+          setBuildPaletteHouseOption(key, active);
+          if (active) button.classList.add("active");
+          else button.classList.remove("active");
+          button.setAttribute("aria-pressed", String(active));
         },
       },
     })
@@ -112,7 +176,7 @@ export function renderBuildPalettePopup(): HTMLElement | null {
             openBuildPaletteAiFill(selection);
             return;
           }
-          const result = applyBuildPalettePrimitive(selection, primitive.id, { housePresetId: getSelectedHousePresetId() });
+          const result = applyBuildPalettePrimitive(selection, primitive.id, buildPaletteApplyOptions());
           toast(result.ok ? result.summary : `건축 팔레트 실패: ${result.summary}`, result.ok ? "ok" : "error");
         },
       },
@@ -124,21 +188,68 @@ export function renderBuildPalettePopup(): HTMLElement | null {
     dataset: { testid: "build-palette-popup" },
     children: [
       title,
-      el("div", { class: "build-house-preset-group", attrs: { role: "group", "aria-label": "집 프리셋" }, children: presetButtons }),
+      el("div", { class: "build-house-preset-group", attrs: { role: "group", "aria-label": "집 형태" }, children: shapeButtons }),
+      el("div", { class: "build-house-kit-group", attrs: { role: "group", "aria-label": "집 키트" }, children: kitButtons }),
+      el("div", { class: "build-house-option-group", attrs: { role: "group", "aria-label": "집 옵션" }, children: optionButtons }),
       el("div", { class: "build-palette-grid", children: buttons }),
     ],
   });
 }
 
-export function getSelectedHousePresetId(): HousePresetId {
+export function getSelectedHouseShapeId(): BuildHouseShapeId {
   const storage = globalThis.localStorage;
-  if (!storage) return DEFAULT_HOUSE_PRESET_ID;
-  const stored = storage.getItem(HOUSE_PRESET_STORAGE_KEY);
-  return HOUSE_PRESETS.some((preset) => preset.id === stored) ? stored as HousePresetId : DEFAULT_HOUSE_PRESET_ID;
+  if (!storage) return DEFAULT_HOUSE_SHAPE_ID;
+  const stored = storage.getItem(HOUSE_SHAPE_STORAGE_KEY);
+  return HOUSE_SHAPE_PRESETS.some((preset) => preset.id === stored) ? stored as BuildHouseShapeId : DEFAULT_HOUSE_SHAPE_ID;
 }
 
-export function setSelectedHousePresetId(id: HousePresetId): void {
-  globalThis.localStorage?.setItem(HOUSE_PRESET_STORAGE_KEY, id);
+export function setSelectedHouseShapeId(id: BuildHouseShapeId): void {
+  globalThis.localStorage?.setItem(HOUSE_SHAPE_STORAGE_KEY, id);
+}
+
+export function getSelectedHouseKitId(): HouseKitId {
+  const storage = globalThis.localStorage;
+  if (!storage) return DEFAULT_HOUSE_KIT_ID;
+  const stored = storage.getItem(HOUSE_KIT_STORAGE_KEY);
+  return HOUSE_KIT_CARDS.some((kit) => kit.id === stored) ? stored as HouseKitId : DEFAULT_HOUSE_KIT_ID;
+}
+
+export function setSelectedHouseKitId(id: HouseKitId): void {
+  globalThis.localStorage?.setItem(HOUSE_KIT_STORAGE_KEY, id);
+}
+
+export function getBuildPaletteHouseOptions(): Required<Pick<BuildPaletteApplyOptions, "doorEvent" | "interior" | "windows">> {
+  return {
+    doorEvent: storedBoolean("doorEvent", true),
+    interior: storedBoolean("interior", true),
+    windows: storedBoolean("windows", true),
+  };
+}
+
+export function setBuildPaletteHouseOption(key: HouseOptionKey, value: boolean): void {
+  globalThis.localStorage?.setItem(HOUSE_OPTION_STORAGE_KEYS[key], value ? "true" : "false");
+}
+
+function buildPaletteApplyOptions(): BuildPaletteApplyOptions {
+  const houseOptions = getBuildPaletteHouseOptions();
+  return {
+    houseShapeId: getSelectedHouseShapeId(),
+    houseKitId: getSelectedHouseKitId(),
+    doorEvent: houseOptions.doorEvent,
+    interior: houseOptions.interior,
+    windows: houseOptions.windows,
+  };
+}
+
+function storedBoolean(key: HouseOptionKey, fallback: boolean): boolean {
+  const stored = globalThis.localStorage?.getItem(HOUSE_OPTION_STORAGE_KEYS[key]);
+  if (stored === "true") return true;
+  if (stored === "false") return false;
+  return fallback;
+}
+
+function optionTestId(key: HouseOptionKey): string {
+  return key === "doorEvent" ? "door-event" : key;
 }
 
 function openBuildPaletteAiFill(selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>): void {

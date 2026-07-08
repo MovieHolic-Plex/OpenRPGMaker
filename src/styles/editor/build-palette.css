@@ -9,7 +9,7 @@
   top: calc(100% + 6px);
   right: 0;
   z-index: 40;
-  width: 184px;
+  width: 228px;
   padding: 8px;
   border: 1px solid rgba(148, 163, 184, 0.45);
   border-radius: 8px;
@@ -43,7 +43,23 @@
   margin-bottom: 8px;
 }
 
-.build-house-preset-button {
+.build-house-kit-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.build-house-option-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.build-house-preset-button,
+.build-house-kit-button,
+.build-house-option-button {
   min-width: 0;
   min-height: 26px;
   padding: 4px;
@@ -54,17 +70,29 @@
   font: inherit;
   font-size: 11px;
   line-height: 1.1;
+  white-space: normal;
+  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
-.build-house-preset-button.active {
+.build-house-kit-button {
+  min-height: 38px;
+}
+
+.build-house-preset-button.active,
+.build-house-kit-button.active,
+.build-house-option-button.active {
   border-color: rgba(45, 212, 191, 0.9);
   background: rgba(20, 83, 76, 0.95);
   color: #f8fafc;
 }
 
 .build-house-preset-button:hover,
-.build-house-preset-button:focus-visible {
+.build-house-preset-button:focus-visible,
+.build-house-kit-button:hover,
+.build-house-kit-button:focus-visible,
+.build-house-option-button:hover,
+.build-house-option-button:focus-visible {
   border-color: rgba(45, 212, 191, 0.85);
   outline: none;
 }

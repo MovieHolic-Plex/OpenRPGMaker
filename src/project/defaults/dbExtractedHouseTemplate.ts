@@ -816,9 +816,9 @@ function buildComplexSteppedHouseVariant(map: GameMap): void {
 }
 
 function buildSmallHouseCity(map: GameMap): void {
-  for (const housePlan of SMALL_HOUSE_CITY_BUILD_PLAN.houses) {
-    stampHouseBodies(map, housePlan.bodies, "plaster", housePlan.windows);
-    stampDoor(map, housePlan.door);
+  for (const extractedBuild of SMALL_HOUSE_CITY_BUILD_PLAN.houses) {
+    stampHouseBodies(map, extractedBuild.bodies, "plaster", extractedBuild.windows);
+    stampDoor(map, extractedBuild.door);
   }
   paintAutoRoad(map, SMALL_HOUSE_CITY_BUILD_PLAN.roads);
   for (const treeOrigin of SMALL_HOUSE_CITY_BUILD_PLAN.treeOrigins) placeTwoByTwoTreeIfClear(map, treeOrigin);

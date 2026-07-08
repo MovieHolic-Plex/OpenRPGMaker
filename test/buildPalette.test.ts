@@ -4,11 +4,15 @@ import {
   applyBuildPalettePrimitiveToProject,
   BUILD_PALETTE_PRESETS,
   ensureBuildPalettePresets,
+  houseKitWingsFromSelection,
+  validateHouseKitSelection,
   type BuildPaletteSelection,
 } from "@/editor/panels/buildPaletteCore";
-import { createBlankProject } from "@/project/defaults";
+import { runTool } from "@/editor/tools";
+import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { projectLint } from "@/project/lint/projectLint";
+import type { MapId, Project } from "@/project/types";
 
 const MAP_ID = "map_blank_start";
 
@@ -16,20 +20,56 @@ function selection(patch: Partial<BuildPaletteSelection> = {}): BuildPaletteSele
   return { mapId: MAP_ID, x: 4, y: 4, width: 6, height: 5, ...patch };
 }
 
-describe("build palette deterministic stamps", () => {
-  it("집 프리미티브는 2×2 미만 선택 영역을 명확한 사유로 거부한다", () => {
-    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ width: 1, height: 1 }), "house");
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("최소 2×2");
-    expect(result.summary).not.toContain("완료");
-    expect(result.toolResults).toHaveLength(0);
+function largeProject(width = 60, height = 60): Project {
+  const project = createBlankProject();
+  const map = createBlankMap("큰 맵", width, height);
+  map.id = MAP_ID;
+  project.maps = { [MAP_ID]: map } as Record<MapId, typeof map>;
+  project.startMapId = MAP_ID;
+  project.startPos = { x: 1, y: 1 };
+  project.mapTree = { mapId: MAP_ID, children: [] };
+  return project;
+}
+
+function inRect(point: { readonly x: number; readonly y: number }, rect: { readonly x: number; readonly y: number; readonly w: number; readonly h: number }): boolean {
+  return point.x >= rect.x && point.y >= rect.y && point.x < rect.x + rect.w && point.y < rect.y + rect.h;
+}
+
+describe("build palette house kit wings", () => {
+  it("직사각/ㄱ자/ㄷ자 선택 영역을 하네싱 wings로 분해한다", () => {
+    expect(houseKitWingsFromSelection(selection({ x: 2, y: 3, width: 8, height: 7 }), "rect")).toEqual([
+      { x: 2, y: 3, w: 8, h: 7 },
+    ]);
+    expect(houseKitWingsFromSelection(selection({ x: 2, y: 3, width: 8, height: 8 }), "l")).toEqual([
+      { x: 2, y: 3, w: 8, h: 5 },
+      { x: 2, y: 3, w: 4, h: 8 },
+    ]);
+    expect(houseKitWingsFromSelection(selection({ x: 2, y: 3, width: 9, height: 8 }), "u")).toEqual([
+      { x: 2, y: 3, w: 9, h: 5 },
+      { x: 2, y: 3, w: 3, h: 8 },
+      { x: 8, y: 3, w: 3, h: 8 },
+    ]);
   });
 
+  it("키트 최소 제약에 못 미치는 선택 영역은 툴 호출 전에 거부한다", () => {
+    expect(validateHouseKitSelection(selection({ width: 2, height: 5 }), "rect")).toContain("3×5");
+    expect(validateHouseKitSelection(selection({ width: 6, height: 4 }), "rect")).toContain("3×5");
+    expect(validateHouseKitSelection(selection({ width: 5, height: 6 }), "l")).toContain("ㄱ자");
+    expect(validateHouseKitSelection(selection({ width: 8, height: 6 }), "u")).toContain("ㄷ자");
+
+    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ width: 2, height: 5 }), "house");
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("3×5");
+    expect(result.toolResults).toHaveLength(0);
+  });
+});
+
+describe("build palette deterministic stamps", () => {
   it("집 프리미티브가 시작 위치를 덮으면 무결성 오류를 사용자 메시지로 요약한다", () => {
     const project = createBlankProject();
     const result = applyBuildPalettePrimitiveToProject(
       project,
-      selection({ x: project.startPos.x, y: project.startPos.y - 1, width: 3, height: 4 }),
+      selection({ x: project.startPos.x - 1, y: project.startPos.y - 2, width: 3, height: 5 }),
       "house"
     );
 
@@ -39,149 +79,107 @@ describe("build palette deterministic stamps", () => {
     expect(result.toolResults.some((toolResult) => toolResult.issues?.some((issue) => issue.code === "start-position"))).toBe(true);
   });
 
-  // 2026-07-08 회귀: 선재 lint 오류(예: 시작 위치 통행 불가)가 있으면 무관한 편집까지
-  // 전부 커밋 거부되던 버그 — 새로 생긴 오류만 차단해야 한다.
   it("선재 무결성 오류가 있어도 무관한 영역의 시공은 허용한다", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
-    map.lowerTiles[project.startPos.y * map.width + project.startPos.x] = 120; // 물 — 통행 불가
+    map.lowerTiles[project.startPos.y * map.width + project.startPos.x] = 120;
     const preexisting = projectLint(project).filter((issue) => issue.code === "start-position");
     expect(preexisting.length, "선재 오류가 심어져야 함").toBeGreaterThan(0);
 
-    const result = applyBuildPalettePrimitiveToProject(project, selection(), "house");
+    const result = applyBuildPalettePrimitiveToProject(project, selection({ x: 1, y: 1, width: 8, height: 6 }), "house");
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("완료");
+    expect(result.summary).toContain("하네싱");
   });
 
-  it("집 프리미티브는 LLM 없이 벽, 문, 지붕을 한 번에 시공한다", () => {
+  it("선재 error가 있어도 커밋 거부 issues는 신규 blocking 오류만 담는다", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const map = project.maps[mapId];
+    map.lowerTiles[project.startPos.y * map.width + project.startPos.x] = 120;
+    map.lowerTiles[1 * map.width + 1] = 120;
+    const preexistingCodes = projectLint(project).map((issue) => issue.code);
+    expect(preexistingCodes).toContain("start-position");
+    expect(preexistingCodes).not.toContain("transfer-impassable");
+
+    const result = runTool({ project }, "upsert_event", {
+      mapId,
+      event: {
+        id: "ev_bad_transfer",
+        x: 2,
+        y: 2,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [{
+          id: "ev_bad_transfer_page",
+          name: "나쁜 전이",
+          conditions: [],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [{ kind: "transfer", mapId, x: 1, y: 1, fade: "black" }],
+        }],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.map((issue) => issue.code)).toEqual(["transfer-impassable"]);
+  });
+
+  it("집 프리미티브는 build_house_kit를 호출하고 문 이벤트와 창문이 diff에 반영된다", () => {
     const chat = vi.spyOn(llmClient, "chatCompletion");
-    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection(), "house");
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 1, y: 1, width: 10, height: 6 }),
+      "house",
+      { houseShapeId: "rect", houseKitId: "blue-stone" }
+    );
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("완료");
     expect(chat).not.toHaveBeenCalled();
+    expect(result.toolResults).toHaveLength(1);
+    const toolResult = result.toolResults[0];
+    expect(toolResult.summary).toContain("하네싱");
+    expect(toolResult.diff?.tilesChanged).toBeGreaterThan(0);
+    expect(toolResult.diff?.eventsAdded).toBeGreaterThan(0);
+    expect(toolResult.diff?.mapsAdded).toBeGreaterThan(0);
 
+    const data = toolResult.data as { readonly kitId: string; readonly doorAt: { readonly x: number; readonly y: number }; readonly wings: unknown };
+    expect(data.kitId).toBe("blue-stone");
+    expect(data.wings).toEqual([{ x: 1, y: 1, w: 10, h: 6 }]);
     const map = result.project.maps[MAP_ID];
-    const at = (x: number, y: number) => y * map.width + x;
-    // 선택 (4,4) 6×5 → 1층 벽 2행을 먼저 확보하고, 나머지 3행은 용마루/몸통/처마 지붕으로 채운다.
-    for (let x = 4; x <= 9; x++) {
-      expect(map.lowerTiles[at(x, 4)], `ridge(${x},4)`).toBe(374);
-      expect(map.lowerTiles[at(x, 5)], `body(${x},5)`).toBe(375);
-      expect(map.lowerTiles[at(x, 6)], `eave(${x},6)`).toBe(405);
-    }
-    expect(map.lowerTiles[at(4, 7)]).not.toBe(0); // wall top-left
-    expect(map.lowerTiles[at(7, 8)]).toBe(146); // door bottom
+    expect(map.lowerTiles[data.doorAt.y * map.width + data.doorAt.x]).toBe(146);
+    expect(map.upperTiles.some((tile) => tile === 87)).toBe(true);
   });
 
-  it("ㄱ자집 프리셋은 열별 yMax 기준으로 남쪽 노출면 두 곳에 벽을 깔고 지붕을 ㄱ자로 채운다", () => {
+  it("마을 프리미티브는 build_village(bounds)를 호출하고 감사 요약을 메시지에 포함한다", () => {
+    const bounds = { x: 10, y: 10, w: 36, h: 36 };
     const result = applyBuildPalettePrimitiveToProject(
-      createBlankProject(),
-      selection({ x: 2, y: 2, width: 8, height: 8 }),
-      "house",
-      { housePresetId: "l-house-1f" }
+      largeProject(),
+      selection({ x: bounds.x, y: bounds.y, width: bounds.w, height: bounds.h }),
+      "village",
+      { interior: false }
     );
+
     expect(result.ok, result.summary).toBe(true);
-    const map = result.project.maps[MAP_ID];
-    const at = (x: number, y: number) => y * map.width + x;
-
-    // 왼쪽 위 열: splitY=6이므로 y=4..5가 1층 벽, 그 위 y=2..3이 지붕.
-    expect(map.lowerTiles[at(2, 2)]).toBe(374);
-    expect(map.lowerTiles[at(2, 3)]).toBe(405);
-    expect(map.lowerTiles[at(2, 4)]).not.toBe(0);
-    expect(map.lowerTiles[at(2, 5)]).not.toBe(0);
-
-    // 오른쪽 아래 열: 같은 열 규칙으로 하단 y=8..9가 벽, 위쪽은 긴 지붕 열이다.
-    expect(map.lowerTiles[at(8, 2)]).toBe(374);
-    expect(map.lowerTiles[at(8, 7)]).toBe(405);
-    expect(map.lowerTiles[at(8, 8)]).not.toBe(0);
-    expect(map.lowerTiles[at(8, 9)]).not.toBe(0);
+    expect(result.summary).toContain("마을 시공:");
+    expect(result.summary).toContain("문 연결");
+    expect(result.toolResults).toHaveLength(1);
+    const data = result.toolResults[0].data as {
+      readonly bounds: typeof bounds;
+      readonly housesBuilt: number;
+      readonly houses: readonly { readonly doorAt: { readonly x: number; readonly y: number }; readonly front: { readonly x: number; readonly y: number } }[];
+    };
+    expect(data.bounds).toEqual(bounds);
+    expect(data.housesBuilt).toBeGreaterThan(0);
+    expect(data.houses.every((house) => inRect(house.doorAt, bounds) && inRect(house.front, bounds))).toBe(true);
   });
 
-  it("2층집 프리셋은 벽 공간 4행을 먼저 확보한다", () => {
-    const result = applyBuildPalettePrimitiveToProject(
-      createBlankProject(),
-      selection({ x: 2, y: 2, width: 6, height: 7 }),
-      "house",
-      { housePresetId: "house-2f" }
-    );
-    expect(result.ok, result.summary).toBe(true);
-    const map = result.project.maps[MAP_ID];
-    const at = (x: number, y: number) => y * map.width + x;
-
-    expect(map.lowerTiles[at(2, 2)]).toBe(374);
-    expect(map.lowerTiles[at(2, 3)]).toBe(375);
-    expect(map.lowerTiles[at(2, 4)]).toBe(405);
-    for (let y = 5; y <= 8; y += 1) expect(map.lowerTiles[at(2, y)], `wall y=${y}`).not.toBe(0);
-  });
-
-  // 2026-07-08 학습 반영(연습02): 파랑 지붕 — 몸통 406, 좌/우 가장자리 437/407, 처마 467,
-  // 대각 모서리는 상위 레이어 356/357/386/387.
-  it("파랑1층 프리셋은 파랑 세트 하위 타일과 상위 대각 모서리로 지붕을 시공한다", () => {
-    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection(), "house", {
-      housePresetId: "blue-cottage-1f",
-    });
-    expect(result.ok, result.summary).toBe(true);
-
-    const map = result.project.maps[MAP_ID];
-    const at = (x: number, y: number) => y * map.width + x;
-    // 선택 (4,4) 6×5, 벽 2행 → 지붕 rows 4~6 (처마 6행).
-    expect(map.upperTiles[at(4, 4)]).toBe(356); // NW 대각(상위), 하위는 비워 둔다
-    expect(map.upperTiles[at(9, 4)]).toBe(357); // NE
-    expect(map.lowerTiles[at(5, 4)]).toBe(406); // 최상행 몸통
-    expect(map.lowerTiles[at(4, 5)]).toBe(437); // 좌측 가장자리
-    expect(map.lowerTiles[at(9, 5)]).toBe(407); // 우측 가장자리
-    expect(map.lowerTiles[at(6, 5)]).toBe(406); // 몸통
-    for (let x = 4; x <= 9; x++) expect(map.lowerTiles[at(x, 6)], `eave(${x},6)`).toBe(467);
-    expect(map.upperTiles[at(4, 6)]).toBe(386); // SW
-    expect(map.upperTiles[at(9, 6)]).toBe(387); // SE
-  });
-
-  // 2026-07-08 학습 반영(연습08): 밝은 오렌지 — 용마루(374)는 지붕 위 한 줄 상위 레이어,
-  // 수직 트림 376/377은 지붕 좌우 바깥 열 상위 레이어.
-  it("밝은ㄱ자 프리셋은 용마루·트림을 상위 레이어에 얹는다", () => {
-    const result = applyBuildPalettePrimitiveToProject(
-      createBlankProject(),
-      selection({ x: 3, y: 3, width: 6, height: 6 }),
-      "house",
-      { housePresetId: "bright-l-1f" }
-    );
-    expect(result.ok, result.summary).toBe(true);
-
-    const map = result.project.maps[MAP_ID];
-    const at = (x: number, y: number) => y * map.width + x;
-    // 지붕 최상단은 y=3 → 용마루 라인은 y=2 상위 레이어, 좌우 캡은 지붕 바깥.
-    expect(map.upperTiles[at(6, 2)]).toBe(374);
-    expect(map.upperTiles[at(8, 2)]).toBe(374);
-    expect(map.upperTiles[at(2, 2)]).toBe(354); // 좌측 용마루 캡
-    expect(map.upperTiles[at(9, 2)]).toBe(355); // 우측 용마루 캡
-    // 우측 날개(x=6..8, 지붕 y=3..6) 바깥 열 수직 트림 + 하단 캡.
-    expect(map.upperTiles[at(9, 3)]).toBe(377);
-    expect(map.upperTiles[at(9, 6)]).toBe(385);
-    // 하위 몸통은 404, 각 열의 최하 지붕행은 처마 405.
-    expect(map.lowerTiles[at(7, 4)]).toBe(404);
-    expect(map.lowerTiles[at(7, 6)]).toBe(405);
-  });
-
-  it("마을 프리미티브는 집을 2채 이상 배치한 뒤 문 앞 좌표 사이에 길을 연결하고 시작 위치를 막지 않는다", () => {
-    const result = applyBuildPalettePrimitiveToProject(
-      createBlankProject(),
-      selection({ x: 0, y: 0, width: 20, height: 15 }),
-      "village"
-    );
-    expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toMatch(/마을 시공 완료: \d+채 중 \d+채/);
-    const doorResults = result.toolResults.filter((toolResult) => {
-      const data = toolResult.data as { at?: { x: number; y: number } } | undefined;
-      return Boolean(data?.at);
-    });
-    expect(doorResults.length).toBeGreaterThanOrEqual(2);
-
-    const pathMembers = new Set(result.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_PRESETS.path)?.tileIds ?? []);
-    const map = result.project.maps[MAP_ID];
-    const firstDoor = (doorResults[0].data as { at: { x: number; y: number } }).at;
-    const firstDoorFront = { x: firstDoor.x, y: Math.min(map.height - 1, firstDoor.y + 1) };
-    expect(pathMembers.has(map.lowerTiles[firstDoorFront.y * map.width + firstDoorFront.x])).toBe(true);
-    expect(projectLint(result.project).filter((issue) => issue.severity === "error" && issue.code === "start-position")).toHaveLength(0);
+  it("마을 프리미티브는 build_village 최소 영역과 같은 36×36 기준으로 사전 거부한다", () => {
+    const result = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ x: 0, y: 0, width: 20, height: 15 }), "village");
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("36×36");
+    expect(result.toolResults).toHaveLength(0);
   });
 
   it("지붕 프리미티브는 용마루→몸통→처마 3단으로 채운다", () => {
@@ -189,9 +187,9 @@ describe("build palette deterministic stamps", () => {
     expect(result.ok, result.summary).toBe(true);
     const map = result.project.maps[MAP_ID];
     const at = (x: number, y: number) => y * map.width + x;
-    expect(map.lowerTiles[at(2, 10)]).toBe(374); // 용마루
-    expect(map.lowerTiles[at(3, 11)]).toBe(375); // 몸통
-    expect(map.lowerTiles[at(2, 12)]).toBe(405); // 처마(최하단)
+    expect(map.lowerTiles[at(2, 10)]).toBe(374);
+    expect(map.lowerTiles[at(3, 11)]).toBe(375);
+    expect(map.lowerTiles[at(2, 12)]).toBe(405);
     expect(map.lowerTiles[at(5, 12)]).toBe(405);
   });
 

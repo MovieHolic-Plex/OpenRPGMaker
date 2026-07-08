@@ -28,6 +28,7 @@ interface VillageHouseData {
 
 interface VillageData {
   readonly mapId: string;
+  readonly bounds?: { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
   readonly housesBuilt: number;
   readonly doorsConnected: number;
   readonly roadComponents: number;
@@ -232,6 +233,20 @@ describe("build_village", () => {
     expect(rejected.issues?.[0]?.code).toBe("map-too-small");
   });
 
+  it("bounds 지정 시 기존 맵의 해당 영역 안에 광장·집·NPC를 배치한다", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    expect(runTool(context, "create_map", { id: "map_60", name: "기존 60", width: 60, height: 60 }).ok).toBe(true);
+    const bounds = { x: 10, y: 8, w: 36, h: 36 };
+    const result = runTool(context, "build_village", { mapId: "map_60", bounds, seed: 7, interior: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = villageData(result.data);
+    expect(data.bounds).toEqual(bounds);
+    expect(data.roadComponents).toBe(1);
+    expect(data.houses.every((house) => pointInRect(house.doorAt, bounds) && pointInRect(house.front, bounds))).toBe(true);
+    const map = context.project.maps[data.mapId];
+    expect(map.events.filter((event) => event.id.startsWith("ev_village_")).every((event) => pointInRect(event, bounds))).toBe(true);
+  });
+
   it("레지스트리와 툴 브라우저에 등록되고 runTool 경로로 실행된다", () => {
     expect(allTools().map((tool) => tool.name)).toContain("build_village");
     expect(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("build_village");
@@ -267,4 +282,8 @@ function findTreeNode(node: MapTreeNode, mapId: string): MapTreeNode | null {
     if (found) return found;
   }
   return null;
+}
+
+function pointInRect(point: { readonly x: number; readonly y: number }, rect: { readonly x: number; readonly y: number; readonly w: number; readonly h: number }): boolean {
+  return point.x >= rect.x && point.y >= rect.y && point.x < rect.x + rect.w && point.y < rect.y + rect.h;
 }

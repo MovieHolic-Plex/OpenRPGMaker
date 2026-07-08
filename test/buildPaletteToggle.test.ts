@@ -1,11 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import {
-  getSelectedHousePresetId,
+  getBuildPaletteHouseOptions,
+  getSelectedHouseKitId,
+  getSelectedHouseShapeId,
   isBuildPaletteEnabled,
   renderBuildPalettePopup,
+  setBuildPaletteHouseOption,
   setBuildPaletteEnabled,
-  setSelectedHousePresetId,
+  setSelectedHouseKitId,
+  setSelectedHouseShapeId,
 } from "@/editor/panels/buildPalette";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -58,19 +62,41 @@ describe("build palette toggle → tool switch", () => {
     expect(editorState.get().tool).toBe("paint");
   });
 
-  it("집 프리셋 선택을 localStorage에 저장하고 팝오버 재렌더에서 복원한다", () => {
-    setSelectedHousePresetId("house-2f");
-    expect(getSelectedHousePresetId()).toBe("house-2f");
+  it("집 형태와 키트 선택을 localStorage에 저장하고 팝오버 재렌더에서 복원한다", () => {
+    setSelectedHouseShapeId("l");
+    setSelectedHouseKitId("bright-plaster");
+    expect(getSelectedHouseShapeId()).toBe("l");
+    expect(getSelectedHouseKitId()).toBe("bright-plaster");
 
     setBuildPaletteEnabled(true);
-    editorState.set({ currentMapId: "map_blank_start", selection: { mapId: "map_blank_start", x: 2, y: 2, width: 8, height: 8 } });
+    editorState.set({ currentMapId: "map_blank_start", selection: { mapId: "map_blank_start", x: 2, y: 2, width: 10, height: 8 } });
     const popup = renderBuildPalettePopup();
     expect(popup).toBeTruthy();
     const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
-    const active = fakePopup ? findByTestId(fakePopup, "build-house-preset-house-2f") : null;
-    expect(active?.classList.contains("active")).toBe(true);
+    expect(fakePopup ? findByTestId(fakePopup, "build-shape-l")?.classList.contains("active") : false).toBe(true);
+    expect(fakePopup ? findByTestId(fakePopup, "build-kit-bright-plaster")?.classList.contains("active") : false).toBe(true);
 
-    if (fakePopup) findByTestId(fakePopup, "build-house-preset-l-house-1f")?.click();
-    expect(getSelectedHousePresetId()).toBe("l-house-1f");
+    if (fakePopup) {
+      findByTestId(fakePopup, "build-shape-u")?.click();
+      findByTestId(fakePopup, "build-kit-blue-stone")?.click();
+    }
+    expect(getSelectedHouseShapeId()).toBe("u");
+    expect(getSelectedHouseKitId()).toBe("blue-stone");
+  });
+
+  it("집 문 이벤트·내부·창문 옵션 토글을 저장한다", () => {
+    expect(getBuildPaletteHouseOptions()).toEqual({ doorEvent: true, interior: true, windows: true });
+    setBuildPaletteHouseOption("windows", false);
+    expect(getBuildPaletteHouseOptions().windows).toBe(false);
+
+    setBuildPaletteEnabled(true);
+    editorState.set({ currentMapId: "map_blank_start", selection: { mapId: "map_blank_start", x: 2, y: 2, width: 10, height: 8 } });
+    const popup = renderBuildPalettePopup();
+    const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
+    const windows = fakePopup ? findByTestId(fakePopup, "build-option-windows") : null;
+    expect(windows?.classList.contains("active")).toBe(false);
+
+    windows?.click();
+    expect(getBuildPaletteHouseOptions().windows).toBe(true);
   });
 });

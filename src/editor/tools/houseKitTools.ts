@@ -6,6 +6,8 @@
 import { HOUSE_KITS, stampFootprintHouseKit, type FootprintWing, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { createHouseDoorEvent, createHouseInteriorMap } from "@/editor/houseInteriors";
 import { appendToTree } from "@/editor/mapTreeActions";
+import { isPassable, tilePassability } from "@/project/collision";
+import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, MapId, MapTreeNode, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -80,6 +82,7 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       const windows = coerceWindows(args.windows);
       const result = stampFootprintHouseKit(map, { kitId, wings, windows });
       if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId });
+      const warnings: string[] = [];
       let doorNote = "문 없음";
       let interiorData: {
         interiorMapId: MapId;
@@ -90,6 +93,8 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
         const { x, y } = result.doorAt;
         map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;
         map.lowerTiles[y * map.width + x] = DOOR_BOTTOM_TILE;
+        const clearanceWarning = ensureDoorFrontPassable(draft, map, { x, y });
+        if (clearanceWarning) warnings.push(clearanceWarning);
         doorNote = `문 (${x},${y})`;
         if (args.interior !== false && args.doorEvent !== false) {
           const base = `${map.id}_${kitId}_${x}_${y}`;
@@ -126,6 +131,7 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       const windowNote = windows === false ? "창문 없음" : "창문 자동";
       return {
         summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${wings.length}개, ${doorNote}, ${windowNote}. 하네싱 규칙 적용 완료.`,
+        ...(warnings.length > 0 ? { warnings } : {}),
         data: { doorAt: result.doorAt ?? null, kitId, wings, ...(interiorData ?? {}) },
       };
     },
@@ -186,6 +192,60 @@ function upsertEvent(events: GameEvent[], event: GameEvent): void {
   const index = events.findIndex((entry) => entry.id === event.id);
   if (index >= 0) events[index] = event;
   else events.push(event);
+}
+
+function ensureDoorFrontPassable(project: Project, map: Project["maps"][string], door: { readonly x: number; readonly y: number }): string | undefined {
+  const front = { x: door.x, y: door.y + 1 };
+  if (front.x < 0 || front.y < 0 || front.x >= map.width || front.y >= map.height) {
+    throw new ToolError("문 앞이 맵 밖입니다 — 남쪽에 여유를 두세요", {
+      code: "house-door-front-out-of-bounds",
+      mapId: map.id,
+      x: front.x,
+      y: front.y,
+    });
+  }
+  if (isPassable(project, map, front.x, front.y)) return undefined;
+  const index = front.y * map.width + front.x;
+  map.lowerTiles[index] = chooseDoorFrontGroundTile(project, map, front.x, front.y);
+  map.upperTiles[index] = TILE.EMPTY;
+  clearTileStacksAt(map, index);
+  return `문 앞 (${front.x},${front.y}) 통행 확보 — 지면으로 정리`;
+}
+
+function chooseDoorFrontGroundTile(project: Project, map: Project["maps"][string], centerX: number, centerY: number): number {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) return TILE.GRASS;
+  const counts = new Map<number, number>();
+  for (let y = centerY - 2; y <= centerY + 2; y += 1) {
+    for (let x = centerX - 2; x <= centerX + 2; x += 1) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const tile = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
+      if (tile === TILE.EMPTY) continue;
+      const passability = tilePassability(tileset, tile, TILE.EMPTY);
+      if (!passability.up && !passability.down && !passability.left && !passability.right) continue;
+      counts.set(tile, (counts.get(tile) ?? 0) + 1);
+    }
+  }
+  let bestTile: number = TILE.GRASS;
+  let bestCount = 0;
+  for (const [tile, count] of counts) {
+    if (count > bestCount) {
+      bestTile = tile;
+      bestCount = count;
+    }
+  }
+  return bestTile;
+}
+
+function clearTileStacksAt(map: Project["maps"][string], index: number): void {
+  if (map.lowerTileStacks?.[index]) {
+    delete map.lowerTileStacks[index];
+    if (Object.keys(map.lowerTileStacks).length === 0) delete map.lowerTileStacks;
+  }
+  if (map.upperTileStacks?.[index]) {
+    delete map.upperTileStacks[index];
+    if (Object.keys(map.upperTileStacks).length === 0) delete map.upperTileStacks;
+  }
 }
 
 function seedFromString(value: string): number {
