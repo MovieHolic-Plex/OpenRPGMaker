@@ -13,7 +13,10 @@ function parseJsonString(value: unknown, schema: JsonSchema): unknown {
   const trimmed = value.trim();
   if (!trimmed) return value;
   const first = trimmed[0];
-  if ((schemaHasType(schema, "object") && first !== "{") || (schemaHasType(schema, "array") && first !== "[")) return value;
+  const wantsObject = schemaHasType(schema, "object");
+  const wantsArray = schemaHasType(schema, "array");
+  if (!wantsObject && !wantsArray) return value;
+  if ((wantsObject && first !== "{") || (wantsArray && first !== "[")) return value;
   try {
     return JSON.parse(trimmed) as unknown;
   } catch {

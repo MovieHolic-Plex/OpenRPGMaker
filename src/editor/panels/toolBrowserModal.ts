@@ -11,6 +11,7 @@ import { MAP_GEN_TOOLS } from "@/editor/tools/generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "@/editor/tools/groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
 import { HISTORY_TOOLS } from "@/editor/tools/historyTools";
+import { INVESTIGATION_TOOLS } from "@/editor/tools/investigationTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { TILE_TOOLS_V2 } from "@/editor/tools/v2";
 import { HOUSE_KIT_TOOLS } from "@/editor/tools/houseKitTools";
@@ -49,6 +50,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "맵 생성", tools: MAP_GEN_TOOLS },
   ...PLACEMENT_CATEGORIES,
   { label: "이벤트/NPC", tools: EVENT_TOOLS },
+  { label: "조사/퍼즐", tools: INVESTIGATION_TOOLS },
   { label: "엔딩", tools: ENDING_TOOLS },
   { label: "데이터베이스", tools: DB_TOOLS },
   { label: "세계관", tools: WORLD_TOOLS },

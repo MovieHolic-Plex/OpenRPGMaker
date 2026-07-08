@@ -12,6 +12,7 @@ import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_KIT_TOOLS } from "./houseKitTools";
+import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MAP_TOOLS } from "./mapTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
@@ -101,6 +102,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(MAP_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
   ...withDomain(WORLD_TOOLS, "world"),

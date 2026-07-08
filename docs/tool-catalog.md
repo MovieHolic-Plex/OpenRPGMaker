@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 100개 툴 — 쓰기 70, 읽기 30.
+> 총 102개 툴 — 쓰기 72, 읽기 30.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -48,6 +48,8 @@
 | `remove_event` | `mapId: string`, `eventId: string` | 맵에서 이벤트를 제거한다(파괴적). |
 | `move_event` | `mapId: string`, `eventId: string`, `x: integer`, `y: integer` | 이벤트를 같은 맵 내 다른 좌표로 옮긴다. |
 | `script_cutscene` | `mapId: string`, `eventId?: string`, `x?: integer`, `y?: integer`, `trigger?: action\|auto\|parallel`, `beats: array`, `skippable?: boolean` | 한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. beat 종류: say{speaker,face,text\|lines}, moveActor{target:'player'\|eventId,moves,wait}, camera{mode:'pan\|follow\|fixed\|return',target\|x,y,durationMs,wait}, picture{action:'show\|move\|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm\|se\|fade\|stop',resourceId}, tint{color\|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. 예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]} |
+| `place_examine_hotspots` | `mapId: string`, `hotspots: array` | 조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다. |
+| `compile_puzzle` | `mapId: string`, `puzzleId: string`, `kind: switch-sequence\|password\|item-gate\|push-switches`, `onSolve: object`, `reset?: boolean`, `nodes?: array`, `order?: array`, `at?: object`, `name?: string`, `answer?: string`, `prompt?: string`, `requiredItemId?: string`, `consumeItem?: boolean`, `lockedMessage?: string`, `unlockedMessage?: string`, `plates?: array`, `all?: boolean` | 선언형 퍼즐을 이벤트로 컴파일한다. 공통 {mapId,puzzleId,kind,onSolve:{setSwitch?,beats?,message?},reset?}. kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다. |
 | `define_ending` | `id: string`, `name: string`, `conditions: array`, `priority?: integer`, `epilogue?: array` | 프로젝트 엔딩을 선언한다. conditions는 switch/variable 조건 배열이며, triggerEnding은 조건을 만족한 엔딩 중 priority가 가장 높은 엔딩을 선택한다. epilogue는 script_cutscene beat 배열이다. |
 | `upsert_item` | `item: object` | 아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `upsert_enemy` | `enemy: object` | 적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
