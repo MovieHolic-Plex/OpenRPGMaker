@@ -3,11 +3,12 @@
 //              / duplicate_event / remove_event / move_event.
 
 import { isPassable } from "@/project/collision";
+import { isSeason, isTimePhase } from "@/project/gameTime";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, EventPage, GameEvent, GameMap, Project, TransferFade, Trigger } from "@/project/types";
+import type { Command, Dir, EventPage, EventPageCondition, GameEvent, GameMap, NpcScheduleEntry, NpcScheduleWhen, Project, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
@@ -26,6 +27,32 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
+const DIRS: readonly Dir[] = ["down", "left", "right", "up"];
+
+const npcScheduleSchema = {
+  type: "array" as const,
+  description: "NpcScheduleEntry[]",
+  items: {
+    type: "object" as const,
+    properties: {
+      when: {
+        type: "object" as const,
+        properties: {
+          timePhase: { type: "string" as const, enum: ["morning", "day", "evening", "night"] },
+          hourRange: { type: "array" as const, items: { type: "number" as const } },
+          season: { type: "string" as const, enum: ["spring", "summer", "fall", "winter"] },
+          dayRange: { type: "array" as const, items: { type: "number" as const } },
+        },
+      },
+      at: {
+        type: "object" as const,
+        properties: { mapId: { type: "string" as const }, x: { type: "integer" as const }, y: { type: "integer" as const } },
+      },
+      facing: { type: "string" as const, enum: ["down", "left", "right", "up"] },
+      activity: { type: "string" as const },
+    },
+  },
+};
 
 function knownIds(records: readonly { readonly id: string }[], limit = 8): string {
   return records.slice(0, limit).map((record) => record.id).join(", ") || "(없음)";
@@ -158,6 +185,100 @@ const placeNpc: ToolDefinition = {
   },
 };
 
+const setNpcSchedule: ToolDefinition = {
+  name: "set_npc_schedule",
+  description:
+    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      eventId: { type: "string" },
+      schedule: npcScheduleSchema,
+    },
+    required: ["mapId", "eventId", "schedule"],
+  },
+  invalidArgsExample: {
+    mapId: "map_town",
+    eventId: "ev_farmer",
+    schedule: [
+      { when: { hourRange: [6, 18], season: "spring" }, at: { mapId: "map_town", x: 8, y: 10 }, facing: "down", activity: "field" },
+    ],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const event = map.events.find((entry) => entry.id === args.eventId);
+    if (!event) throw new ToolError(`스케줄을 설정할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found", mapId: map.id });
+    const schedule = parseNpcSchedule(draft, args.schedule, "schedule");
+    event.schedule = schedule.length > 0 ? schedule : undefined;
+    return {
+      summary: `${map.name} 이벤트 '${event.id}' 스케줄 ${schedule.length}개 설정`,
+      data: { eventId: event.id, scheduleCount: schedule.length },
+    };
+  },
+};
+
+const makeVillager: ToolDefinition = {
+  name: "make_villager",
+  description:
+    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      name: { type: "string" },
+      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
+      home: { type: "object", description: "{x,y}" },
+      schedule: npcScheduleSchema,
+      dailyRoutine: { type: "object", description: "{workAt:{mapId?,x,y},workHours:[start,end]}" },
+      dialogue: { type: "array", description: "{when?,text}[]", items: { type: "object" } },
+      id: { type: "string" },
+    },
+    required: ["mapId", "name", "home"],
+  },
+  invalidArgsExample: {
+    mapId: "map_town",
+    name: "농부",
+    home: { x: 4, y: 8 },
+    dailyRoutine: { workAt: { x: 12, y: 8 }, workHours: [6, 18] },
+    dialogue: [{ when: { npcActivity: "work" }, text: "밭을 돌보는 중이야." }],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const name = stringArg(args.name, "name");
+    const home = pointFromRecord(args.home, "home");
+    assertPassableSchedulePoint(draft, map.id, home.x, home.y, "home");
+    const schedule = args.schedule !== undefined
+      ? parseNpcSchedule(draft, args.schedule, "schedule")
+      : routineSchedule(draft, map.id, home, args.dailyRoutine);
+    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    const id = typeof args.id === "string" && args.id.trim() ? args.id.trim() : genId("ev_villager");
+    const warnings: string[] = [];
+    const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
+      movement: PASSIVE,
+      warnings,
+    });
+    const event: GameEvent = {
+      id,
+      x: home.x,
+      y: home.y,
+      trigger: { kind: "action" },
+      commands: [],
+      pages,
+      ...(schedule.length > 0 ? { schedule } : {}),
+    };
+    assertEventShape(event);
+    upsertEventIntoMap(map, event);
+    return {
+      summary: `${map.name}에 주민 '${name}' 생성 (${home.x}, ${home.y}) — 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개`,
+      data: { eventId: id, scheduleCount: schedule.length, pageCount: pages.length },
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
+  },
+};
+
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
 function nearestPassableCell(project: Project, map: GameMap, x: number, y: number, maxRadius: number): Point | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
@@ -174,6 +295,195 @@ function nearestPassableCell(project: Project, map: GameMap, x: number, y: numbe
     }
   }
   return null;
+}
+
+function parseNpcSchedule(project: Project, raw: unknown, label: string): NpcScheduleEntry[] {
+  if (!Array.isArray(raw)) throw new ToolError(`${label}는 배열이어야 합니다.`, { code: "npc-schedule" });
+  return raw.map((entryRaw, index): NpcScheduleEntry => {
+    if (typeof entryRaw !== "object" || entryRaw === null || Array.isArray(entryRaw)) {
+      throw new ToolError(`${label}[${index}]는 객체여야 합니다.`, { code: "npc-schedule" });
+    }
+    const entry = entryRaw as Record<string, unknown>;
+    const at = scheduleAt(project, entry.at, `${label}[${index}].at`);
+    const facing = entry.facing === undefined ? undefined : dirArg(entry.facing, `${label}[${index}].facing`);
+    const activity = cleanOptionalString(entry.activity);
+    return {
+      when: parseScheduleWhen(entry.when, `${label}[${index}].when`),
+      at,
+      ...(facing ? { facing } : {}),
+      ...(activity ? { activity } : {}),
+    };
+  });
+}
+
+function parseScheduleWhen(raw: unknown, label: string): NpcScheduleWhen {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${label}은 객체여야 합니다.`, { code: "npc-schedule-when" });
+  }
+  const record = raw as Record<string, unknown>;
+  const timePhase = record.timePhase;
+  const season = record.season;
+  return {
+    ...(timePhase !== undefined ? { timePhase: parseTimePhaseArg(timePhase, `${label}.timePhase`) } : {}),
+    ...(record.hourRange !== undefined ? { hourRange: numberPair(record.hourRange, `${label}.hourRange`) } : {}),
+    ...(season !== undefined ? { season: parseSeasonArg(season, `${label}.season`) } : {}),
+    ...(record.dayRange !== undefined ? { dayRange: numberPair(record.dayRange, `${label}.dayRange`) } : {}),
+  };
+}
+
+function scheduleAt(project: Project, raw: unknown, label: string): NpcScheduleEntry["at"] {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${label}은 {mapId,x,y} 객체여야 합니다.`, { code: "npc-schedule-at" });
+  }
+  const record = raw as Record<string, unknown>;
+  const mapId = stringArg(record.mapId, `${label}.mapId`);
+  if (typeof record.x !== "number" || typeof record.y !== "number") {
+    throw new ToolError(`${label}.x/y 숫자가 필요합니다.`, { code: "npc-schedule-at" });
+  }
+  const x = Math.trunc(record.x);
+  const y = Math.trunc(record.y);
+  assertPassableSchedulePoint(project, mapId, x, y, label);
+  return { mapId, x, y };
+}
+
+function routineSchedule(project: Project, mapId: string, home: Point, rawRoutine: unknown): NpcScheduleEntry[] {
+  if (rawRoutine === undefined) return [];
+  if (typeof rawRoutine !== "object" || rawRoutine === null || Array.isArray(rawRoutine)) {
+    throw new ToolError("dailyRoutine은 {workAt,workHours} 객체여야 합니다.", { code: "daily-routine" });
+  }
+  const routine = rawRoutine as Record<string, unknown>;
+  const workAt = workPoint(project, mapId, routine.workAt, "dailyRoutine.workAt");
+  const [start, end] = numberPair(routine.workHours, "dailyRoutine.workHours");
+  if (start < 0 || end > 48 || start >= end) {
+    throw new ToolError("dailyRoutine.workHours는 0~48 사이의 [start,end] 오름차순 범위여야 합니다.", { code: "daily-routine-hours" });
+  }
+  const homeEntry = (when: NpcScheduleWhen): NpcScheduleEntry => ({
+    when,
+    at: { mapId, x: home.x, y: home.y },
+    facing: "down",
+    activity: "home",
+  });
+  return [
+    ...(start > 0 ? [homeEntry({ hourRange: [0, start] })] : []),
+    { when: { hourRange: [start, end] }, at: workAt, facing: "down", activity: "work" },
+    ...(end < 48 ? [homeEntry({ hourRange: [end, 48] })] : []),
+  ];
+}
+
+function workPoint(project: Project, defaultMapId: string, raw: unknown, label: string): NpcScheduleEntry["at"] {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`${label}은 {mapId?,x,y} 객체여야 합니다.`, { code: "daily-routine-work" });
+  }
+  const record = raw as Record<string, unknown>;
+  const mapId = typeof record.mapId === "string" && record.mapId.trim() ? record.mapId.trim() : defaultMapId;
+  if (typeof record.x !== "number" || typeof record.y !== "number") {
+    throw new ToolError(`${label}.x/y 숫자가 필요합니다.`, { code: "daily-routine-work" });
+  }
+  const x = Math.trunc(record.x);
+  const y = Math.trunc(record.y);
+  assertPassableSchedulePoint(project, mapId, x, y, label);
+  return { mapId, x, y };
+}
+
+function villagerPages(rawDialogue: unknown, schedule: readonly NpcScheduleEntry[], warnings: string[]): SimplePage[] {
+  const pages: SimplePage[] = [{ lines: ["안녕하세요."] }];
+  if (rawDialogue !== undefined) {
+    if (!Array.isArray(rawDialogue)) throw new ToolError("dialogue는 {when?,text}[] 배열이어야 합니다.", { code: "villager-dialogue" });
+    rawDialogue.forEach((entry, index) => {
+      const page = dialoguePageFromRecord(entry, index, warnings);
+      if (page) pages.push(page);
+    });
+  }
+  if (pages.length === 1) {
+    for (const activity of activityLabels(schedule)) {
+      pages.push({ conditions: [{ kind: "npcActivity", activity }], lines: [defaultActivityLine(activity)] });
+    }
+  }
+  return pages;
+}
+
+function dialoguePageFromRecord(raw: unknown, index: number, warnings: string[]): SimplePage | null {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError(`dialogue[${index}]는 {when?,text} 객체여야 합니다.`, { code: "villager-dialogue" });
+  }
+  const record = raw as Record<string, unknown>;
+  const text = cleanOptionalString(record.text);
+  if (!text) {
+    warnings.push(`dialogue[${index}] text가 비어 있어 건너뜁니다.`);
+    return null;
+  }
+  return {
+    lines: [text],
+    conditions: dialogueConditionsFromWhen(record.when, `dialogue[${index}].when`, warnings),
+  };
+}
+
+function dialogueConditionsFromWhen(raw: unknown, label: string, warnings: string[]): EventPageCondition[] {
+  if (raw === undefined || raw === null) return [];
+  if (typeof raw !== "object" || Array.isArray(raw)) {
+    throw new ToolError(`${label}은 객체여야 합니다.`, { code: "villager-dialogue-when" });
+  }
+  const record = raw as Record<string, unknown>;
+  const conditions: EventPageCondition[] = [];
+  const activity = cleanOptionalString(record.npcActivity ?? record.activity);
+  if (activity) conditions.push({ kind: "npcActivity", activity });
+  if (record.timePhase !== undefined) conditions.push({ kind: "timePhase", phase: parseTimePhaseArg(record.timePhase, `${label}.timePhase`) });
+  if (record.season !== undefined) conditions.push({ kind: "season", season: parseSeasonArg(record.season, `${label}.season`) });
+  if (record.hourRange !== undefined) warnings.push(`${label}.hourRange는 이벤트 페이지 조건으로 직접 표현되지 않아 무시됩니다.`);
+  if (record.dayRange !== undefined) warnings.push(`${label}.dayRange는 이벤트 페이지 조건으로 직접 표현되지 않아 무시됩니다.`);
+  return conditions;
+}
+
+function activityLabels(schedule: readonly NpcScheduleEntry[]): string[] {
+  return [...new Set(schedule.map((entry) => entry.activity).filter((activity): activity is string => typeof activity === "string" && activity.trim().length > 0))];
+}
+
+function defaultActivityLine(activity: string): string {
+  switch (activity) {
+    case "home":
+      return "집에서 쉬는 중이야.";
+    case "work":
+      return "일하는 중이야.";
+    default:
+      return `${activity} 중이야.`;
+  }
+}
+
+function assertPassableSchedulePoint(project: Project, mapId: string, x: number, y: number, label: string): void {
+  const map = requireMap(project, mapId);
+  if (!inMapBounds(map, x, y)) throw new ToolError(`${label} 좌표가 맵 밖입니다: (${x}, ${y})`, { code: "npc-schedule-bounds", mapId, x, y });
+  if (!isPassable(project, map, x, y)) throw new ToolError(`${label} 좌표가 통행 불가입니다: (${x}, ${y})`, { code: "npc-schedule-passable", mapId, x, y });
+}
+
+function numberPair(raw: unknown, label: string): readonly [number, number] {
+  if (!Array.isArray(raw) || raw.length !== 2 || typeof raw[0] !== "number" || typeof raw[1] !== "number") {
+    throw new ToolError(`${label}는 숫자 2개 배열이어야 합니다.`, { code: "number-pair" });
+  }
+  return [raw[0], raw[1]];
+}
+
+function dirArg(raw: unknown, label: string): Dir {
+  if (typeof raw === "string" && DIRS.includes(raw as Dir)) return raw as Dir;
+  throw new ToolError(`${label}은 down/left/right/up 중 하나여야 합니다.`, { code: "direction" });
+}
+
+function parseTimePhaseArg(raw: unknown, label: string): NonNullable<NpcScheduleWhen["timePhase"]> {
+  if (typeof raw === "string" && isTimePhase(raw)) return raw;
+  throw new ToolError(`${label}은 morning/day/evening/night 중 하나여야 합니다.`, { code: "time-phase" });
+}
+
+function parseSeasonArg(raw: unknown, label: string): NonNullable<NpcScheduleWhen["season"]> {
+  if (typeof raw === "string" && isSeason(raw)) return raw;
+  throw new ToolError(`${label}은 spring/summer/fall/winter 중 하나여야 합니다.`, { code: "season" });
+}
+
+function stringArg(raw: unknown, label: string): string {
+  if (typeof raw === "string" && raw.trim()) return raw.trim();
+  throw new ToolError(`${label} 문자열이 필요합니다.`, { code: "string-arg" });
+}
+
+function cleanOptionalString(raw: unknown): string | undefined {
+  return typeof raw === "string" && raw.trim() ? raw.trim() : undefined;
 }
 
 const createTransferPair: ToolDefinition = {
@@ -756,6 +1066,8 @@ export { ensureNamedSwitch };
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
   upsertEvent,
   placeNpc,
+  setNpcSchedule,
+  makeVillager,
   createTransferPair,
   placeBattleBlocker,
   placeTrap,

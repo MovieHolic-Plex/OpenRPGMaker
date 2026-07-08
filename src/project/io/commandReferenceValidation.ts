@@ -215,6 +215,7 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "timer":
     case "timePhase":
     case "season":
+    case "npcActivity":
       return;
   }
 }
@@ -234,6 +235,7 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "timer":
     case "timePhase":
     case "season":
+    case "npcActivity":
       return;
     case "enemyHp":
     case "enemyTurn":
@@ -266,7 +268,7 @@ export function validateCondition(
   if (condition.kind === "variable") {
     assert(variableIds.has(condition.variableId), `condition: variableId가 존재하지 않습니다: ${condition.variableId}`);
   }
-  // selfSwitch/actor/item/gold/timer/timePhase/season 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
+  // selfSwitch/actor/item/gold/timer/timePhase/season/npcActivity 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
 }
 
 function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {

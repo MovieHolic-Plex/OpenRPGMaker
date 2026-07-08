@@ -75,18 +75,17 @@ export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): 
 export function updateEvent(
   mapId: MapId,
   eventId: string,
-  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition">>
+  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition" | "schedule">>
 ): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
     const ev = m.events.find((e) => e.id === eventId);
     if (!ev) return;
-    if (patch.sprite !== undefined) ev.sprite = patch.sprite;
-    if (patch.trigger !== undefined) ev.trigger = patch.trigger;
-    if (patch.condition !== undefined) {
-      ev.condition = patch.condition;
-    }
+    if ("sprite" in patch) ev.sprite = patch.sprite;
+    if ("trigger" in patch && patch.trigger !== undefined) ev.trigger = patch.trigger;
+    if ("condition" in patch) ev.condition = patch.condition;
+    if ("schedule" in patch) ev.schedule = patch.schedule;
   }, { scope: "map", mapId });
 }
 

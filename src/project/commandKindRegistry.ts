@@ -97,6 +97,7 @@ export const CONDITION_KINDS = [
   "timer",
   "timePhase",
   "season",
+  "npcActivity",
 ] as const satisfies readonly Condition["kind"][];
 
 export type ConditionKind = (typeof CONDITION_KINDS)[number];

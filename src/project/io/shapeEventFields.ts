@@ -120,11 +120,15 @@ function validateEventGraphic(label: string, value: unknown): void {
     requireString(`${label}.sprite.id`, sprite.id);
   }
   if (graphic.direction !== undefined) {
-    const direction = requireString(`${label}.direction`, graphic.direction);
-    assert(direction === "left" || direction === "right" || direction === "up" || direction === "down", `${label}.direction이 잘못되었습니다.`);
+    validateDir(`${label}.direction`, graphic.direction);
   }
   if (graphic.pattern !== undefined) requireNumber(`${label}.pattern`, graphic.pattern);
   if (graphic.transparent !== undefined) requireBoolean(`${label}.transparent`, graphic.transparent);
+}
+
+function validateDir(label: string, value: unknown): void {
+  const direction = requireString(label, value);
+  assert(direction === "left" || direction === "right" || direction === "up" || direction === "down", `${label}이 잘못되었습니다.`);
 }
 
 function validateIdArray(label: string, value: unknown): void {
@@ -153,11 +157,46 @@ function validateEventShape(label: string, value: unknown): void {
   if (event.condition !== undefined) validateConditionShape(`${label}.condition`, event.condition);
   if (event.moveRoute !== undefined) validateMoveRoute(`${label}.moveRoute`, event.moveRoute);
   validateCommandArray(`${label}.commands`, event.commands);
+  if (event.schedule !== undefined) validateNpcSchedule(`${label}.schedule`, event.schedule);
   if (event.pages !== undefined) {
     for (const [index, pageValue] of requireArray(`${label}.pages`, event.pages).entries()) {
       validatePageShape(`${label}.pages[${index}]`, pageValue);
     }
   }
+}
+
+function validateNpcSchedule(label: string, value: unknown): void {
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    validateNpcScheduleWhen(`${label}[${index}].when`, entry.when);
+    const at = requireRecord(`${label}[${index}].at`, entry.at);
+    requireString(`${label}[${index}].at.mapId`, at.mapId);
+    requireNumber(`${label}[${index}].at.x`, at.x);
+    requireNumber(`${label}[${index}].at.y`, at.y);
+    if (entry.facing !== undefined) validateDir(`${label}[${index}].facing`, entry.facing);
+    if (entry.activity !== undefined) requireString(`${label}[${index}].activity`, entry.activity);
+  }
+}
+
+function validateNpcScheduleWhen(label: string, value: unknown): void {
+  const when = requireRecord(label, value);
+  if (when.timePhase !== undefined) {
+    const phase = requireString(`${label}.timePhase`, when.timePhase);
+    assert(isTimePhase(phase), `${label}.timePhase가 잘못되었습니다.`);
+  }
+  if (when.hourRange !== undefined) validateNumberPair(`${label}.hourRange`, when.hourRange);
+  if (when.season !== undefined) {
+    const season = requireString(`${label}.season`, when.season);
+    assert(isSeason(season), `${label}.season이 잘못되었습니다.`);
+  }
+  if (when.dayRange !== undefined) validateNumberPair(`${label}.dayRange`, when.dayRange);
+}
+
+function validateNumberPair(label: string, value: unknown): void {
+  const pair = requireArray(label, value);
+  assert(pair.length === 2, `${label}는 숫자 2개 배열이어야 합니다.`);
+  requireNumber(`${label}[0]`, pair[0]);
+  requireNumber(`${label}[1]`, pair[1]);
 }
 
 function validatePageShape(label: string, value: unknown): void {
@@ -200,11 +239,7 @@ function validateLivingMovement(label: string, value: unknown): void {
     requireNumber(`${label}.destinations[${index}].x`, destination.x);
     requireNumber(`${label}.destinations[${index}].y`, destination.y);
     if (destination.direction !== undefined) {
-      const direction = requireString(`${label}.destinations[${index}].direction`, destination.direction);
-      assert(
-        direction === "left" || direction === "right" || direction === "up" || direction === "down",
-        `${label}.destinations[${index}].direction이 잘못되었습니다.`
-      );
+      validateDir(`${label}.destinations[${index}].direction`, destination.direction);
     }
     if (destination.switchId !== undefined) requireString(`${label}.destinations[${index}].switchId`, destination.switchId);
   }

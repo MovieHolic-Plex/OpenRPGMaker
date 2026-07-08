@@ -1,5 +1,6 @@
 import type { EventPageMovement, MoveCommand } from "@/project/types";
 import { store } from "@/project/store";
+import { resolveTimeSystem } from "@/project/gameTime";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import { routeForLivingMovement } from "@/player/npcLivingTravel";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
@@ -27,6 +28,7 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   const activePageRouteEventIds = new Set<string>();
   const project = store.getCurrent();
   for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
+    if (resolveTimeSystem(project) && view.event.schedule?.length) continue;
     const movement = view.movement;
     const route = routeForPageMovement(movement) ?? routeForLivingMovement({ project, map: scene.map, session: scene.session, view });
     if (!route) continue;

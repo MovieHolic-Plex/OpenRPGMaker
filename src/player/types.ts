@@ -224,6 +224,11 @@ export type RuntimeNpcTravelState = {
   readonly destinationIndex: number;
 };
 
+export type RuntimeNpcScheduleState = {
+  readonly routeKey?: string;
+  readonly exitTarget?: RuntimeEventLocation;
+};
+
 export type RuntimeFollowerLike = {
   readonly eventId?: string;
   readonly graphic: EventPageGraphic;
@@ -269,6 +274,8 @@ export interface PlaySessionLike {
   camera?: RuntimeCameraSessionState;
   lighting?: LightingState;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
+  npcActivities?: Record<string, string>;
+  npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
   farmPlots?: FarmPlots;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];

@@ -1,4 +1,4 @@
-import { canMove } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
@@ -68,6 +68,7 @@ import {
   type GameTime,
   type TimePhase,
 } from "@/project/gameTime";
+import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { advanceFarmPlotsForDay, cropStageAt, interactWithFarmPlot } from "@/player/farming";
 
 const TICK_MS = 16;
@@ -89,6 +90,7 @@ export type SceneExpectStep = {
   switchOff?: string | readonly string[];
   variableEquals?: { variableId: string; value: number } | Record<string, number>;
   eventAt?: { eventId: string; x: number; y: number; mapId?: string };
+  eventOnMap?: { eventId: string; mapId: string };
   eventDistanceToPlayerLessThan?: { eventId: string; distance: number; mapId?: string };
   followerCount?: number;
   followerAt?: { name: string; x: number; y: number };
@@ -236,6 +238,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   };
   initializeFieldSpawnsForRunner(state);
   syncFollowCamera(state);
+  applyNpcSchedulesForRunner(state);
   refreshChasers(state);
   const autoReason = runAutoTriggers(state);
   if (autoReason !== null) {
@@ -371,6 +374,7 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
   initializeFieldSpawnsForRunner(state);
   state.camera = emptyCamera(state.session);
   state.encounterAccumulator = 0;
+  applyNpcSchedulesForRunner(state);
   refreshChasers(state);
   syncFollowCamera(state);
   state.log.push("checkpoint retry");
@@ -460,6 +464,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           if (targetMap) applyMapDefaultLighting(state.session, targetMap);
         }
         resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId]);
+        applyNpcSchedulesForRunner(state);
         refreshChasers(state);
         syncFollowCamera(state);
         state.autoStartedKeys.clear();
@@ -779,6 +784,7 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     const untilEnd = minutesUntilDayEnd(currentTime, system);
     if (untilEnd > remaining) {
       state.session.gameTime = advanceGameTime(currentTime, remaining, system).time;
+      applyNpcSchedulesForRunner(state);
       return null;
     }
     if (system.forceSleep) return sleepUntilMorningForRunner(state);
@@ -788,6 +794,7 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     const nextTime: GameTime = sleepGameTimeUntilMorning(currentTime, system).time;
     advanceFarmPlotsForDay(state.project, state.session, 1, nextTime.season);
     state.session.gameTime = nextTime;
+    applyNpcSchedulesForRunner(state);
     if (untilEnd <= 0) remaining = 0;
   }
   return null;
@@ -799,6 +806,7 @@ function setClockForRunner(state: RunnerState, hour: number, minute: number | un
   state.session.gameTime ??= initialGameTime(system);
   if (!state.session.gameTime) return;
   state.session.gameTime = setGameTimeClock(state.session.gameTime, hour, minute, system);
+  applyNpcSchedulesForRunner(state);
 }
 
 function sleepUntilMorningForRunner(state: RunnerState): string | null {
@@ -811,10 +819,71 @@ function sleepUntilMorningForRunner(state: RunnerState): string | null {
   const nextTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
   advanceFarmPlotsForDay(state.project, state.session, 1, nextTime.season);
   state.session.gameTime = nextTime;
+  applyNpcSchedulesForRunner(state);
   state.timeFixedAccumulatorMs = 0;
   state.timeMinuteAccumulator = 0;
   state.log.push(`sleep until morning: ${state.session.gameTime.season} ${state.session.gameTime.day} ${state.session.gameTime.hour}:00`);
   return null;
+}
+
+function applyNpcSchedulesForRunner(state: RunnerState): void {
+  const system = resolveTimeSystem(state.project);
+  if (!system || isCutsceneInputLocked(state.session)) return;
+  state.session.gameTime ??= initialGameTime(system);
+  if (!state.session.gameTime) return;
+  state.session.npcActivities ??= {};
+  state.session.npcScheduleStates ??= {};
+  const activeIds = new Set<string>();
+  for (const map of Object.values(state.runtimeMaps)) {
+    for (const event of map.events) {
+      if (!event.schedule?.length) continue;
+      activeIds.add(event.id);
+      const target = npcScheduleTargetForEvent(map.id, event, state.session.gameTime);
+      if (!target) continue;
+      const targetMap = state.runtimeMaps[target.mapId];
+      if (!targetMap) continue;
+      if (target.activity) state.session.npcActivities[event.id] = target.activity;
+      else delete state.session.npcActivities[event.id];
+      const destination = passableScheduleDestination(state.project, targetMap, target.x, target.y);
+      state.session.eventLocations[event.id] = {
+        mapId: targetMap.id,
+        x: destination.x,
+        y: destination.y,
+        direction: target.facing,
+      };
+      if (targetMap.id === state.session.currentMapId) {
+        state.eventPositions[event.id] = { x: destination.x, y: destination.y, direction: target.facing };
+      } else {
+        delete state.eventPositions[event.id];
+      }
+      state.session.npcScheduleStates[event.id] = { routeKey: target.key };
+    }
+  }
+  for (const eventId of Object.keys(state.session.npcActivities)) {
+    if (!activeIds.has(eventId)) delete state.session.npcActivities[eventId];
+  }
+}
+
+function passableScheduleDestination(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number
+): { readonly x: number; readonly y: number } {
+  const cx = Math.max(0, Math.min(map.width - 1, Math.trunc(x)));
+  const cy = Math.max(0, Math.min(map.height - 1, Math.trunc(y)));
+  if (isPassable(project, map, cx, cy)) return { x: cx, y: cy };
+  for (let radius = 1; radius < Math.max(map.width, map.height); radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const tx = cx + dx;
+        const ty = cy + dy;
+        if (isPassable(project, map, tx, ty)) return { x: tx, y: ty };
+      }
+    }
+  }
+  return { x: cx, y: cy };
 }
 
 function runDayEndHookForRunner(state: RunnerState): string | null {
@@ -932,6 +1001,10 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.eventAt) {
     const eventFailure = expectEventAt(state, step.eventAt);
     if (eventFailure) return eventFailure;
+  }
+  if (step.eventOnMap) {
+    const eventMapFailure = expectEventOnMap(state, step.eventOnMap);
+    if (eventMapFailure) return eventMapFailure;
   }
   if (step.eventDistanceToPlayerLessThan) {
     const distanceFailure = expectEventDistance(state, step.eventDistanceToPlayerLessThan);
@@ -1131,6 +1204,16 @@ function expectEventAt(
     return `이벤트 ${expected.eventId}: 기대 (${expected.x},${expected.y}), 실제 (${event.x},${event.y})`;
   }
   return null;
+}
+
+function expectEventOnMap(
+  state: RunnerState,
+  expected: { readonly eventId: string; readonly mapId: string }
+): string | null {
+  const map = state.runtimeMaps[expected.mapId];
+  if (!map) return `이벤트 맵 확인 맵 없음: ${expected.mapId}`;
+  const event = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((view) => view.event.id === expected.eventId);
+  return event ? null : `이벤트 ${expected.eventId}: 기대 맵 ${expected.mapId}에 있음`;
 }
 
 function expectEventDistance(

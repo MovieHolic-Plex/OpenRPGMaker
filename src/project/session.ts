@@ -9,6 +9,7 @@ import type {
   PlaySessionLike,
   RuntimeCameraSessionState,
   RuntimeEventLocation,
+  RuntimeNpcScheduleState,
   RuntimeNpcTravelState,
   RuntimeRemovedEventIds,
   RuntimeSpawnedEventState,
@@ -137,6 +138,8 @@ export interface PlaySession {
   camera?: RuntimeCameraSessionState;
   lighting: LightingState;
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
+  npcActivities?: Record<string, string>;
+  npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
   followers: RuntimeFollower[];
   followerTrail: RuntimeFollowerTrailPoint[];
   actorEquipment: Record<string, ActorInitialEquipment>;
@@ -219,6 +222,8 @@ export function startSession(project: Project, seed?: number): PlaySession {
     camera: { mode: "follow", target: { kind: "player" } },
     lighting: normalizeLightingState(project.maps[project.startMapId]?.defaultLighting),
     npcTravelStates: {},
+    npcActivities: {},
+    npcScheduleStates: {},
     followers: [],
     followerTrail: [],
     actorEquipment: initialActorEquipment(project),
@@ -454,5 +459,7 @@ export function evalCondition(session: PlaySessionLike, condition: Condition | u
       return conditionMatchesTimePhase(session.gameTime, condition.phase);
     case "season":
       return conditionMatchesSeason(session.gameTime, condition.season);
+    case "npcActivity":
+      return eventId ? session.npcActivities?.[eventId] === condition.activity : false;
   }
 }

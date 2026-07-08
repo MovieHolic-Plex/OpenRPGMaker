@@ -6,6 +6,7 @@ import type {
   RuntimeCameraSessionState,
   RuntimeCameraTarget,
   RuntimeEventLocation,
+  RuntimeNpcScheduleState,
   RuntimeNpcTravelState,
   RuntimeRemovedEventIds,
   RuntimeSpawnedEventState,
@@ -135,16 +136,7 @@ export function isRngState(value: unknown): value is RngState {
 
 export function isRuntimeEventLocationRecord(value: unknown): value is Record<string, RuntimeEventLocation> {
   if (!isRecord(value)) return false;
-  return Object.values(value).every((location) => {
-    if (!isRecord(location)) return false;
-    const direction = location.direction;
-    return (
-      typeof location.mapId === "string" &&
-      typeof location.x === "number" &&
-      typeof location.y === "number" &&
-      (direction === undefined || direction === "left" || direction === "right" || direction === "up" || direction === "down")
-    );
-  });
+  return Object.values(value).every(isRuntimeEventLocation);
 }
 
 export function isRuntimeCameraState(value: unknown): value is RuntimeCameraSessionState {
@@ -221,6 +213,26 @@ export function isRuntimeNpcTravelStateRecord(value: unknown): value is Record<s
   if (!isRecord(value)) return false;
   return Object.values(value).every((state) =>
     isRecord(state) && typeof state.destinationIndex === "number"
+  );
+}
+
+export function isRuntimeNpcScheduleStateRecord(value: unknown): value is Record<string, RuntimeNpcScheduleState> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((state) => {
+    if (!isRecord(state)) return false;
+    if (state.routeKey !== undefined && typeof state.routeKey !== "string") return false;
+    return state.exitTarget === undefined || isRuntimeEventLocation(state.exitTarget);
+  });
+}
+
+function isRuntimeEventLocation(value: unknown): value is RuntimeEventLocation {
+  if (!isRecord(value)) return false;
+  const direction = value.direction;
+  return (
+    typeof value.mapId === "string" &&
+    typeof value.x === "number" &&
+    typeof value.y === "number" &&
+    (direction === undefined || isDirection(direction))
   );
 }
 

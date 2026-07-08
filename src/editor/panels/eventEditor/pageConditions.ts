@@ -84,6 +84,13 @@ export function renderPageConditions(mapId: MapId, eventId: string, page: EventP
       "일 때",
       (enabled) => toggleSimpleCondition(context, "season", enabled)
     ),
+    conditionRow(
+      "활동",
+      npcActivityConditionInputs(context),
+      page.conditions.some((item) => item.kind === "npcActivity"),
+      "일 때",
+      (enabled) => toggleSimpleCondition(context, "npcActivity", enabled)
+    ),
     renderAdvancedConditions(context),
   ];
 }
@@ -266,4 +273,20 @@ function seasonConditionInputs(context: PageConditionContext): HTMLElement {
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   });
   return el("div", { class: "event-condition-control season", children: [season] });
+}
+
+function npcActivityConditionInputs(context: PageConditionContext): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "npcActivity");
+  const activity = el("input", {
+    attrs: { type: "text", placeholder: "work" },
+    value: condition?.kind === "npcActivity" ? condition.activity : "work",
+    dataset: { testid: "event-page-npc-activity-condition-input" },
+  }) as HTMLInputElement;
+  activity.addEventListener("change", () => {
+    const next = withoutFirstCondition(context.page.conditions, "npcActivity");
+    const label = activity.value.trim();
+    if (label) next.push({ kind: "npcActivity", activity: label });
+    updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
+  });
+  return el("div", { class: "event-condition-control npc-activity", children: [activity] });
 }

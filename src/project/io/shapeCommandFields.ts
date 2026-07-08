@@ -315,6 +315,9 @@ export function validateConditionShape(label: string, value: unknown): void {
       if (isSeason(season)) return;
       break;
     }
+    case "npcActivity":
+      requireString(`${label}.activity`, condition.activity);
+      return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
 }

@@ -118,6 +118,7 @@ function buildMinimalConditions(ids: {
     timer: { kind: "timer", timerId: "timer1", seconds: 10 },
     timePhase: { kind: "timePhase", phase: "day" },
     season: { kind: "season", season: "spring" },
+    npcActivity: { kind: "npcActivity", activity: "work" },
   };
 }
 

@@ -107,6 +107,7 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   timer: "T",
   timePhase: "P",
   season: "S",
+  npcActivity: "A",
 };
 
 function pageTabThumbnail(page: EventPage): HTMLElement {
@@ -171,6 +172,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":
       return `계절 ${seasonLabel(condition.season)}`;
+    case "npcActivity":
+      return `활동 ${condition.activity}`;
   }
 }
 

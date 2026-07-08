@@ -429,6 +429,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>["conditi
       return `시간대 ${condition.phase}`;
     case "season":
       return `계절 ${condition.season}`;
+    case "npcActivity":
+      return `활동 ${condition.activity}`;
   }
 }
 

@@ -20,6 +20,7 @@ import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./comm
 import { renderCommandList } from "./commandList";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
+import { renderEventScheduleSection } from "./eventSchedule";
 import {
   renderClassicPageTabStrip,
   renderEventNameControl,
@@ -116,7 +117,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       );
     }
   });
-  settingsColumn.append(renderClassicPageTabStrip(ev, activePage), renderEventPageProps(mapId, ev.id, activePage));
+  settingsColumn.append(
+    renderClassicPageTabStrip(ev, activePage),
+    renderEventPageProps(mapId, ev.id, activePage),
+    renderEventScheduleSection(mapId, ev)
+  );
   commandsColumn.append(
     renderCommandToolbar(cmdList, actions),
     el("fieldset", {

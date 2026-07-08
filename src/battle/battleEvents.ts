@@ -121,6 +121,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "timer":
       case "timePhase":
       case "season":
+      case "npcActivity":
         return evaluateCondition(condition);
       case "turn":
         return condition.interval <= 0
@@ -310,6 +311,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return conditionMatchesTimePhase(options.state.gameTime, condition.phase);
       case "season":
         return conditionMatchesSeason(options.state.gameTime, condition.season);
+      case "npcActivity":
+        return false;
     }
   }
 

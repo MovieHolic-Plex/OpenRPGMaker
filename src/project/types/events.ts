@@ -39,7 +39,8 @@ export type Condition =
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
   | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
   | { kind: "timePhase"; phase: TimePhase }
-  | { kind: "season"; season: Season };
+  | { kind: "season"; season: Season }
+  | { kind: "npcActivity"; activity: string };
 
 export type EventPageCondition = Condition;
 
@@ -272,6 +273,27 @@ export interface NpcLivingMovement {
   repeat: boolean;
 }
 
+export interface NpcScheduleWhen {
+  readonly timePhase?: TimePhase;
+  readonly hourRange?: readonly [number, number];
+  readonly season?: Season;
+  readonly dayRange?: readonly [number, number];
+}
+
+export interface NpcScheduleAt {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface NpcScheduleEntry {
+  // GameTime에는 요일 개념이 없으므로 요일 조건은 도입하지 않고 dayRange로 대체한다.
+  readonly when: NpcScheduleWhen;
+  readonly at: NpcScheduleAt;
+  readonly facing?: Dir;
+  readonly activity?: string;
+}
+
 export interface EventPageMovement {
   type: AutonomousMovement;
   speed: number;
@@ -311,6 +333,7 @@ export interface GameEvent {
   moveRoute?: MoveRoute;
   commands: Command[];
   pages?: EventPage[];
+  schedule?: NpcScheduleEntry[];
   draft?: EventDraftMeta;
 }
 

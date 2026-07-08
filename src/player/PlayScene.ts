@@ -67,7 +67,8 @@ import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/p
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
-import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
+import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
+import { updateNpcSchedules } from "@/player/npcSchedules";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -164,6 +165,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     syncFollowerSprites(this);
     this.centerCamera();
+    updateNpcSchedules(this, false);
     // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
     // (runEvent가 dialogue 없으면 즉시 return하므로). dialogue는 player.ts가
     // 게임 생성 후 registry에 설정한다 — 비동기이므로 준비될 때까지 기다린다.
@@ -183,6 +185,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
     updateGameTime(this, deltaMs);
+    updateNpcSchedules(this, isGameTimePausedForRuntime(this));
     updateWeather(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);

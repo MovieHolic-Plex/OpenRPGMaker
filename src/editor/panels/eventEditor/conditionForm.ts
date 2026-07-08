@@ -16,6 +16,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "timer", label: "타이머" },
   { value: "timePhase", label: "시간대" },
   { value: "season", label: "계절" },
+  { value: "npcActivity", label: "활동" },
 ] as const;
 
 export const TIME_PHASE_OPTIONS = [
@@ -93,6 +94,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "season":
         onChange({ kind: "season", season: "spring" });
         return;
+      case "npcActivity":
+        onChange({ kind: "npcActivity", activity: "work" });
+        return;
     }
   });
   wrap.append(mode);
@@ -123,6 +127,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "season":
       wrap.append(renderSeasonCondition(cond, onChange));
+      break;
+    case "npcActivity":
+      wrap.append(renderNpcActivityCondition(cond, onChange));
       break;
   }
   return wrap;
@@ -401,6 +408,24 @@ export function renderSeasonCondition(
     onChange({ kind: "season", season: selectedOptionValue(season, SEASON_OPTIONS, cond.season) });
   });
   row.append(season);
+  return row;
+}
+
+export function renderNpcActivityCondition(
+  cond: Extract<Condition, { kind: "npcActivity" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly activityTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const activity = el("input", {
+    attrs: { type: "text", placeholder: "work" },
+    value: cond.activity,
+    dataset: { testid: options.activityTestId ?? "event-condition-npc-activity" },
+  }) as HTMLInputElement;
+  activity.addEventListener("change", () => {
+    onChange({ kind: "npcActivity", activity: activity.value.trim() || cond.activity });
+  });
+  row.append(activity);
   return row;
 }
 

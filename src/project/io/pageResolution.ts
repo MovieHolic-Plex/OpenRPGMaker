@@ -5,6 +5,7 @@ import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from ".
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
   Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold">> & {
     readonly gameTime?: GameTime;
+    readonly npcActivities?: Record<string, string>;
   };
 
 export function resolveEventPage(
@@ -45,5 +46,7 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       return conditionMatchesTimePhase(session.gameTime, condition.phase);
     case "season":
       return conditionMatchesSeason(session.gameTime, condition.season);
+    case "npcActivity":
+      return session.npcActivities?.[eventId] === condition.activity;
   }
 }
