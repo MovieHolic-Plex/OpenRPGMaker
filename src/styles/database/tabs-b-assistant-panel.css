@@ -226,6 +226,24 @@ body:has([data-testid='resource-modal']) .right-panel {
   pointer-events: auto;
 }
 
+/* 접힘 상태: float 의 inset:0 이 접힘 pill 을 캔버스 전체 불투명 패널로 늘려
+   맵을 통째로 가리던 회귀 수정 — 접힘은 우하단 pill 만 남긴다. */
+.ai-chat-panel.chat-dock-float.is-collapsed {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  inset: auto 14px 14px auto;
+  padding: 0;
+  pointer-events: none;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore {
+  pointer-events: auto;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-command-bar,
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-rising-overlay {
+  display: none;
+}
+
 .ai-chat-panel.chat-dock-side {
   border: none;
   border-radius: 0;
