@@ -16,6 +16,7 @@
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
+//  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
@@ -28,6 +29,7 @@ import { lintQuestGraph } from "../quest/questGraph";
 import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../storyFlags";
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
+import { lintWorldGraph } from "../worldGraph";
 import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
 import { checkReachability, type ReachabilitySpec } from "./reachability";
 
@@ -58,6 +60,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkStoryFlags(project, issues);
   checkQuestGraphs(project, issues);
   checkClusterRules(project, issues);
+  issues.push(...lintWorldGraph(project));
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
 }

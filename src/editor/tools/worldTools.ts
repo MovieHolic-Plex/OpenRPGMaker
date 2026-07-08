@@ -17,6 +17,7 @@ import { WORLD_ENTITY_TYPES, WORLD_REF_KINDS } from "@/project/world/types";
 import type { Project } from "@/project/types";
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -235,4 +236,5 @@ export const WORLD_TOOLS: readonly ToolDefinition[] = [
   queryWorld,
   upsertWorldEntities,
   linkWorldRef,
+  ...WORLD_GRAPH_TOOLS,
 ];

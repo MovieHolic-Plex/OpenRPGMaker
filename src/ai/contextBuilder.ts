@@ -93,6 +93,7 @@ const INTRO = [
   "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
+  "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.",
 ].join("\n");
 
 function summarySection(project: Project): string {

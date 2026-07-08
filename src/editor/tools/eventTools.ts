@@ -119,7 +119,7 @@ function assertEventShape(event: GameEvent): void {
 }
 
 // (x,y) 주변(또는 자신)에서 통행 가능한 첫 칸을 착지 좌표로 고른다.
-function passableLanding(project: Project, map: GameMap, x: number, y: number): Point | null {
+export function passableLanding(project: Project, map: GameMap, x: number, y: number): Point | null {
   const candidates: Point[] = [
     { x, y: y + 1 },
     { x, y: y - 1 },

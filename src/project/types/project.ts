@@ -16,6 +16,7 @@ import type {
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
 import type { AnyQuestDef } from "../quest/questDef";
 import type { ProjectWorld } from "../world/types";
+import type { WorldGraph } from "../worldGraph/types";
 import type {
   CommandV1,
   CommonEvent,
@@ -201,6 +202,7 @@ export interface Project {
   mapConnections?: MapConnection[];
   villageInfoDocuments?: VillageInfoDocument[];
   world?: ProjectWorld;
+  worldGraph?: WorldGraph;
   // 선언적 퀘스트 정의(Phase 3). questCompiler가 스위치/변수/이벤트로 컴파일하며,
   // 플레이어 퀘스트 로그가 이 메타 + 세션 상태로 단계를 표시한다. optional이라 마이그레이션 불필요.
   quests?: AnyQuestDef[];

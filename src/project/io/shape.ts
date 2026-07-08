@@ -3,6 +3,7 @@ import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRec
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
 import { normalizeWorld } from "../world/guards";
 import type { ProjectWorld } from "../world/types";
+import { normalizeWorldGraph } from "../worldGraph";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
@@ -87,6 +88,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   normalizeStoryFlags(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
+  if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);

@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 126개 툴 — 쓰기 90, 읽기 36.
+> 총 130개 툴 — 쓰기 93, 읽기 37.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -79,6 +79,9 @@
 | `set_title_screen` | `title: string`, `menuLabels?: object` | 타이틀 화면 제목/메뉴 라벨을 설정한다. |
 | `upsert_world_entities` | `entities: array` | 세계관 개체를 배치 추가/수정한다. 새 NPC/맵/명명 아이템을 만들 때 같은 제안에 반드시 세계관 갱신을 동봉하라. 잠긴 세계관 개체는 AI가 수정할 수 없다. |
 | `link_world_ref` | `entityId: string`, `kind: map\|event\|item\|skill\|actor`, `id: string`, `action: link\|unlink` | 기존 세계관 개체에 게임 개체 ref(kind+id)를 연결하거나 해제한다. 새 NPC/맵/명명 아이템 생성 시 upsert_world_entities와 함께 실제 게임 id를 연결하라. |
+| `plan_world` | `nodes: array`, `edges: array` | 선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. |
+| `link_maps` | `from: object`, `to: object`, `bidirectional?: boolean`, `fade?: black\|white\|none` | 두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true. |
+| `build_world` | `plan: object`, `fade?: black\|white\|none` | worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. |
 | `upsert_palette_preset` | `tilesetId?: string`, `preset: object` | 타일셋 팔레트 프리셋을 추가/수정한다. 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 잠긴 프리셋은 AI가 수정할 수 없다. |
 | `create_quest_flags` | `questKey: string`, `steps: integer` | 퀘스트용 스위치(sw_<key>_started/_done)와 진행 변수(var_<key>_progress)를 자동 등록한다. |
 | `create_quest` | `def: object` | 선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존. |
@@ -108,6 +111,7 @@
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `list_endings` | (없음) | 프로젝트 엔딩 레지스트리를 나열하고 조건 충돌/priority 그림자 warning을 함께 반환한다. |
 | `query_world` | `type?: character\|place\|faction\|event\|item\|concept\|guideline`, `tags?: array`, `text?: string`, `limit?: integer` | 세계관 개체와 관계를 조회한다. type/tags/text로 필터링해 상세(body/refs/relations)를 읽고, 세계관을 수정하기 전 현재 내용을 확인하라. |
+| `lint_world` | (없음) | worldGraph의 맵 참조, transfer 목적지, adjacent 경계 통행성 일관성을 검사한다. |
 | `lint_quest` | `questId: string` | 퀘스트 그래프 하나의 dead-end, 도달 불가, 고아 노드 lint를 반환한다. |
 | `generate_walkthrough` | `questId: string` | 퀘스트 그래프를 위상 순서로 따라가며 run_scene_test 입력 JSON을 생성한다. 자동 유도 불가 구간은 manualHint가 붙은 set 스텝으로 폴백한다. |
 | `verify_quest` | `questId: string` | generate_walkthrough 결과를 즉시 run_scene_test로 실행해 성공/실패와 실패 스텝을 반환한다. |
