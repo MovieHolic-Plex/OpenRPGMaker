@@ -9,7 +9,7 @@ import type { Project } from "@/project/types";
 export type JsonSchemaType = "object" | "array" | "string" | "number" | "integer" | "boolean";
 
 export interface JsonSchema {
-  readonly type: JsonSchemaType;
+  readonly type: JsonSchemaType | readonly JsonSchemaType[];
   readonly description?: string;
   readonly properties?: Record<string, JsonSchema>;
   readonly required?: readonly string[];

@@ -46,6 +46,7 @@ interface BrightRoofKit {
 export interface HouseKit {
   readonly id: HouseKitId;
   readonly name: string;
+  readonly windowTile: number;
   readonly wall: WallNineSlice;
   readonly roof: BlueRoofKit | BrightRoofKit;
 }
@@ -54,12 +55,14 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
   "blue-stone": {
     id: "blue-stone",
     name: "파랑 지붕 + 석벽",
+    windowTile: 87,
     wall: { top: [15, 16, 17], mid: [45, 46, 47], bottom: [75, 76, 77] },
     roof: { kind: "blue", body: 406, rightEdge: 407, eave: 467, upper: { nw: 356, ne: 357, sw: 386, se: 387 } },
   },
   "bright-plaster": {
     id: "bright-plaster",
     name: "밝은 오렌지 지붕 + 흰 회벽",
+    windowTile: 85,
     wall: { top: [12, 13, 14], mid: [42, 43, 44], bottom: [72, 73, 74] },
     roof: {
       kind: "bright",
@@ -69,6 +72,8 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
     },
   },
 };
+
+export type HouseKitWindowsOption = { readonly spacing?: number } | false;
 
 export interface RectHousePlan {
   /** 바운딩 박스 좌상단 (bright는 용마루(상위) 행이 y, blue는 지붕 최상행이 y). */
@@ -81,6 +86,8 @@ export interface RectHousePlan {
   /** 지붕 몸통 행 수(≥1). 높은 지붕이 필요하면 늘린다. */
   readonly roofBodyRows: number;
   readonly kitId: HouseKitId;
+  /** 창문 자동 배치. 기본 활성, spacing=2. */
+  readonly windows?: HouseKitWindowsOption;
 }
 
 export interface RectHouseStampResult {
@@ -101,6 +108,64 @@ function wallMidRows(stories: 1 | 2): number {
   return 2 * stories - 1;
 }
 
+interface WallRun {
+  readonly x0: number;
+  readonly x1: number;
+  readonly y: number;
+}
+
+function windowSpacing(windows: HouseKitWindowsOption | undefined): number | null {
+  if (windows === false) return null;
+  const spacing = windows?.spacing;
+  if (spacing === undefined) return 2;
+  if (!Number.isFinite(spacing)) return 2;
+  return Math.max(0, Math.floor(spacing));
+}
+
+function upperIfEmpty(map: GameMap, x: number, y: number, tile: number): void {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return;
+  const index = y * map.width + x;
+  if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
+}
+
+function placeWindowsOnWallRuns(
+  map: GameMap,
+  kit: HouseKit,
+  runs: readonly WallRun[],
+  windows: HouseKitWindowsOption | undefined,
+  doorAt: { readonly x: number; readonly y: number } | undefined
+): void {
+  const spacing = windowSpacing(windows);
+  if (spacing === null) return;
+  const step = spacing + 1;
+  for (const run of runs) {
+    if (run.x1 - run.x0 + 1 < 3) continue;
+    for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) {
+      if (doorAt && Math.abs(x - doorAt.x) <= 1) continue;
+      upperIfEmpty(map, x, run.y, kit.windowTile);
+    }
+  }
+}
+
+function wallMidRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width: number): WallRun[] {
+  const runs: WallRun[] = [];
+  const cellKey = (x: number, y: number): number => y * width + x;
+  for (const [cell, role] of wallRole.entries()) {
+    if (role !== 1) continue;
+    const x = cell % width;
+    const y = Math.floor(cell / width);
+    if (x > 0 && wallRole.get(cellKey(x - 1, y)) === 1) continue;
+    let x1 = x;
+    while (x1 + 1 < width && wallRole.get(cellKey(x1 + 1, y)) === 1) x1 += 1;
+    runs.push({ x0: x, x1, y });
+  }
+  return runs.sort((a, b) => a.y - b.y || a.x0 - b.x0);
+}
+
+function rectWallMidRuns(left: number, right: number, wallTopY: number, stories: 1 | 2): WallRun[] {
+  return Array.from({ length: wallMidRows(stories) }, (_, row) => ({ x0: left, x1: right, y: wallTopY + 1 + row }));
+}
+
 // ── 임의 평면(ㄱ/ㄴ/ㄷ/ㅁ/O …) 일반화 ────────────────────────────────────────
 // 건물 질량(mass) = 날개 사각형들의 합집합. 열 구간(interval)마다 하단 3행이 벽,
 // 그 위가 지붕(R). 지붕 렌더는 기준 집에서 추출한 "국소 규칙"으로 결정된다:
@@ -118,6 +183,8 @@ export interface FootprintWing {
 export interface FootprintHousePlan {
   readonly wings: readonly FootprintWing[];
   readonly kitId: HouseKitId;
+  /** 창문 자동 배치. 기본 활성, spacing=2. */
+  readonly windows?: HouseKitWindowsOption;
 }
 
 const WALL_BAND_ROWS = 3; // 하네싱 불변식: 벽 = 상단+중단+하단
@@ -257,6 +324,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (!best || x1 - x > best.x1 - best.x0 || (x1 - x === best.x1 - best.x0 && y > best.y)) best = { x0: x, x1, y };
   }
   const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
+  placeWindowsOnWallRuns(map, kit, wallMidRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
   return { ok: true, doorAt };
 }
 
@@ -327,10 +395,14 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   }
 
   // ── 벽(상단 1 + 중단 N + 하단 1) ──
+  const wallTopY = y;
   nineSliceRow(y, kit.wall.top);
   y += 1;
   for (let row = 0; row < wallMidRows(plan.stories); row += 1, y += 1) nineSliceRow(y, kit.wall.mid);
   nineSliceRow(y, kit.wall.bottom);
 
-  return { ok: true, doorAt: { x: left + Math.floor(plan.width / 2), y }, height };
+  const doorAt = { x: left + Math.floor(plan.width / 2), y };
+  placeWindowsOnWallRuns(map, kit, rectWallMidRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
+
+  return { ok: true, doorAt, height };
 }

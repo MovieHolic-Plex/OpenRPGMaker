@@ -21,10 +21,14 @@ function row(map: GameMap, layer: "lower" | "upper", y: number, x0: number, x1: 
   return Array.from({ length: x1 - x0 + 1 }, (_, i) => arr[y * map.width + (x0 + i)]);
 }
 
+function countUpper(map: GameMap, tile: number): number {
+  return map.upperTiles.filter((entry) => entry === tile).length;
+}
+
 describe("house kit — 하네싱 골든", () => {
   it("파랑+석벽 키트(폭6·1층·몸통1행)가 연습04 기준 집을 셀 단위로 재현한다", () => {
     const map = freshMap();
-    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 6, stories: 1, roofBodyRows: 1, kitId: "blue-stone" });
+    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 6, stories: 1, roofBodyRows: 1, kitId: "blue-stone", windows: false });
     expect(result.ok, result.reason).toBe(true);
     expect(result.height).toBe(6);
 
@@ -42,7 +46,7 @@ describe("house kit — 하네싱 골든", () => {
 
   it("밝은오렌지+회벽 키트는 연습08 규칙(용마루 위 한 줄·트림·오버행 처마)을 지킨다", () => {
     const map = freshMap();
-    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 6, stories: 1, roofBodyRows: 2, kitId: "bright-plaster" });
+    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 6, stories: 1, roofBodyRows: 2, kitId: "bright-plaster", windows: false });
     expect(result.ok, result.reason).toBe(true);
 
     // 용마루(상위) 행: 몸통 폭(인셋), 캡은 바깥.
@@ -101,6 +105,7 @@ describe("house kit — 하네싱 골든", () => {
     // 연습08 질량: 좌날개 x3..7 rows3..9 + 우날개 x8..12 rows3..12.
     const result = stampFootprintHouseKit(map, {
       kitId: "bright-plaster",
+      windows: false,
       wings: [
         { x: 3, y: 3, w: 5, h: 7 },
         { x: 8, y: 3, w: 5, h: 10 },
@@ -128,7 +133,7 @@ describe("house kit — 하네싱 골든", () => {
 
   it("풋프린트 painter가 연습04 직사각 파랑 기준 집도 재현한다", () => {
     const map = freshMap();
-    const result = stampFootprintHouseKit(map, { kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }] });
+    const result = stampFootprintHouseKit(map, { kitId: "blue-stone", windows: false, wings: [{ x: 2, y: 2, w: 6, h: 6 }] });
     expect(result.ok, result.reason).toBe(true);
     expect(row(map, "lower", 2, 2, 7)).toEqual([G, 406, 406, 406, 406, G]);
     expect(row(map, "upper", 2, 2, 7)).toEqual([356, E, E, E, E, 357]);
@@ -170,6 +175,59 @@ describe("house kit — 하네싱 골든", () => {
   });
 });
 
+describe("house kit — 창문 자동 배치", () => {
+  it("1층 풋프린트 집은 중단 행에 spacing 규칙대로 창문을 찍고 문 열±1은 비운다", () => {
+    const map = freshMap();
+    const result = stampFootprintHouseKit(map, { kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 10, h: 6 }] });
+    expect(result.ok, result.reason).toBe(true);
+    expect(result.doorAt).toEqual({ x: 6, y: 7 });
+
+    expect(map.upperTiles[6 * map.width + 3]).toBe(87);
+    expect(map.upperTiles[6 * map.width + 9]).toBe(87);
+    for (const x of [5, 6, 7]) expect(map.upperTiles[6 * map.width + x]).toBe(E);
+  });
+
+  it("2층 직사각 집은 각 벽 중단 행마다 창문을 배치한다", () => {
+    const map = freshMap();
+    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 10, stories: 2, roofBodyRows: 1, kitId: "blue-stone" });
+    expect(result.ok, result.reason).toBe(true);
+
+    for (const y of [6, 7, 8]) {
+      expect(map.upperTiles[y * map.width + 3], `window left y=${y}`).toBe(87);
+      expect(map.upperTiles[y * map.width + 9], `window right y=${y}`).toBe(87);
+      for (const x of [6, 7, 8]) expect(map.upperTiles[y * map.width + x], `door skip (${x},${y})`).toBe(E);
+    }
+  });
+
+  it("windows:false면 창문 타일을 추가하지 않는다", () => {
+    const map = freshMap();
+    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 10, stories: 1, roofBodyRows: 1, kitId: "blue-stone", windows: false });
+    expect(result.ok, result.reason).toBe(true);
+    expect(countUpper(map, 87)).toBe(0);
+  });
+
+  it("키트별 창문 타일을 사용한다", () => {
+    const blue = freshMap();
+    const bright = freshMap();
+    expect(stampRectHouseKit(blue, { x: 2, y: 2, width: 10, stories: 1, roofBodyRows: 1, kitId: "blue-stone" }).ok).toBe(true);
+    expect(stampRectHouseKit(bright, { x: 2, y: 2, width: 10, stories: 1, roofBodyRows: 1, kitId: "bright-plaster" }).ok).toBe(true);
+
+    expect(countUpper(blue, 87)).toBeGreaterThan(0);
+    expect(countUpper(blue, 85)).toBe(0);
+    expect(countUpper(bright, 85)).toBeGreaterThan(0);
+    expect(countUpper(bright, 87)).toBe(0);
+  });
+
+  it("창문 위치의 상위 레이어에 기존 값이 있으면 덮지 않는다", () => {
+    const map = freshMap();
+    map.upperTiles[6 * map.width + 3] = 260;
+    const result = stampRectHouseKit(map, { x: 2, y: 2, width: 10, stories: 1, roofBodyRows: 1, kitId: "blue-stone" });
+    expect(result.ok, result.reason).toBe(true);
+    expect(map.upperTiles[6 * map.width + 3]).toBe(260);
+    expect(map.upperTiles[6 * map.width + 9]).toBe(87);
+  });
+});
+
 describe("build_house_kit AI 툴", () => {
   it("에이전트 채팅 경로(runTool)로 하네싱 집을 짓는다", async () => {
     const { runTool } = await import("@/editor/tools");
@@ -187,7 +245,24 @@ describe("build_house_kit AI 툴", () => {
     const map = ctx.project.maps[mapId];
     expect(map.lowerTiles[3 * map.width + 7]).toBe(407); // 몸통행 우측 끝
     expect(map.upperTiles[2 * map.width + 2]).toBe(356); // NW 대각
+    expect(map.upperTiles[6 * map.width + 6]).toBe(87); // 기본 창문
     expect(map.lowerTiles[7 * map.width + 4]).toBe(146); // 자동 문 하단
+  });
+
+  it("windows:false 인자로 창문 자동 배치를 끈다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const project = createBlankProject();
+    const ctx = { project };
+    const mapId = project.startMapId;
+    project.maps[mapId].lowerTiles.fill(G);
+    const result = runTool(ctx, "build_house_kit", {
+      mapId,
+      kitId: "bright-plaster",
+      windows: false,
+      wings: [{ x: 2, y: 2, w: 10, h: 6 }],
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(countUpper(ctx.project.maps[mapId], 85)).toBe(0);
   });
 
   it("알 수 없는 키트는 학습되지 않은 재질로 거부한다", async () => {

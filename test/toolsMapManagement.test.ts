@@ -117,6 +117,30 @@ describe("resize_map", () => {
 });
 
 describe("create_map", () => {
+  it("기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    const result = runTool(context, "create_map", { name: "평지", width: 5, height: 4, id: "map_plain" });
+    expect(result.ok, result.summary).toBe(true);
+    const map = context.project.maps.map_plain;
+    expect(map.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(true);
+  });
+
+  it("border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    const result = runTool(context, "create_map", { name: "벽 평지", width: 5, height: 4, id: "map_walled", border: "wall" });
+    expect(result.ok, result.summary).toBe(true);
+    const map = context.project.maps.map_walled;
+    for (let x = 0; x < map.width; x += 1) {
+      expect(map.lowerTiles[x]).toBe(TILE.WALL);
+      expect(map.lowerTiles[(map.height - 1) * map.width + x]).toBe(TILE.WALL);
+    }
+    for (let y = 0; y < map.height; y += 1) {
+      expect(map.lowerTiles[y * map.width]).toBe(TILE.WALL);
+      expect(map.lowerTiles[y * map.width + map.width - 1]).toBe(TILE.WALL);
+    }
+    expect(map.lowerTiles[1 * map.width + 1]).toBe(TILE.GRASS);
+  });
+
   it("256x256 초과 생성은 거부한다", () => {
     const context: ToolContext = { project: createBlankProject() };
     const result = runTool(context, "create_map", { name: "초대형", width: 500, height: 500, id: "map_huge" });

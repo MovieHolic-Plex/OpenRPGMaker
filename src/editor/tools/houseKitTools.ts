@@ -3,7 +3,7 @@
 // 타일 선택은 전부 결정론 스크립트(houseKit)가 하고, LLM은 평면(날개 사각형)·키트만 설계한다.
 // 정본 명세: docs/knowledge/images/2026-07-08-house-harness-design.png
 
-import { HOUSE_KITS, stampFootprintHouseKit, type FootprintWing, type HouseKitId } from "@/editor/houseKit";
+import { HOUSE_KITS, stampFootprintHouseKit, type FootprintWing, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import type { Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -28,7 +28,8 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       "상위 레이어 마감(대각/용마루/트림)은 스크립트가 자동으로 정확히 깐다 — 타일 ID를 직접 고르지 말 것. " +
       "키트: blue-stone(파랑 지붕+석벽) | bright-plaster(밝은 오렌지 지붕+흰 회벽). " +
       "이 두 키트에 없는 재질(통나무·초가 등)을 요청받으면 지어내지 말고 '아직 학습되지 않은 재질'이라고 답할 것. " +
-      "제약: 날개 폭 ≥3, 각 열 구간 높이 ≥5(벽3+지붕2). 문은 남쪽 외벽 중앙에 자동 배치된다.",
+      "제약: 날개 폭 ≥3, 각 열 구간 높이 ≥5(벽3+지붕2). 문은 남쪽 외벽 중앙에 자동 배치된다. " +
+      "창문은 기본 활성으로 각 벽 중단 행에 1칸 인셋 후 spacing+1 간격으로 상위 레이어에 배치하며 문 열±1은 비운다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -50,6 +51,11 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
           },
         },
         door: { type: "boolean", description: "남쪽 외벽 중앙에 문 자동 배치(기본 true)" },
+        windows: {
+          type: ["boolean", "object"],
+          description: "창문 자동 배치(기본 true). false면 끄고, {spacing}이면 창문 사이 벽 칸 수를 지정(기본 2)",
+          properties: { spacing: { type: "integer", description: "창문 사이 벽 칸 수(기본 2)" } },
+        },
       },
       required: ["mapId", "kitId", "wings"],
     },
@@ -66,7 +72,8 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
         );
       }
       const wings = coerceWings(args.wings);
-      const result = stampFootprintHouseKit(map, { kitId, wings });
+      const windows = coerceWindows(args.windows);
+      const result = stampFootprintHouseKit(map, { kitId, wings, windows });
       if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId });
       let doorNote = "문 없음";
       if (args.door !== false && result.doorAt) {
@@ -76,8 +83,9 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
         doorNote = `문 (${x},${y})`;
       }
       const kit = HOUSE_KITS[kitId];
+      const windowNote = windows === false ? "창문 없음" : "창문 자동";
       return {
-        summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${wings.length}개, ${doorNote}. 하네싱 규칙 적용 완료.`,
+        summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${wings.length}개, ${doorNote}, ${windowNote}. 하네싱 규칙 적용 완료.`,
         data: { doorAt: result.doorAt ?? null, kitId, wings },
       };
     },
@@ -97,4 +105,18 @@ function coerceWings(value: unknown): FootprintWing[] {
     }
     return { x: wing.x as number, y: wing.y as number, w: wing.w as number, h: wing.h as number };
   });
+}
+
+function coerceWindows(value: unknown): HouseKitWindowsOption | undefined {
+  if (value === undefined || value === true) return undefined;
+  if (value === false) return false;
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ToolError("windows는 boolean 또는 {spacing} 객체여야 합니다.", { code: "invalid-args" });
+  }
+  const spacing = (value as Record<string, unknown>).spacing;
+  if (spacing === undefined) return {};
+  if (typeof spacing !== "number" || !Number.isInteger(spacing) || spacing < 0) {
+    throw new ToolError("windows.spacing은 0 이상의 정수여야 합니다.", { code: "invalid-args" });
+  }
+  return { spacing };
 }

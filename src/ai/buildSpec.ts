@@ -293,7 +293,7 @@ export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegi
 }
 
 function isBuiltCell(map: GameMap, x: number, y: number): boolean {
-  // 맵 테두리(create_map이 자동으로 두르는 벽 경계)는 기본 지형이지 구조물이 아니다 — 제외.
+  // 맵 바깥 가장자리는 생성 옵션/기본 맵별 테두리와 무관하게 구조물 판정에서 제외한다.
   if (x <= 0 || y <= 0 || x >= map.width - 1 || y >= map.height - 1) return false;
   const index = y * map.width + x;
   const upper = map.upperTiles[index] ?? TILE.EMPTY;

@@ -2,7 +2,7 @@
 // JSON Schema 기반 최소 인자 검증(필수 필드/타입). 깊은 구조는 검증하지 않고
 // 툴 내부의 기존 shape 검증기(io/shape*)에 위임한다.
 
-import type { JsonSchema } from "./types";
+import type { JsonSchema, JsonSchemaType } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -13,12 +13,16 @@ function parseJsonString(value: unknown, schema: JsonSchema): unknown {
   const trimmed = value.trim();
   if (!trimmed) return value;
   const first = trimmed[0];
-  if ((schema.type === "object" && first !== "{") || (schema.type === "array" && first !== "[")) return value;
+  if ((schemaHasType(schema, "object") && first !== "{") || (schemaHasType(schema, "array") && first !== "[")) return value;
   try {
     return JSON.parse(trimmed) as unknown;
   } catch {
     return value;
   }
+}
+
+function schemaHasType(schema: JsonSchema, type: JsonSchemaType): boolean {
+  return Array.isArray(schema.type) ? schema.type.includes(type) : schema.type === type;
 }
 
 const COORDINATE_WRAPPER_KEYS = ["rect", "region", "area", "bounds", "at", "pos", "point"] as const;
@@ -102,7 +106,29 @@ function normalizeCoordinateShape(schema: JsonSchema, args: Record<string, unkno
 
 function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
   const parsed = parseJsonString(value, schema);
-  switch (schema.type) {
+  const schemaTypes = Array.isArray(schema.type) ? schema.type : [schema.type];
+  if (schemaTypes.includes("object") && isRecord(Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed)) {
+    const unwrapped = Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed;
+    const properties = schema.properties ?? {};
+    const next: Record<string, unknown> = { ...unwrapped };
+    normalizeCoordinateShape(schema, next);
+    for (const [key, childSchema] of Object.entries(properties)) {
+      if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key]);
+    }
+    return next;
+  }
+  if (schemaTypes.includes("array") && Array.isArray(parsed)) {
+    if (!schema.items) return parsed;
+    return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry));
+  }
+  if (schemaTypes.includes("integer") || schemaTypes.includes("number")) {
+    if (typeof parsed === "string" && parsed.trim() !== "") {
+      const number = Number(parsed);
+      if (Number.isFinite(number)) return number;
+    }
+  }
+  if (schemaTypes.length > 1) return parsed;
+  switch (schemaTypes[0]) {
     case "object": {
       const unwrapped = Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed;
       if (!isRecord(unwrapped)) return unwrapped;
@@ -131,6 +157,7 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
     case "boolean":
       return parsed;
   }
+  return parsed;
 }
 
 // LLM 툴콜에서 흔히 나오는 무해한 표현 흔들림을 스키마 검증 전에 정규화한다.
@@ -139,7 +166,7 @@ export function normalizeArgsForSchema(schema: JsonSchema, args: unknown): unkno
 }
 
 // 값이 스키마 타입에 부합하는지 판정.
-function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
+function matchesSingleType(value: unknown, type: JsonSchemaType): boolean {
   switch (type) {
     case "object":
       return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -154,6 +181,11 @@ function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
     case "boolean":
       return typeof value === "boolean";
   }
+}
+
+function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
+  const schemaTypes = Array.isArray(type) ? type : [type];
+  return schemaTypes.some((entry) => matchesSingleType(value, entry));
 }
 
 // 최상위 object 스키마에 대해 args를 검증하고 오류 메시지 배열을 반환한다(빈 배열=통과).

@@ -3,7 +3,11 @@
 // 레지스트리가 단일 진실 소스이므로 문서 드리프트가 없다.
 
 import { TOOL_REGISTRY } from "./toolRegistry";
-import type { JsonSchema, ToolDefinition } from "./types";
+import type { JsonSchema, JsonSchemaType, ToolDefinition } from "./types";
+
+function typeSummary(type: JsonSchemaType | readonly JsonSchemaType[]): string {
+  return (Array.isArray(type) ? type : [type]).join("\\|");
+}
 
 function paramSummary(schema: JsonSchema): string {
   const required = new Set(schema.required ?? []);
@@ -12,7 +16,7 @@ function paramSummary(schema: JsonSchema): string {
   return props
     .map(([name, prop]) => {
       const mark = required.has(name) ? "" : "?";
-      const type = prop.enum ? prop.enum.join("\\|") : prop.type;
+      const type = prop.enum ? prop.enum.join("\\|") : typeSummary(prop.type);
       return `\`${name}${mark}: ${type}\``;
     })
     .join(", ");

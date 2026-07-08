@@ -66,7 +66,7 @@ function assertToolMapSize(width: number, height: number): void {
 
 const createMap: ToolDefinition = {
   name: "create_map",
-  description: "새 맵을 생성한다(잔디 바닥 + 테두리 벽, 최대 256×256). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다.",
+  description: "새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 256×256). 돌벽 테두리가 필요할 때만 border:\"wall\"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -75,6 +75,7 @@ const createMap: ToolDefinition = {
       width: { type: "integer", description: "가로 타일 수(3 이상, 최대 256)" },
       height: { type: "integer", description: "세로 타일 수(3 이상, 최대 256)" },
       id: { type: "string", description: "맵 id(생략 시 자동 생성)" },
+      border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 TILE.WALL)" },
     },
     required: ["name", "width", "height"],
   },
@@ -97,7 +98,8 @@ const createMap: ToolDefinition = {
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };
-    borderWalls(map);
+    const border = (args.border as "none" | "wall" | undefined) ?? "none";
+    if (border === "wall") borderWalls(map);
     draft.maps[id] = map;
     // mapTree.mapId가 유효하지 않으면(빈 프로젝트) 이 맵을 트리 루트로 채택, 아니면 자식으로 추가.
     if (!draft.maps[draft.mapTree.mapId]) {
