@@ -50,6 +50,48 @@
   min-height: 0;
 }
 
+.ai-chat-panel.chat-dock-side .ai-rising-overlay {
+  bottom: auto;
+  flex: 1 1 auto;
+  gap: 8px;
+  left: auto;
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+  pointer-events: auto;
+  position: relative;
+  right: auto;
+  width: 100%;
+  z-index: 1;
+}
+
+.ai-chat-panel.chat-dock-side .ai-rising-overlay > * {
+  max-width: none;
+}
+
+.ai-chat-panel.chat-dock-side .ai-rising-volatile-zone {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.ai-chat-panel.chat-dock-side .ai-rising-volatile-zone[hidden],
+.ai-chat-panel.chat-dock-side .ai-rising-volatile-zone.is-faded {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.ai-chat-panel.chat-dock-side .ai-rising-overlay .ai-chat-log {
+  box-shadow: none;
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+  width: 100%;
+}
+
 /* 미니 스트림: 떠오르는 오버레이에서는 이전 턴을 숨긴다(현재 턴만). 과거 대화는 ⌃ 전체 기록에서. */
 .ai-rising-overlay .ai-chat-log > .is-prior-turn {
   display: none;
@@ -57,7 +99,8 @@
 
 /* 전체 기록/스튜디오 뷰에서는 이전 턴도 전부 보인다. */
 .ai-history-log-mount .ai-chat-log > .is-prior-turn,
-.ai-chat-panel.is-studio .ai-chat-log > .is-prior-turn {
+.ai-chat-panel.is-studio .ai-chat-log > .is-prior-turn,
+.ai-chat-panel.chat-dock-side .ai-chat-log > .is-prior-turn {
   display: block;
 }
 

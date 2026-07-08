@@ -6,8 +6,9 @@
 // store/세션 싱글턴 의존을 deps로 분리해 단위 테스트가 가능하다.
 import { AssistantSession, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
-import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
@@ -100,16 +101,36 @@ export async function runRegionTask(
 
   const session = deps.createSession(base, opts.mapId);
   const message = buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region);
+  const ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
+    getBaseProject: () => base,
+    getDraftProject: () => session.getProposedProject(),
+    isWriteTool: (toolName) => getTool(toolName)?.mode === "write",
+  });
+  const onEvent = (event: SessionEvent): void => {
+    opts.onEvent?.(event);
+    ghostPreviewUpdater.handleToolCall(event);
+  };
 
   let turn: TurnResult;
   try {
-    turn = await session.sendUserMessage(message, opts.onEvent);
+    turn = await session.sendUserMessage(message, onEvent);
   } catch (cause) {
+    ghostPreviewUpdater.cancel();
     clearAgentGhostPreview();
     const error = cause instanceof Error ? cause.message : String(cause);
     return { ...empty, error };
   }
+  if (turn.stoppedReason === "error" || turn.stoppedReason === "aborted") {
+    ghostPreviewUpdater.cancel();
+    clearAgentGhostPreview();
+  } else {
+    ghostPreviewUpdater.flush();
+  }
   clearAgentGhostPreview();
+
+  if (turn.stoppedReason === "aborted") {
+    return { ...empty, proposedCalls: turn.proposedCalls.length, assistantText: turn.assistantText, error: turn.error ?? "사용자가 중단했습니다." };
+  }
 
   if (turn.stoppedReason === "error") {
     return { ...empty, proposedCalls: turn.proposedCalls.length, assistantText: turn.assistantText, error: turn.error ?? "AI 처리 오류" };

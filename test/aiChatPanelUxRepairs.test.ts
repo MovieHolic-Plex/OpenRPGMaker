@@ -338,7 +338,7 @@ describe("키 온보딩과 설정 접근성", () => {
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-tools-browser", "ai-collapse", "ai-dock-toggle", "ai-studio-toggle", "ai-skill-slash-toggle"]) {
+    for (const testId of ["ai-settings-toggle", "ai-tools-browser", "ai-collapse", "chat-dock-toggle", "ai-dock-toggle", "ai-studio-toggle", "ai-skill-slash-toggle"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });

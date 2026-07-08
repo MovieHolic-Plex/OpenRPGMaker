@@ -127,7 +127,18 @@ function mockEditorDependencies(): void {
     takeoverMapLock,
   }));
   vi.doMock("@/editor/panels/aiChatPanel", () => ({
-    renderAiChatPanel: () => document.createElement("div"),
+    renderAiChatPanel: (options?: { readonly onChatDockToggle?: () => void }) => {
+      const panel = document.createElement("aside");
+      panel.dataset.testid = "ai-panel";
+      panel.className = "ai-chat-panel";
+      const log = document.createElement("div");
+      log.dataset.testid = "ai-chat-log";
+      const toggle = document.createElement("button");
+      toggle.dataset.testid = "chat-dock-toggle";
+      toggle.addEventListener("click", () => options?.onChatDockToggle?.());
+      panel.append(log, toggle);
+      return panel;
+    },
   }));
   vi.doMock("@/editor/panels/editorZoomToolbar", () => ({
     renderCanvasToolbar: (node: HTMLElement) => {
@@ -189,7 +200,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     document.dispatchEvent(mouseEvent("mouseup", {}));
     toggleLeftPanel();
 
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 626, mapTreeHeight: 160, leftCollapsed: true }));
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 626, mapTreeHeight: 160, leftCollapsed: true, chatDock: "float" }));
 
     vi.resetModules();
     mockEditorDependencies();
@@ -199,6 +210,38 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     expect(reloaded.isLeftCollapsed()).toBe(true);
     expect(fakeElement(nextMain).querySelector(".left-panel")?.style.display).toBe("none");
+  });
+
+  it("채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다", async () => {
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const { editorState } = await import("@/editor/editorState");
+    const main = document.createElement("main");
+    renderEditor(main);
+    const root = fakeElement(main);
+    const panel = findByTestId(root, "ai-panel");
+    const log = findByTestId(root, "ai-chat-log");
+    const toggle = findByTestId(root, "chat-dock-toggle");
+    const floatHost = findByTestId(root, "chat-float-host");
+    const sideHost = findByTestId(root, "chat-side-panel");
+    if (!panel || !log || !toggle || !floatHost || !sideHost) throw new Error("chat dock fixtures missing");
+    log.textContent = "로그 유지";
+
+    expect(panel.parentElement).toBe(floatHost);
+    expect(editorState.get().chatDock).toBe("float");
+
+    toggle.click();
+
+    expect(panel.parentElement).toBe(sideHost);
+    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
+    expect(log.textContent).toBe("로그 유지");
+    expect(editorState.get().chatDock).toBe("side");
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
+
+    toggle.click();
+
+    expect(panel.parentElement).toBe(floatHost);
+    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "float" }));
   });
 
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
@@ -224,6 +267,23 @@ describe("에디터 레이아웃 크기 저장", () => {
     const freshLeftPanel = fakeElement(freshMain).querySelector(".left-panel");
     expect(freshLeftPanel?.style.width).toBe("526px");
     expect(freshLeftPanel?.style["--map-tree-height"]).toBe("154px");
+  });
+
+  it("저장된 채팅 side dock을 복원한다", async () => {
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
+    vi.resetModules();
+    mockEditorDependencies();
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const { editorState } = await import("@/editor/editorState");
+    const main = document.createElement("main");
+
+    renderEditor(main);
+
+    const root = fakeElement(main);
+    const panel = findByTestId(root, "ai-panel");
+    const sideHost = findByTestId(root, "chat-side-panel");
+    expect(panel?.parentElement).toBe(sideHost);
+    expect(editorState.get().chatDock).toBe("side");
   });
 });
 

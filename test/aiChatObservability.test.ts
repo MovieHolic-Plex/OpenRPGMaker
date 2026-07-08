@@ -10,6 +10,7 @@ import {
 } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations, projectConversationContextKey, saveConversation } from "@/ai/conversationStore";
+import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -20,6 +21,7 @@ let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
 beforeEach(() => {
+  clearAgentGhostPreview();
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   resetMapEditHistory();
@@ -39,6 +41,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  clearAgentGhostPreview();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -182,5 +185,47 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     // 도구 상세도 순번대로 배선됐다(같은 턴의 실호출 인자/결과).
     expect(findByTestId(panel, "ai-tool-detail-1")).toBeTruthy();
     expect(findByTestId(panel, "ai-tool-detail-2")).toBeTruthy();
+  });
+});
+
+describe("실시간 고스트 프리뷰 연결", () => {
+  it("채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다", async () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+    const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
+    const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
+    const bodies = [
+      sse([
+        JSON.stringify({
+          choices: [{
+            delta: {
+              tool_calls: [{
+                index: 0,
+                id: "c_live",
+                function: { name: "create_map", arguments: JSON.stringify(createMapArgs) },
+              }],
+            },
+          }],
+        }),
+      ]),
+      sse([JSON.stringify({ choices: [{ delta: { content: "초안을 만들었습니다." } }] })]),
+    ];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } }))
+    );
+
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "새 맵 만들어줘";
+    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
+    for (let i = 0; i < 16; i += 1) await flushAsync();
+
+    expect(getAgentGhostPreviewState().previews).toEqual([
+      expect.objectContaining({
+        mapId: "map_live_ghost",
+        toolName: "live_project_diff",
+        bounds: { x: 0, y: 0, width: 6, height: 5 },
+      }),
+    ]);
   });
 });

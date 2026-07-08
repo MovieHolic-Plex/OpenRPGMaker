@@ -161,6 +161,36 @@ body:has([data-testid='resource-modal']) .right-panel {
 }
 
 /* ── LLM 어시스턴트 채팅 dock (Phase 2) ───────────────────────── */
+.ai-chat-float-host {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 32;
+}
+
+.editor-layout .ai-chat-side-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-default);
+  border-right: none;
+  display: flex;
+  flex: 0 0 var(--ai-chat-side-width, 420px);
+  max-width: 440px;
+  min-width: 360px;
+  overflow: hidden;
+  padding: 0;
+  transition: flex-basis 180ms ease, width 180ms ease, opacity 160ms ease;
+  width: var(--ai-chat-side-width, 420px);
+}
+
+.editor-layout.chat-dock-float .ai-chat-side-panel {
+  border-left: 0;
+  flex-basis: 0;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+}
+
 .ai-chat-panel {
   background: var(--bg-raised);
   border: 1px solid var(--border-strong);
@@ -178,6 +208,47 @@ body:has([data-testid='resource-modal']) .right-panel {
   z-index: 31;
   padding: var(--space-2);
   box-shadow: var(--shadow-modal);
+}
+
+.ai-chat-panel.chat-dock-float {
+  inset: 0;
+  max-height: none;
+  max-width: none;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 160ms ease, transform 180ms ease;
+  width: auto;
+}
+
+.ai-chat-panel.chat-dock-float .ai-command-bar,
+.ai-chat-panel.chat-dock-float .ai-rising-overlay,
+.ai-chat-panel.chat-dock-float .ai-proposal-modal-backdrop {
+  pointer-events: auto;
+}
+
+.ai-chat-panel.chat-dock-side {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  flex: 1 1 auto;
+  height: 100%;
+  max-height: none;
+  max-width: none;
+  min-height: 0;
+  position: relative;
+  right: auto;
+  bottom: auto;
+  width: 100%;
+  transition: opacity 160ms ease, transform 180ms ease;
+}
+
+.ai-chat-panel.chat-dock-side .ai-chat-header,
+.ai-chat-panel.chat-dock-side .ai-chat-toolbar {
+  flex: 0 0 auto;
+}
+
+.ai-chat-panel.chat-dock-side .ai-chat-body {
+  flex: 0 0 auto;
 }
 body:has(.database-modal-backdrop) .ai-chat-panel,
 body:has([data-testid='resource-modal']) .ai-chat-panel {
@@ -1521,7 +1592,7 @@ body.ai-panel-docked .editor-layout {
 
 
 
-.ai-chat-panel.is-history-open {
+.ai-chat-panel.is-history-open:not(.chat-dock-side) {
   top: 0;
   right: 0;
   bottom: 0;

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { clearAgentGhostPreview, subscribeAgentGhostPreview, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { clipMapCellsToRegion, type RegionRect } from "@/editor/regionTask/clipToRegion";
+import { runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
@@ -104,5 +106,42 @@ describe("clipMapCellsToRegion", () => {
 
     expect(clippedCells).toBe(0);
     expect(project).toBe(proposed);
+  });
+});
+
+describe("runRegionTask live ghost preview", () => {
+  it("성공한 쓰기 tool_call 뒤 세션 draft diff 프리뷰를 발행하고 종료 시 clear한다", async () => {
+    clearAgentGhostPreview();
+    const base = baseProject();
+    base.maps[MAP_ID].lowerTiles.fill(TILE.EMPTY);
+    const draft: Project = structuredClone(base);
+    draft.maps[MAP_ID].lowerTiles[idx(2, 2)] = 42;
+    const seen: AgentGhostPreviewState[] = [];
+    const unsubscribe = subscribeAgentGhostPreview((state) => seen.push(state));
+    const deps: RegionTaskDeps = {
+      getProject: () => base,
+      applyProject: () => undefined,
+      createSession: () => ({
+        getProposedProject: () => draft,
+        sendUserMessage: async (_message, onEvent) => {
+          onEvent?.({
+            type: "tool_call",
+            name: "paint_tiles",
+            args: { mapId: MAP_ID },
+            result: { ok: true, summary: "타일 변경" },
+          });
+          return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
+        },
+      }),
+    };
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "칠해줘" }, deps);
+
+    expect(result.ok).toBe(true);
+    expect(seen.some((state) => state.previews.some((preview) =>
+      preview.mapId === MAP_ID && preview.cells.some((cell) => cell.x === 2 && cell.y === 2 && cell.layer === "lower")
+    ))).toBe(true);
+    expect(seen.at(-1)?.previews).toEqual([]);
+    unsubscribe();
   });
 });

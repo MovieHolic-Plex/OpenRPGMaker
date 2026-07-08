@@ -6,10 +6,10 @@
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { editorState } from "@/editor/editorState";
+import { editorState, type ChatDock } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
-import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openStructureReviewModal } from "@/editor/panels/structureReviewModal";
@@ -18,7 +18,7 @@ import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/ev
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TerrainTemplateDraft } from "@/editor/tools/terrainTemplateExtract";
-import { commitChangeset, summarizeChanges, type ToolResult } from "@/editor/tools";
+import { commitChangeset, getTool, summarizeChanges, type ToolResult } from "@/editor/tools";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
@@ -161,8 +161,14 @@ const MAP_TILE_TOOLS = new Set([
   "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props",
 ]);
 
+function isWriteTool(name: string): boolean {
+  return getTool(name)?.mode === "write";
+}
+
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
+  readonly getChatDock?: () => ChatDock;
+  readonly onChatDockToggle?: () => void;
   readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
 }
 
@@ -1271,6 +1277,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
+    const ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
+      getBaseProject: () => store.getCurrent(),
+      getDraftProject: () => session.getProposedProject(),
+      isWriteTool,
+    });
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let assistantBubble: HTMLElement | null = null;
     let reasoningBox: { body: HTMLElement } | null = null;
@@ -1294,6 +1305,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } else if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
+        ghostPreviewUpdater.handleToolCall(event);
         assistantBubble = null; // 툴 이후 새 assistant 응답은 새 버블.
         reasoningBox = null; // 툴 이후 새 추론은 새 상자.
         // 밑그림(스펙) 확정: 중간과정 가시화 — 에셋별 할당 영역을 카드로 보여준다.
@@ -1359,9 +1371,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const result = await exec(onEvent, abortController.signal);
       endTurnProgress();
       if (result.stoppedReason === "aborted") {
+        ghostPreviewUpdater.cancel();
+        clearAgentGhostPreview();
         setStatus("대기");
         streamedBubbles.forEach(renderStreamedMarkdown);
         return;
+      }
+      if (result.stoppedReason === "error") {
+        ghostPreviewUpdater.cancel();
+        clearAgentGhostPreview();
+      } else {
+        ghostPreviewUpdater.flush();
       }
       const completenessWarnings = result.stoppedReason === "error"
         ? []
@@ -1404,9 +1424,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
       endTurnProgress();
+      ghostPreviewUpdater.cancel();
+      clearAgentGhostPreview();
       setStatus("오류");
       appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
     } finally {
+      ghostPreviewUpdater.cancel();
       endTurnProgress();
       if (activeAbortController === abortController) activeAbortController = null;
       sendButton.disabled = false;
@@ -1928,6 +1951,37 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
   });
+  const currentChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
+  const refreshDockToggleButton = (button: HTMLButtonElement): void => {
+    const mode = currentChatDock();
+    button.textContent = mode === "side" ? "⇣" : "⇥";
+    button.setAttribute("title", mode === "side" ? "맵 하단 플로팅으로 이동" : "우측 사이드패널로 이동");
+    button.setAttribute("aria-label", mode === "side" ? "채팅을 맵 하단 플로팅으로 이동" : "채팅을 우측 사이드패널로 이동");
+    button.setAttribute("aria-pressed", String(mode === "side"));
+  };
+  const refreshDockToggleButtons = (): void => {
+    refreshDockToggleButton(dockToggleButton);
+    refreshDockToggleButton(commandBarDockButton);
+  };
+  const onDockToggleClick = (): void => {
+    if (options.onChatDockToggle) options.onChatDockToggle();
+    else editorState.set({ chatDock: currentChatDock() === "side" ? "float" : "side" });
+    refreshDockToggleButtons();
+  };
+  const dockToggleButton = el("button", {
+    class: "ai-chat-tools-button",
+    attrs: { type: "button" },
+    dataset: { testid: "chat-dock-toggle" },
+    on: { click: onDockToggleClick },
+  }) as HTMLButtonElement;
+  // float 모드에선 헤더가 숨겨져 헤더 토글로는 전환 불가 — 커맨드바에도 같은 토글을 둔다.
+  const commandBarDockButton = el("button", {
+    class: "ai-chat-tools-button ai-command-bar-dock-toggle",
+    attrs: { type: "button" },
+    dataset: { testid: "chat-dock-toggle-bar" },
+    on: { click: onDockToggleClick },
+  }) as HTMLButtonElement;
+  refreshDockToggleButtons();
   // 감사 로그 내보내기 — 도구줄에 라벨 달아 상주(중요 기능이라 잘 보이게, #5).
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
@@ -2029,7 +2083,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const statusGroup = el("div", {
     class: "ai-status-group",
     dataset: { testid: "ai-status-group" },
-    children: [status, abortButton],
+    children: [status, abortButton, commandBarDockButton],
   });
   const fontButton = el("button", {
     class: "ai-chat-tools-button",
@@ -2049,7 +2103,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-header",
     children: [
       titleEl,
-      el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, historyButton] }),
+      el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, dockToggleButton, historyButton] }),
       collapseButton,
     ],
   });
@@ -2120,7 +2174,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 크기 커스텀: 좌상단 코너 핸들 드래그(오른쪽·아래가 고정이라 왼쪽·위로 끌면 커진다).
   let panelSize = loadPanelSize();
   const applySize = (): void => {
-    if (collapsed || !panelSize || panel.classList.contains("is-studio") || panel.classList.contains("is-docked")) {
+    if (
+      collapsed ||
+      !panelSize ||
+      panel.classList.contains("is-studio") ||
+      panel.classList.contains("is-docked") ||
+      panel.classList.contains("chat-dock-float") ||
+      panel.classList.contains("chat-dock-side")
+    ) {
       panel.setAttribute("style", "");
       return;
     }
@@ -2184,7 +2245,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   applyHistoryOpen = (next: boolean): void => {
     historyOpen = next;
     if (historyOpen) {
-      panel.classList.add("is-history-open", "is-docked");
+      panel.classList.add("is-history-open");
+      if (!panel.classList.contains("chat-dock-side")) panel.classList.add("is-docked");
       historyLogMount.append(log);
       historyButton.textContent = "×";
       historyButton.setAttribute("title", "전체 기록 닫기");

@@ -31,6 +31,7 @@ export interface AgentGhostPreviewState {
 }
 
 type Listener = (state: AgentGhostPreviewState) => void;
+type TimerHandle = ReturnType<typeof setTimeout>;
 type MutableArea = {
   bounds: AgentGhostBounds | null;
   cells: AgentGhostCell[];
@@ -40,8 +41,23 @@ type MutableArea = {
   toolName: string;
 };
 
+export interface AgentGhostToolCallLike {
+  readonly type: string;
+  readonly name?: string;
+  readonly result?: {
+    readonly ok?: boolean;
+  };
+}
+
+export interface ThrottledAgentGhostPreviewUpdater {
+  readonly handleToolCall: (event: AgentGhostToolCallLike) => void;
+  readonly flush: () => void;
+  readonly cancel: () => void;
+}
+
 const TEMPLATE_HOUSE_FOOTPRINT = { width: 18, height: 16 } as const;
 const STRUCTURE_FOOTPRINT = { width: 18, height: 16 } as const;
+export const AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS = 150;
 
 const listeners = new Set<Listener>();
 let previews: AgentGhostPreview[] = [];
@@ -81,6 +97,79 @@ export function appendAgentGhostPreviewForToolCall(
   if (next.length === 0) return next;
   appendPreviews(next);
   return next;
+}
+
+export function replaceAgentGhostPreviewFromProjectDiff(
+  baseProject: Project,
+  draftProject: Project
+): readonly AgentGhostPreview[] {
+  const next = summarizeAgentGhostPreviewForProjectDiff(baseProject, draftProject);
+  replacePreviews(next);
+  return next;
+}
+
+export function summarizeAgentGhostPreviewForProjectDiff(
+  baseProject: Project,
+  draftProject: Project
+): readonly AgentGhostPreview[] {
+  const previewsByMap: AgentGhostPreview[] = [];
+  const mapIds = new Set([...Object.keys(baseProject.maps), ...Object.keys(draftProject.maps)]);
+  for (const mapId of mapIds) {
+    const baseMap = baseProject.maps[mapId];
+    const draftMap = draftProject.maps[mapId];
+    const preview = mapDiffPreview(mapId, baseMap, draftMap);
+    if (preview) previewsByMap.push(preview);
+  }
+  return previewsByMap;
+}
+
+export function createThrottledAgentGhostPreviewUpdater(options: {
+  readonly getBaseProject: () => Project;
+  readonly getDraftProject: () => Project;
+  readonly isWriteTool: (toolName: string) => boolean;
+  readonly throttleMs?: number;
+  readonly apply?: (baseProject: Project, draftProject: Project) => void;
+  readonly setTimeoutFn?: (handler: () => void, timeout: number) => TimerHandle;
+  readonly clearTimeoutFn?: (handle: TimerHandle) => void;
+}): ThrottledAgentGhostPreviewUpdater {
+  const throttleMs = options.throttleMs ?? AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS;
+  const setTimeoutFn = options.setTimeoutFn ?? ((handler, timeout) => setTimeout(handler, timeout));
+  const clearTimeoutFn = options.clearTimeoutFn ?? ((handle) => clearTimeout(handle));
+  const apply = options.apply ?? ((baseProject, draftProject) => {
+    replaceAgentGhostPreviewFromProjectDiff(baseProject, draftProject);
+  });
+  let timer: TimerHandle | null = null;
+  let pending = false;
+
+  const run = (): void => {
+    timer = null;
+    if (!pending) return;
+    pending = false;
+    apply(options.getBaseProject(), options.getDraftProject());
+  };
+
+  return {
+    handleToolCall(event): void {
+      if (event.type !== "tool_call" || !event.result?.ok || !event.name || !options.isWriteTool(event.name)) return;
+      pending = true;
+      if (timer !== null) return;
+      timer = setTimeoutFn(run, throttleMs);
+    },
+    flush(): void {
+      if (timer !== null) {
+        clearTimeoutFn(timer);
+        timer = null;
+      }
+      if (!pending) return;
+      pending = false;
+      apply(options.getBaseProject(), options.getDraftProject());
+    },
+    cancel(): void {
+      if (timer !== null) clearTimeoutFn(timer);
+      timer = null;
+      pending = false;
+    },
+  };
 }
 
 export function summarizeAgentGhostPreviewForToolCall(
@@ -172,10 +261,112 @@ function appendPreviews(next: readonly AgentGhostPreview[]): void {
   emit();
 }
 
+function replacePreviews(next: readonly AgentGhostPreview[]): void {
+  previews = [...next];
+  emit();
+}
+
 function emit(): void {
   revision += 1;
   const state = getAgentGhostPreviewState();
   for (const listener of listeners) listener(state);
+}
+
+function mapDiffPreview(mapId: MapId, baseMap: GameMap | undefined, draftMap: GameMap | undefined): AgentGhostPreview | null {
+  if (!baseMap && !draftMap) return null;
+  if (!baseMap && draftMap) {
+    return finalizeArea(boundsArea(mapId, fullMapBounds(draftMap), "live_project_diff", "새 맵 초안", false) as MutableArea, "live_project_diff", {
+      mapId,
+      kind: "created",
+    });
+  }
+  if (baseMap && !draftMap) {
+    return finalizeArea(boundsArea(mapId, fullMapBounds(baseMap), "live_project_diff", "맵 제거 초안", false) as MutableArea, "live_project_diff", {
+      mapId,
+      kind: "removed",
+    });
+  }
+  const before = baseMap as GameMap;
+  const after = draftMap as GameMap;
+  const initialBounds = initialDiffBounds(before, after);
+  const area = initialBounds
+    ? boundsArea(mapId, initialBounds, "live_project_diff", "AI 작업 초안", false)
+    : { bounds: null, cells: [], clipToMap: false, label: "AI 작업 초안", mapId, toolName: "live_project_diff" };
+  if (!area) return null;
+  collectTileDiffCells(area, before, after);
+  collectEventDiffCells(area, before, after);
+  const normalized = normalizeArea({ maps: { [mapId]: after } } as Project, area);
+  if (!normalized?.bounds) return null;
+  if (normalized.cells.length === 0 && sameMapShape(before, after)) return null;
+  return finalizeArea(normalized, "live_project_diff", {
+    mapId,
+    kind: "changed",
+    bounds: normalized.bounds,
+    cells: normalized.cells,
+  });
+}
+
+function initialDiffBounds(before: GameMap, after: GameMap): AgentGhostBounds | null {
+  if (!sameMapShape(before, after)) {
+    return {
+      x: 0,
+      y: 0,
+      width: Math.max(before.width, after.width),
+      height: Math.max(before.height, after.height),
+    };
+  }
+  return null;
+}
+
+function sameMapShape(before: GameMap, after: GameMap): boolean {
+  return before.width === after.width && before.height === after.height;
+}
+
+function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap): void {
+  const width = Math.min(before.width, after.width);
+  const height = Math.min(before.height, after.height);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = y * before.width + x;
+      const nextIndex = y * after.width + x;
+      if (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex])) {
+        includeCell(area, { x, y, layer: "lower" });
+      }
+      if (before.upperTiles[index] !== after.upperTiles[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex])) {
+        includeCell(area, { x, y, layer: "upper" });
+      }
+    }
+  }
+}
+
+function collectEventDiffCells(area: MutableArea, before: GameMap, after: GameMap): void {
+  const beforeEvents = new Map(before.events.map((event) => [event.id, event]));
+  const afterEvents = new Map(after.events.map((event) => [event.id, event]));
+  const eventIds = new Set([...beforeEvents.keys(), ...afterEvents.keys()]);
+  for (const eventId of eventIds) {
+    const oldEvent = beforeEvents.get(eventId);
+    const newEvent = afterEvents.get(eventId);
+    if (!oldEvent && newEvent) {
+      includeCell(area, { x: newEvent.x, y: newEvent.y, layer: "event" });
+      continue;
+    }
+    if (oldEvent && !newEvent) {
+      includeCell(area, { x: oldEvent.x, y: oldEvent.y, layer: "event" });
+      continue;
+    }
+    if (!oldEvent || !newEvent) continue;
+    const moved = oldEvent.x !== newEvent.x || oldEvent.y !== newEvent.y;
+    const changed = moved || stableStringify(oldEvent) !== stableStringify(newEvent);
+    if (!changed) continue;
+    includeCell(area, { x: newEvent.x, y: newEvent.y, layer: "event" });
+    if (moved) includeCell(area, { x: oldEvent.x, y: oldEvent.y, layer: "event" });
+  }
+}
+
+function sameStacks(a: readonly number[] | undefined, b: readonly number[] | undefined): boolean {
+  if (!a && !b) return true;
+  if (!a || !b || a.length !== b.length) return false;
+  return a.every((value, index) => value === b[index]);
 }
 
 function finalizeArea(area: MutableArea, toolName: string, args: Record<string, unknown>): AgentGhostPreview {

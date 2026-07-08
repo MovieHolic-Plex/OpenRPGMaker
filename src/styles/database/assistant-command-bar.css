@@ -8,7 +8,12 @@ body.ai-command-bar-active .editor-layout {
   padding-bottom: var(--ai-command-bar-inset);
 }
 
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+body.ai-chat-dock-float.ai-command-bar-active .editor-layout,
+body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
+  padding-bottom: 0;
+}
+
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) {
   background: transparent;
   border: none;
   box-shadow: none;
@@ -18,11 +23,18 @@ body.ai-command-bar-active .editor-layout {
   width: 0;
 }
 
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-header,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-toolbar,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-body,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-resize-handle,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-collapsed-restore {
+/* float 모드 셸: 위 규칙의 inset/width 를 같은 특이도 + 후순위로 되살린다.
+   0 폭 셸이 containing block 이 되면 absolute 커맨드바 폭이 0 으로 붕괴한다. */
+.ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+  inset: 0;
+  width: auto;
+}
+
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-header,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-toolbar,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-body,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-resize-handle,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-collapsed-restore {
   display: none;
 }
 
@@ -39,6 +51,29 @@ body.ai-command-bar-active .editor-layout {
   position: fixed;
   right: 24px;
   z-index: 50;
+}
+
+.ai-chat-panel.chat-dock-float .ai-command-bar {
+  bottom: 14px;
+  left: 12px;
+  position: absolute;
+  right: 12px;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-bar {
+  align-items: stretch;
+  bottom: auto;
+  flex: 0 0 auto;
+  grid-template-columns: 32px minmax(0, 1fr);
+  left: auto;
+  position: relative;
+  right: auto;
+  z-index: 1;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-bar .ai-status-group {
+  grid-column: 1 / -1;
+  justify-self: start;
 }
 
 /* 스튜디오에선 좌패널이 어차피 패널 뒤에 있으므로 스튜디오 폭 기준 중앙 정렬. */

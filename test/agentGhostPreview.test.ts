@@ -1,10 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   agentGhostPreviewsForMap,
   appendAgentGhostPreviewForToolCall,
   clearAgentGhostPreview,
+  createThrottledAgentGhostPreviewUpdater,
   getAgentGhostPreviewState,
+  replaceAgentGhostPreviewFromProjectDiff,
   subscribeAgentGhostPreview,
+  summarizeAgentGhostPreviewForProjectDiff,
   summarizeAgentGhostPreviewForToolCall,
   type AgentGhostPreviewState,
 } from "@/editor/agentGhostPreview";
@@ -18,6 +21,7 @@ beforeEach(() => {
 
 afterEach(() => {
   clearAgentGhostPreview();
+  vi.useRealTimers();
 });
 
 describe("agent ghost preview area extraction", () => {
@@ -115,6 +119,63 @@ describe("agent ghost preview proposal lifecycle", () => {
     expect(getAgentGhostPreviewState().previews).toEqual([]);
     expect(seen.at(-1)?.previews).toEqual([]);
     unsubscribe();
+  });
+});
+
+describe("agent ghost preview live draft diff", () => {
+  it("성공한 쓰기 tool_call을 150ms 스로틀 뒤 현재 draft diff 프리뷰로 갱신한다", () => {
+    vi.useFakeTimers();
+    const base = projectWithMaps(blankMap("m1", 8, 8));
+    const draft = structuredClone(base);
+    draft.maps.m1.lowerTiles[3 + 2 * 8] = 77;
+    let applied = 0;
+    const updater = createThrottledAgentGhostPreviewUpdater({
+      getBaseProject: () => base,
+      getDraftProject: () => draft,
+      isWriteTool: (toolName) => toolName === "paint_tiles",
+      apply: (before, after) => {
+        applied += 1;
+        replaceAgentGhostPreviewFromProjectDiff(before, after);
+      },
+    });
+
+    updater.handleToolCall({ type: "tool_call", name: "paint_tiles", result: { ok: true } });
+    updater.handleToolCall({ type: "tool_call", name: "get_project_summary", result: { ok: true } });
+    updater.handleToolCall({ type: "tool_call", name: "paint_tiles", result: { ok: false } });
+
+    expect(applied).toBe(0);
+    expect(getAgentGhostPreviewState().previews).toEqual([]);
+
+    vi.advanceTimersByTime(149);
+    expect(applied).toBe(0);
+
+    vi.advanceTimersByTime(1);
+
+    expect(applied).toBe(1);
+    expect(getAgentGhostPreviewState().previews).toHaveLength(1);
+    expect(getAgentGhostPreviewState().previews[0]).toMatchObject({
+      mapId: "m1",
+      toolName: "live_project_diff",
+      cells: [{ x: 3, y: 2, layer: "lower" }],
+    });
+  });
+
+  it("프로젝트 diff 요약은 이벤트 이동의 이전/새 위치를 함께 표시한다", () => {
+    const baseMap = blankMap("m1", 8, 8);
+    baseMap.events.push({ id: "ev_1", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [] });
+    const base = projectWithMaps(baseMap);
+    const draft = structuredClone(base);
+    draft.maps.m1.events[0].x = 5;
+    draft.maps.m1.events[0].y = 4;
+
+    const previews = summarizeAgentGhostPreviewForProjectDiff(base, draft);
+
+    expect(previews).toHaveLength(1);
+    expect(previews[0]?.bounds).toEqual({ x: 1, y: 1, width: 5, height: 4 });
+    expect(previews[0]?.cells).toEqual([
+      { x: 5, y: 4, layer: "event" },
+      { x: 1, y: 1, layer: "event" },
+    ]);
   });
 });
 

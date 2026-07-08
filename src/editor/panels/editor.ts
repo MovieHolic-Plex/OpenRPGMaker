@@ -1,5 +1,5 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
-import { editorState, type Layer } from "@/editor/editorState";
+import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
 import {
   ensureCurrentMapLock,
   getMapEditLockStatus,
@@ -33,12 +33,14 @@ const MAP_TREE_MIN_HEIGHT = 112;
 const MAP_TREE_MAX_HEIGHT = 260;
 const RESPONSIVE_BREAKPOINT = 720;
 const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout";
+const CHAT_SIDE_PANEL_WIDTH = 420;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
   readonly mapTreeHeight: number;
   readonly leftCollapsed: boolean;
   readonly leftCollapsedStored: boolean;
+  readonly chatDock: ChatDock;
 };
 
 const initialLayout = loadEditorLayout();
@@ -52,6 +54,9 @@ let leftResizer: HTMLElement | null = null;
 let mapTreeResizer: HTMLElement | null = null;
 let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
+let chatFloatRoot: HTMLElement | null = null;
+let chatSideRoot: HTMLElement | null = null;
+let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let statusBarRoot: HTMLElement | null = null;
 let projectExportNode: HTMLElement | null = null;
@@ -60,6 +65,7 @@ let unsubAutoSave: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
+let chatDock = initialLayout.chatDock;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
@@ -88,6 +94,14 @@ export function renderEditor(main: HTMLElement): void {
     class: "editor-statusbar",
     dataset: { testid: "editor-statusbar" },
   });
+  const chatFloatHost = el("div", {
+    class: "ai-chat-float-host",
+    dataset: { testid: "chat-float-host" },
+  });
+  const chatSidePanel = el("aside", {
+    class: "right-panel ai-chat-side-panel",
+    dataset: { testid: "chat-side-panel" },
+  });
 
   leftResizer = el("div", { class: "resizer resizer-left", attrs: { title: "드래그로 크기 조절" } });
   leftPaletteRoot = el("div", { class: "left-panel-stack", dataset: { testid: "left-palette-root" } });
@@ -107,18 +121,24 @@ export function renderEditor(main: HTMLElement): void {
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
-  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar);
-  layout.append(left, leftResizer, canvasArea);
-  const aiPanel = renderAiChatPanel();
-  normalizeAiDockButtonChrome(aiPanel);
-  main.append(layout, projectExportNodeElement(), aiPanel);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar, chatFloatHost);
+  layout.append(left, leftResizer, canvasArea, chatSidePanel);
+  const aiPanel = renderAiChatPanel({
+    getChatDock: () => chatDock,
+    onChatDockToggle: toggleChatDock,
+  });
+  main.append(layout, projectExportNodeElement());
 
   leftRoot = left;
   phaserHost = phaserContainer;
   canvasToolbarRoot = canvasToolbar;
+  chatFloatRoot = chatFloatHost;
+  chatSideRoot = chatSidePanel;
+  aiChatPanelRoot = aiPanel;
   mapLockBannerRoot = mapLockBanner;
   statusBarRoot = statusBar;
 
+  applyChatDockLayout();
   applyLayout();
   refreshPanels();
   ensureCurrentMapLock();
@@ -154,9 +174,13 @@ export function teardownEditor(): void {
   mapTreeResizer = null;
   phaserHost = null;
   canvasToolbarRoot = null;
+  chatFloatRoot = null;
+  chatSideRoot = null;
+  aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
+  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side");
 }
 
 export function toggleLeftPanel(): void {
@@ -174,6 +198,33 @@ function refreshStatusbar(): void {
 
 export function isLeftCollapsed(): boolean {
   return leftCollapsed;
+}
+
+export function toggleChatDock(): void {
+  chatDock = chatDock === "side" ? "float" : "side";
+  applyChatDockLayout();
+  applyLayout();
+  saveEditorLayout();
+  fitCanvas();
+}
+
+function applyChatDockLayout(): void {
+  if (!chatFloatRoot || !chatSideRoot || !aiChatPanelRoot) return;
+  editorState.set({ chatDock });
+  const layoutEl = chatFloatRoot.parentElement?.parentElement ?? null;
+  layoutEl?.classList[chatDock === "side" ? "add" : "remove"]("chat-dock-side");
+  layoutEl?.classList[chatDock === "float" ? "add" : "remove"]("chat-dock-float");
+  aiChatPanelRoot.classList[chatDock === "side" ? "add" : "remove"]("chat-dock-side");
+  aiChatPanelRoot.classList[chatDock === "float" ? "add" : "remove"]("chat-dock-float");
+  if (chatDock === "side") aiChatPanelRoot.classList.remove("is-docked");
+  else if (aiChatPanelRoot.classList.contains("is-history-open")) aiChatPanelRoot.classList.add("is-docked");
+  document.body.classList[chatDock === "side" ? "add" : "remove"]("ai-chat-dock-side");
+  document.body.classList[chatDock === "float" ? "add" : "remove"]("ai-chat-dock-float");
+  const target = chatDock === "side" ? chatSideRoot : chatFloatRoot;
+  if (aiChatPanelRoot.parentElement !== target) {
+    aiChatPanelRoot.remove();
+    target.append(aiChatPanelRoot);
+  }
 }
 
 // 저장 스킵/로컬 저장 모드 배너: 임시 URL 모드 등에서
@@ -246,7 +297,8 @@ function applyLayout(): void {
     usableWidth = layoutWidth - padL - padR;
   }
   const resizerWidth = leftResizer.offsetWidth || 6;
-  const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth);
+  const sideWidth = chatDock === "side" ? CHAT_SIDE_PANEL_WIDTH : 0;
+  const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth - sideWidth);
   const effectiveLeftWidth = Math.min(leftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
   leftRoot.style.setProperty("--map-tree-height", `${mapTreeHeight}px`);
@@ -549,6 +601,7 @@ function loadEditorLayout(): LoadedEditorLayout {
         typeof parsed.mapTreeHeight === "number" ? clamp(parsed.mapTreeHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT) : fallback.mapTreeHeight,
       leftCollapsed: leftCollapsedStored ? parsed.leftCollapsed === true : fallback.leftCollapsed,
       leftCollapsedStored,
+      chatDock: parsed.chatDock === "side" || parsed.chatDock === "float" ? parsed.chatDock : fallback.chatDock,
     };
   } catch (error) {
     if (error instanceof SyntaxError) return fallback;
@@ -562,11 +615,12 @@ function defaultEditorLayout(): LoadedEditorLayout {
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
     leftCollapsed: false,
     leftCollapsedStored: false,
+    chatDock: "float",
   };
 }
 
 function saveEditorLayout(): void {
-  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth, mapTreeHeight, leftCollapsed }));
+  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth, mapTreeHeight, leftCollapsed, chatDock }));
 }
 
 function browserLocalStorage(): Storage | null {
