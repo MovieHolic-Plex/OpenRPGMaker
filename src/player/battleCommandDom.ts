@@ -102,10 +102,13 @@ function commandControl(
       }, targetMode);
     case "skill": {
       const skills = usableSkills(actor, command);
-      return commandButton(command.name, commandTestId(command), "fire", skills.length > 0 ? `${skills.length}개` : "없음", () => {
+      // Compact main command list: name only. Counts clutter 320x240 labels.
+      return commandButton(command.name, commandTestId(command), "fire", "", () => {
         if (targetMode || skills.length === 0) return;
-        if (command.skillId && skills.length === 1) {
-          options.beginTargetCommand({ kind: "skill", skillId: skills[0] });
+        // Single available skill: skip the submenu and go straight to targeting.
+        if (skills.length === 1 || command.skillId) {
+          const skillId = command.skillId && skills.includes(command.skillId) ? command.skillId : skills[0];
+          options.beginTargetCommand({ kind: "skill", skillId });
           return;
         }
         options.setSubmenu({ kind: "skill", command });
@@ -114,7 +117,7 @@ function commandControl(
     }
     case "item": {
       const items = battleItems(snapshot);
-      return commandButton(command.name, commandTestId(command), "bag", items.length > 0 ? `${items.length}종` : "없음", () => {
+      return commandButton(command.name, commandTestId(command), "bag", "", () => {
         if (targetMode || items.length === 0) return;
         options.setSubmenu({ kind: "item" });
         options.render();
@@ -267,7 +270,8 @@ function skillDetailFor(
   if (!fullSkill) return mp;
   if (fullSkill.effect.kind === "healing") return `${terms.hp} ${fullSkill.power} 회복 ${mp}`;
   if (fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch") return `보조 ${mp}`;
-  return mp || terms.attack;
+  // Prefer MP cost; fall back to power rather than the attack command label (keeps KR UI clean).
+  return mp || (fullSkill.power > 0 ? `위력 ${fullSkill.power}` : "");
 }
 
 // MP 소비 표기. flat + percentMax.
@@ -346,7 +350,7 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
   for (const enemyId of targetEnemyIds) {
     const enemy = snapshot.enemies.find((entry) => entry.id === enemyId);
     if (!enemy) continue;
-    const button = commandButton(enemy.name, `battle-target-${enemy.id}`, "target", "선택", () => {
+    const button = commandButton(enemy.name, `battle-target-${enemy.id}`, "target", "", () => {
       options.confirmTargetSelection(enemy.id);
     });
     button.dataset.battleTargetable = "true";
@@ -355,7 +359,7 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
     }
     menu.append(button);
   }
-  menu.append(commandButton("취소", "battle-target-cancel", "back", "대상 선택 취소", () => {
+  menu.append(commandButton("취소", "battle-target-cancel", "back", "", () => {
     options.runtime.cancelTargetSelection();
     options.setDirectorState(commandPromptState(options.runtime.snapshot()));
     options.render();

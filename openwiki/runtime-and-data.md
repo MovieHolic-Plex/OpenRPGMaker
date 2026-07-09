@@ -19,6 +19,7 @@ Use this page when changing play mode, event execution, battle behavior, save/se
 - Schema changes must include migration, validation, fixtures, and save/load verification.
 - Battle rules belong in `src/battle`; scene or DOM code should render/bridge them rather than becoming the source of truth.
 - Battle DOM is intentionally presentation-only and compact: render the field, message window, command list, party status, target prompt/brackets, and result rewards without duplicating runtime predictions into extra analysis panels.
+- Battle presentation is classic side-view JRPG (RM2K3-flavored): gold command cursor, persistent message window, short resolve beats with SFX/shake/floating damage, forest backdrop fallback when no troop/system backdrop is authored, and single-skill commands that skip the skill submenu. Keep `src/player/battleJuice.ts` as the only juice/SFX helper for battle DOM.
 
 - `PlayScene` is the play-mode scene entry point. It wires map loading, player input, runtime overlays, battle entry, and scene-level helpers, but it should not own game rules.
 - Play-mode map rendering shares default Combined Town terrain quarter composition with editor previews through `src/project/defaults/terrainQuarterAutotile.ts`; `terrainQuarterSources()` returning `null` means the saved tile should be drawn as one raw tile.

@@ -160,16 +160,12 @@ export function battleResultPanel(snapshot: BattleSnapshot): HTMLElement | undef
     cards.append(item);
   }
 
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "battle-result-confirm";
-  button.textContent = "확인";
-
   const prompt = document.createElement("div");
   prompt.className = "battle-result-next-prompt";
-  prompt.textContent = "클릭하여 계속";
+  prompt.dataset.testid = "battle-result-confirm";
+  prompt.textContent = "Z / 클릭 으로 계속";
 
-  panel.append(crest, title, cards, button, prompt);
+  panel.append(crest, title, cards, prompt);
   return panel;
 }
 
