@@ -281,10 +281,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
+    // Title menu is keyboard-only (RM2003). Mouse/touch must not fire these actions.
     surface.stage.append(renderTitleScreen(project, {
-      onNewGame: () => confirmTitleThen(() => startGame(newSession())),
-      onContinue: () => confirmTitleThen(() => renderLoad(true)),
-      onQuit: () => confirmTitleThen(exitPlayer),
+      onNewGame: () => undefined,
+      onContinue: () => undefined,
+      onQuit: () => undefined,
     }, titleMenuIndex));
     layout.append(surface.viewport);
     surface.sync();

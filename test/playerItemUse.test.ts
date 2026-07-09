@@ -43,6 +43,19 @@ describe("player menu item use", () => {
     expect(session.actorVitals[secondActorId]!.hp).toBe(session.actorVitals[secondActorId]!.maxHp);
     expect(session.inventory[itemId]).toBeUndefined();
   });
+
+  it("removes cured states from the menu and refuses battle-only items", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0]!;
+    session.actorVitals[actorId] = { hp: 50, mp: 10, maxHp: 100, maxMp: 20 };
+    session.actorStateIds = { [actorId]: ["state_poison"] };
+    session.inventory = { item_antidote: 1, item_poison_dart: 1 };
+
+    expect(useItemFromMenu(project, session, "item_antidote", actorId).kind).toBe("used");
+    expect(session.actorStateIds[actorId]).toEqual([]);
+    expect(useItemFromMenu(project, session, "item_poison_dart", actorId).kind).toBe("unusable");
+  });
 });
 
 function itemUseFixture() {

@@ -3,6 +3,7 @@ import { mkdir } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dismissDialogue, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop7-control-flow";
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -51,7 +52,7 @@ test("loop7 certifies variable operand wait timer and label flow", async ({ page
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await page.getByTestId("event-ev_control").click();
   await page.waitForTimeout(100);
   const duringWait = await runtimeState(page);

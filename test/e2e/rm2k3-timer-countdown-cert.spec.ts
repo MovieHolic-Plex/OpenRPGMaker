@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop16-timer-countdown";
 
@@ -53,7 +54,7 @@ test("loop16 certifies timer set start stop countdown hud and state", async ({ p
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await screenshot(page, "006-runtime-before-timer-event.png");
 

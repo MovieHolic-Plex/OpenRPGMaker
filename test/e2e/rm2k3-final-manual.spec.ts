@@ -15,6 +15,7 @@ import {
   visitInterior,
   winBattle,
 } from "./rm2k3-final-manual-helpers";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 test.setTimeout(90_000);
 
@@ -39,7 +40,7 @@ test("final manual QA covers RM2K3 editor surfaces and sample game end to end", 
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("title-screen")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("title-screen.png"), fullPage: true });
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_town");
   await expectCanvasHasPixels(page, "play-canvas");
   await expectPlayCanvasLogicalSurface(page, testInfo);

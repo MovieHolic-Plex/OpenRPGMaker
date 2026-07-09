@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import systemShellProject from "../fixtures/projects/system-shell-v3.json" with { type: "json" };
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -67,7 +68,7 @@ test("system shell supports title, menu, saves, audio, pictures, game over, and 
   await expect(page.getByTestId("title-screen")).toHaveAttribute("data-title-resource", "title_shell");
   await expect(page.getByTestId("title-screen")).toHaveCSS("background-image", /data:image\/png/);
   await page.screenshot({ path: testInfo.outputPath("title-screen.png"), fullPage: true });
-  await page.click('[data-testid="title-new-game"]');
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
 
   await page.keyboard.press("Escape");

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 test("editor shell keeps RM2K3 workbench controls visible and mode switches cleanly", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
@@ -31,13 +32,13 @@ test("editor shell keeps RM2K3 workbench controls visible and mode switches clea
 
   await page.click('[data-testid="mode-play"]');
   await expect(page.getByTestId("title-screen")).toBeVisible();
-  await page.click('[data-testid="title-new-game"]');
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await page.click('[data-testid="mode-edit"]');
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await page.click('[data-testid="mode-play"]');
   await expect(page.getByTestId("title-screen")).toBeVisible();
-  await page.click('[data-testid="title-new-game"]');
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await page.click('[data-testid="mode-edit"]');
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
@@ -45,7 +46,7 @@ test("editor shell keeps RM2K3 workbench controls visible and mode switches clea
   for (let i = 0; i < 3; i++) {
     await page.click('[data-testid="mode-play"]');
     await expect(page.getByTestId("title-screen")).toBeVisible();
-    await page.click('[data-testid="title-new-game"]');
+    await startNewGameFromTitle(page);
     await expect(page.getByTestId("play-canvas")).toBeVisible();
     await page.click('[data-testid="mode-edit"]');
     await expect(page.getByTestId("edit-canvas")).toBeVisible();

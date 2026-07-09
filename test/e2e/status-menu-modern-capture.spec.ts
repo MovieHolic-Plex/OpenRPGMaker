@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { openTestPlayWindow, seedDefaultProject } from "./rm2k3PlayerStatusMenuHelpers";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 test("captures equipment and item menu evidence without text overflow", async ({ page }) => {
   await mkdir("evidence/browser-screenshots/status-menu-modern-mock", { recursive: true });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedDefaultProject(page);
   await openTestPlayWindow(page);
-  await page.getByTestId("test-play-window").getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15000 });
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });
   await page.keyboard.press("X");

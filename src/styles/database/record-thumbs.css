@@ -1,8 +1,8 @@
 /* 레코드 리스트 썸네일/리소스 피커 스타일 (database-overhaul, 신규 클래스 전용) */
 
 .database-modal-body .rm2k3-record-list-pane .db-list-row.db-list-row-has-thumb {
-  gap: 6px;
-  grid-template-columns: auto 24px minmax(0, 1fr);
+  gap: 8px;
+  grid-template-columns: auto 32px minmax(0, 1fr);
 }
 
 .db-list-thumb {
@@ -13,12 +13,16 @@
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   box-sizing: border-box;
   display: inline-grid;
-  height: 24px;
+  height: 32px;
   image-rendering: pixelated;
   overflow: hidden;
   place-items: center;
   position: relative;
-  width: 24px;
+  width: 32px;
+}
+
+.db-list-thumb-state {
+  border-radius: 999px;
 }
 
 .db-list-thumb img {
@@ -188,4 +192,174 @@
   display: grid;
   min-height: 36px;
   place-items: center;
+}
+
+/* Shared visual resource picker (items/equipment/enemies/system/species/actors) */
+
+.db-resource-picker-search {
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.db-resource-picker-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 280px) minmax(120px, 1fr);
+}
+
+.db-resource-picker-list {
+  background: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  border: 1px inset var(--border-default, rgba(255, 255, 255, 0.2));
+  display: grid;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.db-resource-picker-list button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  min-height: 48px;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.db-resource-picker-list button.active,
+.db-resource-picker-list button:hover {
+  background: var(--accent-muted, rgba(120, 140, 255, 0.22));
+}
+
+.db-resource-picker-list button > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-resource-picker-preview {
+  align-items: center;
+  background: var(--bg-raised, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  display: grid;
+  justify-items: center;
+  min-height: 160px;
+  padding: 10px;
+}
+
+.db-resource-picker-option-thumb,
+.db-resource-picker-preview-visual,
+.db-resource-picker-inline-thumb {
+  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  display: block;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.db-resource-picker-option-thumb,
+.db-resource-picker-inline-thumb {
+  height: 40px;
+  max-width: 40px;
+  width: 40px;
+}
+
+.db-resource-picker-preview-visual {
+  max-height: 120px;
+  max-width: 140px;
+}
+
+.db-resource-picker-crop {
+  background-image: var(--db-resource-url);
+  background-position: var(--db-resource-x) var(--db-resource-y);
+  background-repeat: no-repeat;
+  background-size: var(--db-resource-sheet-width) var(--db-resource-sheet-height);
+  height: min(var(--db-resource-height), 120px);
+  overflow: hidden;
+  width: min(var(--db-resource-width), 140px);
+}
+
+.db-resource-picker-empty {
+  color: var(--text-3, rgba(255, 255, 255, 0.5));
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+}
+
+.db-resource-picker-index-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.db-resource-picker-index,
+.db-resource-picker-hue {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.db-resource-picker-control {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.db-resource-picker-control-label {
+  color: var(--text-2, rgba(255, 255, 255, 0.78));
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.db-resource-picker-control-body {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 44px minmax(0, 1fr);
+}
+
+.db-resource-picker-control-meta {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.db-resource-picker-inline-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-system-party-face-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.db-system-party-face {
+  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  height: 40px;
+  image-rendering: pixelated;
+  width: 40px;
+}
+
+.db-system-party-face.empty {
+  opacity: 0.35;
+}
+
+.db-monster-species-stage {
+  margin: 8px 0;
+  max-width: 180px;
+  min-height: 96px;
 }

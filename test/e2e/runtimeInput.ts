@@ -8,7 +8,7 @@
 //
 // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 두 경로 모두 작동한다.
 
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 const DIR_MAP: Record<string, "down" | "left" | "right" | "up"> = {
   ArrowDown: "down",
@@ -50,4 +50,15 @@ export async function tapKey(page: Page, key: string, holdMs = 80): Promise<void
     });
     await page.waitForTimeout(holdMs);
   }
+}
+
+
+/** RM2003 title is keyboard-only — do not click title-new-game. */
+export async function startNewGameFromTitle(page: Page, options?: { readonly timeoutMs?: number }): Promise<void> {
+  const timeout = options?.timeoutMs ?? 15_000;
+  await expect(page.getByTestId("title-screen")).toBeVisible({ timeout });
+  await expect(page.getByTestId("title-new-game")).toBeVisible({ timeout });
+  // Default selection is 새 게임 (index 0).
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout });
 }

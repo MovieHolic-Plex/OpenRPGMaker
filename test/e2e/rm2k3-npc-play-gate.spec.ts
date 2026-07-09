@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { EventPage, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
 const EVIDENCE_DIR = ".omo/ulw-loop/npc-keyboard-natural";
@@ -351,7 +352,7 @@ test("real play gate proves NPC movement types and triggers execute in PlayScene
   const before = await debugState(page);
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();

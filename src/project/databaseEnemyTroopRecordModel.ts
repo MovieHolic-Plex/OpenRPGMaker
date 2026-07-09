@@ -29,7 +29,8 @@ export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRe
     flying: record.flying ?? false,
     criticalHit: critical,
     attackOptions: options,
-    skillIds: actions.map((action) => action.skillId),
+    // skillIds is the legacy skill-only projection; empty skillId means basic attack and is omitted here.
+    skillIds: actions.map((action) => action.skillId).filter((skillId) => skillId.length > 0),
     stats: normalizeEnemyStats(record.stats),
     rewards: normalizeRewards(record.rewards),
     actions,
@@ -101,7 +102,8 @@ function normalizeOptions(options: Partial<EnemyOptions> | undefined): EnemyOpti
 function normalizeEnemyActions(actions: readonly Partial<EnemyActionPattern>[] | undefined, legacy: readonly string[] = []): EnemyActionPattern[] {
   const source = actions ?? legacy.map((skillId) => defaultEnemyAction(skillId));
   return source
-    .filter((action): action is EnemyActionPattern => typeof action.skillId === "string" && action.skillId.length > 0)
+    // skillId "" is a basic (normal) attack; keep it. Only drop missing/non-string skillId.
+    .filter((action): action is Partial<EnemyActionPattern> & { skillId: string } => typeof action.skillId === "string")
     .map((action) => ({
       skillId: action.skillId,
       priority: clampInteger(action.priority ?? 50, 1, 100),

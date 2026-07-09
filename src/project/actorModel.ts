@@ -77,7 +77,9 @@ type LegacyActorRecord = {
   readonly initialLevel: number;
   readonly maxLevel: number;
   readonly faceResourceId?: string;
+  readonly faceIndex?: number;
   readonly characterResourceId?: string;
+  readonly characterIndex?: number;
   readonly characterTransparent?: boolean;
   readonly battleCharacterResourceId?: string;
   readonly critical?: Partial<ActorCritical>;
@@ -141,7 +143,9 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     initialLevel,
     maxLevel,
     faceResourceId: cleanOptionalId(actor.faceResourceId) ?? defaultActorFaceResourceId({ ...actor, characterResourceId }),
+    faceIndex: normalizeOptionalSheetIndex(actor.faceIndex, 15),
     characterResourceId,
+    characterIndex: normalizeOptionalSheetIndex(actor.characterIndex, 7),
     characterTransparent: actor.characterTransparent ?? false,
     battleCharacterResourceId: cleanOptionalId(actor.battleCharacterResourceId),
     critical: normalizeCritical(actor.critical),
@@ -184,6 +188,8 @@ export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorR
   const normalized: Partial<ActorRecord> = { ...patch };
   if (patch.initialLevel !== undefined) normalized.initialLevel = clampLevel(patch.initialLevel);
   if (patch.maxLevel !== undefined) normalized.maxLevel = clampLevel(patch.maxLevel);
+  if (patch.faceIndex !== undefined) normalized.faceIndex = normalizeOptionalSheetIndex(patch.faceIndex, 15);
+  if (patch.characterIndex !== undefined) normalized.characterIndex = normalizeOptionalSheetIndex(patch.characterIndex, 7);
   if (patch.critical !== undefined) normalized.critical = normalizeCritical(patch.critical);
   if (patch.parameterCurves !== undefined) normalized.parameterCurves = normalizeParameterCurves(patch.parameterCurves);
   if (patch.expCurve !== undefined) normalized.expCurve = normalizeExpCurve(patch.expCurve);
@@ -193,6 +199,13 @@ export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorR
   if (patch.stateRates !== undefined) normalized.stateRates = normalizeRates(patch.stateRates);
   if (patch.elementRates !== undefined) normalized.elementRates = defaultElementRates(patch.elementRates);
   return normalized;
+}
+
+/** Keeps 0 as explicit value when authored; omits undefined for compact legacy shape. */
+function normalizeOptionalSheetIndex(value: number | undefined, max: number): number | undefined {
+  if (value === undefined || value === null || !Number.isFinite(value)) return undefined;
+  const clamped = Math.min(max, Math.max(0, Math.trunc(value)));
+  return clamped === 0 ? undefined : clamped;
 }
 
 function normalizeCritical(critical: Partial<ActorCritical> | undefined): ActorCritical {

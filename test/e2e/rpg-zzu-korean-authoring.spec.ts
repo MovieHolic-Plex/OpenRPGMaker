@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type EventCommand = {
   readonly kind: string;
@@ -143,7 +144,7 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
   const eventId = await authoredEventId(page);
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("title-new-game")).toHaveText("새 게임");
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await page.getByTestId(`event-${eventId}`).click();
   await expect(page.getByTestId("dialogue-box")).toContainText("북쪽 숲");

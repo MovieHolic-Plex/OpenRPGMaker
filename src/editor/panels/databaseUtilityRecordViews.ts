@@ -1,4 +1,4 @@
-import { emptyToUndefined, selectField, textControl } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, numberField, selectField, selectLiteral, textControl } from "@/editor/panels/databaseControls";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 export { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import {
@@ -17,12 +17,16 @@ import {
 } from "@/editor/panels/databaseUtilityRecordControls";
 import { store } from "@/project/store";
 import type {
+  BattleFlow,
+  BattlerAnimationPoseKind,
   BattlerAnimationRecord,
   ClassBattleCommandKind,
   DatabaseBattleCommandRecord,
   DatabaseTerrainRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
+
+const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 
 export function renderTerrainTab(host: HTMLElement): void {
   const terrains = store.getCurrent().database.terrains ?? [];
@@ -47,22 +51,49 @@ export function renderTerrainTab(host: HTMLElement): void {
 
 export function renderBattleScreenTab(host: HTMLElement): void {
   const project = store.getCurrent();
+  const selectedTroop = project.database.troops.find((troop) => troop.id === project.system.initialTroopId) ?? project.database.troops[0];
   const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
+  const rerender = (): void => {
+    host.replaceChildren();
+    renderBattleScreenTab(host);
+  };
   form.append(
     rm2k3Fieldset("전투 화면", [
       readonlyValue("편집 위치", "RM2003 데이터베이스 > 전투 화면"),
       textControl("전투 시스템", project.system.battleSystemResourceId ?? "", (value) => {
         store.update((draft) => {
           draft.system.battleSystemResourceId = emptyToUndefined(value);
-        });
+        }, { scope: "system" });
       }, "db-field-battle-system-resource"),
       selectField("초기 적 그룹", "db-picker-battle-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
         store.update((draft) => {
           draft.system.initialTroopId = emptyToUndefined(value);
-        });
+        }, { scope: "system" });
+        rerender();
+      }),
+      selectLiteral(
+        "전투 흐름",
+        "db-field-battle-screen-flow",
+        project.system.battleFlow === "strict" ? "strict" : "gauge",
+        BATTLE_FLOW_OPTIONS,
+        (value) => {
+          store.update((draft) => {
+            draft.system.battleFlow = value;
+          }, { scope: "system" });
+        },
+      ),
+      numberField("기본 참전 수", "db-field-battle-screen-active-slots", project.system.activeSlots ?? 0, (value) => {
+        store.update((draft) => {
+          draft.system.activeSlots = Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
+        }, { scope: "system" });
       }),
     ]),
-    rm2k3Fieldset("미리보기 레코드", project.database.troops.slice(0, 6).map((troop, index) => {
+    rm2k3Fieldset("선택 적 그룹 미리보기", [
+      readonlyValue("이름", selectedTroop?.name ?? "(없음)"),
+      readonlyValue("멤버", String(selectedTroop?.members?.length ?? selectedTroop?.enemyIds.length ?? 0)),
+      readonlyValue("배경", selectedTroop?.previewBackgroundResourceId ?? project.system.battleSystemResourceId ?? "(미설정)"),
+    ]),
+    rm2k3Fieldset("적 그룹 목록", project.database.troops.slice(0, 8).map((troop, index) => {
       const memberCount = troop.members?.length ?? troop.enemyIds.length;
       return readonlyValue(ordinalLabel(index), `${troop.name} / 적 ${memberCount}개`);
     })),
@@ -123,27 +154,38 @@ function battlerAnimationEditorRows(animations: readonly BattlerAnimationRecord[
   return animations.slice(0, 10).flatMap((animation, index) => [
     utilityTextRow({
       label: ordinalLabel(index),
-      onFocus: () => undefined,
+      onFocus: () => selectUtilityRecord("battlerAnimations", index),
       onInput: (value) => updateBattlerAnimation(index, { name: value }),
       testid: `db-field-battler-animation-name-${index}`,
       value: animation.name,
     }),
     utilityTextRow({
       label: "배틀러 그래픽",
-      onFocus: () => undefined,
+      onFocus: () => selectUtilityRecord("battlerAnimations", index),
       onInput: (value) => updateBattlerAnimation(index, { resourceId: emptyToUndefined(value) }),
       testid: `db-field-battler-animation-resource-${index}`,
       value: animation.resourceId ?? "",
     }),
     utilityNumberRow({
       label: "대기 1프레임",
-      onFocus: () => undefined,
-      onInput: (value) => updateBattlerIdleDuration(index, value),
+      onFocus: () => selectUtilityRecord("battlerAnimations", index),
+      onInput: (value) => updateBattlerPoseDuration(index, "idle", value),
       testid: `db-field-battler-animation-idle-duration-${index}`,
-      value: animation.poses.find((pose) => pose.pose === "idle")?.frames[0]?.durationMs ?? 180,
+      value: poseFirstDuration(animation, "idle"),
+    }),
+    utilityNumberRow({
+      label: "공격 1프레임",
+      onFocus: () => selectUtilityRecord("battlerAnimations", index),
+      onInput: (value) => updateBattlerPoseDuration(index, "attack", value),
+      testid: `db-field-battler-animation-attack-duration-${index}`,
+      value: poseFirstDuration(animation, "attack"),
     }),
     readonlyValue("포즈", animation.poses.map((pose) => `${pose.pose}:${pose.frames.length}`).join(" / ")),
   ]);
+}
+
+function poseFirstDuration(animation: BattlerAnimationRecord, pose: BattlerAnimationPoseKind): number {
+  return animation.poses.find((entry) => entry.pose === pose)?.frames[0]?.durationMs ?? 180;
 }
 
 function updateBattlerAnimation(index: number, patch: Partial<Pick<BattlerAnimationRecord, "name" | "resourceId">>): void {
@@ -152,17 +194,23 @@ function updateBattlerAnimation(index: number, patch: Partial<Pick<BattlerAnimat
     if (!target) return;
     if (patch.name !== undefined) target.name = patch.name;
     if ("resourceId" in patch) target.resourceId = patch.resourceId;
-  });
+  }, { scope: "database", collection: "battlerAnimations" });
 }
 
-function updateBattlerIdleDuration(index: number, value: number): void {
+function updateBattlerPoseDuration(index: number, poseKind: BattlerAnimationPoseKind, value: number): void {
   store.update((project) => {
     const target = project.database.battlerAnimations?.[index];
-    const idle = target?.poses.find((pose) => pose.pose === "idle");
-    const firstFrame = idle?.frames[0];
+    if (!target) return;
+    let pose = target.poses.find((entry) => entry.pose === poseKind);
+    if (!pose) {
+      pose = { pose: poseKind, frames: [{ pattern: 0, durationMs: 180 }] };
+      target.poses = [...target.poses, pose];
+    }
+    if (pose.frames.length === 0) pose.frames = [{ pattern: 0, durationMs: 180 }];
+    const firstFrame = pose.frames[0];
     if (!firstFrame) return;
     firstFrame.durationMs = Math.max(1, Math.trunc(value));
-  });
+  }, { scope: "database", collection: "battlerAnimations" });
 }
 
 function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[]): HTMLElement[] {

@@ -302,7 +302,12 @@ function validateEnemyRecords(
 ): void {
   for (const enemy of project.database.enemies) {
     if (enemy.speciesId && !speciesIds.has(enemy.speciesId)) issues.push(`enemy ${enemy.id}: speciesId does not exist.`);
-    collectExistingIdIssues(`enemy ${enemy.id}: skill`, enemy.actions.map((entry) => entry.skillId), skillIds, issues);
+    collectExistingIdIssues(
+      `enemy ${enemy.id}: skill`,
+      enemy.actions.map((entry) => entry.skillId).filter((skillId) => skillId.length > 0),
+      skillIds,
+      issues,
+    );
     if (enemy.rewards.dropItemId && !itemIds.has(enemy.rewards.dropItemId)) issues.push(`enemy ${enemy.id}: dropItemId does not exist.`);
     for (const action of enemy.actions) {
       for (const effect of [action.switchOnAfterAction, action.switchOffAfterAction]) {

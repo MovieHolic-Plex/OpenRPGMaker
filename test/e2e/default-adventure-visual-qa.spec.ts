@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 900 },
@@ -18,7 +19,7 @@ test.describe("default adventure visual QA", () => {
       await expect(page.getByTestId("title-screen")).toBeVisible();
       await page.screenshot({ path: testInfo.outputPath(`${viewport.name}-title.png`), fullPage: true });
       await expect(page.getByTestId("title-screen").getByRole("heading", { name: "별등 마을" })).toBeVisible();
-      await page.getByTestId("title-new-game").click();
+      await startNewGameFromTitle(page);
       await expect(page.getByTestId("play-canvas").locator("canvas")).toBeVisible({ timeout: 15_000 });
       await page.screenshot({ path: testInfo.outputPath(`${viewport.name}-village.png`), fullPage: true });
 

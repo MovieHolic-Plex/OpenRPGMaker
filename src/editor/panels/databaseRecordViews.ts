@@ -309,7 +309,11 @@ function recordForm(
       return form;
     case "equipment":
       equipmentFields(form, record.id);
-      renderEquipmentRecordForm(form, store.getCurrent().database.equipment.find((entry) => entry.id === record.id) ?? store.getCurrent().database.equipment[0]);
+      renderEquipmentRecordForm(
+        form,
+        store.getCurrent().database.equipment.find((entry) => entry.id === record.id) ?? store.getCurrent().database.equipment[0],
+        rerender
+      );
       return form;
     case "enemies":
       renderEnemyRecordForm(form, store.getCurrent().database.enemies.find((entry) => entry.id === record.id) ?? store.getCurrent().database.enemies[0], rerender);

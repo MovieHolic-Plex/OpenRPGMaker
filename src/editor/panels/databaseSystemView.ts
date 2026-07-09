@@ -1,72 +1,158 @@
 import {
+  FACESET_COLUMNS,
+  FACESET_FACE_HEIGHT,
+  FACESET_FACE_WIDTH,
+  FACESET_ROWS,
+} from "@/assets/easyrpgRtp";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import {
   emptyToUndefined,
   numberField,
   selectField,
+  selectLiteral,
   textControl,
 } from "@/editor/panels/databaseControls";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { normalizeTypeChart } from "@/project/databaseRecordModel";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import {
+  DEFAULT_DAY_END_HOUR,
+  DEFAULT_DAY_START_HOUR,
+  DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
+} from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { TypeChartRecord } from "@/project/types";
+import type { ActorRecord, BattleFlow, TypeChartRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
-export function renderSystemTab(host: HTMLElement): void {
+const START_PARTY_SLOTS = 4;
+const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
+
+export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
   const project = store.getCurrent();
   const titleScreen = project.system.titleScreen ?? defaultTitleScreenSettings();
   const titleBackgroundResourceId = titleScreen.backgroundResourceId ?? project.system.titleResourceId;
   const form = el("section", { class: "db-detail-form db-system-form", dataset: { testid: "db-detail-form" } });
   form.append(
     rm2k3Fieldset("초기 파티", [
-      readonlyValue("멤버 1", project.database.actors[0]?.name ?? "(없음)"),
-      readonlyValue("멤버 2", project.database.actors[1]?.name ?? "(없음)"),
-      readonlyValue("멤버 3", project.database.actors[2]?.name ?? "(없음)"),
-      readonlyValue("멤버 4", project.database.actors[3]?.name ?? "(없음)"),
+      startPartyFaceStrip(project.system.startActorIds, project.database.actors),
+      ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
     ]),
     rm2k3Fieldset("리소스", [
-      textControl("타이틀 리소스", project.system.titleResourceId ?? "", (value) => {
-        const resourceId = emptyToUndefined(value);
-        store.update((draft) => {
-          draft.system.titleResourceId = resourceId;
-          draft.system.titleScreen ??= defaultTitleScreenSettings();
-          draft.system.titleScreen.backgroundResourceId = resourceId;
-        });
-      }, "db-field-title-resource"),
-      textControl("시스템 리소스", project.system.systemResourceId ?? "", (value) => {
-        store.update((draft) => {
-          draft.system.systemResourceId = emptyToUndefined(value);
-        });
-      }, "db-field-system-resource"),
-      textControl("전투 시스템 리소스", project.system.battleSystemResourceId ?? "", (value) => {
-        store.update((draft) => {
-          draft.system.battleSystemResourceId = emptyToUndefined(value);
-        });
-      }, "db-field-battle-system-resource"),
+      resourcePickerControl({
+        label: "타이틀 리소스",
+        resourceId: project.system.titleResourceId,
+        kind: "title",
+        testid: "db-field-title-resource",
+        allowClear: true,
+        dialogTitle: "타이틀 그래픽",
+        onChange: (result) => {
+          const resourceId = emptyToUndefined(result.resourceId);
+          updateSystem((draft) => {
+            draft.system.titleResourceId = resourceId;
+            draft.system.titleScreen ??= defaultTitleScreenSettings();
+            draft.system.titleScreen.backgroundResourceId = resourceId;
+          });
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "시스템 리소스",
+        resourceId: project.system.systemResourceId,
+        kind: "system",
+        testid: "db-field-system-resource",
+        allowClear: true,
+        dialogTitle: "시스템 그래픽",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.systemResourceId = emptyToUndefined(result.resourceId);
+          });
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "전투 시스템 리소스",
+        resourceId: project.system.battleSystemResourceId,
+        kind: "system2",
+        testid: "db-field-battle-system-resource",
+        allowClear: true,
+        dialogTitle: "전투 시스템 그래픽",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
+          });
+        },
+        rerender,
+      }),
+      el("div", {
+        class: "db-system-resource-actions",
+        children: [
+          el("button", {
+            class: "btn small",
+            text: "미리보기 갱신",
+            attrs: { type: "button" },
+            dataset: { testid: "db-system-refresh-previews" },
+            on: { click: () => rerender() },
+          }),
+        ],
+      }),
     ]),
     rm2k3Fieldset("시작 설정", [
-      selectField("시작 파티", "db-picker-system-start-actor", project.system.startActorIds[0] ?? "", project.database.actors, (value) => {
-        store.update((draft) => {
-          draft.system.startActorIds = value ? [value] : [];
-          draft.session.partyActorIds = value ? [value] : [];
-        });
-      }),
       selectField("초기 적 그룹", "db-picker-system-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
-        store.update((draft) => {
+        updateSystem((draft) => {
           draft.system.initialTroopId = emptyToUndefined(value);
         });
       }),
+      selectLiteral(
+        "전투 흐름",
+        "db-field-system-battle-flow",
+        project.system.battleFlow === "strict" ? "strict" : "gauge",
+        BATTLE_FLOW_OPTIONS,
+        (value) => {
+          updateSystem((draft) => {
+            draft.system.battleFlow = value;
+          });
+        },
+      ),
       numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
-        store.update((draft) => {
+        updateSystem((draft) => {
           draft.system.activeSlots = optionalPositiveInteger(value);
         });
       }),
       checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
-        store.update((draft) => {
-          draft.system.monsterCollection = checked;
+        updateSystem((draft) => {
+          if (checked) draft.system.monsterCollection = true;
+          else delete draft.system.monsterCollection;
         });
       }),
+      checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
+        updateSystem((draft) => {
+          if (checked) draft.system.giftSystem = true;
+          else delete draft.system.giftSystem;
+        });
+      }),
+      checkboxField(
+        "참전 보상만",
+        "db-field-system-reward-participation-only",
+        project.system.rewardPolicy?.participationOnly === true,
+        (checked) => {
+          updateSystem((draft) => {
+            draft.system.rewardPolicy = nextRewardPolicy(draft.system.rewardPolicy, { participationOnly: checked });
+          });
+        },
+      ),
+      checkboxField(
+        "레벨 격차 패널티",
+        "db-field-system-reward-level-gap",
+        project.system.rewardPolicy?.levelGapPenalty === true,
+        (checked) => {
+          updateSystem((draft) => {
+            draft.system.rewardPolicy = nextRewardPolicy(draft.system.rewardPolicy, { levelGapPenalty: checked });
+          });
+        },
+      ),
     ]),
-    typeChartFieldset(project.system.typeChart),
+    timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender),
+    typeChartFieldset(project.system.typeChart, rerender),
     rm2k3Fieldset("게임 시작화면", [
       textControl("게임 타이틀", titleScreen.title, (value) => {
         updateTitleScreen((titleScreenSettings) => {
@@ -75,7 +161,7 @@ export function renderSystemTab(host: HTMLElement): void {
       }, "db-field-title-screen-title"),
       textControl("배경 리소스", titleBackgroundResourceId ?? "", (value) => {
         const resourceId = emptyToUndefined(value);
-        store.update((draft) => {
+        updateSystem((draft) => {
           draft.system.titleScreen ??= defaultTitleScreenSettings();
           draft.system.titleScreen.backgroundResourceId = resourceId;
         });
@@ -126,7 +212,150 @@ export function renderSystemTab(host: HTMLElement): void {
   host.append(el("h3", { text: "시스템" }), form);
 }
 
-function typeChartFieldset(chart: TypeChartRecord | undefined): HTMLElement {
+function startPartySlots(
+  startActorIds: readonly string[],
+  actors: readonly { readonly id: string; readonly name: string }[],
+  rerender: () => void,
+): HTMLElement[] {
+  const slots: HTMLElement[] = [];
+  for (let index = 0; index < START_PARTY_SLOTS; index += 1) {
+    const value = startActorIds[index] ?? "";
+    // 첫 슬롯은 레거시 단일 피커 testid(`db-picker-system-start-actor`)를 유지한다.
+    const testid = index === 0 ? "db-picker-system-start-actor" : `db-picker-system-start-actor-${index + 1}`;
+    slots.push(
+      selectField(`멤버 ${index + 1}`, testid, value, actors, (next) => {
+        updateSystem((draft) => {
+          const nextSlots = Array.from({ length: START_PARTY_SLOTS }, (_, slot) => draft.system.startActorIds[slot] ?? "");
+          nextSlots[index] = next;
+          const party = nextSlots.filter((id) => id.length > 0);
+          draft.system.startActorIds = party;
+          draft.session.partyActorIds = [...party];
+        });
+        rerender();
+      }),
+    );
+  }
+  return slots;
+}
+
+function startPartyFaceStrip(startActorIds: readonly string[], actors: readonly ActorRecord[]): HTMLElement {
+  const project = store.getCurrent();
+  const faces = Array.from({ length: START_PARTY_SLOTS }, (_, index) => {
+    const actorId = startActorIds[index];
+    const actor = actorId ? actors.find((entry) => entry.id === actorId) : undefined;
+    if (!actor?.faceResourceId) {
+      return el("span", {
+        class: "db-system-party-face empty",
+        attrs: { "aria-label": `파티 슬롯 ${index + 1} 비어 있음` },
+      });
+    }
+    const url = resolveAssetResourceUrl(actor.faceResourceId, { project });
+    if (!url) {
+      return el("span", { class: "db-system-party-face empty", attrs: { "aria-label": actor.name } });
+    }
+    const faceIndex = actor.faceIndex ?? 0;
+    const column = faceIndex % FACESET_COLUMNS;
+    const row = Math.floor(faceIndex / FACESET_COLUMNS);
+    const scale = 40 / FACESET_FACE_WIDTH;
+    return el("span", {
+      class: "db-system-party-face",
+      attrs: {
+        "aria-label": actor.name,
+        role: "img",
+        title: actor.name,
+        style: [
+          `background-image:url("${url}")`,
+          `background-position:-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`,
+          `background-size:${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`,
+        ].join(";"),
+      },
+    });
+  });
+  return el("div", {
+    class: "db-system-party-face-strip",
+    dataset: { testid: "db-system-party-face-strip" },
+    children: faces,
+  });
+}
+
+function timeSystemFieldset(
+  timeSystem: ReturnType<typeof normalizeTimeSystemConfig>,
+  commonEvents: readonly { readonly id: string; readonly name: string }[],
+  rerender: () => void,
+): HTMLElement {
+  const enabled = timeSystem?.enabled === true;
+  const children: HTMLElement[] = [
+    checkboxField("시간/달력 사용", "db-field-system-time-enabled", enabled, (checked) => {
+      updateSystem((draft) => {
+        if (!checked) {
+          delete draft.system.timeSystem;
+          return;
+        }
+        draft.system.timeSystem = normalizeTimeSystemConfig({
+          enabled: true,
+          minutesPerRealSecond: draft.system.timeSystem?.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
+          dayStartHour: draft.system.timeSystem?.dayStartHour ?? DEFAULT_DAY_START_HOUR,
+          dayEndHour: draft.system.timeSystem?.dayEndHour ?? DEFAULT_DAY_END_HOUR,
+          forceSleep: draft.system.timeSystem?.forceSleep === true,
+          onDayEnd: draft.system.timeSystem?.onDayEnd,
+        });
+      });
+      rerender();
+    }),
+  ];
+  if (enabled && timeSystem) {
+    children.push(
+      numberField("분/초 배속", "db-field-system-time-minutes-per-second", timeSystem.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND, (value) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            minutesPerRealSecond: Number.isFinite(value) && value > 0 ? value : DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
+          });
+        });
+      }),
+      numberField("하루 시작 시", "db-field-system-time-day-start", timeSystem.dayStartHour ?? DEFAULT_DAY_START_HOUR, (value) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            dayStartHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_START_HOUR,
+          });
+        });
+      }),
+      numberField("하루 종료 시", "db-field-system-time-day-end", timeSystem.dayEndHour ?? DEFAULT_DAY_END_HOUR, (value) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            dayEndHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_END_HOUR,
+          });
+        });
+      }),
+      checkboxField("종료 시 강제 취침", "db-field-system-time-force-sleep", timeSystem.forceSleep === true, (checked) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            forceSleep: checked,
+          });
+        });
+      }),
+      selectField("하루 종료 공통 이벤트", "db-picker-system-time-on-day-end", timeSystem.onDayEnd ?? "", commonEvents, (value) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            onDayEnd: emptyToUndefined(value),
+          });
+        });
+      }),
+    );
+  }
+  return rm2k3Fieldset("시간 시스템", children);
+}
+
+function typeChartFieldset(chart: TypeChartRecord | undefined, rerender: () => void): HTMLElement {
   const types = chart?.types ?? [];
   const typeInput = el("input", {
     attrs: { type: "text", placeholder: "fire, water, grass" },
@@ -135,11 +364,12 @@ function typeChartFieldset(chart: TypeChartRecord | undefined): HTMLElement {
   }) as HTMLInputElement;
   typeInput.addEventListener("change", () => {
     const nextTypes = parseTypes(typeInput.value);
-    store.update((draft) => {
+    updateSystem((draft) => {
       const normalized = normalizeTypeChart({ types: nextTypes, multipliers: draft.system.typeChart?.multipliers ?? {} });
       if (normalized) draft.system.typeChart = normalized;
       else delete draft.system.typeChart;
     });
+    rerender();
   });
   const children: HTMLElement[] = [
     el("label", { class: "db-field", children: [el("span", { text: "타입 목록" }), typeInput] }),
@@ -172,7 +402,7 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
 }
 
 function updateTypeChartCell(attacker: string, defender: string, value: number): void {
-  store.update((draft) => {
+  updateSystem((draft) => {
     const chart = draft.system.typeChart;
     if (!chart) return;
     const multipliers = { ...chart.multipliers, [attacker]: { ...(chart.multipliers[attacker] ?? {}), [defender]: value } };
@@ -186,10 +416,27 @@ function parseTypes(value: string): string[] {
 }
 
 function updateTitleScreen(mutator: (settings: ReturnType<typeof defaultTitleScreenSettings>) => void): void {
-  store.update((draft) => {
+  updateSystem((draft) => {
     draft.system.titleScreen ??= defaultTitleScreenSettings();
     mutator(draft.system.titleScreen);
   });
+}
+
+function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => void): void {
+  store.update(mutator, { scope: "system" });
+}
+
+function nextRewardPolicy(
+  current: { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined,
+  patch: { participationOnly?: boolean; levelGapPenalty?: boolean },
+): { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined {
+  const participationOnly = patch.participationOnly ?? current?.participationOnly === true;
+  const levelGapPenalty = patch.levelGapPenalty ?? current?.levelGapPenalty === true;
+  if (!participationOnly && !levelGapPenalty) return undefined;
+  return {
+    ...(participationOnly ? { participationOnly: true } : {}),
+    ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
+  };
 }
 
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
@@ -204,13 +451,6 @@ function clampStageCoordinate(value: number, max: number): number {
 function optionalPositiveInteger(value: number): number | undefined {
   if (!Number.isFinite(value) || value <= 0) return undefined;
   return Math.trunc(value);
-}
-
-function readonlyValue(label: string, value: string): HTMLElement {
-  return el("div", {
-    class: "db-readonly-row",
-    children: [el("span", { text: label }), el("code", { text: value })],
-  });
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {

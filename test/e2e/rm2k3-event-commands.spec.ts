@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type SeedProject = Project;
 
@@ -619,7 +620,7 @@ test("editor-created money, item, and party commands affect play mode state", as
   expect(playableEvent?.pages?.[0].trigger.kind).toBe("action");
   expect(playableEvent?.pages?.[0].commands.some((command) => command.kind === "changeGold")).toBe(true);
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -686,7 +687,7 @@ test("input number command stores runtime entry in the selected variable", async
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
   await seedProject(page, playable);
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -902,7 +903,7 @@ test("editor-authored picture and audio commands render and clear in play mode",
   await page.getByTestId("event-editor-modal-close").click();
   await seedProject(page, playable);
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   const beforeVisible = {
     audio: await audioState(page),
@@ -992,7 +993,7 @@ test("editor-authored picture erase and audio stop commands clear runtime state"
   await page.getByTestId("event-editor-modal-close").click();
   await seedProject(page, clearPlayable, "/?e2eMedia=1");
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.evaluate(() => {
     const hooks = window as unknown as {
@@ -1068,7 +1069,7 @@ test("terminal flow commands show game over, ending, and title return runtime sc
   await page.goto("/?freshProject=1");
   await seedProject(page, terminalProject([{ kind: "gameOver" }]));
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -1079,7 +1080,7 @@ test("terminal flow commands show game over, ending, and title return runtime sc
   await page.goto("/?freshProject=1");
   await seedProject(page, terminalProject([{ kind: "ending", title: "Loop 3 Ending", message: "Ending command runtime proof." }]));
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -1090,7 +1091,7 @@ test("terminal flow commands show game over, ending, and title return runtime sc
   await page.goto("/?freshProject=1");
   await seedProject(page, terminalProject([{ kind: "returnToTitle" }]));
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -1185,7 +1186,7 @@ test("battleProcessing command hands off to a battle scene marker in play mode",
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page, makeBattleProject());
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();

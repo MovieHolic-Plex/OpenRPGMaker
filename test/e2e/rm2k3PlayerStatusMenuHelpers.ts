@@ -2,6 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 export const C001_SCREENSHOT = ".omo/ulw-loop/status-menu-fullscreen-20260628/evidence/c001-fullscreen-panels.png";
 export const C002_SCREENSHOT = ".omo/ulw-loop/status-menu-fullscreen-20260628/evidence/c002-actions-use-equip-row-formation.png";
@@ -36,7 +37,7 @@ export async function startActualPlay(page: Page, project = seededStatusMenuProj
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, project, route);
   await openTestPlayWindow(page);
-  await page.getByTestId("test-play-window").getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15000 });
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });
 }

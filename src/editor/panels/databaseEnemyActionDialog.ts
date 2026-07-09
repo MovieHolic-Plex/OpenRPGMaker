@@ -1,23 +1,58 @@
+import { applyEnemyActionBehaviourMode, enemyActionBehaviourMode, type EnemyActionBehaviourMode } from "@/editor/databaseEnemyActionMode";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectField } from "@/editor/panels/databaseControls";
 import { openSwitchVariablePicker } from "@/editor/panels/eventEditor/recordPickerDialog";
 import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/databaseEnemyRecordSupport";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord } from "@/project/types";
+import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord, SkillId } from "@/project/types";
 import { el } from "@/util/dom";
 
 let actionClipboard: EnemyActionPattern | undefined;
 
 export function openActionDialog(record: EnemyRecord, index: number, action: EnemyActionPattern, rerender: () => void): void {
   let nextAction: EnemyActionPattern = { ...action, condition: { ...action.condition } };
+  let mode: EnemyActionBehaviourMode = enemyActionBehaviourMode(nextAction);
   const rating = numberInput("db-enemy-action-rating", 1, 100, nextAction.priority);
   const conditionType = conditionSelect(nextAction.condition.kind);
   const start = numberInput("db-enemy-action-turn-start", 1, 999, nextAction.condition.kind === "turn" ? nextAction.condition.start : 1);
   const interval = numberInput("db-enemy-action-turn-interval", 1, 999, nextAction.condition.kind === "turn" ? nextAction.condition.interval : 1);
-  const skill = skillSelect(nextAction.skillId, (skillId) => {
-    nextAction = { ...nextAction, skillId };
-  });
+  const skillHost = el("div", { class: "db-enemy-action-skill-host", dataset: { testid: "db-enemy-action-skill-host" } });
+  const modeHost = el("div", { class: "db-enemy-behaviour-mode", dataset: { testid: "db-enemy-behaviour-mode" } });
+
+  const rebuildSkill = (): void => {
+    skillHost.replaceChildren(
+      selectField("스킬", "db-enemy-action-dialog-skill", nextAction.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
+        nextAction = { ...nextAction, skillId: skillId as SkillId };
+        mode = "skill";
+        rebuildMode();
+      }),
+    );
+    const select = skillHost.querySelector("select");
+    if (select instanceof HTMLSelectElement) select.disabled = mode !== "skill";
+  };
+
+  const rebuildMode = (): void => {
+    modeHost.replaceChildren(
+      behaviourRadio("basic", "기본 행동", mode === "basic", () => {
+        mode = "basic";
+        nextAction = applyEnemyActionBehaviourMode(nextAction, "basic");
+        rebuildMode();
+        rebuildSkill();
+      }),
+      behaviourRadio("skill", "스킬", mode === "skill", () => {
+        mode = "skill";
+        const fallback = store.getCurrent().database.skills[0]?.id ?? "";
+        nextAction = applyEnemyActionBehaviourMode(nextAction, "skill", nextAction.skillId || fallback);
+        rebuildMode();
+        rebuildSkill();
+      }),
+      skillHost,
+    );
+    rebuildSkill();
+  };
+  rebuildMode();
+
   const switchOn = switchEffectField("db-enemy-action-switch-on", nextAction.switchOnAfterAction, (effect) => {
     nextAction = { ...nextAction, switchOnAfterAction: effect };
   });
@@ -28,14 +63,18 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     const condition: EnemyActionCondition = conditionType.value === "turn"
       ? { kind: "turn", start: Number(start.value), interval: Number(interval.value) }
       : { kind: "always" };
-    nextAction = { ...nextAction, priority: Number(rating.value), condition };
+    nextAction = applyEnemyActionBehaviourMode(
+      { ...nextAction, priority: Number(rating.value), condition },
+      mode,
+      nextAction.skillId ?? "",
+    );
   };
   for (const input of [rating, conditionType, start, interval]) input.addEventListener("input", syncAction);
   openDialog("db-enemy-action-dialog", "공격 패턴", [
     panel("조건", [conditionHeader(conditionType, rating), conditionDetail(start, interval)]),
     panel("행동 후 스위치 ON", [switchOn]),
     panel("행동 후 스위치 OFF", [switchOff]),
-    panel("행동", [basicActionMode(skill)]),
+    panel("행동", [modeHost]),
   ], [
     { label: "OK", testid: "db-enemy-action-ok", action: () => {
       syncAction();
@@ -91,6 +130,18 @@ function contextMenuActions(record: EnemyRecord, index: number, action: EnemyAct
   ];
 }
 
+function behaviourRadio(mode: EnemyActionBehaviourMode, label: string, checked: boolean, onSelect: () => void): HTMLElement {
+  const radio = el("input", {
+    attrs: { type: "radio", name: "db-enemy-action-behaviour", value: mode },
+    dataset: { testid: `db-enemy-action-mode-${mode}` },
+  }) as HTMLInputElement;
+  radio.checked = checked;
+  radio.addEventListener("change", () => {
+    if (radio.checked) onSelect();
+  });
+  return el("label", { class: "actor-check db-enemy-behaviour-row", children: [radio, el("span", { text: label })] });
+}
+
 function conditionSelect(value: EnemyActionCondition["kind"]): HTMLSelectElement {
   const select = el("select", { dataset: { testid: "db-enemy-action-condition-type" } }) as HTMLSelectElement;
   select.append(el("option", { text: "항상", attrs: { value: "always" } }), el("option", { text: "턴", attrs: { value: "turn" } }));
@@ -107,10 +158,6 @@ function conditionHeader(conditionType: HTMLSelectElement, rating: HTMLInputElem
 
 function conditionDetail(start: HTMLInputElement, interval: HTMLInputElement): HTMLElement {
   return el("div", { class: "db-enemy-condition-detail", children: [numberFieldNode("시작", start), numberFieldNode("간격", interval)] });
-}
-
-function skillSelect(value: string, onChange: (value: string) => void): HTMLElement {
-  return selectField("스킬", "db-picker-enemy-action-skill", value, store.getCurrent().database.skills, onChange);
 }
 
 function switchEffectField(testid: string, effect: EnemyActionSwitchEffect, onChange: (effect: EnemyActionSwitchEffect) => void): HTMLElement {
@@ -168,26 +215,6 @@ function switchPickerLabel(testid: string): string {
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
   const project = store.getCurrent();
   return project.switches.map((entry, index) => ({ id: entry.id, name: storyFlagOptionLabel(project, "switch", entry, index) }));
-}
-
-function basicActionMode(skill: HTMLElement): HTMLElement {
-  return el("div", {
-    class: "db-enemy-behaviour-mode",
-    children: [radioRow("기본 행동", true, skill), radioRow("스킬", false, disabledSelect()), radioRow("변신", false, disabledSelect())],
-  });
-}
-
-function radioRow(label: string, checked: boolean, control: HTMLElement): HTMLElement {
-  const radio = el("input", { attrs: { type: "radio", name: "db-enemy-action-behaviour" } }) as HTMLInputElement;
-  radio.checked = checked;
-  if (!checked) radio.disabled = true;
-  return el("div", { class: "db-enemy-behaviour-row", children: [el("label", { class: "actor-check", children: [radio, el("span", { text: label })] }), control] });
-}
-
-function disabledSelect(): HTMLElement {
-  const select = el("select") as HTMLSelectElement;
-  select.disabled = true;
-  return select;
 }
 
 function numberInput(testid: string, min: number, max: number, value: number): HTMLInputElement {

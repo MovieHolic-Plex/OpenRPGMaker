@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import type { Command, EventPage, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/quest-low-level-verification";
 const QUEST_SWITCH = "sw_quest_accepted";
@@ -75,7 +76,7 @@ test("low-level editor parts can author and run a quest-like switch/variable flo
   await writeJson("06-project-export-after-editor.json", editorExport);
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15_000 });
   await screenshot(page, "07-play-start.png");
 

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 // SIZE_OK: This proof keeps editor-authoring helpers and screenshot assertions
 // together so the generated gameplay evidence remains reproducible.
@@ -447,7 +448,7 @@ test("editor-authored face graphic and show text render together in actual play 
   const eventId = await authoredEventId(page);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await expectHeroCharsetAnimation(page);
   await page.getByTestId(`event-${eventId}`).click();
@@ -478,7 +479,7 @@ test("editor-authored display text settings render as a top transparent message 
   const eventId = await authoredDisplayTextSettingsEventId(page);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await page.getByTestId(`event-${eventId}`).click();
 
@@ -502,7 +503,7 @@ test("display text options faceset and choices apply to real gameplay from the e
   const eventId = await authoredDisplayOptionsFacesetChoicesEventId(page);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await page.getByTestId(`event-${eventId}`).click();
 

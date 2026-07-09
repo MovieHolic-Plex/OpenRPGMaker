@@ -12,7 +12,9 @@ import type {
 } from "@/project/types";
 import { el } from "@/util/dom";
 
-const selectedUtilityRecords: Partial<Record<"battleCommands" | "elements" | "terrain", number>> = {};
+type UtilityTabId = "battleCommands" | "elements" | "terrain" | "battlerAnimations";
+
+const selectedUtilityRecords: Partial<Record<UtilityTabId, number>> = {};
 
 type UtilityRowBase<T> = {
   readonly label: string;
@@ -26,11 +28,11 @@ type UtilitySelectRowOptions = UtilityRowBase<string> & {
   readonly options: readonly string[];
 };
 
-export function selectedUtilityRecordIndex(tab: "battleCommands" | "elements" | "terrain"): number {
+export function selectedUtilityRecordIndex(tab: UtilityTabId): number {
   return selectedUtilityRecords[tab] ?? 0;
 }
 
-export function selectUtilityRecord(tab: "battleCommands" | "elements" | "terrain", index: number): void {
+export function selectUtilityRecord(tab: UtilityTabId, index: number): void {
   selectedUtilityRecords[tab] = index;
   updateUtilityStatus(tab, index);
 }
@@ -160,13 +162,13 @@ export function isBattleCommandKind(value: string): value is ClassBattleCommandK
   return value === "attack" || value === "skill" || value === "skillSubset" || value === "defend" || value === "guard" || value === "item" || value === "escape" || value === "switch" || value === "event";
 }
 
-function updateUtilityStatus(tab: "battleCommands" | "elements" | "terrain", index: number): void {
+function updateUtilityStatus(tab: UtilityTabId, index: number): void {
   const status = document.querySelector<HTMLElement>("[data-testid='db-workbench-status']");
   if (!status) return;
   status.textContent = databaseWorkbenchStatusText(utilitySummary(tab, index));
 }
 
-function utilitySummary(tab: "battleCommands" | "elements" | "terrain", index: number): DatabaseWorkbenchSummary {
+function utilitySummary(tab: UtilityTabId, index: number): DatabaseWorkbenchSummary {
   const database = store.getCurrent().database;
   if (tab === "elements") {
     const record = database.elements?.[index] ?? database.elements?.[0];
@@ -175,6 +177,10 @@ function utilitySummary(tab: "battleCommands" | "elements" | "terrain", index: n
   if (tab === "terrain") {
     const record = database.terrains?.[index] ?? database.terrains?.[0];
     return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "terrain", tabLabel: "지형", totalCount: database.terrains?.length };
+  }
+  if (tab === "battlerAnimations") {
+    const record = database.battlerAnimations?.[index] ?? database.battlerAnimations?.[0];
+    return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "battlerAnimations", tabLabel: "애니메이션 2", totalCount: database.battlerAnimations?.length };
   }
   const record = database.battleCommands?.[index] ?? database.battleCommands?.[0];
   return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "battleCommands", tabLabel: "전투 명령", totalCount: database.battleCommands?.length };

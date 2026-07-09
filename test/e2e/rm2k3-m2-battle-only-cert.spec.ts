@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { applyDatabaseChanges, exportedProject, openDatabase } from "./rm2k3-database-helpers";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type Project = ReturnType<typeof deserialize>;
 type JsonRecord = Record<string, unknown>;
@@ -107,7 +108,7 @@ async function runForceEscapeBattle(page: Page, project: unknown): Promise<void>
 async function startBattle(page: Page): Promise<void> {
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible();
   await page.click('[data-testid="event-battle-start"]');
   await expect(page.getByTestId("battle-scene")).toBeVisible();

@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeBattleResult = "victory" | "defeat" | "escape";
 
@@ -30,7 +31,7 @@ async function runtimeState(page: Page): Promise<RuntimeState> {
 async function startPlayFromEditor(page: Page): Promise<void> {
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
 }
 

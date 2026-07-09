@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { deserialize, serialize } from "@/project/io";
 import type { GameMap, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeEventState = {
   readonly x: number;
@@ -198,7 +199,7 @@ test("existing city map transfer fires from the event layer", async ({ page }) =
     await seedProjectFromSupabaseCanonical(page, project);
     await page.screenshot({ path: `${runEvidenceDir}/editor-city-map.png`, fullPage: true });
     await page.getByTestId("mode-play").click();
-    await page.getByTestId("title-new-game").click();
+    await startNewGameFromTitle(page);
     await expect(page.getByTestId("play-canvas")).toBeVisible();
     await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
 

@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type ImageProbe = {
   readonly width: number;
@@ -36,7 +37,7 @@ test("generated hero and slime assets render inside the battle scene", async ({ 
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedGeneratedBattleProject(page);
   await page.click('[data-testid="mode-play"]');
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 2_000 });
   await page.click('[data-testid="event-battle-start"]');
 

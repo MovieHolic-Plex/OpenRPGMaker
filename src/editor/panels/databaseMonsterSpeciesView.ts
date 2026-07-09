@@ -1,5 +1,7 @@
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { emptyToUndefined, numberField, textControl } from "@/editor/panels/databaseControls";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { imageIconOf, recordIconElement } from "@/editor/panels/eventEditor/recordPicker";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { store } from "@/project/store";
@@ -45,7 +47,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
     toolbar(rerender)
   );
   const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
-  detailPane.append(selected ? speciesForm(selected) : el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "species가 없습니다." }));
+  detailPane.append(selected ? speciesForm(selected, rerender) : el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "species가 없습니다." }));
   host.append(el("div", { class: "db-record-workspace rm2k3-record-workspace rm2k3-record-monster-species", children: [listPane, detailPane] }));
 }
 
@@ -89,14 +91,44 @@ function toolbar(rerender: () => void): HTMLElement {
   return el("div", { class: "db-toolbar", children: [add, remove] });
 }
 
-function speciesForm(record: MonsterSpeciesRecord): HTMLElement {
+function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
   const form = el("section", { class: "db-detail-form rm2k3-detail-form", dataset: { testid: "db-detail-form" } });
+  const previewUrl = resolveAssetResourceUrl(record.graphic.monsterResourceId, { project: store.getCurrent() });
+  const stageImage = previewUrl
+    ? el("img", { attrs: { alt: `${record.name} 미리보기`, src: previewUrl } })
+    : el("span", { class: "db-enemy-empty-graphic", text: "(없음)" });
+  if (stageImage instanceof HTMLImageElement) {
+    stageImage.style.filter = `hue-rotate(${record.graphic.graphicHue}deg)`;
+    stageImage.style.opacity = record.graphic.transparent ? "0.58" : "1";
+  }
   form.append(
     el("div", { class: "db-record-id", children: [el("span", { text: "ID" }), el("code", { text: record.id })] }),
     textControl("이름", record.name, (value) => updateSpecies(record.id, { name: value }), "db-monster-species-name"),
-    textControl("몬스터 리소스", record.graphic.monsterResourceId ?? "", (value) => {
-      updateSpecies(record.id, { graphic: { ...record.graphic, monsterResourceId: emptyToUndefined(value) } });
-    }, "db-monster-species-resource"),
+    el("div", {
+      class: "db-enemy-graphic-stage db-monster-species-stage",
+      dataset: { testid: "db-monster-species-stage" },
+      children: [stageImage],
+    }),
+    resourcePickerControl({
+      label: "몬스터 리소스",
+      resourceId: record.graphic.monsterResourceId,
+      kind: "monster",
+      testid: "db-monster-species-resource",
+      allowClear: true,
+      allowHue: true,
+      currentHue: record.graphic.graphicHue,
+      dialogTitle: "Species 몬스터 그래픽",
+      onChange: (result) => {
+        updateSpecies(record.id, {
+          graphic: {
+            ...record.graphic,
+            monsterResourceId: emptyToUndefined(result.resourceId),
+            graphicHue: result.graphicHue ?? record.graphic.graphicHue,
+          },
+        });
+      },
+      rerender,
+    }),
     textControl("타입(최대 2, 쉼표 구분)", (record.types ?? []).join(", "), (value) => {
       updateSpecies(record.id, { types: parseTypes(value) });
     }, "db-monster-species-types"),

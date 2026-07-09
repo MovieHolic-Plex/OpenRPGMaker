@@ -143,12 +143,12 @@ function activateInspectorTab(button: HTMLElement, root: HTMLElement, selector: 
 
 function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
   return actorPanel("그래픽", "actor-graphic", [
-    graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset"),
+    graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset", actor.faceIndex ?? 0),
     resourceControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
       updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
       () => openActorResourceDialog(actor, "faceResourceId", rerender)
     ),
-    graphicPreview("캐릭터셋", actor.characterResourceId ?? "(없음)", "charset"),
+    graphicPreview("캐릭터셋", actor.characterResourceId ?? "(없음)", "charset", actor.characterIndex ?? 0),
     resourceControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>
       updateDatabaseRecord("actors", actor.id, { characterResourceId: emptyToUndefined(characterResourceId) }),
       () => openActorResourceDialog(actor, "characterResourceId", rerender)

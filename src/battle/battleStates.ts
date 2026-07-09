@@ -74,6 +74,7 @@ function attackMultiplierFrom(stateId: string, value: string): number {
 }
 
 function defenseMultiplierFrom(stateId: string, value: string): number {
+  if (stateId === "state_defense_up") return 2;
   if (stateId === "state_defense_down") return 0.5;
   const match = /\bdefen[cs]e\s*(?:x|×)\s*(\d+(?:\.\d+)?)\b/i.exec(value);
   return match ? Math.max(0, Number(match[1])) : 1;

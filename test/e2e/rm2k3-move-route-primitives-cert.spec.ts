@@ -12,6 +12,7 @@ import {
   type DebugState,
 } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop17-move-route-primitives";
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -59,7 +60,7 @@ test("loop17 certifies move route primitive authoring persistence and runtime ef
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   const before = await runtimeState(page);
   expect(before.events.ev_route_target).toMatchObject({ x: 2, y: 3 });

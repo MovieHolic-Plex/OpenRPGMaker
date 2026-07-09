@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { openTestPlayWindow, seedDefaultProject } from "./rm2k3PlayerStatusMenuHelpers";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/item-menu-target-match";
 
@@ -9,7 +10,7 @@ test("item menu uses the Korean detail-and-target structure", async ({ page }) =
   await page.setViewportSize({ width: 1932, height: 1448 });
   await seedDefaultProject(page);
   await openTestPlayWindow(page);
-  await page.getByTestId("test-play-window").getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15000 });
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });
 

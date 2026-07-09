@@ -6,7 +6,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { tapKey } from "./runtimeInput";
+import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -56,7 +56,7 @@ test("build_village door action opens and transfers into the generated house int
   await seedProjectFromSupabaseCanonical(page, scenario.project);
   await page.screenshot({ path: `${EVIDENCE_DIR}/editor-village.png`, fullPage: true });
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
 
