@@ -1,4 +1,6 @@
-type SvgIconName = "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo";
+type SvgIconName =
+  | "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo"
+  | "eyedropper" | "event" | "tile" | "layers" | "map";
 type SvgTag = "path" | "rect" | "circle";
 type SvgNodeSpec = {
   readonly tag: SvgTag;
@@ -54,6 +56,30 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M7 7H3V3" } },
     { tag: "path", attrs: { d: "M3 7c2.6-3.2 7.9-4.2 11.4-1.7 3.7 2.6 4.1 8 .8 11.1-2.3 2.1-5.7 2.5-8.4 1" } },
   ],
+  eyedropper: [
+    { tag: "path", attrs: { d: "M14.5 3.5l4 4-2.5 2.5-4-4z" } },
+    { tag: "path", attrs: { d: "M12 6L5 13l-1 5 5-1 7-7" } },
+  ],
+  event: [
+    { tag: "path", attrs: { d: "M6 3v18" } },
+    { tag: "path", attrs: { d: "M6 4h11l-2.5 3.5L17 11H6" } },
+  ],
+  tile: [
+    { tag: "rect", attrs: { x: "4", y: "4", width: "6", height: "6" } },
+    { tag: "rect", attrs: { x: "12", y: "4", width: "6", height: "6" } },
+    { tag: "rect", attrs: { x: "4", y: "12", width: "6", height: "6" } },
+    { tag: "rect", attrs: { x: "12", y: "12", width: "6", height: "6", fill: "currentColor", opacity: "0.22" } },
+  ],
+  layers: [
+    { tag: "path", attrs: { d: "M11 3l8 4.5-8 4.5-8-4.5z" } },
+    { tag: "path", attrs: { d: "M3 12l8 4.5 8-4.5" } },
+    { tag: "path", attrs: { d: "M3 16.5L11 21l8-4.5" } },
+  ],
+  map: [
+    { tag: "path", attrs: { d: "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" } },
+    { tag: "path", attrs: { d: "M9 4v14" } },
+    { tag: "path", attrs: { d: "M15 6v14" } },
+  ],
 };
 
 export function makeSvgIcon(icon: SvgIconName): SVGSVGElement {
@@ -77,5 +103,7 @@ export function makeSvgIcon(icon: SvgIconName): SVGSVGElement {
 
   return svg;
 }
+
+export const SVG_ICON_NAMES = Object.keys(ICONS) as readonly SvgIconName[];
 
 export type { SvgIconName };
