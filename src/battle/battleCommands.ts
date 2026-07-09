@@ -81,13 +81,7 @@ function defaultRuntimeBattleCommands(project: Project): readonly RuntimeBattleC
   const terms = resolveTerms(project);
   return DEFAULT_RUNTIME_BATTLE_COMMANDS.map((command) => ({
     ...command,
-    name: command.kind === "attack"
-      ? terms.attack
-      : command.kind === "skill"
-        ? terms.skill
-        : command.kind === "item"
-          ? terms.item
-          : command.name,
+    name: fallbackCommandName(project, command.kind),
   }));
 }
 

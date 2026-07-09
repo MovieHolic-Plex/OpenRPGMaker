@@ -22,16 +22,17 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
   backdrop.dataset.testid = "battle-backdrop";
-  // DB(전투군 previewBackground / 지형 battleBackground / 시스템 battleSystem)에서 온
-  // 배경 리소스만 사용한다. 설정이 없으면 절차적 배경(CSS)만 남긴다.
-  // (이전에는 battle-reference-forest.png 를 항상 겹쳐 그려 DB 설정을 덮어썼다.)
-  if (resourceId) {
-    backdrop.dataset.backdropResourceId = resourceId;
-    backdrop.title = "전투 배경";
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-    if (url) {
-      backdrop.style.backgroundImage = `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("${url}")`;
-    }
+  // Prefer troop/system authored backdrop. When absent, use the forest reference
+  // so battles still read as a JRPG scene instead of a flat procedural gradient.
+  const resolvedId = resourceId || "generated-battle-reference-forest";
+  const url =
+    resolveAssetResourceUrl(resolvedId, { project: store.getCurrent() })
+    ?? (!resourceId ? "/generated/battle-reference-forest.png" : undefined);
+  if (resourceId) backdrop.dataset.backdropResourceId = resourceId;
+  else backdrop.dataset.backdropFallback = "forest";
+  backdrop.title = "전투 배경";
+  if (url) {
+    backdrop.style.backgroundImage = `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
   }
   return backdrop;
 }
@@ -149,21 +150,30 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   const row = document.createElement("div");
   row.className = "battle-actor-status";
   row.dataset.recordId = actor.recordId;
+  if (actor.defeated) row.classList.add("is-defeated");
+
   const name = document.createElement("span");
   name.className = "battle-actor-name";
   name.textContent = actor.name;
+
+  const vitals = document.createElement("span");
+  vitals.className = "battle-actor-vitals";
   const hp = document.createElement("span");
   hp.className = "battle-actor-hp";
   hp.textContent = `HP ${actor.hp}/${actor.maxHp}`;
   const mp = document.createElement("span");
   mp.className = "battle-actor-mp";
   mp.textContent = `MP ${actor.mp}/${actor.maxMp}`;
-  const gauge = document.createElement("span");
-  gauge.className = "battle-actor-gauge";
-  gauge.append(atbLabel(), atbBar(actor.gauge));
+  vitals.append(hp, mp);
+
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
-  row.append(name, hp, mp, hpGauge);
-  if (battleFlow === "gauge") row.append(gauge);
+  row.append(name, vitals, hpGauge);
+  if (battleFlow === "gauge") {
+    const gauge = document.createElement("span");
+    gauge.className = "battle-actor-gauge";
+    gauge.append(atbLabel(), atbBar(actor.gauge));
+    row.append(gauge);
+  }
   return row;
 }
 
