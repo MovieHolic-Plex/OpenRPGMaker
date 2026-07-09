@@ -57,6 +57,21 @@ describe("DB upsert 확장 툴", () => {
     expect(record?.commands).toHaveLength(1);
   });
 
+  it("upsert_common_event commands 단수 객체 입력은 배열로 승격하고 warning을 남긴다", () => {
+    const context = ctx();
+    const result = runTool(context, "upsert_common_event", {
+      id: "ce_single",
+      name: "단수",
+      trigger: "none",
+      commands: { kind: "text", body: "한 줄" },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.join("\n")).toContain("common_event.ce_single.commands 단일 커맨드 객체를 Command[] 배열로 감쌌습니다");
+    const record = context.project.commonEvents.find((entry) => entry.id === "ce_single");
+    expect(record?.commands).toEqual([{ kind: "text", body: "한 줄" }]);
+  });
+
   it("upsert_common_event와 run_lint가 런타임 지원 제한 warning을 노출한다", () => {
     const context = ctx();
     const result = runTool(context, "upsert_common_event", {
@@ -82,9 +97,20 @@ describe("DB upsert 확장 툴", () => {
     const result = runTool(context, "upsert_common_event", {
       id: "ce_bad",
       name: "불량",
-      commands: [{ notACommand: true }],
+      commands: [
+        { kind: { command: "text" }, body: "객체 kind" },
+        { body: "kind 없음" },
+      ],
     });
     expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("invalid-args");
+    const message = result.issues?.[0]?.message ?? "";
+    expect(message).toContain("common_event.ce_bad.commands[0].kind");
+    expect(message).toContain("common_event.ce_bad.commands[1].kind");
+    expect(message).toContain("기대 형식 string");
+    expect(message).toContain("커맨드 kind는 문자열");
+    expect(message).toContain("event_command_assist(있으면)나 고수준 툴");
+    expect(message).toContain("올바른 1커맨드 예시 JSON: {\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}");
   });
 });
 

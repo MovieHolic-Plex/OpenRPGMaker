@@ -4,7 +4,7 @@
 
 import { isPassable } from "@/project/collision";
 import { isSeason, isTimePhase, type Season } from "@/project/gameTime";
-import { validateCommandArray, validateShopStock } from "@/project/io/shapeCommandFields";
+import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
@@ -20,12 +20,14 @@ import {
   resolveGraphic,
   type GraphicSpec,
 } from "./eventCompile";
+import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
+const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
 const DIRS: readonly Dir[] = ["down", "left", "right", "up"];
 
@@ -112,17 +114,12 @@ export function upsertEventIntoMap(map: GameMap, event: GameEvent): "added" | "m
   return "added";
 }
 
-function commandArrayOrEmpty(value: unknown, label: string): Command[] {
-  if (value === undefined || value === null) return [];
-  if (Array.isArray(value)) return value as Command[];
-  throw new ToolError(
-    `이벤트 형식이 올바르지 않습니다: ${label}은 Command[] 배열이어야 합니다. 실제 타입: ${describeValue(value)}. 단일 커맨드는 {"commands":[{"kind":"text","body":"..."}]}처럼 배열로 보내세요.`,
-    { code: "invalid-args" }
-  );
+function commandArrayOrEmpty(value: unknown, label: string, warnings?: string[]): Command[] {
+  return normalizeLowLevelCommandArray(value, label, warnings);
 }
 
-function normalizeEventCommandArrays(event: GameEvent): void {
-  (event as GameEvent).commands = commandArrayOrEmpty((event as { commands?: unknown }).commands, `${event.id}.commands`);
+function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): void {
+  (event as GameEvent).commands = commandArrayOrEmpty((event as { commands?: unknown }).commands, `${event.id}.commands`, warnings);
   if (event.pages === undefined || event.pages === null) return;
   if (!Array.isArray(event.pages)) {
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${event.id}.pages는 배열이어야 합니다. 실제 타입: ${describeValue(event.pages)}`, {
@@ -132,17 +129,17 @@ function normalizeEventCommandArrays(event: GameEvent): void {
   for (const [index, page] of event.pages.entries()) {
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
-    (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`);
+    (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
   }
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent): void {
+function assertEventShape(event: GameEvent, warnings?: string[]): void {
   try {
-    normalizeEventCommandArrays(event);
-    validateCommandArray(`${event.id}.commands`, event.commands);
+    normalizeEventCommandArrays(event, warnings);
+    validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
-      validateCommandArray(`${event.id}.${page.id}.commands`, page.commands);
+      validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
@@ -169,7 +166,7 @@ export function passableLanding(project: Project, map: GameMap, x: number, y: nu
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: "저수준 만능 이벤트 툴. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용.",
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -183,15 +180,17 @@ const upsertEvent: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const event = args.event as GameEvent;
+    const warnings: string[] = [];
     if (!event || typeof event.id !== "string") throw new ToolError("event.id(문자열)가 필요합니다.");
     if (typeof event.x !== "number" || typeof event.y !== "number") throw new ToolError("event.x/y(숫자)가 필요합니다.");
     if (!event.trigger) (event as GameEvent).trigger = { kind: "action" };
-    assertEventShape(event);
+    assertEventShape(event, warnings);
     const outcome = upsertEventIntoMap(map, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
       data: { eventId: event.id, unsupportedCommands },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

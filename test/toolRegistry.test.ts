@@ -11,6 +11,12 @@ import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 
 const NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 
+function descriptionFor(name: string): string {
+  const tool = allTools().find((entry) => entry.name === name);
+  expect(tool).toBeDefined();
+  return tool?.description ?? "";
+}
+
 describe("toolRegistry", () => {
   it("모든 툴이 유효한 OpenAI 함수 스키마를 산출한다", () => {
     const openai = toOpenAiTools();
@@ -31,6 +37,18 @@ describe("toolRegistry", () => {
       expect(tool.function.parameters.type).toBe("object");
       expect(typeof tool.function.parameters).toBe("object");
     }
+  });
+
+  it("저수준 이벤트 툴 description은 고수준 툴 우선 라우팅을 먼저 안내한다", () => {
+    expect({
+      upsert_event: descriptionFor("upsert_event"),
+      upsert_common_event: descriptionFor("upsert_common_event"),
+    }).toMatchInlineSnapshot(`
+      {
+        "upsert_common_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능.",
+        "upsert_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용.",
+      }
+    `);
   });
 
   it("모든 툴 정의가 read/write 모드와 실행 함수를 가진다", () => {

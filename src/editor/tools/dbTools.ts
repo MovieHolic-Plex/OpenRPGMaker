@@ -11,7 +11,6 @@ import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, no
 import { normalizeCropRecord } from "@/project/farmModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
-import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import type {
   ActorRecord,
@@ -29,6 +28,7 @@ import type {
   StateRecord,
   TroopRecord,
 } from "@/project/types";
+import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 // id 기준으로 배열에 upsert.
@@ -781,10 +781,11 @@ const upsertState: ToolDefinition = {
 };
 
 const COMMON_EVENT_TRIGGERS = new Set<CommonEvent["trigger"]>(["none", "auto", "parallel"]);
+const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
 
 const upsertCommonEvent: ToolDefinition = {
   name: "upsert_common_event",
-  description: "커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능.",
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -793,29 +794,32 @@ const upsertCommonEvent: ToolDefinition = {
       name: { type: "string" },
       trigger: { type: "string", enum: ["none", "auto", "parallel"] },
       conditionSwitchId: { type: "string" },
-      commands: { type: "array", description: "Command[]", items: { type: "object" } },
+      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: { type: "object" } },
     },
     required: ["id", "name", "commands"],
   },
   run(draft, args): ToolExecResult {
     const base = requireRecordId(args, "common_event");
     if (!base.name) throw new ToolError("common_event.name(문자열)가 필요합니다.");
+    const warnings: string[] = [];
     const trigger = COMMON_EVENT_TRIGGERS.has(args.trigger as CommonEvent["trigger"])
       ? (args.trigger as CommonEvent["trigger"])
       : "none";
-    validateCommandArray(`common_event.${args.id}.commands`, args.commands);
+    const commands = normalizeLowLevelCommandArray(args.commands, `common_event.${args.id}.commands`, warnings);
+    validateLowLevelCommandArray(`common_event.${args.id}.commands`, commands);
     const record: CommonEvent = {
       id: args.id as string,
       name: args.name as string,
       trigger,
       ...(typeof args.conditionSwitchId === "string" && args.conditionSwitchId ? { conditionSwitchId: args.conditionSwitchId } : {}),
-      commands: [...(args.commands as Command[])],
+      commands: [...commands],
     };
     const outcome = upsertById(draft.commonEvents, record);
     const unsupportedCommands = countLimitedRuntimeSupportCommands(record.commands);
     return {
       summary: `커먼 이벤트 '${record.name}'(${trigger}) ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
       data: { id: record.id, unsupportedCommands },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

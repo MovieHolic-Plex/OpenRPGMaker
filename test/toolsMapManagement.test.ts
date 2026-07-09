@@ -73,12 +73,12 @@ describe("get_event", () => {
     expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
   });
 
-  it("upsert_event pages[].commands 객체 입력은 턴 예외 대신 invalid-args 실패로 반환한다", () => {
+  it("upsert_event pages[].commands 단수 객체 입력은 배열로 승격하고 warning을 남긴다", () => {
     const { context, mapId } = ctxWithMap();
     const result = runTool(context, "upsert_event", {
       mapId,
       event: {
-        id: "ev_bad_commands",
+        id: "ev_single_command",
         x: 4,
         y: 4,
         trigger: { kind: "action" },
@@ -92,17 +92,43 @@ describe("get_event", () => {
             priority: "same",
             movement: { type: "fixed", speed: 3, frequency: 3 },
             trigger: { kind: "action" },
-            commands: { kind: "text", body: "배열이 아님" },
+            commands: { kind: "text", body: "단수 커맨드" },
           },
         ],
       },
     });
 
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.join("\n")).toContain("ev_single_command.p1.commands 단일 커맨드 객체를 Command[] 배열로 감쌌습니다");
+    const event = context.project.maps[mapId].events.find((entry) => entry.id === "ev_single_command");
+    expect(event?.pages?.[0]?.commands).toEqual([{ kind: "text", body: "단수 커맨드" }]);
+  });
+
+  it("upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다", () => {
+    const { context, mapId } = ctxWithMap();
+    const result = runTool(context, "upsert_event", {
+      mapId,
+      event: {
+        id: "ev_bad_kind",
+        x: 4,
+        y: 4,
+        trigger: { kind: "action" },
+        commands: [
+          { kind: { command: "text" }, body: "객체 kind" },
+          { body: "kind 없음" },
+        ],
+      },
+    });
+
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("'upsert_event' 실행 실패");
     expect(result.issues?.[0]?.code).toBe("invalid-args");
-    expect(result.issues?.[0]?.message).toContain("Command[] 배열");
-    expect(context.project.maps[mapId].events.some((event) => event.id === "ev_bad_commands")).toBe(false);
+    const message = result.issues?.[0]?.message ?? "";
+    expect(message).toContain("ev_bad_kind.commands[0].kind");
+    expect(message).toContain("ev_bad_kind.commands[1].kind");
+    expect(message).toContain("기대 형식 string");
+    expect(message).toContain("커맨드 kind는 문자열");
+    expect(message).toContain("올바른 1커맨드 예시 JSON");
+    expect(context.project.maps[mapId].events.some((event) => event.id === "ev_bad_kind")).toBe(false);
   });
 
   it("upsert_event 인자 누락은 NPC 배치용 place_npc 힌트를 돌려준다", () => {

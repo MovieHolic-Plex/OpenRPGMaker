@@ -80,6 +80,26 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("오브젝트 산포만 place_props");
   });
 
+  it("routes common domain requests to high-level tools before low-level event upserts", () => {
+    const text = prompt();
+    expect(text).toContain("## 고수준 툴 우선");
+    expect(text).toContain("트랩/즉사=place_trap");
+    expect(text).toContain("체크포인트=place_trap의 checkpoint 관례");
+    expect(text).toContain("퍼즐(순서/비밀번호/아이템 게이트)=compile_puzzle");
+    expect(text).toContain("조사 오브젝트=place_examine_hotspots");
+    expect(text).toContain("컷신=script_cutscene");
+    expect(text).toContain("추격 장면=make_chase_scene");
+    expect(text).toContain("NPC=place_npc/make_villager");
+    expect(text).toContain("상점=set_shop_stock");
+    expect(text).toContain("사냥터=make_hunting_ground");
+    expect(text).toContain("조명/분위기=set_lighting_volume/set_scene_mood");
+    expect(text).toContain("수역/바닥=fill_region");
+    expect(text).toContain("집/마을=build_house_kit/build_village");
+    expect(text).toContain("월드=plan_world/build_world");
+    expect(text).toContain("퀘스트=define_quest→verify_quest");
+    expect(text).toContain("upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용");
+  });
+
   it("routes NPC placement to place_npc instead of low-level upsert_event", () => {
     const text = prompt();
     expect(text).toContain("NPC/주민 배치 = place_npc");

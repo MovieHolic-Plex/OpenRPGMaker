@@ -28,6 +28,18 @@ function schemaHasType(schema: JsonSchema, type: JsonSchemaType): boolean {
   return Array.isArray(schema.type) ? schema.type.includes(type) : schema.type === type;
 }
 
+const SINGLE_OBJECT_ARRAY_MARK = "__rpgzzuSingleObjectArray";
+
+function shouldWrapSingleObjectAsArray(schema: JsonSchema): boolean {
+  return schema.type === "array" && schema.items?.type === "object" && schema.description?.includes("단일 Command object") === true;
+}
+
+function singleObjectArray(value: unknown): unknown[] {
+  const array = [value];
+  Object.defineProperty(array, SINGLE_OBJECT_ARRAY_MARK, { value: true, enumerable: false });
+  return array;
+}
+
 const COORDINATE_WRAPPER_KEYS = ["rect", "region", "area", "bounds", "at", "pos", "point"] as const;
 
 function dimensionAlias(key: string): string | null {
@@ -125,6 +137,9 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
     if (!schema.items) return parsed;
     return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry));
   }
+  if (shouldWrapSingleObjectAsArray(schema) && isRecord(parsed)) {
+    return singleObjectArray(coerceForSchema(schema.items as JsonSchema, parsed));
+  }
   if (schemaTypes.includes("integer") || schemaTypes.includes("number")) {
     if (typeof parsed === "string" && parsed.trim() !== "") {
       const number = Number(parsed);
@@ -146,7 +161,12 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
       return next;
     }
     case "array": {
-      if (!Array.isArray(parsed)) return parsed;
+      if (!Array.isArray(parsed)) {
+        if (shouldWrapSingleObjectAsArray(schema) && isRecord(parsed)) {
+          return singleObjectArray(coerceForSchema(schema.items as JsonSchema, parsed));
+        }
+        return parsed;
+      }
       if (!schema.items) return parsed;
       return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry));
     }
