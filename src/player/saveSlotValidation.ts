@@ -1,7 +1,17 @@
-import type { ActorInitialEquipment } from "@/project/types";
+import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
-import type { RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
+import { isSeason, normalizeGameTime } from "@/project/gameTime";
+import type {
+  RuntimeCameraSessionState,
+  RuntimeCameraTarget,
+  RuntimeEventLocation,
+  RuntimeNpcScheduleState,
+  RuntimeNpcTravelState,
+  RuntimeRemovedEventIds,
+  RuntimeSpawnedEventState,
+} from "@/player/types";
+import { RNG_STREAMS, type RngState } from "@/util/rng";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
   if (!isRecord(value)) return false;
@@ -37,18 +47,166 @@ export function isActorSkillIdsRecord(value: unknown): value is PlaySession["act
   return Object.values(value).every(isStringArray);
 }
 
+export function isActorParamBonusRecord(value: unknown): value is Record<string, Partial<Record<ActorParameterKey, number>>> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((bonuses) => {
+    if (!isRecord(bonuses)) return false;
+    return Object.values(bonuses).every((amount) => typeof amount === "number" && Number.isFinite(amount));
+  });
+}
+
+export function isActorStateIdsRecord(value: unknown): value is Record<string, string[]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((states) => Array.isArray(states) && states.every((stateId) => typeof stateId === "string"));
+}
+
+export function isMonsterInstancesRecord(value: unknown): value is PlaySession["monsterInstances"] {
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([instanceId, instance]) => {
+    if (!isRecord(instance)) return false;
+    if (instance.instanceId !== instanceId || typeof instance.speciesId !== "string") return false;
+    if (instance.nickname !== undefined && typeof instance.nickname !== "string") return false;
+    if (typeof instance.level !== "number" || !Number.isFinite(instance.level)) return false;
+    if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
+    if (instance.currentHp !== undefined && (typeof instance.currentHp !== "number" || !Number.isFinite(instance.currentHp))) return false;
+    if (instance.skillIds !== undefined && !isStringArray(instance.skillIds)) return false;
+    if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
+    if (!isMonsterCaughtAt(instance.caughtAt)) return false;
+    return instance.ivs === undefined || isMonsterIvs(instance.ivs);
+  });
+}
+
+export function isFarmPlotsRecord(value: unknown): value is PlaySession["farmPlots"] {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((plots) => {
+    if (!isRecord(plots)) return false;
+    return Object.entries(plots).every(([key, plot]) => isFarmPlotKey(key) && isFarmPlotState(plot));
+  });
+}
+
+function isMonsterIvs(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return ["hp", "atk", "def", "spd"].every((key) => {
+    const amount = value[key];
+    return typeof amount === "number" && Number.isFinite(amount) && amount >= 0 && amount <= 15;
+  });
+}
+
+function isMonsterCaughtAt(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return typeof value.mapId === "string" && typeof value.x === "number" && Number.isFinite(value.x) && typeof value.y === "number" && Number.isFinite(value.y);
+}
+
+function isFarmPlotKey(value: string): boolean {
+  const parts = value.split(",");
+  if (parts.length !== 2) return false;
+  return parts.every((part) => Number.isInteger(Number(part)));
+}
+
+function isFarmPlotState(value: unknown): value is NonNullable<PlaySession["farmPlots"]>[string][string] {
+  if (!isRecord(value)) return false;
+  if (typeof value.tilled !== "boolean" || typeof value.watered !== "boolean") return false;
+  if (value.cropId !== undefined && typeof value.cropId !== "string") return false;
+  if (value.stage !== undefined && !isFiniteInteger(value.stage)) return false;
+  if (value.growthDays !== undefined && !isFiniteInteger(value.growthDays)) return false;
+  if (value.dead !== undefined && typeof value.dead !== "boolean") return false;
+  if (value.plantedDay !== undefined && !isFarmPlotDate(value.plantedDay)) return false;
+  return true;
+}
+
+function isFarmPlotDate(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return isFiniteInteger(value.day) && isSeason(value.season) && isFiniteInteger(value.year);
+}
+
+export function isRngState(value: unknown): value is RngState {
+  if (!isRecord(value)) return false;
+  if (typeof value.seed !== "number" || !Number.isFinite(value.seed)) return false;
+  if (!isRecord(value.streams)) return false;
+  const streams = value.streams;
+  return RNG_STREAMS.every((stream) => {
+    const state = streams[stream];
+    return isRecord(state) &&
+      typeof state.seed === "number" &&
+      Number.isFinite(state.seed) &&
+      typeof state.state === "number" &&
+      Number.isFinite(state.state);
+  });
+}
+
 export function isRuntimeEventLocationRecord(value: unknown): value is Record<string, RuntimeEventLocation> {
   if (!isRecord(value)) return false;
-  return Object.values(value).every((location) => {
-    if (!isRecord(location)) return false;
-    const direction = location.direction;
+  return Object.values(value).every(isRuntimeEventLocation);
+}
+
+export function isRuntimeCameraState(value: unknown): value is RuntimeCameraSessionState {
+  if (!isRecord(value)) return false;
+  if (value.mode !== "follow" && value.mode !== "fixed") return false;
+  if (!isRuntimeCameraTarget(value.target)) return false;
+  return (
+    optionalFiniteNumber(value.offsetX) &&
+    optionalFiniteNumber(value.offsetY) &&
+    optionalFiniteNumber(value.zoom)
+  );
+}
+
+export function isLightingState(value: unknown): value is LightingState {
+  if (!isRecord(value)) return false;
+  if (typeof value.ambient !== "number" || !Number.isFinite(value.ambient)) return false;
+  if (value.color !== undefined && typeof value.color !== "string") return false;
+  if (!Array.isArray(value.sources)) return false;
+  return value.sources.every(isLightSource);
+}
+
+export function isGameTime(value: unknown): value is PlaySession["gameTime"] {
+  return normalizeGameTime(value) !== undefined;
+}
+
+function isLightSource(value: unknown): value is LightSource {
+  if (!isRecord(value)) return false;
+  if (typeof value.id !== "string") return false;
+  if (!isLightAnchor(value.at)) return false;
+  if (typeof value.radius !== "number" || !Number.isFinite(value.radius)) return false;
+  if (value.intensity !== undefined && (typeof value.intensity !== "number" || !Number.isFinite(value.intensity))) return false;
+  if (value.color !== undefined && typeof value.color !== "string") return false;
+  if (value.flicker !== undefined && typeof value.flicker !== "boolean") return false;
+  return true;
+}
+
+function isLightAnchor(value: unknown): value is LightSource["at"] {
+  if (value === "player") return true;
+  if (!isRecord(value)) return false;
+  if (typeof value.eventId === "string") return true;
+  return typeof value.x === "number" && Number.isFinite(value.x) && typeof value.y === "number" && Number.isFinite(value.y);
+}
+
+function isRuntimeCameraTarget(value: unknown): value is RuntimeCameraTarget {
+  if (!isRecord(value)) return false;
+  if (value.kind === "player") return true;
+  if (value.kind === "event") return typeof value.eventId === "string";
+  if (value.kind === "position") return typeof value.x === "number" && typeof value.y === "number";
+  return false;
+}
+
+export function isRuntimeSpawnedEventRecord(value: unknown): value is Record<string, RuntimeSpawnedEventState> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((spawn) => {
+    if (!isRecord(spawn)) return false;
+    const direction = spawn.direction;
     return (
-      typeof location.mapId === "string" &&
-      typeof location.x === "number" &&
-      typeof location.y === "number" &&
+      typeof spawn.templateMapId === "string" &&
+      typeof spawn.templateEventId === "string" &&
+      typeof spawn.mapId === "string" &&
+      typeof spawn.x === "number" &&
+      typeof spawn.y === "number" &&
       (direction === undefined || direction === "left" || direction === "right" || direction === "up" || direction === "down")
     );
   });
+}
+
+export function isRuntimeRemovedEventIds(value: unknown): value is RuntimeRemovedEventIds {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every(isStringArray);
 }
 
 export function isRuntimeNpcTravelStateRecord(value: unknown): value is Record<string, RuntimeNpcTravelState> {
@@ -56,6 +214,58 @@ export function isRuntimeNpcTravelStateRecord(value: unknown): value is Record<s
   return Object.values(value).every((state) =>
     isRecord(state) && typeof state.destinationIndex === "number"
   );
+}
+
+export function isRuntimeNpcScheduleStateRecord(value: unknown): value is Record<string, RuntimeNpcScheduleState> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((state) => {
+    if (!isRecord(state)) return false;
+    if (state.routeKey !== undefined && typeof state.routeKey !== "string") return false;
+    return state.exitTarget === undefined || isRuntimeEventLocation(state.exitTarget);
+  });
+}
+
+function isRuntimeEventLocation(value: unknown): value is RuntimeEventLocation {
+  if (!isRecord(value)) return false;
+  const direction = value.direction;
+  return (
+    typeof value.mapId === "string" &&
+    typeof value.x === "number" &&
+    typeof value.y === "number" &&
+    (direction === undefined || isDirection(direction))
+  );
+}
+
+export function isRuntimeFollowerArray(value: unknown): value is PlaySession["followers"] {
+  if (!Array.isArray(value)) return false;
+  return value.every((follower) => {
+    if (!isRecord(follower)) return false;
+    if (follower.eventId !== undefined && typeof follower.eventId !== "string") return false;
+    if (typeof follower.name !== "string") return false;
+    if (!isRecord(follower.graphic)) return false;
+    const graphic = follower.graphic;
+    if (graphic.transparent !== undefined && typeof graphic.transparent !== "boolean") return false;
+    if (graphic.direction !== undefined && !isDirection(graphic.direction)) return false;
+    if (graphic.pattern !== undefined && typeof graphic.pattern !== "number" && typeof graphic.pattern !== "string") return false;
+    if (graphic.sprite !== undefined) {
+      if (!isRecord(graphic.sprite)) return false;
+      if (graphic.sprite.type !== "bundled" && graphic.sprite.type !== "uploaded") return false;
+      if (typeof graphic.sprite.id !== "string") return false;
+    }
+    return true;
+  });
+}
+
+export function isRuntimeFollowerTrail(value: unknown): value is PlaySession["followerTrail"] {
+  if (!Array.isArray(value)) return false;
+  return value.every((point) => {
+    if (!isRecord(point)) return false;
+    return (
+      typeof point.x === "number" &&
+      typeof point.y === "number" &&
+      (point.direction === undefined || isDirection(point.direction))
+    );
+  });
 }
 
 export function parseMapOverrides(value: Record<string, unknown>): PlaySession["mapOverrides"] {
@@ -139,8 +349,25 @@ export function isNumberRecord(value: unknown): value is Record<string, number> 
   return Object.values(value).every((item) => typeof item === "number");
 }
 
+export function isStringRecord(value: unknown): value is Record<string, string> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((item) => typeof item === "string");
+}
+
 export function isStringArray(value: unknown): value is readonly string[] {
   return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+function optionalFiniteNumber(value: unknown): boolean {
+  return value === undefined || (typeof value === "number" && Number.isFinite(value));
+}
+
+function isFiniteInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value);
+}
+
+function isDirection(value: unknown): value is "down" | "left" | "right" | "up" {
+  return value === "down" || value === "left" || value === "right" || value === "up";
 }
 
 type ParsedAudioTrack =

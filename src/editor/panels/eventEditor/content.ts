@@ -5,6 +5,7 @@ import {
   deleteEventPageCommandAt,
   ensureEventPages,
   insertEventPageCommandAt,
+  moveEventPageCommandAcross,
   moveEventPageCommandAt,
   moveEventPageCommandToIndex,
   replaceEventPageCommands,
@@ -15,11 +16,13 @@ import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventAiAssist } from "./aiAssist";
+import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
+import { renderEventScheduleSection } from "./eventSchedule";
 import {
   renderClassicPageTabStrip,
   renderEventNameControl,
@@ -121,7 +124,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       );
     }
   });
-  settingsColumn.append(renderClassicPageTabStrip(ev, activePage), renderEventPageProps(mapId, ev.id, activePage));
+  settingsColumn.append(
+    renderClassicPageTabStrip(ev, activePage),
+    renderEventPageProps(mapId, ev.id, activePage),
+    renderEventScheduleSection(mapId, ev)
+  );
   commandsColumn.append(
     renderCommandToolbar(cmdList, actions, commandHistory),
     el("fieldset", {
@@ -133,7 +140,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       ],
     }),
     // 커맨드 리스트 하단 AI Assist(자연어 → 커맨드 JSON 생성/프리뷰/삽입).
-    renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList })
+    renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
+    // [P2] 모던 전용 파생 뷰(라이브 미리보기/플로우차트) — 기본 접힘, RM2003 화면 옆에 선다.
+    renderEventScriptModernViews(activePage)
   );
 
   const workbench = el("div", {
@@ -262,6 +271,12 @@ function commandKindForTestId(testId: string): Command["kind"] | null {
     "command-add-gold": "changeGold",
     "command-add-item": "changeItem",
     "command-add-party": "changeParty",
+    "command-add-give-monster": "giveMonster",
+    "command-add-evolve-monster": "evolveMonster",
+    "command-add-set-lighting": "setLighting",
+    "command-add-checkpoint-save": "checkpointSave",
+    "command-add-kill-player": "killPlayer",
+    "command-add-trigger-ending": "triggerEnding",
     "command-add-game-over": "gameOver",
     "command-add-ending": "ending",
   };
@@ -277,6 +292,8 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
     deleteCommand: (path) => deleteEventPageCommandAt(mapId, eventId, pageId, path),
     moveCommand: (path, dir) => moveEventPageCommandAt(mapId, eventId, pageId, path, dir),
     moveCommandTo: (sourcePath, toIndex) => moveEventPageCommandToIndex(mapId, eventId, pageId, sourcePath, toIndex),
+    moveCommandAcross: (sourcePath, targetContainerPath, toIndex) =>
+      moveEventPageCommandAcross(mapId, eventId, pageId, sourcePath, targetContainerPath, toIndex),
   };
 }
 

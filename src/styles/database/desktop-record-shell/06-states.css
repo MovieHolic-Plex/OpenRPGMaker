@@ -22,8 +22,8 @@
   }
 
   .database-modal-body .db-state-rm2k3-workbench > .db-state-panel {
-    background: #ffffff;
-    border-color: var(--db-modern-line, #d7d7d3);
+    background: var(--bg-raised);
+    border-color: var(--db-modern-line, var(--border-subtle));
     padding: 12px 12px 10px;
   }
 

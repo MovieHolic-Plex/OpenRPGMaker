@@ -1,12 +1,43 @@
-import { assert, requireArray, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
+import { isPaletteSlotRole } from "../tilesetPalette";
+import { TERM_KEYS } from "../terms";
+import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
 import { validateAssetRef } from "./shapeReferenceFields";
 
 export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
-  const terms = requireRecord("meta.terms", meta.terms);
-  requireString("meta.terms.gold", terms.gold);
+  repairTerms(meta);
+}
+
+function repairTerms(meta: Record<string, unknown>): void {
+  if (meta.terms === undefined) {
+    meta.terms = {};
+    warnTermsRepair("meta.terms가 없어 빈 용어 설정으로 정리하고 로드했습니다.");
+    return;
+  }
+  if (!isRecord(meta.terms)) {
+    meta.terms = {};
+    warnTermsRepair("meta.terms가 객체가 아니어서 빈 용어 설정으로 정리하고 로드했습니다.");
+    return;
+  }
+  const terms = meta.terms;
+  let removed = 0;
+  for (const key of TERM_KEYS) {
+    if (terms[key] === undefined || typeof terms[key] === "string") continue;
+    delete terms[key];
+    removed += 1;
+  }
+  if (removed > 0) warnTermsRepair(`문자열이 아닌 용어 필드 ${removed}개를 삭제하고 로드했습니다.`);
+}
+
+function warnTermsRepair(message: string): void {
+  if (typeof console === "undefined") return;
+  console.warn(`[project] ${message}`);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export function validateAssets(value: unknown): void {
@@ -57,6 +88,38 @@ export function validateTileset(id: string, value: unknown): void {
       requireArray(`tileset ${id}.tileMeta`, tileset.tileMeta).length === count,
       `tileset ${id}: tileMeta 길이 불일치.`
     );
+    for (const [index, meta] of requireArray(`tileset ${id}.tileMeta`, tileset.tileMeta).entries()) {
+      if (meta === undefined || meta === null) continue;
+      const record = requireRecord(`tileset ${id}.tileMeta[${index}]`, meta);
+      if (record.confidence !== undefined) {
+        if (typeof record.confidence === "number") {
+          const confidence = requireNumber(`tileset ${id}.tileMeta[${index}].confidence`, record.confidence);
+          assert(confidence >= 0 && confidence <= 1, `tileset ${id}: tileMeta[${index}] confidence must be 0~1`);
+        } else {
+          const confidence = requireString(`tileset ${id}.tileMeta[${index}].confidence`, record.confidence);
+          assert(
+            confidence === "high" || confidence === "medium" || confidence === "low",
+            `tileset ${id}: tileMeta[${index}] confidence invalid`
+          );
+        }
+      }
+      if (record.origin !== undefined) {
+        const origin = requireString(`tileset ${id}.tileMeta[${index}].origin`, record.origin);
+        assert(origin === "user" || origin === "ai", `tileset ${id}: tileMeta[${index}] origin invalid`);
+      }
+      if (record.locked !== undefined) requireBoolean(`tileset ${id}.tileMeta[${index}].locked`, record.locked);
+    }
+  }
+  if (tileset.transparentColor !== undefined) {
+    requireString(`tileset ${id}.transparentColor`, tileset.transparentColor);
+  }
+  if (tileset.grammarProfile !== undefined) {
+    requireString(`tileset ${id}.grammarProfile`, tileset.grammarProfile);
+  }
+  if (tileset.suppressedHarnessGroupIds !== undefined) {
+    for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
+      requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);
+    }
   }
   if (tileset.tileGroups !== undefined) {
     for (const [index, group] of requireArray(`tileset ${id}.tileGroups`, tileset.tileGroups).entries()) {
@@ -67,6 +130,17 @@ export function validateTileset(id: string, value: unknown): void {
       requireString(`tileset ${id}.tileGroups[${index}].defaultLayer`, record.defaultLayer);
       requireString(`tileset ${id}.tileGroups[${index}].description`, record.description);
       requireString(`tileset ${id}.tileGroups[${index}].placementRules`, record.placementRules);
+      if (record.origin !== undefined) {
+        const origin = requireString(`tileset ${id}.tileGroups[${index}].origin`, record.origin);
+        assert(origin === "user" || origin === "ai", `tileset ${id}: tileGroups[${index}] origin invalid`);
+      }
+      if (record.layerHome !== undefined) {
+        const layerHome = requireString(`tileset ${id}.tileGroups[${index}].layerHome`, record.layerHome);
+        assert(
+          layerHome === "lower" || layerHome === "upper" || layerHome === "perCell",
+          `tileset ${id}: tileGroups[${index}] layerHome invalid`
+        );
+      }
       if (record.confidence !== undefined) {
         const confidence = requireString(`tileset ${id}.tileGroups[${index}].confidence`, record.confidence);
         assert(
@@ -135,44 +209,54 @@ export function validateTileset(id: string, value: unknown): void {
       }
     }
   }
-  if (tileset.terrainTemplates !== undefined) {
-    for (const [index, template] of requireArray(`tileset ${id}.terrainTemplates`, tileset.terrainTemplates).entries()) {
-      const record = requireRecord(`tileset ${id}.terrainTemplates[${index}]`, template);
-      requireString(`tileset ${id}.terrainTemplates[${index}].id`, record.id);
-      requireString(`tileset ${id}.terrainTemplates[${index}].name`, record.name);
-      requireString(`tileset ${id}.terrainTemplates[${index}].sourceMapName`, record.sourceMapName);
-      if (record.grammar !== undefined) {
-        for (const [grammarIndex, grammar] of requireArray(`tileset ${id}.terrainTemplates[${index}].grammar`, record.grammar).entries()) {
-          const grammarRecord = requireRecord(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}]`, grammar);
-          const kind = requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].kind`, grammarRecord.kind);
-          assert(kind === "overlay" || kind === "roof-row" || kind === "wall-row", `tileset ${id}: terrainTemplates[${index}] grammar.kind invalid`);
-          requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].role`, grammarRecord.role);
-          requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].layer`, grammarRecord.layer);
-          requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].meaning`, grammarRecord.meaning);
-          if (grammarRecord.left !== undefined) requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].left`, grammarRecord.left);
-          if (grammarRecord.middle !== undefined) requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].middle`, grammarRecord.middle);
-          if (grammarRecord.right !== undefined) requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].right`, grammarRecord.right);
-          if (grammarRecord.mustTouch !== undefined) requireString(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].mustTouch`, grammarRecord.mustTouch);
-          if (grammarRecord.tiles !== undefined) {
-            for (const tile of requireArray(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].tiles`, grammarRecord.tiles)) {
-              requireNumber(`tileset ${id}.terrainTemplates[${index}].grammar[${grammarIndex}].tiles[]`, tile);
-            }
-          }
+  if (tileset.palettePresets !== undefined) {
+    for (const [index, preset] of requireArray(`tileset ${id}.palettePresets`, tileset.palettePresets).entries()) {
+      const record = requireRecord(`tileset ${id}.palettePresets[${index}]`, preset);
+      requireString(`tileset ${id}.palettePresets[${index}].id`, record.id);
+      requireString(`tileset ${id}.palettePresets[${index}].name`, record.name);
+      const origin = requireString(`tileset ${id}.palettePresets[${index}].origin`, record.origin);
+      assert(origin === "user" || origin === "ai", `tileset ${id}: palettePresets[${index}] origin invalid`);
+      if (record.locked !== undefined) requireBoolean(`tileset ${id}.palettePresets[${index}].locked`, record.locked);
+      for (const [slotIndex, slot] of requireArray(`tileset ${id}.palettePresets[${index}].slots`, record.slots).entries()) {
+        const slotRecord = requireRecord(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}]`, slot);
+        const role = requireString(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].role`, slotRecord.role);
+        assert(isPaletteSlotRole(role), `tileset ${id}: palettePresets[${index}].slots[${slotIndex}] role invalid`);
+        for (const tileId of requireArray(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].tileIds`, slotRecord.tileIds)) {
+          const tileNumber = requireNumber(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].tileIds[]`, tileId);
+          assert(tileNumber >= 0 && tileNumber < count, `tileset ${id}: palettePresets[${index}] tileId out of range`);
+        }
+        if (slotRecord.weight !== undefined) {
+          const weight = requireNumber(`tileset ${id}.palettePresets[${index}].slots[${slotIndex}].weight`, slotRecord.weight);
+          assert(weight > 0, `tileset ${id}: palettePresets[${index}].slots[${slotIndex}] weight must be > 0`);
         }
       }
-      for (const [rowIndex, row] of requireArray(`tileset ${id}.terrainTemplates[${index}].rows`, record.rows).entries()) {
-        const rowRecord = requireRecord(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}]`, row);
-        requireString(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].section`, rowRecord.section);
-        requireString(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].coord`, rowRecord.coord);
-        requireString(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].meaning`, rowRecord.meaning);
-        for (const layer of ["lower", "upper", "stack"] as const) {
-          for (const tile of requireArray(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].${layer}`, rowRecord[layer])) {
-            requireNumber(`tileset ${id}.terrainTemplates[${index}].rows[${rowIndex}].${layer}[]`, tile);
-          }
+    }
+  }
+  if (tileset.autotileGroups !== undefined) {
+    for (const [index, group] of requireArray(`tileset ${id}.autotileGroups`, tileset.autotileGroups).entries()) {
+      const record = requireRecord(`tileset ${id}.autotileGroups[${index}]`, group);
+      requireString(`tileset ${id}.autotileGroups[${index}].id`, record.id);
+      requireString(`tileset ${id}.autotileGroups[${index}].name`, record.name);
+      if (record.neighborhood !== undefined) {
+        const neighborhood = requireNumber(`tileset ${id}.autotileGroups[${index}].neighborhood`, record.neighborhood);
+        assert(neighborhood === 4 || neighborhood === 8, `tileset ${id}: autotileGroups[${index}] neighborhood invalid`);
+      }
+      for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].memberTileIds`, record.memberTileIds)) {
+        requireNumber(`tileset ${id}.autotileGroups[${index}].memberTileIds[]`, tileId);
+      }
+      if (record.connectTileIds !== undefined) {
+        for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].connectTileIds`, record.connectTileIds)) {
+          requireNumber(`tileset ${id}.autotileGroups[${index}].connectTileIds[]`, tileId);
         }
       }
-      for (const rule of requireArray(`tileset ${id}.terrainTemplates[${index}].rules`, record.rules)) {
-        requireString(`tileset ${id}.terrainTemplates[${index}].rules[]`, rule);
+      if (record.triggerTileIds !== undefined) {
+        for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].triggerTileIds`, record.triggerTileIds)) {
+          requireNumber(`tileset ${id}.autotileGroups[${index}].triggerTileIds[]`, tileId);
+        }
+      }
+      const variantMap = requireRecord(`tileset ${id}.autotileGroups[${index}].variantMap`, record.variantMap);
+      for (const [mask, variant] of Object.entries(variantMap)) {
+        requireNumber(`tileset ${id}.autotileGroups[${index}].variantMap[${mask}]`, variant);
       }
     }
   }

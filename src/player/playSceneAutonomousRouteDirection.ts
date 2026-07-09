@@ -1,21 +1,22 @@
 import type { Dir } from "@/player/input";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import type { MoveCommand } from "@/project/types";
+import type { Rng } from "@/util/rng";
 
 const DIRECTIONS: readonly Dir[] = ["up", "right", "down", "left"];
 
-export function randomMoveIndex(length: number): number {
+export function randomMoveIndex(length: number, rng: Rng): number {
   if (length <= 0) return 0;
-  return Math.floor(Math.random() * length);
+  return Math.floor(rng() * length);
 }
 
-export function randomDirection(): Dir {
-  return DIRECTIONS[randomMoveIndex(DIRECTIONS.length)] ?? "down";
+export function randomDirection(rng: Rng): Dir {
+  return DIRECTIONS[randomMoveIndex(DIRECTIONS.length, rng)] ?? "down";
 }
 
-export function relativeTurn(dir: Dir, turn: Extract<MoveCommand, { kind: "turnRelative" }>["turn"]): Dir {
+export function relativeTurn(dir: Dir, turn: Extract<MoveCommand, { kind: "turnRelative" }>["turn"], rng: Rng): Dir {
   const index = DIRECTIONS.indexOf(dir);
-  const offset = relativeTurnOffset(turn);
+  const offset = relativeTurnOffset(turn, rng);
   return DIRECTIONS[(index + offset + DIRECTIONS.length) % DIRECTIONS.length] ?? dir;
 }
 
@@ -39,7 +40,7 @@ export function facingForDelta(x: number, y: number, fallback: Dir): Dir {
   return fallback;
 }
 
-function relativeTurnOffset(turn: Extract<MoveCommand, { kind: "turnRelative" }>["turn"]): number {
+function relativeTurnOffset(turn: Extract<MoveCommand, { kind: "turnRelative" }>["turn"], rng: Rng): number {
   switch (turn) {
     case "right90":
       return 1;
@@ -48,7 +49,7 @@ function relativeTurnOffset(turn: Extract<MoveCommand, { kind: "turnRelative" }>
     case "turn180":
       return 2;
     case "leftOrRight90":
-      return Math.random() < 0.5 ? -1 : 1;
+      return rng() < 0.5 ? -1 : 1;
     default:
       return assertNever(turn);
   }

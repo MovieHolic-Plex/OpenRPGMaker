@@ -4,6 +4,7 @@ import type { DatabaseRecords } from "@/project/types";
 type RecordViewSessionState = {
   selectedIds: Partial<Record<DatabaseCollection, string>>;
   searchQueries: Partial<Record<DatabaseCollection, string>>;
+  scrollTops: Partial<Record<DatabaseCollection, number>>;
 };
 
 let state = createRecordViewSessionState();
@@ -46,6 +47,18 @@ export function setSearchQueryForCollection(collection: DatabaseCollection, quer
   delete state.searchQueries[collection];
 }
 
+export function listScrollTopForCollection(collection: DatabaseCollection): number {
+  return state.scrollTops[collection] ?? 0;
+}
+
+export function setListScrollTopForCollection(collection: DatabaseCollection, scrollTop: number): void {
+  if (scrollTop > 0) {
+    state.scrollTops[collection] = scrollTop;
+    return;
+  }
+  delete state.scrollTops[collection];
+}
+
 function createRecordViewSessionState(): RecordViewSessionState {
-  return { searchQueries: {}, selectedIds: {} };
+  return { searchQueries: {}, selectedIds: {}, scrollTops: {} };
 }

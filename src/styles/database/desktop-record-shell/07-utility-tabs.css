@@ -5,11 +5,11 @@
   }
 
   .db-class-dialog {
-    background: #ffffff;
-    border: 1px solid #d7d7d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     box-shadow: 0 22px 60px rgba(20, 22, 26, 0.24);
-    color: #202020;
+    color: var(--text-1);
     display: grid;
     font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     grid-template-rows: auto auto minmax(0, 1fr) auto;
@@ -20,19 +20,19 @@
 
   .db-class-dialog header,
   .db-class-dialog footer {
-    background: #ffffff;
-    border-color: #e8e7e2;
-    color: #151515;
+    background: var(--bg-raised);
+    border-color: var(--border-subtle);
+    color: var(--text-1);
     min-height: 48px;
     padding: 10px 14px;
   }
 
   .db-class-dialog header {
-    border-bottom: 1px solid #e8e7e2;
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   .db-class-dialog footer {
-    border-top: 1px solid #e8e7e2;
+    border-top: 1px solid var(--border-subtle);
     justify-content: flex-end;
   }
 
@@ -43,10 +43,10 @@
   .db-class-dialog header button,
   .db-class-dialog footer button,
   .db-class-dialog .btn {
-    background: #ffffff;
-    border: 1px solid #d7d7d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #1f1d1a;
+    color: var(--text-1);
     font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 32px;
     min-width: 76px;
@@ -54,14 +54,14 @@
   }
 
   .db-class-dialog footer button:first-child {
-    background: linear-gradient(180deg, #0c75eb 0%, #075ed1 100%);
-    border-color: #075ed1;
-    color: #ffffff;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    border-color: var(--accent-border);
+    color: var(--text-1);
   }
 
   .db-class-curve-tabs {
-    background: #ffffff;
-    border-bottom: 1px solid #e8e7e2;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     gap: 4px;
     overflow-x: auto;
@@ -69,10 +69,10 @@
   }
 
   .db-class-curve-tabs button {
-    background: #ffffff;
+    background: var(--bg-raised);
     border: 0;
     border-bottom: 3px solid transparent;
-    color: #222222;
+    color: var(--text-1);
     flex: 0 0 auto;
     font: 600 13px/32px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 36px;
@@ -80,8 +80,8 @@
   }
 
   .db-class-curve-tabs button.active {
-    border-bottom-color: #0c75eb;
-    color: #0b62cb;
+    border-bottom-color: var(--accent-border);
+    color: var(--accent);
   }
 
   .db-class-dialog-body {
@@ -95,8 +95,8 @@
 
   .db-class-curve-dialog-graph {
     align-items: end;
-    background: #fbfbfa;
-    border: 1px solid #d7d7d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 5px;
     display: flex;
     gap: 1px;
@@ -107,7 +107,7 @@
   }
 
   .db-class-curve-dialog-graph button {
-    background: linear-gradient(180deg, #6ca8f7 0%, #0c75eb 100%);
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
     border: 0;
     border-radius: 3px 3px 0 0;
     flex: 1 1 0;
@@ -117,14 +117,14 @@
   }
 
   .db-class-curve-dialog-graph button.active {
-    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    background: linear-gradient(180deg, var(--bg-inset) 0%, var(--bg-inset) 100%);
     box-shadow: 0 0 0 2px rgba(12, 117, 235, 0.18);
   }
 
   .db-class-dialog-side {
     align-content: start;
-    background: #ffffff;
-    border: 1px solid #d7d7d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 5px;
     display: grid;
     gap: 10px;
@@ -133,17 +133,17 @@
   }
 
   .db-class-dialog-number {
-    color: #4a4742;
+    color: var(--text-1);
     display: grid;
     font: 600 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     gap: 5px;
   }
 
   .db-class-dialog-number input {
-    background: #fbfbfa;
-    border: 1px solid #d7d7d3;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #202020;
+    color: var(--text-1);
     font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 32px;
     padding: 4px 8px;
@@ -159,7 +159,7 @@
   }
 
   .db-class-dialog-side .db-advanced-panel legend {
-    color: #171717;
+    color: var(--text-1);
     font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0 0 2px;
   }

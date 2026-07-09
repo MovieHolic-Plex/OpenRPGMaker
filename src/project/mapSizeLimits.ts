@@ -1,0 +1,1 @@
+export const MAX_TOOL_MAP_DIMENSION = 256;

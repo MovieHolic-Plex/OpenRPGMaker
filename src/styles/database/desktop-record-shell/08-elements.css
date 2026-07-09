@@ -24,21 +24,21 @@
 
   .database-modal-body .db-elements-list-pane,
   .database-modal-body .db-elements-editor {
-    background: #ffffff;
-    border: 1px solid #dedfdf;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
   }
 
   .database-modal-body .db-elements-list-title {
     background: transparent;
-    color: #20242c;
+    color: var(--text-1);
     font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     justify-content: flex-start;
   }
 
   .database-modal-body .db-elements-row,
   .database-modal-body button.db-elements-row {
-    border: 1px solid #ececec;
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
     font: 400 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     height: 36px;
@@ -48,8 +48,8 @@
 
   .database-modal-body .db-elements-row.is-selected,
   .database-modal-body button.db-elements-row.is-selected {
-    background: linear-gradient(180deg, #1473df 0%, #0965cf 100%);
-    border-color: #0965cf;
-    color: #ffffff;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    border-color: var(--accent-border);
+    color: var(--text-1);
   }
 }

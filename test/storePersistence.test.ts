@@ -65,7 +65,7 @@ describe("Project store remote persistence", () => {
     const storage = new Map<string, string>();
     const setItem = vi.fn((key: string, value: string) => storage.set(key, value));
     vi.stubGlobal("window", {
-      location: { hostname: "127.0.0.1", pathname: "/", search: "?freshProject=1" },
+      location: { hostname: "127.0.0.1", pathname: "/", search: "?blankProject=1" },
       localStorage: {
         getItem: (key: string) => storage.get(key) ?? null,
         setItem,
@@ -75,9 +75,8 @@ describe("Project store remote persistence", () => {
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
-    const [{ createBlankProject }, { ADVENTURE_TITLE }, { serialize }] = await Promise.all([
+    const [{ createBlankProject }, { serialize }] = await Promise.all([
       import("@/project/defaults"),
-      import("@/project/defaults/defaultAdventureGameIds"),
       import("@/project/io"),
     ]);
     const staleProject = createBlankProject();
@@ -85,7 +84,7 @@ describe("Project store remote persistence", () => {
     if (staleProject.system.titleScreen) {
       staleProject.system.titleScreen.backgroundResourceId = "rpg-zzu-title-blue";
     }
-    storage.set("rpg-zzu:dev-project:127.0.0.1/?freshProject=1", serialize(staleProject));
+    storage.set("rpg-zzu:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
 
     vi.resetModules();
     const { store } = await import("@/project/store");
@@ -95,7 +94,8 @@ describe("Project store remote persistence", () => {
     });
     const saveResult = await store.flush();
 
-    expect(project.meta.title).toBe(ADVENTURE_TITLE);
+    expect(project.meta.title).toBe("새 프로젝트");
+    expect(Object.keys(project.maps)).toHaveLength(1);
     expect(project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title1");
     expect(saveResult).toEqual({ kind: "saved-local" });
     expect(setItem).not.toHaveBeenCalled();

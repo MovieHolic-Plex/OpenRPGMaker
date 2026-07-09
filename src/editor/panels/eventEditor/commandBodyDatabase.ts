@@ -1,7 +1,19 @@
+import { startStateOf } from "@/project/session";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { selectWithOptions, selectedOptionValue } from "./dom";
-import type { ActorAmountOp, ActorEquipmentSlot, Command } from "@/project/types";
+import {
+  AMOUNT_OP_SEGMENTS,
+  amountStepper,
+  facesetIconOf,
+  imageIconOf,
+  previewAmountAfter,
+  previewStrip,
+  recordIconElement,
+  recordPickerWithPreview,
+  segmentedSelect,
+} from "./recordPicker";
+import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 const AMOUNT_OP_OPTIONS = [
@@ -13,6 +25,17 @@ const AMOUNT_OP_OPTIONS = [
 const PARTY_ACTION_OPTIONS = [
   { value: "add", label: "파티에 추가" },
   { value: "remove", label: "파티에서 제거" },
+] as const;
+
+const MONSTER_MOVE_TARGET_OPTIONS = [
+  { value: "party", label: "파티" },
+  { value: "box", label: "보관함" },
+] as const;
+
+const BATTLE_FLOW_OPTIONS = [
+  { value: "inherit", label: "시스템/트룹 설정" },
+  { value: "gauge", label: "게이지" },
+  { value: "strict", label: "엄격 턴제" },
 ] as const;
 
 const EQUIPMENT_SLOT_OPTIONS = [
@@ -30,79 +53,338 @@ export function battleProcessingBody(
   cmd: Extract<Command, { kind: "battleProcessing" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const troop = recordSelect(project.database.troops, cmd.troopId, "적 그룹 선택", "battle-processing-troop-select");
+  // 트룹 픽커: 카드 부제에 소속 적 이름을 나열해 어떤 전투인지 즉시 보이게 한다.
+  const troop = recordPickerWithPreview({
+    records: project.database.troops,
+    selectedId: cmd.troopId,
+    placeholder: "적 그룹 선택",
+    testid: "battle-processing-troop-select",
+    iconOf: (record) => {
+      const firstEnemyId = record.enemyIds[0];
+      const enemy = project.database.enemies.find((entry) => entry.id === firstEnemyId);
+      return imageIconOf(project, enemy?.monsterResourceId);
+    },
+    subtitleOf: (record) => troopMemberNames(project, record.enemyIds),
+  });
   const canEscape = checkbox("탈출 허용", cmd.canEscape, "battle-processing-escape-checkbox");
   const canLose = checkbox("패배 허용", cmd.canLose, "battle-processing-lose-checkbox");
+  const flow = selectWithOptions(BATTLE_FLOW_OPTIONS, cmd.battleFlow ?? "inherit", "battle-processing-flow-select");
   const apply = () => {
+    const battleFlow = selectedOptionValue(flow, BATTLE_FLOW_OPTIONS, "inherit");
     context.actions.replaceCommand(context.path, {
       kind: "battleProcessing",
-      troopId: troop.value,
+      troopId: troop.select.value,
       canEscape: canEscape.input.checked,
       canLose: canLose.input.checked,
+      battleFlow: battleFlow === "inherit" ? undefined : battleFlow,
     });
   };
-  troop.addEventListener("change", apply);
+  troop.select.addEventListener("change", apply);
   canEscape.input.addEventListener("change", apply);
   canLose.input.addEventListener("change", apply);
-  const wrap = el("span", {});
-  wrap.append(troop, canEscape.label, canLose.label);
+  flow.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [troop.root] }),
+    el("span", { class: "rich-form-row", children: [canEscape.label, canLose.label, flow] })
+  );
   return wrap;
 }
 
+// 트룹 소속 적 이름 나열 부제(최대 4개 + "외 N").
+function troopMemberNames(project: Project, enemyIds: readonly string[]): string | null {
+  if (enemyIds.length === 0) return null;
+  const names = enemyIds.map(
+    (enemyId) => project.database.enemies.find((entry) => entry.id === enemyId)?.name ?? enemyId
+  );
+  const shown = names.slice(0, 4).join(" · ");
+  return names.length > 4 ? `${shown} 외 ${names.length - 4}` : shown;
+}
+
 export function changeGoldBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeGold" }>): HTMLElement {
-  const op = selectWithOptions(AMOUNT_OP_OPTIONS, cmd.op, "change-gold-op-select");
+  const project = store.getCurrent();
+  // 연산 세그먼트(= / + / −). 기존 select(testid)는 세그먼트 안에 숨겨 호환 유지.
+  const op = segmentedSelect({ options: AMOUNT_OP_SEGMENTS, value: cmd.op, testid: "change-gold-op-select", ariaLabel: "소지금 연산 선택" });
   const amount = numberInput(cmd.amount, "금액", "change-gold-amount-input");
+  const preview = previewStrip("change-gold-preview", "시작 소지금 기준");
+  const startGold = Math.max(0, startStateOf(project).gold ?? 0);
+  const goldBadge = () => el("span", { class: "rich-gold-badge", text: "G", attrs: { "aria-hidden": "true" } });
+  const renderPreview = () => {
+    const after = previewAmountAfter(startGold, selectedOptionValue(op.select, AMOUNT_OP_OPTIONS, cmd.op), parseInt(amount.value, 10) || 0);
+    preview.root.dataset.before = String(startGold);
+    preview.root.dataset.after = String(after);
+    preview.body.replaceChildren(
+      goldBadge(),
+      el("span", { text: `지금 ${startGold}G` }),
+      el("span", { class: "rich-preview-arrow", text: "→" }),
+      el("span", { class: `rich-preview-after ${deltaTone(startGold, after)}`, text: `실행 후 ${after}G` })
+    );
+  };
   const apply = () => {
+    renderPreview();
     context.actions.replaceCommand(context.path, {
       kind: "changeGold",
-      op: selectedOptionValue(op, AMOUNT_OP_OPTIONS, cmd.op),
+      op: selectedOptionValue(op.select, AMOUNT_OP_OPTIONS, cmd.op),
       amount: parseInt(amount.value, 10) || 0,
     });
   };
-  op.addEventListener("change", apply);
+  op.select.addEventListener("change", apply);
   amount.addEventListener("change", apply);
-  const wrap = el("span", {});
-  wrap.append(op, amount);
+  // 타이핑 중에도 프리뷰만 라이브 갱신(저장은 change 시점).
+  amount.addEventListener("input", renderPreview);
+  renderPreview();
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [op.root, amountStepper(amount, { testidBase: "change-gold-amount" })] }),
+    preview.root
+  );
   return wrap;
 }
 
 export function changeItemBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeItem" }>): HTMLElement {
   const project = store.getCurrent();
-  const item = recordSelect(project.database.items, cmd.itemId, "아이템 선택", "change-item-select");
-  const op = selectWithOptions(AMOUNT_OP_OPTIONS, cmd.op, "change-item-op-select");
+  const items = project.database.items;
+  const startInventory = startStateOf(project).inventory;
+  // 아이템 픽커: 카드에 아이콘 + 이름 + 시작 보유 수량.
+  const item = recordPickerWithPreview({
+    records: items,
+    selectedId: cmd.itemId,
+    placeholder: "아이템 선택",
+    testid: "change-item-select",
+    iconOf: (record) => imageIconOf(project, record.iconResourceId ?? record.imageResourceId),
+    subtitleOf: (record) => `시작 보유 ×${startInventory[record.id] ?? 0}`,
+  });
+  const op = segmentedSelect({ options: AMOUNT_OP_SEGMENTS, value: cmd.op, testid: "change-item-op-select", ariaLabel: "아이템 연산 선택" });
   const amount = numberInput(cmd.amount, "개수", "change-item-amount-input");
+  const preview = previewStrip("change-item-preview", "시작 인벤토리 기준");
+  const renderPreview = () => {
+    const record = items.find((entry) => entry.id === item.select.value);
+    if (!record) {
+      delete preview.root.dataset.before;
+      delete preview.root.dataset.after;
+      preview.body.replaceChildren(
+        el("span", { class: "rich-preview-hint", text: "아이템을 선택하면 전/후 개수가 표시됩니다." })
+      );
+      return;
+    }
+    const before = startInventory[record.id] ?? 0;
+    const after = previewAmountAfter(before, selectedOptionValue(op.select, AMOUNT_OP_OPTIONS, cmd.op), parseInt(amount.value, 10) || 0);
+    preview.root.dataset.before = String(before);
+    preview.root.dataset.after = String(after);
+    preview.body.replaceChildren(
+      el("span", { text: "지금:" }),
+      recordIconElement(imageIconOf(project, record.iconResourceId ?? record.imageResourceId), record.name),
+      el("span", { text: `${record.name} ×${before}` }),
+      el("span", { class: "rich-preview-arrow", text: "→" }),
+      el("span", { class: `rich-preview-after ${deltaTone(before, after)}`, text: `실행 후 ×${after}` })
+    );
+  };
   const apply = () => {
+    renderPreview();
     context.actions.replaceCommand(context.path, {
       kind: "changeItem",
-      itemId: item.value,
-      op: selectedOptionValue(op, AMOUNT_OP_OPTIONS, cmd.op),
+      itemId: item.select.value,
+      op: selectedOptionValue(op.select, AMOUNT_OP_OPTIONS, cmd.op),
       amount: parseInt(amount.value, 10) || 0,
     });
   };
-  item.addEventListener("change", apply);
-  op.addEventListener("change", apply);
+  item.select.addEventListener("change", apply);
+  op.select.addEventListener("change", apply);
   amount.addEventListener("change", apply);
-  const wrap = el("span", {});
-  wrap.append(item, op, amount);
+  amount.addEventListener("input", renderPreview);
+  renderPreview();
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [item.root] }),
+    el("span", { class: "rich-form-row", children: [op.root, amountStepper(amount, { testidBase: "change-item-amount" })] }),
+    preview.root
+  );
   return wrap;
+}
+
+// 전/후 값 변화 색조: 증가 gain(성공색) / 감소 loss(위험색) / 동일 none.
+function deltaTone(before: number, after: number): string {
+  if (after > before) return "gain";
+  if (after < before) return "loss";
+  return "";
 }
 
 export function changePartyBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeParty" }>): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", "change-party-actor-select");
-  const action = selectWithOptions(PARTY_ACTION_OPTIONS, cmd.action, "change-party-action-select");
+  const actors = project.database.actors;
+  const actor = recordPickerWithPreview({
+    records: actors,
+    selectedId: cmd.actorId,
+    placeholder: "주인공 선택",
+    testid: "change-party-actor-select",
+    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
+    subtitleOf: (record) => actorSubtitle(project, record),
+  });
+  // 추가/제거 세그먼트(기존 select 는 숨김 호환 유지).
+  const action = segmentedSelect({
+    options: [
+      { value: "add", label: "파티에 추가", key: "add" },
+      { value: "remove", label: "파티에서 제거", key: "remove" },
+    ],
+    value: cmd.action,
+    testid: "change-party-action-select",
+    ariaLabel: "파티 동작 선택",
+  });
+  const preview = previewStrip("change-party-preview", "시작 파티 기준");
+  const renderPreview = () => {
+    const record = actors.find((entry) => entry.id === actor.select.value);
+    if (!record) {
+      delete preview.root.dataset.beforeIn;
+      delete preview.root.dataset.afterIn;
+      preview.body.replaceChildren(
+        el("span", { class: "rich-preview-hint", text: "주인공을 선택하면 전/후 파티 상태가 표시됩니다." })
+      );
+      return;
+    }
+    const beforeIn = startStateOf(project).partyActorIds.includes(record.id);
+    const afterIn = selectedOptionValue(action.select, PARTY_ACTION_OPTIONS, cmd.action) === "add";
+    preview.root.dataset.beforeIn = String(beforeIn);
+    preview.root.dataset.afterIn = String(afterIn);
+    preview.body.replaceChildren(
+      recordIconElement(facesetIconOf(project, record.faceResourceId), record.name),
+      el("span", { text: `${record.name} — 지금: ${beforeIn ? "파티에 있음" : "파티에 없음"}` }),
+      el("span", { class: "rich-preview-arrow", text: "→" }),
+      el("span", {
+        class: `rich-preview-after ${afterIn === beforeIn ? "" : afterIn ? "gain" : "loss"}`,
+        text: `실행 후: ${afterIn ? "파티에 있음" : "파티에 없음"}`,
+      })
+    );
+  };
   const apply = () => {
+    renderPreview();
     context.actions.replaceCommand(context.path, {
       kind: "changeParty",
-      actorId: actor.value,
-      action: selectedOptionValue(action, PARTY_ACTION_OPTIONS, cmd.action),
+      actorId: actor.select.value,
+      action: selectedOptionValue(action.select, PARTY_ACTION_OPTIONS, cmd.action),
     });
   };
-  actor.addEventListener("change", apply);
-  action.addEventListener("change", apply);
-  const wrap = el("span", {});
-  wrap.append(actor, action);
+  actor.select.addEventListener("change", apply);
+  action.select.addEventListener("change", apply);
+  renderPreview();
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [actor.root] }),
+    el("span", { class: "rich-form-row", children: [action.root] }),
+    preview.root
+  );
   return wrap;
+}
+
+export function giveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "giveMonster" }>): HTMLElement {
+  const project = store.getCurrent();
+  const speciesRecords = project.database.monsterSpecies ?? [];
+  const species = recordPickerWithPreview({
+    records: speciesRecords,
+    selectedId: cmd.speciesId,
+    placeholder: "species 선택",
+    testid: "give-monster-species-select",
+    iconOf: (record) => imageIconOf(project, record.graphic.monsterResourceId),
+    subtitleOf: (record) => `포획률 ${Math.round(record.captureRate * 100)}% · HP ${record.baseStats.maxHp}`,
+  });
+  const level = numberInput(cmd.level, "레벨", "give-monster-level-input");
+  level.min = "1";
+  level.max = "99";
+  const nickname = el("input", {
+    attrs: { type: "text", placeholder: "별명(선택)" },
+    value: cmd.nickname ?? "",
+    dataset: { testid: "give-monster-nickname-input" },
+  }) as HTMLInputElement;
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "giveMonster",
+      speciesId: species.select.value,
+      level: Math.max(1, Math.min(99, parseInt(level.value, 10) || 1)),
+      nickname: nickname.value.trim() || undefined,
+    });
+  };
+  species.select.addEventListener("change", apply);
+  level.addEventListener("change", apply);
+  nickname.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [species.root] }),
+    el("span", { class: "rich-form-row", children: [amountStepper(level, { testidBase: "give-monster-level" }), nickname] })
+  );
+  return wrap;
+}
+
+export function moveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "moveMonster" }>): HTMLElement {
+  const instanceId = el("input", {
+    attrs: { type: "text", placeholder: "monster_1" },
+    value: cmd.instanceId,
+    dataset: { testid: "move-monster-instance-input" },
+  }) as HTMLInputElement;
+  const target = segmentedSelect({
+    options: [
+      { value: "party", label: "파티", key: "party" },
+      { value: "box", label: "보관함", key: "box" },
+    ],
+    value: cmd.to,
+    testid: "move-monster-target-select",
+    ariaLabel: "몬스터 이동 대상",
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "moveMonster",
+      instanceId: instanceId.value.trim(),
+      to: selectedOptionValue(target.select, MONSTER_MOVE_TARGET_OPTIONS, cmd.to),
+    });
+  };
+  instanceId.addEventListener("change", apply);
+  target.select.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [instanceId] }),
+    el("span", { class: "rich-form-row", children: [target.root] })
+  );
+  return wrap;
+}
+
+export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Command, { kind: "evolveMonster" }>): HTMLElement {
+  const project = store.getCurrent();
+  const instanceId = el("input", {
+    attrs: { type: "text", placeholder: "monster_1" },
+    value: cmd.instanceId,
+    dataset: { testid: "evolve-monster-instance-input" },
+  }) as HTMLInputElement;
+  const species = recordPickerWithPreview({
+    records: project.database.monsterSpecies ?? [],
+    selectedId: cmd.toSpeciesId ?? "",
+    placeholder: "조건 충족 첫 진화",
+    testid: "evolve-monster-species-select",
+    iconOf: (record) => imageIconOf(project, record.graphic.monsterResourceId),
+    subtitleOf: (record) => `HP ${record.baseStats.maxHp} · 포획률 ${Math.round(record.captureRate * 100)}%`,
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "evolveMonster",
+      instanceId: instanceId.value.trim(),
+      toSpeciesId: species.select.value || undefined,
+      successBranch: cmd.successBranch ?? [],
+      failureBranch: cmd.failureBranch ?? [],
+    });
+  };
+  instanceId.addEventListener("change", apply);
+  species.select.addEventListener("change", apply);
+  return el("span", {
+    class: "rich-command-form",
+    children: [
+      el("span", { class: "rich-form-row", children: [instanceId] }),
+      el("span", { class: "rich-form-row", children: [species.root] }),
+    ],
+  });
+}
+
+// 액터 카드 부제: 직업 이름(+ 초기 레벨). (learnSkill 등 다른 폼에서도 재사용)
+export function actorSubtitle(project: Project, record: ActorRecord): string | null {
+  const className = project.database.classes.find((entry) => entry.id === record.classId)?.name;
+  const level = `Lv.${record.initialLevel}`;
+  return className ? `${className} · ${level}` : level;
 }
 
 export function changeExpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeExp" }>): HTMLElement {
@@ -111,6 +393,49 @@ export function changeExpBody(context: CommandEditContext, cmd: Extract<Command,
 
 export function changeLevelBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeLevel" }>): HTMLElement {
   return actorAmountBody(context, cmd);
+}
+
+export function promoteActorBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "promoteActor" }>
+): HTMLElement {
+  const project = store.getCurrent();
+  const actor = recordPickerWithPreview({
+    records: project.database.actors,
+    selectedId: cmd.actorId,
+    placeholder: "주인공 선택",
+    testid: "promote-actor-select",
+    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
+    subtitleOf: (record) => actorSubtitle(project, record),
+  });
+  const klass = recordPickerWithPreview({
+    records: project.database.classes,
+    selectedId: cmd.toClassId ?? "",
+    placeholder: "조건 충족 첫 승급",
+    testid: "promote-class-select",
+    subtitleOf: (record) => {
+      const from = project.database.classes.find((source) => (source.promotions ?? []).some((promotion) => promotion.toClassId === record.id));
+      return from ? `${from.name}에서 승급 가능` : "수동 목표";
+    },
+  });
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "promoteActor",
+      actorId: actor.select.value,
+      toClassId: klass.select.value || undefined,
+      successBranch: cmd.successBranch ?? [],
+      failureBranch: cmd.failureBranch ?? [],
+    });
+  };
+  actor.select.addEventListener("change", apply);
+  klass.select.addEventListener("change", apply);
+  return el("span", {
+    class: "rich-command-form",
+    children: [
+      el("span", { class: "rich-form-row", children: [actor.root] }),
+      el("span", { class: "rich-form-row", children: [klass.root] }),
+    ],
+  });
 }
 
 export function changeActorHpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeActorHp" }>): HTMLElement {
@@ -126,23 +451,94 @@ export function changeEquipmentBody(
   cmd: Extract<Command, { kind: "changeEquipment" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", "change-equipment-actor-select");
+  const actor = recordPickerWithPreview({
+    records: project.database.actors,
+    selectedId: cmd.actorId,
+    placeholder: "주인공 선택",
+    testid: "change-equipment-actor-select",
+    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
+    subtitleOf: (record) => actorSubtitle(project, record),
+  });
   const slot = selectWithOptions(EQUIPMENT_SLOT_OPTIONS, cmd.slot, "change-equipment-slot-select");
-  const equipment = recordSelect(project.database.equipment, cmd.equipmentId, "장비 해제", "change-equipment-equipment-select");
+  // 장비 픽커: 아이콘 + 슬롯/주요 스탯 부제. 빈 값은 "장비 해제".
+  const equipment = recordPickerWithPreview({
+    records: project.database.equipment,
+    selectedId: cmd.equipmentId,
+    placeholder: "장비 해제",
+    testid: "change-equipment-equipment-select",
+    iconOf: (record) => imageIconOf(project, record.iconResourceId ?? record.imageResourceId),
+    subtitleOf: (record) => {
+      const slotLabel = EQUIPMENT_SLOT_OPTIONS.find((option) => option.value === record.slot)?.label ?? record.slot;
+      const bonuses: string[] = [];
+      if (record.statBonuses.attack !== 0) bonuses.push(`공격 ${signed(record.statBonuses.attack)}`);
+      if (record.statBonuses.defense !== 0) bonuses.push(`방어 ${signed(record.statBonuses.defense)}`);
+      return bonuses.length > 0 ? `${slotLabel} · ${bonuses.join(" ")}` : slotLabel;
+    },
+  });
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "changeEquipment",
-      actorId: actor.value,
+      actorId: actor.select.value,
       slot: selectedOptionValue(slot, EQUIPMENT_SLOT_OPTIONS, cmd.slot),
-      equipmentId: equipment.value,
+      equipmentId: equipment.select.value,
+    });
+  };
+  actor.select.addEventListener("change", apply);
+  slot.addEventListener("change", apply);
+  equipment.select.addEventListener("change", apply);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [actor.root, slot] }),
+    el("span", { class: "rich-form-row", children: [equipment.root] })
+  );
+  return wrap;
+}
+
+function signed(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
+export function enterHeroNameBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "enterHeroName" }>
+): HTMLElement {
+  const project = store.getCurrent();
+  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", "enter-hero-name-actor-select");
+  const maxLength = el("input", {
+    attrs: { type: "number", min: "1", max: "12", title: "최대 글자 수" },
+    value: String(cmd.maxLength),
+    dataset: { testid: "enter-hero-name-max-length" },
+  }) as HTMLInputElement;
+  const showInitial = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "enter-hero-name-show-initial" } }) as HTMLInputElement;
+  showInitial.checked = cmd.showInitialName;
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "enterHeroName",
+      actorId: actor.value,
+      maxLength: clampMaxLengthInput(maxLength.value),
+      showInitialName: showInitial.checked,
     });
   };
   actor.addEventListener("change", apply);
-  slot.addEventListener("change", apply);
-  equipment.addEventListener("change", apply);
+  maxLength.addEventListener("change", apply);
+  showInitial.addEventListener("change", apply);
   const wrap = el("span", {});
-  wrap.append(actor, slot, equipment);
+  wrap.append(
+    actor,
+    labeledControl("최대 글자", maxLength),
+    labeledControl("초기 이름 표시", showInitial)
+  );
   return wrap;
+}
+
+function labeledControl(label: string, control: HTMLElement): HTMLElement {
+  return el("label", { class: "inline-field", children: [el("span", { text: label }), control] });
+}
+
+function clampMaxLengthInput(value: string): number {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return 6;
+  return Math.max(1, Math.min(12, parsed));
 }
 
 export function recoverAllBody(context: CommandEditContext, cmd: Extract<Command, { kind: "recoverAll" }>): HTMLElement {

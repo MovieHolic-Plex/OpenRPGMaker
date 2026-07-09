@@ -19,6 +19,10 @@ function firstNonDefaultTileset() {
   return tileset;
 }
 
+function terrainGroups(tileset: ReturnType<typeof defaultTileset>) {
+  return tileset.tileGroups?.filter((group) => group.role === "terrain") ?? [];
+}
+
 describe("AI preview contracts", () => {
   it("accepts the combined-town/default harness as the high-confidence ChipSet happy path", () => {
     const result = evaluateChipsetEligibility(defaultTileset());
@@ -189,17 +193,15 @@ describe("AI preview theme contracts", () => {
 
   it("fails closed when a required typed capability is missing even if descriptive text matches", () => {
     const tileset = defaultTileset();
-    const terrainGroup = tileset.tileGroups?.find((group) => group.role === "terrain");
-    if (!terrainGroup) throw new Error("expected terrain group");
-    tileset.tileGroups = [
-      ...(tileset.tileGroups ?? []).filter((group) => group.id !== terrainGroup.id),
-      {
-        ...terrainGroup,
-        role: "prop",
-        description: "walkableFloor terrain dungeon floor exact words should not count",
-        placementRules: "walkable floor lower terrain",
-      },
-    ];
+    if (terrainGroups(tileset).length === 0) throw new Error("expected terrain groups");
+    tileset.tileGroups = (tileset.tileGroups ?? []).map((group) => group.role === "terrain"
+      ? {
+          ...group,
+          role: "prop" as const,
+          description: "walkableFloor terrain dungeon floor exact words should not count",
+          placementRules: "walkable floor lower terrain",
+        }
+      : group);
 
     const result = evaluateThemeEligibility(tileset, "combined-town");
 
@@ -229,12 +231,10 @@ describe("AI preview theme contracts", () => {
 
   it("honors per-theme pattern grammar requirements from the typed requirement table", () => {
     const tileset = defaultTileset();
-    const terrainGroup = tileset.tileGroups?.find((group) => group.role === "terrain");
-    if (!terrainGroup) throw new Error("expected terrain group");
-    tileset.tileGroups = [
-      ...(tileset.tileGroups ?? []).filter((group) => group.id !== terrainGroup.id),
-      { ...terrainGroup, patternGrammar: undefined },
-    ];
+    if (terrainGroups(tileset).length === 0) throw new Error("expected terrain groups");
+    tileset.tileGroups = (tileset.tileGroups ?? []).map((group) => group.role === "terrain"
+      ? { ...group, patternGrammar: undefined }
+      : group);
 
     const result = evaluateThemeEligibility(tileset, "combined-town");
 
@@ -245,10 +245,13 @@ describe("AI preview theme contracts", () => {
 
   it("requires passable floor capability metadata for walkableFloor", () => {
     const tileset = defaultTileset();
-    const terrainGroup = tileset.tileGroups?.find((group) => group.role === "terrain");
-    if (!terrainGroup) throw new Error("expected terrain group");
-    const tile = terrainGroup.tileIds[0];
-    tileset.tileMeta![tile] = { ...tileset.tileMeta![tile], passage: "solid" };
+    const groups = terrainGroups(tileset);
+    if (groups.length === 0) throw new Error("expected terrain groups");
+    for (const group of groups) {
+      for (const tile of group.tileIds) {
+        tileset.tileMeta![tile] = { ...tileset.tileMeta![tile], passage: "solid" };
+      }
+    }
 
     const result = evaluateThemeEligibility(tileset, "combined-town");
 

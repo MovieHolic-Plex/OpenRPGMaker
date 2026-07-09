@@ -189,11 +189,12 @@ describe("deserialize — v2/v3 검증", () => {
     expect(() => deserialize(JSON.stringify(obj))).toThrow(/lowerTiles 길이/);
   });
 
-  it("mapTree가 존재하지 않는 맵 참조 시 거부", () => {
+  it("mapTree가 존재하지 않는 맵 참조 시 안전 복구", () => {
     const p = createBlankProject();
     const obj = JSON.parse(serialize(p));
     obj.mapTree.mapId = "nope";
-    expect(() => deserialize(JSON.stringify(obj))).toThrow(/존재하지 않는 맵/);
+    const restored = deserialize(JSON.stringify(obj));
+    expect(restored.mapTree.mapId).toBe(p.startMapId);
   });
 
   it("확장 이동 경로 명령 payload를 검증한다", () => {

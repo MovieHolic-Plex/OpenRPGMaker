@@ -1,5 +1,5 @@
 .database-modal-body .db-body:has(.db-elements-classic) {
-  background: #f7f7f5;
+  background: var(--bg-raised);
   border: 0;
   display: grid;
   min-height: 0;
@@ -15,8 +15,8 @@
 }
 
 .database-modal-window:has(.db-elements-classic) {
-  background: #ffffff;
-  border: 1px solid #d8dadd;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: 7px;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
   height: min(900px, calc(100vh - 24px));
@@ -32,7 +32,7 @@
 }
 
 .db-elements-classic-inner {
-  color: #20242c;
+  color: var(--text-1);
   display: grid;
   font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   gap: 14px;
@@ -43,8 +43,8 @@
 
 .db-elements-list-pane,
 .db-elements-editor {
-  background: #ffffff;
-  border: 1px solid #dedfdf;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   min-height: 0;
   min-width: 0;
@@ -57,13 +57,13 @@
 }
 
 .db-elements-list-title {
-  color: #20242c;
+  color: var(--text-1);
   font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin-bottom: 10px;
 }
 
 .db-elements-list {
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 0;
   display: grid;
   gap: 2px;
@@ -73,11 +73,11 @@
 
 .db-elements-row {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #ececec;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
   box-shadow: none;
-  color: #2f333a;
+  color: var(--text-1);
   display: flex;
   font: 400 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   height: 36px;
@@ -92,20 +92,20 @@
 }
 
 .database-modal-body button.db-elements-row {
-  background: #ffffff;
-  border: 1px solid #ececec;
-  color: #2f333a;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-1);
 }
 
 .db-elements-row.is-selected,
 .database-modal-body button.db-elements-row.is-selected {
-  background: linear-gradient(180deg, #1473df 0%, #0965cf 100%);
-  border-color: #0965cf;
-  color: #ffffff;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+  border-color: var(--accent-border);
+  color: var(--text-1);
 }
 
 .db-elements-row.is-selected::before {
-  background: #ffffff;
+  background: var(--bg-raised);
   border-radius: 2px;
   content: "";
   height: 22px;
@@ -117,10 +117,10 @@
 
 .db-elements-maximum {
   align-self: end;
-  background: #f6f4ef;
-  border: 1px solid #e3e0d8;
-  border-radius: 4px;
-  color: #8a8d92;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
   font: 500 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   height: 36px;
   margin-top: 12px;
@@ -143,8 +143,8 @@
 
 .db-elements-fieldset {
   align-content: start;
-  background: #ffffff;
-  border: 1px solid #dedfdf;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: 5px;
   display: grid;
   gap: 8px;
@@ -155,8 +155,8 @@
 }
 
 .db-elements-fieldset legend {
-  background: #ffffff;
-  color: #20242c;
+  background: var(--bg-raised);
+  color: var(--text-1);
   float: left;
   font: 700 15px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin-bottom: 2px;
@@ -166,10 +166,10 @@
 
 .db-elements-name-input,
 .db-elements-damage-input {
-  background: #ffffff;
-  border: 1px solid #d8dadd;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
-  color: #20242c;
+  color: var(--text-1);
   font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   height: 32px;
   min-width: 0;
@@ -182,7 +182,7 @@
 
 .db-elements-radio-row {
   align-items: center;
-  color: #30343b;
+  color: var(--text-1);
   display: flex;
   font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   gap: 8px;
@@ -200,7 +200,7 @@
 
 .db-elements-damage-row {
   align-items: center;
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid var(--border-subtle);
   display: grid;
   grid-template-columns: 28px minmax(0, 112px) 24px;
   height: 38px;
@@ -231,7 +231,7 @@
 }
 
 .db-elements-grade.grade-d {
-  color: #4437b6;
+  color: var(--accent);
 }
 
 .db-elements-grade.grade-e {
@@ -245,7 +245,7 @@
 
 .database-modal-body .db-elements-classic .db-elements-radio-row,
 .database-modal-body .db-elements-classic .db-elements-damage-row {
-  color: #30343b;
+  color: var(--text-1);
   font-size: 14px;
   letter-spacing: 0;
   margin: 0;
@@ -261,7 +261,7 @@
 }
 
 .db-elements-percent {
-  color: #555b64;
+  color: var(--text-2);
   font: 400 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 

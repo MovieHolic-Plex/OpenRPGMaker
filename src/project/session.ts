@@ -3,12 +3,24 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, Command, MapId, Project, SkillId, Condition, MessageWindowSettings } from "./types";
-import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimeNpcTravelState } from "@/player/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type {
+  M2RuntimeState,
+  PlaySessionLike,
+  RuntimeCameraSessionState,
+  RuntimeEventLocation,
+  RuntimeNpcScheduleState,
+  RuntimeNpcTravelState,
+  RuntimeRemovedEventIds,
+  RuntimeSpawnedEventState,
+} from "@/player/types";
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
+import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type GameTime, type Season } from "@/project/gameTime";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
+import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
+import { normalizeLightingState } from "@/player/lighting";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -29,9 +41,71 @@ export type PictureState = {
   readonly resourceId: string;
   readonly x: number;
   readonly y: number;
+  // Move Picture 트윈용 선택 필드(RM2K3 호환). 미지정 시 기본값으로 렌더.
+  // scale: %(기본 100), opacity: 0~255(기본 255), rotation: 도(기본 0),
+  // durationMs: 이 상태로의 전환에 걸릴 시간(0=즉시).
+  readonly scale?: number;
+  readonly opacity?: number;
+  readonly rotation?: number;
+  readonly durationMs?: number;
 };
 
 export type ActorRowPosition = "front" | "back";
+
+export type RuntimeFollower = {
+  readonly eventId?: string;
+  readonly graphic: EventPageGraphic;
+  readonly name: string;
+};
+
+export type RuntimeFollowerTrailPoint = {
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: "down" | "left" | "right" | "up";
+};
+
+export type MonsterInstanceIvs = {
+  readonly hp: number;
+  readonly atk: number;
+  readonly def: number;
+  readonly spd: number;
+};
+
+export type MonsterCaughtAt = {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+};
+
+export type MonsterInstance = {
+  readonly instanceId: MonsterInstanceId;
+  readonly speciesId: MonsterSpeciesId;
+  readonly nickname?: string;
+  readonly level: number;
+  readonly exp: number;
+  readonly currentHp?: number;
+  readonly skillIds?: readonly SkillId[];
+  readonly ivs?: MonsterInstanceIvs;
+  readonly friendship: number;
+  readonly caughtAt: MonsterCaughtAt;
+};
+
+export type FarmPlotState = {
+  readonly tilled: boolean;
+  readonly watered: boolean;
+  readonly cropId?: CropId;
+  readonly plantedDay?: { readonly day: number; readonly season: Season; readonly year: number };
+  readonly stage?: number;
+  readonly dead?: boolean;
+  // 단계별 소요일을 결정적으로 누적하기 위한 런타임 진행도. 저장/로드 대상이다.
+  readonly growthDays?: number;
+};
+
+export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
+export type DailyGiftLog = Record<string, string>;
+
+export const FRIENDSHIP_MIN = 0;
+export const FRIENDSHIP_MAX = 1000;
 
 export const DEFAULT_MESSAGE_WINDOW_SETTINGS: MessageWindowSettings = {
   format: "normal",
@@ -52,20 +126,47 @@ export interface PlaySession {
   gold: number;
   inventory: Record<string, number>;
   partyActorIds: string[];
+  monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
+  monsterParty: MonsterInstanceId[];
+  monsterBox: MonsterInstanceId[];
   actorSkillIds: Record<ActorId, SkillId[]>;
   actorExperience: Record<string, number>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
+  // Erase Event 런타임 소거 목록. 맵을 다시 로드/진입하면 RM2003 관례대로 초기화된다.
+  erasedEventIds: string[];
+  // Persistent Modern Remove Event state. Erase Event remains map-entry scoped.
+  removedEventIds?: RuntimeRemovedEventIds;
+  spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
+  camera?: RuntimeCameraSessionState;
+  lighting: LightingState;
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
+  npcActivities?: Record<string, string>;
+  npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
+  followers: RuntimeFollower[];
+  followerTrail: RuntimeFollowerTrailPoint[];
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
+  // 런타임 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 미설정 시 DB 이름 사용.
+  actorNames?: Record<string, string>;
+  // 런타임 주인공 그래픽 오버라이드(Change Actor Graphic). actorId → charset resourceId.
+  actorCharacterResourceIds?: Record<string, string>;
+  // 런타임 직업 오버라이드(Change Actor Class/승급). actorId → classId.
+  classOverrides: Record<string, string>;
+  // 런타임 능력치 영구 보정(Change Parameters). actorId → parameterKey → delta.
+  actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;
+  // 필드/전투로 이어지는 런타임 상태 이상(Change State).
+  actorStateIds?: Record<string, string[]>;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;
   y: number;
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
   mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
+  farmPlots?: FarmPlots;
+  friendship?: Record<string, number>;
+  dailyGifts?: DailyGiftLog;
   // 레거시 호환(flags → switches로 마이그레이션됐지만 보존).
   flags: Record<string, boolean>;
   battleResult?: BattleResult;
@@ -76,11 +177,22 @@ export interface PlaySession {
   m2Runtime?: M2RuntimeState;
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
   playTimeSeconds: number;
+  rng?: RngState;
+  gameTime?: GameTime;
+}
+
+// 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
+// 명시적으로 읽는 헬퍼. 런타임 상태(PlaySession = scene.session)와 혼동하지 않도록,
+// "이 값은 플레이 중 상태가 아니라 시작 상태다"라는 의도를 코드로 표시한다.
+// 직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
+export function startStateOf(project: Project): ProjectStartState {
+  return project.session;
 }
 
 // Project로부터 새 세션 시작.
 // 스위치/변수는 Database 정의에서 0/false 로 초기화(Project.flags는 레거시).
-export function startSession(project: Project): PlaySession {
+export function startSession(project: Project, seed?: number): PlaySession {
+  const start = startStateOf(project);
   const switches: Record<string, boolean> = {};
   for (const sw of project.switches) {
     switches[sw.id] = false;
@@ -97,33 +209,65 @@ export function startSession(project: Project): PlaySession {
     switches,
     selfSwitches: {},
     variables,
-    timers: { ...(project.session.timers ?? {}) },
-    gold: 0,
-    inventory: { ...project.session.inventory },
-    partyActorIds: [...project.session.partyActorIds],
+    timers: { ...(start.timers ?? {}) },
+    // 시작 소지금은 인벤토리/파티와 마찬가지로 프로젝트 시작 상태 설정을 따른다.
+    gold: Math.max(0, start.gold ?? 0),
+    inventory: { ...start.inventory },
+    partyActorIds: [...start.partyActorIds],
+    monsterInstances: {},
+    monsterParty: [],
+    monsterBox: [],
     actorSkillIds: {},
     actorExperience: initialActorExperience(project),
     actorLevels: initialActorLevels(project),
     actorVitals: initialActorVitals(project),
     eventLocations: {},
+    erasedEventIds: [],
+    removedEventIds: {},
+    spawnedEvents: {},
+    camera: { mode: "follow", target: { kind: "player" } },
+    lighting: normalizeLightingState(project.maps[project.startMapId]?.defaultLighting),
     npcTravelStates: {},
+    npcActivities: {},
+    npcScheduleStates: {},
+    followers: [],
+    followerTrail: [],
     actorEquipment: initialActorEquipment(project),
     actorRows: initialActorRows(project),
+    actorNames: {},
+    actorCharacterResourceIds: {},
+    classOverrides: {},
+    actorParamBonuses: {},
+    actorStateIds: {},
     currentMapId: project.startMapId,
     x: project.startPos.x,
     y: project.startPos.y,
     mapOverrides: {},
+    farmPlots: {},
+    friendship: {},
+    dailyGifts: {},
     flags: { ...project.flags },
     audio: {},
     pictures: {},
     messageWindowSettings: { ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
     playTimeSeconds: 0,
+    rng: createRngState(seed),
+    gameTime: initialGameTime(project.system.timeSystem),
   };
+}
+
+export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {
+  session.rng = createRngState(seed);
+}
+
+export function nextSessionRandom(session: PlaySessionLike, stream: RngStreamName): number {
+  session.rng ??= createRngState();
+  return nextRngFloat(session.rng, stream);
 }
 
 function initialActorExperience(project: Project): Record<string, number> {
   const experience: Record<string, number> = {};
-  for (const actorId of project.session.partyActorIds) {
+  for (const actorId of startStateOf(project).partyActorIds) {
     experience[actorId] = 0;
   }
   return experience;
@@ -147,7 +291,7 @@ function initialActorEquipment(project: Project): Record<string, ActorInitialEqu
 
 function initialActorRows(project: Project): Record<string, ActorRowPosition> {
   const rows: Record<string, ActorRowPosition> = {};
-  for (const actorId of project.session.partyActorIds) {
+  for (const actorId of startStateOf(project).partyActorIds) {
     rows[actorId] = "front";
   }
   return rows;
@@ -229,6 +373,41 @@ export function learnSkill(session: PlaySessionLike, actorId: ActorId, skillId: 
   session.actorSkillIds ??= {};
   const learned = session.actorSkillIds[actorId] ?? [];
   if (!learned.includes(skillId)) session.actorSkillIds[actorId] = [...learned, skillId];
+}
+
+export function friendshipKey(npcKey: string | undefined, eventId?: string): string | undefined {
+  const key = npcKey?.trim() || eventId?.trim();
+  return key || undefined;
+}
+
+export function getFriendship(session: PlaySessionLike, npcKey: string | undefined, eventId?: string): number {
+  const key = friendshipKey(npcKey, eventId);
+  if (!key) return 0;
+  return clampFriendship(session.friendship?.[key] ?? 0);
+}
+
+export function changeFriendship(
+  session: PlaySessionLike,
+  npcKey: string | undefined,
+  delta: number,
+  eventId?: string
+): number {
+  const key = friendshipKey(npcKey, eventId);
+  if (!key) return 0;
+  session.friendship ??= {};
+  const next = clampFriendship((session.friendship[key] ?? 0) + Math.trunc(Number.isFinite(delta) ? delta : 0));
+  session.friendship[key] = next;
+  return next;
+}
+
+export function clampFriendship(value: number): number {
+  if (!Number.isFinite(value)) return FRIENDSHIP_MIN;
+  return Math.max(FRIENDSHIP_MIN, Math.min(FRIENDSHIP_MAX, Math.trunc(value)));
+}
+
+export function giftDayKey(time: GameTime | undefined): string {
+  if (!time) return "no-time";
+  return `${time.year}:${time.season}:${time.day}`;
 }
 
 function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): number {
@@ -319,5 +498,13 @@ export function evalCondition(session: PlaySessionLike, condition: Condition | u
       const remaining = session.timers[condition.timerId] ?? 0;
       return remaining <= condition.seconds;
     }
+    case "timePhase":
+      return conditionMatchesTimePhase(session.gameTime, condition.phase);
+    case "season":
+      return conditionMatchesSeason(session.gameTime, condition.season);
+    case "npcActivity":
+      return eventId ? session.npcActivities?.[eventId] === condition.activity : false;
+    case "friendshipAtLeast":
+      return getFriendship(session, condition.npcKey, eventId) >= clampFriendship(condition.value);
   }
 }

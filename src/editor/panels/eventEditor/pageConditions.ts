@@ -2,6 +2,7 @@ import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { CONDITION_OP_OPTIONS } from "./options";
+import { renderFriendshipAtLeastCondition, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
 import {
@@ -68,6 +69,34 @@ export function renderPageConditions(mapId: MapId, eventId: string, page: EventP
       timerCondition(context, "timer2") !== undefined,
       "이하",
       (enabled) => toggleTimerCondition(context, "timer2", enabled)
+    ),
+    conditionRow(
+      "시간대",
+      timePhaseConditionInputs(context),
+      page.conditions.some((item) => item.kind === "timePhase"),
+      "일 때",
+      (enabled) => toggleSimpleCondition(context, "timePhase", enabled)
+    ),
+    conditionRow(
+      "계절",
+      seasonConditionInputs(context),
+      page.conditions.some((item) => item.kind === "season"),
+      "일 때",
+      (enabled) => toggleSimpleCondition(context, "season", enabled)
+    ),
+    conditionRow(
+      "활동",
+      npcActivityConditionInputs(context),
+      page.conditions.some((item) => item.kind === "npcActivity"),
+      "일 때",
+      (enabled) => toggleSimpleCondition(context, "npcActivity", enabled)
+    ),
+    conditionRow(
+      "호감도",
+      friendshipConditionInputs(context),
+      page.conditions.some((item) => item.kind === "friendshipAtLeast"),
+      "이상",
+      (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled)
     ),
     renderAdvancedConditions(context),
   ];
@@ -221,4 +250,67 @@ function timerConditionInputs(context: PageConditionContext, timerId: "timer1" |
       el("span", { class: "event-condition-time-unit", text: "초" }),
     ],
   });
+}
+
+function timePhaseConditionInputs(context: PageConditionContext): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "timePhase");
+  const phase = selectWithOptions(
+    TIME_PHASE_OPTIONS,
+    condition?.kind === "timePhase" ? condition.phase : "day",
+    "event-page-time-phase-condition-input"
+  );
+  phase.addEventListener("change", () => {
+    const next = withoutFirstCondition(context.page.conditions, "timePhase");
+    next.push({ kind: "timePhase", phase: selectedOptionValue(phase, TIME_PHASE_OPTIONS, "day") });
+    updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
+  });
+  return el("div", { class: "event-condition-control time-phase", children: [phase] });
+}
+
+function seasonConditionInputs(context: PageConditionContext): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "season");
+  const season = selectWithOptions(
+    SEASON_OPTIONS,
+    condition?.kind === "season" ? condition.season : "spring",
+    "event-page-season-condition-input"
+  );
+  season.addEventListener("change", () => {
+    const next = withoutFirstCondition(context.page.conditions, "season");
+    next.push({ kind: "season", season: selectedOptionValue(season, SEASON_OPTIONS, "spring") });
+    updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
+  });
+  return el("div", { class: "event-condition-control season", children: [season] });
+}
+
+function npcActivityConditionInputs(context: PageConditionContext): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "npcActivity");
+  const activity = el("input", {
+    attrs: { type: "text", placeholder: "work" },
+    value: condition?.kind === "npcActivity" ? condition.activity : "work",
+    dataset: { testid: "event-page-npc-activity-condition-input" },
+  }) as HTMLInputElement;
+  activity.addEventListener("change", () => {
+    const next = withoutFirstCondition(context.page.conditions, "npcActivity");
+    const label = activity.value.trim();
+    if (label) next.push({ kind: "npcActivity", activity: label });
+    updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
+  });
+  return el("div", { class: "event-condition-control npc-activity", children: [activity] });
+}
+
+function friendshipConditionInputs(context: PageConditionContext): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "friendshipAtLeast");
+  return renderFriendshipAtLeastCondition(
+    condition?.kind === "friendshipAtLeast" ? condition : { kind: "friendshipAtLeast", value: 100 },
+    (next) => {
+      const existing = withoutFirstCondition(context.page.conditions, "friendshipAtLeast");
+      existing.push(next);
+      updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: existing });
+    },
+    {
+      className: "event-condition-control friendship",
+      npcKeyTestId: "event-page-friendship-condition-npc-key",
+      valueTestId: "event-page-friendship-condition-value",
+    }
+  );
 }

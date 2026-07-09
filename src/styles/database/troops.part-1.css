@@ -15,32 +15,32 @@
 }
 
 .database-modal-window:has(.rm2k3-record-troops) {
-  background: #e8e8e8;
-  border-color: #ffffff #707070 #707070 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   box-shadow: 1px 1px 0 #303030;
-  color: #000000;
+  color: var(--text-1);
   height: var(--rm2k3-troop-modal-height);
   width: var(--rm2k3-troop-modal-width);
 }
 
 .database-modal-window:has(.rm2k3-record-troops) .database-modal-header {
-  background: linear-gradient(180deg, #f6e4b8 0%, #d8b675 100%);
-  border-bottom: 1px solid #8b6f3c;
-  color: #000000;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-1);
   min-height: 24px;
   padding: 2px 4px 1px;
 }
 
 .database-modal-window:has(.rm2k3-record-troops) .database-modal-header h2 {
-  color: #000000;
+  color: var(--text-1);
   font: 400 12px/18px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   text-shadow: none;
 }
 
 .database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
-  background: #e8e8e8;
+  background: var(--bg-raised);
   display: grid;
   grid-template-rows: 39px 21px 1fr;
   overflow: hidden;
@@ -56,12 +56,12 @@
 
 .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tab,
 .database-modal-body:has(.rm2k3-record-troops) .db-tab {
-  background: #e8e8e8;
-  border-color: #ffffff #808080 #808080 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
   border-style: solid;
   border-width: 1px;
-  color: #000000;
+  color: var(--text-1);
   font: 12px/18px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   height: 21px;
 }
@@ -85,11 +85,11 @@
 }
 
 .database-modal-body:has(.rm2k3-record-troops) .db-tab.active {
-  background: linear-gradient(#5e84dc, #315ebc);
-  border-bottom-color: #315ebc;
-  border-color: #dfe8ff #1f4695 #1f4695 #dfe8ff;
+  background: linear-gradient(var(--accent), var(--accent));
+  border-bottom-color: var(--accent-border);
+  border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
   box-shadow: none;
-  color: #ffffff;
+  color: var(--text-1);
 }
 
 .database-modal-body:has(.rm2k3-record-troops) .rm2k3-record-identity {
@@ -97,8 +97,8 @@
 }
 
 .database-modal-body:has(.rm2k3-record-troops) .db-body {
-  background: #e8e8e8;
-  border-color: #808080 #ffffff #ffffff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   height: 608px;
@@ -117,7 +117,7 @@
 }
 
 .database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane {
-  background: #e8e8e8;
+  background: var(--bg-raised);
   border: 0;
   box-shadow: none;
   display: grid;
@@ -128,9 +128,9 @@
 
 .database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane h3 {
   align-items: center;
-  background: #1f65b5;
-  border: 1px solid #7c7c7c;
-  color: #ffffff;
+  background: var(--accent);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
   display: grid;
   font: 700 20px/27px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   height: 30px;
@@ -143,8 +143,8 @@
 }
 
 .database-modal-body .rm2k3-record-troops .db-list {
-  background: #ffffff;
-  border-color: #808080 #ffffff #ffffff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   display: block;
@@ -156,9 +156,9 @@
 
 .database-modal-body .rm2k3-record-troops .db-list-row {
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-raised);
   border: 0;
-  color: #000000;
+  color: var(--text-1);
   display: flex;
   font: 19px/21px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   height: 21px;
@@ -168,8 +168,8 @@
 }
 
 .database-modal-body .rm2k3-record-troops .db-list-row.active {
-  background: #0a87d8;
-  color: #ffffff;
+  background: var(--accent-muted);
+  color: var(--text-1);
 }
 
 .database-modal-body .rm2k3-record-troops .db-list-number,
@@ -188,12 +188,12 @@
 .database-modal-body .rm2k3-record-troops .rm2k3-maximum-button,
 .database-modal-body .rm2k3-record-troops .db-toolbar .btn,
 .database-modal-body .db-troops-classic-workbench button {
-  background: #e8e8e8;
-  border-color: #ffffff #707070 #707070 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
   border-style: solid;
   border-width: 1px;
-  color: #000000;
+  color: var(--text-1);
   font: 15px/22px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   min-height: 24px;
   padding: 0 8px;
@@ -210,7 +210,7 @@
 
 .database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane,
 .database-modal-body .rm2k3-record-troops .rm2k3-detail-form {
-  background: #e8e8e8;
+  background: var(--bg-raised);
   border: 0;
   box-shadow: none;
   display: block;
@@ -236,7 +236,7 @@
 
 .database-modal-body .db-troop-top-controls {
   align-items: start;
-  border-bottom: 1px solid #a8a8a8;
+  border-bottom: 1px solid var(--border-default);
   display: grid;
   gap: 4px;
   grid-area: top;
@@ -247,12 +247,12 @@
 
 .database-modal-body .db-troop-classic-panel {
   align-content: start;
-  background: #e8e8e8;
-  border-color: #808080 #ffffff #ffffff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   box-shadow: none;
-  color: #000000;
+  color: var(--text-1);
   display: grid;
   gap: 4px;
   margin: 0;
@@ -262,8 +262,8 @@
 
 .database-modal-body .db-troop-classic-panel legend,
 .database-modal-body .db-troop-event-panel h3 {
-  background: #e8e8e8;
-  color: #000000;
+  background: var(--bg-raised);
+  color: var(--text-1);
   font: 16px/1 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   margin: 0;
   padding: 0 4px;
@@ -289,12 +289,12 @@
 
 .database-modal-body .db-troops-classic-workbench input,
 .database-modal-body .db-troops-classic-workbench select {
-  background: #ffffff;
-  border-color: #808080 #ffffff #ffffff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-radius: 0;
   border-style: solid;
   border-width: 1px;
-  color: #000000;
+  color: var(--text-1);
   font: 15px/20px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   height: 25px;
   min-height: 0;
@@ -322,7 +322,7 @@
 .database-modal-body .db-troops-classic-workbench .actor-check,
 .database-modal-body .db-troop-radio,
 .database-modal-body .db-troop-terrain-row {
-  color: #000000;
+  color: var(--text-1);
   font: 15px/19px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   letter-spacing: 0;
   text-transform: none;
@@ -335,11 +335,11 @@
 
 .database-modal-body .rm2k3-detail-troops .db-troop-battle-preview-stage {
   background:
-    linear-gradient(180deg, #80b8e8 0 18%, #4a8fc1 19% 25%, #55a13d 26% 100%),
+    linear-gradient(180deg, var(--accent) 0 18%, var(--accent) 19% 25%, #55a13d 26% 100%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 45%);
   background-position: center;
   background-size: cover;
-  border-color: #808080 #ffffff #ffffff #808080;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   height: 254px;
@@ -390,8 +390,8 @@
 }
 
 .database-modal-body .db-troop-preview-caption {
-  background: #ffffff;
-  border-color: #808080 #ffffff #ffffff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   font: 13px/20px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;

@@ -3,6 +3,7 @@ import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene } from "@/player/battleDom";
 import { renderPlayer, teardownPlayer } from "@/player/player";
 import { startSession, type PlaySession } from "@/project/session";
+import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
 import { store } from "@/project/store";
 import type { GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -12,10 +13,11 @@ let removePlayWindowKeydown: (() => void) | null = null;
 
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
-export async function openTestPlayModal(): Promise<void> {
+export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
   await store.flush();
-  const body = openTestPlayShell("테스트 플레이 - RPG 쯔꾸르");
-  renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false });
+  const title = startOverride ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})` : "테스트 플레이 - RPG 쯔꾸르";
+  const body = openTestPlayShell(title);
+  renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false, startOverride });
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
@@ -115,7 +117,7 @@ function openTestPlayShell(title: string): HTMLElement {
     dataset: { testid: "test-play-window-body" },
   });
 
-  windowNode.append(titlebar, body);
+  windowNode.append(titlebar, body, renderRuntimeDebugPanel());
   backdrop.append(windowNode);
   document.body.append(backdrop);
   modalRoot = backdrop;

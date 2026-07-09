@@ -1,0 +1,91 @@
+/* ============================================================================
+   rpg-zzu 디자인 토큰 (UI-0 파운데이션) — 단일 진실 공급원(Single Source of Truth)
+   모던 다크 IDE 계열 (VS Code / Figma / Linear 방향).
+   전 영역(shell/editor/database/map/resources)은 여기 정의된 변수만 사용한다.
+   가이드: src/styles/TOKENS.md
+   주의: 이 파일은 index.css 최상단에서 가장 먼저 import 된다.
+         레거시 변수(--bg, --surface-panel, --editor-shell-bg 등)는
+         editor/core.part-1.css · database/tabs-b-shell-layout.css ·
+         shell/figma-editor.css 의 :root 에서 이 토큰의 별칭으로 리매핑돼 있다.
+   ========================================================================= */
+
+:root {
+  /* ---- 배경 계층 (base → surface → raised → overlay) ------------------- */
+  --bg-base: #0f1117;    /* 앱 셸 최하층: 메뉴바/툴바 뒤, body */
+  --bg-surface: #151823; /* 패널/사이드바/스테이터스바 */
+  --bg-raised: #1c202d;  /* 카드, 다이얼로그 본문, 떠 있는 패널 */
+  --bg-overlay: #232838; /* 팝오버/드롭다운/컨텍스트 메뉴 (최상층) */
+  --bg-inset: #0c0e14;   /* 인풋 웰, 리스트 웰, 움푹 들어간 영역 */
+  --bg-canvas: #0a0c11;  /* 맵/게임 캔버스 뒤 가장 어두운 우물 */
+  --bg-glass: rgba(24, 28, 40, 0.88); /* 캔버스 위 반투명 플로팅 툴바 */
+
+  /* ---- 인터랙션 상태 (배경 위에 얹는 반투명 레이어) --------------------- */
+  --bg-hover: rgba(255, 255, 255, 0.05);  /* 리스트행/메뉴항목 hover */
+  --bg-active: rgba(255, 255, 255, 0.09); /* pressed/선택 유사 상태 */
+  --control-bg: rgba(255, 255, 255, 0.045);      /* 버튼 등 컨트롤 기본면 */
+  --control-bg-hover: rgba(255, 255, 255, 0.08); /* 컨트롤 hover */
+  --control-bg-active: rgba(255, 255, 255, 0.12);/* 컨트롤 active(눌림) */
+
+  /* ---- 테두리 (밝은 선 대신 은은한 흰색 알파) --------------------------- */
+  --border-subtle: rgba(255, 255, 255, 0.07);  /* 패널 구분선, 섹션 경계 */
+  --border-default: rgba(255, 255, 255, 0.11); /* 컨트롤/카드 기본 보더 */
+  --border-strong: rgba(255, 255, 255, 0.17);  /* hover 보더, 강조 구분 */
+
+  /* ---- 텍스트 3단계 ----------------------------------------------------- */
+  --text-1: #e9ecf3; /* 본문/제목 (primary) */
+  --text-2: #9aa3b5; /* 보조 라벨 (secondary) */
+  --text-3: #626b7d; /* 흐린 힌트/비활성 (muted) */
+
+  /* ---- 액센트 (인디고/바이올렛) ----------------------------------------- */
+  --accent: #6c79f2;
+  --accent-hover: #8590f6;
+  --accent-active: #5765ee;
+  --accent-muted: rgba(108, 121, 242, 0.17);  /* 선택 행/탭 배경 */
+  --accent-border: rgba(108, 121, 242, 0.55); /* 선택 컨트롤 보더 */
+  --on-accent: #ffffff;                       /* 액센트 배경 위 텍스트 */
+
+  /* ---- 상태 색 ----------------------------------------------------------- */
+  --danger: #f0716f;
+  --danger-muted: rgba(240, 113, 111, 0.14);
+  --success: #55d69c;
+  --success-muted: rgba(85, 214, 156, 0.14);
+  --warning: #f2b74e;
+  --warning-muted: rgba(242, 183, 78, 0.14);
+
+  /* ---- 라운드 3단계 ------------------------------------------------------ */
+  --radius-s: 6px;  /* 버튼/인풋/리스트행 */
+  --radius-m: 10px; /* 카드/팝오버 */
+  --radius-l: 14px; /* 모달/큰 패널 */
+
+  /* ---- 스페이싱 (4px 기반 8px 그리드) ------------------------------------ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* ---- 그림자 2단계 ------------------------------------------------------ */
+  --shadow-pop: 0 4px 12px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.38);
+  --shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.36), 0 24px 64px rgba(0, 0, 0, 0.5);
+
+  /* ---- 포커스 링 --------------------------------------------------------- */
+  /* box-shadow 형: box-shadow: var(--focus-ring); */
+  --focus-ring: 0 0 0 2px rgba(108, 121, 242, 0.55);
+  /* outline 형: outline: var(--focus-outline); outline-offset: 1px; */
+  --focus-outline: 2px solid var(--accent);
+
+  /* ---- 트랜지션 ---------------------------------------------------------- */
+  --transition-fast: 120ms ease; /* hover/색 전이 */
+  --transition-med: 160ms ease;  /* 팝오버/펼침 */
+
+  /* ---- 폰트 (외부 로드 금지 — 로컬 설치분만 폴백) ------------------------ */
+  --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic",
+    -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas,
+    monospace;
+
+  /* ---- 얇은 라운드 스크롤바 (전역 기본은 index.css 하단) ----------------- */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
+}

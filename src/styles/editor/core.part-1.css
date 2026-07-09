@@ -2,55 +2,48 @@
 
 :root {
   /* ?먮뵒???꾩슜 紐⑤뜕 ?ㅽ겕 ?붾젅???뺤젣). 寃뚯엫 罹붾쾭???ㅺ낵 遺꾨━. */
-  --bg: #16181d;
-  --bg-panel: #1e2128;
-  --bg-panel-2: #272b34;
-  --bg-elev: #2d323d;
-  --border: #353a45;
-  --border-soft: #2a2e37;
-  --text: #e8eaef;
-  --text-dim: #9097a4;
-  --text-muted: #6b7280;
-  --accent: #7c9eff;
-  --accent-hover: #9bb5ff;
-  --accent-soft: rgba(124, 158, 255, 0.16);
-  --danger: #ef6b6b;
-  --ok: #6edb94;
+  /* 레거시 변수 브리지 (UI-0) — 실제 값은 전부 ../tokens.css 의 토큰.
+     (--accent / --accent-hover / --danger / --border-strong / --border-default /
+      --space-1..4 / --font-mono 는 tokens.css 가 직접 정의 — 여기서 재정의 금지.) */
+  --bg: var(--bg-base);
+  --bg-panel: var(--bg-surface);
+  --bg-panel-2: var(--bg-raised);
+  --bg-elev: var(--bg-raised);
+  --border: var(--border-default);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-1);
+  --text-dim: var(--text-2);
+  --text-muted: var(--text-3);
+  --accent-soft: var(--accent-muted);
+  --ok: var(--success);
   /* 怨⑤뱶 ?≪꽱????ъ갹 ?ㅺ낵 議고솕). */
-  --gold: #f5d04a;
+  --gold: var(--warning);
   /* DESIGN.md 짠2 ?좏겙 ???ъ슜泥섍? 議댁옱?섏?留??뺤쓽媛 鍮좎졇 ?됱씠 源⑥???蹂?섎뱾.
      紐⑤뜕 ?ㅽ겕 ?붾젅??湲곗? 媛믪쑝濡??뺤쓽?쒕떎(?덊듃濡??쇱씠???뚮쭏???꾨옒 ??踰덉㎏ :root ?먯꽌 override). */
-  --surface-app: var(--bg);
+  --surface-app: var(--bg-base);
   --accent-secondary: var(--gold);
-  --accent-editor: #86b878;
+  --accent-editor: var(--success);
   --accent-blue: var(--accent);
-  --bg-recessed: #121418;
-  --surface-button: var(--bg-panel-2);
+  --bg-recessed: var(--bg-inset);
+  --surface-button: var(--control-bg);
   --mono: var(--font-mono);
-  --status-warning: #e7b45b;
-  --status-success: var(--ok);
+  --status-warning: var(--warning);
+  --status-success: var(--success);
   --pixel-grid: rgba(255, 255, 255, 0.15);
-  --surface-workbench: #f8f5ec;
-  --surface-panel: #fffdf7;
-  --surface-recessed: #d8d0be;
-  --surface-selected: #d9e8f6;
-  --text-primary: #232323;
-  --text-secondary: #5c5b57;
-  --text-inverse: #ffffff;
-  --border-default: #9d988c;
-  --border-strong: #5f5b52;
-  --accent-primary: #2e6f9e;
-  --status-error: #a33a32;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --surface-workbench: var(--bg-surface);
+  --surface-panel: var(--bg-raised);
+  --surface-recessed: var(--bg-inset);
+  --surface-selected: var(--accent-muted);
+  --text-primary: var(--text-1);
+  --text-secondary: var(--text-2);
+  --text-inverse: var(--on-accent);
+  --accent-primary: var(--accent);
+  --status-error: var(--danger);
+  font-family: var(--font-ui);
   font-size: 14px;
-  --radius: 4px;
-  --radius-sm: 3px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-  --shadow-popover: 0 8px 20px rgba(0, 0, 0, 0.22);
+  --radius: var(--radius-s);
+  --radius-sm: 4px;
+  --shadow-popover: var(--shadow-pop);
 }
 
 * {
@@ -103,7 +96,7 @@ body {
 
 button.btn {
   align-items: center;
-  background: var(--bg-elev);
+  background: var(--control-bg);
   color: var(--text);
   border: 1px solid var(--border);
   display: inline-flex;
@@ -115,13 +108,12 @@ button.btn {
   font-size: 13px;
   font-family: inherit;
   line-height: 1.2;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.08s, box-shadow 0.12s;
   user-select: none;
 }
 button.btn:hover:not(:disabled) {
-  background: var(--border);
-  border-color: var(--text-muted);
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
 }
 button.btn:focus-visible {
   outline: 2px solid var(--accent-primary);
@@ -133,8 +125,8 @@ button.btn:active:not(:disabled) {
 }
 button.btn.primary {
   background: var(--accent);
-  border-color: var(--accent);
-  color: #0d1424;
+  border-color: var(--accent-border);
+  color: var(--on-accent);
   font-weight: 600;
 }
 button.btn.primary:hover:not(:disabled) {
@@ -184,7 +176,7 @@ button.btn:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0d0f13;
+  background: var(--bg-canvas);
   position: relative;
   overflow: hidden;
 }
@@ -192,6 +184,41 @@ button.btn:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.agent-focus-highlight {
+  animation: agent-focus-highlight-fade 2.2s ease-out forwards;
+  background: rgba(255, 212, 59, 0.12);
+  border: 2px solid rgba(255, 243, 191, 0.9);
+  box-shadow: 0 0 0 1px rgba(255, 146, 43, 0.35), 0 0 18px rgba(255, 212, 59, 0.26);
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+.agent-ghost-preview {
+  background: rgba(32, 201, 151, 0.08);
+  border: 2px dashed rgba(99, 230, 190, 0.82);
+  box-shadow: 0 0 0 1px rgba(18, 184, 134, 0.26), 0 0 14px rgba(32, 201, 151, 0.18);
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+
+@keyframes agent-focus-highlight-fade {
+  0% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ?쎌? ?꾪듃 ?먮┝ 諛⑹?: Phaser 罹붾쾭???뺣? ???쎌???萸됯컻吏吏 ?딄쾶. */
@@ -226,9 +253,9 @@ button.btn:disabled {
   text-align: center;
 }
 .tool-grid .btn.active {
-  background: var(--accent);
+  background: var(--accent-muted);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--text-1);
   font-weight: 600;
 }
 .tool-command-row {
@@ -267,9 +294,9 @@ button.btn:disabled {
 }
 
 .brush-size-btn.active {
-  background: var(--accent);
+  background: var(--accent-muted);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--text-1);
   font-weight: 700;
 }
 
@@ -316,7 +343,7 @@ button.btn:disabled {
 .tile-tool-status-value {
   color: var(--text);
   flex: 1 1 auto;
-  font: 600 10px/1.25 "Cascadia Mono", Consolas, monospace;
+  font: 600 10px/1.25 var(--font-mono);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -333,9 +360,9 @@ button.btn:disabled {
   display: grid;
   place-items: center;
   pointer-events: none;
-  background: rgba(5, 8, 14, 0.72);
-  border: 1px solid var(--accent);
-  color: #f8fbff;
+  background: var(--bg-glass);
+  border: 1px solid var(--accent-border);
+  color: var(--text-1);
   font-size: 18px;
   font-weight: 700;
   padding: 16px;
@@ -350,9 +377,9 @@ button.btn:disabled {
   max-width: min(340px, calc(100% - 32px));
   padding: 8px 12px;
   place-items: center;
-  background: rgba(10, 31, 68, 0.92);
-  border: 1px solid #b9d8ff;
-  color: #ffffff;
+  background: var(--bg-glass);
+  border: 1px solid var(--accent-border);
+  color: var(--text-1);
   font-size: 14px;
   line-height: 1.25;
   z-index: 28;

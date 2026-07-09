@@ -1,7 +1,10 @@
 import { changeGold } from "@/project/session";
 import { recoverPartyVitals } from "@/project/sessionVitals";
+import { store } from "@/project/store";
+import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { dialogueHost } from "@/player/playSceneDom";
 import { applySystemGraphic } from "@/player/systemGraphics";
+import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -19,41 +22,60 @@ type CommerceOverlayOptions = {
 export function playInn(scene: PlaySceneContext, step: InnStep): Promise<void> {
   // RM2003 여관 처리: 인사 → "N G 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
   // 화면이 어두워졌다가(휴식) 기상 메시지와 함께 밝아지고 이벤트가 계속된다.
+  const text = innTextModel(step, resolveTerms(store.getCurrent()));
   return new Promise((resolve) => {
     const overlay = createCommerceOverlay({
       testId: "inn-scene",
-      title: "여관",
-      note: "어서 오세요. 편히 쉬어가시겠어요?",
+      title: text.title,
+      note: text.note,
     });
-    const question = commerceStatus(`하룻밤 묵는 데 ${step.price} G 입니다. 묵으시겠습니까?`);
+    const question = commerceStatus(text.question);
     const actions = document.createElement("div");
     actions.className = "runtime-commerce-actions";
-    actions.append(
-      closeButton(
-        "예",
-        () => {
-          if (scene.session.gold < step.price) {
-            question.textContent = "소지금이 부족합니다.";
-            scene.syncRuntimeState();
-            return;
-          }
-          // 회복/차감은 즉시 반영하고, 이후 휴식 연출을 거쳐 이벤트를 재개한다.
-          changeGold(scene.session, "-=", step.price);
-          recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds);
+    let detachCursor: (() => void) | null = null;
+    const teardownCursor = (): void => {
+      detachCursor?.();
+      detachCursor = null;
+    };
+    const stayButton = closeButton(
+      text.yes,
+      () => {
+        if (scene.session.gold < step.price) {
+          question.textContent = text.notEnoughGold;
           scene.syncRuntimeState();
-          playInnRest(scene, overlay, resolve);
-        },
-        "inn-stay"
-      ),
-      closeButton("아니오", () => finishCommerce(scene, overlay, resolve), "inn-cancel")
+          return;
+        }
+        // 회복/차감은 즉시 반영하고, 이후 휴식 연출을 거쳐 이벤트를 재개한다.
+        teardownCursor();
+        changeGold(scene.session, "-=", step.price);
+        recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds);
+        scene.syncRuntimeState();
+        playInnRest(scene, overlay, resolve, text);
+      },
+      "inn-stay"
     );
+    const cancelButton = closeButton(
+      text.no,
+      () => {
+        teardownCursor();
+        finishCommerce(scene, overlay, resolve);
+      },
+      "inn-cancel"
+    );
+    actions.append(stayButton, cancelButton);
     overlay.append(question, actions);
     mountCommerceOverlay(scene, overlay);
+    // 예/아니오 를 방향키(←→)로 선택, Z/Enter 결정, X/Esc(=아니오) 취소.
+    detachCursor = attachCursorMenu(overlay, {
+      items: [stayButton, cancelButton],
+      cancelEl: cancelButton,
+      columns: 2,
+    });
   });
 }
 
 // 숙박 연출: 어두워짐(휴식) → 기상 메시지 → 밝아지며 종료.
-function playInnRest(scene: PlaySceneContext, overlay: HTMLElement, resolve: () => void): void {
+function playInnRest(scene: PlaySceneContext, overlay: HTMLElement, resolve: () => void, text: InnTextModel): void {
   overlay.classList.add("runtime-inn-rest");
   const fade = document.createElement("div");
   fade.className = "runtime-inn-fade";
@@ -67,7 +89,7 @@ function playInnRest(scene: PlaySceneContext, overlay: HTMLElement, resolve: () 
     overlay.classList.add("runtime-inn-wake-view");
     const title = document.createElement("div");
     title.className = "runtime-overlay-title";
-    title.textContent = "여관";
+    title.textContent = text.title;
     overlay.replaceChildren(title, wake);
     scene.syncRuntimeState();
     scene.time.delayedCall(750, () => finishCommerce(scene, overlay, resolve));
@@ -75,12 +97,33 @@ function playInnRest(scene: PlaySceneContext, overlay: HTMLElement, resolve: () 
 }
 
 export function commerceOverlayText(step: ShopStep | InnStep): string {
+  const terms = resolveTerms(store.getCurrent());
   switch (step.kind) {
     case "shop":
       return `상점: ${step.itemIds.length}개 상품`;
     case "inn":
-      return `여관: ${step.price} G`;
+      return `${terms.innTitle}: ${step.price} ${terms.gold}`;
   }
+}
+
+export type InnTextModel = {
+  readonly title: string;
+  readonly note: string;
+  readonly question: string;
+  readonly yes: string;
+  readonly no: string;
+  readonly notEnoughGold: string;
+};
+
+export function innTextModel(step: InnStep, terms: ResolvedTerms): InnTextModel {
+  return {
+    title: terms.innTitle,
+    note: "어서 오세요. 편히 쉬어가시겠어요?",
+    question: `하룻밤 묵는 데 ${step.price} ${terms.gold} 입니다. 묵으시겠습니까?`,
+    yes: terms.yes,
+    no: terms.no,
+    notEnoughGold: terms.notEnoughGold,
+  };
 }
 
 function commerceStatus(text: string): HTMLElement {

@@ -8,7 +8,9 @@ import type {
   VariableDef,
 } from "../types";
 import { SCHEMA_VERSION } from "../types";
-import { DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
+import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { normalizeCropRecord } from "@/project/farmModel";
+import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -21,7 +23,9 @@ import {
   defaultTerms,
 } from "./defaultDatabase";
 import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
+import { createTrainingExampleMaps } from "./trainingExampleMaps";
 import {
+  createBlankMap,
   createLogCabinShowcaseMap,
   createRetroHouseShowcaseMap,
   createDbExtractedHouseTemplateMap,
@@ -40,10 +44,29 @@ import {
 } from "./defaultMaps";
 
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
+const BLANK_PROJECT_START_MAP_ID = "map_blank_start";
+const BLANK_PROJECT_MAP_WIDTH = 20;
+const BLANK_PROJECT_MAP_HEIGHT = 15;
 
 export function createBlankProject(): Project {
+  const map = createBlankMap("빈 맵", BLANK_PROJECT_MAP_WIDTH, BLANK_PROJECT_MAP_HEIGHT);
+  map.id = BLANK_PROJECT_START_MAP_ID;
+  const project = createProjectWithMaps([map], 0);
+  project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };
+  project.session = { ...project.session, partyActorIds: [DEFAULT_ACTOR_ID] };
+  return project;
+}
+
+export function createSampleAdventureProject(): Project {
   const project = createProjectWithMaps(createAdventureMaps(), 0);
   configureAdventureProject(project);
+  return project;
+}
+
+// 학습 예시 12맵 — 지붕/집/마을 구성을 사람이 채워넣어 AI 학습 정답 데이터로 쓰는 캔버스 프로젝트.
+export function createTrainingExamplesProject(): Project {
+  const project = createProjectWithMaps(createTrainingExampleMaps(), 0);
+  project.meta = { ...project.meta, title: "학습 예시 12맵" };
   return project;
 }
 
@@ -109,6 +132,60 @@ export function createShopShowcaseProject(): Project {
   const starter = project.maps[project.startMapId];
   if (!starter) return project;
   starter.events.push(createShopkeeperEvent(project.startPos.x, project.startPos.y + 1));
+  return project;
+}
+
+export function createFarmingDemoProject(): Project {
+  const map = createBlankMap("봄 밭", 20, 20);
+  map.id = "map_farming_demo";
+  map.farmableArea = [{ x: 4, y: 5, w: 6, h: 4 }];
+  const project = createProjectWithMaps([map], 0);
+  project.meta = { ...project.meta, title: "농사 데모" };
+  project.startPos = { x: 4, y: 4 };
+  project.system = {
+    ...project.system,
+    startActorIds: [DEFAULT_ACTOR_ID],
+    timeSystem: { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep: false },
+  };
+  project.session = {
+    ...project.session,
+    partyActorIds: [DEFAULT_ACTOR_ID],
+    inventory: {
+      item_hoe: 1,
+      item_watering_can: 1,
+      item_potato_seed: 3,
+      item_strawberry_seed: 2,
+    },
+  };
+  project.database.items.push(
+    normalizeItemRecord({ id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" }),
+    normalizeItemRecord({ id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" }),
+    normalizeItemRecord({ id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true }),
+    normalizeItemRecord({ id: "item_potato", name: "감자", scope: "none", price: 40, type: "normalGoods" }),
+    normalizeItemRecord({ id: "item_strawberry_seed", name: "딸기 씨앗", scope: "none", price: 40, type: "seed", consumable: true }),
+    normalizeItemRecord({ id: "item_strawberry", name: "딸기", scope: "none", price: 80, type: "normalGoods" })
+  );
+  project.database.crops = [
+    normalizeCropRecord({
+      id: "crop_potato",
+      name: "감자",
+      seedItemId: "item_potato_seed",
+      harvestItemId: "item_potato",
+      harvestCount: 1,
+      stages: [{ days: 1 }, { days: 1 }],
+      seasons: ["spring"],
+    }),
+    normalizeCropRecord({
+      id: "crop_strawberry",
+      name: "딸기",
+      seedItemId: "item_strawberry_seed",
+      harvestItemId: "item_strawberry",
+      harvestCount: 2,
+      stages: [{ days: 1 }, { days: 1 }],
+      seasons: ["spring"],
+      regrow: { days: 1 },
+    }),
+  ];
   return project;
 }
 
@@ -217,6 +294,7 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
       y: Math.floor(starter.height / 2) + 1,
     },
     flags: {},
+    villageInfoDocuments: [],
   };
   ensureSwitchVariableSlots(project);
   return project;

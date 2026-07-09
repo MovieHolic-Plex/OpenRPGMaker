@@ -6,7 +6,9 @@ import {
   selectLiteral,
   textField,
 } from "@/editor/panels/databaseControls";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type {
   ActorId,
@@ -45,6 +47,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
       class: "db-items-rm2k3-workbench",
       dataset: { testid: "db-items-rm2k3-workbench" },
       children: [
+        resourcePanel(record),
         panel("기본 설정", [
           textField("설명", "db-field-item-description", record.description, (description) =>
             updateDatabaseRecord("items", record.id, { description })
@@ -54,6 +57,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
             rerender();
           }),
           consumptionLimitField(record),
+          farmToolField(record),
         ]),
         ...typePanels(record),
       ],
@@ -101,6 +105,27 @@ function equipmentPanels(record: ItemRecord): HTMLElement[] {
       ),
     ]),
   ];
+}
+
+function resourcePanel(record: ItemRecord): HTMLElement {
+  return panel("아이템 그래픽", [
+    imagePreview("이미지", record.imageResourceId),
+    textField("이미지", "db-field-item-image-resource", resourceText(record.imageResourceId), (imageResourceId) =>
+      updateDatabaseRecord("items", record.id, { imageResourceId: emptyToUndefined(imageResourceId) })
+    ),
+    imagePreview("아이콘", record.iconResourceId),
+    textField("아이콘", "db-field-item-icon-resource", resourceText(record.iconResourceId), (iconResourceId) =>
+      updateDatabaseRecord("items", record.id, { iconResourceId: emptyToUndefined(iconResourceId) })
+    ),
+  ]);
+}
+
+function imagePreview(label: string, resourceId: string | undefined): HTMLElement {
+  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const visual = url
+    ? el("img", { attrs: { alt: `${label} 미리보기`, src: url } })
+    : el("strong", { text: resourceId ?? "(없음)" });
+  return el("div", { class: "db-image-preview", children: [el("span", { text: label }), visual] });
 }
 
 function medicinePanels(record: ItemRecord): HTMLElement[] {
@@ -341,6 +366,12 @@ function consumptionLimitField(record: ItemRecord): HTMLElement {
   return field("사용 횟수", select);
 }
 
+function farmToolField(record: ItemRecord): HTMLElement {
+  return selectLiteral("농사 도구", "db-field-item-farm-tool", record.farmTool ?? "", ["", "hoe", "wateringCan"] as const, (farmTool) => {
+    updateDatabaseRecord("items", record.id, { farmTool: farmTool || undefined });
+  });
+}
+
 function checkboxField(label: string, testid: string, checked: boolean, onInput: (value: boolean) => void): HTMLElement {
   const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
   input.checked = checked;
@@ -378,9 +409,15 @@ function currentItem(record: ItemRecord): ItemRecord {
   return store.getCurrent().database.items.find((item) => item.id === record.id) ?? record;
 }
 
+function resourceText(resourceId: string | undefined): string {
+  return resourceId?.startsWith("generated-") ? "" : resourceId ?? "";
+}
+
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
-  const switches = store.getCurrent().switches;
-  if (switches.length > 0) return switches;
+  const project = store.getCurrent();
+  const switches = project.switches;
+  const labeled = switches.map((entry, index) => ({ id: entry.id, name: storyFlagOptionLabel(project, "switch", entry, index) }));
+  if (labeled.length > 0) return labeled;
   return [{ id: "switch_original", name: "0001:오리지널" }];
 }
 

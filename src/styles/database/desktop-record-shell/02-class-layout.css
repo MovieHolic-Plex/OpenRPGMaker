@@ -15,7 +15,7 @@
 
   .database-modal-body .rm2k3-record-classes .db-class-curve strong,
   .database-modal-body .rm2k3-record-classes .db-class-curve span {
-    color: #1f242c;
+    color: var(--text-1);
     font: 700 13px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-width: 0;
     overflow: hidden;
@@ -24,7 +24,7 @@
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-curve span {
-    color: #4b525c;
+    color: var(--text-2);
     font-weight: 600;
   }
 
@@ -39,7 +39,7 @@
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-curve-graph i {
-    background: #0b73df;
+    background: var(--accent);
     flex: 1 1 0;
     min-width: 1px;
   }
@@ -51,7 +51,7 @@
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-exp-summary {
-    color: #22262d;
+    color: var(--text-1);
     display: block;
     font: 500 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-height: 18px;
@@ -70,7 +70,7 @@
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-exp-graph i {
-    background: #111827;
+    background: var(--bg-inset);
     flex: 1 1 0;
     min-width: 1px;
   }

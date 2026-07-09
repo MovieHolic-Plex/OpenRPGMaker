@@ -31,10 +31,20 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "setVariable", variableId: "", op: "=", value: 0 };
     case "timer":
       return { kind: "timer", action: "set", seconds: 60, timerId: "timer1" };
+    case "advanceTime":
+      return { kind: "advanceTime", minutes: 10 };
+    case "advanceCropGrowth":
+      return { kind: "advanceCropGrowth", days: 1 };
+    case "setTime":
+      return { kind: "setTime", hour: 6, minute: 0 };
+    case "sleepUntilMorning":
+      return { kind: "sleepUntilMorning" };
     case "transfer":
       return { kind: "transfer", mapId: "", x: 0, y: 0, direction: "retain", fade: "black" };
     case "moveEvent":
       return { kind: "moveEvent", eventId: "", route: { moves: [], repeat: false } };
+    case "setEventGraphicPattern":
+      return { kind: "setEventGraphicPattern", eventId: "", pattern: 0 };
     case "changeTile":
       return { kind: "changeTile", mapId: "", layer: "lower", x: 0, y: 0, tile: 0 };
     case "callCommonEvent":
@@ -49,6 +59,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeExp", actorId: "", op: "+=", amount: 10 };
     case "changeLevel":
       return { kind: "changeLevel", actorId: "", op: "+=", amount: 1 };
+    case "promoteActor":
+      return { kind: "promoteActor", actorId: "", toClassId: "", successBranch: [], failureBranch: [] };
     case "changeEquipment":
       return { kind: "changeEquipment", actorId: "", slot: "weapon", equipmentId: "" };
     case "changeActorHp":
@@ -57,12 +69,38 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeActorMp", actorId: "", op: "-=", amount: 5 };
     case "recoverAll":
       return { kind: "recoverAll", actorId: "" };
+    case "enterHeroName":
+      return { kind: "enterHeroName", actorId: "", maxLength: 6, showInitialName: true };
     case "changeGold":
       return { kind: "changeGold", op: "+=", amount: 10 };
     case "changeItem":
       return { kind: "changeItem", itemId: "", op: "+=", amount: 1 };
+    case "changeFriendship":
+      return { kind: "changeFriendship", npcKey: "", delta: 20 };
+    case "getFriendship":
+      return { kind: "getFriendship", npcKey: "", variableId: "" };
     case "changeParty":
       return { kind: "changeParty", actorId: "", action: "add" };
+    case "giveMonster":
+      return { kind: "giveMonster", speciesId: "species_wild_slime", level: 5 };
+    case "moveMonster":
+      return { kind: "moveMonster", instanceId: "", to: "party" };
+    case "evolveMonster":
+      return { kind: "evolveMonster", instanceId: "", toSpeciesId: "", successBranch: [], failureBranch: [] };
+    case "addFollower":
+      return { kind: "addFollower", actorId: "", name: "" };
+    case "removeFollower":
+      return { kind: "removeFollower", all: true };
+    case "setLighting":
+      return { kind: "setLighting", ambient: 0.85, color: "#000000", transitionMs: 0 };
+    case "addLight":
+      return { kind: "addLight", source: { id: "light_1", at: "player", radius: 4, intensity: 1 } };
+    case "removeLight":
+      return { kind: "removeLight", all: true };
+    case "setWeather":
+      return { kind: "setWeather", weather: "rain", intensity: 0.5, transitionMs: 0 };
+    case "showAnimation":
+      return { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: false };
     case "showPicture":
       return { kind: "showPicture", pictureId: "pic1", resourceId: "tex_tiles_default", x: 0, y: 0 };
     case "erasePicture":
@@ -71,6 +109,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "playAudio", resourceId: "", loop: false };
     case "stopAudio":
       return { kind: "stopAudio" };
+    case "cutsceneControl":
+      return { kind: "cutsceneControl", mode: "begin", skippable: false };
     case "displayTextSettings":
       return {
         kind: "displayTextSettings",
@@ -92,6 +132,12 @@ export function newCommand(kind: Command["kind"]): Command {
       };
     case "inn":
       return { kind: "inn", price: 0 };
+    case "checkpointSave":
+      return { kind: "checkpointSave" };
+    case "killPlayer":
+      return { kind: "killPlayer", message: "" };
+    case "triggerEnding":
+      return { kind: "triggerEnding" };
     case "gameOver":
       return { kind: "gameOver" };
     case "ending":

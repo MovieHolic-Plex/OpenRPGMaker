@@ -1,7 +1,7 @@
 import type { Command, Project } from "@/project/types";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
-import { advanceCompletedFrame, topFrame } from "@/player/interpreter/stack";
+import { advanceCompletedFrame, gotoLabel, topFrame } from "@/player/interpreter/stack";
 import type { PlaySessionLike } from "@/player/types";
 import type {
   Interpreter,
@@ -77,6 +77,12 @@ export function createInterpreter(
       // pending(블로킹 단계)을 무시하고 현재 프레임의 pc 만 전진시킨다.
       const frame = topFrame(state.stack);
       if (frame) frame.pc += 1;
+      pending = "none";
+      return run();
+    },
+    jumpToLabel(name: string): StepResult {
+      if (done) return { kind: "done" };
+      if (!gotoLabel(state.stack, name)) return { kind: "done" };
       pending = "none";
       return run();
     },

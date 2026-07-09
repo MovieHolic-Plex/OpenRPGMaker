@@ -1,18 +1,38 @@
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, ItemId, SkillId } from "@/project/types";
+import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
+import { startStateOf } from "@/project/session";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, type MutableBattler } from "@/battle/battleBattlers";
 import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
+import { computeActorLevelUp } from "@/battle/battleLevelUp";
+import { typeChartMultiplierFor } from "@/battle/typeChart";
+import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
+import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
+import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
+import {
+  applyStateEffects,
+  attackMultiplierForStates,
+  canBattlerAct,
+  clearBattleEndStates,
+  defenseMultiplierForStates,
+  recoverStatesWhenHit,
+  runStateUpkeep,
+} from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import type {
   ActorCommand,
   ActorCommandDraft,
   BattleActionResultSnapshot,
   BattleAnimationSnapshot,
+  BattleCapturedMonsterSnapshot,
+  BattleCaptureResultSnapshot,
+  BattleFlow,
   BattlePhase,
+  BattleRoundActionLogSnapshot,
+  BattleRoundLogSnapshot,
   BattleResult,
   BattleRuntime,
   BattleRuntimeOptions,
@@ -20,6 +40,7 @@ import type {
   BattleTargetSelectionSnapshot,
   TargetedActorCommand,
 } from "@/battle/types";
+import { mulberry32, type Rng } from "@/util/rng";
 
 export type {
   ActorCommand,
@@ -37,16 +58,45 @@ export type {
 
 const FALLBACK_SKILL_POWER = 12;
 
+type EnemyActionChoice = {
+  readonly skillId: SkillId;
+  readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string };
+  readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string };
+};
+
+type StrictQueuedActorCommand = {
+  readonly actorId: ActorId;
+  readonly command: ActorCommand;
+};
+
+type StrictQueuedAction =
+  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly actor: MutableBattler; readonly command: ActorCommand }
+  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
+
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
+  const rng: Rng = options.rng ?? mulberry32(1);
+  const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
-  const actors = actorBattlers(options.project);
+  const actors = actorBattlers(options.project, {
+    names: options.party?.names,
+    levels: options.party?.levels,
+    vitals: options.party?.vitals,
+    paramBonuses: options.party?.paramBonuses,
+    equipment: options.party?.equipment,
+    skillIds: options.party?.skillIds,
+    classOverrides: options.party?.classOverrides,
+    stateIds: options.party?.stateIds,
+    partyActorIds: options.party?.partyActorIds,
+  });
   const enemies = enemyBattlers(options.project, troopRecord);
-  let backdropResourceId = troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
+  const activeSlots = normalizeActiveSlots(options.activeSlots ?? troopRecord.activeSlots ?? options.project.system.activeSlots, actors.length);
+  let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
+  let backdropResourceId = options.backdropResourceId ?? troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
 
-  let phase: BattlePhase = "charging";
+  let phase: BattlePhase = battleFlow === "strict" ? "actorCommand" : "charging";
   let activeActorId: ActorId | undefined;
   let lastAnimation: BattleAnimationSnapshot | undefined;
   let lastActionResult: BattleActionResultSnapshot | undefined;
@@ -54,14 +104,27 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let escaped = false;
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
+  let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
-  const rewards: { exp: number; gold: number; items: ItemId[] } = { exp: 0, gold: 0, items: [] };
+  let strictActorCommands: StrictQueuedActorCommand[] = [];
+  let strictPendingActorIds: ActorId[] = [];
+  let strictCurrentRoundActions: BattleRoundActionLogSnapshot[] = [];
+  let strictCurrentRoundParticipantIds = new Set<ActorId>();
+  const roundLogs: BattleRoundLogSnapshot[] = [];
+  const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
+  const participatingActorIds = new Set<ActorId>();
+  const rewards: { exp: number; gold: number; items: ItemId[]; enemyLevel?: number; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
+  // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
+  const sessionState = options.sessionState ?? startStateOf(options.project);
   const battleEventState: BattleEventRuntimeState = {
-    switches: { ...options.project.session.switches },
-    variables: { ...options.project.session.variables },
-    inventory: { ...options.project.session.inventory },
+    switches: { ...sessionState.switches },
+    variables: { ...sessionState.variables },
+    inventory: { ...sessionState.inventory },
+    gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
+    friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
   const battleEvents = createBattleEventRuntime({
+    project: options.project,
     troopRecord,
     actors,
     enemies,
@@ -72,18 +135,30 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       backdropResourceId = resourceId;
     },
   });
+  markActiveParticipants();
 
   function tick(deltaMs: number): void {
+    if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
+    if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
-    const ready = nextReadyBattler(actors, enemiesInBattle, deltaMs);
+    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs);
     if (!ready) {
-      chargeBattlers(actors, enemiesInBattle, deltaMs);
+      chargeBattlers(activeActors(), enemiesInBattle, deltaMs);
       return;
     }
-    chargeBattlers(actors, enemiesInBattle, ready.timeMs);
+    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
+      // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
+      runStateUpkeep(options.project, ready.battler, rng);
+      resolveOutcome();
+      if (result) return;
+      if (!canBattlerAct(options.project, ready.battler)) {
+        ready.battler.gauge = 0;
+        phase = "charging";
+        return;
+      }
       phase = "actorCommand";
       activeActorId = ready.battler.recordId;
       return;
@@ -92,56 +167,26 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performActorCommand(command: ActorCommand): void {
+    const forcedActor = forcedSwitchActor();
+    if (forcedActor) {
+      if (command.kind !== "switch") return;
+      if (!switchActiveActor(forcedActor.recordId, command.targetActorId)) return;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      if (battleFlow === "strict") startStrictRound();
+      else phase = "charging";
+      return;
+    }
+    if (battleFlow === "strict") {
+      collectStrictActorCommand(command);
+      return;
+    }
     if (phase !== "actorCommand" || !activeActorId || result) return;
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor) return;
+    if (command.kind === "switch" && !canSwitchActor(actor.recordId, command.targetActorId)) return;
 
-    currentActorCommandKind = command.kind;
-    switch (command.kind) {
-      case "attack": {
-        const target = visibleEnemies().find((entry) => entry.id === command.targetEnemyId);
-        if (!target || target.hp <= 0) {
-          currentActorCommandKind = undefined;
-          return;
-        }
-        const result = applySkillLike(actor, target, { power: actor.attackPower, statistic: "attack", effect: "damage", criticalRate: criticalRateFor(actor) });
-        lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
-        break;
-      }
-      case "skill": {
-        const skill = lookupSkill(command.skillId);
-        consumeSkillMp(actor, command.skillId);
-        if (skill?.scope === "allEnemies") {
-          for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
-            applySkill(actor, target, command.skillId);
-          }
-          break;
-        }
-        const target = resolveSkillTarget(command.skillId, command.targetEnemyId, actor);
-        applySkill(actor, target, command.skillId);
-        break;
-      }
-      case "item": {
-        const target = resolveSkillTarget(command.itemId, command.targetEnemyId, actor);
-        applyItem(command.itemId, target, actor);
-        break;
-      }
-      case "defend": {
-        actor.defending = true;
-        break;
-      }
-      case "escape": {
-        if (!options.canEscape) break;
-        // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
-        const actorAgi = average(actors.filter((a) => a.hp > 0).map((a) => a.agility));
-        const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
-        const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
-        if (Math.random() < chance) {
-          escaped = true;
-        }
-        break;
-      }
-    }
+    applyActorCommandEffect(actor, command);
     if (escaped) {
       actor.gauge = 0;
       activeActorId = undefined;
@@ -159,6 +204,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
+    if (beginForcedSwitchIfNeeded()) {
+      actor.gauge = 0;
+      currentActorCommandKind = undefined;
+      return;
+    }
     if (battleEvents.consumeExtraActorAction(actor.recordId)) {
       actor.gauge = 100;
       activeActorId = actor.recordId;
@@ -172,16 +222,101 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     phase = "charging";
   }
 
+  function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
+    currentActorCommandKind = command.kind;
+    lastCaptureResult = undefined;
+    switch (command.kind) {
+      case "attack":
+        applyActorAttack(actor, command.targetEnemyId);
+        break;
+      case "skill": {
+        const skill = lookupSkill(command.skillId);
+        if (!canUseSkill(actor, command.skillId)) {
+          performFallbackAttack(actor, command.targetEnemyId);
+          break;
+        }
+        consumeSkillMp(actor, command.skillId);
+        if (skill?.scope === "allEnemies") {
+          for (const target of visibleEnemies().filter((entry) => entry.hp > 0)) {
+            applySkill(actor, target, command.skillId);
+          }
+          break;
+        }
+        const target = resolveSkillTarget(command.skillId, command.targetEnemyId, actor);
+        applySkill(actor, target, command.skillId);
+        break;
+      }
+      case "item": {
+        const target = resolveSkillTarget(command.itemId, command.targetEnemyId, actor);
+        applyItem(command.itemId, target, actor);
+        break;
+      }
+      case "capture":
+        applyCapture(command.captureItemId, command.targetEnemyId);
+        break;
+      case "defend":
+        actor.defending = true;
+        break;
+      case "escape":
+        attemptEscape();
+        break;
+      case "switch":
+        switchActiveActor(actor.recordId, command.targetActorId);
+        break;
+    }
+  }
+
+  function applyActorAttack(actor: MutableBattler, targetEnemyId: string): void {
+    const target = visibleEnemies().find((entry) => entry.id === targetEnemyId);
+    if (!target || target.hp <= 0) {
+      currentActorCommandKind = undefined;
+      return;
+    }
+    const attackCount = actor.equipmentEffects?.doubleAttack ? 2 : 1;
+    for (let index = 0; index < attackCount; index += 1) {
+      if (target.hp <= 0) return;
+      applySingleActorAttack(actor, target);
+    }
+  }
+
+  function applySingleActorAttack(actor: MutableBattler, target: MutableBattler): void {
+    const result = applySkillLike(actor, target, {
+      power: actor.attackPower,
+      statistic: "attack",
+      effect: "damage",
+      criticalRate: criticalRateFor(actor),
+      hitRate: normalAttackHitRate(actor, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
+    });
+    if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+  }
+
+  function attemptEscape(): void {
+    if (!options.canEscape) return;
+    // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
+    const actorAgi = average(activeActors().filter((a) => a.hp > 0).map((a) => a.agility));
+    const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
+    const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
+    if (rng() < chance) {
+      escaped = true;
+    }
+  }
+
   function beginActorCommand(command: ActorCommandDraft): void {
     if (phase !== "actorCommand" || !activeActorId || result) return;
     switch (command.kind) {
       case "defend":
       case "escape":
+      case "switch":
         performActorCommand(command);
         return;
       case "attack":
       case "skill":
       case "item":
+      case "capture":
         beginTargetSelection(command);
         return;
     }
@@ -207,6 +342,161 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (phase !== "targetSelect") return;
     targetSelection = undefined;
     phase = "actorCommand";
+  }
+
+  function startStrictRound(): void {
+    if (result) return;
+    phase = "roundResolve";
+    activeActorId = undefined;
+    targetSelection = undefined;
+    currentActorCommandKind = undefined;
+    strictActorCommands = [];
+    strictPendingActorIds = [];
+    strictCurrentRoundActions = [];
+    strictCurrentRoundParticipantIds = new Set<ActorId>();
+    markActiveParticipants();
+
+    for (const battler of [...activeActors(), ...visibleEnemies()]) {
+      if (battler.hp > 0) runStateUpkeep(options.project, battler, rng);
+    }
+    resolveOutcome();
+    if (result) return;
+    if (beginForcedSwitchIfNeeded()) return;
+
+    strictPendingActorIds = activeActors()
+      .filter((actor) => actor.hp > 0 && canBattlerAct(options.project, actor))
+      .map((actor) => actor.recordId);
+    for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
+    if (strictPendingActorIds.length > 0) {
+      activeActorId = strictPendingActorIds[0];
+      phase = "actorCommand";
+      return;
+    }
+    resolveStrictRound();
+  }
+
+  function collectStrictActorCommand(command: ActorCommand): void {
+    if (phase !== "actorCommand" || !activeActorId || result) return;
+    const actor = actors.find((entry) => entry.recordId === activeActorId);
+    if (!actor || actor.hp <= 0) return;
+    if (command.kind === "switch" && !canSwitchActor(actor.recordId, command.targetActorId)) return;
+    strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command }];
+    strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId);
+    actor.gauge = 0;
+    activeActorId = strictPendingActorIds[0];
+    if (activeActorId) return;
+    resolveStrictRound();
+  }
+
+  function resolveStrictRound(): void {
+    if (result) return;
+    phase = "roundResolve";
+    targetSelection = undefined;
+    activeActorId = undefined;
+    currentActorCommandKind = undefined;
+    const round = turn + 1;
+    const actions = strictRoundActions();
+    for (const [index, action] of actions.entries()) {
+      if (result) break;
+      if (action.side === "actor") {
+        if (action.actor.hp <= 0) continue;
+        activeActorId = action.actor.recordId;
+        const beforeResult = lastActionResult;
+        applyActorCommandEffect(action.actor, action.command);
+        logStrictAction(round, index + 1, action, beforeResult);
+        if (escaped) {
+          result = "escape";
+          phase = "resolved";
+          break;
+        }
+        applyTroopEvents(round);
+        resolveOutcome();
+        continue;
+      }
+      if (action.enemy.hp <= 0 || !visibleEnemies().some((enemy) => enemy.id === action.enemy.id)) continue;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      const beforeResult = lastActionResult;
+      executeEnemyAction(action.enemy, action.action);
+      logStrictAction(round, index + 1, action, beforeResult);
+      applyTroopEvents(round);
+      resolveOutcome();
+    }
+
+    for (const actor of actors) actor.defending = false;
+    for (const battler of [...actors, ...enemies]) battler.gauge = 0;
+    activeActorId = undefined;
+    currentActorCommandKind = undefined;
+    turn = round;
+    finishStrictRoundLog(round);
+    if (result) {
+      phase = "resolved";
+      return;
+    }
+    startStrictRound();
+  }
+
+  function strictRoundActions(): StrictQueuedAction[] {
+    const actorActions: StrictQueuedAction[] = strictActorCommands.flatMap((entry) => {
+      const actor = actors.find((candidate) => candidate.recordId === entry.actorId);
+      if (!actor) return [];
+      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, actor, command: entry.command }];
+    });
+    const enemyActions: StrictQueuedAction[] = visibleEnemies()
+      .flatMap((enemy, index) => {
+        if (enemy.hp <= 0 || !canBattlerAct(options.project, enemy)) return [];
+        return [{ side: "enemy", index, speed: enemy.agility, enemy, action: chooseEnemyAction(enemy) }];
+      });
+    return [...actorActions, ...enemyActions].sort(compareStrictActions);
+  }
+
+  function compareStrictActions(left: StrictQueuedAction, right: StrictQueuedAction): number {
+    const leftSwitch = left.side === "actor" && left.command.kind === "switch";
+    const rightSwitch = right.side === "actor" && right.command.kind === "switch";
+    if (leftSwitch !== rightSwitch) return leftSwitch ? -1 : 1;
+    if (left.speed !== right.speed) return right.speed - left.speed;
+    if (left.side !== right.side) return left.side === "actor" ? -1 : 1;
+    return left.index - right.index;
+  }
+
+  function logStrictAction(
+    round: number,
+    order: number,
+    action: StrictQueuedAction,
+    beforeResult: BattleActionResultSnapshot | undefined
+  ): void {
+    const resultForLog = lastActionResult !== beforeResult ? lastActionResult : undefined;
+    const user = action.side === "actor" ? action.actor : action.enemy;
+    strictCurrentRoundActions.push({
+      round,
+      order,
+      side: action.side,
+      userId: user.id,
+      userRecordId: user.recordId,
+      commandKind: strictCommandKindForLog(action),
+      targetId: resultForLog?.targetId,
+      hit: resultForLog?.hit,
+      amount: resultForLog?.amount,
+      critical: resultForLog?.critical,
+      skillName: resultForLog?.skillName,
+    });
+  }
+
+  function strictCommandKindForLog(action: StrictQueuedAction): BattleRoundActionLogSnapshot["commandKind"] {
+    if (action.side === "actor") return action.command.kind;
+    return action.action?.skillId ? "enemySkill" : "enemyAttack";
+  }
+
+  function finishStrictRoundLog(round: number): void {
+    roundLogs.push({
+      round,
+      actions: [...strictCurrentRoundActions],
+      participatingActorIds: [...strictCurrentRoundParticipantIds],
+      actors: activeActors().map((actor) => ({ id: actor.id, hp: actor.hp, mp: actor.mp, stateIds: [...actor.stateIds] })),
+      enemies: visibleEnemies().map((enemy) => ({ id: enemy.id, hp: enemy.hp, mp: enemy.mp, stateIds: [...enemy.stateIds] })),
+      result,
+    });
+    strictCurrentRoundActions = [];
   }
 
   function beginTargetSelection(command: TargetedActorCommand): void {
@@ -244,30 +534,49 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const skill = lookupItemSkill(command.itemId);
         return skill?.scope !== "self" && skill?.scope !== "ally";
       }
+      case "capture":
+        return true;
     }
   }
 
-  function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, actor: MutableBattler): MutableBattler {
-    // 힐/서포트 스킬은 아군(자신)을, 공격 스킬은 지정 적을 대상으로 삼는다.
+  function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, user: MutableBattler): MutableBattler {
+    // 힐/서포트 스킬은 시전자 진영의 생존자를 대상으로 삼는다.
     const record = lookupSkill(skillOrItemId) ?? lookupItemSkill(skillOrItemId);
     const effect = record?.effect;
     const scope = record?.scope;
-    if (effect && (effect.kind === "healing" || effect.kind === "support")) return actor;
-    if (scope === "self" || scope === "ally") return actor;
+    if (effect && (effect.kind === "healing" || effect.kind === "support")) return supportTargetFor(user);
+    if (scope === "self" || scope === "ally") return supportTargetFor(user);
     return visibleEnemies().find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
       ?? visibleEnemies().find((entry) => entry.hp > 0)
-      ?? actor;
+      ?? user;
+  }
+
+  function supportTargetFor(user: MutableBattler): MutableBattler {
+    const side = actors.some((entry) => entry.id === user.id) ? activeActors() : visibleEnemies();
+    return side
+      .filter((entry) => entry.hp > 0)
+      .sort((a, b) => (a.hp / Math.max(1, a.maxHp)) - (b.hp / Math.max(1, b.maxHp)))[0]
+      ?? user;
   }
 
   function snapshot(): BattleSnapshot {
     const enemiesInBattle = visibleEnemies();
+    const forcedActor = forcedSwitchActor();
     return {
       phase,
+      battleFlow,
       activeActorId,
-      actors: actors.map(battlerSnapshot),
-      enemies: enemiesInBattle.map(battlerSnapshot),
+      activeSlots,
+      forcedSwitchActorId: forcedActor?.recordId,
+      switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
+      participatingActorIds: [...participatingActorIds],
+      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index))),
+      reserveActors: reserveActors().map((actor) => battlerSnapshot(actor)),
+      enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy)),
       lastAnimation,
       lastActionResult,
+      lastCaptureResult,
+      capturedMonsters,
       result,
       rewards,
       canEscape: options.canEscape,
@@ -277,20 +586,31 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       turn,
       eventState: battleEvents.snapshot(),
       targetSelection,
+      roundLogs,
+      eventLogs: battleEvents.logs(),
     };
   }
 
   function performEnemyTurn(enemy: MutableBattler): void {
-    const target = actors.find((actor) => actor.hp > 0);
-    if (!target) return;
-    const skillId = enemy.skillIds[0];
-    if (skillId) {
-      consumeSkillMp(enemy, skillId);
-      applySkill(enemy, target, skillId);
-    } else {
-      const result = applySkillLike(enemy, target, { power: enemy.attackPower, statistic: "attack", effect: "damage", criticalRate: criticalRateFor(enemy) });
-      lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+    // 턴 시작 상태 처리(지속 피해/자연 회복).
+    runStateUpkeep(options.project, enemy, rng);
+    resolveOutcome();
+    if (result) {
+      phase = "resolved";
+      return;
     }
+    // 행동 불가(수면 등)면 적도 턴을 건너뛴다.
+    if (!canBattlerAct(options.project, enemy)) {
+      enemy.gauge = 0;
+      for (const actor of actors) actor.defending = false;
+      turn += 1;
+      applyTroopEvents();
+      resolveOutcome();
+      if (!result && beginForcedSwitchIfNeeded()) return;
+      phase = result ? "resolved" : "charging";
+      return;
+    }
+    executeEnemyAction(enemy, chooseEnemyAction(enemy));
     enemy.gauge = 0;
     // 적 턴이 끝나면 아군의 방어(defending) 상태를 해제한다.
     // RM2K3: 방어는 다음 적 턴까지만 유효(1턴 가드).
@@ -298,7 +618,34 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     turn += 1;
     applyTroopEvents();
     resolveOutcome();
+    if (!result && beginForcedSwitchIfNeeded()) return;
     phase = result ? "resolved" : "charging";
+  }
+
+  function executeEnemyAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    const skillId = action?.skillId;
+    if (skillId) {
+      const target = resolveEnemySkillTarget(enemy, skillId);
+      if (!target) return;
+      consumeSkillMp(enemy, skillId);
+      applySkill(enemy, target, skillId);
+      applyEnemyActionSwitchEffects(action);
+      return;
+    }
+    const target = activeActors().find((actor) => actor.hp > 0);
+    if (!target) return;
+    const result = applySkillLike(enemy, target, {
+      power: enemy.attackPower,
+      statistic: "attack",
+      effect: "damage",
+      criticalRate: criticalRateFor(enemy),
+      hitRate: normalAttackHitRate(enemy, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
+    });
+    if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
   }
 
   function lookupSkill(skillId: SkillId) {
@@ -309,6 +656,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const item = options.project.database.items.find((record) => record.id === itemId);
     if (!item?.skillId) return undefined;
     return options.project.database.skills.find((record) => record.id === item.skillId);
+  }
+
+  function performFallbackAttack(actor: MutableBattler, requestedEnemyId: string): void {
+    const target = visibleEnemies().find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
+      ?? visibleEnemies().find((entry) => entry.hp > 0);
+    if (!target) return;
+    const result = applySkillLike(actor, target, {
+      power: actor.attackPower,
+      statistic: "attack",
+      effect: "damage",
+      criticalRate: criticalRateFor(actor),
+      hitRate: normalAttackHitRate(actor, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
+    });
+    if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
   }
 
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
@@ -323,6 +688,54 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
+  function applyCapture(captureItemId: ItemId, targetEnemyId: string): void {
+    const target = visibleEnemies().find((entry) => entry.id === targetEnemyId && entry.hp > 0);
+    if (!target) {
+      lastCaptureResult = { targetId: targetEnemyId, captureItemId, success: false, rate: 0, blockedReason: "missingTarget" };
+      return;
+    }
+    if (troopRecord.uncapturable === true) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "uncapturable" };
+      return;
+    }
+    const item = options.project.database.items.find((record) => record.id === captureItemId);
+    const count = battleEventState.inventory[captureItemId] ?? 0;
+    if (!item?.captureProfile || count <= 0) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingItem" };
+      return;
+    }
+    const enemyRecord = options.project.database.enemies.find((record) => record.id === target.recordId);
+    const species = monsterSpeciesForEnemy(options.project, enemyRecord);
+    if (!species) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingSpecies" };
+      return;
+    }
+    battleEventState.inventory[captureItemId] = count - 1;
+    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item));
+    const roll = rng();
+    if (roll >= rate) {
+      lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate, roll, speciesId: species.id };
+      return;
+    }
+    const caughtAt = options.captureLocation ?? { mapId: options.project.startMapId, x: options.project.startPos.x, y: options.project.startPos.y };
+    const capture: BattleCapturedMonsterSnapshot = {
+      targetId: target.id,
+      enemyId: target.recordId as EnemyId,
+      speciesId: species.id,
+      level: Math.max(1, Math.min(99, Math.trunc(enemyRecord?.level ?? 1))),
+      caughtAt,
+      ivs: rollMonsterIvs(rng),
+      captureItemId,
+    };
+    target.captured = true;
+    target.hidden = true;
+    target.hp = 0;
+    target.gauge = 0;
+    capturedMonsters.push(capture);
+    options.onMonsterCaptured?.(capture);
+    lastCaptureResult = { targetId: target.id, captureItemId, success: true, rate, roll, speciesId: species.id };
+  }
+
   // 스킬 MP 소비. flat + percentMax(최대 MP 기준 비율). 부족해도 일단 차감(최소 0).
   // 호출부에서 applySkill(allEnemies 루프 등)과 분리해 1회만 차감하도록 직접 호출한다.
   function consumeSkillMp(user: MutableBattler, skillId: SkillId): void {
@@ -332,6 +745,58 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const pct = skill.mpCost.percentMax ?? 0;
     const cost = flat + Math.floor((user.maxMp * pct) / 100);
     if (cost > 0) user.mp = Math.max(0, user.mp - cost);
+  }
+
+  function skillMpCost(user: MutableBattler, skillId: SkillId): number {
+    const skill = lookupSkill(skillId);
+    if (!skill?.mpCost) return 0;
+    const flat = skill.mpCost.flat ?? 0;
+    const pct = skill.mpCost.percentMax ?? 0;
+    return Math.max(0, flat + Math.floor((user.maxMp * pct) / 100));
+  }
+
+  function canUseSkill(user: MutableBattler, skillId: SkillId): boolean {
+    if (!lookupSkill(skillId)) return false;
+    if (actors.some((actor) => actor.id === user.id) && !user.skillIds.includes(skillId)) return false;
+    return user.mp >= skillMpCost(user, skillId);
+  }
+
+  function chooseEnemyAction(enemy: MutableBattler): EnemyActionChoice | undefined {
+    const actionTurn = turn + 1;
+    const candidates = (enemy.enemyActions ?? [])
+      .filter((action) => enemyActionConditionMet(action.condition, actionTurn))
+      .filter((action) => canUseSkill(enemy, action.skillId));
+    if (candidates.length === 0) return undefined;
+    const total = candidates.reduce((sum, action) => sum + Math.max(1, action.priority), 0);
+    let roll = rng() * total;
+    for (const action of candidates) {
+      roll -= Math.max(1, action.priority);
+      if (roll < 0) return action;
+    }
+    return candidates[candidates.length - 1];
+  }
+
+  function enemyActionConditionMet(condition: { readonly kind: "always" } | { readonly kind: "turn"; readonly start: number; readonly interval: number }, actionTurn: number): boolean {
+    if (condition.kind === "always") return true;
+    if (actionTurn < condition.start) return false;
+    return (actionTurn - condition.start) % condition.interval === 0;
+  }
+
+  function applyEnemyActionSwitchEffects(action: { readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string }; readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string } }): void {
+    if (action.switchOnAfterAction.enabled && action.switchOnAfterAction.switchId) {
+      battleEventState.switches[action.switchOnAfterAction.switchId] = true;
+    }
+    if (action.switchOffAfterAction.enabled && action.switchOffAfterAction.switchId) {
+      battleEventState.switches[action.switchOffAfterAction.switchId] = false;
+    }
+  }
+
+  function resolveEnemySkillTarget(enemy: MutableBattler, skillId: SkillId): MutableBattler | undefined {
+    const skill = lookupSkill(skillId);
+    if (skill?.effect.kind === "healing" || skill?.effect.kind === "support" || skill?.scope === "self" || skill?.scope === "ally") {
+      return supportTargetFor(enemy);
+    }
+    return activeActors().find((actor) => actor.hp > 0);
   }
 
   function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId): void {
@@ -347,19 +812,41 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       power,
       statistic,
       effect: effectKind,
-      hitRate: skill?.hitRate,
+      // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
+      // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
+      hitRate: combinedSkillHitRate(skill),
       variance: skill?.variance,
       criticalRate: criticalRateFor(user),
-      elementMultiplier: elementMultiplierFor(skill?.elementId, target),
+      elementMultiplier: elementMultiplierFor(skill?.elementId, user, target),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, user),
+      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      rng,
     });
     lastActionResult = { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name };
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
     }
-    if (skill?.effect?.kind === "switch" && skill.effect.switchId) {
-      // 전투 내 스위치 토글은 플레이 세션으로 전파하지 않고 배틀 stateIds 에 기록만.
-      // (런타임-세션 연동은 별도 작업)
+    // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
+    // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
+    if (result.hit && effectKind === "damage" && result.amount > 0) {
+      recoverStatesWhenHit(options.project, target, rng);
     }
+    if (result.hit) {
+      applyStateEffects(options.project, target, skill?.stateEffects, rng);
+    }
+    if (result.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
+      // RM2K3 스위치형 스킬: 명중 시 지정 스위치를 ON으로 만든다.
+      battleEventState.switches[skill.effect.switchId] = true;
+    }
+  }
+
+  // 스킬 명중률(hitRate)과 성공률(successRate)을 곱해 0~100 판정 확률로 합성한다.
+  // successRate 는 감사 A12 에서 "편집만 되고 전투에 미반영"으로 확인된 필드다.
+  function combinedSkillHitRate(skill: { hitRate?: number; successRate?: number } | undefined): number | undefined {
+    if (!skill) return undefined;
+    const hitRate = skill.hitRate ?? 100;
+    const successRate = skill.successRate ?? 100;
+    return Math.max(0, Math.min(100, Math.round((hitRate * successRate) / 100)));
   }
 
   // 사용자의 크리티컬 발동 확률(%)을 계산. actor 는 ActorCritical.chanceDenominator(1/N),
@@ -376,29 +863,42 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return 0;
   }
 
+  function normalAttackHitRate(user: MutableBattler, target: MutableBattler): number {
+    const enemy = options.project.database.enemies.find((entry) => entry.id === user.recordId);
+    let rate = enemy?.attackOptions.normalAttacksMiss ? 90 : 100;
+    for (const stateId of user.stateIds) {
+      const state = options.project.database.states.find((entry) => entry.id === stateId);
+      if (typeof state?.accuracyModifier === "number") rate *= state.accuracyModifier / 100;
+    }
+    rate -= Math.max(-20, Math.min(40, (target.agility - user.agility) * 0.5));
+    return Math.max(5, Math.min(100, Math.round(rate)));
+  }
+
   // 속성 상성 배율을 계산. skill.elementId 가 없거나 데이터가 없으면 1.0.
   // target 의 elementRates(등급 A~E) → DatabaseElementRecord.damageMultipliers(배율) 조회.
-  function elementMultiplierFor(elementId: string | undefined, target: MutableBattler): number {
+  function elementMultiplierFor(elementId: string | undefined, user: MutableBattler, target: MutableBattler): number {
     if (!elementId) return 1;
     const element = options.project.database.elements?.find((entry) => entry.id === elementId);
-    if (!element?.damageMultipliers) return 1;
+    const typeMultiplier = typeChartMultiplierFor(options.project, elementId, user.recordId, target.recordId);
+    if (!element?.damageMultipliers) return typeMultiplier;
     // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
     const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);
     const actor = options.project.database.actors.find((entry) => entry.id === target.recordId);
     const rates = enemy?.elementRates ?? actor?.elementRates;
-    if (!rates) return 1;
+    if (!rates) return typeMultiplier;
     const grade = rates[elementId];
-    if (!grade) return 1;
+    if (!grade) return typeMultiplier;
     const multiplier = element.damageMultipliers[grade];
-    if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return 1;
+    if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return typeMultiplier;
     // damageMultipliers 는 퍼센트 스케일(A=200,B=150,C=100,D=50,E=0)로 저장된다.
     // 데미지 배율로 쓰려면 100으로 나눈다: C=1.0(중립), A=2.0(약점), D=0.5(내성), E=0(무효),
     // 음수(-100 등)는 흡수(-1.0 = 회복)를 의미한다.
-    return multiplier / 100;
+    const equipmentReduction = target.equipmentEffects?.elementalDefenseIds.includes(elementId) ? 0.5 : 1;
+    return (multiplier / 100) * equipmentReduction * typeMultiplier;
   }
 
-  function applyTroopEvents(): void {
-    const eventResult = battleEvents.applyTroopEvents({ turn, activeActorId, currentActorCommandKind });
+  function applyTroopEvents(eventTurn: number = turn): void {
+    const eventResult = battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind });
     if (!eventResult.forceEscape) return;
     escaped = true;
     result = "escape";
@@ -424,26 +924,120 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return enemies.filter((enemy) => !enemy.hidden);
   }
 
+  function activeActors(): readonly MutableBattler[] {
+    return activeActorIds.flatMap((actorId) => {
+      const actor = actors.find((entry) => entry.recordId === actorId);
+      return actor ? [actor] : [];
+    });
+  }
+
+  function reserveActors(): readonly MutableBattler[] {
+    const active = new Set(activeActorIds);
+    return actors.filter((actor) => !active.has(actor.recordId));
+  }
+
+  function switchCandidateActors(): readonly MutableBattler[] {
+    return reserveActors().filter((actor) => actor.hp > 0);
+  }
+
+  function forcedSwitchActor(): MutableBattler | undefined {
+    if (switchCandidateActors().length === 0) return undefined;
+    return activeActors().find((actor) => actor.hp <= 0);
+  }
+
+  function beginForcedSwitchIfNeeded(): boolean {
+    const forced = forcedSwitchActor();
+    if (!forced || result) return false;
+    phase = "actorCommand";
+    activeActorId = forced.recordId;
+    targetSelection = undefined;
+    currentActorCommandKind = undefined;
+    return true;
+  }
+
+  function switchActiveActor(fromActorId: ActorId, targetActorId: ActorId): boolean {
+    const slotIndex = activeActorIds.indexOf(fromActorId);
+    if (slotIndex < 0) return false;
+    const candidate = switchCandidateActors().find((actor) => actor.recordId === targetActorId);
+    const outgoing = actors.find((actor) => actor.recordId === fromActorId);
+    if (!candidate) return false;
+    activeActorIds = activeActorIds.map((actorId, index) => (index === slotIndex ? candidate.recordId : actorId));
+    if (outgoing) {
+      outgoing.gauge = 0;
+      outgoing.defending = false;
+    }
+    candidate.gauge = 0;
+    candidate.defending = false;
+    markActiveParticipants();
+    return true;
+  }
+
+  function canSwitchActor(fromActorId: ActorId, targetActorId: ActorId): boolean {
+    return activeActorIds.includes(fromActorId) && switchCandidateActors().some((actor) => actor.recordId === targetActorId);
+  }
+
+  function markActiveParticipants(): void {
+    for (const actor of activeActors()) {
+      participatingActorIds.add(actor.recordId);
+      strictCurrentRoundParticipantIds.add(actor.recordId);
+    }
+  }
+
+  function activeActorPosition(index: number): { readonly battleX: number; readonly battleY: number } {
+    return { battleX: 248 + (index % 2) * 32, battleY: 70 + index * 24 };
+  }
+
   function resolveOutcome(): void {
     if (result) return;
     if (visibleEnemies().every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
+      clearEndOfBattleStates();
       accumulateRewards();
       return;
     }
     if (actors.every((actor) => actor.hp <= 0)) {
       result = "defeat";
       phase = "resolved";
+      clearEndOfBattleStates();
     }
   }
 
+  function clearEndOfBattleStates(): void {
+    for (const actor of actors) clearBattleEndStates(options.project, actor);
+    for (const enemy of enemies) clearBattleEndStates(options.project, enemy);
+  }
+
   function accumulateRewards(): void {
-    const collected = collectBattleRewards(options.project, enemies);
+    const collected = collectBattleRewards(options.project, enemies, rng);
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
+    rewards.enemyLevel = collected.enemyLevel;
     rewards.items = [...collected.items];
+    rewards.levelUps = computeLevelUpPreview(collected.exp, collected.enemyLevel);
   }
+
+  // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).
+  // 실제 세션 적립/성장은 battleRewardsToSession 이 담당하며 동일 로직으로 일치한다.
+  function computeLevelUpPreview(earnedExp: number, enemyLevel: number | undefined): BattleLevelUpResult[] {
+    const party = options.party;
+    if (!party) return [];
+    const results: BattleLevelUpResult[] = [];
+    const seen = new Set<string>();
+    const actorIds = rewardActorIds(options.project, party.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    for (const actorId of actorIds) {
+      if (seen.has(actorId)) continue;
+      seen.add(actorId);
+      const level = party.levels[actorId] ?? 1;
+      const adjustedExp = expForRewardActor(earnedExp, level, enemyLevel, options.project.system.rewardPolicy);
+      const totalExp = (party.experience[actorId] ?? 0) + adjustedExp;
+      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: party.classOverrides });
+      if (result) results.push(result);
+    }
+    return results;
+  }
+
+  if (battleFlow === "strict") startStrictRound();
 
   return { tick, beginActorCommand, selectTargetEnemy, setSelectedTargetEnemy, cancelTargetSelection, performActorCommand, snapshot };
 }
@@ -458,5 +1052,13 @@ export function concreteTargetCommand(command: TargetedActorCommand, targetEnemy
       return { kind: "skill", skillId: command.skillId, targetEnemyId };
     case "item":
       return { kind: "item", itemId: command.itemId, targetEnemyId };
+    case "capture":
+      return { kind: "capture", captureItemId: command.captureItemId, targetEnemyId };
   }
+}
+
+function normalizeActiveSlots(value: number | undefined, partySize: number): number {
+  if (partySize <= 0) return 0;
+  if (typeof value !== "number" || !Number.isFinite(value)) return partySize;
+  return Math.max(1, Math.min(partySize, Math.trunc(value)));
 }

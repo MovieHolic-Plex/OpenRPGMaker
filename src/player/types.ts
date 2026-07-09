@@ -2,8 +2,11 @@
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
 
-import type { ActorId, ActorInitialEquipment, Dir, MapId, Command, MessageWindowSettings, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
+import type { FarmPlots, MonsterInstance } from "@/project/session";
+import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
+import type { RngState } from "@/util/rng";
 
 export type RuntimeAudioState = {
   readonly resourceId: string;
@@ -15,6 +18,11 @@ export type RuntimePictureState = {
   readonly resourceId: string;
   readonly x: number;
   readonly y: number;
+  // Move Picture 트윈용 선택 필드(PictureState 와 동일 의미).
+  readonly scale?: number;
+  readonly opacity?: number;
+  readonly rotation?: number;
+  readonly durationMs?: number;
 };
 
 export type M2RecordedFallback = {
@@ -28,6 +36,8 @@ export type M2ScreenRuntimeState = {
   hidden?: boolean;
   shake?: number;
   tint?: string;
+  // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
+  tintDurationMs?: number;
   weather?: string;
 };
 
@@ -74,7 +84,11 @@ export type M2MapRuntimeState = {
 };
 
 export type M2SessionRuntimeState = {
+  endedEventProcessing?: boolean;
+  eraseEventRequested?: boolean;
   shellAction?: string;
+  stopAllMovementRequested?: boolean;
+  waitForAllMovementRequested?: boolean;
   weightedBranch?: { readonly resultVariableId: string; readonly table: string };
 };
 
@@ -182,8 +196,49 @@ export type RuntimeEventLocation = {
   readonly direction?: Dir;
 };
 
+export type RuntimeCameraTarget =
+  | { readonly kind: "player" }
+  | { readonly kind: "event"; readonly eventId: string }
+  | { readonly kind: "position"; readonly x: number; readonly y: number };
+
+export type RuntimeCameraSessionState = {
+  readonly mode: "follow" | "fixed";
+  readonly target: RuntimeCameraTarget;
+  readonly offsetX?: number;
+  readonly offsetY?: number;
+  readonly zoom?: number;
+};
+
+export type RuntimeSpawnedEventState = {
+  readonly templateMapId: MapId;
+  readonly templateEventId: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
+};
+
+export type RuntimeRemovedEventIds = Record<MapId, readonly string[]>;
+
 export type RuntimeNpcTravelState = {
   readonly destinationIndex: number;
+};
+
+export type RuntimeNpcScheduleState = {
+  readonly routeKey?: string;
+  readonly exitTarget?: RuntimeEventLocation;
+};
+
+export type RuntimeFollowerLike = {
+  readonly eventId?: string;
+  readonly graphic: EventPageGraphic;
+  readonly name: string;
+};
+
+export type RuntimeFollowerTrailPointLike = {
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
 };
 
 // 인터프리터가 요구하는 세션 인터페이스.
@@ -197,16 +252,37 @@ export interface PlaySessionLike {
   gold: number;
   inventory: Record<string, number>;
   partyActorIds: string[];
+  monsterInstances?: Record<MonsterInstanceId, MonsterInstance>;
+  monsterParty?: MonsterInstanceId[];
+  monsterBox?: MonsterInstanceId[];
   audio?: Record<string, RuntimeAudioState>;
   pictures?: Record<string, RuntimePictureState>;
   actorSkillIds?: Record<ActorId, SkillId[]>;
   actorExperience?: Record<string, number>;
   actorLevels?: Record<string, number>;
   actorEquipment?: Record<string, ActorInitialEquipment>;
+  actorNames?: Record<ActorId, string>;
+  actorCharacterResourceIds?: Record<ActorId, string>;
+  classOverrides?: Record<ActorId, string>;
+  actorParamBonuses?: Record<ActorId, Partial<Record<ActorParameterKey, number>>>;
+  actorStateIds?: Record<ActorId, string[]>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations?: Record<string, RuntimeEventLocation>;
+  erasedEventIds?: readonly string[];
+  removedEventIds?: RuntimeRemovedEventIds;
+  spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
+  camera?: RuntimeCameraSessionState;
+  lighting?: LightingState;
   npcTravelStates?: Record<string, RuntimeNpcTravelState>;
+  npcActivities?: Record<string, string>;
+  npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
+  farmPlots?: FarmPlots;
+  friendship?: Record<string, number>;
+  dailyGifts?: Record<string, string>;
+  followers?: RuntimeFollowerLike[];
+  followerTrail?: RuntimeFollowerTrailPointLike[];
   playTimeSeconds?: number;
+  gameTime?: GameTime;
   currentMapId: MapId;
   x: number;
   y: number;
@@ -214,4 +290,5 @@ export interface PlaySessionLike {
   // 공통 이벤트(callCommonEvent용). Project.commonEvents 참조를 세션에 복사.
   commonEvents?: { id: string; commands: Command[] }[];
   m2Runtime?: M2RuntimeState;
+  rng?: RngState;
 }

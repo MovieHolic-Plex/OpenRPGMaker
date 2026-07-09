@@ -1,0 +1,218 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Active Slots Boss Fixture",
+    "author": "Phase 7b",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "hero": {
+        "id": "hero",
+        "image": { "type": "bundled", "id": "tex_easyrpg_charset_people1" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "boss": {
+        "id": "boss",
+        "image": { "type": "bundled", "id": "tex_slime" },
+        "frames": 1,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {}
+  },
+  "resourceProfiles": [],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "기본 타일셋",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 1,
+      "passability": [{ "up": true, "down": true, "left": true, "right": true }],
+      "priority": ["lower"],
+      "terrain": [0]
+    }
+  },
+  "switches": [],
+  "variables": [],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_a",
+        "name": "전열 A",
+        "classId": "class_front",
+        "initialLevel": 1,
+        "critical": { "enabled": false, "chanceDenominator": 30 },
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "parameterCurves": {
+          "maxHp": [180],
+          "maxMp": [20],
+          "attack": [20],
+          "defense": [20],
+          "mind": [10],
+          "agility": [10]
+        }
+      },
+      {
+        "id": "actor_b",
+        "name": "전열 B",
+        "classId": "class_front",
+        "initialLevel": 1,
+        "critical": { "enabled": false, "chanceDenominator": 30 },
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "parameterCurves": {
+          "maxHp": [180],
+          "maxMp": [20],
+          "attack": [20],
+          "defense": [20],
+          "mind": [10],
+          "agility": [12]
+        }
+      },
+      {
+        "id": "actor_c",
+        "name": "후보 C",
+        "classId": "class_reserve",
+        "initialLevel": 1,
+        "critical": { "enabled": false, "chanceDenominator": 30 },
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "parameterCurves": {
+          "maxHp": [180],
+          "maxMp": [20],
+          "attack": [20],
+          "defense": [20],
+          "mind": [10],
+          "agility": [8]
+        }
+      },
+      {
+        "id": "actor_d",
+        "name": "후보 D",
+        "classId": "class_reserve",
+        "initialLevel": 1,
+        "critical": { "enabled": false, "chanceDenominator": 30 },
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "parameterCurves": {
+          "maxHp": [180],
+          "maxMp": [20],
+          "attack": [20],
+          "defense": [20],
+          "mind": [10],
+          "agility": [6]
+        }
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_front",
+        "name": "전열",
+        "battleCommands": [
+          { "id": "cmd_attack", "name": "공격", "kind": "attack" },
+          { "id": "cmd_defend", "name": "방어", "kind": "defend" },
+          { "id": "cmd_switch", "name": "교체", "kind": "switch" }
+        ]
+      },
+      {
+        "id": "class_reserve",
+        "name": "후보",
+        "battleCommands": [
+          { "id": "cmd_attack", "name": "공격", "kind": "attack" },
+          { "id": "cmd_defend", "name": "방어", "kind": "defend" },
+          { "id": "cmd_switch", "name": "교체", "kind": "switch" }
+        ]
+      }
+    ],
+    "skills": [],
+    "items": [],
+    "equipment": [],
+    "enemies": [
+      {
+        "id": "enemy_phase_boss",
+        "name": "슬롯 보스",
+        "monsterResourceId": "boss",
+        "stats": {
+          "maxHp": 300,
+          "maxMp": 0,
+          "attack": 1,
+          "defense": 10,
+          "mind": 1,
+          "agility": 15
+        },
+        "rewards": { "exp": 10, "gold": 5 },
+        "skillIds": []
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_active_slot_boss",
+        "name": "액티브 슬롯 보스",
+        "enemyIds": ["enemy_phase_boss"],
+        "members": [{ "enemyId": "enemy_phase_boss", "x": 160, "y": 112 }],
+        "autoAlign": false,
+        "battleFlow": "strict",
+        "activeSlots": 2,
+        "battleEventPages": [
+          {
+            "id": "page_boss_half",
+            "name": "HP 50% 대사",
+            "conditions": [{ "kind": "enemyHpBelow", "enemyId": "enemy_phase_boss", "percent": 50 }],
+            "span": "moment",
+            "runOnce": true,
+            "commands": [{ "kind": "text", "speaker": "보스", "body": "아직 끝나지 않았다" }]
+          }
+        ]
+      }
+    ],
+    "states": [],
+    "battleAnimations": []
+  },
+  "system": {
+    "startActorIds": ["actor_a", "actor_b", "actor_c", "actor_d"],
+    "titleResourceId": "tex_tiles_default",
+    "systemResourceId": "tex_tiles_default",
+    "battleSystemResourceId": "tex_tiles_default",
+    "initialTroopId": "troop_active_slot_boss",
+    "battleFlow": "gauge"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {},
+    "partyActorIds": ["actor_a", "actor_b", "actor_c", "actor_d"]
+  },
+  "maps": {
+    "map_active_slot_boss": {
+      "id": "map_active_slot_boss",
+      "name": "Active Slot Boss Demo",
+      "width": 2,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0, 0],
+      "upperTiles": [-1, -1],
+      "events": []
+    }
+  },
+  "mapTree": { "mapId": "map_active_slot_boss", "children": [] },
+  "startMapId": "map_active_slot_boss",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

@@ -14,9 +14,10 @@ import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
+import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
-export { eraseTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
-import type { MapId, TilesetDef } from "@/project/types";
+export { eraseTile, eraseVisibleTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
+import type { EncounterTableEntry, FieldSpawnDef, MapId, TilesetDef } from "@/project/types";
 
 // ── 맵 CRUD ──
 export function addMap(name: string, width = 16, height = 16): MapId {
@@ -27,7 +28,7 @@ export function addMap(name: string, width = 16, height = 16): MapId {
     // mapTree에 루트 자식으로 추가.
     appendToTree(p.mapTree, m.id);
     newId = m.id;
-  });
+  }, { scope: "project" });
   return newId;
 }
 
@@ -44,7 +45,7 @@ export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);
     newId = m.id;
-  });
+  }, { scope: "project" });
   return newId;
 }
 
@@ -62,19 +63,25 @@ export function duplicateMap(mapId: MapId): MapId {
     p.maps[copy.id] = copy;
     appendToTree(p.mapTree, copy.id, mapId);
     newId = copy.id;
-  });
+  }, { scope: "project" });
   return newId;
 }
 
-export function deleteMap(mapId: MapId): void {
-  store.update((p) => {
-    if (Object.keys(p.maps).length <= 1) return;
-    delete p.maps[mapId];
-    if (p.startMapId === mapId) {
-      p.startMapId = Object.keys(p.maps)[0];
-    }
-    removeFromTree(p.mapTree, mapId);
-  });
+export type DeleteMapResult =
+  | { readonly ok: true; readonly impact: MapDeletionImpact }
+  | { readonly ok: false; readonly message: string };
+
+// 맵 삭제(무결성 가드 — 도그푸딩 결함 ①).
+// startMapId/mapTree 루트는 안전 재배선하고, 연결/이벤트 참조를 함께 정리한다.
+// 삭제 결과가 재로드(shape) 검증을 통과하지 못하면 커밋하지 않는다(벽돌 원천 차단).
+export function deleteMap(mapId: MapId): DeleteMapResult {
+  const plan = planMapDeletion(store.getCurrent(), mapId);
+  if (!plan.ok) {
+    toast(plan.block.message, "error");
+    return { ok: false, message: plan.block.message };
+  }
+  store.update((p) => applyMapDeletion(p, mapId), { scope: "project" });
+  return { ok: true, impact: plan.impact };
 }
 
 export function renameMap(mapId: MapId, name: string): void {
@@ -82,7 +89,7 @@ export function renameMap(mapId: MapId, name: string): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (m) m.name = name;
-  });
+  }, { scope: "map", mapId });
 }
 
 export function resizeMap(mapId: MapId, width: number, height: number): void {
@@ -128,19 +135,19 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
       p.startPos.x = Math.min(p.startPos.x, width - 1);
       p.startPos.y = Math.min(p.startPos.y, height - 1);
     }
-  });
+  }, { scope: "map", mapId });
 }
 
 export function setStartMap(mapId: MapId): void {
   store.update((p) => {
     if (p.maps[mapId]) p.startMapId = mapId;
-  });
+  }, { scope: "project" });
 }
 
 export function setStartPos(x: number, y: number): void {
   store.update((p) => {
     p.startPos = { x, y };
-  });
+  }, { scope: "map", mapId: store.getCurrent().startMapId });
 }
 
 // 맵의 타일셋 변경(chipset 분리).
@@ -157,7 +164,27 @@ export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
         editorState.set({ activePaletteStamp: null, activeStampId: null, selectedTile: 0 });
       }
     }
-  });
+  }, { scope: "map", mapId });
+}
+
+export function setMapEncounterTable(mapId: MapId, entries: EncounterTableEntry[]): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (entries.length > 0) map.encounterTable = structuredClone(entries);
+    else delete map.encounterTable;
+  }, { scope: "map", mapId });
+}
+
+export function setMapFieldSpawns(mapId: MapId, spawns: FieldSpawnDef[]): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (spawns.length > 0) map.fieldSpawns = structuredClone(spawns);
+    else delete map.fieldSpawns;
+  }, { scope: "map", mapId });
 }
 
 function allowMapMutation(mapId: MapId): boolean {
@@ -172,7 +199,7 @@ export function moveMapInTree(mapId: MapId, newParentId: MapId): void {
     if (mapId === newParentId) return;
     removeFromTree(p.mapTree, mapId);
     appendToTree(p.mapTree, mapId, newParentId);
-  });
+  }, { scope: "project" });
 }
 
 // ── Database: Switches/Variables/Common Events CRUD ──
@@ -180,9 +207,15 @@ export function addSwitch(name: string): string {
   recordProjectSnapshot();
   let id = "";
   store.update((p) => {
+    const empty = p.switches.find((record) => record.name.trim().length === 0);
+    if (empty) {
+      empty.name = name || "새 스위치";
+      id = empty.id;
+      return;
+    }
     id = nextNumberedId("sw", p.switches);
     p.switches.push({ id, name: name || "새 스위치" });
-  });
+  }, { scope: "database", collection: "switches" });
   return id;
 }
 export function renameSwitch(id: string, name: string): void {
@@ -190,7 +223,7 @@ export function renameSwitch(id: string, name: string): void {
   store.update((p) => {
     const s = p.switches.find((x) => x.id === id);
     if (s) s.name = name;
-  });
+  }, { scope: "database", collection: "switches" });
 }
 export function deleteSwitch(id: string): DeleteResult {
   const message = switchVariableReferenceMessage("switch", id);
@@ -198,7 +231,7 @@ export function deleteSwitch(id: string): DeleteResult {
   recordProjectSnapshot();
   store.update((p) => {
     p.switches = p.switches.filter((s) => s.id !== id);
-  });
+  }, { scope: "database", collection: "switches" });
   return { ok: true };
 }
 
@@ -206,9 +239,15 @@ export function addVariable(name: string): string {
   recordProjectSnapshot();
   let id = "";
   store.update((p) => {
+    const empty = p.variables.find((record) => record.name.trim().length === 0);
+    if (empty) {
+      empty.name = name || "새 변수";
+      id = empty.id;
+      return;
+    }
     id = nextNumberedId("var", p.variables);
     p.variables.push({ id, name: name || "새 변수" });
-  });
+  }, { scope: "database", collection: "variables" });
   return id;
 }
 export function renameVariable(id: string, name: string): void {
@@ -216,7 +255,7 @@ export function renameVariable(id: string, name: string): void {
   store.update((p) => {
     const v = p.variables.find((x) => x.id === id);
     if (v) v.name = name;
-  });
+  }, { scope: "database", collection: "variables" });
 }
 export function deleteVariable(id: string): DeleteResult {
   const message = switchVariableReferenceMessage("variable", id);
@@ -224,13 +263,13 @@ export function deleteVariable(id: string): DeleteResult {
   recordProjectSnapshot();
   store.update((p) => {
     p.variables = p.variables.filter((v) => v.id !== id);
-  });
+  }, { scope: "database", collection: "variables" });
   return { ok: true };
 }
 
 function nextNumberedId(prefix: "sw" | "var", records: readonly { readonly id: string }[]): string {
   const existingIds = new Set(records.map((record) => record.id));
-  for (let index = records.length + 1; index < records.length + 10000; index += 1) {
+  for (let index = 1; index < records.length + 10000; index += 1) {
     const id = `${prefix}_${String(index).padStart(4, "0")}`;
     if (!existingIds.has(id)) return id;
   }

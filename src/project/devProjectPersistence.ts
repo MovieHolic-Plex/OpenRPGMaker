@@ -4,12 +4,16 @@ import type { Project } from "./types";
 const DEV_PROJECT_STORAGE_PREFIX = "rpg-zzu:dev-project:";
 
 const DEV_PROJECT_PARAMS = [
+  "blankProject",
   "dbExtractedHouseTemplate",
+  "defaultAdventure",
+  "defaultAdventureVisual",
   "devProject",
   "freshProject",
   "houseTemplateGallery",
   "logCabinShowcase",
   "retroHouseShowcase",
+  "sampleAdventure",
   "shopShowcase",
   "smallHouseVariant",
   "townArchitectureCity",
@@ -24,11 +28,28 @@ export function loadDevProjectOverride(): Project | null {
   return loadStoredProject(key);
 }
 
-export function saveDevProjectOverride(project: Project): void {
-  if (isFreshProjectLocation()) return;
+// 현재 위치의 로컬 사본(dev override)이 존재하는가 — 부팅 실패 화면의 "로컬 사본 폐기" 노출 판단.
+export function hasDevProjectOverride(): boolean {
+  if (isFreshProjectLocation()) return false;
   const key = devProjectStorageKey();
-  if (!key) return;
+  return key !== null && window.localStorage.getItem(key) !== null;
+}
+
+// 로컬 사본 폐기(도그푸딩 결함 ② 복구 액션): 손상된 dev override를 지워 새로 시작할 수 있게 한다.
+export function discardDevProjectOverride(): void {
+  if (typeof window === "undefined") return;
+  const key = devProjectStorageKey();
+  if (key) window.localStorage.removeItem(key);
+}
+
+// 반환값: 실제로 기록했는가 — fresh/blank 위치(저장 스킵 모드)에서는 false.
+// store가 미저장 변경 추적(결함 ⑧)에 사용한다.
+export function saveDevProjectOverride(project: Project): boolean {
+  if (isFreshProjectLocation()) return false;
+  const key = devProjectStorageKey();
+  if (!key) return false;
   window.localStorage.setItem(key, serialize(project));
+  return true;
 }
 
 function loadStoredProject(key: string | null): Project | null {
@@ -52,5 +73,11 @@ function devProjectStorageKey(): string | null {
 
 function isFreshProjectLocation(): boolean {
   if (typeof window === "undefined") return false;
-  return new URLSearchParams(window.location.search).has("freshProject");
+  const params = new URLSearchParams(window.location.search);
+  return params.has("freshProject") || params.has("blankProject");
+}
+
+// 저장이 완전히 스킵되는 위치인가(blankProject/freshProject) — 배너(결함 ⑩) 노출 판단.
+export function isSaveSkippedLocation(): boolean {
+  return isFreshProjectLocation();
 }

@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import {
   createBlankProject,
+  createSampleAdventureProject,
   ensureSwitchVariableSlots,
   createBlankMap,
   createStarterMap,
@@ -23,6 +24,7 @@ import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE as PREVIEW_TILE_SIZE } from "@/assets/tilePreview";
 import { serialize } from "@/project/io";
+import { startSession } from "@/project/session";
 import { SCHEMA_VERSION } from "@/project/types";
 import sampleProject from "./fixtures/projects/rm2k3-sample-v3.json";
 
@@ -98,6 +100,29 @@ function tileSizesIn(value: unknown): number[] {
 }
 
 describe("createBlankProject", () => {
+  it("진짜 빈 프로젝트 shape를 만든다", () => {
+    const p = createBlankProject();
+    const maps = Object.values(p.maps);
+    const startMap = p.maps[p.startMapId];
+
+    expect(maps).toHaveLength(1);
+    expect(startMap).toBeDefined();
+    if (!startMap) throw new Error("missing blank start map");
+    expect(startMap.name).toBe("빈 맵");
+    expect(startMap.width).toBe(20);
+    expect(startMap.height).toBe(15);
+    expect(startMap.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(startMap.events).toHaveLength(0);
+    expect(startMap.lowerTiles).toHaveLength(20 * 15);
+    expect(startMap.upperTiles).toHaveLength(20 * 15);
+    expect(startMap.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(true);
+    expect(startMap.upperTiles.every((tile) => tile === TILE.EMPTY)).toBe(true);
+    expect(p.mapTree).toEqual({ mapId: p.startMapId, children: [] });
+    expect(p.villageInfoDocuments).toEqual([]);
+    expect(p.system.startActorIds).toEqual(["actor_hero"]);
+    expect(p.session.partyActorIds).toEqual(["actor_hero"]);
+  });
+
   it("스키마 버전 3을 가진다", () => {
     const p = createBlankProject();
     expect(p.version).toBe(SCHEMA_VERSION);
@@ -116,6 +141,16 @@ describe("createBlankProject", () => {
     expect(p.startPos.x).toBeLessThan(m.width);
     expect(p.startPos.y).toBeGreaterThanOrEqual(0);
     expect(p.startPos.y).toBeLessThan(m.height);
+  });
+
+  it("빈 프로젝트로 헤드리스 런타임 세션을 시작할 수 있다", () => {
+    const p = createBlankProject();
+    const session = startSession(p);
+
+    expect(session.currentMapId).toBe(p.startMapId);
+    expect(session.x).toBe(p.startPos.x);
+    expect(session.y).toBe(p.startPos.y);
+    expect(p.maps[session.currentMapId]).toBeDefined();
   });
 
   it("Database 구조가 있다(switches/variables/commonEvents/tilesets)", () => {
@@ -268,13 +303,13 @@ describe("createBlankProject", () => {
     expect(tileset.terrain[TILE.PATH]).toBe(TERRAIN_TAG.NORMAL);
     expect(tileset.passability[TILE.WATER]).toEqual(solid);
     expect(tileset.passability[TILE.PATH]).toEqual(passable);
-    expect(tileset.priority[TILE.TREE]).toBe("lower");
+    // 투명 배경 칩(나무/창문/울타리 등)은 상위 레이어 전용 — 하위에 깔리면 검게 보인다.
+    expect(tileset.priority[TILE.TREE]).toBe("upper");
     expect(tileset.passability[TILE.TREE]).toEqual(solid);
     expect(tileset.priority[TILE.FLOWERS]).toBe("upper");
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);
     expect(tileset.priority[85]).toBe("upper");
-    expect(tileset.priority[87]).toBe("upper");
-    expect(tileset.priority[378]).toBe("lower");
+    expect(tileset.priority[378]).toBe("upper");
     expect(tileset.priority[374]).toBe("upper");
     const passableRoofTiles = [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437].filter((tile) => !(
       tileset.passability[tile]?.up === false &&
@@ -312,6 +347,16 @@ describe("createBlankProject", () => {
     });
   });
 
+});
+
+describe("createSampleAdventureProject", () => {
+  it("명시 예제 프로젝트로 기존 어드벤처 5맵을 유지한다", () => {
+    const p = createSampleAdventureProject();
+
+    expect(Object.keys(p.maps)).toHaveLength(5);
+    expect(p.meta.title).toBe("별등 마을과 세 개의 봉인");
+    expect(p.maps.map_lantern_village?.events.length).toBeGreaterThan(0);
+  });
 });
 
 describe("createBlankMap", () => {

@@ -38,8 +38,8 @@
 
   .database-modal-body .db-enemy-graphic-stage {
     align-items: center;
-    background: #1018f4;
-    border: 1px solid #d8dadd;
+    background: var(--accent);
+    border: 1px solid var(--border-subtle);
     border-radius: 3px;
     display: flex;
     height: 100%;
@@ -63,10 +63,10 @@
 
   .database-modal-body .db-enemy-graphic-preview .btn {
     align-self: end;
-    background: #ffffff;
-    border: 1px solid #d8dadd;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #20242c;
+    color: var(--text-1);
     font: 700 12px/28px "Malgun Gothic", "Segoe UI", sans-serif;
     height: 30px;
     justify-self: stretch;
@@ -99,7 +99,7 @@
 
   .database-modal-body .db-enemy-rate-row {
     align-items: center;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--border-subtle);
     display: grid;
     gap: 8px;
     grid-template-columns: minmax(0, 1fr) 70px;
@@ -108,7 +108,7 @@
   }
 
   .database-modal-body .db-enemy-rate-row span {
-    color: #3f4652;
+    color: var(--text-1);
     font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -116,7 +116,7 @@
   }
 
   .database-modal-body .db-enemy-rate-row select {
-    color: #20242c;
+    color: var(--text-1);
     font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
     height: 28px;
     min-height: 28px;
@@ -149,7 +149,7 @@
   }
 
   .database-modal-body .db-enemy-bm101-workbench .db-enemy-action-skill-field > span {
-    color: #30343b;
+    color: var(--text-1);
     font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
     white-space: nowrap;
   }
@@ -161,8 +161,8 @@
   }
 
   .database-modal-body .db-enemy-attack-patterns {
-    background: #ffffff;
-    border: 1px solid #d8dadd;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
     min-height: 0;
     overflow: auto;
@@ -170,16 +170,16 @@
 
   .database-modal-body .db-enemy-attack-patterns table {
     border-collapse: collapse;
-    color: #20242c;
+    color: var(--text-1);
     font: 400 13px/21px "Malgun Gothic", "Segoe UI", sans-serif;
     width: 100%;
   }
 
   .database-modal-body .db-enemy-attack-patterns th {
-    background: #f3f4f5;
-    border-bottom: 1px solid #d8dadd;
-    border-right: 1px solid #d8dadd;
-    color: #20242c;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+    color: var(--text-1);
     font-weight: 700;
     height: 32px;
     padding: 0 10px;
@@ -187,7 +187,7 @@
   }
 
   .database-modal-body .db-enemy-attack-patterns td {
-    border-right: 1px solid #eeeeee;
+    border-right: 1px solid var(--border-subtle);
     height: 28px;
     padding: 0 10px;
   }
@@ -195,13 +195,13 @@
   .database-modal-body .db-enemy-attack-patterns tr:hover td,
   .database-modal-body .db-enemy-attack-patterns tr.db-enemy-action-context-target td {
     background: #eaf3ff;
-    color: #0b64d8;
+    color: var(--accent);
   }
 
   .database-modal-window:has(.rm2k3-record-enemies) .database-modal-footer {
     align-items: center;
-    background: #ffffff;
-    border-top: 1px solid #e2e4e8;
+    background: var(--bg-raised);
+    border-top: 1px solid var(--border-subtle);
     display: grid;
     gap: 12px;
     grid-template-columns: 1fr 148px 128px 128px 104px;
@@ -209,22 +209,22 @@
   }
 
   .database-modal-window:has(.rm2k3-record-enemies) .database-footer-status {
-    color: #30343b;
+    color: var(--text-1);
     font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
   }
 
   .database-modal-window:has(.rm2k3-record-enemies) .database-footer-button {
-    background: #ffffff;
-    border: 1px solid #d8dadd;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    color: #20242c;
+    color: var(--text-1);
     font: 700 14px/40px "Malgun Gothic", "Segoe UI", sans-serif;
     height: 44px;
   }
 
   .database-modal-window:has(.rm2k3-record-enemies) .database-footer-button.primary {
-    background: linear-gradient(180deg, #087bf0 0%, #0567d0 100%);
-    border-color: #0567d0;
-    color: #ffffff;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    border-color: var(--accent-border);
+    color: var(--text-1);
   }
 }

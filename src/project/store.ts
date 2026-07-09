@@ -13,9 +13,29 @@ import {
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
-import type { Project } from "./types";
+import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
+import type { GameMap, MapId, Project } from "./types";
 
-type Listener = (project: Project) => void;
+export type ProjectChangeCell = {
+  readonly x: number;
+  readonly y: number;
+  readonly layer: "lower" | "upper" | "event";
+};
+
+export type ProjectChangeDescriptor =
+  | { readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] }
+  | { readonly scope: "database"; readonly collection?: string }
+  | { readonly scope: "system" | "assets" | "project" };
+
+type Listener = (project: Project, change: ProjectChangeDescriptor) => void;
+type AutoSaveListener = (state: AutoSaveState) => void;
+
+export type AutoSaveState =
+  | { readonly kind: "idle" }
+  | { readonly kind: "pending" }
+  | { readonly kind: "saving" }
+  | { readonly kind: "saved"; readonly at: number }
+  | { readonly kind: "error"; readonly message: string };
 
 export type ProjectFlushResult =
   | { readonly kind: "disabled" }
@@ -40,12 +60,20 @@ export class DbConnectionRequiredError extends Error {
 class ProjectStore {
   private current: Project;
   private listeners = new Set<Listener>();
+  private autoSaveListeners = new Set<AutoSaveListener>();
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly autoSaveDelayMs = 15000;
+  private autoSaveRetryTimer: ReturnType<typeof setTimeout> | null = null;
+  private autoSaveState: AutoSaveState = { kind: "idle" };
+  private readonly autoSaveDelayMs = 4000;
+  private readonly autoSaveRetryDelayMs = 30000;
   private loaded = false;
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
+  // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
+  // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
+  // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
+  private dirtySinceLastPersist = false;
 
   constructor() {
     this.current = createBlankProject();
@@ -77,6 +105,7 @@ class ProjectStore {
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+          resetManualProjectCommitBaseline(this.current);
         }
       }
       await this.normalizeCurrentProject();
@@ -92,12 +121,27 @@ class ProjectStore {
       throw error;
     }
     this.loaded = true;
-    this.emit();
+    this.dirtySinceLastPersist = false;
+    this.emit({ scope: "project" });
     return this.current;
   }
 
   isLoaded(): boolean {
     return this.loaded;
+  }
+
+  // 부팅 실패 복구(도그푸딩 결함 ②): 로드 실패 상태에서 대체 프로젝트(예제/빈)를 메모리로 연다.
+  // 깨진 원격/로컬 프로젝트를 덮어쓰지 않도록 원격 저장은 끈 채 시작한다 —
+  // 사용자는 이후 DB 연결 설정에서 명시적으로 다시 연결/저장할 수 있다.
+  async loadFallbackProject(project: Project): Promise<void> {
+    this.current = project;
+    this.remotePersistenceEnabled = false;
+    this.remotePersistenceDisabledReason = "load-failed";
+    this.persistedBaseline = null;
+    this.loaded = true;
+    await this.normalizeCurrentProject();
+    this.dirtySinceLastPersist = false;
+    this.emit({ scope: "project" });
   }
 
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
@@ -118,6 +162,20 @@ class ProjectStore {
     return dbPersistenceStatus({ disabledReason: this.remotePersistenceDisabledReason });
   }
 
+  getAutoSaveState(): AutoSaveState {
+    return this.autoSaveState;
+  }
+
+  // 마지막 실제 저장 이후 미저장 변경이 있는가(결함 ⑧ — 창 닫기 경고 근거).
+  hasUnsavedChanges(): boolean {
+    return this.dirtySinceLastPersist;
+  }
+
+  subscribeAutoSave(listener: AutoSaveListener): () => void {
+    this.autoSaveListeners.add(listener);
+    return () => this.autoSaveListeners.delete(listener);
+  }
+
   async reconnectRemotePersistence(): Promise<ProjectDbReconnectResult> {
     const status = dbPersistenceStatus({ disabledReason: null });
     if (status.kind !== "ready") return { kind: "not-configured" };
@@ -129,7 +187,9 @@ class ProjectStore {
         this.remotePersistenceDisabledReason = null;
         await this.normalizeCurrentProject();
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
-        this.emit();
+        resetManualProjectCommitBaseline(this.current);
+        this.dirtySinceLastPersist = false;
+        this.emit({ scope: "project" });
         this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
       }
@@ -149,19 +209,57 @@ class ProjectStore {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
     this.current = project;
-    this.emit();
+    this.dirtySinceLastPersist = true;
+    this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
 
-  update(mutator: (draft: Project) => void): void {
+  update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     const draft: Project = structuredClone(this.current);
     mutator(draft);
     ensureProjectMapConnections(draft);
     ensureSwitchVariableSlots(draft);
     removeLegacySpriteReferences(draft);
     this.current = draft;
-    this.emit();
+    this.dirtySinceLastPersist = true;
+    this.emit(change);
     this.scheduleAutoSave();
+  }
+
+  updateMap(
+    mapId: MapId,
+    mapMutator: (draft: GameMap) => void,
+    change: { readonly cells?: readonly ProjectChangeCell[] } = {}
+  ): void {
+    const currentMap = this.current.maps[mapId];
+    if (!currentMap) return;
+    const draftMap: GameMap = structuredClone(currentMap);
+    mapMutator(draftMap);
+    // Map-only edits only replace one GameMap. The skipped normalizers read
+    // project root/mapConnections, switch+variable database/session slots, or
+    // the entire project for legacy sprite IDs; paint/erase/fill/event moves do
+    // not create those legacy/global shapes, so full-project normalize is left
+    // on update(), replace(), load(), and save paths.
+    this.current = {
+      ...this.current,
+      maps: {
+        ...this.current.maps,
+        [mapId]: draftMap,
+      },
+    };
+    this.dirtySinceLastPersist = true;
+    this.emit({ scope: "map", mapId, ...change });
+    this.scheduleAutoSave();
+  }
+
+  /** @internal */
+  _getPersistedBaselineForTest(): Project | null {
+    return this.persistedBaseline;
+  }
+
+  /** @internal */
+  _setPersistedBaselineForTest(project: Project | null): void {
+    this.persistedBaseline = project;
   }
 
   async flush(): Promise<ProjectFlushResult> {
@@ -169,16 +267,18 @@ class ProjectStore {
       clearTimeout(this.autoSaveTimer);
       this.autoSaveTimer = null;
     }
+    this.clearAutoSaveRetry();
     if (!this.loaded) return { kind: "not-loaded" };
     if (!this.remotePersistenceEnabled && this.remotePersistenceDisabledReason === null) {
       return { kind: "not-configured" };
     }
-    return await this.persistCurrent();
+    return await this.saveCurrentWithAutoSaveState(true);
   }
 
   async clearAll(): Promise<void> {
     this.current = createBlankProject();
-    this.emit();
+    this.dirtySinceLastPersist = true;
+    this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
 
@@ -187,26 +287,69 @@ class ProjectStore {
     return () => this.listeners.delete(listener);
   }
 
-  private emit(): void {
-    for (const listener of this.listeners) listener(this.current);
+  private emit(change: ProjectChangeDescriptor = { scope: "project" }): void {
+    for (const listener of this.listeners) listener(this.current, change);
+  }
+
+  private emitAutoSave(): void {
+    for (const listener of this.autoSaveListeners) listener(this.autoSaveState);
+  }
+
+  private setAutoSaveState(state: AutoSaveState): void {
+    this.autoSaveState = state;
+    this.emitAutoSave();
   }
 
   private scheduleAutoSave(): void {
     if (!this.loaded) return;
     if (!this.remotePersistenceEnabled) return;
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    this.clearAutoSaveRetry();
+    this.setAutoSaveState({ kind: "pending" });
     this.autoSaveTimer = setTimeout(() => {
       this.autoSaveTimer = null;
-      void this.persistCurrent().catch((error) => {
+      void this.saveCurrentWithAutoSaveState(true).catch((error) => {
         console.error("[store] Supabase auto-save failed:", error);
       });
     }, this.autoSaveDelayMs);
   }
 
+  private clearAutoSaveRetry(): void {
+    if (!this.autoSaveRetryTimer) return;
+    clearTimeout(this.autoSaveRetryTimer);
+    this.autoSaveRetryTimer = null;
+  }
+
+  private scheduleAutoSaveRetry(): void {
+    if (this.autoSaveRetryTimer) return;
+    this.autoSaveRetryTimer = setTimeout(() => {
+      this.autoSaveRetryTimer = null;
+      void this.saveCurrentWithAutoSaveState(false).catch((error) => {
+        console.error("[store] Supabase auto-save retry failed:", error);
+      });
+    }, this.autoSaveRetryDelayMs);
+  }
+
+  private async saveCurrentWithAutoSaveState(allowRetry: boolean): Promise<ProjectFlushResult> {
+    this.setAutoSaveState({ kind: "saving" });
+    try {
+      const result = await this.persistCurrent();
+      this.setAutoSaveState(autoSaveStateForFlushResult(result));
+      return result;
+    } catch (error) {
+      this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
+      if (allowRetry) this.scheduleAutoSaveRetry();
+      throw error;
+    }
+  }
+
   private async persistCurrent(): Promise<ProjectFlushResult> {
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
-        saveDevProjectOverride(projectWithoutEventDrafts(this.current));
+        // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
+        if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
+          this.dirtySinceLastPersist = false;
+        }
         return { kind: "saved-local" };
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
@@ -219,10 +362,12 @@ class ProjectStore {
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? persistedProject;
     this.persistedBaseline = structuredClone(savedProject);
+    this.dirtySinceLastPersist = false;
     if (result.project) {
       this.current = structuredClone(result.project);
-      this.emit();
+      this.emit({ scope: "project" });
     }
+    recordManualProjectCommitAfterSave(savedProject);
     this.refreshSupabaseResourceCache();
     return result;
   }
@@ -255,4 +400,24 @@ function ensureProjectMapConnections(project: Project): boolean {
   if (Array.isArray(project.mapConnections)) return false;
   project.mapConnections = [];
   return true;
+}
+
+function autoSaveStateForFlushResult(result: ProjectFlushResult): AutoSaveState {
+  switch (result.kind) {
+    case "saved":
+    case "saved-local":
+      return { kind: "saved", at: Date.now() };
+    case "conflict":
+      return { kind: "error", message: "DB 저장 충돌이 있습니다. 새로고침 후 다시 저장하세요." };
+    case "disabled":
+      return { kind: "error", message: "DB 저장이 꺼져 있습니다." };
+    case "not-configured":
+      return { kind: "error", message: "DB 설정이 필요합니다." };
+    case "not-loaded":
+      return { kind: "idle" };
+  }
+}
+
+function autoSaveErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "알 수 없는 저장 오류";
 }

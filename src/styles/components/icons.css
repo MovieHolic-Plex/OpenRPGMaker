@@ -26,9 +26,9 @@
 }
 
 .rm-tool-icon-trash::before {
-  background: #d8d0be;
-  border: 1px solid #2f2f2f;
-  box-shadow: inset 3px 0 0 #9d988c, inset 6px 0 0 #d8d0be;
+  background: #dfe4ec;
+  border: 1px solid #1c202d;
+  box-shadow: inset 3px 0 0 #9aa3b5, inset 6px 0 0 #dfe4ec;
   height: 10px;
   left: 4px;
   top: 5px;
@@ -36,8 +36,8 @@
 }
 
 .rm-tool-icon-trash::after {
-  background: #5f5b52;
-  box-shadow: 3px -2px 0 #5f5b52;
+  background: #c3cbd9;
+  box-shadow: 3px -2px 0 #c3cbd9;
   height: 2px;
   left: 3px;
   top: 2px;
@@ -45,8 +45,8 @@
 }
 
 .rm-tool-icon-map-menu::before {
-  background: #5f5b52;
-  box-shadow: 0 5px 0 #5f5b52, 0 10px 0 #5f5b52;
+  background: #dfe4ec;
+  box-shadow: 0 5px 0 #dfe4ec, 0 10px 0 #dfe4ec;
   height: 2px;
   left: 7px;
   top: 2px;
@@ -68,8 +68,8 @@
 }
 
 .rm-tool-icon-map-settings::after {
-  background: #2e6f9e;
-  box-shadow: 4px 0 0 #2e6f9e, 8px 0 0 #2e6f9e;
+  background: #7b87f5;
+  box-shadow: 4px 0 0 #7b87f5, 8px 0 0 #7b87f5;
   height: 2px;
   left: 4px;
   top: 7px;
@@ -92,32 +92,6 @@
   left: 5px;
   top: 7px;
   width: 6px;
-}
-
-.rm-tool-icon-terrain-template::before {
-  background: #6fa047;
-  border: 1px solid #2f3b45;
-  box-shadow:
-    4px 0 0 #d8c36a,
-    8px 0 0 #6fa047,
-    0 4px 0 #b89558,
-    4px 4px 0 #6fa047,
-    8px 4px 0 #d8c36a,
-    0 8px 0 #6fa047,
-    4px 8px 0 #b89558,
-    8px 8px 0 #6fa047;
-  height: 3px;
-  left: 2px;
-  top: 2px;
-  width: 3px;
-}
-
-.rm-tool-icon-terrain-template::after {
-  background: #2f3b45;
-  height: 2px;
-  left: 11px;
-  top: 11px;
-  width: 3px;
 }
 
 .rm-tool-icon-new,

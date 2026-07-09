@@ -30,7 +30,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(project.database.classes[0]?.name).toBe("전사");
     expect(project.database.items[0]?.name).toBe("회복약");
     expect(project.database.equipment[0]?.name).toBe("청동 검");
-    expect(project.database.enemies[0]?.name).toBe("말벌");
+    expect(project.database.enemies[0]?.name).toBe("슬라임");
     expect(checkedStrings.filter((value) => MOJIBAKE_PATTERN.test(value))).toEqual([]);
   });
 
@@ -54,7 +54,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     // Then: each default resource points at an existing RTP 또는 generated asset.
     expect(project.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1");
     expect(project.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
-    expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-sylph-hornet");
+    expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
     expect(project.system.titleResourceId).toBe("easyrpg-title-title1");
     expect(project.system.systemResourceId).toBe("easyrpg-system-system");
     expect(project.system.battleSystemResourceId).toBe("easyrpg-system2-system2-c");

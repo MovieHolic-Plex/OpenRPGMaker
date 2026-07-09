@@ -12,6 +12,20 @@ export function changeActorVital(session: PlaySessionLike, command: ActorVitalCo
   vitals[kind] = clamp(applyAmount(vitals[kind], command.op, command.amount), 0, max);
 }
 
+// 런타임 액터 이름을 세션 오버라이드에 저장한다(프로젝트 DB 는 건드리지 않음).
+export function changeActorName(session: PlaySessionLike, actorId: ActorId, name: string): void {
+  session.actorNames ??= {};
+  session.actorNames[actorId] = name;
+}
+
+// 액터의 표시 이름을 조회한다. 세션 오버라이드가 있으면 우선, 없으면 DB 이름.
+export function resolveActorName(
+  session: Pick<PlaySessionLike, "actorNames">,
+  actor: { readonly id: ActorId; readonly name: string }
+): string {
+  return session.actorNames?.[actor.id] ?? actor.name;
+}
+
 export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefined): void {
   const actorIds = actorId ? [actorId] : session.partyActorIds;
   for (const id of actorIds) {

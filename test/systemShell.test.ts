@@ -160,11 +160,13 @@ describe("T12 RM2K3 player status menu", () => {
       "아이템",
       "스킬",
       "장비",
+      "몬스터",
       "저장",
       "로드",
       "상태",
       "열",
       "진형",
+      "임무",
       "대기 ON",
       "타이틀",
     ]);
@@ -202,9 +204,12 @@ describe("T12 RM2K3 player status menu", () => {
           onSelectEquipmentActor: () => undefined,
           onSelectEquipmentSlot: () => undefined,
           onEquipItem: () => undefined,
+          onUnequipItem: () => undefined,
           onToggleRow: () => undefined,
           onSelectFormationActor: () => undefined,
           onMoveFormationActor: () => undefined,
+          onToggleMonsterView: () => undefined,
+          onMoveMonster: () => undefined,
         },
       }));
 

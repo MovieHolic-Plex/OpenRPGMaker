@@ -13,7 +13,7 @@ type DebugState = {
       upperTiles: number[];
       lowerTileStacks?: Record<string, number[]>;
       upperTileStacks?: Record<string, number[]>;
-      events: { commands: { kind: string; mapId?: string; x?: number; y?: number }[] }[];
+      events: { x: number; y: number; commands: { kind: string; mapId?: string; x?: number; y?: number }[] }[];
     }>;
     tilesets: Record<string, { passability: { up: boolean; down: boolean; left: boolean; right: boolean }[]; terrain: number[] }>;
   };
@@ -21,7 +21,12 @@ type DebugState = {
     currentMapId: string | null;
     paintShape: "pen" | "rect" | "round";
     selection: { mapId: string; x: number; y: number; width: number; height: number } | null;
-    clipboard: { width: number; height: number; lowerTiles: number[]; upperTiles: number[] } | null;
+    clipboard: {
+      width: number;
+      height: number;
+      lower: { tiles: number[]; stacks: number[][] };
+      upper: { tiles: number[]; stacks: number[][] };
+    } | null;
     tool: string;
     zoom: number;
   };
@@ -189,7 +194,7 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
   await page.getByTestId("tool-select").click();
   await clickMapCenter(page);
   await page.keyboard.press("Control+C");
-  await expect.poll(async () => (await debugState(page)).editor.clipboard?.lowerTiles[0]).toBe(PAINT_TILE);
+  await expect.poll(async () => (await debugState(page)).editor.clipboard?.lower.tiles[0]).toBe(PAINT_TILE);
 
   await clickMapOffset(page, 1, 0);
   await page.keyboard.press("Control+V");
@@ -239,6 +244,34 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
   }).toBe(persistedPassability);
 
   await page.screenshot({ path: testInfo.outputPath("map-selection-copy-paste.png"), fullPage: true });
+});
+
+test("manual cluster pen paint places hard-rule companion tree tiles", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/?freshProject=1");
+
+  await expect(page.getByTestId("edit-canvas")).toBeVisible();
+  await page.getByTestId("layer-lower").click();
+  await page.getByTestId("rpg-maker-tool-pen").click();
+  await page.getByTestId("cluster-tile-260").scrollIntoViewIfNeeded();
+  await page.getByTestId("cluster-tile-260").click();
+
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  await canvas.click({ position: { x: Math.floor(box.width * 0.5), y: Math.floor(box.height * 0.45) } });
+
+  // 클릭 시 자동 스크롤로 화면 좌표→타일 좌표가 어긋날 수 있어, 좌표 고정 대신
+  // "상단(260)이 놓이면 반드시 바로 아래에 하단(290)이 동반된다"는 hard 규칙 자체를 검증한다.
+  await expect.poll(async () => {
+    const state = await debugState(page);
+    const map = currentMap(state);
+    const tops: number[] = [];
+    for (let i = 0; i < map.upperTiles.length; i += 1) if (map.upperTiles[i] === 260) tops.push(i);
+    if (tops.length === 0) return "no-top-placed";
+    const paired = tops.every((i) => map.upperTiles[i + map.width] === 290);
+    return paired ? "paired" : "orphan-top";
+  }).toBe("paired");
 });
 
 test("requested map toolbar controls drive select area, zoom, pen, rectangle, round terrain, fill, and undo", async ({ page }, testInfo) => {

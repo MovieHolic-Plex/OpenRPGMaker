@@ -29,6 +29,20 @@ light from top-left.
   - v1 (2026-06-18): 최초 생성. 9-slice slice=16.
 - **정밀수정 시 참고**: 슬라이스 영역(코너 16px) 보존. 중앙은 텍스트 가독성 위해 충분히 어둡게(~75% 불투명).
 
+## ui/windowskin-rm2003.png
+- **치수**: 96×96 (9-slice용, 슬라이스 24px)
+- **용도**: 런타임 게임 표면의 메시지/선택지/메뉴/상점/여관/전투/타이틀 메뉴 창 스킨. CSS `--runtime-window-skin`과 `border-image`로 사용.
+- **출처**: `scripts/generate-window-skin.mjs`가 절차 생성한 원본 프로젝트 에셋.
+- **버전 히스토리**:
+  - v1 (2026-07-07): 진한 파란 세로 그라데이션과 텍스처, 밝은 외곽선/내부 하이라이트/그림자 이중 테두리, 직각 모서리. slice=24.
+- **정밀수정 시 참고**: 전체 96×96과 24px slice 구조를 유지. 라운딩 금지, 중앙 fill 영역은 텍스트 대비를 충분히 유지.
+
+## fonts/Galmuri*.woff2
+- **파일**: `Galmuri9.woff2`, `Galmuri11.woff2`, `Galmuri11-Bold.woff2`
+- **용도**: 런타임 게임 표면 전용 픽셀 폰트. 에디터 셸에는 적용하지 않는다.
+- **출처**: quiple/galmuri v2.40.3.
+- **라이선스**: SIL Open Font License 1.1. `public/assets/fonts/LICENSE.txt`와 `public/assets/ATTRIBUTION.md` 유지.
+
 ## rm2k3-original-chipset.png
 - **치수**: 480×256 (RPG Maker 2000/2003 ChipSet 호환, 16px 타일)
 - **용도**: 에디터 ChipSet 팔레트와 기본 RM2K3식 맵 타일 리소스.

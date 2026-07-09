@@ -1,5 +1,7 @@
 import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import { validateLightSource } from "./shapeLightingFields";
+import { isSeason, isTimePhase } from "@/project/gameTime";
 
 export function validateCommandArray(label: string, value: unknown): void {
   for (const [index, command] of requireArray(label, value).entries()) {
@@ -44,10 +46,39 @@ function validateCommandShape(label: string, value: unknown): void {
       validateCommandArray(`${label}.then`, command.then);
       if (command.else !== undefined) validateCommandArray(`${label}.else`, command.else);
       return;
+    case "loop":
+      validateCommandArray(`${label}.body`, command.body);
+      return;
+    case "setSelfSwitch":
+      requireSelfSwitchKey(`${label}.key`, command.key);
+      requireBoolean(`${label}.value`, command.value);
+      return;
     case "setVariable":
       requireString(`${label}.variableId`, command.variableId);
       requireString(`${label}.op`, command.op);
       validateVariableOperand(`${label}.value`, command.value);
+      return;
+    case "advanceTime":
+      if (command.minutes !== undefined) requireNumber(`${label}.minutes`, command.minutes);
+      if (command.hours !== undefined) requireNumber(`${label}.hours`, command.hours);
+      if (command.days !== undefined) requireNumber(`${label}.days`, command.days);
+      return;
+    case "advanceCropGrowth":
+      requireNumber(`${label}.days`, command.days);
+      return;
+    case "changeFriendship":
+      if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
+      requireNumber(`${label}.delta`, command.delta);
+      return;
+    case "getFriendship":
+      if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
+      requireString(`${label}.variableId`, command.variableId);
+      return;
+    case "setTime":
+      requireNumber(`${label}.hour`, command.hour);
+      if (command.minute !== undefined) requireNumber(`${label}.minute`, command.minute);
+      return;
+    case "sleepUntilMorning":
       return;
     case "transfer":
       if (command.direction !== undefined) requireTransferDirection(`${label}.direction`, command.direction);
@@ -55,6 +86,10 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "moveEvent":
       validateMoveRoute(`${label}.route`, command.route);
+      return;
+    case "setEventGraphicPattern":
+      requireString(`${label}.eventId`, command.eventId);
+      requireNumber(`${label}.pattern`, command.pattern);
       return;
     case "changeExp":
     case "changeLevel":
@@ -64,17 +99,110 @@ function validateCommandShape(label: string, value: unknown): void {
       requireActorAmountOp(`${label}.op`, command.op);
       requireNumber(`${label}.amount`, command.amount);
       return;
+    case "promoteActor":
+      requireString(`${label}.actorId`, command.actorId);
+      if (command.toClassId !== undefined) requireString(`${label}.toClassId`, command.toClassId);
+      if (command.successBranch !== undefined) validateCommandArray(`${label}.successBranch`, command.successBranch);
+      if (command.failureBranch !== undefined) validateCommandArray(`${label}.failureBranch`, command.failureBranch);
+      return;
     case "changeEquipment":
       requireString(`${label}.actorId`, command.actorId);
       requireEquipmentSlot(`${label}.slot`, command.slot);
       requireString(`${label}.equipmentId`, command.equipmentId);
       return;
+    case "giveMonster":
+      requireString(`${label}.speciesId`, command.speciesId);
+      requireNumber(`${label}.level`, command.level);
+      if (command.nickname !== undefined) requireString(`${label}.nickname`, command.nickname);
+      return;
+    case "moveMonster":
+      requireString(`${label}.instanceId`, command.instanceId);
+      requireMonsterMoveTarget(`${label}.to`, command.to);
+      return;
+    case "evolveMonster":
+      requireString(`${label}.instanceId`, command.instanceId);
+      if (command.toSpeciesId !== undefined) requireString(`${label}.toSpeciesId`, command.toSpeciesId);
+      if (command.successBranch !== undefined) validateCommandArray(`${label}.successBranch`, command.successBranch);
+      if (command.failureBranch !== undefined) validateCommandArray(`${label}.failureBranch`, command.failureBranch);
+      return;
     case "recoverAll":
       if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
       return;
+    case "cutsceneControl":
+      requireCutsceneControlMode(`${label}.mode`, command.mode);
+      if (command.skippable !== undefined) requireBoolean(`${label}.skippable`, command.skippable);
+      return;
+    case "checkpointSave":
+      if (command.label !== undefined) requireString(`${label}.label`, command.label);
+      return;
+    case "killPlayer":
+      if (command.message !== undefined) requireString(`${label}.message`, command.message);
+      return;
+    case "triggerEnding":
+      if (command.endingId !== undefined) requireString(`${label}.endingId`, command.endingId);
+      return;
+    case "addFollower":
+      if (command.actorId !== undefined) requireString(`${label}.actorId`, command.actorId);
+      if (command.name !== undefined) requireString(`${label}.name`, command.name);
+      if (command.graphic !== undefined) requireRecord(`${label}.graphic`, command.graphic);
+      return;
+    case "removeFollower":
+      if (command.name !== undefined) requireString(`${label}.name`, command.name);
+      if (command.all !== undefined) requireBoolean(`${label}.all`, command.all);
+      return;
+    case "setLighting":
+      requireNumber(`${label}.ambient`, command.ambient);
+      if (command.color !== undefined) requireString(`${label}.color`, command.color);
+      if (command.transitionMs !== undefined) requireNumber(`${label}.transitionMs`, command.transitionMs);
+      return;
+    case "addLight":
+      validateLightSource(`${label}.source`, command.source);
+      return;
+    case "removeLight":
+      if (command.id !== undefined) requireString(`${label}.id`, command.id);
+      if (command.all !== undefined) requireBoolean(`${label}.all`, command.all);
+      return;
+    case "setWeather":
+      requireWeatherKind(`${label}.weather`, command.weather);
+      if (command.intensity !== undefined) {
+        const intensity = requireNumber(`${label}.intensity`, command.intensity);
+        if (intensity < 0 || intensity > 1) throw new ProjectFormatError(`${label}.intensity는 0~1이어야 합니다.`);
+      }
+      if (command.transitionMs !== undefined) requireNumber(`${label}.transitionMs`, command.transitionMs);
+      return;
+    case "showAnimation":
+      validateShowAnimationTarget(`${label}.target`, command.target);
+      requireString(`${label}.animationId`, command.animationId);
+      if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
+      return;
+    case "shop":
+      for (const [index, itemId] of requireArray(`${label}.itemIds`, command.itemIds).entries()) {
+        requireString(`${label}.itemIds[${index}]`, itemId);
+      }
+      if (command.allowSell !== undefined) requireBoolean(`${label}.allowSell`, command.allowSell);
+      if (command.quantityMode !== undefined) requireString(`${label}.quantityMode`, command.quantityMode);
+      if (command.shopType !== undefined) requireString(`${label}.shopType`, command.shopType);
+      if (command.messageType !== undefined) requireString(`${label}.messageType`, command.messageType);
+      if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);
+      if (command.branchOnTransaction !== undefined) requireBoolean(`${label}.branchOnTransaction`, command.branchOnTransaction);
+      if (command.transactionBranch !== undefined) validateCommandArray(`${label}.transactionBranch`, command.transactionBranch);
+      return;
+    case "enterHeroName": {
+      requireString(`${label}.actorId`, command.actorId);
+      requireBoolean(`${label}.showInitialName`, command.showInitialName);
+      const maxLength = requireNumber(`${label}.maxLength`, command.maxLength);
+      if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
+      throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);
+    }
     default:
       return;
   }
+}
+
+function requireSelfSwitchKey(label: string, value: unknown): void {
+  const key = requireString(label, value);
+  if (key === "A" || key === "B" || key === "C" || key === "D") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
 function requireFacePosition(label: string, value: unknown): void {
@@ -121,6 +249,29 @@ function requireTransferFade(label: string, value: unknown): void {
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
+function requireWeatherKind(label: string, value: unknown): void {
+  const kind = requireString(label, value);
+  if (kind === "none" || kind === "rain" || kind === "storm" || kind === "snow" || kind === "fog") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+function validateShowAnimationTarget(label: string, value: unknown): void {
+  if (value === "player") return;
+  const target = requireRecord(label, value);
+  if (target.eventId !== undefined) {
+    requireString(`${label}.eventId`, target.eventId);
+    return;
+  }
+  requireNumber(`${label}.x`, target.x);
+  requireNumber(`${label}.y`, target.y);
+}
+
+function requireCutsceneControlMode(label: string, value: unknown): void {
+  const mode = requireString(label, value);
+  if (mode === "begin" || mode === "end") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
 function requireEquipmentSlot(label: string, value: unknown): void {
   const slot = requireString(label, value);
   if (
@@ -133,21 +284,87 @@ function requireEquipmentSlot(label: string, value: unknown): void {
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
+function requireMonsterMoveTarget(label: string, value: unknown): void {
+  const target = requireString(label, value);
+  if (target === "party" || target === "box") return;
+  throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+}
+
+// Condition 유니온(fork/페이지 조건 공용)이 지원하는 모든 kind를 허용해야 한다.
+// switch/variable만 검증하면 item/selfSwitch/gold 조건이 든 프로젝트의 저장/불러오기가 깨진다.
 export function validateConditionShape(label: string, value: unknown): void {
   const condition = requireRecord(label, value);
   const kind = requireString(`${label}.kind`, condition.kind);
-  if (kind === "switch") {
-    requireString(`${label}.switchId`, condition.switchId);
-    requireBoolean(`${label}.value`, condition.value);
-    return;
-  }
-  if (kind === "variable") {
-    requireString(`${label}.variableId`, condition.variableId);
-    requireString(`${label}.op`, condition.op);
-    requireNumber(`${label}.value`, condition.value);
-    return;
+  switch (kind) {
+    case "switch":
+      requireString(`${label}.switchId`, condition.switchId);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "variable":
+      requireString(`${label}.variableId`, condition.variableId);
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.value`, condition.value);
+      return;
+    case "selfSwitch":
+      requireString(`${label}.key`, condition.key);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "actor":
+      requireString(`${label}.actorId`, condition.actorId);
+      requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "item":
+      requireString(`${label}.itemId`, condition.itemId);
+      requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "gold":
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.amount`, condition.amount);
+      return;
+    case "timer":
+      requireString(`${label}.timerId`, condition.timerId);
+      requireNumber(`${label}.seconds`, condition.seconds);
+      return;
+    case "timePhase": {
+      const phase = requireString(`${label}.phase`, condition.phase);
+      if (isTimePhase(phase)) return;
+      break;
+    }
+    case "season": {
+      const season = requireString(`${label}.season`, condition.season);
+      if (isSeason(season)) return;
+      break;
+    }
+    case "npcActivity":
+      requireString(`${label}.activity`, condition.activity);
+      return;
+    case "friendshipAtLeast":
+      if (condition.npcKey !== undefined) requireString(`${label}.npcKey`, condition.npcKey);
+      requireNumber(`${label}.value`, condition.value);
+      return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
+}
+
+export function validateShopStock(label: string, value: unknown): void {
+  for (const [index, stockValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, stockValue);
+    requireString(`${label}[${index}].itemId`, entry.itemId);
+    if (entry.seasons !== undefined) {
+      for (const [seasonIndex, seasonValue] of requireArray(`${label}[${index}].seasons`, entry.seasons).entries()) {
+        const season = requireString(`${label}[${index}].seasons[${seasonIndex}]`, seasonValue);
+        if (!isSeason(season)) throw new ProjectFormatError(`${label}[${index}].seasons[${seasonIndex}]가 잘못되었습니다.`);
+      }
+    }
+    if (entry.priceOverride !== undefined) requireNumber(`${label}[${index}].priceOverride`, entry.priceOverride);
+    if (entry.priceBySeason !== undefined) {
+      const prices = requireRecord(`${label}[${index}].priceBySeason`, entry.priceBySeason);
+      for (const [season, price] of Object.entries(prices)) {
+        if (!isSeason(season)) throw new ProjectFormatError(`${label}[${index}].priceBySeason.${season} 계절이 잘못되었습니다.`);
+        requireNumber(`${label}[${index}].priceBySeason.${season}`, price);
+      }
+    }
+  }
 }
 
 export function validateMoveRoute(label: string, value: unknown): void {

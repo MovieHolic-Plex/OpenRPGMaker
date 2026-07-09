@@ -8,6 +8,7 @@ import type {
   EnemyRecord,
   EnemyRewards,
   EnemyStats,
+  BattleFlow,
   TroopMemberRecord,
   TroopRecord,
 } from "@/project/types";
@@ -20,6 +21,8 @@ export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRe
   return {
     id: record.id,
     name: record.name,
+    speciesId: cleanOptionalId(record.speciesId),
+    level: typeof record.level === "number" && Number.isFinite(record.level) ? clampInteger(record.level, 1, 99) : undefined,
     monsterResourceId: cleanOptionalId(record.monsterResourceId),
     graphicHue: clampInteger(record.graphicHue ?? 0, 0, 360),
     transparent: record.transparent ?? false,
@@ -43,9 +46,23 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     enemyIds: members.map((member) => member.enemyId),
     members,
     autoAlign: record.autoAlign ?? true,
+    uncapturable: record.uncapturable === true,
     previewBackgroundResourceId: cleanOptionalId(record.previewBackgroundResourceId),
+    battleFlow: normalizeBattleFlow(record.battleFlow),
+    activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
     battleEventPages: record.battleEventPages ?? [],
   };
+}
+
+function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow | undefined {
+  if (value === "strict") return "strict";
+  if (value === "gauge") return "gauge";
+  return undefined;
+}
+
+function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.max(1, Math.min(99, Math.trunc(value)));
 }
 
 function normalizeEnemyStats(stats: Partial<EnemyStats> | undefined): EnemyStats {

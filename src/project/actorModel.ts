@@ -130,8 +130,8 @@ export function createActorRecord(id: string, classId: ClassId, defaults: ActorR
 }
 
 export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
-  const initialLevel = clampLevel(actor.initialLevel);
-  const maxLevel = Math.max(initialLevel, clampLevel(actor.maxLevel));
+  const initialLevel = clampLevel(actor.initialLevel ?? ACTOR_LEVEL_MIN);
+  const maxLevel = Math.max(initialLevel, clampLevel(actor.maxLevel ?? ACTOR_LEVEL_MAX));
   const characterResourceId = cleanOptionalId(actor.characterResourceId) ?? defaultActorCharacterResourceId(actor);
   return {
     id: actor.id,

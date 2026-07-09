@@ -1,6 +1,6 @@
 import type { PassFlag, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
-import { DEFAULT_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
-import { DIRT_ROAD_TILE, TERRAIN_TAG, describeChipsetTile } from "@/project/defaults/chipsetMapping";
+import { DEFAULT_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
+import { DIRT_ROAD_TILE, TERRAIN_TAG, describeChipsetTile, isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import {
   COMBINED_TOWN_HARNESS_GROUPS,
   COMBINED_TOWN_HARNESS_PREFIX,
@@ -36,16 +36,46 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
   for (const group of COMBINED_TOWN_HARNESS_GROUPS) {
     for (const tile of group.tileIds) changed = applyTileContract(tileset, group, tile) || changed;
   }
-  const groups = COMBINED_TOWN_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, stackable: _stackable, ...group }) => ({
-    ...group,
-    tileIds: [...group.tileIds],
-    patternGrammar: clonePattern(group.patternGrammar),
-  }));
+  changed = enforceTransparentOverlayPriority(tileset) || changed;
   const current = tileset.tileGroups ?? [];
-  const next = [...current.filter((group) => !group.id.startsWith(COMBINED_TOWN_HARNESS_PREFIX)), ...groups];
+  const suppressed = normalizeSuppressedHarnessGroupIds(tileset);
+  if (suppressed.changed) changed = true;
+  const suppressedIds = new Set(suppressed.ids);
+  const harnessIds = new Set(COMBINED_TOWN_HARNESS_GROUPS.map((group) => group.id));
+  const currentById = new Map(current.map((group) => [group.id, group]));
+  const preserved = current.filter((group) => !harnessIds.has(group.id) && !isBundledCombinedTownHarnessGroup(group));
+  const groups = COMBINED_TOWN_HARNESS_GROUPS.flatMap((group) => {
+    if (suppressedIds.has(group.id)) return [];
+    const existing = currentById.get(group.id);
+    return existing ? [preserveHarnessGroup(existing, group)] : [cloneHarnessGroup(group)];
+  });
+  const next = [...preserved, ...groups];
   if (JSON.stringify(current) !== JSON.stringify(next)) {
     tileset.tileGroups = next;
     changed = true;
+  }
+  return changed;
+}
+
+// 투명 배경 칩(스프라이트형)은 상위 레이어 전용 — 그룹 계약이 lower/mixed로 정하더라도
+// 투명 부분 아래가 검게 보이는 하위 배치는 금지한다. 사용자가 명시적으로 하위로 확정한
+// 타일(userLocked/user 메타 + defaultLayer:"lower")만 예외.
+export function isUpperOnlyOverlayTile(tileset: Pick<TilesetDef, "image" | "tileMeta">, tile: number): boolean {
+  if (!isCombinedTownTileset(tileset) || !isTransparentChipsetTile(tile)) return false;
+  const meta = tileset.tileMeta?.[tile];
+  if (isUserRuntimeMeta(meta) && meta?.defaultLayer === "lower") return false;
+  return true;
+}
+
+// 저장된 프로젝트 치유: 예전 분류로 priority가 lower로 남은 투명 칩을 로드 시 upper로 승격.
+function enforceTransparentOverlayPriority(tileset: TilesetDef): boolean {
+  let changed = false;
+  for (let tile = 0; tile < tileset.count; tile += 1) {
+    if (!isUpperOnlyOverlayTile(tileset, tile)) continue;
+    if (tileset.priority[tile] !== "upper") {
+      tileset.priority[tile] = "upper";
+      changed = true;
+    }
   }
   return changed;
 }
@@ -65,8 +95,8 @@ export function combinedTownHarnessPrompt(tileset: Pick<TilesetDef, "id" | "imag
   return {
     active: true,
     rules: [
-      "울타리, 문, 벽, 직선 지붕면, 지붕-벽 경계는 하위 레이어입니다.",
-      "상위 레이어는 창문과 사선 지붕처럼 아래 벽/지형 위에 겹치는 투명 오버레이에 사용합니다.",
+      "문, 벽, 직선 지붕면, 지붕-벽 경계처럼 불투명한 건축 칩은 하위 레이어입니다.",
+      "투명 배경을 가진 스프라이트형 칩(벤치·사선 지붕·나무·울타리·창문·소품)은 상위 레이어 전용입니다 — 하위에 칠해도 자동으로 상위로 라우팅됩니다.",
       "길과 물은 대표 타일을 칠하면 주변 연결에 맞춰 실제 타일이 바뀌는 오토타일입니다.",
       "userLocked 메타는 절대 덮어쓰지 않습니다.",
     ],
@@ -149,11 +179,48 @@ function ensureTileMetaLength(tileset: TilesetDef): void {
   while (tileset.tileMeta.length < tileset.count) tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
 }
 
+function normalizeSuppressedHarnessGroupIds(tileset: TilesetDef): { readonly changed: boolean; readonly ids: readonly string[] } {
+  const raw = tileset.suppressedHarnessGroupIds ?? [];
+  const ids = [...new Set(raw.filter((id) => id.startsWith(COMBINED_TOWN_HARNESS_PREFIX)))];
+  const changed = ids.length !== raw.length || ids.some((id, index) => raw[index] !== id);
+  if (changed) tileset.suppressedHarnessGroupIds = ids;
+  return { changed, ids };
+}
+
+function preserveHarnessGroup(existing: TileGroupMetadata, group: CombinedTownHarnessGroup): TileGroupMetadata {
+  const next = structuredClone(existing);
+  if (next.rules === undefined) next.rules = cloneRules(group.rules);
+  return next;
+}
+
+function isBundledCombinedTownHarnessGroup(group: TileGroupMetadata): boolean {
+  return group.id.startsWith(COMBINED_TOWN_HARNESS_PREFIX) && group.source !== "user";
+}
+
+function cloneHarnessGroup(group: CombinedTownHarnessGroup): TileGroupMetadata {
+  const { passage: _passage, repeatability: _repeatability, stackable: _stackable, ...metadata } = group;
+  return {
+    ...metadata,
+    tileIds: [...metadata.tileIds],
+    patternGrammar: clonePattern(metadata.patternGrammar),
+    rules: cloneRules(metadata.rules),
+  };
+}
+
 function groupForTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, tile: number): RuntimeHarnessGroup | null {
   if (isCombinedTownTileset(tileset)) {
     return COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.tileIds.includes(tile)) ?? null;
   }
   return tileset.tileGroups?.find((group) => group.tileIds.includes(tile)) ?? null;
+}
+
+// 레이어 분류(tileLayerClassification)가 mixed 그룹과 그룹 미소속을 구분할 수 있도록
+// 그룹의 레이어/스택 속성을 노출한다. 내장 타운 칩셋은 정적 하네스 그룹을 우선한다.
+export function harnessGroupForTile(
+  tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">,
+  tile: number
+): { readonly defaultLayer: TileGroupMetadata["defaultLayer"]; readonly stackable?: boolean } | null {
+  return groupForTile(tileset, tile);
 }
 
 // harness 그룹 → 런타임 priority 결정.
@@ -174,13 +241,25 @@ function terrainTagForGroup(group: CombinedTownHarnessGroup, fallback: number): 
 function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: string): string {
   if (group.id.includes("dirt-road")) return roadLabel(tile);
   if (group.id.includes("lake-water")) return "물 오토타일";
+  if (group.id.includes("conifer-tree")) return tile === 260 ? "침엽수 상단" : "침엽수 하단";
+  if (group.id.includes("dry-tree")) return tile === 261 ? "마른나무 상단" : "마른나무 하단";
+  if (group.id.includes("broadleaf-tree")) return broadleafLabel(tile);
+  if (group.id.includes("bush-props")) return "덤불";
+  if (group.id.includes("branch-props")) return "가지";
   if (group.id.includes("roof-overlays")) return "사선 지붕";
   if (group.id.includes("windows")) return "창문";
   if (group.id.includes("fence")) return "울타리";
   if (group.id.includes("doors")) return "문/입구";
+  if (group.id.includes("stone-floor-trap")) return "돌바닥";
+  if (group.id.includes("castle-solid-tiles")) return castleSolidLabel(tile);
   if (group.id.includes("wall") || group.id.includes("boundary")) return group.name;
   if (fallback && !fallback.startsWith("Tile ")) return fallback.replace(/ upper-layer| lower-layer/gi, "").slice(0, 36);
   return `${group.name} ${tile}`;
+}
+
+function castleSolidLabel(tile: number): string {
+  if (tile === TILE.STAIRS) return "계단";
+  return "어두운 벽";
 }
 
 function roadLabel(tile: number): string {
@@ -194,4 +273,23 @@ function roadLabel(tile: number): string {
 
 function clonePattern(patternGrammar: CombinedTownHarnessGroup["patternGrammar"]): CombinedTownHarnessGroup["patternGrammar"] {
   return patternGrammar ? { ...patternGrammar, parts: patternGrammar.parts.map((part) => ({ role: part.role, tileIds: [...part.tileIds] })) } : undefined;
+}
+
+function cloneRules(rules: CombinedTownHarnessGroup["rules"]): CombinedTownHarnessGroup["rules"] {
+  return rules?.map((rule) => ({ ...rule, params: { ...rule.params } }));
+}
+
+function broadleafLabel(tile: number): string {
+  switch (tile) {
+    case 262:
+      return "활엽수 좌상";
+    case 263:
+      return "활엽수 우상";
+    case 292:
+      return "활엽수 좌하";
+    case 293:
+      return "활엽수 우하";
+    default:
+      return "활엽수";
+  }
 }

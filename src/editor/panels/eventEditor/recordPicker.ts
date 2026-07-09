@@ -1,0 +1,278 @@
+// 이벤트 명령 편집 폼용 리치 공용 컨트롤 (EV-2).
+// - recordPickerWithPreview: 기존 <select>(testid 불변)를 유지하면서 옆에
+//   선택 레코드 카드(아이콘 24px + 이름 + 부제)를 라이브 렌더.
+// - segmentedSelect: 연산(= / + / −) 등을 세그먼트 버튼으로 편집하되,
+//   기존 <select>는 시각적으로만 숨겨(측정 가능한 크기 유지) testid/change
+//   이벤트 호환을 그대로 보존한다(Playwright selectOption 호환).
+// - amountStepper: 수량 인풋을 − / + 버튼으로 감싼 스테퍼.
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
+import { el } from "@/util/dom";
+import type { Project } from "@/project/types";
+
+export type RecordPickerIcon =
+  | { readonly kind: "image"; readonly url: string }
+  // 시트(페이스셋 등)에서 한 칸만 잘라 보여주는 아이콘.
+  | {
+      readonly kind: "sheet";
+      readonly url: string;
+      readonly cellWidth: number;
+      readonly cellHeight: number;
+      readonly columns: number;
+      readonly index: number;
+      readonly sheetWidth: number;
+      readonly sheetHeight: number;
+    };
+
+export type RecordPickerRecordLike = { readonly id: string; readonly name: string };
+
+export type RecordPickerOptions<T extends RecordPickerRecordLike> = {
+  readonly records: readonly T[];
+  readonly selectedId: string;
+  readonly placeholder: string;
+  readonly testid: string;
+  readonly onChange?: (id: string) => void;
+  // 아이콘 리졸버. null 이면 이니셜 플레이스홀더로 대체.
+  readonly iconOf?: (record: T) => RecordPickerIcon | null;
+  // 카드 부제(예: 장비 슬롯, 소속 적 이름). null/빈 문자열이면 생략.
+  readonly subtitleOf?: (record: T) => string | null;
+};
+
+export type RecordPickerHandle = {
+  readonly root: HTMLElement;
+  readonly select: HTMLSelectElement;
+  // 외부에서 값을 바꾼 뒤 카드를 다시 그릴 때 사용.
+  readonly refreshCard: () => void;
+};
+
+const RICH_ICON_SIZE = 24;
+
+export function recordPickerWithPreview<T extends RecordPickerRecordLike>(
+  options: RecordPickerOptions<T>
+): RecordPickerHandle {
+  // 기존 recordSelect 와 동일한 옵션 포맷(0001: 이름)을 유지해 테스트를 보호한다.
+  const select = el("select", { dataset: { testid: options.testid } }) as HTMLSelectElement;
+  select.append(el("option", { text: `(${options.placeholder})`, attrs: { value: "" } }));
+  for (const [index, record] of options.records.entries()) {
+    select.append(
+      el("option", { text: `${String(index + 1).padStart(4, "0")}: ${record.name}`, attrs: { value: record.id } })
+    );
+  }
+  select.value = options.selectedId;
+
+  const card = el("span", {
+    class: "record-picker-card",
+    dataset: { testid: `${options.testid}-card` },
+  });
+
+  const refreshCard = (): void => {
+    const record = options.records.find((entry) => entry.id === select.value);
+    card.replaceChildren();
+    if (!record) {
+      card.dataset.empty = "true";
+      card.append(
+        initialBadge("?"),
+        el("span", { class: "record-picker-card-name empty", text: `(${options.placeholder})` })
+      );
+      return;
+    }
+    delete card.dataset.empty;
+    const icon = options.iconOf?.(record) ?? null;
+    card.append(renderRecordIcon(icon, record.name));
+    const copy = el("span", { class: "record-picker-card-copy" });
+    copy.append(el("span", { class: "record-picker-card-name", text: record.name }));
+    const subtitle = options.subtitleOf?.(record);
+    if (subtitle) copy.append(el("span", { class: "record-picker-card-subtitle", text: subtitle }));
+    card.append(copy);
+  };
+  refreshCard();
+
+  select.addEventListener("change", () => {
+    refreshCard();
+    options.onChange?.(select.value);
+  });
+
+  const root = el("span", { class: "record-picker" });
+  root.append(select, card);
+  return { root, select, refreshCard };
+}
+
+// 단순 이미지 아이콘 리졸버(아이템/장비 iconResourceId 등).
+export function imageIconOf(project: Pick<Project, "assets">, resourceId: string | undefined): RecordPickerIcon | null {
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  return url === null ? null : { kind: "image", url };
+}
+
+// 페이스셋 첫 칸(얼굴 1)을 24px 로 잘라 쓰는 아이콘 리졸버(액터용).
+export function facesetIconOf(project: Pick<Project, "assets">, resourceId: string | undefined): RecordPickerIcon | null {
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  if (url === null) return null;
+  const slicing = RESOURCE_SLICING.faceset;
+  return {
+    kind: "sheet",
+    url,
+    cellWidth: slicing.cellWidth,
+    cellHeight: slicing.cellHeight,
+    columns: slicing.columns,
+    index: 0,
+    sheetWidth: slicing.sheetWidth,
+    sheetHeight: slicing.sheetHeight,
+  };
+}
+
+export function recordIconElement(icon: RecordPickerIcon | null, name: string): HTMLElement {
+  return renderRecordIcon(icon, name);
+}
+
+function renderRecordIcon(icon: RecordPickerIcon | null, name: string): HTMLElement {
+  if (icon === null) return initialBadge(name);
+  if (icon.kind === "image") {
+    return el("img", {
+      class: "rich-record-icon",
+      attrs: { src: icon.url, alt: "", width: String(RICH_ICON_SIZE), height: String(RICH_ICON_SIZE) },
+    });
+  }
+  // 시트 크롭: 24px 로 축소한 background 포지셔닝.
+  const scale = RICH_ICON_SIZE / icon.cellWidth;
+  const col = icon.index % icon.columns;
+  const row = Math.floor(icon.index / icon.columns);
+  const crop = el("span", {
+    class: "rich-record-icon-crop",
+    attrs: { role: "img", "aria-label": `${name} 아이콘` },
+  });
+  crop.style.setProperty("background-image", `url("${icon.url}")`);
+  crop.style.setProperty("background-size", `${icon.sheetWidth * scale}px ${icon.sheetHeight * scale}px`);
+  crop.style.setProperty(
+    "background-position",
+    `-${col * icon.cellWidth * scale}px -${row * icon.cellHeight * scale}px`
+  );
+  return crop;
+}
+
+// 아이콘이 없을 때 쓰는 이니셜 플레이스홀더(--bg-inset 원형).
+export function initialBadge(name: string): HTMLElement {
+  const initial = Array.from(name.trim())[0] ?? "?";
+  return el("span", { class: "rich-record-initial", text: initial, attrs: { "aria-hidden": "true" } });
+}
+
+export type SegmentOption<T extends string> = {
+  readonly value: T;
+  readonly label: string;
+  // testid 안전 키(예: "=" → "set").
+  readonly key: string;
+};
+
+export type SegmentedSelectHandle = {
+  readonly root: HTMLElement;
+  readonly select: HTMLSelectElement;
+};
+
+// 세그먼트 버튼 + 숨김 네이티브 select.
+// select 는 opacity 0 이지만 크기를 유지해 Playwright selectOption/actionability 를 통과하고,
+// selectOption → change 이벤트 시 세그먼트 하이라이트도 동기화된다.
+export function segmentedSelect<T extends string>(options: {
+  readonly options: readonly SegmentOption<T>[];
+  readonly value: T;
+  readonly testid: string;
+  readonly ariaLabel?: string;
+}): SegmentedSelectHandle {
+  const select = el("select", {
+    class: "rich-native-select",
+    dataset: { testid: options.testid },
+    attrs: options.ariaLabel ? { "aria-label": options.ariaLabel } : {},
+  }) as HTMLSelectElement;
+  for (const option of options.options) {
+    select.append(el("option", { text: option.label, attrs: { value: option.value } }));
+  }
+  select.value = options.value;
+
+  const root = el("span", { class: "rich-segment-group", attrs: { role: "group" } });
+  const buttons = new Map<string, HTMLButtonElement>();
+  for (const option of options.options) {
+    const button = el("button", {
+      class: "rich-segment",
+      text: option.label,
+      attrs: { type: "button", "aria-pressed": "false" },
+      dataset: { testid: `${options.testid}-segment-${option.key}` },
+      on: {
+        click: () => {
+          if (select.value === option.value) return;
+          select.value = option.value;
+          // 기존 폼 로직(select change 리스너)을 그대로 태운다.
+          select.dispatchEvent(new Event("change"));
+        },
+      },
+    }) as HTMLButtonElement;
+    buttons.set(option.value, button);
+    root.append(button);
+  }
+  const syncSelected = (): void => {
+    for (const [value, button] of buttons) {
+      const selected = value === select.value;
+      // (fakeDom 호환) classList.toggle 대신 add/remove 사용.
+      if (selected) button.classList.add("selected");
+      else button.classList.remove("selected");
+      button.setAttribute("aria-pressed", String(selected));
+    }
+  };
+  syncSelected();
+  select.addEventListener("change", syncSelected);
+  root.append(select);
+  return { root, select };
+}
+
+// 수량 스테퍼: [−] [input] [+]. 인풋 자체(testid)는 호출자가 만든 것을 그대로 감싼다.
+export function amountStepper(input: HTMLInputElement, options: { readonly testidBase: string; readonly min?: number }): HTMLElement {
+  const min = options.min ?? 0;
+  const step = (delta: number): void => {
+    const current = Number.parseInt(input.value, 10);
+    const next = Math.max(min, (Number.isFinite(current) ? current : 0) + delta);
+    input.value = String(next);
+    // 기존 change 파이프라인(replaceCommand)을 그대로 태운다.
+    input.dispatchEvent(new Event("change"));
+  };
+  const minus = el("button", {
+    class: "rich-stepper-button",
+    text: "−",
+    attrs: { type: "button", "aria-label": "감소" },
+    dataset: { testid: `${options.testidBase}-minus` },
+    on: { click: () => step(-1) },
+  });
+  const plus = el("button", {
+    class: "rich-stepper-button",
+    text: "+",
+    attrs: { type: "button", "aria-label": "증가" },
+    dataset: { testid: `${options.testidBase}-plus` },
+    on: { click: () => step(1) },
+  });
+  const root = el("span", { class: "rich-stepper" });
+  root.append(minus, input, plus);
+  return root;
+}
+
+// 런타임(session.ts changeGold/changeItem)과 동일한 규칙으로 실행 후 값을 미리 계산.
+export function previewAmountAfter(current: number, op: "=" | "+=" | "-=", amount: number): number {
+  switch (op) {
+    case "=":
+      return Math.max(0, amount);
+    case "+=":
+      return Math.max(0, current + amount);
+    case "-=":
+      return Math.max(0, current - amount);
+  }
+}
+
+// 전/후 프리뷰 스트립 골격. body 는 호출자가 라이브로 갈아끼운다.
+export function previewStrip(testid: string, caption: string): { root: HTMLElement; body: HTMLElement } {
+  const body = el("span", { class: "rich-preview-body" });
+  const root = el("span", { class: "rich-preview-strip", dataset: { testid } });
+  root.append(body, el("span", { class: "rich-preview-caption", text: caption }));
+  return { root, body };
+}
+
+// 연산(= / + / −) 세그먼트 공용 옵션.
+export const AMOUNT_OP_SEGMENTS = [
+  { value: "=", label: "＝ 대입", key: "set" },
+  { value: "+=", label: "＋ 증가", key: "inc" },
+  { value: "-=", label: "− 감소", key: "dec" },
+] as const satisfies readonly SegmentOption<"=" | "+=" | "-=">[];

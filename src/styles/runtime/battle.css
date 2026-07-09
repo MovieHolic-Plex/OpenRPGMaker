@@ -23,11 +23,6 @@
   width: 100%;
 }
 
-.player-layout.system-shell .play-stage:has(.battle-scene) {
-  height: min(calc(100% / var(--play-scale)), 240px);
-  width: min(calc(100% / var(--play-scale)), 427px);
-}
-
 .player-layout.system-shell .title-screen {
   height: 100%;
   min-height: 0;
@@ -46,8 +41,8 @@
   border-radius: 0;
   background: #000;
   color: var(--rm2k3-battle-text);
-  font-family: "MS Gothic", "MS PGothic", "Gulim", "Dotum", monospace;
-  font-size: 8px;
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-9);
   line-height: 1.25;
   overflow: hidden;
   position: absolute;
@@ -153,11 +148,14 @@
 .battle-enemy-list-panel,
 .battle-message-window,
 .battle-result-panel {
-  border: 1px solid var(--rm2k3-battle-window-light);
-  border-right-color: var(--rm2k3-battle-window-shadow);
-  border-bottom-color: var(--rm2k3-battle-window-shadow);
-  background: linear-gradient(180deg, var(--rm2k3-battle-blue-hi), var(--rm2k3-battle-blue) 46%, var(--rm2k3-battle-blue-deep));
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.35);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .battle-party {
@@ -627,8 +625,8 @@
   --battle-hud-height: 34%;
   background: #000;
   display: grid;
-  font-family: "Galmuri11", "D2Coding", "Malgun Gothic", "Gulim", sans-serif;
-  font-size: clamp(13px, 1.15vw, 18px);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-11);
   gap: 8px;
   grid-template-columns: minmax(280px, 30%) minmax(520px, 1fr) minmax(300px, 28%);
   grid-template-rows: 92px minmax(0, 1fr) minmax(250px, 34%);
@@ -948,11 +946,14 @@
 .battle-enemy-list-panel,
 .battle-message-window,
 .battle-result-panel {
-  background: linear-gradient(180deg, var(--battle-panel-hi), var(--battle-panel-mid) 45%, var(--battle-panel-low));
-  border: 2px solid var(--battle-metal);
-  border-bottom-color: #4c5d79;
-  border-right-color: #34435c;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 18px rgba(0, 0, 0, 0.45);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .battle-command-panel {
@@ -2061,7 +2062,7 @@
 }
 
 .battle-scene {
-  font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", "Galmuri11", "D2Coding", sans-serif;
+  font-family: var(--runtime-pixel-font);
 }
 
 .battle-command-panel {
@@ -2764,4 +2765,32 @@
 .battle-result-next-prompt {
   font-size: 4px !important;
   line-height: 1 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   상태 스타일 정돈 (UI 폴리시) — RM2K3 골드/블루 감성은 유지하고,
+   키보드 포커스 가시성과 확인 버튼 hover/focus 상태만 토큰으로 일관화한다.
+   레이아웃 속성(display/inset/grid)은 건드리지 않는다.
+   ------------------------------------------------------------------------ */
+.battle-command:focus-visible,
+.battle-enemy-list-row:focus-visible,
+.battle-result-confirm:focus-visible {
+  box-shadow: var(--focus-ring, 0 0 0 2px rgba(108, 121, 242, 0.55));
+  outline: 0;
+}
+
+.battle-result-confirm {
+  cursor: pointer;
+  transition: background var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease);
+}
+
+.battle-result-confirm:hover,
+.battle-result-confirm:focus-visible {
+  background: linear-gradient(180deg, var(--battle-panel-hi, #123b82), var(--battle-panel-low, #020a1d));
+  border-color: var(--battle-gold, #ffd866);
+}
+
+.battle-command,
+.battle-enemy-list-row {
+  cursor: pointer;
 }

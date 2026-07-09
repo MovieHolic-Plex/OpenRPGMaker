@@ -1,3 +1,5 @@
+import { loadAiConfig } from "@/ai/llmClient";
+
 export type CpenTilesetRequest = {
   readonly prompt: string;
   readonly imageDataUrl: string;
@@ -11,8 +13,9 @@ type ChatCompletionResponse = {
   }[];
 };
 
-const DEFAULT_LLM_API_URL = "https://yunwu.ai/v1";
-const DEFAULT_LLM_MODEL = "gemini-3.5-flash";
+// CPEN 타일셋 매핑은 감독 모델 설정을 재사용하고, 아래 값은 폴백일 뿐이다.
+const DEFAULT_LLM_API_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_LLM_MODEL = "minimax/minimax-m3";
 const MAX_INPUT_PER_1M = 0.1;
 const MAX_OUTPUT_TOKENS = 8192;
 const LOCAL_STORAGE_KEY = "rpg-zzu.llmApiKey";
@@ -20,13 +23,16 @@ const JSON_ONLY_SYSTEM_PROMPT =
   "Return exactly one JSON object for the requested tileset metadata. Do not quote the schema, do not include markdown, prose, code fences, or hidden reasoning. If uncertain, fill minimumQuestions and keep fields conservative.";
 
 export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Promise<string> {
-  const apiKey = readApiKey();
+  const mainConfig = loadAiConfig();
+  const apiKey = mainConfig.apiKey?.trim() || readApiKey();
   if (!apiKey) return "AI 설정이 아직 연결되지 않았습니다. 로컬 설정을 확인해 주세요.";
+  const baseUrl = (mainConfig.baseUrl?.trim() || readApiUrl()).replace(/\/$/, "");
+  const model = mainConfig.model?.trim() || DEFAULT_LLM_MODEL;
 
   try {
-    const response = await fetchWithTimeout(`${readApiUrl()}/chat/completions`, {
+    const response = await fetchWithTimeout(`${baseUrl}/chat/completions`, {
       body: JSON.stringify({
-        model: DEFAULT_LLM_MODEL,
+        model,
         messages: [
           {
             role: "system",

@@ -58,6 +58,48 @@ function mkSession(): PlaySessionLike {
   };
 }
 
+describe("M2 interpreter control flow commands", () => {
+  it("End Event Processing terminates the whole call stack", () => {
+    const session = mkSession();
+    session.commonEvents = [
+      {
+        id: "common_end",
+        commands: [m2Command("End Event Processing"), { kind: "setSwitch", switchId: "after_end", value: true }],
+      },
+    ];
+    const interpreter = createInterpreter(
+      [
+        { kind: "callCommonEvent", commonEventId: "common_end" },
+        { kind: "setSwitch", switchId: "root_after", value: true },
+      ],
+      session
+    );
+
+    expect(interpreter.start()).toEqual({ kind: "done" });
+    expect(session.switches.after_end).toBeUndefined();
+    expect(session.switches.root_after).toBeUndefined();
+  });
+
+  it("Erase Event, Wait for All Movement, and Stop All Movement produce runtime steps", () => {
+    const session = mkSession();
+    const interpreter = createInterpreter(
+      [
+        m2Command("Erase Event"),
+        m2Command("Wait for All Movement"),
+        m2Command("Stop All Movement"),
+      ],
+      session,
+      undefined,
+      { currentEventId: "ev1" }
+    );
+
+    expect(interpreter.start()).toEqual({ kind: "eraseEvent", eventId: "ev1" });
+    expect(interpreter.resume()).toEqual({ kind: "waitForAllMovement" });
+    expect(interpreter.resume()).toEqual({ kind: "stopAllMovement" });
+    expect(interpreter.resume()).toEqual({ kind: "done" });
+  });
+});
+
 function mkM2Session(): M2RuntimeTestSession {
   return {
     ...mkSession(),
@@ -173,7 +215,13 @@ function drain(
       r.kind === "gameOver" ||
       r.kind === "returnToTitle" ||
       r.kind === "flashScreen" ||
-      r.kind === "shakeScreen"
+      r.kind === "shakeScreen" ||
+      r.kind === "scrollMap" ||
+      r.kind === "cameraControl" ||
+      r.kind === "setWeather" ||
+      r.kind === "showAnimation" ||
+      r.kind === "spawnEvent" ||
+      r.kind === "removeEvent"
     ) {
       r = it.resume(undefined);
     } else {
@@ -609,7 +657,7 @@ describe("label / gotoLabel — 루프", () => {
         r = it.resume(undefined);
       } else if (r.kind === "choices") {
         r = it.resume(0);
-      } else if (r.kind === "wait" || r.kind === "inputWait" || r.kind === "timer" || r.kind === "changeTile" || r.kind === "moveEvent") {
+      } else if (r.kind === "wait" || r.kind === "inputWait" || r.kind === "timer" || r.kind === "changeTile" || r.kind === "moveEvent" || r.kind === "setEventGraphicPattern") {
         r = it.resume(undefined);
       } else if (r.kind === "transfer") {
         r = it.resume(undefined);
@@ -620,7 +668,7 @@ describe("label / gotoLabel — 루프", () => {
   });
 });
 
-describe("changeTile / moveEvent — 요청 반환", () => {
+describe("changeTile / moveEvent / setEventGraphicPattern — 요청 반환", () => {
   it("changeTile은 요청을 반환하고 resume 후 계속", () => {
     const cmds: Command[] = [
       { kind: "changeTile", mapId: "m1", layer: "lower", x: 1, y: 2, tile: 5 },
@@ -643,6 +691,18 @@ describe("changeTile / moveEvent — 요청 반환", () => {
     const it = createInterpreter(cmds, mkSession());
     const r = it.start();
     expect(r.kind).toBe("moveEvent");
+  });
+
+  it("setEventGraphicPattern은 프레임 변경 요청을 반환하고 resume 후 계속한다", () => {
+    const cmds: Command[] = [
+      { kind: "setEventGraphicPattern", eventId: "ev_door", pattern: 14 },
+      { kind: "text", body: "열림" },
+    ];
+    const it = createInterpreter(cmds, mkSession());
+    let r = it.start();
+    expect(r).toEqual({ kind: "setEventGraphicPattern", eventId: "ev_door", pattern: 14 });
+    r = it.resume(undefined);
+    expect(expectTextResult(r).body).toBe("열림");
   });
 });
 
@@ -805,6 +865,8 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.screen).toMatchObject({ tint: "warm", shake: 30, weather: "rain" });
     expect(session.m2Runtime?.access).toMatchObject({ save: false, menu: false });
     expect(session.m2Runtime?.actors?.actor_hero).toMatchObject({ name: "Alex", parameters: 3, states: ["poison"] });
+    expect(session.actorParamBonuses?.actor_hero).toEqual({ maxHp: 3 });
+    expect(session.actorStateIds?.actor_hero).toEqual(["poison"]);
     expect(session.variables.player_map).toBe(0);
     expect(session.variables.player_x).toBe(4);
     expect(session.variables.player_y).toBe(5);
@@ -812,6 +874,55 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.audio).toMatchObject({ memorizedBgm: "field-theme", playedMemorizedBgm: "field-theme" });
     expect(session.audio.bgm).toEqual({ resourceId: "field-theme", loop: true });
     expect(session.m2Runtime?.fallbacks?.some((entry) => entry.commandId.includes("break-loop"))).toBe(true);
+  });
+
+  it("applies M2 damage processing and actor graphic changes to live session actor state", () => {
+    const session = mkM2Session();
+    session.partyActorIds = ["actor_hero"];
+    session.actorVitals.actor_hero = { hp: 40, mp: 8, maxHp: 50, maxMp: 10 };
+    const commands: Command[] = [
+      m2Command("Damage Processing", { target: "actor_hero", operation: "add", value: 12 }),
+      m2Command("Change Actor Graphic", { target: "actor_hero", value: "easyrpg-charset-actor2" }),
+    ];
+
+    drain(createInterpreter(commands, session));
+
+    expect(session.actorVitals.actor_hero?.hp).toBe(28);
+    expect(session.actorCharacterResourceIds?.actor_hero).toBe("easyrpg-charset-actor2");
+    expect(session.m2Runtime?.actors?.actor_hero).toMatchObject({ damage: 12, characterGraphic: "easyrpg-charset-actor2" });
+  });
+
+  it("emits a blocking scrollMap step with direction, return, and lock options", () => {
+    const session = mkM2Session();
+    const interpreter = createInterpreter([
+      m2Command("Scroll Map", { direction: "right", distance: 3, durationMs: 450, wait: true, mode: "return", lock: true }),
+    ], session);
+
+    expect(interpreter.start()).toEqual({
+      kind: "scrollMap",
+      direction: "right",
+      distanceTiles: 3,
+      durationMs: 450,
+      wait: true,
+      returnToPlayer: true,
+      lock: true,
+    });
+  });
+
+  it("emits a cameraControl step with pan target and wait options", () => {
+    const session = mkM2Session();
+    const interpreter = createInterpreter([
+      modernM2Command("Camera Control", { mode: "panTo", target: "screen", x: 10, y: 12, durationMs: 450, wait: true }),
+    ], session);
+
+    expect(interpreter.start()).toMatchObject({
+      kind: "cameraControl",
+      mode: "pan",
+      target: { kind: "position", x: 10, y: 12 },
+      durationMs: 450,
+      wait: true,
+      returnToPlayer: false,
+    });
   });
 
   it("records modern event commands into explicit runtime buckets without unsafe script execution", () => {

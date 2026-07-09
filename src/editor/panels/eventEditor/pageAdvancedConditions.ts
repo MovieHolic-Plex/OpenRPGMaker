@@ -1,6 +1,18 @@
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
-import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, SELF_SWITCH_KEY_OPTIONS } from "./options";
+import {
+  renderActorCondition,
+  renderFriendshipAtLeastCondition,
+  renderGoldCondition,
+  renderItemCondition,
+  renderNpcActivityCondition,
+  renderSeasonCondition,
+  renderSelfSwitchCondition,
+  renderSwitchCondition,
+  renderTimePhaseCondition,
+  renderTimerCondition,
+  renderVariableCondition,
+} from "./conditionForm";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
 import {
   advancedConditionEntries,
@@ -21,6 +33,10 @@ const ADVANCED_CONDITION_OPTIONS = [
   { value: "actor", label: "주인공" },
   { value: "gold", label: "소지금" },
   { value: "timer", label: "타이머" },
+  { value: "timePhase", label: "시간대" },
+  { value: "season", label: "계절" },
+  { value: "npcActivity", label: "활동" },
+  { value: "friendshipAtLeast", label: "호감도" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {
@@ -95,174 +111,97 @@ function renderAdvancedConditionContent(
 ): HTMLElement {
   switch (condition.kind) {
     case "switch":
-      return switchConditionControl(context, index, condition, listIndex);
+      return renderSwitchCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control",
+        showValue: false,
+        forceTrueOnSwitchChange: true,
+        picker: (currentId, onChange) => switchVariableIdPicker({
+          kind: "switch",
+          currentId,
+          inputTestId: `event-page-advanced-condition-switch-${listIndex}`,
+          pickerTestId: `event-page-advanced-condition-switch-picker-${listIndex}`,
+          onChange,
+        }),
+      });
     case "variable":
-      return variableConditionControl(context, index, condition, listIndex);
+      return renderVariableCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control variable",
+        opTestId: `event-page-advanced-condition-variable-op-${listIndex}`,
+        valueTestId: `event-page-advanced-condition-variable-value-${listIndex}`,
+        picker: (currentId, onChange) => switchVariableIdPicker({
+          kind: "variable",
+          currentId,
+          inputTestId: `event-page-advanced-condition-variable-${listIndex}`,
+          pickerTestId: `event-page-advanced-condition-variable-picker-${listIndex}`,
+          onChange,
+        }),
+      });
     case "selfSwitch":
-      return selfSwitchConditionControl(context, index, condition, listIndex);
+      return renderSelfSwitchCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control self-switch",
+        keyTestId: `event-page-advanced-condition-self-switch-key-${listIndex}`,
+        valueTestId: `event-page-advanced-condition-self-switch-value-${listIndex}`,
+      });
     case "item":
-      return recordConditionControl(context, index, condition, listIndex);
+      return renderItemCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control record",
+        showPresent: false,
+        forcePresentOnItemChange: true,
+        picker: (currentId, onChange) => databaseRecordSelect({
+          kind: "item",
+          currentId,
+          testId: `event-page-advanced-condition-item-${listIndex}`,
+          onChange,
+        }),
+      });
     case "actor":
-      return recordConditionControl(context, index, condition, listIndex);
+      return renderActorCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control record",
+        showPresent: false,
+        forcePresentOnActorChange: true,
+        picker: (currentId, onChange) => databaseRecordSelect({
+          kind: "actor",
+          currentId,
+          testId: `event-page-advanced-condition-actor-${listIndex}`,
+          onChange,
+        }),
+      });
     case "gold":
-      return goldConditionControl(context, index, condition, listIndex);
+      return renderGoldCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control gold",
+        opTestId: `event-page-advanced-condition-gold-op-${listIndex}`,
+        amountTestId: `event-page-advanced-condition-gold-amount-${listIndex}`,
+      });
     case "timer":
-      return timerConditionControl(context, index, condition, listIndex);
+      return renderTimerCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control timer",
+        minutesSeconds: true,
+        timerIdTestId: `event-page-advanced-condition-timer-id-${listIndex}`,
+        minutesTestId: `event-page-advanced-condition-timer-minutes-${listIndex}`,
+        secondsTestId: `event-page-advanced-condition-timer-seconds-${listIndex}`,
+      });
+    case "timePhase":
+      return renderTimePhaseCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control time-phase",
+        phaseTestId: `event-page-advanced-condition-time-phase-${listIndex}`,
+      });
+    case "season":
+      return renderSeasonCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control season",
+        seasonTestId: `event-page-advanced-condition-season-${listIndex}`,
+      });
+    case "npcActivity":
+      return renderNpcActivityCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control npc-activity",
+        activityTestId: `event-page-advanced-condition-npc-activity-${listIndex}`,
+      });
+    case "friendshipAtLeast":
+      return renderFriendshipAtLeastCondition(condition, (next) => replaceConditionAt(context, index, next), {
+        className: "event-advanced-condition-control friendship",
+        npcKeyTestId: `event-page-advanced-condition-friendship-npc-key-${listIndex}`,
+        valueTestId: `event-page-advanced-condition-friendship-value-${listIndex}`,
+      });
   }
-}
-
-function switchConditionControl(
-  context: PageConditionContext,
-  index: number,
-  condition: Extract<EventPageCondition, { kind: "switch" }>,
-  listIndex: number
-): HTMLElement {
-  const picker = switchVariableIdPicker({
-    kind: "switch",
-    currentId: condition.switchId,
-    inputTestId: `event-page-advanced-condition-switch-${listIndex}`,
-    pickerTestId: `event-page-advanced-condition-switch-picker-${listIndex}`,
-    onChange: (switchId) => replaceConditionAt(context, index, { ...condition, switchId, value: true }),
-  });
-  return el("div", { class: "event-advanced-condition-control", children: [picker] });
-}
-
-function variableConditionControl(
-  context: PageConditionContext,
-  index: number,
-  condition: Extract<EventPageCondition, { kind: "variable" }>,
-  listIndex: number
-): HTMLElement {
-  let currentVariableId = condition.variableId;
-  const op = selectWithOptions(CONDITION_OP_OPTIONS, condition.op, `event-page-advanced-condition-variable-op-${listIndex}`);
-  const value = el("input", {
-    attrs: { type: "number" },
-    value: String(condition.value),
-    dataset: { testid: `event-page-advanced-condition-variable-value-${listIndex}` },
-  }) as HTMLInputElement;
-  const apply = () => replaceConditionAt(context, index, {
-    kind: "variable",
-    variableId: currentVariableId,
-    op: selectedOptionValue(op, CONDITION_OP_OPTIONS, condition.op),
-    value: parseInt(value.value, 10) || 0,
-  });
-  op.addEventListener("change", apply);
-  value.addEventListener("change", apply);
-  const picker = switchVariableIdPicker({
-    kind: "variable",
-    currentId: currentVariableId,
-    inputTestId: `event-page-advanced-condition-variable-${listIndex}`,
-    pickerTestId: `event-page-advanced-condition-variable-picker-${listIndex}`,
-    onChange: (variableId) => {
-      currentVariableId = variableId;
-      apply();
-    },
-  });
-  return el("div", { class: "event-advanced-condition-control variable", children: [picker, op, value] });
-}
-
-function recordConditionControl(
-  context: PageConditionContext,
-  index: number,
-  condition: Extract<EventPageCondition, { kind: "item" | "actor" }>,
-  listIndex: number
-): HTMLElement {
-  const select = databaseRecordSelect({
-    kind: condition.kind,
-    currentId: condition.kind === "item" ? condition.itemId : condition.actorId,
-    testId: `event-page-advanced-condition-${condition.kind}-${listIndex}`,
-    onChange: (id) => replaceConditionAt(context, index, condition.kind === "item"
-      ? { ...condition, itemId: id, present: true }
-      : { ...condition, actorId: id, present: true }),
-  });
-  return el("div", { class: "event-advanced-condition-control record", children: [select] });
-}
-
-function timerConditionControl(
-  context: PageConditionContext,
-  index: number,
-  condition: Extract<EventPageCondition, { kind: "timer" }>,
-  listIndex: number
-): HTMLElement {
-  const timerId = selectWithOptions(
-    [{ value: "timer1", label: "타이머 1" }, { value: "timer2", label: "타이머 2" }],
-    condition.timerId,
-    `event-page-advanced-condition-timer-id-${listIndex}`
-  );
-  const minutes = el("input", {
-    attrs: { type: "number", min: "0" },
-    value: String(Math.floor(condition.seconds / 60)),
-    dataset: { testid: `event-page-advanced-condition-timer-minutes-${listIndex}` },
-  }) as HTMLInputElement;
-  const seconds = el("input", {
-    attrs: { type: "number", min: "0", max: "59" },
-    value: String(condition.seconds % 60),
-    dataset: { testid: `event-page-advanced-condition-timer-seconds-${listIndex}` },
-  }) as HTMLInputElement;
-  const apply = () => replaceConditionAt(context, index, {
-    kind: "timer",
-    timerId: selectedOptionValue(timerId, [{ value: "timer1", label: "타이머 1" }, { value: "timer2", label: "타이머 2" }], condition.timerId),
-    seconds: (parseInt(minutes.value, 10) || 0) * 60 + (parseInt(seconds.value, 10) || 0),
-  });
-  timerId.addEventListener("change", apply);
-  minutes.addEventListener("change", apply);
-  seconds.addEventListener("change", apply);
-  return el("div", {
-    class: "event-advanced-condition-control timer",
-    children: [timerId, minutes, el("span", { text: "분" }), seconds, el("span", { text: "초 이하" })],
-  });
-}
-
-function selfSwitchConditionControl(
-  context: PageConditionContext,
-  index: number,
-  condition: Extract<EventPageCondition, { kind: "selfSwitch" }>,
-  listIndex: number
-): HTMLElement {
-  const key = selectWithOptions(
-    SELF_SWITCH_KEY_OPTIONS,
-    condition.key,
-    `event-page-advanced-condition-self-switch-key-${listIndex}`
-  );
-  const val = selectWithOptions(
-    BOOLEAN_OPTIONS,
-    String(condition.value),
-    `event-page-advanced-condition-self-switch-value-${listIndex}`
-  );
-  const apply = () => replaceConditionAt(context, index, {
-    kind: "selfSwitch",
-    key: selectedOptionValue(key, SELF_SWITCH_KEY_OPTIONS, condition.key),
-    value: val.value === "true",
-  });
-  key.addEventListener("change", apply);
-  val.addEventListener("change", apply);
-  return el("div", { class: "event-advanced-condition-control self-switch", children: [key, val] });
-}
-
-function goldConditionControl(
-  context: PageConditionContext,
-  index: number,
-  condition: Extract<EventPageCondition, { kind: "gold" }>,
-  listIndex: number
-): HTMLElement {
-  const op = selectWithOptions(
-    CONDITION_OP_OPTIONS,
-    condition.op,
-    `event-page-advanced-condition-gold-op-${listIndex}`
-  );
-  const amount = el("input", {
-    attrs: { type: "number", min: "0" },
-    value: String(condition.amount),
-    dataset: { testid: `event-page-advanced-condition-gold-amount-${listIndex}` },
-  }) as HTMLInputElement;
-  const apply = () => replaceConditionAt(context, index, {
-    kind: "gold",
-    op: selectedOptionValue(op, CONDITION_OP_OPTIONS, condition.op),
-    amount: parseInt(amount.value, 10) || 0,
-  });
-  op.addEventListener("change", apply);
-  amount.addEventListener("change", apply);
-  return el("div", { class: "event-advanced-condition-control gold", children: [op, amount] });
 }
 
 function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageCondition {
@@ -281,5 +220,13 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "gold", op: ">=", amount: 0 };
     case "timer":
       return { kind: "timer", timerId: "timer1", seconds: 0 };
+    case "timePhase":
+      return { kind: "timePhase", phase: "day" };
+    case "season":
+      return { kind: "season", season: "spring" };
+    case "npcActivity":
+      return { kind: "npcActivity", activity: "work" };
+    case "friendshipAtLeast":
+      return { kind: "friendshipAtLeast", value: 100 };
   }
 }

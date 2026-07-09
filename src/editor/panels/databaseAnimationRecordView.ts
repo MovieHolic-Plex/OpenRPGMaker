@@ -29,6 +29,8 @@ type AnimationEditorContext = {
   readonly timings: readonly BattleAnimationTiming[];
   readonly project: ReturnType<typeof store.getCurrent>;
   readonly rerender: () => void;
+  readonly duplicateLastFrame: () => void;
+  readonly updateSelectedFrameCells: (cells: readonly BattleAnimationCell[]) => void;
 };
 
 export function renderBattleAnimationRecordForm(form: HTMLElement, animation: BattleAnimationRecord): HTMLElement {
@@ -44,7 +46,21 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
     const next = store.getCurrent().database.battleAnimations.find((entry) => entry.id === animation.id) ?? animation;
     renderBattleAnimationRecordForm(form, next);
   };
-  const context: AnimationEditorContext = { animation, sheet, frames, selectedFrameIndex, selectedFrame, timings, project, rerender };
+  const context: AnimationEditorContext = {
+    animation,
+    sheet,
+    frames,
+    selectedFrameIndex,
+    selectedFrame,
+    timings,
+    project,
+    rerender,
+    duplicateLastFrame: () => addAnimationFrame(animation.id, frames, rerender),
+    updateSelectedFrameCells: (cells) => {
+      updateFrameCells(animation.id, selectedFrameIndex, cells);
+      rerender();
+    },
+  };
 
   form.classList.add("animation-detail-form");
   form.append(animationEditor(context), referencePanel(animation), battlerSeparationNote(project.database.battlerAnimations?.length ?? 0));
@@ -74,7 +90,7 @@ function topFieldGrid(context: AnimationEditorContext): HTMLElement {
     textField("애니메이션 그래픽", "db-field-animation-resource", context.animation.resourceId ?? "", (value) =>
       updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(value) })
     ),
-    readonlyField("대상", "말벌"),
+    readonlyField("대상", animationReferenceTarget(context.animation)),
     maxFrameField(context),
     animationFlagsPanel(context.animation, context.sheet)
   );
@@ -374,28 +390,37 @@ function deleteAnimationFrame(id: string, frames: readonly BattleAnimationFrame[
 }
 
 // 선택 프레임의 셀 배열을 통째로 교체.
-function updateFrameCells(id: string, frameIndex: number, cells: BattleAnimationCell[]): void {
+function updateFrameCells(id: string, frameIndex: number, cells: readonly BattleAnimationCell[]): void {
   const record = store.getCurrent().database.battleAnimations.find((a) => a.id === id);
   if (!record) return;
   const frames = normalizedFrames(record.frames);
-  frames[frameIndex] = { cells: cells.length > 0 ? cells : [{ ...DEFAULT_CELL }] };
+  frames[frameIndex] = { cells: cells.length > 0 ? cloneAnimationCells(cells) : [{ ...DEFAULT_CELL }] };
   updateDatabaseRecord("battleAnimations", id, { frames: [...frames] });
 }
 
+export function animationReferenceTarget(animation: BattleAnimationRecord, database = store.getCurrent().database): string {
+  const reference = animationReferences(animation, database)[0];
+  return reference ? reference.name || reference.id : "(참조 없음)";
+}
+
 function referencePanel(animation: BattleAnimationRecord): HTMLElement {
-  const database = store.getCurrent().database;
-  const referencingSkills = database.skills.filter((skill) => skill.animationId === animation.id);
-  const referencingItems = database.items.filter((item) => item.animationId === animation.id);
+  const references = animationReferences(animation, store.getCurrent().database);
   const panel = panelWrap("참조", "db-animation-references");
 
-  if (referencingSkills.length === 0 && referencingItems.length === 0) {
+  if (references.length === 0) {
     panel.append(el("div", { class: "empty-hint", text: "이 효과 애니메이션을 참조하는 스킬 또는 아이템이 없습니다." }));
     return panel;
   }
 
-  for (const skill of referencingSkills) panel.append(el("div", { class: "db-ref-row", text: `스킬: ${skill.name} (${skill.id})` }));
-  for (const item of referencingItems) panel.append(el("div", { class: "db-ref-row", text: `아이템: ${item.name} (${item.id})` }));
+  for (const reference of references) panel.append(el("div", { class: "db-ref-row", text: `${reference.kind}: ${reference.name} (${reference.id})` }));
   return panel;
+}
+
+function animationReferences(animation: BattleAnimationRecord, database: ReturnType<typeof store.getCurrent>["database"]): readonly { readonly kind: "스킬" | "아이템"; readonly id: string; readonly name: string }[] {
+  return [
+    ...database.skills.filter((skill) => skill.animationId === animation.id).map((skill) => ({ kind: "스킬" as const, id: skill.id, name: skill.name })),
+    ...database.items.filter((item) => item.animationId === animation.id).map((item) => ({ kind: "아이템" as const, id: item.id, name: item.name })),
+  ];
 }
 
 function battlerSeparationNote(count: number): HTMLElement {
@@ -424,7 +449,11 @@ function dataTable(headers: readonly string[]): HTMLElement {
 }
 
 function normalizedFrames(frames: readonly BattleAnimationFrame[] | undefined): BattleAnimationFrame[] {
-  return frames && frames.length > 0 ? frames.map((f) => ({ cells: f.cells.map((c) => ({ ...c })) })) : [{ cells: [{ ...DEFAULT_CELL }] }];
+  return frames && frames.length > 0 ? frames.map((f) => ({ cells: cloneAnimationCells(f.cells) })) : [{ cells: [{ ...DEFAULT_CELL }] }];
+}
+
+function cloneAnimationCells(cells: readonly BattleAnimationCell[]): BattleAnimationCell[] {
+  return cells.map(({ tone, ...cell }) => (tone ? { ...cell, tone: { ...tone } } : { ...cell }));
 }
 
 function clampFrameIndex(index: number, length: number): number {

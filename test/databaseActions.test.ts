@@ -192,7 +192,7 @@ describe("Database actions", () => {
         { id: "cmd_defend", name: "방어", kind: "defend" },
         { id: "cmd_item", name: "아이템", kind: "item" },
         { id: "cmd_escape", name: "도주", kind: "escape" },
-        { id: "cmd_change", name: "교체", kind: "event" },
+        { id: "cmd_change", name: "교체", kind: "switch" },
       ],
       learnedSkills: [{ level: 12, skillId }],
       stateRates: { state_death: "A", state_poison: "E" },
@@ -206,7 +206,7 @@ describe("Database actions", () => {
     expect(klass?.options).toEqual({ dualWield: true, autoBattle: true, fixedEquipment: true, mightyGuard: true });
     expect(klass?.animationId).toBe(animationId);
     expect(klass?.battleCommands).toHaveLength(6);
-    expect(klass?.battleCommands.at(-1)).toMatchObject({ id: "cmd_change", name: "교체", kind: "event" });
+    expect(klass?.battleCommands.at(-1)).toMatchObject({ id: "cmd_change", name: "교체", kind: "switch" });
     expect(klass?.learnedSkills).toEqual([{ level: 12, skillId }]);
     expect(klass?.stateRates).toMatchObject({ state_death: "A", state_poison: "E" });
     expect(klass?.elementRates).toMatchObject({ fire: "B", ice: "D" });

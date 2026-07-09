@@ -1,4 +1,5 @@
 import type { MutableBattler } from "@/battle/battleBattlers";
+import type { Rng } from "@/util/rng";
 
 export interface SkillLikeEffect {
   readonly power: number;
@@ -14,12 +15,18 @@ export interface SkillLikeEffect {
   readonly criticalMultiplier?: number;
   // 속성 상성 배율. 기본 1.0. 1.5=약점, 0.5=내성 등.
   readonly elementMultiplier?: number;
+  // 시전자 능력치 배율(공격 상승 상태 등). 기본 1.0.
+  readonly attackerStatMultiplier?: number;
+  // 대상 방어력 배율(방어 하락 상태 등). 기본 1.0.
+  readonly targetDefenseMultiplier?: number;
+  readonly rng?: Rng;
 }
 
 export type SkillApplyResult = { hit: boolean; amount: number; critical: boolean };
 
 export function applySkillLike(user: MutableBattler, target: MutableBattler, spec: SkillLikeEffect): SkillApplyResult {
-  const stat = spec.statistic === "mind" ? user.mind : user.attackPower;
+  const baseStat = spec.statistic === "mind" ? user.mind : user.attackPower;
+  const stat = Math.round(baseStat * (spec.attackerStatMultiplier ?? 1));
   if (spec.effect === "healing") {
     const result = computeMagnitude(spec.power, target, "heal", stat, spec);
     target.hp = Math.min(target.maxHp, target.hp + result.amount);
@@ -28,10 +35,15 @@ export function applySkillLike(user: MutableBattler, target: MutableBattler, spe
   if (spec.effect === "support" || spec.effect === "switch") return { hit: true, amount: 0, critical: false };
   // 명중 판정(데미지 효과만). hitRate 기본 100.
   const hitRate = spec.hitRate ?? 100;
-  if (Math.random() * 100 >= hitRate) {
+  const rng = spec.rng ?? fallbackRng;
+  if (rng() * 100 >= hitRate) {
     return { hit: false, amount: 0, critical: false };
   }
   const magnitude = computeMagnitude(spec.power, target, "damage", stat, spec);
+  if (magnitude.amount < 0) {
+    target.hp = Math.min(target.maxHp, target.hp + Math.abs(magnitude.amount));
+    return { hit: true, amount: magnitude.amount, critical: false };
+  }
   applyDamage(target, magnitude.amount);
   return { hit: true, amount: magnitude.amount, critical: magnitude.critical };
 }
@@ -48,28 +60,36 @@ function computeMagnitude(
     return { amount: applyVariance(magnitude, spec), critical: false };
   }
   // 속성 상성 배율(기본 1.0)
-  magnitude = Math.round(magnitude * (spec.elementMultiplier ?? 1));
+  const elementMultiplier = spec.elementMultiplier ?? 1;
+  magnitude = Math.round(magnitude * elementMultiplier);
+  if (elementMultiplier === 0) return { amount: 0, critical: false };
+  if (elementMultiplier < 0) return { amount: magnitude, critical: false };
   // 분산(±variance%)
   magnitude = applyVariance(magnitude, spec);
   // 크리티컬(확률×배율)
   const criticalRate = spec.criticalRate ?? 0;
-  const critical = criticalRate > 0 && Math.random() * 100 < criticalRate;
+  const critical = criticalRate > 0 && (spec.rng ?? fallbackRng)() * 100 < criticalRate;
   if (critical) {
     magnitude = Math.round(magnitude * (spec.criticalMultiplier ?? 3));
   }
-  // 방어 반감 + 대상 방어력
-  magnitude -= Math.floor(target.defense / 2);
+  // 방어 반감 + 대상 방어력(방어 하락 상태 등의 배율 반영)
+  const effectiveDefense = target.defense * (spec.targetDefenseMultiplier ?? 1);
+  magnitude -= Math.floor(effectiveDefense / 2);
   if (target.defending) magnitude = Math.floor(magnitude / 2);
-  return { amount: Math.max(1, magnitude), critical };
+  return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };
 }
 
 function applyVariance(magnitude: number, spec: SkillLikeEffect): number {
   const variance = spec.variance ?? 0;
   if (variance <= 0) return magnitude;
-  const factor = 1 + (Math.random() * 2 - 1) * (variance / 100);
+  const factor = 1 + ((spec.rng ?? fallbackRng)() * 2 - 1) * (variance / 100);
   return Math.max(1, Math.round(magnitude * factor));
 }
 
 function applyDamage(target: MutableBattler, amount: number): void {
   target.hp = Math.max(0, target.hp - amount);
+}
+
+function fallbackRng(): number {
+  return 0.5;
 }

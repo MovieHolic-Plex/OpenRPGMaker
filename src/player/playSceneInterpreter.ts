@@ -21,57 +21,200 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
+import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { applyCameraControl } from "@/player/playSceneCamera";
+import { applyLightingStep } from "@/player/playSceneLighting";
+import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { applyWeatherStep } from "@/player/playSceneWeather";
+import { runtimeEventViewsForMap, type RuntimeEventView } from "@/player/runtimeEventState";
+import {
+  CUTSCENE_END_LABEL,
+  isCutsceneSkippable,
+  releaseCutsceneControlForOwner,
+} from "@/player/cutsceneControl";
+import { isFieldSpawnEventId } from "@/player/fieldSpawns";
+import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
+import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+import { isGiftableEvent, isGiftSystemEnabled } from "@/project/friendship";
+import { playGiftSelection } from "@/player/playSceneGift";
+
+export type RunCommandsOptions = {
+  readonly allowNested?: boolean;
+};
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
-  const event = scene.map.events.find((entry) => entry.id === eventId);
-  if (!event) return;
-  const page = resolveEventPage(event, scene.session);
+  if (isFieldSpawnEventId(eventId) && await runFieldSpawnEventBattle(scene, eventId)) return;
+  const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
+    .find((entry) => entry.event.id === eventId);
+  if (!view) return;
+  const event = view.event;
+  const page = view.page ?? resolveEventPage(event, scene.session);
   if (!page && event.condition && !evalCondition(scene.session, event.condition)) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
     console.warn("[player] dialogue UI missing");
     return;
   }
-  await runCommands(scene, page?.commands ?? event.commands, eventId);
+  const commands = page?.commands ?? event.commands;
+  if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
+    const action = await showGiftMenu(scene, event, page?.name);
+    if (action === "talk") await runCommands(scene, commands, eventId);
+    if (action === "gift") await runGiftSelection(scene, event);
+    return;
+  }
+  await runCommands(scene, commands, eventId);
+}
+
+async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
+  scene.running = true;
+  scene.setInputEnabled(false);
+  try {
+    await playGiftSelection(scene, event);
+  } finally {
+    scene.running = previousRunning;
+    scene.lastActionTargetKey = "";
+    scene.setInputEnabled(previousInputEnabled);
+    dialogueUi(scene)?.hide();
+    scene.refreshRuntimeSurfaces();
+  }
+}
+
+function shouldOfferGiftMenu(event: CommandSourceEvent, page: RuntimeEventView["page"] | undefined, project: ReturnType<typeof store.getCurrent>): boolean {
+  const trigger = page?.trigger ?? event.trigger;
+  return trigger.kind === "action" && isGiftSystemEnabled(project) && isGiftableEvent(event);
+}
+
+type CommandSourceEvent = RuntimeEventView["event"];
+
+async function showGiftMenu(
+  scene: PlaySceneContext,
+  event: CommandSourceEvent,
+  speaker: string | undefined
+): Promise<"talk" | "gift" | "cancel"> {
+  const dialogue = dialogueUi(scene);
+  if (!dialogue) return "cancel";
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
+  scene.running = true;
+  scene.setInputEnabled(false);
+  try {
+    const choice = await dialogue.showChoices({
+      prompt: speaker ?? event.id,
+      options: [{ text: "대화하기" }, { text: "선물하기" }, { text: "취소" }],
+      settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+      cancelBehavior: "choice3",
+      textContext: { session: scene.session, project: store.getCurrent() },
+      playerTileY: scene.tileY,
+      mapHeight: scene.map.height,
+    });
+    if (choice === 1) return "gift";
+    if (choice === 0) return "talk";
+    return "cancel";
+  } finally {
+    scene.running = previousRunning;
+    scene.setInputEnabled(previousInputEnabled);
+  }
 }
 
 export async function runCommands(
   scene: PlaySceneContext,
   commands: readonly Command[],
-  currentEventId?: string
+  currentEventId?: string,
+  options: RunCommandsOptions = {}
 ): Promise<void> {
-  if (scene.running) return;
+  if (scene.running && options.allowNested !== true) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
     console.warn("[player] dialogue UI missing");
     return;
   }
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
   scene.setInputEnabled(false);
   const project = store.getCurrent();
   scene.session.commonEvents = project.commonEvents;
   const interpreter = createInterpreter([...commands], scene.session, project, { currentEventId });
+  const skipController = createCutsceneSkipController(scene, interpreter);
   try {
     let result = interpreter.start();
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done") {
-      result = await consumeBlockingStep(scene, interpreter, result, currentEventId);
+      result = await consumeBlockingStep(scene, interpreter, result, currentEventId, skipController);
     }
   } finally {
-    scene.running = false;
+    skipController.dispose();
+    releaseCutsceneControlForOwner(scene.session, currentEventId);
+    scene.running = options.allowNested === true ? previousRunning : false;
     scene.lastActionTargetKey = "";
-    scene.setInputEnabled(true);
+    scene.setInputEnabled(options.allowNested === true ? previousInputEnabled : true);
     dialogue.hide();
     scene.refreshRuntimeSurfaces();
   }
+}
+
+type CutsceneSkipController = {
+  dispose(): void;
+  takeResult(): StepResult | null;
+  waitForSkip(): Promise<void>;
+};
+
+function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Interpreter): CutsceneSkipController {
+  let lastEscapeAt = 0;
+  let result: StepResult | null = null;
+  let waiters: Array<() => void> = [];
+  const notify = (): void => {
+    const pending = waiters;
+    waiters = [];
+    for (const resolve of pending) resolve();
+  };
+  const requestSkip = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape" || !isCutsceneSkippable(scene.session) || result) return;
+    const now = performance.now();
+    const secondEscape = now - lastEscapeAt <= 900;
+    lastEscapeAt = now;
+    if (!secondEscape) return;
+    event.preventDefault();
+    result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
+    scene.refreshRuntimeSurfaces();
+    notify();
+  };
+  document.addEventListener("keydown", requestSkip);
+  return {
+    dispose(): void {
+      document.removeEventListener("keydown", requestSkip);
+      waiters = [];
+    },
+    takeResult(): StepResult | null {
+      const next = result;
+      result = null;
+      return next;
+    },
+    waitForSkip(): Promise<void> {
+      if (result) return Promise.resolve();
+      return new Promise((resolve) => waiters.push(resolve));
+    },
+  };
+}
+
+function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController): Promise<void> {
+  const duration = Math.max(0, Math.round(ms));
+  if (duration === 0) return Promise.resolve();
+  return Promise.race([
+    new Promise<void>((resolve) => window.setTimeout(resolve, duration)),
+    skipController.waitForSkip(),
+  ]);
 }
 
 async function consumeBlockingStep(
   scene: PlaySceneContext,
   interpreter: Interpreter,
   step: Exclude<StepResult, { kind: "done" }>,
-  currentEventId: string | undefined
+  currentEventId: string | undefined,
+  skipController: CutsceneSkipController
 ): Promise<StepResult> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
@@ -82,25 +225,36 @@ async function consumeBlockingStep(
         body: step.body,
         face: step.face,
         settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+        textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
       });
+      {
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
       return resumeAfterSurface(scene, interpreter);
     case "choices":
-      return resumeWithChoice(
-        scene,
-        interpreter,
-        await dialogue.showChoices({
+      {
+        const choice = await dialogue.showChoices({
           prompt: step.prompt,
           options: step.options,
           settings: step.settings,
           cancelBehavior: step.cancelBehavior,
+          textContext: { session: scene.session, project: store.getCurrent() },
           playerTileY: scene.tileY,
           mapHeight: scene.map.height,
-        })
-      );
+        });
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+        return resumeWithChoice(scene, interpreter, choice);
+      }
     case "wait":
-      await new Promise<void>((resolve) => window.setTimeout(resolve, step.ms));
+      await waitWithCutsceneSkip(step.ms, skipController);
+      {
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
       return resumeAfterSurface(scene, interpreter);
     case "inputWait": {
       const keyCode = await waitForKey();
@@ -133,6 +287,15 @@ async function consumeBlockingStep(
     case "timer":
       applyTimerStep(scene, step);
       return resumeAfterSurface(scene, interpreter);
+    case "advanceTime":
+      await applyAdvanceTimeStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "setTime":
+      applySetTimeStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "sleepUntilMorning":
+      await scene.sleepUntilMorning();
+      return resumeAfterSurface(scene, interpreter);
     case "transfer":
       dialogue.hide();
       await scene.transferTo(step);
@@ -140,6 +303,9 @@ async function consumeBlockingStep(
     case "changeTile":
       scene.applyChangeTileStep(step);
       return resumeAfterSurface(scene, interpreter);
+    case "setEventGraphicPattern":
+      applyEventGraphicPatternStep(scene, step, currentEventId);
+      return resumeInterpreter(interpreter);
     case "moveEvent": {
       const target = resolveMoveEventTarget(step.eventId, currentEventId);
       if (target === PLAYER_MOVE_TARGET) {
@@ -148,10 +314,20 @@ async function consumeBlockingStep(
         if (step.wait) await waitForPlayerRouteComplete(scene);
       } else {
         scene.registerAutonomousMover(target, step.moves, step.repeat);
+        scene.commandMoveRouteEventIds.add(target);
         if (step.wait) await waitForMoverComplete(scene, target);
       }
       return resumeAfterSurface(scene, interpreter);
     }
+    case "eraseEvent":
+      eraseRuntimeEvent(scene, step.eventId ?? currentEventId);
+      return resumeAfterSurface(scene, interpreter);
+    case "waitForAllMovement":
+      await waitForAllCommandMovement(scene);
+      return resumeAfterSurface(scene, interpreter);
+    case "stopAllMovement":
+      stopCommandMovement(scene);
+      return resumeAfterSurface(scene, interpreter);
     case "battleProcessing":
       scene.session.battleResult = await scene.playBattle(step);
       return resumeAfterSurface(scene, interpreter);
@@ -159,6 +335,11 @@ async function consumeBlockingStep(
       showPictureState(scene.session, step);
       scene.showRuntimeOverlay("picture-overlay", resourceDisplayName(step.resourceId, step.pictureId || step.resourceId));
       scene.syncRuntimeState();
+      if (step.waitForPicture === true) {
+        await waitWithCutsceneSkip(step.durationMs ?? 0, skipController);
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
       return resumeInterpreter(interpreter);
     case "erasePicture":
       erasePictureState(scene.session, step.pictureId);
@@ -183,13 +364,40 @@ async function consumeBlockingStep(
     case "shakeScreen":
       await scene.shakeScreen(step);
       return resumeAfterSurface(scene, interpreter);
+    case "scrollMap":
+      await scene.panScreen(step);
+      return resumeAfterSurface(scene, interpreter);
+    case "cameraControl":
+      await applyCameraControl(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "setLighting":
+      await applyLightingStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "setWeather":
+      applyWeatherStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "showAnimation": {
+      const done = playMapAnimation(scene, step, currentEventId);
+      if (step.wait) {
+        await Promise.race([done, skipController.waitForSkip()]);
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
+      }
+      return resumeAfterSurface(scene, interpreter);
+    }
+    case "spawnEvent":
+      refreshSpawnedEvent(scene, step.eventId);
+      return resumeAfterSurface(scene, interpreter);
+    case "removeEvent":
+      removeRuntimeEvent(scene, step.eventId);
+      return resumeAfterSurface(scene, interpreter);
     case "shop":
       return resumeWithValue(scene, interpreter, await playShop(scene, step));
     case "inn":
       await playInn(scene, step);
       return resumeAfterSurface(scene, interpreter);
     case "gameOver":
-      scene.showGameOverScreen();
+      scene.showGameOverScreen(step.message);
       return resumeInterpreter(interpreter);
     case "returnToTitle":
       if (step.title || step.message) {
@@ -207,6 +415,17 @@ function resolveMoveEventTarget(eventId: string, currentEventId: string | undefi
   return eventId || currentEventId || "";
 }
 
+function applyEventGraphicPatternStep(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "setEventGraphicPattern" }>,
+  currentEventId: string | undefined
+): void {
+  const eventId = step.eventId || currentEventId;
+  if (!eventId) return;
+  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  scene.syncRuntimeState();
+}
+
 // moveEvent 의 wait 옵션: mover 가 활동을 마칠 때(autonomousNPCs 에서 제거될 때)까지 대기.
 // 반복(repeat) mover는 완료되지 않으므로 wait 와 함께 쓰면 무한 대기가 되나,
 // RM2K3 동작과 일관되게 비반복 경로에만 의미를 둔다. 안전 가드로 최대 30초 후 타임아웃.
@@ -216,6 +435,26 @@ function waitForMoverComplete(scene: PlaySceneContext, eventId: string): Promise
     const startedAt = performance.now();
     const check = () => {
       if (!scene.autonomousNPCs.has(eventId)) {
+        resolve();
+        return;
+      }
+      if (performance.now() - startedAt >= timeoutMs) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+  });
+}
+
+function waitForAllCommandMovement(scene: PlaySceneContext): Promise<void> {
+  return new Promise((resolve) => {
+    const timeoutMs = 30000;
+    const startedAt = performance.now();
+    const check = () => {
+      const hasCommandMover = [...scene.commandMoveRouteEventIds].some((eventId) => scene.autonomousNPCs.has(eventId));
+      if (!hasCommandMover && !scene.playerRoute && !scene.moving) {
         resolve();
         return;
       }
@@ -243,6 +482,40 @@ function waitForPlayerRouteComplete(scene: PlaySceneContext): Promise<void> {
     };
     requestAnimationFrame(check);
   });
+}
+
+function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.session.erasedEventIds = [...new Set([...(scene.session.erasedEventIds ?? []), eventId])];
+  removeRuntimeEvent(scene, eventId);
+}
+
+function refreshSpawnedEvent(scene: PlaySceneContext, eventId: string): void {
+  if (!eventId) return;
+  scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.delete(eventId);
+  scene.pageMoveRouteEventIds.delete(eventId);
+}
+
+function removeRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.delete(eventId);
+  scene.pageMoveRouteEventIds.delete(eventId);
+  scene.eventSprites.get(eventId)?.destroy();
+  scene.eventSprites.delete(eventId);
+}
+
+function stopCommandMovement(scene: PlaySceneContext): void {
+  for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.clear();
+  scene.playerRoute = null;
+  if (scene.moving) {
+    scene.moving = false;
+    scene.moveProgress = 0;
+    scene.movingTo = { ...scene.movingFrom };
+    scene.player.setPosition(characterSpriteX(scene.tileX), characterSpriteY(scene.tileY));
+  }
 }
 
 function resumeAfterSurface(scene: PlaySceneContext, interpreter: Interpreter): StepResult {

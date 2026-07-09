@@ -5,7 +5,12 @@ import type { MapId, TransferFade } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
+import { dialogueHost } from "@/player/playSceneDom";
+import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
+import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
+import { resetFollowerTrailNearPlayer } from "@/player/followers";
+import { syncFollowerSprites } from "@/player/playSceneFollowers";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
 type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
@@ -28,7 +33,7 @@ type FadeColor = {
   readonly blue: number;
 };
 
-const TRANSFER_FADE_DURATION_MS = 500;
+export const TRANSFER_FADE_DURATION_MS = 500;
 
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
   const project = store.getCurrent();
@@ -38,20 +43,34 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     return;
   }
   const destination = nearestPassableTile(project, targetMap, request.x, request.y);
-  const fadeColor = transferFadeColor(request.fade ?? "black");
-  if (fadeColor) await fadeCamera(scene, "out", fadeColor);
+  // 전환 연출: 모자이크/블라인드는 DOM 오버레이, 그 외(기본)는 카메라 페이드.
+  const transition = parseTransitionKind(request.transition);
+  const overlayTransition = usesOverlayTransition(transition);
+  const host = overlayTransition ? dialogueHost(scene) : undefined;
+  const fadeColor = overlayTransition ? null : transferFadeColor(request.fade ?? "black");
+  if (host) {
+    await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS);
+  } else if (fadeColor) {
+    await fadeCamera(scene, "out", fadeColor);
+  }
   scene.loadMap(request.mapId);
   scene.tileX = destination.x;
   scene.tileY = destination.y;
   scene.session.x = destination.x;
   scene.session.y = destination.y;
+  resetFollowerTrailNearPlayer(scene.session, targetMap);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   scene.player.setPosition(characterSpriteX(destination.x), characterSpriteY(destination.y));
   updateCharacterDepth(scene.player, "same");
+  syncFollowerSprites(scene);
   scene.moving = false;
   scene.centerCamera();
-  if (fadeColor) await fadeCamera(scene, "in", fadeColor);
+  if (host) {
+    await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);
+  } else if (fadeColor) {
+    await fadeCamera(scene, "in", fadeColor);
+  }
   void fireAutoTriggers(scene);
 }
 
@@ -66,15 +85,15 @@ function transferFadeColor(fade: TransferFade): FadeColor | null {
   }
 }
 
-function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: FadeColor): Promise<void> {
+export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: FadeColor, durationMs = TRANSFER_FADE_DURATION_MS): Promise<void> {
   return new Promise((resolve) => {
     const eventName = phase === "out" ? "camerafadeoutcomplete" : "camerafadeincomplete";
     scene.cameras.main.once(eventName, () => resolve());
     if (phase === "out") {
-      scene.cameras.main.fadeOut(TRANSFER_FADE_DURATION_MS, color.red, color.green, color.blue);
+      scene.cameras.main.fadeOut(durationMs, color.red, color.green, color.blue);
       return;
     }
-    scene.cameras.main.fadeIn(TRANSFER_FADE_DURATION_MS, color.red, color.green, color.blue);
+    scene.cameras.main.fadeIn(durationMs, color.red, color.green, color.blue);
   });
 }
 

@@ -1,4 +1,4 @@
-import { requireArray, requireRecord } from "./guards";
+import { requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 
 export function validateDatabase(value: unknown): void {
   const database = requireRecord("database", value);
@@ -19,12 +19,32 @@ export function validateDatabase(value: unknown): void {
   if (database.terrains !== undefined) requireArray("database.terrains", database.terrains);
   if (database.battleCommands !== undefined) requireArray("database.battleCommands", database.battleCommands);
   if (database.battlerAnimations !== undefined) requireArray("database.battlerAnimations", database.battlerAnimations);
+  if (database.monsterSpecies !== undefined) requireArray("database.monsterSpecies", database.monsterSpecies);
+  if (database.crops !== undefined) requireArray("database.crops", database.crops);
 }
 
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
   if (system.titleScreen !== undefined) requireRecord("system.titleScreen", system.titleScreen);
+  if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
+  if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
+  if (system.timeSystem !== undefined) validateTimeSystem(system.timeSystem);
+  if (system.typeChart !== undefined) {
+    const chart = requireRecord("system.typeChart", system.typeChart);
+    requireArray("system.typeChart.types", chart.types);
+    requireRecord("system.typeChart.multipliers", chart.multipliers);
+  }
+}
+
+function validateTimeSystem(value: unknown): void {
+  const timeSystem = requireRecord("system.timeSystem", value);
+  requireBoolean("system.timeSystem.enabled", timeSystem.enabled);
+  if (timeSystem.minutesPerRealSecond !== undefined) requireNumber("system.timeSystem.minutesPerRealSecond", timeSystem.minutesPerRealSecond);
+  if (timeSystem.dayStartHour !== undefined) requireNumber("system.timeSystem.dayStartHour", timeSystem.dayStartHour);
+  if (timeSystem.dayEndHour !== undefined) requireNumber("system.timeSystem.dayEndHour", timeSystem.dayEndHour);
+  if (timeSystem.forceSleep !== undefined) requireBoolean("system.timeSystem.forceSleep", timeSystem.forceSleep);
+  if (timeSystem.onDayEnd !== undefined) requireString("system.timeSystem.onDayEnd", timeSystem.onDayEnd);
 }
 
 export function validateSession(value: unknown): void {

@@ -7,6 +7,10 @@ import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
 import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, TransferTransition, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import type { LightingAmbientTransition } from "@/player/lighting";
+import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
+import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
+import type { TimePhase } from "@/project/gameTime";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
   down: 0,
@@ -28,7 +32,7 @@ export type AutonomousMover = {
   step: number;
   timer: number;
   repeat: boolean;
-  strategy: "sequence" | "random" | "approach";
+  strategy: "sequence" | "random" | "approach" | "chase";
   facing: Dir;
   directionFix: boolean;
   through: boolean;
@@ -39,6 +43,13 @@ export type AutonomousMover = {
   moveIntervalMs: number;
   moveDurationMs: number;
   activeMove: AutonomousMoveTween | null;
+  sightRange?: number;
+  giveUpRange?: number;
+  pathfind?: boolean;
+  chaseRepathTimerMs?: number;
+  chasePath?: { readonly x: number; readonly y: number }[];
+  chaseActive?: boolean;
+  chaseHome?: { readonly x: number; readonly y: number };
 };
 
 export type AutonomousMoveTween = {
@@ -54,6 +65,18 @@ export type AutonomousMoveTween = {
 export type RuntimeTimer = {
   remaining: number;
   active: boolean;
+};
+
+export type TimeTintVisual = {
+  readonly color: number;
+  readonly alpha: number;
+};
+
+export type TimeTintTransition = {
+  readonly from: TimeTintVisual;
+  readonly to: TimeTintVisual;
+  readonly durationMs: number;
+  elapsedMs: number;
 };
 
 export type TransferRequest = {
@@ -82,11 +105,13 @@ export interface PlaySceneContext extends Phaser.Scene {
   running: boolean;
   eventPositions: RuntimeEventPositions;
   eventSprites: Map<string, Phaser.GameObjects.Sprite>;
+  followerSprites: Map<string, Phaser.GameObjects.Sprite>;
   runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess>;
   autoStartedKeys: Set<string>;
   pageMoveRouteKeys: Set<string>;
   pageMoveRouteEventIds: Set<string>;
+  commandMoveRouteEventIds: Set<string>;
   missingResources: Set<string>;
   tileX: number;
   tileY: number;
@@ -104,8 +129,32 @@ export interface PlaySceneContext extends Phaser.Scene {
   playerRoute: PlayerRouteState | null;
   autonomousNPCs: Map<string, AutonomousMover>;
   runtimeTimers: Map<string, RuntimeTimer>;
+  fieldSpawnState: FieldSpawnRuntimeState | null;
+  lightingOverlayImage?: Phaser.GameObjects.Image;
+  lightingMaskTexture?: Phaser.Textures.CanvasTexture;
+  lightingMaskSignature: string;
+  lightingClockMs: number;
+  lightingFixedAccumulatorMs: number;
+  lightingTransition: LightingAmbientTransition | null;
+  lightingTransitionWaiters: Array<() => void>;
+  weatherLayer?: Phaser.GameObjects.Container;
+  weatherGraphics?: Phaser.GameObjects.Graphics;
+  weatherClockMs: number;
+  weatherFixedAccumulatorMs: number;
+  weatherDisplayed: WeatherParams;
+  weatherTargetSignature: string;
+  weatherTransition: WeatherTransition | null;
+  timeFixedAccumulatorMs: number;
+  timeMinuteAccumulator: number;
+  timeSleepInProgress: boolean;
+  timeTintGraphics?: Phaser.GameObjects.Graphics;
+  timeTintPhase?: TimePhase;
+  timeTintDisplayed?: TimeTintVisual;
+  timeTintTransition: TimeTintTransition | null;
+  mapAnimationLayer?: Phaser.GameObjects.Container;
+  activeMapAnimations: Set<Phaser.GameObjects.Container>;
   getMapId(): MapId;
-  loadMap(mapId: MapId): void;
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void;
   renderTiles(): void;
   syncRuntimeState(): void;
   refreshRuntimeSurfaces(): void;
@@ -124,11 +173,20 @@ export interface PlaySceneContext extends Phaser.Scene {
   transferTo(request: TransferRequest): Promise<void>;
   flashScreen(step: { red: number; green: number; blue: number; durationMs: number }): Promise<void>;
   shakeScreen(step: { intensity: number; durationMs: number }): Promise<void>;
+  panScreen(step: {
+    direction: "down" | "left" | "right" | "up";
+    distanceTiles: number;
+    durationMs: number;
+    wait: boolean;
+    returnToPlayer: boolean;
+    lock: boolean;
+  }): Promise<void>;
   playBattle(step: {
     kind: "battleProcessing";
     troopId: string;
     canEscape: boolean;
     canLose: boolean;
+    battleFlow?: "gauge" | "strict";
   }): Promise<"victory" | "defeat" | "escape">;
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;
@@ -138,7 +196,11 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateParallelEvents(deltaMs: number): void;
   updateAutonomousNPCs(deltaMs: number): void;
   updateTimers(deltaMs: number): void;
-  showGameOverScreen(): void;
+  updateFieldSpawns(deltaMs: number): void;
+  sleepUntilMorning(): Promise<void>;
+  hasCheckpoint(): boolean;
+  restoreCheckpoint(): void;
+  showGameOverScreen(message?: string): void;
   showEndingScreen(title: string, message: string): void;
   returnToTitle(): void;
 }

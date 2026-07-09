@@ -9,59 +9,39 @@ import {
   registerBundledFrames,
   TILE_SIZE,
 } from "@/assets/bundled";
-import { store } from "@/project/store";
-import { editorState, type PaintShape } from "@/editor/editorState";
+import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
+import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
+import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
+import { editorState } from "@/editor/editorState";
+import { showConfirm } from "@/editor/ui/modal";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import {
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
+import { eventLayerSwitchPrompt, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
 import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
-import { renderEditScene } from "@/editor/editSceneRender";
-import {
-  paintTile,
-  eraseTile,
-  toggleCollision,
-  fillTile,
-} from "@/editor/actions";
-import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
-import { recordProjectSnapshot, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
+import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
+import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
+import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
+import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
 import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapSelectionContextMenu";
+import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { saveProjectNow } from "@/editor/saveActions";
-import { placeStructureStamp, previewStructureStampCells } from "@/editor/structureStampTools";
-import type { StructureStampId } from "@/editor/structureStampTools";
-import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
-import { compatibleStampIdForTile, tileStampById, tileStampsForTile, type TileStamp } from "@/editor/tileStampBrushes";
-import { visibleTilePickAt } from "@/editor/tilePicking";
+import { TilePaintEngine } from "@/editor/TilePaintEngine";
+import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { committedEvents } from "@/project/eventDrafts";
-import { moveEvent } from "@/editor/eventActions";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
 
 const PhaserRuntime = getLoadedPhaser();
-
-type BrushStroke = {
-  readonly centerX: number;
-  readonly centerY: number;
-  readonly size: number;
-  readonly applyCell: (x: number, y: number) => void;
-};
-
-type TileLayer = "lower" | "upper";
-
-type TilePickTarget = {
-  readonly mapId: MapId;
-  readonly layer: TileLayer;
-  readonly x: number;
-  readonly y: number;
-};
 
 type EventLayerClick = {
   readonly at: number;
@@ -77,53 +57,77 @@ type EventLayerClickTarget = {
   readonly y: number;
 };
 
-type PanStart = {
-  readonly screenX: number;
-  readonly screenY: number;
-  readonly scrollX: number;
-  readonly scrollY: number;
-  readonly shellScrollLeft: number;
-  readonly shellScrollTop: number;
+const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+const BUILD_PALETTE_GAP_PX = 8;
+const BUILD_PALETTE_CANVAS_PADDING_PX = 8;
+
+type TileRect = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
 };
 
-type DragOperation =
-  | {
-    readonly kind: "select";
-    readonly mapId: MapId;
-    readonly start: TilePoint;
-  }
-  | {
-    readonly kind: "shape";
-    readonly layer: TileLayer;
-    readonly mapId: MapId;
-    readonly shape: Exclude<PaintShape, "pen">;
-    readonly start: TilePoint;
-    readonly tile: number;
-    readonly autoConnect: boolean;
-  }
-  | {
-    readonly kind: "structure";
-    readonly mapId: MapId;
-    readonly stampId: StructureStampId;
-  }
-  | {
-    // 이벤트 레이어에서 NPC/이벤트를 드래그해 다른 칸으로 옮긴다.
-    readonly kind: "eventMove";
-    readonly mapId: MapId;
-    readonly eventId: string;
-    readonly origin: TilePoint;
-  };
+type CameraView = {
+  readonly scrollX: number;
+  readonly scrollY: number;
+  readonly zoom: number;
+};
 
-const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+type PixelSize = {
+  readonly width: number;
+  readonly height: number;
+};
+
+type PixelPoint = {
+  readonly x: number;
+  readonly y: number;
+};
+
+export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize = TILE_SIZE): TileRect {
+  return {
+    x: Math.round((rect.x * tileSize - camera.scrollX) * camera.zoom),
+    y: Math.round((rect.y * tileSize - camera.scrollY) * camera.zoom),
+    width: Math.max(1, Math.round(rect.width * tileSize * camera.zoom)),
+    height: Math.max(1, Math.round(rect.height * tileSize * camera.zoom)),
+  };
+}
+
+export function anchoredBuildPalettePosition(input: {
+  readonly selectionRect: TileRect;
+  readonly popupSize: PixelSize;
+  readonly canvasSize: PixelSize;
+  readonly gap?: number;
+  readonly padding?: number;
+}): PixelPoint {
+  const gap = input.gap ?? BUILD_PALETTE_GAP_PX;
+  const padding = input.padding ?? BUILD_PALETTE_CANVAS_PADDING_PX;
+  const maxX = Math.max(padding, input.canvasSize.width - input.popupSize.width - padding);
+  const maxY = Math.max(padding, input.canvasSize.height - input.popupSize.height - padding);
+  const rightX = input.selectionRect.x + input.selectionRect.width + gap;
+  const leftX = input.selectionRect.x - input.popupSize.width - gap;
+  const preferredX = rightX + input.popupSize.width + padding <= input.canvasSize.width ? rightX : leftX;
+  const centeredY = input.selectionRect.y + input.selectionRect.height / 2 - input.popupSize.height / 2;
+  return {
+    x: clampNumber(preferredX, padding, maxX),
+    y: clampNumber(centeredY, padding, maxY),
+  };
+}
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
+  private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
+  private agentFocusHighlightLayer: Phaser.GameObjects.Container | null = null;
   private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
   private gridGraphics: Phaser.GameObjects.Graphics | null = null;
   private unsubStore: (() => void) | null = null;
   private unsubEditor: (() => void) | null = null;
+  private unsubAgentGhost: (() => void) | null = null;
+  private unsubAgentFocus: (() => void) | null = null;
+  private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
+  private agentFocusRenderer: AgentFocusRenderer | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
@@ -132,38 +136,13 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastRenderedMapId: MapId | null = null;
   private lastRenderStateKey = "";
   private lastCameraViewKey = "";
-  private isPanning = false;
-  private dragOperation: DragOperation | null = null;
-  // 이벤트 레이어에서 눌린 이벤트. 포인터가 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
-  private eventDragCandidate: { readonly mapId: MapId; readonly eventId: string; readonly origin: TilePoint } | null = null;
-  private spacePanActive = false;
-  private panStart: PanStart | null = null;
-  private readonly handleAuxiliaryCanvasPointerDown = (event: MouseEvent | PointerEvent): void => {
-    if (!this.isMiddleButtonEvent(event)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    this.startPanAt(event.clientX, event.clientY);
-  };
-  private readonly handleAuxiliaryCanvasClick = (event: MouseEvent | PointerEvent): void => {
-    if (!this.isMiddleButtonEvent(event)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-  };
-  private readonly handleWindowPanMove = (event: MouseEvent | PointerEvent): void => {
-    if (!this.isPanning) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    this.continuePanAt(event.clientX, event.clientY);
-  };
-  private readonly handleWindowPanEnd = (event?: MouseEvent | PointerEvent): void => {
-    event?.preventDefault();
-    event?.stopPropagation();
-    event?.stopImmediatePropagation();
-    this.stopPan();
-  };
+  private readonly tileIndex: EditSceneTileIndex = new Map();
+  private cameraPanController: CameraPanController | null = null;
+  private tilePaintEngine: TilePaintEngine | null = null;
+  private dragOperationHandler: DragOperationHandler | null = null;
+  private buildPalettePopup: HTMLElement | null = null;
+  private buildPalettePopupKey = "";
+  private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
 
   constructor() {
     super({ key: "EditScene" });
@@ -185,6 +164,22 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    this.agentGhostPreviewLayer = this.add.container(0, 0);
+    this.agentGhostPreviewLayer.setDepth(10.5);
+    this.agentFocusHighlightLayer = this.add.container(0, 0);
+    this.agentFocusHighlightLayer.setDepth(11);
+    this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
+    this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
+    this.cameraPanController = new CameraPanController(this, {
+      onPanStart: () => {
+        this.isPainting = false;
+        this.lastPaintKey = "";
+      },
+      onPanMove: () => {
+        this.refreshAgentGhostDomMarkers();
+        this.renderBuildPaletteOverlay();
+      },
+    });
     this.eventClickFeedbackLayer = this.add.container(0, 0);
     this.eventClickFeedbackLayer.setDepth(12);
 
@@ -192,10 +187,13 @@ export class EditScene extends PhaserRuntime.Scene {
     this.redraw();
 
     // store/에디터 상태 변경 시 재렌더.
-    this.unsubStore = store.subscribe(() => this.redraw());
+    this.unsubStore = store.subscribe((_project, change) => this.redrawForStoreChange(change));
     this.unsubEditor = editorState.subscribe(() => this.redrawWhenViewStateChanges());
+    this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
+    this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
 
     this.scale.on("resize", this.handleResize, this);
+    window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -204,14 +202,37 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private cleanup(): void {
     this.unbindCanvasPanGuards();
-    this.unbindWindowPanGuards();
+    this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
+    this.unsubAgentGhost?.();
+    this.unsubAgentFocus?.();
     this.unsubStore = null;
     this.unsubEditor = null;
+    this.unsubAgentGhost = null;
+    this.unsubAgentFocus = null;
+    this.clearAgentGhostPreviewLayer();
+    this.clearAgentFocusHighlight();
+    window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    this.clearBuildPaletteOverlay();
   }
 
   private handleResize(): void {
+    this.redraw();
+  }
+
+  private redrawForStoreChange(change: ProjectChangeDescriptor): void {
+    const mapId = this.mapId();
+    const plan = planEditSceneRenderForStoreChange({
+      change,
+      currentMapId: mapId,
+      canIncrementalCells: mapId !== null && this.canIncrementallyRenderCells(mapId),
+    });
+    if (plan.kind === "skip") return;
+    if (plan.kind === "cells") {
+      this.redrawCells(plan.cells);
+      return;
+    }
     this.redraw();
   }
 
@@ -226,8 +247,6 @@ export class EditScene extends PhaserRuntime.Scene {
         if (this.tryOpenRegionTaskMenu(ptr)) return; // 선택 영역 안 우클릭 → 영역 작업 메뉴
         if (editorState.get().layer === "event") {
           this.openEventLayerMenu(ptr);
-        } else {
-          this.pickTileAtPointer(ptr);
         }
         return;
       }
@@ -235,6 +254,7 @@ export class EditScene extends PhaserRuntime.Scene {
         this.startPan(ptr);
         return;
       }
+      if (this.tryOfferEventLayerSwitchFromPointer(ptr)) return;
       if (this.beginDragOperation(ptr)) return;
       this.isPainting = true;
       this.lastPaintKey = "";
@@ -244,14 +264,14 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
-      if (this.dragOperation && ptr.isDown) {
+      if (this.getDragOperationHandler().active() && ptr.isDown) {
         this.updateDragOperation(ptr);
         return;
       }
       // 이벤트를 누른 채 다른 칸으로 이동하면 드래그 이동을 시작한다.
-      if (this.eventDragCandidate && ptr.isDown && this.tryPromoteEventDrag(ptr)) return;
+      if (ptr.isDown && this.tryPromoteEventDrag(ptr)) return;
       this.updateHoverPreview(ptr);
-      if (this.isPanning) {
+      if (this.cameraPanController?.active()) {
         this.continuePan(ptr);
         return;
       }
@@ -261,13 +281,13 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointerup", (ptr: Phaser.Input.Pointer) => {
       this.finishDragOperation(ptr);
-      this.eventDragCandidate = null;
+      this.getDragOperationHandler().clearEventCandidate();
       this.isPainting = false;
       this.lastPaintKey = "";
       this.stopPan();
     });
     this.input.on("pointerout", () => {
-      if (!this.dragOperation) this.clearHoverPreview();
+      if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
     this.input.on(
       "wheel",
@@ -281,37 +301,15 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private shouldPan(ptr: Phaser.Input.Pointer): boolean {
-    return editorState.get().tool === "pan" || this.spacePanActive || ptr.middleButtonDown() || ptr.button === 1;
+    return this.cameraPanController?.shouldPan(ptr) ?? false;
   }
 
   private bindCanvasPanGuards(): void {
-    const canvas = this.game.canvas;
-    canvas.addEventListener("pointerdown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.addEventListener("mousedown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.addEventListener("auxclick", this.handleAuxiliaryCanvasClick, { capture: true });
+    this.cameraPanController?.bindCanvasGuards();
   }
 
   private unbindCanvasPanGuards(): void {
-    const canvas = this.game.canvas;
-    canvas.removeEventListener("pointerdown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.removeEventListener("mousedown", this.handleAuxiliaryCanvasPointerDown, { capture: true });
-    canvas.removeEventListener("auxclick", this.handleAuxiliaryCanvasClick, { capture: true });
-  }
-
-  private bindWindowPanGuards(): void {
-    window.addEventListener("pointermove", this.handleWindowPanMove, { capture: true, passive: false });
-    window.addEventListener("mousemove", this.handleWindowPanMove, { capture: true, passive: false });
-    window.addEventListener("pointerup", this.handleWindowPanEnd, { capture: true });
-    window.addEventListener("pointercancel", this.handleWindowPanEnd, { capture: true });
-    window.addEventListener("mouseup", this.handleWindowPanEnd, { capture: true });
-  }
-
-  private unbindWindowPanGuards(): void {
-    window.removeEventListener("pointermove", this.handleWindowPanMove, { capture: true });
-    window.removeEventListener("mousemove", this.handleWindowPanMove, { capture: true });
-    window.removeEventListener("pointerup", this.handleWindowPanEnd, { capture: true });
-    window.removeEventListener("pointercancel", this.handleWindowPanEnd, { capture: true });
-    window.removeEventListener("mouseup", this.handleWindowPanEnd, { capture: true });
+    this.cameraPanController?.unbindCanvasGuards();
   }
 
   private isRightClick(ptr: Phaser.Input.Pointer): boolean {
@@ -319,79 +317,31 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private startPan(ptr: Phaser.Input.Pointer): void {
-    const point = this.pointerScreenPosition(ptr);
-    this.startPanAt(point.x, point.y);
-  }
-
-  private startPanAt(screenX: number, screenY: number): void {
-    const camera = this.cameras.main;
-    this.isPanning = true;
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    this.panStart = {
-      screenX,
-      screenY,
-      scrollX: camera.scrollX,
-      scrollY: camera.scrollY,
-      shellScrollLeft: this.canvasScrollShell()?.scrollLeft ?? 0,
-      shellScrollTop: this.canvasScrollShell()?.scrollTop ?? 0,
-    };
-    this.bindWindowPanGuards();
+    this.cameraPanController?.start(ptr);
   }
 
   private continuePan(ptr: Phaser.Input.Pointer): void {
-    const point = this.pointerScreenPosition(ptr);
-    this.continuePanAt(point.x, point.y);
-  }
-
-  private continuePanAt(screenX: number, screenY: number): void {
-    const start = this.panStart;
-    if (!start) return;
-    const camera = this.cameras.main;
-    const dx = screenX - start.screenX;
-    const dy = screenY - start.screenY;
-    camera.setScroll(
-      start.scrollX - dx / camera.zoom,
-      start.scrollY - dy / camera.zoom
-    );
-    const shell = this.canvasScrollShell();
-    if (!shell) return;
-    shell.scrollLeft = start.shellScrollLeft - dx;
-    shell.scrollTop = start.shellScrollTop - dy;
+    this.cameraPanController?.continue(ptr);
   }
 
   private stopPan(): void {
-    this.isPanning = false;
-    this.panStart = null;
-    this.unbindWindowPanGuards();
+    this.cameraPanController?.stop();
   }
 
   private pointerScreenPosition(ptr: Phaser.Input.Pointer): { readonly x: number; readonly y: number } {
-    const event = ptr.event;
-    if (event instanceof MouseEvent || event instanceof PointerEvent) {
-      return { x: event.clientX, y: event.clientY };
-    }
-    return { x: ptr.x, y: ptr.y };
-  }
-
-  private canvasScrollShell(): HTMLElement | null {
-    const canvas = this.game.canvas;
-    const shell = canvas.closest("[data-testid='editor-canvas-scroll-shell']");
-    return shell instanceof HTMLElement ? shell : null;
-  }
-
-  private isMiddleButtonEvent(event: MouseEvent | PointerEvent): boolean {
-    return event.button === 1 || (event.buttons & 4) === 4;
+    return pointerScreenPosition(ptr);
   }
 
   private updateHoverPreview(ptr: Phaser.Input.Pointer): void {
     const { x, y } = this.pointerToTile(ptr);
     this.lastPointerTile = { x, y };
+    this.updateEventMarkerTooltip(x, y);
     this.renderHoverPreview(x, y);
   }
 
   private clearHoverPreview(): void {
     this.lastPointerTile = null;
+    this.clearEventMarkerTooltip();
     this.hoverPreviewLayer?.removeAll(true);
   }
 
@@ -403,364 +353,30 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private beginDragOperation(ptr: Phaser.Input.Pointer): boolean {
-    const mapId = this.mapId();
-    if (!mapId) return false;
-    const map = store.getCurrent().maps[mapId];
-    if (!map) return false;
-    const point = this.pointerToTile(ptr);
-    if (!this.isInsideMapPoint(point, map)) return false;
-    const state = editorState.get();
-    if (state.tool === "select") {
-      this.dragOperation = { kind: "select", mapId, start: point };
-      selectTileRegion(mapId, { mapId, x: point.x, y: point.y, width: 1, height: 1 });
-      return true;
-    }
-    if (state.tool === "paint" && state.activeStructureStampId) {
-      const operation: Extract<DragOperation, { readonly kind: "structure" }> = {
-        kind: "structure",
-        mapId,
-        stampId: state.activeStructureStampId,
-      };
-      this.dragOperation = operation;
-      this.renderStructureDragPreview(operation, point);
-      return true;
-    }
-    if (state.tool === "paint" && state.paintShape !== "pen" && state.selectedTile >= 0) {
-      const layer: TileLayer = state.layer === "upper" ? "upper" : "lower";
-      const operation: Extract<DragOperation, { readonly kind: "shape" }> = {
-        kind: "shape",
-        layer,
-        mapId,
-        shape: state.paintShape,
-        start: point,
-        tile: state.selectedTile,
-        autoConnect: state.autoConnectMode,
-      };
-      this.dragOperation = operation;
-      this.renderShapeDragPreview(operation, point);
-      return true;
-    }
-    return false;
+    return this.getDragOperationHandler().begin(ptr);
   }
 
   // 이벤트 레이어에서 눌린 칸에 이벤트가 있으면 드래그 이동 후보로 기록한다.
   // 실제 드래그(다른 칸으로 이동)가 시작되기 전까지는 클릭/더블클릭 동작을 방해하지 않는다.
   private maybeBeginEventDragCandidate(ptr: Phaser.Input.Pointer): void {
-    this.eventDragCandidate = null;
-    if (editorState.get().layer !== "event") return;
-    const mapId = this.mapId();
-    if (!mapId) return;
-    const map = store.getCurrent().maps[mapId];
-    if (!map) return;
-    const point = this.pointerToTile(ptr);
-    if (!this.isInsideMapPoint(point, map)) return;
-    const existing = committedEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
-    if (!existing) return;
-    this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
+    this.getDragOperationHandler().maybeBeginEventDragCandidate(ptr);
   }
 
   // 후보 이벤트를 누른 채 다른 칸으로 움직이면 eventMove 드래그로 승격한다.
   private tryPromoteEventDrag(ptr: Phaser.Input.Pointer): boolean {
-    const candidate = this.eventDragCandidate;
-    if (!candidate) return false;
-    const point = this.pointerToTile(ptr);
-    if (point.x === candidate.origin.x && point.y === candidate.origin.y) return false;
-    this.dragOperation = {
-      kind: "eventMove",
-      mapId: candidate.mapId,
-      eventId: candidate.eventId,
-      origin: candidate.origin,
-    };
-    this.eventDragCandidate = null;
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    this.renderEventMoveDragPreview(this.dragOperation, point);
-    return true;
-  }
-
-  private renderEventMoveDragPreview(
-    operation: Extract<DragOperation, { readonly kind: "eventMove" }>,
-    point: TilePoint
-  ): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return;
-    // 드롭 예정 칸을 이벤트 레이어 하이라이트로 표시한다.
-    this.showEventLayerClickFeedback(operation.mapId, point.x, point.y);
-  }
-
-  private commitEventMoveDrag(
-    operation: Extract<DragOperation, { readonly kind: "eventMove" }>,
-    point: TilePoint
-  ): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return; // 맵 밖 → 취소
-    if (point.x === operation.origin.x && point.y === operation.origin.y) return; // 제자리 → 무시
-    if (!canEditMap(operation.mapId)) {
-      toast(mapEditLockNotice(operation.mapId), "error");
-      return;
-    }
-    const occupied = committedEvents(map.events).some(
-      (event) => event.id !== operation.eventId && event.x === point.x && event.y === point.y
-    );
-    if (occupied) {
-      toast("이미 다른 이벤트가 있는 칸입니다.", "error");
-      return;
-    }
-    recordProjectSnapshot();
-    moveEvent(operation.mapId, operation.eventId, point.x, point.y);
-    editorState.set({ selectedEventId: operation.eventId });
+    return this.getDragOperationHandler().tryPromoteEventDrag(ptr);
   }
 
   private updateDragOperation(ptr: Phaser.Input.Pointer): void {
-    const operation = this.dragOperation;
-    if (!operation) return;
-    const point = this.pointerToTile(ptr);
-    this.lastPointerTile = point;
-    if (operation.kind === "select") {
-      this.updateSelectionDrag(operation, point);
-      return;
-    }
-    if (operation.kind === "structure") {
-      this.renderStructureDragPreview(operation, point);
-      return;
-    }
-    if (operation.kind === "eventMove") {
-      this.renderEventMoveDragPreview(operation, point);
-      return;
-    }
-    this.renderShapeDragPreview(operation, point);
+    this.getDragOperationHandler().update(ptr);
   }
 
   private finishDragOperation(ptr: Phaser.Input.Pointer): void {
-    const operation = this.dragOperation;
-    if (!operation) return;
-    const point = this.pointerToTile(ptr);
-    if (operation.kind === "select") {
-      this.updateSelectionDrag(operation, point);
-    } else if (operation.kind === "structure") {
-      this.commitStructureDrag(operation, point);
-    } else if (operation.kind === "eventMove") {
-      this.commitEventMoveDrag(operation, point);
-    } else {
-      this.commitShapeDrag(operation, point);
-    }
-    this.dragOperation = null;
-    this.clearHoverPreview();
-  }
-
-  private updateSelectionDrag(operation: Extract<DragOperation, { readonly kind: "select" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map) return;
-    const rect = tileRectWithinBounds(tileRectFromDrag(operation.start, point), { width: map.width, height: map.height });
-    if (!rect) return;
-    selectTileRegion(operation.mapId, { mapId: operation.mapId, x: rect.x, y: rect.y, width: rect.width, height: rect.height });
-  }
-
-  private commitShapeDrag(operation: Extract<DragOperation, { readonly kind: "shape" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map) return;
-    const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
-    if (cells.length === 0) return;
-    recordProjectSnapshot();
-    for (const cell of cells) {
-      paintTile(operation.mapId, operation.layer, cell.x, cell.y, operation.tile, { autoConnect: operation.autoConnect });
-    }
-  }
-
-  private commitStructureDrag(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return;
-    recordProjectSnapshot();
-    placeStructureStamp(operation.mapId, { id: operation.stampId, origin: point });
-  }
-
-  private renderStructureDragPreview(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
-    const layer = this.hoverPreviewLayer;
-    if (!layer) return;
-    layer.removeAll(true);
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !this.isInsideMapPoint(point, map)) return;
-    const tileset = store.getCurrent().tilesets[map.tilesetId];
-    if (!tileset) return;
-    const cells = previewStructureStampCells(map, { id: operation.stampId, origin: point });
-    for (const cell of cells) {
-      const preview = createChipsetTileObject(this, map, tileset, cell.x, cell.y, cell.tile);
-      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
-      layer.add(preview);
-      const marker = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
-      marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
-      layer.add(marker);
-    }
-  }
-
-  private renderShapeDragPreview(operation: Extract<DragOperation, { readonly kind: "shape" }>, point: TilePoint): void {
-    const layer = this.hoverPreviewLayer;
-    if (!layer) return;
-    layer.removeAll(true);
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map) return;
-    const tileset = store.getCurrent().tilesets[map.tilesetId];
-    if (!tileset) return;
-    const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
-    for (const cell of cells) {
-      const preview = createChipsetTileObject(this, map, tileset, cell.x, cell.y, operation.tile);
-      preview.setAlpha(0.62);
-      layer.add(preview);
-      const marker = this.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x3bc9db, 0.18);
-      marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
-      layer.add(marker);
-    }
-  }
-
-  private isInsideMapPoint(point: TilePoint, map: { readonly width: number; readonly height: number }): boolean {
-    return point.x >= 0 && point.y >= 0 && point.x < map.width && point.y < map.height;
+    this.getDragOperationHandler().finish(ptr);
   }
 
   private applyAtPointer(ptr: Phaser.Input.Pointer): void {
-    const mid = this.mapId();
-    if (!mid) return;
-    const { x, y } = this.pointerToTile(ptr);
-    this.lastPointerTile = { x, y };
-    this.updatePointerStatus(ptr);
-
-    const tool = editorState.get().tool;
-    const layer = editorState.get().layer;
-    if (!canEditMap(mid) && this.toolCanMutateMap(tool)) {
-      this.isPainting = false;
-      this.lastPaintKey = "";
-      toast(mapEditLockNotice(mid), "error");
-      return;
-    }
-    const { activePaletteStamp, activeStampId, activeStructureStampId, autoConnectMode, brushSize, selectedTile } = editorState.get();
-    const tileset = this.currentTileset();
-    const key = `${x},${y}`;
-    const firstStrokeTile = this.lastPaintKey === "";
-    if (layer !== "event" && key === this.lastPaintKey) return;
-    this.lastPaintKey = key;
-    // event 레이어에선 타일 도구 동작 안 함.
-    const tileLayer: "lower" | "upper" = layer === "upper" ? "upper" : "lower";
-    const clickCount =
-      layer === "event" ? this.eventLayerClickCount({ mapId: mid, ptr, x, y }) : this.pointerClickCount(ptr);
-    if (layer === "event") this.showEventLayerClickFeedback(mid, x, y);
-
-    if (layer === "event" && clickCount >= 2 && this.openExistingEventAt(mid, x, y)) {
-      return;
-    }
-
-    switch (tool) {
-      case "paint":
-        recordProjectSnapshot();
-        {
-          if (activePaletteStamp) {
-            this.applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y });
-            break;
-          }
-          if (activeStructureStampId) {
-            placeStructureStamp(mid, { id: activeStructureStampId, origin: { x, y } });
-            break;
-          }
-          const stamp = tileset
-            ? tileStampsForTile(selectedTile, tileset).find((candidate) => candidate.id === activeStampId) ?? null
-            : tileStampById(activeStampId);
-          if (stamp) {
-            this.applyStamp({ mapId: mid, layer: tileLayer, x, y, stamp, autoConnect: autoConnectMode });
-          } else {
-            this.applyBrush({
-              centerX: x,
-              centerY: y,
-              size: brushSize,
-              applyCell: (brushX, brushY) => paintTile(mid, tileLayer, brushX, brushY, selectedTile, { autoConnect: autoConnectMode }),
-            });
-          }
-        }
-        break;
-      case "fill":
-        if (firstStrokeTile) {
-          recordProjectSnapshot();
-          fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
-        }
-        break;
-      case "erase":
-        recordProjectSnapshot();
-        this.applyBrush({
-          centerX: x,
-          centerY: y,
-          size: brushSize,
-          applyCell: (brushX, brushY) => eraseTile(mid, tileLayer, brushX, brushY, { autoConnect: autoConnectMode }),
-        });
-        break;
-      case "collision":
-        recordProjectSnapshot();
-        toggleCollision(mid, x, y);
-        break;
-      case "event":
-        this.isPainting = false;
-        this.lastPaintKey = "";
-        this.handleEventClick(mid, x, y, clickCount >= 2);
-        break;
-      case "select":
-        selectTileRegion(mid, { mapId: mid, x, y, width: 1, height: 1 });
-        break;
-      case "eyedropper":
-        this.pickTileAt({ mapId: mid, layer: tileLayer, x, y });
-        break;
-      case "pan":
-        break;
-    }
-  }
-
-  private applyBrush(stroke: BrushStroke): void {
-    const offset = Math.floor(stroke.size / 2);
-    for (let y = stroke.centerY - offset; y <= stroke.centerY + offset; y++) {
-      for (let x = stroke.centerX - offset; x <= stroke.centerX + offset; x++) {
-        stroke.applyCell(x, y);
-      }
-    }
-  }
-
-  private pickTileAt(target: TilePickTarget): void {
-    const map = store.getCurrent().maps[target.mapId];
-    if (!map) return;
-    if (target.x < 0 || target.y < 0 || target.x >= map.width || target.y >= map.height) return;
-    const index = target.y * map.width + target.x;
-    const tile =
-      target.layer === "upper"
-        ? topTileInStack(map, "upper", index) ?? map.upperTiles[index]
-        : topTileInStack(map, "lower", index) ?? map.lowerTiles[index];
-    const fallbackTile =
-      target.layer === "upper" ? topTileInStack(map, "lower", index) ?? map.lowerTiles[index] : tile;
-    const selectedTile = tile >= 0 ? tile : fallbackTile;
-    if (selectedTile < 0) return;
-    const tileset = this.tilesetForMap(target.mapId);
-    editorState.set({
-      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, selectedTile, tileset),
-      selectedTile,
-      layer: target.layer,
-      tool: "paint",
-    });
-  }
-
-  private pickTileAtPointer(ptr: Phaser.Input.Pointer): void {
-    const mapId = this.mapId();
-    if (!mapId) return;
-    const { x, y } = this.pointerToTile(ptr);
-    const map = store.getCurrent().maps[mapId];
-    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
-    const pick = visibleTilePickAt(map, y * map.width + x);
-    if (!pick) return;
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    const tileset = this.tilesetForMap(mapId);
-    editorState.set({
-      activePaletteStamp: null,
-      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, pick.tile, tileset),
-      activeStructureStampId: null,
-      selectedTile: pick.tile,
-      layer: pick.layer,
-      tool: "paint",
-    });
+    this.getTilePaintEngine().applyAtPointer(ptr);
   }
 
   // 우클릭 셀이 현재 맵의 활성 선택 영역 안이면 "이 영역에 AI 작업…" 메뉴를 연다.
@@ -812,11 +428,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleKeyDown(event: KeyboardEvent): void {
     // 텍스트 입력/모달이 포커스를 잡고 있으면 에디터 단축키를 끈다.
     if (shouldIgnoreEditorShortcut(event)) return;
-    if (event.code === "Space") {
-      event.preventDefault();
-      this.spacePanActive = true;
-      return;
-    }
+    if (this.cameraPanController?.handleSpaceKeyDown(event)) return;
     if (!(event.ctrlKey || event.metaKey) && this.panWithArrowKey(event)) return;
     // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
     if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
@@ -824,12 +436,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleKeyUp(event: KeyboardEvent): void {
-    if (event.code !== "Space") return;
-    event.preventDefault();
-    this.spacePanActive = false;
-    if (!this.isPanning) return;
-    this.isPanning = false;
-    this.panStart = null;
+    this.cameraPanController?.handleSpaceKeyUp(event);
   }
 
   private panWithArrowKey(event: KeyboardEvent): boolean {
@@ -857,8 +464,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private panCameraBy(deltaX: number, deltaY: number): void {
-    const camera = this.cameras.main;
-    camera.setScroll(camera.scrollX + deltaX, camera.scrollY + deltaY);
+    this.cameraPanController?.panBy(deltaX, deltaY);
   }
 
   private handleShortcut(event: KeyboardEvent): void {
@@ -935,10 +541,6 @@ export class EditScene extends PhaserRuntime.Scene {
     setTileToolStatus("cursor-upper", String(topTileInStack(map, "upper", index) ?? map.upperTiles[index]));
   }
 
-  private toolCanMutateMap(tool: string): boolean {
-    return tool === "paint" || tool === "fill" || tool === "erase" || tool === "collision" || tool === "event";
-  }
-
   private handleEventClick(mapId: MapId, x: number, y: number, openEditor = false): void {
     const map = store.getCurrent().maps[mapId];
     if (!map) return;
@@ -950,6 +552,37 @@ export class EditScene extends PhaserRuntime.Scene {
     } else if (openEditor) {
       openNewEventEditorModal(mapId, x, y);
     }
+  }
+
+  private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
+    const map = store.getCurrent().maps[mapId];
+    const existing = map ? committedEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    if (!shouldOfferEventLayerSwitch({ activeLayer: layer as "lower" | "upper" | "event", clickCount, hasEvent: Boolean(existing) })) {
+      return false;
+    }
+    if (!existing) return false;
+    // 커스텀 인앱 모달(§2.4): 확인은 비동기로 받고, 제안이 뜬 시점에 페인팅은 즉시 멈춘다.
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    void showConfirm({ title: "이벤트 레이어 전환", message: eventLayerSwitchPrompt(existing), confirmLabel: "전환" }).then((confirmed) => {
+      if (!confirmed) {
+        toast("이벤트 레이어 전환을 취소했습니다.", "info");
+        return;
+      }
+      editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
+      openEventEditorModal(mapId, existing.id);
+    });
+    return true;
+  }
+
+  private tryOfferEventLayerSwitchFromPointer(ptr: Phaser.Input.Pointer): boolean {
+    const mapId = this.mapId();
+    if (!mapId) return false;
+    const layer = editorState.get().layer;
+    if (layer === "event") return false;
+    if (!canEditMap(mapId)) return false;
+    const { x, y } = this.pointerToTile(ptr);
+    return this.offerEventLayerSwitchAt(mapId, x, y, layer, this.pointerClickCount(ptr));
   }
 
   private openExistingEventAt(mapId: MapId, x: number, y: number): boolean {
@@ -986,15 +619,52 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   // ── 렌더 ──
-  private currentTileset() {
-    const mapId = this.mapId();
-    return mapId ? this.tilesetForMap(mapId) : undefined;
-  }
-
   private tilesetForMap(mapId: MapId) {
     const project = store.getCurrent();
     const map = project.maps[mapId];
     return map ? project.tilesets[map.tilesetId] : undefined;
+  }
+
+  private getTilePaintEngine(): TilePaintEngine {
+    this.tilePaintEngine ??= new TilePaintEngine({
+      mapId: () => this.mapId(),
+      pointerToTile: (ptr) => this.pointerToTile(ptr),
+      updatePointerStatus: (ptr) => this.updatePointerStatus(ptr),
+      eventLayerClickCount: (target) => this.eventLayerClickCount(target),
+      pointerClickCount: (ptr) => this.pointerClickCount(ptr),
+      offerEventLayerSwitchAt: (mapId, x, y, layer, clickCount) => this.offerEventLayerSwitchAt(mapId, x, y, layer, clickCount),
+      showEventLayerClickFeedback: (mapId, x, y) => this.showEventLayerClickFeedback(mapId, x, y),
+      openExistingEventAt: (mapId, x, y) => this.openExistingEventAt(mapId, x, y),
+      handleEventClick: (mapId, x, y, openEditor) => this.handleEventClick(mapId, x, y, openEditor),
+      tilesetForMap: (mapId) => this.tilesetForMap(mapId),
+      setLastPointerTile: (point) => {
+        this.lastPointerTile = point;
+      },
+      getPaintState: () => ({ isPainting: this.isPainting, lastPaintKey: this.lastPaintKey }),
+      setPaintState: (state) => {
+        if (state.isPainting !== undefined) this.isPainting = state.isPainting;
+        if (state.lastPaintKey !== undefined) this.lastPaintKey = state.lastPaintKey;
+      },
+    });
+    return this.tilePaintEngine;
+  }
+
+  private getDragOperationHandler(): DragOperationHandler {
+    this.dragOperationHandler ??= new DragOperationHandler(this, {
+      mapId: () => this.mapId(),
+      pointerToTile: (ptr) => this.pointerToTile(ptr),
+      hoverPreviewLayer: () => this.hoverPreviewLayer,
+      clearHoverPreview: () => this.clearHoverPreview(),
+      showEventLayerClickFeedback: (mapId, x, y) => this.showEventLayerClickFeedback(mapId, x, y),
+      setLastPointerTile: (point) => {
+        this.lastPointerTile = point;
+      },
+      setPaintState: (state) => {
+        if (state.isPainting !== undefined) this.isPainting = state.isPainting;
+        if (state.lastPaintKey !== undefined) this.lastPaintKey = state.lastPaintKey;
+      },
+    });
+    return this.dragOperationHandler;
   }
 
   private redraw(): void {
@@ -1004,8 +674,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (mapChanged) {
       this.lastPointerTile = null;
       this.clearHoverPreview();
+      this.clearAgentFocusHighlight();
       this.lastPaintKey = "";
-      this.dragOperation = null;
+      this.dragOperationHandler?.clear();
     }
     this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
@@ -1017,40 +688,46 @@ export class EditScene extends PhaserRuntime.Scene {
     const overlayLayer = this.overlayLayer;
     const gridGraphics = this.gridGraphics;
     if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
-    renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, resetCamera });
+    renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, tileIndex: this.tileIndex, resetCamera });
     this.renderEventLayerClickFeedback();
+    this.renderAgentGhostPreview();
     if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.renderBuildPaletteOverlay();
   }
 
-  private applyStamp(input: {
-    readonly autoConnect: boolean;
-    readonly layer: TileLayer;
-    readonly mapId: MapId;
-    readonly stamp: TileStamp;
-    readonly x: number;
-    readonly y: number;
-  }): void {
-    for (const cell of input.stamp.cells) {
-      paintTile(input.mapId, input.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: input.autoConnect });
-    }
+  private canIncrementallyRenderCells(mapId: MapId): boolean {
+    if (this.lastRenderedMapId !== mapId) return false;
+    if (!this.tileLayer || !this.overlayLayer || !this.gridGraphics) return false;
+    return this.lastRenderStateKey === this.renderStateKey(mapId);
   }
 
-  private applyPaletteStamp(input: {
-    readonly mapId: MapId;
-    readonly stamp: PaletteStamp;
-    readonly x: number;
-    readonly y: number;
-  }): void {
-    for (const cell of input.stamp.cells) {
-      paintTile(input.mapId, cell.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: false });
-    }
+  private redrawCells(cells: readonly ProjectChangeCell[]): EditSceneRenderStats {
+    const mid = this.mapId();
+    const tileLayer = this.tileLayer;
+    const overlayLayer = this.overlayLayer;
+    const gridGraphics = this.gridGraphics;
+    if (!mid || !tileLayer || !overlayLayer || !gridGraphics) return { tileObjectsUpdated: 0 };
+    const stats = renderEditSceneTileCells({
+      scene: this,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: mid,
+      tileIndex: this.tileIndex,
+    }, cells);
+    if (this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.renderBuildPaletteOverlay();
+    return stats;
   }
 
   private redrawWhenViewStateChanges(): void {
     const mid = this.mapId();
     if (!mid) return;
     const nextKey = this.renderStateKey(mid);
-    if (nextKey === this.lastRenderStateKey) return;
+    if (nextKey === this.lastRenderStateKey) {
+      this.renderBuildPaletteOverlay();
+      return;
+    }
     this.redraw();
   }
 
@@ -1098,6 +775,20 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderEventLayerClickFeedback();
   }
 
+  private updateEventMarkerTooltip(x: number, y: number): void {
+    const mapId = this.mapId();
+    const canvas = this.game.canvas;
+    if (!mapId || !canvas) return;
+    const map = store.getCurrent().maps[mapId];
+    const existing = map ? committedEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    canvas.title = existing ? eventMarkerTooltip(existing) : "";
+  }
+
+  private clearEventMarkerTooltip(): void {
+    const canvas = this.game.canvas;
+    if (canvas) canvas.title = "";
+  }
+
   private renderEventLayerClickFeedback(): void {
     const layer = this.eventClickFeedbackLayer;
     if (!layer) return;
@@ -1106,10 +797,99 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!feedback || feedback.mapId !== this.mapId() || editorState.get().layer !== "event") return;
     renderEventLayerClickFeedback({ scene: this, overlayLayer: layer }, feedback);
   }
+
+  private renderAgentGhostPreview(): void {
+    this.agentGhostPreviewRenderer?.render();
+  }
+
+  private clearAgentGhostPreviewLayer(): void {
+    this.agentGhostPreviewRenderer?.clear();
+  }
+
+  private refreshAgentGhostDomMarkers(): void {
+    this.agentGhostPreviewRenderer?.refreshDomMarkers();
+  }
+
+  private showAgentFocusHighlight(target: AgentFocusTarget): void {
+    this.agentFocusRenderer?.show(target);
+  }
+
+  private clearAgentFocusHighlight(): void {
+    this.agentFocusRenderer?.clear();
+  }
+
+  private renderBuildPaletteOverlay(): void {
+    if (typeof document === "undefined") return;
+    const selection = editorState.get().selection;
+    const mapId = this.mapId();
+    if (!isBuildPaletteEnabled() || !selection || selection.mapId !== mapId) {
+      this.clearBuildPaletteOverlay();
+      return;
+    }
+    const host = this.game.canvas.parentElement;
+    if (!host) {
+      this.clearBuildPaletteOverlay();
+      return;
+    }
+
+    const popupKey = `${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`;
+    if (!this.buildPalettePopup || this.buildPalettePopupKey !== popupKey || !this.buildPalettePopup.isConnected) {
+      this.clearBuildPaletteOverlay();
+      const popup = renderBuildPalettePopup();
+      if (!popup) return;
+      popup.classList.add("build-palette-floating");
+      popup.style.left = "0px";
+      popup.style.top = "0px";
+      popup.style.visibility = "hidden";
+      host.append(popup);
+      this.buildPalettePopup = popup;
+      this.buildPalettePopupKey = popupKey;
+    }
+    this.positionBuildPaletteOverlay(selection);
+  }
+
+  private positionBuildPaletteOverlay(selection: TileRect): void {
+    const popup = this.buildPalettePopup;
+    if (!popup) return;
+    const canvas = this.game.canvas;
+    const host = canvas.parentElement;
+    if (!host) return;
+    const camera = this.cameras.main;
+    const selectionRect = tileRectToScreenRect(selection, {
+      scrollX: camera.scrollX,
+      scrollY: camera.scrollY,
+      zoom: camera.zoom,
+    });
+    const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+    const popupSize = {
+      width: Math.max(1, popupRect.width || popup.offsetWidth || 184),
+      height: Math.max(1, popupRect.height || popup.offsetHeight || 140),
+    };
+    const canvasSize = {
+      width: Math.max(1, canvasRect.width || canvas.width),
+      height: Math.max(1, canvasRect.height || canvas.height),
+    };
+    const point = anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
+    popup.style.left = `${Math.round(canvasRect.left - hostRect.left + point.x)}px`;
+    popup.style.top = `${Math.round(canvasRect.top - hostRect.top + point.y)}px`;
+    popup.style.visibility = "";
+  }
+
+  private clearBuildPaletteOverlay(): void {
+    this.buildPalettePopup?.remove();
+    this.buildPalettePopup = null;
+    this.buildPalettePopupKey = "";
+  }
 }
 
 function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
   if (!node) return;
   node.textContent = text;
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
 }

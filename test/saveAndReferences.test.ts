@@ -14,17 +14,25 @@ function mkSession(): PlaySession {
     gold: 750,
     inventory: { potion: 3 },
     partyActorIds: [],
+    monsterInstances: {},
+    monsterParty: [],
+    monsterBox: [],
+    classOverrides: {},
     actorSkillIds: {},
     actorExperience: {},
     actorLevels: {},
     actorVitals: {},
     eventLocations: {},
+    erasedEventIds: [],
     npcTravelStates: {},
+    followers: [],
+    followerTrail: [],
     actorEquipment: {},
     actorRows: {},
     currentMapId: "m1",
     x: 5,
     y: 6,
+    lighting: { ambient: 0, sources: [] },
     mapOverrides: {},
     flags: {},
     audio: {},
@@ -81,6 +89,30 @@ describe("세이브 직렬화 — gold/selfSwitches", () => {
     const snapshot = createSaveSnapshot(project, session);
 
     expect(snapshot.mapName).toBe("시작 마을");
+  });
+
+  it("대표 파티 레벨이 슬롯 메타데이터에 저장된다", () => {
+    const project = createBlankProject();
+    const actorId = project.database.actors[0]!.id;
+    const session = mkSession();
+    session.partyActorIds = [actorId];
+    session.actorLevels = { [actorId]: 7 };
+
+    const snapshot = createSaveSnapshot(project, session);
+
+    expect(snapshot.partyLevel).toBe(7);
+  });
+
+  it("erasedEventIds 가 스냅샷에 저장되고 로드 후 복원된다", () => {
+    const project = createBlankProject();
+    const session = mkSession();
+    session.erasedEventIds = ["ev_erased"];
+
+    const snapshot = createSaveSnapshot(project, session);
+    const restored = applySaveSnapshot(project, snapshot);
+
+    expect(snapshot.session.erasedEventIds).toEqual(["ev_erased"]);
+    expect(restored.erasedEventIds).toEqual(["ev_erased"]);
   });
 });
 

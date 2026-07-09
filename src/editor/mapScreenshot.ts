@@ -1,5 +1,10 @@
 import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
+import {
+  isTerrainQuarterTile,
+  terrainQuarterSources,
+  type TerrainQuarterSource,
+} from "@/project/defaults/terrainQuarterAutotile";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
@@ -76,6 +81,13 @@ function drawLayer(
       drawLakeAutotile(context, image, map, tileset, x, y);
       continue;
     }
+    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
+      const terrainQuarters = terrainQuarterSources(map, x, y);
+      if (terrainQuarters) {
+        drawTerrainQuarter(context, image, tileset, x, y, terrainQuarters);
+        continue;
+      }
+    }
     drawRawTile(context, image, tileset, tile, x, y);
   }
 }
@@ -89,6 +101,26 @@ function drawLakeAutotile(
   y: number,
 ): void {
   for (const part of lakeAutotileQuarterSources(map, x, y)) {
+    const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
+    const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
+    const targetX = (x * tileset.tileSize + part.offsetX) * SCREENSHOT_SCALE;
+    const targetY = (y * tileset.tileSize + part.offsetY) * SCREENSHOT_SCALE;
+    const quarterSize = tileset.tileSize / 2;
+    const drawSize = quarterSize * SCREENSHOT_SCALE;
+    context.drawImage(image, sourceX, sourceY, quarterSize, quarterSize, targetX, targetY, drawSize, drawSize);
+  }
+}
+
+// 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
+function drawTerrainQuarter(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  tileset: TilesetDef,
+  x: number,
+  y: number,
+  sources: readonly TerrainQuarterSource[]
+): void {
+  for (const part of sources) {
     const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
     const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
     const targetX = (x * tileset.tileSize + part.offsetX) * SCREENSHOT_SCALE;

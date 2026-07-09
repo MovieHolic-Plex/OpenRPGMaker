@@ -9,6 +9,7 @@ const MOVEMENT_TYPE_OPTIONS = [
   { value: "fixed", label: "정지" },
   { value: "random", label: "무작위" },
   { value: "approach", label: "접근" },
+  { value: "chase", label: "추격" },
   { value: "custom", label: "사용자 지정" },
   { value: "living", label: "생활 이동" },
 ] as const;
@@ -77,6 +78,9 @@ function movementForType(movement: EventPageMovement, type: EventPageMovement["t
         repeat: false,
       },
     };
+  }
+  if (type === "chase") {
+    return { ...movement, type, pathfind: movement.pathfind ?? true };
   }
   return { ...movement, type };
 }

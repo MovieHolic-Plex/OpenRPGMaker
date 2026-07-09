@@ -60,10 +60,13 @@ export {
 export {
   createBlankProject,
   createDbExtractedHouseTemplateProject,
+  createFarmingDemoProject,
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createMarketTownProject,
   createRetroHouseShowcaseProject,
+  createSampleAdventureProject,
+  createTrainingExamplesProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
   createTownArchitectureCityProject,

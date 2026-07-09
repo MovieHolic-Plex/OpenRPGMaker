@@ -1,7 +1,7 @@
 import { commandsReference, commandsResourceReference, switchVariableReferencedInProject } from "@/editor/databaseCommandReferences";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
-import type { ItemRecord, SkillRecord } from "@/project/types";
+import type { Command, ItemRecord, SkillRecord } from "@/project/types";
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
   const project = store.getCurrent();
@@ -26,6 +26,7 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
     case "classes":
       if (project.database.actors.some((record) => record.classId === id)) return "주인공이 이 직업을 사용 중입니다.";
       if (project.database.equipment.some((record) => record.equippableClassIds.includes(id))) return "장비가 이 직업을 사용 중입니다.";
+      if (project.database.items.some((record) => record.usableClassIds.includes(id) || record.equipmentProfile.equippableClassIds.includes(id))) return "아이템/장비 효과가 이 직업을 사용 중입니다.";
       return null;
     case "equipment":
       if (project.database.actors.some((record) => Object.values(record.initialEquipment).includes(id))) return "주인공이 이 장비를 사용 중입니다.";
@@ -33,6 +34,8 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (commandsReference(project, "equipment", id)) return "이벤트 명령이 이 장비를 사용 중입니다.";
       return null;
     case "battleAnimations":
+      if (project.database.actors.some((record) => record.unarmedAnimationId === id)) return "주인공이 이 전투 애니메이션을 사용 중입니다.";
+      if (project.database.classes.some((record) => record.animationId === id)) return "직업이 이 전투 애니메이션을 사용 중입니다.";
       if (project.database.skills.some((record) => record.animationId === id)) return "스킬이 이 전투 애니메이션을 사용 중입니다.";
       if (project.database.items.some((record) => record.animationId === id)) return "아이템이 이 전투 애니메이션을 사용 중입니다.";
       return null;
@@ -45,9 +48,43 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (commandsReference(project, "items", id)) return "이벤트 명령이 이 아이템을 사용 중입니다.";
       return null;
     case "states":
-      if (project.database.items.some((record) => record.stateEffects.some((effect) => effect.stateId === id))) return "아이템이 이 상태를 사용 중입니다.";
+      if (project.database.skills.some((record) => record.stateEffects?.some((effect) => effect.stateId === id))) return "스킬이 이 상태를 사용 중입니다.";
+      if (project.database.items.some((record) => record.stateEffects.some((effect) => effect.stateId === id) || record.healStateIds.includes(id) || record.equipmentProfile.stateInflictIds.includes(id) || record.equipmentProfile.stateDefenseIds.includes(id))) return "아이템이 이 상태를 사용 중입니다.";
       if (project.database.equipment.some((record) => record.stateInflictIds.includes(id))) return "장비가 이 상태를 사용 중입니다.";
       return null;
+  }
+}
+
+export function commonEventReferenceMessage(id: string): string | null {
+  const project = store.getCurrent();
+  if (
+    project.commonEvents.some((event) => event.id !== id && commandListReferencesCommonEvent(event.commands, id)) ||
+    Object.values(project.maps).some((map) =>
+      map.events.some((event) => commandListReferencesCommonEvent(event.commands, id) || (event.pages ?? []).some((page) => commandListReferencesCommonEvent(page.commands, id)))
+    ) ||
+    project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id)))
+  ) return "이벤트 명령이 이 커먼 이벤트를 호출 중입니다.";
+  return null;
+}
+
+function commandListReferencesCommonEvent(commands: readonly Command[], id: string): boolean {
+  return commands.some((command) => commandReferencesCommonEvent(command, id));
+}
+
+function commandReferencesCommonEvent(command: Command, id: string): boolean {
+  switch (command.kind) {
+    case "callCommonEvent":
+      return command.commonEventId === id;
+    case "choices":
+      return command.options.some((option) => commandListReferencesCommonEvent(option.branch, id)) || commandListReferencesCommonEvent(command.cancelBranch ?? [], id);
+    case "fork":
+      return commandListReferencesCommonEvent(command.then, id) || commandListReferencesCommonEvent(command.else ?? [], id);
+    case "loop":
+      return commandListReferencesCommonEvent(command.body, id);
+    case "shop":
+      return commandListReferencesCommonEvent(command.transactionBranch ?? [], id);
+    default:
+      return false;
   }
 }
 

@@ -9,7 +9,11 @@ import {
 } from "./defaults/defaultDatabaseStarterRecords";
 import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
-import type { GameMap, MapTreeNode, Project, TerrainTemplateMetadata, TilesetDef } from "./types";
+import { sha256HexText } from "../util/sha256";
+import { randomUuid } from "../util/id";
+import type { ChangeSummary } from "@/editor/tools/types";
+import type { EditorIdentity } from "./editorIdentity";
+import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
 const DEFAULT_PROJECT_TITLE = "RPG Zzu";
@@ -33,16 +37,8 @@ type SupabaseProjectListRow = {
   readonly title: string | null;
 };
 
-type SupabaseProjectHealthRow = {
-  readonly project_id: string;
-};
-
-export type SupabaseProjectHealthResult =
-  | { readonly kind: "healthy" }
-  | { readonly kind: "missing" }
-  | { readonly kind: "not-configured" };
-
-type SupabaseChildTable = "ai_analysis_runs" | "maps" | "terrain_templates" | "tilesets";
+type SupabaseChildTable = "ai_analysis_runs" | "maps" | "tilesets";
+type SupabaseCommitTable = "project_changes" | "project_commits";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
 export type SupabaseMapSaveConflict = {
@@ -66,6 +62,30 @@ type SupabaseAiAnalysisRunInput = {
   readonly result: unknown;
   readonly selectedTiles: readonly number[];
   readonly tilesetId: string;
+};
+
+export type ProjectCommitReviewStatus = "approved" | "direct";
+
+export type SupabaseProjectCommitInput = {
+  readonly diff?: ChangeSummary;
+  readonly identity: EditorIdentity;
+  readonly project: Project;
+  readonly reviewStatus: ProjectCommitReviewStatus;
+  readonly serialized?: string;
+  readonly summary: string;
+  readonly toolNames: readonly string[];
+};
+
+export type SupabaseProjectCommitListItem = {
+  readonly agentName: string | null;
+  readonly authorId: string | null;
+  readonly authorKind: string | null;
+  readonly authorLabel: string | null;
+  readonly commitId: string;
+  readonly createdAt: string | null;
+  readonly message: string;
+  readonly reviewStatus: string | null;
+  readonly summary: string | null;
 };
 
 type SupabaseProjectSnapshot = {
@@ -99,28 +119,6 @@ export async function listSupabaseProjects(config: SupabaseProjectListConfig): P
     projectId: row.project_id,
     title: supabaseProjectListTitle(row),
   }));
-}
-
-export async function pingSupabaseProject(
-  config = supabaseProjectConfig(),
-  timeoutMs = 3500,
-): Promise<SupabaseProjectHealthResult> {
-  if (!config) return { kind: "not-configured" };
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(supabaseProjectHealthUrl(config), {
-      headers: supabaseJsonHeaders(config, "read"),
-      signal: controller.signal,
-    });
-    if (!response.ok) {
-      throw new SupabaseProjectSyncError(await response.text(), response.status);
-    }
-    const rows = await parseProjectHealthRows(response);
-    return rows.length > 0 ? { kind: "healthy" } : { kind: "missing" };
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 async function loadProjectSnapshotFromSupabase(
@@ -212,6 +210,36 @@ export async function recordSupabaseAiAnalysisRun(
   return { kind: "saved" };
 }
 
+export async function recordProjectCommitToSupabase(
+  input: SupabaseProjectCommitInput,
+  config = supabaseProjectConfig(),
+): Promise<SupabaseSaveResult> {
+  if (!config) return { kind: "not-configured" };
+  const serialized = input.serialized ?? serialize(projectWithoutEventDrafts(input.project));
+  const commitId = randomUuid();
+  const currentSha256 = await sha256Hex(serialized);
+  try {
+    await insertRows(config, "project_commits", [projectCommitRow(config.projectId, commitId, currentSha256, input)]);
+    await insertRows(config, "project_changes", [projectChangeRow(config.projectId, commitId, input)]);
+  } catch (error) {
+    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    throw error;
+  }
+  return { kind: "saved" };
+}
+
+export async function listProjectCommitsFromSupabase(
+  limit = 20,
+  config = supabaseProjectConfig(),
+): Promise<readonly SupabaseProjectCommitListItem[]> {
+  if (!config) throw new SupabaseProjectSyncError("Supabase 설정 없음");
+  const response = await fetch(supabaseProjectCommitsListUrl(config, limit), {
+    headers: supabaseJsonHeaders(config, "read"),
+  });
+  if (!response.ok) throw new SupabaseProjectSyncError(await response.text(), response.status);
+  return parseProjectCommitRows(await response.json());
+}
+
 function supabaseProjectUrl(config: SupabaseProjectConfig): string {
   const query = new URLSearchParams({
     select: "current_json,current_sha256",
@@ -224,15 +252,6 @@ function supabaseProjectListUrl(config: SupabaseProjectListConfig): string {
   const query = new URLSearchParams({
     order: "project_id.asc",
     select: "project_id,title,current_json",
-  });
-  return `${config.url}/rest/v1/projects?${query.toString()}`;
-}
-
-function supabaseProjectHealthUrl(config: SupabaseProjectConfig): string {
-  const query = new URLSearchParams({
-    limit: "1",
-    project_id: `eq.${config.projectId}`,
-    select: "project_id",
   });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
 }
@@ -255,6 +274,10 @@ function supabaseTableUpsertUrl(config: SupabaseProjectConfig, table: SupabaseCh
   return `${config.url}/rest/v1/${table}?${query.toString()}`;
 }
 
+function supabaseTableInsertUrl(config: SupabaseProjectConfig, table: SupabaseCommitTable): string {
+  return `${config.url}/rest/v1/${table}`;
+}
+
 function supabaseTableDeleteUrl(config: SupabaseProjectConfig, table: SupabaseChildTable): string {
   const query = new URLSearchParams({ project_id: `eq.${config.projectId}` });
   return `${config.url}/rest/v1/${table}?${query.toString()}`;
@@ -266,6 +289,16 @@ function supabaseMapRowsDeleteUrl(config: SupabaseProjectConfig, mapIds: readonl
     map_id: `in.(${mapIds.map(supabaseListValue).join(",")})`,
   });
   return `${config.url}/rest/v1/maps?${query.toString()}`;
+}
+
+function supabaseProjectCommitsListUrl(config: SupabaseProjectConfig, limit: number): string {
+  const query = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    limit: String(Math.max(1, Math.min(100, Math.floor(limit)))),
+    order: "created_at.desc",
+    select: "commit_id,message,summary,review_status,author_id,author_label,author_kind,agent_name,created_at",
+  });
+  return `${config.url}/rest/v1/project_commits?${query.toString()}`;
 }
 
 function supabaseJsonHeaders(
@@ -308,17 +341,6 @@ async function parseProjectListRows(response: Response): Promise<readonly Supaba
       project_id: entry.project_id,
       title: typeof entry.title === "string" ? entry.title : null,
     };
-  });
-}
-
-async function parseProjectHealthRows(response: Response): Promise<readonly SupabaseProjectHealthRow[]> {
-  const parsed: unknown = await response.json();
-  if (!Array.isArray(parsed)) throw new SupabaseProjectSyncError("Supabase project health response was not an array");
-  return parsed.map((entry) => {
-    if (!isRecord(entry) || typeof entry.project_id !== "string") {
-      throw new SupabaseProjectSyncError("Supabase project health row is missing project_id");
-    }
-    return { project_id: entry.project_id };
   });
 }
 
@@ -383,14 +405,12 @@ async function projectUpsertPayload(projectId: string, project: Project, seriali
     current_sha256: await sha256Hex(serialized),
     map_count: Object.keys(project.maps).length,
     tileset_count: Object.keys(project.tilesets).length,
-    terrain_template_count: terrainTemplateCount(project),
   };
 }
 
 async function saveProjectChildRows(config: SupabaseProjectConfig, project: Project): Promise<void> {
   await replaceRows(config, "maps", "project_id,map_id", await Promise.all(Object.values(project.maps).map((map) => mapRow(config.projectId, map))));
   await replaceRows(config, "tilesets", "project_id,tileset_id", Object.values(project.tilesets).map((tileset) => tilesetRow(config.projectId, tileset)));
-  await replaceRows(config, "terrain_templates", "project_id,tileset_id,template_id", terrainTemplateRows(config.projectId, project));
 }
 
 async function saveChangedMapRows(
@@ -477,6 +497,22 @@ async function upsertRows(
   }
 }
 
+async function insertRows(
+  config: SupabaseProjectConfig,
+  table: SupabaseCommitTable,
+  rows: readonly Record<string, unknown>[],
+): Promise<void> {
+  if (rows.length === 0) return;
+  const response = await fetch(supabaseTableInsertUrl(config, table), {
+    method: "POST",
+    headers: supabaseJsonHeaders(config, "write"),
+    body: JSON.stringify(rows),
+  });
+  if (!response.ok) {
+    throw new SupabaseProjectSyncError(await response.text(), response.status);
+  }
+}
+
 async function mapRow(projectId: string, map: GameMap): Promise<Record<string, unknown>> {
   const lowerTiles = JSON.stringify(map.lowerTiles);
   const upperTiles = JSON.stringify(map.upperTiles);
@@ -505,26 +541,9 @@ function tilesetRow(projectId: string, tileset: TilesetDef): Record<string, unkn
   };
 }
 
-function terrainTemplateRows(projectId: string, project: Project): readonly Record<string, unknown>[] {
-  return Object.values(project.tilesets).flatMap((tileset) =>
-    (tileset.terrainTemplates ?? []).map((template) => terrainTemplateRow(projectId, tileset.id, template)),
-  );
-}
-
-function terrainTemplateRow(projectId: string, tilesetId: string, template: TerrainTemplateMetadata): Record<string, unknown> {
-  return {
-    project_id: projectId,
-    tileset_id: tilesetId,
-    template_id: template.id,
-    name: template.name,
-    category: null,
-    template_json: template,
-  };
-}
-
 function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput): Record<string, unknown> {
   return {
-    run_id: crypto.randomUUID(),
+    run_id: randomUuid(),
     project_id: projectId,
     tileset_id: input.tilesetId,
     selected_tile_ids_json: input.selectedTiles,
@@ -533,13 +552,66 @@ function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput):
   };
 }
 
-async function sha256Hex(value: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+function projectCommitRow(
+  projectId: string,
+  commitId: string,
+  currentSha256: string,
+  input: SupabaseProjectCommitInput,
+): Record<string, unknown> {
+  return {
+    commit_id: commitId,
+    project_id: projectId,
+    parent_commit_id: null,
+    message: input.summary,
+    summary: input.summary,
+    review_status: input.reviewStatus,
+    author_id: input.identity.id,
+    author_label: input.identity.label,
+    author_kind: input.identity.kind,
+    agent_name: input.identity.kind === "agent" ? input.identity.agentName ?? null : null,
+    current_sha256: currentSha256,
+  };
 }
 
-function terrainTemplateCount(project: Project): number {
-  return Object.values(project.tilesets).reduce((count, tileset) => count + (tileset.terrainTemplates?.length ?? 0), 0);
+function projectChangeRow(
+  projectId: string,
+  commitId: string,
+  input: SupabaseProjectCommitInput,
+): Record<string, unknown> {
+  return {
+    commit_id: commitId,
+    entity_type: "project",
+    entity_id: projectId,
+    operation: "changeset",
+    patch_json: {
+      diff: input.diff ?? null,
+      toolNames: input.toolNames,
+    },
+  };
+}
+
+function parseProjectCommitRows(parsed: unknown): readonly SupabaseProjectCommitListItem[] {
+  if (!Array.isArray(parsed)) throw new SupabaseProjectSyncError("Supabase project commits response was not an array");
+  return parsed.map((entry) => {
+    if (!isRecord(entry) || typeof entry.commit_id !== "string" || typeof entry.message !== "string") {
+      throw new SupabaseProjectSyncError("Supabase project commit row is missing commit_id/message");
+    }
+    return {
+      agentName: typeof entry.agent_name === "string" ? entry.agent_name : null,
+      authorId: typeof entry.author_id === "string" ? entry.author_id : null,
+      authorKind: typeof entry.author_kind === "string" ? entry.author_kind : null,
+      authorLabel: typeof entry.author_label === "string" ? entry.author_label : null,
+      commitId: entry.commit_id,
+      createdAt: typeof entry.created_at === "string" ? entry.created_at : null,
+      message: entry.message,
+      reviewStatus: typeof entry.review_status === "string" ? entry.review_status : null,
+      summary: typeof entry.summary === "string" ? entry.summary : null,
+    };
+  });
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  return sha256HexText(value);
 }
 
 function changedMapIdsBetween(baseProject: Project, project: Project): readonly string[] {

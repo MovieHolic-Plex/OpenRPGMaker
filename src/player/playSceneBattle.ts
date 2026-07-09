@@ -8,6 +8,8 @@ import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
+import { giveMonster } from "@/project/monsterCollection";
+import { nextSessionRandom } from "@/project/session";
 
 export function showBattleScene(scene: PlaySceneContext, troopId: string): void {
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
@@ -25,6 +27,36 @@ export function playBattle(
     troopId: step.troopId,
     canEscape: step.canEscape,
     canLose: step.canLose,
+    battleFlow: step.battleFlow,
+    party: {
+      levels: scene.session.actorLevels,
+      experience: scene.session.actorExperience,
+      names: scene.session.actorNames,
+      vitals: scene.session.actorVitals,
+      paramBonuses: scene.session.actorParamBonuses,
+      equipment: scene.session.actorEquipment,
+      skillIds: scene.session.actorSkillIds,
+      classOverrides: scene.session.classOverrides,
+      stateIds: scene.session.actorStateIds,
+      // 플레이 중 파티 편성(라이브 세션). 없으면 전투가 에디터 시작 상태 파티를 쓴다.
+      partyActorIds: scene.session.partyActorIds,
+    },
+    sessionState: {
+      switches: scene.session.switches,
+      variables: scene.session.variables,
+      inventory: scene.session.inventory,
+      gameTime: scene.session.gameTime,
+    },
+    captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
+    onMonsterCaptured: (capture) => {
+      giveMonster(store.getCurrent(), scene.session, {
+        speciesId: capture.speciesId,
+        level: capture.level,
+        caughtAt: capture.caughtAt,
+        ivs: capture.ivs,
+      });
+    },
+    rng: () => nextSessionRandom(scene.session, "battle"),
   });
   advanceBattleRuntime(runtime);
   return new Promise<BattleResult>((resolve) => {
@@ -32,7 +64,11 @@ export function playBattle(
       host,
       runtime,
       onResult: (result, snapshot) => {
-        applyBattleRewardsToSession(scene.session, { result, rewards: snapshot.rewards });
+        applyBattleRewardsToSession(
+          scene.session,
+          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds },
+          store.getCurrent()
+        );
         battleScene.destroy();
         resolve(result);
       },

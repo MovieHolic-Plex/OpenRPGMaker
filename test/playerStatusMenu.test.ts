@@ -2,10 +2,33 @@ import { describe, expect, it } from "vitest";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
+import type { SaveSlotReadResult } from "@/player/saveSlots";
+import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
+const noopActions: PlayerStatusMenuActions = {
+  onCommand: () => undefined,
+  onSaveSlot: () => undefined,
+  onLoadSlot: () => undefined,
+  onSelectItemTarget: () => undefined,
+  onUseItem: () => undefined,
+  onSelectSkillActor: () => undefined,
+  onSelectSkill: () => undefined,
+  onSelectEquipmentActor: () => undefined,
+  onSelectEquipmentSlot: () => undefined,
+  onEquipItem: () => undefined,
+  onUnequipItem: () => undefined,
+  onToggleRow: () => undefined,
+  onSelectFormationActor: () => undefined,
+  onMoveFormationActor: () => undefined,
+  onToggleMonsterView: () => undefined,
+  onMoveMonster: () => undefined,
+  onToggleWait: () => undefined,
+  onToTitle: () => undefined,
+};
+
 describe("player status menu", () => {
-  it("opens command functions as full-screen scenes", () => {
+  it("keeps function mode in the unified Korean menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -16,33 +39,162 @@ describe("player status menu", () => {
           slots: [],
           selectedCommand: "skills",
           mode: "function",
-          actions: {
-            onCommand: () => undefined,
-            onSaveSlot: () => undefined,
-            onLoadSlot: () => undefined,
-            onSelectItemTarget: () => undefined,
-            onUseItem: () => undefined,
-            onSelectSkillActor: () => undefined,
-            onSelectSkill: () => undefined,
-            onSelectEquipmentActor: () => undefined,
-            onSelectEquipmentSlot: () => undefined,
-            onEquipItem: () => undefined,
-            onToggleRow: () => undefined,
-            onSelectFormationActor: () => undefined,
-            onMoveFormationActor: () => undefined,
-            onToggleWait: () => undefined,
-            onToTitle: () => undefined,
-          },
+          actions: noopActions,
         }),
       );
 
-      const commandRail = findByTestId(menu, "status-menu-command-rail");
-      const skillsCommand = findByTestId(menu, "status-menu-command-skills");
-      const scene = findByTestId(menu, "status-menu-fullscreen-skills");
+      expect(findByTestId(menu, "status-menu-command-rail")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-fullscreen-skills")).toBeNull();
+      expect(findByTestId(menu, "status-menu-command-quests")?.textContent).toBe("임무");
+      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("스킬");
+    } finally {
+      restoreDom();
+    }
+  });
 
-      expect(commandRail).toBeNull();
-      expect(skillsCommand).toBeNull();
-      expect(scene?.textContent).toContain("스킬");
+  it("renders all 12 commands and full party vitals", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session: startSession(project),
+          slots: [],
+          actions: noopActions,
+        }),
+      );
+
+      for (const commandId of ["items", "skills", "equipment", "monsters", "save", "load", "status", "row", "formation", "quests", "wait", "to-title"]) {
+        expect(findByTestId(menu, `status-menu-command-${commandId}`)).not.toBeNull();
+      }
+      expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toMatch(/HP \d+\/\d+/);
+      expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toMatch(/MP \d+\/\d+/);
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("shows empty save slots as empty and keeps the selected cursor", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const slots: SaveSlotReadResult[] = [{ kind: "empty", slot: 1 }];
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session: startSession(project),
+          slots,
+          selectedCommand: "save",
+          mode: "function",
+          selectedDetailActionIndex: 0,
+          actions: noopActions,
+        }),
+      );
+
+      const slot = findByTestId(menu, "save-slot-1");
+      expect(slot?.textContent).toContain("비어 있음");
+      expect(slot?.className).toContain("selected");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps status detail HP and MP numbers visible in text", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session: startSession(project),
+          slots: [],
+          selectedCommand: "status",
+          actions: noopActions,
+        }),
+      );
+
+      const detail = findByTestId(menu, "status-menu-detail");
+      expect(detail?.textContent).toMatch(/HP \d+\/\d+/);
+      expect(detail?.textContent).toMatch(/MP \d+\/\d+/);
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps legacy row action test ids in the Korean detail panel", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session: startSession(project),
+          slots: [],
+          selectedCommand: "row",
+          mode: "function",
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-row-actor_hero")).not.toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("shows the unequip candidate when an equipped slot is opened", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const actorId = session.partyActorIds[0]!;
+      const weapon = project.database.equipment.find((record) => record.slot === "weapon");
+      if (!weapon) throw new Error("missing weapon fixture");
+      session.actorEquipment[actorId] = { weapon: weapon.id };
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "equipment",
+          mode: "function",
+          equipmentActorId: actorId,
+          equipmentSlotId: "weapon",
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-equipment-item-none")?.textContent).toContain("해제");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps item target rows to name, HP, and MP without repeated guidance", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const item = project.database.items.find((record) => record.id === "item_potion") ?? project.database.items[0]!;
+      item.name = "테스트 회복약";
+      session.actorVitals[session.partyActorIds[0]!]!.hp = 10;
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "items",
+          mode: "function",
+          targetItemId: item.id,
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("대상 선택: 테스트 회복약");
+      const target = findByTestId(menu, `status-menu-item-target-${session.partyActorIds[0]}`);
+      expect(target?.textContent).toMatch(/HP \d+\/\d+.*MP \d+\/\d+/);
+      expect(target?.textContent).not.toContain("사용할 대상을 선택하세요");
     } finally {
       restoreDom();
     }

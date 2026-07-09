@@ -3,14 +3,26 @@ import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import { applyFacing } from "@/player/playSceneAutonomousCommands";
+import { facingForDelta } from "@/player/playSceneAutonomousRouteDirection";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
 import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
-import { findBlockingRuntimeEventAtInMap, findRuntimeEventAtInMap } from "@/player/runtimeEventState";
+import {
+  findBlockingRuntimeEventAtInMap,
+  findRuntimeEventAtInMap,
+  setRuntimeEventPositionDirection,
+} from "@/player/runtimeEventState";
 import type { RuntimeEventView } from "@/player/runtimeEventState";
 import type { EventAnimationType } from "@/project/types";
+import { nextSessionRandom } from "@/project/session";
+import { isCutsceneInputLocked } from "@/player/cutsceneControl";
+import { recordFollowerPlayerStep } from "@/player/followers";
+import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { isFieldSpawnEventId } from "@/player/fieldSpawns";
+import { interactWithFarmPlot } from "@/player/farming";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -25,6 +37,8 @@ type ActionEventSceneContext = Pick<
   | "tileY"
 > & {
   readonly eventSprites: { get(eventId: string): AutonomousNpcSprite | undefined };
+  refreshRuntimeSurfaces?(): void;
+  syncRuntimeState?(): void;
 };
 
 export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void {
@@ -35,23 +49,25 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   }
   scene.session.playTimeSeconds += deltaMs / 1000;
   const input = scene.input_.update();
+  const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
   if (!scene.moving) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
-    else if (input.x !== 0 || input.y !== 0) tryStartMove(scene, input);
+    else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
     updatePlayerMovement(scene, deltaMs);
   } else {
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
-  if (input.actionPressed && !scene.moving) handleAction(scene);
+  if (!cutsceneInputLocked && input.actionPressed && !scene.moving) handleAction(scene);
   scene.input_.resetEdges();
   if (canUpdateWaitingEvents(scene)) {
     scene.updateAutonomousNPCs(deltaMs);
     scene.updateParallelEvents(deltaMs);
   }
   scene.updateTimers(deltaMs);
+  scene.updateFieldSpawns(deltaMs);
   scene.syncRuntimeState();
 }
 
@@ -83,10 +99,12 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     scene.tileY = scene.movingTo.y;
     scene.session.x = scene.tileX;
     scene.session.y = scene.tileY;
+    recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
     scene.moving = false;
     scene.player.x = characterSpriteX(scene.tileX);
     scene.player.y = characterSpriteY(scene.tileY);
     updateCharacterDepth(scene.player, "same");
+    syncFollowerSprites(scene);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
     return;
@@ -227,26 +245,43 @@ export function handleAction(scene: ActionEventSceneContext): void {
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
   const key = `${tx},${ty}`;
-  if (key === scene.lastActionTargetKey) return;
-  scene.lastActionTargetKey = key;
   const event = findRuntimeEventInScene(scene, tx, ty, "action");
   if (event) {
+    if (key === scene.lastActionTargetKey) return;
+    scene.lastActionTargetKey = key;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
     return;
   }
+  if (tryFarmInteraction(scene, tx, ty)) return;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
-  if (underfoot) void scene.runEvent(underfoot.event.id);
+  if (underfoot) {
+    const underfootKey = `${scene.tileX},${scene.tileY}`;
+    if (underfootKey === scene.lastActionTargetKey) return;
+    scene.lastActionTargetKey = underfootKey;
+    void scene.runEvent(underfoot.event.id);
+    return;
+  }
+  void tryFarmInteraction(scene, scene.tileX, scene.tileY);
+}
+
+function tryFarmInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {
+  const result = interactWithFarmPlot(store.getCurrent(), scene.session, scene.map, x, y);
+  if (result.kind === "ignored") return false;
+  scene.lastActionTargetKey = "";
+  scene.refreshRuntimeSurfaces?.();
+  scene.syncRuntimeState?.();
+  return true;
 }
 
 function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): void {
   if (!canActionTurn(event.animationType)) return;
   const direction = directionTowardPlayer(scene, event);
-  if (!direction) return;
   const mover = scene.autonomousNPCs.get(event.event.id);
   const frameDirection = mover ? applyFacing(mover, direction) : direction;
+  setActionEventRuntimeDirection(scene, event, frameDirection);
   setNpcIdleFrame(
     scene.eventSprites.get(event.event.id),
     event.page?.graphic.pattern ?? 0,
@@ -257,6 +292,8 @@ function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: Runt
 }
 
 function canActionTurn(animationType: EventAnimationType): boolean {
+  // 스펙 확인: 페이지 graphic에는 별도 directionFix 필드가 없고, 고정 방향은
+  // fixedDirection 계열 animationType 및 Move Route의 setDirectionFix(mover.directionFix)로 표현된다.
   switch (animationType) {
     case "normal":
     case "step":
@@ -271,12 +308,21 @@ function canActionTurn(animationType: EventAnimationType): boolean {
   }
 }
 
-function directionTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): Dir | null {
-  const dx = scene.tileX - event.x;
-  const dy = scene.tileY - event.y;
-  if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) return dx > 0 ? "right" : "left";
-  if (dy !== 0) return dy > 0 ? "down" : "up";
-  return null;
+function directionTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): Dir {
+  return facingForDelta(scene.tileX - event.x, scene.tileY - event.y, event.direction ?? "down");
+}
+
+function setActionEventRuntimeDirection(
+  scene: ActionEventSceneContext,
+  event: RuntimeEventView,
+  direction: Dir
+): void {
+  const location = scene.session.eventLocations?.[event.event.id];
+  if (location?.mapId === scene.session.currentMapId) {
+    scene.session.eventLocations[event.event.id] = { ...location, direction };
+    return;
+  }
+  setRuntimeEventPositionDirection(scene.eventPositions, event.event.id, direction);
 }
 
 function fireTouchTriggers(scene: PlaySceneContext): void {
@@ -302,6 +348,10 @@ function findBlockingRuntimeEventInScene(
 }
 
 function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: string): void {
+  if (isFieldSpawnEventId(eventId) && triggerKind === "eventTouch") {
+    void scene.runEvent(eventId);
+    return;
+  }
   if (triggerKind === "touch" || triggerKind === "playerTouch") void scene.runEvent(eventId);
 }
 
@@ -333,16 +383,20 @@ function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
   const map = scene.map;
   const rate = map.encounterRate ?? 0;
-  const troops = map.troopIds;
-  if (rate <= 0 || !troops || troops.length === 0) return;
+  if (rate <= 0) return;
+  const position = { x: scene.tileX, y: scene.tileY };
+  const hasCandidates = map.encounterTable && map.encounterTable.length > 0
+    ? eligibleEncounterEntries(map, scene.session, position).length > 0
+    : (map.troopIds?.length ?? 0) > 0;
+  if (!hasCandidates) return;
   encounterStepCounter += 1;
   encounterAccumulator += rate;
   // 누적 가중치가 임계(1000)를 넘으면 인카운트 발생. 매 스텝마다 rate가 쌓여
   // 결국 발생하도록 보장(rate 클수록 빠름). 발생 시 카운터/누적값 리셋.
-  if (encounterAccumulator < 1000 && Math.random() * 1000 >= encounterAccumulator) return;
+  if (!rollRandomEncounter(scene.session, encounterAccumulator)) return;
   encounterStepCounter = 0;
   encounterAccumulator = 0;
-  const troopId = troops[Math.floor(Math.random() * troops.length)] ?? troops[0];
+  const troopId = pickEncounterTroopForMap(map, scene.session, position);
   if (!troopId) return;
   // 전투 시작(비동기). scene.running 가드로 재진입 방지.
   void scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
@@ -352,4 +406,18 @@ function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
 export function resetEncounterCounter(): void {
   encounterStepCounter = 0;
   encounterAccumulator = 0;
+}
+
+export function rollRandomEncounter(
+  session: PlaySceneContext["session"],
+  accumulator: number
+): boolean {
+  return accumulator >= 1000 || nextSessionRandom(session, "encounter") * 1000 < accumulator;
+}
+
+export function pickRandomEncounterTroop(
+  session: PlaySceneContext["session"],
+  troops: readonly string[]
+): string | undefined {
+  return troops[Math.floor(nextSessionRandom(session, "encounter") * troops.length)] ?? troops[0];
 }

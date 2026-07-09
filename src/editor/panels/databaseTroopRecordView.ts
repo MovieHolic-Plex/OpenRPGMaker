@@ -6,6 +6,7 @@ import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
 import type { DatabaseTerrainRecord, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { applyMagentaChromaKeyToImageData } from "./chromaKey";
 
 const DEFAULT_MEMBER: TroopMemberRecord = { enemyId: "", x: 160, y: 120, hidden: false };
 const selectedMemberIndexes = new Map<string, number>();
@@ -256,6 +257,14 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
       rerender();
     }),
+    numberField("참전 수", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
+      updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
+      rerender();
+    }),
+    checkboxField("포획 불가", "db-field-troop-uncapturable", record.uncapturable === true, (uncapturable) => {
+      updateDatabaseRecord("troops", record.id, { uncapturable });
+      rerender();
+    }),
   ]);
 }
 
@@ -273,6 +282,11 @@ function checkboxField(label: string, testid: string, checked: boolean, onInput:
   input.checked = checked;
   input.addEventListener("change", () => onInput(input.checked));
   return el("label", { class: "actor-check", children: [input, el("span", { text: label })] });
+}
+
+function optionalPositiveInteger(value: number): number | undefined {
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  return Math.trunc(value);
 }
 
 function actionButton(label: string, testid: string, onClick: () => void): HTMLButtonElement {
@@ -373,11 +387,7 @@ function renderChromaKeyImage(canvas: HTMLCanvasElement, url: string): void {
     const y = Math.floor((canvas.height - height) / 2);
     context.drawImage(image, x, y, width, height);
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    for (let index = 0; index < data.length; index += 4) {
-      const isMagenta = data[index] > 220 && data[index + 1] < 80 && data[index + 2] > 220;
-      if (isMagenta) data[index + 3] = 0;
-    }
+    applyMagentaChromaKeyToImageData(imageData, { minBlue: 220 });
     context.putImageData(imageData, 0, 0);
   });
   image.src = url;

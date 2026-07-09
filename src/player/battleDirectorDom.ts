@@ -39,7 +39,7 @@ export function actorCommandDirectorState(
   const result = after.lastActionResult;
   const lines = [
     commandLine(command, actor),
-    impactLine(command, target, impact, result),
+    impactLine(command, target, impact, result, after),
   ];
   return {
     step: impact > 0 ? "impact" : "acting",
@@ -54,10 +54,13 @@ function impactLine(
   command: ActorCommand,
   target: BattleBattlerSnapshot | undefined,
   impact: number,
-  result: BattleSnapshot["lastActionResult"]
+  result: BattleSnapshot["lastActionResult"],
+  after: BattleSnapshot
 ): string {
   if (command.kind === "defend") return "받는 피해를 줄일 준비를 마쳤다.";
   if (command.kind === "escape") return "전장에서 벗어나려 한다.";
+  if (command.kind === "switch") return "전열을 교체했다.";
+  if (command.kind === "capture") return captureImpactLine(after.lastCaptureResult, target);
   if (result && !result.hit) return "공격이 빗나갔다!";
   if (result && result.critical && impact > 0) return `급소에 맞았다! ${target?.name ?? "적"}에게 ${impact} 피해!`;
   if (impact > 0) return `${target?.name ?? "적"}에게 ${impact} 피해!`;
@@ -87,6 +90,16 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
     lines: [resultLine(snapshot.result), rewardsLine(snapshot)],
     activeActorRecordId: previous.activeActorRecordId,
     targetId: previous.targetId,
+  };
+}
+
+export function battleEventDirectorState(snapshot: BattleSnapshot, previous: BattleDirectorState): BattleDirectorState {
+  const log = [...snapshot.eventLogs].reverse().find((entry) => entry.kind === "message" || entry.kind === "choices");
+  if (!log?.detail) return previous;
+  return {
+    ...previous,
+    step: "acting",
+    lines: [log.detail],
   };
 }
 
@@ -181,10 +194,12 @@ function commandTarget(
     case "attack":
     case "skill":
     case "item":
+    case "capture":
       return after.enemies.find((enemy) => enemy.id === command.targetEnemyId)
         ?? before.enemies.find((enemy) => enemy.id === command.targetEnemyId);
     case "defend":
     case "escape":
+    case "switch":
       return undefined;
   }
 }
@@ -198,10 +213,31 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
       return `${actorName}이 ${skillName(command.skillId)}을 사용했다!`;
     case "item":
       return `${actorName}이 ${itemName(command.itemId)}을 사용했다!`;
+    case "capture":
+      return `${actorName}이 ${itemName(command.captureItemId)}을 던졌다!`;
     case "defend":
       return `${actorName}이 방어 태세를 취했다.`;
     case "escape":
       return `${actorName}이 후퇴를 시도했다.`;
+    case "switch":
+      return `${actorName}이 교체를 지시했다.`;
+  }
+}
+
+function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: BattleBattlerSnapshot | undefined): string {
+  if (!result) return "포획을 시도했다.";
+  if (result.success) return `${target?.name ?? "몬스터"} 포획에 성공했다!`;
+  switch (result.blockedReason) {
+    case "uncapturable":
+      return "이 전투에서는 포획할 수 없다.";
+    case "missingItem":
+      return "포획 아이템이 없다.";
+    case "missingSpecies":
+      return "포획 대상 species가 정의되지 않았다.";
+    case "missingTarget":
+      return "포획할 대상이 없다.";
+    case undefined:
+      return "포획에 실패했다.";
   }
 }
 
@@ -229,7 +265,11 @@ function resultLine(result: BattleSnapshot["result"]): string {
 function rewardsLine(snapshot: BattleSnapshot): string {
   if (snapshot.result !== "victory") return "전투가 종료되었습니다.";
   const itemCount = snapshot.rewards.items.length;
-  return `경험치 ${snapshot.rewards.exp} / 골드 ${snapshot.rewards.gold} / 아이템 ${itemCount}`;
+  const base = `경험치 ${snapshot.rewards.exp} / 골드 ${snapshot.rewards.gold} / 아이템 ${itemCount}`;
+  const levelUps = snapshot.rewards.levelUps ?? [];
+  if (levelUps.length === 0) return base;
+  const names = levelUps.map((entry) => `${entry.actorName} Lv.${entry.toLevel}`).join(", ");
+  return `${base} · 레벨 업! ${names}`;
 }
 
 function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {
@@ -241,6 +281,10 @@ function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string;
   // 획득한 아이템이 있으면 실제 이름으로, 없으면 행을 추가하지 않는다(거짓 표시 금지).
   for (const itemId of snapshot.rewards.items) {
     rows.push({ kind: "item", label: "아이템", value: itemName(itemId) });
+  }
+  // 레벨업이 발생한 액터별로 "레벨 업!" 행을 추가.
+  for (const levelUp of snapshot.rewards.levelUps ?? []) {
+    rows.push({ kind: "levelup", label: `${levelUp.actorName} 레벨 업!`, value: `Lv.${levelUp.fromLevel}→${levelUp.toLevel}` });
   }
   return rows;
 }

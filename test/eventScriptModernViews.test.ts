@@ -1,0 +1,136 @@
+// [P2] 라이브 미리보기/플로우차트 파생 뷰 + 크로스 컨테이너 이동.
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { flattenScript, renderEventScriptModernViews } from "@/editor/panels/eventEditor/eventScriptModernViews";
+import {
+  FORK_THEN_BRANCH_INDEX,
+  isContainerInsideCommand,
+  moveCommandBetweenLists,
+  resolveCommandListAtPath,
+} from "@/editor/eventCommandPaths";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import type { Command, EventPage } from "@/project/types";
+import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+
+const PAGE_BASE: Omit<EventPage, "commands"> = {
+  id: "pg_test",
+  name: "테스트",
+  conditions: [],
+  graphic: {},
+  trigger: { kind: "action" },
+  priority: "same",
+  movement: { type: "fixed", speed: 3, frequency: 3 },
+};
+
+function pageWith(commands: Command[]): EventPage {
+  return { ...PAGE_BASE, commands };
+}
+
+describe("이벤트 스크립트 모던 뷰 (P2)", () => {
+  let restoreDom: (() => void) | undefined;
+
+  beforeEach(() => {
+    restoreDom = installFakeDom();
+    store.replace(createBlankProject());
+  });
+
+  afterEach(() => {
+    restoreDom?.();
+  });
+
+  it("flattenScript 는 분기 라벨과 직전 얼굴 상태를 스크립트 순서로 기록한다", () => {
+    const commands: Command[] = [
+      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 3, position: "left", flipHorizontally: false },
+      { kind: "text", body: "안녕" },
+      {
+        kind: "fork",
+        condition: { kind: "switch", switchId: "", value: true },
+        then: [{ kind: "text", body: "참" }],
+        else: [{ kind: "text", body: "거짓" }],
+      },
+    ];
+    const steps = flattenScript(commands);
+    expect(steps.map((step) => step.command.kind)).toEqual(["changeFace", "text", "fork", "text", "text"]);
+    // changeFace 자신에게는 이전 얼굴(없음), 다음 text 부터 적용.
+    expect(steps[0]?.face).toBeUndefined();
+    expect(steps[1]?.face).toMatchObject({ resourceId: "easyrpg-faceset-actor1", faceIndex: 3 });
+    expect(steps[3]?.branchLabel).toBe("참일 때");
+    expect(steps[4]?.branchLabel).toBe("그 외");
+  });
+
+  it("라이브 미리보기와 플로우차트는 기본 접힘 details 로 렌더된다", () => {
+    const root = renderWithFakeDom(() =>
+      renderEventScriptModernViews(pageWith([{ kind: "text", body: "한 줄" }]))
+    );
+    const live = findByTestId(root, "event-script-live-preview");
+    const flow = findByTestId(root, "event-script-flowchart");
+    expect(live).not.toBeNull();
+    expect(flow).not.toBeNull();
+    // 기본 접힘 (open 어트리뷰트/프로퍼티 없음)
+    expect((live as unknown as { open?: boolean }).open ?? false).toBe(false);
+    expect((flow as unknown as { open?: boolean }).open ?? false).toBe(false);
+    expect(findByTestId(root, "event-script-live-stage")).not.toBeNull();
+    expect(findByTestId(root, "event-flow-node-text")).not.toBeNull();
+  });
+
+  it("플로우차트는 fork/choices 분기를 하위 컬럼으로 렌더한다", () => {
+    const root = renderWithFakeDom(() =>
+      renderEventScriptModernViews(
+        pageWith([
+          {
+            kind: "choices",
+            options: [
+              { text: "예", branch: [{ kind: "text", body: "긍정" }] },
+              { text: "아니오", branch: [] },
+            ],
+          },
+        ])
+      )
+    );
+    const flow = findByTestId(root, "event-flowchart-body");
+    expect(flow).not.toBeNull();
+    const labels = flow ? flow.querySelectorAll(".event-flow-branch-label").map((node) => node.textContent) : [];
+    expect(labels).toContain("예");
+    expect(labels).toContain("아니오");
+    expect(flow?.querySelectorAll(".event-flow-empty").length).toBe(1);
+  });
+});
+
+describe("크로스 컨테이너 명령 이동 (P2)", () => {
+  it("isContainerInsideCommand 는 자기 분기 안 이동만 참이다", () => {
+    expect(isContainerInsideCommand([2], [2, FORK_THEN_BRANCH_INDEX])).toBe(true);
+    expect(isContainerInsideCommand([2], [1, FORK_THEN_BRANCH_INDEX])).toBe(false);
+    expect(isContainerInsideCommand([2, FORK_THEN_BRANCH_INDEX, 0], [])).toBe(false);
+    expect(isContainerInsideCommand([0], [0])).toBe(false);
+  });
+
+  it("moveCommandBetweenLists 는 루트 → fork then 분기 이동을 수행한다", () => {
+    const commands: Command[] = [
+      { kind: "text", body: "이동 대상" },
+      {
+        kind: "fork",
+        condition: { kind: "switch", switchId: "", value: true },
+        then: [{ kind: "text", body: "기존" }],
+      },
+    ];
+    const targetList = resolveCommandListAtPath(commands, [1, FORK_THEN_BRANCH_INDEX], { missingBranches: "create" });
+    expect(targetList).not.toBeNull();
+    if (!targetList) return;
+    expect(moveCommandBetweenLists(commands, 0, targetList, Number.MAX_SAFE_INTEGER)).toBe(true);
+    expect(commands.length).toBe(1);
+    expect(commands[0]?.kind).toBe("fork");
+    const fork = commands[0];
+    if (fork?.kind !== "fork") return;
+    expect(fork.then.map((cmd) => (cmd.kind === "text" ? cmd.body : ""))).toEqual(["기존", "이동 대상"]);
+  });
+
+  it("같은 리스트 이동은 기존 재정렬 규칙(클램프)을 따른다", () => {
+    const list: Command[] = [
+      { kind: "text", body: "A" },
+      { kind: "text", body: "B" },
+      { kind: "text", body: "C" },
+    ];
+    expect(moveCommandBetweenLists(list, 0, list, 99)).toBe(true);
+    expect(list.map((cmd) => (cmd.kind === "text" ? cmd.body : ""))).toEqual(["B", "C", "A"]);
+  });
+});

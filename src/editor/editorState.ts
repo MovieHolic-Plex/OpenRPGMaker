@@ -15,6 +15,7 @@ export type AutoConnectMode = boolean;
 export type ActiveStampId = TileStampId | null;
 export type ActiveStructureStampId = StructureStampId | null;
 export type ActivePaletteStamp = PaletteStamp | null;
+export type ChatDock = "float" | "side";
 export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
 export const EDITOR_BRUSH_SIZES = [1, 2, 3, 4] as const;
@@ -28,13 +29,17 @@ export interface TileSelection {
   height: number;
 }
 
+export interface TileClipboardLayer {
+  tiles: number[];
+  stacks: number[][];
+}
+
+// 복사는 항상 하위+상위 레이어를 통째로 담는다(RM2K3 영역 복사 관례).
 export interface TileClipboard {
   width: number;
   height: number;
-  lowerTiles: number[];
-  upperTiles: number[];
-  lowerStacks?: number[][];
-  upperStacks?: number[][];
+  lower: TileClipboardLayer;
+  upper: TileClipboardLayer;
 }
 
 export interface EditorState {
@@ -54,6 +59,7 @@ export interface EditorState {
   selection: TileSelection | null;
   clipboard: TileClipboard | null;
   showGrid: boolean;
+  chatDock: ChatDock;
   // 배틀 애니메이션 에디터 — 현재 편집 중인 애니메이션의 선택 프레임/셀 인덱스.
   selectedAnimationFrameIndex: number;
   selectedAnimationCellIndex: number;
@@ -79,6 +85,7 @@ class EditorStateStore {
     selection: null,
     clipboard: null,
     showGrid: true,
+    chatDock: "float",
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,
   };
@@ -89,6 +96,16 @@ class EditorStateStore {
   }
 
   set(patch: Partial<EditorState>): void {
+    // 무변경 set은 통지하지 않는다 — 통지마다 팔레트/맵트리가 전체 재구축되므로,
+    // pointerdown~pointerup 사이에 노드가 교체되면 사용자의 클릭이 증발한다(클릭 불가 보고 원인 중 하나).
+    let changed = false;
+    for (const key of Object.keys(patch) as (keyof EditorState)[]) {
+      if (this.state[key] !== patch[key]) {
+        changed = true;
+        break;
+      }
+    }
+    if (!changed) return;
     this.state = { ...this.state, ...patch };
     for (const l of this.listeners) l(this.state);
   }

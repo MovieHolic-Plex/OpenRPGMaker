@@ -225,7 +225,7 @@ function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[]): HTMLElem
 }
 
 function battleCommandEditorRows(commands: readonly DatabaseBattleCommandRecord[]): HTMLElement[] {
-  const kinds: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "item", "escape", "event"];
+  const kinds: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "escape", "switch", "event"];
   return commands.flatMap((command, index) => [
     utilityTextRow({ label: ordinalLabel(index), value: command.name, testid: `db-field-battle-command-name-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
       store.update((project) => {

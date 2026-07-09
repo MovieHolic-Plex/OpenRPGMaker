@@ -1,8 +1,9 @@
-import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
+import type { CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import type { CommandListActions } from "./eventEditor/types";
@@ -11,6 +12,7 @@ export type DatabaseCommandArrayAdapter = {
   readonly commands: Command[];
   readonly replaceCommands: (commands: Command[]) => void;
   readonly rerender?: () => void;
+  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
 };
 
 export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAdapter): CommandListActions {
@@ -70,12 +72,23 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
       list.splice(fromIndex, 1);
       list.splice(clamped, 0, moving);
     }),
+    // [P2] 크로스 컨테이너 이동 (공용/전투 이벤트 명령 리스트).
+    moveCommandAcross: (sourcePath, targetContainerPath, toIndex) => {
+      if (isContainerInsideCommand(sourcePath, targetContainerPath)) return;
+      edit((commands) => {
+        const targetList = commandList(commands, targetContainerPath);
+        const sourceList = commandList(commands, sourcePath.slice(0, -1));
+        const fromIndex = sourcePath[sourcePath.length - 1];
+        if (!targetList || !sourceList || fromIndex === undefined) return;
+        moveCommandBetweenLists(sourceList, fromIndex, targetList, toIndex);
+      });
+    },
   };
 }
 
 export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: DatabaseCommandArrayAdapter): void {
   const actions = createDatabaseCommandListActions(adapter);
-  renderCommandList(host, adapter.commands, [], actions);
+  renderCommandList(host, adapter.commands, [], actions, { runtimeSupport: adapter.runtimeSupport });
   if (host.firstElementChild?.classList.contains("empty-hint")) host.firstElementChild.remove();
   host.append(renderEmptyCommandLine(actions));
   host.addEventListener("dblclick", (event) => {

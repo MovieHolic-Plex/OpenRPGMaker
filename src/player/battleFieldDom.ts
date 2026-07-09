@@ -15,19 +15,22 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
 }
 
 export function battlePartyStatus(snapshot: BattleSnapshot): HTMLElement {
-  return partyStatusGroup(snapshot.actors);
+  return partyStatusGroup(snapshot.actors, snapshot.battleFlow);
 }
 
 function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
   backdrop.dataset.testid = "battle-backdrop";
+  // DB(전투군 previewBackground / 지형 battleBackground / 시스템 battleSystem)에서 온
+  // 배경 리소스만 사용한다. 설정이 없으면 절차적 배경(CSS)만 남긴다.
+  // (이전에는 battle-reference-forest.png 를 항상 겹쳐 그려 DB 설정을 덮어썼다.)
   if (resourceId) {
     backdrop.dataset.backdropResourceId = resourceId;
     backdrop.title = "전투 배경";
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) {
-      backdrop.style.backgroundImage = `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("/generated/battle-reference-forest.png"), url("${url}")`;
+      backdrop.style.backgroundImage = `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("${url}")`;
     }
   }
   return backdrop;
@@ -99,12 +102,12 @@ function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement
   return group;
 }
 
-function partyStatusGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement {
+function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-party";
   group.dataset.testid = "battle-party";
   for (const actor of actors) {
-    group.append(actorStatusRow(actor));
+    group.append(actorStatusRow(actor, battleFlow));
   }
   return group;
 }
@@ -142,7 +145,7 @@ function clampBattleCoordinate(value: number, min: number, max: number): number 
   return Math.max(min, Math.min(max, value));
 }
 
-function actorStatusRow(actor: BattleBattlerSnapshot): HTMLElement {
+function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
   const row = document.createElement("div");
   row.className = "battle-actor-status";
   row.dataset.recordId = actor.recordId;
@@ -159,7 +162,8 @@ function actorStatusRow(actor: BattleBattlerSnapshot): HTMLElement {
   gauge.className = "battle-actor-gauge";
   gauge.append(atbLabel(), atbBar(actor.gauge));
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
-  row.append(name, hp, mp, hpGauge, gauge);
+  row.append(name, hp, mp, hpGauge);
+  if (battleFlow === "gauge") row.append(gauge);
   return row;
 }
 
@@ -197,17 +201,24 @@ function stateIconToken(stateId: string): string {
   return "burst";
 }
 
+function stateName(stateId: string): string {
+  return store.getCurrent().database.states.find((state) => state.id === stateId)?.name ?? stateId;
+}
+
 function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   const cluster = document.createElement("span");
   cluster.className = "battle-status-icons";
-  // 실제 적용된 상태(stateIds)만 표시. 거짓 표시(이름 기반 추측) 제거.
-  const icons = battler.stateIds.slice(0, 4).map(stateIconToken);
-  if (battler.defeated) icons.unshift("death");
-  for (const icon of icons) {
+  // 실제 적용된 상태(stateIds)만 표시하고, DB 상태 레코드의 이름을 툴팁/접근성 라벨로 노출.
+  const states = battler.stateIds.slice(0, 4).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
+  const entries = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
+  for (const entry of entries) {
     const node = document.createElement("span");
-    node.className = `battle-status-icon battle-status-icon-${icon}`;
-    node.dataset.statusIcon = icon;
-    node.setAttribute("aria-hidden", "true");
+    node.className = `battle-status-icon battle-status-icon-${entry.icon}`;
+    node.dataset.statusIcon = entry.icon;
+    node.dataset.statusName = entry.name;
+    node.title = entry.name;
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", entry.name);
     cluster.append(node);
   }
   return cluster;

@@ -50,7 +50,7 @@ export function addEvent(
     const ev = createDefaultGameEvent(x, y, trigger);
     m.events.push(ev);
     newId = ev.id;
-  });
+  }, { scope: "map", mapId });
   return newId;
 }
 
@@ -59,13 +59,11 @@ export function deleteEvent(mapId: MapId, eventId: string): void {
     const m = p.maps[mapId];
     if (!m) return;
     m.events = m.events.filter((e) => e.id !== eventId);
-  });
+  }, { scope: "map", mapId });
 }
 
 export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): void {
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
+  store.updateMap(mapId, (m) => {
     const ev = m.events.find((e) => e.id === eventId);
     if (ev) {
       ev.x = x;
@@ -77,19 +75,18 @@ export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): 
 export function updateEvent(
   mapId: MapId,
   eventId: string,
-  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition">>
+  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition" | "schedule">>
 ): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
     const ev = m.events.find((e) => e.id === eventId);
     if (!ev) return;
-    if (patch.sprite !== undefined) ev.sprite = patch.sprite;
-    if (patch.trigger !== undefined) ev.trigger = patch.trigger;
-    if (patch.condition !== undefined) {
-      ev.condition = patch.condition;
-    }
-  });
+    if ("sprite" in patch) ev.sprite = patch.sprite;
+    if ("trigger" in patch && patch.trigger !== undefined) ev.trigger = patch.trigger;
+    if ("condition" in patch) ev.condition = patch.condition;
+    if ("schedule" in patch) ev.schedule = patch.schedule;
+  }, { scope: "map", mapId });
 }
 
 // ── 명령(Command) 편집 ──
@@ -120,7 +117,7 @@ export function addCommand(
         : resolveCommandListAtPath(ev.commands, containerPath, { missingBranches: "create" });
     if (!list) return;
     list.push(structuredClone(command));
-  });
+  }, { scope: "map", mapId });
 }
 
 export function insertCommand(
@@ -140,7 +137,7 @@ export function insertCommand(
         : resolveCommandListAtPath(ev.commands, container, { missingBranches: "create" });
     if (!list) return;
     list.splice(lastIdx, 0, structuredClone(command));
-  });
+  }, { scope: "map", mapId });
 }
 
 export function deleteCommand(
@@ -159,7 +156,7 @@ export function deleteCommand(
         : resolveCommandListAtPath(ev.commands, container, { missingBranches: "create" });
     if (!list) return;
     list.splice(lastIdx, 1);
-  });
+  }, { scope: "map", mapId });
 }
 
 export function replaceCommand(
@@ -179,7 +176,7 @@ export function replaceCommand(
         : resolveCommandListAtPath(ev.commands, container, { missingBranches: "create" });
     if (!list) return;
     list[lastIdx] = structuredClone(command);
-  });
+  }, { scope: "map", mapId });
 }
 
 // 특정 경로의 명령 조회(편집기 폼 채우기용).

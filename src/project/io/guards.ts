@@ -1,3 +1,4 @@
+import { COMMAND_KINDS } from "../commandKindRegistry";
 import { ProjectFormatError } from "./errors";
 
 export type JsonRecord = Record<string, unknown>;
@@ -20,48 +21,9 @@ export const resourceKinds = new Set([
   "sound",
 ]);
 
-export const commandKinds = new Set([
-  "text",
-  "changeFace",
-  "choices",
-  "fork",
-  "wait",
-  "inputWait",
-  "inputNumber",
-  "label",
-  "gotoLabel",
-  "setSwitch",
-  "setVariable",
-  "timer",
-  "transfer",
-  "moveEvent",
-  "changeTile",
-  "callCommonEvent",
-  "callMapEvent",
-  "battleProcessing",
-  "learnSkill",
-  "changeExp",
-  "changeLevel",
-  "changeEquipment",
-  "changeActorHp",
-  "changeActorMp",
-  "recoverAll",
-  "changeGold",
-  "changeItem",
-  "changeParty",
-  "showPicture",
-  "erasePicture",
-  "playAudio",
-  "stopAudio",
-  "displayTextSettings",
-  "shop",
-  "inn",
-  "gameOver",
-  "ending",
-  "returnToTitle",
-  "setFlag",
-  "m2Command",
-]);
+// commandKindRegistry.ts(단일 소스)에서 파생. kind 유니온과의 드리프트는
+// commandKindRegistry.ts의 타입 레벨 검증 + test/commandKindCoverage.test.ts 가 차단한다.
+export const commandKinds: ReadonlySet<string> = new Set(COMMAND_KINDS);
 
 export function deepClone<T>(value: T): T {
   return structuredClone(value);

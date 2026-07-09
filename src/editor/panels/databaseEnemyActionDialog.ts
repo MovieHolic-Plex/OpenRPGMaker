@@ -2,6 +2,7 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectField } from "@/editor/panels/databaseControls";
 import { openSwitchVariablePicker } from "@/editor/panels/eventEditor/recordPickerDialog";
 import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/databaseEnemyRecordSupport";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -165,7 +166,8 @@ function switchPickerLabel(testid: string): string {
 }
 
 function switchOptions(): readonly { readonly id: string; readonly name: string }[] {
-  return store.getCurrent().switches.map((entry, index) => ({ id: entry.id, name: `${String(index + 1).padStart(4, "0")}:${entry.name}` }));
+  const project = store.getCurrent();
+  return project.switches.map((entry, index) => ({ id: entry.id, name: storyFlagOptionLabel(project, "switch", entry, index) }));
 }
 
 function basicActionMode(skill: HTMLElement): HTMLElement {

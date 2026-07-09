@@ -2,7 +2,7 @@
 
 - Ontology schema: 1
 - Project schema: 3
-- Updated: 2026-06-27
+- Updated: 2026-07-08
 
 ## Capabilities
 
@@ -30,14 +30,14 @@ Event pages, conditions, graphics, command editing, and command picker workflows
 
 ### TilesetSemantics
 
-Tile metadata, tile groups, pattern grammar, terrain tags, passability, and AI tile meaning.
+Tile metadata, tile groups, cluster rules, terrain tags, passability, palette presets, autotile groups, house kits, and AI tile meaning.
 
-- Entities: `TilesetDef`, `Tile`, `TileAiMetadata`, `TileGroupMetadata`, `TerrainTemplateMetadata`
+- Entities: `TilesetDef`, `Tile`, `TileAiMetadata`, `TileGroupMetadata`, `HouseKit`
 - Types: `src/project/types/base.ts`
-- UI: `src/editor/panels/tilesetMetadataEditor.ts`, `src/editor/panels/tilesetAiQuestionEditor.ts`, `src/editor/panels/terrainTemplatePanel.ts`
+- UI: `src/editor/panels/tilesetMetadataEditor.ts`, `src/editor/panels/tilesetAiQuestionEditor.ts`, `src/editor/panels/tilesetAutotileEditor.ts`
 - Runtime: `src/project/tilesetPassage.ts`, `src/project/aiPreviewGenerator.ts`, `src/project/aiPreviewContracts.ts`
 - Storage: `src/project/io/guards.ts`, `src/project/io/shapeResourceFields.ts`, `src/project/tileMetadataDb.ts`
-- Tests: `test/tileMetadataDb.test.ts`, `test/aiPreviewContracts.test.ts`, `test/e2e/rm2k3-tileset-readability.spec.ts`
+- Tests: `test/tileMetadataDb.test.ts`, `test/aiPreviewContracts.test.ts`, `test/houseKit.test.ts`, `test/e2e/rm2k3-tileset-readability.spec.ts`
 
 ### DatabaseRecords
 
@@ -92,7 +92,7 @@ Serialization, package export, migration, shape guards, reference validation, an
 - `Tile`: A single indexed tile inside a tileset.
 - `TileAiMetadata`: AI-readable meaning and runtime hints for one tile.
 - `TileGroupMetadata`: A semantic group of tiles with placement grammar.
-- `TerrainTemplateMetadata`: Reusable terrain build template rows and grammar.
+- `HouseKit`: Built-in house structure grammar consumed by `build_house_kit`, `build_village`, and showcase defaults.
 - `GameEvent`: A map event with pages and commands.
 - `EventPage`: Conditional event page state and command list.
 - `Command`: A discriminated command executed by the interpreter.

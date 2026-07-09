@@ -1,9 +1,20 @@
+/* ============================================================================
+   AI 어시스턴트 패널 — 모던 다크 (디자인 토큰 기반, src/styles/tokens.css)
+   소유: p2-assistant. 클래스명/testid/DOM 불변, 색·보더·라운드·그림자만 토큰화.
+   ========================================================================= */
+
+@import "./assistant-proposal.css";
+@import "./assistant-skills.css";
+@import "./assistant-command-bar.css";
+@import "./assistant-rising-overlay.css";
+
+/* ── 레거시 프리뷰 어시스턴트 패널(휴리스틱) ─────────────────────── */
 .ai-assistant-panel {
-  background: linear-gradient(180deg, #fffdf7 0%, #f2eee4 100%);
-  border: 1px solid var(--border-default);
-  border-radius: 6px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset;
-  color: var(--text-primary);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
   position: fixed;
   right: 14px;
   top: 118px;
@@ -12,13 +23,13 @@
   max-height: calc(100vh - 16px);
   overflow: auto;
   z-index: 30;
-  padding: 8px;
+  padding: var(--space-2);
 }
 body:has(.right-panel) .ai-assistant-panel {
   display: none;
 }
 .ai-assistant-panel.is-dragging {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-modal);
 }
 body:has(.database-modal-backdrop) .ai-assistant-panel,
 body:has(.database-modal-backdrop) .right-panel,
@@ -29,87 +40,1470 @@ body:has([data-testid='resource-modal']) .right-panel {
   align-items: start;
   cursor: move;
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: space-between;
   touch-action: none;
   user-select: none;
 }
 .ai-assistant-header h2 {
+  color: var(--text-1);
   font-size: 13px;
   line-height: 1.2;
   margin: 0;
 }
 .ai-assistant-header p {
-  color: var(--text-secondary);
+  color: var(--text-2);
   font-size: 11px;
   line-height: 1.3;
   margin: 2px 0 0;
 }
 .ai-assistant-status {
-  background: #e7f0e2;
-  border: 1px solid #9eb892;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
   border-radius: 999px;
-  color: #315d2b;
+  color: var(--text-1);
   flex: 0 0 auto;
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 2px 9px;
 }
 .ai-assistant-body {
   display: grid;
-  gap: 5px;
-  margin-top: 8px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
+
+/* 컨트롤 버튼(기본) */
 .ai-assistant-action {
-  background: #f8f5ec;
+  background: var(--control-bg);
   border: 1px solid var(--border-default);
-  border-radius: 5px;
-  color: var(--text-primary);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
   cursor: pointer;
   font-size: 12px;
   min-height: 28px;
-  padding: 4px 7px;
+  padding: 4px 9px;
   text-align: left;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.ai-assistant-action:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+.ai-assistant-action:active:not(:disabled) {
+  background: var(--control-bg-active);
+}
+.ai-assistant-action:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 .ai-assistant-action:disabled {
-  color: var(--text-secondary);
+  color: var(--text-3);
   cursor: not-allowed;
 }
+
+/* 인풋/텍스트영역 */
 .ai-assistant-input {
-  background: var(--surface-panel);
+  background: var(--bg-inset);
   border: 1px solid var(--border-default);
-  border-radius: 5px;
-  color: var(--text-secondary);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
   font: inherit;
   min-height: 52px;
-  padding: 6px;
+  padding: var(--space-2);
   resize: none;
+  transition: border-color var(--transition-fast);
 }
+.ai-assistant-input::placeholder {
+  color: var(--text-3);
+}
+.ai-assistant-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
 .ai-preview-status {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid var(--border-default);
-  border-radius: 5px;
-  color: var(--text-secondary);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
   display: grid;
   gap: 3px;
   max-height: 180px;
   overflow: auto;
-  padding: 6px;
+  padding: var(--space-2);
 }
 .ai-preview-status p {
   line-height: 1.35;
   margin: 0;
 }
+.ai-preview-validation-details {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+  padding-top: 4px;
+}
+.ai-preview-validation-details summary {
+  color: var(--text-1);
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1.35;
+}
+/* 승인 = 주요 액션(primary) */
 .ai-preview-approve:not(:disabled) {
-  background: #e4f3dc;
-  border-color: #8aac78;
-  color: #285320;
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
   font-weight: 700;
 }
+.ai-preview-approve:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+/* ── LLM 어시스턴트 채팅 dock (Phase 2) ───────────────────────── */
+.ai-chat-float-host {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 32;
+}
+
+.editor-layout .ai-chat-side-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-default);
+  border-right: none;
+  display: flex;
+  flex: 0 0 var(--ai-chat-side-width, 420px);
+  max-width: 440px;
+  min-width: 360px;
+  overflow: hidden;
+  padding: 0;
+  transition: flex-basis 180ms ease, width 180ms ease, opacity 160ms ease;
+  width: var(--ai-chat-side-width, 420px);
+}
+
+.editor-layout.chat-dock-float .ai-chat-side-panel {
+  border-left: 0;
+  flex-basis: 0;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+}
+
+.ai-chat-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  color: var(--text-1);
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  width: 390px;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 31;
+  padding: var(--space-2);
+  box-shadow: var(--shadow-modal);
+}
+
+.ai-chat-panel.chat-dock-float {
+  inset: 0;
+  max-height: none;
+  max-width: none;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 160ms ease, transform 180ms ease;
+  width: auto;
+}
+
+.ai-chat-panel.chat-dock-float .ai-command-bar,
+.ai-chat-panel.chat-dock-float .ai-rising-overlay,
+.ai-chat-panel.chat-dock-float .ai-proposal-modal-backdrop {
+  pointer-events: auto;
+}
+
+/* 접힘 상태: float 의 inset:0 이 접힘 pill 을 캔버스 전체 불투명 패널로 늘려
+   맵을 통째로 가리던 회귀 수정 — 접힘은 우하단 pill 만 남긴다. */
+.ai-chat-panel.chat-dock-float.is-collapsed {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  inset: auto 14px 14px auto;
+  padding: 0;
+  pointer-events: none;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore {
+  pointer-events: auto;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-command-bar,
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-rising-overlay {
+  display: none;
+}
+
+.ai-chat-panel.chat-dock-side {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  flex: 1 1 auto;
+  height: 100%;
+  max-height: none;
+  max-width: none;
+  min-height: 0;
+  position: relative;
+  right: auto;
+  bottom: auto;
+  width: 100%;
+  transition: opacity 160ms ease, transform 180ms ease;
+}
+
+.ai-chat-panel.chat-dock-side .ai-chat-header,
+.ai-chat-panel.chat-dock-side .ai-chat-toolbar {
+  flex: 0 0 auto;
+}
+
+.ai-chat-panel.chat-dock-side .ai-chat-body {
+  flex: 0 0 auto;
+}
+body:has(.database-modal-backdrop) .ai-chat-panel,
+body:has([data-testid='resource-modal']) .ai-chat-panel {
+  display: none;
+}
+body:has(.database-modal-backdrop) .ai-chat-panel {
+  display: flex;
+  right: 18px;
+  bottom: 18px;
+  z-index: 62;
+}
+.ai-chat-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  min-height: 40px;
+}
+.ai-chat-header h2 {
+  color: var(--text-1);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+  user-select: none;
+}
+.ai-status-group {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+/* ── 3-존 IA (2026-07-07 §2.3) ───────────────────────────────── */
+/* ① 헤더: 모드 배지(현재 컨텍스트 · 노출 툴 수) + 잡컨트롤 수렴. */
+.ai-mode-badge {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 9px;
+  user-select: none;
+  white-space: nowrap;
+}
+.ai-header-actions {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+/* ③ 액션 존: 입력창 바로 위 고정 — 결정이 필요한 카드만. 비면 통째로 숨긴다. */
+.ai-action-zone:empty {
+  display: none;
+}
+.ai-action-zone {
+  border-top: 2px solid var(--accent-border, var(--border-strong));
+  flex: 0 0 auto;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding-top: var(--space-2);
+}
+/* 도킹 폭 리사이저(§2.3 — G4): 도킹 모드에서만 좌측 엣지에 노출. */
+.ai-dock-resizer {
+  display: none;
+}
+.ai-chat-panel.is-docked .ai-dock-resizer {
+  bottom: 0;
+  cursor: ew-resize;
+  display: block;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 6px;
+  z-index: 2;
+}
+.ai-chat-panel.is-docked .ai-dock-resizer:hover {
+  background: var(--accent-border, var(--accent));
+  opacity: 0.5;
+}
+.ai-chat-header .ai-assistant-status {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+}
+.ai-abort-button {
+  border-color: var(--danger, #d85c5c);
+  color: var(--danger, #d85c5c);
+  font-size: 11px;
+  min-height: 24px;
+  padding: 2px 8px;
+}
+.ai-abort-button[hidden] {
+  display: none;
+}
+.ai-chat-collapse {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-grid;
+  font-size: 15px;
+  height: 28px;
+  line-height: 1;
+  min-width: 28px;
+  padding: 0;
+  place-items: center;
+  white-space: nowrap;
+}
+.ai-chat-collapse:hover {
+  background: var(--control-bg);
+  color: var(--text-1);
+}
+/* 도구줄 — 주요 액션을 그룹으로 정리(새 대화·로그 | 설정·툴 | 도킹·스튜디오). 헤더 아이콘 뭉침 해소. */
+.ai-chat-toolbar {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+.ai-toolbar-sep {
+  align-self: stretch;
+  background: var(--border-subtle);
+  margin: 2px 2px;
+  width: 1px;
+}
+.ai-new-session,
+.ai-export-button {
+  font-size: 11px;
+  min-height: 28px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.ai-export-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.ai-new-session {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* 도구줄의 아이콘 버튼은 라벨 버튼과 높이를 맞춘다. */
+.ai-chat-toolbar .ai-chat-tools-button {
+  font-size: 13px;
+  height: 28px;
+  line-height: 1;
+  min-width: 28px;
+  padding: 0;
+}
+.ai-chat-panel.is-collapsed {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-modal);
+  max-height: none;
+  min-width: 0;
+  width: auto;
+}
+.ai-chat-panel.is-collapsed > .ai-chat-header,
+.ai-chat-panel.is-collapsed > .ai-chat-toolbar,
+.ai-chat-panel.is-collapsed > .ai-chat-body,
+.ai-chat-panel.is-collapsed > .ai-chat-resize-handle {
+  display: none;
+}
+.ai-collapsed-restore {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  cursor: pointer;
+  display: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  gap: var(--space-1);
+  min-height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+.ai-chat-panel.is-collapsed > .ai-collapsed-restore {
+  display: flex;
+}
+.ai-collapsed-restore:hover,
+.ai-collapsed-restore:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+.ai-collapsed-restore:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+.ai-collapsed-restore-rail-icon,
+.ai-collapsed-restore-rail-label {
+  display: none;
+}
+/* ── 도킹 사이드바 모드(기본값) — 오른쪽 전체 높이. 떠 있는 말풍선은 ⇥ 버튼으로 전환하는 옵션. ── */
+.ai-chat-panel.is-docked {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  /* 폭 확대(2026-07-07 §2.3 — G4): 기본 520px, 좌측 리사이저로 조절(localStorage 유지). */
+  width: var(--ai-dock-width, 520px);
+  max-width: 52vw;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: var(--shadow-modal);
+}
+/* 도킹 시 로그가 전체 높이를 채우고 입력창이 바닥에 붙게 한다(짧은 플로팅 레이아웃 재사용으로 생긴 상단 쏠림·바닥 여백 해결). */
+.ai-chat-panel.is-docked .ai-chat-log {
+  max-height: none;
+  flex: 1 1 auto;
+}
+/* 도킹 시 에디터 셸을 왼쪽으로 밀어 사이드바에 가려지지 않게 한다(오버레이가 아니라 진짜 사이드바). 폭은 패널과 일치. */
+body.ai-panel-docked {
+  --ai-docked-panel-inset: calc(min(var(--ai-dock-width, 520px), 52vw) + 4px);
+}
+
+body.ai-panel-docked .topbar {
+  padding-right: var(--ai-docked-panel-inset);
+}
+
+body.ai-panel-docked .editor-layout {
+  padding-right: var(--ai-docked-panel-inset);
+}
+.ai-chat-panel.is-docked.is-collapsed {
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  max-width: 44px;
+  min-width: 44px;
+  padding: 0;
+  width: 44px;
+  border: 1px solid var(--accent-border);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
+}
+.ai-chat-panel.is-docked.is-collapsed > .ai-collapsed-restore {
+  align-items: center;
+  background: var(--bg-raised);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: var(--space-3) 0;
+  width: 100%;
+}
+.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-float {
+  display: none;
+}
+.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-icon,
+.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-label {
+  display: inline-block;
+}
+.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-label {
+  color: var(--text-1);
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1.2;
+  writing-mode: vertical-rl;
+}
+
+/* 사이드 도크 접힘: 420px 컬럼이 통째로 남던 갭 — 기록 도크와 동일한 44px 레일로 축소한다. */
+.editor-layout .ai-chat-side-panel:has(.ai-chat-panel.is-collapsed) {
+  flex-basis: 44px;
+  min-width: 44px;
+  width: 44px;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed {
+  padding: 0;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore {
+  align-items: center;
+  background: var(--bg-raised);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  justify-content: flex-start;
+  padding: var(--space-3) 0;
+  width: 100%;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-float {
+  display: none;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-icon,
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-label {
+  display: inline-block;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-label {
+  color: var(--text-1);
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1.2;
+  writing-mode: vertical-rl;
+}
+/* 접힘 레일 본문 누출 수정: float 접힘(231행대)과 동일하게 커맨드바·라이징 오버레이를 숨긴다.
+   빠뜨리면 44px 레일에 시작 화면/입력창이 짜부라져 새어 나온다(2026-07-09 실측). */
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-command-bar,
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay,
+.ai-chat-panel.is-docked.is-collapsed > .ai-command-bar,
+.ai-chat-panel.is-docked.is-collapsed > .ai-rising-overlay {
+  display: none;
+}
+/* 접힘 상태 알림 점 — 진행(호박 펄스)/완료 미확인(초록)/오류(빨강). 펼치면 소거된다. */
+.ai-collapsed-restore-dot {
+  border-radius: 50%;
+  display: none;
+  flex: none;
+  height: 9px;
+  width: 9px;
+}
+.ai-chat-panel.is-turn-running .ai-collapsed-restore-dot {
+  animation: ai-rail-dot-pulse 1.1s ease-in-out infinite;
+  background: #f5a524;
+  display: inline-block;
+}
+.ai-chat-panel.is-turn-attention .ai-collapsed-restore-dot {
+  background: #22c55e;
+  display: inline-block;
+}
+.ai-chat-panel.is-turn-error .ai-collapsed-restore-dot {
+  background: #ef4444;
+  display: inline-block;
+}
+@keyframes ai-rail-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.ai-config-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.ai-config-saved-hint {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.ai-chat-log {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: 120px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+.ai-chat-log,
+.ai-proposal-lines,
+.ai-skill-drawer,
+.ai-skill-pinbar,
+.ai-slash-list,
+.ai-skill-palette-list {
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+.ai-chat-log::-webkit-scrollbar,
+.ai-proposal-lines::-webkit-scrollbar,
+.ai-skill-drawer::-webkit-scrollbar,
+.ai-skill-pinbar::-webkit-scrollbar,
+.ai-slash-list::-webkit-scrollbar,
+.ai-skill-palette-list::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.ai-chat-log::-webkit-scrollbar-thumb,
+.ai-proposal-lines::-webkit-scrollbar-thumb,
+.ai-skill-drawer::-webkit-scrollbar-thumb,
+.ai-skill-pinbar::-webkit-scrollbar-thumb,
+.ai-slash-list::-webkit-scrollbar-thumb,
+.ai-skill-palette-list::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+/* 채팅 버블 */
+.ai-chat-bubble {
+  border-radius: 10px 10px 10px 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 92%;
+  padding: 6px 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ai-chat-user {
+  align-self: flex-end;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px 10px 4px 10px;
+  color: var(--text-1);
+  max-width: 92%;
+}
+.ai-chat-assistant {
+  align-self: flex-start;
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-1);
+  max-width: 92%;
+}
+.ai-chat-assistant.is-discarded,
+.ai-chat-assistant.is-reverted {
+  opacity: 0.62;
+}
+.ai-msg-badge {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 0 6px 2px 0;
+  padding: 3px 7px;
+  vertical-align: 1px;
+}
+.ai-msg-badge.is-proposal {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+.ai-msg-badge.is-applied {
+  background: var(--success-muted);
+  color: var(--success);
+}
+.ai-msg-badge.is-discarded,
+.ai-msg-badge.is-reverted {
+  background: var(--bg-inset);
+  color: var(--text-3);
+}
+.ai-chat-tool {
+  align-self: flex-start;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.ai-chat-system {
+  align-self: center;
+  color: var(--text-3);
+  font-size: 11px;
+  font-style: italic;
+}
+.ai-chat-input-row {
+  display: flex;
+  gap: var(--space-2);
+}
+.ai-chat-input-row .ai-assistant-input {
+  border-radius: 8px;
+  flex: 1 1 auto;
+  min-height: 40px;
+}
+.ai-chat-send {
+  flex: 0 0 auto;
+  align-self: stretch;
+  background: var(--accent);
+  border-color: var(--accent-border);
+  border-radius: 8px;
+  color: var(--on-accent);
+  font-weight: 600;
+  min-height: 40px;
+  padding-inline: var(--space-3);
+}
+.ai-chat-send:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-border);
+}
+.ai-chat-send:disabled {
+  background: var(--control-bg);
+  color: var(--text-3);
+}
+
+/* 제안(changeset) 카드 */
+
+/* 원탭 답변 칩(맵 인터뷰 [선택지] 응답) */
+.ai-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.ai-quick-replies.ai-choice-block {
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  padding: var(--space-1);
+}
+.ai-quick-replies:empty {
+  display: none;
+}
+.ai-quick-reply-chip {
+  background: var(--control-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  padding: 3px 10px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.ai-quick-reply-chip:hover {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+.ai-skill-prompt-details {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font-size: 11px;
+  margin-top: 6px;
+  padding-top: 5px;
+}
+.ai-skill-prompt-details > summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.ai-skill-prompt-raw {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  margin: 6px 0 0;
+  max-height: 160px;
+  overflow: auto;
+  padding: 6px;
+  white-space: pre-wrap;
+}
+
+/* 타일 썸네일 버블(show_tiles) — 어떤 타일을 말하는지 그림으로 보여준다 */
+.ai-chat-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.ai-tile-thumb-item {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  margin: 0;
+}
+.ai-tile-thumb {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  height: 48px;
+  image-rendering: pixelated;
+  width: 48px;
+}
+.ai-tile-thumb-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* 맵 영역 그리드 버블(show_tile_grid) — 구조물을 그림으로 보여준다 */
+.ai-chat-tile-grid {
+  display: grid;
+  gap: var(--space-1);
+}
+.ai-tile-grid {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  overflow-x: auto;
+  width: max-content;
+  max-width: 100%;
+}
+.ai-tile-grid-row {
+  display: flex;
+}
+.ai-tile-grid-cell {
+  flex: 0 0 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 24px;
+}
+.ai-tile-grid-upper {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.ai-tile-grid-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* 구조물 검토 모달 — 넓은 화면에서 그리드 + 행 카드로 AI 추측을 확인한다 */
+.structure-review-window {
+  display: flex;
+  flex-direction: column;
+  height: min(86vh, 820px);
+  max-width: min(96vw, 1180px);
+  width: 96vw;
+}
+.structure-review-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.structure-review-header h2 {
+  flex: 0 0 auto;
+}
+.structure-review-name {
+  flex: 1 1 200px;
+}
+.structure-review-tags {
+  flex: 1 1 160px;
+}
+.structure-review-name,
+.structure-review-tags {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.structure-review-body {
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  min-height: 0;
+  overflow: hidden;
+}
+.structure-review-left {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow: auto;
+}
+.structure-review-grid {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  width: max-content;
+}
+.structure-review-grid-row {
+  display: flex;
+}
+.structure-review-grid-row.is-focused {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.structure-review-grid-ylabel {
+  color: var(--text-3);
+  flex: 0 0 26px;
+  font-size: 10px;
+  line-height: 34px;
+  text-align: center;
+}
+.structure-review-cell {
+  flex: 0 0 34px;
+  height: 34px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 34px;
+}
+.structure-review-cell-upper {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.structure-review-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: 0;
+}
+.structure-review-cards {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.structure-review-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+.structure-review-card.is-excluded {
+  opacity: 0.45;
+}
+.structure-review-card-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+.structure-review-include-label {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+.structure-review-card-layer {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.structure-review-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.structure-review-thumb-item {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  margin: 0;
+}
+.structure-review-thumb {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  height: 32px;
+  image-rendering: pixelated;
+  width: 32px;
+}
+.structure-review-thumb-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+.structure-review-meaning {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 6px;
+  resize: vertical;
+}
+.structure-review-footer {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+.structure-review-count {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: 11px;
+}
+
+/* 시연 캔버스 — 직접 깔아서 가르치는 샌드박스 */
+.demo-teach-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 760px);
+  max-width: min(94vw, 1040px);
+  width: 94vw;
+}
+.demo-teach-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.demo-teach-origin {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: 11px;
+}
+.demo-teach-body {
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  min-height: 0;
+  overflow: hidden;
+}
+.demo-teach-left {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow: auto;
+}
+.demo-teach-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.demo-teach-toolbar .is-active {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+.demo-teach-brush {
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  height: 28px;
+  image-rendering: pixelated;
+  width: 28px;
+}
+.demo-teach-brush-label {
+  color: var(--text-2);
+  font-size: 11px;
+}
+.demo-teach-count {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.demo-teach-grid {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  width: max-content;
+}
+.demo-teach-grid-row {
+  display: flex;
+}
+.demo-teach-cell {
+  cursor: crosshair;
+  flex: 0 0 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 32px;
+}
+.demo-teach-cell:hover {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+.demo-teach-cell-upper {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.demo-teach-palette {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-height: 0;
+  overflow-y: auto;
+}
+.demo-teach-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  padding: 4px 8px;
+}
+.demo-teach-palette-caption {
+  color: var(--text-3);
+  font-size: 10px;
+  margin: var(--space-1) 0 0;
+}
+.demo-teach-palette-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.demo-teach-palette-tile {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  height: 28px;
+  image-rendering: pixelated;
+  padding: 0;
+  width: 28px;
+}
+.demo-teach-palette-tile:hover {
+  border-color: var(--accent);
+}
+.demo-teach-explanation {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 8px;
+  resize: vertical;
+}
+
+/* 패널 크기 조절 핸들(좌상단 코너 — 오른쪽·아래 고정 도킹이라 왼쪽·위로 끌면 커짐) */
+.ai-chat-resize-handle {
+  cursor: nwse-resize;
+  height: 16px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 16px;
+}
+.ai-chat-resize-handle::before {
+  border-left: 2px solid var(--border-strong);
+  border-top: 2px solid var(--border-strong);
+  border-top-left-radius: var(--radius-l);
+  content: "";
+  display: block;
+  height: 10px;
+  margin: 2px;
+  width: 10px;
+}
+.ai-chat-resize-handle:hover::before {
+  border-color: var(--accent);
+}
+
+/* 🧰 툴 브라우저 버튼 */
+.ai-chat-tools-button {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 14px;
+  min-height: 28px;
+  padding: 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.ai-chat-tools-button:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+.ai-chat-tools-button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+/* 툴 브라우저 모달 */
+.tool-browser-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 780px);
+  max-width: min(92vw, 880px);
+  width: 92vw;
+}
+.tool-browser-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.tool-browser-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.tool-browser-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: var(--space-1) 0;
+}
+.tool-browser-body {
+  display: grid;
+  align-content: start;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+  min-height: 0;
+  overflow-y: auto;
+}
+.tool-browser-category-title {
+  color: var(--text-1);
+  font-size: 12px;
+  margin: 0 0 var(--space-1);
+}
+.tool-browser-row {
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 2px;
+  padding: var(--space-1) 0;
+}
+.tool-browser-row-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.tool-browser-name {
+  color: var(--accent);
+  font-size: 12px;
+}
+.tool-browser-badge {
+  border-radius: 999px;
+  font-size: 10px;
+  padding: 1px 8px;
+}
+.tool-browser-badge.is-read {
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+.tool-browser-badge.is-write {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.tool-browser-badge.is-danger {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+.tool-browser-desc {
+  color: var(--text-2);
+  font-size: 11px;
+  margin: 0;
+}
+.tool-browser-empty {
+  color: var(--text-3);
+}
+
+/* ── 🔬 AI 하네스 뷰어 — 내부 동작 타임라인 모달 ── */
+.harness-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 780px);
+  max-width: min(92vw, 920px);
+  width: 92vw;
+}
+.harness-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.harness-header h2 {
+  flex: 1 1 auto;
+}
+.harness-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: var(--space-1) 0;
+}
+.harness-summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.harness-body {
+  display: grid;
+  align-content: start;
+  flex: 1 1 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: auto;
+}
+.harness-timeline {
+  display: grid;
+  gap: 2px;
+}
+.harness-row {
+  align-items: baseline;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-2);
+  padding: 3px 0;
+}
+.harness-row.is-phase {
+  background: var(--control-bg);
+}
+.harness-time {
+  color: var(--text-3);
+  flex: none;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  min-width: 58px;
+}
+.harness-badge {
+  border-radius: 999px;
+  flex: none;
+  font-size: 10px;
+  padding: 1px 8px;
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+.harness-badge.is-phase {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.harness-badge.is-injection {
+  background: #8b5cf6;
+  color: #fff;
+}
+.harness-badge.is-tool-ok {
+  background: #14532d;
+  color: #86efac;
+}
+.harness-badge.is-tool-fail,
+.harness-badge.is-role-system {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+.harness-badge.is-turn-end {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+.harness-badge.is-model,
+.harness-badge.is-role-assistant {
+  color: var(--accent);
+}
+.harness-text {
+  color: var(--text-2);
+  font-size: 11px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.harness-tool-name {
+  color: var(--accent);
+  flex: none;
+  font-size: 11px;
+}
+.harness-row-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.harness-row-summary {
+  align-items: baseline;
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+}
+.harness-row-raw {
+  background: var(--control-bg);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-size: 10px;
+  margin: var(--space-1) 0 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: var(--space-2);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.harness-raw-section > summary {
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  padding: var(--space-1) 0;
+}
+.harness-raw-messages {
+  display: grid;
+  gap: 2px;
+}
+.harness-empty {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+/* 하단 액션(맵 인터뷰 / 감사 로그 내보내기) */
+.ai-chat-footer-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+.ai-chat-footer-actions > .ai-chat-interview {
+  flex: 1 1 auto;
+}
+
+/* 설정 폼 */
+.ai-config-form {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  font-size: 12px;
+  padding: var(--space-2);
+}
+.ai-config-form summary {
+  color: var(--text-1);
+  cursor: pointer;
+  font-weight: 600;
+}
+.ai-config-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.ai-config-label {
+  color: var(--text-2);
+  flex: 0 0 78px;
+  font-size: 11px;
+}
+.ai-config-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  padding: 4px 7px;
+  transition: border-color var(--transition-fast);
+}
+.ai-config-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
 .left-panel-stack {
   background: var(--bg-panel);
   border: 1px solid;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -131,4 +1525,462 @@ body:has([data-testid='resource-modal']) .right-panel {
 }
 .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(3) {
   order: 3;
+}
+
+/* ── AI 패널 전면 재배치(2026-07-05): 스킬 서랍/슬래시/컨텍스트 칩/툴 요약 ── */
+.ai-config-collapsed {
+  display: none;
+}
+
+.ai-context-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 2px 8px;
+}
+
+.ai-context-chip {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  color: var(--text-2);
+  font-size: 11px;
+  padding: 1px 8px;
+}
+
+.ai-selection-chip {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.ai-selection-chip-clear {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 14px;
+}
+
+.ai-selection-chip-clear:hover {
+  color: var(--text-1);
+}
+
+
+.ai-chat-tool-activity {
+  padding: 2px 6px;
+}
+
+.ai-tool-activity-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 0;
+  text-align: left;
+  width: 100%;
+}
+
+/* 모델 추론(reasoning) 상자 — 기본 접힘, 은은한 색으로 답변과 구분. */
+.ai-chat-bubble.ai-reasoning {
+  background: color-mix(in srgb, var(--bg-inset) 70%, transparent);
+  border: 1px dashed var(--border-subtle);
+}
+.ai-reasoning-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 0;
+  text-align: left;
+  width: 100%;
+}
+.ai-reasoning-body {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.ai-tool-activity-list {
+  border-left: 2px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 4px 6px;
+  padding-left: 8px;
+}
+
+.ai-tool-activity-line {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.ai-tool-failure {
+  color: var(--text-3);
+}
+.ai-tool-failure summary {
+  cursor: pointer;
+}
+.ai-tool-failure-body {
+  color: var(--text-3);
+  padding: 3px 0 2px 12px;
+}
+
+/* ── AI 스튜디오 모드 + 시작 화면 + 핀 바 + 팔레트(2026-07-05) ───── */
+.ai-chat-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+}
+
+.ai-chat-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  min-width: 0;
+}
+
+/* 독 모드: 서랍을 열면 본문 위(헤더 아래)에 넓게 뜬다. */
+
+/* 스튜디오: 에디터를 덮는 넓은 워크스페이스. 좌 대화 / 우 스킬 레일.
+   (2026-07-08 재설계) 이전엔 좁은 도킹 패널을 그대로 늘려 놓아 커맨드 바가 패널 위에
+   겹쳐 뜨고 스킬 레일은 투명 무장식이었다. 원칙: 디자인 토큰만 사용,
+   하단에 커맨드 바 전용 스트립 확보, 레일은 표면(surface) 위 카드로. */
+.ai-chat-panel.is-studio {
+  left: 12px;
+  right: 12px;
+  top: 96px;
+  bottom: 12px;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  z-index: 60;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+
+.ai-chat-panel.is-studio .ai-chat-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-2) var(--space-3);
+}
+
+.ai-chat-panel.is-studio .ai-chat-toolbar {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-1) var(--space-3);
+}
+
+/* 스튜디오의 아이콘 버튼은 실사용 히트 타깃 확보(글리프-만한 크기 금지). */
+.ai-chat-panel.is-studio .ai-chat-toolbar button,
+.ai-chat-panel.is-studio .ai-chat-header .ai-chat-tools-button {
+  min-height: 28px;
+  min-width: 28px;
+  padding: var(--space-1) var(--space-2);
+}
+
+.ai-chat-panel.is-studio .ai-chat-body {
+  flex-direction: row;
+  gap: 0;
+  /* 하단 고정 커맨드 바(패널 자식, fixed)가 로그 마지막 줄을 가리지 않도록 스트립 확보. */
+  padding-bottom: 84px;
+}
+
+.ai-chat-panel.is-studio .ai-chat-log {
+  max-height: none;
+}
+
+.ai-chat-panel.is-studio .ai-chat-bubble {
+  max-width: 780px;
+}
+
+/* 커맨드 바를 스튜디오 하단 스트립의 일부처럼 정렬. */
+.ai-chat-panel.is-studio .ai-command-bar {
+  bottom: 26px;
+}
+
+/* 전체 로그가 이미 보이므로 미니 스트림(휘발 존)은 중복 — 숨긴다.
+   고정 존(제안 pill/알림)은 유지해 승인 대기를 잃지 않는다. */
+.ai-chat-panel.is-studio .ai-rising-volatile-zone {
+  display: none;
+}
+
+/* 빈 대화의 시작 화면은 세로 중앙에 — 전면 워크스페이스 상단에 몰려 휑하지 않게. */
+.ai-chat-panel.is-studio .ai-start-screen {
+  justify-content: center;
+  min-height: 60%;
+}
+
+/* 좁은 화면: 스킬 레일을 접어 대화에 전폭을 준다. */
+@media (max-width: 1100px) {
+  .ai-chat-panel.is-studio .ai-chat-body > .ai-skill-drawer {
+    display: none;
+  }
+}
+
+/* 시작 화면 — 빈 대화의 첫인상 */
+.ai-start-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 0 8px 16px;
+  text-align: center;
+}
+
+.ai-start-title {
+  color: var(--text-1);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.ai-start-sub {
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.ai-start-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  margin-top: 8px;
+}
+
+.ai-start-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 10px;
+  text-align: left;
+}
+
+.ai-start-card:hover {
+  border-color: var(--accent-border);
+  background: var(--control-bg-hover);
+}
+
+.ai-start-card-icon {
+  font-size: 20px;
+}
+
+.ai-start-card-name {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-start-guide {
+  margin-top: var(--space-2);
+  text-align: left;
+}
+.ai-start-guide details {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+.ai-start-guide summary {
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 10px;
+}
+.ai-start-guide ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0 10px 10px;
+}
+.ai-start-guide li {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.ai-start-guide strong {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+
+
+
+
+.ai-chat-panel.is-history-open:not(.chat-dock-side) {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--ai-dock-width, 520px);
+  max-width: 52vw;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.ai-history-log-mount {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ai-history-log-mount .ai-chat-log {
+  flex: 1 1 auto;
+  max-height: none;
+  width: 100%;
+}
+
+
+
+/* ── UX 실사 픽스(2026-07-05): 헤더 톤/핀 바 1줄/시작 화면 정돈/빈 호스트 숨김 ── */
+.ai-chat-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.ai-chat-header h2 {
+  margin-right: auto;
+}
+
+.ai-chat-tools-button {
+  opacity: 0.9;
+}
+
+.ai-chat-tools-button:hover {
+  opacity: 1;
+}
+
+/* 핀 바는 한 줄 고정 — 세로 공간을 잠식하지 않는다. */
+
+/* 빈 보조 호스트는 자리를 차지하지 않는다. */
+.ai-proposal-host:empty,
+.ai-quick-replies:empty,
+.ai-context-chips:empty,
+.ai-slash-host:empty {
+  display: none;
+}
+
+/* 시작 화면: 로그 중앙 배치 + 카드 조밀하게(독 모드 2열). */
+.ai-chat-log:has(.ai-start-screen) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: calc(var(--space-4) + var(--space-2));
+}
+
+.ai-start-grid {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+
+.ai-start-card {
+  padding: 9px 10px;
+}
+
+/* 스튜디오: 대화 컬럼을 중앙 정렬해 초광폭에서 휑하지 않게. */
+.ai-chat-panel.is-studio .ai-chat-main {
+  margin: 0 auto;
+  max-width: 920px;
+  width: 100%;
+}
+
+.ai-chat-panel.is-studio .ai-start-grid {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+}
+
+/* 1280px 급 좁은 화면: AI 도킹 인셋을 줄여 캔버스/좌팔레트에 폭을 돌려준다. */
+@media (max-width: 1320px) {
+  body.ai-panel-docked {
+    --ai-docked-panel-inset: calc(min(360px, 40vw) + 4px);
+  }
+}
+
+/* ── 채팅 관측성(V3C): 글자 크기 3단 + 추론 원문 + 도구 호출 상세 ───── */
+/* 글자 크기 — 패널 data-ai-font-size(작게/보통/크게)가 --ai-font-scale 로 로그/제안 카드/도구 로그를 함께 스케일. */
+.ai-chat-panel[data-ai-font-size="small"] {
+  --ai-font-scale: 0.85;
+}
+.ai-chat-panel[data-ai-font-size="large"] {
+  --ai-font-scale: 1.2;
+}
+.ai-chat-bubble,
+.ai-proposal-card {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-title,
+.ai-proposal-summary {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-lines,
+.ai-tool-activity-line,
+.ai-tool-activity-toggle,
+.ai-reasoning-toggle,
+.ai-reasoning-body {
+  font-size: calc(11px * var(--ai-font-scale, 1));
+}
+
+/* 병합 추론 블록 — 각 추론의 원문 전체를 아이템으로 보존, 긴 원문은 스크롤(컨테이너 max-height). */
+.ai-reasoning-body {
+  max-height: 320px;
+}
+.ai-reasoning-item {
+  white-space: pre-wrap;
+}
+.ai-reasoning-item + .ai-reasoning-item {
+  border-top: 1px dashed var(--border-subtle);
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+/* 도구 로그 라인 클릭 → 호출 인자 JSON + 결과 원문 아코디언. */
+.ai-tool-entry summary,
+.ai-tool-entry-summary {
+  cursor: pointer;
+}
+.ai-tool-detail {
+  border-left: 2px solid var(--border-subtle);
+  margin: 4px 0 4px 4px;
+  padding-left: 8px;
+}
+.ai-tool-detail-label {
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin-top: 4px;
+}
+.ai-tool-detail-pre {
+  background: var(--bg-inset);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin: 2px 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px 6px;
+  white-space: pre-wrap;
+  word-break: break-all;
 }

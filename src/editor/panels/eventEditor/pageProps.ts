@@ -10,9 +10,11 @@ import {
   updateEventPage,
 } from "@/editor/eventPages";
 import { editorState } from "@/editor/editorState";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
+import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { openNewEventCommandKindDialog } from "./commandEditDialog";
-import { renderEventGraphicPreview } from "./eventGraphicPreview";
+import { renderEventGraphicIcon, renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
@@ -24,7 +26,7 @@ import {
   TRIGGER_OPTIONS,
   commandKindLabel,
 } from "./options";
-import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
+import type { Command, EventPage, EventPageCondition, GameEvent, MapId, Trigger } from "@/project/types";
 
 export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const name = el("input", {
@@ -78,15 +80,141 @@ export function renderClassicPageTabStrip(ev: GameEvent, activePage: EventPage):
   pages.forEach((page, index) => {
     pageButtons.append(
       el("button", {
-        class: "btn" + (page.id === activePage.id ? " active" : ""),
-        text: String(index + 1),
+        class: "btn event-page-tab-rich" + (page.id === activePage.id ? " active" : ""),
         dataset: { testid: `event-page-tab-${index + 1}` },
-        attrs: { title: page.name },
+        attrs: { title: pageTabTooltip(page, index) },
+        children: [
+          pageTabThumbnail(page),
+          el("span", { class: "event-page-tab-number", text: String(index + 1) }),
+          pageTabConditionBadges(page),
+        ],
         on: { click: () => editorState.set({ selectedEventPageId: page.id }) },
       })
     );
   });
   return pageButtons;
+}
+
+const PAGE_TAB_BADGE_LIMIT = 3;
+
+const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
+  switch: "S",
+  variable: "V",
+  selfSwitch: "S",
+  actor: "A",
+  item: "I",
+  gold: "G",
+  timer: "T",
+  timePhase: "P",
+  season: "S",
+  npcActivity: "A",
+  friendshipAtLeast: "F",
+};
+
+function pageTabThumbnail(page: EventPage): HTMLElement {
+  return el("span", {
+    class: "event-page-tab-thumb",
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: "event-page-tab-thumb" },
+    children: [renderEventGraphicIcon(page.graphic)],
+  });
+}
+
+function pageTabConditionBadges(page: EventPage): HTMLElement {
+  const badges = el("span", {
+    class: "event-page-tab-badges",
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: "event-page-tab-badges" },
+  });
+  const conditions = page.conditions ?? [];
+  for (const condition of conditions.slice(0, PAGE_TAB_BADGE_LIMIT)) {
+    badges.append(
+      el("span", {
+        class: `event-page-tab-badge event-page-tab-badge-${condition.kind}`,
+        text: PAGE_TAB_BADGE_LETTERS[condition.kind],
+      })
+    );
+  }
+  if (conditions.length > PAGE_TAB_BADGE_LIMIT) {
+    badges.append(
+      el("span", {
+        class: "event-page-tab-badge event-page-tab-badge-more",
+        text: `+${conditions.length - PAGE_TAB_BADGE_LIMIT}`,
+      })
+    );
+  }
+  return badges;
+}
+
+function pageTabTooltip(page: EventPage, index: number): string {
+  const name = page.name.trim() || "(이름 없음)";
+  const conditions = page.conditions ?? [];
+  const summary = conditions.length > 0 ? conditions.map(pageConditionSummary).join(" / ") : "조건 없음";
+  return `페이지 ${index + 1} — ${name}\n${summary}`;
+}
+
+function pageConditionSummary(condition: EventPageCondition): string {
+  switch (condition.kind) {
+    case "switch":
+      return `스위치 [${switchVariableName("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+    case "variable":
+      return `변수 [${switchVariableName("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
+    case "selfSwitch":
+      return `셀프 스위치 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
+    case "actor":
+      return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
+    case "item":
+      return `아이템 [${recordName(store.getCurrent().database.items, condition.itemId)}] ${condition.present ? "보유 중" : "미보유"}`;
+    case "gold":
+      return `소지금 ${condition.op} ${condition.amount}`;
+    case "timer":
+      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+    case "timePhase":
+      return `시간대 ${timePhaseLabel(condition.phase)}`;
+    case "season":
+      return `계절 ${seasonLabel(condition.season)}`;
+    case "npcActivity":
+      return `활동 ${condition.activity}`;
+    case "friendshipAtLeast":
+      return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+  }
+}
+
+function timePhaseLabel(phase: Extract<EventPageCondition, { kind: "timePhase" }>["phase"]): string {
+  switch (phase) {
+    case "morning":
+      return "아침";
+    case "day":
+      return "낮";
+    case "evening":
+      return "저녁";
+    case "night":
+      return "밤";
+  }
+}
+
+function seasonLabel(season: Extract<EventPageCondition, { kind: "season" }>["season"]): string {
+  switch (season) {
+    case "spring":
+      return "봄";
+    case "summer":
+      return "여름";
+    case "fall":
+      return "가을";
+    case "winter":
+      return "겨울";
+  }
+}
+
+function switchVariableName(kind: "switch" | "variable", id: string): string {
+  const project = store.getCurrent();
+  const records = kind === "switch" ? project.switches : project.variables;
+  const index = records.findIndex((record) => record.id === id);
+  return index >= 0 ? storyFlagOptionLabel(project, kind, records[index]!, index) : id;
+}
+
+function recordName(records: readonly { id: string; name: string }[], id: string): string {
+  return records.find((record) => record.id === id)?.name ?? id;
 }
 
 function pageButton(

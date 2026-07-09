@@ -6,7 +6,7 @@ import { migrateV1toV3, migrateV2toV3 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV3 } from "./shape";
 
 export function serialize(project: Project): string {
-  return JSON.stringify(project, null, 2);
+  return JSON.stringify(project, (key, value) => key === "terrainTemplates" ? undefined : value, 2);
 }
 
 export function deserialize(raw: string): Project {

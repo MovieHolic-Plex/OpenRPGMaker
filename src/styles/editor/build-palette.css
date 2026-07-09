@@ -1,0 +1,123 @@
+.canvas-toolbar-build-group {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.build-palette-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  width: 228px;
+  padding: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.96);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.28);
+  color: #f8fafc;
+}
+
+.build-palette-popup.build-palette-floating {
+  right: auto;
+  top: auto;
+}
+
+.build-palette-title {
+  margin: 0 0 6px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: #cbd5e1;
+}
+
+.build-palette-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.build-house-preset-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.build-house-kit-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.build-house-option-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.build-house-preset-button,
+.build-house-kit-button,
+.build-house-option-button {
+  min-width: 0;
+  min-height: 26px;
+  padding: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #cbd5e1;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.build-house-kit-button {
+  min-height: 38px;
+}
+
+.build-house-preset-button.active,
+.build-house-kit-button.active,
+.build-house-option-button.active {
+  border-color: rgba(45, 212, 191, 0.9);
+  background: rgba(20, 83, 76, 0.95);
+  color: #f8fafc;
+}
+
+.build-house-preset-button:hover,
+.build-house-preset-button:focus-visible,
+.build-house-kit-button:hover,
+.build-house-kit-button:focus-visible,
+.build-house-option-button:hover,
+.build-house-option-button:focus-visible {
+  border-color: rgba(45, 212, 191, 0.85);
+  outline: none;
+}
+
+.build-palette-button {
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px 6px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 6px;
+  background: rgba(30, 41, 59, 0.96);
+  color: #f8fafc;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.build-palette-button:hover,
+.build-palette-button:focus-visible {
+  border-color: rgba(45, 212, 191, 0.85);
+  background: rgba(20, 83, 76, 0.95);
+  outline: none;
+}
+
+.build-palette-button[data-testid="build-palette-ai"] {
+  grid-column: 1 / -1;
+}

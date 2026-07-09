@@ -80,44 +80,6 @@ test("editor sidebars avoid document overflow and keep key controls clickable", 
   await expectNoDocumentHorizontalOverflow(page);
 });
 
-test("title resources and terrain template toolbar buttons open separate surfaces", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 820 });
-  await page.goto("/?freshProject=1&toolbarSurfaceSplit=1");
-
-  await page.getByTestId("toolbar-title-screen").click();
-  await expect(page.getByTestId("database-modal")).toBeVisible();
-  await expect(page.getByTestId("db-tab-system")).toHaveClass(/active/);
-  await expect(page.getByTestId("db-field-title-resource")).toBeVisible();
-  await expect(page.getByTestId("terrain-template-modal")).toHaveCount(0);
-  await page.getByTestId("database-modal-close").click();
-
-  await page.getByTestId("toolbar-terrain-template").click();
-  await expect(page.getByTestId("terrain-template-modal")).toBeVisible();
-  await expect(page.getByTestId("database-modal")).toHaveCount(0);
-  const terrainTemplateStyles = await page.getByTestId("terrain-template-modal").evaluate((node) => {
-    const layout = node.querySelector(".terrain-template-layout");
-    const chip = node.querySelector(".terrain-template-tile-chip");
-    const swatch = node.querySelector(".terrain-template-tile-swatch");
-    if (!(layout instanceof HTMLElement) || !(chip instanceof HTMLElement) || !(swatch instanceof HTMLElement)) return null;
-    const chipBox = chip.getBoundingClientRect();
-    const swatchBox = swatch.getBoundingClientRect();
-    return {
-      chipDisplay: getComputedStyle(chip).display,
-      chipHeight: chipBox.height,
-      layoutDisplay: getComputedStyle(layout).display,
-      swatchHeight: swatchBox.height,
-      swatchWidth: swatchBox.width,
-    };
-  });
-  expect(terrainTemplateStyles).toEqual({
-    chipDisplay: "grid",
-    chipHeight: 32,
-    layoutDisplay: "grid",
-    swatchHeight: 32,
-    swatchWidth: 32,
-  });
-});
-
 test("chipset palette exposes category-only vertical scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&paletteVerticalCategoryScroll=1");

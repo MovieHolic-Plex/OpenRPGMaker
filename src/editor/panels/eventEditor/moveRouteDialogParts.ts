@@ -1,6 +1,16 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import {
+  CHARSET_FRAME_HEIGHT,
+  CHARSET_FRAME_WIDTH,
+  CHARSET_SHEET_COLUMNS,
+  CHARSET_SHEET_ROWS,
+  EASYRPG_CHARSET_ASSETS,
+  charsetFrameSource,
+} from "@/assets/easyrpgRtp";
+import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import type { Dir, MapId, MoveCommand } from "@/project/types";
+import { databasePicker } from "./conditionForm";
 import type { MoveRouteCommandContext } from "./moveRouteCommandCatalog";
 
 export function renderTopBar(
@@ -102,9 +112,9 @@ function renderParameterPanel(parameters: MoveRouteCommandContext & {
     class: "event-page-move-route-parameters",
     children: [
       el("legend", { text: "매개변수" }),
-      parameterInput("스위치 ID", "event-page-move-route-switch-id", parameters.switchId, parameters.onSwitchId),
-      parameterInput("그래픽 ID", "event-page-move-route-graphic-id", parameters.spriteId, parameters.onSpriteId),
-      parameterInput("효과음 ID", "event-page-move-route-sound-id", parameters.soundId, parameters.onSoundId),
+      switchParameterRow(parameters.switchId, parameters.onSwitchId),
+      graphicParameterRow(parameters.spriteId, parameters.onSpriteId),
+      soundParameterRow(parameters.soundId, parameters.onSoundId),
       mapSelect("NPC 대상 맵", parameters.npcTargetMapId, parameters.onNpcTargetMapId),
       numberInput("NPC X", "event-page-move-route-npc-target-x", parameters.npcTargetX, parameters.onNpcTargetX),
       numberInput("NPC Y", "event-page-move-route-npc-target-y", parameters.npcTargetY, parameters.onNpcTargetY),
@@ -113,23 +123,129 @@ function renderParameterPanel(parameters: MoveRouteCommandContext & {
   });
 }
 
-function parameterInput(
-  label: string,
-  testId: string,
-  value: string,
-  onChange: (value: string) => void
-): HTMLElement {
+// 스위치: 레코드 피커(셀렉트 + ... 버튼) + 원시 id 입력 하이브리드.
+// e2e 가 event-page-move-route-switch-id 에 fill() 하므로 원시 input 은 반드시 유지한다.
+function switchParameterRow(value: string, onChange: (value: string) => void): HTMLElement {
   const input = el("input", {
-    attrs: { type: "text" },
+    class: "event-page-move-route-raw-id",
+    attrs: { type: "text", placeholder: "스위치 id 직접 입력" },
     value,
-    dataset: { testid: testId },
-    on: {
-      input: (event) => {
-        if (event.currentTarget instanceof HTMLInputElement) onChange(event.currentTarget.value.trim());
-      },
-    },
+    dataset: { testid: "event-page-move-route-switch-id" },
   });
-  return el("label", { children: [el("span", { text: label }), input] });
+  const picker = databasePicker(
+    "switch",
+    value,
+    (id) => {
+      input.value = id;
+      onChange(id);
+    },
+    "event-page-move-route-switch-picker"
+  );
+  const pickerSelect = picker.querySelector("select") as HTMLSelectElement | null;
+  input.addEventListener("input", () => {
+    const next = input.value.trim();
+    onChange(next);
+    if (pickerSelect) pickerSelect.value = next;
+  });
+  return el("label", {
+    class: "event-page-move-route-parameter-row",
+    children: [el("span", { text: "스위치 ID" }), picker, input],
+  });
+}
+
+// 그래픽: RTP 차셋 셀렉트 + 24x32 스프라이트 미리보기 칩 + 원시 id 입력 하이브리드.
+// e2e 가 event-page-move-route-graphic-id 에 fill() 하므로 원시 input 은 반드시 유지한다.
+function graphicParameterRow(value: string, onChange: (value: string) => void): HTMLElement {
+  const chip = el("span", {
+    class: "event-page-move-route-graphic-chip",
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: "event-page-move-route-graphic-preview" },
+  });
+  const select = el("select", {
+    class: "event-page-move-route-graphic-select",
+    dataset: { testid: "event-page-move-route-graphic-select" },
+  });
+  select.append(el("option", { text: "(직접 입력)", attrs: { value: "" } }));
+  for (const asset of EASYRPG_CHARSET_ASSETS) {
+    select.append(el("option", { text: charsetOptionLabel(asset.fileName, asset.group), attrs: { value: asset.textureKey } }));
+  }
+  const input = el("input", {
+    class: "event-page-move-route-raw-id",
+    attrs: { type: "text", placeholder: "텍스처 키 직접 입력" },
+    value,
+    dataset: { testid: "event-page-move-route-graphic-id" },
+  });
+  select.value = knownCharsetKey(value) ? value : "";
+  updateGraphicChip(chip, value);
+  select.addEventListener("change", () => {
+    const next = select.value;
+    if (next.length === 0) return;
+    input.value = next;
+    onChange(next);
+    updateGraphicChip(chip, next);
+  });
+  input.addEventListener("input", () => {
+    const next = input.value.trim();
+    select.value = knownCharsetKey(next) ? next : "";
+    onChange(next);
+    updateGraphicChip(chip, next);
+  });
+  return el("label", {
+    class: "event-page-move-route-parameter-row",
+    children: [el("span", { text: "그래픽 ID" }), chip, select, input],
+  });
+}
+
+// 효과음: 텍스트 입력 유지 + ♪ 아이콘/placeholder 예시.
+function soundParameterRow(value: string, onChange: (value: string) => void): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "text", placeholder: "예: se_cursor" },
+    value,
+    dataset: { testid: "event-page-move-route-sound-id" },
+  });
+  input.addEventListener("input", () => onChange(input.value.trim()));
+  return el("label", {
+    class: "event-page-move-route-parameter-row",
+    children: [
+      el("span", {
+        children: [
+          "효과음 ID ",
+          el("span", { class: "event-page-move-route-sound-icon", attrs: { "aria-hidden": "true" }, text: "♪" }),
+        ],
+      }),
+      input,
+    ],
+  });
+}
+
+function charsetOptionLabel(fileName: string, group: string): string {
+  return `${fileName.replace(/\.png$/iu, "")} (${group})`;
+}
+
+function knownCharsetKey(textureKey: string): boolean {
+  return EASYRPG_CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
+}
+
+function updateGraphicChip(chip: HTMLElement, textureKey: string): void {
+  const asset = EASYRPG_CHARSET_ASSETS.find((item) => item.textureKey === textureKey);
+  chip.dataset.spriteId = textureKey;
+  chip.style.width = `${CHARSET_FRAME_WIDTH}px`;
+  chip.style.height = `${CHARSET_FRAME_HEIGHT}px`;
+  if (!asset) {
+    chip.dataset.empty = "true";
+    chip.style.backgroundImage = "none";
+    chip.title = textureKey.length > 0 ? textureKey : "그래픽 없음";
+    return;
+  }
+  delete chip.dataset.empty;
+  chip.title = asset.name;
+  // 정면(아래) 대기 프레임 크롭. 투명 컬러키 배경 처리 재사용.
+  const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
+  applyTransparentColorKeyBackground(chip, asset.path);
+  chip.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH}px ${
+    CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT
+  }px`;
+  chip.style.backgroundPosition = `-${source.x}px -${source.y}px`;
 }
 
 function mapSelect(label: string, value: MapId, onChange: (value: MapId) => void): HTMLElement {

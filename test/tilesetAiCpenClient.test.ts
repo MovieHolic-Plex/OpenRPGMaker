@@ -10,7 +10,7 @@ describe("requestCpenTilesetMapping", () => {
     vi.unstubAllGlobals();
   });
 
-  it("Given an API key When requesting a tileset mapping Then it sends the Yunwu Gemini request", async () => {
+  it("Given an API key When requesting a tileset mapping Then it sends the default OpenRouter request", async () => {
     const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
       new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
     );
@@ -28,11 +28,11 @@ describe("requestCpenTilesetMapping", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0] ?? [];
-    expect(url).toBe("https://yunwu.ai/v1/chat/completions");
+    expect(url).toBe("https://openrouter.ai/api/v1/chat/completions");
     expect(typeof init?.body).toBe("string");
     expect(readHeader(init, "Authorization")).toBe("Bearer test-key");
     const body = parseBody(readStringBody(init));
-    expect(body.model).toBe("gemini-3.5-flash");
+    expect(body.model).toBe("minimax/minimax-m3");
     expect(body.messages?.[0]?.role).toBe("system");
     expect(body.messages?.[1]?.content).toBe("타일셋을 분석해줘");
     expect(body.routing?.max_input_per_1m).toBe(0.1);

@@ -1,5 +1,6 @@
 import { numberedName } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { el } from "@/util/dom";
 import { openSwitchVariablePicker } from "./recordPickerDialog";
 
@@ -23,13 +24,14 @@ type RecordSelectParams = {
 };
 
 export function switchVariableIdPicker(params: IdPickerParams): HTMLElement {
+  const project = store.getCurrent();
   const records = switchVariableRecords(params.kind);
   const select = el("select", {
     dataset: { testid: params.inputTestId },
   }) as HTMLSelectElement;
   select.append(el("option", { text: "(선택)", attrs: { value: "" } }));
   for (const [index, record] of records.entries()) {
-    select.append(el("option", { text: numberedName(index, record.name), attrs: { value: record.id } }));
+    select.append(el("option", { text: storyFlagOptionLabel(project, params.kind, record, index), attrs: { value: record.id } }));
   }
   if (params.currentId && !records.some((record) => record.id === params.currentId)) {
     select.append(el("option", { text: params.currentId, attrs: { value: params.currentId } }));

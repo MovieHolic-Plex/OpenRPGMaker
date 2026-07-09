@@ -10,12 +10,16 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const ONTOLOGY_ENTRY = resolve(REPO_ROOT, "src/project/ontology/index.ts");
 
 export async function withOntologyModule(callback) {
+  return withTsModule(ONTOLOGY_ENTRY, "ontology.mjs", callback);
+}
+
+export async function withTsModule(entryPoint, outputName, callback) {
   const tempDir = await mkdtemp(resolve(tmpdir(), "rpg-zzu-ontology-"));
-  const outputFile = resolve(tempDir, "ontology.mjs");
+  const outputFile = resolve(tempDir, outputName);
   await build({
     absWorkingDir: REPO_ROOT,
     bundle: true,
-    entryPoints: [ONTOLOGY_ENTRY],
+    entryPoints: [entryPoint],
     format: "esm",
     logLevel: "silent",
     outfile: outputFile,
@@ -41,5 +45,7 @@ function resolveAlias(path) {
   const resolved = resolve(REPO_ROOT, "src", path.slice(2));
   if (extname(resolved)) return resolved;
   const typedPath = `${resolved}.ts`;
-  return existsSync(typedPath) ? typedPath : resolved;
+  if (existsSync(typedPath)) return typedPath;
+  const indexPath = resolve(resolved, "index.ts");
+  return existsSync(indexPath) ? indexPath : resolved;
 }

@@ -1,0 +1,121 @@
+/* 선택 영역 AI 작업 모달 (우클릭 → "이 영역에 AI 작업…"). */
+.region-task-backdrop {
+  align-items: center;
+  background: rgba(7, 9, 14, 0.62);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-4);
+  position: fixed;
+  z-index: 1200;
+}
+
+.region-task-modal {
+  background: var(--editor-panel-bg);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  color: var(--editor-text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: min(520px, calc(100vw - 32px));
+  padding: var(--space-4);
+  width: 100%;
+}
+
+.region-task-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.region-task-title {
+  font-weight: 600;
+}
+
+.region-task-chip {
+  background: var(--accent-muted, rgba(80, 160, 255, 0.16));
+  border: 1px solid var(--accent-border, rgba(80, 160, 255, 0.4));
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  font-size: 12px;
+  margin-inline-start: auto;
+  padding: 2px 8px;
+}
+
+.region-task-close {
+  background: transparent;
+  border: none;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px;
+}
+.region-task-close:hover {
+  color: var(--editor-text);
+}
+
+.region-task-input {
+  background: var(--bg-raised, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  font: inherit;
+  padding: var(--space-2);
+  resize: vertical;
+  width: 100%;
+}
+.region-task-input:focus {
+  border-color: var(--accent, #4a9eff);
+  outline: none;
+}
+
+.region-task-log {
+  color: var(--editor-text-muted);
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 2px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.region-task-log:empty {
+  display: none;
+}
+.region-task-log-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.region-task-summary {
+  color: var(--editor-text);
+  font-size: 13px;
+  min-height: 18px;
+}
+.region-task-summary:empty {
+  display: none;
+}
+
+.region-task-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.region-task-run {
+  background: var(--accent, #4a9eff);
+  border: 1px solid var(--accent-border, #4a9eff);
+  border-radius: var(--radius-s);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+.region-task-run:disabled {
+  cursor: default;
+  opacity: 0.6;
+}

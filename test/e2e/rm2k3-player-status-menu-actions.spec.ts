@@ -7,7 +7,7 @@ import {
   startActualPlay,
 } from "./rm2k3PlayerStatusMenuHelpers";
 
-test("fullscreen item target, equipment, row, and formation actions mutate runtime state", async ({ page }) => {
+test("Korean item target, equipment, row, and formation actions mutate runtime state", async ({ page }) => {
   const recoveryAmount = 77;
   await startActualPlay(page, recoveryItemProject(recoveryAmount), "/?e2eVitals=1");
   const before = await runtimeState(page);
@@ -20,7 +20,7 @@ test("fullscreen item target, equipment, row, and formation actions mutate runti
   await page.keyboard.press("X");
   await page.getByTestId("status-menu-command-items").click();
   await page.getByTestId("status-menu-item-item_potion").click();
-  await expect(page.getByTestId("status-menu-classic-actor-targets")).toBeVisible();
+  await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택");
   await page.getByTestId(`status-menu-item-target-${secondActorId}`).click();
   await expect(page.getByTestId("status-menu-message")).toContainText("테스트 회복약을 사용했습니다");
   await expect.poll(async () => (await runtimeState(page)).actorVitals[secondActorId]?.hp).toBe(30 + recoveryAmount);
@@ -63,9 +63,9 @@ test("uses a DB-edited recovery item from the status menu", async ({ page }, tes
   await page.keyboard.press("X");
   await expect(page.getByTestId("main-menu")).toBeVisible();
   await page.getByTestId("status-menu-command-items").click();
-  await expect(page.getByTestId("status-menu-fullscreen-items")).toContainText("테스트 회복약");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("테스트 회복약");
   await page.getByTestId("status-menu-item-item_potion").click();
-  await expect(page.getByTestId("status-menu-classic-actor-targets")).toBeVisible();
+  await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택");
   await page.getByTestId(`status-menu-item-target-${actorId}`).click();
 
   await expect(page.getByTestId("status-menu-message")).toContainText("테스트 회복약을 사용했습니다");

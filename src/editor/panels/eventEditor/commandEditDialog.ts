@@ -1,9 +1,10 @@
 import { newCommand } from "@/editor/eventActions";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import { resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
+import { isContainerInsideCommand, moveCommandBetweenLists, resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
+import { renderCommandPreview } from "./commandPreview";
 import { commandLabel } from "./commandPicker";
 import { openEventSubdialog } from "./subdialog";
 import type { CommandListActions } from "./types";
@@ -12,6 +13,10 @@ type EventCommandEditDialogRequest = {
   readonly title?: string;
   readonly initial: Command;
   readonly onApply: (command: Command) => void;
+  // 기존 명령 편집이면 종류 select 를 잠근다(분기 유실 방지). 새 명령 추가는 false.
+  readonly lockKind?: boolean;
+  // [중간-3] 이 명령 시점의 활성 얼굴(직전 changeFace). 문장 표시 프리뷰에 반영.
+  readonly previewFace?: { readonly resourceId: string; readonly faceIndex: number };
 };
 
 export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): void {
@@ -26,9 +31,18 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         dataset: { testid: "event-command-edit-form" },
       });
       const formHost = el("div", { class: "event-command-edit-body" });
+      const previewHost = el("div", {
+        class: "event-command-preview-panel",
+        dataset: { testid: "event-command-preview" },
+      });
+      const renderPreview = () => {
+        clearChildren(previewHost);
+        previewHost.append(renderCommandPreview(stagedCommand, { face: request.previewFace }));
+      };
       const renderEditor = () => {
         clearChildren(formHost);
-        formHost.append(renderCommandBody({ path: [], actions }, stagedCommand));
+        formHost.append(renderCommandBody({ path: [], actions, lockKind: request.lockKind ?? false }, stagedCommand));
+        renderPreview();
       };
       const actions: CommandListActions = {
         addCommand: (containerPath, command) => {
@@ -47,8 +61,11 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         },
         replaceCommand: (path, command) => {
           if (path.length === 0) {
+            // 같은 종류의 필드 편집이면 폼을 재빌드하지 않고 프리뷰만 갱신(입력 포커스 보존).
+            const structural = stagedCommand.kind !== command.kind;
             stagedCommand = structuredClone(command);
-            renderEditor();
+            if (structural) renderEditor();
+            else renderPreview();
             return;
           }
           const containerPath = path.slice(0, -1);
@@ -56,8 +73,10 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           if (replaceIndex === undefined) return;
           const list = commandContainer(stagedCommand, containerPath);
           if (!list) return;
+          const structural = list[replaceIndex]?.kind !== command.kind;
           list[replaceIndex] = structuredClone(command);
-          renderEditor();
+          if (structural) renderEditor();
+          else renderPreview();
         },
         deleteCommand: (path) => {
           const containerPath = path.slice(0, -1);
@@ -93,6 +112,15 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           list.splice(toIndex, 0, moving);
           renderEditor();
         },
+        // [P2] 스테이징된 루트 명령 안에서의 크로스 컨테이너 이동(선택지 가지 간 등).
+        moveCommandAcross: (sourcePath, targetContainerPath, toIndex) => {
+          if (isContainerInsideCommand(sourcePath, targetContainerPath)) return;
+          const targetList = commandContainer(stagedCommand, targetContainerPath);
+          const sourceList = commandContainer(stagedCommand, sourcePath.slice(0, -1));
+          const fromIndex = sourcePath[sourcePath.length - 1];
+          if (!targetList || !sourceList || fromIndex === undefined) return;
+          if (moveCommandBetweenLists(sourceList, fromIndex, targetList, toIndex)) renderEditor();
+        },
       };
       const ok = el("button", {
         class: "event-command-edit-action primary",
@@ -116,7 +144,10 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       });
 
       editor.append(
-        formHost,
+        el("div", {
+          class: "event-command-edit-columns",
+          children: [formHost, previewHost],
+        }),
         el("div", {
           class: "event-command-edit-actions",
           children: [ok, cancel],

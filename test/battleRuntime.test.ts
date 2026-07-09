@@ -307,8 +307,11 @@ describe("side-view battle runtime", () => {
 
   it("keeps rough fallback state behavior for empty legacy troop pages", () => {
     // Given: a legacy troop page has no battle commands yet.
+    const project = battleProject();
+    const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
+    if (enemy) enemy.stats = { ...enemy.stats, maxHp: 9999 };
     const runtime = createBattleRuntime({
-      project: battleProject(),
+      project,
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,

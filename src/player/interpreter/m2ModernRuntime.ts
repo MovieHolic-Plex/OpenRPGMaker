@@ -1,13 +1,16 @@
 import type { M2CommandFields } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike } from "@/player/types";
+import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 
 export function executeModernCommand(
   session: PlaySessionLike,
   runtime: M2RuntimeState,
   title: string,
-  fields: M2CommandFields
+  fields: M2CommandFields,
+  context: { readonly currentEventId?: string } = {}
 ): boolean {
   switch (title) {
     case "Camera Control":
@@ -31,7 +34,7 @@ export function executeModernCommand(
       recordSpawnEvent(session, runtime, fields);
       return true;
     case "Remove Event":
-      recordRemoveEvent(session, runtime, fields);
+      recordRemoveEvent(session, runtime, fields, context);
       return true;
     case "Pathfind Move":
       runtime.pathfinding.push({
@@ -129,6 +132,10 @@ function recordCutsceneControl(session: PlaySessionLike, runtime: M2RuntimeState
   const enabled = fieldBoolean(fields, "enabled", true);
   runtime.cutscene[action] = enabled;
   session.flags[`cutscene:${action}`] = enabled;
+  if (action === "lockPlayer") {
+    if (enabled) beginCutsceneControl(session, undefined, fieldBoolean(fields, "skippable", false));
+    else endCutsceneControl(session);
+  }
 }
 
 function recordCheckpoint(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
@@ -152,18 +159,38 @@ function recordUiCommand(session: PlaySessionLike, runtime: M2RuntimeState, fiel
 }
 
 function recordSpawnEvent(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
-  const eventId = fieldString(fields, "eventId", "spawned-event");
-  const mapId = fieldString(fields, "mapId", "");
+  const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
+  const eventId = fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
+  const mapId = fieldString(fields, "mapId", session.currentMapId) || session.currentMapId;
+  const templateMapId = fieldString(fields, "templateMapId", fieldString(fields, "sourceMapId", session.currentMapId)) || session.currentMapId;
   const x = fieldNumber(fields, "x", 0);
   const y = fieldNumber(fields, "y", 0);
-  runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), prefabId: fieldString(fields, "prefabId", ""), mapId, x, y };
+  runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), prefabId: templateEventId, mapId, x, y };
+  session.spawnedEvents ??= {};
+  session.spawnedEvents[eventId] = { templateMapId, templateEventId, mapId, x, y };
   session.eventLocations ??= {};
   session.eventLocations[eventId] = { mapId, x, y };
 }
 
-function recordRemoveEvent(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
-  const eventId = fieldString(fields, "eventId", "");
+function recordRemoveEvent(
+  session: PlaySessionLike,
+  runtime: M2RuntimeState,
+  fields: M2CommandFields,
+  context: { readonly currentEventId?: string }
+): void {
+  const eventId = fieldString(fields, "eventId", context.currentEventId ?? "");
+  if (!eventId) return;
+  const spawned = session.spawnedEvents?.[eventId];
+  const mapId = spawned?.mapId ?? (fieldString(fields, "mapId", session.currentMapId) || session.currentMapId);
   runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), removed: true };
+  if (spawned) {
+    delete session.spawnedEvents?.[eventId];
+  } else {
+    session.removedEventIds ??= {};
+    const removed = new Set(session.removedEventIds[mapId] ?? []);
+    removed.add(eventId);
+    session.removedEventIds[mapId] = [...removed];
+  }
   delete session.eventLocations?.[eventId];
   session.flags[`event-removed:${eventId}`] = true;
 }
@@ -204,19 +231,19 @@ function recordQuestObjective(session: PlaySessionLike, runtime: M2RuntimeState,
 function recordWeightedBranch(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
   const variableId = fieldString(fields, "resultVariableId", "");
   const table = fieldString(fields, "table", "");
-  const selectedIndex = selectWeightedIndex(table);
+  const selectedIndex = selectWeightedIndex(session, table);
   runtime.session.weightedBranch = { table, resultVariableId: variableId };
   if (variableId) session.variables[variableId] = selectedIndex;
 }
 
-function selectWeightedIndex(table: string): number {
+function selectWeightedIndex(session: PlaySessionLike, table: string): number {
   const weights = table
     .split(/\r?\n/)
     .map((line) => Number(line.split("=").at(1) ?? 0))
     .filter((value) => Number.isFinite(value) && value > 0);
   if (weights.length === 0) return 0;
   const total = weights.reduce((sum, value) => sum + value, 0);
-  let cursor = Math.random() * total;
+  let cursor = nextSessionRandom(session, "misc") * total;
   for (let index = 0; index < weights.length; index += 1) {
     cursor -= weights[index] ?? 0;
     if (cursor <= 0) return index;

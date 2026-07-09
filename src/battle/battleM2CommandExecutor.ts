@@ -14,30 +14,35 @@ export type M2BattleCommandExecutorOptions = {
   readonly addExtraActorAction: (actorId: string, amount: number) => void;
 };
 
-export function executeM2BattleCommand(command: M2Command, options: M2BattleCommandExecutorOptions): boolean {
+export type M2BattleCommandExecution = {
+  readonly handled: boolean;
+  readonly forceEscape: boolean;
+};
+
+export function executeM2BattleCommand(command: M2Command, options: M2BattleCommandExecutorOptions): M2BattleCommandExecution {
   const parsed = parseM2BattleCommand(command);
-  if (!parsed) return false;
+  if (!parsed) return { handled: false, forceEscape: false };
   switch (parsed.kind) {
     case "changeEnemyHp":
       for (const enemy of resolveEnemyTargets(options.enemies, parsed.target)) {
         enemy.hp = applyM2NumberOperation(enemy.hp, parsed.operation, parsed.value, enemy.maxHp);
       }
-      return false;
+      return { handled: true, forceEscape: false };
     case "enemyEncounter":
       options.revealEnemy?.(parsed.target);
-      return false;
+      return { handled: true, forceEscape: false };
     case "changeBattleback": {
       const resourceId = parsed.resourceId.trim();
       if (resourceId) options.changeBattleback?.(resourceId);
-      return false;
+      return { handled: true, forceEscape: false };
     }
     case "forceEscape":
-      return true;
+      return { handled: true, forceEscape: true };
     case "actionTimes": {
       const actor = resolveActorTarget(options.actors, parsed.target, options.context);
-      if (!actor || parsed.amount <= 0) return false;
+      if (!actor || parsed.amount <= 0) return { handled: true, forceEscape: false };
       options.addExtraActorAction(actor.recordId, parsed.amount);
-      return false;
+      return { handled: true, forceEscape: false };
     }
   }
 }

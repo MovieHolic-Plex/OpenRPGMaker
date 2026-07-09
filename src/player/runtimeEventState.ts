@@ -1,6 +1,7 @@
 import { resolveEventPage } from "@/project/io";
 import type {
   AssetRef,
+  Dir,
   EventAnimationType,
   EventPage,
   EventPageMovement,
@@ -21,6 +22,7 @@ const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
 export interface RuntimeEventPosition {
   readonly x: number;
   readonly y: number;
+  readonly direction?: Dir;
 }
 
 export type RuntimeEventPositions = Record<string, RuntimeEventPosition>;
@@ -38,6 +40,8 @@ export interface RuntimeEventView {
   readonly animationType: EventAnimationType;
   readonly movement: EventPageMovement;
   readonly sprite: AssetRef | undefined;
+  readonly direction: Dir | undefined;
+  readonly runtimeDirection: Dir | undefined;
 }
 
 export function initialRuntimeEventPositions(events: readonly GameEvent[]): RuntimeEventPositions {
@@ -52,9 +56,20 @@ export function moveRuntimeEventPosition(
   positions: RuntimeEventPositions,
   eventId: string,
   x: number,
-  y: number
+  y: number,
+  direction?: Dir
 ): void {
-  positions[eventId] = { x, y };
+  positions[eventId] = { x, y, direction: direction ?? positions[eventId]?.direction };
+}
+
+export function setRuntimeEventPositionDirection(
+  positions: RuntimeEventPositions,
+  eventId: string,
+  direction: Dir
+): void {
+  const position = positions[eventId];
+  if (!position) return;
+  positions[eventId] = { ...position, direction };
 }
 
 export function runtimeEventView(
@@ -64,7 +79,9 @@ export function runtimeEventView(
 ): RuntimeEventView {
   const page = resolveEventPage(event, session);
   const location = session.eventLocations?.[event.id];
-  const position = location ? { x: location.x, y: location.y } : positions[event.id] ?? { x: event.x, y: event.y };
+  const runtimePosition = positions[event.id];
+  const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
+  const runtimeDirection = location?.direction ?? runtimePosition?.direction;
   const transparent = page?.graphic.transparent === true;
   return {
     event,
@@ -79,6 +96,8 @@ export function runtimeEventView(
     animationType: page?.animationType ?? "normal",
     movement: page?.movement ?? legacyMovement(event),
     sprite: transparent ? undefined : page?.graphic.sprite ?? event.sprite,
+    direction: runtimeDirection ?? page?.graphic.direction,
+    runtimeDirection,
   };
 }
 
@@ -90,7 +109,11 @@ export function runtimeEventViewsForMap(
 ): RuntimeEventView[] {
   const views: RuntimeEventView[] = [];
   const included = new Set<string>();
+  const erased = new Set(session.erasedEventIds ?? []);
+  const removedOnCurrentMap = removedEventSet(session, map.id);
   for (const event of map.events) {
+    if (erased.has(event.id)) continue;
+    if (removedOnCurrentMap.has(event.id)) continue;
     const location = session.eventLocations?.[event.id];
     if (location && location.mapId !== map.id) continue;
     views.push(runtimeEventView(event, session, positions));
@@ -98,14 +121,60 @@ export function runtimeEventViewsForMap(
   }
   for (const sourceMap of Object.values(project.maps)) {
     if (sourceMap.id === map.id) continue;
+    const removedOnSourceMap = removedEventSet(session, sourceMap.id);
     for (const event of sourceMap.events) {
       if (included.has(event.id)) continue;
+      if (erased.has(event.id)) continue;
+      if (removedOnSourceMap.has(event.id)) continue;
       if (session.eventLocations?.[event.id]?.mapId !== map.id) continue;
       views.push(runtimeEventView(event, session, positions));
       included.add(event.id);
     }
   }
+  for (const [spawnedEventId, spawn] of Object.entries(session.spawnedEvents ?? {})) {
+    if (included.has(spawnedEventId)) continue;
+    if (spawn.mapId !== map.id) continue;
+    const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
+    if (!event) continue;
+    views.push(runtimeEventView(event, session, positions));
+    included.add(spawnedEventId);
+  }
   return views;
+}
+
+function removedEventSet(session: PlaySessionLike, mapId: string): ReadonlySet<string> {
+  return new Set(session.removedEventIds?.[mapId] ?? []);
+}
+
+function materializeSpawnedEvent(
+  project: Pick<Project, "maps">,
+  eventId: string,
+  spawn: NonNullable<PlaySessionLike["spawnedEvents"]>[string]
+): GameEvent | null {
+  const template = findTemplateEvent(project, spawn.templateMapId, spawn.templateEventId);
+  if (!template) return null;
+  return {
+    ...template,
+    id: eventId,
+    x: spawn.x,
+    y: spawn.y,
+    pages: template.pages?.map((page) => ({ ...page, commands: [...page.commands] })),
+    commands: [...template.commands],
+  };
+}
+
+function findTemplateEvent(
+  project: Pick<Project, "maps">,
+  templateMapId: string,
+  templateEventId: string
+): GameEvent | undefined {
+  const preferred = project.maps[templateMapId]?.events.find((event) => event.id === templateEventId);
+  if (preferred) return preferred;
+  for (const map of Object.values(project.maps)) {
+    const event = map.events.find((entry) => entry.id === templateEventId);
+    if (event) return event;
+  }
+  return undefined;
 }
 
 function legacyMovement(event: GameEvent): EventPageMovement {
@@ -123,6 +192,7 @@ export function findRuntimeEventAt(
   triggerKind: Trigger["kind"] | readonly Trigger["kind"][]
 ): RuntimeEventView | undefined {
   return events
+    .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
     .find((event) => event.x === x && event.y === y && matchesTrigger(event.trigger.kind, triggerKind));
 }
@@ -148,6 +218,7 @@ export function findBlockingRuntimeEventAt(
   y: number
 ): RuntimeEventView | undefined {
   return events
+    .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
     .find((event) => event.x === x && event.y === y && event.priority === "same" && event.overlapForbidden);
 }

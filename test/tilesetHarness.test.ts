@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
+import { deserialize, serialize } from "@/project/io";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, COMBINED_TOWN_HARNESS_GROUPS, DUNGEON_HARNESS_PREFIX, harnessLayerForTile, INTERIOR_HARNESS_PREFIX, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
@@ -7,6 +9,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   it("seeds the default Combined Town tileset with grouped metadata and grammars", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
     const roadGroup = tileset.tileGroups?.find((group) => group.id.endsWith("dirt-road-autotile"));
+    const sandGroup = tileset.tileGroups?.find((group) => group.id.endsWith("sand-autotile"));
     const waterGroup = tileset.tileGroups?.find((group) => group.id.endsWith("lake-water-autotile"));
 
     expect(roadGroup).toMatchObject({
@@ -18,6 +21,16 @@ describe("EasyRPG Combined Town tileset harness", () => {
       role: "water",
       patternGrammar: { kind: "animated_terrain" },
     });
+    expect(sandGroup).toMatchObject({
+      defaultLayer: "lower",
+      id: "harness-combined-town-sand-autotile",
+      layerHome: "lower",
+      name: "모래",
+      patternGrammar: { kind: "autotile_3x3" },
+      role: "terrain",
+      source: "bundled-default",
+    });
+    expect(sandGroup?.tileIds).toEqual(CHIPSET_TILE_GROUPS.sandGround);
     expect(tileset.tileMeta?.[360]).toMatchObject({
       label: "흙길 중앙",
       repeatability: "auto",
@@ -25,18 +38,92 @@ describe("EasyRPG Combined Town tileset harness", () => {
     });
   });
 
-  it("locks the Combined Town layer contract to lower building parts and upper transparent overlays", () => {
+  it("seeds conifer, dry tree, broadleaf, flower, and bush cluster rules by default", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const group = (suffix: string) => tileset.tileGroups?.find((entry) => entry.id.endsWith(suffix));
+
+    expect(group("conifer-tree")?.rules).toEqual([
+      expect.objectContaining({ kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" }),
+    ]);
+    expect(group("dry-tree")?.rules).toEqual([
+      expect.objectContaining({ kind: "adjacency", params: { a: 261, b: 291, relation: "aAboveB" }, strength: "hard" }),
+    ]);
+    expect(group("broadleaf-tree-2x2")?.rules).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ params: { a: 262, b: 292, relation: "aAboveB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 263, b: 293, relation: "aAboveB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 262, b: 263, relation: "aLeftOfB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 292, b: 293, relation: "aLeftOfB" }, strength: "hard" }),
+      ])
+    );
+    expect(group("flower-props")?.rules).toEqual([
+      expect.objectContaining({ kind: "spacing", params: { minGap: 2 }, strength: "medium" }),
+    ]);
+    expect(group("bush-props")?.rules).toEqual([
+      expect.objectContaining({ kind: "spacing", params: { minGap: 2 }, strength: "soft" }),
+    ]);
+  });
+
+  it("does not overwrite existing rules when the Combined Town harness is re-applied", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
+    if (!conifer) throw new Error("missing conifer group");
+    conifer.rules = [{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }];
+    conifer.tileIds = [260];
+    conifer.patternGrammar = { kind: "single", parts: [{ role: "center", tileIds: [260] }], preserveCaps: true, repeat: "source_order" };
+
+    applyCombinedTownHarness(tileset);
+
+    const reseeded = tileset.tileGroups?.find((group) => group.id === conifer.id);
+    expect(reseeded?.rules).toEqual([{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }]);
+    expect(reseeded?.tileIds).toEqual([260]);
+    expect(reseeded?.patternGrammar).toEqual({ kind: "single", parts: [{ role: "center", tileIds: [260] }], preserveCaps: true, repeat: "source_order" });
+  });
+
+  it("seeds missing default rules without resetting user-edited group layout", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
+    if (!conifer) throw new Error("missing conifer group");
+    conifer.rules = undefined;
+    conifer.tileIds = [260];
+    conifer.patternGrammar = { kind: "single", parts: [{ role: "center", tileIds: [260] }], preserveCaps: true, repeat: "source_order" };
+
+    applyCombinedTownHarness(tileset);
+
+    const reseeded = tileset.tileGroups?.find((group) => group.id === conifer.id);
+    expect(reseeded?.tileIds).toEqual([260]);
+    expect(reseeded?.patternGrammar?.kind).toBe("single");
+    expect(reseeded?.rules).toEqual([
+      expect.objectContaining({ kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" }),
+    ]);
+  });
+
+  it("keeps tombstoned Combined Town harness groups deleted across serialization and re-apply", () => {
+    const project = createBlankProject();
+    const tileset = project.tilesets[DEFAULT_TILESET_ID];
+    const groupId = COMBINED_TOWN_HARNESS_GROUPS[0]?.id;
+    if (!groupId) throw new Error("missing harness group");
+    tileset.tileGroups = tileset.tileGroups?.filter((group) => group.id !== groupId);
+    tileset.suppressedHarnessGroupIds = [groupId];
+
+    const restored = deserialize(serialize(project));
+    applyCombinedTownHarness(restored.tilesets[DEFAULT_TILESET_ID]);
+
+    expect(restored.tilesets[DEFAULT_TILESET_ID].tileGroups?.some((group) => group.id === groupId)).toBe(false);
+    expect(restored.tilesets[DEFAULT_TILESET_ID].suppressedHarnessGroupIds).toEqual([groupId]);
+  });
+
+  it("locks the Combined Town layer contract to lower building parts and upper roof overlays", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
 
-    expect(harnessLayerForTile(tileset, 85)).toBe("upper");
-    expect(harnessLayerForTile(tileset, 87)).toBe("upper");
+    expect(harnessLayerForTile(tileset, 85)).toBe("lower");
     expect(harnessLayerForTile(tileset, 378)).toBe("lower");
     expect(harnessLayerForTile(tileset, 116)).toBe("lower");
     expect(harnessLayerForTile(tileset, 404)).toBe("lower");
     expect(harnessLayerForTile(tileset, 374)).toBe("upper");
+    // 창문(85)/울타리(378)는 그룹 계약이 lower여도 투명 칩이라 런타임 priority는 upper로 승격된다.
     expect(tileset.priority[85]).toBe("upper");
-    expect(tileset.priority[87]).toBe("upper");
-    expect(tileset.priority[378]).toBe("lower");
+    expect(tileset.priority[378]).toBe("upper");
     expect(tileset.priority[374]).toBe("upper");
     expect(tileset.passability[374]).toEqual({ up: false, down: false, left: false, right: false });
   });

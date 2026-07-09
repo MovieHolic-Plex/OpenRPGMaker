@@ -6,12 +6,16 @@ import type {
   MessageWindowSettings,
   MoveCommand,
   Project,
+  ShowAnimationTarget,
   TransferFade,
+  TransferTransition,
   TransferDirection,
+  WeatherKind,
   ShopMessageType,
   ShopType,
 } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
+import type { RuntimeCameraTarget } from "@/player/types";
 
 export type StepResult =
   | { kind: "done" }
@@ -23,11 +27,18 @@ export type StepResult =
       settings: MessageWindowSettings;
       cancelBehavior?: ChoiceCancelBehavior;
     }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade }
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "wait"; ms: number }
+  | { kind: "eraseEvent"; eventId?: string }
+  | { kind: "waitForAllMovement" }
+  | { kind: "stopAllMovement" }
   | { kind: "inputWait"; variableId?: string }
   | { kind: "inputNumber"; variableId: string; digits: number; settings: MessageWindowSettings }
+  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
+  | { kind: "advanceTime"; minutes?: number; days?: number }
+  | { kind: "setTime"; hour: number; minute?: number }
+  | { kind: "sleepUntilMorning" }
   | {
       kind: "changeTile";
       mapId: MapId;
@@ -37,16 +48,54 @@ export type StepResult =
       tile: number;
     }
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
-  | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean }
-  | { kind: "showPicture"; pictureId: string; resourceId: string; x: number; y: number }
+  | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
+  | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean; battleFlow?: "gauge" | "strict" }
+  | {
+      kind: "showPicture";
+      pictureId: string;
+      resourceId: string;
+      x: number;
+      y: number;
+      scale?: number;
+      opacity?: number;
+      rotation?: number;
+      durationMs?: number;
+      waitForPicture?: boolean;
+    }
   | { kind: "erasePicture"; pictureId: string }
   | { kind: "playAudio"; resourceId: string; loop: boolean }
   | { kind: "stopAudio" }
+  | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
+  | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }
+  | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: string; wait: boolean }
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
   | { kind: "shakeScreen"; intensity: number; durationMs: number }
   | {
+      kind: "scrollMap";
+      direction: "down" | "left" | "right" | "up";
+      distanceTiles: number;
+      durationMs: number;
+      wait: boolean;
+      returnToPlayer: boolean;
+      lock: boolean;
+    }
+  | {
+      kind: "cameraControl";
+      mode: "pan" | "follow" | "fixed" | "return";
+      target: RuntimeCameraTarget;
+      durationMs: number;
+      wait: boolean;
+      returnToPlayer: boolean;
+      offsetX?: number;
+      offsetY?: number;
+      zoom?: number;
+    }
+  | { kind: "spawnEvent"; eventId: string }
+  | { kind: "removeEvent"; eventId: string }
+  | {
       kind: "shop";
       itemIds: string[];
+      items?: readonly { readonly itemId: string; readonly price?: number }[];
       allowSell?: boolean;
       quantityMode?: "single" | "select";
       shopType?: ShopType;
@@ -54,10 +103,10 @@ export type StepResult =
       branchOnTransaction?: boolean;
     }
   | { kind: "inn"; price: number }
-  | { kind: "gameOver" }
+  | { kind: "gameOver"; message?: string }
   | { kind: "returnToTitle"; title?: string; message?: string };
 
-export type ResumeValue = number | boolean | undefined | void;
+export type ResumeValue = number | boolean | string | undefined | void;
 export type PendingStep = Exclude<StepResult["kind"], "done">;
 export type ResumeAdvance = "continue" | "done";
 
@@ -89,6 +138,8 @@ export interface Interpreter {
   // 병렬 이벤트 등에서 현재 pending(블로킹) 단계를 건너뛰고 다음 명령으로 진행한다.
   // 메인 이벤트 흐름에서는 사용하지 않는다.
   skip(): StepResult;
+  // 컷신 스킵처럼 외부 입력이 현재 큐를 특정 라벨로 보낼 때 사용한다.
+  jumpToLabel(name: string): StepResult;
   isDone(): boolean;
 }
 

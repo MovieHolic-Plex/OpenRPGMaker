@@ -1,4 +1,3 @@
-import { RM2K3_GENERATED_ASSET_PLAN } from "./rm2k3GeneratedAssetPlan";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
@@ -9,14 +8,29 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "rpg-zzu-title-bright": "/assets/generated/title/bright-rpg-maker-title-v2.png",
   "rpg-zzu-title-blue": "/assets/generated/title/default-title-blue.png",
   "generated-actor-hero-01-battle": "/assets/generated/rm2k3/hero-01-battle.png",
+  "generated-actor-hero-01-charset": "/assets/generated/rm2k3/hero-01-charset.png",
   "generated-actor-hero-01-face": "/assets/generated/rm2k3/hero-01-face.png",
   "generated-actor-hero-02-battle": "/assets/generated/rm2k3/hero-02-battle.png",
+  "generated-actor-hero-02-charset": "/assets/generated/rm2k3/hero-02-charset.png",
   "generated-actor-hero-02-face": "/assets/generated/rm2k3/hero-02-face.png",
   "generated-actor-hero-03-battle": "/assets/generated/rm2k3/hero-03-battle.png",
   "generated-actor-hero-03-face": "/assets/generated/rm2k3/hero-03-face.png",
   "generated-actor-hero-04-battle": "/assets/generated/rm2k3/hero-04-battle.png",
+  "generated-enemy-bat-01": "/assets/generated/rm2k3/monster-bat-01.png",
+  "generated-enemy-dragon-01": "/assets/generated/rm2k3/monster-dragon-01.png",
+  "generated-enemy-golem-01": "/assets/generated/rm2k3/monster-golem-01.png",
   "generated-enemy-ontology-8da61312": "/assets/generated/rm2k3/monster-ontology-8da61312.png",
+  "generated-enemy-slime-01": "/assets/generated/rm2k3/monster-slime-01.png",
   "generated-enemy-sylph-hornet": "/assets/generated/rm2k3/sylph-hornet-transparent.png",
+  "generated-equipment-bronze-sword-icon": "/assets/generated/rm2k3/bronze-sword-icon.png",
+  "generated-equipment-bronze-sword-image": "/assets/generated/rm2k3/bronze-sword-image.png",
+  "generated-equipment-oak-shield-icon": "/assets/generated/rm2k3/oak-shield-icon.png",
+  "generated-equipment-oak-shield-image": "/assets/generated/rm2k3/oak-shield-image.png",
+  "generated-item-ether-blue-icon": "/assets/generated/rm2k3/ether-blue-icon.png",
+  "generated-item-ether-blue-image": "/assets/generated/rm2k3/ether-blue-image.png",
+  "generated-item-potion-red-icon": "/assets/generated/rm2k3/potion-red-icon.png",
+  "generated-item-potion-red-image": "/assets/generated/rm2k3/potion-red-image.png",
+  "generated-troop-preview-slime": "/assets/generated/rm2k3/troop-preview-slime.png",
 };
 
 const LEGACY_PACKAGED_RESOURCE_URLS: Record<string, string> = {
@@ -35,17 +49,16 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
   if (packagedUrl !== null) return packagedUrl;
   const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;
   if (uploadedUrl !== undefined) return safeUploadedResourceUrl(uploadedUrl);
-  return (
-    BUILTIN_GENERATED_RESOURCE_URLS[resourceId] ??
-    resolveGeneratedAssetResourceUrl(resourceId, options.manifest ?? RM2K3_GENERATED_ASSET_PLAN)
-  );
+  if (options.manifest !== undefined) return resolveGeneratedAssetResourceUrl(resourceId, options.manifest);
+  return resolveGeneratedAssetResourceUrl(resourceId);
 }
 
 export function builtinGeneratedResourceIds(): string[] {
   return Object.keys(BUILTIN_GENERATED_RESOURCE_URLS);
 }
 
-export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest: GeneratedAssetManifest = RM2K3_GENERATED_ASSET_PLAN): string | null {
+export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: GeneratedAssetManifest): string | null {
+  if (manifest === undefined) return BUILTIN_GENERATED_RESOURCE_URLS[resourceId] ?? null;
   const entry = manifest.assets.find((asset) => asset.resourceId === resourceId);
   if (entry === undefined) return null;
   if (entry.status !== "promoted") return null;

@@ -6,21 +6,36 @@
 }
 .status-menu-party {
   background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.68), rgba(18, 60, 154, 0.68) 42%, rgba(7, 30, 104, 0.74));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
+    var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   box-shadow: none;
   display: grid;
-  gap: 2px;
+  gap: 1px;
   grid-template-rows: repeat(4, minmax(0, 1fr));
   padding: 2px;
 }
 .status-menu-party-row {
   align-items: start;
+  box-sizing: border-box;
   display: grid;
-  gap: 2px;
-  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 4px;
+  grid-template-columns: 32px minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
+}
+.status-menu-face.actor-sheet-crop {
+  --crop-width: 32px !important;
+  --crop-height: 32px !important;
+  --crop-sheet-width: 128px !important;
+  --crop-sheet-height: 128px !important;
+  height: 32px;
+  width: 32px;
 }
 .status-menu-face {
   box-sizing: border-box;
@@ -40,18 +55,24 @@
 .status-menu-footer {
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .status-menu-party-info {
   align-content: start;
-  line-height: 1.08;
+  line-height: 1.02;
   padding-top: 1px;
 }
 .status-menu-detail {
   background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.7), rgba(18, 60, 154, 0.72) 42%, rgba(7, 30, 104, 0.8));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
+    var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   box-shadow: none;
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 2px 3px;
@@ -60,6 +81,8 @@
   font-size: 13px;
   line-height: 1.12;
   margin: 0 0 2px;
+  white-space: normal;
+  word-break: keep-all;
 }
 .status-menu-detail-list {
   align-content: start;
@@ -72,10 +95,12 @@
   box-sizing: border-box;
   display: grid;
   gap: 2px;
-  grid-template-columns: minmax(42px, 0.42fr) minmax(0, 1fr);
-  min-height: 15px;
+  /* max-content 는 긴 value 가 label 칼럼을 0 으로 붕괴시켜 겹침 — auto 로 컨테이너 안에 가둔다. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  min-height: var(--rm2k3-menu-row-height, 15px);
   padding: 1px 2px;
   text-shadow: none;
+  white-space: normal;
 }
 .status-menu-detail-row.with-face {
   grid-template-columns: 32px minmax(0, 1fr);
@@ -85,29 +110,79 @@
 .status-menu-detail-description {
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: normal;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+.status-menu-detail-label {
+  justify-self: start;
+}
+.status-menu-detail-value {
+  justify-self: end;
+  text-align: right;
 }
 .status-menu-detail-description {
   display: none;
 }
+.status-menu-detail-row.has-description {
+  align-items: start;
+  min-height: 25px;
+  white-space: normal;
+}
+.status-menu-detail-row.has-description .status-menu-detail-description {
+  color: #d8ebff;
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+.status-menu-detail-row.disabled {
+  color: rgba(255, 255, 255, 0.62);
+}
 .status-menu-detail-copy {
   display: grid;
   gap: 1px 2px;
-  grid-template-columns: minmax(42px, 0.42fr) minmax(0, 1fr);
+  /* max-content 는 긴 value 가 label 칼럼을 0 으로 붕괴시켜 겹침 — auto 로 컨테이너 안에 가둔다. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
 }
 .status-menu-footer {
   align-items: center;
   background:
-    linear-gradient(180deg, rgba(53, 111, 212, 0.66), rgba(18, 60, 154, 0.68) 42%, rgba(7, 30, 104, 0.74));
-  border: 1px solid rgba(245, 251, 255, 0.72);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
+    var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   box-shadow: none;
-  display: flex;
+  display: grid;
   gap: 4px;
   grid-column: 1 / -1;
   grid-row: 2;
-  justify-content: space-between;
+  grid-template-columns: max-content minmax(0, 1fr);
   padding: 1px 4px;
+}
+.status-menu-footer-meta {
+  display: flex;
+  gap: 4px;
+  min-width: max-content;
+}
+.status-menu-message {
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 .main-menu-button {
   position: absolute;
@@ -141,17 +216,41 @@
   bottom: 26px;
 }
 .game-over-panel {
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--runtime-window-text);
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
   left: 50%;
   min-width: 220px;
   position: absolute;
   top: 50%;
+  /* .runtime-overlay의 inset이 right/bottom까지 고정해 내용이 넘치므로 해제한다. */
+  right: auto;
+  bottom: auto;
+  height: auto;
+  width: max-content;
+  max-width: 90%;
   transform: translate(-50%, -50%);
   pointer-events: auto;
   z-index: 45;
 }
 .runtime-overlay-title {
-  font-size: 18px;
+  font-size: var(--runtime-font-size-18);
   font-weight: 700;
+}
+.runtime-overlay-message {
+  font-size: var(--runtime-font-size-11);
+  line-height: 1.3;
+  max-width: 260px;
+  text-align: center;
+  white-space: pre-wrap;
 }

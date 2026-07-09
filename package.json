@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --configLoader runner",
-    "build": "tsc --noEmit && vite build --configLoader runner",
+    "build": "tsc --noEmit && vite build --configLoader runner && npm run build:player",
+    "build:player": "vite build --config vite.player.config.ts --configLoader runner",
     "preview": "vite preview --configLoader runner",
     "typecheck": "tsc --noEmit",
     "ontology:query": "node scripts/ontology-query.mjs",
@@ -14,6 +15,8 @@
     "ontology:evaluate": "node scripts/ontology-query.mjs evaluate",
     "ontology:docs": "node scripts/ontology-query.mjs docs --write docs/ontology/development-ontology.md",
     "ontology:check": "node scripts/ontology-check.mjs",
+    "generate:window-skin": "node scripts/generate-window-skin.mjs",
+    "perf:bench": "node scripts/perf-benchmark.mjs",
     "openwiki:cpen": "node scripts/openwiki-cpen.mjs",
     "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",
     "test": "vitest run --configLoader runner",

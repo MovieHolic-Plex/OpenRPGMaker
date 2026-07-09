@@ -1,35 +1,132 @@
-import { screenColorToRgb } from "@/player/interpreter/commandCatalog";
 import { dialogueHost } from "@/player/playSceneDom";
 import { el } from "@/util/dom";
+import {
+  interpolateRgba,
+  isVisibleTint,
+  parseTintColor,
+  rgbaEqual,
+  rgbaToCss,
+  TRANSPARENT_TINT,
+  type Rgba,
+} from "@/player/screen/tintModel";
+import { removeWeatherOverlay } from "@/player/weather/weatherOverlay";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
-// tint/hide screen 같은 "지속형" 화면 효과를 DOM 풀스크린 오버레이로 반영한다.
-// 인터프리터는 이 값을 session.m2Runtime.screen 에 기록하며, 이 함수는
-// refreshRuntimeSurfaces() 호출 시점(상태 갱신마다)에 함께 호출되어
-// 화면 위의 단일 오버레이 레이어를 동기화한다.
+// tint/hide screen 같은 "지속형" 화면 효과와 날씨를 DOM 오버레이로 반영한다.
+// 인터프리터는 값을 session.m2Runtime.screen 에 기록하며, 이 함수는
+// refreshRuntimeSurfaces() 호출마다 함께 호출되어 오버레이 레이어들을 동기화한다.
 //
+// 색조는 tintDurationMs 가 있으면 목표 색으로 점진 트윈(requestAnimationFrame)한다.
 // 일회형 효과(flash/shake)는 Phaser 카메라 API 로 별도 처리되며 여기서 다루지 않는다.
 export function syncScreenEffects(scene: PlaySceneContext): void {
   const host = dialogueHost(scene);
   if (!host) return;
 
   const screen = scene.session.m2Runtime?.screen;
-  const tint = screen?.tint;
-  const hidden = screen?.hidden === true;
 
-  // 우선순위: 화면 숨김 > 색조. 둘 다 없으면 레이어 제거.
+  // 날씨는 Phaser 레이어(조명 마스크 아래)에서 렌더한다. 예전 DOM 레이어가 있으면 제거한다.
+  removeWeatherOverlay(host);
+
+  const hidden = screen?.hidden === true;
+  // 우선순위: 화면 숨김(즉시, 불투명 검정) > 색조(트윈 가능).
   if (hidden) {
-    upsertScreenLayer(host, "rgba(0,0,0,1)", "screen-hidden");
+    setImmediateColor(host, { r: 0, g: 0, b: 0, a: 1 }, "screen-hidden");
     return;
   }
-  if (tint && tint !== "neutral") {
-    const rgba = tintToRgba(tint);
-    if (rgba) {
-      upsertScreenLayer(host, rgba, "screen-tint");
+  const target = parseTintColor(screen?.tint);
+  const durationMs = screen?.tintDurationMs ?? 0;
+  applyTintColor(host, target, durationMs);
+}
+
+type TintAnim = {
+  displayed: Rgba;
+  from: Rgba;
+  to: Rgba;
+  startedAt: number;
+  durationMs: number;
+  rafId: number;
+};
+
+const tintAnimations = new WeakMap<HTMLElement, TintAnim>();
+
+function nowMs(): number {
+  return typeof performance !== "undefined" && typeof performance.now === "function"
+    ? performance.now()
+    : 0;
+}
+
+function animFor(host: HTMLElement): TintAnim {
+  let anim = tintAnimations.get(host);
+  if (!anim) {
+    anim = {
+      displayed: TRANSPARENT_TINT,
+      from: TRANSPARENT_TINT,
+      to: TRANSPARENT_TINT,
+      startedAt: 0,
+      durationMs: 0,
+      rafId: 0,
+    };
+    tintAnimations.set(host, anim);
+  }
+  return anim;
+}
+
+function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {
+  const anim = animFor(host);
+  anim.displayed = color;
+  anim.from = color;
+  anim.to = color;
+  anim.durationMs = 0;
+  renderColor(host, color, mode);
+}
+
+function applyTintColor(host: HTMLElement, target: Rgba, durationMs: number): void {
+  const anim = animFor(host);
+  if (durationMs <= 0 || rgbaEqual(anim.displayed, target)) {
+    anim.displayed = target;
+    anim.from = target;
+    anim.to = target;
+    anim.durationMs = 0;
+    renderColor(host, target, "screen-tint");
+    return;
+  }
+  anim.from = anim.displayed;
+  anim.to = target;
+  anim.startedAt = nowMs();
+  anim.durationMs = durationMs;
+  ensureTintTicker(host, anim);
+}
+
+function ensureTintTicker(host: HTMLElement, anim: TintAnim): void {
+  if (typeof requestAnimationFrame !== "function") {
+    anim.displayed = anim.to;
+    anim.durationMs = 0;
+    renderColor(host, anim.to, "screen-tint");
+    return;
+  }
+  if (anim.rafId !== 0) return;
+  const tick = (): void => {
+    const t = anim.durationMs <= 0 ? 1 : Math.max(0, Math.min(1, (nowMs() - anim.startedAt) / anim.durationMs));
+    anim.displayed = interpolateRgba(anim.from, anim.to, t);
+    renderColor(host, anim.displayed, "screen-tint");
+    if (t >= 1) {
+      anim.displayed = anim.to;
+      anim.from = anim.to;
+      anim.durationMs = 0;
+      anim.rafId = 0;
       return;
     }
+    anim.rafId = requestAnimationFrame(tick);
+  };
+  anim.rafId = requestAnimationFrame(tick);
+}
+
+function renderColor(host: HTMLElement, color: Rgba, mode: string): void {
+  if (!isVisibleTint(color)) {
+    removeScreenLayer(host);
+    return;
   }
-  removeScreenLayer(host);
+  upsertScreenLayer(host, rgbaToCss(color), mode);
 }
 
 function upsertScreenLayer(host: HTMLElement, background: string, mode: string): void {
@@ -47,22 +144,4 @@ function upsertScreenLayer(host: HTMLElement, background: string, mode: string):
 
 function removeScreenLayer(host: HTMLElement): void {
   host.querySelector("[data-testid='runtime-screen-effect']")?.remove();
-}
-
-// tint 값(색 이름 / hex / "r,g,b")을 rgba 오버레이 색으로 변환한다.
-// RM2K3 tint 는 색을 입히는 것이므로 반투명(0.45)으로 표현한다.
-function tintToRgba(tint: string): string | null {
-  if (!tint) return null;
-  // "r,g,b[,a]" 형태(게터/기록기가 쓸 수 있음)
-  const parts = tint.split(",").map((part) => part.trim());
-  if (parts.length >= 3 && parts.every((part) => /^\d+(\.\d+)?$/.test(part))) {
-    const r = Number(parts[0]);
-    const g = Number(parts[1]);
-    const b = Number(parts[2]);
-    const a = parts[3] !== undefined ? Number(parts[3]) : 0.45;
-    return `rgba(${r},${g},${b},${a})`;
-  }
-  // 색 이름 / hex
-  const rgb = screenColorToRgb(tint);
-  return `rgba(${rgb.red},${rgb.green},${rgb.blue},0.45)`;
 }

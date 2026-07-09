@@ -3,14 +3,27 @@ import { updateTroopBattleEventPage } from "@/editor/panels/databaseTroopBattleE
 import { store } from "@/project/store";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
-export type TroopEventConditionKind = "none" | "switch" | "variable" | "turn" | "enemyHp" | "actorHp" | "actorCommand";
+export type TroopEventConditionKind =
+  | "none"
+  | "switch"
+  | "variable"
+  | "turn"
+  | "onRound"
+  | "everyRound"
+  | "enemyHp"
+  | "enemyHpBelow"
+  | "actorHp"
+  | "actorCommand";
 
 export const TROOP_EVENT_CONDITION_KINDS = [
   "none",
   "switch",
   "variable",
   "turn",
+  "onRound",
+  "everyRound",
   "enemyHp",
+  "enemyHpBelow",
   "actorHp",
   "actorCommand",
 ] as const;
@@ -28,8 +41,14 @@ export function battleEventConditionControls(
       return variableControls(record, page, condition);
     case "turn":
       return turnControls(record, page, condition);
+    case "onRound":
+      return onRoundControls(record, page, condition);
+    case "everyRound":
+      return everyRoundControls(record, page, condition);
     case "enemyHp":
       return enemyHpControls(record, page, condition);
+    case "enemyHpBelow":
+      return enemyHpBelowControls(record, page, condition);
     case "actorHp":
       return actorHpControls(record, page, condition);
     case "actorCommand":
@@ -48,8 +67,14 @@ export function initialBattleEventConditions(kind: TroopEventConditionKind): Bat
       return [{ kind: "variable", variableId: "0001", op: ">=", value: 0 }];
     case "turn":
       return [{ kind: "turn", start: 1, interval: 1 }];
+    case "onRound":
+      return [{ kind: "onRound", round: 1 }];
+    case "everyRound":
+      return [{ kind: "everyRound", start: 1, interval: 1 }];
     case "enemyHp":
       return [{ kind: "enemyHp", enemyId: project.database.enemies[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
+    case "enemyHpBelow":
+      return [{ kind: "enemyHpBelow", enemyId: project.database.enemies[0]?.id, percent: 50 }];
     case "actorHp":
       return [{ kind: "actorHp", actorId: project.database.actors[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
     case "actorCommand":
@@ -66,7 +91,10 @@ export function kindOfBattleEventCondition(condition: BattleEventCondition | und
     case "switch":
     case "variable":
     case "turn":
+    case "onRound":
+    case "everyRound":
     case "enemyHp":
+    case "enemyHpBelow":
     case "actorHp":
     case "actorCommand":
       return condition.kind;
@@ -103,6 +131,22 @@ function turnControls(record: TroopRecord, page: BattleEventPageRecord, conditio
   ];
 }
 
+function onRoundControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "onRound" ? condition : { kind: "onRound" as const, round: 1 };
+  return [numberField("라운드", "db-field-troop-event-condition-on-round", current.round, (round) =>
+    setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "onRound" ? stored : current), round })))];
+}
+
+function everyRoundControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "everyRound" ? condition : { kind: "everyRound" as const, start: 1, interval: 1 };
+  return [
+    numberField("시작", "db-field-troop-event-condition-every-round-start", current.start ?? 1, (start) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "everyRound" ? stored : current), start }))),
+    numberField("간격", "db-field-troop-event-condition-every-round-interval", current.interval ?? 1, (interval) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "everyRound" ? stored : current), interval }))),
+  ];
+}
+
 function enemyHpControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
   const current = condition?.kind === "enemyHp"
     ? condition
@@ -114,6 +158,21 @@ function enemyHpControls(record: TroopRecord, page: BattleEventPageRecord, condi
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), minPercent }))),
     numberField("최대 %", "db-field-troop-event-condition-enemy-hp-max", current.maxPercent, (maxPercent) =>
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), maxPercent }))),
+  ];
+}
+
+function enemyHpBelowControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "enemyHpBelow"
+    ? condition
+    : { kind: "enemyHpBelow" as const, enemyId: record.enemyIds[0], percent: 50 };
+  return [
+    textField("적 ID(비우면 전체)", "db-field-troop-event-condition-enemy-hp-below-target", current.enemyId ?? "", (enemyId) =>
+      setFreshCondition(record, page, (stored) => ({
+        ...(stored?.kind === "enemyHpBelow" ? stored : current),
+        enemyId: enemyId.trim() || undefined,
+      }))),
+    numberField("이하 %", "db-field-troop-event-condition-enemy-hp-below-percent", current.percent, (percent) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHpBelow" ? stored : current), percent }))),
   ];
 }
 
@@ -143,7 +202,7 @@ function actorCommandControls(record: TroopRecord, page: BattleEventPageRecord, 
 function actorCommandField(record: TroopRecord, page: BattleEventPageRecord, current: Extract<BattleEventCondition, { kind: "actorCommand" }>): HTMLElement {
   const select = document.createElement("select");
   select.dataset.testid = "db-field-troop-event-condition-actor-command-command";
-  for (const commandId of ["attack", "skill", "defend", "item", "escape", "event"] as const) {
+  for (const commandId of ["attack", "skill", "defend", "item", "escape", "switch", "event"] as const) {
     const option = document.createElement("option");
     option.value = commandId;
     option.textContent = commandId;

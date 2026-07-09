@@ -3,13 +3,13 @@
 }
 
 .left-panel-stack + .left-panel-stack {
-  background: #ece7da;
+  background: var(--bg-surface);
 }
 
 .right-tabbar {
   background: var(--bg-panel);
-  border: 1px solid;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
   flex: 0 0 auto;
   gap: 0;
   overflow: hidden;
@@ -18,7 +18,7 @@
 
 .right-tab {
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: var(--radius-s);
   color: var(--text);
   flex: 1 1 0;
   font-size: 11px;
@@ -32,8 +32,8 @@
 
 .right-panel-collapse {
   background: var(--bg-panel-2);
-  border: 1px solid;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
   color: var(--text);
   cursor: pointer;
   flex: 0 0 24px;
@@ -54,8 +54,8 @@
   align-items: center;
   align-self: stretch;
   background: var(--bg-panel);
-  border: 1px solid;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
   color: var(--text);
   cursor: pointer;
   display: flex;
@@ -85,15 +85,15 @@
 }
 
 .right-tab.active {
-  background: var(--bg-panel-2);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
   color: var(--text);
 }
 
 .right-tabbody {
   background: var(--bg-panel);
-  border: 1px solid;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
   flex: 1 1 auto;
   margin-top: var(--space-1);
   min-height: 0;
@@ -102,19 +102,15 @@
 }
 
 .editor-layout .canvas-area {
-  background:
-    linear-gradient(45deg, #9a9a9a 25%, transparent 25%, transparent 75%, #9a9a9a 75%),
-    linear-gradient(45deg, #9a9a9a 25%, #b7b7b7 25%, #b7b7b7 75%, #9a9a9a 75%);
-  background-position: 0 0, 8px 8px;
-  background-size: 16px 16px;
+  background: var(--bg-canvas);
   display: block;
   position: relative;
 }
 
 .editor-layout .canvas-area .phaser-container {
-  background: #111111;
-  border: 1px solid #333333;
-  box-shadow: 0 1px 0 #ffffff, 1px 0 0 #ffffff;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  box-shadow: none;
   height: 768px;
   min-height: 768px;
   min-width: 1024px;
@@ -139,22 +135,29 @@
 }
 
 .editor-canvas-scroll-shell::-webkit-scrollbar-thumb {
-  background: #8f8a80;
-  border: 3px solid #d4d0c8;
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 4px solid transparent;
+  border-radius: 8px;
+}
+
+.editor-canvas-scroll-shell::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
 }
 
 .editor-canvas-scroll-shell::-webkit-scrollbar-track {
-  background: #d4d0c8;
+  background: var(--bg-canvas);
 }
 
 .editor-statusbar {
   align-items: center;
   background: var(--bg-panel);
-  border-top: 1px solid #ffffff;
+  border-top: 1px solid var(--border-subtle);
   bottom: 0;
   color: var(--text);
   display: flex;
-  font: 11px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 11px/1.2 var(--font-ui);
   gap: 0;
   height: 22px;
   left: 0;
@@ -166,8 +169,8 @@
 }
 
 .editor-statusbar-cell {
-  border-left: 1px solid #ffffff;
-  border-right: 1px solid #8f8a80;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 0;
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -231,7 +234,7 @@
 
 .test-play-modal-backdrop {
   align-items: center;
-  background: #000000;
+  background: var(--bg-inset);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -241,7 +244,7 @@
 }
 
 .test-play-window {
-  background: #000000;
+  background: var(--bg-inset);
   border: 0;
   box-shadow: none;
   display: flex;
@@ -269,12 +272,13 @@
 
 .test-play-titlebar {
   align-items: center;
-  background: rgba(17, 19, 24, 0.78);
-  color: #ffffff;
+  backdrop-filter: blur(8px);
+  background: var(--bg-glass);
+  color: var(--text-1);
   display: flex;
   flex: 0 0 30px;
   gap: 5px;
-  font: 700 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 700 13px/1 var(--font-ui);
   height: 30px;
   inset: 0 0 auto 0;
   min-height: 30px;
@@ -314,12 +318,12 @@
 
 .test-play-close {
   appearance: none;
-  background: #d4d0c8;
-  border: 1px solid;
-  border-color: #ffffff #404040 #404040 #ffffff;
-  color: #111111;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
   cursor: pointer;
-  font: 700 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 700 12px/1 var(--font-ui);
   min-height: 20px;
   opacity: 1;
   padding: 2px 8px;
@@ -333,14 +337,14 @@
 }
 
 .test-play-close.icon {
-  font-family: "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-mono);
   padding: 2px 0;
   text-transform: uppercase;
   width: 22px;
 }
 
 .test-play-modal-body {
-  background: #000000;
+  background: var(--bg-inset);
   border: 0;
   flex: 1 1 auto;
   height: auto;
@@ -377,9 +381,11 @@
 
 .canvas-toolbar {
   align-items: center;
-  background: var(--bg-panel);
-  border: 1px solid;
-  border-color: #ffffff #6c6c6c #6c6c6c #ffffff;
+  backdrop-filter: blur(10px);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
   display: flex;
   gap: 3px;
   left: 50%;
@@ -412,7 +418,7 @@
 
 .canvas-toolbar-label {
   color: var(--text);
-  font: 600 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 600 11px/1 var(--font-ui);
   padding: 0 var(--space-1);
 }
 
@@ -422,8 +428,8 @@
 
 .zoom-button.active,
 .zoom-button[aria-pressed="true"] {
-  background: var(--surface-selected);
-  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  background: var(--accent-muted);
+  border-color: var(--accent);
   color: var(--text-primary);
 }
 
@@ -453,7 +459,7 @@
 .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1),
 .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) {
   background: var(--bg-panel);
-  border-bottom: 1px solid #aaa59b;
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 1px;
   padding-bottom: 1px;
 }
@@ -509,7 +515,7 @@
 
 .rm-tool-icon-open::before {
   background: #d8b35e;
-  border: 1px solid #5a421b;
+  border: 1px solid var(--border-default);
   box-shadow: inset 0 2px 0 #f0d48c;
   height: 9px;
   left: 2px;
@@ -519,7 +525,7 @@
 
 .rm-tool-icon-open::after {
   background: #c79840;
-  border: 1px solid #5a421b;
+  border: 1px solid var(--border-default);
   border-bottom: 0;
   height: 4px;
   left: 2px;
@@ -528,9 +534,9 @@
 }
 
 .rm-tool-icon-save::before {
-  background: #264d79;
+  background: var(--accent);
   border: 1px solid #172a42;
-  box-shadow: inset 0 3px 0 #7fa0bf;
+  box-shadow: inset 0 3px 0 var(--accent-border);
   height: 12px;
   left: 2px;
   top: 2px;

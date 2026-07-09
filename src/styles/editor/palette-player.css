@@ -343,13 +343,104 @@
   align-items: center;
   gap: var(--space-1);
   margin-bottom: var(--space-1);
+  /* 트리 들여쓰기 + 인덴트 가이드 — event-editor.part-2.css 의 규칙과 동일한 18px 그리드.
+     (이벤트 필드셋 밖 중첩 커맨드 리스트에서도 위계가 보이도록 통합) */
+  padding-left: calc(var(--cmd-depth, 0) * 18px);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent 5px,
+    var(--border-subtle) 5px,
+    var(--border-subtle) 6px,
+    transparent 6px,
+    transparent 18px
+  );
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
+}
+.cmd-item .cmd-head:hover {
+  background-color: var(--bg-hover);
+}
+.cmd-item.selected {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
 }
 .cmd-item .cmd-kind {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-1);
+  letter-spacing: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 커맨드 프리픽스('@>')와 요약 토큰 — 필드셋 밖 리스트에서도 같은 색 규약을 쓴다. */
+.cmd-item .cmd-prefix {
   color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  flex: 0 0 auto;
+}
+.cmd-summary-token.command {
+  color: var(--accent);
+}
+.cmd-summary-token.value {
+  color: var(--success);
+}
+.cmd-summary-token.op-add {
+  color: var(--success);
+  font-weight: 700;
+}
+.cmd-summary-token.op-sub {
+  color: var(--danger);
+  font-weight: 700;
+}
+.cmd-summary-token.op-set {
+  color: var(--accent);
+  font-weight: 700;
+}
+.cmd-summary-token.badge-on,
+.cmd-summary-token.badge-off {
+  background: var(--success-muted);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  color: var(--success);
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
+  padding: 0 3px;
+}
+.cmd-summary-token.badge-off {
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  color: var(--text-2);
+}
+/* 아이템/장비 요약 아이콘 (16px 픽셀아트). */
+.cmd-summary-icon {
+  flex: 0 0 auto;
+  height: 16px;
+  image-rendering: pixelated;
+  margin: 0 2px 0 1px;
+  vertical-align: text-bottom;
+  width: 16px;
+}
+/* 분기 마커 라인 (": 조건이 참일 때" 등) — 본 커맨드와 구분되는 이탤릭 보조 라인. */
+.cmd-list > .cmd-line-marker {
+  color: var(--text-2);
+  font-size: 12px;
+  font-style: italic;
+  padding: 1px 0 1px calc(var(--cmd-depth, 0) * 18px);
+  white-space: nowrap;
+}
+.cmd-list > .cmd-line-marker.cmd-marker-fork {
+  color: var(--accent);
+}
+.cmd-list > .cmd-line-marker.cmd-marker-choices {
+  color: var(--warning);
+}
+.cmd-list > .cmd-line-marker.cmd-marker-shop {
+  color: var(--success);
 }
 .cmd-item .cmd-actions {
   margin-left: auto;

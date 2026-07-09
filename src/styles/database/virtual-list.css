@@ -1,0 +1,15 @@
+/* database/virtual-list.css
+ * 레코드 리스트 가상 스크롤(windowing)용 레이아웃 보정.
+ * .db-list 는 grid/gap 을 유지한 채 rows 래퍼가 레이아웃에 개입하지 않도록 display:contents 로 투명화한다.
+ * 스페이서는 렌더되지 않은 영역의 높이를 채워 스크롤바 길이를 보존한다.
+ */
+
+.db-virtual-rows {
+  display: contents;
+}
+
+.db-virtual-spacer {
+  flex: none;
+  pointer-events: none;
+  width: 100%;
+}

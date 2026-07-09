@@ -86,7 +86,7 @@ test("test play opens windowed and toggles fullscreen with Alt+Enter", async ({ 
   expect(titleSurface.titleTextBottom).toBeLessThan(titleSurface.menuTop);
   expect(titleSurface.menuBottom).toBeLessThan(titleSurface.hintTop);
 
-  await page.getByTestId("title-new-game").click();
+  await page.keyboard.press("Enter");
   await expect(page.getByTestId("play-canvas").locator("canvas")).toBeVisible();
   await expect(page.getByTestId("main-menu-button")).toHaveCount(0);
 
@@ -134,6 +134,10 @@ test("test play opens windowed and toggles fullscreen with Alt+Enter", async ({ 
   expect(Math.round(surface.viewportHeight)).toBe(900);
   expect(Math.round(surface.stageWidth)).toBe(960);
   expect(Math.round(surface.stageHeight)).toBe(720);
+  expect(surface.stageLeft).toBeGreaterThanOrEqual(surface.viewportLeft);
+  expect(surface.stageTop).toBeGreaterThanOrEqual(surface.viewportTop);
+  expect(surface.stageLeft + surface.stageWidth).toBeLessThanOrEqual(surface.viewportLeft + surface.viewportWidth);
+  expect(surface.stageTop + surface.stageHeight).toBeLessThanOrEqual(surface.viewportTop + surface.viewportHeight);
   expect(Math.abs(surface.stageWidth / surface.stageHeight - 4 / 3)).toBeLessThanOrEqual(0.02);
   expect(Math.abs((surface.stageLeft + surface.stageWidth / 2) - (surface.viewportLeft + surface.viewportWidth / 2))).toBeLessThanOrEqual(2);
   expect(Math.abs((surface.stageTop + surface.stageHeight / 2) - (surface.viewportTop + surface.viewportHeight / 2))).toBeLessThanOrEqual(2);
@@ -154,11 +158,10 @@ test("test play exposes the runtime menu through X without an on-screen menu but
   await expect(page.getByTestId("mode-play")).toBeVisible();
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
-  await page.getByTestId("title-new-game").click();
+  await page.keyboard.press("Enter");
   await expect(page.getByTestId("play-canvas").locator("canvas")).toBeVisible();
 
   await expect(page.getByTestId("main-menu-button")).toHaveCount(0);
-  await page.getByTestId("play-canvas").locator("canvas").click();
   await page.keyboard.press("KeyX");
   await expect(page.getByTestId("main-menu")).toBeVisible();
 });
@@ -185,7 +188,59 @@ test("test play can exit to the editor from title quit and restore to a window",
   expect(windowedBounds?.width).toBeLessThan(1280);
   expect(windowedBounds?.height).toBeLessThan(900);
 
-  await page.getByTestId("title-quit-game").click();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
   await expect(page.getByTestId("test-play-window")).toHaveCount(0);
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
 });
+
+for (const viewport of [
+  { width: 1600, height: 900, scale: 3 },
+  { width: 1024, height: 768, scale: 3 },
+  { width: 800, height: 600, scale: 2 },
+] as const) {
+  test(`play stage is fully visible with integer contain scale at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await gotoShowcaseEditor(page);
+
+    await page.getByTestId("mode-play").click();
+    const testWindow = page.getByTestId("test-play-window");
+    await expect(testWindow).toBeVisible();
+    await page.getByTestId("test-play-window-maximize").click();
+    await expect(testWindow).toHaveAttribute("data-window-mode", "fullscreen");
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("play-canvas").locator("canvas")).toBeVisible();
+
+    const metrics = await page.evaluate(() => {
+      const viewportEl = document.querySelector("[data-testid='play-viewport']");
+      const stage = document.querySelector("[data-testid='play-stage']");
+      if (!(viewportEl instanceof HTMLElement)) throw new Error("missing play viewport");
+      if (!(stage instanceof HTMLElement)) throw new Error("missing play stage");
+      const viewportRect = viewportEl.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      return {
+        scale: Number(viewportEl.dataset.scale),
+        stageBottom: stageRect.bottom,
+        stageHeight: stageRect.height,
+        stageLeft: stageRect.left,
+        stageRight: stageRect.right,
+        stageTop: stageRect.top,
+        stageWidth: stageRect.width,
+        viewportBottom: viewportRect.bottom,
+        viewportLeft: viewportRect.left,
+        viewportRight: viewportRect.right,
+        viewportTop: viewportRect.top,
+      };
+    });
+
+    expect(metrics.scale).toBe(viewport.scale);
+    expect(Number.isInteger(metrics.scale)).toBe(true);
+    expect(Math.round(metrics.stageWidth)).toBe(320 * viewport.scale);
+    expect(Math.round(metrics.stageHeight)).toBe(240 * viewport.scale);
+    expect(metrics.stageLeft).toBeGreaterThanOrEqual(metrics.viewportLeft);
+    expect(metrics.stageTop).toBeGreaterThanOrEqual(metrics.viewportTop);
+    expect(metrics.stageRight).toBeLessThanOrEqual(metrics.viewportRight);
+    expect(metrics.stageBottom).toBeLessThanOrEqual(metrics.viewportBottom);
+  });
+}

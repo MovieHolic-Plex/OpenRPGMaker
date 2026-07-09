@@ -5,6 +5,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import type { Command, CommonEvent, MoveCommand } from "@/project/types";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import { commerceOverlayText } from "@/player/playSceneCommerce";
@@ -14,6 +15,12 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { applyCameraControl } from "@/player/playSceneCamera";
+import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
+import { applyLightingStep } from "@/player/playSceneLighting";
+import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { applyWeatherStep } from "@/player/playSceneWeather";
+import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
 
@@ -100,7 +107,9 @@ function createParallelProcess(
   const process = {
     pageId,
     currentEventId: event.event.id,
-    interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent()),
+    interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
+      currentEventId: event.event.id,
+    }),
     waitMs: 0,
     started: false,
   };
@@ -151,7 +160,10 @@ function consumeParallelSteps(
     process.waitMs = 100;
     return;
   }
-  if (result.kind === "done") scene.parallelProcesses.delete(key);
+  if (result.kind === "done") {
+    releaseCutsceneControlForOwner(scene.session, process.currentEventId);
+    scene.parallelProcesses.delete(key);
+  }
 }
 
 export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, currentEventId?: string): boolean {
@@ -159,8 +171,18 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "changeTile":
       scene.applyChangeTileStep(step);
       return true;
+    case "setEventGraphicPattern":
+      applyEventGraphicPatternStep(scene, step, currentEventId);
+      return true;
     case "moveEvent":
       scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
+      scene.commandMoveRouteEventIds.add(step.eventId || currentEventId || "");
+      return true;
+    case "eraseEvent":
+      eraseRuntimeEvent(scene, step.eventId || currentEventId);
+      return true;
+    case "stopAllMovement":
+      stopCommandMovement(scene);
       return true;
     case "transfer":
       void scene.transferTo(step);
@@ -170,6 +192,15 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "timer":
       applyTimerStep(scene, step);
+      return true;
+    case "advanceTime":
+      void applyAdvanceTimeStep(scene, step);
+      return true;
+    case "setTime":
+      applySetTimeStep(scene, step);
+      return true;
+    case "sleepUntilMorning":
+      void scene.sleepUntilMorning();
       return true;
     case "showPicture":
       showPictureState(scene.session, step);
@@ -181,11 +212,34 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "playAudio":
       setAudioState(scene.session, step);
+      playAudioCommand(step, store.getCurrent());
       scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       return true;
     case "stopAudio":
       clearAudioState(scene.session);
+      stopAudioCommand();
       scene.clearRuntimeOverlay("audio-indicator");
+      return true;
+    case "scrollMap":
+      void scene.panScreen({ ...step, wait: false });
+      return true;
+    case "cameraControl":
+      void applyCameraControl(scene, { ...step, wait: false });
+      return true;
+    case "setLighting":
+      void applyLightingStep(scene, step);
+      return true;
+    case "setWeather":
+      applyWeatherStep(scene, step);
+      return true;
+    case "showAnimation":
+      void playMapAnimation(scene, { ...step, wait: false }, currentEventId);
+      return true;
+    case "spawnEvent":
+      removeRuntimeEventSurfaces(scene, step.eventId);
+      return true;
+    case "removeEvent":
+      removeRuntimeEventSurfaces(scene, step.eventId);
       return true;
     case "shop":
       scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
@@ -194,7 +248,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showRuntimeOverlay("inn-scene", commerceOverlayText(step));
       return true;
     case "gameOver":
-      scene.showGameOverScreen();
+      scene.showGameOverScreen(step.message);
       return true;
     case "returnToTitle":
       scene.returnToTitle();
@@ -203,8 +257,10 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "text":
     case "choices":
     case "wait":
+    case "waitForAllMovement":
     case "inputWait":
     case "inputNumber":
+    case "enterHeroName":
     case "flashScreen":
     case "shakeScreen":
       return false;
@@ -221,9 +277,43 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "choices" ||
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||
+    step.kind === "enterHeroName" ||
+    step.kind === "waitForAllMovement" ||
     step.kind === "flashScreen" ||
     step.kind === "shakeScreen"
   );
+}
+
+function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.session.erasedEventIds = [...new Set([...(scene.session.erasedEventIds ?? []), eventId])];
+  removeRuntimeEventSurfaces(scene, eventId);
+}
+
+function removeRuntimeEventSurfaces(scene: PlaySceneContext, eventId: string | undefined): void {
+  if (!eventId) return;
+  scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.delete(eventId);
+  scene.pageMoveRouteEventIds.delete(eventId);
+  scene.eventSprites.get(eventId)?.destroy();
+  scene.eventSprites.delete(eventId);
+}
+
+function applyEventGraphicPatternStep(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "setEventGraphicPattern" }>,
+  currentEventId: string | undefined
+): void {
+  const eventId = step.eventId || currentEventId;
+  if (!eventId) return;
+  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  scene.syncRuntimeState();
+}
+
+function stopCommandMovement(scene: PlaySceneContext): void {
+  for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
+  scene.commandMoveRouteEventIds.clear();
+  scene.playerRoute = null;
 }
 
 export function updateTimers(scene: PlaySceneContext, deltaMs: number): void {

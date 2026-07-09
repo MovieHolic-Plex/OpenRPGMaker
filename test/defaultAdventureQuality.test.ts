@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 
 type QualityCategory = {
@@ -10,7 +10,7 @@ type QualityCategory = {
 
 describe("default adventure quality score", () => {
   it("scores above 90 with a transparent local rubric", () => {
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
     const score = scoreAdventure(project);
 
     expect(score.categories).toEqual([
@@ -27,7 +27,7 @@ describe("default adventure quality score", () => {
   });
 
   it("keeps adventure references resolvable", () => {
-    const project = createBlankProject();
+    const project = createSampleAdventureProject();
     const references = collectReferences(project);
 
     expect(references.missingMapIds).toEqual([]);

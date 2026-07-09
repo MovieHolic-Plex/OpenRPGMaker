@@ -2,10 +2,15 @@ import { store } from "@/project/store";
 import type { Project, VillageInfoDocument } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { openWorldPanel } from "./worldPanel";
 
 let selectedDocumentId = "";
 
 export function openVillageInfoModal(): void {
+  openWorldPanel();
+}
+
+export function openLegacyVillageInfoModal(): void {
   document.querySelector("[data-testid='village-info-modal']")?.remove();
   ensureVillageInfoDocuments();
 

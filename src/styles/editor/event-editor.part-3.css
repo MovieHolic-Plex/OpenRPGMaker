@@ -696,6 +696,33 @@
   gap: 10px;
 }
 
+/* [치명-1] 선택지 인라인 에디터: 패널/가지 편집 영역을 세로 스택으로 강제.
+   auto-fit 트랙에 얹혀 가지 패널이 취소 라디오 위로 겹치던 결함 수정. */
+.event-command-edit-body .event-command-choices-inline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-body .event-command-choices-panel {
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 190px);
+  max-width: none;
+}
+
+.event-command-edit-body .event-command-choices-panel > * {
+  min-width: 0;
+}
+
+.event-command-edit-body .event-command-choice-branch {
+  max-width: none;
+  min-width: 0;
+}
+
+/* 긴 커맨드 줄이 가지 패널 보더 밖으로 삐져나가지 않게 가둔다. */
+.event-command-choice-branch .cmd-list {
+  min-width: 0;
+  overflow-x: auto;
+}
+
 .event-command-edit-summary {
   background: var(--event-popup-field, var(--bg-raised));
   border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
@@ -710,13 +737,62 @@
   white-space: nowrap;
 }
 
+/* [치명-1/치명-2] auto-fit 그리드는 단순 폼에만 적용한다.
+   선택지 인라인 에디터(.event-command-choices-inline)와 레코드 폼(.event-command-record-form)은
+   자체 레이아웃을 가지므로 여기서 제외 — 트랙 폭보다 넓은 자식이 이웃 위로 겹쳐 렌더되던 원인. */
 .event-command-edit-body > div > span,
-.event-command-edit-body > div > div {
+.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor) {
   align-items: end;
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   min-width: 0;
+}
+
+/* 그리드 트랙 오버플로 방지: 자식은 트랙 폭을 넘지 않는다. */
+.event-command-edit-body > div > span > *,
+.event-command-edit-body > div > div > * {
+  min-width: 0;
+}
+
+/* [치명-2] 스위치/변수 레코드 셀렉트 + ... 피커 버튼 수평 배치.
+   기존에는 스타일이 전무해 셀렉트가 찌그러지고 버튼과 수직으로 겹쳤다. */
+.event-record-select {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(150px, 1fr) auto;
+  min-width: 0;
+}
+
+.event-record-select select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-record-select[hidden] {
+  display: none;
+}
+
+.event-record-select .btn.small {
+  flex: 0 0 auto;
+  min-width: 30px;
+}
+
+/* [치명-2] 스위치/변수 조작 폼: 셀렉트 최소폭 보장 + 값 컨트롤 수평 정렬 + 참조 요약 줄. */
+.event-command-edit-body .event-command-record-form {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+
+.event-command-edit-body .event-command-record-form .inline-field {
+  min-width: 0;
+}
+
+.event-command-record-usage {
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
 }
 
 .event-command-edit-body .event-command-edit-summary {
@@ -1017,6 +1093,37 @@
   text-overflow: ellipsis;
   transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
   white-space: nowrap;
+}
+
+.event-command-picker-command-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.command-runtime-badge {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-s, 3px);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 800 10px/12px Inter, "Segoe UI", system-ui, sans-serif;
+  height: 16px;
+  justify-content: center;
+  margin-left: 6px;
+  min-width: 16px;
+  padding: 0 3px;
+}
+
+.command-runtime-badge.runtime-partial {
+  background: var(--accent-soft, var(--editor-blue-soft));
+  color: var(--status-warning, var(--gold));
+}
+
+.command-runtime-badge.editor-only {
+  background: var(--danger-muted, var(--accent-soft));
+  color: var(--status-error, var(--danger));
 }
 
 .event-command-picker-command:hover {

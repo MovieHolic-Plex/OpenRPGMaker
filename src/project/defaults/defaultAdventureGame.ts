@@ -3,6 +3,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILESET_ID, DEFAULT_TILE_SIZE, TILE } from "./constants";
 import { defaultTitleScreenSettings } from "./defaultDatabase";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
+import { addStarterHouseDoor, createStarterHouseInteriorMap, STARTER_HOUSE_INTERIOR_MAP_ID } from "./starterHouseTransfer";
 import { ADVENTURE_MAP, ADVENTURE_SWITCH, ADVENTURE_TITLE, ADVENTURE_TITLE_SHORT, ADVENTURE_VARIABLE } from "./defaultAdventureGameIds";
 
 type Point = {
@@ -45,11 +46,14 @@ const EVENT_GRAPHICS = {
 } as const;
 
 export function createAdventureMaps(): readonly GameMap[] {
+  const village = villageMap();
+  addStarterHouseDoor(village);
   return [
-    villageMap(),
+    village,
     branchMap(ADVENTURE_MAP.forest, "달샘 숲", "troop_forest_hornets", ADVENTURE_SWITCH.forestSeal, { x: 14, y: 27 }, { x: 14, y: 2 }),
     branchMap(ADVENTURE_MAP.mine, "낡은 구리 광산", "troop_golem_guard", ADVENTURE_SWITCH.mineSeal, { x: 2, y: 14 }, { x: 27, y: 14 }),
     shrineMap(),
+    createStarterHouseInteriorMap(ADVENTURE_MAP.village),
   ];
 }
 
@@ -66,7 +70,12 @@ export function configureAdventureProject(project: Project): void {
   project.startPos = { x: 14, y: 18 };
   project.mapTree = {
     mapId: ADVENTURE_MAP.village,
-    children: [singleNodeTree(ADVENTURE_MAP.forest), singleNodeTree(ADVENTURE_MAP.mine), singleNodeTree(ADVENTURE_MAP.shrine)],
+    children: [
+      singleNodeTree(ADVENTURE_MAP.forest),
+      singleNodeTree(ADVENTURE_MAP.mine),
+      singleNodeTree(ADVENTURE_MAP.shrine),
+      singleNodeTree(STARTER_HOUSE_INTERIOR_MAP_ID),
+    ],
   };
   project.villageInfoDocuments = adventureVillageInfoDocuments();
   nameSwitch(project, ADVENTURE_SWITCH.started, "별등 의뢰 수락");
@@ -114,7 +123,7 @@ function decorateHarborVillage(map: GameMap): void {
   stampLower(map, { x: 4, y: 20 }, SMALL_HARBOR_HOUSE_PATTERN);
   stampUpper(map, { x: 9, y: 10 }, MARKET_CANOPY_PATTERN);
   stampUpper(map, { x: 17, y: 18 }, [[327, 328], [288, -1]]);
-  stampUpper(map, { x: 21, y: 11 }, [[260, -1, 288]]);
+  stampUpper(map, { x: 21, y: 11 }, [[260, -1, 288], [290, -1, -1]]);
 }
 
 function trainingEvent(): GameEvent {
@@ -353,6 +362,20 @@ function adventureVillageInfoDocuments(): Project["villageInfoDocuments"] {
         "",
         "## 퀘스트 단서",
         "- 변수 조건이 충족된 뒤 최종 전투와 ending 명령으로 이어진다.",
+      ].join("\n"),
+    },
+    {
+      id: "village_info_map_starter_house_interior",
+      mapId: STARTER_HOUSE_INTERIOR_MAP_ID,
+      title: "시작 집 내부.md",
+      markdown: [
+        "# 시작 집 내부",
+        "",
+        "## 역할",
+        "- 별등 마을의 첫 번째 집 문으로 들어갈 수 있는 작은 실내 테스트 맵.",
+        "",
+        "## 퀘스트 단서",
+        "- 플레이어 터치 전이와 실내/실외 왕복 동선을 검증한다.",
       ].join("\n"),
     },
   ];

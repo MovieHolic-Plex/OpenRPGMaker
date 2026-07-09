@@ -55,8 +55,8 @@
 .tileset-db-listbox,
 .tileset-db-terrain-list,
 .tileset-db-preview {
-  background: #fffdf7;
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
 }
@@ -83,8 +83,8 @@
 }
 
 .tileset-db-list-row.active {
-  background: #1f65b5;
-  color: #ffffff;
+  background: var(--accent-muted);
+  color: var(--text-1);
 }
 
 .tileset-db-editor {
@@ -108,7 +108,7 @@
 .tileset-db-resource {
   align-self: center;
   background: var(--surface-panel);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -125,7 +125,7 @@
 
 .tileset-db-properties {
   background: var(--surface-workbench);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   display: grid;
@@ -160,7 +160,7 @@
 }
 
 .tileset-db-group {
-  border: 1px solid #8f8a80;
+  border: 1px solid var(--border-default);
   margin: 0;
   padding: 7px 6px 6px;
 }
@@ -193,8 +193,8 @@
 }
 
 .tileset-db-preview-scale button {
-  background: #d8d0be;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -213,7 +213,7 @@
 
 .tileset-db-preview-scale button.active {
   background: var(--surface-panel);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 
 .tileset-db-layer-tabs,
@@ -225,13 +225,13 @@
 
 .tileset-db-layer-tabs {
   align-items: end;
-  border-bottom: 1px solid #8f8a80;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .tileset-db-layer-tabs button,
 .tileset-db-tools button {
-  background: #d8d0be;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -245,7 +245,7 @@
 .tileset-db-layer-tabs button.active,
 .tileset-db-tools button.active {
   background: var(--surface-panel);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 
 .tileset-db-edit-area {
@@ -328,7 +328,7 @@
 .tileset-db-group-editor select,
 .tileset-db-group-editor textarea {
   background: var(--surface-panel);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -396,7 +396,7 @@
 .tileset-db-selected-tile input,
 .tileset-db-selected-tile textarea {
   background: var(--surface-panel);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);

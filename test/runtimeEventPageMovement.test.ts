@@ -48,7 +48,7 @@ describe("runtime event page movement", () => {
 
     updateAutonomousNPCs(runtimeScene, npcMoveIntervalMs(6));
 
-    expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1 });
+    expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1, direction: "right" });
     expect(scene.autonomousNPCs.get("npc")?.activeMove?.toX).toBe(2);
 
     updateAutonomousNPCs(runtimeScene, npcMoveDurationMs(6));
@@ -128,6 +128,28 @@ describe("runtime event page movement", () => {
     registerPageMoveRoutes(scene);
 
     expect(scene.autonomousNPCs.has("npc")).toBe(false);
+  });
+
+  it("registers chase movement with pathfinding options", () => {
+    const scene = movementScene({
+      movement: {
+        type: "chase",
+        speed: 6,
+        frequency: 7,
+        sightRange: 5,
+        giveUpRange: 9,
+        pathfind: true,
+      },
+    });
+
+    registerPageMoveRoutes(scene);
+
+    expect(scene.autonomousNPCs.get("npc")).toMatchObject({
+      strategy: "chase",
+      sightRange: 5,
+      giveUpRange: 9,
+      pathfind: true,
+    });
   });
 
   it("removes stale page-owned movers when page conditions switch to a fixed page", () => {

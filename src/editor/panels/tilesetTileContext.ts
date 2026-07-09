@@ -1,5 +1,6 @@
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { LEGACY_RM_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
+import { tileMetaLocked } from "@/project/tilesetPalette";
 import type { TileMetadataSource, TilesetDef } from "@/project/types";
 
 export type TilesetTileContext = {
@@ -26,7 +27,7 @@ export function resolveTilesetTileContext(tileset: TilesetDef, tile: number): Ti
       terrainTag: meta.terrainTag ?? tileset.terrain[tile] ?? 0,
       tags: [meta.role ?? "metadata", meta.source ?? "user"],
       metadataSource: meta.source ?? "user",
-      userLocked: meta.userLocked === true,
+      userLocked: tileMetaLocked(meta),
     };
   }
   if (isDefaultBundledTileset(tileset)) {

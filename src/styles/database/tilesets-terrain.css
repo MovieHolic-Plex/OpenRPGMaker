@@ -30,7 +30,7 @@
 }
 
 .database-modal-body .tileset-checker-status {
-  color: var(--text-dim, #3c3c3c);
+  color: var(--text-dim, var(--text-1));
   font: 700 11px/1.3 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
 }
 
@@ -48,8 +48,8 @@
 }
 
 .database-modal-body .tileset-checker-row {
-  background: var(--bg-panel-2, #f0f0f0);
-  border: 1px solid var(--border-soft, #b8b4aa);
+  background: var(--bg-panel-2, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
   display: grid;
   gap: 2px;
   padding: 3px 4px;
@@ -80,8 +80,8 @@
 }
 
 .database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-list {
-  background: #ffffff;
-  border-color: #808080 #ffffff #ffffff #808080;
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
   min-height: 258px;
@@ -90,8 +90,8 @@
 }
 
 .database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-row {
-  background: #ffffff;
-  color: #111111;
+  background: var(--bg-raised);
+  color: var(--text-1);
   font: 400 12px/17px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   height: 19px;
   min-height: 19px;
@@ -102,8 +102,8 @@
 }
 
 .database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-row.active {
-  background: #2f8fff;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--text-1);
 }
 
 @media (max-width: 1050px) {

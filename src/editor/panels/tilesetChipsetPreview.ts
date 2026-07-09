@@ -135,6 +135,7 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
     dataset: { testid: `tileset-db-cell-${index}` },
     on: {
       click: (event) => handleTileClick(model, index, event),
+      contextmenu: (event) => handleTileContextMenu(model, index, event),
       pointerdown: (event) => handlePointerDown(model, index, event),
       mousedown: (event) => {
         event.preventDefault();
@@ -154,6 +155,11 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
       mouseup: stopAiSelectionDrag,
     },
   });
+}
+
+function handleTileContextMenu(model: ChipsetPreviewModel, tile: number, event: Event): void {
+  event.preventDefault();
+  model.onSelectTile(tile);
 }
 
 function handleTileClick(model: ChipsetPreviewModel, tile: number, event: Event): void {
@@ -245,6 +251,7 @@ function stableRerender(rerender: () => void): void {
   const snapshots = captureScrollSnapshots();
   rerender();
   restoreScrollSnapshots(snapshots);
+  if (typeof window === "undefined") return; // fakeDom 테스트 환경.
   window.requestAnimationFrame(() => restoreScrollSnapshots(snapshots));
   window.setTimeout(() => restoreScrollSnapshots(snapshots), 0);
 }

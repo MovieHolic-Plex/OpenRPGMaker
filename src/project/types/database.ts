@@ -3,14 +3,17 @@ import type {
   BattleAnimationId,
   BattlerAnimationId,
   ClassId,
+  CropId,
   EnemyId,
   EquipmentId,
   ItemId,
+  MonsterSpeciesId,
   SkillId,
   StateId,
   TroopId,
 } from "./base";
 import type { Command, Condition } from "./events";
+import type { Season, TimeSystemConfig } from "../gameTime";
 
 export interface ActorRecord {
   id: ActorId;
@@ -79,11 +82,25 @@ export interface ClassRecord {
   skillIds: SkillId[];
   battleCommands: ClassBattleCommand[];
   learnedSkills: ActorLearnedSkill[];
+  promotions?: ClassPromotion[];
   equipmentPermissions: ClassEquipmentPermissions;
   parameterCurves: ActorParameterCurves;
   expCurve: ActorExperienceCurve;
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+}
+
+export interface ClassPromotion {
+  toClassId: ClassId;
+  requires: ClassPromotionRequirement;
+}
+
+export interface ClassPromotionRequirement {
+  level?: number;
+  switchId?: string;
+  itemId?: ItemId;
+  variableId?: string;
+  atLeast?: number;
 }
 
 export interface ClassOptions {
@@ -93,13 +110,16 @@ export interface ClassOptions {
   mightyGuard: boolean;
 }
 
-export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "item" | "escape" | "event";
+export type BattleFlow = "gauge" | "strict";
+
+export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event";
 
 export interface ClassBattleCommand {
   id: string;
   name: string;
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
+  skillId?: SkillId;
 }
 
 export type DatabaseElementKind = "physical" | "magical";
@@ -160,6 +180,9 @@ export interface SkillRecord {
   effect: SkillEffect;
   // 속성 ID. DatabaseElementRecord.id 와 매칭. 없으면 비속성(상성 배율 1.0).
   elementId?: string;
+  // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
+  // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
+  stateEffects?: DatabaseStateEffect[];
 }
 
 export interface SkillMpCost {
@@ -203,7 +226,15 @@ export interface ItemRecord {
   occasionBattle: boolean;
   seedParameterBonuses: EquipmentStatBonuses;
   equipmentProfile: ItemEquipmentProfile;
+  farmTool?: FarmTool;
+  captureProfile?: ItemCaptureProfile;
 }
+
+export interface ItemCaptureProfile {
+  multiplier: number;
+}
+
+export type FarmTool = "hoe" | "wateringCan";
 
 export type ItemScope = "none" | "ally" | "allAllies" | "enemy";
 export type ItemType =
@@ -265,7 +296,14 @@ export interface EquipmentRecord {
   cursed: boolean;
   twoHanded: boolean;
   usableAsItemSkillId?: SkillId;
+  attackElementIds: string[];
   stateInflictIds: StateId[];
+  stateInflictionChance: number;
+  effectFlags: ItemEquipmentEffectFlags;
+  elementalDefenseIds: string[];
+  stateDefenseIds: StateId[];
+  stateDefenseMode: "resist" | "inflict";
+  stateResistanceChance: number;
 }
 
 export interface EquipmentStatBonuses {
@@ -284,6 +322,8 @@ export interface DatabaseStateEffect {
 export interface EnemyRecord {
   id: EnemyId;
   name: string;
+  speciesId?: MonsterSpeciesId;
+  level?: number;
   monsterResourceId?: string;
   graphicHue: number;
   transparent: boolean;
@@ -305,6 +345,67 @@ export interface EnemyStats {
   defense: number;
   mind: number;
   agility: number;
+}
+
+export interface MonsterSpeciesGraphic {
+  monsterResourceId?: string;
+  graphicHue: number;
+  transparent: boolean;
+  flying: boolean;
+}
+
+export interface MonsterSpeciesRecord {
+  id: MonsterSpeciesId;
+  name: string;
+  graphic: MonsterSpeciesGraphic;
+  types?: string[];
+  baseStats: EnemyStats;
+  expCurve?: ActorExperienceCurve;
+  captureRate: number;
+  skillsByLevel?: ActorLearnedSkill[];
+  evolutions?: MonsterEvolutionRecord[];
+}
+
+export interface CropStageRecord {
+  days: number;
+}
+
+export interface CropGraphicStage {
+  resourceId?: string;
+  frame?: string | number;
+  label?: string;
+}
+
+export interface CropRegrowRecord {
+  days: number;
+}
+
+export interface CropRecord {
+  id: CropId;
+  name: string;
+  seedItemId: ItemId;
+  harvestItemId: ItemId;
+  harvestCount: number;
+  stages: CropStageRecord[];
+  seasons: Season[];
+  regrow?: CropRegrowRecord;
+  graphicStages?: CropGraphicStage[];
+}
+
+export interface MonsterEvolutionRecord {
+  toSpeciesId: MonsterSpeciesId;
+  requires: MonsterEvolutionRequirement;
+}
+
+export interface MonsterEvolutionRequirement {
+  level?: number;
+  itemId?: ItemId;
+  friendshipAtLeast?: number;
+}
+
+export interface TypeChartRecord {
+  types: string[];
+  multipliers: Record<string, Record<string, number>>;
 }
 
 export interface EnemyRewards {
@@ -350,7 +451,10 @@ export type BattleEventSpan = "battle" | "turn" | "moment";
 export type BattleEventCondition =
   | Condition
   | { kind: "turn"; start: number; interval: number }
+  | { kind: "onRound"; round: number }
+  | { kind: "everyRound"; start?: number; interval?: number }
   | { kind: "enemyHp"; enemyId: EnemyId; minPercent: number; maxPercent: number }
+  | { kind: "enemyHpBelow"; enemyId?: EnemyId; percent: number }
   | { kind: "actorHp"; actorId: ActorId; minPercent: number; maxPercent: number }
   | { kind: "enemyTurn"; enemyId: EnemyId; turn: number }
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
@@ -361,6 +465,7 @@ export interface BattleEventPageRecord {
   name: string;
   conditions: BattleEventCondition[];
   span: BattleEventSpan;
+  runOnce?: boolean;
   commands: Command[];
 }
 
@@ -370,7 +475,10 @@ export interface TroopRecord {
   enemyIds: EnemyId[];
   members?: TroopMemberRecord[];
   autoAlign: boolean;
+  uncapturable?: boolean;
   previewBackgroundResourceId?: string;
+  battleFlow?: BattleFlow;
+  activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
 }
 
@@ -393,6 +501,15 @@ export interface StateRecord {
   mpReleaseStep?: number;
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
+  runtimeEffects?: StateRuntimeEffects;
+}
+
+export interface StateRuntimeEffects {
+  restrictsAction?: boolean;
+  hpDamagePercentPerTurn?: number;
+  attackMultiplier?: number;
+  defenseMultiplier?: number;
+  removeOnBattleEnd?: boolean;
 }
 
 export interface BattleAnimationRecord {
@@ -493,6 +610,8 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   terrains?: DatabaseTerrainRecord[];
   battleCommands?: DatabaseBattleCommandRecord[];
   battlerAnimations?: BattlerAnimationRecord[];
+  monsterSpecies?: MonsterSpeciesRecord[];
+  crops?: CropRecord[];
 }
 
 export interface TitleScreenLayout {
@@ -521,5 +640,17 @@ export interface SystemRecords {
   systemResourceId?: string;
   battleSystemResourceId?: string;
   initialTroopId?: TroopId;
+  battleFlow?: BattleFlow;
+  activeSlots?: number;
+  rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
+  monsterCollection?: boolean;
+  giftSystem?: boolean;
+  typeChart?: TypeChartRecord;
+  timeSystem?: TimeSystemConfig;
+}
+
+export interface RewardPolicy {
+  participationOnly?: boolean;
+  levelGapPenalty?: boolean;
 }

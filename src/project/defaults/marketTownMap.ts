@@ -22,12 +22,13 @@ const TOWN_PATH_TILE_SET = new Set<number>(Object.values(SAND_TILE));
 //  - stampDbHouseVariant : 집(wide/compact/l × wood/plaster/stone) + 문 앞 도로 접근
 //  - paintTownPathNetwork/shapeAllTownPaths : 모래길 자동타일(중심/외곽/모서리)
 //  - stampTownMarket     : 시장 천막 2x2
-//  - 장식 타일: 나무(260), 꽃(288), 벤치(327/328), 석상(352/353), 횃불(381)
+//  - 장식 타일: 나무(260/290), 꽃(288), 벤치(327/328), 석상(352/353), 횃불(381)
 
 const MARKET_TOWN_SIZE = 60;
 const COMBINED_TOWN_TILESET_ID = "easyrpg_chipset_combined_town";
 const TOWN_GRASS = 270;
 const TREE = 260;
+const TREE_BOTTOM = 290;
 const FLOWER = 288;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
@@ -156,12 +157,12 @@ function decorateMarketSquare(map: GameMap): void {
 function decorateNeighborhoods(map: GameMap): void {
   // 외곽 울타리용 나무 — 맵 테두리를 나무로 둘러싸 자연 경계 형성
   for (let x = 0; x < MARKET_TOWN_SIZE; x += 1) {
-    stampUpper(map, { x, y: 0 }, TREE);
-    stampUpper(map, { x, y: MARKET_TOWN_SIZE - 1 }, TREE);
+    stampConifer(map, { x, y: 0 }, { overwrite: true });
+    stampConifer(map, { x, y: MARKET_TOWN_SIZE - 2 }, { overwrite: true });
   }
-  for (let y = 0; y < MARKET_TOWN_SIZE; y += 1) {
-    stampUpper(map, { x: 0, y }, TREE);
-    stampUpper(map, { x: MARKET_TOWN_SIZE - 1, y }, TREE);
+  for (let y = 2; y < MARKET_TOWN_SIZE - 2; y += 2) {
+    stampConifer(map, { x: 0, y }, { overwrite: true });
+    stampConifer(map, { x: MARKET_TOWN_SIZE - 1, y }, { overwrite: true });
   }
   // 블록 구석 나무 클러스터 (도로 외곽, 집과 겹치지 않는 위치)
   const treeOrigins = [
@@ -174,7 +175,7 @@ function decorateNeighborhoods(map: GameMap): void {
     { x: 29, y: 43 }, { x: 29, y: 44 },
     { x: 43, y: 43 }, { x: 44, y: 44 },
   ];
-  for (const origin of treeOrigins) stampUpper(map, origin, TREE);
+  for (const origin of treeOrigins) stampConifer(map, origin);
   // 꽃밭 장식 (주택가 곳곳)
   stampUpperPattern(map, { x: 11, y: 11 }, [[FLOWER, -1, FLOWER], [-1, FLOWER, -1]]);
   stampUpperPattern(map, { x: 38, y: 11 }, [[FLOWER, FLOWER], [FLOWER, FLOWER]]);
@@ -207,6 +208,17 @@ function stampUpper(map: GameMap, point: { readonly x: number; readonly y: numbe
   // 도로(모래길) 위에는 오브젝트를 덮어씌우지 않아 통행과 도로 시인성을 유지한다.
   if (isTownPath(map, point)) return;
   map.upperTiles[point.y * map.width + point.x] = tile;
+}
+
+function stampConifer(map: GameMap, point: { readonly x: number; readonly y: number }, options: { readonly overwrite?: boolean } = {}): void {
+  const bottom = { x: point.x, y: point.y + 1 };
+  if (!isInside(map, point) || !isInside(map, bottom)) return;
+  if (isTownPath(map, point) || isTownPath(map, bottom)) return;
+  const topIndex = point.y * map.width + point.x;
+  const bottomIndex = bottom.y * map.width + bottom.x;
+  if (!options.overwrite && (map.upperTiles[topIndex] !== TILE.EMPTY || map.upperTiles[bottomIndex] !== TILE.EMPTY)) return;
+  map.upperTiles[topIndex] = TREE;
+  map.upperTiles[bottomIndex] = TREE_BOTTOM;
 }
 
 function isTownPath(map: GameMap, point: { readonly x: number; readonly y: number }): boolean {

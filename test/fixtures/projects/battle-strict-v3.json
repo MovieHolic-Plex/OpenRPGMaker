@@ -1,0 +1,214 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Strict Battle Fixture",
+    "author": "Phase 7a",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "hero": {
+        "id": "hero",
+        "image": { "type": "bundled", "id": "tex_easyrpg_charset_people1" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "slime": {
+        "id": "slime",
+        "image": { "type": "bundled", "id": "tex_slime" },
+        "frames": 1,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {}
+  },
+  "resourceProfiles": [],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "기본 타일셋",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 1,
+      "passability": [{ "up": true, "down": true, "left": true, "right": true }],
+      "priority": ["lower"],
+      "terrain": [0]
+    }
+  },
+  "switches": [],
+  "variables": [],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_warrior",
+        "name": "전사",
+        "classId": "class_warrior",
+        "initialLevel": 1,
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero"
+      },
+      {
+        "id": "actor_mage",
+        "name": "마법사",
+        "classId": "class_mage",
+        "initialLevel": 1,
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "skillIds": ["skill_fire", "skill_focus"]
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_warrior",
+        "name": "전사",
+        "battleCommands": [
+          { "id": "cmd_attack", "name": "공격", "kind": "attack" },
+          { "id": "cmd_guard", "name": "방어", "kind": "guard" },
+          { "id": "cmd_escape", "name": "도주", "kind": "escape" }
+        ],
+        "parameterCurves": {
+          "maxHp": [220],
+          "maxMp": [10],
+          "attack": [20],
+          "defense": [20],
+          "mind": [8],
+          "agility": [12]
+        }
+      },
+      {
+        "id": "class_mage",
+        "name": "마법사",
+        "battleCommands": [
+          { "id": "cmd_attack", "name": "공격", "kind": "attack" },
+          { "id": "cmd_magic", "name": "마법", "kind": "skill", "skillSubsetName": "magic" },
+          { "id": "cmd_item", "name": "아이템", "kind": "item" }
+        ],
+        "skillIds": ["skill_fire", "skill_focus"],
+        "parameterCurves": {
+          "maxHp": [180],
+          "maxMp": [40],
+          "attack": [10],
+          "defense": [12],
+          "mind": [26],
+          "agility": [30]
+        }
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_fire",
+        "name": "화염",
+        "scope": "enemy",
+        "power": 18,
+        "type": "magic",
+        "mpCost": { "flat": 0, "percentMax": 0 },
+        "variance": 0,
+        "hitRate": 100,
+        "successRate": 100
+      },
+      {
+        "id": "skill_focus",
+        "name": "집중",
+        "scope": "self",
+        "power": 0,
+        "type": "tech",
+        "effect": { "kind": "support" },
+        "mpCost": { "flat": 0, "percentMax": 0 }
+      },
+      {
+        "id": "skill_potion",
+        "name": "회복약 효과",
+        "scope": "ally",
+        "power": 40,
+        "type": "item",
+        "effect": { "kind": "healing", "statistic": "mind", "affects": "hp" },
+        "mpCost": { "flat": 0, "percentMax": 0 }
+      }
+    ],
+    "items": [
+      {
+        "id": "item_potion",
+        "name": "회복약",
+        "scope": "ally",
+        "price": 10,
+        "skillId": "skill_potion",
+        "occasion": "battle",
+        "occasionBattle": true
+      }
+    ],
+    "equipment": [],
+    "enemies": [
+      {
+        "id": "enemy_training_slime",
+        "name": "훈련 슬라임",
+        "monsterResourceId": "slime",
+        "stats": {
+          "maxHp": 260,
+          "maxMp": 0,
+          "attack": 1,
+          "defense": 8,
+          "mind": 1,
+          "agility": 20
+        },
+        "rewards": { "exp": 3, "gold": 1 },
+        "skillIds": []
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_strict_training",
+        "name": "엄격 턴제 훈련",
+        "enemyIds": ["enemy_training_slime"],
+        "members": [{ "enemyId": "enemy_training_slime", "x": 160, "y": 112 }],
+        "autoAlign": false,
+        "battleFlow": "strict",
+        "battleEventPages": []
+      }
+    ],
+    "states": [],
+    "battleAnimations": []
+  },
+  "system": {
+    "startActorIds": ["actor_warrior", "actor_mage"],
+    "titleResourceId": "tex_tiles_default",
+    "systemResourceId": "tex_tiles_default",
+    "battleSystemResourceId": "tex_tiles_default",
+    "initialTroopId": "troop_strict_training",
+    "battleFlow": "gauge"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": { "item_potion": 2 },
+    "partyActorIds": ["actor_warrior", "actor_mage"]
+  },
+  "maps": {
+    "map_strict": {
+      "id": "map_strict",
+      "name": "Strict Battle Demo",
+      "width": 2,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0, 0],
+      "upperTiles": [-1, -1],
+      "events": []
+    }
+  },
+  "mapTree": { "mapId": "map_strict", "children": [] },
+  "startMapId": "map_strict",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

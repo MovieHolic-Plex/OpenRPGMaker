@@ -1,5 +1,7 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
+import { renderCropTab } from "@/editor/panels/databaseCropView";
+import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
@@ -24,7 +26,9 @@ export type DatabaseTab =
   | "battleScreen"
   | "battlerAnimations"
   | "commonEvents"
+  | "crops"
   | "elements"
+  | "monsterSpecies"
   | "system"
   | "terms"
   | "terrain"
@@ -42,8 +46,10 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템", testid: "db-tab-items" },
+  { id: "crops", label: "작물", testid: "db-tab-crops" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
+  { id: "monsterSpecies", label: "Species", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
@@ -60,8 +66,10 @@ const tabOrder: readonly DatabaseTab[] = [
   "classes",
   "skills",
   "items",
+  "crops",
   "equipment",
   "enemies",
+  "monsterSpecies",
   "troops",
   "elements",
   "states",
@@ -107,6 +115,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
     ],
   });
   const header = el("div", { class: "db-tabs" });
+  const body = el("div", { class: "db-body" });
   for (const tab of orderedTabs) {
     header.append(
       el("button", {
@@ -115,17 +124,38 @@ export function renderDatabasePanel(container: HTMLElement): void {
         dataset: { testid: tab.testid },
         on: {
           click: () => {
+            if (activeTab === tab.id) return;
             setDatabaseActiveTab(tab.id);
-            renderDatabasePanel(container);
+            // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
+            updateTabButtons(header);
+            renderActiveTab(body, container);
           },
         },
       }),
     );
   }
 
-  const body = el("div", { class: "db-body" });
   renderActiveTab(body, container);
   container.append(groupTabs, header, body);
+}
+
+// 이미 마운트된 패널을 부분 갱신한다(본문만 다시 그림). undo/redo 재렌더 경로용.
+export function refreshDatabasePanel(container: HTMLElement): void {
+  const body = container.querySelector(".db-body");
+  if (body instanceof HTMLElement) {
+    renderActiveTab(body, container);
+    return;
+  }
+  renderDatabasePanel(container);
+}
+
+function updateTabButtons(header: HTMLElement): void {
+  const activeTestId = orderedTabs.find((tab) => tab.id === activeTab)?.testid;
+  for (const button of Array.from(header.querySelectorAll(".db-tab"))) {
+    if (!(button instanceof HTMLElement)) continue;
+    if (button.dataset.testid === activeTestId) button.classList.add("active");
+    else button.classList.remove("active");
+  }
 }
 
 function classicGroupTab(label: string): HTMLElement {
@@ -133,6 +163,8 @@ function classicGroupTab(label: string): HTMLElement {
 }
 
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
+  clearChildren(body);
+  const rerender = (): void => renderActiveTab(body, container);
   switch (activeTab) {
     case "actors":
     case "classes":
@@ -142,10 +174,10 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
     case "enemies":
     case "troops":
     case "states":
-      renderRecordTab(body, activeTab, () => renderDatabasePanel(container));
+      renderRecordTab(body, activeTab, rerender);
       return;
     case "animations":
-      renderRecordTab(body, "battleAnimations", () => renderDatabasePanel(container));
+      renderRecordTab(body, "battleAnimations", rerender);
       return;
     case "elements":
       renderElementsTab(body);
@@ -162,17 +194,23 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
     case "battlerAnimations":
       renderBattlerAnimationsTab(body);
       return;
+    case "monsterSpecies":
+      renderMonsterSpeciesTab(body, rerender);
+      return;
+    case "crops":
+      renderCropTab(body, rerender);
+      return;
     case "switches":
-      renderSwitchesTab(body, () => renderDatabasePanel(container));
+      renderSwitchesTab(body, rerender);
       return;
     case "variables":
-      renderVariablesTab(body, () => renderDatabasePanel(container));
+      renderVariablesTab(body, rerender);
       return;
     case "commonEvents":
-      renderCommonEventsTab(body, () => renderDatabasePanel(container));
+      renderCommonEventsTab(body, rerender);
       return;
     case "tilesets":
-      renderTilesetsTab(body, () => renderDatabasePanel(container));
+      renderTilesetsTab(body, rerender);
       return;
     case "system":
       renderSystemTab(body);

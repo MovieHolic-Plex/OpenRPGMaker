@@ -1,5 +1,5 @@
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title {
-  font-size: 30px;
+  font-size: var(--runtime-font-size-22);
   max-width: 280px;
   -webkit-text-stroke: 0;
   text-shadow:
@@ -24,20 +24,22 @@
 }
 
 .player-layout.system-shell .rm-title-menu {
-  border-width: 2px;
-  border-radius: 3px;
-  box-shadow:
-    0 0 0 1px var(--rm2k3-title-window-shadow),
-    0 0 0 2px rgba(255, 255, 255, 0.72),
-    inset 1px 1px 0 var(--rm2k3-title-window-mid),
-    inset -1px -1px 0 rgba(0, 0, 0, 0.44);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
   gap: 2px;
   min-width: 220px;
-  padding: 6px 8px;
+  padding: 2px 4px;
 }
 
 .player-layout.system-shell .rm-title-menu-button {
-  font-size: 14px;
+  font-size: var(--runtime-font-size-11);
   line-height: 1.15;
   min-height: 20px;
   padding: 2px 8px 2px 26px;
@@ -54,13 +56,17 @@
 }
 
 .player-layout.system-shell .rm-title-input-hint {
-  border-width: 1px;
-  border-radius: 2px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-width: var(--runtime-window-border-tight);
+  border-radius: 0;
   bottom: 8px;
-  box-shadow:
-    0 0 0 1px var(--rm2k3-title-window-shadow),
-    inset 1px 1px 0 var(--rm2k3-title-window-mid);
-  font-size: 10px;
+  box-shadow: none;
+  font-size: var(--runtime-font-size-9);
   line-height: 1.2;
   min-width: 174px;
   padding: 3px 8px;
@@ -82,22 +88,19 @@
 }
 
 .player-layout.system-shell .rm2k3-load-window {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.17), transparent 22%),
-    linear-gradient(180deg, var(--rm2k3-title-window-hi), var(--rm2k3-title-window) 40%, var(--rm2k3-title-window-deep));
-  border: 2px solid var(--rm2k3-title-window-edge);
-  border-radius: 3px;
-  box-shadow:
-    0 0 0 2px var(--rm2k3-title-window-shadow),
-    0 0 0 3px rgba(255, 255, 255, 0.72),
-    inset 1px 1px 0 var(--rm2k3-title-window-mid),
-    inset -1px -1px 0 rgba(0, 0, 0, 0.48),
-    0 8px 16px rgba(5, 19, 70, 0.24);
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  box-shadow: none;
   box-sizing: border-box;
   display: grid;
-  font: 700 11px/1.25 "GulimChe", "DotumChe", "MS Gothic", "DotGothic16", "DungGeunMo", "Galmuri11", sans-serif;
+  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-pixel-font);
   gap: 4px;
-  padding: 6px;
+  padding: 2px 4px;
   position: relative;
   text-shadow:
     1px 0 0 var(--rm2k3-title-window-shadow),
@@ -139,7 +142,7 @@
   appearance: none;
   background: transparent;
   border: 0;
-  border-radius: 2px;
+  border-radius: 0;
   color: var(--rm2k3-title-text);
   cursor: pointer;
   font: inherit;
@@ -165,11 +168,8 @@
 .player-layout.system-shell .rm2k3-load-slot:focus-visible,
 .player-layout.system-shell .rm2k3-load-back:hover,
 .player-layout.system-shell .rm2k3-load-back:focus-visible {
-  background:
-    linear-gradient(180deg, var(--rm2k3-title-highlight), var(--rm2k3-title-highlight-deep));
-  box-shadow:
-    inset 0 0 0 1px var(--rm2k3-title-highlight-ring),
-    inset 0 -1px 0 rgba(3, 29, 85, 0.5);
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
   outline: none;
 }
 

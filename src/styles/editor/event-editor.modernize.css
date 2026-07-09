@@ -1,0 +1,565 @@
+/* =========================================================================
+   이벤트 편집기 모던화 (2026-07-07 UI/UX 리뷰 후속)
+   - P0: 커맨드 리스트 카테고리 색 레일/아이콘, 피커 검색·아이콘·범례·푸터,
+         레코드 피커 검색, 밀도/모달 결함(중간-2/4/6, 낮음-3) 수정
+   - RM2003 보존: 텍스트 스크립트 줄이 정본. 여기서는 16px 이하 부가 장식과
+     색 레일만 얹는다. 런타임 표면(320x240)은 건드리지 않는다.
+   ========================================================================= */
+
+:root {
+  --cmdcat-dialogue: #7f9ee8;
+  --cmdcat-flow: #b08ae0;
+  --cmdcat-map: #5fb890;
+  --cmdcat-reward: #d8a94e;
+  --cmdcat-sound: #d87ab0;
+  --cmdcat-actor: #e0915a;
+  --cmdcat-screen: #6fc3d8;
+  --cmdcat-system: #9aa4b5;
+  --cmdcat-battle: #d86a6a;
+  --cmdcat-modern: #8ad8c0;
+}
+
+/* ---- [중간-1] 커맨드 리스트: 카테고리 색 레일 + kind 아이콘 ---- */
+
+.cmd-item[data-command-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+.cmd-item[data-command-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+.cmd-item[data-command-category="map"] { --cmdcat: var(--cmdcat-map); }
+.cmd-item[data-command-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+.cmd-item[data-command-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+.cmd-item[data-command-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+.cmd-item[data-command-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+.cmd-item[data-command-category="system"] { --cmdcat: var(--cmdcat-system); }
+.cmd-item[data-command-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+.cmd-item[data-command-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.cmd-item[data-command-category] > .cmd-head {
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--cmdcat, transparent) 78%, transparent);
+}
+
+.cmd-cat-icon {
+  align-items: center;
+  color: var(--cmdcat, var(--text-dim, currentColor));
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  line-height: 16px;
+  opacity: 0.9;
+  width: 13px;
+}
+
+/* 글리프는 생성 콘텐츠로 — 줄 textContent/접근성 이름을 오염시키지 않는다. */
+.cmd-cat-icon::before {
+  content: attr(data-glyph);
+}
+
+/* ---- [P1] 조건/선택지 분기 깊이 가이드 라인 ---- */
+
+.cmd-item[data-cmd-depth] > .cmd-head,
+.cmd-line-marker[data-cmd-depth] {
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent 15px,
+    color-mix(in srgb, var(--rm2k3-command-blue, #6f87c9) 26%, transparent) 15px,
+    color-mix(in srgb, var(--rm2k3-command-blue, #6f87c9) 26%, transparent) 16px
+  );
+  background-position: 6px 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * 16px) 100%;
+}
+
+/* ---- [높음-1/중간-5] 커맨드 피커: 검색/아이콘/스티키 푸터/범례 ---- */
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-subdialog-body {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel {
+  min-height: 220px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.event-command-picker-search-row {
+  display: flex;
+  gap: 8px;
+}
+
+.event-command-picker-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.event-command-picker-view-toggle {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  color: var(--text-muted, var(--text-2));
+  flex: 0 0 auto;
+  font: 650 11px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px 10px;
+}
+
+.event-command-picker-view-toggle[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--accent, #6f87c9) 60%, transparent);
+  color: var(--accent, var(--text-1));
+}
+
+.event-command-picker-tab {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.event-command-picker-tab::before {
+  content: attr(data-glyph);
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.event-command-picker-group-heading[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+.event-command-picker-group-heading[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+.event-command-picker-group-heading[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+.event-command-picker-group-heading[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+.event-command-picker-group-heading[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+.event-command-picker-group-heading[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+.event-command-picker-group-heading[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+.event-command-picker-group-heading[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+.event-command-picker-group-heading[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+.event-command-picker-group-heading[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.event-command-picker-group-heading::before {
+  align-items: center;
+  background: color-mix(in srgb, var(--cmdcat, var(--text-dim)) 18%, transparent);
+  border-radius: 4px;
+  color: var(--cmdcat, var(--text-dim, currentColor));
+  content: attr(data-glyph);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.event-command-picker-command[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+.event-command-picker-command[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+.event-command-picker-command[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+.event-command-picker-command[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+.event-command-picker-command[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+.event-command-picker-command[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+.event-command-picker-command[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+.event-command-picker-command[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+.event-command-picker-command[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+.event-command-picker-command[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.event-command-picker-command-icon {
+  align-items: center;
+  color: var(--cmdcat, var(--text-dim, currentColor));
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  margin-right: 7px;
+  opacity: 0.9;
+  width: 16px;
+}
+
+.event-command-picker-command-icon::before {
+  content: attr(data-glyph);
+}
+
+.event-command-picker-page-chip {
+  background: color-mix(in srgb, var(--text-dim, #888) 14%, transparent);
+  border-radius: 4px;
+  color: var(--text-dim, var(--text-2));
+  flex: 0 0 auto;
+  font: 700 10px/14px Inter, "Segoe UI", system-ui, sans-serif;
+  margin-left: 6px;
+  padding: 0 4px;
+}
+
+.event-command-picker-no-result {
+  padding: 18px 6px;
+  text-align: center;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-footer {
+  align-items: center;
+  border-top: 1px solid var(--border-soft, var(--border-subtle));
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.event-command-picker-legend {
+  align-items: center;
+  color: var(--text-dim, var(--text-2));
+  display: inline-flex;
+  flex-wrap: wrap;
+  font: 600 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  gap: 5px;
+}
+
+.event-command-picker-legend .command-runtime-badge {
+  margin-left: 0;
+}
+
+/* 아이콘 그리드 모드(P2): 기본은 RM2003 리스트, 명시적 토글로만 진입 */
+.event-command-picker-grid.icon-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command {
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  min-height: 64px;
+  padding: 8px 6px;
+  text-align: center;
+  white-space: normal;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command-icon {
+  background: color-mix(in srgb, var(--cmdcat, var(--text-dim)) 16%, transparent);
+  border-radius: 6px;
+  font-size: 13px;
+  height: 24px;
+  margin-right: 0;
+  width: 24px;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command {
+  position: relative;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command-label {
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  width: 100%;
+}
+
+/* ---- [P1] 커맨드 리스트 인라인 썸네일 (16px 상한 — 줄 높이 불변) ---- */
+
+.cmd-thumb {
+  background-repeat: no-repeat;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 16px;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.cmd-thumb-face {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.cmd-thumb-map {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  position: relative;
+  width: 24px;
+}
+
+.cmd-thumb-map-canvas {
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.cmd-kind .cmd-thumb {
+  margin: 0 3px -3px 1px;
+}
+
+[data-testid="cmd-speaker-face"] {
+  margin-right: 4px;
+}
+
+/* ---- [중간-3] 문장 표시 폼: 세로 스택 + 제어 문자 팔레트 ---- */
+
+.event-command-edit-body .event-command-text-editor {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-body .event-command-text-editor textarea {
+  font: 500 13px/1.5 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  min-height: 110px;
+  resize: vertical;
+  width: 100%;
+}
+
+.event-command-text-palette {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-command-text-palette-label {
+  color: var(--text-dim, var(--text-2));
+  font: 700 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin-right: 2px;
+}
+
+.event-command-text-palette-button {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 4px;
+  color: var(--rm2k3-command-blue, var(--accent));
+  font: 700 11px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  padding: 2px 6px;
+}
+
+.event-command-text-palette-button:hover {
+  border-color: color-mix(in srgb, var(--accent, #6f87c9) 55%, transparent);
+}
+
+/* ---- [높음-3] 레코드 피커 검색 ---- */
+
+/* 검색 입력이 추가되면서 레코드 페인 행 구성이 [검색 / 리스트 / 이름 박스] 3행이 된다. */
+.event-record-picker-record-pane {
+  grid-template-rows: auto minmax(0, 1fr) 62px;
+}
+
+.event-record-picker-search {
+  min-height: 24px;
+  width: 100%;
+}
+
+/* ---- [중간-2] 정보 밀도: 좌측 조건 패널 압축 + 안 쓰는 조건 행 시각적 후퇴 ---- */
+
+.event-conditions-grid .event-condition-row:has(> input[type="checkbox"]:not(:checked)),
+.event-conditions-grid label.event-condition-row:has(input[type="checkbox"]:not(:checked)) {
+  opacity: 0.62;
+}
+
+.event-editor-settings-column {
+  scrollbar-width: thin;
+}
+
+/* ---- [중간-4] 모달 깊이: 겹친 서브다이얼로그의 블러 중첩 완화 ---- */
+
+.event-subdialog-backdrop {
+  backdrop-filter: blur(6px) saturate(1.05);
+}
+
+.event-subdialog-backdrop ~ .event-subdialog-backdrop {
+  backdrop-filter: none;
+  background: rgba(12, 15, 22, 0.3);
+}
+
+/* ---- [P2] 모던 전용 파생 뷰: 라이브 미리보기 / 플로우차트 (기본 접힘) ---- */
+
+/* 실행 내용 fieldset 의 그리드 높이를 잠식하지 않도록 커맨드 컬럼 하단에 떠 있는
+   오버레이로 배치 (RM2003 창 비율 e2e 계약 보존 — contents fieldset 높이 불변). */
+.event-editor-commands-column {
+  position: relative;
+}
+
+.event-script-modern-views {
+  /* AI 드로어 바(하단 in-flow)를 가리지 않도록 그 위에 띄운다. */
+  bottom: 48px;
+  display: grid;
+  gap: 6px;
+  left: 8px;
+  position: absolute;
+  right: 8px;
+  z-index: 6;
+}
+
+.event-script-live-preview,
+.event-script-flowchart {
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 96%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  box-shadow: 0 -2px 14px rgba(10, 14, 24, 0.28);
+  padding: 0;
+}
+
+.event-script-live-preview[open] .event-script-live-preview-body {
+  max-height: 340px;
+  overflow: auto;
+}
+
+.event-script-flowchart[open] .event-flowchart-body {
+  max-height: 300px;
+}
+
+.event-script-live-preview > summary,
+.event-script-flowchart > summary {
+  color: var(--text-muted, var(--text-2));
+  cursor: pointer;
+  font: 700 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 7px 12px;
+  user-select: none;
+}
+
+.event-script-live-preview[open] > summary,
+.event-script-flowchart[open] > summary {
+  border-bottom: 1px solid var(--border-soft, var(--border-subtle));
+  color: var(--accent, var(--text-1));
+}
+
+.event-script-live-preview-body {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+
+.event-script-live-controls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.event-script-live-position {
+  color: var(--text-dim, var(--text-2));
+  font: 700 11px/16px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  margin-left: auto;
+}
+
+.event-script-live-stage {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  min-height: 150px;
+  padding: 8px;
+}
+
+.event-script-live-caption {
+  color: var(--text-dim, var(--text-2));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-flowchart-body {
+  overflow: auto;
+  padding: 10px 12px 12px;
+}
+
+.event-flow-column {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+}
+
+.event-flow-node {
+  align-items: center;
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-left: 3px solid var(--cmdcat, var(--border-soft));
+  border-radius: 5px;
+  display: inline-flex;
+  font: 600 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  gap: 6px;
+  max-width: 420px;
+  padding: 3px 8px;
+}
+
+.event-flow-node[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+.event-flow-node[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+.event-flow-node[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+.event-flow-node[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+.event-flow-node[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+.event-flow-node[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+.event-flow-node[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+.event-flow-node[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+.event-flow-node[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+.event-flow-node[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.event-flow-node-icon {
+  color: var(--cmdcat, var(--text-dim));
+  font-size: 10px;
+}
+
+.event-flow-node-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-flow-branches {
+  border-left: 1px dashed color-mix(in srgb, var(--text-dim, #888) 40%, transparent);
+  display: flex;
+  gap: 10px;
+  margin: 2px 0 4px 10px;
+  padding-left: 10px;
+}
+
+.event-flow-branch {
+  display: grid;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.event-flow-branch-label {
+  color: var(--rm2k3-branch-label, var(--text-dim, var(--text-2)));
+  font: 700 10px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.event-flow-empty {
+  color: var(--text-dim, var(--text-2));
+  font: 500 10px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+/* ---- [P2] 이동 경로: 실제 맵 캔버스 위 경로 오버레이 ---- */
+
+.ecp-move-map-overlay {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  max-height: 240px;
+  overflow: auto;
+  padding: 6px 6px 20px;
+  /* .ecp-map-caption 이 absolute 로 잡히는 프리뷰 스킨과 함께 쓰여도 밖으로 새지 않게 */
+  position: relative;
+}
+
+.ecp-move-map-overlay .ecp-map-caption {
+  bottom: 2px;
+  left: 6px;
+  position: absolute;
+}
+
+.ecp-move-map-canvas {
+  image-rendering: pixelated;
+}
+
+/* ---- [P2] 크로스 컨테이너 드래그: 무효 드롭 대상 표시 ---- */
+
+.cmd-item.cmd-drop-invalid > .cmd-head {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger, #d4553a) 65%, transparent);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ---- [낮음-3] 그래픽 선택 커서 강화 ---- */
+
+.npc-character-cell.active {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 4px rgba(0, 0, 0, 0.45);
+}

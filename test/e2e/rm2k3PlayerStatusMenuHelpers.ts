@@ -27,6 +27,7 @@ export const COMMAND_LABELS = [
   ["status", "상태"],
   ["row", "열"],
   ["formation", "진형"],
+  ["quests", "임무"],
   ["wait", "대기 ON"],
   ["to-title", "타이틀"],
 ] as const;
@@ -57,6 +58,11 @@ export function seededStatusMenuProject(): Project {
   relabelItem(project, "item_warp_scroll", "귀환 두루마리", "마을로 이동");
   relabelItem(project, "item_hi_potion", "상급 회복약", "HP를 크게 회복합니다.");
   for (const actor of project.database.actors) delete actor.faceResourceId;
+  // 스펙은 4인 파티(대상 선택/진형/열 조작)를 전제한다 — 블랭크 프로젝트 기본은 1인.
+  project.session = {
+    ...project.session,
+    partyActorIds: project.database.actors.slice(0, 4).map((actor) => actor.id),
+  };
   return project;
 }
 

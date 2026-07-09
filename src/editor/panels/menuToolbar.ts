@@ -39,7 +39,6 @@ export type ToolbarIcon =
   | "play"
   | "sound"
   | "search"
-  | "terrain-template"
   | "window"
   | "title"
   | "manual";

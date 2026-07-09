@@ -6,18 +6,27 @@ import {
   lakeAutotileQuarterSources,
   type LakeAutotileQuarter,
 } from "@/project/defaults/lakeAutotile";
+import {
+  isTerrainQuarterTile,
+  terrainQuarterSources,
+  type TerrainQuarterSource,
+} from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
-import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
+import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
+import { applyMapDefaultLighting } from "@/player/lighting";
+import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
+import { renderFarmOverlays } from "@/player/playSceneFarming";
 import {
   initialRuntimeEventPositions,
   runtimeEventViewsForMap,
@@ -47,7 +56,7 @@ interface RenderTilesSceneContext<
   readonly eventPositions: PlaySceneContext["eventPositions"];
   readonly tileLayer: {
     removeAll(removeChildren?: boolean): void;
-    add(image: TImage | TSprite): unknown;
+    add(image: TImage | TSprite | unknown): unknown;
   };
   readonly eventSprites: {
     values(): IterableIterator<TSprite>;
@@ -62,12 +71,15 @@ interface RenderTilesSceneContext<
   readonly add: {
     image(x: number, y: number, texture: string, frame?: string | number): TImage;
     sprite(x: number, y: number, texture: string, frame?: string | number): TSprite;
+    rectangle?(x: number, y: number, width: number, height: number, fillColor?: number, fillAlpha?: number): RenderedTileImage;
+    text?(x: number, y: number, text: string, style?: Record<string, string>): RenderedTileImage;
   };
+  readonly resolveTilesetTexture?: (tileset: TilesetDef) => string;
   runEvent(eventId: string): Promise<void>;
   syncRuntimeState(): void;
 }
 
-export function loadMap(scene: PlaySceneContext, mapId: MapId): void {
+export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean } = {}): void {
   const map = store.getCurrent().maps[mapId];
   if (!map) {
     console.warn(`[player] map not found: ${mapId}`);
@@ -75,8 +87,11 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId): void {
   }
   scene.map = mapWithCommittedEvents(map);
   scene.session.currentMapId = mapId;
+  if (options.applyDefaultLighting !== false) applyMapDefaultLighting(scene.session, scene.map);
+  if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
   applyMapOverrides(scene);
+  initializeFieldSpawnsForScene(scene);
   scene.renderTiles();
   scene.registerPageMoveRoutes();
   scene.syncRuntimeState();
@@ -103,6 +118,7 @@ export function renderTiles<
       for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile);
     }
   }
+  renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderEvents(scene);
 }
 
@@ -114,10 +130,17 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   tile: number
 ): void {
   if (tile < 0) return;
-  const textureKey = tilesetTextureKey(tileset);
+  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
     renderLakeAutotile(scene, textureKey, x, y);
     return;
+  }
+  if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
+    const terrainQuarters = terrainQuarterSources(scene.map, x, y);
+    if (terrainQuarters) {
+      renderTerrainQuarter(scene, textureKey, x, y, terrainQuarters);
+      return;
+    }
   }
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
@@ -145,6 +168,26 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   }
 }
 
+// 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
+function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  textureKey: string,
+  x: number,
+  y: number,
+  sources: readonly TerrainQuarterSource[]
+): void {
+  for (const part of sources) {
+    const image = scene.add.image(
+      x * TILE_SIZE + part.offsetX,
+      y * TILE_SIZE + part.offsetY,
+      textureKey,
+      `tile_${part.tile}_${part.quarter}`
+    );
+    image.setOrigin(0, 0);
+    scene.tileLayer.add(image);
+  }
+}
+
 function quarterFrameName(tile: number, quarter: LakeAutotileQuarter): string {
   return `tile_${tile}_${quarter}`;
 }
@@ -166,11 +209,12 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     if (!sprite) continue;
     const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, view.page?.graphic.pattern);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
+    const frame = eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     const marker = scene.add.sprite(
       characterSpriteX(view.x),
       characterSpriteY(view.y),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
-      spriteTexture?.frame ?? 0
+      frame
     );
     placeCharacterSprite(marker, view.priority);
     scene.eventSprites.set(event.id, marker);
@@ -182,11 +226,17 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
 export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.eventPositions = initialRuntimeEventPositions(scene.map.events);
   scene.eventSprites.clear();
+  for (const sprite of scene.followerSprites.values()) sprite.destroy();
+  scene.followerSprites.clear();
   scene.parallelProcesses.clear();
   scene.autoStartedKeys.clear();
   scene.pageMoveRouteKeys.clear();
   scene.pageMoveRouteEventIds.clear();
+  scene.commandMoveRouteEventIds.clear();
   scene.autonomousNPCs.clear();
+  scene.fieldSpawnState = null;
+  for (const animation of scene.activeMapAnimations) animation.destroy(true);
+  scene.activeMapAnimations.clear();
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
 }
@@ -208,6 +258,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
       pageId: view.pageId,
       priority: view.priority,
       trigger: view.trigger.kind,
+      direction: view.direction,
     };
   }
   scene.runtimeDom.syncRuntimeState({
@@ -229,14 +280,23 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     actorLevels: scene.session.actorLevels,
     actorVitals: scene.session.actorVitals,
     eventLocations: scene.session.eventLocations,
+    followers: scene.session.followers,
+    followerTrail: scene.session.followerTrail,
+    removedEventIds: scene.session.removedEventIds,
+    spawnedEvents: scene.session.spawnedEvents,
+    camera: scene.session.camera,
+    lighting: scene.session.lighting,
     actorEquipment: scene.session.actorEquipment,
     actorRows: scene.session.actorRows,
+    classOverrides: scene.session.classOverrides,
     audio: scene.session.audio,
     pictures: scene.session.pictures,
     m2Runtime: scene.session.m2Runtime,
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),
     battleResult: scene.session.battleResult,
+    gameTime: resolveTimeSystem(store.getCurrent()) ? scene.session.gameTime : undefined,
+    timePhase: resolveTimeSystem(store.getCurrent()) ? timePhaseFor(scene.session.gameTime) : undefined,
   });
   scene.runtimeDom.syncAudioState(scene.session.audio);
   scene.runtimeDom.syncPictureLayer(scene.session.pictures);

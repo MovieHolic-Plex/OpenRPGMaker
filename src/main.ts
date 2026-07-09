@@ -25,6 +25,20 @@ if (typeof window !== "undefined" && window.location) {
       document.body.classList.add(flag.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
   }
+  window.addEventListener("beforeunload", (event) => {
+    const autoSave = store.getAutoSaveState();
+    if (autoSave.kind === "pending" || autoSave.kind === "saving") {
+      void store.flush().catch((error) => {
+        console.error("[store] beforeunload auto-save flush failed:", error);
+      });
+    }
+    // 미저장 변경 경고(도그푸딩 결함 ⑧): 저장이 꺼진/실패한 상태에서 변경을 들고
+    // 창을 닫으면 브라우저 확인 다이얼로그를 띄운다(P1에서 삭제 12건 무경고 증발).
+    if (store.hasUnsavedChanges()) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  });
 }
 
 const app = document.getElementById("app");

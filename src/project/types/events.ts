@@ -1,14 +1,18 @@
 import type {
   ActorId,
   AssetRef,
+  BattleAnimationId,
   Dir,
   EquipmentId,
   FlagName,
   ItemId,
   MapId,
+  MonsterInstanceId,
+  MonsterSpeciesId,
   SkillId,
   TroopId,
 } from "./base";
+import type { Season, TimePhase } from "../gameTime";
 
 export type Trigger =
   | { kind: "action" }
@@ -33,7 +37,11 @@ export type Condition =
   | { kind: "actor"; actorId: ActorId; present: boolean }
   | { kind: "item"; itemId: ItemId; present: boolean }
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
-  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number };
+  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
+  | { kind: "timePhase"; phase: TimePhase }
+  | { kind: "season"; season: Season }
+  | { kind: "npcActivity"; activity: string }
+  | { kind: "friendshipAtLeast"; npcKey?: string; value: number };
 
 export type EventPageCondition = Condition;
 
@@ -83,8 +91,30 @@ export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
 export type ShopType = "normal" | "buyOnly" | "sellOnly";
 export type ShopMessageType = "welcome" | "business" | "direct";
+export type GiftPreferenceRank = "loved" | "liked" | "neutral" | "disliked";
+export interface GiftPrefs {
+  readonly loved?: readonly ItemId[];
+  readonly liked?: readonly ItemId[];
+  readonly disliked?: readonly ItemId[];
+}
+export interface GiftResponses {
+  readonly loved?: string;
+  readonly liked?: string;
+  readonly neutral?: string;
+  readonly disliked?: string;
+  readonly alreadyGifted?: string;
+  readonly noItems?: string;
+}
+export interface ShopStockEntry {
+  readonly itemId: ItemId;
+  readonly seasons?: readonly Season[];
+  readonly priceOverride?: number;
+  readonly priceBySeason?: Partial<Record<Season, number>>;
+}
 export type TransferDirection = "retain" | Dir;
 export type TransferFade = "black" | "white" | "none";
+// 전환 연출 종류. 기본 페이드 외에 모자이크(픽셀화)/블라인드 지원.
+export type TransferTransition = "fade" | "mosaic" | "blinds";
 export type ActorAmountOp = "=" | "+=" | "-=";
 export type ActorEquipmentSlot = "weapon" | "shield" | "armor" | "helmet" | "accessory";
 export type MessageWindowFormat = "normal" | "transparent";
@@ -102,6 +132,33 @@ export type FaceGraphic = {
   readonly position: "left" | "right";
   readonly flipHorizontally: boolean;
 };
+
+export type LightSourceAnchor =
+  | { readonly x: number; readonly y: number }
+  | { readonly eventId: string }
+  | "player";
+
+export type LightSource = {
+  readonly id: string;
+  readonly at: LightSourceAnchor;
+  readonly radius: number;
+  readonly intensity?: number;
+  readonly color?: string;
+  readonly flicker?: boolean;
+};
+
+export type LightingState = {
+  readonly ambient: number;
+  readonly color?: string;
+  readonly sources: readonly LightSource[];
+};
+
+export type WeatherKind = "none" | "rain" | "storm" | "snow" | "fog";
+
+export type ShowAnimationTarget =
+  | "player"
+  | { readonly eventId: string }
+  | { readonly x: number; readonly y: number };
 
 export type Command =
   | { kind: "text"; speaker?: string; body: string }
@@ -129,8 +186,13 @@ export type Command =
       value: VariableOperand;
     }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade }
+  | { kind: "advanceTime"; minutes?: number; hours?: number; days?: number }
+  | { kind: "advanceCropGrowth"; days: number }
+  | { kind: "setTime"; hour: number; minute?: number }
+  | { kind: "sleepUntilMorning" }
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
+  | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
       kind: "changeTile";
       mapId: MapId;
@@ -141,21 +203,47 @@ export type Command =
     }
   | { kind: "callCommonEvent"; commonEventId: string }
   | { kind: "callMapEvent"; eventId: string }
-  | { kind: "battleProcessing"; troopId: TroopId; canEscape: boolean; canLose: boolean }
+  | { kind: "battleProcessing"; troopId: TroopId; canEscape: boolean; canLose: boolean; battleFlow?: "gauge" | "strict" }
   | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId }
   | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "changeLevel"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "promoteActor"; actorId: ActorId; toClassId?: string; successBranch?: Command[]; failureBranch?: Command[] }
   | { kind: "changeEquipment"; actorId: ActorId; slot: ActorEquipmentSlot; equipmentId: EquipmentId }
   | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "recoverAll"; actorId?: ActorId }
+  | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
+  | { kind: "changeFriendship"; npcKey?: string; delta: number }
+  | { kind: "getFriendship"; npcKey?: string; variableId: string }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
-  | { kind: "showPicture"; pictureId: string; resourceId: string; x: number; y: number }
+  | { kind: "giveMonster"; speciesId: MonsterSpeciesId; level: number; nickname?: string }
+  | { kind: "moveMonster"; instanceId: MonsterInstanceId; to: "party" | "box" }
+  | { kind: "evolveMonster"; instanceId: MonsterInstanceId; toSpeciesId?: MonsterSpeciesId; successBranch?: Command[]; failureBranch?: Command[] }
+  | { kind: "addFollower"; actorId?: ActorId; graphic?: EventPageGraphic; name?: string }
+  | { kind: "removeFollower"; name?: string; all?: boolean }
+  | { kind: "setLighting"; ambient: number; color?: string; transitionMs?: number }
+  | { kind: "addLight"; source: LightSource }
+  | { kind: "removeLight"; id?: string; all?: boolean }
+  | { kind: "setWeather"; weather: WeatherKind; intensity?: number; transitionMs?: number }
+  | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: BattleAnimationId; wait?: boolean }
+  | {
+      kind: "showPicture";
+      pictureId: string;
+      resourceId: string;
+      x: number;
+      y: number;
+      scale?: number;
+      opacity?: number;
+      rotation?: number;
+      durationMs?: number;
+      waitForPicture?: boolean;
+    }
   | { kind: "erasePicture"; pictureId: string }
   | { kind: "playAudio"; resourceId: string; loop: boolean }
   | { kind: "stopAudio" }
+  | { kind: "cutsceneControl"; mode: "begin" | "end"; skippable?: boolean }
   | ({ kind: "displayTextSettings" } & MessageWindowSettings)
   | {
       kind: "shop";
@@ -164,10 +252,14 @@ export type Command =
       quantityMode?: "single" | "select";
       shopType?: ShopType;
       messageType?: ShopMessageType;
+      stock?: ShopStockEntry[];
       branchOnTransaction?: boolean;
       transactionBranch?: Command[];
     }
   | { kind: "inn"; price: number }
+  | { kind: "checkpointSave"; label?: string }
+  | { kind: "killPlayer"; message?: string }
+  | { kind: "triggerEnding"; endingId?: string }
   | { kind: "gameOver" }
   | { kind: "ending"; title: string; message: string }
   | { kind: "returnToTitle" }
@@ -176,7 +268,7 @@ export type Command =
   | { kind: "m2Command"; commandId: string; fields: M2CommandFields };
 
 export type EventPriority = "below" | "same" | "above";
-export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living";
+export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
 export type EventAnimationType =
   | "normal"
   | "step"
@@ -205,12 +297,36 @@ export interface NpcLivingMovement {
   repeat: boolean;
 }
 
+export interface NpcScheduleWhen {
+  readonly timePhase?: TimePhase;
+  readonly hourRange?: readonly [number, number];
+  readonly season?: Season;
+  readonly dayRange?: readonly [number, number];
+}
+
+export interface NpcScheduleAt {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface NpcScheduleEntry {
+  // GameTime에는 요일 개념이 없으므로 요일 조건은 도입하지 않고 dayRange로 대체한다.
+  readonly when: NpcScheduleWhen;
+  readonly at: NpcScheduleAt;
+  readonly facing?: Dir;
+  readonly activity?: string;
+}
+
 export interface EventPageMovement {
   type: AutonomousMovement;
   speed: number;
   frequency: number;
   route?: MoveRoute;
   living?: NpcLivingMovement;
+  sightRange?: number;
+  giveUpRange?: number;
+  pathfind?: boolean;
 }
 
 export interface EventPage {
@@ -241,6 +357,9 @@ export interface GameEvent {
   moveRoute?: MoveRoute;
   commands: Command[];
   pages?: EventPage[];
+  schedule?: NpcScheduleEntry[];
+  giftPrefs?: GiftPrefs;
+  giftResponses?: GiftResponses;
   draft?: EventDraftMeta;
 }
 

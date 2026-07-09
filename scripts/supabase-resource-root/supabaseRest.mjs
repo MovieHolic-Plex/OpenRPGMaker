@@ -48,7 +48,6 @@ export async function upsertCurrentJson(config, currentJson) {
       current_sha256: sha256Text(serialized),
       map_count: Object.keys(currentJson.maps ?? {}).length,
       tileset_count: Object.keys(currentJson.tilesets ?? {}).length,
-      terrain_template_count: terrainTemplateCount(currentJson),
     }),
   });
   if (!response.ok) {
@@ -108,8 +107,4 @@ function supabaseHeaders(config, mode) {
 function projectTitle(currentJson) {
   const title = currentJson.meta?.title;
   return typeof title === "string" && title.trim().length > 0 ? title.trim() : "RPG Zzu";
-}
-
-function terrainTemplateCount(currentJson) {
-  return Object.values(currentJson.tilesets ?? {}).reduce((count, tileset) => count + (tileset.terrainTemplates?.length ?? 0), 0);
 }

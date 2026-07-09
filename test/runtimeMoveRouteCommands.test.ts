@@ -154,7 +154,7 @@ describe("runtime move route commands", () => {
     executeNext();
     expect(mover.through).toBe(true);
     executeNext();
-    expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1 });
+    expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1, direction: "right" });
     executeNext();
     expect(mover.through).toBe(false);
     scene.map.lowerTiles[blockedTileIndex] = 0;
@@ -166,7 +166,7 @@ describe("runtime move route commands", () => {
     executeNext();
     expect(mover.through).toBe(true);
     executeNext();
-    expect(scene.eventPositions.npc).toEqual({ x: 3, y: 1 });
+    expect(scene.eventPositions.npc).toEqual({ x: 3, y: 1, direction: "right" });
     executeNext();
     expect(mover.through).toBe(false);
     executeNext();
@@ -175,7 +175,7 @@ describe("runtime move route commands", () => {
     executeNext();
     expect(mover.through).toBe(true);
     executeNext();
-    expect(scene.eventPositions.npc).toEqual({ x: 3, y: 0 });
+    expect(scene.eventPositions.npc).toEqual({ x: 3, y: 0, direction: "up" });
     executeNext();
     expect(mover.through).toBe(false);
     executeNext();

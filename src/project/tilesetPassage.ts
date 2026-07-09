@@ -1,3 +1,4 @@
+import { isUpperOnlyOverlayTile } from "./tilesetHarness";
 import type { PassFlag, TilesetDef } from "./types";
 
 export type PassageMark = "o" | "x" | "star";
@@ -25,13 +26,16 @@ export function passageMarkForTile(tileset: TilesetDef, tile: number): PassageMa
 
 export function setPassageMark(tileset: TilesetDef, tile: number, mark: PassageMark): void {
   if (tile < 0 || tile >= tileset.count) return;
+  // 투명 배경 칩(상위 전용)은 O/X가 통행만 바꾸고 레이어(priority)는 상위를 유지한다 —
+  // 하위로 내리면 투명 부분이 검게 보이므로, 레이어 변경은 레이어 컨트롤(userLocked)로만 한다.
+  const keepUpper = isUpperOnlyOverlayTile(tileset, tile);
   switch (mark) {
     case "o":
-      tileset.priority[tile] = "lower";
+      if (!keepUpper) tileset.priority[tile] = "lower";
       tileset.passability[tile] = passableFlag();
       return;
     case "x":
-      tileset.priority[tile] = "lower";
+      if (!keepUpper) tileset.priority[tile] = "lower";
       tileset.passability[tile] = blockedFlag();
       return;
     case "star":

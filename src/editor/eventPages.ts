@@ -1,5 +1,5 @@
 import { editorState } from "@/editor/editorState";
-import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
@@ -291,6 +291,27 @@ export function replaceEventPageCommands(
       ?.pages?.find((item) => item.id === pageId);
     if (!page) return;
     page.commands = commands.map((command) => structuredClone(command));
+  });
+}
+
+// [P2] 크로스 컨테이너 이동: sourcePath 명령을 targetContainerPath 리스트의 toIndex 로.
+// 자기 분기(자손) 안으로의 이동은 명령 유실을 막기 위해 무시한다.
+export function moveEventPageCommandAcross(
+  mapId: MapId,
+  eventId: string,
+  pageId: string,
+  sourcePath: readonly number[],
+  targetContainerPath: readonly number[],
+  toIndex: number
+): void {
+  if (isContainerInsideCommand(sourcePath, targetContainerPath)) return;
+  store.update((project) => {
+    const events = project.maps[mapId]?.events;
+    const targetList = resolvePageCommandList(events, eventId, pageId, targetContainerPath);
+    const sourceList = resolvePageCommandList(events, eventId, pageId, sourcePath.slice(0, -1));
+    const fromIndex = sourcePath[sourcePath.length - 1];
+    if (!targetList || !sourceList || fromIndex === undefined) return;
+    moveCommandBetweenLists(sourceList, fromIndex, targetList, toIndex);
   });
 }
 

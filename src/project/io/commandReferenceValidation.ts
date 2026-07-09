@@ -11,15 +11,19 @@ import { validateOptionalResource } from "./resourceReferenceValidation";
 
 export type ReferenceContext = {
   actorIds: ReadonlySet<string>;
+  classIds: ReadonlySet<string>;
   enemyIds: ReadonlySet<string>;
   itemIds: ReadonlySet<string>;
   equipmentIds: ReadonlySet<string>;
   skillIds: ReadonlySet<string>;
+  animationIds: ReadonlySet<string>;
   switchIds: ReadonlySet<string>;
   variableIds: ReadonlySet<string>;
   commonEventIds: ReadonlySet<string>;
+  endingIds: ReadonlySet<string>;
   mapIds: ReadonlySet<string>;
   troopIds: ReadonlySet<string>;
+  speciesIds: ReadonlySet<string>;
   resourceIds: ReadonlySet<string>;
 };
 
@@ -61,14 +65,36 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "label":
     case "gotoLabel":
     case "timer":
+    case "advanceTime":
+    case "advanceCropGrowth":
+    case "changeFriendship":
+    case "setTime":
+    case "sleepUntilMorning":
     case "moveEvent":
+    case "setEventGraphicPattern":
     case "setFlag":
     case "erasePicture":
     case "stopAudio":
+    case "cutsceneControl":
     case "inn":
+    case "checkpointSave":
+    case "killPlayer":
+    case "removeFollower":
+    case "setLighting":
+    case "addLight":
+    case "removeLight":
+    case "setWeather":
     case "gameOver":
+    case "ending":
     case "returnToTitle":
     case "displayTextSettings":
+      return;
+    case "triggerEnding":
+      if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);
+      return;
+    case "addFollower":
+      if ((command.actorId ?? "").trim().length > 0) assert(context.actorIds.has(command.actorId ?? ""), `addFollower: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
+      if (command.graphic?.sprite?.id) validateOptionalCommandResource("addFollower: graphic.sprite", command.graphic.sprite.id, context.resourceIds);
       return;
     case "changeFace":
       validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);
@@ -90,6 +116,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       if (typeof command.value !== "number") {
         assert(context.variableIds.has(command.value.id), `setVariable: operand variableId가 존재하지 않습니다: ${command.value.id}`);
       }
+      return;
+    case "getFriendship":
+      assert(context.variableIds.has(command.variableId), `getFriendship: variableId가 존재하지 않습니다: ${command.variableId}`);
       return;
     case "inputNumber":
       assert(context.variableIds.has(command.variableId), `inputNumber: variableId가 존재하지 않습니다: ${command.variableId}`);
@@ -116,6 +145,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "changeLevel":
       assert(context.actorIds.has(command.actorId), `changeLevel: actorId가 존재하지 않습니다: ${command.actorId}`);
       return;
+    case "promoteActor":
+      assert(context.actorIds.has(command.actorId), `promoteActor: actorId가 존재하지 않습니다: ${command.actorId}`);
+      if (command.toClassId && command.toClassId.trim().length > 0) {
+        assert(context.classIds.has(command.toClassId), `promoteActor: toClassId가 존재하지 않습니다: ${command.toClassId}`);
+      }
+      validateCommands(command.successBranch ?? [], context);
+      validateCommands(command.failureBranch ?? [], context);
+      return;
     case "changeEquipment":
       assert(context.actorIds.has(command.actorId), `changeEquipment: actorId가 존재하지 않습니다: ${command.actorId}`);
       if (command.equipmentId.trim().length > 0) {
@@ -133,14 +170,35 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
         assert(context.actorIds.has(command.actorId ?? ""), `recoverAll: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
       }
       return;
+    case "giveMonster":
+      assert(context.speciesIds.has(command.speciesId), `giveMonster: speciesId가 존재하지 않습니다: ${command.speciesId}`);
+      return;
+    case "moveMonster":
+      return;
+    case "evolveMonster":
+      if (command.toSpeciesId && command.toSpeciesId.trim().length > 0) {
+        assert(context.speciesIds.has(command.toSpeciesId), `evolveMonster: toSpeciesId가 존재하지 않습니다: ${command.toSpeciesId}`);
+      }
+      validateCommands(command.successBranch ?? [], context);
+      validateCommands(command.failureBranch ?? [], context);
+      return;
+    case "enterHeroName":
+      if (command.actorId.trim().length > 0) {
+        assert(context.actorIds.has(command.actorId), `enterHeroName: actorId가 존재하지 않습니다: ${command.actorId}`);
+      }
+      return;
     case "showPicture":
       assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     case "playAudio":
       assert(context.resourceIds.has(command.resourceId), `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
+    case "showAnimation":
+      assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
+      return;
     case "shop":
       requireExistingIds("shop: item", command.itemIds, context.itemIds);
+      if (command.stock) requireExistingIds("shop stock: item", command.stock.map((entry) => entry.itemId), context.itemIds);
       return;
   }
 }
@@ -157,7 +215,13 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "item":
       assert(context.itemIds.has(condition.itemId), `page condition: itemId가 존재하지 않습니다: ${condition.itemId}`);
       return;
+    case "selfSwitch":
+    case "gold":
     case "timer":
+    case "timePhase":
+    case "season":
+    case "npcActivity":
+    case "friendshipAtLeast":
       return;
   }
 }
@@ -168,9 +232,24 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "variable":
       validateCondition(condition, context.switchIds, context.variableIds);
       return;
+    case "actor":
+      assert(context.actorIds.has(condition.actorId), `battle condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
+      return;
+    case "item":
+    case "selfSwitch":
+    case "gold":
+    case "timer":
+    case "timePhase":
+    case "season":
+    case "npcActivity":
+    case "friendshipAtLeast":
+      return;
     case "enemyHp":
     case "enemyTurn":
       assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      return;
+    case "enemyHpBelow":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
       return;
     case "actorHp":
     case "actorTurn":
@@ -178,6 +257,8 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
       assert(context.actorIds.has(condition.actorId), `battle condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
       return;
     case "turn":
+    case "onRound":
+    case "everyRound":
       return;
   }
 }
@@ -194,7 +275,7 @@ export function validateCondition(
   if (condition.kind === "variable") {
     assert(variableIds.has(condition.variableId), `condition: variableId가 존재하지 않습니다: ${condition.variableId}`);
   }
-  // selfSwitch/actor/item/gold/timer 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
+  // selfSwitch/actor/item/gold/timer/timePhase/season/npcActivity 조건은 전역 스위치/변수 id를 참조하지 않으므로 검증 생략.
 }
 
 function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {

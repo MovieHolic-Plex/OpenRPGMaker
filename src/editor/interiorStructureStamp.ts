@@ -21,7 +21,7 @@ type StampPattern = {
 
 export const INTERIOR_HOUSE_TILESET_ID = "easyrpg_chipset_interior";
 
-const INTERIOR_TILE = {
+export const INTERIOR_HOUSE_TILE = {
   BED_BOTTOM_LEFT: 354,
   BED_BOTTOM_MID: 355,
   BED_BOTTOM_RIGHT: 356,
@@ -60,6 +60,8 @@ const INTERIOR_TILE = {
   WALL_TOP_MID: 103,
   WALL_TOP_RIGHT: 104,
 } as const;
+
+const INTERIOR_TILE = INTERIOR_HOUSE_TILE;
 
 export function stampInteriorHouse10x10(map: GameMap, origin: TilePoint): void {
   fillRect(map, { height: 10, layer: "lower", tile: INTERIOR_TILE.FLOOR, width: 10, ...origin });

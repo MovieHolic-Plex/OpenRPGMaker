@@ -4,3 +4,8 @@
 @import "./event-editor.part-4.css";
 @import "./event-editor.part-3.css";
 @import "./event-editor.modern.css";
+@import "./event-editor.command-preview.css";
+@import "./event-editor.modernize.css";
+@import "./event-editor.p1-graphic.css";
+@import "./event-editor.p1-route.css";
+@import "./event-editor.p1-pagetabs.css";

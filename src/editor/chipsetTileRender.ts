@@ -1,6 +1,6 @@
 import type Phaser from "phaser";
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
-import { isDefaultTilesetTexture, tilesetTextureKey } from "@/editor/tilesetImage";
+import { ensureTilesetTexture, isDefaultTilesetTexture } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import {
   isLakeAutotileTile,
@@ -9,6 +9,11 @@ import {
   type LakeAutotileQuarterSource,
 } from "@/project/defaults/lakeAutotile";
 import { roadAutotileTileForCell } from "@/project/defaults/roadAutotile";
+import {
+  isTerrainQuarterTile,
+  terrainQuarterSources,
+  type TerrainQuarterSource,
+} from "@/project/defaults/terrainQuarterAutotile";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
 
@@ -48,6 +53,10 @@ export function createChipsetTileObject(
   if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
   }
+  if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
+    const terrainQuarters = terrainQuarterSources(map, x, y);
+    if (terrainQuarters) return createTerrainQuarterObject(scene, tileset, x, y, terrainQuarters);
+  }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
   return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, tile);
@@ -84,7 +93,7 @@ function createLakeAutotileObject(
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
   container.setSize(TILE_SIZE, TILE_SIZE);
-  const textureKey = tilesetTextureKey(tileset);
+  const textureKey = ensureTilesetTexture(scene, tileset);
   for (const part of lakeAutotileQuarterSources(map, x, y)) {
     container.add(createLakeQuarterObject(scene, textureKey, part));
   }
@@ -105,8 +114,27 @@ function createLakeQuarterObject(
   return image;
 }
 
+// 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
+function createTerrainQuarterObject(
+  scene: Phaser.Scene,
+  tileset: TilesetDef,
+  x: number,
+  y: number,
+  sources: readonly TerrainQuarterSource[]
+): Phaser.GameObjects.Container {
+  const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
+  container.setSize(TILE_SIZE, TILE_SIZE);
+  const textureKey = ensureTilesetTexture(scene, tileset);
+  for (const part of sources) {
+    const image = scene.add.image(part.offsetX, part.offsetY, textureKey, `tile_${part.tile}_${part.quarter}`);
+    image.setOrigin(0, 0);
+    container.add(image);
+  }
+  return container;
+}
+
 function createRawTileObject(scene: Phaser.Scene, tileset: TilesetDef, pixelX: number, pixelY: number, tile: number): ChipsetTilePiece {
-  const textureKey = tilesetTextureKey(tileset);
+  const textureKey = ensureTilesetTexture(scene, tileset);
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey

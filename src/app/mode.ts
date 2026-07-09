@@ -29,6 +29,7 @@ let game: Phaser.Game | null = null;
 let elements: AppElements | null = null;
 let modeMounted = false;
 let modeRun = 0;
+let topbarRefreshQueued = false;
 
 // 현재 모드 조회.
 export function getMode(): Mode {
@@ -49,12 +50,30 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   if (typeof window !== "undefined") {
     window.addEventListener(MAP_EDIT_HISTORY_EVENT, onMapEditHistoryChange);
   }
+  // 탑바(레이어/도구 버튼 등)는 editorState를 표시하지만 명시적 핸들러에서만 다시 그려져
+  // 팔레트발 자동 레이어 전환 시 상태바와 어긋났다(지우개 버그의 절반). 상태 변경마다
+  // 마이크로태스크로 합쳐 갱신한다.
+  // 테스트에서 editorState가 부분 목킹될 수 있으므로 함수 존재를 가드.
+  if (typeof editorState.subscribe === "function") {
+    editorState.subscribe(() => {
+      if (topbarRefreshQueued) return;
+      topbarRefreshQueued = true;
+      queueMicrotask(() => {
+        topbarRefreshQueued = false;
+        void renderTopbar();
+      });
+    });
+  }
 
   try {
     await store.load();
   } catch (error) {
-    renderDbRequiredScreen(error);
-    if (!(error instanceof DbConnectionRequiredError)) {
+    // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
+    // 프로젝트 데이터가 무결성 검증에 실패한 경우(벽돌)를 구분해 다른 화면을 보여준다.
+    if (error instanceof DbConnectionRequiredError) {
+      renderDbRequiredScreen(error);
+    } else {
+      renderLoadFailureScreen(error);
       console.error("[app] Project load failed before editor boot:", error);
     }
     return;
@@ -70,6 +89,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   await renderTopbar();
   await enterMode("edit");
+  const { openLoginModalIfNeeded } = await import("@/editor/teamWorkflowUi");
+  openLoginModalIfNeeded(() => void renderTopbar());
   markInitialEditRender(startedAt);
 }
 
@@ -107,6 +128,113 @@ function openRequiredDbSettings(): void {
   });
 }
 
+// 프로젝트 로드 실패(데이터 무결성 오류) 화면.
+// 기존 저장본을 덮어쓰지 않는 메모리 폴백을 1차 CTA로 제공하고, 오류 원문은 접어 둔다.
+function renderLoadFailureScreen(error: unknown): void {
+  if (!elements) return;
+  elements.topbar.textContent = "RPG ZZU - 프로젝트 로드 실패";
+  while (elements.main.firstChild) {
+    elements.main.removeChild(elements.main.firstChild);
+  }
+  const panel = document.createElement("section");
+  panel.className = "db-required-panel project-load-error-panel";
+  panel.dataset.testid = "project-load-error-panel";
+
+  const title = document.createElement("h1");
+  title.textContent = "저장된 프로젝트를 바로 열 수 없습니다";
+  const body = document.createElement("p");
+  body.textContent = "기존 저장본은 그대로 두고 예제나 새 프로젝트로 임시 시작할 수 있습니다.";
+  const detail = document.createElement("details");
+  detail.className = "project-load-error-details";
+  detail.dataset.testid = "project-load-error-details";
+  const detailSummary = document.createElement("summary");
+  detailSummary.textContent = "자세히 보기";
+  const detailMessage = document.createElement("p");
+  detailMessage.className = "project-load-error-message";
+  detailMessage.dataset.testid = "project-load-error-message";
+  detailMessage.textContent = error instanceof Error ? error.message : String(error);
+  detail.append(detailSummary, detailMessage);
+
+  const actions = document.createElement("div");
+  actions.className = "project-load-error-actions";
+
+  const sample = document.createElement("button");
+  sample.type = "button";
+  sample.className = "btn primary";
+  sample.dataset.testid = "load-error-start-sample";
+  sample.textContent = "예제 프로젝트로 시작";
+  sample.title = "깨진 프로젝트를 덮어쓰지 않고 예제를 메모리로 엽니다.";
+  sample.addEventListener("click", () => {
+    void import("@/project/defaults").then(async ({ createSampleAdventureProject }) => {
+      await store.loadFallbackProject(createSampleAdventureProject());
+      await finishEditorBoot(performance.now());
+    });
+  });
+  actions.append(sample);
+
+  const blank = document.createElement("button");
+  blank.type = "button";
+  blank.className = "btn";
+  blank.dataset.testid = "load-error-start-blank";
+  blank.textContent = "새 프로젝트로 시작";
+  blank.title = "깨진 프로젝트를 덮어쓰지 않고 빈 프로젝트를 메모리로 엽니다.";
+  blank.addEventListener("click", () => {
+    void import("@/project/defaults").then(async ({ createBlankProject }) => {
+      await store.loadFallbackProject(createBlankProject());
+      await finishEditorBoot(performance.now());
+    });
+  });
+  actions.append(blank);
+
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "btn";
+  retry.dataset.testid = "load-error-retry";
+  retry.textContent = "원격에서 다시 로드";
+  retry.addEventListener("click", () => {
+    retry.disabled = true;
+    void store.load()
+      .then(() => finishEditorBoot(performance.now()))
+      .catch((cause: unknown) => {
+        retry.disabled = false;
+        if (cause instanceof DbConnectionRequiredError) renderDbRequiredScreen(cause);
+        else renderLoadFailureScreen(cause);
+      });
+  });
+  actions.append(retry);
+
+  void import("@/project/devProjectPersistence").then(({ hasDevProjectOverride, discardDevProjectOverride }) => {
+    if (!hasDevProjectOverride()) return;
+    const discard = document.createElement("button");
+    discard.type = "button";
+    discard.className = "btn";
+    discard.dataset.testid = "load-error-discard-local";
+    discard.textContent = "로컬 사본 폐기 후 새로 시작";
+    discard.addEventListener("click", () => {
+      discardDevProjectOverride();
+      window.location.reload();
+    });
+    actions.append(discard);
+  });
+
+  const openDb = document.createElement("button");
+  openDb.type = "button";
+  openDb.className = "btn";
+  openDb.dataset.testid = "load-error-open-db";
+  openDb.textContent = "DB 연결 설정 열기";
+  openDb.addEventListener("click", () => {
+    void import("@/editor/panels/dbConnectionSettings").then(({ openDbConnectionSettings }) => {
+      openDbConnectionSettings(() => {
+        if (store.isLoaded()) void finishEditorBoot(performance.now());
+      }, { autoLoadProjects: true });
+    });
+  });
+  actions.append(openDb);
+
+  panel.append(title, body, actions, detail);
+  elements.main.append(panel);
+}
+
 // 모드 진입. 이전 모드 정리 후 새 모드 부팅.
 export async function enterMode(mode: Mode): Promise<void> {
   const run = ++modeRun;
@@ -120,8 +248,11 @@ export async function enterMode(mode: Mode): Promise<void> {
     teardownEditor();
   } else if (modeMounted) {
     const { teardownPlayer } = await import("@/player/player");
+    const { stopAllAudio } = await import("@/player/audio");
     if (run !== modeRun) return;
     teardownPlayer();
+    // 에디터 복귀 시 재생 중인 BGM/SE 를 확실히 정지(씬 teardown 누락 대비).
+    stopAllAudio();
   }
   modeMounted = false;
 

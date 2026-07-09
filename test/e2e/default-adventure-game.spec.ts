@@ -26,10 +26,9 @@ test("fresh editor project plays as the built-in adventure game", async ({ page 
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_lantern_village");
 
   await page.getByTestId("event-ev_lantern_elder").click();
-  await expect(page.getByTestId("dialogue-box")).toContainText("별등 마을의 등불");
-  await advancePastText(page, "별등 마을의 등불");
-  await expect(page.getByTestId("dialogue-box")).toContainText("숲과 광산의 봉인");
-  await advancePastText(page, "숲과 광산의 봉인");
+  await advancePastText(page, "별등 마을의 등불이 셋으로 갈라졌네.");
+  await advancePastText(page, "수문장, 치유사, 정찰병이 각자 길의 단서를 알고 있으니 말을 들어보게.");
+  await advancePastText(page, "숲과 광산의 봉인을 풀고 별조각 두 개를 모아주게.");
   await expect(page.getByTestId("runtime-choices")).toBeVisible();
   await expect(page.getByTestId("runtime-choice-0")).toContainText("받는다");
   await page.screenshot({ path: testInfo.outputPath("03-elder-choice.png"), fullPage: true });
@@ -41,8 +40,7 @@ test("fresh editor project plays as the built-in adventure game", async ({ page 
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_moonwell_forest");
   await page.screenshot({ path: testInfo.outputPath("04-forest-map.png"), fullPage: true });
   await page.getByTestId("event-ev_map_moonwell_forest_seal").click();
-  await expect(page.getByTestId("dialogue-box")).toContainText("달샘 숲의 봉인");
-  await advancePastText(page, "달샘 숲의 봉인");
+  await advancePastText(page, "달샘 숲의 봉인이 흔들립니다.");
   await expect(page.getByTestId("battle-scene")).toBeVisible();
   await expect(page.getByTestId("actor-command-attack")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("05-forest-seal-battle.png"), fullPage: true });
@@ -80,12 +78,26 @@ async function advanceDialogue(page: Page): Promise<void> {
 }
 
 async function advancePastText(page: Page, currentText: string): Promise<void> {
-  for (let attempt = 0; attempt < 4; attempt += 1) {
-    if ((await page.getByTestId("runtime-choices").count()) > 0) return;
-    const dialogue = page.getByTestId("dialogue-box");
-    if ((await dialogue.count()) === 0) return;
-    if (!((await dialogue.textContent()) ?? "").includes(currentText)) return;
-    await advanceDialogue(page);
-    await page.waitForTimeout(160);
+  await expect(page.getByTestId("dialogue-box")).toContainText(currentText);
+  await page.waitForTimeout(80);
+  await advanceDialogue(page);
+  if (await waitForDialogueTextChange(page, currentText, 750)) return;
+  await advanceDialogue(page);
+  await waitForDialogueTextChange(page, currentText, 5_000);
+}
+
+async function dialogueIncludes(page: Page, text: string): Promise<boolean> {
+  if ((await page.getByTestId("runtime-choices").count()) > 0) return false;
+  const dialogue = page.getByTestId("dialogue-box");
+  if ((await dialogue.count()) === 0) return false;
+  return ((await dialogue.textContent()) ?? "").includes(text);
+}
+
+async function waitForDialogueTextChange(page: Page, text: string, timeout: number): Promise<boolean> {
+  try {
+    await expect.poll(async () => dialogueIncludes(page, text), { timeout }).toBe(false);
+    return true;
+  } catch {
+    return false;
   }
 }

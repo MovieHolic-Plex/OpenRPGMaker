@@ -58,7 +58,17 @@ import {
   returnToTitle as returnSceneToTitle,
 } from "@/player/playSceneOverlays";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
-import { centerRuntimeCamera } from "@/player/playSceneCamera";
+import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
+import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
+import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
+import type { LightingAmbientTransition } from "@/player/lighting";
+import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
+import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
+import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
+import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
+import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
+import { updateNpcSchedules } from "@/player/npcSchedules";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -73,11 +83,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   running = false;
   eventPositions: RuntimeEventPositions = {};
   eventSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  followerSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   declare runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess> = new Map();
   autoStartedKeys: Set<string> = new Set();
   pageMoveRouteKeys: Set<string> = new Set();
   pageMoveRouteEventIds: Set<string> = new Set();
+  commandMoveRouteEventIds: Set<string> = new Set();
   missingResources: Set<string> = new Set();
   tileX = 0;
   tileY = 0;
@@ -94,17 +106,40 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   playerRoute: PlayerRouteState | null = null;
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
+  fieldSpawnState: FieldSpawnRuntimeState | null = null;
+  lightingOverlayImage?: Phaser.GameObjects.Image;
+  lightingMaskTexture?: Phaser.Textures.CanvasTexture;
+  lightingMaskSignature = "";
+  lightingClockMs = 0;
+  lightingFixedAccumulatorMs = 0;
+  lightingTransition: LightingAmbientTransition | null = null;
+  lightingTransitionWaiters: Array<() => void> = [];
+  weatherClockMs = 0;
+  weatherFixedAccumulatorMs = 0;
+  weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
+  weatherTargetSignature = "none:0";
+  weatherTransition: WeatherTransition | null = null;
+  timeFixedAccumulatorMs = 0;
+  timeMinuteAccumulator = 0;
+  timeSleepInProgress = false;
+  timeTintGraphics?: Phaser.GameObjects.Graphics;
+  timeTintPhase?: import("@/project/gameTime").TimePhase;
+  timeTintDisplayed?: import("@/player/playSceneTypes").TimeTintVisual;
+  timeTintTransition: import("@/player/playSceneTypes").TimeTintTransition | null = null;
+  mapAnimationLayer?: Phaser.GameObjects.Container;
+  activeMapAnimations: Set<Phaser.GameObjects.Container> = new Set();
 
   constructor() {
     super({ key: "PlayScene" });
   }
 
   preload(): void {
-    loadBundledAssets(this);
+    loadBundledAssets(this, store.getCurrent());
   }
 
   create(): void {
-    registerBundledFrames(this);
+    const project = store.getCurrent();
+    registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
     this.tileLayer = this.add.container(0, 0);
     this.input_ = new Input(this);
@@ -112,10 +147,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       const host: unknown = this.game.registry.get("dialogueHost");
       return host instanceof HTMLElement ? host : undefined;
     });
-    const project = store.getCurrent();
     this.session = this.initialSession(project);
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId);
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
@@ -125,8 +159,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.playerSprite.idleFrameFor("down")
     );
     placeCharacterSprite(this.player, "same");
+    installWeatherLayer(this);
+    installTimeTintLayer(this);
+    installLightingLayer(this);
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
+    syncFollowerSprites(this);
     this.centerCamera();
+    updateNpcSchedules(this, false);
     // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
     // (runEvent가 dialogue 없으면 즉시 return하므로). dialogue는 player.ts가
     // 게임 생성 후 registry에 설정한다 — 비동기이므로 준비될 때까지 기다린다.
@@ -140,7 +179,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // Phaser keyboard 매니저에 도달하지 않아 실제 키보드 입력이 잡히지 않는다.
     // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
     // 실제 브라우저에서는 keydown 리스너가 정상 동작하므로 쓰이지 않는다.
-    installPlaySceneTestHooks(this, this.input_, this.session, () => this.syncRuntimeState());
+    installPlaySceneTestHooks(this, this.input_, () => this.session, () => this.syncRuntimeState());
     // 세이브 로드로 진입한 세션이면 저장된 BGM/BGS 를 재개(원샷은 복원 안 함).
     resumeAudioState(this.session.audio, project);
     // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
@@ -150,14 +189,19 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
+    updateGameTime(this, deltaMs);
+    updateNpcSchedules(this, isGameTimePausedForRuntime(this));
+    updateWeather(this, deltaMs);
+    updateTimeTint(this, deltaMs);
+    updateLighting(this, deltaMs);
   }
 
   getMapId(): MapId {
     return this.session.currentMapId;
   }
 
-  loadMap(mapId: MapId): void {
-    loadSceneMap(this, mapId);
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void {
+    loadSceneMap(this, mapId, options);
     resetEncounterCounter();
   }
 
@@ -178,11 +222,27 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   refreshRuntimeSurfaces(): void {
+    const project = store.getCurrent();
+    const nextPlayerSprite = resolvePlayerSpriteResource(project, this.session);
+    if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId) {
+      this.playerSprite = nextPlayerSprite;
+      this.player.setTexture(this.playerSprite.texture);
+      this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
+    }
     refreshSceneRuntimeSurfaces(this);
+    syncFollowerSprites(this);
+    applyStoredCameraState(this);
+    syncWeatherLayer(this);
+    installTimeTintLayer(this);
+    syncLightingLayer(this);
   }
 
   centerCamera(): void {
     centerRuntimeCamera(this.cameras.main, this.map, this.player);
+    applyStoredCameraState(this);
+    syncWeatherLayer(this);
+    installTimeTintLayer(this);
+    syncLightingLayer(this);
   }
 
   setInputEnabled(enabled: boolean): void {
@@ -208,6 +268,21 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
       return playBattle(this, step, startedAt);
     });
+  }
+
+  async sleepUntilMorning(): Promise<void> {
+    await sleepUntilMorningScene(this, async (commands) => {
+      const { runCommands } = await import("@/player/playSceneInterpreter");
+      await runCommands(this, commands, undefined, { allowNested: true });
+    });
+  }
+
+  applyAdvanceTimeStep(step: Extract<StepResult, { kind: "advanceTime" }>): Promise<void> {
+    return applyAdvanceTimeStep(this, step);
+  }
+
+  applySetTimeStep(step: Extract<StepResult, { kind: "setTime" }>): void {
+    applySetTimeStep(this, step);
   }
 
   showRuntimeOverlay(testId: string, text: string): void {
@@ -238,6 +313,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateSceneTimers(this, deltaMs);
   }
 
+  updateFieldSpawns(deltaMs: number): void {
+    updateFieldSpawnsForScene(this, deltaMs);
+  }
+
   transferTo(request: TransferRequest): Promise<void> {
     return transferSceneTo(this, request);
   }
@@ -250,6 +329,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return shakeCamera(this, step);
   }
 
+  panScreen(step: Extract<StepResult, { kind: "scrollMap" }>): Promise<void> {
+    return panRuntimeCamera(this, step);
+  }
+
   getSession(): PlaySession {
     return this.session;
   }
@@ -258,13 +341,15 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.session = structuredClone(session);
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId);
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);
     this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     this.player.setPosition(characterSpriteX(this.tileX), characterSpriteY(this.tileY));
     placeCharacterSprite(this.player, "same");
+    for (const animation of this.activeMapAnimations) animation.destroy(true);
+    this.activeMapAnimations.clear();
     this.runtimeTimers.clear();
     this.moving = false;
     this.centerCamera();
@@ -272,10 +357,23 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     stopAllAudio();
     resumeAudioState(this.session.audio, project);
     this.refreshRuntimeSurfaces();
+    syncFollowerSprites(this);
   }
 
-  showGameOverScreen(): void {
-    showSceneGameOverScreen(this);
+  hasCheckpoint(): boolean {
+    return hasSessionCheckpoint(this.session);
+  }
+
+  restoreCheckpoint(): void {
+    const snapshot = getSessionCheckpoint(this.session);
+    const restored = restoreSessionCheckpoint(store.getCurrent(), this.session);
+    if (!restored || !snapshot) return;
+    this.applySession(restored);
+    setSessionCheckpoint(this.session, snapshot);
+  }
+
+  showGameOverScreen(message?: string): void {
+    showSceneGameOverScreen(this, message);
   }
 
   showEndingScreen(title: string, message: string): void {

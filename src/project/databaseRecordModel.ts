@@ -9,11 +9,19 @@ import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from 
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, ClassBattleCommand, ClassRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings } from "@/project/types";
+import {
+  DEFAULT_DAY_END_HOUR,
+  DEFAULT_DAY_START_HOUR,
+  DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
+  type TimeSystemConfig,
+} from "@/project/gameTime";
+import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains" | "monsterSpecies" | "crops">>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -30,18 +38,67 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     terrains: normalizeTerrainRecords(database.terrains),
     battleCommands: normalizeGlobalBattleCommands(database.battleCommands),
     battlerAnimations: (database.battlerAnimations ?? []).map(normalizeBattlerAnimationRecord),
+    monsterSpecies: (database.monsterSpecies ?? []).map(normalizeMonsterSpeciesRecord),
+    crops: (database.crops ?? []).map((crop) => normalizeCropRecord(crop as Partial<CropRecord> & Pick<CropRecord, "id" | "name">)),
   };
 }
 
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
+  const typeChart = normalizeTypeChart(system.typeChart);
+  const timeSystem = normalizeTimeSystemConfig(system.timeSystem);
   return {
     startActorIds: cleanIds(system.startActorIds),
     titleResourceId,
     systemResourceId: cleanOptionalId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
+    battleFlow: normalizeBattleFlow(system.battleFlow),
+    activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
+    ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
+    ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
+    ...(typeChart ? { typeChart } : {}),
+    ...(timeSystem ? { timeSystem } : {}),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+  };
+}
+
+export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | undefined): TimeSystemConfig | undefined {
+  if (!config) return undefined;
+  const enabled = config.enabled === true;
+  const dayStartHour = clampInteger(config.dayStartHour ?? DEFAULT_DAY_START_HOUR, 0, 23);
+  const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
+  const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
+  const onDayEnd = cleanOptionalId(config.onDayEnd);
+  return {
+    enabled,
+    minutesPerRealSecond: positiveNumber(config.minutesPerRealSecond, DEFAULT_TIME_MINUTES_PER_REAL_SECOND),
+    dayStartHour,
+    dayEndHour,
+    forceSleep: config.forceSleep === true,
+    ...(onDayEnd ? { onDayEnd } : {}),
+  };
+}
+
+export function normalizeTypeChart(chart: Partial<TypeChartRecord> | undefined): TypeChartRecord | undefined {
+  const types = uniqueCleanIds(chart?.types).slice(0, 32);
+  if (types.length === 0) return undefined;
+  const multipliers: Record<string, Record<string, number>> = {};
+  for (const attacker of types) {
+    const source = chart?.multipliers?.[attacker] ?? {};
+    const row: Record<string, number> = {};
+    for (const defender of types) row[defender] = clampNumber(source[defender] ?? 1, 0, 4);
+    multipliers[attacker] = row;
+  }
+  return { types, multipliers };
+}
+
+function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
+  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined)) return undefined;
+  return {
+    participationOnly: policy.participationOnly === true,
+    levelGapPenalty: policy.levelGapPenalty === true,
   };
 }
 
@@ -77,6 +134,7 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     skillIds: learnedSkills.map((skill) => skill.skillId),
     battleCommands: normalizeBattleCommands(record.battleCommands),
     learnedSkills,
+    promotions: normalizePromotions(record.promotions),
     equipmentPermissions: {
       actorIds: cleanIds(record.equipmentPermissions?.actorIds),
       classIds: cleanIds(record.equipmentPermissions?.classIds),
@@ -113,6 +171,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     hitRate: clampInteger(record.hitRate ?? 100, 0, 100),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
+    stateEffects: normalizeStateEffects(record.stateEffects),
   };
 }
 
@@ -147,6 +206,8 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     occasionBattle: record.occasionBattle ?? (record.occasion === "battle" || record.occasion === "always"),
     seedParameterBonuses: normalizeSeedBonuses(record.seedParameterBonuses),
     equipmentProfile: normalizeItemEquipmentProfile(record.equipmentProfile),
+    farmTool: isFarmTool(record.farmTool) ? record.farmTool : undefined,
+    captureProfile: normalizeCaptureProfile(record.captureProfile),
   };
 }
 
@@ -166,20 +227,67 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     cursed: record.cursed ?? false,
     twoHanded: record.twoHanded ?? false,
     usableAsItemSkillId: cleanOptionalId(record.usableAsItemSkillId),
+    attackElementIds: cleanIds(record.attackElementIds),
     stateInflictIds: cleanIds(record.stateInflictIds),
+    stateInflictionChance: clampInteger(record.stateInflictionChance ?? 100, 0, 100),
+    effectFlags: normalizeItemEquipmentEffectFlags(record.effectFlags),
+    elementalDefenseIds: cleanIds(record.elementalDefenseIds),
+    stateDefenseIds: cleanIds(record.stateDefenseIds),
+    stateDefenseMode: record.stateDefenseMode === "inflict" ? "inflict" : "resist",
+    stateResistanceChance: clampInteger(record.stateResistanceChance ?? 0, 0, 100),
+  };
+}
+
+function normalizePromotions(promotions: readonly Partial<ClassPromotion>[] | undefined): ClassPromotion[] | undefined {
+  const normalized = (promotions ?? [])
+    .flatMap((promotion): ClassPromotion[] => {
+      const toClassId = cleanOptionalId(promotion.toClassId);
+      if (!toClassId) return [];
+      return [{ toClassId, requires: normalizePromotionRequirement(promotion.requires) }];
+    });
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+function normalizePromotionRequirement(requires: Partial<ClassPromotionRequirement> | undefined): ClassPromotionRequirement {
+  const variableId = cleanOptionalId(requires?.variableId);
+  return {
+    level: typeof requires?.level === "number" ? clampInteger(requires.level, 1, ACTOR_LEVEL_MAX) : undefined,
+    switchId: cleanOptionalId(requires?.switchId),
+    itemId: cleanOptionalId(requires?.itemId),
+    variableId,
+    atLeast: variableId && typeof requires?.atLeast === "number" ? clampInteger(requires.atLeast, -999999, 999999) : undefined,
   };
 }
 
 function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[] | undefined): ClassBattleCommand[] {
-  const source: readonly Partial<ClassBattleCommand>[] = commands?.length
-    ? commands
-    : [{ id: "cmd_attack", name: "Attack", kind: "attack" }];
+  const source: readonly Partial<ClassBattleCommand>[] = commands?.length ? commands : [];
   return source.map((command, index) => ({
     id: cleanOptionalId(command.id) ?? `cmd_${index + 1}`,
     name: command.name ?? "Command",
-    kind: command.kind ?? "attack",
+    kind: normalizeBattleCommandKind(command.kind),
     skillSubsetName: cleanOptionalId(command.skillSubsetName),
+    skillId: cleanOptionalId(command.skillId),
   }));
+}
+
+function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
+    ? kind
+    : "attack";
+}
+
+function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow {
+  return value === "strict" ? "strict" : "gauge";
+}
+
+function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.max(1, Math.min(99, Math.trunc(value)));
+}
+
+function positiveNumber(value: number | undefined, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return fallback;
+  return value;
 }
 
 function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | undefined, legacy: readonly string[] = []): ActorLearnedSkill[] {
@@ -250,6 +358,14 @@ function normalizeSeedBonuses(bonuses: Partial<EquipmentStatBonuses> | undefined
   };
 }
 
+function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefined): ItemCaptureProfile | undefined {
+  if (!profile) return undefined;
+  const multiplier = typeof profile.multiplier === "number" && Number.isFinite(profile.multiplier)
+    ? Math.max(0.01, Math.min(100, profile.multiplier))
+    : 1;
+  return { multiplier };
+}
+
 function normalizeItemEquipmentProfile(profile: Partial<ItemEquipmentProfile> | undefined): ItemEquipmentProfile {
   return {
     statBonuses: normalizeItemEquipmentBonuses(profile?.statBonuses),
@@ -309,6 +425,13 @@ function cleanIds(ids: readonly string[] | undefined): string[] {
   return [...new Set((ids ?? []).filter((id) => id.trim().length > 0))];
 }
 
+function uniqueCleanIds(ids: readonly string[] | undefined): string[] {
+  return [...new Set((ids ?? []).flatMap((id) => {
+    const trimmed = id.trim();
+    return trimmed ? [trimmed] : [];
+  }))];
+}
+
 function cleanOptionalId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
@@ -360,4 +483,9 @@ function normalizeConsumptionLimit(value: unknown): ItemConsumptionLimit {
 function clampInteger(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, Math.trunc(value)));
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(max, Math.max(min, value));
 }

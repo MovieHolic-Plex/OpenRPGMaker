@@ -1,4 +1,5 @@
-import type { GameMap, TerrainTemplateBuildPlan, TerrainTemplateHouseBuildPlan, TerrainTemplatePoint, TerrainTemplateRect, TerrainTemplateSpan, TerrainTemplateWallSpan } from "../types";
+import { stampRectHouseKit, type HouseKitId } from "@/editor/houseKit";
+import type { GameMap } from "../types";
 import { SAND_TILE } from "./chipsetMapping";
 import { TILE } from "./constants";
 import type { SmallHouseMaterial, TilePoint } from "./dbExtractedHouseTemplate";
@@ -10,35 +11,57 @@ type TilePlacement = TilePoint & {
   readonly layer: TileLayerName;
   readonly tile: number;
 };
-type TileRun = {
-  readonly layer: TileLayerName;
-  readonly origin: TilePoint;
-  readonly tiles: readonly [number, number, number];
+
+export type HouseStampRect = TilePoint & {
+  readonly height: number;
   readonly width: number;
 };
-type HouseWallTiles = {
-  readonly body: readonly [number, number, number];
-  readonly bottom: readonly [number, number, number];
-  readonly top: readonly [number, number, number];
-  readonly window: number;
+
+export type HouseStampPlan = {
+  readonly door: {
+    readonly bottomY: number;
+    readonly topY: number;
+    readonly x: number;
+  };
+  readonly roof: {
+    readonly origin: TilePoint;
+    readonly width: number;
+  };
+  readonly wall: {
+    readonly origin: TilePoint;
+    readonly rows: number;
+    readonly width: number;
+  };
+  readonly windows?: readonly TilePoint[];
 };
-export type TerrainTemplateHouseStampInput = {
-  readonly buildPlan: TerrainTemplateBuildPlan;
+
+export type HouseKitBuildPlan = {
+  readonly fence: HouseStampRect;
+  readonly house: HouseStampPlan;
+  readonly roads: readonly RoadRect[];
+};
+
+export type HouseKitBridgeStampInput = {
+  readonly buildPlan: HouseKitBuildPlan;
   readonly includeFence?: boolean;
   readonly material: SmallHouseMaterial;
   readonly origin: TilePoint;
   readonly paintRoads?: boolean;
 };
 
-const ROOF_BODY = 375;
-const ROOF_CAP_RIGHT = 377;
-const ROOF_FACE_MID = 405;
-const LEFT_DIAGONAL_ROOF_TOP = 354;
-const LEFT_DIAGONAL_ROOF_MID = 376;
-const LEFT_DIAGONAL_ROOF_BOTTOM = 384;
-const RIGHT_DIAGONAL_ROOF_TOP = 355;
-const RIGHT_DIAGONAL_ROOF_MID = 377;
-const RIGHT_DIAGONAL_ROOF_BOTTOM = 385;
+export const SMALL_HOUSE_01_HOUSE_KIT_PLAN = {
+  fence: { x: 2, y: 2, width: 17, height: 15 },
+  house: {
+    roof: { origin: { x: 7, y: 4 }, width: 11 },
+    wall: { origin: { x: 7, y: 8 }, width: 11, rows: 3 },
+    door: { x: 13, topY: 9, bottomY: 10 },
+  },
+  roads: [
+    { x: 13, y: 11, width: 2, height: 6 },
+    { x: 13, y: 14, width: 4, height: 2 },
+  ],
+} as const satisfies HouseKitBuildPlan;
+
 const DOOR_TOP = 116;
 const DOOR_BOTTOM = 146;
 const FENCE_TOP_LEFT = 378;
@@ -47,70 +70,43 @@ const FENCE_TOP_RIGHT = 380;
 const FENCE_SIDE_RAIL = 408;
 const FENCE_BOTTOM_LEFT = 438;
 const FENCE_BOTTOM_RIGHT = 410;
-const WALL_TILES: Record<SmallHouseMaterial, HouseWallTiles> = {
-  plaster: { top: [15, 16, 17], body: [45, 46, 47], bottom: [75, 76, 77], window: 87 },
-  stone: { top: [12, 13, 14], body: [42, 43, 44], bottom: [72, 73, 74], window: 85 },
-  wood: { top: [102, 103, 104], body: [132, 133, 134], bottom: [162, 163, 164], window: 85 },
-};
 const TOWN_PATH_TILES = new Set<number>(Object.values(SAND_TILE));
 
-export function stampTerrainTemplateHouse(map: GameMap, input: TerrainTemplateHouseStampInput): void {
+export function kitIdForSmallHouseMaterial(material: SmallHouseMaterial): HouseKitId {
+  return material === "stone" ? "blue-stone" : "bright-plaster";
+}
+
+export function stampTerrainTemplateHouse(map: GameMap, input: HouseKitBridgeStampInput): void {
   const buildPlan = offsetBuildPlan(input.buildPlan, input.origin);
   if (input.includeFence !== false) stampFence(map, buildPlan.fence);
-  stampHouse(map, buildPlan.house, input.material);
+  const result = stampRectHouseKit(map, {
+    x: buildPlan.house.wall.origin.x,
+    y: buildPlan.house.roof.origin.y,
+    width: buildPlan.house.wall.width,
+    stories: buildPlan.house.wall.rows >= 5 ? 2 : 1,
+    roofBodyRows: roofBodyRows(buildPlan.house),
+    kitId: kitIdForSmallHouseMaterial(input.material),
+  });
+  if (result.ok) {
+    setTile(map, { layer: "lower", tile: DOOR_TOP, x: buildPlan.house.door.x, y: buildPlan.house.door.topY });
+    setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: buildPlan.house.door.x, y: buildPlan.house.door.bottomY });
+  }
   if (input.paintRoads === true) {
     paintTownPathNetwork(map, buildPlan.roads);
     clearUpperTilesOnTownPath(map);
   }
 }
 
-export function terrainTemplateDoorBottomOffset(buildPlan: TerrainTemplateBuildPlan): TilePoint {
+export function terrainTemplateDoorBottomOffset(buildPlan: HouseKitBuildPlan): TilePoint {
   return { x: buildPlan.house.door.x, y: buildPlan.house.door.bottomY };
 }
 
-function stampHouse(map: GameMap, house: TerrainTemplateHouseBuildPlan, material: SmallHouseMaterial): void {
-  stampRoof(map, house.roof);
-  stampWall(map, house.wall, WALL_TILES[material]);
-  setTile(map, { layer: "lower", tile: DOOR_TOP, x: house.door.x, y: house.door.topY });
-  setTile(map, { layer: "lower", tile: DOOR_BOTTOM, x: house.door.x, y: house.door.bottomY });
-  for (const window of house.windows) setTile(map, { layer: "upper", tile: WALL_TILES[material].window, x: window.x, y: window.y });
+function roofBodyRows(house: HouseStampPlan): number {
+  return Math.max(1, house.wall.origin.y - house.roof.origin.y - 2);
 }
 
-function stampRoof(map: GameMap, roof: TerrainTemplateSpan): void {
-  const innerOrigin = { x: roof.origin.x + 1, y: roof.origin.y };
-  const innerWidth = roof.width - 2;
-  stampRun(map, { layer: "upper", origin: innerOrigin, tiles: [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT], width: innerWidth });
-  stampRun(map, { layer: "upper", origin: { x: innerOrigin.x, y: roof.origin.y + 1 }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_BODY], width: innerWidth });
-  stampRun(map, { layer: "upper", origin: { x: innerOrigin.x, y: roof.origin.y + 2 }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_BODY], width: innerWidth });
-  stampRun(map, { layer: "lower", origin: { x: roof.origin.x, y: roof.origin.y + 3 }, tiles: [ROOF_FACE_MID, ROOF_FACE_MID, ROOF_FACE_MID], width: roof.width });
-  stampRoofEnds(map, roof);
-}
-
-function stampRoofEnds(map: GameMap, roof: TerrainTemplateSpan): void {
-  const leftX = roof.origin.x;
-  const rightX = roof.origin.x + roof.width - 1;
-  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_TOP, x: leftX, y: roof.origin.y });
-  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_MID, x: leftX, y: roof.origin.y + 1 });
-  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_MID, x: leftX, y: roof.origin.y + 2 });
-  setTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_BOTTOM, x: leftX, y: roof.origin.y + 3 });
-  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_TOP, x: rightX, y: roof.origin.y });
-  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_MID, x: rightX, y: roof.origin.y + 1 });
-  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_MID, x: rightX, y: roof.origin.y + 2 });
-  setTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_BOTTOM, x: rightX, y: roof.origin.y + 3 });
-}
-
-function stampWall(map: GameMap, wall: TerrainTemplateWallSpan, tiles: HouseWallTiles): void {
-  for (let row = 0; row < wall.rows; row += 1) {
-    stampRun(map, {
-      layer: "lower",
-      origin: { x: wall.origin.x, y: wall.origin.y + row },
-      tiles: wallTilesForRow(tiles, row, wall.rows),
-      width: wall.width,
-    });
-  }
-}
-
-function stampFence(map: GameMap, fence: TerrainTemplateRect): void {
+function stampFence(map: GameMap, fence: HouseStampRect): void {
+  if (fence.width < 2 || fence.height < 2) return;
   const lastX = fence.x + fence.width - 1;
   const lastY = fence.y + fence.height - 1;
   for (let x = fence.x + 1; x < lastX; x += 1) {
@@ -127,47 +123,28 @@ function stampFence(map: GameMap, fence: TerrainTemplateRect): void {
   setTile(map, { layer: "upper", tile: FENCE_BOTTOM_RIGHT, x: lastX, y: lastY });
 }
 
-function stampRun(map: GameMap, run: TileRun): void {
-  for (let offset = 0; offset < run.width; offset += 1) {
-    setTile(map, { layer: run.layer, tile: run.tiles[columnIndex(offset, run.width)], x: run.origin.x + offset, y: run.origin.y });
-  }
-}
-
-function offsetBuildPlan(buildPlan: TerrainTemplateBuildPlan, origin: TilePoint): TerrainTemplateBuildPlan {
+function offsetBuildPlan(buildPlan: HouseKitBuildPlan, origin: TilePoint): HouseKitBuildPlan {
   return {
     fence: offsetRect(origin, buildPlan.fence),
-    house: offsetHouse(origin, buildPlan.house),
+    house: {
+      door: {
+        x: origin.x + buildPlan.house.door.x,
+        topY: origin.y + buildPlan.house.door.topY,
+        bottomY: origin.y + buildPlan.house.door.bottomY,
+      },
+      roof: { origin: offsetPoint(origin, buildPlan.house.roof.origin), width: buildPlan.house.roof.width },
+      wall: { origin: offsetPoint(origin, buildPlan.house.wall.origin), rows: buildPlan.house.wall.rows, width: buildPlan.house.wall.width },
+    },
     roads: buildPlan.roads.map((road) => offsetRect(origin, road)),
   };
 }
 
-function offsetHouse(origin: TilePoint, house: TerrainTemplateHouseBuildPlan): TerrainTemplateHouseBuildPlan {
-  return {
-    door: { x: origin.x + house.door.x, topY: origin.y + house.door.topY, bottomY: origin.y + house.door.bottomY },
-    roof: { origin: offsetPoint(origin, house.roof.origin), width: house.roof.width },
-    wall: { origin: offsetPoint(origin, house.wall.origin), rows: house.wall.rows, width: house.wall.width },
-    windows: house.windows.map((window) => offsetPoint(origin, window)),
-  };
-}
-
-function offsetRect(origin: TilePoint, rect: TerrainTemplateRect): RoadRect {
+function offsetRect(origin: TilePoint, rect: HouseStampRect): RoadRect {
   return { x: origin.x + rect.x, y: origin.y + rect.y, width: rect.width, height: rect.height };
 }
 
-function offsetPoint(origin: TilePoint, point: TerrainTemplatePoint): TilePoint {
+function offsetPoint(origin: TilePoint, point: TilePoint): TilePoint {
   return { x: origin.x + point.x, y: origin.y + point.y };
-}
-
-function wallTilesForRow(wall: HouseWallTiles, row: number, rows: number): readonly [number, number, number] {
-  if (row === 0) return wall.top;
-  if (row === rows - 1) return wall.bottom;
-  return wall.body;
-}
-
-function columnIndex(offset: number, width: number): 0 | 1 | 2 {
-  if (offset === 0) return 0;
-  if (offset === width - 1) return 2;
-  return 1;
 }
 
 function setTile(map: GameMap, placement: TilePlacement): void {

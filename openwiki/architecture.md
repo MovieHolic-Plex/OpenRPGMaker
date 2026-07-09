@@ -7,6 +7,7 @@
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.
   - `bootApp()` loads the project store, seeds editor state from `startMapId`, renders the topbar, and enters edit mode.
+  - If canonical project load fails with a validation/integrity error, `src/app/mode.ts` renders a recovery screen whose primary actions load a sample or blank fallback project through `store.loadFallbackProject()`. That path keeps remote/local saved data intact and disables remote persistence until the user explicitly reconnects or exports.
   - `enterMode()` tears down the previous mode, clears the main area, and lazily imports either the editor or player renderer.
   - `startEditGame()` and `startPlayGame()` build separate Phaser games with different scenes/resolution; `destroyGame()` is the shared cleanup path.
 
@@ -19,11 +20,21 @@
   - `src/player/player.ts` is the player shell: title screen, load UI, status menu, dialogue overlay wiring, and start/stop of play sessions.
   - It creates the play surface, starts `PlayScene`, bridges UI events to scene/session actions, and handles save-slot restore.
   - `src/player/PlayScene.ts` is the actual in-game runtime: map loading, movement, events, overlays, battle entry, and test hooks.
+  - `src/player/playSceneTime.ts` owns calendar ticking, day/night tint, HUD snapshot state, and sleep transitions at the scene boundary; pure date math stays in `src/project/gameTime.ts`.
+  - Session-only retry checkpoints are owned by `src/player/checkpoints.ts` and are restored through `PlayScene`; they must stay outside project JSON and save-slot persistence.
+
+- Web player export boundary:
+  - `player.html` and `src/player/exportEntry.ts` are the Vite player-only entry. They fetch sibling `project.json`, set the exported project store shim, configure the export save namespace, and start the normal player shell without booting the editor.
+  - `vite.player.config.ts` builds `dist/export-player` with exact aliases for editor-only boundaries such as `@/app/mode`, `@/project/store`, `@/project/io`, `@/editor/tilesetImage`, `@/editor/cutscene`, and `@/editor/eventCommands/m2Catalog`.
+  - Player shims under `src/player/export*Shim.ts` must stay minimal and runtime-facing. Do not import AI, Supabase, editor panels, or generated-asset provenance/validation JSON into the export bundle.
+  - `src/project/webExport.ts` packages the prebuilt player files with `project.json` and used runtime assets. It is shared by the editor menu download and the headless `export_game` read tool.
 
 - `src/project` data/persistence:
   - `src/project/store.ts` is the canonical project store. It loads the project, normalizes defaults, emits updates, autosaves, and flushes to local or remote persistence.
+  - Store subscribers receive a `ProjectChangeDescriptor` alongside the project. Omitted descriptors fall back to `scope: "project"` for full-refresh compatibility; editor map/tile paths use narrower map/database scopes to avoid unnecessary Phaser and panel redraws.
   - Persistence can come from Supabase, browser overrides, or dev-showcase overrides depending on environment/config.
-  - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems.
+  - Local dev `?blankProject=1` means a true blank project. `?freshProject=1` keeps its legacy meaning (sample adventure, no persisted override) because 32+ e2e specs and playtest drivers depend on it; example flags `sampleAdventure=1`/`defaultAdventure=1`/`defaultAdventureVisual` also remain.
+  - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems, including authored ending definitions and optional `system.timeSystem` consumed by the player interpreter.
 
 - `src/battle` boundary:
   - `src/battle/runtime.ts` is the battle state machine and should be treated as the core battle boundary.

@@ -7,6 +7,7 @@ import type {
   BattleAnimationTiming,
   BattlerAnimationPoseKind,
   BattlerAnimationRecord,
+  DatabaseStateEffect,
   SkillRecord,
   StateRecord,
 } from "../types";
@@ -44,15 +45,24 @@ export function defaultSkillRecords(): SkillRecord[] {
       mpCost: 4,
       variance: 10,
     }),
-    skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10 }),
+    skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
+    skill("skill_water", "물대포", "enemy", 28, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
+    skill("skill_leaf", "잎날", "enemy", 28, "anim_arrow", "풀 타입 공격에 대응하는 기본 기술입니다.", "attack", "hp", { mpCost: 3, variance: 10, elementId: "grass" }),
     skill("skill_heal", "치유", "ally", 32, "anim_heal", "아군 하나의 HP를 회복합니다.", "mind", "hp", { mpCost: 3, kind: "healing" }),
     skill("skill_poison_sting", "독침", "enemy", 8, "anim_poison", "독 상태를 노리는 찌르기 기술입니다.", "mind", "hp", {
       successRate: 85,
       hitRate: 90,
+      stateEffects: [{ stateId: DEFAULT_STATE_ID, chance: 85, operation: "add" }],
     }),
-    supportSkill("skill_sleep_mist", "수면 안개", "enemy", "수면 상태 연출에 쓰는 보조 기술입니다.", "anim_magic", 5, 75),
-    supportSkill("skill_focus", "집중", "self", "공격 상승 상태를 노리는 자기 강화 기술입니다.", DEFAULT_ANIMATION_ID, 2),
-    supportSkill("skill_weaken", "약화", "enemy", "방어 하락 상태를 노리는 약화 기술입니다.", "anim_magic", 3, 80),
+    supportSkill("skill_sleep_mist", "수면 안개", "enemy", "수면 상태 연출에 쓰는 보조 기술입니다.", "anim_magic", 5, 75, [
+      { stateId: "state_sleep", chance: 75, operation: "add" },
+    ]),
+    supportSkill("skill_focus", "집중", "self", "공격 상승 상태를 노리는 자기 강화 기술입니다.", DEFAULT_ANIMATION_ID, 2, 100, [
+      { stateId: "state_attack_up", chance: 100, operation: "add" },
+    ]),
+    supportSkill("skill_weaken", "약화", "enemy", "방어 하락 상태를 노리는 약화 기술입니다.", "anim_magic", 3, 80, [
+      { stateId: "state_defense_down", chance: 80, operation: "add" },
+    ]),
     skill("skill_item_potion", "회복약 효과", "ally", 40, "anim_heal", "회복약이 사용하는 HP 회복 효과입니다.", "mind", "hp", { kind: "healing" }),
     skill("skill_item_ether", "마력약 효과", "ally", 24, "anim_magic", "마력약이 사용하는 MP 회복 효과입니다.", "mind", "mp", { kind: "healing" }),
   ];
@@ -60,10 +70,14 @@ export function defaultSkillRecords(): SkillRecord[] {
 
 export function defaultStateRecords(): StateRecord[] {
   return [
-    { id: DEFAULT_STATE_ID, name: "독" },
-    { id: "state_sleep", name: "수면" },
-    { id: "state_attack_up", name: "공격 상승" },
-    { id: "state_defense_down", name: "방어 하락" },
+    // 독: 매 턴 지속 피해, 전투 종료 후에도 유지(해독 필요). 3턴째부터 자연 회복 시도.
+    { id: DEFAULT_STATE_ID, name: "독", restriction: "없음", removalCondition: "전투 종료 후 유지", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 20 },
+    // 수면: 행동 불가, 피격 시 50% 해제, 전투 종료 시 해제.
+    { id: "state_sleep", name: "수면", restriction: "행동 불가", removalCondition: "피격 또는 전투 종료", recoverWhenHitChance: 50, recoverNaturallyFromTurn: 2, recoverNaturallyChance: 35 },
+    // 공격 상승: 공격 2배 강화, 전투 종료 시 해제.
+    { id: "state_attack_up", name: "공격 상승", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25 },
+    // 방어 하락: 방어 절반 약화, 전투 종료 시 해제.
+    { id: "state_defense_down", name: "방어 하락", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25 },
   ];
 }
 
@@ -139,7 +153,7 @@ function skill(
   description: string,
   statistic: "attack" | "mind",
   affects: "hp" | "mp",
-  options: { readonly kind?: "damage" | "healing"; readonly mpCost?: number; readonly successRate?: number; readonly variance?: number; readonly hitRate?: number } = {},
+  options: { readonly kind?: "damage" | "healing"; readonly mpCost?: number; readonly successRate?: number; readonly variance?: number; readonly hitRate?: number; readonly elementId?: string; readonly stateEffects?: DatabaseStateEffect[] } = {},
 ): SkillRecord {
   return normalizeSkillRecord({
     id,
@@ -153,10 +167,12 @@ function skill(
     variance: options.variance ?? 20,
     hitRate: options.hitRate ?? 100,
     effect: options.kind === "healing" ? { kind: "healing", statistic: "mind", affects } : { kind: "damage", statistic, affects },
+    elementId: options.elementId,
+    stateEffects: options.stateEffects,
   });
 }
 
-function supportSkill(id: string, name: string, scope: SkillRecord["scope"], description: string, animationId: string, mpCost: number, successRate = 100): SkillRecord {
+function supportSkill(id: string, name: string, scope: SkillRecord["scope"], description: string, animationId: string, mpCost: number, successRate = 100, stateEffects?: DatabaseStateEffect[]): SkillRecord {
   return normalizeSkillRecord({
     id,
     name,
@@ -167,6 +183,7 @@ function supportSkill(id: string, name: string, scope: SkillRecord["scope"], des
     mpCost: { flat: mpCost, percentMax: 0 },
     successRate,
     effect: { kind: "support" },
+    stateEffects,
   });
 }
 

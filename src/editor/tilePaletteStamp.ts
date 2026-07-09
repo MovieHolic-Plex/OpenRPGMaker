@@ -1,3 +1,4 @@
+import { defaultPaintLayerForTile } from "@/editor/tileLayerClassification";
 import type { TilesetDef } from "@/project/types";
 
 export type PaletteStampLayer = "lower" | "upper";
@@ -45,7 +46,7 @@ export function createPaletteStampFromDrag(input: PaletteStampDragInput): Palett
       cells.push({
         dx: x - left,
         dy: y - top,
-        layer: input.tileset.priority[tile] ?? "lower",
+        layer: defaultPaintLayerForTile(input.tileset, tile),
         tile,
       });
     }

@@ -1,4 +1,14 @@
-import type { CharsetDirection, EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
+import {
+  CHARSET_FRAME_HEIGHT,
+  CHARSET_FRAME_WIDTH,
+  CHARSET_SHEET_COLUMNS,
+  CHARSET_SHEET_ROWS,
+  charsetFrameSource,
+  type CharsetDirection,
+  type CharsetFrameSelection,
+  type EasyRpgCharsetAsset,
+} from "@/assets/easyrpgRtp";
+import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 
 export type AdvancedSpriteInput = {
   readonly details: HTMLElement;
@@ -23,6 +33,11 @@ export type GraphicRadioGroup<TValue extends string | number> = {
 };
 
 const TILESET_LABELS = ["*타일셋 1", "*타일셋 2", "*타일셋 3"] as const;
+const RESOURCE_THUMB_SELECTION = {
+  characterIndex: 0,
+  direction: "down",
+  pattern: 1,
+} as const satisfies CharsetFrameSelection;
 
 export function renderGraphicResourceList(
   assets: readonly EasyRpgCharsetAsset[],
@@ -49,7 +64,7 @@ export function renderGraphicResourceList(
     button.dataset.testid = `event-graphic-resource-${asset.textureKey}`;
     button.dataset.textureKey = asset.textureKey;
     button.setAttribute("role", "option");
-    button.append(renderResourceIcon(), document.createTextNode(charsetResourceLabel(asset)));
+    button.append(renderResourceIcon(asset), document.createTextNode(charsetResourceLabel(asset)));
     button.addEventListener("click", () => {
       onSelect(asset);
     });
@@ -89,7 +104,6 @@ export function renderAdvancedSpriteInput(
 ): AdvancedSpriteInput {
   const details = document.createElement("details");
   details.className = "npc-advanced-sprite";
-  details.open = true;
 
   const summary = document.createElement("summary");
   summary.textContent = "직접 ID";
@@ -127,9 +141,17 @@ export function setActiveGraphicResource(
 ): void {
   for (const button of buttons) {
     const selected = button.dataset.textureKey === textureKey;
-    button.classList.toggle("active", selected);
+    setClass(button, "active", selected);
     button.setAttribute("aria-selected", String(selected));
   }
+}
+
+export function setClass(target: HTMLElement, token: string, enabled: boolean): void {
+  if (enabled) {
+    target.classList.add(token);
+    return;
+  }
+  target.classList.remove(token);
 }
 
 function footerButton(
@@ -189,11 +211,22 @@ function renderGraphicRadioGroup<TValue extends string | number>(
   };
 }
 
-function renderResourceIcon(): HTMLElement {
+function renderResourceIcon(asset?: EasyRpgCharsetAsset): HTMLElement {
   const icon = document.createElement("span");
   icon.className = "event-graphic-resource-icon";
   icon.setAttribute("aria-hidden", "true");
+  if (asset) applyResourceThumbnail(icon, asset);
   return icon;
+}
+
+function applyResourceThumbnail(icon: HTMLElement, asset: EasyRpgCharsetAsset): void {
+  const source = charsetFrameSource(RESOURCE_THUMB_SELECTION);
+  icon.classList.add("charset-thumb");
+  icon.style.width = `${CHARSET_FRAME_WIDTH}px`;
+  icon.style.height = `${CHARSET_FRAME_HEIGHT}px`;
+  applyTransparentColorKeyBackground(icon, asset.path);
+  icon.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH}px ${CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT}px`;
+  icon.style.backgroundPosition = `-${source.x}px -${source.y}px`;
 }
 
 function charsetResourceLabel(asset: EasyRpgCharsetAsset): string {

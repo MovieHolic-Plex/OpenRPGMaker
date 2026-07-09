@@ -8,9 +8,16 @@ import type {
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
+import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { activeActor } from "@/battle/battlePredict";
+import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
 
-export type BattleCommandSubmenu = "skill" | "item" | null;
+export type BattleCommandSubmenu =
+  | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
+  | { readonly kind: "item" }
+  | { readonly kind: "capture" }
+  | { readonly kind: "switch" }
+  | null;
 
 export interface BattleCommandPanelOptions {
   readonly runtime: BattleRuntime;
@@ -26,10 +33,11 @@ export interface BattleCommandPanelOptions {
 export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
   const panel = document.createElement("div");
   panel.className = "battle-command-panel";
+  const terms = resolveTerms(store.getCurrent());
 
   if (snapshot.phase === "targetSelect") {
-    panel.append(targetPrompt(snapshot));
-    panel.append(targetSelectionMenu(snapshot, options));
+    panel.append(targetPrompt(snapshot, terms));
+    panel.append(targetSelectionMenu(snapshot, options, terms));
     panel.append(keyPrompts());
     return panel;
   }
@@ -51,40 +59,111 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   const menu = document.createElement("div");
   menu.className = "battle-command-menu";
   menu.dataset.testid = "battle-command-grid";
+  const terms = resolveTerms(store.getCurrent());
 
-  if (options.submenu === "skill") {
-    menu.append(...skillSubmenu(snapshot, options));
+  if (options.submenu?.kind === "skill") {
+    menu.append(...skillSubmenu(snapshot, options, terms));
     return menu;
   }
-  if (options.submenu === "item") {
-    menu.append(...itemSubmenu(options));
+  if (options.submenu?.kind === "item") {
+    menu.append(...itemSubmenu(snapshot, options, terms));
+    return menu;
+  }
+  if (options.submenu?.kind === "capture") {
+    menu.append(...captureSubmenu(snapshot, options, terms));
+    return menu;
+  }
+  if (options.submenu?.kind === "switch") {
+    menu.append(...switchSubmenu(snapshot, options, terms));
     return menu;
   }
 
-  menu.append(commandButton("공격", "actor-command-attack", "sword", "", () => {
-    options.beginTargetCommand({ kind: "attack" });
-  }, targetMode));
-  menu.append(commandButton("스킬", "actor-command-skill", "fire", actor ? `${usableSkills(actor).length}개` : "", () => {
-    const skills = usableSkills(actor);
-    if (skills.length === 1) {
-      options.beginTargetCommand({ kind: "skill", skillId: skills[0] });
-      return;
-    }
-    options.setSubmenu("skill");
-    options.render();
-  }));
-  menu.append(commandButton("아이템", "actor-command-item", "bag", battleItems().length > 0 ? `${battleItems().length}종` : "없음", () => {
-    if (targetMode || battleItems().length === 0) return;
-    options.setSubmenu("item");
-    options.render();
-  }, targetMode));
-  menu.append(commandButton("방어", "actor-command-defend", "shield", "", () => {
-    if (!targetMode) options.runActorCommand({ kind: "defend" });
-  }, targetMode));
-  menu.append(commandButton("도주", "actor-command-escape", "boot", "", () => {
-    if (!targetMode) options.runActorCommand({ kind: "escape" });
-  }, targetMode));
+  for (const command of battleCommandsForActor(store.getCurrent(), actor?.recordId, {
+    classId: actor?.classId,
+    includeSwitch: snapshot.reserveActors.length > 0,
+    forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
+  })) {
+    menu.append(commandControl(snapshot, options, command, actor, targetMode));
+  }
   return menu;
+}
+
+function commandControl(
+  snapshot: BattleSnapshot,
+  options: BattleCommandPanelOptions,
+  command: RuntimeBattleCommand,
+  actor: BattleBattlerSnapshot | undefined,
+  targetMode: boolean
+): HTMLElement {
+  switch (command.kind) {
+    case "attack":
+      return commandButton(command.name, commandTestId(command), "sword", "", () => {
+        options.beginTargetCommand({ kind: "attack" });
+      }, targetMode);
+    case "skill": {
+      const skills = usableSkills(actor, command);
+      return commandButton(command.name, commandTestId(command), "fire", skills.length > 0 ? `${skills.length}개` : "없음", () => {
+        if (targetMode || skills.length === 0) return;
+        if (command.skillId && skills.length === 1) {
+          options.beginTargetCommand({ kind: "skill", skillId: skills[0] });
+          return;
+        }
+        options.setSubmenu({ kind: "skill", command });
+        options.render();
+      }, targetMode || skills.length === 0);
+    }
+    case "item": {
+      const items = battleItems(snapshot);
+      return commandButton(command.name, commandTestId(command), "bag", items.length > 0 ? `${items.length}종` : "없음", () => {
+        if (targetMode || items.length === 0) return;
+        options.setSubmenu({ kind: "item" });
+        options.render();
+      }, targetMode || items.length === 0);
+    }
+    case "capture": {
+      const items = captureItems(snapshot);
+      return commandButton(command.name, commandTestId(command), "target", items.length > 0 ? `${items.length}종` : "없음", () => {
+        if (targetMode || items.length === 0) return;
+        options.setSubmenu({ kind: "capture" });
+        options.render();
+      }, targetMode || items.length === 0);
+    }
+    case "defend":
+      return commandButton(command.name, commandTestId(command), "shield", "", () => {
+        if (!targetMode) options.runActorCommand({ kind: "defend" });
+      }, targetMode);
+    case "escape":
+      return commandButton(command.name, commandTestId(command), "boot", "", () => {
+        if (!targetMode) options.runActorCommand({ kind: "escape" });
+      }, targetMode);
+    case "switch": {
+      const candidates = switchCandidates(snapshot);
+      return commandButton(command.name, commandTestId(command), "switch", candidates.length > 0 ? `${candidates.length}명` : "없음", () => {
+        if (targetMode || candidates.length === 0) return;
+        options.setSubmenu({ kind: "switch" });
+        options.render();
+      }, targetMode || candidates.length === 0);
+    }
+  }
+}
+
+function commandTestId(command: RuntimeBattleCommand): string {
+  switch (command.kind) {
+    case "attack":
+      return "actor-command-attack";
+    case "item":
+      return "actor-command-item";
+    case "capture":
+      return "actor-command-capture";
+    case "defend":
+      return "actor-command-defend";
+    case "escape":
+      return "actor-command-escape";
+    case "skill":
+      return command.skillId ? `actor-command-skill-${command.skillId}` : command.id === "cmd_skill" ? "actor-command-skill" : `actor-command-${command.id}`;
+    case "switch":
+      return "actor-command-switch";
+  }
 }
 
 function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
@@ -101,87 +180,139 @@ function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
   return list;
 }
 
-function usableSkills(actor: BattleBattlerSnapshot | undefined): SkillId[] {
+function usableSkills(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
   if (!actor) return [];
   const skills = store.getCurrent().database.skills;
-  return actor.skillIds.filter((id) => skills.some((skill) => skill.id === id));
+  return actor.skillIds.filter((id) => {
+    const skill = skills.find((record) => record.id === id);
+    if (!skill) return false;
+    if (command?.skillId) return skill.id === command.skillId;
+    if (command?.skillSubsetName) return skill.type === command.skillSubsetName;
+    return true;
+  });
 }
 
-function battleItems(): { itemId: ItemId; name: string; count: number }[] {
+// 전투 아이템 목록은 전투 런타임의 이벤트 상태(현재 플레이 세션에서 시드됨)를 기준으로 한다.
+// project.session은 에디터 시작 상태라 플레이 중 획득/소모가 반영되지 않는다.
+function battleItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number }[] {
   const project = store.getCurrent();
-  const inventory = project.session.inventory;
+  const inventory = snapshot.eventState.inventory;
   return project.database.items
     .filter((item) => item.skillId && (inventory[item.id] ?? 0) > 0)
     .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0 }));
 }
 
-function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
+function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number }[] {
+  const project = store.getCurrent();
+  const inventory = snapshot.eventState.inventory;
+  return project.database.items
+    .filter((item) => item.captureProfile && (inventory[item.id] ?? 0) > 0)
+    .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1 }));
+}
+
+function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = "스킬";
+  header.textContent = options.submenu?.kind === "skill" ? options.submenu.command.name : terms.skill;
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
-  for (const skillId of usableSkills(actor)) {
+  const command = options.submenu?.kind === "skill" ? options.submenu.command : undefined;
+  for (const skillId of usableSkills(actor, command)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
-    const detail = skill ? skillDetailFor(project, skill) : "스킬";
+    const detail = skill ? skillDetailFor(project, skill, terms) : terms.skill;
     nodes.push(commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
     }));
   }
-  nodes.push(submenuBackButton(options));
+  nodes.push(submenuBackButton(options, terms));
   return nodes;
 }
 
 function skillDetailFor(
   project: ReturnType<typeof store.getCurrent>,
-  skill: { id: SkillId; power: number; effect: { kind: string } }
+  skill: { id: SkillId; power: number; effect: { kind: string } },
+  terms: ResolvedTerms
 ): string {
-  const mp = mpDetail(project, skill.id);
+  const mp = mpDetail(project, skill.id, terms);
   const fullSkill = project.database.skills.find((record) => record.id === skill.id);
   if (!fullSkill) return mp;
-  if (fullSkill.effect.kind === "healing") return `HP ${fullSkill.power} 회복 ${mp}`;
+  if (fullSkill.effect.kind === "healing") return `${terms.hp} ${fullSkill.power} 회복 ${mp}`;
   if (fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch") return `보조 ${mp}`;
-  return mp || "공격";
+  return mp || terms.attack;
 }
 
 // MP 소비 표기. flat + percentMax.
-function mpDetail(project: ReturnType<typeof store.getCurrent>, skillId: SkillId): string {
+function mpDetail(project: ReturnType<typeof store.getCurrent>, skillId: SkillId, terms: ResolvedTerms): string {
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill?.mpCost) return "";
   const flat = skill.mpCost.flat ?? 0;
   const pct = skill.mpCost.percentMax ?? 0;
   if (flat === 0 && pct === 0) return "";
-  return `MP ${flat}${pct > 0 ? `+${pct}%` : ""}`;
+  return `${terms.mp} ${flat}${pct > 0 ? `+${pct}%` : ""}`;
 }
 
-function itemSubmenu(options: BattleCommandPanelOptions): HTMLElement[] {
+function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = "아이템";
+  header.textContent = terms.item;
   const nodes: HTMLElement[] = [header];
-  for (const item of battleItems()) {
-    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", "아이템 사용", () => {
+  for (const item of battleItems(snapshot)) {
+    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", `${terms.item} 사용`, () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
     }));
   }
-  nodes.push(submenuBackButton(options));
+  nodes.push(submenuBackButton(options, terms));
   return nodes;
 }
 
-function submenuBackButton(options: BattleCommandPanelOptions): HTMLElement {
-  return commandButton("뒤로", "actor-command-back", "back", "이전 메뉴", () => {
+function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = terms.capture;
+  const nodes: HTMLElement[] = [header];
+  for (const item of captureItems(snapshot)) {
+    const detail = item.multiplier === 1 ? terms.capture : `x${item.multiplier}`;
+    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
+      options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
+    }));
+  }
+  nodes.push(submenuBackButton(options, terms));
+  return nodes;
+}
+
+function switchSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = snapshot.forcedSwitchActorId ? "교체 필요" : "교체";
+  const nodes: HTMLElement[] = [header];
+  for (const actor of switchCandidates(snapshot)) {
+    nodes.push(commandButton(actor.name, `actor-switch-${actor.recordId}`, "switch", `${terms.hp} ${actor.hp}/${actor.maxHp}`, () => {
+      options.runActorCommand({ kind: "switch", targetActorId: actor.recordId });
+    }));
+  }
+  if (!snapshot.forcedSwitchActorId) nodes.push(submenuBackButton(options, terms));
+  return nodes;
+}
+
+function switchCandidates(snapshot: BattleSnapshot): BattleBattlerSnapshot[] {
+  const candidateIds = new Set(snapshot.switchCandidateActorIds);
+  return snapshot.reserveActors.filter((actor) => candidateIds.has(actor.recordId) && !actor.defeated);
+}
+
+function submenuBackButton(options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement {
+  return commandButton(terms.back, "actor-command-back", "back", "이전 메뉴", () => {
     options.setSubmenu(null);
     options.render();
   });
 }
 
-function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
+function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement {
   const menu = document.createElement("div");
   menu.className = "battle-command-menu battle-target-menu";
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = "대상";
+  header.textContent = terms.target;
   menu.append(header);
   const targetEnemyIds = snapshot.targetSelection?.targetEnemyIds ?? [];
   for (const enemyId of targetEnemyIds) {
@@ -204,7 +335,7 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
   return menu;
 }
 
-function targetPrompt(snapshot: BattleSnapshot): HTMLElement {
+function targetPrompt(snapshot: BattleSnapshot, terms: ResolvedTerms): HTMLElement {
   const prompt = document.createElement("div");
   prompt.className = "battle-target-prompt";
   prompt.dataset.testid = "battle-target-prompt";
@@ -212,10 +343,10 @@ function targetPrompt(snapshot: BattleSnapshot): HTMLElement {
   const selectedEnemy = snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
     ?? snapshot.enemies.find((enemy) => snapshot.targetSelection?.targetEnemyIds.includes(enemy.id));
   prompt.textContent = selectedEnemy
-    ? `대상: ${selectedEnemy.name}`
+    ? `${terms.target}: ${selectedEnemy.name}`
     : actor
-      ? `${actor.name}: 대상을 선택`
-      : "대상 선택";
+      ? `${actor.name}: ${terms.target}을 선택`
+      : `${terms.target} 선택`;
   return prompt;
 }
 

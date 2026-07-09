@@ -3,6 +3,7 @@ import { el } from "@/util/dom";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ItemRecord } from "@/project/types/database";
+import type { ResolvedTerms } from "@/project/terms";
 
 export type ShopMode = "buy" | "sell";
 export type ShopView = "menu" | "items";
@@ -18,6 +19,7 @@ type ShopItemsRenderRequest = {
   readonly items: readonly ItemRecord[];
   readonly mode: ShopMode;
   readonly prompt: string;
+  readonly terms: ResolvedTerms;
   readonly setStatus: (text: string) => void;
   readonly showMenu: () => void;
   readonly onItem: ShopItemAction;
@@ -31,16 +33,21 @@ export function createShopOverlay(): HTMLElement {
   return overlay;
 }
 
-export function renderShopMenu(step: ShopStep, showItems: (mode: ShopMode) => void, finish: () => void): HTMLElement {
+export function renderShopMenu(
+  step: ShopStep,
+  terms: ResolvedTerms,
+  showItems: (mode: ShopMode) => void,
+  finish: () => void
+): HTMLElement {
   const shell = document.createElement("div");
   shell.className = "runtime-shop-shell runtime-shop-menu-shell";
   shell.append(shopBluePanel("runtime-shop-top-panel", []), shopBluePanel("runtime-shop-middle-panel", []));
   const menu = document.createElement("div");
   menu.className = "runtime-shop-menu";
-  menu.append(shopMenuMessage(messageLine(step)));
+  menu.append(shopMenuMessage(messageLine(step, terms)));
   const choices = document.createElement("div");
   choices.className = "runtime-shop-menu-choices";
-  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, showItems, finish));
+  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, terms, showItems, finish));
   menu.append(choices);
   shell.append(shopBluePanel("runtime-shop-bottom-panel", [menu]));
   return shell;
@@ -51,7 +58,7 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   shell.className = "runtime-shop-shell runtime-shop-items-shell";
   shell.append(
     shopBluePanel("runtime-shop-message-panel", [
-      shopMenuMessage(request.mode === "sell" ? "무엇을 판매하시겠습니까?" : itemHeaderText(request.step)),
+      shopMenuMessage(request.mode === "sell" ? request.terms.shopSellPrompt : itemHeaderText(request.step)),
     ])
   );
   const main = document.createElement("div");
@@ -65,9 +72,9 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   side.className = "runtime-shop-side";
   side.append(shopBluePanel("runtime-shop-party-panel", [partyPreview(request.scene)]));
   side.append(shopBluePanel("runtime-shop-owned-panel", [ownedPanel(request.scene, request.items[0])]));
-  side.append(shopBluePanel("runtime-shop-gold-panel", [goldPanel(request.scene)]));
+  side.append(shopBluePanel("runtime-shop-gold-panel", [goldPanel(request.scene, request.terms)]));
   main.append(side);
-  shell.append(main, shopBluePanel("runtime-shop-prompt-panel", [shopPrompt(request.prompt, request.showMenu)]));
+  shell.append(main, shopBluePanel("runtime-shop-prompt-panel", [shopPrompt(request.prompt, request.terms, request.showMenu)]));
   return shell;
 }
 
@@ -75,13 +82,34 @@ export function defaultShopMode(step: ShopStep): ShopMode {
   return shopType(step) === "sellOnly" ? "sell" : "buy";
 }
 
-export function shopPromptText(step: ShopStep, mode: ShopMode): string {
-  if (mode === "sell") return "무엇을 판매하시겠습니까?";
+export function shopPromptText(step: ShopStep, mode: ShopMode, terms: ResolvedTerms): string {
+  if (mode === "sell") return terms.shopSellPrompt;
   return messageType(step) === "welcome" ? "무엇을 구매하시겠습니까?" : "구매할 물건을 고르세요.";
 }
 
 export function sellPrice(item: ItemRecord): number {
   return Math.max(0, Math.floor(item.price / 2));
+}
+
+// 커서가 아이템을 옮길 때 우측 '보유' 패널을 선택 아이템 기준으로 갱신(RM2003 감각).
+export function updateShopOwnedPanel(
+  overlay: HTMLElement,
+  scene: PlaySceneContext,
+  item: ItemRecord | undefined
+): void {
+  const panel = overlay.querySelector(".runtime-shop-owned-panel");
+  if (!panel) return;
+  while (panel.firstChild) panel.firstChild.remove();
+  panel.append(ownedPanel(scene, item));
+}
+
+// 수량 select 모드에서 ←(-1)/→(+1) 로 수량 입력을 1~99 범위로 조절. 항상 소비(true).
+export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1): boolean {
+  const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+  if (!input) return true;
+  const current = Math.max(1, Number.parseInt(input.value, 10) || 1);
+  input.value = String(Math.min(99, Math.max(1, current + dir)));
+  return true;
 }
 
 function shopItemList(step: ShopStep, items: readonly ItemRecord[], mode: ShopMode, onItem: ShopItemAction): HTMLElement {
@@ -144,7 +172,7 @@ function shopMenuMessage(text: string): HTMLElement {
   return el("div", { class: "runtime-shop-message", text });
 }
 
-function shopPrompt(text: string, showMenu: () => void): HTMLElement {
+function shopPrompt(text: string, terms: ResolvedTerms, showMenu: () => void): HTMLElement {
   const wrap = document.createElement("div");
   wrap.className = "runtime-shop-prompt";
   wrap.append(el("span", { text }));
@@ -152,17 +180,22 @@ function shopPrompt(text: string, showMenu: () => void): HTMLElement {
   back.type = "button";
   back.className = "runtime-shop-cancel";
   back.dataset.testid = "shop-item-cancel";
-  back.textContent = "취소";
+  back.textContent = terms.shopCancel;
   back.addEventListener("click", showMenu);
   wrap.append(back);
   return wrap;
 }
 
-function shopMenuButton(action: ShopMenuAction, showItems: (mode: ShopMode) => void, finish: () => void): HTMLButtonElement {
+function shopMenuButton(
+  action: ShopMenuAction,
+  terms: ResolvedTerms,
+  showItems: (mode: ShopMode) => void,
+  finish: () => void
+): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "runtime-shop-menu-choice";
-  button.textContent = menuActionLabel(action);
+  button.textContent = menuActionLabel(action, terms);
   button.dataset.testid = action === "cancel" ? "shop-menu-cancel" : `shop-mode-${action}`;
   button.addEventListener("click", () => {
     if (action === "cancel") finish();
@@ -182,14 +215,14 @@ function shopMenuActions(step: ShopStep): ShopMenuAction[] {
   }
 }
 
-function menuActionLabel(action: ShopMenuAction): string {
+function menuActionLabel(action: ShopMenuAction, terms: ResolvedTerms): string {
   switch (action) {
     case "buy":
-      return "구입";
+      return terms.shopBuy;
     case "sell":
-      return "판매";
+      return terms.shopSell;
     case "cancel":
-      return "취소";
+      return terms.shopCancel;
   }
 }
 
@@ -202,10 +235,10 @@ function messageType(step: ShopStep): ShopMessageType {
   return step.messageType ?? "welcome";
 }
 
-function messageLine(step: ShopStep): string {
+function messageLine(step: ShopStep, terms: ResolvedTerms): string {
   switch (messageType(step)) {
     case "welcome":
-      return "어서 오세요.";
+      return terms.shopGreeting;
     case "business":
       return "무엇이 필요하신가요?";
     case "direct":
@@ -251,6 +284,6 @@ function statLine(label: string, value: number): HTMLElement {
   });
 }
 
-function goldPanel(scene: PlaySceneContext): HTMLElement {
-  return el("div", { class: "runtime-shop-gold", text: `${scene.session.gold}G` });
+function goldPanel(scene: PlaySceneContext, terms: ResolvedTerms): HTMLElement {
+  return el("div", { class: "runtime-shop-gold", text: `${scene.session.gold}${terms.gold}` });
 }

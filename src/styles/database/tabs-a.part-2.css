@@ -1,13 +1,13 @@
 
 .database-modal-body .db-tab:hover {
-  background: #ece7da;
+  background: var(--bg-raised);
 }
 
 .database-modal-body .db-tab.active {
-  background: linear-gradient(#5e84dc, #315ebc);
-  border-bottom-color: #315ebc;
-  border-color: #dfe8ff #1f4695 #1f4695 #dfe8ff;
-  color: #ffffff;
+  background: linear-gradient(var(--accent), var(--accent));
+  border-bottom-color: var(--accent-border);
+  border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
+  color: var(--text-1);
   margin-bottom: -1px;
   position: relative;
   z-index: 1;
@@ -15,7 +15,7 @@
 
 .database-modal-body .db-body {
   background: var(--surface-panel);
-  border-color: transparent #8f8a80 #8f8a80 #8f8a80;
+  border-color: transparent var(--border-default) var(--border-default) var(--border-default);
   border-style: solid;
   border-width: 0 1px 1px;
   min-height: 0;
@@ -31,8 +31,8 @@
 
 .database-modal-footer {
   align-items: center;
-  background: #d8d0be;
-  border-top: 1px solid #8f8a80;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border-default);
   display: flex;
   flex: 0 0 auto;
   gap: var(--space-2);
@@ -50,8 +50,8 @@
 }
 
 .database-footer-button {
-  background: #d8d0be;
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -67,7 +67,7 @@
 }
 
 .database-footer-button:active {
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   padding: 2px 0 0 2px;
 }
 
@@ -88,7 +88,7 @@
 .database-modal-body .db-detail-pane,
 .database-modal-body .db-detail-form {
   background: var(--surface-workbench);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
 }
@@ -121,7 +121,7 @@
 
 .database-modal-body .actor-panel {
   background: var(--surface-workbench);
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-radius: 0;
 }
 
@@ -138,7 +138,7 @@
 }
 
 .database-modal-body .actor-graphic-preview {
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-radius: 0;
 }
 
@@ -197,13 +197,13 @@
 
 .database-modal-body .btn,
 .database-modal-body button:not(.db-tab) {
-  border-color: #ffffff #8f8a80 #8f8a80 #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
 }
 
 .database-modal-body .btn:active,
 .database-modal-body button:not(.db-tab):active {
-  border-color: #8f8a80 #ffffff #ffffff #8f8a80;
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 
 .tileset-modal-backdrop {
@@ -283,9 +283,9 @@
   padding: 1px 0 0 2px;
   border: 1px solid rgba(20, 20, 20, 0.34);
   background: transparent;
-  color: #ffffff;
+  color: var(--text-1);
   font: 700 10px/1 var(--font-mono);
-  text-shadow: 1px 1px 0 #000000;
+  text-shadow: 1px 1px 0 var(--border-strong);
   cursor: pointer;
 }
 .tileset-passage-cell:hover,
@@ -332,7 +332,7 @@
 
 .db-class-dialog {
   background: var(--surface-workbench);
-  border-color: #ffffff #6d675d #6d675d #ffffff;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
@@ -344,7 +344,7 @@
 .db-class-dialog header,
 .db-class-dialog footer {
   align-items: center;
-  background: #d8d0be;
+  background: var(--bg-raised);
   display: flex;
   gap: var(--space-2);
   justify-content: space-between;
@@ -398,7 +398,7 @@
 .ts-pass-btn.on {
   background: var(--ok);
   border-color: var(--ok);
-  color: #0d1424;
+  color: var(--text-1);
 }
 .ts-pass-btn.off {
   background: var(--bg);
@@ -419,7 +419,7 @@
 .layer-btn.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--text-1);
   font-weight: 600;
 }
 

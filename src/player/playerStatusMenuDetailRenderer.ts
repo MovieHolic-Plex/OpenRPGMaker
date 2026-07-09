@@ -52,15 +52,20 @@ function renderDetailEntry(options: {
   readonly actionIndex?: number;
 }): HTMLElement {
   const { project, entry, selected, actionIndex } = options;
+  const rowClasses = [
+    "status-menu-detail-row",
+    entry.description ? "has-description" : "",
+    entry.disabled ? "disabled" : "",
+  ].filter(Boolean).join(" ");
   const row = entry.onActivate
     ? el("button", {
-        class: "status-menu-detail-row status-menu-detail-action",
+        class: `${rowClasses} status-menu-detail-action`,
         attrs: { type: "button", ...(entry.disabled ? { disabled: "true", "aria-disabled": "true" } : {}) },
         dataset: detailEntryDataset(entry, actionIndex),
         on: { click: entry.onActivate },
       })
     : el("div", {
-        class: "status-menu-detail-row",
+        class: rowClasses,
         ...(entry.testId ? { dataset: { testid: entry.testId } } : {}),
       });
   if (selected) row.classList.add("selected");

@@ -1,5 +1,7 @@
 import { EDITOR_BRUSH_SIZES } from "@/editor/editorState";
 import type { EditorState } from "@/editor/editorState";
+import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
+import { renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
 import { canPlaceStructureStampOnMap, STRUCTURE_STAMPS } from "@/editor/structureStampTools";
 import type { StructureStampId } from "@/editor/structureStampTools";
 import { tileStampsForTile } from "@/editor/tileStampBrushes";
@@ -18,7 +20,9 @@ import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import type { GameMap, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
-type ToolbarMenuId = "inspector" | "brush" | "template" | null;
+type ToolbarMenuId = "inspector" | "brush" | "template" | "ruleAudit" | "history" | null;
+type OpenToolbarMenuId = Exclude<ToolbarMenuId, null>;
+type SvgToolbarMenuId = Exclude<OpenToolbarMenuId, "ruleAudit" | "history">;
 
 export type RpgMakerToolbarModel = {
   readonly state: EditorState;
@@ -28,6 +32,7 @@ export type RpgMakerToolbarModel = {
 };
 
 let openMenu: ToolbarMenuId = null;
+const TOOLBAR_MENU_ICONS = { brush: "brush", inspector: "inspector", template: "template" } as const satisfies Record<SvgToolbarMenuId, SvgIconName>;
 
 export function makeInspectorDropdown(model: RpgMakerToolbarModel): HTMLElement {
   const { state, tileset } = model;
@@ -59,6 +64,44 @@ export function makeInspectorDropdown(model: RpgMakerToolbarModel): HTMLElement 
     closeToolbarMenus();
     model.rerender();
   }));
+  wrapper.append(menu);
+  return wrapper;
+}
+
+export function makeRuleAuditDropdown(model: RpgMakerToolbarModel): HTMLElement {
+  const wrapper = makeToolbarMenuWrapper("tile-rule-audit-menu");
+  const active = openMenu === "ruleAudit";
+  const count = ruleAuditViolationCount();
+  const toggle = makeMenuToggle("ruleAudit", "규칙 감사", active, count > 0, model.rerender);
+  if (count > 0) toggle.append(makeToolbarBadge(count, "rule-audit-badge", true));
+  wrapper.append(toggle);
+  if (!active) return wrapper;
+
+  const menu = el("div", {
+    class: "rpg-maker-toolbar-dropdown rpg-maker-rule-audit-dropdown",
+    attrs: { role: "menu" },
+    dataset: { testid: "tile-rule-audit-dropdown" },
+  });
+  menu.append(renderRuleAuditPanel());
+  wrapper.append(menu);
+  return wrapper;
+}
+
+export function makeHistoryDropdown(model: RpgMakerToolbarModel): HTMLElement {
+  const wrapper = makeToolbarMenuWrapper("tile-history-menu");
+  const active = openMenu === "history";
+  const count = mapHistoryEntryCount();
+  const toggle = makeMenuToggle("history", "작업 기록", active, count > 0, model.rerender);
+  if (count > 0) toggle.append(makeToolbarBadge(count, "history-badge", false));
+  wrapper.append(toggle);
+  if (!active) return wrapper;
+
+  const menu = el("div", {
+    class: "rpg-maker-toolbar-dropdown rpg-maker-history-dropdown",
+    attrs: { role: "menu" },
+    dataset: { testid: "tile-history-dropdown" },
+  });
+  menu.append(renderMapHistoryPanel());
   wrapper.append(menu);
   return wrapper;
 }
@@ -140,7 +183,7 @@ function makeToolbarMenuWrapper(testId: string): HTMLElement {
   return el("div", { class: "rpg-maker-toolbar-menu", dataset: { testid: testId } });
 }
 
-function makeMenuToggle(menu: Exclude<ToolbarMenuId, null>, label: string, expanded: boolean, active: boolean, rerender: () => void): HTMLButtonElement {
+function makeMenuToggle(menu: OpenToolbarMenuId, label: string, expanded: boolean, active: boolean, rerender: () => void): HTMLButtonElement {
   return el("button", {
     class: "rpg-maker-tile-tool" + (active ? " active" : ""),
     attrs: {
@@ -149,8 +192,8 @@ function makeMenuToggle(menu: Exclude<ToolbarMenuId, null>, label: string, expan
       "aria-label": label,
       title: label,
     },
-    children: [makeSvgIcon(menuIcon(menu))],
-    dataset: { testid: `rpg-maker-tool-${menu}` },
+    children: [makeMenuIcon(menu)],
+    dataset: { testid: menuToggleTestId(menu) },
     on: {
       click: () => {
         openMenu = expanded ? null : menu;
@@ -160,15 +203,25 @@ function makeMenuToggle(menu: Exclude<ToolbarMenuId, null>, label: string, expan
   });
 }
 
-function menuIcon(menu: Exclude<ToolbarMenuId, null>): SvgIconName {
-  switch (menu) {
-    case "brush":
-      return "brush";
-    case "inspector":
-      return "inspector";
-    case "template":
-      return "template";
-  }
+function makeMenuIcon(menu: OpenToolbarMenuId): Node {
+  if (menu === "ruleAudit") return el("span", { class: "rpg-maker-menu-glyph", attrs: { "aria-hidden": "true" }, text: "🔎" });
+  if (menu === "history") return el("span", { class: "rpg-maker-menu-glyph", attrs: { "aria-hidden": "true" }, text: "🕘" });
+  return makeSvgIcon(TOOLBAR_MENU_ICONS[menu]);
+}
+
+function menuToggleTestId(menu: OpenToolbarMenuId): string {
+  if (menu === "ruleAudit") return "toolbar-toggle-ruleAudit";
+  if (menu === "history") return "toolbar-toggle-history";
+  return `rpg-maker-tool-${menu}`;
+}
+
+function makeToolbarBadge(count: number, testId: string, danger: boolean): HTMLElement {
+  return el("span", {
+    class: "toolbar-badge" + (danger ? " danger" : ""),
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: testId },
+    text: String(count),
+  });
 }
 
 function makeInspectorField(label: string, value: string): HTMLElement {

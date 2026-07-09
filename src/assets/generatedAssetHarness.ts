@@ -7,6 +7,7 @@ import {
 } from "./generatedAssetManifest";
 import { createFakePngBytes } from "./pngFake";
 import { inspectPngBytes, type PngInspection } from "./pngInspection";
+import { sha256HexBytes } from "../util/sha256";
 
 export type HarnessPathPlan = {
   readonly entryId: string;
@@ -152,10 +153,7 @@ function emptyValidation(entryId: string, path: string, issues: readonly string[
 }
 
 async function sha256Hex(bytes: Uint8Array): Promise<string> {
-  const stableBytes = new ArrayBuffer(bytes.byteLength);
-  new Uint8Array(stableBytes).set(bytes);
-  const digest = await globalThis.crypto.subtle.digest("SHA-256", stableBytes);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return sha256HexBytes(bytes);
 }
 
 function stableEightHex(value: string): string {

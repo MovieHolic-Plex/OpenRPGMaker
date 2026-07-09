@@ -1,8 +1,14 @@
 import { compareVariableValue } from "../conditionEvaluation";
+import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
+import { clampFriendship } from "../session";
 import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
-  Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold">>;
+  Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold">> & {
+    readonly gameTime?: GameTime;
+    readonly npcActivities?: Record<string, string>;
+    readonly friendship?: Record<string, number>;
+  };
 
 export function resolveEventPage(
   event: GameEvent,
@@ -38,5 +44,15 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       return compareVariableValue(session.gold ?? 0, condition.op, condition.amount);
     case "timer":
       return ((session.timers ?? {})[condition.timerId] ?? 0) <= condition.seconds;
+    case "timePhase":
+      return conditionMatchesTimePhase(session.gameTime, condition.phase);
+    case "season":
+      return conditionMatchesSeason(session.gameTime, condition.season);
+    case "npcActivity":
+      return session.npcActivities?.[eventId] === condition.activity;
+    case "friendshipAtLeast": {
+      const npcKey = condition.npcKey?.trim() || eventId;
+      return clampFriendship(session.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+    }
   }
 }

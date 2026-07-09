@@ -38,7 +38,7 @@ export function shiftMapContent(mapId: MapId, offset: MapShiftOffset): boolean {
       };
     }
     shifted = true;
-  });
+  }, { scope: "map", mapId });
   return shifted;
 }
 

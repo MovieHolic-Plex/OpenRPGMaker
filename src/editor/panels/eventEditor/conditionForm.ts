@@ -1,10 +1,11 @@
 import { el } from "@/util/dom";
 import { numberedName } from "@/editor/panels/databaseDisplay";
+import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, SELF_SWITCH_KEY_OPTIONS } from "./options";
 import { openSwitchVariablePicker } from "./recordPickerDialog";
-import type { ActorId, Condition, ItemId } from "@/project/types";
+import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
 
 const CONDITION_MODE_OPTIONS = [
   { value: "switch", label: "스위치" },
@@ -14,7 +15,25 @@ const CONDITION_MODE_OPTIONS = [
   { value: "item", label: "아이템" },
   { value: "gold", label: "소지금" },
   { value: "timer", label: "타이머" },
+  { value: "timePhase", label: "시간대" },
+  { value: "season", label: "계절" },
+  { value: "npcActivity", label: "활동" },
+  { value: "friendshipAtLeast", label: "호감도" },
 ] as const;
+
+export const TIME_PHASE_OPTIONS = [
+  { value: "morning", label: "아침" },
+  { value: "day", label: "낮" },
+  { value: "evening", label: "저녁" },
+  { value: "night", label: "밤" },
+] as const satisfies readonly { readonly value: TimePhase; readonly label: string }[];
+
+export const SEASON_OPTIONS = [
+  { value: "spring", label: "봄" },
+  { value: "summer", label: "여름" },
+  { value: "fall", label: "가을" },
+  { value: "winter", label: "겨울" },
+] as const satisfies readonly { readonly value: Season; readonly label: string }[];
 
 export function databasePicker(
   kind: "switch" | "variable",
@@ -27,7 +46,7 @@ export function databasePicker(
   sel.append(el("option", { text: "(선택)", attrs: { value: "" } }));
   const list = kind === "switch" ? project.switches : project.variables;
   for (const [index, item] of list.entries()) {
-    sel.append(el("option", { text: numberedName(index, item.name), attrs: { value: item.id } }));
+    sel.append(el("option", { text: storyFlagOptionLabel(project, kind, item, index), attrs: { value: item.id } }));
   }
   sel.value = currentId;
   sel.addEventListener("change", () => onChange(sel.value));
@@ -71,6 +90,18 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "timer":
         onChange({ kind: "timer", timerId: "timer1", seconds: 60 });
         return;
+      case "timePhase":
+        onChange({ kind: "timePhase", phase: "day" });
+        return;
+      case "season":
+        onChange({ kind: "season", season: "spring" });
+        return;
+      case "npcActivity":
+        onChange({ kind: "npcActivity", activity: "work" });
+        return;
+      case "friendshipAtLeast":
+        onChange({ kind: "friendshipAtLeast", value: 100 });
+        return;
     }
   });
   wrap.append(mode);
@@ -96,20 +127,42 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
     case "timer":
       wrap.append(renderTimerCondition(cond, onChange));
       break;
+    case "timePhase":
+      wrap.append(renderTimePhaseCondition(cond, onChange));
+      break;
+    case "season":
+      wrap.append(renderSeasonCondition(cond, onChange));
+      break;
+    case "npcActivity":
+      wrap.append(renderNpcActivityCondition(cond, onChange));
+      break;
+    case "friendshipAtLeast":
+      wrap.append(renderFriendshipAtLeastCondition(cond, onChange));
+      break;
   }
   return wrap;
 }
 
-function renderSwitchCondition(
+export function renderSwitchCondition(
   cond: Extract<Condition, { kind: "switch" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: string, onChange: (id: string) => void) => HTMLElement;
+    readonly showValue?: boolean;
+    readonly forceTrueOnSwitchChange?: boolean;
+    readonly className?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentSwitchId = cond.switchId;
-  const sw = databasePicker("switch", cond.switchId, (switchId) => {
+  const sw = (options.picker ?? ((switchId, onPick) => databasePicker("switch", switchId, onPick)))(cond.switchId, (switchId) => {
     currentSwitchId = switchId;
-    onChange({ kind: "switch", switchId, value: cond.value });
+    onChange({ kind: "switch", switchId, value: options.forceTrueOnSwitchChange ? true : cond.value });
   });
+  if (options.showValue === false) {
+    row.append(sw);
+    return row;
+  }
   const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value));
   val.addEventListener("change", () => {
     onChange({ kind: "switch", switchId: currentSwitchId, value: val.value === "true" });
@@ -118,20 +171,27 @@ function renderSwitchCondition(
   return row;
 }
 
-function renderVariableCondition(
+export function renderVariableCondition(
   cond: Extract<Condition, { kind: "variable" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: string, onChange: (id: string) => void) => HTMLElement;
+    readonly className?: string;
+    readonly opTestId?: string;
+    readonly valueTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentVariableId = cond.variableId;
-  const variable = databasePicker("variable", cond.variableId, (variableId) => {
+  const variable = (options.picker ?? ((variableId, onPick) => databasePicker("variable", variableId, onPick)))(cond.variableId, (variableId) => {
     currentVariableId = variableId;
     onChange({ kind: "variable", variableId, op: cond.op, value: cond.value });
   });
-  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op);
+  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, options.opTestId);
   const value = el("input", {
     attrs: { type: "number" },
     value: String(cond.value),
+    dataset: options.valueTestId ? { testid: options.valueTestId } : undefined,
   }) as HTMLInputElement;
   const apply = () => {
     onChange({
@@ -147,13 +207,18 @@ function renderVariableCondition(
   return row;
 }
 
-function renderSelfSwitchCondition(
+export function renderSelfSwitchCondition(
   cond: Extract<Condition, { kind: "selfSwitch" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly keyTestId?: string;
+    readonly valueTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
-  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cond.key, "event-condition-self-switch-key");
-  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value), "event-condition-self-switch-value");
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cond.key, options.keyTestId ?? "event-condition-self-switch-key");
+  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value), options.valueTestId ?? "event-condition-self-switch-value");
   const apply = () => {
     onChange({ kind: "selfSwitch", key: key.value as "A" | "B" | "C" | "D", value: val.value === "true" });
   };
@@ -171,16 +236,26 @@ function itemPicker(currentId: ItemId, onChange: (id: ItemId) => void): HTMLElem
   return recordSelect(store.getCurrent().database.items, currentId, onChange, "event-condition-item");
 }
 
-function renderActorCondition(
+export function renderActorCondition(
   cond: Extract<Condition, { kind: "actor" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: ActorId, onChange: (id: ActorId) => void) => HTMLElement;
+    readonly showPresent?: boolean;
+    readonly forcePresentOnActorChange?: boolean;
+    readonly className?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentActorId = cond.actorId;
-  const sel = actorPicker(cond.actorId, (actorId) => {
+  const sel = (options.picker ?? actorPicker)(cond.actorId, (actorId) => {
     currentActorId = actorId;
-    onChange({ kind: "actor", actorId, present: cond.present });
+    onChange({ kind: "actor", actorId, present: options.forcePresentOnActorChange ? true : cond.present });
   });
+  if (options.showPresent === false) {
+    row.append(sel);
+    return row;
+  }
   const present = el("select", { dataset: { testid: "event-condition-actor-present" } }) as HTMLSelectElement;
   present.append(
     el("option", { text: "파티에 있음", attrs: { value: "true" } }),
@@ -194,16 +269,26 @@ function renderActorCondition(
   return row;
 }
 
-function renderItemCondition(
+export function renderItemCondition(
   cond: Extract<Condition, { kind: "item" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly picker?: (currentId: ItemId, onChange: (id: ItemId) => void) => HTMLElement;
+    readonly showPresent?: boolean;
+    readonly forcePresentOnItemChange?: boolean;
+    readonly className?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   let currentItemId = cond.itemId;
-  const sel = itemPicker(cond.itemId, (itemId) => {
+  const sel = (options.picker ?? itemPicker)(cond.itemId, (itemId) => {
     currentItemId = itemId;
-    onChange({ kind: "item", itemId, present: cond.present });
+    onChange({ kind: "item", itemId, present: options.forcePresentOnItemChange ? true : cond.present });
   });
+  if (options.showPresent === false) {
+    row.append(sel);
+    return row;
+  }
   const present = el("select", { dataset: { testid: "event-condition-item-present" } }) as HTMLSelectElement;
   present.append(
     el("option", { text: "소지함", attrs: { value: "true" } }),
@@ -217,16 +302,21 @@ function renderItemCondition(
   return row;
 }
 
-function renderGoldCondition(
+export function renderGoldCondition(
   cond: Extract<Condition, { kind: "gold" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly opTestId?: string;
+    readonly amountTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
-  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, "event-condition-gold-op");
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, options.opTestId ?? "event-condition-gold-op");
   const amount = el("input", {
     attrs: { type: "number", min: "0" },
     value: String(cond.amount),
-    dataset: { testid: "event-condition-gold-amount" },
+    dataset: { testid: options.amountTestId ?? "event-condition-gold-amount" },
   }) as HTMLInputElement;
   const apply = () => {
     onChange({
@@ -241,21 +331,52 @@ function renderGoldCondition(
   return row;
 }
 
-function renderTimerCondition(
+export function renderTimerCondition(
   cond: Extract<Condition, { kind: "timer" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly timerIdTestId?: string;
+    readonly secondsTestId?: string;
+    readonly minutesSeconds?: boolean;
+    readonly minutesTestId?: string;
+  } = {}
 ): HTMLElement {
-  const row = el("span", {});
-  const timerId = el("select", { dataset: { testid: "event-condition-timer-id" } }) as HTMLSelectElement;
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const timerId = el("select", { dataset: { testid: options.timerIdTestId ?? "event-condition-timer-id" } }) as HTMLSelectElement;
   timerId.append(
     el("option", { text: "타이머 1", attrs: { value: "timer1" } }),
     el("option", { text: "타이머 2", attrs: { value: "timer2" } })
   );
   timerId.value = cond.timerId;
+  if (options.minutesSeconds) {
+    const minutes = el("input", {
+      attrs: { type: "number", min: "0" },
+      value: String(Math.floor(cond.seconds / 60)),
+      dataset: { testid: options.minutesTestId ?? "event-condition-timer-minutes" },
+    }) as HTMLInputElement;
+    const seconds = el("input", {
+      attrs: { type: "number", min: "0", max: "59" },
+      value: String(cond.seconds % 60),
+      dataset: { testid: options.secondsTestId ?? "event-condition-timer-seconds" },
+    }) as HTMLInputElement;
+    const apply = () => {
+      onChange({
+        kind: "timer",
+        timerId: timerId.value === "timer2" ? "timer2" : "timer1",
+        seconds: (parseInt(minutes.value, 10) || 0) * 60 + (parseInt(seconds.value, 10) || 0),
+      });
+    };
+    timerId.addEventListener("change", apply);
+    minutes.addEventListener("change", apply);
+    seconds.addEventListener("change", apply);
+    row.append(timerId, minutes, el("span", { text: "분" }), seconds, el("span", { text: "초 이하" }));
+    return row;
+  }
   const seconds = el("input", {
     attrs: { type: "number", min: "0" },
     value: String(cond.seconds),
-    dataset: { testid: "event-condition-timer-seconds" },
+    dataset: { testid: options.secondsTestId ?? "event-condition-timer-seconds" },
   }) as HTMLInputElement;
   const apply = () => {
     onChange({
@@ -267,6 +388,81 @@ function renderTimerCondition(
   timerId.addEventListener("change", apply);
   seconds.addEventListener("change", apply);
   row.append(timerId, seconds);
+  return row;
+}
+
+export function renderTimePhaseCondition(
+  cond: Extract<Condition, { kind: "timePhase" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly phaseTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const phase = selectWithOptions(TIME_PHASE_OPTIONS, cond.phase, options.phaseTestId ?? "event-condition-time-phase");
+  phase.addEventListener("change", () => {
+    onChange({ kind: "timePhase", phase: selectedOptionValue(phase, TIME_PHASE_OPTIONS, cond.phase) });
+  });
+  row.append(phase);
+  return row;
+}
+
+export function renderSeasonCondition(
+  cond: Extract<Condition, { kind: "season" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly seasonTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const season = selectWithOptions(SEASON_OPTIONS, cond.season, options.seasonTestId ?? "event-condition-season");
+  season.addEventListener("change", () => {
+    onChange({ kind: "season", season: selectedOptionValue(season, SEASON_OPTIONS, cond.season) });
+  });
+  row.append(season);
+  return row;
+}
+
+export function renderNpcActivityCondition(
+  cond: Extract<Condition, { kind: "npcActivity" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly activityTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const activity = el("input", {
+    attrs: { type: "text", placeholder: "work" },
+    value: cond.activity,
+    dataset: { testid: options.activityTestId ?? "event-condition-npc-activity" },
+  }) as HTMLInputElement;
+  activity.addEventListener("change", () => {
+    onChange({ kind: "npcActivity", activity: activity.value.trim() || cond.activity });
+  });
+  row.append(activity);
+  return row;
+}
+
+export function renderFriendshipAtLeastCondition(
+  cond: Extract<Condition, { kind: "friendshipAtLeast" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly npcKeyTestId?: string; readonly valueTestId?: string } = {}
+): HTMLElement {
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const npcKey = el("input", {
+    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    value: cond.npcKey ?? "",
+    dataset: { testid: options.npcKeyTestId ?? "event-condition-friendship-npc-key" },
+  }) as HTMLInputElement;
+  const value = el("input", {
+    attrs: { type: "number", min: "0", max: "1000" },
+    value: String(cond.value),
+    dataset: { testid: options.valueTestId ?? "event-condition-friendship-value" },
+  }) as HTMLInputElement;
+  const apply = () => {
+    onChange({
+      kind: "friendshipAtLeast",
+      npcKey: npcKey.value.trim() || undefined,
+      value: parseInt(value.value, 10) || 0,
+    });
+  };
+  npcKey.addEventListener("change", apply);
+  value.addEventListener("change", apply);
+  row.append(npcKey, value);
   return row;
 }
 

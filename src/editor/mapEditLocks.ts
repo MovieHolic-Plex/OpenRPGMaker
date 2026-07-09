@@ -1,12 +1,15 @@
 import { editorState } from "@/editor/editorState";
+import { randomUuid } from "@/util/id";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
+import { toast } from "@/util/toast";
 
 type MapEditLockRow = {
   readonly owner_label: string | null;
   readonly owner_session_id: string;
   readonly expires_at: string;
+  readonly updated_at: string | null;
 };
 
 export type MapEditLockStatus =
@@ -19,6 +22,7 @@ export type MapEditLockStatus =
       readonly mapName: string;
       readonly ownerLabel: string;
       readonly expiresAt: string;
+      readonly updatedAt?: string;
     }
   | {
       readonly kind: "unavailable";
@@ -36,6 +40,7 @@ const SESSION_KEY = "rpg-zzu-editor-session-id";
 const OWNER_LABEL_KEY = "rpg-zzu-editor-owner-label";
 const LOCK_TTL_MS = 2 * 60 * 1000;
 const HEARTBEAT_MS = 45 * 1000;
+export const MAP_EDIT_LOCK_IMMEDIATE_TAKEOVER_AFTER_MS = 90 * 1000;
 
 let status: MapEditLockStatus = { kind: "idle" };
 let requestVersion = 0;
@@ -58,7 +63,8 @@ export function statusForMap(mapId: MapId): MapEditLockStatus | null {
 
 export function canEditMap(mapId: MapId): boolean {
   if (status.kind === "locked" && status.mapId === mapId) return false;
-  if (status.kind === "checking" && status.mapId === mapId) return false;
+  // checking(부팅/맵 전환 직후 비동기 확인 중)은 낙관적으로 편집 허용 — 확인 중 몇 초간
+  // 페인트가 조용히 막혀 "수동으로 못 깐다"로 느껴지던 데드존 제거. 진짜 잠금이면 곧 locked로 바뀐다.
   return true;
 }
 
@@ -70,11 +76,42 @@ export function mapEditLockNotice(mapId: MapId): string {
   return "이 맵은 지금 읽기 전용입니다.";
 }
 
+export function mapEditLockLastActivityAt(status: MapEditLockStatus): number | null {
+  if (status.kind !== "locked") return null;
+  const explicit = status.updatedAt ? Date.parse(status.updatedAt) : Number.NaN;
+  if (Number.isFinite(explicit)) return explicit;
+  const expiresAt = Date.parse(status.expiresAt);
+  if (!Number.isFinite(expiresAt)) return null;
+  return expiresAt - LOCK_TTL_MS;
+}
+
+export function mapEditLockLastActivityText(status: MapEditLockStatus, now = Date.now()): string {
+  const lastActivityAt = mapEditLockLastActivityAt(status);
+  if (lastActivityAt === null) return "활동 시각 알 수 없음";
+  const elapsedMs = Math.max(0, now - lastActivityAt);
+  if (elapsedMs < 60_000) return "방금 활동";
+  const minutes = Math.max(1, Math.floor(elapsedMs / 60_000));
+  return `${minutes}분 전 활동`;
+}
+
+export function isMapEditLockTakeoverImmediate(status: MapEditLockStatus, now = Date.now()): boolean {
+  const lastActivityAt = mapEditLockLastActivityAt(status);
+  return lastActivityAt !== null && now - lastActivityAt >= MAP_EDIT_LOCK_IMMEDIATE_TAKEOVER_AFTER_MS;
+}
+
 export function ensureCurrentMapLock(): void {
   const project = store.getCurrent();
   const mapId = editorState.get().currentMapId ?? project.startMapId;
   const mapName = project.maps[mapId]?.name ?? mapId;
   void checkoutMapForEditing(mapId, mapName);
+}
+
+// 탭 닫기/새로고침 시 보유 락을 즉시 반납 — 새로고침한 자기 자신이 이전 세션 락에 걸려
+// "읽기 전용"으로 시작하던 자기잠금 문제 완화(TTL은 백스톱으로 유지).
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+  window.addEventListener("beforeunload", () => {
+    if (status.kind === "held") void releaseMapLock(status.mapId);
+  });
 }
 
 export async function checkoutMapForEditing(mapId: MapId, mapName: string): Promise<void> {
@@ -102,7 +139,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
     if (version !== requestVersion) return;
     if (result.kind === "locked") {
       stopHeartbeat();
-      setStatus({ kind: "locked", mapId, mapName, ownerLabel: result.ownerLabel, expiresAt: result.expiresAt });
+      setStatus({ kind: "locked", mapId, mapName, ownerLabel: result.ownerLabel, expiresAt: result.expiresAt, updatedAt: result.updatedAt });
       return;
     }
     setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
@@ -114,11 +151,37 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
   }
 }
 
+export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<void> {
+  const config = supabaseProjectConfig();
+  checkedMapId = mapId;
+  requestVersion += 1;
+  if (!config) {
+    stopHeartbeat();
+    setStatus({ kind: "unavailable", mapId, mapName, reason: "not-configured", message: "Supabase 설정 없음" });
+    toast("편집 권한을 가져올 수 없습니다: Supabase 설정 없음", "error");
+    return;
+  }
+  try {
+    const result = await upsertOwnMapLock(config, mapId, mapName);
+    setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
+    scheduleHeartbeat(mapId, mapName);
+    toast("편집 권한을 가져왔습니다", "ok");
+  } catch (error) {
+    stopHeartbeat();
+    const nextStatus = unavailableStatusFromError(error, mapId, mapName);
+    setStatus(nextStatus);
+    toast(`편집 권한 가져오기 실패: ${nextStatus.kind === "unavailable" ? nextStatus.message : "잠금 확인 실패"}`, "error");
+  }
+}
+
 async function acquireMapLock(
   config: SupabaseProjectConfig,
   mapId: MapId,
   mapName: string,
-): Promise<{ readonly kind: "held"; readonly expiresAt: string } | { readonly kind: "locked"; readonly ownerLabel: string; readonly expiresAt: string }> {
+): Promise<
+  | { readonly kind: "held"; readonly expiresAt: string }
+  | { readonly kind: "locked"; readonly ownerLabel: string; readonly expiresAt: string; readonly updatedAt?: string }
+> {
   const sessionId = editorSessionId();
   const existing = await loadMapLock(config, mapId);
   const now = Date.now();
@@ -127,16 +190,25 @@ async function acquireMapLock(
       kind: "locked",
       ownerLabel: existing.owner_label?.trim() || "다른 브라우저",
       expiresAt: existing.expires_at,
+      updatedAt: existing.updated_at ?? undefined,
     };
   }
-  const expiresAt = new Date(now + LOCK_TTL_MS).toISOString();
-  await upsertMapLock(config, mapId, mapName, sessionId, expiresAt);
+  return upsertOwnMapLock(config, mapId, mapName);
+}
+
+async function upsertOwnMapLock(
+  config: SupabaseProjectConfig,
+  mapId: MapId,
+  mapName: string,
+): Promise<{ readonly kind: "held"; readonly expiresAt: string }> {
+  const expiresAt = new Date(Date.now() + LOCK_TTL_MS).toISOString();
+  await upsertMapLock(config, mapId, mapName, editorSessionId(), expiresAt);
   return { kind: "held", expiresAt };
 }
 
 async function loadMapLock(config: SupabaseProjectConfig, mapId: MapId): Promise<MapEditLockRow | null> {
   const query = new URLSearchParams({
-    select: "owner_session_id,owner_label,expires_at",
+    select: "owner_session_id,owner_label,expires_at,updated_at",
     project_id: `eq.${config.projectId}`,
     map_id: `eq.${mapId}`,
     limit: "1",
@@ -153,6 +225,7 @@ async function loadMapLock(config: SupabaseProjectConfig, mapId: MapId): Promise
     owner_session_id: row.owner_session_id,
     owner_label: typeof row.owner_label === "string" ? row.owner_label : null,
     expires_at: row.expires_at,
+    updated_at: typeof row.updated_at === "string" ? row.updated_at : null,
   };
 }
 
@@ -220,7 +293,16 @@ function stopHeartbeat(): void {
 }
 
 function setStatus(next: MapEditLockStatus): void {
+  // 내용이 같은 상태(예: 45초 하트비트로 자기 락 expiresAt만 갱신)는 통지하지 않는다 —
+  // 통지가 좌측 팔레트/맵트리 전체 재구축으로 이어져 진행 중인 클릭을 증발시킨다.
+  // 타인 락(locked)은 expiresAt/updatedAt이 인수(takeover) UI에 쓰이므로 그대로 통지한다.
+  const sameIgnoringExpiry =
+    status.kind === next.kind &&
+    (status.kind === "idle" ||
+      (status.kind !== "locked" && "mapId" in status && "mapId" in next && status.mapId === next.mapId &&
+        (status.kind !== "unavailable" || (next.kind === "unavailable" && status.reason === next.reason))));
   status = next;
+  if (sameIgnoringExpiry) return;
   for (const listener of listeners) listener(status);
 }
 
@@ -256,7 +338,7 @@ function editorSessionId(): string {
   const storage = browserStorage();
   const existing = storage?.getItem(SESSION_KEY);
   if (existing) return existing;
-  const next = crypto.randomUUID();
+  const next = randomUuid();
   storage?.setItem(SESSION_KEY, next);
   return next;
 }

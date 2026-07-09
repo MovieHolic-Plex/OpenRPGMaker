@@ -67,18 +67,19 @@
 .layer-btn,
 .brush-size-btn,
 .tool-command-row .icon-btn {
-  background: #e5dfd0;
-  border-color: #aaa397;
-  border-radius: 2px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
-  color: var(--text-primary);
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .tool-grid .btn:hover:not(:disabled),
 .layer-btn:hover:not(:disabled),
 .brush-size-btn:hover:not(:disabled),
 .tool-command-row .icon-btn:hover:not(:disabled) {
-  background: var(--surface-workbench);
+  background: var(--control-bg-hover);
   border-color: var(--border-strong);
 }
 
@@ -107,9 +108,9 @@
 .layer-btn:active:not(:disabled),
 .brush-size-btn:active:not(:disabled),
 .tool-command-row .icon-btn:active:not(:disabled) {
-  background: var(--surface-recessed);
-  border-color: var(--accent-primary);
-  box-shadow: inset 0 0 0 1px rgba(46, 111, 158, 0.3);
+  background: var(--control-bg-active);
+  border-color: var(--accent-border);
+  box-shadow: none;
 }
 
 .left-panel-stack .tile-tool-status {
@@ -206,8 +207,8 @@
 
 .tile-category-tab.active,
 .tile-category-tab[aria-selected="true"] {
-  background: var(--surface-selected);
-  border-color: #6c6c6c #ffffff #ffffff #6c6c6c;
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
   font-weight: 700;
 }
 
@@ -375,14 +376,14 @@
 
 .quick-tile-cell:hover:not(:disabled),
 .quick-tile-cell:focus-visible:not(:disabled) {
-  border-color: #ffffff;
-  box-shadow: inset 0 0 0 1px #000000;
+  border-color: var(--accent-hover);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
   outline: none;
 }
 
 .quick-tile-cell.active {
-  border-color: #ffff00;
-  box-shadow: inset 0 0 0 1px #000000;
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
 }
 
 .quick-tile-cell.muted::after {
@@ -394,10 +395,10 @@
 }
 
 .quick-tile-index {
-  background: rgba(255, 255, 255, 0.9);
-  color: #c00000;
+  background: rgba(10, 12, 17, 0.85);
+  color: var(--warning);
   display: none;
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
@@ -416,17 +417,19 @@
 }
 
 .chipset-sheet::-webkit-scrollbar {
-  height: 14px;
-  width: 14px;
+  height: 10px;
+  width: 10px;
 }
 
 .chipset-sheet::-webkit-scrollbar-thumb {
-  background: #8f8a80;
-  border: 3px solid var(--bg-panel-2);
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
 }
 
 .chipset-sheet::-webkit-scrollbar-track {
-  background: #d8d0be;
+  background: transparent;
 }
 
 .chipset-sheet-image {
@@ -486,21 +489,94 @@
 
 .chipset-tile:hover:not(:disabled),
 .chipset-tile:focus-visible:not(:disabled) {
-  border-color: #ffffff;
-  box-shadow: inset 0 0 0 1px #000000;
+  border-color: var(--accent-hover);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
   outline: none;
 }
 
 .chipset-tile.active {
-  border-color: #ffff00;
-  box-shadow: inset 0 0 0 1px #000000;
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
 }
 
 .chipset-tile.stamp-source {
-  border-color: #51cf66;
+  border-color: var(--success);
   box-shadow:
-    inset 0 0 0 1px #ffffff,
-    inset 0 0 0 2px #14532d;
+    inset 0 0 0 1px var(--bg-canvas),
+    inset 0 0 0 2px var(--success-muted);
+}
+
+.chipset-tile.classified {
+  filter: saturate(0.72);
+  opacity: 0.55;
+  position: relative;
+}
+
+.chipset-tile.classified::after {
+  align-items: center;
+  background: rgba(10, 36, 106, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  color: var(--text-inverse);
+  content: "✓";
+  display: flex;
+  font-size: 9px;
+  font-weight: 700;
+  height: 13px;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 13px;
+}
+
+.chipset-tile.range-selected {
+  border-color: var(--accent);
+  box-shadow:
+    inset 0 0 0 1px var(--bg-canvas),
+    inset 0 0 0 3px var(--accent-soft);
+  filter: none;
+  opacity: 1;
+}
+
+.chipset-range-marquee {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.36);
+  height: max(2px, var(--range-height, 0px));
+  left: var(--range-left, 0);
+  pointer-events: none;
+  position: absolute;
+  top: var(--range-top, 0);
+  width: max(2px, var(--range-width, 0px));
+  z-index: 4;
+}
+
+.chipset-range-marquee.hidden {
+  display: none;
+}
+
+.sheet-range-classify {
+  background: var(--accent);
+  border: 1px solid var(--accent-hover);
+  border-radius: 4px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  color: var(--text-inverse);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 8px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  z-index: 5;
+}
+
+.sheet-range-classify:hover,
+.sheet-range-classify:focus-visible {
+  background: var(--accent-hover);
+  outline: 1px solid var(--text-inverse);
 }
 
 .chipset-tile.muted {
@@ -513,7 +589,7 @@
 }
 
 .chipset-tile.band-dimmed {
-  background: rgba(236, 231, 218, 0.18);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .chipset-tile.band-dimmed.muted {
@@ -528,27 +604,28 @@
 }
 
 .chipset-band-button {
-  background: #e5dfd0;
-  border-color: #aaa397;
-  border-radius: 2px;
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.28);
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
   font-size: 11px;
   font-weight: 600;
   height: 22px;
   min-width: 0;
   padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .chipset-band-button.active,
 .chipset-band-button[aria-pressed="true"] {
-  background: var(--surface-selected);
-  border-color: var(--accent-primary);
-  box-shadow: inset 3px 0 0 var(--accent-primary);
-  color: var(--text-primary);
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  box-shadow: none;
+  color: var(--text-1);
 }
 
 .chipset-band-button:hover:not(:disabled) {
-  background: var(--surface-workbench);
+  background: var(--control-bg-hover);
   border-color: var(--border-strong);
 }
 
@@ -564,9 +641,9 @@
 }
 
 .chipset-scroll-button {
-  background: #e5dfd0;
-  border-color: #aaa397;
-  border-radius: 2px;
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
   height: 22px;
 }
 

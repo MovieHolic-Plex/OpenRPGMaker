@@ -1,5 +1,7 @@
 import { getMode, toggleMode } from "@/app/mode";
-import { addMap, deleteMap, setStartMap } from "@/editor/actions";
+import { addMap, setStartMap } from "@/editor/actions";
+import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
+import { showConfirm } from "@/editor/ui/modal";
 import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -7,9 +9,9 @@ import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
-import { openTerrainTemplateModal } from "@/editor/panels/terrainTemplatePanel";
-import { openVillageInfoModal } from "@/editor/panels/villageInfoModal";
+import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
+import { createSampleAdventureProject, createTrainingExamplesProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -18,12 +20,14 @@ import {
   RPGZZU_MIME,
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { saveProjectNow } from "@/editor/saveActions";
 import { separator, toolbarButton } from "./menuToolbar";
+import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
 const MENU_ITEMS = [
   { id: "project", label: "프로젝트" },
@@ -33,6 +37,8 @@ const MENU_ITEMS = [
   { id: "help", label: "도움말" },
 ] as const;
 
+const TOOLBAR_COLLAPSED_KEY = "rpg-zzu:toolbar-collapsed";
+
 type MenuId = (typeof MENU_ITEMS)[number]["id"];
 
 type MenuCommand =
@@ -40,9 +46,11 @@ type MenuCommand =
   | { readonly kind: "separator" };
 
 let activeMenuPopup: HTMLElement | null = null;
+let popupOutsideListener: (() => void) | null = null;
 
 export function renderTopbar(topbar: HTMLElement): void {
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
+  applyToolbarCollapsed(readToolbarCollapsed());
   const mode = getMode();
   const state = editorState.get();
   const history = getMapEditHistoryState();
@@ -50,10 +58,26 @@ export function renderTopbar(topbar: HTMLElement): void {
   for (const item of MENU_ITEMS) {
     menuBar.append(renderMenu(item.id, item.label, menuCommands(item.id, state, history, topbar)));
   }
+  menuBar.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
+  menuBar.append(renderWindowControls());
 
   const toolbar = el("div", { class: "rm2k3-toolbar classic-toolbar", dataset: { testid: "rm2k3-toolbar" } });
   toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
   topbar.append(menuBar, toolbar);
+}
+
+export function readableTopbarIdentityLabel(label: string): string {
+  const browserSession = label.trim().match(/^브라우저\s+(.+)$/u)?.[1];
+  return browserSession ? `게스트 세션 ${browserSession}` : label.trim();
+}
+
+function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
+  const control = renderIdentityTopbarControl(() => renderTopbar(topbar));
+  const label = control.querySelector<HTMLElement>("[data-testid='topbar-identity-label']");
+  if (label) label.textContent = readableTopbarIdentityLabel(label.textContent ?? "");
+  control.querySelector(".team-identity-kind")?.remove();
+  control.querySelector(".team-identity-kind-text")?.remove();
+  return control;
 }
 
 function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[]): HTMLElement {
@@ -71,6 +95,86 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
       },
     },
   });
+}
+
+function renderWindowControls(): HTMLElement {
+  const controls = el("div", { class: "rm2k3-window-controls" });
+  const collapsed = document.body.classList.contains("toolbar-collapsed");
+  const collapse = el("button", {
+    class: "rm2k3-window-control",
+    text: collapsed ? "▾" : "─",
+    attrs: { type: "button", title: "툴바 접기/펼치기", "aria-pressed": collapsed ? "true" : "false" },
+    dataset: { testid: "window-toolbar-collapse" },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        const nextCollapsed = !document.body.classList.contains("toolbar-collapsed");
+        applyToolbarCollapsed(nextCollapsed);
+        writeToolbarCollapsed(nextCollapsed);
+        collapse.textContent = nextCollapsed ? "▾" : "─";
+        collapse.setAttribute("aria-pressed", nextCollapsed ? "true" : "false");
+      },
+    },
+  });
+  const fullscreen = el("button", {
+    class: "rm2k3-window-control",
+    text: document.fullscreenElement ? "◱" : "□",
+    attrs: { type: "button", title: "전체화면 전환" },
+    dataset: { testid: "window-fullscreen" },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        void toggleFullscreen();
+      },
+    },
+  });
+  document.addEventListener("fullscreenchange", () => {
+    fullscreen.textContent = document.fullscreenElement ? "◱" : "□";
+  });
+  // 브라우저 탭은 스크립트로 안정적으로 닫을 수 없어 닫기 컨트롤은 렌더하지 않는다.
+  controls.append(collapse, fullscreen);
+  return controls;
+}
+
+function applyToolbarCollapsed(collapsed: boolean): void {
+  document.body.classList[collapsed ? "add" : "remove"]("toolbar-collapsed");
+}
+
+function readToolbarCollapsed(): boolean {
+  return browserLocalStorage()?.getItem(TOOLBAR_COLLAPSED_KEY) === "1";
+}
+
+function writeToolbarCollapsed(collapsed: boolean): void {
+  browserLocalStorage()?.setItem(TOOLBAR_COLLAPSED_KEY, collapsed ? "1" : "0");
+}
+
+function browserLocalStorage(): Storage | null {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch (error) {
+    if (error instanceof Error) return null;
+    return null;
+  }
+}
+
+async function toggleFullscreen(): Promise<void> {
+  try {
+    if (document.fullscreenElement) {
+      if (typeof document.exitFullscreen !== "function") {
+        toast("이 브라우저에서는 전체화면을 지원하지 않습니다", "error");
+        return;
+      }
+      await document.exitFullscreen();
+      return;
+    }
+    if (typeof document.documentElement.requestFullscreen !== "function") {
+      toast("이 브라우저에서는 전체화면을 지원하지 않습니다", "error");
+      return;
+    }
+    await document.documentElement.requestFullscreen();
+  } catch (error) {
+    toast(error instanceof Error ? `전체화면 전환 실패: ${error.message}` : "전체화면 전환 실패", "error");
+  }
 }
 
 function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuCommand[]): void {
@@ -104,12 +208,23 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   popup.style.top = `${Math.round(box.bottom)}px`;
   document.body.append(popup);
   activeMenuPopup = popup;
+  // 바깥 클릭 시 닫기 — 단, 팝업 '안'을 누른 pointerdown은 닫지 않는다(도그푸딩 결함 ⑪ 근본 원인).
+  // 기존에는 무조건 닫아서, 항목의 pointerdown이 팝업을 제거 → 이어질 click이 분리된 항목에
+  // 도달하지 못해 내보내기 등 메뉴 항목 onClick이 실행되지 않았다(내보내기 무반응).
+  const onOutsidePointerDown = (event: PointerEvent): void => {
+    if (event.target instanceof Node && popup.contains(event.target)) return;
+    closeMenuPopup();
+    document.removeEventListener("pointerdown", onOutsidePointerDown);
+  };
   window.setTimeout(() => {
-    document.addEventListener("pointerdown", closeMenuPopup, { once: true });
+    document.addEventListener("pointerdown", onOutsidePointerDown);
   }, 0);
+  popupOutsideListener = () => document.removeEventListener("pointerdown", onOutsidePointerDown);
 }
 
 function closeMenuPopup(): void {
+  popupOutsideListener?.();
+  popupOutsideListener = null;
   activeMenuPopup?.remove();
   activeMenuPopup = null;
   document.querySelectorAll<HTMLElement>(".rm2k3-menu-item[aria-expanded='true']").forEach((node) => {
@@ -129,6 +244,8 @@ function menuCommands(
     case "project":
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
+        item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
+        item("학습 예시 12맵", "menu-project-training-examples", () => void newTrainingExamplesProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
@@ -152,12 +269,14 @@ function menuCommands(
         { kind: "separator" },
         item("데이터베이스...", "menu-tools-database", () => openDatabaseModal()),
         item("리소스 관리자...", "menu-tools-resources", () => openResourceModal()),
-        item("마을 정보...", "menu-tools-village-info", () => openVillageInfoModal()),
+        item("세계관...", "menu-tools-world", () => openWorldPanel()),
       ];
     case "game":
       return [
         item(state.layer === "event" ? "편집 계속" : "테스트 플레이", "menu-game-play", () => void togglePlayMode()),
         item("테스트 플레이 창", "menu-game-test-window", () => void openTestPlayWindow()),
+        { kind: "separator" },
+        item("내보내기...", "menu-game-export", () => void doExportWebGame()),
       ];
     case "help":
       return [
@@ -190,6 +309,8 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
       onClick: () => void openSelectedEventTestWindow(),
     }),
     separator(),
+    playModeButton("edit"),
+    separator(),
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
     separator(),
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "Supabase 프로젝트 열기", icon: "open", onClick: () => doLoad(topbar) }),
@@ -206,15 +327,11 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     separator(),
     toolbarButton({ testId: "toolbar-database", label: "DB", title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
     toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
-    toolbarButton({ testId: "toolbar-village-info", label: "마을 정보", title: "마을 정보 문서", icon: "manual", onClick: () => openVillageInfoModal() }),
-    toolbarButton({ testId: "toolbar-evidence-packet", label: "증거 패킷", title: "브라우저 증거 패킷", icon: "manual", onClick: () => toast("브라우저 증거 패킷 준비됨", "ok") }),
+    toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
-    playModeButton("edit"),
-    separator(),
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
-    toolbarButton({ testId: "toolbar-title-screen", label: "TITLE", title: "타이틀/시스템 리소스", icon: "title", onClick: () => openTerrainTemplateModal() }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
   return row;
@@ -321,11 +438,27 @@ function applyHistory(action: () => boolean, topbar: HTMLElement): void {
 }
 
 async function newProject(): Promise<void> {
-  if (!window.confirm("현재 작업을 지우고 새 프로젝트를 시작할까요?")) return;
+  if (!(await showConfirm({ title: "새 프로젝트", message: "현재 작업을 지우고 새 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   await store.clearAll();
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("새 프로젝트를 만들었습니다", "ok");
+}
+
+async function newTrainingExamplesProject(): Promise<void> {
+  if (!(await showConfirm({ title: "학습 예시 12맵", message: "현재 작업을 지우고 학습 예시 12맵 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replace(createTrainingExamplesProject());
+  const project = store.getCurrent();
+  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  toast("학습 예시 12맵을 불러왔습니다 — 각 맵 이름의 주제대로 예시를 채워넣으세요", "ok");
+}
+
+async function newSampleAdventureProject(): Promise<void> {
+  if (!(await showConfirm({ title: "예제 프로젝트", message: "현재 작업을 지우고 예제 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replace(createSampleAdventureProject());
+  const project = store.getCurrent();
+  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  toast("예제 프로젝트를 불러왔습니다", "ok");
 }
 
 function newMap(): void {
@@ -340,12 +473,13 @@ function deleteCurrentMap(mapId: string): void {
     toast("마지막 맵은 삭제할 수 없습니다", "error");
     return;
   }
-  const mapName = project.maps[mapId]?.name ?? mapId;
-  if (!window.confirm(`'${mapName}' 맵을 삭제할까요?`)) return;
-  deleteMap(mapId);
-  const next = store.getCurrent();
-  editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
-  toast("맵을 삭제했습니다", "ok");
+  // 확인 다이얼로그(임팩트 요약, 커스텀 모달) + 무결성 가드 경유 삭제(도그푸딩 결함 ①·⑦).
+  void confirmAndDeleteMap(mapId).then((result) => {
+    if (!result.ok) return;
+    const next = store.getCurrent();
+    editorState.set({ currentMapId: next.startMapId, selectedEventId: null, selectedEventPageId: null });
+    toast("맵을 삭제했습니다", "ok");
+  });
 }
 
 async function togglePlayMode(): Promise<void> {
@@ -367,17 +501,56 @@ function doLoad(topbar: HTMLElement): void {
   });
 }
 
+// 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 기존 미동작 원인 3가지:
+// 1) `await store.flush()`가 저장 오류 시 reject → 함수 전체가 무반응으로 중단(다운로드 없음).
+// 2) anchor가 DOM에 붙지 않은 채 click() — 일부 환경에서 다운로드가 시작되지 않음.
+// 3) click() 직후 동기 revokeObjectURL — 브라우저가 fetch를 시작하기 전에 URL이 무효화될 수 있음.
 async function doExport(): Promise<void> {
-  await store.flush();
-  const project = projectWithoutEventDrafts(store.getCurrent());
-  const blob = createProjectPackage(project);
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = projectPackageFileName(project);
-  anchor.click();
-  URL.revokeObjectURL(url);
-  toast("내보냈습니다", "ok");
+  try {
+    // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).
+    await store.flush().catch((error) => {
+      console.error("[export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태를 내보냅니다", "info");
+    });
+    const project = projectWithoutEventDrafts(store.getCurrent());
+    const blob = createProjectPackage(project);
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = projectPackageFileName(project);
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    toast("내보냈습니다", "ok");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`내보내기 실패: ${message}`, "error");
+  }
+}
+
+async function doExportWebGame(): Promise<void> {
+  try {
+    await store.flush().catch((error) => {
+      console.error("[web-export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태를 게임 번들로 내보냅니다", "info");
+    });
+    toast("게임 번들을 만드는 중...", "info");
+    const project = store.getCurrent();
+    const result = await createWebPlayerExportPackage(project);
+    const url = URL.createObjectURL(result.blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = webExportFileName(project);
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    toast(`게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`, "ok");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`게임 내보내기 실패: ${message}`, "error");
+  }
 }
 
 function doImport(): void {

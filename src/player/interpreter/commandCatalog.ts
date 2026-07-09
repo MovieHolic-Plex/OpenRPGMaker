@@ -1,12 +1,26 @@
-import type { Command } from "@/project/types";
-import { changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, learnSkill, setSwitch, setTimer, setVariable } from "@/project/session";
+import type { Command, EndingDef, M2CommandFields } from "@/project/types";
+import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, learnSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
+import { syncActorVitals } from "@/project/sessionVitals";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { resolveEventPage } from "@/project/io";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
-import { fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
+import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import type { RuntimeCameraTarget } from "@/player/types";
+import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
+import { saveSessionCheckpoint } from "@/player/checkpoints";
+import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
+import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
+import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
+import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
+import { advanceFarmPlotsForDay } from "@/player/farming";
+import { resolveShopStock } from "@/project/shopStock";
 
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
@@ -56,6 +70,7 @@ function executeM2Command(
     console.warn(`[interpreter] M2 command is unclassified: ${command.commandId}`);
     return resumeNext(frame);
   }
+  const m2Context = { currentEventId: state.currentEventId, project: state.project };
 
   if (entry.existingKind === "displayTextSettings") {
     state.session.messageWindowSettings = {
@@ -67,7 +82,28 @@ function executeM2Command(
     return resumeNext(frame);
   }
 
-  if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("cameraControl", cameraControlStep(command.fields, state.currentEventId));
+  }
+
+  if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("spawnEvent", { kind: "spawnEvent", eventId: spawnEventId(command.fields) });
+  }
+
+  if (entry.title === "Remove Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("removeEvent", { kind: "removeEvent", eventId: removeEventId(command.fields, state.currentEventId) });
+  }
+
+  if (entry.title === "Move Picture" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const pictureId = fieldString(command.fields, "pictureId", "pic1");
+    const picture = state.session.pictures?.[pictureId];
+    if (picture && shouldWaitForPicture(command.fields)) {
+      return pause("showPicture", { kind: "showPicture", ...picture, waitForPicture: true });
+    }
+    return resumeNext(frame);
+  }
+
+  if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("text", {
       kind: "text",
       speaker: fieldString(command.fields, "speaker", ""),
@@ -76,7 +112,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("playAudio", {
       kind: "playAudio",
       resourceId: fieldString(command.fields, "resourceId", ""),
@@ -84,7 +120,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Wait Until" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Wait Until" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     const condition = fieldString(command.fields, "condition", "switchOn");
     const target = fieldString(command.fields, "target", "");
     if (state.session.flags[`m2-wait:${condition}:${target}`] !== true) {
@@ -93,8 +129,25 @@ function executeM2Command(
     return resumeNext(frame);
   }
 
+  if (entry.title === "End Event Processing") {
+    executeM2RuntimeCommand(state.session, entry, command, m2Context);
+    return { kind: "done" };
+  }
+
+  if (entry.title === "Erase Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("eraseEvent", { kind: "eraseEvent", eventId: state.currentEventId });
+  }
+
+  if (entry.title === "Wait for All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("waitForAllMovement", { kind: "waitForAllMovement" });
+  }
+
+  if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("stopAllMovement", { kind: "stopAllMovement" });
+  }
+
   // 일회성 화면 효과: 상태 기록(executeM2RuntimeCommand) 후 블로킹 pause 로 플레이어에 위임.
-  if (entry.title === "Flash Screen" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Flash Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     const rgb = screenColorToRgb(fieldString(command.fields, "color", "white"));
     return pause("flashScreen", {
       kind: "flashScreen",
@@ -105,7 +158,7 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Shake Screen" && executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Shake Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("shakeScreen", {
       kind: "shakeScreen",
       intensity: fieldNumber(command.fields, "intensity", 3),
@@ -113,24 +166,123 @@ function executeM2Command(
     });
   }
 
-  if (executeM2RuntimeCommand(state.session, entry, command)) {
+  if (entry.title === "Scroll Map" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("scrollMap", {
+      kind: "scrollMap",
+      direction: scrollDirection(fieldString(command.fields, "direction", fieldString(command.fields, "target", "down"))),
+      distanceTiles: Math.max(0, fieldNumber(command.fields, "distance", fieldNumber(command.fields, "value", 0))),
+      durationMs: scrollDurationMs(command.fields),
+      wait: fieldBoolean(command.fields, "wait", true),
+      returnToPlayer: fieldBoolean(command.fields, "return", false) || fieldString(command.fields, "mode", "") === "return",
+      lock: fieldBoolean(command.fields, "lock", false) || fieldString(command.fields, "mode", "") === "lock",
+    });
+  }
+
+  if (entry.title === "Set Weather Effects" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const weather = parseWeather(fieldString(command.fields, "value", "none"));
+    return pause("setWeather", {
+      kind: "setWeather",
+      weather: weather.kind,
+      intensity: weather.intensity,
+      transitionMs: Math.max(0, Math.round(fieldNumber(command.fields, "transitionMs", fieldNumber(command.fields, "durationMs", 0)))),
+    });
+  }
+
+  if (entry.title === "Checkpoint Save" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    saveCheckpoint(state);
     return resumeNext(frame);
   }
 
-  switch (entry.runtimeClassification) {
+  if (executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return resumeNext(frame);
+  }
+
+  switch (entry.runtimeSupport) {
     case "editor-only":
       console.warn(`[interpreter] M2 editor-only command skipped: ${entry.label}`);
       return resumeNext(frame);
-    case "shell":
-    case "battle-only":
-    case "disabled":
-    case "missing-runtime":
-    case "internal-non-pdf":
-      console.warn(`[interpreter] M2 command cannot run in map interpreter (${entry.runtimeClassification}): ${entry.label}`);
+    case "runtime-partial":
+      console.warn(`[interpreter] M2 partial runtime command had no map effect: ${entry.label}`);
       return resumeNext(frame);
-    case "runtime":
+    case "runtime-full":
       console.warn(`[interpreter] M2 runtime command should use native command kind: ${entry.label}`);
       return resumeNext(frame);
+  }
+}
+
+function saveCheckpoint(state: InterpreterState): void {
+  if (!state.project) {
+    console.warn("[interpreter] checkpointSave skipped: project context missing");
+    return;
+  }
+  saveSessionCheckpoint(state.project, state.session as PlaySession);
+}
+
+function advanceCommandMinutes(command: Extract<Command, { kind: "advanceTime" }>): number {
+  const minutes = Number.isFinite(command.minutes ?? 0) ? command.minutes ?? 0 : 0;
+  const hours = Number.isFinite(command.hours ?? 0) ? command.hours ?? 0 : 0;
+  return Math.max(0, Math.trunc(minutes + hours * 60));
+}
+
+function killParty(state: InterpreterState): void {
+  for (const actorId of state.session.partyActorIds) {
+    if (state.project) syncActorVitals(state.project, state.session.actorVitals, actorId);
+    const vitals = state.session.actorVitals[actorId];
+    if (vitals) vitals.hp = 0;
+    state.session.actorStateIds ??= {};
+    const states = new Set(state.session.actorStateIds[actorId] ?? []);
+    states.add("state_death");
+    state.session.actorStateIds[actorId] = [...states];
+  }
+}
+
+function triggerEnding(
+  state: InterpreterState,
+  endingId: string | undefined
+): CommandExecution {
+  const project = state.project;
+  const ending = project ? selectEnding(project.endings ?? [], state, endingId) : undefined;
+  if (!ending) {
+    console.warn(`[interpreter] 엔딩을 선택할 수 없습니다: ${endingId ?? "(auto)"}`);
+    return pause("returnToTitle", { kind: "returnToTitle", title: "엔딩", message: "조건에 맞는 엔딩이 없습니다." });
+  }
+
+  state.session.flags[`ending:${ending.id}`] = true;
+  const finalCommand: Command = { kind: "ending", title: ending.name, message: "" };
+  const epilogueCommands = compileEndingEpilogue(state, ending);
+  if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
+    return { kind: "continue" };
+  }
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "" });
+}
+
+function selectEnding(
+  endings: readonly EndingDef[],
+  state: InterpreterState,
+  endingId: string | undefined
+): EndingDef | undefined {
+  if (endingId) return endings.find((ending) => ending.id === endingId);
+  return endings
+    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, state.currentEventId)))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+}
+
+function compileEndingEpilogue(state: InterpreterState, ending: EndingDef): Command[] {
+  if (!state.project || !ending.epilogue || ending.epilogue.length === 0) return [];
+  const eventIds = new Set<string>();
+  for (const map of Object.values(state.project.maps)) {
+    for (const event of map.events) eventIds.add(event.id);
+  }
+  try {
+    return compileCutscene(ending.epilogue as CutsceneBeat[], {
+      context: { eventIds, resourceIds: collectResourceIds(state.project) },
+    });
+  } catch (cause) {
+    if (cause instanceof CutsceneValidationError) {
+      console.warn(`[interpreter] 엔딩 에필로그 검증 실패(${ending.id}): ${cause.reasons.join(" / ")}`);
+      return [];
+    }
+    throw cause;
   }
 }
 
@@ -188,6 +340,19 @@ export function executeCommand(
       if (command.action === "start" && command.seconds !== undefined) setTimer(state.session, timerId, command.seconds);
       return pause("timer", { kind: "timer", action: command.action, seconds: command.seconds, timerId });
     }
+    case "advanceTime":
+      return pause("advanceTime", {
+        kind: "advanceTime",
+        minutes: advanceCommandMinutes(command),
+        days: command.days,
+      });
+    case "advanceCropGrowth":
+      if (state.project) advanceFarmPlotsForDay(state.project, state.session as PlaySession, command.days);
+      return resumeNext(frame);
+    case "setTime":
+      return pause("setTime", { kind: "setTime", hour: command.hour, minute: command.minute });
+    case "sleepUntilMorning":
+      return pause("sleepUntilMorning", { kind: "sleepUntilMorning" });
     case "inputWait":
       return pause("inputWait", { kind: "inputWait", variableId: command.variableId });
     case "inputNumber":
@@ -220,7 +385,7 @@ export function executeCommand(
       breakLoop(state);
       return { kind: "continue" };
     case "transfer":
-      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade });
+      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
     case "wait":
       return pause("wait", { kind: "wait", ms: command.ms });
     case "changeTile":
@@ -240,12 +405,19 @@ export function executeCommand(
         repeat: command.route.repeat,
         wait: command.route.wait === true,
       });
+    case "setEventGraphicPattern":
+      return pause("setEventGraphicPattern", {
+        kind: "setEventGraphicPattern",
+        eventId: command.eventId,
+        pattern: command.pattern,
+      });
     case "battleProcessing":
       return pause("battleProcessing", {
         kind: "battleProcessing",
         troopId: command.troopId,
         canEscape: command.canEscape,
         canLose: command.canLose,
+        battleFlow: command.battleFlow,
       });
     case "showPicture":
       return pause("showPicture", {
@@ -254,6 +426,11 @@ export function executeCommand(
         resourceId: command.resourceId,
         x: command.x,
         y: command.y,
+        scale: command.scale,
+        opacity: command.opacity,
+        rotation: command.rotation,
+        durationMs: command.durationMs,
+        waitForPicture: command.waitForPicture,
       });
     case "erasePicture":
       return pause("erasePicture", { kind: "erasePicture", pictureId: command.pictureId });
@@ -261,6 +438,10 @@ export function executeCommand(
       return pause("playAudio", { kind: "playAudio", resourceId: command.resourceId, loop: command.loop });
     case "stopAudio":
       return pause("stopAudio", { kind: "stopAudio" });
+    case "cutsceneControl":
+      if (command.mode === "begin") beginCutsceneControl(state.session, state.currentEventId, command.skippable === true);
+      else endCutsceneControl(state.session);
+      return resumeNext(frame);
     case "displayTextSettings": {
       state.session.messageWindowSettings = {
         format: command.format,
@@ -274,6 +455,7 @@ export function executeCommand(
       return pause("shop", {
         kind: "shop",
         itemIds: command.itemIds,
+        items: state.project ? resolveShopStock(state.project, state.session, command) : undefined,
         allowSell: command.allowSell,
         quantityMode: command.quantityMode,
         shopType: command.shopType,
@@ -282,6 +464,14 @@ export function executeCommand(
       });
     case "inn":
       return pause("inn", { kind: "inn", price: command.price });
+    case "checkpointSave":
+      saveCheckpoint(state);
+      return resumeNext(frame);
+    case "killPlayer":
+      killParty(state);
+      return pause("gameOver", { kind: "gameOver", message: command.message });
+    case "triggerEnding":
+      return triggerEnding(state, command.endingId);
     case "gameOver":
       return pause("gameOver", { kind: "gameOver" });
     case "ending":
@@ -305,6 +495,15 @@ export function executeCommand(
     case "changeLevel":
       changeActorLevel(state.session, command);
       return resumeNext(frame);
+    case "promoteActor": {
+      const result = state.project
+        ? promoteActor(state.session, state.project, command.actorId, command.toClassId || undefined)
+        : { ok: false as const, actorId: command.actorId, reason: "project-not-available" };
+      state.session.flags.promoteActorSuccess = result.ok;
+      const branch = result.ok ? command.successBranch : command.failureBranch;
+      if (branch?.length && pushFrame(state, branch)) return { kind: "continue" };
+      return resumeNext(frame);
+    }
     case "changeEquipment":
       changeActorEquipment(state.session, command);
       return resumeNext(frame);
@@ -315,15 +514,88 @@ export function executeCommand(
     case "recoverAll":
       recoverAll(state.session, command.actorId);
       return resumeNext(frame);
+    case "enterHeroName": {
+      const actor = state.project?.database.actors.find((record) => record.id === command.actorId);
+      return pause("enterHeroName", {
+        kind: "enterHeroName",
+        actorId: command.actorId,
+        maxLength: command.maxLength,
+        showInitialName: command.showInitialName,
+        currentName: actor?.name ?? "",
+      });
+    }
     case "changeGold":
       changeGold(state.session, command.op, command.amount);
       return resumeNext(frame);
     case "changeItem":
       changeItem(state.session, command.itemId, command.op, command.amount);
       return resumeNext(frame);
+    case "changeFriendship":
+      changeFriendship(state.session, command.npcKey, command.delta, state.currentEventId);
+      return resumeNext(frame);
+    case "getFriendship":
+      setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, state.currentEventId));
+      return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);
       return resumeNext(frame);
+    case "giveMonster":
+      if (state.project) giveMonster(state.project, state.session as PlaySession, command);
+      return resumeNext(frame);
+    case "moveMonster":
+      moveMonster(state.session as PlaySession, command.instanceId, command.to);
+      return resumeNext(frame);
+    case "evolveMonster": {
+      const result = state.project
+        ? evolveMonster(state.project, state.session as PlaySession, { instanceId: command.instanceId, toSpeciesId: command.toSpeciesId, allowItemEvolution: true })
+        : { ok: false as const };
+      state.session.flags.evolveMonsterSuccess = result.ok;
+      const branch = result.ok ? command.successBranch : command.failureBranch;
+      if (branch?.length && pushFrame(state, branch)) return { kind: "continue" };
+      return resumeNext(frame);
+    }
+    case "addFollower":
+      if (state.project) addFollowerToSession(state.project, state.session as PlaySession, command);
+      return resumeNext(frame);
+    case "removeFollower":
+      removeFollowerFromSession(state.session as PlaySession, command);
+      return resumeNext(frame);
+    case "setLighting": {
+      const transitionMs = Math.max(0, Math.round(command.transitionMs ?? 0));
+      if (transitionMs > 0) {
+        return pause("setLighting", {
+          kind: "setLighting",
+          ambient: command.ambient,
+          color: command.color,
+          transitionMs,
+        });
+      }
+      setSessionLighting(state.session, command);
+      return resumeNext(frame);
+    }
+    case "addLight":
+      addSessionLight(state.session, command.source);
+      return resumeNext(frame);
+    case "removeLight":
+      removeSessionLight(state.session, command);
+      return resumeNext(frame);
+    case "setWeather": {
+      const weather = normalizeWeatherParams({ kind: command.weather, intensity: command.intensity });
+      ensureM2Runtime(state.session).screen.weather = weatherToRuntimeString(weather);
+      return pause("setWeather", {
+        kind: "setWeather",
+        weather: weather.kind,
+        intensity: weather.intensity,
+        transitionMs: Math.max(0, Math.round(command.transitionMs ?? 0)),
+      });
+    }
+    case "showAnimation":
+      return pause("showAnimation", {
+        kind: "showAnimation",
+        target: command.target,
+        animationId: command.animationId,
+        wait: command.wait === true,
+      });
     case "setFlag":
       state.session.flags[command.flag] = command.value;
       return resumeNext(frame);
@@ -371,4 +643,126 @@ export function screenColorToRgb(color: string): { red: number; green: number; b
 export function clampMs(ms: number): number {
   if (!Number.isFinite(ms) || ms <= 0) return 300;
   return Math.max(50, Math.min(5000, Math.round(ms)));
+}
+
+function scrollDirection(value: string): "down" | "left" | "right" | "up" {
+  switch (value) {
+    case "left":
+    case "right":
+    case "up":
+    case "down":
+      return value;
+    default:
+      return "down";
+  }
+}
+
+function scrollDurationMs(fields: M2CommandFields): number {
+  const explicit = fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 0));
+  if (explicit > 0) return clampMs(explicit);
+  const distance = Math.max(0, fieldNumber(fields, "distance", fieldNumber(fields, "value", 0)));
+  const speed = Math.max(1, Math.min(6, fieldNumber(fields, "speed", 4)));
+  return clampMs(distance * (700 - speed * 80));
+}
+
+function cameraControlStep(
+  fields: M2CommandFields,
+  currentEventId: string | undefined
+): Extract<StepResult, { kind: "cameraControl" }> {
+  const mode = cameraControlMode(fieldString(fields, "mode", "panTo"));
+  return {
+    kind: "cameraControl",
+    mode,
+    target: cameraTarget(fields, currentEventId, mode),
+    durationMs: cameraDurationMs(fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 300))),
+    wait: fieldBoolean(fields, "wait", true),
+    returnToPlayer: mode === "return" || fieldBoolean(fields, "return", false),
+    offsetX: optionalNumberField(fields, "offsetX"),
+    offsetY: optionalNumberField(fields, "offsetY"),
+    zoom: optionalNumberField(fields, "zoom"),
+  };
+}
+
+function cameraControlMode(value: string): Extract<StepResult, { kind: "cameraControl" }>["mode"] {
+  switch (value) {
+    case "follow":
+      return "follow";
+    case "lock":
+    case "fixed":
+      return "fixed";
+    case "return":
+    case "restore":
+    case "followPlayer":
+      return "return";
+    case "panTo":
+    case "pan":
+    case "zoom":
+    default:
+      return "pan";
+  }
+}
+
+function cameraTarget(
+  fields: M2CommandFields,
+  currentEventId: string | undefined,
+  mode: Extract<StepResult, { kind: "cameraControl" }>["mode"]
+): RuntimeCameraTarget {
+  if (mode === "return") return { kind: "player" };
+  const target = fieldString(fields, "target", "player");
+  const x = fieldNumber(fields, "x", 0);
+  const y = fieldNumber(fields, "y", 0);
+  if (usesCoordinateTarget(fields, target, mode, x, y)) return { kind: "position", x, y };
+  const eventId = explicitCameraEventId(fields, target, currentEventId);
+  if (eventId) return { kind: "event", eventId };
+  return { kind: "player" };
+}
+
+function usesCoordinateTarget(
+  fields: M2CommandFields,
+  target: string,
+  mode: Extract<StepResult, { kind: "cameraControl" }>["mode"],
+  x: number,
+  y: number
+): boolean {
+  if (target === "screen" || target === "position" || target === "fixed") return true;
+  return mode === "pan" && (x !== 0 || y !== 0) && !hasM2Field(fields, "targetEventId") && !hasM2Field(fields, "eventId");
+}
+
+function explicitCameraEventId(
+  fields: M2CommandFields,
+  target: string,
+  currentEventId: string | undefined
+): string {
+  const fieldEventId = fieldString(fields, "targetEventId", fieldString(fields, "eventId", ""));
+  if (fieldEventId) return fieldEventId;
+  if (target === "this-event") return currentEventId ?? "";
+  if (target.startsWith("event:")) return target.slice("event:".length);
+  if (target && target !== "player" && target !== "screen" && target !== "position" && target !== "fixed") return target;
+  return "";
+}
+
+function cameraDurationMs(value: number): number {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return Math.min(60_000, Math.round(value));
+}
+
+function optionalNumberField(fields: M2CommandFields, key: string): number | undefined {
+  return hasM2Field(fields, key) ? fieldNumber(fields, key, 0) : undefined;
+}
+
+function shouldWaitForPicture(fields: M2CommandFields): boolean {
+  return fieldBoolean(fields, "waitForPicture", fieldBoolean(fields, "wait", false));
+}
+
+function spawnEventId(fields: M2CommandFields): string {
+  const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
+  return fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
+}
+
+function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
+  return fieldString(fields, "eventId", currentEventId ?? "");
+}
+
+function hasM2Field(fields: M2CommandFields, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
 }

@@ -1,6 +1,6 @@
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
-import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
+import { openNewEventCommandDialog } from "./commandEditDialog";
 import { copyEventCommandToClipboard, hasEventCommandClipboard, readEventCommandClipboard } from "./commandClipboard";
 import { openEventCommandPicker } from "./commandPicker";
 import type { CommandListActions } from "./types";
@@ -12,7 +12,8 @@ type CommandShortcutRequest = {
   readonly command: Command;
   readonly path: number[];
   readonly actions: CommandListActions;
-  readonly toggleInlineEditor: (item: HTMLElement) => void;
+  // 편집 진입점(모달). commandList 가 lockKind:true 로 구성해 넘긴다.
+  readonly openEditor: () => void;
 };
 
 type ContextMenuItem =
@@ -95,12 +96,8 @@ export function handleCommandShortcut(
   }
   if (event.key === " " || event.key === "Spacebar") {
     event.preventDefault();
-    if (closeMenu) {
-      openEditCommandDialog(request);
-      closeMenu();
-    } else {
-      request.toggleInlineEditor(request.item);
-    }
+    request.openEditor();
+    closeMenu?.();
     return;
   }
   if (event.key === "Delete" || event.key === "Del") {
@@ -125,7 +122,7 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       icon: "edit",
       testId: "event-command-menu-edit",
       run: () => {
-        openEditCommandDialog(request);
+        request.openEditor();
         close();
       },
     },
@@ -184,13 +181,6 @@ function contextMenuButton(item: Extract<ContextMenuItem, { readonly separator?:
     dataset: { testid: item.testId },
     on: { click: item.run },
   }) as HTMLButtonElement;
-}
-
-function openEditCommandDialog(request: CommandShortcutRequest): void {
-  openEventCommandEditDialog({
-    initial: request.command,
-    onApply: (command) => request.actions.replaceCommand(request.path, command),
-  });
 }
 
 function cutCommand(request: CommandShortcutRequest): void {

@@ -1,0 +1,270 @@
+// test/tileVocabularyV3.test.ts
+// 타일 v3 승인 보캐뷸러리 계약 테스트 (2026-07-07 설계, 원칙 0: Zero-Trust Perception).
+// 고정하는 계약: (1) 제로 부트스트랩 — 새 프로젝트 승인 집합은 공집합
+// (2) 승인 표식은 origin:"user" 뿐(source:"user"는 불인정)
+// (3) propose_tile_vocabulary 커밋 = 승인 마킹, 사실 배지는 마킹 전 분류로 계산
+// (4) 하드 차단 헬퍼는 미승인 시 ToolError + "다시 보낼 형식 예시"
+// (5) assistantSession이 requiresApproval로 자동 수락(autoApprove) 경로를 차단.
+
+import { describe, expect, it } from "vitest";
+import { AssistantSession, proposalNeedsExplicitApproval, VOCABULARY_PROPOSAL_TOOLS } from "@/ai/assistantSession";
+import type { ChatResult } from "@/ai/llmClient";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
+import { runTool, type ToolContext } from "@/editor/tools";
+import { ToolError } from "@/editor/tools/types";
+import { getGrammarProfile, tilesetGrammarProfile } from "@/editor/tools/v3";
+import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import {
+  approvedVocabulary,
+  assertApprovedOrFail,
+  isApprovedGroup,
+  isApprovedTile,
+  unapprovedVocabulary,
+} from "@/project/tileVocabulary";
+import type { TilesetDef } from "@/project/types";
+
+function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
+  const ctx: ToolContext = { project: createBlankProject() };
+  return { ctx, tileset: () => ctx.project.tilesets[DEFAULT_TILESET_ID] };
+}
+
+// 엔진 분류가 "upper"인 타일(투명 배경 칩 등) — 사실 배지 모순 테스트용.
+function findUpperTile(tileset: TilesetDef): number {
+  for (let tile = 0; tile < tileset.count; tile++) {
+    if (tileLayerHome(tileset, tile) === "upper") return tile;
+  }
+  throw new Error("upper 분류 타일이 기본 타일셋에 없습니다");
+}
+
+describe("승인 보캐뷸러리 판정 (tileVocabulary)", () => {
+  it("제로 부트스트랩: 새 프로젝트의 승인 집합은 공집합이다 (하네스 그룹·번들 메타는 미승인)", () => {
+    const { tileset } = context();
+    const def = tileset();
+    expect(def.tileGroups?.length ?? 0).toBeGreaterThan(0); // 하네스 그룹은 존재하지만
+    const vocab = approvedVocabulary(def);
+    expect(vocab.groups).toHaveLength(0); // 어떤 것도 승인되지 않았다
+    expect(vocab.tiles).toHaveLength(0);
+    for (const group of def.tileGroups ?? []) expect(isApprovedGroup(def, group.id)).toBe(false);
+  });
+
+  it("source:'user'만으로는 승인이 아니다 — origin:'user'가 유일한 표식", () => {
+    const { tileset } = context();
+    const def = tileset();
+    const group = def.tileGroups![0];
+    group.source = "user"; // v1 upsert가 자동으로 박는 값
+    expect(isApprovedGroup(def, group.id)).toBe(false);
+    def.tileMeta![5].source = "user";
+    expect(isApprovedTile(def, 5)).toBe(false);
+    def.tileMeta![5].origin = "user";
+    expect(isApprovedTile(def, 5)).toBe(true);
+  });
+
+  it("assertApprovedOrFail: 미승인이면 ToolError(합의 안내 + 재전송 예시), 승인 후 통과", () => {
+    const { tileset } = context();
+    const def = tileset();
+    const group = def.tileGroups![0];
+    let thrown: unknown;
+    try {
+      assertApprovedOrFail(def, { groupId: group.id });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(ToolError);
+    const message = String((thrown as Error).message);
+    expect(message).toContain("아직 사용자와 합의되지 않았습니다");
+    expect(message).toContain("propose_tile_vocabulary");
+    expect(message).toContain("다시 보낼 형식 예시");
+    expect((thrown as ToolError).code).toBe("unapproved-vocabulary");
+
+    group.origin = "user";
+    expect(() => assertApprovedOrFail(def, { groupId: group.id })).not.toThrow();
+    expect(() => assertApprovedOrFail(def, { tileId: 3 })).toThrow(ToolError);
+  });
+});
+
+describe("propose_tile_vocabulary (v3 write 툴)", () => {
+  it("기존 그룹 승인 제안: 커밋되면 origin:'user' 마킹 + layerHome 저장 + 카드 데이터 반환", () => {
+    const { ctx, tileset } = context();
+    const groupId = tileset().tileGroups![0].id;
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{ kind: "group", groupId, name: "석벽", role: "wall", patternKind: "nine_slice_expandable", layerHome: "lower" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const def = tileset();
+    expect(isApprovedGroup(def, groupId)).toBe(true);
+    const group = def.tileGroups!.find((entry) => entry.id === groupId)!;
+    expect(group).toMatchObject({ origin: "user", source: "user", layerHome: "lower", name: "석벽", role: "wall" });
+    const data = result.data as { grammarProfile: string; cards: { facts: unknown[]; groupId?: string }[] };
+    expect(data.grammarProfile).toBe("rm-type");
+    expect(data.cards).toHaveLength(1);
+    expect(data.cards[0].groupId).toBe(groupId);
+    expect(data.cards[0].facts.length).toBeGreaterThan(0); // 사실 배지 동봉
+    expect(approvedVocabulary(def).groups.map((entry) => entry.id)).toContain(groupId);
+  });
+
+  it("기존 9slice 그룹 재제안에 부분 tileIds가 섞여도 기존 구성을 유지하고 warning으로 통과한다", () => {
+    const { ctx, tileset } = context();
+    const groupId = `${COMBINED_TOWN_HARNESS_PREFIX}wood-wall-9slice`;
+    const original = [...tileset().tileGroups!.find((entry) => entry.id === groupId)!.tileIds];
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{
+        kind: "group",
+        groupId,
+        tileIds: original.slice(0, 5),
+        name: "통나무 벽",
+        role: "wall",
+        patternKind: "nine_slice_expandable",
+        layerHome: "lower",
+      }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.some((warning) => warning.includes("기존 그룹 타일 구성을 유지했습니다"))).toBe(true);
+    const group = tileset().tileGroups!.find((entry) => entry.id === groupId)!;
+    expect(group.tileIds).toEqual(original);
+    expect(group.patternGrammar?.kind).toBe("nine_slice_expandable");
+    const card = (result.data as { cards: { tileIds: number[] }[] }).cards[0];
+    expect(card.tileIds).toEqual(original);
+  });
+
+  it("기존 그룹 재제안의 tileIds가 기존과 동일하면 경고 없이 현행 승인 마킹만 수행한다", () => {
+    const { ctx, tileset } = context();
+    const groupId = `${COMBINED_TOWN_HARNESS_PREFIX}wood-wall-9slice`;
+    const original = [...tileset().tileGroups!.find((entry) => entry.id === groupId)!.tileIds];
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{
+        kind: "group",
+        groupId,
+        tileIds: original,
+        name: "통나무 벽",
+        role: "wall",
+        patternKind: "nine_slice_expandable",
+        layerHome: "lower",
+      }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.some((warning) => warning.includes("기존 그룹 타일 구성을 유지했습니다"))).not.toBe(true);
+    const group = tileset().tileGroups!.find((entry) => entry.id === groupId)!;
+    expect(group.tileIds).toEqual(original);
+    expect(group.origin).toBe("user");
+  });
+
+  it("낱개 타일(소품) 승인 제안: tileMeta origin:'user' + userLocked + 승인 어휘 편입", () => {
+    const { ctx, tileset } = context();
+    const tile = findUpperTile(tileset());
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{ kind: "tile", tileIds: [tile], name: "벤치", role: "prop", layerHome: "upper" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const def = tileset();
+    expect(isApprovedTile(def, tile)).toBe(true);
+    expect(def.tileMeta![tile]).toMatchObject({ origin: "user", userLocked: true, label: "벤치" });
+    expect(approvedVocabulary(def).tiles.map((entry) => entry.tileId)).toContain(tile);
+  });
+
+  it("사실 배지 모순: 엔진 분류 'upper' 타일에 layerHome:'lower'를 제안하면 경고를 동봉한다", () => {
+    const { ctx, tileset } = context();
+    const tile = findUpperTile(tileset());
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{ kind: "tile", tileIds: [tile], name: "벤치", role: "prop", layerHome: "lower" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.some((warning) => warning.includes("사실 배지와 모순"))).toBe(true);
+  });
+
+  it("스키마 거부: items 누락/빈 배열은 '다시 보낼 형식 예시'와 함께 거부된다", () => {
+    const { ctx } = context();
+    const missing = runTool(ctx, "propose_tile_vocabulary", {});
+    expect(missing.ok).toBe(false);
+    const empty = runTool(ctx, "propose_tile_vocabulary", { items: [] });
+    expect(empty.ok).toBe(false);
+    expect(empty.issues?.some((issue) => issue.message.includes("다시 보낼 형식 예시"))).toBe(true);
+  });
+
+  it("신규 그룹 9slice tileIds 미달은 해당 item만 issues로 보고하고 나머지 item 카드는 유지한다", () => {
+    const { ctx, tileset } = context();
+    const beforeGroupCount = tileset().tileGroups?.length ?? 0;
+    const tile = findUpperTile(tileset());
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [
+        { kind: "group", tileIds: [301, 302, 303, 331, 332], name: "모자란벽", role: "wall", patternKind: "nine_slice_expandable", layerHome: "lower" },
+        { kind: "tile", tileIds: [tile], name: "벤치", role: "prop", layerHome: "upper" },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.issues?.some((issue) => issue.code === "pattern-underspecified" && issue.message.includes("items[0]"))).toBe(true);
+    const data = result.data as { cards: { kind: string; name: string }[] };
+    expect(data.cards).toEqual([expect.objectContaining({ kind: "tile", name: "벤치" })]);
+    expect(tileset().tileGroups?.length ?? 0).toBe(beforeGroupCount);
+    expect(tileset().tileGroups?.some((entry) => entry.name === "모자란벽")).toBe(false);
+    expect(isApprovedTile(tileset(), tile)).toBe(true);
+  });
+});
+
+describe("tile_query ask:'unapproved' + 문법 프로파일", () => {
+  it("미승인 그룹/타일 요약(수량+대표 id)을 주고, 승인하면 수량이 줄어든다", () => {
+    const { ctx, tileset } = context();
+    const before = runTool(ctx, "tile_query", { ask: "unapproved", limit: 5 });
+    expect(before.ok, before.summary).toBe(true);
+    const beforeData = before.data as { groupCount: number; groups: { id: string }[]; tileCount: number; sampleTileIds: number[] };
+    expect(beforeData.groupCount).toBeGreaterThan(0);
+    expect(beforeData.groups.length).toBeLessThanOrEqual(5);
+    expect(before.summary).toContain("propose_tile_vocabulary");
+
+    const groupId = tileset().tileGroups![0].id;
+    runTool(ctx, "propose_tile_vocabulary", { items: [{ kind: "group", groupId, name: "석벽", role: "wall", layerHome: "lower" }] });
+    const after = runTool(ctx, "tile_query", { ask: "unapproved", limit: 5 });
+    expect((after.data as { groupCount: number }).groupCount).toBe(beforeData.groupCount - 1);
+    expect(unapprovedVocabulary(tileset()).groupCount).toBe(beforeData.groupCount - 1);
+  });
+
+  it("grammarProfile 기본은 rm-type이고 미지의 id는 rm-type으로 폴백한다", () => {
+    const { tileset } = context();
+    expect(tileset().grammarProfile).toBeUndefined();
+    expect(tilesetGrammarProfile(tileset()).id).toBe("rm-type");
+    expect(getGrammarProfile("no-such-profile").id).toBe("rm-type");
+    expect(getGrammarProfile("rm-type").supportedPatternKinds).toContain("nine_slice_expandable");
+    expect(getGrammarProfile("rm-type").autotileNeighborhood).toBe(8);
+  });
+});
+
+describe("assistantSession 승인 게이트 (명시 수락만 커밋)", () => {
+  it("propose_tile_vocabulary 제안은 requiresApproval — autoApprove 자동 수락 경로가 차단된다", async () => {
+    expect(VOCABULARY_PROPOSAL_TOOLS.has("propose_tile_vocabulary")).toBe(true);
+    const project = createBlankProject();
+    const groupId = project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].id;
+    const steps: ChatResult[] = [
+      {
+        message: {
+          role: "assistant",
+          content: null,
+          tool_calls: [
+            {
+              id: "c1",
+              type: "function",
+              function: {
+                name: "propose_tile_vocabulary",
+                arguments: JSON.stringify({ items: [{ kind: "group", groupId, name: "석벽", role: "wall", layerHome: "lower" }] }),
+              },
+            },
+          ],
+        },
+        finishReason: "tool_calls",
+      } as ChatResult,
+      { message: { role: "assistant", content: "어휘 승인을 제안합니다.", tool_calls: undefined }, finishReason: "stop" } as ChatResult,
+    ];
+    let index = 0;
+    const session = new AssistantSession(project, {
+      config: { baseUrl: "x", model: "m", liteModel: "m", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 },
+      chat: async () => steps[index++],
+    });
+    const result = await session.sendUserMessage("이 벽 타일들 승인해줘");
+    expect(result.proposedCalls).toHaveLength(1);
+    expect(result.proposedCalls[0].requiresApproval).toBe(true);
+    expect(result.proposedCalls[0].approvalWarning).toContain("어휘 승인");
+    expect(proposalNeedsExplicitApproval(result.proposedCalls)).toBe(true);
+    // 원 프로젝트는 아직 무변경 — 마킹은 명시 수락(스토어 반영) 전이다.
+    expect(isApprovedGroup(project.tilesets[DEFAULT_TILESET_ID], groupId)).toBe(false);
+  });
+});

@@ -1,0 +1,182 @@
+/* ── Command-bar AI IA (2026-07-07): bottom center bar + rising overlay ── */
+body.ai-command-bar-active {
+  /* 컨텍스트 칩 스택 + 2줄 입력 포함 실측 높이(~110px)를 덮도록 — 88px는 하단과 겹쳤다. */
+  --ai-command-bar-inset: 116px;
+}
+
+body.ai-command-bar-active .editor-layout {
+  padding-bottom: var(--ai-command-bar-inset);
+}
+
+body.ai-chat-dock-float.ai-command-bar-active .editor-layout,
+body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
+  padding-bottom: 0;
+}
+
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  inset: auto;
+  max-height: none;
+  padding: 0;
+  width: 0;
+}
+
+/* float 모드 셸: 위 규칙의 inset/width 를 같은 특이도 + 후순위로 되살린다.
+   0 폭 셸이 containing block 이 되면 absolute 커맨드바 폭이 0 으로 붕괴한다. */
+.ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+  inset: 0;
+  width: auto;
+}
+
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-header,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-toolbar,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-body,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-resize-handle,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-collapsed-restore {
+  display: none;
+}
+
+.ai-command-bar {
+  align-items: end;
+  bottom: 18px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 34px minmax(0, 760px) auto;
+  /* 좌측 타일 팔레트/맵트리를 수평으로 침범하지 않는다 — 캔버스 영역 안에서 중앙 정렬.
+     (뷰포트 ≤1284px에서 뷰포트-중앙 760px 바가 좌패널 하단을 덮던 버그 수정) */
+  justify-content: center;
+  left: calc(var(--editor-left-safe, 264px) + 12px);
+  position: fixed;
+  right: 24px;
+  z-index: 50;
+}
+
+.ai-chat-panel.chat-dock-float .ai-command-bar {
+  bottom: 14px;
+  left: 12px;
+  position: absolute;
+  right: 12px;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-bar {
+  align-items: stretch;
+  bottom: auto;
+  flex: 0 0 auto;
+  grid-template-columns: 32px minmax(0, 1fr);
+  left: auto;
+  position: relative;
+  right: auto;
+  z-index: 1;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-bar .ai-status-group {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+/* 스튜디오에선 좌패널이 어차피 패널 뒤에 있으므로 스튜디오 폭 기준 중앙 정렬. */
+.ai-chat-panel.is-studio .ai-command-bar {
+  left: 36px;
+  right: 36px;
+}
+
+.ai-command-menu-toggle {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font-size: 17px;
+  font-weight: 800;
+  height: 40px;
+  place-items: center;
+  width: 34px;
+}
+
+.ai-command-menu-toggle:hover,
+.ai-command-menu-toggle:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+
+.ai-command-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  bottom: 48px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 2px;
+  left: 0;
+  min-width: 170px;
+  padding: 6px;
+  position: absolute;
+}
+
+.ai-command-menu[hidden] {
+  display: none;
+}
+
+.ai-command-menu-item {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 9px;
+  text-align: left;
+}
+
+.ai-command-menu-item:hover,
+.ai-command-menu-item:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+
+.ai-command-input-stack {
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+}
+
+.ai-command-bar .ai-status-group {
+  align-self: center;
+  background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  box-shadow: var(--shadow-pop);
+  padding: 5px 7px;
+}
+
+@media (max-width: 720px) {
+  body.ai-command-bar-active {
+    --ai-command-bar-inset: 118px;
+  }
+
+  .ai-command-bar {
+    bottom: 10px;
+    grid-template-columns: 32px minmax(0, calc(100vw - 56px));
+    width: calc(100vw - 20px);
+  }
+
+  .ai-command-bar .ai-status-group {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .ai-rising-overlay {
+    bottom: 108px;
+    width: calc(100vw - 20px);
+  }
+}

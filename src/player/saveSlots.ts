@@ -1,28 +1,47 @@
 import { SCHEMA_VERSION, type ActorInitialEquipment, type Project } from "@/project/types";
 import {
+  clampFriendship,
   startSession,
   type AudioCommandState,
   type PictureState,
   type PlaySession,
 } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { normalizeGameTime } from "@/project/gameTime";
 import {
   isActorEquipmentRecord,
+  isActorParamBonusRecord,
   isActorRowsRecord,
+  isStringRecord,
   isActorSkillIdsRecord,
+  isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
+  isLightingState,
+  isGameTime,
+  isFarmPlotsRecord,
+  isMonsterInstancesRecord,
   isNumberRecord,
   isPictureRecord,
   isRecord,
+  isRuntimeCameraState,
   isRuntimeEventLocationRecord,
+  isRuntimeFollowerArray,
+  isRuntimeFollowerTrail,
+  isRuntimeNpcScheduleStateRecord,
   isRuntimeNpcTravelStateRecord,
+  isRuntimeRemovedEventIds,
+  isRuntimeSpawnedEventRecord,
+  isRngState,
   isSelfSwitchesRecord,
   isStringArray,
   parseAudioState,
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
+import { normalizeLightingState } from "@/player/lighting";
+import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -33,6 +52,7 @@ export {
 
 export const SAVE_SLOT_COUNT = 3;
 const SAVE_SLOT_PREFIX = "rpg-zzu:save-slot:";
+let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;
 
@@ -41,6 +61,7 @@ export type SaveSnapshot = {
   readonly projectTitle: string;
   readonly savedAt: string;
   readonly mapName?: string;
+  readonly partyLevel?: number;
   readonly playTimeSeconds?: number;
   readonly session: {
     readonly switches: Record<string, boolean>;
@@ -50,12 +71,27 @@ export type SaveSnapshot = {
     readonly gold: number;
     readonly inventory?: Record<string, number>;
     readonly partyActorIds?: readonly string[];
+    readonly monsterInstances?: PlaySession["monsterInstances"];
+    readonly monsterParty?: readonly string[];
+    readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
     readonly actorExperience?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly eventLocations?: PlaySession["eventLocations"];
+    readonly erasedEventIds?: readonly string[];
+    readonly removedEventIds?: PlaySession["removedEventIds"];
+    readonly spawnedEvents?: PlaySession["spawnedEvents"];
+    readonly camera?: PlaySession["camera"];
+    readonly lighting?: PlaySession["lighting"];
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
+    readonly npcActivities?: PlaySession["npcActivities"];
+    readonly npcScheduleStates?: PlaySession["npcScheduleStates"];
+    readonly farmPlots?: PlaySession["farmPlots"];
+    readonly friendship?: PlaySession["friendship"];
+    readonly dailyGifts?: PlaySession["dailyGifts"];
+    readonly followers?: PlaySession["followers"];
+    readonly followerTrail?: PlaySession["followerTrail"];
     readonly currentMapId: string;
     readonly x: number;
     readonly y: number;
@@ -66,8 +102,24 @@ export type SaveSnapshot = {
     readonly pictures: Record<string, PictureState>;
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
+    readonly actorNames?: Record<string, string>;
+    readonly actorCharacterResourceIds?: Record<string, string>;
+    readonly classOverrides?: Record<string, string>;
+    readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
+    readonly actorStateIds?: PlaySession["actorStateIds"];
     readonly playTimeSeconds?: number;
+    readonly gameTime?: PlaySession["gameTime"];
+    readonly rng?: RngState;
+    // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
+    readonly screen?: SaveScreenState;
   };
+};
+
+export type SaveScreenState = {
+  readonly tint?: string;
+  readonly weather?: string;
+  readonly hidden?: boolean;
+  readonly tintDurationMs?: number;
 };
 
 export type SaveSlotReadResult =
@@ -76,7 +128,12 @@ export type SaveSlotReadResult =
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
+}
+
+export function setSaveSlotStorageNamespace(namespace: string | null): void {
+  saveSlotStorageNamespace = namespace?.trim() || null;
 }
 
 export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {
@@ -85,6 +142,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
+    partyLevel: leadPartyLevel(project, session),
     playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
     session: {
       switches: structuredClone(session.switches),
@@ -94,25 +152,59 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       gold: session.gold,
       inventory: structuredClone(session.inventory),
       partyActorIds: structuredClone(session.partyActorIds),
+      monsterInstances: structuredClone(session.monsterInstances),
+      monsterParty: structuredClone(session.monsterParty),
+      monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       eventLocations: structuredClone(session.eventLocations),
+      erasedEventIds: structuredClone(session.erasedEventIds),
+      removedEventIds: structuredClone(session.removedEventIds),
+      spawnedEvents: structuredClone(session.spawnedEvents),
+      camera: structuredClone(session.camera),
+      lighting: structuredClone(normalizeLightingState(session.lighting)),
       npcTravelStates: structuredClone(session.npcTravelStates),
+      npcActivities: structuredClone(session.npcActivities ?? {}),
+      npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
+      farmPlots: structuredClone(session.farmPlots ?? {}),
+      friendship: structuredClone(session.friendship ?? {}),
+      dailyGifts: structuredClone(session.dailyGifts ?? {}),
+      followers: structuredClone(session.followers),
+      followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
-      mapOverrides: structuredClone(session.mapOverrides),
+      mapOverrides: structuredClone(session.mapOverrides ?? {}),
       flags: structuredClone(session.flags),
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),
       pictures: structuredClone(session.pictures),
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
+      actorNames: structuredClone(session.actorNames),
+      actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
+      classOverrides: structuredClone(session.classOverrides),
+      actorParamBonuses: structuredClone(session.actorParamBonuses),
+      actorStateIds: structuredClone(session.actorStateIds),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
+      gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
+      rng: cloneRngState(normalizeRngState(session.rng)),
+      screen: pickScreenState(session),
     },
   };
+}
+
+// 지속형 화면 효과(색조/날씨/숨김)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
+function pickScreenState(session: PlaySession): SaveScreenState | undefined {
+  const screen = session.m2Runtime?.screen;
+  if (!screen) return undefined;
+  const { tint, weather, hidden, tintDurationMs } = screen;
+  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined) {
+    return undefined;
+  }
+  return { tint, weather, hidden, tintDurationMs };
 }
 
 export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): void {
@@ -155,12 +247,27 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.gold = snapshot.session.gold;
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
+  if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
+  if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
+  if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
+  if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
+  if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
+  if (snapshot.session.spawnedEvents) session.spawnedEvents = structuredClone(snapshot.session.spawnedEvents);
+  if (snapshot.session.camera) session.camera = structuredClone(snapshot.session.camera);
+  if (snapshot.session.lighting) session.lighting = normalizeLightingState(snapshot.session.lighting);
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
+  if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
+  if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
+  session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
+  session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
+  session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
+  if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
+  if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
   session.y = snapshot.session.y;
@@ -171,8 +278,25 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.pictures = structuredClone(snapshot.session.pictures);
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
+  if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
+  if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
+  if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
+  if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
+  if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
+  if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
+  session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
+  if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   return session;
+}
+
+// 색조/날씨/숨김 상태를 m2Runtime.screen 에 복원한다.
+function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
+  const runtime = ensureM2Runtime(session);
+  if (screen.tint !== undefined) runtime.screen.tint = screen.tint;
+  if (screen.weather !== undefined) runtime.screen.weather = screen.weather;
+  if (screen.hidden !== undefined) runtime.screen.hidden = screen.hidden;
+  if (screen.tintDurationMs !== undefined) runtime.screen.tintDurationMs = screen.tintDurationMs;
 }
 
 function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadResult {
@@ -191,10 +315,18 @@ function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadRes
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
+      partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
       session: parsed.session,
     },
   };
+}
+
+function leadPartyLevel(project: Project, session: PlaySession): number | undefined {
+  const actorId = session.partyActorIds[0];
+  if (!actorId) return undefined;
+  const actor = project.database.actors.find((record) => record.id === actorId);
+  return session.actorLevels[actorId] ?? actor?.initialLevel;
 }
 
 type ParsedSessionResult =
@@ -227,12 +359,27 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       gold: session.gold,
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
+      monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
+      monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
+      monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
+      erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
+      removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,
+      spawnedEvents: isRuntimeSpawnedEventRecord(session.spawnedEvents) ? session.spawnedEvents : undefined,
+      camera: isRuntimeCameraState(session.camera) ? session.camera : undefined,
+      lighting: isLightingState(session.lighting) ? normalizeLightingState(session.lighting) : undefined,
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
+      npcActivities: isStringRecord(session.npcActivities) ? session.npcActivities : undefined,
+      npcScheduleStates: isRuntimeNpcScheduleStateRecord(session.npcScheduleStates) ? session.npcScheduleStates : undefined,
+      farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
+      friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
+      dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
+      followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
+      followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -243,15 +390,43 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       pictures: parsePictures(session.pictures),
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
+      actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
+      actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
+      classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
+      actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
+      actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
+      gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
+      rng: isRngState(session.rng) ? session.rng : undefined,
+      screen: parseScreenState(session.screen),
     },
   };
+}
+
+// 저장된 화면 상태를 방어적으로 파싱(모든 필드 선택). 유효 필드가 없으면 undefined.
+function parseScreenState(value: unknown): SaveScreenState | undefined {
+  if (!isRecord(value)) return undefined;
+  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number } = {};
+  if (typeof value.tint === "string") result.tint = value.tint;
+  if (typeof value.weather === "string") result.weather = value.weather;
+  if (typeof value.hidden === "boolean") result.hidden = value.hidden;
+  if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function parseBattleResult(value: unknown): PlaySession["battleResult"] | "invalid" {
   if (value === undefined) return undefined;
   if (value === "victory" || value === "defeat" || value === "escape") return value;
   return "invalid";
+}
+
+function normalizeFriendshipRecord(value: Record<string, number> | undefined): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const [npcKey, amount] of Object.entries(value ?? {})) {
+    if (!npcKey.trim()) continue;
+    result[npcKey] = clampFriendship(amount);
+  }
+  return result;
 }
 
 function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {

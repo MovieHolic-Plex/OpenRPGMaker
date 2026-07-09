@@ -27,6 +27,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
         panel("이름", [textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("enemies", record.id, { name }))]),
         panel("능력치", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })]),
         panel("그래픽", graphicFields(record, rerender)),
+        panel("Species", speciesFields(record)),
         panel("보상", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
         panel("치명타 %", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record) })]),
         panel("옵션", optionFields(record)),
@@ -36,6 +37,14 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
       ],
     })
   );
+}
+
+function speciesFields(record: EnemyRecord): HTMLElement[] {
+  return [
+    selectField("포획 species", "db-picker-enemy-species", record.speciesId ?? "", store.getCurrent().database.monsterSpecies ?? [], (speciesId) =>
+      updateDatabaseRecord("enemies", record.id, { speciesId: emptyToUndefined(speciesId) })
+    ),
+  ];
 }
 
 function statFields(record: EnemyRecord): HTMLElement[] {

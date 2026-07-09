@@ -3,6 +3,7 @@ import { editorState } from "@/editor/editorState";
 import { deleteEditorEvent } from "@/editor/eventDeletion";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { openTestPlayModal } from "@/editor/panels/testPlayModal";
 import {
   openMapContextMenu,
   type MapContextMenuItem,
@@ -106,6 +107,14 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       id: "vehicle-start",
       label: "탈것 시작 위치 설정...",
       testId: "event-layer-set-vehicle-start",
+    },
+    {
+      action: () => void openTestPlayModal({ mapId: target.mapId, x: target.x, y: target.y }),
+      icon: "map-start",
+      id: "test-here",
+      label: "여기서 테스트",
+      separatorBefore: true,
+      testId: "event-layer-test-here",
     },
   ];
 }

@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 import type Phaser from "phaser";
 import { editorState, type Layer } from "@/editor/editorState";
 import {
+  type EditSceneTileIndex,
   editorEventMarkerTexture,
   eventMarkerTileScale,
   renderEditScene,
+  renderEditSceneTileCells,
   renderEventLayerClickFeedback,
 } from "@/editor/editSceneRender";
+import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -39,8 +42,10 @@ type MockObject = {
   setStrokeStyle(lineWidth: number, color: number, alpha?: number): MockObject;
   setScale(scale: number): MockObject;
   setSize(width: number, height: number): MockObject;
+  setDepth(depth: number): MockObject;
   play(key: string): MockObject;
   add(child: MockObject): MockObject;
+  depth?: number;
 };
 
 type MockGridGraphics = Phaser.GameObjects.Graphics & {
@@ -85,6 +90,10 @@ function mockObject(partial: Partial<MockObject>): MockObject {
       object.height = height;
       return object;
     },
+    setDepth(depth: number): MockObject {
+      object.depth = depth;
+      return object;
+    },
     play(): MockObject {
       return object;
     },
@@ -98,7 +107,16 @@ function mockObject(partial: Partial<MockObject>): MockObject {
 
 function mockContainer(objects?: MockObject[]): Phaser.GameObjects.Container {
   return {
-    removeAll: () => undefined,
+    removeAll: () => {
+      if (objects) objects.length = 0;
+    },
+    remove: (object: MockObject) => {
+      if (objects) {
+        const index = objects.indexOf(object);
+        if (index >= 0) objects.splice(index, 1);
+      }
+      return object;
+    },
     add: (object: MockObject) => {
       objects?.push(object);
       return object;
@@ -353,5 +371,77 @@ describe("edit scene event rendering", () => {
     expect(marker).toMatchObject({ fillColor: 0xd9e8f6, fillAlpha: 0.55, origin: [0, 0] });
     expect(marker?.stroke).toMatchObject({ lineWidth: 2, color: 0x0a246a, alpha: 0.95 });
     expect(label).toMatchObject({ x: 18, y: 18 });
+  });
+
+  it("keeps single-cell paint tile regeneration bounded on a 128x128 map", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 128;
+    map.height = 128;
+    map.lowerTiles = new Array<number>(128 * 128).fill(-1);
+    map.upperTiles = new Array<number>(128 * 128).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+
+    const tileObjects: MockObject[] = [];
+    const tileIndex: EditSceneTileIndex = new Map();
+    const context = {
+      scene: mockScene(),
+      tileLayer: mockContainer(tileObjects),
+      overlayLayer: mockContainer(),
+      gridGraphics: mockGridGraphics(),
+      mapId: map.id,
+      tileIndex,
+    };
+    const fullStats = renderEditScene(context);
+    const incrementalStats = renderEditSceneTileCells(context, [
+      { x: 64, y: 64, layer: "lower" },
+      { x: 64, y: 63, layer: "lower" },
+      { x: 64, y: 65, layer: "lower" },
+      { x: 63, y: 64, layer: "lower" },
+      { x: 65, y: 64, layer: "lower" },
+    ]);
+
+    expect(fullStats.tileObjectsUpdated).toBe(128 * 128);
+    expect(incrementalStats.tileObjectsUpdated).toBeLessThanOrEqual(8);
+  });
+
+  it("plans database changes as zero tile regeneration", () => {
+    const plan = planEditSceneRenderForStoreChange({
+      change: { scope: "database", collection: "actors" },
+      currentMapId: "map_1",
+      canIncrementalCells: true,
+    });
+
+    const tileObjectsUpdated = plan.kind === "skip" ? 0 : -1;
+    expect(tileObjectsUpdated).toBe(0);
+  });
+
+  it("keeps map switches on the full rebuild path", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 128;
+    map.height = 128;
+    map.lowerTiles = new Array<number>(128 * 128).fill(-1);
+    map.upperTiles = new Array<number>(128 * 128).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+
+    const plan = planEditSceneRenderForStoreChange({
+      change: { scope: "project" },
+      currentMapId: map.id,
+      canIncrementalCells: true,
+    });
+    const stats = renderEditScene({
+      scene: mockScene(),
+      tileLayer: mockContainer(),
+      overlayLayer: mockContainer(),
+      gridGraphics: mockGridGraphics(),
+      mapId: map.id,
+      tileIndex: new Map(),
+    });
+
+    expect(plan.kind).toBe("full");
+    expect(stats.tileObjectsUpdated).toBe(128 * 128);
   });
 });
