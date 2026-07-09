@@ -58,7 +58,7 @@ export function buildDemonstrationMessage(payload: DemonstrationPayload): string
     "해석 지침:",
     "1. show_tiles로 핵심 타일들을 채팅에 띄워 무엇을 배웠는지 시각적으로 확인시키세요.",
     "2. 이 시연이 고치는 지식을 기록하세요 — 타일 의미가 틀렸으면 set_tile_metadata(confirmedByUser=true),",
-    "   배치 규칙이면 upsert_tile_group의 placementRules에 기록하세요. 집 구조물 문법은 하네싱 키트가 담당합니다.",
+    "   배치 규칙이면 upsert_tile_group의 placementRules에 기록하세요. 집 구조물 문법은 집 키트가 담당합니다.",
     "   기존에 잘못 저장된 내용은 같은 id로 고쳐 쓰세요.",
     "3. 마지막으로 '이렇게 배웠습니다'를 한두 문장으로 요약하고, 맞는지 물으세요.",
     `   마지막 줄: [선택지] 맞음 | 아직 다름(추가 설명) | 시연 다시 볼래?`,

@@ -12,6 +12,7 @@ import {
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
@@ -33,7 +34,6 @@ const MAP_TREE_MIN_HEIGHT = 112;
 const MAP_TREE_MAX_HEIGHT = 260;
 const RESPONSIVE_BREAKPOINT = 720;
 const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout";
-const CHAT_SIDE_PANEL_WIDTH = 420;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -71,7 +71,25 @@ export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
   installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__rpgzzuEditorTool.
 
-  const layout = el("div", { class: "editor-layout" });
+  // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
+  const layout = el("div", {
+    class: `editor-layout ${chatDock === "side" ? "chat-dock-side" : "chat-dock-float"}`,
+  });
+  // applyLayout 전에도 1/3 폭 폴백을 심어 사이드 컬럼이 420→재계산으로 점프하지 않게 한다.
+  if (chatDock === "side") {
+    const bootWidth = computeSideChatWidth(
+      typeof window !== "undefined" && window.innerWidth > 0 ? window.innerWidth : 1280,
+      MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH,
+    );
+    layout.style.setProperty("--ai-chat-side-width", `${bootWidth}px`);
+    document.documentElement?.style?.setProperty?.("--ai-chat-side-width", `${bootWidth}px`);
+    document.body?.classList?.add?.("ai-chat-dock-side");
+    document.body?.classList?.remove?.("ai-chat-dock-float", "ai-panel-docked");
+  } else {
+    layout.style.setProperty("--ai-chat-side-width", "0px");
+    document.body?.classList?.add?.("ai-chat-dock-float");
+    document.body?.classList?.remove?.("ai-chat-dock-side");
+  }
   const left = el("div", { class: "left-panel" });
   const canvasArea = el("div", { class: "canvas-area" });
   const canvasScrollShell = el("div", {
@@ -216,10 +234,19 @@ function applyChatDockLayout(): void {
   layoutEl?.classList[chatDock === "float" ? "add" : "remove"]("chat-dock-float");
   aiChatPanelRoot.classList[chatDock === "side" ? "add" : "remove"]("chat-dock-side");
   aiChatPanelRoot.classList[chatDock === "float" ? "add" : "remove"]("chat-dock-float");
-  if (chatDock === "side") aiChatPanelRoot.classList.remove("is-docked");
-  else if (aiChatPanelRoot.classList.contains("is-history-open")) aiChatPanelRoot.classList.add("is-docked");
+  // side flex 도크는 is-docked(fixed 오버레이)와 섞지 않는다 — body inset 이중 적용/흔들림 방지.
+  if (chatDock === "side") {
+    aiChatPanelRoot.classList.remove("is-docked");
+    document.body.classList.remove("ai-panel-docked");
+  } else if (aiChatPanelRoot.classList.contains("is-history-open")) {
+    aiChatPanelRoot.classList.add("is-docked");
+  }
   document.body.classList[chatDock === "side" ? "add" : "remove"]("ai-chat-dock-side");
   document.body.classList[chatDock === "float" ? "add" : "remove"]("ai-chat-dock-float");
+  // 패널 생성 직후 첫 적용에서도 side class가 있도록 마운트 전에 반영한다.
+  if (chatDock === "side" && !aiChatPanelRoot.classList.contains("chat-dock-side")) {
+    aiChatPanelRoot.classList.add("chat-dock-side");
+  }
   const target = chatDock === "side" ? chatSideRoot : chatFloatRoot;
   if (aiChatPanelRoot.parentElement !== target) {
     aiChatPanelRoot.remove();
@@ -273,15 +300,6 @@ function applyLayout(): void {
   if (!leftRoot || !leftResizer) return;
   const autoCollapse = window.innerWidth < RESPONSIVE_BREAKPOINT;
   const leftFolded = leftUserOverride ? leftCollapsed : autoCollapse;
-  if (leftFolded) {
-    leftRoot.style.display = "none";
-    leftResizer.style.display = "none";
-    // 좌패널이 접히면 오버레이 안전 영역도 해제(assistant-rising-overlay.css 참조).
-    setEditorLeftSafe("12px");
-    return;
-  }
-  leftRoot.style.display = "";
-  // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩(AI 도킹 인셋 포함). 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
   const layoutEl = leftRoot.parentElement;
   let usableWidth = window.innerWidth;
   if (layoutEl) {
@@ -297,7 +315,22 @@ function applyLayout(): void {
     usableWidth = layoutWidth - padL - padR;
   }
   const resizerWidth = leftResizer.offsetWidth || 6;
-  const sideWidth = chatDock === "side" ? CHAT_SIDE_PANEL_WIDTH : 0;
+  // 사이드 도크는 레이아웃 폭의 1/3. 접힘 레일(CSS 44px)은 :has(.is-collapsed)가 덮어쓴다.
+  const sideWidth =
+    chatDock === "side"
+      ? computeSideChatWidth(usableWidth, MIN_CANVAS_WIDTH + resizerWidth + LEFT_PANEL_MIN_WIDTH)
+      : 0;
+  publishSideChatWidth(layoutEl, sideWidth);
+
+  if (leftFolded) {
+    leftRoot.style.display = "none";
+    leftResizer.style.display = "none";
+    // 좌패널이 접히면 오버레이 안전 영역도 해제(assistant-rising-overlay.css 참조).
+    setEditorLeftSafe("12px");
+    return;
+  }
+  leftRoot.style.display = "";
+  // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩. 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
   const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth - sideWidth);
   const effectiveLeftWidth = Math.min(leftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
@@ -305,6 +338,20 @@ function applyLayout(): void {
   leftResizer.style.display = "";
   // AI 미니 스트림/제안 오버레이가 좌패널을 덮지 않도록 실제 패널 폭을 전역 변수로 발행.
   setEditorLeftSafe(`${effectiveLeftWidth + resizerWidth}px`);
+}
+
+/** CSS `--ai-chat-side-width` 와 TS 좌패널 예산을 동일 값으로 맞춘다. */
+function publishSideChatWidth(layoutEl: HTMLElement | null, sideWidth: number): void {
+  const px = sideWidth > 0 ? `${sideWidth}px` : "0px";
+  layoutEl?.style?.setProperty?.("--ai-chat-side-width", px);
+  // float 모드에서도 변수를 0으로 고정해 이전 side 값이 남지 않게 한다.
+  if (sideWidth <= 0 && layoutEl) {
+    layoutEl.style.setProperty("--ai-chat-side-width", "0px");
+  }
+  // 폴백 문서 루트(사이드 패널이 layout 밖 선택자를 쓰는 경우 대비) — side일 때만 실제 값.
+  if (sideWidth > 0) {
+    document.documentElement?.style?.setProperty?.("--ai-chat-side-width", px);
+  }
 }
 
 // fakeDom(단위 테스트)에는 documentElement가 없으므로 옵셔널 체이닝으로 가드.
@@ -629,7 +676,7 @@ function defaultEditorLayout(): LoadedEditorLayout {
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
     leftCollapsed: false,
     leftCollapsedStored: false,
-    chatDock: "float",
+    chatDock: "side",
   };
 }
 

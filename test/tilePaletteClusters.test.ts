@@ -201,14 +201,29 @@ describe("tile palette cluster UI", () => {
     expect(findByTestId(root, "tile-palette")).not.toBeNull();
   });
 
-  it("restores advanced tile tools from the title toggle", () => {
+  it("work tabs switch paint / find / props panes", () => {
     const root = renderPalette();
 
+    expect(findByTestId(root, "palette-work-tabs")).not.toBeNull();
+    expect(findByTestId(root, "palette-work-pane-paint")).not.toBeNull();
     expect(findByTestId(root, "quick-tile-picker")).toBeNull();
-    requireTestId(root, "tile-advanced-toggle").click();
 
-    expect(storage.getItem("rpg-zzu:palette-advanced")).toBe("1");
+    // 찾기 탭 (레거시 testid quick-tile-toggle)
+    requireTestId(root, "quick-tile-toggle").click();
+    expect(storage.getItem("rpg-zzu:palette-work-tab")).toBe("find");
     expect(findByTestId(root, "quick-tile-picker")).not.toBeNull();
+    expect(findByTestId(root, "selected-tile-status")).not.toBeNull();
+
+    requireTestId(root, "palette-work-tab-props").click();
+    expect(storage.getItem("rpg-zzu:palette-work-tab")).toBe("props");
+    expect(findByTestId(root, "palette-work-pane-props")).not.toBeNull();
+    expect(findByTestId(root, "quick-tile-picker")).toBeNull();
+
+    // 레거시 advanced 훅: 찾기 탭이 아니면 찾기로, 찾기면 칠하기로
+    requireTestId(root, "tile-advanced-toggle").click();
+    expect(findByTestId(root, "quick-tile-picker")).not.toBeNull();
+    requireTestId(root, "tile-advanced-toggle").click();
+    expect(findByTestId(root, "palette-work-pane-paint")).not.toBeNull();
   });
 });
 

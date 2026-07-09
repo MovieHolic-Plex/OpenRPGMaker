@@ -26,7 +26,7 @@ export type StructureStampCell = TilePoint & {
 };
 
 export const STRUCTURE_STAMPS: readonly StructureStamp[] = [
-  { id: "house-template", label: "기본 집", description: "small_house_01 하네싱 키트 기반 집" },
+  { id: "house-template", label: "기본 집", description: "small_house_01 집 키트 기반 집" },
   { id: "house-wide", label: "넓은 집", description: "가로로 넓은 집" },
   { id: "house-compact", label: "작은 집", description: "작게 압축된 집" },
   { id: "house-l", label: "ㄴ자 집", description: "ㄴ자 형태의 집" },

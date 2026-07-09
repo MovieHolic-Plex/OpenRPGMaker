@@ -1,5 +1,5 @@
 // editor/tools/houseKitTools.ts
-// 하네싱 집 키트를 에이전트 채팅에 노출하는 AI 툴.
+// 집 키트를 에이전트 채팅에 노출하는 AI 툴.
 // 타일 선택은 전부 결정론 스크립트(houseKit)가 하고, LLM은 평면(날개 사각형)·키트만 설계한다.
 // 정본 명세: docs/knowledge/images/2026-07-08-house-harness-design.png
 
@@ -27,7 +27,7 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
   {
     name: "build_house_kit",
     description:
-      "하네싱 집 키트로 집을 짓는다(권장 정공법). 건물 = 날개 사각형(wings)들의 합집합 — " +
+      "집 키트로 집을 짓는다(권장 정공법). 건물 = 날개 사각형(wings)들의 합집합 — " +
       "직사각·ㄱ/ㄴ/ㄷ/ㅁ/O자 등 임의 평면 가능. 벽 3행(상·중·하 나인슬라이스)과 지붕 3단, " +
       "상위 레이어 마감(대각/용마루/트림)은 스크립트가 자동으로 정확히 깐다 — 타일 ID를 직접 고르지 말 것. " +
       "키트: blue-stone(파랑 지붕+석벽) | bright-plaster(밝은 오렌지 지붕+흰 회벽). " +
@@ -133,7 +133,7 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       const kit = HOUSE_KITS[kitId];
       const windowNote = windows === false ? "창문 없음" : "창문 자동";
       return {
-        summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${wings.length}개, ${doorNote}, ${windowNote}. 하네싱 규칙 적용 완료.`,
+        summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${wings.length}개, ${doorNote}, ${windowNote}. 집 키트 규칙 적용 완료.`,
         ...(warnings.length > 0 ? { warnings } : {}),
         data: { doorAt: result.doorAt ?? null, kitId, wings, ...(interiorData ?? {}) },
       };

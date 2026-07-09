@@ -21,7 +21,12 @@ import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 const PALETTE_VIEW_STORAGE_KEY = "rpg-zzu:palette-view";
+/** 작업 모드 탭: 칠하기 | 찾기 | 속성 */
+const PALETTE_WORK_TAB_KEY = "rpg-zzu:palette-work-tab";
+/** 구 advanced 플래그 — 있으면 find 탭으로 마이그레이션 */
 const PALETTE_ADVANCED_STORAGE_KEY = "rpg-zzu:palette-advanced";
+
+type PaletteWorkTab = "paint" | "find" | "props";
 type TileCategoryId = "recent" | "terrain" | "water" | "house" | "fence" | "decor" | "all";
 
 type TileCategory = {
@@ -39,10 +44,17 @@ const TILE_CATEGORIES: readonly TileCategory[] = [
   { id: "all", label: "전체" },
 ] as const;
 
-let activeTileCategory: TileCategoryId = "house";
+const WORK_TABS: readonly { readonly id: PaletteWorkTab; readonly label: string; readonly title: string; readonly testid: string }[] = [
+  { id: "paint", label: "칠하기", title: "도구 + 타일 팔레트", testid: "palette-work-tab-paint" },
+  // quick-tile-toggle: 레거시 e2e/단축 호환 (찾기 탭 = 예전 빠른 선택)
+  { id: "find", label: "찾기", title: "검색·카테고리로 타일 찾기", testid: "quick-tile-toggle" },
+  { id: "props", label: "속성", title: "선택 타일 메타·통행·지형", testid: "palette-work-tab-props" },
+] as const;
+
+let activeTileCategory: TileCategoryId = "recent";
 let tileSearchQuery = "";
 let showQuickTileNumbers = false;
-let advancedTileToolsExpanded = false;
+let activeWorkTab: PaletteWorkTab = "paint";
 let resetChipsetScroll = false;
 const recentTiles: number[] = [];
 
@@ -57,84 +69,214 @@ export function renderTilePalette(container: HTMLElement): void {
   const previousPaletteScroll = readPaletteScroll(container);
   clearChildren(container);
   const state = editorState.get();
-
-  container.append(makeTilePaletteToolSection(currentMapId));
+  activeWorkTab = readWorkTab();
 
   if (state.layer === "event") {
-    // 이벤트 레이어에서는 이벤트 편집기(목록/선택/요약)를 사이드 패널에 렌더링한다.
-    // 새 이벤트가 생성·선택되면 renderEventEditor 내부의 maybeAutoOpenEventEditor가
-    // 명령 카탈로그 모달을 자동으로 연다.
+    // 이벤트 레이어: 도구 + 이벤트 편집기. 타일 작업 탭은 숨긴다.
+    container.append(makeTilePaletteToolSection(currentMapId));
     renderEventEditor(container);
     return;
   }
 
+  // event 분기 이후 타일 레이어로 좁힌다 (시트/클러스터 API가 lower|upper만 받음).
+  const tileLayer: Exclude<Layer, "event"> = state.layer;
+
   const project = store.getCurrent();
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
-  const tileSection = el("div", { class: "panel-section" });
+  const shell = el("div", {
+    class: "panel-section palette-work-shell",
+    dataset: { testid: "palette-work-shell", workTab: activeWorkTab },
+  });
   if (!map) {
-    tileSection.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
-    container.append(tileSection);
+    shell.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
+    container.append(shell);
     return;
   }
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) {
-    tileSection.append(el("div", { class: "empty-hint", text: "타일셋이 없습니다." }));
-    container.append(tileSection);
+    shell.append(el("div", { class: "empty-hint", text: "타일셋이 없습니다." }));
+    container.append(shell);
     return;
   }
 
-  advancedTileToolsExpanded = readAdvancedTileToolsExpanded();
-  const paletteView = readPaletteView();
-  const palette = paletteView === "sheet"
-    ? makeChipsetSheet({
-      activePaletteStamp: state.activePaletteStamp,
-      layer: state.layer,
-      onCreatePaletteStamp: setPaletteStampFromDrag,
-      onSelectTile: selectPaletteTile,
-      selectedTile: state.selectedTile,
-      tileset,
-    })
-    : renderTilePaletteClusters({
-      layer: state.layer,
-      onSelectTile: selectPaletteTile,
-      selectedTile: state.selectedTile,
-      tileset,
-    });
-  tileSection.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
-  tileSection.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
-  // RM2K3처럼 팔레트는 현재 편집 레이어에 속한 타일만 보여 준다 — 제목에 레이어를 명시.
-  tileSection.append(makeTilePaletteTitleRow(state.layer, paletteView));
-  tileSection.append(palette);
-  // 타일 매핑 인스펙터는 항상 표시 — RM2K3에서 현재 타일의 메타데이터
-  // (이름/키/AI 라벨/레이어/통행/지형)를 보여주는 표준 패널이다.
-  if (advancedTileToolsExpanded) {
-    if (state.selectedTile >= 0) {
-      tileSection.append(makeTileBrushAssistPanel({
-        activeStampId: state.activeStampId,
-        autoConnectMode: state.autoConnectMode,
-        mapId: map.id,
-        onSelectTile: selectPaletteTile,
-        rerender: renderPalettePreservingViewport,
-        selectedTile: state.selectedTile,
-        tileset,
-      }));
-    }
-    tileSection.append(makeQuickTilePicker(state.selectedTile, state.layer, tileset));
-    if (state.selectedTile >= 0) {
-      tileSection.append(renderTileMappingInspector(state.selectedTile, tileset));
-      tileSection.append(makeTerrainEditor(tileset.id, state.selectedTile, tileset.terrain[state.selectedTile] ?? 0));
-    }
-  }
-  container.append(tileSection);
-
-  container.append(
+  shell.append(makeWorkTabBar());
+  shell.append(makeSelectedTileStatus(state.selectedTile, tileset));
+  shell.append(
     el("div", {
-      class: "empty-hint",
+      class: "palette-tileset-badge",
       text: tileset.name,
+      attrs: { title: tileset.name },
+      dataset: { testid: "palette-tileset-name" },
     })
   );
-  restorePaletteScroll(container, palette, previousPaletteScroll);
+
+  let palette: HTMLElement | null = null;
+  if (activeWorkTab === "paint") {
+    const paintBody = makePaintTabBody({
+      map,
+      state,
+      tileLayer,
+      tileset,
+    });
+    palette = paintBody.palette;
+    shell.append(paintBody.root);
+  } else if (activeWorkTab === "find") {
+    shell.append(makeQuickTilePicker(state.selectedTile, tileLayer, tileset));
+  } else {
+    shell.append(makePropsTabBody({
+      mapId: map.id,
+      selectedTile: state.selectedTile,
+      state,
+      tileset,
+    }));
+  }
+
+  // 레거시 호환: 숨은 advanced 토글 — 속성/찾기 전환용 테스트 훅
+  shell.append(makeLegacyAdvancedToggle());
+
+  container.append(shell);
+  if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
+}
+
+function makeWorkTabBar(): HTMLElement {
+  const bar = el("div", {
+    class: "palette-work-tabs",
+    attrs: { role: "tablist", "aria-label": "타일 작업 모드" },
+    dataset: { testid: "palette-work-tabs" },
+  });
+  for (const tab of WORK_TABS) {
+    const active = activeWorkTab === tab.id;
+    bar.append(
+      el("button", {
+        class: "btn palette-work-tab" + (active ? " active" : ""),
+        text: tab.label,
+        attrs: {
+          role: "tab",
+          "aria-selected": String(active),
+          title: tab.title,
+          type: "button",
+        },
+        dataset: { testid: tab.testid },
+        on: {
+          click: () => {
+            if (activeWorkTab === tab.id) return;
+            activeWorkTab = tab.id;
+            writePaletteStorage(PALETTE_WORK_TAB_KEY, tab.id);
+            // 찾기/속성을 쓰면 advanced 플래그도 맞춰 구 테스트 기대와 맞춘다.
+            writePaletteStorage(PALETTE_ADVANCED_STORAGE_KEY, tab.id === "paint" ? "0" : "1");
+            renderPalettePreservingViewport();
+          },
+        },
+      })
+    );
+  }
+  return bar;
+}
+
+/** 구 tile-advanced-toggle: 클릭 시 찾기 탭으로 (unit e2e 호환). */
+function makeLegacyAdvancedToggle(): HTMLElement {
+  return el("button", {
+    class: "btn tile-advanced-toggle is-legacy-hook",
+    text: "고급",
+    attrs: {
+      type: "button",
+      hidden: "",
+      "aria-hidden": "true",
+      "aria-expanded": String(activeWorkTab !== "paint"),
+    },
+    dataset: { testid: "tile-advanced-toggle" },
+    on: {
+      click: () => {
+        activeWorkTab = activeWorkTab === "find" ? "paint" : "find";
+        writePaletteStorage(PALETTE_WORK_TAB_KEY, activeWorkTab);
+        writePaletteStorage(PALETTE_ADVANCED_STORAGE_KEY, activeWorkTab === "paint" ? "0" : "1");
+        renderPalettePreservingViewport();
+      },
+    },
+  });
+}
+
+function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTMLElement {
+  const label =
+    selectedTile < 0 || selectedTile >= tileset.count
+      ? "없음"
+      : `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`;
+  return el("div", {
+    class: "selected-tile-status",
+    text: label,
+    attrs: { title: "현재 선택 타일" },
+    dataset: { testid: "selected-tile-status" },
+  });
+}
+
+function makePaintTabBody(input: {
+  readonly map: { readonly id: string; readonly tilesetId: string };
+  readonly state: ReturnType<typeof editorState.get>;
+  readonly tileLayer: Exclude<Layer, "event">;
+  readonly tileset: TilesetDef;
+}): { readonly root: HTMLElement; readonly palette: HTMLElement } {
+  const { map, state, tileLayer, tileset } = input;
+  const root = el("div", {
+    class: "palette-work-pane is-paint",
+    dataset: { testid: "palette-work-pane-paint" },
+  });
+  root.append(makeTilePaletteToolSection(currentMapId));
+  root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+  root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
+
+  const paletteView = readPaletteView();
+  const palette =
+    paletteView === "sheet"
+      ? makeChipsetSheet({
+          activePaletteStamp: state.activePaletteStamp,
+          layer: tileLayer,
+          onCreatePaletteStamp: setPaletteStampFromDrag,
+          onSelectTile: selectPaletteTile,
+          selectedTile: state.selectedTile,
+          tileset,
+        })
+      : renderTilePaletteClusters({
+          layer: tileLayer,
+          onSelectTile: selectPaletteTile,
+          selectedTile: state.selectedTile,
+          tileset,
+        });
+
+  root.append(makePaintTitleRow(tileLayer, paletteView));
+  root.append(palette);
+  return { root, palette };
+}
+
+function makePropsTabBody(input: {
+  readonly mapId: string;
+  readonly selectedTile: number;
+  readonly state: ReturnType<typeof editorState.get>;
+  readonly tileset: TilesetDef;
+}): HTMLElement {
+  const { mapId, selectedTile, state, tileset } = input;
+  const root = el("div", {
+    class: "palette-work-pane is-props",
+    dataset: { testid: "palette-work-pane-props" },
+  });
+  if (selectedTile < 0) {
+    root.append(el("div", { class: "empty-hint", text: "타일을 선택하세요. (칠하기·찾기 탭)" }));
+    return root;
+  }
+  root.append(
+    makeTileBrushAssistPanel({
+      activeStampId: state.activeStampId,
+      autoConnectMode: state.autoConnectMode,
+      mapId,
+      onSelectTile: selectPaletteTile,
+      rerender: renderPalettePreservingViewport,
+      selectedTile,
+      tileset,
+    })
+  );
+  root.append(renderTileMappingInspector(selectedTile, tileset));
+  root.append(makeTerrainEditor(tileset.id, selectedTile, tileset.terrain[selectedTile] ?? 0));
+  return root;
 }
 
 function makeQuickTilePicker(
@@ -187,14 +329,29 @@ function makeQuickTilePicker(
       },
     },
   });
+  const numberToggle = el("button", {
+    class: "btn tile-number-toggle" + (showQuickTileNumbers ? " active" : ""),
+    text: showQuickTileNumbers ? "# ON" : "#",
+    attrs: {
+      type: "button",
+      title: "타일 번호 표시",
+      "aria-pressed": String(showQuickTileNumbers),
+    },
+    dataset: { testid: "tile-number-toggle" },
+    on: {
+      click: () => {
+        showQuickTileNumbers = !showQuickTileNumbers;
+        renderPalettePreservingViewport();
+      },
+    },
+  });
   const toolbar = el("div", { class: "quick-tile-toolbar" });
-  toolbar.append(search);
+  toolbar.append(search, numberToggle);
 
   const grid = el("div", { class: "quick-tile-grid", dataset: { testid: "quick-tile-grid" } });
   const matches = quickTileIndexes(tileset).slice(0, 96);
   for (const index of matches) {
     // 빠른 선택은 검색 편의상 전 레이어를 보여 주되, 다른 레이어 타일은 흐리게 표시한다.
-    // 클릭하면 selectPaletteTile이 해당 타일의 홈 레이어로 자동 전환한다.
     grid.append(makeQuickTileCell(index, selectedTile === index, tileVisibleOnLayer(tileset, index, layer)));
   }
   if (matches.length === 0) {
@@ -214,12 +371,14 @@ function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
 }
 
-function makeTilePaletteTitleRow(layer: Exclude<Layer, "event">, paletteView: PaletteViewMode): HTMLElement {
+function makePaintTitleRow(layer: Exclude<Layer, "event">, paletteView: PaletteViewMode): HTMLElement {
   const row = el("div", { class: "tile-palette-title-row" });
-  row.append(el("h3", {
-    class: "tile-palette-title",
-    text: layer === "upper" ? "타일 팔레트 · 상위 레이어" : "타일 팔레트 · 하위 레이어",
-  }));
+  row.append(
+    el("h3", {
+      class: "tile-palette-title",
+      text: layer === "upper" ? "타일 · 상위" : "타일 · 하위",
+    })
+  );
   row.append(
     el("div", {
       class: "tile-palette-title-controls",
@@ -228,11 +387,10 @@ function makeTilePaletteTitleRow(layer: Exclude<Layer, "event">, paletteView: Pa
           class: "palette-view-segment",
           attrs: { role: "group", "aria-label": "타일 팔레트 보기" },
           children: [
-            makePaletteViewButton("cluster", "클러스터", paletteView),
+            makePaletteViewButton("cluster", "그룹", paletteView),
             makePaletteViewButton("sheet", "시트", paletteView),
           ],
         }),
-        makeAdvancedTileToolsToggle(),
       ],
     })
   );
@@ -259,31 +417,16 @@ function makePaletteViewButton(view: PaletteViewMode, label: string, activeView:
   });
 }
 
-function makeAdvancedTileToolsToggle(): HTMLButtonElement {
-  return el("button", {
-    class: "btn tile-advanced-toggle" + (advancedTileToolsExpanded ? " active" : ""),
-    text: advancedTileToolsExpanded ? "고급 ▾" : "고급 ▸",
-    attrs: {
-      "aria-expanded": String(advancedTileToolsExpanded),
-      title: "고급 타일 도구",
-    },
-    dataset: { testid: "tile-advanced-toggle" },
-    on: {
-      click: () => {
-        advancedTileToolsExpanded = !advancedTileToolsExpanded;
-        writePaletteStorage(PALETTE_ADVANCED_STORAGE_KEY, advancedTileToolsExpanded ? "1" : "0");
-        renderPalettePreservingViewport();
-      },
-    },
-  });
-}
-
 function readPaletteView(): PaletteViewMode {
   return readPaletteStorage(PALETTE_VIEW_STORAGE_KEY) === "sheet" ? "sheet" : "cluster";
 }
 
-function readAdvancedTileToolsExpanded(): boolean {
-  return readPaletteStorage(PALETTE_ADVANCED_STORAGE_KEY) === "1";
+function readWorkTab(): PaletteWorkTab {
+  const stored = readPaletteStorage(PALETTE_WORK_TAB_KEY);
+  if (stored === "paint" || stored === "find" || stored === "props") return stored;
+  // 구 advanced=1 이면 찾기 탭으로 승격
+  if (readPaletteStorage(PALETTE_ADVANCED_STORAGE_KEY) === "1") return "find";
+  return "paint";
 }
 
 function readPaletteStorage(key: string): string | null {
@@ -298,9 +441,10 @@ function writePaletteStorage(key: string, value: string): void {
 
 function quickTileIndexes(tileset: TilesetDef): readonly number[] {
   const normalizedQuery = tileSearchQuery.trim().toLowerCase();
-  const source = activeTileCategory === "recent"
-    ? recentTiles.filter((index) => index < tileset.count)
-    : Array.from({ length: tileset.count }, (_, index) => index);
+  const source =
+    activeTileCategory === "recent"
+      ? recentTiles.filter((index) => index < tileset.count)
+      : Array.from({ length: tileset.count }, (_, index) => index);
   return source.filter((index) => {
     const tile = describeChipsetTile(index);
     if (!matchesCategory(activeTileCategory, tile.tags, tile.usage, tileset.priority[index] ?? "lower")) return false;
@@ -332,11 +476,7 @@ function matchesCategory(
   return usage === "decoration" || layer === "upper";
 }
 
-function makeQuickTileCell(
-  index: number,
-  active: boolean,
-  currentLayer: boolean
-): HTMLButtonElement {
+function makeQuickTileCell(index: number, active: boolean, currentLayer: boolean): HTMLButtonElement {
   const name = `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`;
   return el("button", {
     class: "quick-tile-cell" + (active ? " active" : "") + (currentLayer ? "" : " muted"),
@@ -348,7 +488,6 @@ function makeQuickTileCell(
     children: [el("span", { class: "quick-tile-index", text: String(index) })],
     dataset: { testid: `quick-tile-${index}` },
     on: {
-      // 선택은 pointerdown에서 즉시 — click은 도중 재구축 시 증발(클릭 불가 보고 원인).
       pointerdown: (event) => {
         event.preventDefault();
         selectPaletteTile(index);
@@ -367,17 +506,11 @@ export function selectPaletteTile(index: number): void {
     const state = editorState.get();
     const tileset = currentTilesetForPalette();
     const nextActiveStampId = compatibleStampIdForTile(state.activeStampId, index, tileset);
-    // RM2K3식 엄격 분류: 타일은 소속 레이어가 정해져 있다. 다른 레이어의 타일을
-    // (검색/즐겨찾기/유사 타일 등에서) 선택하면 편집 레이어를 그 타일의 홈으로 전환한다.
-    // 이벤트 레이어에서는 전환하지 않는다 — 이벤트 편집 흐름을 깨지 않기 위해.
     let nextLayer = state.layer;
     if (tileset && state.layer !== "event") {
       const home = tileLayerHome(tileset, index);
       if (home !== "both" && home !== state.layer) nextLayer = home;
     }
-    // 타일을 고르는 행위는 "칠하겠다"는 의도 — select(건축 영역 지정) 등 다른 툴에 갇혀
-    // "클릭해도 안 깔리는" 상태가 되지 않게 페인트 계열이 아니면 paint로 전환한다.
-    // 단 이벤트 레이어/이벤트 툴은 기존 계약대로 건드리지 않는다(이벤트 편집 흐름 보존).
     const keepTools = new Set(["paint", "fill", "erase", "event"]);
     const switchToPaint = !keepTools.has(state.tool) && nextLayer !== "event";
     editorState.set({
@@ -388,10 +521,11 @@ export function selectPaletteTile(index: number): void {
       selectedTile: index,
       ...(switchToPaint ? { tool: "paint" as const } : {}),
     });
-    // 자동 레이어 전환은 사용자에게 보여야 한다 — 몰래 바뀌면 지우개/페인트가
-    // "빈 레이어"를 대상으로 삼아 무반응처럼 느껴진다(지우개 버그 보고의 원인).
     if (nextLayer !== state.layer) {
-      toast(nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환", "ok");
+      toast(
+        nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환",
+        "ok"
+      );
     }
   });
 }

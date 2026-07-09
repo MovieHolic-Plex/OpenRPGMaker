@@ -83,6 +83,29 @@ export function totalToolCount(): number {
 
 const DESTRUCTIVE_NAMES = new Set(["remove_event", "remove_map"]);
 
+/** 첫 화면용 자주 쓰는 툴 (이름 고정 — 레지스트리에 없으면 건너뜀). */
+export const FREQUENT_TOOL_NAMES = [
+  "place_npc",
+  "build_house_kit",
+  "build_wall",
+  "lay_path",
+  "fill_region",
+  "tile_paint",
+  "place_door",
+  "transfer_player",
+  "propose_tile_vocabulary",
+  "generate_map",
+] as const;
+
+export function frequentTools(): readonly ToolDefinition[] {
+  const byName = new Map(
+    TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => [tool.name, tool] as const))
+  );
+  return FREQUENT_TOOL_NAMES.map((name) => byName.get(name)).filter(
+    (tool): tool is ToolDefinition => tool !== undefined
+  );
+}
+
 // 검색 필터(이름/설명 부분 일치). 빈 질의는 전체.
 export function filterToolCategories(query: string): ToolCategory[] {
   const trimmed = query.trim().toLowerCase();
@@ -95,16 +118,90 @@ export function filterToolCategories(query: string): ToolCategory[] {
   })).filter((category) => category.tools.length > 0);
 }
 
+export function shouldShowFrequentFirst(query: string, showAll: boolean): boolean {
+  return query.trim().length === 0 && !showAll;
+}
+
+function renderToolRow(tool: ToolDefinition): HTMLElement {
+  return el("div", {
+    class: "tool-browser-row",
+    dataset: { testid: `tool-browser-row-${tool.name}` },
+    children: [
+      el("div", {
+        class: "tool-browser-row-head",
+        children: [
+          el("code", { class: "tool-browser-name", text: tool.name }),
+          el("span", {
+            class: `tool-browser-badge ${tool.mode === "write" ? "is-write" : "is-read"}`,
+            text: tool.mode === "write" ? "편집" : "조회",
+          }),
+          ...(DESTRUCTIVE_NAMES.has(tool.name)
+            ? [el("span", { class: "tool-browser-badge is-danger", text: "파괴적" })]
+            : []),
+        ],
+      }),
+      el("p", { class: "tool-browser-desc", text: tool.description }),
+    ],
+  });
+}
+
 export function openToolBrowserModal(): HTMLElement {
   document.querySelector("[data-testid='tool-browser-modal']")?.remove();
 
   const body = el("div", { class: "database-modal-body tool-browser-body", dataset: { testid: "tool-browser-body" } });
+  let showAll = false;
   const renderList = (query: string): void => {
     body.replaceChildren();
+    if (shouldShowFrequentFirst(query, showAll)) {
+      const frequent = frequentTools();
+      body.append(
+        el("section", {
+          class: "tool-browser-category tool-browser-frequent",
+          dataset: { testid: "tool-browser-frequent" },
+          children: [
+            el("h3", {
+              class: "tool-browser-category-title",
+              text: `자주 쓰는 툴 (${frequent.length})`,
+              dataset: { testid: "tool-browser-frequent-title" },
+            }),
+            ...frequent.map((tool) => renderToolRow(tool)),
+          ],
+        }),
+        el("button", {
+          class: "ai-assistant-action tool-browser-show-all",
+          text: `전체 ${totalToolCount()}개 보기`,
+          attrs: { type: "button" },
+          dataset: { testid: "tool-browser-show-all" },
+          on: {
+            click: () => {
+              showAll = true;
+              renderList(search.value);
+            },
+          },
+        })
+      );
+      return;
+    }
     const categories = filterToolCategories(query);
     if (categories.length === 0) {
       body.append(el("p", { class: "tool-browser-empty", text: "검색 결과가 없습니다." }));
       return;
+    }
+    if (showAll && query.trim().length === 0) {
+      body.append(
+        el("button", {
+          class: "ai-assistant-action tool-browser-show-frequent",
+          text: "자주 쓰는 툴만 보기",
+          attrs: { type: "button" },
+          dataset: { testid: "tool-browser-show-frequent" },
+          on: {
+            click: () => {
+              showAll = false;
+              renderList(search.value);
+            },
+          },
+        })
+      );
     }
     for (const category of categories) {
       body.append(
@@ -112,28 +209,7 @@ export function openToolBrowserModal(): HTMLElement {
           class: "tool-browser-category",
           children: [
             el("h3", { class: "tool-browser-category-title", text: `${category.label} (${category.tools.length})` }),
-            ...category.tools.map((tool) =>
-              el("div", {
-                class: "tool-browser-row",
-                dataset: { testid: `tool-browser-row-${tool.name}` },
-                children: [
-                  el("div", {
-                    class: "tool-browser-row-head",
-                    children: [
-                      el("code", { class: "tool-browser-name", text: tool.name }),
-                      el("span", {
-                        class: `tool-browser-badge ${tool.mode === "write" ? "is-write" : "is-read"}`,
-                        text: tool.mode === "write" ? "편집" : "조회",
-                      }),
-                      ...(DESTRUCTIVE_NAMES.has(tool.name)
-                        ? [el("span", { class: "tool-browser-badge is-danger", text: "파괴적" })]
-                        : []),
-                    ],
-                  }),
-                  el("p", { class: "tool-browser-desc", text: tool.description }),
-                ],
-              })
-            ),
+            ...category.tools.map((tool) => renderToolRow(tool)),
           ],
         })
       );
@@ -145,7 +221,10 @@ export function openToolBrowserModal(): HTMLElement {
     attrs: { type: "text", placeholder: "툴 검색 (예: 집, npc, 타일, 삭제)" },
     dataset: { testid: "tool-browser-search" },
   }) as HTMLInputElement;
-  search.addEventListener("input", () => renderList(search.value));
+  search.addEventListener("input", () => {
+    if (search.value.trim().length > 0) showAll = false;
+    renderList(search.value);
+  });
 
   const closeButton = el("button", {
     class: "database-modal-close",
@@ -166,14 +245,14 @@ export function openToolBrowserModal(): HTMLElement {
           el("header", {
             class: "database-modal-header tool-browser-header",
             children: [
-              el("h2", { text: `🧰 AI가 쓸 수 있는 툴 ${totalToolCount()}개` }),
+              el("h2", { text: `🧰 AI 툴 · 자주 쓰는 것 + 검색` }),
               search,
               closeButton,
             ],
           }),
           el("p", {
             class: "tool-browser-hint",
-            text: "채팅에 자연어로 요청하면 AI가 이 툴들을 조합해 실행합니다. 편집은 제안 카드(또는 자동 승인)로 적용되고 Ctrl+Z로 되돌릴 수 있습니다.",
+            text: "먼저 자주 쓰는 툴을 보고, 검색으로 나머지를 찾거나 전체 목록을 엽니다. 채팅에 자연어로 요청하면 AI가 이 툴들을 조합해 실행합니다.",
           }),
           body,
         ],

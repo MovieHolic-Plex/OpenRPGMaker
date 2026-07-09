@@ -98,6 +98,118 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   width: 34px;
 }
 
+.ai-chat-icon-btn,
+.ai-command-settings-button {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-grid;
+  font-size: 16px;
+  font-weight: 700;
+  height: 32px;
+  place-items: center;
+  width: 32px;
+}
+
+.ai-chat-icon-btn:hover,
+.ai-command-settings-button:hover,
+.ai-chat-icon-btn:focus-visible,
+.ai-command-settings-button:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+}
+
+.ai-header-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.ai-more-wrap {
+  position: relative;
+}
+
+.ai-more-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: 2px;
+  min-width: 160px;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 60;
+}
+
+.ai-more-menu[hidden] {
+  display: none;
+}
+
+.ai-more-menu-item {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.ai-more-menu-item:hover,
+.ai-more-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--accent, #6ea8fe) 16%, transparent);
+}
+
+.ai-chat-toolbar.is-empty,
+.ai-chat-toolbar[hidden] {
+  display: none !important;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-status-group {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-settings-window {
+  max-width: min(480px, 92vw);
+  width: 440px;
+}
+
+.ai-settings-body {
+  max-height: min(70vh, 640px);
+  overflow: auto;
+  padding: 12px 16px 18px;
+}
+
+.ai-settings-form .ai-config-row {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tool-browser-frequent {
+  margin-bottom: 12px;
+}
+
+.tool-browser-show-all,
+.tool-browser-show-frequent {
+  margin: 8px 0 12px;
+}
+
 .ai-command-menu-toggle:hover,
 .ai-command-menu-toggle:focus-visible {
   background: var(--control-bg-hover);

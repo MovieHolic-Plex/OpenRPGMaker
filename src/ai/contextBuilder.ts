@@ -97,7 +97,7 @@ const INTRO = [
   "19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워",
   "    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).",
   "20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)는 데이터베이스의 타일셋 지식 화면에 저장됩니다.",
-  "    구조물 문법은 하네싱 키트가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
+  "    구조물 문법은 집 키트(build_house_kit)가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
   "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
@@ -233,7 +233,7 @@ function tileSemanticsSection(project: Project): string {
 function houseKitSection(): string {
   const lines = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
   return [
-    "## 하네싱 키트 요약",
+    "## 집 키트 요약",
     ...lines,
     "길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.",
   ].join("\n");

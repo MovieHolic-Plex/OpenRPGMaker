@@ -13,7 +13,7 @@ import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from 
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
-import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowserModal";
+import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -55,8 +55,9 @@ import {
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
-import { DEFAULT_BASE_URL, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { createCommandBarElements } from "./aiCommandBar";
+import { openAiSettingsModal } from "./aiSettingsModal";
 import {
   applyAiFontSize,
   clampPanelSize,
@@ -522,29 +523,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-send" },
   }) as HTMLButtonElement;
 
-  // 설정 저장 시 진행 중인 세션에도 즉시 반영한다 — 세션이 생성 시점 설정(빈 API 키 등)을
-  // 계속 쓰는 바람에 키를 저장해도 인증 실패가 반복되던 문제를 막는다.
-  const settings = renderSettingsForm(
-    (config) => {
-      controller.session?.updateConfig(config);
-    },
-    // 글자 크기 변경 즉시 패널에 반영(패널은 아래에서 생성되지만 콜백은 사용자 조작 시점에만 호출된다).
-    (size) => applyAiFontSize(panel, size)
-  );
-  // 설정은 한 번 쓰고 안 쓰는 요소라 기본 접힘 — 헤더 ⚙로 펼친다(전면 재배치 2026-07-05).
-  let settingsOpen = false;
-  const applySettingsOpen = (): void => {
-    if (settingsOpen) settings.element.classList.remove("ai-config-collapsed");
-    else settings.element.classList.add("ai-config-collapsed");
-  };
-  applySettingsOpen();
+  // 설정은 전용 모달로 연다(채팅 본문 인라인 폼 제거 — UX P0/P1).
+  // 저장 시 진행 중 세션 config도 즉시 갱신한다.
   const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
-    settingsOpen = true;
-    settings.element.classList.remove("ai-config-collapsed");
-    settings.element.setAttribute("open", "");
-    (settings.element as HTMLDetailsElement).open = true;
-    if (focusTarget === "apiKey") settings.focusApiKey();
-    else settings.focusFirstInput();
+    openAiSettingsModal({
+      focusTarget,
+      fontRoot: panel,
+      onSaved: (config) => {
+        controller.session?.updateConfig(config);
+      },
+      onFontSizeChange: (size) => applyAiFontSize(panel, size),
+    });
   };
 
   // 시작 화면(빈 대화) — 첫 콘텐츠가 붙는 순간 제거된다.
@@ -2010,77 +1999,71 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }) as HTMLButtonElement;
 
   const titleEl = el("h2", { text: "AI 어시스턴트" });
-  // 사용자에게 "AI한테 뭘 시킬 수 있는지"를 보여주는 툴 브라우저.
+  // 1차 크롬: ＋ 새 대화 · ⚙ 설정 · ☰ 더보기 · 접기. 2차 액션은 햄버거로만.
+  const openToolsBrowser = (): void => {
+    void openToolBrowserModal();
+  };
+  const openHarness = (): void => {
+    void openHarnessModal({
+      audit: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])],
+      statusTimeline: controller.statusTimeline,
+      getSnapshot: () => controller.session?.getHarnessSnapshot() ?? null,
+    });
+  };
+  // testid 호환용 숨은 트리거 (메뉴/테스트가 click 위임).
   const toolsButton = el("button", {
     class: "ai-chat-tools-button",
     text: "🧰",
-    attrs: { type: "button", title: `AI가 쓸 수 있는 툴 ${totalToolCount()}개 보기`, "aria-label": "AI 도구 보기" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "ai-tools-browser" },
-    on: { click: () => void openToolBrowserModal() },
+    on: { click: openToolsBrowser },
   });
-  // 하네스 뷰어(🔬): plan→execute→review 전환, 오케스트레이션 주입 원문, 툴 인자/결과, 토큰 사용의 관측 지점.
   const harnessButton = el("button", {
     class: "ai-chat-tools-button",
     text: "🔬",
-    attrs: { type: "button", title: "하네스 — AI 내부 동작 타임라인(단계 전환·주입·툴·토큰)", "aria-label": "AI 하네스 뷰어 열기" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "ai-harness" },
-    on: {
-      click: () =>
-        void openHarnessModal({
-          audit: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])],
-          statusTimeline: controller.statusTimeline,
-          getSnapshot: () => controller.session?.getHarnessSnapshot() ?? null,
-        }),
-    },
+    on: { click: openHarness },
   });
   const settingsButton = el("button", {
-    class: "ai-chat-tools-button",
+    class: "ai-chat-icon-btn",
     text: "⚙",
-    attrs: { type: "button", title: "엔드포인트/모델/API 키 설정", "aria-label": "AI 설정 열기" },
+    attrs: { type: "button", title: "설정", "aria-label": "AI 설정 열기" },
     dataset: { testid: "ai-settings-toggle" },
-    on: {
-      click: () => {
-        applyHistoryOpen(true);
-        openAiSettings("first");
-      },
-    },
+    on: { click: () => openAiSettings("first") },
+  });
+  // float 모드(헤더 숨김)에서도 1클릭 설정.
+  const commandBarSettingsButton = el("button", {
+    class: "ai-command-settings-button ai-chat-icon-btn",
+    text: "⚙",
+    attrs: { type: "button", title: "설정", "aria-label": "AI 설정 열기" },
+    dataset: { testid: "ai-settings-command-bar" },
+    on: { click: () => openAiSettings("first") },
   });
   const currentChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
-  const refreshDockToggleButton = (button: HTMLButtonElement): void => {
-    const mode = currentChatDock();
-    button.textContent = mode === "side" ? "⇣" : "⇥";
-    button.setAttribute("title", mode === "side" ? "맵 하단 플로팅으로 이동" : "우측 사이드패널로 이동");
-    button.setAttribute("aria-label", mode === "side" ? "채팅을 맵 하단 플로팅으로 이동" : "채팅을 우측 사이드패널로 이동");
-    button.setAttribute("aria-pressed", String(mode === "side"));
-  };
-  const refreshDockToggleButtons = (): void => {
-    refreshDockToggleButton(dockToggleButton);
-    refreshDockToggleButton(commandBarDockButton);
-  };
+  let refreshDockLabels: () => void = () => {};
   const onDockToggleClick = (): void => {
     if (options.onChatDockToggle) options.onChatDockToggle();
     else editorState.set({ chatDock: currentChatDock() === "side" ? "float" : "side" });
-    refreshDockToggleButtons();
+    refreshDockLabels();
   };
+  // 도크 전환은 햄버거 전용 (헤더/커맨드바 중복 제거). testid 호환용 숨은 버튼.
   const dockToggleButton = el("button", {
     class: "ai-chat-tools-button",
-    attrs: { type: "button" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "chat-dock-toggle" },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
-  // float 모드에선 헤더가 숨겨져 헤더 토글로는 전환 불가 — 커맨드바에도 같은 토글을 둔다.
   const commandBarDockButton = el("button", {
     class: "ai-chat-tools-button ai-command-bar-dock-toggle",
-    attrs: { type: "button" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "chat-dock-toggle-bar" },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
-  refreshDockToggleButtons();
-  // 감사 로그 내보내기 — 도구줄에 라벨 달아 상주(중요 기능이라 잘 보이게, #5).
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",
-    attrs: { type: "button", title: "이 대화의 감사 로그를 JSON으로 내보내기 — 무엇을 했는지 기록", "aria-label": "대화 내보내기" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "대화 감사 로그 내보내기", "aria-label": "대화 내보내기" },
     dataset: { testid: "ai-export" },
     on: {
       click: () => {
@@ -2096,8 +2079,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   refreshExportButton();
   const undoLastButton = el("button", {
     class: "ai-assistant-action ai-undo-last",
-    text: "↶ 되돌리기",
-    attrs: { type: "button", title: "직전 변경 되돌리기(Ctrl+Z)" },
+    text: "되돌리기",
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "직전 변경 되돌리기(Ctrl+Z)" },
     dataset: { testid: "ai-undo-last" },
     on: {
       click: () => {
@@ -2119,33 +2102,34 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   refreshUndoLastButton();
   if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
-  // AI 스튜디오 모드 — 에디터를 덮는 넓은 워크스페이스(좌: 대화, 우: 스킬 레일).
   let studio = typeof localStorage !== "undefined" && localStorage.getItem(STUDIO_MODE_KEY) === "1";
   let historyOpen = false;
   let applyHistoryOpen: (next: boolean) => void = () => {};
   let applyStudio: (next: boolean) => void = () => {};
   const studioButton = el("button", {
     class: "ai-chat-tools-button",
-    text: "⛶",
-    attrs: { type: "button", title: "AI 스튜디오 — 넓게 펼치기/되돌리기", "aria-label": "AI 스튜디오 펼치기" },
+    text: "스튜디오",
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "AI 스튜디오", "aria-label": "AI 스튜디오 펼치기" },
     dataset: { testid: "ai-studio-toggle" },
   });
-  // 구 도크 버튼은 전체 기록 패널 토글로 역할을 바꾼다. testid는 호환을 위해 유지한다.
   const historyButton = el("button", {
     class: "ai-chat-tools-button",
-    text: "🕒",
-    attrs: { type: "button", title: "전체 기록 열기", "aria-label": "전체 기록 열기" },
+    text: "기록",
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "전체 기록", "aria-label": "전체 기록 열기" },
     dataset: { testid: "ai-dock-toggle" },
   });
-  // 새 대화(#6): 현재 대화를 기록에 저장하고 문맥을 비운다. 대화가 길수록 비용이 늘어나므로 새 주제는 새 대화로.
   const newSessionButton = el("button", {
-    class: "ai-assistant-action ai-new-session",
-    text: "🆕 새 대화",
-    attrs: { type: "button", title: "새 대화 시작 — 대화가 길어지면 토큰 비용이 늘어납니다. 새 주제는 새 대화로 시작하세요(이전 대화는 기록에 저장됨)." },
+    class: "ai-chat-icon-btn ai-new-session",
+    text: "＋",
+    attrs: {
+      type: "button",
+      title: "새 대화",
+      "aria-label": "새 대화 시작",
+    },
     dataset: { testid: "ai-new-session" },
     on: {
       click: () => {
-        persistConversation(); // 비우기 전에 현재 대화를 기록 저장.
+        persistConversation();
         dropSession(controller);
         controller.auditHistory = [];
         conversationId = genId("conv");
@@ -2173,16 +2157,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   abortButton.hidden = true;
   abortButton.disabled = true;
   abortButton.setAttribute("aria-disabled", "true");
-  // 제목줄(항상 보임): 제목·상태·접기. 아이콘 뭉침을 걷어내 접었을 때도 깔끔하게.
   const statusGroup = el("div", {
     class: "ai-status-group",
     dataset: { testid: "ai-status-group" },
-    children: [status, abortButton, commandBarDockButton],
+    children: [status, abortButton],
   });
   const fontButton = el("button", {
     class: "ai-chat-tools-button",
-    text: "가",
-    attrs: { type: "button", title: "글자 크기 전환 (작게 → 보통 → 크게)", "aria-label": "글자 크기 전환" },
+    text: "글자 크기",
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "글자 크기 전환", "aria-label": "글자 크기 전환" },
     dataset: { testid: "ai-font-cycle" },
     on: {
       click: () => {
@@ -2193,27 +2176,104 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
   });
+
+  // 헤더 햄버거 메뉴 (2차 액션 통합).
+  const moreMenu = el("div", {
+    class: "ai-more-menu",
+    attrs: { role: "menu", hidden: "" },
+    dataset: { testid: "ai-more-menu" },
+  });
+  const moreMenuDockItem = el("button", {
+    class: "ai-more-menu-item",
+    text: "플로팅으로 이동",
+    attrs: { type: "button", role: "menuitem" },
+    dataset: { testid: "ai-more-dock" },
+  }) as HTMLButtonElement;
+  const refreshMoreMenuDockLabel = (): void => {
+    const mode = currentChatDock();
+    moreMenuDockItem.textContent = mode === "side" ? "플로팅으로 이동" : "사이드로 이동";
+  };
+  refreshMoreMenuDockLabel();
+  const closeMoreMenu = (): void => {
+    moreMenu.hidden = true;
+    moreMenuToggle.setAttribute("aria-expanded", "false");
+  };
+  const moreMenuToggle = el("button", {
+    class: "ai-chat-icon-btn",
+    text: "☰",
+    attrs: { type: "button", title: "더보기", "aria-label": "더보기 메뉴", "aria-expanded": "false", "aria-haspopup": "menu" },
+    dataset: { testid: "ai-more-menu-toggle" },
+    on: {
+      click: () => {
+        const open = moreMenu.hidden;
+        moreMenu.hidden = !open;
+        moreMenuToggle.setAttribute("aria-expanded", String(open));
+        if (open) refreshMoreMenuDockLabel();
+      },
+    },
+  }) as HTMLButtonElement;
+  if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+    document.addEventListener("pointerdown", (event) => {
+      if (moreMenu.hidden) return;
+      if (event.target instanceof Node && (moreMenu.contains(event.target) || moreMenuToggle.contains(event.target))) return;
+      closeMoreMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (!moreMenu.hidden && event.key === "Escape") closeMoreMenu();
+    });
+  }
+  const moreMenuItem = (text: string, testId: string, onClick: () => void): HTMLElement =>
+    el("button", {
+      class: "ai-more-menu-item",
+      text,
+      attrs: { type: "button", role: "menuitem" },
+      dataset: { testid: testId },
+      on: {
+        click: () => {
+          closeMoreMenu();
+          onClick();
+        },
+      },
+    });
+  moreMenuDockItem.addEventListener("click", () => {
+    closeMoreMenu();
+    onDockToggleClick();
+  });
+  moreMenu.replaceChildren(
+    moreMenuItem("되돌리기", "ai-more-undo", () => undoLastButton.click()),
+    moreMenuItem("내보내기", "ai-more-export", () => exportButton?.click()),
+    moreMenuDockItem,
+    moreMenuItem("전체 기록", "ai-more-history", () => {
+      historyButton.click();
+      applyHistoryOpen(true);
+    }),
+    moreMenuItem("툴 브라우저", "ai-more-tools", () => toolsButton.click()),
+    moreMenuItem("AI 내부 로그", "ai-more-harness", () => harnessButton.click()),
+    moreMenuItem("스튜디오", "ai-more-studio", () => studioButton.click()),
+    moreMenuItem("글자 크기", "ai-more-font", () => fontButton.click())
+  );
+  const moreWrap = el("div", {
+    class: "ai-more-wrap",
+    children: [moreMenuToggle, moreMenu],
+  });
+
   const header = el("div", {
     class: "ai-chat-header",
     children: [
       titleEl,
-      el("span", { class: "ai-header-actions", children: [fontButton, settingsButton, dockToggleButton, historyButton] }),
+      el("span", {
+        class: "ai-header-actions",
+        children: [newSessionButton, settingsButton, moreWrap],
+      }),
       collapseButton,
     ],
   });
-  // 도구줄(접으면 숨김): 새 대화 · 되돌리기 · 로그 | 툴 · 스튜디오 (설정/도킹은 헤더로 이동 — §2.3 ①).
+  // 구 툴바 슬롯은 유지하되 비움 — 테스트/레이아웃 훅 호환, 화면 소음 제거.
   const toolbar = el("div", {
-    class: "ai-chat-toolbar",
+    class: "ai-chat-toolbar is-empty",
     dataset: { testid: "ai-chat-toolbar" },
-    children: [
-      newSessionButton,
-      undoLastButton,
-      exportButton,
-      el("span", { class: "ai-toolbar-sep" }),
-      toolsButton,
-      harnessButton,
-      studioButton,
-    ],
+    attrs: { hidden: "" },
+    children: [toolsButton, harnessButton, studioButton, historyButton, dockToggleButton, commandBarDockButton, exportButton, undoLastButton, fontButton],
   });
 
   const inputRow = el("div", {
@@ -2227,6 +2287,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     inputRow,
     statusGroup,
   });
+  // float: ⚙ + ☰ 상시 (헤더 숨김 대응). 메뉴 토글 아이콘을 햄버거로.
+  commandMenuToggle.textContent = "☰";
+  commandMenuToggle.setAttribute("title", "더보기");
+  commandMenuToggle.setAttribute("aria-label", "더보기 메뉴");
+  statusGroup.prepend(commandBarSettingsButton);
   const volatileLogMount = el("div", {
     class: "ai-rising-volatile-zone",
     dataset: { testid: "ai-rising-volatile-zone" },
@@ -2250,7 +2315,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const mainColumn = el("div", {
     class: "ai-chat-main",
     children: [
-      settings.element,
       historyLogMount,
       chipsHost,
     ],
@@ -2349,7 +2413,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     historyOpen = next;
     if (historyOpen) {
       panel.classList.add("is-history-open");
+      // side flex 도크에서는 본문이 곧 기록 영역 — fixed is-docked 오버레이를 켜지 않는다.
       if (!panel.classList.contains("chat-dock-side")) panel.classList.add("is-docked");
+      else panel.classList.remove("is-docked");
       historyLogMount.append(log);
       historyButton.textContent = "×";
       historyButton.setAttribute("title", "전체 기록 닫기");
@@ -2362,6 +2428,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.setAttribute("aria-label", "전체 기록 열기");
     }
     if (typeof document !== "undefined" && document.body) {
+      // side/float 공통: fixed 오버레이 inset 도킹 body 클래스는 쓰지 않는다(이중 패딩 흔들림).
       document.body.classList.remove("ai-panel-docked");
       document.body.classList.add("ai-command-bar-active");
     }
@@ -2388,64 +2455,91 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (typeof document !== "undefined" && document.body) document.body.classList.remove("ai-panel-docked");
       drawer.element.hidden = false;
       drawer.refresh();
-      studioButton.textContent = "🗗";
       studioButton.setAttribute("aria-label", "AI 스튜디오 되돌리기");
     } else {
       panel.classList.remove("is-studio");
       drawer.element.hidden = true;
-      studioButton.textContent = "⛶";
       studioButton.setAttribute("aria-label", "AI 스튜디오 펼치기");
       applyHistoryOpen(false);
     }
   };
   studioButton.addEventListener("click", () => applyStudio(!studio));
 
+  // float 커맨드바 ☰ — 헤더 햄버거와 동일 항목 (설정/새 대화는 아이콘으로 이미 노출).
+  const closeCommandMenu = (): void => {
+    commandMenu.hidden = true;
+    commandMenuToggle.setAttribute("aria-expanded", "false");
+  };
+  const commandDockItem = el("button", {
+    class: "ai-command-menu-item",
+    text: "플로팅으로 이동",
+    attrs: { type: "button", role: "menuitem" },
+    dataset: { testid: "ai-command-menu-dock" },
+    on: {
+      click: () => {
+        closeCommandMenu();
+        onDockToggleClick();
+      },
+    },
+  }) as HTMLButtonElement;
+  const refreshCommandDockLabel = (): void => {
+    commandDockItem.textContent = currentChatDock() === "side" ? "플로팅으로 이동" : "사이드로 이동";
+  };
+  refreshCommandDockLabel();
+  refreshDockLabels = (): void => {
+    refreshMoreMenuDockLabel();
+    refreshCommandDockLabel();
+  };
+  refreshDockLabels();
+  commandMenuToggle.addEventListener("click", () => {
+    if (!commandMenu.hidden) refreshCommandDockLabel();
+  });
   commandMenu.replaceChildren(
     el("button", {
       class: "ai-command-menu-item",
-      text: "🕒 전체 기록",
-      attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); applyHistoryOpen(true); } },
-    }),
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "➕ 새 대화",
-      attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); newSessionButton.click(); } },
-    }),
-    // 되돌리기/내보내기/툴은 구 헤더 툴바가 기본(바 전용) 상태에서 숨겨지며 도달 불가가 됐던 것 — 메뉴로 복원.
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "↩️ 되돌리기",
+      text: "되돌리기",
       attrs: { type: "button", role: "menuitem", title: "마지막 AI 적용 되돌리기" },
       dataset: { testid: "ai-command-menu-undo" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); undoLastButton.click(); } },
+      on: { click: () => { closeCommandMenu(); undoLastButton.click(); } },
     }),
     el("button", {
       class: "ai-command-menu-item",
-      text: "📤 대화 내보내기",
+      text: "내보내기",
       attrs: { type: "button", role: "menuitem", title: "대화 로그 내보내기" },
       dataset: { testid: "ai-command-menu-export" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); exportButton?.click(); } },
+      on: { click: () => { closeCommandMenu(); exportButton?.click(); } },
+    }),
+    commandDockItem,
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "전체 기록",
+      attrs: { type: "button", role: "menuitem" },
+      on: { click: () => { closeCommandMenu(); applyHistoryOpen(true); } },
     }),
     el("button", {
       class: "ai-command-menu-item",
-      text: "🧰 툴 브라우저",
+      text: "툴 브라우저",
       attrs: { type: "button", role: "menuitem" },
       dataset: { testid: "ai-command-menu-tools" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); toolsButton.click(); } },
+      on: { click: () => { closeCommandMenu(); toolsButton.click(); } },
     }),
     el("button", {
       class: "ai-command-menu-item",
-      text: "⚙️ 설정",
-      attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); applyHistoryOpen(true); openAiSettings("first"); } },
+      text: "AI 내부 로그",
+      attrs: { type: "button", role: "menuitem", title: "계획·툴 호출·주입 원문 타임라인" },
+      on: { click: () => { closeCommandMenu(); harnessButton.click(); } },
     }),
     el("button", {
       class: "ai-command-menu-item",
-      text: "🎬 스튜디오",
+      text: "스튜디오",
       attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { commandMenu.hidden = true; commandMenuToggle.setAttribute("aria-expanded", "false"); applyStudio(true); } },
+      on: { click: () => { closeCommandMenu(); applyStudio(true); } },
+    }),
+    el("button", {
+      class: "ai-command-menu-item",
+      text: "글자 크기",
+      attrs: { type: "button", role: "menuitem" },
+      on: { click: () => { closeCommandMenu(); fontButton.click(); } },
     })
   );
 
@@ -2503,172 +2597,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 }
 
 const STUDIO_MODE_KEY = "rpg-zzu:ai-studio";
-
-// ── 설정 폼(접이식) ─────────────────────────────────────────────
-// 입력이 바뀌면 즉시 localStorage에 자동 저장한다 — "저장 버튼을 안 눌러서 날아가는" 문제 방지.
-// onSaved 콜백으로 진행 중인 세션에도 새 설정을 반영한다.
-function renderSettingsForm(
-  onSaved: (config: AiConfig) => void,
-  onFontSizeChange: (size: AiFontSize) => void = () => {}
-): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
-  const config = loadAiConfig();
-  const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
-  const model = textField("감독 모델(계획·검수)", config.model, "ai-config-model", "text", DEFAULT_MODEL);
-  const liteModel = textField("실행 모델(툴 작업)", config.liteModel ?? DEFAULT_LITE_MODEL, "ai-config-lite-model", "text", DEFAULT_LITE_MODEL);
-  const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
-  // 사용자 제한은 출력 토큰 예산 하나뿐 — 툴콜 깊이는 AI가 필요한 만큼 쓴다.
-  const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");
-  maxTokens.input.setAttribute("min", "256");
-  maxTokens.input.setAttribute("max", "1000000");
-  maxTokens.input.setAttribute("title", "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산(기본 32768). 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.");
-
-  // 추론(reasoning) 강도 — 모델이 답하기 전에 생각하는 정도. 기본 '보통'(reasoning 켜짐).
-  const reasoningSelect = el("select", {
-    class: "ai-config-select",
-    dataset: { testid: "ai-config-reasoning" },
-    children: [
-      el("option", { attrs: { value: "off" }, text: "끔" }),
-      el("option", { attrs: { value: "low" }, text: "낮음" }),
-      el("option", { attrs: { value: "medium" }, text: "보통" }),
-      el("option", { attrs: { value: "high" }, text: "높음" }),
-    ],
-  }) as HTMLSelectElement;
-  reasoningSelect.value = config.reasoningEffort ?? "medium";
-  const reasoningRow = el("label", {
-    class: "ai-config-row",
-    attrs: { title: "모델이 답/도구 사용 전에 추론(생각)하는 강도. 끔=추론 안 함." },
-    children: [el("span", { class: "ai-config-label", text: "추론" }), reasoningSelect],
-  });
-
-  // 글자 크기 3단(V3C) — AiConfig와 별개로 localStorage(rpg-zzu:ai-font-size)에 즉시 영속.
-  const fontSizeSelect = el("select", {
-    class: "ai-config-select",
-    dataset: { testid: "ai-font-size" },
-    children: [
-      el("option", { attrs: { value: "small" }, text: "작게" }),
-      el("option", { attrs: { value: "normal" }, text: "보통" }),
-      el("option", { attrs: { value: "large" }, text: "크게" }),
-    ],
-  }) as HTMLSelectElement;
-  fontSizeSelect.value = loadAiFontSize();
-  fontSizeSelect.addEventListener("change", () => {
-    const raw = fontSizeSelect.value;
-    const size: AiFontSize = raw === "small" || raw === "large" ? raw : "normal";
-    saveAiFontSize(size);
-    onFontSizeChange(size);
-  });
-  const fontSizeRow = el("label", {
-    class: "ai-config-row",
-    attrs: { title: "채팅 로그·제안 카드·도구 로그의 글자 크기. 즉시 적용되고 저장됩니다." },
-    children: [el("span", { class: "ai-config-label", text: "글자 크기" }), fontSizeSelect],
-  });
-
-  const autoApprove = el("input", {
-    class: "ai-config-checkbox",
-    attrs: { type: "checkbox" },
-    dataset: { testid: "ai-config-autoapprove" },
-  }) as HTMLInputElement;
-  autoApprove.checked = config.autoApprove === true;
-  const autoApproveRow = el("label", {
-    class: "ai-config-row ai-config-check-row",
-    attrs: { title: "AI가 만든 변경 제안을 검토 없이 즉시 프로젝트에 적용합니다. 되돌리기는 Ctrl+Z." },
-    children: [el("span", { class: "ai-config-label", text: "자동 승인" }), autoApprove],
-  });
-
-  const savedHint = el("span", {
-    class: "ai-config-saved-hint",
-    text: "",
-    dataset: { testid: "ai-config-saved-hint" },
-  });
-
-  const collect = (): AiConfig => ({
-    // 비워 두면 기본값으로 저장한다.
-    baseUrl: baseUrl.input.value.trim() || DEFAULT_BASE_URL,
-    model: model.input.value.trim() || DEFAULT_MODEL,
-    liteModel: liteModel.input.value.trim() || DEFAULT_LITE_MODEL,
-    apiKey: apiKey.input.value,
-    maxToolCalls: defaultAiConfig().maxToolCalls,
-    maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
-    reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
-    autoApprove: autoApprove.checked,
-  });
-
-  let autoSaveTimer: number | null = null;
-  const persist = (showToast: boolean): void => {
-    const next = collect();
-    saveAiConfig(next);
-    onSaved(next);
-    savedHint.textContent = "자동 저장됨";
-    if (showToast) toast("어시스턴트 설정을 저장했습니다.", "ok");
-  };
-  const scheduleAutoSave = (): void => {
-    if (typeof window === "undefined") {
-      persist(false);
-      return;
-    }
-    if (autoSaveTimer !== null) window.clearTimeout(autoSaveTimer);
-    autoSaveTimer = window.setTimeout(() => {
-      autoSaveTimer = null;
-      persist(false);
-    }, 350);
-  };
-  for (const field of [baseUrl, model, liteModel, apiKey, maxTokens]) {
-    field.input.addEventListener("input", scheduleAutoSave);
-    field.input.addEventListener("change", () => persist(false));
-  }
-  autoApprove.addEventListener("change", () => persist(false));
-  reasoningSelect.addEventListener("change", () => persist(false));
-
-  const saveButton = el("button", {
-    class: "ai-assistant-action",
-    text: "설정 저장",
-    attrs: { type: "button" },
-    dataset: { testid: "ai-config-save" },
-    on: { click: () => persist(true) },
-  });
-
-  const details = el("details", {
-    class: "ai-config-form",
-    dataset: { testid: "ai-config" },
-    children: [
-      el("summary", { text: "설정 (엔드포인트/모델/API 키)" }),
-      baseUrl.row,
-      model.row,
-      liteModel.row,
-      apiKey.row,
-      maxTokens.row,
-      reasoningRow,
-      fontSizeRow,
-      autoApproveRow,
-      el("div", { class: "ai-config-actions", children: [saveButton, savedHint] }),
-    ],
-  });
-  return {
-    element: details,
-    focusFirstInput: () => baseUrl.input.focus(),
-    focusApiKey: () => apiKey.input.focus(),
-  };
-}
-
-function textField(
-  label: string,
-  value: string,
-  testid: string,
-  type = "text",
-  placeholder = ""
-): { row: HTMLElement; input: HTMLInputElement } {
-  const input = el("input", {
-    class: "ai-config-input",
-    attrs: placeholder ? { type, placeholder } : { type },
-    value,
-    dataset: { testid },
-  }) as HTMLInputElement;
-  const row = el("label", {
-    class: "ai-config-row",
-    children: [el("span", { class: "ai-config-label", text: label }), input],
-  });
-  return { row, input };
-}
 
 function downloadJson(filename: string, json: string): void {
   const blob = new Blob([json], { type: "application/json" });

@@ -24,13 +24,13 @@ export function buildInterviewKickoff(mapId: string | null): string {
     "8. 매 질문에 진행률을 표시하세요: (설명됨 n/전체 m)",
     "9. 내가 '중단'/'그만'이라고 하면 지금까지 기록한 내용을 요약하고 종료하세요.",
     "10. 여러 타일이 구조물(집/울타리/다리 등)을 이루고 있으면 show_tile_grid로 영역을 그림으로 보여주고,",
-    "    타일 의미/그룹 규칙만 메타데이터로 보강하세요. 집 구조 문법은 하네싱 키트(build_house_kit)가 담당하므로 별도 템플릿을 저장하지 않습니다.",
+    "    타일 의미/그룹 규칙만 메타데이터로 보강하세요. 집 구조 문법은 집 키트(build_house_kit)가 담당하므로 별도 템플릿을 저장하지 않습니다.",
     "",
     "기록 툴콜과 다음 질문은 같은 턴에 이어서 해도 됩니다. 지금 1번부터 시작하세요.",
   ].join("\n");
 }
 
-// 📐 버튼: 에디터에서 선택한 영역을 하네싱/타일 메타 관점으로 분석하는 킥오프.
+// 📐 버튼: 에디터에서 선택한 영역을 집 키트/타일 메타 관점으로 분석하는 킥오프.
 // 원칙: 이미지(그리드)를 먼저 보여주고, 필요한 타일 의미만 질문한다.
 export function buildStructureLearnKickoff(
   mapId: string,
@@ -38,7 +38,7 @@ export function buildStructureLearnKickoff(
 ): string {
   const rect = `x=${region.x}, y=${region.y}, w=${region.width}, h=${region.height}`;
   return [
-    `내가 맵(mapId="${mapId}")에서 영역(${rect})을 선택했습니다. 이 영역을 하네싱 키트/타일 메타 관점으로 분석하세요.`,
+    `내가 맵(mapId="${mapId}")에서 영역(${rect})을 선택했습니다. 이 영역을 집 키트/타일 메타 관점으로 분석하세요.`,
     "",
     "절차(반드시 이 순서로):",
     `1. show_tile_grid(mapId="${mapId}", ${rect})로 영역을 채팅에 그림으로 먼저 보여주세요.`,

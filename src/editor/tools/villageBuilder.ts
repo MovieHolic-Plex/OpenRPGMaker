@@ -170,7 +170,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
   {
     name: "build_village",
     description:
-      "하네싱 집 키트 기반 50x50 마을을 한 번에 시공한다. 인자 없이 호출해도 50x50 마을이 완성된다. " +
+      "집 키트 기반 50x50 마을을 한 번에 시공한다. 인자 없이 호출해도 50x50 마을이 완성된다. " +
       "기존 맵에서는 bounds를 지정해 그 사각형 안에 광장·집·길·NPC를 배치할 수 있다(최소 36x36). " +
       "배치·집·길·NPC 배치는 결정론 코드가 수행하고, interior/doorEvent/windows로 내부·문 이벤트·창문 생성을 제어한다. " +
       "npcs 로 이름/대사만 지정 가능하다. 기본 결과: 집 8채, 중앙 광장과 전부 연결된 흙길, 집마다 주민 1명과 광장 주민 2명.",

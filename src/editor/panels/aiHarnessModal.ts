@@ -1,7 +1,7 @@
 // editor/panels/aiHarnessModal.ts
-// 🔬 AI 하네스 뷰어 — 오케스트레이션 내부 동작(단계 전환·주입 원문·툴 호출·토큰 사용)을
+// 🔬 AI 내부 로그 뷰어 — 오케스트레이션 내부 동작(단계 전환·주입 원문·툴 호출·토큰 사용)을
 // 타임라인으로 보여준다. 채팅 버블은 요약본이고, 여기가 원본 관측 지점이다.
-// 데이터 원천: 감사 로그(AuditEntry, 영속) + 살아있는 세션의 하네스 스냅샷(주입 포함 원본 메시지).
+// 데이터 원천: 감사 로그(AuditEntry, 영속) + 살아있는 세션 스냅샷(주입 포함 원본 메시지).
 
 import type { AuditEntry, HarnessSnapshot } from "@/ai/assistantSession";
 import { el } from "@/util/dom";
@@ -219,15 +219,15 @@ export function openHarnessModal(input: HarnessModalInput): HTMLElement {
     children: [
       el("section", {
         class: "database-modal-window harness-window",
-        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "AI 하네스 타임라인" },
+        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "AI 내부 로그" },
         children: [
           el("header", {
             class: "database-modal-header harness-header",
-            children: [el("h2", { text: "🔬 AI 하네스 — 내부 동작 타임라인" }), downloadButton, closeButton],
+            children: [el("h2", { text: "🔬 AI 내부 로그" }), downloadButton, closeButton],
           }),
           el("p", {
             class: "harness-hint",
-            text: "계획→실행→검수 전환, 오케스트레이션 주입 원문, 툴 호출 인자/결과, 토큰 사용을 시간순으로 기록합니다. 항목을 펼치면 원문이 보입니다.",
+            text: "계획→실행→검수 전환, 시스템 주입 원문, 툴 호출 인자/결과, 토큰 사용을 시간순으로 기록합니다. 항목을 펼치면 원문이 보입니다. (개발·디버그용)",
           }),
           summary,
           el("div", { class: "database-modal-body harness-body", children: [timeline, rawSection] }),

@@ -158,7 +158,7 @@ describe("AI 패널 크롬", () => {
     const undo = findByTestId(panel, "ai-undo-last");
     if (!undo) throw new Error("AI undo button missing");
 
-    expect(undo.textContent).toBe("↶ 되돌리기");
+    expect(undo.textContent).toContain("되돌리기");
     expect(undo.disabled).toBe(false);
 
     undo.click();

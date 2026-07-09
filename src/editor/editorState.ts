@@ -85,7 +85,7 @@ class EditorStateStore {
     selection: null,
     clipboard: null,
     showGrid: true,
-    chatDock: "float",
+    chatDock: "side",
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,
   };

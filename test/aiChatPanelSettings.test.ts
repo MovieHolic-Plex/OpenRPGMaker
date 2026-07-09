@@ -65,10 +65,29 @@ describe("패널 접기", () => {
   });
 });
 
+function openSettingsSurface(panel: FakeElement): FakeElement {
+  const commandBarSettings = findByTestId(panel, "ai-settings-command-bar");
+  const headerSettings = findByTestId(panel, "ai-settings-toggle");
+  expect(commandBarSettings ?? headerSettings).not.toBeNull();
+  (commandBarSettings ?? headerSettings)?.click();
+  const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
+  if (!modal) throw new Error("ai-settings-modal missing");
+  return modal;
+}
+
 describe("설정 자동 저장", () => {
+  it("커맨드바에서 설정 모달을 1클릭으로 연다", () => {
+    const panel = renderPanel();
+    expect(findByTestId(panel, "ai-settings-command-bar")).not.toBeNull();
+    const modal = openSettingsSurface(panel);
+    expect(findByTestId(modal, "ai-config-baseurl")).not.toBeNull();
+    expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
+  });
+
   it("API 키 입력만으로 즉시 localStorage에 저장된다 (저장 버튼 불필요)", () => {
     const panel = renderPanel();
-    const apiKey = findByTestId(panel, "ai-config-apikey");
+    const modal = openSettingsSurface(panel);
+    const apiKey = findByTestId(modal, "ai-config-apikey");
     expect(apiKey).not.toBeNull();
     if (!apiKey) return;
     apiKey.value = "sk-or-test-abc";
@@ -80,7 +99,8 @@ describe("설정 자동 저장", () => {
 
   it("감독 모델을 비우고 저장하면 기본값(minimax/minimax-m3)으로 저장된다", () => {
     const panel = renderPanel();
-    const model = findByTestId(panel, "ai-config-model");
+    const modal = openSettingsSurface(panel);
+    const model = findByTestId(modal, "ai-config-model");
     if (!model) throw new Error("model field missing");
     model.value = "   ";
     model.dispatchEvent(new Event("change"));
@@ -94,7 +114,8 @@ describe("설정 자동 저장", () => {
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
     const panel = renderPanel();
-    const model = findByTestId(panel, "ai-config-model");
+    const modal = openSettingsSurface(panel);
+    const model = findByTestId(modal, "ai-config-model");
     if (!model) throw new Error("model field missing");
     model.value = "minimax/minimax-m3";
     model.dispatchEvent(new Event("input"));
@@ -105,7 +126,8 @@ describe("설정 자동 저장", () => {
 
   it("실행 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
     const panel = renderPanel();
-    const liteModel = findByTestId(panel, "ai-config-lite-model");
+    const modal = openSettingsSurface(panel);
+    const liteModel = findByTestId(modal, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
     liteModel.value = "   ";
     liteModel.dispatchEvent(new Event("change"));
@@ -117,14 +139,16 @@ describe("설정 자동 저장", () => {
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
     const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
 
-    expect(panel.textContent).toContain("감독 모델(계획·검수)");
-    expect(panel.textContent).toContain("실행 모델(툴 작업)");
+    expect(modal.textContent).toContain("감독 모델(계획·검수)");
+    expect(modal.textContent).toContain("실행 모델(툴 작업)");
   });
 
   it("실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
     const panel = renderPanel();
-    const liteModel = findByTestId(panel, "ai-config-lite-model");
+    const modal = openSettingsSurface(panel);
+    const liteModel = findByTestId(modal, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
     liteModel.value = "minimax/minimax-m3";
     liteModel.dispatchEvent(new Event("input"));
@@ -135,8 +159,9 @@ describe("설정 자동 저장", () => {
 
   it("설정 저장 버튼도 동일하게 저장한다", () => {
     const panel = renderPanel();
-    const baseUrl = findByTestId(panel, "ai-config-baseurl");
-    const save = findByTestId(panel, "ai-config-save");
+    const modal = openSettingsSurface(panel);
+    const baseUrl = findByTestId(modal, "ai-config-baseurl");
+    const save = findByTestId(modal, "ai-config-save");
     if (!baseUrl || !save) throw new Error("fields missing");
     baseUrl.value = "https://openrouter.ai/api/v1";
     save.click();

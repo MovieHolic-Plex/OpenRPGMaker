@@ -184,7 +184,7 @@ export function ensureBuildPalettePresets(tileset: TilesetDef): void {
       group.patternGrammar = derivePatternGrammar(claim.patternKind, group.tileIds, tileset, { groupId: group.id, name: group.name });
     }
   }
-  // 프리셋 외 추가 승인 그룹 — 하네싱 키트가 쓰는 벽 세트는 place_door/place_window의
+  // 프리셋 외 추가 승인 그룹 — 집 키트가 쓰는 벽 세트는 place_door/place_window의
   // "승인된 벽 어휘" 검사를 통과해야 한다 (연습08 기준 집의 목골 석벽).
   for (const groupId of EXTRA_APPROVED_GROUP_IDS) {
     const group = tileset.tileGroups?.find((entry) => entry.id === groupId);

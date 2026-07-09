@@ -38,7 +38,7 @@ export function savePanelSize(size: PanelSize): void {
 }
 
 // ── 도킹 사이드바 폭(§2.3 — G4) ──────────────────────────────────
-// 기본 폭을 400→520px로 상향하고, 좌측 리사이저로 조절해 localStorage에 유지한다.
+// fixed 오버레이(is-docked / 기록 패널)용 폭. 좌측 리사이저로 조절해 localStorage에 유지한다.
 const DOCK_WIDTH_KEY = "rpg-zzu:ai-dock-width";
 export const DOCK_WIDTH_LIMITS = { min: 320, max: 900, default: 520 } as const;
 
@@ -56,6 +56,31 @@ export function loadDockWidth(): number {
 export function saveDockWidth(width: number): void {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(DOCK_WIDTH_KEY, String(clampDockWidth(width)));
+}
+
+// ── 사이드 flex 도크 폭 (chatDock: "side") ───────────────────────
+// 에디터 레이아웃 사용 가능 폭의 1/3. 캔버스 최소 폭을 위해 max를 상한으로 묶는다.
+export const SIDE_CHAT_WIDTH = {
+  ratio: 1 / 3,
+  min: 320,
+  max: 720,
+  /** CSS 변수 미적용 시 폴백 (넓은 모니터 ~1/3 근처). */
+  cssFallback: 480,
+} as const;
+
+/**
+ * side dock 컬럼 폭(px). `usableWidth`는 레이아웃 content 폭(패딩 제외).
+ * `reservedForCanvas`는 좌패널+리사이저+캔버스 최소 등 사이드 외 예산.
+ */
+export function computeSideChatWidth(usableWidth: number, reservedForCanvas = 0): number {
+  if (!Number.isFinite(usableWidth) || usableWidth <= 0) return SIDE_CHAT_WIDTH.min;
+  const third = Math.floor(usableWidth * SIDE_CHAT_WIDTH.ratio);
+  const maxByCanvas =
+    reservedForCanvas > 0
+      ? Math.max(SIDE_CHAT_WIDTH.min, Math.floor(usableWidth - reservedForCanvas))
+      : SIDE_CHAT_WIDTH.max;
+  const upper = Math.min(SIDE_CHAT_WIDTH.max, maxByCanvas);
+  return Math.round(Math.min(upper, Math.max(SIDE_CHAT_WIDTH.min, third)));
 }
 
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────

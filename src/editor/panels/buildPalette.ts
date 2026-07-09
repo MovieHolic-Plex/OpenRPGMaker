@@ -19,8 +19,8 @@ let buildPaletteEnabled = false;
 export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
-  { id: "house", label: "🏠집", title: "선택한 키트와 형태로 하네싱 집을 시공" },
-  { id: "village", label: "🏘️마을", title: "선택 영역 안에 하네싱 마을을 시공" },
+  { id: "house", label: "🏠집", title: "선택한 집 키트와 형태로 집을 시공" },
+  { id: "village", label: "🏘️마을", title: "선택 영역 안에 집 키트 기반 마을을 시공" },
   { id: "river", label: "🌊강", title: "선택 영역을 물로 채우기" },
   { id: "path", label: "🛣️길", title: "선택 영역 중앙에 길 놓기" },
   { id: "roof", label: "🔺지붕", title: "선택 영역을 지붕 줄로 채우기" },

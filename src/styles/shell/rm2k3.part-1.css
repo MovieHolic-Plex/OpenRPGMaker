@@ -181,6 +181,75 @@
   padding: 0 4px;
 }
 
+/* ── 타일 작업 모드 탭 (칠하기 / 찾기 / 속성) ───────────────── */
+.palette-work-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.palette-work-tabs {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.palette-work-tab {
+  font-size: 11px;
+  font-weight: 600;
+  height: 28px;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+.palette-work-tab.active,
+.palette-work-tab[aria-selected="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+}
+
+.selected-tile-status {
+  background: var(--surface-workbench, var(--bg-inset));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  padding: 4px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-tileset-badge {
+  color: var(--text-2, var(--text-secondary));
+  font-size: 10px;
+  line-height: 1.2;
+  overflow: hidden;
+  padding: 0 2px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-work-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.palette-work-pane.is-paint .tile-palette-title {
+  font-size: 12px;
+  margin: 0;
+}
+
+.btn.tile-advanced-toggle.is-legacy-hook[hidden] {
+  display: none !important;
+}
+
 .quick-tile-picker {
   background: var(--surface-panel);
   border: 1px solid var(--border-default);
@@ -229,8 +298,9 @@
 
 .quick-tile-toolbar {
   align-items: center;
-  display: block;
-  gap: 2px;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
   margin-bottom: var(--space-1);
 }
 

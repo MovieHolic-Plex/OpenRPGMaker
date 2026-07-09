@@ -89,7 +89,7 @@ describe("build palette deterministic stamps", () => {
     const result = applyBuildPalettePrimitiveToProject(project, selection({ x: 1, y: 1, width: 8, height: 6 }), "house");
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("하네싱");
+    expect(result.summary).toContain("집");
   });
 
   it("선재 error가 있어도 커밋 거부 issues는 신규 blocking 오류만 담는다", () => {
@@ -139,7 +139,7 @@ describe("build palette deterministic stamps", () => {
     expect(chat).not.toHaveBeenCalled();
     expect(result.toolResults).toHaveLength(1);
     const toolResult = result.toolResults[0];
-    expect(toolResult.summary).toContain("하네싱");
+    expect(toolResult.summary).toContain("집 키트");
     expect(toolResult.diff?.tilesChanged).toBeGreaterThan(0);
     expect(toolResult.diff?.eventsAdded).toBeGreaterThan(0);
     expect(toolResult.diff?.mapsAdded).toBeGreaterThan(0);

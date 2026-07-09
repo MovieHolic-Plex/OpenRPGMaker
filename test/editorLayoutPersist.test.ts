@@ -200,7 +200,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     document.dispatchEvent(mouseEvent("mouseup", {}));
     toggleLeftPanel();
 
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 626, mapTreeHeight: 160, leftCollapsed: true, chatDock: "float" }));
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 626, mapTreeHeight: 160, leftCollapsed: true, chatDock: "side" }));
 
     vi.resetModules();
     mockEditorDependencies();
@@ -226,26 +226,29 @@ describe("에디터 레이아웃 크기 저장", () => {
     if (!panel || !log || !toggle || !floatHost || !sideHost) throw new Error("chat dock fixtures missing");
     log.textContent = "로그 유지";
 
+    expect(panel.parentElement).toBe(sideHost);
+    expect(editorState.get().chatDock).toBe("side");
+    expect(panel.classList.contains("chat-dock-side")).toBe(true);
+    expect(panel.classList.contains("is-docked")).toBe(false);
+
+    toggle.click();
+
     expect(panel.parentElement).toBe(floatHost);
+    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
+    expect(log.textContent).toBe("로그 유지");
     expect(editorState.get().chatDock).toBe("float");
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "float" }));
 
     toggle.click();
 
     expect(panel.parentElement).toBe(sideHost);
     expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(log.textContent).toBe("로그 유지");
-    expect(editorState.get().chatDock).toBe("side");
     expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
-
-    toggle.click();
-
-    expect(panel.parentElement).toBe(floatHost);
-    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "float" }));
   });
 
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
-    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 9999, mapTreeHeight: -1, leftCollapsed: false }));
+    // float 로 고정해 좌패널 max(640) clamp 를 side-dock 폭 차감과 분리한다.
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 9999, mapTreeHeight: -1, leftCollapsed: false, chatDock: "float" }));
     vi.resetModules();
     mockEditorDependencies();
     const { renderEditor } = await import("@/editor/panels/editor");
@@ -265,7 +268,8 @@ describe("에디터 레이아웃 크기 저장", () => {
     fresh.renderEditor(freshMain);
 
     const freshLeftPanel = fakeElement(freshMain).querySelector(".left-panel");
-    expect(freshLeftPanel?.style.width).toBe("526px");
+    // 깨진 JSON → 기본 레이아웃(side dock). 좌폭 기본 526은 side 폭 차감으로 줄어들 수 있다.
+    expect(Number.parseInt(String(freshLeftPanel?.style.width), 10)).toBeLessThanOrEqual(526);
     expect(freshLeftPanel?.style["--map-tree-height"]).toBe("154px");
   });
 

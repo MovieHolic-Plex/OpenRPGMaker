@@ -199,7 +199,7 @@ export function summarizeAgentGhostPreviewForToolCall(
       pushArea(rectArea(project, mapId, rectFromOriginSize(args), "build_house", "집 건설"));
       break;
     case "build_house_kit":
-      pushArea(rectArea(project, mapId, rectFromWings(args.wings), "build_house_kit", "하네싱 집"));
+      pushArea(rectArea(project, mapId, rectFromWings(args.wings), "build_house_kit", "집 키트"));
       break;
     case "stamp_structure":
       pushArea(rectArea(project, mapId, rectFromOriginFixed(args, STRUCTURE_FOOTPRINT), "stamp_structure", "구조물 스탬프"));
