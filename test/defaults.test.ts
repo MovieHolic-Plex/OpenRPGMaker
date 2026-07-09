@@ -399,15 +399,15 @@ describe("createStarterMap", () => {
     }
   });
 
-  it("keeps the compact village boundary walled", () => {
+  it("keeps the compact village boundary open grass (no wall frame)", () => {
     const m = createStarterMap();
     for (let x = 0; x < m.width; x++) {
-      expect(m.lowerTiles[0 * m.width + x]).toBe(TILE.WALL);
-      expect(m.lowerTiles[(m.height - 1) * m.width + x]).toBe(TILE.WALL);
+      expect(m.lowerTiles[0 * m.width + x]).not.toBe(TILE.WALL);
+      expect(m.lowerTiles[(m.height - 1) * m.width + x]).not.toBe(TILE.WALL);
     }
     for (let y = 0; y < m.height; y++) {
-      expect(m.lowerTiles[y * m.width + 0]).toBe(TILE.WALL);
-      expect(m.lowerTiles[y * m.width + (m.width - 1)]).toBe(TILE.WALL);
+      expect(m.lowerTiles[y * m.width + 0]).not.toBe(TILE.WALL);
+      expect(m.lowerTiles[y * m.width + (m.width - 1)]).not.toBe(TILE.WALL);
     }
   });
 

@@ -1,4 +1,5 @@
 import { EDITOR_ZOOM_LEVELS, editorState } from "@/editor/editorState";
+import { getEditorChrome } from "@/editor/editorUiMode";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
 import { renderBuildPaletteToggle } from "@/editor/panels/buildPalette";
 import { store } from "@/project/store";
@@ -10,7 +11,19 @@ let mapScreenshotRequestSeq = 0;
 
 export function renderCanvasToolbar(container: HTMLElement): void {
   clearChildren(container);
+  const chrome = getEditorChrome();
   const currentZoom = editorState.get().zoom;
+  container.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "basic";
+  // figma-editor.css hides .zoom-button until .is-expanded (⋯ gate for expert).
+  // Basic has no expand control — always expand so 1x/2x/4x/8x stay reachable.
+  if (!chrome.canvasChromeDense) {
+    container.classList.add("is-basic-chrome");
+    container.classList.add("is-expanded");
+  } else {
+    container.classList.remove("is-basic-chrome");
+    container.classList.remove("is-expanded");
+  }
+
   const zoomGroup = el("div", {
     class: "canvas-toolbar-zoom-group",
     attrs: { "aria-label": "캔버스 확대", role: "group" },
@@ -28,10 +41,15 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       })
     );
   }
+  // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
+  if (!chrome.canvasChromeDense) {
+    container.append(zoomGroup);
+    return;
+  }
   const saveAction = el("div", {
     class: "canvas-toolbar-save-group",
     attrs: { "aria-label": "맵 이미지 저장", role: "group" },
-    dataset: { testid: "editor-map-save-group" },
+    dataset: { testid: "editor-map-save-group", uiDensity: "expert" },
     children: [
       el("button", {
         class: "rm2k3-tool-button map-save-button",
@@ -45,7 +63,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   const buildGroup = el("div", {
     class: "canvas-toolbar-build-group",
     attrs: { "aria-label": "건축 팔레트", role: "group" },
-    dataset: { testid: "editor-build-palette-group" },
+    dataset: { testid: "editor-build-palette-group", uiDensity: "expert" },
     children: [renderBuildPaletteToggle()],
   });
   const expandButton = el("button", {
@@ -53,7 +71,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       text: "⋯",
       // hover 자동 노출을 없앴으므로 이 버튼이 확대/맵저장 컨트롤을 여닫는 유일한 토글이다.
       attrs: { type: "button", title: "확대·맵 저장 펼치기/접기", "aria-label": "확대·맵 저장 펼치기/접기", "aria-expanded": "false" },
-      dataset: { testid: "editor-canvas-toolbar-expand" },
+      dataset: { testid: "editor-canvas-toolbar-expand", uiDensity: "expert" },
       on: {
         click: () => {
           const expanded = !container.classList.contains("is-expanded");

@@ -500,11 +500,71 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   padding: 32px;
 }
 
+.db-required-panel.db-required-hero {
+  align-content: stretch;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent, #5b7cfa) 22%, transparent), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #7c3aed 18%, transparent), transparent 50%),
+    var(--bg-base, #0b0d14);
+  gap: 0;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  justify-items: stretch;
+  padding: 0;
+}
+
+.db-required-hero-art {
+  min-height: min(100vh, 720px);
+  overflow: hidden;
+  position: relative;
+}
+
+.db-required-hero-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.db-required-hero-art::after {
+  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #0b0d14) 88%, transparent) 100%);
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.db-required-copy {
+  align-content: center;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 40px 36px 40px 20px;
+}
+
+.db-required-kicker {
+  color: var(--accent, #8aa4ff);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
 .db-required-panel h1 {
   font-size: 24px;
   font-weight: 700;
   letter-spacing: 0;
   margin: 0;
+}
+
+.db-required-hero .db-required-copy h1 {
+  font-size: clamp(26px, 3.2vw, 36px);
+  line-height: 1.2;
+  max-width: 18ch;
 }
 
 .db-required-panel p {
@@ -513,6 +573,43 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   line-height: 1.6;
   margin: 0;
   max-width: 560px;
+}
+
+.db-required-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.db-required-chips li {
+  background: color-mix(in srgb, var(--bg-raised, #1a1f2e) 88%, transparent);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+}
+
+@media (max-width: 900px) {
+  .db-required-panel.db-required-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .db-required-hero-art {
+    min-height: 220px;
+  }
+
+  .db-required-hero-art::after {
+    background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #0b0d14) 92%, transparent) 100%);
+  }
+
+  .db-required-copy {
+    padding: 20px 24px 32px;
+  }
 }
 
 /* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. */

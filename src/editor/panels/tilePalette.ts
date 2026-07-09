@@ -1,6 +1,8 @@
 import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
+import { getEditorChrome, getEditorUiMode } from "@/editor/editorUiMode";
+import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
 import { setTerrainTag } from "@/editor/tilesetActions";
@@ -69,10 +71,21 @@ export function renderTilePalette(container: HTMLElement): void {
   const previousPaletteScroll = readPaletteScroll(container);
   clearChildren(container);
   const state = editorState.get();
+  const chrome = getEditorChrome();
   activeWorkTab = readWorkTab();
+  // Basic: paint-only density — find/props tabs stay expert; event layer still full path below.
+  if (!chrome.paletteFindPropsTabs && activeWorkTab !== "paint") {
+    activeWorkTab = "paint";
+  }
+
+  // 기본 모드: 레퍼런스 밀도 좌측 레일 (도구·타일·레이어). 맵 트리는 하단 맵 루트.
+  if (getEditorUiMode() === "basic") {
+    renderBasicLeftRail(container);
+    return;
+  }
 
   if (state.layer === "event") {
-    // 이벤트 레이어: 도구 + 이벤트 편집기. 타일 작업 탭은 숨긴다.
+    // 이벤트 레이어: 도구 + 이벤트 편집기. basic/expert 모두 동일 경로(숨기지 않음).
     container.append(makeTilePaletteToolSection(currentMapId));
     renderEventEditor(container);
     return;
@@ -140,12 +153,17 @@ export function renderTilePalette(container: HTMLElement): void {
 }
 
 function makeWorkTabBar(): HTMLElement {
+  const chrome = getEditorChrome();
+  const tabs = chrome.paletteFindPropsTabs ? WORK_TABS : WORK_TABS.filter((tab) => tab.id === "paint");
   const bar = el("div", {
     class: "palette-work-tabs",
     attrs: { role: "tablist", "aria-label": "타일 작업 모드" },
-    dataset: { testid: "palette-work-tabs" },
+    dataset: {
+      testid: "palette-work-tabs",
+      uiDensity: chrome.paletteFindPropsTabs ? "expert" : "basic",
+    },
   });
-  for (const tab of WORK_TABS) {
+  for (const tab of tabs) {
     const active = activeWorkTab === tab.id;
     bar.append(
       el("button", {

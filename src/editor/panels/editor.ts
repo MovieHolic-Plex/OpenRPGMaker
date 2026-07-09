@@ -1,6 +1,12 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
 import {
+  applyEditorUiModeClasses,
+  getEditorChrome,
+  getEditorUiMode,
+  subscribeEditorUiMode,
+} from "@/editor/editorUiMode";
+import {
   ensureCurrentMapLock,
   getMapEditLockStatus,
   isMapEditLockTakeoverImmediate,
@@ -66,15 +72,20 @@ let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
+let unsubUiMode: (() => void) | null = null;
+let editorLayoutRoot: HTMLElement | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
   installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__rpgzzuEditorTool.
+  applyEditorUiModeClasses(getEditorUiMode());
 
   // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
   const layout = el("div", {
     class: `editor-layout ${chatDock === "side" ? "chat-dock-side" : "chat-dock-float"}`,
+    dataset: { testid: "editor-layout", editorUiMode: getEditorUiMode() },
   });
+  editorLayoutRoot = layout;
   // applyLayout 전에도 1/3 폭 폴백을 심어 사이드 컬럼이 420→재계산으로 점프하지 않게 한다.
   if (chatDock === "side") {
     const bootWidth = computeSideChatWidth(
@@ -130,9 +141,12 @@ export function renderEditor(main: HTMLElement): void {
       role: "separator",
       title: "드래그로 맵 트리 높이 조절",
     },
-    dataset: { testid: "map-tree-height-resizer" },
+    dataset: { testid: "map-tree-height-resizer", uiDensity: "expert" },
   });
-  leftMapRoot = el("div", { class: "left-panel-stack", dataset: { testid: "left-map-root" } });
+  leftMapRoot = el("div", {
+    class: "left-panel-stack",
+    dataset: { testid: "left-map-root", uiDensity: "expert" },
+  });
   left.append(leftPaletteRoot, mapTreeResizer, leftMapRoot);
   canvasScrollShell.append(phaserContainer);
   // 저장 모드 배너(결함 ⑩)는 캔버스 열 상단에 넣는다 — .main(flex row)의 형제로 넣으면
@@ -158,6 +172,7 @@ export function renderEditor(main: HTMLElement): void {
 
   applyChatDockLayout();
   applyLayout();
+  applyEditorUiModeLayout();
   refreshPanels();
   ensureCurrentMapLock();
   bindLeftResizer();
@@ -170,6 +185,58 @@ export function renderEditor(main: HTMLElement): void {
   unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
   unsubEditor = editorState.subscribe(() => refreshPanels());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
+  unsubUiMode = subscribeEditorUiMode(() => applyEditorUiModeLayout());
+}
+
+/** Re-apply basic/expert density without tearing down Phaser or AI session. */
+export function applyEditorUiModeLayout(): void {
+  const mode = getEditorUiMode();
+  const chrome = getEditorChrome();
+  applyEditorUiModeClasses(mode);
+  editorLayoutRoot?.setAttribute("data-editor-ui-mode", mode);
+  editorLayoutRoot?.classList.toggle("editor-layout-basic", mode === "basic");
+  editorLayoutRoot?.classList.toggle("editor-layout-expert", mode === "expert");
+
+  if (leftMapRoot) {
+    leftMapRoot.hidden = !chrome.mapTree;
+    if (chrome.mapTree) leftMapRoot.classList.remove("is-ui-hidden");
+    else leftMapRoot.classList.add("is-ui-hidden");
+  }
+  if (mapTreeResizer) {
+    mapTreeResizer.hidden = !chrome.mapTree;
+    if (chrome.mapTree) mapTreeResizer.classList.remove("is-ui-hidden");
+    else mapTreeResizer.classList.add("is-ui-hidden");
+  }
+  if (canvasToolbarRoot) {
+    if (!chrome.canvasChromeDense) {
+      canvasToolbarRoot.classList.add("is-basic-chrome");
+      canvasToolbarRoot.classList.add("is-expanded");
+    } else {
+      canvasToolbarRoot.classList.remove("is-basic-chrome");
+    }
+    canvasToolbarRoot.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "basic";
+  }
+  if (aiChatPanelRoot) {
+    aiChatPanelRoot.dataset.uiDensity = chrome.aiDenseSections ? "expert" : "basic";
+    if (chrome.aiDenseSections) {
+      aiChatPanelRoot.classList.add("ai-density-expert");
+      aiChatPanelRoot.classList.remove("ai-density-basic");
+    } else {
+      aiChatPanelRoot.classList.add("ai-density-basic");
+      aiChatPanelRoot.classList.remove("ai-density-expert");
+    }
+  }
+  // Re-render left/map chrome so palette tabs match density; keep event layer path live.
+  // 맵 트리는 basic에서도 표시(맵 전환) — 숨기지 않는다.
+  if (leftPaletteRoot && leftMapRoot && canvasToolbarRoot && statusBarRoot) {
+    renderTilePalette(leftPaletteRoot);
+    if (chrome.mapTree) renderMapList(leftMapRoot);
+    else clearChildren(leftMapRoot);
+    renderCanvasToolbar(canvasToolbarRoot);
+    refreshStatusbar();
+  }
+  applyLayout();
+  fitCanvas();
 }
 
 export function teardownEditor(): void {
@@ -177,10 +244,12 @@ export function teardownEditor(): void {
   unsubAutoSave?.();
   unsubEditor?.();
   unsubMapLocks?.();
+  unsubUiMode?.();
   unsubStore = null;
   unsubAutoSave = null;
   unsubEditor = null;
   unsubMapLocks = null;
+  unsubUiMode = null;
   window.removeEventListener("resize", onWindowResize);
   window.removeEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
   closeTestPlayModal();
@@ -198,7 +267,8 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
-  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side");
+  editorLayoutRoot = null;
+  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side", "editor-ui-basic", "editor-ui-expert");
 }
 
 export function toggleLeftPanel(): void {

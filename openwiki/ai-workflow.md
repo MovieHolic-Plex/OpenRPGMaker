@@ -36,6 +36,23 @@ This page describes how an agent should operate on this project using the local 
 - Headless/MCP execution is read-only for project storage: read tools run normally, write tools only produce dry-run summaries/diffs/issues.
 - Do not add store save, project commit, or remote transport imports to `src/headless/` or the headless scripts; audit logs may record tool name, args, summary, and ok status, but never project JSON.
 
+## Live editor AI assistant MCP (same UI session)
+
+Use this when an external agent should drive the **in-editor AI chat panel** so a human can watch the stream/proposals on screen.
+
+1. Start bridge MCP: `npm run mcp:assistant` (HTTP `http://127.0.0.1:17831` + MCP stdio).
+2. Start the editor: `npm run dev` (DEV auto-connects the bridge; force with `?aiBridge=1`, disable with `?aiBridge=0`, port with `?aiBridgePort=17831`).
+3. Ensure AI settings have an API key in the editor.
+4. Point the MCP client at `scripts/rpgzzu-assistant-mcp.mjs` (stdio).
+
+MCP tools:
+
+- `assistant_ping` — browser hello recently?
+- `assistant_send` `{ text, timeoutMs? }` — send through live panel; returns audit + harness when the turn ends
+- `assistant_status` / `assistant_audit` / `assistant_harness` / `assistant_abort`
+
+Browser also exposes `window.__rpgzzuAiBridge` for console debugging. Implementation: `src/editor/aiAssistantBridge.ts` + registration in `aiChatPanel.ts`. Bridge binds **localhost only**.
+
 ## Refreshing the wiki
 
 Use `npm run openwiki:cpen` only for CPEN-backed refresh work. Keep runs page-sized to stay under CPEN content limits. Never put credentials in wiki files.

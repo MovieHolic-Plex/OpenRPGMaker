@@ -1,0 +1,281 @@
+/* Dual editor shell density: basic vs expert (AI RPG MAKER) */
+
+.editor-product-brand {
+  align-items: center;
+  color: var(--editor-text, #e8eefc);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 700 13px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 8px;
+  letter-spacing: 0.02em;
+  margin-right: 14px;
+  user-select: none;
+}
+
+.editor-product-brand-mark {
+  color: #7aa2ff;
+  font-size: 14px;
+}
+
+.editor-product-brand-text {
+  white-space: nowrap;
+}
+
+.editor-ui-mode-toggle {
+  align-items: center;
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 88%, #000);
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 12px;
+  padding: 3px;
+}
+
+.editor-ui-mode-btn {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--editor-text-muted, #9aa8c7);
+  cursor: pointer;
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
+  height: 28px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.editor-ui-mode-btn:hover,
+.editor-ui-mode-btn:focus-visible {
+  color: var(--editor-text, #e8eefc);
+  outline: none;
+}
+
+.editor-ui-mode-btn.is-active {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 85%, #1a2744);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 50%, transparent);
+  color: #fff;
+}
+
+/* Classic RM toolbar is a legacy surface — expert only. */
+.classic-toolbar.is-legacy-surface {
+  opacity: 0.96;
+  border-top: 1px solid color-mix(in srgb, var(--editor-line, #2a3550) 70%, transparent);
+}
+
+body.editor-ui-basic .classic-toolbar.is-legacy-surface {
+  display: none !important;
+}
+
+/* Map tree: always available when chrome.mapTree; only hide via .is-ui-hidden. */
+.left-panel-stack.is-ui-hidden,
+.resizer-map-tree.is-ui-hidden {
+  display: none !important;
+}
+
+/* Compact map tree in basic (still visible for map switching). */
+body.editor-ui-basic [data-testid="left-map-root"] {
+  max-height: 180px;
+  min-height: 96px;
+}
+
+body.editor-ui-basic [data-testid="left-map-root"] .map-tree-header h3 {
+  font-size: 12px;
+}
+
+body.editor-ui-basic .canvas-toolbar.is-basic-chrome {
+  gap: 8px;
+  opacity: 0.95;
+}
+
+/* Basic has no ⋯ expand control — never hide zoom buttons behind is-expanded gate. */
+body.editor-ui-basic .canvas-toolbar.is-basic-chrome .zoom-button,
+.canvas-toolbar.is-basic-chrome.is-expanded .zoom-button {
+  display: inline-flex;
+}
+
+/* ── Basic left rail (reference density) ───────────────────────── */
+
+.basic-left-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 12px 14px;
+}
+
+.basic-rail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.basic-rail-title {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 700 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.basic-rail-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.basic-tileset-name {
+  color: var(--editor-text-soft, #7f8db0);
+  font: 500 11px/1 var(--font-ui, system-ui, sans-serif);
+  max-width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.basic-tool-list,
+.basic-layer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.basic-tool-row,
+.basic-layer-row {
+  align-items: center;
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 90%, #000);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  display: flex;
+  font: 600 13px/1.2 var(--font-ui, system-ui, sans-serif);
+  justify-content: flex-start;
+  min-height: 36px;
+  padding: 8px 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.basic-tool-row:hover,
+.basic-layer-row:hover,
+.basic-tool-row:focus-visible,
+.basic-layer-row:focus-visible {
+  border-color: var(--editor-line-strong, #3a4a6a);
+  outline: none;
+}
+
+.basic-tool-row.is-active,
+.basic-layer-row.is-active {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, #1a2236);
+  border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 35%, transparent);
+}
+
+.basic-selected-tile {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
+}
+
+.basic-tile-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+}
+
+.basic-tile-cell {
+  background-color: #0d1424;
+  background-repeat: no-repeat;
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 6px;
+  cursor: pointer;
+  image-rendering: pixelated;
+  padding: 0;
+}
+
+.basic-tile-cell.is-active,
+.basic-tile-cell:hover,
+.basic-tile-cell:focus-visible {
+  border-color: var(--editor-blue, #3d6df0);
+  box-shadow: 0 0 0 1px var(--editor-blue, #3d6df0);
+  outline: none;
+}
+
+.basic-rail-hint {
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 85%, #000);
+  border: 1px dashed var(--editor-line, #2a3550);
+  border-radius: 10px;
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 500 12px/1.4 var(--font-ui, system-ui, sans-serif);
+  padding: 10px 12px;
+}
+
+/* ── Expert AI board ───────────────────────────────────────────── */
+
+.ai-expert-board {
+  border-bottom: 1px solid var(--editor-line, #2a3550);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0 0 12px;
+}
+
+.ai-expert-board.is-hidden,
+body.editor-ui-basic .ai-expert-board {
+  display: none !important;
+}
+
+.ai-expert-section-title {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 600 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.ai-quick-action-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.ai-quick-action-btn {
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 92%, #000);
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 10px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  font: 600 12px/1.25 var(--font-ui, system-ui, sans-serif);
+  min-height: 44px;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.ai-quick-action-btn:hover,
+.ai-quick-action-btn:focus-visible {
+  border-color: var(--editor-blue, #3d6df0);
+  outline: none;
+}
+
+.ai-automation-empty,
+.ai-recent-work-list {
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 80%, #000);
+  border: 1px dashed var(--editor-line, #2a3550);
+  border-radius: 10px;
+  color: var(--editor-text-soft, #7f8db0);
+  font: 500 12px/1.4 var(--font-ui, system-ui, sans-serif);
+  padding: 10px 12px;
+}
+
+/* Basic: left stack gives more room to palette + map tree */
+body.editor-ui-basic .left-panel {
+  /* keep existing width; rail scrolls inside */
+}
+
+body.editor-ui-basic [data-testid="left-palette-root"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}

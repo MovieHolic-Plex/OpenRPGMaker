@@ -164,24 +164,13 @@ function paintRoadNetwork(map: GameMap, rects: readonly RoadRect[]): void {
 }
 
 function decorateStarterVillage(map: GameMap): void {
-  paintBoundary(map);
+  // 외곽 돌벽 프레임은 넣지 않는다 — 풀밭이 가장자리까지 이어지게 한다.
   paintRoadNetwork(map, STARTER_VILLAGE_ROADS);
   for (const origin of STARTER_VILLAGE_HOUSE_ORIGINS) {
     stampLower(map, origin, SMALL_LOG_CABIN_PATTERN);
   }
   clearUpperTilesOnRoad(map);
   addStarterVillageNpcs(map);
-}
-
-function paintBoundary(map: GameMap): void {
-  for (let x = 0; x < map.width; x += 1) {
-    setLower(map, x, 0, TILE.WALL);
-    setLower(map, x, map.height - 1, TILE.WALL);
-  }
-  for (let y = 0; y < map.height; y += 1) {
-    setLower(map, 0, y, TILE.WALL);
-    setLower(map, map.width - 1, y, TILE.WALL);
-  }
 }
 
 function stampUpper(

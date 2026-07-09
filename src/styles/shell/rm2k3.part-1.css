@@ -184,9 +184,24 @@
 /* ── 타일 작업 모드 탭 (칠하기 / 찾기 / 속성) ───────────────── */
 .palette-work-shell {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 4px;
   min-height: 0;
+  width: 100%;
+}
+
+.palette-work-shell .palette-work-pane.is-paint {
+  flex: 1 1 auto;
+  min-height: 120px;
+}
+
+/* 그룹/시트 팔레트가 높이 0으로 붕괴하지 않게 */
+.palette-work-shell [data-testid="tile-palette-clusters"],
+.palette-work-shell [data-testid="tile-palette"] {
+  flex: 1 1 auto;
+  min-height: 160px;
+  overflow: auto;
 }
 
 .palette-work-tabs {

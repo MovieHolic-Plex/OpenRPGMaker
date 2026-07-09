@@ -515,24 +515,55 @@
     padding: 18px 24px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1),
-  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) {
+  /* 예전 구조: 1=도구섹션(숨김), 2=타일 팔레트.
+     현재: 단일 .palette-work-shell 이 1번째 자식 — 숨기면 팔레트 전체가 사라진다. */
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1):not(.palette-work-shell),
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2):not(.palette-work-shell) {
     background: transparent;
     border-bottom: 1px solid var(--editor-line);
     margin-bottom: 16px;
     padding-bottom: 14px;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) h3 {
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1):not(.palette-work-shell) h3 {
     display: none;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) {
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1):not(.palette-work-shell) {
     display: none;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) h3 {
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2):not(.palette-work-shell) h3 {
     display: block;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section.palette-work-shell {
+    background: transparent;
+    border-bottom: 0;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint .panel-section {
+    margin-bottom: 8px;
   }
 
   .panel-section {

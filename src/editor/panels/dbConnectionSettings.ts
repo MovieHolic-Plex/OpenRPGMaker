@@ -2,6 +2,7 @@ import { ensureCurrentMapLock } from "@/editor/mapEditLocks";
 import type { DbConfigField, DbPersistenceStatus } from "@/project/persistenceStatus";
 import {
   clearSupabaseProjectConfigDraft,
+  resetSupabaseProjectConfigToEnv,
   saveSupabaseProjectConfigDraft,
   supabaseProjectConfigDraft,
   supabaseProjectConfigDraftWithSource,
@@ -74,7 +75,7 @@ export function openDbConnectionSettings(onRefresh: StatusRefresh = () => undefi
   const draft = supabaseProjectConfigDraftWithSource();
   const statusLine = el("p", {
     class: "db-config-status-line",
-    text: `현재 DB 설정: ${dbConfigSourceLabel(draft.source)}. 저장한 뒤 즉시 연결을 시도합니다.`,
+    text: dbConfigStatusText(draft.source, draft),
     dataset: { testid: "db-config-status-line" },
   });
   const form = el("form", {
@@ -264,6 +265,24 @@ function renderActions(form: HTMLFormElement, statusLine: HTMLElement, onRefresh
         attrs: { type: "submit" },
         dataset: { testid: "db-config-connect" },
       }),
+      el("button", {
+        class: "btn",
+        text: "env로 채우기",
+        attrs: {
+          type: "button",
+          title: ".env / .env.local 의 VITE_SUPABASE_* 값으로 폼을 다시 채웁니다",
+        },
+        dataset: { testid: "db-config-fill-env" },
+        on: {
+          click: () => {
+            const next = resetSupabaseProjectConfigToEnv();
+            fillFormFromDraft(form, next);
+            setStatusLine(statusLine, dbConfigStatusText(next.source, next));
+            toast("env 기본값으로 폼을 채웠습니다.", "ok");
+            onRefresh();
+          },
+        },
+      }),
       ...(required ? [] : [el("button", {
         class: "btn",
         text: "저장만",
@@ -293,6 +312,26 @@ function renderActions(form: HTMLFormElement, statusLine: HTMLElement, onRefresh
       })]),
     ],
   });
+}
+
+function fillFormFromDraft(form: HTMLFormElement, draft: ReturnType<typeof supabaseProjectConfigDraft>): void {
+  const url = form.elements.namedItem("url");
+  const anon = form.elements.namedItem("anonKey");
+  const project = form.elements.namedItem("projectId");
+  if (url instanceof HTMLInputElement) url.value = draft.url;
+  if (anon instanceof HTMLInputElement) anon.value = draft.anonKey;
+  if (project instanceof HTMLInputElement) project.value = draft.projectId;
+}
+
+function dbConfigStatusText(
+  source: SupabaseProjectConfigSource,
+  draft: ReturnType<typeof supabaseProjectConfigDraft>,
+): string {
+  const filled = [draft.url ? "URL" : null, draft.anonKey ? "Anon key" : null, draft.projectId ? "Project ID" : null]
+    .filter(Boolean)
+    .join(", ");
+  const fillNote = filled.length > 0 ? ` 채워짐: ${filled}.` : " 아직 비어 있는 항목이 있습니다.";
+  return `현재 DB 설정: ${dbConfigSourceLabel(source)}.${fillNote} 저장한 뒤 즉시 연결을 시도합니다.`;
 }
 
 async function connectFromForm(form: HTMLFormElement, statusLine: HTMLElement, onRefresh: StatusRefresh): Promise<void> {

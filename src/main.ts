@@ -1,6 +1,8 @@
 // 앱 진입점: store 로드 + 에디터 부팅.
 
 import "./styles/index.css";
+// Hydrate basic/expert UI mode (+ body class + window.__rpgzzuEditorUiMode) before shell paint.
+import "@/editor/editorUiMode";
 import { bootApp } from "@/app/mode";
 import { editorState } from "@/editor/editorState";
 import { addEvent } from "@/editor/eventActions";
