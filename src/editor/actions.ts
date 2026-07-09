@@ -207,6 +207,12 @@ export function addSwitch(name: string): string {
   recordProjectSnapshot();
   let id = "";
   store.update((p) => {
+    const empty = p.switches.find((record) => record.name.trim().length === 0);
+    if (empty) {
+      empty.name = name || "새 스위치";
+      id = empty.id;
+      return;
+    }
     id = nextNumberedId("sw", p.switches);
     p.switches.push({ id, name: name || "새 스위치" });
   }, { scope: "database", collection: "switches" });
@@ -233,6 +239,12 @@ export function addVariable(name: string): string {
   recordProjectSnapshot();
   let id = "";
   store.update((p) => {
+    const empty = p.variables.find((record) => record.name.trim().length === 0);
+    if (empty) {
+      empty.name = name || "새 변수";
+      id = empty.id;
+      return;
+    }
     id = nextNumberedId("var", p.variables);
     p.variables.push({ id, name: name || "새 변수" });
   }, { scope: "database", collection: "variables" });
@@ -257,7 +269,7 @@ export function deleteVariable(id: string): DeleteResult {
 
 function nextNumberedId(prefix: "sw" | "var", records: readonly { readonly id: string }[]): string {
   const existingIds = new Set(records.map((record) => record.id));
-  for (let index = records.length + 1; index < records.length + 10000; index += 1) {
+  for (let index = 1; index < records.length + 10000; index += 1) {
     const id = `${prefix}_${String(index).padStart(4, "0")}`;
     if (!existingIds.has(id)) return id;
   }

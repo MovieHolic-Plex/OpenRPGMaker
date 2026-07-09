@@ -1,5 +1,6 @@
 import { defaultActorFaceResourceId } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
+import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 
 export const STATUS_MENU_COMMAND_IDS = [
@@ -54,8 +55,9 @@ export function createPlayerStatusMenuSnapshot(
   options: StatusMenuSnapshotOptions = {}
 ): PlayerStatusMenuSnapshot {
   const actorsById = new Map(project.database.actors.map((actor) => [actor.id, actor]));
-  const hpTerm = project.meta.terms.hp ?? "HP";
-  const mpTerm = project.meta.terms.mp ?? "MP";
+  const terms = resolveTerms(project);
+  const hpTerm = terms.hp;
+  const mpTerm = terms.mp;
   const partyRows = session.partyActorIds.flatMap((actorId): PlayerStatusMenuPartyRow[] => {
     const actor = actorsById.get(actorId);
     if (!actor) return [];
@@ -80,7 +82,7 @@ export function createPlayerStatusMenuSnapshot(
     commands,
     commandLabels: commands.map((command) => command.label),
     partyRows,
-    goldLabel: `돈 ${session.gold}${project.meta.terms.gold || "G"}`,
+    goldLabel: `${terms.goldPrefix}${session.gold}${terms.gold}`,
     timeLabel: formatElapsedTime(options.elapsedMs ?? 0),
     emptyPartyLabel: partyRows.length === 0 ? "파티원이 없습니다" : null,
   };

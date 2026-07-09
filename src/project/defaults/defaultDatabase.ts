@@ -15,15 +15,28 @@ import {
 } from "./defaultDatabaseUtilityRecords";
 import { DEFAULT_TROOP_ID } from "./constants";
 
-export function defaultTerms(): Terms {
+export function defaultTerms(): Required<Terms> {
   return {
-    gold: "G",
-    level: "레벨",
-    hp: "HP",
-    mp: "MP",
     attack: "공격",
     skill: "스킬",
     item: "아이템",
+    capture: "포획",
+    back: "뒤로",
+    target: "대상",
+    shopGreeting: "어서 오세요.",
+    shopBuy: "구입",
+    shopSell: "판매",
+    shopCancel: "취소",
+    shopSellPrompt: "무엇을 판매하시겠습니까?",
+    innTitle: "여관",
+    yes: "예",
+    no: "아니오",
+    notEnoughGold: "소지금이 부족합니다.",
+    gold: "G",
+    goldPrefix: "돈 ",
+    level: "레벨",
+    hp: "HP",
+    mp: "MP",
   };
 }
 

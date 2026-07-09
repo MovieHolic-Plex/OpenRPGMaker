@@ -279,13 +279,26 @@ export interface VariableDef {
 }
 
 export interface Terms {
-  gold: string;
-  level?: string;
-  hp?: string;
-  mp?: string;
   attack?: string;
   skill?: string;
   item?: string;
+  capture?: string;
+  back?: string;
+  target?: string;
+  shopGreeting?: string;
+  shopBuy?: string;
+  shopSell?: string;
+  shopCancel?: string;
+  shopSellPrompt?: string;
+  innTitle?: string;
+  yes?: string;
+  no?: string;
+  notEnoughGold?: string;
+  gold?: string;
+  goldPrefix?: string;
+  level?: string;
+  hp?: string;
+  mp?: string;
 }
 
 export const SCHEMA_VERSION = 3 as const;

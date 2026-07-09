@@ -1,4 +1,5 @@
 import { isPaletteSlotRole } from "../tilesetPalette";
+import { TERM_KEYS } from "../terms";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
 import { validateAssetRef } from "./shapeReferenceFields";
 
@@ -6,8 +7,37 @@ export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
-  const terms = requireRecord("meta.terms", meta.terms);
-  requireString("meta.terms.gold", terms.gold);
+  repairTerms(meta);
+}
+
+function repairTerms(meta: Record<string, unknown>): void {
+  if (meta.terms === undefined) {
+    meta.terms = {};
+    warnTermsRepair("meta.terms가 없어 빈 용어 설정으로 정리하고 로드했습니다.");
+    return;
+  }
+  if (!isRecord(meta.terms)) {
+    meta.terms = {};
+    warnTermsRepair("meta.terms가 객체가 아니어서 빈 용어 설정으로 정리하고 로드했습니다.");
+    return;
+  }
+  const terms = meta.terms;
+  let removed = 0;
+  for (const key of TERM_KEYS) {
+    if (terms[key] === undefined || typeof terms[key] === "string") continue;
+    delete terms[key];
+    removed += 1;
+  }
+  if (removed > 0) warnTermsRepair(`문자열이 아닌 용어 필드 ${removed}개를 삭제하고 로드했습니다.`);
+}
+
+function warnTermsRepair(message: string): void {
+  if (typeof console === "undefined") return;
+  console.warn(`[project] ${message}`);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export function validateAssets(value: unknown): void {

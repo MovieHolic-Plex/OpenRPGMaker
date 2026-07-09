@@ -1,4 +1,5 @@
 import type { ClassBattleCommand, ClassBattleCommandKind, Project, SkillId } from "@/project/types";
+import { resolveTerms } from "@/project/terms";
 
 export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "capture" | "defend" | "escape" | "switch";
 
@@ -32,7 +33,7 @@ export function battleCommandsForActor(
     .filter((command): command is RuntimeBattleCommand => command !== undefined)
     .filter((command) => project.system.monsterCollection === true || command.kind !== "capture")
     .filter((command) => options.includeSwitch || command.kind !== "switch");
-  const base = withMonsterCaptureCommand(project, commands.length > 0 ? commands : DEFAULT_RUNTIME_BATTLE_COMMANDS);
+  const base = withMonsterCaptureCommand(project, commands.length > 0 ? commands : defaultRuntimeBattleCommands(project));
   if (!options.includeSwitch || base.some((command) => command.kind === "switch")) return base;
   return [...base, switchCommand()];
 }
@@ -43,7 +44,7 @@ function resolveClassBattleCommand(project: Project, command: ClassBattleCommand
   if (!kind) return undefined;
   return {
     id: command.id,
-    name: command.name || global?.name || fallbackCommandName(kind),
+    name: command.name || global?.name || fallbackCommandName(project, kind),
     kind,
     skillSubsetName: command.skillSubsetName ?? global?.skillSubsetName,
     skillId: command.skillId ?? global?.skillId,
@@ -76,16 +77,31 @@ function normalizeKind(kind: ClassBattleCommandKind): RuntimeBattleCommandKind |
   }
 }
 
-function fallbackCommandName(kind: RuntimeBattleCommandKind): string {
+function defaultRuntimeBattleCommands(project: Project): readonly RuntimeBattleCommand[] {
+  const terms = resolveTerms(project);
+  return DEFAULT_RUNTIME_BATTLE_COMMANDS.map((command) => ({
+    ...command,
+    name: command.kind === "attack"
+      ? terms.attack
+      : command.kind === "skill"
+        ? terms.skill
+        : command.kind === "item"
+          ? terms.item
+          : command.name,
+  }));
+}
+
+function fallbackCommandName(project: Project, kind: RuntimeBattleCommandKind): string {
+  const terms = resolveTerms(project);
   switch (kind) {
     case "attack":
-      return "공격";
+      return terms.attack;
     case "skill":
-      return "스킬";
+      return terms.skill;
     case "item":
-      return "아이템";
+      return terms.item;
     case "capture":
-      return "포획";
+      return terms.capture;
     case "defend":
       return "방어";
     case "escape":
@@ -99,11 +115,11 @@ function switchCommand(): RuntimeBattleCommand {
   return { id: "cmd_switch", name: "교체", kind: "switch" };
 }
 
-function captureCommand(): RuntimeBattleCommand {
-  return { id: "cmd_capture", name: "포획", kind: "capture" };
+function captureCommand(project: Project): RuntimeBattleCommand {
+  return { id: "cmd_capture", name: resolveTerms(project).capture, kind: "capture" };
 }
 
 function withMonsterCaptureCommand(project: Project, commands: readonly RuntimeBattleCommand[]): readonly RuntimeBattleCommand[] {
   if (project.system.monsterCollection !== true || commands.some((command) => command.kind === "capture")) return commands;
-  return [...commands, captureCommand()];
+  return [...commands, captureCommand(project)];
 }

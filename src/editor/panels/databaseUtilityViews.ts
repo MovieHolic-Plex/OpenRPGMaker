@@ -1,12 +1,13 @@
-import { deleteSwitch, deleteVariable, renameSwitch, renameVariable } from "@/editor/actions";
+import { addSwitch, addVariable, deleteSwitch, deleteVariable, renameSwitch, renameVariable } from "@/editor/actions";
 import { bulkRenameSwitches, bulkRenameVariables, type DeleteResult } from "@/editor/databaseActions";
 import {
+  field,
   matchesNameOrId,
-  textControl,
 } from "@/editor/panels/databaseControls";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
-import { storyFlagForTarget, storyFlagListLabel } from "@/project/storyFlags";
+import { storyFlagListLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
+import { defaultTermValue, type TermKey } from "@/project/terms";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -15,21 +16,26 @@ let selectedSwitchId = "";
 let variableSearch = "";
 let selectedVariableId = "";
 let utilitySearchTimer: number | null = null;
+let pendingUtilityFocusId = "";
 
 type UtilityNamedRowsOptions = {
   readonly kind: "switch" | "variable";
+  readonly emptyMessage: string;
+  readonly onDelete: (id: string) => DeleteResult;
   readonly query: string;
   readonly records: readonly { readonly id: string; readonly name: string }[];
+  readonly rerender: () => void;
   readonly selectedId: string;
   readonly setSelectedId: (id: string) => void;
 };
 
 type UtilityNamedRowOptions = {
-  readonly flagId?: string;
   readonly id: string;
   readonly index: number;
   readonly name: string;
+  readonly onDelete: (id: string) => DeleteResult;
   readonly ordinal: string;
+  readonly rerender: () => void;
   readonly selected: boolean;
   readonly setSelectedId: (id: string) => void;
   readonly total: number;
@@ -44,10 +50,10 @@ type UtilityDetailOptions = {
 };
 
 type TermFieldOptions = {
-  readonly key: "attack" | "gold" | "hp" | "item" | "level" | "mp" | "skill";
+  readonly key: TermKey;
   readonly label: string;
   readonly testid?: string;
-  readonly value: string;
+  readonly value?: string;
 };
 
 export function renderSwitchesTab(host: HTMLElement, rerender: () => void): void {
@@ -56,17 +62,19 @@ export function renderSwitchesTab(host: HTMLElement, rerender: () => void): void
   if (!form) return;
   const records = store.getCurrent().switches;
   selectedSwitchId = selectedRecordId(records, selectedSwitchId);
+  form.append(addUtilityButton("switch", rerender));
   form.append(rangeControls("스위치 범위 이름 변경", "switch", rerender));
   form.append(searchInput("스위치 검색", switchSearch, (value) => {
     switchSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ kind: "switch", records, query: switchSearch, selectedId: selectedSwitchId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "switch", emptyMessage: "아직 스위치가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteSwitch, records, query: switchSearch, rerender, selectedId: selectedSwitchId, setSelectedId: (id) => {
     selectedSwitchId = id;
     rerender();
   } }));
   form.append(utilityDetail({ label: "스위치 이름", record: records.find((record) => record.id === selectedSwitchId), onName: renameSwitch, onDelete: deleteSwitch, rerender }));
   form.append(storyFlagList());
+  focusPendingUtilityName(form);
 }
 
 export function renderVariablesTab(host: HTMLElement, rerender: () => void): void {
@@ -75,33 +83,52 @@ export function renderVariablesTab(host: HTMLElement, rerender: () => void): voi
   if (!form) return;
   const records = store.getCurrent().variables;
   selectedVariableId = selectedRecordId(records, selectedVariableId);
+  form.append(addUtilityButton("variable", rerender));
   form.append(rangeControls("변수 범위 이름 변경", "variable", rerender));
   form.append(searchInput("변수 검색", variableSearch, (value) => {
     variableSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ kind: "variable", records, query: variableSearch, selectedId: selectedVariableId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "variable", emptyMessage: "아직 변수가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteVariable, records, query: variableSearch, rerender, selectedId: selectedVariableId, setSelectedId: (id) => {
     selectedVariableId = id;
     rerender();
   } }));
   form.append(utilityDetail({ label: "변수 이름", record: records.find((record) => record.id === selectedVariableId), onName: renameVariable, onDelete: deleteVariable, rerender }));
   form.append(storyFlagList());
+  focusPendingUtilityName(form);
 }
 
 export function renderTermsTab(host: HTMLElement): void {
   const terms = store.getCurrent().meta.terms;
   const form = el("section", { class: "db-detail-form db-terms-form", dataset: { testid: "db-detail-form" } });
   form.append(
-    rm2k3Fieldset("기본 용어", [
-      termField({ label: "돈", key: "gold", value: terms.gold, testid: "db-field-gold" }),
-      termField({ label: "레벨", key: "level", value: terms.level ?? "레벨" }),
-      termField({ label: "HP", key: "hp", value: terms.hp ?? "HP" }),
-      termField({ label: "MP", key: "mp", value: terms.mp ?? "MP" }),
+    rm2k3Fieldset("전투", [
+      termField({ label: "공격", key: "attack", value: terms.attack }),
+      termField({ label: "스킬", key: "skill", value: terms.skill, testid: "db-field-skill-term" }),
+      termField({ label: "아이템", key: "item", value: terms.item }),
+      termField({ label: "포획", key: "capture", value: terms.capture }),
+      termField({ label: "뒤로", key: "back", value: terms.back }),
+      termField({ label: "대상", key: "target", value: terms.target }),
     ]),
-    rm2k3Fieldset("명령 용어", [
-      termField({ label: "공격", key: "attack", value: terms.attack ?? "공격" }),
-      termField({ label: "스킬", key: "skill", value: terms.skill ?? "스킬", testid: "db-field-skill-term" }),
-      termField({ label: "아이템", key: "item", value: terms.item ?? "아이템" }),
+    rm2k3Fieldset("상점", [
+      termField({ label: "인사", key: "shopGreeting", value: terms.shopGreeting }),
+      termField({ label: "구입", key: "shopBuy", value: terms.shopBuy }),
+      termField({ label: "판매", key: "shopSell", value: terms.shopSell }),
+      termField({ label: "취소", key: "shopCancel", value: terms.shopCancel }),
+      termField({ label: "판매 질문", key: "shopSellPrompt", value: terms.shopSellPrompt }),
+    ]),
+    rm2k3Fieldset("여관", [
+      termField({ label: "제목", key: "innTitle", value: terms.innTitle }),
+      termField({ label: "예", key: "yes", value: terms.yes }),
+      termField({ label: "아니오", key: "no", value: terms.no }),
+      termField({ label: "소지금 부족", key: "notEnoughGold", value: terms.notEnoughGold }),
+    ]),
+    rm2k3Fieldset("공통", [
+      termField({ label: "돈 단위", key: "gold", value: terms.gold, testid: "db-field-gold" }),
+      termField({ label: "돈 접두사", key: "goldPrefix", value: terms.goldPrefix }),
+      termField({ label: "레벨", key: "level", value: terms.level }),
+      termField({ label: "HP", key: "hp", value: terms.hp }),
+      termField({ label: "MP", key: "mp", value: terms.mp }),
     ]),
   );
   host.append(el("h3", { text: "용어" }), form);
@@ -117,6 +144,27 @@ function utilityShell(title: string): HTMLElement {
     class: "db-detail-form db-utility-form",
     dataset: { testid: "db-detail-form" },
     children: [el("div", { class: "db-utility-heading", text: title })],
+  });
+}
+
+function addUtilityButton(kind: "switch" | "variable", rerender: () => void): HTMLElement {
+  return el("div", {
+    class: "db-utility-toolbar",
+    children: [el("button", {
+      class: "btn small",
+      text: "+ 추가",
+      attrs: { type: "button" },
+      dataset: { testid: kind === "switch" ? "db-add-switch" : "db-add-variable" },
+      on: {
+        click: () => {
+          const id = kind === "switch" ? addSwitch("새 스위치") : addVariable("새 변수");
+          if (kind === "switch") selectedSwitchId = id;
+          else selectedVariableId = id;
+          pendingUtilityFocusId = id;
+          rerender();
+        },
+      },
+    })],
   });
 }
 
@@ -146,26 +194,26 @@ function rangeControls(label: string, kind: "switch" | "variable", rerender: () 
 
 function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
   const list = el("div", { class: "db-utility-list" });
-  const project = store.getCurrent();
   let visibleCount = 0;
   for (const [index, record] of options.records.entries()) {
+    if (record.name.trim().length === 0) continue;
     if (options.query && !matchesNameOrId(record.name, record.id, options.query)) continue;
     visibleCount += 1;
-    const flag = storyFlagForTarget(project, options.kind, record.id);
     list.append(namedRow({
-      flagId: flag?.id,
       index,
       ordinal: ordinalLabel(index),
       id: record.id,
       name: record.name,
+      onDelete: options.onDelete,
+      rerender: options.rerender,
       selected: record.id === options.selectedId,
       setSelectedId: options.setSelectedId,
       total: options.records.length,
     }));
   }
-  if (list.childElementCount === 0) {
+  if (visibleCount === 0) {
     list.classList.add("empty");
-    for (let index = 0; index < 30; index += 1) list.append(emptyNumberedRow(ordinalLabel(index)));
+    list.append(emptyListHint(options.query ? "검색 결과가 없습니다." : options.emptyMessage));
     return list;
   }
   if (!options.query) {
@@ -178,22 +226,40 @@ function numberedRows(options: UtilityNamedRowsOptions): HTMLElement {
 }
 
 function namedRow(options: UtilityNamedRowOptions): HTMLElement {
-  const name = options.flagId ? `${options.name} · ${options.flagId}` : options.name;
-  return el("button", {
+  const row = el("button", {
     class: `db-row db-utility-row${options.selected ? " active" : ""}`,
     attrs: { type: "button" },
     dataset: {
       recordId: options.id,
       recordIndex: String(options.index + 1),
-      recordName: name,
+      recordName: options.name,
       recordTotal: String(options.total),
     },
     on: { click: () => options.setSelectedId(options.id) },
     children: [
       el("span", { class: "db-id", text: `${options.ordinal}:` }),
-      el("span", { class: "db-list-name", text: name }),
+      el("span", { class: "db-list-name", text: options.name }),
     ],
   });
+  const deleteButton = el("button", {
+    class: "btn danger tiny db-utility-row-delete",
+    text: "삭제",
+    attrs: { type: "button", "aria-label": `${options.name} 삭제` },
+    dataset: { testid: `db-delete-${options.id}` },
+    on: {
+      click: () => {
+        const result = options.onDelete(options.id);
+        if (!result.ok) {
+          toast(result.message, "error");
+          return;
+        }
+        if (selectedSwitchId === options.id) selectedSwitchId = "";
+        if (selectedVariableId === options.id) selectedVariableId = "";
+        options.rerender();
+      },
+    },
+  });
+  return el("div", { class: "db-utility-row-wrap", children: [row, deleteButton] });
 }
 
 function storyFlagList(): HTMLElement {
@@ -202,7 +268,7 @@ function storyFlagList(): HTMLElement {
   return el("section", {
     class: "db-story-flag-list",
     children: [
-      el("div", { class: "db-utility-heading", text: "스토리 플래그" }),
+      el("div", { class: "db-utility-heading", text: "스토리 플래그 (읽기 전용)" }),
       ...(flags.length > 0
         ? flags.map((flag) => el("div", {
           class: "db-row db-story-flag-row",
@@ -226,6 +292,10 @@ function emptyNumberedRow(ordinal: string): HTMLElement {
   });
 }
 
+function emptyListHint(text: string): HTMLElement {
+  return el("div", { class: "db-row db-empty-list-hint", text });
+}
+
 function searchInput(placeholder: string, value: string, onInput: (value: string) => void): HTMLElement {
   const input = el("input", { attrs: { type: "search", placeholder }, value });
   input.addEventListener("input", () => {
@@ -244,9 +314,16 @@ function searchInput(placeholder: string, value: string, onInput: (value: string
   return el("div", { class: "db-search", children: [input] });
 }
 
-function selectedRecordId(records: readonly { readonly id: string }[], currentId: string): string {
-  if (records.some((record) => record.id === currentId)) return currentId;
-  return records[0]?.id ?? "";
+function selectedRecordId(records: readonly { readonly id: string; readonly name: string }[], currentId: string): string {
+  if (records.some((record) => record.id === currentId && record.name.trim().length > 0)) return currentId;
+  return records.find((record) => record.name.trim().length > 0)?.id ?? "";
+}
+
+function focusPendingUtilityName(form: HTMLElement): void {
+  if (!pendingUtilityFocusId) return;
+  const input = form.querySelector<HTMLInputElement>("[data-testid='db-utility-selected-name']");
+  input?.focus();
+  pendingUtilityFocusId = "";
 }
 
 function utilityDetail(options: UtilityDetailOptions): HTMLElement {
@@ -287,9 +364,17 @@ function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLEle
 }
 
 function termField(options: TermFieldOptions): HTMLElement {
-  return textControl(options.label, options.value, (next) => {
+  const input = el("input", {
+    attrs: { type: "text", placeholder: defaultTermValue(options.key) },
+    value: options.value ?? "",
+  });
+  if (options.testid) input.dataset.testid = options.testid;
+  input.addEventListener("input", () => {
+    const next = input.value;
     store.update((project) => {
-      project.meta.terms[options.key] = next;
+      if (next.trim().length === 0) delete project.meta.terms[options.key];
+      else project.meta.terms[options.key] = next;
     });
-  }, options.testid);
+  });
+  return field(options.label, input);
 }

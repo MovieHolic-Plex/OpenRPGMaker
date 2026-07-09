@@ -1,5 +1,6 @@
 import { changeGold, changeItem } from "@/project/session";
 import { store } from "@/project/store";
+import { resolveTerms } from "@/project/terms";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import {
@@ -22,11 +23,12 @@ export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 
 export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean> {
   const items = shopItems(step);
+  const terms = resolveTerms(store.getCurrent());
   return new Promise((resolve) => {
     const overlay = createShopOverlay();
     let view: ShopView = "menu";
     let mode: ShopMode = defaultShopMode(step);
-    let statusText = items.length ? shopPromptText(step, mode) : "There are no goods here.";
+    let statusText = items.length ? shopPromptText(step, mode, terms) : "There are no goods here.";
     let transactionCompleted = false;
     // 커서 메뉴는 매 렌더마다 재부착한다(뷰/상태 변경 시 overlay 전체 재빌드).
     // 커서 위치는 뷰별 인덱스로 보존해 상태 메시지 갱신에도 자리를 유지한다.
@@ -71,13 +73,14 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
       clearElement(overlay);
       overlay.append(
         view === "menu"
-          ? renderShopMenu(step, showItems, finish)
+          ? renderShopMenu(step, terms, showItems, finish)
           : renderShopItems({
               scene,
               step,
               items,
               mode,
               prompt: statusText,
+              terms,
               setStatus,
               showMenu,
               onItem: (item, nextMode, count) => {
@@ -97,7 +100,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
     const showItems = (nextMode: ShopMode) => {
       mode = nextMode;
       view = "items";
-      statusText = shopPromptText(step, mode);
+      statusText = shopPromptText(step, mode, terms);
       renderShop();
     };
     const setStatus = (text: string) => {

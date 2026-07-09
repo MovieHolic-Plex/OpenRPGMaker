@@ -8,6 +8,7 @@ Pick validation based on the touched boundary:
 
 - Type-only or low-risk helper changes: run `npm run typecheck` plus a focused unit test if one exists.
 - Project schema, migration, persistence, defaults, or references: run focused Vitest coverage for the changed path and include save/load or migration evidence.
+- Terms/runtime label changes should cover `resolveTerms` defaults and overrides, old JSON with missing `meta.terms`, unknown term roundtrips, and focused DOM/model checks for battle command labels, shop text, inn text, and status/common labels when touched.
 - Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must still produce a `projectLint` error, `commitChangeset` must return `ok:true` for cluster-rule-only hard violations, and the fixed map should return `ok:true` without cluster-rule issues.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
 - Chat dock layout regressions have a standing Playwright spec at `test/e2e/chat-dock-switch.spec.ts`; it covers float default placement, side docking persistence, DOM preservation, collapsed float/side states, input focus, and viewport resize bounds. Run it when validating dock UI changes unless the task owner explicitly asks for spec authoring only.

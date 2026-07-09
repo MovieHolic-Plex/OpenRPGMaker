@@ -1011,12 +1011,19 @@
     display: grid;
     gap: 10px 14px;
     grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
-    grid-template-rows: auto auto minmax(0, 1fr);
+    /* 행 구성: 제목 / +추가 툴바 / 범위 적용 / 검색·상세 / 목록·스토리플래그 */
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
   }
 
   .database-modal-body .db-utility-form .db-utility-heading,
+  .database-modal-body .db-utility-form .db-utility-toolbar,
   .database-modal-body .db-utility-form .db-range {
     grid-column: 1 / -1;
+  }
+
+  .database-modal-body .db-utility-form .db-utility-toolbar {
+    display: flex;
+    justify-content: flex-start;
   }
 
   .database-modal-body .db-utility-heading {
@@ -1077,12 +1084,19 @@
     overflow: auto;
   }
 
+  .database-modal-body .db-utility-row-wrap {
+    align-items: stretch;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 56px;
+  }
+
   .database-modal-body .db-utility-row,
-  .database-modal-body .db-empty-row {
+  .database-modal-body .db-empty-row,
+  .database-modal-body .db-empty-list-hint {
     align-items: center;
     background: var(--bg-raised);
     border: 0;
-    border-bottom: 1px solid var(--db-modern-line-soft);
     box-sizing: border-box;
     color: var(--text-1);
     display: grid;
@@ -1093,6 +1107,23 @@
     padding: 0 10px;
     text-align: left;
     width: 100%;
+  }
+
+  .database-modal-body .db-empty-row {
+    border-bottom: 1px solid var(--db-modern-line-soft);
+  }
+
+  .database-modal-body .db-empty-list-hint {
+    color: var(--db-modern-muted);
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 44px;
+  }
+
+  .database-modal-body .db-utility-row-delete {
+    border-radius: 0;
+    min-height: 28px;
+    min-width: 0;
+    padding: 0 8px;
   }
 
   .database-modal-body .db-utility-row:hover {
@@ -1127,7 +1158,8 @@
     display: grid;
     gap: 12px;
     grid-column: 2;
-    grid-row: 3;
+    /* +추가 툴바 행이 추가되며 한 칸 아래로(3→4) — 범위 행과의 겹침 방지. */
+    grid-row: 4;
     min-width: 0;
     padding: 14px;
   }
@@ -1146,6 +1178,23 @@
     justify-self: start;
     min-height: 32px;
     min-width: 96px;
+  }
+
+  .database-modal-body .db-story-flag-list {
+    align-self: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    display: grid;
+    gap: 0;
+    grid-column: 2;
+    grid-row: 5;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-story-flag-list .db-utility-heading,
+  .database-modal-body .db-story-flag-list .empty-hint {
+    padding: 10px;
   }
 
   .database-modal-body:has(.rm2k3-record-troops) .db-body {
