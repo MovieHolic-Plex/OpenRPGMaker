@@ -191,6 +191,8 @@ export function installFakeDom(): () => void {
     activeElement: null,
     body,
     createElement: (tagName: string) => new FakeElement(tagName),
+    // SVG 아이콘(makeSvgIcon)이 createElementNS를 쓴다 — 네임스페이스는 무시하고 일반 요소로 위임.
+    createElementNS: (_ns: string, tagName: string) => new FakeElement(tagName),
     createTextNode: (text: string) => {
       const node = new FakeNode();
       node.textContent = text;
