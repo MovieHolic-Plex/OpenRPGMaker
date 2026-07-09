@@ -1,6 +1,8 @@
 import { expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
+import { reseedSessionRng } from "@/project/session";
+import type { PlaySessionLike } from "@/player/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
@@ -20,10 +22,21 @@ export async function seedReferenceBattleProject(page: Page): Promise<void> {
   await seedProjectFromSupabaseCanonical(page, project);
 }
 
+export async function seedLayoutResultBattleProject(page: Page): Promise<void> {
+  const fixture = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
+  const project = deserialize(fixture);
+  prepareReferenceBattleProject(project);
+  const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
+  if (!enemy) throw new Error("missing enemy_slime fixture");
+  enemy.stats.maxHp = 14;
+  await seedProjectFromSupabaseCanonical(page, project);
+}
+
 export function prepareReferenceBattleProject(project: BattleProject): void {
   setReferenceBattleback(project);
   setReferenceEnemy(project);
   ensureReferenceParty(project);
+  reseedSessionRng(project.session as PlaySessionLike, 42_001);
 }
 
 export async function startReferenceBattle(page: Page): Promise<void> {
@@ -34,7 +47,40 @@ export async function startReferenceBattle(page: Page): Promise<void> {
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
   await page.click('[data-testid="event-battle-start"]');
   await expect(page.getByTestId("battle-scene")).toBeVisible();
-  await expect(page.getByTestId("actor-command-attack")).toBeVisible();
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("battle-enemy-hp-enemy-1")).toBeVisible({ timeout: 5_000 });
+}
+
+export async function confirmBattleTarget(page: Page, enemyId = "enemy-1"): Promise<void> {
+  const scene = page.getByTestId("battle-scene");
+  const fieldTarget = scene.locator(`.battle-enemy[data-testid='${enemyId}'][data-battle-targetable='true']`);
+  if (await fieldTarget.count()) {
+    await fieldTarget.click();
+    return;
+  }
+  await scene.getByTestId(`battle-target-${enemyId}`).click();
+}
+
+export async function performBattleAttack(page: Page, enemyId = "enemy-1"): Promise<void> {
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 20_000 });
+  await page.getByTestId("actor-command-attack").click();
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
+  await confirmBattleTarget(page, enemyId);
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", /acting|impact|result/, { timeout: 10_000 });
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-sequence-busy", "false", { timeout: 20_000 });
+}
+
+export async function performBattleSkill(page: Page, enemyId = "enemy-1"): Promise<void> {
+  await expect(page.getByTestId("actor-command-skill")).toBeVisible({ timeout: 20_000 });
+  await page.getByTestId("actor-command-skill").click();
+  const skillButton = page.getByTestId("actor-skill-skill_fire");
+  if (await skillButton.count()) {
+    await skillButton.click();
+  }
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect", { timeout: 10_000 });
+  await confirmBattleTarget(page, enemyId);
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", /acting|impact|result/, { timeout: 10_000 });
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-sequence-busy", "false", { timeout: 20_000 });
 }
 
 function ensureReferenceParty(project: BattleProject): void {
@@ -63,10 +109,10 @@ function setReferenceEnemy(project: BattleProject): void {
   if (!enemy) throw new Error("missing enemy_slime fixture");
   enemy.name = "달빛 숲 파수군";
   enemy.monsterResourceId = "generated-enemy-sylph-hornet";
-  enemy.stats.maxHp = 1;
+  enemy.stats.maxHp = 220;
   enemy.stats.maxMp = 0;
-  enemy.stats.attack = 68;
-  enemy.stats.defense = 12;
+  enemy.stats.attack = 12;
+  enemy.stats.defense = 8;
   enemy.stats.mind = 9;
   enemy.stats.agility = 8;
   enemy.rewards = { ...enemy.rewards, exp: 12, gold: 7 };

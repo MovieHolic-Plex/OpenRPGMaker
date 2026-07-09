@@ -69,6 +69,7 @@ export function defaultSystem(): SystemRecords {
     titleResourceId: "easyrpg-title-title1",
     systemResourceId: "easyrpg-system-system",
     battleSystemResourceId: "easyrpg-system2-system2-c",
+    battleBgmResourceId: "easyrpg-music-battle-1",
     initialTroopId: DEFAULT_TROOP_ID,
     battleFlow: "gauge",
     typeChart: {

@@ -13,10 +13,45 @@ type CellSourceRect = {
 
 export interface BattleAnimationPlayback {
   readonly element: HTMLElement;
+  readonly animationKey: string | undefined;
   destroy(): void;
 }
 
-export function mountBattleAnimationPlayback(snapshot: BattleSnapshot): BattleAnimationPlayback | undefined {
+export function syncBattleAnimationLayer(
+  layer: HTMLElement,
+  snapshot: BattleSnapshot,
+  sceneRoot: HTMLElement
+): BattleAnimationPlayback | undefined {
+  const lastAnimation = snapshot.lastAnimation;
+  const animationKey = lastAnimation ? `${lastAnimation.animationId}:${lastAnimation.targetId}` : undefined;
+  const existing = layer.querySelector<HTMLElement>("[data-testid='battle-animation']");
+  if (!animationKey) {
+    existing?.remove();
+    sceneRoot.classList.remove("battle-screen-shake", "battle-screen-flash");
+    return undefined;
+  }
+  if (existing?.dataset.animationKey === animationKey) {
+    return {
+      element: existing,
+      animationKey,
+      destroy(): void {
+        /* retained across ticks */
+      },
+    };
+  }
+  existing?.remove();
+  const playback = mountBattleAnimationPlayback(snapshot, sceneRoot);
+  if (!playback) return undefined;
+  playback.element.dataset.animationKey = animationKey;
+  positionAnimationOnTarget(playback.element, lastAnimation!.targetId);
+  layer.append(playback.element);
+  return playback;
+}
+
+export function mountBattleAnimationPlayback(
+  snapshot: BattleSnapshot,
+  sceneRoot: HTMLElement | null = null
+): BattleAnimationPlayback | undefined {
   const lastAnimation = snapshot.lastAnimation;
   if (!lastAnimation) return undefined;
 
@@ -34,24 +69,34 @@ export function mountBattleAnimationPlayback(snapshot: BattleSnapshot): BattleAn
   element.dataset.animationScreenShake = String(lastAnimation.screenShake);
   element.dataset.animationFrameCount = String(lastAnimation.frameCount);
   element.dataset.currentFrame = "0";
-  element.textContent = lastAnimation.name ?? lastAnimation.animationId;
+  element.setAttribute("aria-label", lastAnimation.name ?? lastAnimation.animationId);
+  element.setAttribute("role", "img");
 
   const timers = new Set<number>();
   const url = resolveAssetResourceUrl(record?.resourceId, { project: store.getCurrent() });
   if (url && record?.sheet && record.frames && record.frames.length > 0) {
     element.dataset.renderedFrameCount = String(record.frames.length);
-    element.replaceChildren(animationSheet(record, url));
-    setActiveAnimationFrame(element, record, 0);
-    startPlayback(element, record, timers);
+    element.append(animationSheet(record, url));
+    setActiveAnimationFrame(element, record, 0, sceneRoot);
+    startPlayback(element, record, timers, sceneRoot);
   }
 
   return {
     element,
+    animationKey: `${lastAnimation.animationId}:${lastAnimation.targetId}`,
     destroy(): void {
       for (const timer of timers) window.clearInterval(timer);
       timers.clear();
+      element.remove();
     },
   };
+}
+
+function positionAnimationOnTarget(element: HTMLElement, targetId: string): void {
+  const target = document.querySelector<HTMLElement>(`[data-testid="${targetId}"]`);
+  if (!target) return;
+  element.style.setProperty("--battle-node-x", target.style.getPropertyValue("--battle-node-x"));
+  element.style.setProperty("--battle-node-y", target.style.getPropertyValue("--battle-node-y"));
 }
 
 function setOptionalDataset(element: HTMLElement, key: string, value: string | undefined): void {
@@ -62,7 +107,12 @@ function battleAnimationRecord(animationId: string): BattleAnimationRecord | und
   return store.getCurrent().database.battleAnimations.find((record) => record.id === animationId);
 }
 
-function startPlayback(element: HTMLElement, record: BattleAnimationRecord, timers: Set<number>): void {
+function startPlayback(
+  element: HTMLElement,
+  record: BattleAnimationRecord,
+  timers: Set<number>,
+  sceneRoot: HTMLElement | null
+): void {
   const frames = record.frames ?? [];
   if (frames.length <= 1) return;
   let index = 0;
@@ -71,9 +121,12 @@ function startPlayback(element: HTMLElement, record: BattleAnimationRecord, time
     if (index >= frames.length) {
       window.clearInterval(timer);
       timers.delete(timer);
+      if (sceneRoot) {
+        sceneRoot.classList.remove("battle-screen-shake", "battle-screen-flash");
+      }
       return;
     }
-    setActiveAnimationFrame(element, record, index);
+    setActiveAnimationFrame(element, record, index, sceneRoot);
   }, BATTLE_ANIMATION_FRAME_MS);
   timers.add(timer);
 }
@@ -138,7 +191,12 @@ function animationCell(
   return canvas;
 }
 
-function setActiveAnimationFrame(element: HTMLElement, record: BattleAnimationRecord, frameIndex: number): void {
+function setActiveAnimationFrame(
+  element: HTMLElement,
+  record: BattleAnimationRecord,
+  frameIndex: number,
+  sceneRoot: HTMLElement | null
+): void {
   element.dataset.currentFrame = String(frameIndex);
   const frames = element.querySelectorAll<HTMLElement>(".battle-animation-frame");
   for (const frame of frames) {
@@ -150,6 +208,10 @@ function setActiveAnimationFrame(element: HTMLElement, record: BattleAnimationRe
   element.dataset.activeScreenShake = String(Boolean(timing?.screenShake));
   element.classList.toggle("battle-animation-flash-active", Boolean(timing?.flash));
   element.classList.toggle("battle-animation-shake-active", Boolean(timing?.screenShake));
+  if (sceneRoot) {
+    sceneRoot.classList.toggle("battle-screen-shake", Boolean(timing?.screenShake));
+    sceneRoot.classList.toggle("battle-screen-flash", Boolean(timing?.flash));
+  }
   playTimingSound(timing?.soundResourceId);
 }
 

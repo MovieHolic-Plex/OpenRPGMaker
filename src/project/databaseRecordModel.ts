@@ -52,6 +52,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     titleResourceId,
     systemResourceId: cleanOptionalId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
+    battleBgmResourceId: cleanOptionalId(system.battleBgmResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),

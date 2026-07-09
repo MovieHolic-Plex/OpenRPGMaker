@@ -10,6 +10,15 @@ function battleProject() {
   return deserialize(JSON.stringify(battleFixture));
 }
 
+function defeatSlime(runtime: ReturnType<typeof createBattleRuntime>): void {
+  while (!runtime.snapshot().result) {
+    if (runtime.snapshot().phase === "actorCommand") {
+      runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    }
+    runtime.tick(1_000);
+  }
+}
+
 describe("side-view battle runtime", () => {
   it("fills active-time gauges in actor-before-enemy order", () => {
     // Given: a database-backed battle with one party actor and one troop enemy.
@@ -44,18 +53,21 @@ describe("side-view battle runtime", () => {
     // When: the actor uses the Attack command.
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
 
-    // Then: the targeted enemy loses HP. The weak slime(10 HP) falls to one
-    // attack from the database-driven hero curve, resolving as victory.
+    // Then: the slime loses HP but stays standing for a multi-turn exchange.
     const after = runtime.snapshot().enemies[0]?.hp;
     expect(after).toBeLessThan(before ?? 0);
-    expect(after).toBe(0);
-    expect(runtime.snapshot().result).toBe("victory");
+    expect(after).toBeGreaterThan(0);
+    expect(runtime.snapshot().result).toBeUndefined();
   });
 
   it("records skill animation and defeats an enemy into victory", () => {
-    // Given: a weak troop enemy and a hero skill with a battle animation.
+    // Given: a weakened troop enemy and a hero skill with a battle animation.
+    const project = battleProject();
+    const slime = project.database.enemies.find((record) => record.id === "enemy_slime");
+    expect(slime).toBeDefined();
+    if (slime) slime.stats = { ...slime.stats, maxHp: 18 };
     const runtime = createBattleRuntime({
-      project: battleProject(),
+      project,
       troopId: "troop_slime",
       canEscape: true,
       canLose: true,
@@ -65,7 +77,7 @@ describe("side-view battle runtime", () => {
     // When: the actor uses the database skill.
     runtime.performActorCommand({ kind: "skill", skillId: "skill_fire", targetEnemyId: "enemy-1" });
 
-    // Then: the animation is exposed and the battle resolves as victory.
+    // Then: the animation is exposed and the weakened slime is defeated.
     expect(runtime.snapshot().lastAnimation?.animationId).toBe("anim_magic");
     expect(runtime.snapshot().enemies[0]?.defeated).toBe(true);
     expect(runtime.snapshot().result).toBe("victory");
@@ -167,7 +179,7 @@ describe("side-view battle runtime", () => {
 
     runtime.performActorCommand({ kind: "defend" });
 
-    expect(runtime.snapshot().enemies[0]?.hp).toBe(6);
+    expect(runtime.snapshot().enemies[0]?.hp).toBe(216);
     expect(runtime.snapshot().result).toBeUndefined();
   });
 
@@ -226,7 +238,7 @@ describe("side-view battle runtime", () => {
     expect(runtime.snapshot().phase).toBe("actorCommand");
     expect(runtime.snapshot().activeActorId).toBe("actor_hero");
 
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    defeatSlime(runtime);
 
     expect(runtime.snapshot().result).toBe("victory");
   });

@@ -122,7 +122,7 @@
         "id": "skill_fire",
         "name": "화염",
         "scope": "enemy",
-        "power": 20,
+        "power": 14,
         "animationId": "anim_magic"
       },
       {
@@ -156,10 +156,10 @@
         "name": "슬라임",
         "monsterResourceId": "generated-enemy-slime-01",
         "stats": {
-          "maxHp": 10,
+          "maxHp": 220,
           "maxMp": 1,
           "attack": 10,
-          "defense": 10,
+          "defense": 8,
           "mind": 10,
           "agility": 10
         },
@@ -282,6 +282,7 @@
     "titleResourceId": "tex_tiles_default",
     "systemResourceId": "tex_tiles_default",
     "battleSystemResourceId": "tex_tiles_default",
+    "battleBgmResourceId": "easyrpg-music-battle-1",
     "initialTroopId": "troop_slime"
   },
   "session": {

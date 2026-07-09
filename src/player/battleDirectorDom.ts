@@ -107,46 +107,75 @@ export function battleMessageWindow(state: BattleDirectorState): HTMLElement {
   const windowNode = document.createElement("div");
   windowNode.className = "battle-message-window";
   windowNode.dataset.testid = "battle-message-window";
+  syncBattleMessageWindow(windowNode, state);
+  return windowNode;
+}
+
+export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDirectorState): void {
   windowNode.dataset.battleDirectorStep = state.step;
-
-  const cursor = document.createElement("span");
-  cursor.className = "battle-message-cursor";
-  cursor.textContent = ">";
-  windowNode.append(cursor);
-
-  const lines = document.createElement("div");
-  lines.className = "battle-message-lines";
+  let cursor = windowNode.querySelector<HTMLElement>(".battle-message-cursor");
+  if (!cursor) {
+    cursor = document.createElement("span");
+    cursor.className = "battle-message-cursor";
+    cursor.textContent = ">";
+    windowNode.prepend(cursor);
+  }
+  let lines = windowNode.querySelector<HTMLElement>(".battle-message-lines");
+  if (!lines) {
+    lines = document.createElement("div");
+    lines.className = "battle-message-lines";
+    windowNode.append(lines);
+  }
+  lines.replaceChildren();
   for (const line of state.lines) {
     const row = document.createElement("div");
     row.className = "battle-message-line";
     row.textContent = line;
     lines.append(row);
   }
-  windowNode.append(lines);
-  return windowNode;
 }
 
-export function battleResultPanel(snapshot: BattleSnapshot): HTMLElement | undefined {
+export function battleResultPanel(snapshot: BattleSnapshot, revealStage = 0): HTMLElement | undefined {
   if (!snapshot.result) return undefined;
   const panel = document.createElement("div");
   panel.className = "battle-result-panel";
   panel.dataset.testid = "battle-result-panel";
   panel.dataset.battleResult = snapshot.result;
+  syncBattleResultPanel(panel, snapshot, revealStage);
+  return panel;
+}
 
-  const crest = document.createElement("div");
-  crest.className = "battle-result-crest";
-  crest.setAttribute("aria-hidden", "true");
-
-  const title = document.createElement("div");
-  title.className = "battle-result-title";
+export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapshot, revealStage: number): void {
+  panel.dataset.battleResult = snapshot.result ?? "";
+  panel.dataset.resultRevealStage = String(revealStage);
+  let crest = panel.querySelector(".battle-result-crest");
+  if (!crest) {
+    crest = document.createElement("div");
+    crest.className = "battle-result-crest";
+    crest.setAttribute("aria-hidden", "true");
+    panel.prepend(crest);
+  }
+  let title = panel.querySelector<HTMLElement>(".battle-result-title");
+  if (!title) {
+    title = document.createElement("div");
+    title.className = "battle-result-title";
+    panel.append(title);
+  }
   title.textContent = resultLine(snapshot.result);
 
-  const cards = document.createElement("div");
-  cards.className = "battle-result-cards battle-result-rewards";
-  cards.dataset.testid = "battle-result-cards";
-  for (const row of rewardRows(snapshot)) {
+  let cards = panel.querySelector<HTMLElement>(".battle-result-cards");
+  if (!cards) {
+    cards = document.createElement("div");
+    cards.className = "battle-result-cards battle-result-rewards";
+    cards.dataset.testid = "battle-result-cards";
+    panel.append(cards);
+  }
+  cards.replaceChildren();
+  for (const [index, row] of rewardRows(snapshot).entries()) {
     const item = document.createElement("div");
     item.className = "battle-result-reward-card battle-result-reward-row";
+    item.dataset.revealIndex = String(index);
+    item.hidden = index >= revealStage;
     const icon = document.createElement("span");
     icon.className = `battle-result-reward-icon battle-result-reward-icon-${row.kind}`;
     icon.setAttribute("aria-hidden", "true");
@@ -160,12 +189,21 @@ export function battleResultPanel(snapshot: BattleSnapshot): HTMLElement | undef
     cards.append(item);
   }
 
-  const prompt = document.createElement("div");
-  prompt.className = "battle-result-next-prompt";
-  prompt.dataset.testid = "battle-result-confirm";
-  prompt.textContent = "Z / 클릭 으로 계속";
-
-  panel.append(crest, title, cards, prompt);
+  panel.append(crest, title, cards);
+  if (!panel.querySelector(".battle-result-confirm")) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "battle-result-confirm";
+    button.dataset.testid = "battle-result-confirm";
+    button.textContent = "확인";
+    panel.append(button);
+  }
+  if (!panel.querySelector(".battle-result-next-prompt")) {
+    const prompt = document.createElement("div");
+    prompt.className = "battle-result-next-prompt";
+    prompt.textContent = "Z / 클릭 으로 계속";
+    panel.append(prompt);
+  }
   return panel;
 }
 
