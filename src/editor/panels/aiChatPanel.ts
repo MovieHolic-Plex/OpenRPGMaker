@@ -13,6 +13,7 @@ import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from 
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
+import { openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { store } from "@/project/store";
@@ -1138,7 +1139,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       dataset: { testid: "ai-start-screen" },
       children: [
         el("div", { class: "ai-start-title", text: "무엇을 만들까요?" }),
-        el("div", { class: "ai-start-sub", text: "자연어로 요청하거나, 스킬로 시작하세요. (입력창 / · Ctrl+K)" }),
+        el("div", { class: "ai-start-sub", text: "Ctrl+K 명령 · / 스킬 · 영역 선택 후 ✨ 칩으로 시작하세요." }),
         ...resume,
         el("div", { class: "ai-start-grid", children: cards }),
         el("div", {
@@ -1980,14 +1981,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     cleanupAiAssistBridge = () => targetWindow.removeEventListener("rpgzzu:ai-assist", handleAiAssist);
   }
 
-  // Ctrl/Cmd+K — 스킬 팔레트(검색+Enter 실행). 전역 1회만 등록.
+  // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵+스킬). 전역 1회만 등록.
   if (typeof window !== "undefined" && !(window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey) {
     (window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey = true;
     document.addEventListener?.("keydown", (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        input.focus();
-        revealVolatileZone();
+        openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
       }
     });
   }
