@@ -85,7 +85,12 @@ body.editor-ui-basic .canvas-toolbar.is-basic-chrome .zoom-button,
 
 /* ── Basic icon rail + flyout ──────────────────────────────────── */
 
-body.editor-ui-basic .left-panel,
+body.editor-ui-basic .left-panel {
+  min-width: 48px;
+  width: 48px;
+  overflow: visible;
+}
+
 body.editor-ui-basic .left-panel-stack {
   overflow: visible;
 }
