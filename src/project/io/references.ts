@@ -125,6 +125,11 @@ export function repairProjectReferences(project: Project): void {
   for (const klass of project.database.classes) {
     if (klass.animationId && !animationIds.has(klass.animationId)) delete klass.animationId;
   }
+  // 존재하지 않는 속성을 가리키는 스킬 elementId는 로드 실패 대신 제거한다 — 타입 상성(9b) 검증
+  // 추가로 기존 저장본(skill_leaf 등)이 열리지 않던 사고의 재발 방지.
+  for (const skill of project.database.skills) {
+    if (skill.elementId && !elementIdExists(project, skill.elementId)) delete skill.elementId;
+  }
   // 삭제/미생성 맵을 가리키는 transfer·changeTile 과 생활 이동 목적지는 로드를 벽돌내는 대신
   // 여기서 정리한다 — AI가 만들다 만 맵 참조가 저장본에 남아 프로젝트 전체가 열리지 않던 사고의 재발 방지.
   const prune = new PruneStats();

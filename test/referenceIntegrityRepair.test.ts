@@ -81,3 +81,18 @@ describe("project reference integrity", () => {
     expect(restored.commonEvents[0].commands).toEqual([]);
   });
 });
+
+// 2026-07-09 사고 회귀: 타입 상성(9b)이 skill.elementId 존재 검증을 추가하면서, 존재하지 않는
+// 속성을 가리키는 기존 저장본 스킬(skill_leaf)이 프로젝트 전체 로드 실패(벽돌)를 일으켰다.
+// 로드는 깨진 elementId를 제거하고 성공해야 한다.
+describe("skill elementId 로드 복구", () => {
+  it("deserialize는 존재하지 않는 elementId를 가진 스킬을 정리하고 로드한다", () => {
+    const project = createBlankProject();
+    const obj = JSON.parse(serialize(project));
+    obj.database.skills[0].elementId = "element_missing";
+
+    const restored = deserialize(JSON.stringify(obj));
+
+    expect(restored.database.skills[0].elementId).toBeUndefined();
+  });
+});
