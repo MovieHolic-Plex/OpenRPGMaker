@@ -60,12 +60,15 @@ test("database six surfaces persist real edits through project export", async ({
   // Ensure interpolate button is live (needs middle frame; duplicate to create neighbors if needed)
   await expect(page.getByTestId("db-animation-cell-interpolate")).toBeEnabled();
 
-  // (5) 몬스터 행동 기본/스킬
+  // (5) 몬스터 행동 기본/스킬 — 행 위 인라인 select가 dblclick을 가로채므로 Enter로 연다.
   await page.getByTestId("db-tab-enemies").click();
   const actionRow = page.getByTestId("db-enemy-action-row-0");
   await expect(actionRow).toBeVisible();
-  await actionRow.dblclick();
+  await actionRow.focus();
+  await page.keyboard.press("Enter");
   await expect(page.getByTestId("db-enemy-action-dialog")).toBeVisible();
+  await page.getByTestId("db-enemy-action-mode-basic").check();
+  await expect(page.getByTestId("db-picker-enemy-action-skill")).toBeDisabled();
   await page.getByTestId("db-enemy-action-mode-skill").check();
   const skillSelect = page.getByTestId("db-picker-enemy-action-skill");
   await expect(skillSelect).toBeEnabled();
