@@ -225,7 +225,6 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     prompt.textContent = "Z / 클릭 으로 계속";
     panel.append(prompt);
   }
-  return panel;
 }
 
 export function applyBattleDirectorState(
