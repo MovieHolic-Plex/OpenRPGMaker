@@ -243,7 +243,7 @@ const findSwitchUsage: ToolDefinition = {
   },
 };
 
-const RESOURCE_KINDS: readonly ResourceSearchKind[] = ["tile", "charset", "backdrop", "bgm", "se"];
+const RESOURCE_KINDS: readonly ResourceSearchKind[] = ["tile", "charset", "monster", "backdrop", "bgm", "se"];
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
@@ -272,7 +272,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/backdrop/bgm/se.",
+  description: "리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/monster/backdrop/bgm/se.",
   mode: "read",
   parameters: {
     type: "object",

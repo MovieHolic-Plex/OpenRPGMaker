@@ -2,12 +2,14 @@
 // 부분 문자열 + 태그 매칭, 한국어 질의 기준.
 
 import { CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
-import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
+import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import type { TilesetDef } from "@/project/types";
 
-export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "se" | "tile";
+export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
 
 export interface ResourceSearchOptions {
   // 타일 검색 시 프로젝트 타일셋의 사용자 메타데이터(tileMeta/tileGroups)를 번들 시맨틱 위에 겹친다.
@@ -80,6 +82,48 @@ function charsetDerivedTags(textureKey: string): string[] {
   return [shortKey, base, ...(CHARSET_CATEGORY_SYNONYMS[base] ?? [])];
 }
 
+function idWords(id: string): string[] {
+  return id
+    .split(/[^a-zA-Z0-9가-힣]+/u)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+function monsterCandidates(): ResourceCandidate[] {
+  const generated = RM2K3_GENERATED_ASSET_PLAN.assets
+    .filter((asset) => asset.status === "promoted" && asset.resourceKind === "monster")
+    .map((asset) => ({
+      id: asset.resourceId,
+      label: asset.id.replace(/-/g, " "),
+      tags: [
+        "monster",
+        "enemy",
+        "몬스터",
+        "적",
+        asset.id,
+        asset.resourceId,
+        ...idWords(asset.id),
+        ...idWords(asset.resourceId),
+        asset.prompt,
+      ],
+    }));
+  const builtin = builtinGeneratedResourceIds()
+    .filter((id) => id.startsWith("generated-enemy-") && !generated.some((asset) => asset.id === id))
+    .map((id) => ({
+      id,
+      label: id.replace(/^generated-enemy-/, "").replace(/-/g, " "),
+      tags: ["monster", "enemy", "몬스터", "적", id, ...idWords(id)],
+    }));
+  const rtpMonsters = EASYRPG_RTP_ASSETS
+    .filter((asset) => asset.category === "monster")
+    .map((asset) => ({
+      id: asset.id,
+      label: asset.name,
+      tags: [...moodTagsForAsset(asset), asset.id, ...idWords(asset.id), ...idWords(asset.name)],
+    }));
+  return [...generated, ...builtin, ...rtpMonsters];
+}
+
 // 번들 시맨틱 + 프로젝트 사용자 메타데이터 병합. 같은 타일이면 사용자 라벨이 이기고 태그는 합친다.
 function tileCandidates(tileset: TilesetDef | undefined): ResourceCandidate[] {
   const byTile = new Map<number, { label: string; tags: string[] }>();
@@ -128,6 +172,8 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
       }));
+    case "monster":
+      return monsterCandidates();
     case "backdrop":
       return EASYRPG_BACKDROP_ASSETS.map((asset) => ({
         id: `backdrop:${asset.id}`,

@@ -93,6 +93,14 @@ function knownIds(records: readonly { readonly id: string }[], limit = 8): strin
   return records.slice(0, limit).map((record) => record.id).join(", ") || "(없음)";
 }
 
+function describeValue(value: unknown): string {
+  if (value === undefined) return "undefined";
+  if (value === null) return "null";
+  if (Array.isArray(value)) return `array(length:${value.length})`;
+  if (typeof value === "object") return `object(keys:${Object.keys(value as Record<string, unknown>).slice(0, 4).join(",")})`;
+  return typeof value;
+}
+
 // 맵의 이벤트를 id로 upsert(있으면 교체, 없으면 push).
 export function upsertEventIntoMap(map: GameMap, event: GameEvent): "added" | "modified" {
   const index = map.events.findIndex((entry) => entry.id === event.id);
@@ -104,16 +112,42 @@ export function upsertEventIntoMap(map: GameMap, event: GameEvent): "added" | "m
   return "added";
 }
 
+function commandArrayOrEmpty(value: unknown, label: string): Command[] {
+  if (value === undefined || value === null) return [];
+  if (Array.isArray(value)) return value as Command[];
+  throw new ToolError(
+    `이벤트 형식이 올바르지 않습니다: ${label}은 Command[] 배열이어야 합니다. 실제 타입: ${describeValue(value)}. 단일 커맨드는 {"commands":[{"kind":"text","body":"..."}]}처럼 배열로 보내세요.`,
+    { code: "invalid-args" }
+  );
+}
+
+function normalizeEventCommandArrays(event: GameEvent): void {
+  (event as GameEvent).commands = commandArrayOrEmpty((event as { commands?: unknown }).commands, `${event.id}.commands`);
+  if (event.pages === undefined || event.pages === null) return;
+  if (!Array.isArray(event.pages)) {
+    throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${event.id}.pages는 배열이어야 합니다. 실제 타입: ${describeValue(event.pages)}`, {
+      code: "invalid-args",
+    });
+  }
+  for (const [index, page] of event.pages.entries()) {
+    if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
+    const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
+    (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`);
+  }
+}
+
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
 function assertEventShape(event: GameEvent): void {
   try {
+    normalizeEventCommandArrays(event);
     validateCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
       validateCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
   } catch (cause) {
+    if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
-      code: "event-shape",
+      code: "invalid-args",
     });
   }
 }
@@ -152,7 +186,6 @@ const upsertEvent: ToolDefinition = {
     if (!event || typeof event.id !== "string") throw new ToolError("event.id(문자열)가 필요합니다.");
     if (typeof event.x !== "number" || typeof event.y !== "number") throw new ToolError("event.x/y(숫자)가 필요합니다.");
     if (!event.trigger) (event as GameEvent).trigger = { kind: "action" };
-    if (!Array.isArray(event.commands)) (event as GameEvent).commands = [];
     assertEventShape(event);
     const outcome = upsertEventIntoMap(map, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);

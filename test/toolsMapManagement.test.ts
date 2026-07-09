@@ -73,6 +73,38 @@ describe("get_event", () => {
     expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
   });
 
+  it("upsert_event pages[].commands 객체 입력은 턴 예외 대신 invalid-args 실패로 반환한다", () => {
+    const { context, mapId } = ctxWithMap();
+    const result = runTool(context, "upsert_event", {
+      mapId,
+      event: {
+        id: "ev_bad_commands",
+        x: 4,
+        y: 4,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          {
+            id: "p1",
+            name: "본문",
+            conditions: [],
+            graphic: { transparent: true },
+            priority: "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            trigger: { kind: "action" },
+            commands: { kind: "text", body: "배열이 아님" },
+          },
+        ],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("'upsert_event' 실행 실패");
+    expect(result.issues?.[0]?.code).toBe("invalid-args");
+    expect(result.issues?.[0]?.message).toContain("Command[] 배열");
+    expect(context.project.maps[mapId].events.some((event) => event.id === "ev_bad_commands")).toBe(false);
+  });
+
   it("upsert_event 인자 누락은 NPC 배치용 place_npc 힌트를 돌려준다", () => {
     const { context, mapId } = ctxWithMap();
     const result = runTool(context, "upsert_event", { mapId });

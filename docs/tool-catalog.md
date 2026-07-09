@@ -129,7 +129,7 @@
 | `get_event` | `mapId: string`, `eventId: string` | 이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. |
 | `find_switch_usage` | `switchId: string` | 스위치의 전 맵 이벤트/커먼이벤트/트룹 전투이벤트 역참조를 찾는다. |
 | `list_npc_graphics` | `query?: string` | NPC/캐릭터셋 그래픽 후보를 조회한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다. |
-| `list_resources` | `kind: tile\|charset\|backdrop\|bgm\|se`, `query: string` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/backdrop/bgm/se. |
+| `list_resources` | `kind: tile\|charset\|monster\|backdrop\|bgm\|se`, `query: string` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/monster/backdrop/bgm/se. |
 | `query_tiles` | `tilesetId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라. |
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps` | 컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps. |
 | `run_lint` | `reachability?: array` | projectLint, 세계관 lint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |

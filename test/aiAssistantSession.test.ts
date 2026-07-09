@@ -324,6 +324,93 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.assistantText).not.toContain("<invoke name=");
   }, 30000);
 
+  it("오케스트레이션에서 변경 기대 요청이 0건 비질문으로 끝나면 한 번 재킥해 실행한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps = [
+      assistantFinal("먼저 확인하겠습니다."),
+      assistantToolCall("set_title_screen", { title: "재킥 제목" }, "c_title"),
+      assistantFinal("실행 완료"),
+      assistantFinal("완료: 타이틀을 바꿨습니다."),
+    ];
+    let index = 0;
+    const requests: ChatRequest[] = [];
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      requests.push({ ...req, messages: [...req.messages] });
+      if (index >= steps.length) throw new Error("scripted chat exhausted");
+      return steps[index++];
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const phases: string[] = [];
+
+    const result = await session.sendUserMessage("타이틀을 재킥 제목으로 바꿔줘", (event) => {
+      if (event.type === "phase") phases.push(event.value);
+    });
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
+    expect(result.assistantText).toBe("타이틀을 바꿨습니다.");
+    expect(phases).toEqual(["plan", "execute", "review"]);
+    expect(requests[1]?.messages.some((message) =>
+      message.role === "user" &&
+      message.content === "[오케스트레이션] 사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요"
+    )).toBe(true);
+  }, 30000);
+
+  it("오케스트레이션 0건 종료라도 질문이면 재킥하지 않는다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let calls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      calls += 1;
+      return assistantFinal("어떤 제목으로 바꿀까요?\n[선택지] 숲 | 바다");
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+
+    const result = await session.sendUserMessage("타이틀을 바꿔줘", () => {});
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.assistantText).toContain("어떤 제목");
+    expect(calls).toBe(1);
+  }, 30000);
+
+  it("0건 조기 종료 재킥은 한 턴에 한 번만 쓴다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps = [
+      assistantFinal("먼저 확인하겠습니다."),
+      assistantFinal("곧 진행하겠습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) throw new Error("scripted chat exhausted");
+      return steps[index++];
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+
+    const result = await session.sendUserMessage("마을을 꾸며줘", () => {});
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.assistantText).toBe("곧 진행하겠습니다.");
+    expect(index).toBe(2);
+  }, 30000);
+
+  it("비오케스트레이션 세션은 0건 조기 종료 재킥을 하지 않는다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let calls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      calls += 1;
+      return assistantFinal("먼저 확인하겠습니다.");
+    };
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+
+    const result = await session.sendUserMessage("타이틀을 바꿔줘", () => {});
+
+    expect(result.stoppedReason).toBe("final");
+    expect(result.assistantText).toBe("먼저 확인하겠습니다.");
+    expect(result.proposedCalls).toEqual([]);
+    expect(calls).toBe(1);
+  }, 30000);
+
   it("단순 대화 턴은 전환 없이 감독 모델 한 번으로 끝난다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const seenModels: string[] = [];

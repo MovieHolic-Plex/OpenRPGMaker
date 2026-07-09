@@ -45,6 +45,30 @@ describe("DB write tools", () => {
     expect(ctx.project.database.actors.find((actor) => actor.id === "actor_new")?.maxLevel).toBe(99);
   });
 
+  it("monsterResourceId는 DB 툴 실행 시점에 검색어를 리소스로 해석하거나 invalid-args로 거부한다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const enemy = runTool(ctx, "upsert_enemy", {
+      enemy: { id: "enemy_query_slime", name: "검색 슬라임", monsterResourceId: "slime" },
+    }, { dryRun: false });
+    expect(enemy.ok, JSON.stringify(enemy.issues)).toBe(true);
+    expect(ctx.project.database.enemies.find((record) => record.id === "enemy_query_slime")?.monsterResourceId).toBe("generated-enemy-slime-01");
+    expect(enemy.diff?.warnings.some((warning) => warning.includes("enemy.monsterResourceId 자동 해석"))).toBe(true);
+
+    const species = runTool(ctx, "define_monster_species", {
+      species: { id: "species_query_dragon", name: "검색 드래곤", graphic: { monsterResourceId: "dragon" } },
+    }, { dryRun: false });
+    expect(species.ok, JSON.stringify(species.issues)).toBe(true);
+    expect(ctx.project.database.monsterSpecies?.find((record) => record.id === "species_query_dragon")?.graphic.monsterResourceId).toBe("generated-enemy-dragon-01");
+
+    const missing = runTool(ctx, "define_monster_species", {
+      species: { id: "species_missing_graphic", name: "없는 그래픽", graphic: { monsterResourceId: "definitely_missing_monster_graphic" } },
+    });
+    expect(missing.ok).toBe(false);
+    expect(missing.issues?.[0]?.code).toBe("invalid-args");
+    expect(missing.issues?.[0]?.message).toContain("사용 가능한 monster 리소스 예시");
+    expect(missing.issues?.[0]?.message).toContain("generated-enemy");
+  });
+
   it("upsert_state는 raw spread로 임의 필드를 저장하지 않는다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, "upsert_state", { state: { id: "state_x", name: "X", rawInjected: true } }, { dryRun: false });

@@ -144,6 +144,7 @@ const VOCABULARY_APPROVAL_WARNING = "🔒 어휘 승인 제안: 수락하면 해
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지";
+const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요";
 const ORCHESTRATION_PREFIX = "[오케스트레이션] ";
 const REVIEW_REEXECUTE_PREFIX = "재실행:";
 const REVIEW_COMPLETE_PREFIX = "완료:";
@@ -206,6 +207,18 @@ export function sanitizeAssistantText(text: string): string {
   if (index < 0) return text;
   const safePrefix = text.slice(0, index).trimEnd();
   return `${safePrefix}${RAW_TOOL_CALL_OMISSION_NOTICE}`;
+}
+
+function assistantTextLooksLikeQuestion(text: string): boolean {
+  const lines = text
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .slice(-2);
+  return lines.some((line) => (
+    /[?？]\s*$/u.test(line) ||
+    /(까요|을까요|ㄹ까요|나요|인가요|습니까|하시겠어요|해도 될까요)[.!…\s]*$/u.test(line)
+  ));
 }
 
 function orchestrationContent(content: string): string {
@@ -812,6 +825,8 @@ export class AssistantSession {
     const orchestrated = this.orchestrationEnabled();
     let phase: AssistantPhase = "plan";
     let executionStarted = false;
+    let writeToolAttempts = 0;
+    let zeroChangeRekickUsed = false;
     let reviewRepairUsed = false;
     let reviewMissingWarnings: string[] = [];
     if (orchestrated) this.emitPhase(onEvent, "plan");
@@ -890,8 +905,22 @@ export class AssistantSession {
           this.pushOrchestrationMessage(review.prompt);
           continue;
         }
+        const finalText = sanitizeAssistantText(messageText ?? "");
+        if (
+          orchestrated &&
+          !zeroChangeRekickUsed &&
+          writeToolAttempts === 0 &&
+          requestLikelyExpectsChange(this.currentTurnRequestText) &&
+          !assistantTextLooksLikeQuestion(finalText)
+        ) {
+          zeroChangeRekickUsed = true;
+          this.pushOrchestrationMessage(ZERO_CHANGE_REKICK_HINT);
+          onEvent({ type: "status", text: "변경 없는 종료를 감지해 실행 계획을 다시 요청합니다." });
+          this.pushAudit({ kind: "status", text: "zero-change-rekick" });
+          continue;
+        }
         // 최종 응답.
-        assistantText = sanitizeAssistantText(messageText ?? "");
+        assistantText = finalText;
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -904,6 +933,7 @@ export class AssistantSession {
       for (const call of toolCalls) {
         const { name, args } = parseToolCall(call);
         const tool = getTool(name);
+        if (tool?.mode === "write") writeToolAttempts += 1;
         // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
         // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
         let toolResult: ToolResult;

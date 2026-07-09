@@ -4,11 +4,13 @@
 //            / set_session_start / set_title_screen.
 // 모든 레코드는 기존 레코드와 병합한 뒤 normalize* 계열을 거쳐 id로 upsert한다.
 
+import { searchResources } from "@/assets/resourceSearch";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import type {
@@ -52,6 +54,33 @@ function requireRecordId(record: unknown, label: string): { id: string; name?: s
 
 function knownIds(records: readonly { readonly id: string }[], limit = 8): string {
   return records.slice(0, limit).map((record) => record.id).join(", ") || "(없음)";
+}
+
+function knownMonsterResourceExamples(project: Project, limit = 3): string {
+  const resourceIds = collectResourceIds(project);
+  const matches = searchResources("monster", "*")
+    .filter((match) => resourceIds.has(match.id))
+    .slice(0, limit)
+    .map((match) => `${match.id}(${match.label})`);
+  if (matches.length > 0) return matches.join(", ");
+  return [...resourceIds].filter((id) => id.includes("monster") || id.includes("enemy")).slice(0, limit).join(", ") || "(없음)";
+}
+
+function resolveMonsterResourceId(project: Project, value: string | undefined, label: string, warnings: string[]): string | undefined {
+  if (value === undefined) return undefined;
+  const resourceIds = collectResourceIds(project);
+  if (resourceIds.has(value)) return value;
+
+  const resolved = searchResources("monster", value).find((match) => resourceIds.has(match.id));
+  if (resolved) {
+    warnings.push(`${label} 자동 해석: "${value}" → "${resolved.id}" (${resolved.label})`);
+    return resolved.id;
+  }
+
+  throw new ToolError(
+    `${label}가 존재하지 않습니다: ${value}. 사용 가능한 monster 리소스 예시: ${knownMonsterResourceExamples(project)}`,
+    { code: "invalid-args" }
+  );
 }
 
 type RecordSchema = JsonSchema & { readonly properties: Record<string, JsonSchema> };
@@ -447,8 +476,14 @@ const upsertEnemy: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
+    const warnings: string[] = [];
+    record.monsterResourceId = resolveMonsterResourceId(draft, record.monsterResourceId, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
-    return { summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return {
+      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      data: record,
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 
@@ -504,8 +539,14 @@ const defineMonsterSpecies: ToolDefinition = {
     if (missingItems.length > 0) {
       throw new ToolError(`존재하지 않는 진화 itemId: ${[...new Set(missingItems)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
     }
+    const warnings: string[] = [];
+    record.graphic.monsterResourceId = resolveMonsterResourceId(draft, record.graphic.monsterResourceId, "species.graphic.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.monsterSpecies, record);
-    return { summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return {
+      summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      data: record,
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 

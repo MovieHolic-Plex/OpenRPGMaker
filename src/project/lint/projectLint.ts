@@ -130,11 +130,11 @@ function checkTransfers(project: Project, issues: LintIssue[]): void {
   const transfers: Array<Extract<Command, { kind: "transfer" }>> = [];
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      for (const command of eventCommands(event)) collectTransfers(command, transfers);
+      for (const command of eventCommands(event, issues, `맵 이벤트 ${event.id}`)) collectTransfers(command, transfers, issues, `맵 이벤트 ${event.id}`);
     }
   }
   for (const commonEvent of project.commonEvents) {
-    for (const command of commonEvent.commands) collectTransfers(command, transfers);
+    visitCommands(commonEvent.commands, (command) => collectTransfers(command, transfers, issues, `커먼 이벤트 ${commonEvent.id}`), issues, `커먼 이벤트 ${commonEvent.id}.commands`);
   }
 
   for (const command of transfers) {
@@ -214,33 +214,47 @@ function checkMapSizes(project: Project, issues: LintIssue[]): void {
 function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      visitCommands(event.commands, (command) =>
-        pushRuntimeSupportCommandIssue(command, issues, { mapId: map.id, x: event.x, y: event.y, owner: `맵 이벤트 ${event.id}` })
+      visitCommands(
+        event.commands,
+        (command) => pushRuntimeSupportCommandIssue(command, issues, { mapId: map.id, x: event.x, y: event.y, owner: `맵 이벤트 ${event.id}` }),
+        issues,
+        `맵 이벤트 ${event.id}.commands`
       );
       for (const page of event.pages ?? []) {
-        visitCommands(page.commands, (command) =>
-          pushRuntimeSupportCommandIssue(command, issues, {
-            mapId: map.id,
-            x: event.x,
-            y: event.y,
-            owner: `맵 이벤트 ${event.id}/${page.id}`,
-          })
+        visitCommands(
+          page.commands,
+          (command) =>
+            pushRuntimeSupportCommandIssue(command, issues, {
+              mapId: map.id,
+              x: event.x,
+              y: event.y,
+              owner: `맵 이벤트 ${event.id}/${page.id}`,
+            }),
+          issues,
+          `맵 이벤트 ${event.id}/${page.id}.commands`
         );
       }
     }
   }
   for (const commonEvent of project.commonEvents) {
-    visitCommands(commonEvent.commands, (command) =>
-      pushRuntimeSupportCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` })
+    visitCommands(
+      commonEvent.commands,
+      (command) => pushRuntimeSupportCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` }),
+      issues,
+      `커먼 이벤트 ${commonEvent.id}.commands`
     );
   }
   for (const troop of project.database.troops) {
     for (const page of troop.battleEventPages ?? []) {
-      visitCommands(page.commands, (command) =>
-        pushRuntimeSupportCommandIssue(command, issues, {
-          owner: `트룹 ${troop.id}/${page.id}`,
-          support: battleEventCommandRuntimeSupport(command),
-        })
+      visitCommands(
+        page.commands,
+        (command) =>
+          pushRuntimeSupportCommandIssue(command, issues, {
+            owner: `트룹 ${troop.id}/${page.id}`,
+            support: battleEventCommandRuntimeSupport(command),
+          }),
+        issues,
+        `트룹 ${troop.id}/${page.id}.commands`
       );
     }
   }
@@ -400,45 +414,80 @@ function checkReachabilitySpecs(
 // --- 헬퍼 ---
 
 // 이벤트의 커맨드(레거시 event.commands + 모든 페이지 commands)를 모은다.
-function eventCommands(event: GameEvent): Command[] {
-  const commands: Command[] = [...event.commands];
-  for (const page of event.pages ?? []) commands.push(...page.commands);
+function eventCommands(event: GameEvent, issues?: LintIssue[], owner = `이벤트 ${event.id}`): Command[] {
+  const commands: Command[] = [];
+  commands.push(...commandArrayOrWarn(event.commands, issues, `${owner}.commands`));
+  for (const page of event.pages ?? []) {
+    commands.push(...commandArrayOrWarn(page.commands, issues, `${owner}/${page.id}.commands`));
+  }
   return commands;
 }
 
 // fork/choices/loop 분기 내부까지 재귀 순회하며 transfer 커맨드를 수집한다.
 function collectTransfers(
   command: Command,
-  out: Array<Extract<Command, { kind: "transfer" }>>
+  out: Array<Extract<Command, { kind: "transfer" }>>,
+  issues?: LintIssue[],
+  label = "command"
 ): void {
   visitCommand(command, (candidate) => {
     if (candidate.kind === "transfer") out.push(candidate);
-  });
+  }, issues, label);
 }
 
-function visitCommands(commands: readonly Command[], visit: (command: Command) => void): void {
-  for (const command of commands) visitCommand(command, visit);
+function commandArrayOrWarn(commands: unknown, issues: LintIssue[] | undefined, label: string): Command[] {
+  if (Array.isArray(commands)) return commands as Command[];
+  pushCommandShapeWarning(issues, label, `커맨드 배열이 아니어서 lint 순회를 건너뜁니다: ${valueKind(commands)}`);
+  return [];
 }
 
-function visitCommand(command: Command, visit: (command: Command) => void): void {
+function visitCommands(commands: unknown, visit: (command: Command) => void, issues?: LintIssue[], label = "commands"): void {
+  const list = commandArrayOrWarn(commands, issues, label);
+  for (const [index, command] of list.entries()) visitCommand(command, visit, issues, `${label}[${index}]`);
+}
+
+function visitCommand(command: Command, visit: (command: Command) => void, issues?: LintIssue[], label = "command"): void {
+  if (typeof command !== "object" || command === null || Array.isArray(command)) {
+    pushCommandShapeWarning(issues, label, `커맨드 객체가 아니어서 lint 순회를 건너뜁니다: ${valueKind(command)}`);
+    return;
+  }
   visit(command);
   if (command.kind === "choices") {
-    for (const option of command.options) visitCommands(option.branch, visit);
-    if (command.cancelBranch) visitCommands(command.cancelBranch, visit);
+    if (!Array.isArray(command.options)) {
+      pushCommandShapeWarning(issues, `${label}.options`, `choices options 배열이 아니어서 분기 순회를 건너뜁니다: ${valueKind(command.options)}`);
+      return;
+    }
+    for (const [index, option] of command.options.entries()) visitCommands(option.branch, visit, issues, `${label}.options[${index}].branch`);
+    if (command.cancelBranch) visitCommands(command.cancelBranch, visit, issues, `${label}.cancelBranch`);
     return;
   }
   if (command.kind === "fork") {
-    visitCommands(command.then, visit);
-    if (command.else) visitCommands(command.else, visit);
+    visitCommands(command.then, visit, issues, `${label}.then`);
+    if (command.else) visitCommands(command.else, visit, issues, `${label}.else`);
     return;
   }
   if (command.kind === "loop") {
-    visitCommands(command.body, visit);
+    visitCommands(command.body, visit, issues, `${label}.body`);
     return;
   }
   if (command.kind === "shop" && command.transactionBranch) {
-    visitCommands(command.transactionBranch, visit);
+    visitCommands(command.transactionBranch, visit, issues, `${label}.transactionBranch`);
   }
+}
+
+function pushCommandShapeWarning(issues: LintIssue[] | undefined, label: string, detail: string): void {
+  if (!issues) return;
+  const message = `${label}: ${detail}`;
+  if (issues.some((issue) => issue.code === "command-shape" && issue.message === message)) return;
+  issues.push({ severity: "warning", code: "command-shape", message });
+}
+
+function valueKind(value: unknown): string {
+  if (value === undefined) return "undefined";
+  if (value === null) return "null";
+  if (Array.isArray(value)) return `array(length:${value.length})`;
+  if (typeof value === "object") return `object(keys:${Object.keys(value as Record<string, unknown>).slice(0, 4).join(",")})`;
+  return typeof value;
 }
 
 function commandLabel(command: Command): string {

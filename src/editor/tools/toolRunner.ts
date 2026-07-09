@@ -31,6 +31,12 @@ function failureSummary(name: string, cause: unknown): string {
   return `'${name}' 실행 실패: ${message}`;
 }
 
+function postprocessFailureSummary(name: string, cause: unknown): string {
+  const message = cause instanceof Error ? cause.message : String(cause);
+  const compact = message.length > 200 ? `${message.slice(0, 200)}…` : message;
+  return `'${name}' 후처리 실패: ${compact}`;
+}
+
 function argErrorMessage(message: string, example: Record<string, unknown> | undefined, hint: string | undefined): string {
   const withHint = hint ? `${message} — ${hint}` : message;
   return example ? `${withHint} — 다시 보낼 형식 예시: ${JSON.stringify(example)}` : withHint;
@@ -91,27 +97,35 @@ export function runTool(
     return { ok: false, summary: failureSummary(name, cause), issues: [issueFromError(cause)] };
   }
 
-  const diff = summarizeChanges(before, draft);
-  if (exec.warnings) diff.warnings.push(...exec.warnings);
+  try {
+    const diff = summarizeChanges(before, draft);
+    if (exec.warnings) diff.warnings.push(...exec.warnings);
 
-  // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
-  const commit = commitChangeset(draft, before);
-  if (!commit.ok) {
+    // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
+    const commit = commitChangeset(draft, before);
+    if (!commit.ok) {
+      return {
+        ok: false,
+        summary: `'${name}' 커밋 거부(무결성 오류)`,
+        diff,
+        issues: [...(exec.issues ?? []), ...(commit.blocking.length > 0 ? commit.blocking : commit.issues)],
+      };
+    }
+
+    if (!options.dryRun) ctx.project = draft;
+    const issues = [...(exec.issues ?? []), ...commit.issues];
+    return {
+      ok: true,
+      summary: exec.summary,
+      diff,
+      issues: issues.length > 0 ? issues : undefined,
+      data: exec.data,
+    };
+  } catch (cause) {
     return {
       ok: false,
-      summary: `'${name}' 커밋 거부(무결성 오류)`,
-      diff,
-      issues: [...(exec.issues ?? []), ...(commit.blocking.length > 0 ? commit.blocking : commit.issues)],
+      summary: postprocessFailureSummary(name, cause),
+      issues: [{ severity: "error", code: "tool-postprocess", message: cause instanceof Error ? cause.message : String(cause) }],
     };
   }
-
-  if (!options.dryRun) ctx.project = draft;
-  const issues = [...(exec.issues ?? []), ...commit.issues];
-  return {
-    ok: true,
-    summary: exec.summary,
-    diff,
-    issues: issues.length > 0 ? issues : undefined,
-    data: exec.data,
-  };
 }

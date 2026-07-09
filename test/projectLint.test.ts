@@ -148,6 +148,35 @@ describe("projectLint", () => {
     expect(issues.map((issue) => issue.message).join("\n")).toContain("트룹");
   });
 
+  it("비배열 page.commands는 순회 예외 대신 command-shape warning으로 건너뛴다", () => {
+    const project = cloneProject(createBlankProject());
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.events.push({
+      id: "ev_malformed",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "p_bad",
+          name: "깨진 페이지",
+          conditions: [],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "same",
+          overlapForbidden: true,
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: { kind: "text", body: "배열 아님" } as unknown as Command[],
+        },
+      ],
+    });
+
+    const issues = projectLint(project);
+    expect(issues.some((issue) => issue.code === "command-shape" && issue.message.includes("ev_malformed/p_bad.commands"))).toBe(true);
+  });
+
   it("256x256 초과 맵을 warning으로 보고한다", () => {
     const project = cloneProject(createBlankProject());
     const huge = createBlankMap("임포트 초대형", 257, 12);

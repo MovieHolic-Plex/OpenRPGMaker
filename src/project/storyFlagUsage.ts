@@ -165,14 +165,16 @@ export function declaredStoryFlagTargets(project: Project): ReadonlySet<string> 
 }
 
 function scanCommands(
-  commands: readonly Command[],
+  commands: unknown,
   add: (access: StoryFlagAccess, kind: StoryFlagKind, targetId: string | undefined, location: UsageLocation) => void,
   owner: UsageOwner,
   path: string
 ): void {
+  if (!Array.isArray(commands)) return;
   for (const [index, command] of commands.entries()) {
+    if (typeof command !== "object" || command === null || Array.isArray(command)) continue;
     const commandPath = `${path}[${index}]`;
-    scanCommand(command, add, owner, commandPath);
+    scanCommand(command as Command, add, owner, commandPath);
   }
 }
 
@@ -188,7 +190,7 @@ function scanCommand(
       break;
     case "setVariable":
       add("write", "variable", command.variableId, { ...owner, commandPath, detail: "setVariable" });
-      if (typeof command.value === "object" && command.value.kind === "var") {
+      if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
         add("read", "variable", command.value.id, { ...owner, commandPath: `${commandPath}.value`, detail: "setVariable operand" });
       }
       break;
@@ -207,6 +209,7 @@ function scanCommand(
       if (command.else) scanCommands(command.else, add, owner, `${commandPath}.else`);
       break;
     case "choices":
+      if (!Array.isArray(command.options)) break;
       for (const [optionIndex, option] of command.options.entries()) {
         scanCommands(option.branch, add, owner, `${commandPath}.options[${optionIndex}].branch`);
       }
