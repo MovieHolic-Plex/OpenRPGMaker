@@ -3,6 +3,7 @@ import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
   actorCommandDirectorState,
   commandPromptState,
+  directorStateAfterTurn,
   type BattleDirectorState,
   resultDirectorState,
 } from "@/player/battleDirectorDom";
@@ -131,7 +132,7 @@ export function createBattleSequencer(
       setBusy(false);
       return;
     }
-    hooks.onDirectorState(commandPromptState(snapshot));
+    hooks.onDirectorState(directorStateAfterTurn(snapshot, previous));
     hooks.onDamageFeedback(undefined);
     hooks.onSyncView();
     setBusy(false);
@@ -207,7 +208,7 @@ export function createBattleSequencer(
           setBusy(false);
           return;
         }
-        hooks.onDirectorState(commandPromptState(snapshot));
+        hooks.onDirectorState(directorStateAfterTurn(snapshot, commandPromptState(snapshot)));
         hooks.onDamageFeedback(undefined);
         hooks.onSyncView();
         setBusy(false);

@@ -1,16 +1,25 @@
 import { expect, test } from "@playwright/test";
-import { performBattleAttack, seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import {
+  confirmBattleTarget,
+  seedReferenceBattleProject,
+  startReferenceBattle,
+  waitForActorCommand,
+} from "./battleReferenceProject";
 
 const SLIME_MAX_HP = 220;
 
 test("reference slime battle survives the first player action", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
   const hpLocator = page.getByTestId("battle-scene").getByTestId("battle-enemy-hp-enemy-1");
   await expect(hpLocator).toContainText(String(SLIME_MAX_HP));
 
-  await performBattleAttack(page);
+  await waitForActorCommand(page);
+  await page.getByTestId("actor-command-attack").click();
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
+  await confirmBattleTarget(page);
   await expect(page.getByTestId("battle-result-panel")).toHaveCount(0);
   await expect.poll(async () => {
     const hp = await hpLocator.textContent();

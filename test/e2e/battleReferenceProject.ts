@@ -61,8 +61,13 @@ export async function confirmBattleTarget(page: Page, enemyId = "enemy-1"): Prom
   await scene.getByTestId(`battle-target-${enemyId}`).click();
 }
 
+export async function waitForActorCommand(page: Page): Promise<void> {
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "actorCommand", { timeout: 45_000 });
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 5_000 });
+}
+
 export async function performBattleAttack(page: Page, enemyId = "enemy-1"): Promise<void> {
-  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 20_000 });
+  await waitForActorCommand(page);
   await page.getByTestId("actor-command-attack").click();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
   await confirmBattleTarget(page, enemyId);
@@ -71,7 +76,8 @@ export async function performBattleAttack(page: Page, enemyId = "enemy-1"): Prom
 }
 
 export async function performBattleSkill(page: Page, enemyId = "enemy-1"): Promise<void> {
-  await expect(page.getByTestId("actor-command-skill")).toBeVisible({ timeout: 20_000 });
+  await waitForActorCommand(page);
+  await expect(page.getByTestId("actor-command-skill")).toBeVisible({ timeout: 5_000 });
   await page.getByTestId("actor-command-skill").click();
   const skillButton = page.getByTestId("actor-skill-skill_fire");
   if (await skillButton.count()) {

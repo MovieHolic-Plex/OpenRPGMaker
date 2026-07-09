@@ -14,6 +14,7 @@ import {
   battleMessageWindow,
   battleEventDirectorState,
   battleResultPanel,
+  chargingDirectorState,
   commandPromptState,
   resultDirectorState,
   syncBattleMessageWindow,
@@ -306,6 +307,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (snapshot.phase === "actorCommand" && shouldRefreshCommandPrompt(snapshot, previous)) {
       return commandPromptState(snapshot);
     }
+    if (snapshot.phase === "charging" && previous.step === "command") {
+      return chargingDirectorState(snapshot);
+    }
     return previous;
   }
 
@@ -321,7 +325,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const tickInterval = window.setInterval(() => {
     if (sequenceBusy) return;
     const before = options.runtime.snapshot();
-    if (before.result || before.phase !== "charging") return;
+    if (before.result) return;
+    if (before.phase !== "charging") {
+      if (before.phase === "actorCommand") syncView(false);
+      return;
+    }
     options.runtime.tick(BATTLE_TICK_MS);
     const after = options.runtime.snapshot();
     const actionKey = after.lastActionResult
