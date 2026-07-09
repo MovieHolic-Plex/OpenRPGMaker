@@ -1,0 +1,29 @@
+@layer tokens, base, runtime, overrides;
+
+@import "../styles/tokens.css";
+@import "../styles/runtime/system.css";
+@import "../styles/runtime/battle.css";
+@import "../styles/runtime/commerce.css";
+@import "../styles/runtime/title.css";
+@import "../styles/runtime/timer.css";
+@import "../styles/runtime/touchpad.css";
+@import "../styles/runtime/pictures.css";
+@import "../styles/runtime/weather.css";
+@import "../styles/runtime/transitions.css";
+@import "../styles/runtime/nameEntry.css";
+@import "../styles/runtime/keyboardNav.css";
+@import "../styles/dialogue.css";
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  font-family: var(--font-ui);
+}
+
+#app {
+  min-height: 100vh;
+}

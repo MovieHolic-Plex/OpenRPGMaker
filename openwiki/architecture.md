@@ -23,6 +23,12 @@
   - `src/player/playSceneTime.ts` owns calendar ticking, day/night tint, HUD snapshot state, and sleep transitions at the scene boundary; pure date math stays in `src/project/gameTime.ts`.
   - Session-only retry checkpoints are owned by `src/player/checkpoints.ts` and are restored through `PlayScene`; they must stay outside project JSON and save-slot persistence.
 
+- Web player export boundary:
+  - `player.html` and `src/player/exportEntry.ts` are the Vite player-only entry. They fetch sibling `project.json`, set the exported project store shim, configure the export save namespace, and start the normal player shell without booting the editor.
+  - `vite.player.config.ts` builds `dist/export-player` with exact aliases for editor-only boundaries such as `@/app/mode`, `@/project/store`, `@/project/io`, `@/editor/tilesetImage`, `@/editor/cutscene`, and `@/editor/eventCommands/m2Catalog`.
+  - Player shims under `src/player/export*Shim.ts` must stay minimal and runtime-facing. Do not import AI, Supabase, editor panels, or generated-asset provenance/validation JSON into the export bundle.
+  - `src/project/webExport.ts` packages the prebuilt player files with `project.json` and used runtime assets. It is shared by the editor menu download and the headless `export_game` read tool.
+
 - `src/project` data/persistence:
   - `src/project/store.ts` is the canonical project store. It loads the project, normalizes defaults, emits updates, autosaves, and flushes to local or remote persistence.
   - Store subscribers receive a `ProjectChangeDescriptor` alongside the project. Omitted descriptors fall back to `scope: "project"` for full-refresh compatibility; editor map/tile paths use narrower map/database scopes to avoid unnecessary Phaser and panel redraws.

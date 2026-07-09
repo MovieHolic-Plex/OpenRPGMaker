@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 130개 툴 — 쓰기 93, 읽기 37.
+> 총 131개 툴 — 쓰기 93, 읽기 38.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -120,6 +120,7 @@
 | `explain_event` | `mapId: string`, `eventId: string` | 맵 이벤트 페이지 조건을 현재 세션값(없으면 에디터 기본값)으로 평가해 비활성 원인과 최종 활성 페이지를 설명한다. |
 | `simulate_battle` | `troopId: string`, `heroLevel: integer`, `inventory?: object`, `potionItemId?: string`, `n?: integer`, `seed?: integer`, `battleFlow?: gauge\|strict`, `activeSlots?: integer`, `strictScript?: array` | 전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). |
 | `list_edit_history` | `mapId?: string`, `limit?: integer` | 편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다. |
+| `export_game` | (없음) | 현재 프로젝트를 웹 플레이어 번들로 내보낼 때의 직렬화/에셋 수집 결과를 검증하고 요약한다. 브라우저 UI에서는 같은 경로가 ZIP 다운로드를 트리거한다. |
 | `play_walkthrough` | `scenario: array`, `seed?: integer` | 시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: {do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'\|'defeat'} / {expect:'switch'\|'item'\|'variable'\|'mapId'\|'gold'\|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다. |
 | `run_scene_test` | `mapId: string`, `start: object`, `steps: array` | 브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: {mapId,start:{x,y},steps:[{kind:'wait',ticks}\|{kind:'face',dir}\|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}\|{kind:'move',dir\|to}\|{kind:'interact'}\|{kind:'gift',eventId?,itemId}\|{kind:'choose',index}\|{kind:'retryCheckpoint'}\|{kind:'advanceDays',days}\|{kind:'expect',...}]}. expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다. |
 | `get_project_summary` | (없음) | 제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다. |

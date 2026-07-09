@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --configLoader runner",
-    "build": "tsc --noEmit && vite build --configLoader runner",
+    "build": "tsc --noEmit && vite build --configLoader runner && npm run build:player",
+    "build:player": "vite build --config vite.player.config.ts --configLoader runner",
     "preview": "vite preview --configLoader runner",
     "typecheck": "tsc --noEmit",
     "ontology:query": "node scripts/ontology-query.mjs",

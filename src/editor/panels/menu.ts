@@ -20,6 +20,7 @@ import {
   RPGZZU_MIME,
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -274,6 +275,8 @@ function menuCommands(
       return [
         item(state.layer === "event" ? "편집 계속" : "테스트 플레이", "menu-game-play", () => void togglePlayMode()),
         item("테스트 플레이 창", "menu-game-test-window", () => void openTestPlayWindow()),
+        { kind: "separator" },
+        item("내보내기...", "menu-game-export", () => void doExportWebGame()),
       ];
     case "help":
       return [
@@ -494,6 +497,30 @@ async function doExport(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`내보내기 실패: ${message}`, "error");
+  }
+}
+
+async function doExportWebGame(): Promise<void> {
+  try {
+    await store.flush().catch((error) => {
+      console.error("[web-export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태를 게임 번들로 내보냅니다", "info");
+    });
+    toast("게임 번들을 만드는 중...", "info");
+    const project = store.getCurrent();
+    const result = await createWebPlayerExportPackage(project);
+    const url = URL.createObjectURL(result.blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = webExportFileName(project);
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    toast(`게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`, "ok");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`게임 내보내기 실패: ${message}`, "error");
   }
 }
 

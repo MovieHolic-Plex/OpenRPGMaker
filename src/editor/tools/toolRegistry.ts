@@ -7,6 +7,7 @@ import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { EVENT_TOOLS } from "./eventTools";
+import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
@@ -119,6 +120,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),
+  ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"), // 혼합 패밀리 — NAME_DOMAIN_OVERRIDES가 우선한다.
   ...withDomain(TILE_METADATA_TOOLS, "tile"),

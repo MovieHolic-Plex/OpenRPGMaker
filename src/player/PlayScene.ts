@@ -134,11 +134,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   preload(): void {
-    loadBundledAssets(this);
+    loadBundledAssets(this, store.getCurrent());
   }
 
   create(): void {
-    registerBundledFrames(this);
+    const project = store.getCurrent();
+    registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
     this.tileLayer = this.add.container(0, 0);
     this.input_ = new Input(this);
@@ -146,7 +147,6 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       const host: unknown = this.game.registry.get("dialogueHost");
       return host instanceof HTMLElement ? host : undefined;
     });
-    const project = store.getCurrent();
     this.session = this.initialSession(project);
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });

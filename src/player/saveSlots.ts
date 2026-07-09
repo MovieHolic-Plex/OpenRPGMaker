@@ -52,6 +52,7 @@ export {
 
 export const SAVE_SLOT_COUNT = 3;
 const SAVE_SLOT_PREFIX = "rpg-zzu:save-slot:";
+let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;
 
@@ -127,7 +128,12 @@ export type SaveSlotReadResult =
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
+}
+
+export function setSaveSlotStorageNamespace(namespace: string | null): void {
+  saveSlotStorageNamespace = namespace?.trim() || null;
 }
 
 export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {

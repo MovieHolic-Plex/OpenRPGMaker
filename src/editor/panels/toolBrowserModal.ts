@@ -7,6 +7,7 @@ import { CLUSTER_RULE_TOOLS } from "@/editor/tools/clusterRuleTools";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import { ENDING_TOOLS } from "@/editor/tools/endingTools";
 import { EVENT_TOOLS } from "@/editor/tools/eventTools";
+import { EXPORT_TOOLS } from "@/editor/tools/exportTools";
 import { MAP_GEN_TOOLS } from "@/editor/tools/generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "@/editor/tools/groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
@@ -64,6 +65,7 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
   { label: "전투", tools: BATTLE_TOOLS },
   { label: "리팩토링", tools: REFACTOR_TOOLS },
   { label: "작업 기록", tools: HISTORY_TOOLS },
+  { label: "내보내기", tools: EXPORT_TOOLS },
   { label: "플레이테스트", tools: PLAY_TOOLS },
   { label: "조회", tools: QUERY_TOOLS },
   { label: "팔레트 프리셋", tools: PALETTE_PRESET_TOOLS },

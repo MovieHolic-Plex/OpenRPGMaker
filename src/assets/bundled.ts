@@ -15,6 +15,7 @@ import {
   rawChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
+import type { Project } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
 export const TEX_TILESET = "tex_tiles_default";
@@ -86,12 +87,15 @@ export function findBundledImageAsset(textureKey: string): BundledImageAsset | u
 }
 
 const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
-export function loadBundledAssets(scene: Phaser.Scene): void {
+export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void {
+  const usedTextures = project ? projectBundledTextureKeys(project) : null;
   scene.load.image(TEX_TILESET, ASSET_TILESET);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     scene.load.image(chipsetLoadTextureKey(asset.textureKey), asset.path);
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     scene.load.image(rawCharsetTextureKey(asset.textureKey), asset.path);
   }
   scene.load.image(TEX_DIALOGUE_FRAME, ASSET_DIALOGUE_FRAME);
@@ -109,7 +113,8 @@ export function loadBundledAssets(scene: Phaser.Scene): void {
   });
 }
 
-export function registerBundledFrames(scene: Phaser.Scene): void {
+export function registerBundledFrames(scene: Phaser.Scene, project?: Project): void {
+  const usedTextures = project ? projectBundledTextureKeys(project) : null;
   if (!scene.textures.exists(TEX_TILESET)) {
     console.error(
       `[assets] ${TEX_TILESET} 가 로드되지 않았습니다. 에셋 파일을 확인하세요.`
@@ -118,6 +123,7 @@ export function registerBundledFrames(scene: Phaser.Scene): void {
   }
   registerTileFrames(scene, TEX_TILESET);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     if (isColorKeyedChipsetTextureKey(asset.textureKey)) {
       registerTransparentChipsetTexture(scene, asset);
     }
@@ -129,9 +135,11 @@ export function registerBundledFrames(scene: Phaser.Scene): void {
   }
   registerTileAnimations(scene, [
     TEX_TILESET,
-    ...BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) => asset.textureKey),
+    ...BUNDLED_EASYRPG_CHIPSET_ASSETS
+      .filter((asset) => !usedTextures || usedTextures.has(asset.textureKey))
+      .map((asset) => asset.textureKey),
   ]);
-  registerEasyRpgCharsetTextures(scene);
+  registerEasyRpgCharsetTextures(scene, usedTextures);
 }
 
 export function registerTilesetTextureFrames(scene: Phaser.Scene, textureKey: string): void {
@@ -162,8 +170,9 @@ function registerTransparentChipsetTexture(scene: Phaser.Scene, asset: BundledIm
   }
 }
 
-function registerEasyRpgCharsetTextures(scene: Phaser.Scene): void {
+function registerEasyRpgCharsetTextures(scene: Phaser.Scene, usedTextures: ReadonlySet<string> | null = null): void {
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     if (scene.textures.exists(asset.textureKey)) continue;
     const rawKey = rawCharsetTextureKey(asset.textureKey);
     if (!scene.textures.exists(rawKey)) {
@@ -186,6 +195,35 @@ function registerEasyRpgCharsetTextures(scene: Phaser.Scene): void {
       continue;
     }
     registerCharsetTextureFrames(texture);
+  }
+}
+
+function projectBundledTextureKeys(project: Project): Set<string> {
+  const strings = new Set<string>();
+  collectProjectStrings(project, strings);
+  const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
+  for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
+  }
+  for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
+    if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
+  }
+  return keys;
+}
+
+function collectProjectStrings(value: unknown, out: Set<string>): void {
+  if (typeof value === "string") {
+    out.add(value);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectProjectStrings(item, out);
+    return;
+  }
+  if (typeof value !== "object" || value === null) return;
+  for (const [key, child] of Object.entries(value)) {
+    if (key === "uploaded") continue;
+    collectProjectStrings(child, out);
   }
 }
 
