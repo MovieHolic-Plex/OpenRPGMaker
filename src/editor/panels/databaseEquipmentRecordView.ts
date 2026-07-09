@@ -1,6 +1,6 @@
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { store } from "@/project/store";
 import type { EquipmentRecord, EquipmentStatBonuses } from "@/project/types";
 import { el } from "@/util/dom";
@@ -19,9 +19,9 @@ type StatFieldInput = {
   readonly testid: string;
 };
 
-export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRecord): void {
+export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRecord, rerender: () => void = () => undefined): void {
   form.append(
-    resourcePanel(record),
+    resourcePanel(record, rerender),
     textField("설명", "db-field-equipment-description", record.description, (description) =>
       updateDatabaseRecord("equipment", record.id, { description })
     ),
@@ -56,25 +56,31 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
   );
 }
 
-function resourcePanel(record: EquipmentRecord): HTMLElement {
+function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLElement {
   return panel("장비 그래픽", [
-    imagePreview("이미지", record.imageResourceId),
-    textField("이미지", "db-field-equipment-image-resource", resourceText(record.imageResourceId), (imageResourceId) =>
-      updateDatabaseRecord("equipment", record.id, { imageResourceId: emptyToUndefined(imageResourceId) })
-    ),
-    imagePreview("아이콘", record.iconResourceId),
-    textField("아이콘", "db-field-equipment-icon-resource", resourceText(record.iconResourceId), (iconResourceId) =>
-      updateDatabaseRecord("equipment", record.id, { iconResourceId: emptyToUndefined(iconResourceId) })
-    ),
+    resourcePickerControl({
+      label: "이미지",
+      resourceId: record.imageResourceId,
+      kind: "image",
+      testid: "db-field-equipment-image-resource",
+      allowClear: true,
+      dialogTitle: "장비 이미지",
+      onChange: (result) =>
+        updateDatabaseRecord("equipment", record.id, { imageResourceId: emptyToUndefined(result.resourceId) }),
+      rerender,
+    }),
+    resourcePickerControl({
+      label: "아이콘",
+      resourceId: record.iconResourceId,
+      kind: "icon",
+      testid: "db-field-equipment-icon-resource",
+      allowClear: true,
+      dialogTitle: "장비 아이콘",
+      onChange: (result) =>
+        updateDatabaseRecord("equipment", record.id, { iconResourceId: emptyToUndefined(result.resourceId) }),
+      rerender,
+    }),
   ]);
-}
-
-function imagePreview(label: string, resourceId: string | undefined): HTMLElement {
-  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-  const visual = url
-    ? el("img", { attrs: { alt: `${label} 미리보기`, src: url } })
-    : el("strong", { text: resourceId ?? "(없음)" });
-  return el("div", { class: "db-image-preview", children: [el("span", { text: label }), visual] });
 }
 
 function statField(input: StatFieldInput): HTMLElement {
@@ -136,9 +142,7 @@ function panel(title: string, children: readonly HTMLElement[]): HTMLElement {
   return el("fieldset", { class: "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
 }
 
-function resourceText(resourceId: string | undefined): string {
-  return resourceId?.startsWith("generated-") ? "" : resourceId ?? "";
-}
+
 
 function currentEquipment(record: EquipmentRecord): EquipmentRecord {
   return store.getCurrent().database.equipment.find((equipment) => equipment.id === record.id) ?? record;

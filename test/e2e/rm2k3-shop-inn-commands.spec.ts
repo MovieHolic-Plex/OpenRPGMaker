@@ -8,6 +8,7 @@ import {
   runtimeState,
   tapKey,
 } from "./rm2k3-commerce-fixtures";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type PickerCommand = {
   readonly kind: "shop" | "inn";
@@ -129,7 +130,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
   await seedProjectFromSupabaseCanonical(page, makeCommerceProject());
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
   await expect.poll(async () => page.evaluate(() => "__rpgzzuSetActorVitals" in window)).toBe(false);
   await page.getByTestId("play-canvas").locator("canvas").click();
@@ -169,7 +170,7 @@ test("shop and inn keep the player in the panel when gold is insufficient", asyn
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProjectFromSupabaseCanonical(page, makeInsufficientCommerceProject());
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -197,7 +198,7 @@ test("shop supports quantity purchase and item selling when enabled", async ({ p
   pageCommands[1] = { kind: "shop", itemIds: ["item_potion"], allowSell: true, quantityMode: "select" };
   await seedProjectFromSupabaseCanonical(page, project);
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
   await page.getByTestId("play-canvas").locator("canvas").click();
   await tapKey(page, "Space");
@@ -230,7 +231,7 @@ test("inn restores party HP and MP after payment", async ({ page }, testInfo) =>
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProjectFromSupabaseCanonical(page, makeInnRecoveryProject(), "/?e2eVitals=1");
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
   await page.getByTestId("play-canvas").locator("canvas").click();
   const before = await runtimeState(page);

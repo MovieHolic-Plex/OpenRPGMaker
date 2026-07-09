@@ -44,17 +44,34 @@ describe("database record list thumbnails", () => {
     expect(animation.style.backgroundImage).toContain("/assets/easyrpg/battle/");
   });
 
-  it("keeps non-visual collections unchanged and returns empty slots for missing supported resources", () => {
+  it("returns visual thumbnails for classes, troops, and states", () => {
     const project = createBlankProject();
 
-    expect(recordListThumbnail("classes", project.database.classes[0], project)).toBeNull();
-    expect(recordListThumbnail("troops", project.database.troops[0], project)).toBeNull();
-    expect(recordListThumbnail("states", project.database.states[0], project)).toBeNull();
+    const klass = thumb("classes", project.database.classes[0], project);
+    expect(klass.className).toContain("db-list-thumb");
 
+    const troop = thumb("troops", project.database.troops[0], project);
+    expect(troop.className).toContain("db-list-thumb");
+
+    const state = thumb("states", project.database.states[0], project);
+    expect(state.className).toContain("db-list-thumb-state");
+    expect(state.style.backgroundColor).toMatch(/^#|rgb/i);
+  });
+
+  it("returns empty slots for missing supported resources", () => {
+    const project = createBlankProject();
     const actor = { ...project.database.actors[0], faceResourceId: undefined };
     const empty = recordListThumbnail("actors", actor, project);
     expect(empty?.className).toContain("db-list-thumb");
     expect(empty?.className).toContain("empty");
+  });
+
+  it("crops actor faces by faceIndex", () => {
+    const project = createBlankProject();
+    const actor = { ...project.database.actors[0], faceIndex: 1 };
+    const node = thumb("actors", actor, project);
+    expect(node.style.backgroundPosition).toContain("-");
+    expect(node.style.backgroundPosition).not.toBe("0px 0px");
   });
 });
 

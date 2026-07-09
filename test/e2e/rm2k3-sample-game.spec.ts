@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 import { deserialize, serialize } from "@/project/io";
 import type { Project } from "@/project/types";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -174,7 +175,7 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await expect(page.getByTestId("title-screen")).toBeVisible();
   await expect(page.getByTestId("title-screen")).toHaveAttribute("data-title-resource", "sample_title");
   await page.screenshot({ path: testInfo.outputPath("01-title.png"), fullPage: true });
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_town");
 
   await expect(page.getByTestId("event-town-npc")).toHaveAttribute("data-page-id", "npc-before");

@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createTownArchitectureCityProject, createStarterHouseInteriorMap } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { tapKey } from "./runtimeInput";
+import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 
 declare const process: {
   readonly env: {
@@ -127,7 +127,7 @@ test("editor-authored city start map has three NPCs and a linked house interior"
   expect(exported.project.maps[INTERIOR_MAP_ID]?.events).toHaveLength(1);
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe(cityMapId);
   await screenshot(page, "09-play-city-start.png");

@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createTownArchitectureCityProject } from "@/project/defaults";
 import { TOWN_ARCHITECTURE_CITY_NPC_COUNT } from "@/project/defaults/townArchitectureCityNpcs";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 declare const process: {
   readonly env: {
@@ -70,7 +71,7 @@ test("captures proof for thirty moving city NPCs with dialogue", async ({ page }
   await captureEditorAt(page, "04-editor-south-road-npcs.png", { left: 110, top: 380 });
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId(`event-${DIALOGUE_NPC_ID}`)).toBeVisible();
   await screenshot(page, "05-play-start-with-moving-npcs.png");

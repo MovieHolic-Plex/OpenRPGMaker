@@ -23,7 +23,11 @@ export interface ActorRecord {
   initialLevel: number;
   maxLevel: number;
   faceResourceId?: string;
+  /** Optional faceset cell index (0..15). Omitted means 0 for legacy projects. */
+  faceIndex?: number;
   characterResourceId?: string;
+  /** Optional charset character index (0..7). Omitted means 0 for legacy projects. */
+  characterIndex?: number;
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
   critical: ActorCritical;

@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { defaultDatabase } from "@/project/defaults/defaultDatabase";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { tapKey as runtimeTapKey } from "./runtimeInput";
+import { tapKey as runtimeTapKey, startNewGameFromTitle } from "./runtimeInput";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
 const EVIDENCE_DIR = "output/playwright/event-page-all-props-qa";
@@ -232,7 +232,7 @@ test("focused PlayScene proof covers event page runtime props", async ({ page })
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProjectFromSupabaseCanonical(page, proofProject());
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitReady(page);
   await page.getByTestId("play-canvas").locator("canvas").click({ force: true });
 

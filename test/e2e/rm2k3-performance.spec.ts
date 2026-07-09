@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import systemShellProject from "../fixtures/projects/system-shell-v3.json" with { type: "json" };
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type PerfMetricsRecord = Record<string, unknown>;
 
@@ -46,7 +47,7 @@ test("records nonnegative performance metrics through title flow, battle entry, 
   // When: the T12 title flow starts play mode and launches a new game.
   await page.click('[data-testid="mode-play"]');
   await expect(page.getByTestId("title-screen")).toBeVisible();
-  await page.click('[data-testid="title-new-game"]');
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await waitForMetric(page, "playRenderMs");
   await page.screenshot({ path: testInfo.outputPath("play-ready.png"), fullPage: true });

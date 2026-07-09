@@ -64,7 +64,31 @@ export function defaultSkillRecords(): SkillRecord[] {
       { stateId: "state_defense_down", chance: 80, operation: "add" },
     ]),
     skill("skill_item_potion", "회복약 효과", "ally", 40, "anim_heal", "회복약이 사용하는 HP 회복 효과입니다.", "mind", "hp", { kind: "healing" }),
+    skill("skill_item_hi_potion", "상급 회복약 효과", "ally", 80, "anim_heal", "상급 회복약이 사용하는 HP 회복 효과입니다.", "mind", "hp", { kind: "healing" }),
     skill("skill_item_ether", "마력약 효과", "ally", 24, "anim_magic", "마력약이 사용하는 MP 회복 효과입니다.", "mind", "mp", { kind: "healing" }),
+    skill("skill_item_elixir", "엘릭서 효과", "ally", 100, "anim_magic", "엘릭서가 사용하는 HP 회복 효과입니다. MP는 아이템 회복 필드로 처리합니다.", "mind", "hp", { kind: "healing" }),
+    skill("skill_throwing_knife", "투척 단검", "enemy", 18, "anim_arrow", "투척 단검이 사용하는 물리 피해 효과입니다.", "attack", "hp", {
+      variance: 10,
+      hitRate: 95,
+    }),
+    skill("skill_item_poison_vial", "독병 효과", "enemy", 6, "anim_poison", "독병이 사용하는 독 부여 공격입니다.", "mind", "hp", {
+      successRate: 90,
+      hitRate: 95,
+      stateEffects: [{ stateId: DEFAULT_STATE_ID, chance: 85, operation: "add" }],
+    }),
+    supportSkill("skill_item_antidote", "해독 효과", "ally", "해독초가 사용하는 독 해제 효과입니다.", "anim_heal", 0, 100, [
+      { stateId: DEFAULT_STATE_ID, chance: 100, operation: "remove" },
+    ]),
+    supportSkill("skill_item_wake", "각성 효과", "ally", "각성 아이템이 사용하는 수면 해제 효과입니다.", "anim_heal", 0, 100, [
+      { stateId: "state_sleep", chance: 100, operation: "remove" },
+    ]),
+    supportSkill("skill_item_panacea", "만능 치료 효과", "ally", "만능약이 사용하는 상태이상 해제 효과입니다.", "anim_heal", 0, 100, [
+      { stateId: DEFAULT_STATE_ID, chance: 100, operation: "remove" },
+      { stateId: "state_sleep", chance: 100, operation: "remove" },
+    ]),
+    supportSkill("skill_item_guard", "수호 효과", "ally", "수호 부적이 사용하는 방어 상승 효과입니다.", "anim_heal", 0, 100, [
+      { stateId: "state_defense_up", chance: 100, operation: "add" },
+    ]),
   ];
 }
 
@@ -76,6 +100,16 @@ export function defaultStateRecords(): StateRecord[] {
     { id: "state_sleep", name: "수면", restriction: "행동 불가", removalCondition: "피격 또는 전투 종료", recoverWhenHitChance: 50, recoverNaturallyFromTurn: 2, recoverNaturallyChance: 35 },
     // 공격 상승: 공격 2배 강화, 전투 종료 시 해제.
     { id: "state_attack_up", name: "공격 상승", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25 },
+    // 방어 상승: 방어 2배 강화, 전투 종료 시 해제.
+    {
+      id: "state_defense_up",
+      name: "방어 상승",
+      restriction: "없음",
+      removalCondition: "전투 종료",
+      recoverNaturallyFromTurn: 4,
+      recoverNaturallyChance: 25,
+      runtimeEffects: { defenseMultiplier: 2, removeOnBattleEnd: true },
+    },
     // 방어 하락: 방어 절반 약화, 전투 종료 시 해제.
     { id: "state_defense_down", name: "방어 하락", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25 },
   ];

@@ -39,9 +39,41 @@ describe("default database starter records", () => {
         expect.objectContaining({ id: "anim_poison", resourceId: "easyrpg-battle-arrow" }),
       ])
     );
-    expect(database.items.find((item) => item.id === "item_poison_dart")?.stateEffects).toEqual([
-      { stateId: DEFAULT_STATE_ID, chance: 70, operation: "add" },
-    ]);
+    expect(database.items.find((item) => item.id === "item_poison_dart")).toMatchObject({
+      type: "special",
+      skillId: "skill_poison_sting",
+      occasion: "battle",
+    });
+    expect(database.items.find((item) => item.id === DEFAULT_ITEM_ID)).toMatchObject({
+      type: "medicine",
+      hpRecovery: { flat: 50, percentMax: 0 },
+    });
+    expect(database.items.find((item) => item.id === "item_hi_potion")).toMatchObject({
+      type: "medicine",
+      hpRecovery: { flat: 150, percentMax: 0 },
+      skillId: "skill_item_hi_potion",
+    });
+    expect(database.items.find((item) => item.id === "item_elixir")).toMatchObject({
+      type: "medicine",
+      hpRecovery: { flat: 0, percentMax: 100 },
+      mpRecovery: { flat: 0, percentMax: 100 },
+    });
+    expect(database.items.find((item) => item.id === "item_sword_manual")).toMatchObject({
+      type: "book",
+      learnedSkillId: "skill_sword_slash",
+      consumable: true,
+    });
+    expect(stateIds).toEqual(expect.arrayContaining([DEFAULT_STATE_ID, "state_sleep", "state_attack_up", "state_defense_up", "state_defense_down"]));
+    expect(skillIds).toEqual(
+      expect.arrayContaining([
+        "skill_item_hi_potion",
+        "skill_item_elixir",
+        "skill_throwing_knife",
+        "skill_item_poison_vial",
+        "skill_item_antidote",
+        "skill_item_guard",
+      ])
+    );
   });
 
   it("backs item-use animations with known EasyRPG RTP sounds", () => {

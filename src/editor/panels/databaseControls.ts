@@ -175,6 +175,10 @@ function literalLabel(value: string): string {
       return "아이템";
     case "capture":
       return "포획";
+    case "gauge":
+      return "게이지";
+    case "strict":
+      return "엄격 턴제";
     case "event":
       return "이벤트";
     case "physical":

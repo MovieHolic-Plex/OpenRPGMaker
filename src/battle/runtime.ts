@@ -531,6 +531,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return skill?.scope !== "self" && skill?.scope !== "ally";
       }
       case "item": {
+        const item = options.project.database.items.find((record) => record.id === command.itemId);
+        if (item) return item.scope === "enemy";
         const skill = lookupItemSkill(command.itemId);
         return skill?.scope !== "self" && skill?.scope !== "ally";
       }
@@ -540,6 +542,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function resolveSkillTarget(skillOrItemId: string, requestedEnemyId: string, user: MutableBattler): MutableBattler {
+    // 아이템은 자체 scope 를 우선한다(스킬 미연결 치료 아이템 포함).
+    const item = options.project.database.items.find((record) => record.id === skillOrItemId);
+    if (item) {
+      if (item.scope === "ally" || item.scope === "allAllies" || item.scope === "none") return supportTargetFor(user);
+      if (item.scope === "enemy") {
+        return visibleEnemies().find((entry) => entry.id === requestedEnemyId && entry.hp > 0)
+          ?? visibleEnemies().find((entry) => entry.hp > 0)
+          ?? user;
+      }
+    }
     // 힐/서포트 스킬은 시전자 진영의 생존자를 대상으로 삼는다.
     const record = lookupSkill(skillOrItemId) ?? lookupItemSkill(skillOrItemId);
     const effect = record?.effect;
@@ -678,14 +690,111 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
     const item = options.project.database.items.find((record) => record.id === itemId);
-    if (!item?.skillId) return;
+    if (!item) return;
     const count = battleEventState.inventory[itemId] ?? 0;
     if (count <= 0) return;
-    battleEventState.inventory[itemId] = count - 1;
-    applySkill(user, target, item.skillId);
+    if (!itemIsBattleUsable(item)) return;
+
+    const skillId = item.activateSkillId ?? item.skillId;
+    const usesNativeMedicineEffects = itemUsesNativeBattleEffects(item);
+    if (usesNativeMedicineEffects) {
+      applyItemRecovery(user, target, item);
+      applyStateEffects(options.project, target, itemStateEffectsForBattle(item), rng);
+    } else if (skillId) {
+      applySkill(user, target, skillId);
+    } else {
+      applyItemRecovery(user, target, item);
+      applyStateEffects(options.project, target, itemStateEffectsForBattle(item), rng);
+    }
+
+    if (item.consumable !== false) {
+      battleEventState.inventory[itemId] = count - 1;
+    }
     if (item.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
+    } else if (skillId && !usesNativeMedicineEffects) {
+      // skill path already sets lastAnimation when the skill has animationId
     }
+  }
+
+  function itemIsBattleUsable(item: {
+    readonly occasion?: string;
+    readonly occasionBattle?: boolean;
+    readonly skillId?: string;
+    readonly activateSkillId?: string;
+    readonly captureProfile?: unknown;
+    readonly hpRecovery?: { flat: number; percentMax: number };
+    readonly mpRecovery?: { flat: number; percentMax: number };
+    readonly healStateIds?: readonly string[];
+    readonly stateEffects?: readonly { operation: string }[];
+  }): boolean {
+    if (item.occasion === "never" || item.occasion === "field") return false;
+    if (item.occasionBattle === false && item.occasion !== "battle" && item.occasion !== "always") return false;
+    if (item.captureProfile) return false;
+    return Boolean(
+      item.skillId ||
+        item.activateSkillId ||
+        (item.hpRecovery && (item.hpRecovery.flat > 0 || item.hpRecovery.percentMax > 0)) ||
+        (item.mpRecovery && (item.mpRecovery.flat > 0 || item.mpRecovery.percentMax > 0)) ||
+        (item.healStateIds && item.healStateIds.length > 0) ||
+        (item.stateEffects && item.stateEffects.length > 0)
+    );
+  }
+
+  function itemUsesNativeBattleEffects(item: {
+    readonly type?: string;
+    readonly skillId?: string;
+    readonly activateSkillId?: string;
+    readonly hpRecovery: { flat: number; percentMax: number };
+    readonly mpRecovery: { flat: number; percentMax: number };
+    readonly healStateIds: readonly string[];
+    readonly stateEffects: readonly { operation: string }[];
+  }): boolean {
+    // 치료형(medicine) 또는 회복/상태 해제 필드가 있으면 아이템 고유 효과를 우선한다.
+    // special 등 전투 발동형은 연결된 스킬을 사용한다.
+    if (item.type === "special" || item.type === "weapon" || item.type === "shield" || item.type === "body" || item.type === "head" || item.type === "accessory") {
+      return false;
+    }
+    const hasRecovery =
+      item.hpRecovery.flat > 0 ||
+      item.hpRecovery.percentMax > 0 ||
+      item.mpRecovery.flat > 0 ||
+      item.mpRecovery.percentMax > 0;
+    const hasHeal =
+      item.healStateIds.length > 0 ||
+      item.stateEffects.some((effect) => effect.operation === "remove");
+    return item.type === "medicine" || hasRecovery || hasHeal;
+  }
+
+  function applyItemRecovery(
+    user: MutableBattler,
+    target: MutableBattler,
+    item: { readonly hpRecovery: { flat: number; percentMax: number }; readonly mpRecovery: { flat: number; percentMax: number } }
+  ): void {
+    const hp = Math.max(0, Math.floor((target.maxHp * item.hpRecovery.percentMax) / 100) + item.hpRecovery.flat);
+    const mp = Math.max(0, Math.floor((target.maxMp * item.mpRecovery.percentMax) / 100) + item.mpRecovery.flat);
+    if (hp > 0) target.hp = Math.min(target.maxHp, target.hp + hp);
+    if (mp > 0) target.mp = Math.min(target.maxMp, target.mp + mp);
+    lastActionResult = {
+      userRecordId: user.recordId,
+      targetId: target.id,
+      hit: true,
+      amount: hp + mp,
+      critical: false,
+    };
+  }
+
+  function itemStateEffectsForBattle(item: {
+    readonly healStateIds: readonly string[];
+    readonly stateEffects: readonly { stateId: string; chance: number; operation: "add" | "remove" }[];
+  }) {
+    const effects = [...item.stateEffects];
+    for (const stateId of item.healStateIds) {
+      if (!effects.some((effect) => effect.stateId === stateId && effect.operation === "remove")) {
+        effects.push({ stateId, chance: 100, operation: "remove" });
+      }
+    }
+    return effects;
   }
 
   function applyCapture(captureItemId: ItemId, targetEnemyId: string): void {
@@ -808,10 +917,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const statistic: "attack" | "mind" = effect && (effect.kind === "damage" || effect.kind === "healing")
       ? effect.statistic
       : "attack";
+    const affects =
+      effect && (effect.kind === "damage" || effect.kind === "healing") ? effect.affects : "hp";
     const result = applySkillLike(user, target, {
       power,
       statistic,
       effect: effectKind,
+      affects,
       // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
       // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
       hitRate: combinedSkillHitRate(skill),

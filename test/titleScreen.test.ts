@@ -118,4 +118,31 @@ describe("title screen", () => {
       restoreDom();
     }
   });
+
+  it("does not wire mouse click handlers on title menu options", () => {
+    const restoreDom = installFakeDom();
+    try {
+      let clicked = false;
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => {
+            clicked = true;
+          },
+          onContinue: () => {
+            clicked = true;
+          },
+          onQuit: () => {
+            clicked = true;
+          },
+        }),
+      );
+      const newGame = findByTestId(screen, "title-new-game");
+      expect(String(newGame?.tagName ?? "").toLowerCase()).not.toBe("button");
+      newGame?.dispatchEvent?.(new Event("click", { bubbles: true }));
+      expect(clicked).toBe(false);
+    } finally {
+      restoreDom();
+    }
+  });
 });

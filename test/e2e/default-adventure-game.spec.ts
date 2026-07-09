@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -21,7 +22,7 @@ test("fresh editor project plays as the built-in adventure game", async ({ page 
   await expect(page.getByTestId("title-screen")).toBeVisible();
   await expect(page.getByTestId("title-screen").getByRole("heading", { name: "별등 마을" })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("02-title-screen.png"), fullPage: true });
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15_000 });
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe("map_lantern_village");
 

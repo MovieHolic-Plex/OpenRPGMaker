@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const TRIGGER_VALUES = ["action", "playerTouch", "eventTouch", "auto", "parallel"] as const;
 const TRIGGER_LABELS = ["Action Button", "Player Touch", "Event Touch", "Autorun", "Parallel Process"] as const;
@@ -164,7 +165,7 @@ test("fresh starter project has three character-set NPCs that talk with face chi
   }
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
 
   for (const expected of STARTER_NPCS) {

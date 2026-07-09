@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -154,7 +155,7 @@ test("fresh starter door transfers the player to the new map", async ({ page }) 
   await page.screenshot({ path: `${EVIDENCE_DIR}/editor-before-play.png`, fullPage: true });
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
 

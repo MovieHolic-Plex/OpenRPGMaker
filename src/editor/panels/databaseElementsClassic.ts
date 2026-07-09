@@ -1,8 +1,10 @@
+import { clampElementListCount, resizeElementRecords } from "@/editor/databaseElementList";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { isElementKind, readonlyValue, selectUtilityRecord } from "@/editor/panels/databaseUtilityRecordControls";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 const ELEMENT_DAMAGE_GRADES: readonly ActorRateGrade[] = ["A", "B", "C", "D", "E"];
 let selectedElementIndex = 5;
@@ -53,11 +55,78 @@ function renderElementsClassicList(elements: readonly DatabaseElementRecord[], h
       el("button", {
         class: "db-elements-maximum",
         text: "최대 개수",
-        attrs: { type: "button" },
+        attrs: { type: "button", title: "속성 목록 개수 변경" },
         dataset: { testid: "db-elements-maximum-number" },
+        on: {
+          click: () => openElementMaxCountDialog(elements.length, (count) => {
+            store.update((project) => {
+              project.database.elements = resizeElementRecords(project.database.elements ?? [], count);
+            }, { scope: "database", collection: "elements" });
+            selectedElementIndex = clampIndex(selectedElementIndex, store.getCurrent().database.elements ?? []);
+            host.replaceChildren();
+            renderElementsTab(host);
+            toast(`속성 개수를 ${clampElementListCount(count)}개로 맞췄습니다.`, "ok");
+          }),
+        },
       }),
     ],
   });
+}
+
+function openElementMaxCountDialog(current: number, onApply: (count: number) => void): void {
+  document.querySelector("[data-testid='db-elements-max-dialog']")?.remove();
+  const input = el("input", {
+    attrs: { type: "number", min: "1", max: "99" },
+    value: current,
+    dataset: { testid: "db-elements-max-count-input" },
+  }) as HTMLInputElement;
+  const backdrop = el("div", {
+    class: "db-enemy-dialog-backdrop",
+    dataset: { testid: "db-elements-max-dialog" },
+  });
+  const close = (): void => backdrop.remove();
+  backdrop.append(
+    el("div", {
+      class: "db-enemy-dialog",
+      children: [
+        el("header", { text: "속성 최대 개수" }),
+        el("main", {
+          children: [
+            el("label", {
+              class: "db-field",
+              children: [el("span", { text: "개수 (1~99)" }), input],
+            }),
+          ],
+        }),
+        el("footer", {
+          children: [
+            el("button", {
+              class: "btn small",
+              text: "OK",
+              dataset: { testid: "db-elements-max-ok" },
+              attrs: { type: "button" },
+              on: {
+                click: () => {
+                  onApply(Number(input.value));
+                  close();
+                },
+              },
+            }),
+            el("button", {
+              class: "btn small",
+              text: "Cancel",
+              dataset: { testid: "db-elements-max-cancel" },
+              attrs: { type: "button" },
+              on: { click: close },
+            }),
+          ],
+        }),
+      ],
+    }),
+  );
+  document.body.append(backdrop);
+  input.focus();
+  input.select();
 }
 
 function renderElementsClassicEditor(element: DatabaseElementRecord | undefined, index: number): HTMLElement {

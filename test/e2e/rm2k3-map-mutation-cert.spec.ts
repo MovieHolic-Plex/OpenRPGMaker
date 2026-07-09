@@ -3,6 +3,7 @@ import { mkdir } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dismissDialogue, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop8-map-mutation";
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -59,7 +60,7 @@ test("loop8 certifies editor authored moveEvent and changeTile runtime effects",
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await writeJson("006-runtime-start.json", await runtimeState(page));
   await screenshot(page, "007-runtime-start.png");
   await page.getByTestId("event-ev_mutate").click();

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type SeedProject = Project;
 type DebugState = {
@@ -115,7 +116,7 @@ test("runtime tile overrides do not mutate exported project maps", async ({ page
   expect(before.project.maps.map_runtime.lowerTiles[1]).toBe(0);
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await page.getByTestId("play-canvas").locator("canvas").click();

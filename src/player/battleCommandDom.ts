@@ -198,8 +198,36 @@ function battleItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; 
   const project = store.getCurrent();
   const inventory = snapshot.eventState.inventory;
   return project.database.items
-    .filter((item) => item.skillId && (inventory[item.id] ?? 0) > 0)
+    .filter((item) => (inventory[item.id] ?? 0) > 0 && isBattleUsableItem(item))
     .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0 }));
+}
+
+function isBattleUsableItem(item: {
+  readonly occasion: string;
+  readonly occasionBattle: boolean;
+  readonly captureProfile?: unknown;
+  readonly skillId?: string;
+  readonly activateSkillId?: string;
+  readonly type: string;
+  readonly hpRecovery: { flat: number; percentMax: number };
+  readonly mpRecovery: { flat: number; percentMax: number };
+  readonly healStateIds: readonly string[];
+  readonly stateEffects: readonly unknown[];
+}): boolean {
+  if (item.captureProfile) return false;
+  if (item.occasion === "never" || item.occasion === "field") return false;
+  if (item.occasionBattle === false && item.occasion !== "battle" && item.occasion !== "always") return false;
+  if (item.type === "book") return false;
+  return Boolean(
+    item.skillId ||
+      item.activateSkillId ||
+      item.hpRecovery.flat > 0 ||
+      item.hpRecovery.percentMax > 0 ||
+      item.mpRecovery.flat > 0 ||
+      item.mpRecovery.percentMax > 0 ||
+      item.healStateIds.length > 0 ||
+      item.stateEffects.length > 0
+  );
 }
 
 function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number }[] {

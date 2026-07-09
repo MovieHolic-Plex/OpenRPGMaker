@@ -10,16 +10,20 @@ import type {
   ActorRecord,
   BattleAnimationRecord,
   BattleAnimationSheet,
+  ClassRecord,
   DatabaseRecords,
   EnemyRecord,
   EquipmentRecord,
   ItemRecord,
   Project,
   SkillRecord,
+  StateRecord,
+  TroopRecord,
 } from "@/project/types";
+import { stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import { el } from "@/util/dom";
 
-const THUMB_SIZE = 24;
+const THUMB_SIZE = 32;
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 
 export function recordListThumbnail(
@@ -31,7 +35,7 @@ export function recordListThumbnail(
     case "actors":
       return actorThumbnail(record as ActorRecord, project);
     case "enemies":
-      return imageThumbnail((record as EnemyRecord).monsterResourceId, project, `${record.name} 썸네일`);
+      return enemyThumbnail(record as EnemyRecord, project);
     case "items": {
       const item = record as ItemRecord;
       return imageThumbnail(item.iconResourceId ?? item.imageResourceId, project, `${item.name} 썸네일`);
@@ -45,21 +49,60 @@ export function recordListThumbnail(
     case "battleAnimations":
       return animationThumbnail(record as BattleAnimationRecord, project);
     case "classes":
+      return classThumbnail(record as ClassRecord, project);
     case "troops":
+      return troopThumbnail(record as TroopRecord, project);
     case "states":
-      return null;
+      return stateThumbnail(record as StateRecord);
   }
 }
 
 function actorThumbnail(record: ActorRecord, project: Project): HTMLElement {
   const url = resolveAssetResourceUrl(record.faceResourceId, { project });
   if (!url) return emptySlot();
+  const faceIndex = record.faceIndex ?? 0;
+  const column = faceIndex % FACESET_COLUMNS;
+  const row = Math.floor(faceIndex / FACESET_COLUMNS);
   const slot = baseSlot("db-list-thumb-crop", `${record.name} 얼굴`);
   const scale = THUMB_SIZE / FACESET_FACE_WIDTH;
   slot.style.backgroundImage = `url("${url}")`;
-  slot.style.backgroundPosition = "0 0";
+  slot.style.backgroundPosition = `-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`;
   slot.style.backgroundSize = `${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`;
   slot.append(loadProbe(url, slot));
+  return slot;
+}
+
+function enemyThumbnail(record: EnemyRecord, project: Project): HTMLElement {
+  const thumb = imageThumbnail(record.monsterResourceId, project, `${record.name} 썸네일`);
+  if (record.graphicHue && thumb.classList.contains("db-list-thumb-image")) {
+    const image = thumb.querySelector("img");
+    if (image) image.style.filter = `hue-rotate(${record.graphicHue}deg)`;
+  }
+  return thumb;
+}
+
+function classThumbnail(record: ClassRecord, project: Project): HTMLElement {
+  const actor = project.database.actors.find((entry) => entry.classId === record.id);
+  if (actor?.faceResourceId) return actorThumbnail(actor, project);
+  if (record.animationId) {
+    const animation = project.database.battleAnimations.find((entry) => entry.id === record.animationId);
+    if (animation) return animationThumbnail(animation, project);
+  }
+  return emptySlot();
+}
+
+function troopThumbnail(record: TroopRecord, project: Project): HTMLElement {
+  const firstMemberId = record.members?.[0]?.enemyId ?? record.enemyIds?.[0];
+  const enemy = firstMemberId ? project.database.enemies.find((entry) => entry.id === firstMemberId) : undefined;
+  if (enemy?.monsterResourceId) return enemyThumbnail(enemy, project);
+  return imageThumbnail(record.previewBackgroundResourceId, project, `${record.name} 배경`);
+}
+
+function stateThumbnail(record: StateRecord): HTMLElement {
+  const ontology = stateOntologyFor(record.id, record.name);
+  const slot = baseSlot("db-list-thumb-state", `${record.name} 상태 색`);
+  slot.style.backgroundColor = ontology.colorHex;
+  slot.title = ontology.color;
   return slot;
 }
 

@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
 import { expect, test, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = ".omo/ulw-loop/dialogue-90-match/evidence";
 const SCREENSHOT_PATH = `${EVIDENCE_DIR}/play-screen-green.png`;
@@ -50,7 +51,7 @@ async function startFreshPlay(page: Page): Promise<void> {
     return "loading";
   }, { timeout: 15_000 }).not.toBe("loading");
   if (await page.getByTestId("title-new-game").isVisible()) {
-    await page.getByTestId("title-new-game").click();
+    await startNewGameFromTitle(page);
   }
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();

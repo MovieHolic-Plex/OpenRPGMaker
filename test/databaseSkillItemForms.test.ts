@@ -107,7 +107,7 @@ describe("database skill and item forms", () => {
     const current = store.getCurrent().database.items.find((entry) => entry.id === item.id);
     expect(current?.imageResourceId).toBe("cc0-jetrel-ether-blue");
     expect(current?.iconResourceId).toBe("cc0-jetrel-potion-red");
-    expect(form.querySelectorAll(".db-image-preview").length).toBeGreaterThanOrEqual(2);
+    expect(form.querySelectorAll(".db-resource-picker-control").length).toBeGreaterThanOrEqual(2);
   });
 });
 

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 test.setTimeout(60_000);
 
@@ -480,7 +481,7 @@ test("play mode resolves the highest matching event page", async ({ page }) => {
   expect(seededState.project.startMapId).toBe("map_page");
   expect(seededState.project.maps.map_page.events[0].pages?.length).toBe(2);
   await page.click('[data-testid="mode-play"]');
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);

@@ -14,6 +14,7 @@ import {
   type DebugState,
 } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop13-m2-pdf-command";
 const COMMENT_TEXT = "Loop 13 M2 editor-only comment";
@@ -58,7 +59,7 @@ test("loop13 certifies M2 PDF command authoring persistence and runtime skip", a
   });
   await seedProjectFromSupabaseCanonical(page, roundtrip.project);
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await screenshot(page, "007-runtime-before-m2-event.png");
   await page.getByTestId("event-ev_loop13_m2").click();

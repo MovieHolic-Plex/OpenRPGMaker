@@ -213,7 +213,7 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       renderTilesetsTab(body, rerender);
       return;
     case "system":
-      renderSystemTab(body);
+      renderSystemTab(body, rerender);
       return;
     case "terms":
       renderTermsTab(body);

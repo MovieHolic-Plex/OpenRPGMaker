@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { EventPage, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -289,7 +290,7 @@ test("map runtime schedules events without mutating authoring project data", asy
   expect(before.project.maps.map_runtime.events.find((event) => event.id === "mover-1")?.x).toBe(2);
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();
   await expect(page.getByTestId("event-sprite-npc-1")).toBeVisible();
@@ -348,6 +349,6 @@ test("map runtime schedules events without mutating authoring project data", asy
 test("map runtime reports missing page graphics", async ({ page }) => {
   await seedProject(page, missingResourceProject());
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("missing-resource-error")).toContainText("missing_sprite");
 });

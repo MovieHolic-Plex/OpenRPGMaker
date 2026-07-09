@@ -5,6 +5,8 @@ export interface SkillLikeEffect {
   readonly power: number;
   readonly statistic: "attack" | "mind";
   readonly effect: "damage" | "healing" | "support" | "switch";
+  // healing/damage 가 적용되는 자원. 기본 hp.
+  readonly affects?: "hp" | "mp";
   // 명중률(0~100). 기본 100. 데미지 적용 전에 롤하여 빗나가면 0.
   readonly hitRate?: number;
   // 데미지 분산(0~100). ±variance% 범위 랜덤. 기본 0(고정).
@@ -29,7 +31,11 @@ export function applySkillLike(user: MutableBattler, target: MutableBattler, spe
   const stat = Math.round(baseStat * (spec.attackerStatMultiplier ?? 1));
   if (spec.effect === "healing") {
     const result = computeMagnitude(spec.power, target, "heal", stat, spec);
-    target.hp = Math.min(target.maxHp, target.hp + result.amount);
+    if (spec.affects === "mp") {
+      target.mp = Math.min(target.maxMp, target.mp + result.amount);
+    } else {
+      target.hp = Math.min(target.maxHp, target.hp + result.amount);
+    }
     return { hit: true, amount: result.amount, critical: false };
   }
   if (spec.effect === "support" || spec.effect === "switch") return { hit: true, amount: 0, critical: false };

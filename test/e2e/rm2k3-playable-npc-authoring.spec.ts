@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
 const NPC_NAME = "Guide";
@@ -192,7 +193,7 @@ test("play mode lets the user control the protagonist", async ({ page }, testInf
   await seedProject(page, baseProject());
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect.poll(async () => (await runtimeState(page)).player).toEqual({ x: 1, y: 1 });
 
@@ -246,7 +247,7 @@ test("event tool creates an RM2003-style NPC event that persists and plays", asy
   await expect(page.getByTestId("event-command-text")).toContainText(NPC_BODY);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId(`event-${event.id}`)).toBeVisible();
   await page.getByTestId(`event-${event.id}`).click();
   await expect(page.getByTestId("dialogue-box")).toContainText(NPC_NAME);

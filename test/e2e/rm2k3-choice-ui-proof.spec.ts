@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/npc-dialogue-debug";
 const EDITOR_SCREENSHOT = `${EVIDENCE_DIR}/15-event-editor-inline-choices.png`;
@@ -114,7 +115,7 @@ async function authorChoicesAndOpenRuntime(
   const eventId = await authoredChoicesEventId(page, choices);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await page.getByTestId(`event-${eventId}`).click();
   await expect(page.getByTestId("runtime-choices")).toBeVisible();

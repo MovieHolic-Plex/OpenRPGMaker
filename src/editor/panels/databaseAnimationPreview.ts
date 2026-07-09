@@ -1,6 +1,8 @@
+import { batchApplyCells, interpolateCells, type AnimationCellBatchPatch } from "@/editor/databaseAnimationCellOps";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleAnimationCell, BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 const DEFAULT_CELL: BattleAnimationCell = { pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true };
 const PATTERN_PREVIEW_COUNT = 8;
@@ -82,7 +84,16 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
     class: "db-animation-command-grid",
     children: [
       el("button", { text: "마지막 프레임 복제", attrs: { type: "button", title: "마지막 프레임을 복제해 끝에 추가" }, on: { click: () => context.duplicateLastFrame() } }),
-      disabledCommandButton("셀 일괄..."),
+      el("button", {
+        text: "셀 일괄...",
+        attrs: { type: "button", title: "현재 프레임 모든 셀에 동일 값 적용" },
+        dataset: { testid: "db-animation-cell-batch" },
+        on: {
+          click: () => openCellBatchDialog(context.selectedFrame.cells, (patch) => {
+            context.updateSelectedFrameCells(batchApplyCells(context.selectedFrame.cells, patch));
+          }),
+        },
+      }),
       el("button", {
         text: "셀 복사",
         attrs: { type: "button", title: "현재 프레임 셀 복사" },
@@ -95,11 +106,92 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
       }),
       pasteButton,
       playButton,
-      disabledCommandButton("보간"),
+      el("button", {
+        text: "보간",
+        attrs: { type: "button", title: "이전·다음 프레임 사이 셀 보간" },
+        dataset: { testid: "db-animation-cell-interpolate" },
+        on: {
+          click: () => {
+            const index = context.selectedFrameIndex;
+            const prev = context.frames[index - 1];
+            const next = context.frames[index + 1];
+            if (!prev || !next) {
+              toast("보간하려면 이전·다음 프레임이 모두 필요합니다.", "info");
+              return;
+            }
+            context.updateSelectedFrameCells(interpolateCells(prev.cells, next.cells, 0.5));
+            toast("선택 프레임 셀을 보간했습니다.", "ok");
+          },
+        },
+      }),
       checkboxLabel("격자 사용", true),
     ],
   });
   return grid;
+}
+
+function openCellBatchDialog(cells: readonly BattleAnimationCell[], onApply: (patch: AnimationCellBatchPatch) => void): void {
+  document.querySelector("[data-testid='db-animation-cell-batch-dialog']")?.remove();
+  const sample = cells[0] ?? DEFAULT_CELL;
+  const pattern = el("input", { attrs: { type: "number", min: "0", max: "999" }, value: sample.pattern, dataset: { testid: "db-animation-batch-pattern" } }) as HTMLInputElement;
+  const zoom = el("input", { attrs: { type: "number", min: "1", max: "800" }, value: sample.zoom, dataset: { testid: "db-animation-batch-zoom" } }) as HTMLInputElement;
+  const opacity = el("input", { attrs: { type: "number", min: "0", max: "255" }, value: sample.opacity, dataset: { testid: "db-animation-batch-opacity" } }) as HTMLInputElement;
+  const x = el("input", { attrs: { type: "number", min: "-999", max: "999" }, value: sample.x, dataset: { testid: "db-animation-batch-x" } }) as HTMLInputElement;
+  const y = el("input", { attrs: { type: "number", min: "-999", max: "999" }, value: sample.y, dataset: { testid: "db-animation-batch-y" } }) as HTMLInputElement;
+  const backdrop = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid: "db-animation-cell-batch-dialog" } });
+  const close = (): void => backdrop.remove();
+  backdrop.append(
+    el("div", {
+      class: "db-enemy-dialog",
+      children: [
+        el("header", { text: "셀 일괄 설정" }),
+        el("main", {
+          children: [
+            fieldRow("패턴", pattern),
+            fieldRow("X", x),
+            fieldRow("Y", y),
+            fieldRow("확대", zoom),
+            fieldRow("불투명", opacity),
+          ],
+        }),
+        el("footer", {
+          children: [
+            el("button", {
+              class: "btn small",
+              text: "OK",
+              dataset: { testid: "db-animation-cell-batch-ok" },
+              attrs: { type: "button" },
+              on: {
+                click: () => {
+                  onApply({
+                    pattern: Number(pattern.value),
+                    x: Number(x.value),
+                    y: Number(y.value),
+                    zoom: Number(zoom.value),
+                    opacity: Number(opacity.value),
+                  });
+                  close();
+                  toast("현재 프레임 셀에 일괄 적용했습니다.", "ok");
+                },
+              },
+            }),
+            el("button", {
+              class: "btn small",
+              text: "Cancel",
+              dataset: { testid: "db-animation-cell-batch-cancel" },
+              attrs: { type: "button" },
+              on: { click: close },
+            }),
+          ],
+        }),
+      ],
+    }),
+  );
+  document.body.append(backdrop);
+}
+
+function fieldRow(label: string, input: HTMLElement): HTMLElement {
+  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
 }
 
 function bindPlayback(
@@ -201,12 +293,6 @@ function applySpriteBackground(element: HTMLElement, sheet: BattleAnimationSheet
 
 function cloneCells(cells: readonly BattleAnimationCell[]): BattleAnimationCell[] {
   return cells.map(({ tone, ...cell }) => (tone ? { ...cell, tone: { ...tone } } : { ...cell }));
-}
-
-function disabledCommandButton(text: string): HTMLButtonElement {
-  const button = el("button", { text, attrs: { type: "button", title: "준비 중" } });
-  button.disabled = true;
-  return button;
 }
 
 function isDisconnected(element: HTMLElement): boolean {

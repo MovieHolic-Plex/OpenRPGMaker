@@ -3,7 +3,7 @@ import { mkdir, rm } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { defaultDatabase } from "@/project/defaults/defaultDatabase";
 import { openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText } from "./eventEditorCertEvidence";
-import { tapKey } from "./runtimeInput";
+import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-gameplay-proof";
@@ -58,7 +58,7 @@ test("event editor popups produce real gameplay direction route and frequency pr
   await writeJson("00-editor-export.json", editorExport);
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitReady(page);
   await page.getByTestId("play-canvas").locator("canvas").click({ force: true });
 

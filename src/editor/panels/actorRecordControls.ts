@@ -4,6 +4,10 @@ import {
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
+  FACESET_COLUMNS,
+  FACESET_FACE_HEIGHT,
+  FACESET_FACE_WIDTH,
+  FACESET_ROWS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -28,10 +32,15 @@ export function actorPanel(title: string, className: string, children: HTMLEleme
   });
 }
 
-export function graphicPreview(label: string, resourceId: string, kind: GraphicPreviewKind): HTMLElement {
+export function graphicPreview(
+  label: string,
+  resourceId: string,
+  kind: GraphicPreviewKind,
+  sheetIndex = 0
+): HTMLElement {
   const url = resolveAssetResourceUrl(resourceId === "(없음)" ? undefined : resourceId, { project: store.getCurrent() });
   const visual = url
-    ? previewVisual(label, resourceId, url, kind)
+    ? previewVisual(label, resourceId, url, kind, sheetIndex)
     : neutralActorResourceSlot(resourceId);
   return el("div", {
     class: "actor-graphic-preview",
@@ -49,10 +58,30 @@ function neutralActorResourceSlot(resourceId: string): HTMLElement {
   });
 }
 
-function previewVisual(label: string, resourceId: string, url: string, kind: GraphicPreviewKind): HTMLElement {
-  if (kind === "faceset") return sheetCrop(label, url, { x: 0, y: 0, width: 48, height: 48, sheetWidth: 192, sheetHeight: 192, scale: 1 });
+function previewVisual(
+  label: string,
+  resourceId: string,
+  url: string,
+  kind: GraphicPreviewKind,
+  sheetIndex: number
+): HTMLElement {
+  if (kind === "faceset") {
+    const faceIndex = Math.min(15, Math.max(0, Math.trunc(sheetIndex) || 0));
+    const column = faceIndex % FACESET_COLUMNS;
+    const row = Math.floor(faceIndex / FACESET_COLUMNS);
+    return sheetCrop(label, url, {
+      x: column * FACESET_FACE_WIDTH,
+      y: row * FACESET_FACE_HEIGHT,
+      width: FACESET_FACE_WIDTH,
+      height: FACESET_FACE_HEIGHT,
+      sheetWidth: FACESET_COLUMNS * FACESET_FACE_WIDTH,
+      sheetHeight: FACESET_ROWS * FACESET_FACE_HEIGHT,
+      scale: 1,
+    });
+  }
   if (kind === "charset") {
-    const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
+    const characterIndex = Math.min(7, Math.max(0, Math.trunc(sheetIndex) || 0));
+    const source = charsetFrameSource({ characterIndex, direction: "down", pattern: 1 });
     return sheetCrop(label, url, {
       ...source,
       sheetWidth: CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH,

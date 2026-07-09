@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop10-economy-commerce";
 const POTION_ID = "item_potion";
@@ -77,7 +78,7 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await damageFirstActor(page);
   await page.getByTestId("event-ev_economy_commerce").click();
   await expect(page.getByTestId("shop-scene")).toContainText("어서 오세요.");

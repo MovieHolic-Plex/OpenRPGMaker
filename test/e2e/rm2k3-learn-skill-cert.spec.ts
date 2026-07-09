@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { ActorRecord, Command, EventPage, Project, SkillRecord } from "@/project/types";
 import { debugState, dismissDialogue, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop9-learn-skill";
 
@@ -56,7 +57,7 @@ test("loop9 certifies learnSkill runtime state status menu and save persistence"
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   const startState = await runtimeState(page);
   expect(startState.actorSkillIds?.[actor.id] ?? []).not.toContain(skill.id);
   await writeJson("006-runtime-before-learn.json", startState);

@@ -1,10 +1,11 @@
 import { ACTOR_RATE_GRADES, stateRatePercentage } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { editableClassCommands, finalizeClassBattleCommands, moveEditableClassCommand } from "@/editor/databaseClassCommandOrder";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { charsetFrameSource, EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import type { ActorRateGrade, ClassBattleCommandKind, ClassRecord } from "@/project/types";
+import type { ActorRateGrade, ClassBattleCommand, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { classCurveCards } from "./databaseClassCurveEditors";
@@ -142,7 +143,108 @@ function battleCommandControls(record: ClassRecord): HTMLElement[] {
     }
     return el("div", { class: "db-class-command-row", children: [name, kind, subset, skill] });
   });
-  return [el("button", { class: "db-class-set-button", text: "설정", attrs: { type: "button", title: "명령 순서 편집 (준비 중)" }, on: { click: () => toast("전투 명령 순서 편집은 준비 중입니다. 각 행에서 직접 이름과 종류를 편집하세요.", "info") } }), el("div", { class: "db-class-command-rows", children: rows })];
+  return [
+    el("button", {
+      class: "db-class-set-button",
+      text: "설정",
+      attrs: { type: "button", title: "전투 명령 순서 설정" },
+      dataset: { testid: "db-class-command-order-open" },
+      on: {
+        click: () => openClassCommandOrderDialog(record, () => {
+          const workbench = document.querySelector("[data-testid='db-classes-bm88-workbench']");
+          if (workbench instanceof HTMLElement) {
+            const form = workbench.closest(".db-detail-form");
+            if (form instanceof HTMLElement) {
+              form.replaceChildren();
+              const next = store.getCurrent().database.classes.find((entry) => entry.id === record.id) ?? record;
+              renderClassRecordForm(form, next);
+            }
+          }
+          toast("전투 명령 순서를 저장했습니다.", "ok");
+        }),
+      },
+    }),
+    el("div", { class: "db-class-command-rows", children: rows }),
+  ];
+}
+
+function openClassCommandOrderDialog(record: ClassRecord, onSaved: () => void): void {
+  document.querySelector("[data-testid='db-class-command-order-dialog']")?.remove();
+  let working = editableClassCommands(classCommandsWithChange(record));
+  const list = el("div", { class: "db-class-command-order-list", dataset: { testid: "db-class-command-order-list" } });
+  const refreshList = (): void => {
+    list.replaceChildren(...working.map((command, index) => commandOrderRow(command, index, (delta) => {
+      working = moveEditableClassCommand(working, index, delta).filter((entry) => entry.id !== "cmd_change");
+      refreshList();
+    })));
+  };
+  refreshList();
+  const backdrop = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid: "db-class-command-order-dialog" } });
+  const close = (): void => backdrop.remove();
+  backdrop.append(
+    el("div", {
+      class: "db-enemy-dialog",
+      children: [
+        el("header", { text: "전투 명령 순서" }),
+        el("main", { children: [list, el("p", { class: "db-hint", text: "↑↓로 순서를 바꿉니다. 교체 명령은 항상 맨 아래에 둡니다." })] }),
+        el("footer", {
+          children: [
+            el("button", {
+              class: "btn small",
+              text: "OK",
+              dataset: { testid: "db-class-command-order-ok" },
+              attrs: { type: "button" },
+              on: {
+                click: () => {
+                  updateDatabaseRecord("classes", record.id, {
+                    battleCommands: finalizeClassBattleCommands(working),
+                  });
+                  close();
+                  onSaved();
+                },
+              },
+            }),
+            el("button", {
+              class: "btn small",
+              text: "Cancel",
+              dataset: { testid: "db-class-command-order-cancel" },
+              attrs: { type: "button" },
+              on: { click: close },
+            }),
+          ],
+        }),
+      ],
+    }),
+  );
+  document.body.append(backdrop);
+}
+
+function commandOrderRow(
+  command: ClassBattleCommand,
+  index: number,
+  move: (delta: -1 | 1) => void,
+): HTMLElement {
+  return el("div", {
+    class: "db-class-command-order-row",
+    dataset: { testid: `db-class-command-order-row-${index}` },
+    children: [
+      el("span", { text: `${index + 1}. ${command.name} (${command.kind})` }),
+      el("button", {
+        class: "btn small",
+        text: "↑",
+        attrs: { type: "button", title: "위로" },
+        dataset: { testid: `db-class-command-order-up-${index}` },
+        on: { click: () => move(-1) },
+      }),
+      el("button", {
+        class: "btn small",
+        text: "↓",
+        attrs: { type: "button", title: "아래로" },
+        dataset: { testid: `db-class-command-order-down-${index}` },
+        on: { click: () => move(1) },
+      }),
+    ],
+  });
 }
 
 function optionControls(record: ClassRecord): HTMLElement[] {

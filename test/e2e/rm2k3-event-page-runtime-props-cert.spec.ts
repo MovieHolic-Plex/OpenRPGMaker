@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { eventPageRuntimePropsProject, type RuntimeState, type SpriteSample } from "./rm2k3EventPageRuntimePropsFixture";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { tapKey as runtimeTapKey } from "./runtimeInput";
+import { tapKey as runtimeTapKey, startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop14-event-page-runtime-props";
 const SCREENSHOTS = [
@@ -28,7 +28,7 @@ test("certifies RM2003 event page runtime props with scoped evidence", async ({ 
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProjectFromSupabaseCanonical(page, eventPageRuntimePropsProject());
   await page.getByTestId("mode-play").click();
-  await page.getByTestId("title-new-game").click();
+  await startNewGameFromTitle(page);
   await waitReady(page);
   await page.getByTestId("play-canvas").locator("canvas").click({ force: true });
 
