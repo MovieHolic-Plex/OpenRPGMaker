@@ -104,13 +104,13 @@ describe("default item catalog integrity", () => {
     });
     medicine.tick(1_000);
     expect(medicine.snapshot().actors[0]!.hp).toBe(20);
-    medicine.performActorCommand({ kind: "item", itemId: DEFAULT_ITEM_ID });
+    medicine.performActorCommand({ kind: "item", itemId: DEFAULT_ITEM_ID, targetEnemyId: "" });
     expect(medicine.snapshot().actors[0]!.hp).toBe(70);
     expect(medicine.snapshot().eventState.inventory[DEFAULT_ITEM_ID]).toBe(0);
 
     medicine.tick(5_000);
     expect(medicine.snapshot().phase).toBe("actorCommand");
-    medicine.performActorCommand({ kind: "item", itemId: "item_elixir" });
+    medicine.performActorCommand({ kind: "item", itemId: "item_elixir", targetEnemyId: "" });
     const afterElixir = medicine.snapshot().actors[0]!;
     expect(afterElixir.hp).toBe(afterElixir.maxHp);
     expect(afterElixir.mp).toBe(afterElixir.maxMp);
@@ -139,7 +139,7 @@ describe("default item catalog integrity", () => {
       party: { levels: { [actorId]: 1 }, experience: { [actorId]: 0 } },
     });
     guard.tick(1_000);
-    guard.performActorCommand({ kind: "item", itemId: "item_guard_talisman" });
+    guard.performActorCommand({ kind: "item", itemId: "item_guard_talisman", targetEnemyId: "" });
     expect(guard.snapshot().actors[0]!.stateIds).toContain("state_defense_up");
   });
 });

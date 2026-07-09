@@ -67,10 +67,29 @@ test("database six surfaces persist real edits through project export", async ({
   await actionRow.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("db-enemy-action-dialog")).toBeVisible();
+  const dialog = page.getByTestId("db-enemy-action-dialog");
+  // Basic attack must survive normalize/export (empty skillId is intentional, not "drop me").
   await page.getByTestId("db-enemy-action-mode-basic").check();
-  await expect(page.getByTestId("db-picker-enemy-action-skill")).toBeDisabled();
+  await expect(dialog.getByTestId("db-enemy-action-dialog-skill")).toBeDisabled();
+  await page.getByTestId("db-enemy-action-ok").click();
+  await expect(page.getByTestId("db-enemy-action-dialog")).toHaveCount(0);
+  await expect.poll(async () => {
+    const snap = await exportedProject(page);
+    const enemy = snap.database.enemies[0] as { actions?: { skillId?: string }[] };
+    return enemy.actions?.[0]?.skillId ?? "__missing__";
+  }).toBe("");
+  await expect.poll(async () => {
+    const snap = await exportedProject(page);
+    const enemy = snap.database.enemies[0] as { actions?: unknown[] };
+    return enemy.actions?.length ?? 0;
+  }).toBeGreaterThan(0);
+
+  // Skill mode still works after basic.
+  await actionRow.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("db-enemy-action-dialog")).toBeVisible();
   await page.getByTestId("db-enemy-action-mode-skill").check();
-  const skillSelect = page.getByTestId("db-picker-enemy-action-skill");
+  const skillSelect = page.getByTestId("db-enemy-action-dialog").getByTestId("db-enemy-action-dialog-skill");
   await expect(skillSelect).toBeEnabled();
   const skillValue = await skillSelect.locator("option").nth(1).getAttribute("value");
   expect(skillValue).toBeTruthy();
@@ -104,5 +123,7 @@ test("database six surfaces persist real edits through project export", async ({
   expect(animationCells.every((cell) => cell.zoom === 160 && cell.opacity === 180)).toBe(true);
 
   const firstEnemy = project.database.enemies[0] as { actions?: { skillId?: string }[] };
+  // Final OK was skill mode — skill id must be non-empty and the action must still exist.
+  expect(firstEnemy.actions?.length).toBeGreaterThan(0);
   expect(firstEnemy.actions?.[0]?.skillId).toBeTruthy();
 });

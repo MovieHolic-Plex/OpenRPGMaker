@@ -874,7 +874,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const actionTurn = turn + 1;
     const candidates = (enemy.enemyActions ?? [])
       .filter((action) => enemyActionConditionMet(action.condition, actionTurn))
-      .filter((action) => canUseSkill(enemy, action.skillId));
+      // Empty skillId is a basic normal attack (executeEnemyAction already handles that path).
+      .filter((action) => !action.skillId || canUseSkill(enemy, action.skillId));
     if (candidates.length === 0) return undefined;
     const total = candidates.reduce((sum, action) => sum + Math.max(1, action.priority), 0);
     let roll = rng() * total;

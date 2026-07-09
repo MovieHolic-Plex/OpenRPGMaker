@@ -22,7 +22,7 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
 
   const rebuildSkill = (): void => {
     skillHost.replaceChildren(
-      selectField("스킬", "db-picker-enemy-action-skill", nextAction.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
+      selectField("스킬", "db-enemy-action-dialog-skill", nextAction.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
         nextAction = { ...nextAction, skillId: skillId as SkillId };
         mode = "skill";
         rebuildMode();
