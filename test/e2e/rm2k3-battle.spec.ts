@@ -1,8 +1,11 @@
 ﻿import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
+import { performBattleAttack, performBattleSkill } from "./battleReferenceProject";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
+
+const SLIME_MAX_HP = 220;
 
 type RuntimeBattleResult = "victory" | "defeat" | "escape";
 
@@ -43,6 +46,7 @@ function isRuntimeState(value: unknown): value is RuntimeState {
 }
 
 test("side-view battleProcessing plays through victory and restores the map", async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page);
   await startPlayFromEditor(page);
@@ -56,18 +60,23 @@ test("side-view battleProcessing plays through victory and restores the map", as
   await expect(page.getByTestId("battle-message-window")).toBeVisible();
   await expect(page.getByTestId("battle-party")).toBeVisible();
   await expect(page.getByTestId("battle-actor-actor_hero")).toHaveAttribute("data-battle-charset-resource-id", "hero");
-  await expect(page.getByTestId("actor-command-attack")).toBeVisible();
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("actor-command-skill")).toBeVisible();
   await expect(page.getByTestId("enemy-1")).toHaveAttribute("data-monster-resource-id", "generated-enemy-slime-01");
+  await expect(page.getByTestId("battle-enemy-hp-enemy-1")).toContainText(String(SLIME_MAX_HP), { timeout: 5_000 });
   await page.screenshot({ path: testInfo.outputPath("battle-surface.png"), fullPage: true });
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-bgm-active", "true");
   await page.getByTestId("actor-command-defend").click();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "acting");
-  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 2_000 });
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 15_000 });
   await page.screenshot({ path: testInfo.outputPath("battle-after-defend.png"), fullPage: true });
-  await page.getByTestId("actor-command-skill").click();
-  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
-  await page.getByTestId("battle-target-enemy-1").click();
-  const battleAnimation = page.getByTestId("battle-animation");
+  for (let turn = 0; turn < 2; turn += 1) {
+    await performBattleAttack(page);
+    await expect(page.getByTestId("battle-result-panel")).toHaveCount(0);
+    await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 20_000 });
+  }
+  await performBattleSkill(page);
+  const battleAnimation = page.getByTestId("battle-scene").getByTestId("battle-animation");
   await expect(battleAnimation).toBeVisible();
   const animationState = await battleAnimation.evaluate((node) => ({
     animationId: node.getAttribute("data-animation-id"),
@@ -92,7 +101,10 @@ test("side-view battleProcessing plays through victory and restores the map", as
   expect(animationState.soundResourceIds).toMatch(/easyrpg-sound-magic1/);
   expect(animationState.visibleRenderedCells).toBeGreaterThan(0);
   await page.screenshot({ path: testInfo.outputPath("battle-magic-animation.png"), fullPage: true });
-  await expect(page.getByTestId("battle-result-panel")).toBeVisible();
+  for (let turn = 0; turn < 6 && (await page.getByTestId("battle-result-panel").count()) === 0; turn += 1) {
+    await performBattleAttack(page);
+  }
+  await expect(page.getByTestId("battle-result-panel")).toBeVisible({ timeout: 20_000 });
   await expect(page.getByTestId("battle-result-panel")).toHaveAttribute("data-battle-result", "victory");
   await expect.poll(async () => (await runtimeState(page)).battleResult).toBe("victory");
   await expect(page.getByTestId("battle-scene")).toBeHidden();

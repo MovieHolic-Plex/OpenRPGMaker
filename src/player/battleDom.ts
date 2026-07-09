@@ -6,30 +6,34 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { concreteTargetCommand } from "@/battle/runtime";
-import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { mountBattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { commandPanel, enemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
+import { syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
-  actorCommandDirectorState,
   applyBattleDirectorState,
   battleMessageWindow,
   battleEventDirectorState,
   battleResultPanel,
   commandPromptState,
-  initialBattleDirectorState,
   resultDirectorState,
+  syncBattleMessageWindow,
+  syncBattleResultPanel,
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
-import { emitBattleJuice, flashBattleField, spawnDamagePopup } from "@/player/battleJuice";
-import { battleField, battlePartyStatus } from "@/player/battleFieldDom";
+import { battleField, battlePartyStatus, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
+import {
+  BATTLE_RESULT_HOLD_MS,
+  createBattleSequencer,
+  type DamageFeedback,
+} from "@/player/battleSequencer";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
+  readonly introHold?: boolean;
 }
 
 export interface BattleDomController {
@@ -37,9 +41,6 @@ export interface BattleDomController {
   destroy(): void;
 }
 
-const RESULT_HOLD_MS = 2_200;
-// 행동 연출 비트: 메시지가 한 박자 읽히고 타격감이 생긴 뒤 다음 입력으로 넘어간다.
-const RESOLVE_HOLD_MS = 850;
 const BATTLE_TICK_MS = 200;
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
@@ -50,22 +51,78 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   applyBattleSystemGraphic(root);
   options.host.append(root);
 
+  const initialSnapshot = options.runtime.snapshot();
   let resultSent = false;
   let resultTimer: number | undefined;
-  let resolveTimer: number | undefined;
-  let resolveLocked = false;
   let submenu: BattleCommandSubmenu = null;
+  let directorState: BattleDirectorState = commandPromptState(initialSnapshot);
+  let resultRevealStage = 0;
+  let sequenceBusy = false;
+  let lastDamageFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
-  let directorState: BattleDirectorState | undefined;
+  let commandPanelSignature = "";
+  let lastEnemyActionKey = "";
+
+  const field = battleField(initialSnapshot);
+  field.dataset.testid = "battle-field";
+  const animationLayer = document.createElement("div");
+  animationLayer.className = "battle-animation-layer";
+  animationLayer.dataset.testid = "battle-animation-layer";
+  const messageWindow = battleMessageWindow(directorState);
+  const enemyPanel = enemyListPanel(initialSnapshot);
+  const partyPanel = battlePartyStatus(initialSnapshot);
+  const commandHost = document.createElement("div");
+  commandHost.className = "battle-command-host";
+  const resultHost = document.createElement("div");
+  resultHost.className = "battle-result-host";
+  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
+
+  const panelOptions: {
+    runtime: BattleRuntime;
+    submenu: BattleCommandSubmenu;
+    setSubmenu(next: BattleCommandSubmenu): void;
+    setDirectorState(state: BattleDirectorState): void;
+    render(): void;
+    runActorCommand(command: ActorCommand): void;
+    beginTargetCommand(command: TargetedActorCommand): void;
+    confirmTargetSelection(enemyId: string): void;
+  } = {
+    runtime: options.runtime,
+    submenu: null,
+    setSubmenu(next) {
+      submenu = next;
+      panelOptions.submenu = next;
+    },
+    setDirectorState(state) {
+      directorState = state;
+    },
+    render: () => syncView(true),
+    runActorCommand,
+    beginTargetCommand,
+    confirmTargetSelection,
+  };
+
+  const sequencer = createBattleSequencer(options.runtime, {
+    onDirectorState(state) {
+      directorState = battleEventDirectorState(options.runtime.snapshot(), state);
+    },
+    onSyncView() {
+      syncView(false);
+    },
+    onDamageFeedback(feedback) {
+      lastDamageFeedback = feedback;
+    },
+    onResultStage(stage) {
+      resultRevealStage = stage;
+    },
+    onSequenceBusy(busy) {
+      sequenceBusy = busy;
+      root.dataset.battleSequenceBusy = busy ? "true" : "false";
+    },
+  });
 
   root.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
-    if (resolveLocked) return;
-    const resultConfirm = event.target.closest<HTMLElement>(".battle-result-confirm, .battle-result-panel");
-    if (resultConfirm && options.runtime.snapshot().result) {
-      finishResultEarly();
-      return;
-    }
     const target = event.target.closest<HTMLElement>(".battle-enemy[data-battle-targetable='true']");
     if (!target?.dataset.testid) return;
     confirmTargetSelection(target.dataset.testid);
@@ -75,21 +132,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function onKeydown(event: KeyboardEvent): void {
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
-      if (event.key === "z" || event.key === "Z" || event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        finishResultEarly();
-      }
-      return;
-    }
-    if (resolveLocked) {
-      // 연출 중 Z/Enter 로 비트 스킵 → 바로 다음 입력 페이즈.
       if (event.key === "z" || event.key === "Z" || event.key === "Enter") {
         event.preventDefault();
-        endResolveLock(true);
+        if (!resultSent) {
+          resultSent = true;
+          window.clearTimeout(resultTimer ?? undefined);
+          options.onResult(snapshot.result, snapshot);
+        }
       }
       return;
     }
-    if (event.key === "c" || event.key === "C" || event.key === "Escape") {
+    if (sequenceBusy) return;
+    if (event.key === "c" || event.key === "C") {
       event.preventDefault();
       handleCancel(snapshot);
       return;
@@ -120,7 +174,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (snapshot.phase === "actorCommand" && submenu === null) {
-      emitBattleJuice("command-confirm");
       beginTargetCommand({ kind: "attack" });
     }
   }
@@ -128,15 +181,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function handleCancel(snapshot: BattleSnapshot): void {
     if (submenu !== null) {
       submenu = null;
-      emitBattleJuice("command-cancel");
-      render();
+      panelOptions.submenu = null;
+      syncView(true);
       return;
     }
     if (snapshot.phase === "targetSelect") {
       options.runtime.cancelTargetSelection();
       directorState = commandPromptState(options.runtime.snapshot());
-      emitBattleJuice("command-cancel");
-      render();
+      syncView(true);
     }
   }
 
@@ -149,112 +201,85 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const nextId = ids[(index + 1) % ids.length];
     options.runtime.setSelectedTargetEnemy(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
-    emitBattleJuice("command-select");
-    render();
+    syncView(true);
   }
 
-  function render(): void {
+  function syncView(_rebuildCommandPanel: boolean): void {
     const snapshot = options.runtime.snapshot();
-    directorState = nextDirectorState(snapshot, directorState);
-    directorState = battleEventDirectorState(snapshot, directorState);
-    activeAnimation?.destroy();
-    activeAnimation = undefined;
-    root.replaceChildren();
-    root.append(
-      battleField(snapshot),
-      battleMessageWindow(directorState),
-      enemyListPanel(snapshot),
-      commandPanel(snapshot, {
-        runtime: options.runtime,
-        submenu,
-        setSubmenu: (next) => {
-          unlockResolveForInput();
-          submenu = next;
-          if (next) emitBattleJuice("command-select");
-        },
-        setDirectorState: (state) => {
-          directorState = state;
-        },
-        render: () => {
-          unlockResolveForInput();
-          render();
-        },
-        runActorCommand,
-        beginTargetCommand,
-        confirmTargetSelection,
-      }),
-      battlePartyStatus(snapshot)
-    );
-    const resultPanel = battleResultPanel(snapshot);
-    if (resultPanel) root.append(resultPanel);
+    if (snapshot.result) {
+      directorState = resultDirectorState(snapshot, directorState);
+    } else if (!sequenceBusy) {
+      directorState = nextDirectorState(snapshot, directorState);
+      directorState = battleEventDirectorState(snapshot, directorState);
+    }
+    syncBattleField(field, snapshot, lastDamageFeedback);
+    syncBattleParty(partyPanel, snapshot);
+    syncBattleMessageWindow(messageWindow, directorState);
+    syncEnemyListPanel(enemyPanel, snapshot.enemies);
+    rebuildCommandPanelIfNeeded(snapshot);
+    syncResultHost(snapshot);
     applyBattleDirectorState(root, directorState, snapshot);
-    root.dataset.battleResolve = resolveLocked ? "true" : "false";
-    activeAnimation = mountBattleAnimationPlayback(snapshot);
-    if (activeAnimation) {
-      root.append(activeAnimation.element);
-    }
-    const result = snapshot.result;
-    if (result && !resultSent) {
-      resultSent = true;
-      if (result === "victory") {
-        emitBattleJuice("victory");
-        flashBattleField(root, "victory");
-      } else if (result === "defeat") {
-        emitBattleJuice("defeat");
-        flashBattleField(root, "defeat");
-      }
-      resultTimer = window.setTimeout(() => {
-        options.onResult(result, snapshot);
-      }, RESULT_HOLD_MS);
-    }
+    activeAnimation = syncBattleAnimationLayer(animationLayer, snapshot, root);
+    root.dataset.battleSequenceBusy = sequenceBusy ? "true" : "false";
+    root.dataset.battleBgmActive = snapshot.result ? "false" : "true";
+    scheduleAutoResult(snapshot);
   }
 
-  type ResolveBeat = {
-    readonly state: BattleDirectorState;
-    readonly command?: ActorCommand;
-    readonly before?: BattleSnapshot;
-    readonly after?: BattleSnapshot;
-    readonly enemyHit?: boolean;
-  };
+  function rebuildCommandPanelIfNeeded(snapshot: BattleSnapshot): void {
+    const signature = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${snapshot.targetSelection?.selectedEnemyId ?? ""}`;
+    if (signature === commandPanelSignature && commandHost.childElementCount > 0) return;
+    commandPanelSignature = signature;
+    commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
+  }
 
-  let pendingBeats: ResolveBeat[] = [];
+  function syncResultHost(snapshot: BattleSnapshot): void {
+    if (!snapshot.result) {
+      resultHost.replaceChildren();
+      return;
+    }
+    let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+    if (!panel) {
+      const created = battleResultPanel(snapshot, resultRevealStage);
+      if (!created) return;
+      resultHost.replaceChildren(created);
+      panel = created;
+    }
+    syncBattleResultPanel(panel, snapshot, resultRevealStage);
+  }
 
-  /** Skip remaining resolve beat so the next player command is never dropped. */
-  function unlockResolveForInput(): void {
-    if (!resolveLocked) return;
-    window.clearTimeout(resolveTimer);
-    resolveTimer = undefined;
-    pendingBeats = [];
-    resolveLocked = false;
-    root.dataset.battleResolve = "false";
+  function scheduleAutoResult(snapshot: BattleSnapshot): void {
+    const result = snapshot.result;
+    if (!result || resultSent) return;
+    resultSent = true;
+    resultTimer = window.setTimeout(() => {
+      options.onResult(result, snapshot);
+    }, BATTLE_RESULT_HOLD_MS);
   }
 
   function runActorCommand(command: ActorCommand): void {
-    unlockResolveForInput();
+    if (sequenceBusy) return;
     const before = options.runtime.snapshot();
     options.runtime.performActorCommand(command);
     const afterCommand = options.runtime.snapshot();
-    const actionState = actorCommandDirectorState(command, before, afterCommand);
-    advanceBattleRuntime(options.runtime);
-    const afterAdvance = options.runtime.snapshot();
     submenu = null;
-    startResolveBeats(buildResolveBeats(command, actionState, before, afterCommand, afterAdvance), afterAdvance);
+    panelOptions.submenu = null;
+    sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
   function beginTargetCommand(command: TargetedActorCommand): void {
-    unlockResolveForInput();
+    if (sequenceBusy) return;
     options.runtime.beginActorCommand(command);
     const snapshot = options.runtime.snapshot();
     if (snapshot.phase === "targetSelect") {
       directorState = targetSelectDirectorState(snapshot);
       submenu = null;
-      emitBattleJuice("command-select");
+      panelOptions.submenu = null;
     }
-    render();
+    syncView(true);
   }
 
   function confirmTargetSelection(enemyId: string): void {
-    unlockResolveForInput();
+    if (sequenceBusy) return;
     const before = options.runtime.snapshot();
     const pending = before.targetSelection?.command;
     if (before.phase !== "targetSelect" || !pending) return;
@@ -263,180 +288,21 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {
       directorState = targetSelectDirectorState(afterCommand);
-      render();
+      syncView(true);
       return;
     }
-    const actionState = actorCommandDirectorState(command, before, afterCommand);
-    advanceBattleRuntime(options.runtime);
-    const afterAdvance = options.runtime.snapshot();
     submenu = null;
-    startResolveBeats(buildResolveBeats(command, actionState, before, afterCommand, afterAdvance), afterAdvance);
-  }
-
-  function buildResolveBeats(
-    command: ActorCommand,
-    actionState: BattleDirectorState,
-    before: BattleSnapshot,
-    afterCommand: BattleSnapshot,
-    afterAdvance: BattleSnapshot
-  ): ResolveBeat[] {
-    const beats: ResolveBeat[] = [
-      { state: actionState, command, before, after: afterCommand },
-    ];
-    const enemy = enemyCounterBeat(afterCommand, afterAdvance);
-    if (enemy) beats.push(enemy);
-    if (afterAdvance.result) {
-      beats.push({ state: resultDirectorState(afterAdvance, actionState) });
-    }
-    return beats;
-  }
-
-  function enemyCounterBeat(afterPlayer: BattleSnapshot, afterAdvance: BattleSnapshot): ResolveBeat | undefined {
-    const result = afterAdvance.lastActionResult;
-    if (!result) return undefined;
-    // If last action is still the player's, no enemy follow-up was applied.
-    const playerIds = new Set(afterPlayer.actors.map((actor) => actor.recordId));
-    if (playerIds.has(result.userRecordId)) return undefined;
-    const enemy = afterAdvance.enemies.find((entry) => entry.recordId === result.userRecordId || entry.id === result.userRecordId);
-    const target = afterAdvance.actors.find((entry) => entry.id === result.targetId || entry.recordId === result.targetId);
-    const enemyName = enemy?.name ?? "적";
-    const targetName = target?.name ?? "아군";
-    if (!result.hit) {
-      return {
-        state: {
-          step: "impact",
-          lines: [`${enemyName}의 공격!`, "빗나갔다!"],
-          targetId: result.targetId,
-        },
-        enemyHit: true,
-        after: afterAdvance,
-      };
-    }
-    return {
-      state: {
-        step: "impact",
-        lines: [
-          result.skillName ? `${enemyName}의 ${result.skillName}!` : `${enemyName}의 공격!`,
-          result.critical
-            ? `급소에 맞았다! ${targetName}에게 ${result.amount} 피해!`
-            : `${targetName}에게 ${result.amount} 피해!`,
-        ],
-        targetId: result.targetId,
-      },
-      enemyHit: true,
-      after: afterAdvance,
-    };
-  }
-
-  function startResolveBeats(beats: ResolveBeat[], afterAdvance: BattleSnapshot): void {
-    pendingBeats = beats;
-    resolveLocked = true;
-    window.clearTimeout(resolveTimer);
-    playNextBeat(afterAdvance);
-  }
-
-  function playNextBeat(afterAdvance: BattleSnapshot): void {
-    const beat = pendingBeats.shift();
-    if (!beat) {
-      endResolveLock(false);
-      return;
-    }
-    directorState = afterAdvance.result && pendingBeats.length === 0
-      ? resultDirectorState(afterAdvance, beat.state)
-      : beat.state;
-    render();
-    window.requestAnimationFrame(() => applyBeatJuice(beat));
-
-    if (afterAdvance.result && pendingBeats.length === 0) {
-      resolveLocked = false;
-      root.dataset.battleResolve = "false";
-      return;
-    }
-    resolveTimer = window.setTimeout(() => playNextBeat(afterAdvance), RESOLVE_HOLD_MS);
-  }
-
-  function applyBeatJuice(beat: ResolveBeat): void {
-    if (beat.command) {
-      if (beat.command.kind === "defend") {
-        emitBattleJuice("defend");
-        return;
-      }
-      if (beat.command.kind === "escape") {
-        emitBattleJuice("escape");
-        return;
-      }
-      if (
-        beat.command.kind === "attack"
-        || beat.command.kind === "skill"
-        || beat.command.kind === "item"
-        || beat.command.kind === "capture"
-      ) {
-        emitBattleJuice("attack-swing");
-      }
-    }
-
-    const after = beat.after;
-    const result = after?.lastActionResult;
-    const targetId = beat.state.targetId ?? result?.targetId;
-    const liveTarget = targetId
-      ? root.querySelector<HTMLElement>(`[data-testid='${cssEscape(targetId)}']`)
-      : null;
-    const anchorNode =
-      liveTarget?.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-sprite")
-      ?? liveTarget;
-    const anchor = anchorNode?.getBoundingClientRect() ?? null;
-
-    if (result && !result.hit) {
-      emitBattleJuice("hit-miss", liveTarget);
-      spawnDamagePopup(root, { amount: 0, miss: true, anchor });
-      return;
-    }
-    const amount = Math.max(
-      0,
-      result?.amount
-        ?? (beat.before && after ? damageFromSnapshots(targetId, beat.before, after) : 0)
-    );
-    if (amount <= 0) return;
-    const critical = Boolean(result?.critical);
-    emitBattleJuice(critical ? "hit-critical" : "hit-damage", liveTarget);
-    flashBattleField(root, critical ? "critical" : "hit");
-    spawnDamagePopup(root, { amount, critical, anchor });
-  }
-
-  function endResolveLock(fromSkip: boolean): void {
-    if (!resolveLocked && !fromSkip) return;
-    window.clearTimeout(resolveTimer);
-    resolveTimer = undefined;
-    pendingBeats = [];
-    resolveLocked = false;
-    const snapshot = options.runtime.snapshot();
-    if (snapshot.result) {
-      root.dataset.battleResolve = "false";
-      return;
-    }
-    if (snapshot.phase === "actorCommand") {
-      directorState = commandPromptState(snapshot);
-    }
-    render();
-  }
-
-  function finishResultEarly(): void {
-    const snapshot = options.runtime.snapshot();
-    if (!snapshot.result || !resultSent) return;
-    window.clearTimeout(resultTimer);
-    resultTimer = undefined;
-    options.onResult(snapshot.result, snapshot);
+    panelOptions.submenu = null;
+    syncView(false);
+    sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
   function nextDirectorState(
     snapshot: BattleSnapshot,
-    previous: BattleDirectorState | undefined
+    previous: BattleDirectorState
   ): BattleDirectorState {
-    if (!previous) return initialBattleDirectorState(snapshot);
     if (snapshot.result) return resultDirectorState(snapshot, previous);
     if (snapshot.phase === "targetSelect") return targetSelectDirectorState(snapshot);
-    // 연출 비트 중에는 impact/acting 메시지를 유지한다.
-    if (resolveLocked && (previous.step === "impact" || previous.step === "acting")) return previous;
     if (snapshot.phase === "actorCommand" && shouldRefreshCommandPrompt(snapshot, previous)) {
       return commandPromptState(snapshot);
     }
@@ -444,23 +310,29 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function shouldRefreshCommandPrompt(snapshot: BattleSnapshot, previous: BattleDirectorState): boolean {
-    // Submenu / post-resolve: once the player is free again, restore the command prompt.
-    if (previous.step === "command") return true;
-    if (previous.activeActorRecordId !== snapshot.activeActorId) return true;
-    if (!resolveLocked && (previous.step === "acting" || previous.step === "impact")) return true;
-    return false;
+    return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 
-  render();
-  // 포커스를 받아 키 입력이 바로 먹히게.
-  window.requestAnimationFrame(() => root.focus({ preventScroll: true }));
+  syncView(true);
+  if (options.introHold !== false) {
+    sequencer.startIntro(initialSnapshot);
+  }
 
   const tickInterval = window.setInterval(() => {
-    if (resolveLocked) return;
-    const snapshot = options.runtime.snapshot();
-    if (snapshot.result || snapshot.phase !== "charging") return;
-    advanceBattleRuntime(options.runtime);
-    render();
+    if (sequenceBusy) return;
+    const before = options.runtime.snapshot();
+    if (before.result || before.phase !== "charging") return;
+    options.runtime.tick(BATTLE_TICK_MS);
+    const after = options.runtime.snapshot();
+    const actionKey = after.lastActionResult
+      ? `${after.lastActionResult.targetId}:${after.lastActionResult.amount}:${after.turn}`
+      : "";
+    if (actionKey && actionKey !== lastEnemyActionKey) {
+      lastEnemyActionKey = actionKey;
+      sequencer.runAfterEnemyAdvance(before, after);
+      return;
+    }
+    syncView(false);
   }, BATTLE_TICK_MS);
 
   return {
@@ -469,26 +341,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       window.clearInterval(tickInterval);
       window.removeEventListener("keydown", onWindowKeydown);
       if (resultTimer !== undefined) window.clearTimeout(resultTimer);
-      if (resolveTimer !== undefined) window.clearTimeout(resolveTimer);
+      sequencer.cancel();
       activeAnimation?.destroy();
       root.remove();
     },
   };
-}
-
-function damageFromSnapshots(
-  enemyId: string | undefined,
-  before: BattleSnapshot,
-  after: BattleSnapshot
-): number {
-  if (!enemyId) return 0;
-  const beforeEnemy = before.enemies.find((enemy) => enemy.id === enemyId);
-  const afterEnemy = after.enemies.find((enemy) => enemy.id === enemyId);
-  if (!beforeEnemy || !afterEnemy) return 0;
-  return Math.max(0, beforeEnemy.hp - afterEnemy.hp);
-}
-
-function cssEscape(value: string): string {
-  if (typeof CSS !== "undefined" && typeof CSS.escape === "function") return CSS.escape(value);
-  return value.replace(/["\\]/g, "\\$&");
 }
