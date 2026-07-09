@@ -9,7 +9,7 @@
 
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
-| `propose_tile_vocabulary` | `tilesetId?: string`, `items: array` | 미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **중요: 이 툴만 부르고 멈추지 마라 — 제안 직후 같은 턴에 build_wall 등 시공 프리미티브를 그 그룹 id로 호출하면, 미승인 실패가 승인 카드에 보류 시공으로 묶여 사용자 수락 한 번으로 시공까지 끝난다.** 배치 프리미티브는 승인 어휘만 소비한다. |
+| `propose_tile_vocabulary` | `tilesetId?: string`, `items: array` | 미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). 기존 그룹 재제안은 groupId만 보내라(tileIds 불필요). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **중요: 이 툴만 부르고 멈추지 마라 — 제안 직후 같은 턴에 build_wall 등 시공 프리미티브를 그 그룹 id로 호출하면, 미승인 실패가 승인 카드에 보류 시공으로 묶여 사용자 수락 한 번으로 시공까지 끝난다.** 배치 프리미티브는 승인 어휘만 소비한다. |
 | `build_wall` | `mapId: string`, `rect: object`, `wallVocabId: string` | 승인된 벽 어휘로 벽을 시공한다(v3 공정 1단계). rect 영역에 9분할(nine_slice)/기둥(vertical) 패턴을 전개하며 레이어는 어휘의 layerHome이 결정한다(layer 인자 없음). 미승인 어휘여도 그냥 호출하라 — propose_tile_vocabulary로 어휘를 제안한 직후 같은 턴에 이 툴을 호출하면, 미승인 실패가 승인 카드에 '보류 시공'으로 묶여 사용자가 한 번 수락하면 시공까지 완료된다(승인을 기다리며 멈추지 마라). 시공 후 place_door/place_window → build_roof 순서로 진행하라. |
 | `build_roof` | `mapId: string`, `roofVocabId: string`, `wallRect?: object` | 승인된 지붕 어휘로 벽 위에 지붕을 얹는다(v3 공정 3단계). wallRect 생략 시 맵의 벽 어휘 셀을 스캔해 자동 감지한다. 벽이 없으면 거부 — 먼저 build_wall로 벽을 지으라. 처마/사선 오버레이 레이어는 어휘 layerHome(perCell) 규약으로 자동 판정된다. |
 | `place_door` | `mapId: string`, `at: object`, `doorVocabId: string` | 승인된 문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(승인된 벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. |

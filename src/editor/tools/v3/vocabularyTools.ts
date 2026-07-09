@@ -13,6 +13,7 @@
 
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import type { LintIssue } from "@/project/lint/projectLint";
 import type { VocabLayerHome } from "@/project/tileVocabulary";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import type { Project, TileAiMetadata, TileGroupLayer, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
@@ -43,6 +44,7 @@ const PROPOSE_EXAMPLE = {
     { kind: "tile", tileIds: [357], name: "벤치", role: "prop", layerHome: "upper" },
   ],
 };
+const KEEP_EXISTING_TILE_IDS_WARNING = "기존 그룹 타일 구성을 유지했습니다 — 제안 tileIds 무시";
 
 // 카드 렌더용 사실 배지(결정론) — AI에게 묻지 않고 엔진이 판정한 값.
 export interface VocabularyFactBadge {
@@ -83,6 +85,45 @@ function requireTileIds(tileset: TilesetDef, value: unknown, field: string): num
     }
     return tile;
   });
+}
+
+function uniqueTileIds(tileIds: readonly number[]): number[] {
+  return [...new Set(tileIds)];
+}
+
+function sameTileIds(a: readonly number[], b: readonly number[]): boolean {
+  return a.length === b.length && a.every((tile, index) => tile === b[index]);
+}
+
+function validTileIds(tileset: TilesetDef, tileIds: readonly number[]): boolean {
+  return tileIds.length > 0 && tileIds.every((tile) => Number.isInteger(tile) && tile >= 0 && tile < tileset.count);
+}
+
+function hasUsablePatternGrammar(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  const grammar = group.patternGrammar;
+  if (!grammar || grammar.parts.length === 0) return false;
+  return grammar.parts.every((part) => validTileIds(tileset, part.tileIds));
+}
+
+function hasHarnessDefinitionTileIds(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  if (group.source !== "bundled-default" && !group.id.startsWith("harness-")) return false;
+  return validTileIds(tileset, group.tileIds);
+}
+
+function canDeriveExistingPattern(tileset: TilesetDef, group: TileGroupMetadata, patternKind: GrammarPatternKind | undefined): boolean {
+  if (!isExpandablePatternKind(patternKind)) return false;
+  try {
+    derivePatternGrammar(patternKind, group.tileIds, tileset);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function shouldKeepExistingTileIds(tileset: TilesetDef, group: TileGroupMetadata, patternKind: GrammarPatternKind | undefined): boolean {
+  return hasUsablePatternGrammar(tileset, group)
+    || hasHarnessDefinitionTileIds(tileset, group)
+    || canDeriveExistingPattern(tileset, group, patternKind);
 }
 
 function slugFromName(name: string, existing: readonly TileGroupMetadata[]): string {
@@ -128,10 +169,28 @@ function factContradictions(label: string, claimed: VocabLayerHome, facts: reado
   return [];
 }
 
+function issueFromItemError(index: number, cause: unknown): LintIssue {
+  if (cause instanceof ToolError) {
+    return {
+      severity: "error",
+      code: cause.code,
+      mapId: cause.mapId,
+      x: cause.x,
+      y: cause.y,
+      message: `items[${index}]: ${cause.message}`,
+    };
+  }
+  return {
+    severity: "error",
+    code: "tool-exception",
+    message: `items[${index}]: ${cause instanceof Error ? cause.message : String(cause)}`,
+  };
+}
+
 const proposeTileVocabulary: ToolDefinition = {
   name: "propose_tile_vocabulary",
   description:
-    "미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **중요: 이 툴만 부르고 멈추지 마라 — 제안 직후 같은 턴에 build_wall 등 시공 프리미티브를 그 그룹 id로 호출하면, 미승인 실패가 승인 카드에 보류 시공으로 묶여 사용자 수락 한 번으로 시공까지 끝난다.** 배치 프리미티브는 승인 어휘만 소비한다.",
+    "미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). 기존 그룹 재제안은 groupId만 보내라(tileIds 불필요). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **중요: 이 툴만 부르고 멈추지 마라 — 제안 직후 같은 턴에 build_wall 등 시공 프리미티브를 그 그룹 id로 호출하면, 미승인 실패가 승인 카드에 보류 시공으로 묶여 사용자 수락 한 번으로 시공까지 끝난다.** 배치 프리미티브는 승인 어휘만 소비한다.",
   mode: "write",
   version: 3,
   parameters: {
@@ -166,29 +225,40 @@ const proposeTileVocabulary: ToolDefinition = {
     }
     const cards: VocabularyProposalCard[] = [];
     const warnings: string[] = [];
+    const issues: LintIssue[] = [];
+    let firstFailure: unknown;
     for (const [index, raw] of (args.items as unknown[]).entries()) {
-      if (typeof raw !== "object" || raw === null) failWithExample(`items[${index}]는 객체여야 합니다`, PROPOSE_EXAMPLE);
-      const item = raw as Record<string, unknown>;
-      const kind = coerceEnum(item.kind, ITEM_KINDS, `items[${index}].kind`, PROPOSE_EXAMPLE);
-      const role = coerceEnum(item.role, GROUP_ROLES, `items[${index}].role`, PROPOSE_EXAMPLE);
-      const layerHome = coerceEnum(item.layerHome, LAYER_HOMES, `items[${index}].layerHome`, PROPOSE_EXAMPLE);
-      const patternKind = optionalEnum(item.patternKind, PATTERN_KINDS, `items[${index}].patternKind`, PROPOSE_EXAMPLE);
-      const name = typeof item.name === "string" ? item.name.trim() : "";
-      if (!name) failWithExample(`items[${index}].name이 비어 있습니다`, PROPOSE_EXAMPLE);
-      const itemLabel = `items[${index}] '${name}'`;
-      if (patternKind && !profile.supportedPatternKinds.includes(patternKind)) {
-        warnings.push(`${itemLabel}: 패턴 '${patternKind}'은(는) 문법 프로파일 '${profile.id}'가 아직 시공하지 못합니다(승인은 가능, 프리미티브 전개 제외).`);
+      try {
+        if (typeof raw !== "object" || raw === null) failWithExample(`items[${index}]는 객체여야 합니다`, PROPOSE_EXAMPLE);
+        const item = raw as Record<string, unknown>;
+        const kind = coerceEnum(item.kind, ITEM_KINDS, `items[${index}].kind`, PROPOSE_EXAMPLE);
+        const role = coerceEnum(item.role, GROUP_ROLES, `items[${index}].role`, PROPOSE_EXAMPLE);
+        const layerHome = coerceEnum(item.layerHome, LAYER_HOMES, `items[${index}].layerHome`, PROPOSE_EXAMPLE);
+        const patternKind = optionalEnum(item.patternKind, PATTERN_KINDS, `items[${index}].patternKind`, PROPOSE_EXAMPLE);
+        const name = typeof item.name === "string" ? item.name.trim() : "";
+        if (!name) failWithExample(`items[${index}].name이 비어 있습니다`, PROPOSE_EXAMPLE);
+        const itemLabel = `items[${index}] '${name}'`;
+        const itemWarnings: string[] = [];
+        if (patternKind && !profile.supportedPatternKinds.includes(patternKind)) {
+          itemWarnings.push(`${itemLabel}: 패턴 '${patternKind}'은(는) 문법 프로파일 '${profile.id}'가 아직 시공하지 못합니다(승인은 가능, 프리미티브 전개 제외).`);
+        }
+        const card = kind === "group"
+          ? approveGroupItem(tileset, item, index, { name, role, layerHome, patternKind, itemLabel })
+          : approveTileItems(tileset, item, index, { name, role, layerHome, patternKind, itemLabel });
+        warnings.push(...itemWarnings, ...card.warnings);
+        cards.push(card);
+      } catch (cause) {
+        firstFailure ??= cause;
+        issues.push(issueFromItemError(index, cause));
       }
-      const card = kind === "group"
-        ? approveGroupItem(tileset, item, index, { name, role, layerHome, patternKind, itemLabel })
-        : approveTileItems(tileset, item, index, { name, role, layerHome, patternKind, itemLabel });
-      warnings.push(...card.warnings);
-      cards.push(card);
     }
+    if (cards.length === 0 && firstFailure !== undefined) throw firstFailure;
     const names = cards.map((card) => `'${card.name}'`).join(", ");
+    const failureSummary = issues.length > 0 ? ` 실패 ${issues.length}건은 issues에 보고했습니다.` : "";
     return {
-      summary: `타일 어휘 ${cards.length}건 제안(${names}). 다음 단계(필수): 지금 같은 턴에 이 그룹 id를 wallVocabId/pathVocabId 등으로 넣어 시공 프리미티브(build_wall/lay_path 등)를 곧바로 호출하세요. 미승인 상태라 그 호출은 실패하지만, 시스템이 그 시공을 이 승인 카드에 '보류 시공'으로 묶어 사용자가 [승인하고 시공]을 한 번 누르면 어휘 승인+시공이 함께 끝납니다. 제안만 하고 턴을 끝내지 마세요.`,
+      summary: `타일 어휘 ${cards.length}건 제안(${names}).${failureSummary} 다음 단계(필수): 지금 같은 턴에 이 그룹 id를 wallVocabId/pathVocabId 등으로 넣어 시공 프리미티브(build_wall/lay_path 등)를 곧바로 호출하세요. 미승인 상태라 그 호출은 실패하지만, 시스템이 그 시공을 이 승인 카드에 '보류 시공'으로 묶어 사용자가 [승인하고 시공]을 한 번 누르면 어휘 승인+시공이 함께 끝납니다. 제안만 하고 턴을 끝내지 마세요.`,
       ...(warnings.length > 0 ? { warnings } : {}),
+      ...(issues.length > 0 ? { issues } : {}),
       data: { tilesetId: tileset.id, grammarProfile: profile.id, cards },
     };
   },
@@ -207,6 +277,8 @@ function approveGroupItem(tileset: TilesetDef, item: Record<string, unknown>, in
   tileset.tileGroups ??= [];
   const groupId = typeof item.groupId === "string" && item.groupId.trim() ? item.groupId.trim() : undefined;
   let group: TileGroupMetadata;
+  let nextTileIds: number[];
+  let derivedPatternGrammar: TileGroupMetadata["patternGrammar"] | undefined;
   if (groupId) {
     const existing = tileset.tileGroups.find((candidate) => candidate.id === groupId);
     if (!existing) {
@@ -216,29 +288,48 @@ function approveGroupItem(tileset: TilesetDef, item: Record<string, unknown>, in
       );
     }
     group = existing;
-    if (item.tileIds !== undefined) group.tileIds = [...new Set(requireTileIds(tileset, item.tileIds, `items[${index}].tileIds`))];
+    nextTileIds = [...group.tileIds];
+    if (item.tileIds !== undefined) {
+      const proposedTileIds = uniqueTileIds(requireTileIds(tileset, item.tileIds, `items[${index}].tileIds`));
+      if (sameTileIds(proposedTileIds, group.tileIds)) {
+        nextTileIds = proposedTileIds;
+      } else if (shouldKeepExistingTileIds(tileset, group, claims.patternKind)) {
+        warnings.push(`${claims.itemLabel}: ${KEEP_EXISTING_TILE_IDS_WARNING}`);
+      } else {
+        nextTileIds = proposedTileIds;
+      }
+    }
   } else {
-    const tileIds = [...new Set(requireTileIds(tileset, item.tileIds, `items[${index}].tileIds`))];
+    nextTileIds = uniqueTileIds(requireTileIds(tileset, item.tileIds, `items[${index}].tileIds`));
     group = {
       id: slugFromName(claims.name, tileset.tileGroups),
       name: claims.name,
       role: claims.role,
       defaultLayer: defaultLayerFor(claims.layerHome),
-      tileIds,
+      tileIds: nextTileIds,
       description: "",
       placementRules: "",
       source: "user",
     };
-    tileset.tileGroups.push(group);
+  }
+  if (!group.patternGrammar && isExpandablePatternKind(claims.patternKind)) {
+    derivedPatternGrammar = derivePatternGrammar(claims.patternKind, nextTileIds, tileset, { groupId: group.id, name: claims.name });
+  } else if (!group.patternGrammar && claims.role === "roof") {
+    const roofTiles = nextTileIds.length >= 3 ? nextTileIds.slice(0, 3) : nextTileIds.slice(0, 2);
+    if (roofTiles.length >= 2) {
+      derivedPatternGrammar = derivePatternGrammar("horizontal_expandable", roofTiles, tileset, { groupId: group.id, name: claims.name });
+      warnings.push(`${claims.itemLabel}: 지붕 role은 시공 가능해야 하므로 horizontal_expandable 파츠를 자동 보정했습니다.`);
+    }
   }
   // 사실 배지는 반드시 마킹 전에 계산한다 — 마킹이 defaultLayer를 덮으면 사실이 추정에 오염된다.
-  const facts = factBadges(tileset, group.tileIds);
+  const facts = factBadges(tileset, nextTileIds);
   warnings.push(...factContradictions(claims.itemLabel, claims.layerHome, facts));
   // 승인 마킹 — 커밋은 사용자 명시 수락으로만 일어난다(requiresApproval 게이트).
   group.name = claims.name;
   group.role = claims.role;
   group.layerHome = claims.layerHome;
   group.defaultLayer = defaultLayerFor(claims.layerHome);
+  group.tileIds = nextTileIds;
   group.origin = "user";
   group.source = "user"; // 하네스 재적용이 그룹을 재생성/정리하지 못하게 보호(기존 T1b 규약).
   if (claims.patternKind && group.patternGrammar && group.patternGrammar.kind !== claims.patternKind) {
@@ -250,15 +341,8 @@ function approveGroupItem(tileset: TilesetDef, item: Record<string, unknown>, in
   // patternKind 그룹은 반드시 patternGrammar.parts를 갖는다. 이미 파츠가 있으면(사실) 유지.
   // tileIds가 모자라면 derivePatternGrammar가 pattern-underspecified를 던져 승인이 거부된다
   // (쓰기 draft는 runTool이 폐기하므로 부분 마킹이 남지 않는다).
-  if (isExpandablePatternKind(claims.patternKind) && !group.patternGrammar) {
-    group.patternGrammar = derivePatternGrammar(claims.patternKind, group.tileIds, tileset, { groupId: group.id, name: group.name });
-  } else if (claims.role === "roof" && !group.patternGrammar) {
-    const roofTiles = group.tileIds.length >= 3 ? group.tileIds.slice(0, 3) : group.tileIds.slice(0, 2);
-    if (roofTiles.length >= 2) {
-      group.patternGrammar = derivePatternGrammar("horizontal_expandable", roofTiles, tileset, { groupId: group.id, name: group.name });
-      warnings.push(`${claims.itemLabel}: 지붕 role은 시공 가능해야 하므로 horizontal_expandable 파츠를 자동 보정했습니다.`);
-    }
-  }
+  if (derivedPatternGrammar) group.patternGrammar = derivedPatternGrammar;
+  if (!groupId) tileset.tileGroups.push(group);
   return {
     kind: "group",
     groupId: group.id,

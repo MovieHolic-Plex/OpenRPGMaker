@@ -70,7 +70,12 @@ export function runTool(
   if (tool.mode === "read") {
     try {
       const exec = tool.run(ctx.project, normalizedArgs);
-      return { ok: true, summary: exec.summary, data: exec.data };
+      return {
+        ok: true,
+        summary: exec.summary,
+        ...(exec.issues && exec.issues.length > 0 ? { issues: exec.issues } : {}),
+        data: exec.data,
+      };
     } catch (cause) {
       return { ok: false, summary: failureSummary(name, cause), issues: [issueFromError(cause)] };
     }
@@ -92,15 +97,21 @@ export function runTool(
   // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
   const commit = commitChangeset(draft, before);
   if (!commit.ok) {
-    return { ok: false, summary: `'${name}' 커밋 거부(무결성 오류)`, diff, issues: commit.blocking.length > 0 ? commit.blocking : commit.issues };
+    return {
+      ok: false,
+      summary: `'${name}' 커밋 거부(무결성 오류)`,
+      diff,
+      issues: [...(exec.issues ?? []), ...(commit.blocking.length > 0 ? commit.blocking : commit.issues)],
+    };
   }
 
   if (!options.dryRun) ctx.project = draft;
+  const issues = [...(exec.issues ?? []), ...commit.issues];
   return {
     ok: true,
     summary: exec.summary,
     diff,
-    issues: commit.issues.length > 0 ? commit.issues : undefined,
+    issues: issues.length > 0 ? issues : undefined,
     data: exec.data,
   };
 }

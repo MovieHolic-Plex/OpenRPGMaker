@@ -15,6 +15,7 @@ import { ToolError } from "@/editor/tools/types";
 import { getGrammarProfile, tilesetGrammarProfile } from "@/editor/tools/v3";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import {
   approvedVocabulary,
   assertApprovedOrFail,
@@ -103,6 +104,52 @@ describe("propose_tile_vocabulary (v3 write 툴)", () => {
     expect(approvedVocabulary(def).groups.map((entry) => entry.id)).toContain(groupId);
   });
 
+  it("기존 9slice 그룹 재제안에 부분 tileIds가 섞여도 기존 구성을 유지하고 warning으로 통과한다", () => {
+    const { ctx, tileset } = context();
+    const groupId = `${COMBINED_TOWN_HARNESS_PREFIX}wood-wall-9slice`;
+    const original = [...tileset().tileGroups!.find((entry) => entry.id === groupId)!.tileIds];
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{
+        kind: "group",
+        groupId,
+        tileIds: original.slice(0, 5),
+        name: "통나무 벽",
+        role: "wall",
+        patternKind: "nine_slice_expandable",
+        layerHome: "lower",
+      }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.some((warning) => warning.includes("기존 그룹 타일 구성을 유지했습니다"))).toBe(true);
+    const group = tileset().tileGroups!.find((entry) => entry.id === groupId)!;
+    expect(group.tileIds).toEqual(original);
+    expect(group.patternGrammar?.kind).toBe("nine_slice_expandable");
+    const card = (result.data as { cards: { tileIds: number[] }[] }).cards[0];
+    expect(card.tileIds).toEqual(original);
+  });
+
+  it("기존 그룹 재제안의 tileIds가 기존과 동일하면 경고 없이 현행 승인 마킹만 수행한다", () => {
+    const { ctx, tileset } = context();
+    const groupId = `${COMBINED_TOWN_HARNESS_PREFIX}wood-wall-9slice`;
+    const original = [...tileset().tileGroups!.find((entry) => entry.id === groupId)!.tileIds];
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [{
+        kind: "group",
+        groupId,
+        tileIds: original,
+        name: "통나무 벽",
+        role: "wall",
+        patternKind: "nine_slice_expandable",
+        layerHome: "lower",
+      }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.diff?.warnings.some((warning) => warning.includes("기존 그룹 타일 구성을 유지했습니다"))).not.toBe(true);
+    const group = tileset().tileGroups!.find((entry) => entry.id === groupId)!;
+    expect(group.tileIds).toEqual(original);
+    expect(group.origin).toBe("user");
+  });
+
   it("낱개 타일(소품) 승인 제안: tileMeta origin:'user' + userLocked + 승인 어휘 편입", () => {
     const { ctx, tileset } = context();
     const tile = findUpperTile(tileset());
@@ -133,6 +180,25 @@ describe("propose_tile_vocabulary (v3 write 툴)", () => {
     const empty = runTool(ctx, "propose_tile_vocabulary", { items: [] });
     expect(empty.ok).toBe(false);
     expect(empty.issues?.some((issue) => issue.message.includes("다시 보낼 형식 예시"))).toBe(true);
+  });
+
+  it("신규 그룹 9slice tileIds 미달은 해당 item만 issues로 보고하고 나머지 item 카드는 유지한다", () => {
+    const { ctx, tileset } = context();
+    const beforeGroupCount = tileset().tileGroups?.length ?? 0;
+    const tile = findUpperTile(tileset());
+    const result = runTool(ctx, "propose_tile_vocabulary", {
+      items: [
+        { kind: "group", tileIds: [301, 302, 303, 331, 332], name: "모자란벽", role: "wall", patternKind: "nine_slice_expandable", layerHome: "lower" },
+        { kind: "tile", tileIds: [tile], name: "벤치", role: "prop", layerHome: "upper" },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.issues?.some((issue) => issue.code === "pattern-underspecified" && issue.message.includes("items[0]"))).toBe(true);
+    const data = result.data as { cards: { kind: string; name: string }[] };
+    expect(data.cards).toEqual([expect.objectContaining({ kind: "tile", name: "벤치" })]);
+    expect(tileset().tileGroups?.length ?? 0).toBe(beforeGroupCount);
+    expect(tileset().tileGroups?.some((entry) => entry.name === "모자란벽")).toBe(false);
+    expect(isApprovedTile(tileset(), tile)).toBe(true);
   });
 });
 

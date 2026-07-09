@@ -13,12 +13,15 @@ import {
 } from "@/editor/panels/aiChatPanel";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { VocabularyProposalCard } from "@/editor/tools/v3";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
 const CONFIG = { baseUrl: "x", model: "test-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
 const NINE_TILES = [301, 302, 303, 331, 332, 333, 361, 362, 363];
+const WOOD_WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}wood-wall-9slice`;
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;
@@ -73,6 +76,48 @@ describe("T3 — 미승인 실패가 pendingBuild로 어휘 제안 카드에 첨
     expect(proposalAcceptButtonLabel(true, 1, 1)).toBe("승인하고 시공");
     expect(proposalAcceptButtonLabel(false, 1, 1)).toBe("수락해서 적용");
     expect(collectPendingBuilds(turn.proposedCalls)).toHaveLength(1);
+  });
+
+  it("실측: wood-wall 9slice 기존 그룹 재제안의 부분 tileIds를 무시하고 보류 build_wall이 카드에 묶인다", async () => {
+    const ctx = contextWithMap();
+    const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups!.find((entry) => entry.id === WOOD_WALL_GROUP_ID)!;
+    const originalTileIds = [...group.tileIds];
+    const wallArgs = { mapId: "m1", rect: { x: 4, y: 4, w: 5, h: 4 }, wallVocabId: WOOD_WALL_GROUP_ID };
+    const chat = scriptedChat([
+      toolCallMsg("build_wall", wallArgs, "c1"),
+      toolCallMsg("propose_tile_vocabulary", {
+        items: [{
+          kind: "group",
+          groupId: WOOD_WALL_GROUP_ID,
+          tileIds: originalTileIds.slice(0, 5),
+          name: "통나무 벽",
+          role: "wall",
+          patternKind: "nine_slice_expandable",
+          layerHome: "lower",
+        }],
+      }, "c2"),
+      finalMsg("어휘 승인이 필요합니다."),
+    ]);
+    const session = new AssistantSession(ctx.project, { config: CONFIG, chat });
+    const turn = await session.sendUserMessage("통나무 벽을 지어줘");
+
+    const propose = turn.proposedCalls.find((call) => call.name === "propose_tile_vocabulary");
+    expect(propose).toBeDefined();
+    expect(propose!.result.diff?.warnings.some((warning) => warning.includes("기존 그룹 타일 구성을 유지했습니다"))).toBe(true);
+    expect((propose!.result.data as { cards: { tileIds: number[] }[] }).cards[0].tileIds).toEqual(originalTileIds);
+    const pendings = propose!.pendingBuilds ?? [];
+    expect(pendings).toHaveLength(1);
+    expect(pendings[0].tool).toBe("build_wall");
+    expect(pendings[0].args).toMatchObject(wallArgs);
+
+    const proposed = session.getProposedProject();
+    expect(proposed.tilesets[DEFAULT_TILESET_ID].tileGroups!.find((entry) => entry.id === WOOD_WALL_GROUP_ID)!.tileIds).toEqual(originalTileIds);
+    const fused = runPendingBuilds(proposed, [{ pending: pendings[0], args: pendings[0].args }]);
+    expect(fused.outcomes[0].result.ok, fused.outcomes[0].result.summary).toBe(true);
+    const map = fused.project.maps["m1"];
+    expect(map.lowerTiles[4 * map.width + 4]).toBe(originalTileIds[0]);
+    expect(map.lowerTiles[5 * map.width + 5]).toBe(originalTileIds[4]);
+    expect(map.lowerTiles[7 * map.width + 8]).toBe(originalTileIds[8]);
   });
 
   it("어휘 제안이 없는 턴이면 pendingBuild를 첨부할 카드가 없다(버려짐)", async () => {

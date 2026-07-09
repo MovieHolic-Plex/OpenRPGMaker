@@ -60,6 +60,7 @@ export interface ToolContext {
 export interface ToolExecResult {
   summary: string;
   warnings?: string[];
+  issues?: LintIssue[];
   data?: unknown;
 }
 
