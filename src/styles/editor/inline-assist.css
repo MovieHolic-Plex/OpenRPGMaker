@@ -85,3 +85,20 @@
   font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
   padding: 0 4px;
 }
+
+.region-task-badge {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 85%, #000);
+  border-radius: 999px;
+  color: #fff;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 10px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 30;
+  animation: region-task-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes region-task-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}

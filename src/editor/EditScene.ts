@@ -32,6 +32,8 @@ import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
 import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
+import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
@@ -160,6 +162,14 @@ export class EditScene extends PhaserRuntime.Scene {
   private buildPalettePopup: HTMLElement | null = null;
   private buildPalettePopupKey = "";
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
+  private activeRegionTask: { readonly mapId: string; readonly region: RegionRect } | null = null;
+  private regionTaskBadge: HTMLElement | null = null;
+  private readonly handleRegionTaskStatus = (event: Event): void => {
+    const detail = regionTaskStatusDetail(event);
+    if (!detail) return;
+    this.activeRegionTask = detail.running ? { mapId: detail.mapId, region: detail.region } : null;
+    this.renderRegionTaskBadge();
+  };
   /**
    * 브라우저 기본 컨텍스트 메뉴만 차단.
    * mousedown/pointerdown 에 preventDefault 하면 Phaser 우클릭 드래그가 먹통이 된다.
@@ -227,6 +237,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
@@ -250,9 +261,13 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentGhostPreviewLayer();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     this.clearBuildPaletteOverlay();
+    this.regionTaskBadge?.remove();
+    this.regionTaskBadge = null;
+    this.activeRegionTask = null;
   }
 
   private handleResize(): void {
@@ -988,11 +1003,13 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     if (!selection || selection.mapId !== mapId) {
       this.clearBuildPaletteOverlay();
+      this.renderRegionTaskBadge();
       return;
     }
     const host = this.game.canvas.parentElement;
     if (!host) {
       this.clearBuildPaletteOverlay();
+      this.renderRegionTaskBadge();
       return;
     }
 
@@ -1001,7 +1018,10 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!this.buildPalettePopup || this.buildPalettePopupKey !== popupKey || !this.buildPalettePopup.isConnected) {
       this.clearBuildPaletteOverlay();
       const popup = kind === "build" ? renderBuildPalettePopup() : renderSelectionActionChips(selection);
-      if (!popup) return;
+      if (!popup) {
+        this.renderRegionTaskBadge();
+        return;
+      }
       popup.classList.add("build-palette-floating");
       popup.style.left = "0px";
       popup.style.top = "0px";
@@ -1011,6 +1031,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.buildPalettePopupKey = popupKey;
     }
     this.positionBuildPaletteOverlay(selection);
+    this.renderRegionTaskBadge();
   }
 
   private positionBuildPaletteOverlay(selection: TileRect): void {
@@ -1046,6 +1067,35 @@ export class EditScene extends PhaserRuntime.Scene {
     this.buildPalettePopup?.remove();
     this.buildPalettePopup = null;
     this.buildPalettePopupKey = "";
+  }
+
+  private renderRegionTaskBadge(): void {
+    if (typeof document === "undefined") return;
+    const task = this.activeRegionTask;
+    const mapId = this.mapId();
+    const host = this.game.canvas?.parentElement;
+    if (!task || task.mapId !== mapId || !host) {
+      this.regionTaskBadge?.remove();
+      this.regionTaskBadge = null;
+      return;
+    }
+    if (!this.regionTaskBadge || !this.regionTaskBadge.isConnected) {
+      const badge = document.createElement("div");
+      badge.className = "region-task-badge";
+      badge.dataset.testid = "region-task-badge";
+      badge.textContent = "✨ AI 작업 중…";
+      host.append(badge);
+      this.regionTaskBadge = badge;
+    }
+    const camera = this.cameras.main;
+    const rect = tileRectToScreenRect(
+      { x: task.region.x, y: task.region.y, width: task.region.width, height: task.region.height },
+      { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom },
+    );
+    const canvasRect = this.game.canvas.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    this.regionTaskBadge.style.left = `${Math.round(canvasRect.left - hostRect.left + rect.x)}px`;
+    this.regionTaskBadge.style.top = `${Math.round(canvasRect.top - hostRect.top + rect.y - 26)}px`;
   }
 }
 
