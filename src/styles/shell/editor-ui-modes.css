@@ -177,10 +177,10 @@ body.editor-ui-basic .left-panel-stack {
 }
 
 .basic-rail-flyout {
-  background: color-mix(in srgb, var(--control-bg, #1a2236) 96%, #000);
+  background: var(--editor-popover-bg, #151b2c);
   border: 1px solid var(--editor-line-strong, #3a4a6a);
   border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow-pop, 0 12px 32px rgba(0, 0, 0, 0.45));
   display: flex;
   flex-direction: column;
   left: 54px;
