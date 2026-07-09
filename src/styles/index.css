@@ -18,6 +18,7 @@
 @import "./shell/rm2k3.css";
 @import "./shell/editor-ui-modes.css";
 @import "./editor/responsive-a.css";
+@import "./editor/inline-assist.css";
 @import "./runtime/battle.css";
 @import "./runtime/commerce.css";
 @import "./runtime/title.css";

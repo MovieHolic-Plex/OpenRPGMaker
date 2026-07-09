@@ -34,6 +34,7 @@ import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import { isSignificantRegionDrag, regionRectFromDrag } from "@/editor/regionRightDrag";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { saveProjectNow } from "@/editor/saveActions";
@@ -980,7 +981,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
-    if (!isBuildPaletteEnabled() || !selection || selection.mapId !== mapId) {
+    if (!selection || selection.mapId !== mapId) {
       this.clearBuildPaletteOverlay();
       return;
     }
@@ -990,10 +991,11 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
 
-    const popupKey = `${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`;
+    const kind = isBuildPaletteEnabled() ? "build" : "chips";
+    const popupKey = `${kind}:${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`;
     if (!this.buildPalettePopup || this.buildPalettePopupKey !== popupKey || !this.buildPalettePopup.isConnected) {
       this.clearBuildPaletteOverlay();
-      const popup = renderBuildPalettePopup();
+      const popup = kind === "build" ? renderBuildPalettePopup() : renderSelectionActionChips(selection);
       if (!popup) return;
       popup.classList.add("build-palette-floating");
       popup.style.left = "0px";

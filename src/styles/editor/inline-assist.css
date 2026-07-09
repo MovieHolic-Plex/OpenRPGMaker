@@ -1,0 +1,35 @@
+/* src/styles/editor/inline-assist.css
+   캔버스 인라인 어시스트 — 선택 액션 칩, 제안 인라인 승인, 영역 작업 진행 배지. */
+
+.selection-action-chips {
+  align-items: center;
+  background: var(--editor-popover-bg, #151b2c);
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.selection-action-chip {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.selection-action-chip:hover,
+.selection-action-chip:focus-visible {
+  border-color: var(--editor-line-strong, #3a4a6a);
+  outline: none;
+}
+
+.selection-action-chip.is-primary {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 80%, #1a2744);
+  color: #fff;
+}
