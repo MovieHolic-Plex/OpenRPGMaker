@@ -64,6 +64,11 @@ export function databaseRecordSelect(params: RecordSelectParams): HTMLSelectElem
   for (const [index, record] of records.entries()) {
     select.append(el("option", { text: numberedName(index, record.name), attrs: { value: record.id } }));
   }
+  // 삭제된/유령 itemId·actorId도 선택 상태로 보이게 한다(스위치 피커와 동일).
+  // 없으면 select.value가 조용히 첫 옵션("(선택)")으로 떨어져 조건이 비어 보이는 착시가 난다.
+  if (params.currentId && !records.some((record) => record.id === params.currentId)) {
+    select.append(el("option", { text: `${params.currentId} (없음)`, attrs: { value: params.currentId } }));
+  }
   select.value = params.currentId;
   select.addEventListener("change", () => params.onChange(select.value));
   return select;
