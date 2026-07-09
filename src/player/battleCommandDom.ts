@@ -170,14 +170,41 @@ function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
   const list = document.createElement("div");
   list.className = "battle-enemy-list";
   for (const enemy of enemies) {
-    const row = document.createElement("div");
-    row.className = "battle-enemy-list-row";
-    row.dataset.enemyId = enemy.id;
-    row.textContent = enemy.name;
-    if (enemy.defeated) row.classList.add("defeated");
-    list.append(row);
+    list.append(enemyListRow(enemy));
   }
   return list;
+}
+
+export function syncEnemyListPanel(panel: HTMLElement, enemies: readonly BattleBattlerSnapshot[]): void {
+  const list = panel.querySelector<HTMLElement>(".battle-enemy-list");
+  if (!list) return;
+  for (const enemy of enemies) {
+    let row = list.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${enemy.id}"]`);
+    if (!row) {
+      list.append(enemyListRow(enemy));
+      row = list.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${enemy.id}"]`);
+    }
+    if (!row) continue;
+    const hp = row.querySelector<HTMLElement>(".battle-enemy-list-hp");
+    if (hp) hp.textContent = `HP ${enemy.hp}/${enemy.maxHp}`;
+    row.classList.toggle("defeated", enemy.defeated);
+  }
+}
+
+function enemyListRow(enemy: BattleBattlerSnapshot): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "battle-enemy-list-row";
+  row.dataset.enemyId = enemy.id;
+  const name = document.createElement("span");
+  name.className = "battle-enemy-list-name";
+  name.textContent = enemy.name;
+  const hp = document.createElement("span");
+  hp.className = "battle-enemy-list-hp";
+  hp.dataset.testid = `battle-enemy-list-hp-${enemy.id}`;
+  hp.textContent = `HP ${enemy.hp}/${enemy.maxHp}`;
+  row.append(name, hp);
+  if (enemy.defeated) row.classList.add("defeated");
+  return row;
 }
 
 function usableSkills(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {

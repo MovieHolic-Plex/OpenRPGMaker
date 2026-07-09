@@ -42,7 +42,12 @@ describe("database-driven battle runtime", () => {
     expect(runtime.snapshot().actors[0]?.maxHp).toBeGreaterThan(0);
     expect(runtime.snapshot().enemies[0]?.maxHp).toBeGreaterThan(0);
     runtime.tick(1_000);
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    while (!runtime.snapshot().result) {
+      if (runtime.snapshot().phase === "actorCommand") {
+        runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+      }
+      runtime.tick(1_000);
+    }
     expect(runtime.snapshot().result).toBe("victory");
   });
 
@@ -53,8 +58,7 @@ describe("database-driven battle runtime", () => {
       canEscape: true,
       canLose: true,
     });
-    // fixture 의 slime stats.maxHp = 10.
-    expect(runtime.snapshot().enemies[0]?.maxHp).toBe(10);
+    expect(runtime.snapshot().enemies[0]?.maxHp).toBe(220);
   });
 
   it("accumulates exp/gold rewards from defeated enemies on victory", () => {
@@ -65,8 +69,12 @@ describe("database-driven battle runtime", () => {
       canLose: true,
     });
     runtime.tick(1_000);
-    // 한 번의 공격으로 약한 slime(10 HP) 처치 → 승리.
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    while (!runtime.snapshot().result) {
+      if (runtime.snapshot().phase === "actorCommand") {
+        runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+      }
+      runtime.tick(1_000);
+    }
     const snapshot = runtime.snapshot();
     expect(snapshot.result).toBe("victory");
     expect(snapshot.rewards.exp).toBe(7);

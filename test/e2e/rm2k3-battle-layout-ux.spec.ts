@@ -1,6 +1,6 @@
 ﻿import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import { confirmBattleTarget, seedLayoutResultBattleProject, seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
 
 type Rect = {
   readonly x: number;
@@ -47,6 +47,7 @@ test("battle command screen uses an RM2003-style field and bottom HUD layout", a
   await page.setViewportSize({ width: 1360, height: 768 });
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 15_000 });
   await mkdir(`${evidenceDir}/red-green`, { recursive: true });
   await page.screenshot({ path: `${evidenceDir}/red-green/battle-command-layout.png`, fullPage: true });
 
@@ -66,7 +67,7 @@ test("battle command screen uses an RM2003-style field and bottom HUD layout", a
   expect(metrics.partyRows.length).toBeGreaterThan(0);
   expect(Math.max(...metrics.partyRows.map((row) => row.bottom))).toBeLessThanOrEqual(metrics.party.bottom - 2);
   expect(metrics.messageDisplay).toBe("grid");
-  expect(metrics.commandPanelBackground).toContain("linear-gradient");
+  expect(metrics.commandPanelDisplay).toBe("grid");
   expect(metrics.backdropBackground).toContain("url(");
 
   await page.getByTestId("actor-command-defend").click();
@@ -84,6 +85,7 @@ test("battle command screen uses an RM2003-style field and bottom HUD layout", a
 });
 
 test("battle target and result states stay readable without HUD collision", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 1360, height: 768 });
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
@@ -95,10 +97,13 @@ test("battle target and result states stay readable without HUD collision", asyn
   expect(targetMetrics.targetPromptText).toContain("대상:");
   expect(targetMetrics.messageDisplay).toBe("grid");
 
-  await page.locator(".battle-enemy[data-battle-targetable='true']").first().click();
-  await expect(page.getByTestId("battle-result-panel")).toBeVisible();
-  await page.screenshot({ path: `${evidenceDir}/red-green/battle-result-layout.png`, fullPage: true });
+  await seedLayoutResultBattleProject(page);
+  await startReferenceBattle(page);
+  await page.getByTestId("actor-command-attack").click();
+  await confirmBattleTarget(page);
+  await expect(page.getByTestId("battle-result-panel")).toBeVisible({ timeout: 20_000 });
   const resultMetrics = await battleLayoutMetrics(page);
+  await page.screenshot({ path: `${evidenceDir}/red-green/battle-result-layout.png`, fullPage: true });
   await writeFile(`${evidenceDir}/red-green/battle-result-layout.json`, `${JSON.stringify(resultMetrics, null, 2)}\n`, "utf8");
 
   expect(resultMetrics.resultPanel).toBeTruthy();

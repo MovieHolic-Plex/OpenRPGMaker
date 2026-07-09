@@ -1,7 +1,7 @@
 import type { BattleResult } from "@/battle/runtime";
-import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { StepResult } from "@/player/interpreter";
+import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
 import { mountBattleScene } from "@/player/battleDom";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { dialogueHost } from "@/player/playSceneDom";
@@ -22,8 +22,10 @@ export function playBattle(
 ): Promise<BattleResult> {
   const host = dialogueHost(scene);
   if (!host) return Promise.resolve("defeat");
+  const project = store.getCurrent();
+  const savedAudio = enterBattleAudio(project, scene.session);
   const runtime = createBattleRuntime({
-    project: store.getCurrent(),
+    project,
     troopId: step.troopId,
     canEscape: step.canEscape,
     canLose: step.canLose,
@@ -38,7 +40,6 @@ export function playBattle(
       skillIds: scene.session.actorSkillIds,
       classOverrides: scene.session.classOverrides,
       stateIds: scene.session.actorStateIds,
-      // 플레이 중 파티 편성(라이브 세션). 없으면 전투가 에디터 시작 상태 파티를 쓴다.
       partyActorIds: scene.session.partyActorIds,
     },
     sessionState: {
@@ -49,7 +50,7 @@ export function playBattle(
     },
     captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
     onMonsterCaptured: (capture) => {
-      giveMonster(store.getCurrent(), scene.session, {
+      giveMonster(project, scene.session, {
         speciesId: capture.speciesId,
         level: capture.level,
         caughtAt: capture.caughtAt,
@@ -58,16 +59,16 @@ export function playBattle(
     },
     rng: () => nextSessionRandom(scene.session, "battle"),
   });
-  advanceBattleRuntime(runtime);
   return new Promise<BattleResult>((resolve) => {
     const battleScene = mountBattleScene({
       host,
       runtime,
       onResult: (result, snapshot) => {
+        exitBattleAudio(project, scene.session, savedAudio);
         applyBattleRewardsToSession(
           scene.session,
           { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds },
-          store.getCurrent()
+          project
         );
         battleScene.destroy();
         resolve(result);

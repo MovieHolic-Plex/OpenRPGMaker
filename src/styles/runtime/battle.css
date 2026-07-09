@@ -523,16 +523,198 @@
 }
 
 .battle-enemy > .battle-status-icons {
-  display: none;
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.battle-enemy-hud {
+  display: grid;
+  gap: 1px;
+  margin-top: 2px;
+  min-width: 52px;
+}
+
+.battle-enemy-name {
+  color: var(--rm2k3-battle-text);
+  display: block;
+  font-size: 8px;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.battle-enemy-hp-text {
+  color: var(--rm2k3-battle-muted);
+  display: block;
+  font-size: 7px;
+  line-height: 1;
+  text-align: center;
+}
+
+.battle-enemy-hp-bar {
+  display: block;
+  height: 4px;
+}
+
+.battle-enemy-list-hp {
+  color: var(--rm2k3-battle-muted);
+  font-size: 8px;
+}
+
+.battle-field {
+  position: relative;
+}
+
+.battle-animation-layer {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+.battle-effects-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+}
+
+.battle-damage-popup {
+  animation: battle-damage-float 0.9s ease-out forwards;
+  color: #fff6a8;
+  font-size: 14px;
+  font-weight: 700;
+  left: var(--battle-node-x);
+  position: absolute;
+  text-shadow: 1px 1px 0 #4a1200, -1px -1px 0 #4a1200;
+  top: calc(var(--battle-node-y) - 12%);
+  transform: translate(-50%, -100%);
+  z-index: 6;
+}
+
+.battle-damage-popup-critical {
+  color: #ff8a4d;
+  font-size: 16px;
+}
+
+.battle-damage-popup-heal {
+  color: #8df064;
 }
 
 .battle-animation {
-  border-color: #f3f6ff #07133f #07133f #f3f6ff;
-  border-radius: 0;
-  background: var(--rm2k3-battle-blue);
-  color: var(--rm2k3-battle-text);
-  font-family: inherit;
-  font-size: 12px;
+  background: transparent;
+  border: 0;
+  color: transparent;
+  font-size: 0;
+  height: 0;
+  left: var(--battle-node-x);
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  top: var(--battle-node-y);
+  transform: translate(-50%, -55%);
+  width: 0;
+  z-index: 4;
+}
+
+.battle-animation-sheet {
+  height: 120px;
+  overflow: visible;
+  position: relative;
+  width: 120px;
+}
+
+.battle-animation-frame {
+  inset: 0;
+  position: absolute;
+}
+
+.battle-animation-cell {
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+.battle-scene.battle-screen-shake {
+  animation: battle-screen-shake 0.35s steps(4, end) 2;
+}
+
+.battle-scene.battle-screen-flash::before {
+  animation: battle-screen-flash 0.22s steps(2, end) 3;
+  background: rgba(180, 190, 255, 0.45);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 8;
+}
+
+.battle-result-panel[data-result-reveal-stage="0"] .battle-result-reward-row {
+  opacity: 0;
+}
+
+.battle-result-reward-row[hidden] {
+  display: none !important;
+}
+
+.battle-has-result .battle-message-window,
+.battle-scene[data-battle-phase="resolved"] .battle-message-window {
+  display: none !important;
+}
+
+.battle-has-result .battle-command-panel,
+.battle-has-result .battle-enemy-list-panel,
+.battle-has-result .battle-party,
+.battle-scene[data-battle-phase="resolved"] .battle-command-panel,
+.battle-scene[data-battle-phase="resolved"] .battle-enemy-list-panel,
+.battle-scene[data-battle-phase="resolved"] .battle-party {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.battle-has-result .battle-actor-group,
+.battle-has-result .battle-enemy-group,
+.battle-scene[data-battle-phase="resolved"] .battle-actor-group,
+.battle-scene[data-battle-phase="resolved"] .battle-enemy-group {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes battle-damage-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -145%) scale(1);
+  }
+}
+
+@keyframes battle-screen-shake {
+  25% {
+    transform: translate(-3px, 1px);
+  }
+  50% {
+    transform: translate(3px, -1px);
+  }
+  75% {
+    transform: translate(-2px, -2px);
+  }
+}
+
+@keyframes battle-screen-flash {
+  50% {
+    opacity: 0.85;
+  }
 }
 
 .battle-acting {

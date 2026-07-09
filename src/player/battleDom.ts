@@ -6,29 +6,34 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { concreteTargetCommand } from "@/battle/runtime";
-import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { mountBattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { commandPanel, enemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
+import { syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
-  actorCommandDirectorState,
   applyBattleDirectorState,
   battleMessageWindow,
   battleEventDirectorState,
   battleResultPanel,
   commandPromptState,
-  initialBattleDirectorState,
   resultDirectorState,
+  syncBattleMessageWindow,
+  syncBattleResultPanel,
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
-import { battleField, battlePartyStatus } from "@/player/battleFieldDom";
+import { battleField, battlePartyStatus, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
+import {
+  BATTLE_RESULT_HOLD_MS,
+  createBattleSequencer,
+  type DamageFeedback,
+} from "@/player/battleSequencer";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
+  readonly introHold?: boolean;
 }
 
 export interface BattleDomController {
@@ -36,8 +41,6 @@ export interface BattleDomController {
   destroy(): void;
 }
 
-const ANIMATION_HOLD_MS = 1_500;
-// 세미 액티브 틱 주기. charging 단계 게이지 자동 충전을 위한 폴링 간격.
 const BATTLE_TICK_MS = 200;
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
@@ -48,11 +51,75 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   applyBattleSystemGraphic(root);
   options.host.append(root);
 
+  const initialSnapshot = options.runtime.snapshot();
   let resultSent = false;
   let resultTimer: number | undefined;
   let submenu: BattleCommandSubmenu = null;
+  let directorState: BattleDirectorState = commandPromptState(initialSnapshot);
+  let resultRevealStage = 0;
+  let sequenceBusy = false;
+  let lastDamageFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
-  let directorState: BattleDirectorState | undefined;
+  let commandPanelSignature = "";
+  let lastEnemyActionKey = "";
+
+  const field = battleField(initialSnapshot);
+  field.dataset.testid = "battle-field";
+  const animationLayer = document.createElement("div");
+  animationLayer.className = "battle-animation-layer";
+  animationLayer.dataset.testid = "battle-animation-layer";
+  const messageWindow = battleMessageWindow(directorState);
+  const enemyPanel = enemyListPanel(initialSnapshot);
+  const partyPanel = battlePartyStatus(initialSnapshot);
+  const commandHost = document.createElement("div");
+  commandHost.className = "battle-command-host";
+  const resultHost = document.createElement("div");
+  resultHost.className = "battle-result-host";
+  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
+
+  const panelOptions: {
+    runtime: BattleRuntime;
+    submenu: BattleCommandSubmenu;
+    setSubmenu(next: BattleCommandSubmenu): void;
+    setDirectorState(state: BattleDirectorState): void;
+    render(): void;
+    runActorCommand(command: ActorCommand): void;
+    beginTargetCommand(command: TargetedActorCommand): void;
+    confirmTargetSelection(enemyId: string): void;
+  } = {
+    runtime: options.runtime,
+    submenu: null,
+    setSubmenu(next) {
+      submenu = next;
+      panelOptions.submenu = next;
+    },
+    setDirectorState(state) {
+      directorState = state;
+    },
+    render: () => syncView(true),
+    runActorCommand,
+    beginTargetCommand,
+    confirmTargetSelection,
+  };
+
+  const sequencer = createBattleSequencer(options.runtime, {
+    onDirectorState(state) {
+      directorState = battleEventDirectorState(options.runtime.snapshot(), state);
+    },
+    onSyncView() {
+      syncView(false);
+    },
+    onDamageFeedback(feedback) {
+      lastDamageFeedback = feedback;
+    },
+    onResultStage(stage) {
+      resultRevealStage = stage;
+    },
+    onSequenceBusy(busy) {
+      sequenceBusy = busy;
+      root.dataset.battleSequenceBusy = busy ? "true" : "false";
+    },
+  });
 
   root.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
@@ -61,13 +128,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     confirmTargetSelection(target.dataset.testid);
   });
 
-  // 키보드 조작(Z/X/C). 화면에 표시된 안내와 실제 동작을 일치시킨다.
-  // Z=확정, X=대상 변경(다음 적), C=취소.
   root.tabIndex = 0;
   function onKeydown(event: KeyboardEvent): void {
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
-      // 결과 화면: Z(또는 Enter/Space)로 계속 진행 → onResult 즉시 호출.
       if (event.key === "z" || event.key === "Z" || event.key === "Enter") {
         event.preventDefault();
         if (!resultSent) {
@@ -78,6 +142,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
       return;
     }
+    if (sequenceBusy) return;
     if (event.key === "c" || event.key === "C") {
       event.preventDefault();
       handleCancel(snapshot);
@@ -94,7 +159,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
   }
   root.addEventListener("keydown", onKeydown);
-  // 화면이 포커스를 받지 않아도 동작하도록 window 레벨에서도 수신(중복 방지는 focus 체크).
   function onWindowKeydown(event: KeyboardEvent): void {
     if (document.activeElement === root) return;
     if (!root.isConnected) return;
@@ -102,7 +166,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   window.addEventListener("keydown", onWindowKeydown);
 
-  // Z: 현재 단계에서의 확정 동작.
   function handleConfirm(snapshot: BattleSnapshot): void {
     if (snapshot.phase === "targetSelect") {
       const selectedId = snapshot.targetSelection?.selectedEnemyId
@@ -111,26 +174,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (snapshot.phase === "actorCommand" && submenu === null) {
-      // 기본 동작: 통상 공격으로 대상 선택 진입.
       beginTargetCommand({ kind: "attack" });
     }
   }
 
-  // C: 취소. 서브메뉴 닫기 → 대상 선택 취소 순.
   function handleCancel(snapshot: BattleSnapshot): void {
     if (submenu !== null) {
       submenu = null;
-      render();
+      panelOptions.submenu = null;
+      syncView(true);
       return;
     }
     if (snapshot.phase === "targetSelect") {
       options.runtime.cancelTargetSelection();
       directorState = commandPromptState(options.runtime.snapshot());
-      render();
+      syncView(true);
     }
   }
 
-  // X: 대상을 다음 적으로 순환(대상 선택 단계에서만).
   function cycleTarget(snapshot: BattleSnapshot): void {
     if (snapshot.phase !== "targetSelect") return;
     const ids = snapshot.targetSelection?.targetEnemyIds ?? [];
@@ -140,75 +201,85 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const nextId = ids[(index + 1) % ids.length];
     options.runtime.setSelectedTargetEnemy(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
-    render();
+    syncView(true);
   }
 
-  function render(): void {
+  function syncView(_rebuildCommandPanel: boolean): void {
     const snapshot = options.runtime.snapshot();
-    directorState = nextDirectorState(snapshot, directorState);
-    directorState = battleEventDirectorState(snapshot, directorState);
-    activeAnimation?.destroy();
-    activeAnimation = undefined;
-    root.replaceChildren();
-    root.append(
-      battleField(snapshot),
-      battleMessageWindow(directorState),
-      enemyListPanel(snapshot),
-      commandPanel(snapshot, {
-        runtime: options.runtime,
-        submenu,
-        setSubmenu: (next) => {
-          submenu = next;
-        },
-        setDirectorState: (state) => {
-          directorState = state;
-        },
-        render,
-        runActorCommand,
-        beginTargetCommand,
-        confirmTargetSelection,
-      }),
-      battlePartyStatus(snapshot)
-    );
-    const resultPanel = battleResultPanel(snapshot);
-    if (resultPanel) root.append(resultPanel);
+    if (snapshot.result) {
+      directorState = resultDirectorState(snapshot, directorState);
+    } else if (!sequenceBusy) {
+      directorState = nextDirectorState(snapshot, directorState);
+      directorState = battleEventDirectorState(snapshot, directorState);
+    }
+    syncBattleField(field, snapshot, lastDamageFeedback);
+    syncBattleParty(partyPanel, snapshot);
+    syncBattleMessageWindow(messageWindow, directorState);
+    syncEnemyListPanel(enemyPanel, snapshot.enemies);
+    rebuildCommandPanelIfNeeded(snapshot);
+    syncResultHost(snapshot);
     applyBattleDirectorState(root, directorState, snapshot);
-    activeAnimation = mountBattleAnimationPlayback(snapshot);
-    if (activeAnimation) {
-      root.append(activeAnimation.element);
+    activeAnimation = syncBattleAnimationLayer(animationLayer, snapshot, root);
+    root.dataset.battleSequenceBusy = sequenceBusy ? "true" : "false";
+    root.dataset.battleBgmActive = snapshot.result ? "false" : "true";
+    scheduleAutoResult(snapshot);
+  }
+
+  function rebuildCommandPanelIfNeeded(snapshot: BattleSnapshot): void {
+    const signature = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${snapshot.targetSelection?.selectedEnemyId ?? ""}`;
+    if (signature === commandPanelSignature && commandHost.childElementCount > 0) return;
+    commandPanelSignature = signature;
+    commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
+  }
+
+  function syncResultHost(snapshot: BattleSnapshot): void {
+    if (!snapshot.result) {
+      resultHost.replaceChildren();
+      return;
     }
+    let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+    if (!panel) {
+      const created = battleResultPanel(snapshot, resultRevealStage);
+      if (!created) return;
+      resultHost.replaceChildren(created);
+      panel = created;
+    }
+    syncBattleResultPanel(panel, snapshot, resultRevealStage);
+  }
+
+  function scheduleAutoResult(snapshot: BattleSnapshot): void {
     const result = snapshot.result;
-    if (result && !resultSent) {
-      resultSent = true;
-      resultTimer = window.setTimeout(() => {
-        options.onResult(result, snapshot);
-      }, ANIMATION_HOLD_MS);
-    }
+    if (!result || resultSent) return;
+    resultSent = true;
+    resultTimer = window.setTimeout(() => {
+      options.onResult(result, snapshot);
+    }, BATTLE_RESULT_HOLD_MS);
   }
 
   function runActorCommand(command: ActorCommand): void {
+    if (sequenceBusy) return;
     const before = options.runtime.snapshot();
     options.runtime.performActorCommand(command);
     const afterCommand = options.runtime.snapshot();
-    directorState = actorCommandDirectorState(command, before, afterCommand);
-    advanceBattleRuntime(options.runtime);
-    const afterAdvance = options.runtime.snapshot();
-    directorState = resultDirectorState(afterAdvance, directorState);
     submenu = null;
-    render();
+    panelOptions.submenu = null;
+    sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
   function beginTargetCommand(command: TargetedActorCommand): void {
+    if (sequenceBusy) return;
     options.runtime.beginActorCommand(command);
     const snapshot = options.runtime.snapshot();
     if (snapshot.phase === "targetSelect") {
       directorState = targetSelectDirectorState(snapshot);
       submenu = null;
+      panelOptions.submenu = null;
     }
-    render();
+    syncView(true);
   }
 
   function confirmTargetSelection(enemyId: string): void {
+    if (sequenceBusy) return;
     const before = options.runtime.snapshot();
     const pending = before.targetSelection?.command;
     if (before.phase !== "targetSelect" || !pending) return;
@@ -217,25 +288,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {
       directorState = targetSelectDirectorState(afterCommand);
-      render();
+      syncView(true);
       return;
     }
-    directorState = actorCommandDirectorState(command, before, afterCommand);
-    advanceBattleRuntime(options.runtime);
-    const afterAdvance = options.runtime.snapshot();
-    directorState = resultDirectorState(afterAdvance, directorState);
     submenu = null;
-    render();
+    panelOptions.submenu = null;
+    syncView(false);
+    sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
   function nextDirectorState(
     snapshot: BattleSnapshot,
-    previous: BattleDirectorState | undefined
+    previous: BattleDirectorState
   ): BattleDirectorState {
-    if (!previous) return initialBattleDirectorState(snapshot);
     if (snapshot.result) return resultDirectorState(snapshot, previous);
     if (snapshot.phase === "targetSelect") return targetSelectDirectorState(snapshot);
-    if (snapshot.phase === "actorCommand" && shouldRefreshCommandPrompt(snapshot, previous)) return commandPromptState(snapshot);
+    if (snapshot.phase === "actorCommand" && shouldRefreshCommandPrompt(snapshot, previous)) {
+      return commandPromptState(snapshot);
+    }
     return previous;
   }
 
@@ -243,15 +313,26 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 
-  render();
+  syncView(true);
+  if (options.introHold !== false) {
+    sequencer.startIntro(initialSnapshot);
+  }
 
-  // 세미 액티브 틱: charging 단계에서 게이지가 자동 충전되어 적이 자동 행동.
-  // actorCommand(플레이어 입력 대기) 중에는 정지한다(advanceBattleRuntime 이 알아서 멈춤).
   const tickInterval = window.setInterval(() => {
-    const snapshot = options.runtime.snapshot();
-    if (snapshot.result || snapshot.phase !== "charging") return;
-    advanceBattleRuntime(options.runtime);
-    render();
+    if (sequenceBusy) return;
+    const before = options.runtime.snapshot();
+    if (before.result || before.phase !== "charging") return;
+    options.runtime.tick(BATTLE_TICK_MS);
+    const after = options.runtime.snapshot();
+    const actionKey = after.lastActionResult
+      ? `${after.lastActionResult.targetId}:${after.lastActionResult.amount}:${after.turn}`
+      : "";
+    if (actionKey && actionKey !== lastEnemyActionKey) {
+      lastEnemyActionKey = actionKey;
+      sequencer.runAfterEnemyAdvance(before, after);
+      return;
+    }
+    syncView(false);
   }, BATTLE_TICK_MS);
 
   return {
@@ -260,6 +341,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       window.clearInterval(tickInterval);
       window.removeEventListener("keydown", onWindowKeydown);
       if (resultTimer !== undefined) window.clearTimeout(resultTimer);
+      sequencer.cancel();
       activeAnimation?.destroy();
       root.remove();
     },

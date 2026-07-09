@@ -643,6 +643,7 @@ export interface SystemRecords {
   titleResourceId?: string;
   systemResourceId?: string;
   battleSystemResourceId?: string;
+  battleBgmResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   activeSlots?: number;
