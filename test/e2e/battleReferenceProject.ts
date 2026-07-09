@@ -36,7 +36,7 @@ export function prepareReferenceBattleProject(project: BattleProject): void {
   setReferenceBattleback(project);
   setReferenceEnemy(project);
   ensureReferenceParty(project);
-  reseedSessionRng(project.session as PlaySessionLike, 42_001);
+  reseedSessionRng(project.session as unknown as PlaySessionLike, 42_001);
 }
 
 export async function startReferenceBattle(page: Page): Promise<void> {
