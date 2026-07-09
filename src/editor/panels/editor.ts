@@ -392,6 +392,21 @@ function applyLayout(): void {
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
 
+  // 기본 모드: 아이콘 레일 48px 고정 — 리사이저 없음, 오버레이 안전영역은 레일+여백.
+  if (getEditorUiMode() === "basic") {
+    if (leftFolded) {
+      leftRoot.style.display = "none";
+      leftResizer.style.display = "none";
+      setEditorLeftSafe("12px");
+      return;
+    }
+    leftRoot.style.display = "";
+    leftRoot.style.width = "48px";
+    leftResizer.style.display = "none";
+    setEditorLeftSafe("60px");
+    return;
+  }
+
   if (leftFolded) {
     leftRoot.style.display = "none";
     leftResizer.style.display = "none";
