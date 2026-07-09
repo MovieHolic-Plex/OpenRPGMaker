@@ -27,6 +27,27 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   };
 }
 
+export function chargingDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
+  const readyActor = snapshot.actors
+    .filter((actor) => !actor.defeated)
+    .sort((left, right) => right.gauge - left.gauge)[0];
+  return {
+    step: "acting",
+    lines: [
+      "행동 게이지가 차는 중입니다.",
+      readyActor ? `${readyActor.name}의 턴이 가까워지고 있다.` : "전황이 전개되고 있습니다.",
+    ],
+    activeActorRecordId: undefined,
+  };
+}
+
+export function directorStateAfterTurn(snapshot: BattleSnapshot, previous: BattleDirectorState): BattleDirectorState {
+  if (snapshot.result) return resultDirectorState(snapshot, previous);
+  if (snapshot.phase === "actorCommand") return commandPromptState(snapshot);
+  if (snapshot.phase === "charging") return chargingDirectorState(snapshot);
+  return previous;
+}
+
 export function actorCommandDirectorState(
   command: ActorCommand,
   before: BattleSnapshot,
@@ -204,7 +225,6 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     prompt.textContent = "Z / 클릭 으로 계속";
     panel.append(prompt);
   }
-  return panel;
 }
 
 export function applyBattleDirectorState(

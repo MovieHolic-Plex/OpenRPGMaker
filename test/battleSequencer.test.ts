@@ -77,6 +77,44 @@ describe("battle sequencer", () => {
     expect(advanceSpy).toHaveBeenCalled();
   });
 
+  it("finishes a player turn in charging director state until actorCommand returns", () => {
+    advanceSpy.mockRestore();
+    advanceSpy = vi.spyOn(advanceModule, "advanceBattleRuntime").mockImplementation(() => undefined);
+    const runtime = battleRuntime();
+    untilActorCommand(runtime);
+    const queue: Array<{ callback: () => void; delayMs: number }> = [];
+    let lastStep = "";
+    const sequencer = createBattleSequencer(
+      runtime,
+      {
+        onDirectorState: (state) => {
+          lastStep = state.step;
+        },
+        onSyncView: () => undefined,
+        onDamageFeedback: () => undefined,
+        onResultStage: () => undefined,
+        onSequenceBusy: () => undefined,
+      },
+      (callback, delayMs) => {
+        queue.push({ callback, delayMs });
+        return queue.length;
+      },
+      () => undefined
+    );
+
+    const before = runtime.snapshot();
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    const after = runtime.snapshot();
+    sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-1" }, before, after);
+
+    while (queue.length > 0) {
+      queue.shift()?.callback();
+    }
+
+    expect(runtime.snapshot().phase).toBe("charging");
+    expect(lastStep).toBe("acting");
+  });
+
   it("holds intro lines before releasing command prompt", () => {
     const runtime = battleRuntime();
     const introLines: string[] = [];

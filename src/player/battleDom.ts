@@ -14,6 +14,7 @@ import {
   battleMessageWindow,
   battleEventDirectorState,
   battleResultPanel,
+  chargingDirectorState,
   commandPromptState,
   resultDirectorState,
   syncBattleMessageWindow,
@@ -96,7 +97,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setDirectorState(state) {
       directorState = state;
     },
-    render: () => syncView(true),
+    render: () => syncView(),
     runActorCommand,
     beginTargetCommand,
     confirmTargetSelection,
@@ -107,7 +108,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = battleEventDirectorState(options.runtime.snapshot(), state);
     },
     onSyncView() {
-      syncView(false);
+      syncView();
     },
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
@@ -182,13 +183,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (submenu !== null) {
       submenu = null;
       panelOptions.submenu = null;
-      syncView(true);
+      syncView();
       return;
     }
     if (snapshot.phase === "targetSelect") {
       options.runtime.cancelTargetSelection();
       directorState = commandPromptState(options.runtime.snapshot());
-      syncView(true);
+      syncView();
     }
   }
 
@@ -201,10 +202,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const nextId = ids[(index + 1) % ids.length];
     options.runtime.setSelectedTargetEnemy(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
-    syncView(true);
+    syncView();
   }
 
-  function syncView(_rebuildCommandPanel: boolean): void {
+  function syncView(): void {
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
       directorState = resultDirectorState(snapshot, directorState);
@@ -275,7 +276,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       submenu = null;
       panelOptions.submenu = null;
     }
-    syncView(true);
+    syncView();
   }
 
   function confirmTargetSelection(enemyId: string): void {
@@ -288,12 +289,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {
       directorState = targetSelectDirectorState(afterCommand);
-      syncView(true);
+      syncView();
       return;
     }
     submenu = null;
     panelOptions.submenu = null;
-    syncView(false);
+    syncView();
     sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
@@ -306,6 +307,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (snapshot.phase === "actorCommand" && shouldRefreshCommandPrompt(snapshot, previous)) {
       return commandPromptState(snapshot);
     }
+    if (snapshot.phase === "charging" && previous.step === "command") {
+      return chargingDirectorState(snapshot);
+    }
     return previous;
   }
 
@@ -313,7 +317,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 
-  syncView(true);
+  syncView();
   if (options.introHold !== false) {
     sequencer.startIntro(initialSnapshot);
   }
@@ -321,7 +325,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const tickInterval = window.setInterval(() => {
     if (sequenceBusy) return;
     const before = options.runtime.snapshot();
-    if (before.result || before.phase !== "charging") return;
+    if (before.result) return;
+    if (before.phase !== "charging") {
+      if (before.phase === "actorCommand") syncView();
+      return;
+    }
     options.runtime.tick(BATTLE_TICK_MS);
     const after = options.runtime.snapshot();
     const actionKey = after.lastActionResult
@@ -332,7 +340,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       sequencer.runAfterEnemyAdvance(before, after);
       return;
     }
-    syncView(false);
+    syncView();
   }, BATTLE_TICK_MS);
 
   return {

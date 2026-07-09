@@ -78,7 +78,6 @@ function normalizeKind(kind: ClassBattleCommandKind): RuntimeBattleCommandKind |
 }
 
 function defaultRuntimeBattleCommands(project: Project): readonly RuntimeBattleCommand[] {
-  const terms = resolveTerms(project);
   return DEFAULT_RUNTIME_BATTLE_COMMANDS.map((command) => ({
     ...command,
     name: fallbackCommandName(project, command.kind),

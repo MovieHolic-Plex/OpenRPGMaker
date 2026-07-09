@@ -12,7 +12,7 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
   await startReferenceBattle(page);
 
   let diag = await battleDiagnostics(page);
-  await writeFile(`${OUT}/06-battle-open.json`, `${JSON.stringify(diag, null, 2)}\n`);
+  await writeFile(`${OUT}/06-battle-open.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   await page.screenshot({ path: `${OUT}/06-battle-open.png`, fullPage: true });
   expect(diag.present).toBeTruthy();
   expect(diag.sceneRect?.w ?? 0).toBeGreaterThan(200);
@@ -22,13 +22,13 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
   await page.getByTestId("actor-command-attack").click();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
   diag = await battleDiagnostics(page);
-  await writeFile(`${OUT}/07-after-attack.json`, `${JSON.stringify(diag, null, 2)}\n`);
+  await writeFile(`${OUT}/07-after-attack.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   await page.screenshot({ path: `${OUT}/07-after-attack.png`, fullPage: true });
 
   await page.getByTestId("battle-target-enemy-1").click();
   await page.waitForTimeout(700);
   diag = await battleDiagnostics(page);
-  await writeFile(`${OUT}/08-after-target.json`, `${JSON.stringify(diag, null, 2)}\n`);
+  await writeFile(`${OUT}/08-after-target.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   await page.screenshot({ path: `${OUT}/08-after-target.png`, fullPage: true });
 
   for (let i = 0; i < 20; i++) {
@@ -38,9 +38,9 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
     await page.keyboard.press("Enter");
     await page.waitForTimeout(250);
   }
-  await writeFile(`${OUT}/09-mid.json`, `${JSON.stringify(diag, null, 2)}\n`);
+  await writeFile(`${OUT}/09-mid.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   await page.screenshot({ path: `${OUT}/09-mid.png`, fullPage: true });
-  await writeFile(`${OUT}/final-diag.json`, `${JSON.stringify(diag, null, 2)}\n`);
+  await writeFile(`${OUT}/final-diag.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   // Reference enemy has 1 HP, so battle may already have closed by this point.
 });
 
