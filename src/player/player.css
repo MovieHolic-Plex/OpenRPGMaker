@@ -27,3 +27,38 @@ body {
 #app {
   min-height: 100vh;
 }
+
+/* 익스포트 셸 보정 — 에디터 CSS 없이 단독 구동될 때의 최소 레이아웃. */
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.player-layout canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+/* 헤드리스 검증용 상태 덤프는 시각적으로 숨긴다(에디터 core.part-1.css 규칙과 동일 의도). */
+.runtime-state-json {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0.01;
+  pointer-events: none;
+  font-size: 1px;
+  z-index: 1;
+}
+/* 이벤트 디버그 마커도 동일하게 은닉(헤드리스 검증용 DOM 유지). */
+.runtime-debug-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  opacity: 0.01;
+  pointer-events: none;
+  font-size: 1px;
+  z-index: 6;
+}
