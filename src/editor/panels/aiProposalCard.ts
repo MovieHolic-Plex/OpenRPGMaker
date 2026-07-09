@@ -12,6 +12,7 @@ import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { commitChangeset, summarizeChanges } from "@/editor/tools";
+import { setInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import {
   formatLayoutValidationSummary,
@@ -337,6 +338,7 @@ export function createProposalHost(options: {
   };
 
   const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits = false): void => {
+    setInlineProposalActions(null);
     const session = controller.session;
     if (!session) return;
     const selected = selectedState ? enforceProposalDependencies(selectedState, proposalDependencyIndexes(calls)) : calls.map(() => true);
@@ -354,6 +356,7 @@ export function createProposalHost(options: {
   };
 
   const rejectProposal = (): void => {
+    setInlineProposalActions(null);
     proposalHost.replaceChildren();
     closeProposalModal();
     clearAgentGhostPreview();
@@ -420,6 +423,8 @@ export function createProposalHost(options: {
     let selected = result.proposedCalls.map(() => true);
     const itemRows: HTMLElement[] = [];
     let acceptButton: HTMLButtonElement | null = null;
+    let rejectButton: HTMLButtonElement | null = null;
+    let proposalCardEl: HTMLElement | null = null;
 
     const refreshSelectionUi = (): void => {
       selected = enforceProposalDependencies(selected, dependencies);
@@ -553,20 +558,29 @@ export function createProposalHost(options: {
                   ),
               },
             }) as HTMLButtonElement),
-            el("button", {
+            (rejectButton = el("button", {
               class: "ai-assistant-action ai-proposal-reject",
               text: "거부(초안 폐기)",
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-reject" },
               on: { click: () => rejectProposal() },
-            }),
+            }) as HTMLButtonElement),
           ],
         }),
       ],
     });
+    proposalCardEl = card;
     pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: proposalHumanSummaryLine(result.proposedCalls) };
     setAssistantMessageBadge(assistantBubble, "proposal");
     refreshSelectionUi();
+    // 인라인 승인(캔버스 고스트 마커) — 카드의 실제 버튼 경로를 그대로 태운다.
+    setInlineProposalActions({
+      accept: () => { if (acceptButton && !acceptButton.disabled) acceptButton.click(); },
+      reject: () => rejectButton?.click(),
+      focusCard: () => {
+        proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+      },
+    });
     proposalHost.append(card);
     proposalModalCount.textContent = `${result.proposedCalls.length}건`;
     proposalPill.textContent = `📋 변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;

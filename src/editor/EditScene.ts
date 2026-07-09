@@ -12,6 +12,7 @@ import {
 import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
 import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -138,6 +139,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubEditor: (() => void) | null = null;
   private unsubAgentGhost: (() => void) | null = null;
   private unsubAgentFocus: (() => void) | null = null;
+  private unsubInlineApproval: (() => void) | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
   private isPainting = false;
@@ -225,6 +227,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -247,6 +250,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentGhostPreviewLayer();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    this.unsubInlineApproval?.();
+    this.unsubInlineApproval = null;
     this.clearBuildPaletteOverlay();
   }
 

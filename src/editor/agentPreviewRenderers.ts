@@ -8,6 +8,7 @@ import {
   type AgentGhostCell,
   type AgentGhostPreview,
 } from "@/editor/agentGhostPreview";
+import { buildInlineApprovalToolbar, getInlineProposalActions } from "@/editor/proposalInlineApproval";
 import type { MapId } from "@/project/types";
 
 const AGENT_FOCUS_MAX_CELL_RECTS = 256;
@@ -71,6 +72,22 @@ export class AgentGhostPreviewRenderer {
       marker.style.height = `${rect.height}px`;
       host.append(marker);
       this.domMarkers.push(marker);
+    }
+    const actions = getInlineProposalActions();
+    if (actions && previews.length > 0) {
+      const firstMarker = this.domMarkers[0];
+      if (firstMarker) {
+        const toolbar = buildInlineApprovalToolbar(actions);
+        if (previews.length > 1) {
+          toolbar.prepend(
+            Object.assign(document.createElement("span"), {
+              className: "ghost-inline-count",
+              textContent: `제안 ${previews.length}곳`,
+            }),
+          );
+        }
+        firstMarker.append(toolbar);
+      }
     }
   }
 
