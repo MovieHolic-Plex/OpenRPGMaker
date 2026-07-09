@@ -584,6 +584,44 @@ body.ai-panel-docked .editor-layout {
   line-height: 1.2;
   writing-mode: vertical-rl;
 }
+/* 접힘 레일 본문 누출 수정: float 접힘(231행대)과 동일하게 커맨드바·라이징 오버레이를 숨긴다.
+   빠뜨리면 44px 레일에 시작 화면/입력창이 짜부라져 새어 나온다(2026-07-09 실측). */
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-command-bar,
+.ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay,
+.ai-chat-panel.is-docked.is-collapsed > .ai-command-bar,
+.ai-chat-panel.is-docked.is-collapsed > .ai-rising-overlay {
+  display: none;
+}
+/* 접힘 상태 알림 점 — 진행(호박 펄스)/완료 미확인(초록)/오류(빨강). 펼치면 소거된다. */
+.ai-collapsed-restore-dot {
+  border-radius: 50%;
+  display: none;
+  flex: none;
+  height: 9px;
+  width: 9px;
+}
+.ai-chat-panel.is-turn-running .ai-collapsed-restore-dot {
+  animation: ai-rail-dot-pulse 1.1s ease-in-out infinite;
+  background: #f5a524;
+  display: inline-block;
+}
+.ai-chat-panel.is-turn-attention .ai-collapsed-restore-dot {
+  background: #22c55e;
+  display: inline-block;
+}
+.ai-chat-panel.is-turn-error .ai-collapsed-restore-dot {
+  background: #ef4444;
+  display: inline-block;
+}
+@keyframes ai-rail-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
 .ai-config-actions {
   align-items: center;
   display: flex;
@@ -1270,6 +1308,146 @@ body.ai-panel-docked .editor-layout {
 }
 .tool-browser-empty {
   color: var(--text-3);
+}
+
+/* ── 🔬 AI 하네스 뷰어 — 내부 동작 타임라인 모달 ── */
+.harness-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 780px);
+  max-width: min(92vw, 920px);
+  width: 92vw;
+}
+.harness-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.harness-header h2 {
+  flex: 1 1 auto;
+}
+.harness-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: var(--space-1) 0;
+}
+.harness-summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.harness-body {
+  display: grid;
+  align-content: start;
+  flex: 1 1 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: auto;
+}
+.harness-timeline {
+  display: grid;
+  gap: 2px;
+}
+.harness-row {
+  align-items: baseline;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-2);
+  padding: 3px 0;
+}
+.harness-row.is-phase {
+  background: var(--control-bg);
+}
+.harness-time {
+  color: var(--text-3);
+  flex: none;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  min-width: 58px;
+}
+.harness-badge {
+  border-radius: 999px;
+  flex: none;
+  font-size: 10px;
+  padding: 1px 8px;
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+.harness-badge.is-phase {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.harness-badge.is-injection {
+  background: #8b5cf6;
+  color: #fff;
+}
+.harness-badge.is-tool-ok {
+  background: #14532d;
+  color: #86efac;
+}
+.harness-badge.is-tool-fail,
+.harness-badge.is-role-system {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+.harness-badge.is-turn-end {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+.harness-badge.is-model,
+.harness-badge.is-role-assistant {
+  color: var(--accent);
+}
+.harness-text {
+  color: var(--text-2);
+  font-size: 11px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.harness-tool-name {
+  color: var(--accent);
+  flex: none;
+  font-size: 11px;
+}
+.harness-row-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.harness-row-summary {
+  align-items: baseline;
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+}
+.harness-row-raw {
+  background: var(--control-bg);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-size: 10px;
+  margin: var(--space-1) 0 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: var(--space-2);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.harness-raw-section > summary {
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  padding: var(--space-1) 0;
+}
+.harness-raw-messages {
+  display: grid;
+  gap: 2px;
+}
+.harness-empty {
+  color: var(--text-3);
+  font-size: 11px;
 }
 
 /* 하단 액션(맵 인터뷰 / 감사 로그 내보내기) */

@@ -50,6 +50,8 @@ type RpgZzuCameraDebug = {
 
 interface Window {
   __RPG_ZZU_E2E_PROJECT__?: unknown;
+  // AI 하네스 스냅샷(주입 포함 원본 메시지 + 감사 로그) — 콘솔/헤드리스 디버깅용.
+  __rpgzzuAiHarness?: () => unknown;
   __rpgzzuCamera?: () => RpgZzuCameraDebug;
   __rpgzzuJuiceLog?: () => readonly RpgZzuRuntimeJuiceLogEntry[];
   __rpgzzuInput?: {

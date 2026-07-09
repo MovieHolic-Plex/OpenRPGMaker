@@ -12,6 +12,7 @@ import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
+import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { openToolBrowserModal, totalToolCount } from "@/editor/panels/toolBrowserModal";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
@@ -1216,6 +1217,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const beginTurnProgress = (): void => {
     runningPhaseStatus = null;
     runningProgress = { startedAt: now(), toolCount: 0 };
+    // 접힘 레일의 상태 점: 진행 중 표시를 켜고 직전 턴의 알림 점은 지운다.
+    panel.classList.add("is-turn-running");
+    panel.classList.remove("is-turn-attention", "is-turn-error");
     refreshRunningStatus(true);
     if (typeof window !== "undefined" && typeof window.setInterval === "function") {
       progressTimer = window.setInterval(() => refreshRunningStatus(false), 1000);
@@ -1231,6 +1235,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     progressTimer = null;
     runningProgress = null;
     runningPhaseStatus = null;
+    panel.classList.remove("is-turn-running");
   };
   const abortActiveTurn = (): void => {
     if (!activeAbortController || activeAbortController.signal.aborted) return;
@@ -1291,6 +1296,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       isWriteTool,
     });
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
+    let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
     let assistantBubble: HTMLElement | null = null;
     let reasoningBox: { box: HTMLElement; body: HTMLElement } | null = null;
     const streamedBubbles: HTMLElement[] = [];
@@ -1407,6 +1413,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         return;
       }
       if (result.stoppedReason === "error") {
+        turnFailed = true;
         ghostPreviewUpdater.cancel();
         clearAgentGhostPreview();
       } else {
@@ -1453,6 +1460,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
+      turnFailed = true;
       endTurnProgress();
       ghostPreviewUpdater.cancel();
       clearAgentGhostPreview();
@@ -1465,6 +1473,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       sendButton.disabled = false;
       turnBusy = false;
       refreshAbortButton();
+      // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
+      if (collapsed) panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
@@ -1991,6 +2001,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { type: "button", title: "AI 패널 펼치기", "aria-label": "AI 패널 펼치기" },
     dataset: { testid: "ai-collapsed-restore" },
     children: [
+      // 상태 점: 접힌 동안에도 진행(호박 펄스)/완료(초록)/오류(빨강)를 알린다.
+      el("span", { class: "ai-collapsed-restore-dot", attrs: { "aria-hidden": "true" } }),
       el("span", { class: "ai-collapsed-restore-float", text: "🤖 AI ▸" }),
       el("span", { class: "ai-collapsed-restore-rail-icon", text: "🤖" }),
       el("span", { class: "ai-collapsed-restore-rail-label", text: "AI 어시스턴트" }),
@@ -2005,6 +2017,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { type: "button", title: `AI가 쓸 수 있는 툴 ${totalToolCount()}개 보기`, "aria-label": "AI 도구 보기" },
     dataset: { testid: "ai-tools-browser" },
     on: { click: () => void openToolBrowserModal() },
+  });
+  // 하네스 뷰어(🔬): plan→execute→review 전환, 오케스트레이션 주입 원문, 툴 인자/결과, 토큰 사용의 관측 지점.
+  const harnessButton = el("button", {
+    class: "ai-chat-tools-button",
+    text: "🔬",
+    attrs: { type: "button", title: "하네스 — AI 내부 동작 타임라인(단계 전환·주입·툴·토큰)", "aria-label": "AI 하네스 뷰어 열기" },
+    dataset: { testid: "ai-harness" },
+    on: {
+      click: () =>
+        void openHarnessModal({
+          audit: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])],
+          statusTimeline: controller.statusTimeline,
+          getSnapshot: () => controller.session?.getHarnessSnapshot() ?? null,
+        }),
+    },
   });
   const settingsButton = el("button", {
     class: "ai-chat-tools-button",
@@ -2184,6 +2211,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       exportButton,
       el("span", { class: "ai-toolbar-sep" }),
       toolsButton,
+      harnessButton,
       studioButton,
     ],
   });
@@ -2237,6 +2265,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
+  // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__rpgzzuAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
+  if (typeof window !== "undefined") {
+    window.__rpgzzuAiHarness = () => controller.session?.getHarnessSnapshot() ?? null;
+  }
 
   // 크기 커스텀: 좌상단 코너 핸들 드래그(오른쪽·아래가 고정이라 왼쪽·위로 끌면 커진다).
   let panelSize = loadPanelSize();
@@ -2285,7 +2317,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const applyCollapsed = (): void => {
     if (collapsed) panel.classList.add("is-collapsed");
-    else panel.classList.remove("is-collapsed");
+    else {
+      panel.classList.remove("is-collapsed");
+      // 접힌 동안 쌓인 알림 점(완료/오류)은 펼치는 순간 확인한 것으로 보고 지운다.
+      panel.classList.remove("is-turn-attention", "is-turn-error");
+    }
     collapseButton.textContent = collapsed ? "▸" : "▾";
     collapseButton.setAttribute("title", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
     collapseButton.setAttribute("aria-label", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");

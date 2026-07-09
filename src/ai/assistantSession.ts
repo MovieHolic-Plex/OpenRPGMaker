@@ -97,6 +97,16 @@ export type AuditEntry =
   | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[]; at?: string }
   | { kind: "status"; text: string; at?: string };
 
+// 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
+// 🔬 하네스 뷰어와 window.__rpgzzuAiHarness(헤드리스 디버깅)가 소비한다.
+export interface HarnessSnapshot {
+  readonly model: string;
+  readonly liteModel?: string;
+  readonly maxTokens: number;
+  readonly messages: readonly ChatMessage[];
+  readonly audit: readonly AuditEntry[];
+}
+
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 
 // 파괴적으로 간주하는 툴 이름.
@@ -564,6 +574,18 @@ export class AssistantSession {
     return this.audit;
   }
 
+  // 하네스 관측: 주입 포함 원본 메시지는 여기가 유일한 노출점이다(턴 종료 시 주입은 제거되므로
+  // 진행 중 스냅샷과 종료 후 스냅샷이 다를 수 있다 — 감사 로그가 영속 기록을 맡는다).
+  getHarnessSnapshot(): HarnessSnapshot {
+    return {
+      model: this.config.model,
+      ...(this.config.liteModel ? { liteModel: this.config.liteModel } : {}),
+      maxTokens: this.config.maxTokens,
+      messages: this.messages.map((message) => ({ ...message })),
+      audit: [...this.audit],
+    };
+  }
+
   // 한 턴 실행: 사용자 메시지 → (LLM ↔ 툴) 루프 → 최종 응답 + 제안 changeset.
   async sendUserMessage(
     text: string,
@@ -692,6 +714,11 @@ export class AssistantSession {
 
   private pushOrchestrationMessage(content: string): void {
     this.messages.push({ role: "user", content: orchestrationContent(content) });
+    // 하네스 가시화: 주입은 턴 종료 시 messages에서 제거되므로 감사 로그가 유일한 영속 기록이다.
+    this.pushAudit({
+      kind: "status",
+      text: `오케스트레이션 주입: ${content.length > 600 ? `${content.slice(0, 600)}…` : content}`,
+    });
   }
 
   private removeOrchestrationMessages(): void {
@@ -859,7 +886,7 @@ export class AssistantSession {
         const rawError = cause instanceof Error ? cause.message : String(cause);
         const error = isRetryableLlmError(cause) ? appendTransientRetryGuidance(rawError) : rawError;
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
-        this.pushAudit({ kind: "status", text: `턴 중단(error): ${error}` });
+        this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
       }
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
@@ -891,7 +918,7 @@ export class AssistantSession {
         }
         assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
         onEvent({ type: "assistant_message", content: assistantText });
-        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
+        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
@@ -922,7 +949,7 @@ export class AssistantSession {
         // 최종 응답.
         assistantText = finalText;
         onEvent({ type: "assistant_message", content: assistantText });
-        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건` });
+        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
@@ -1022,14 +1049,14 @@ export class AssistantSession {
           type: "status",
           text: TOKEN_BUDGET_STATUS_TEXT,
         });
-        this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건` });
+        this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
       }
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
-    this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건` });
+    this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "max-tool-calls" };
   }
 }

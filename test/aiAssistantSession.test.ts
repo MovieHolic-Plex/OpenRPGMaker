@@ -432,3 +432,50 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(phases).toEqual(["plan"]);
   }, 30000);
 });
+
+// 하네스 관측(2026-07-09): 오케스트레이션 주입·토큰 사용이 감사 로그에 남고,
+// getHarnessSnapshot이 뷰어(🔬)/window.__rpgzzuAiHarness에 원본을 제공한다.
+describe("하네스 관측", () => {
+  it("오케스트레이션 주입 원문이 감사 로그에 남고 턴 종료 라인에 출력 토큰이 붙는다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps = [
+      assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
+      assistantFinal("실행 완료"),
+      assistantFinal("완료: 타이틀을 바꿨습니다."),
+    ];
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
+
+    await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", () => {});
+
+    const entries = session.getAuditEntries();
+    const injections = entries.filter(
+      (entry) => entry.kind === "status" && entry.text.startsWith("오케스트레이션 주입: ")
+    );
+    // 실행 힌트 + 검수 프롬프트 — 주입이 UI에 전혀 안 보이던 공백을 감사 로그가 메운다.
+    expect(injections.length).toBeGreaterThanOrEqual(2);
+    const turnEnd = entries.find((entry) => entry.kind === "status" && entry.text.startsWith("턴 종료(final)"));
+    expect(turnEnd?.kind).toBe("status");
+    expect(turnEnd && turnEnd.kind === "status" ? turnEnd.text : "").toMatch(/출력 토큰 ~\d+/);
+  }, 30000);
+
+  it("getHarnessSnapshot은 모델 구성과 메시지·감사 로그 사본을 돌려준다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps = [
+      assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
+      assistantFinal("실행 완료"),
+      assistantFinal("완료: 타이틀을 바꿨습니다."),
+    ];
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
+    await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", () => {});
+
+    const snapshot = session.getHarnessSnapshot();
+
+    expect(snapshot.model).toBe("supervisor-model");
+    expect(snapshot.liteModel).toBe("executor-model");
+    expect(snapshot.maxTokens).toBe(512);
+    expect(snapshot.messages.length).toBe(session.getMessages().length);
+    expect(snapshot.audit.length).toBe(session.getAuditEntries().length);
+    // 사본 계약: 스냅샷 배열은 세션 내부 배열과 다른 인스턴스여야 한다(외부 조작 차단).
+    expect(snapshot.audit).not.toBe(session.getAuditEntries());
+  }, 30000);
+});
