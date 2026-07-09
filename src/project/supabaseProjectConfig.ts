@@ -46,14 +46,31 @@ export function supabaseProjectConfigDraftWithSource(
 ): SupabaseProjectConfigDraftWithSource {
   const stored = loadStoredSupabaseProjectConfig();
   const envDraft = supabaseProjectConfigDraftFromEnv(env);
-  const shouldUseStored = stored.source === "custom" || !envDraft.url || !envDraft.anonKey;
-  const source = shouldUseStored ? stored.source : "env";
-  return {
-    anonKey: shouldUseStored ? stored.anonKey || envDraft.anonKey : envDraft.anonKey,
-    projectId: shouldUseStored ? stored.projectId || envDraft.projectId : envDraft.projectId,
-    source,
-    url: shouldUseStored ? stored.url || envDraft.url : envDraft.url,
-  };
+  // custom 은 URL/Anon 중 하나라도 있을 때만 “의도적 사용자 설정”으로 본다.
+  // (빈 custom + 기본 projectId 만 남은 캐시가 env 프리필을 막던 회귀 방지)
+  const customActive = stored.source === "custom" && (stored.url.length > 0 || stored.anonKey.length > 0);
+  const url = customActive && stored.url ? stored.url : envDraft.url || stored.url;
+  const anonKey = customActive && stored.anonKey ? stored.anonKey : envDraft.anonKey || stored.anonKey;
+  const projectId =
+    customActive && stored.projectId
+      ? stored.projectId
+      : envDraft.projectId || stored.projectId || DEFAULT_SUPABASE_PROJECT_ID;
+  const source: SupabaseProjectConfigSource = customActive
+    ? "custom"
+    : envDraft.url && envDraft.anonKey
+      ? "env"
+      : stored.url || stored.anonKey
+        ? "legacy"
+        : envDraft.url || envDraft.anonKey
+          ? "env"
+          : "legacy";
+  return { anonKey, projectId, source, url };
+}
+
+/** 브라우저 custom 저장을 지우고 env 기본값만 쓰게 한다(연결 폼 리셋). */
+export function resetSupabaseProjectConfigToEnv(env: SupabaseProjectEnv = import.meta.env): SupabaseProjectConfigDraftWithSource {
+  clearSupabaseProjectConfigDraft();
+  return supabaseProjectConfigDraftWithSource(env);
 }
 
 export function saveSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft): void {
@@ -73,9 +90,10 @@ function normalizeSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft):
 }
 
 function supabaseProjectConfigDraftFromEnv(env: SupabaseProjectEnv): SupabaseProjectConfigDraft {
+  // projectId 기본값은 병합 단계에서만 적용한다 — env에 키가 없을 때 legacy 저장값을 덮지 않기 위함.
   return {
     anonKey: env.VITE_SUPABASE_ANON_KEY?.trim() || "",
-    projectId: env.VITE_SUPABASE_PROJECT_ID?.trim() || DEFAULT_SUPABASE_PROJECT_ID,
+    projectId: env.VITE_SUPABASE_PROJECT_ID?.trim() || "",
     url: env.VITE_SUPABASE_URL?.trim() || "",
   };
 }

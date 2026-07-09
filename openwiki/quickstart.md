@@ -7,7 +7,12 @@ For AI/code-agent work, start with `AGENTS.md` and `openwiki/PROJECT_WIKI.md`. T
 ## Start here
 
 - `README.md` for the user-facing overview, editor/player controls, and save/load flow.
-- `package.json` for available scripts: `npm run dev`, `npm run build`, `npm test`, and `npm run typecheck`.
+- `package.json` scripts:
+  - **일상 개발 (권장):** `npm run dev` — HMR, 전체 production 빌드 없이 즉시 반영 (기본 포트 9173).
+  - **빠른 정적 미리보기:** `npm run build:fast` 후 `npm run start` — 메인 앱 Vite 빌드만 (tsc·export-player 생략).
+  - **배포/CI 풀빌드:** `npm run build` — `tsc` 전체 + 메인 + player (가장 느림).
+  - `npm run typecheck` / `typecheck:app` — 전체 vs `src`만.
+  - `npm test` — Vitest.
 - `src/main.ts` for startup behavior, URL feature flags, PWA loading, and the classic event editor capture path.
 
 ## Wiki map

@@ -43,7 +43,7 @@ export interface AiConfig {
   autoApprove?: boolean;
 }
 
-// 기본값. apiKey는 항상 빈값.
+// 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
 // DEFAULT_MODEL: 감독(계획·검수)은 minimax-m3. 저장된 사용자 지정 모델은 loadAiConfig가 존중한다.
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const DEFAULT_MODEL = "minimax/minimax-m3";
@@ -51,12 +51,38 @@ export const DEFAULT_MODEL = "minimax/minimax-m3";
 export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
 export const DEFAULT_MAX_TOKENS = 32768;
 
+/** Browser-exposed env keys (from .env.local via Vite). Never hardcode secrets in source. */
+function envApiKey(): string {
+  try {
+    const fromLlm = import.meta.env.VITE_LLM_API_KEY?.trim();
+    if (fromLlm) return fromLlm;
+    const fromYunwu = import.meta.env.VITE_YUNWU_API_KEY?.trim();
+    if (fromYunwu) return fromYunwu;
+  } catch {
+    /* non-vite runtime */
+  }
+  return "";
+}
+
+function envBaseUrl(): string {
+  try {
+    // Prefer explicit OpenRouter base; skip relative proxy paths like /api/ai (yunwu-only).
+    const openrouter = import.meta.env.VITE_OPENROUTER_BASE_URL?.trim();
+    if (openrouter && /^https?:\/\//i.test(openrouter)) return openrouter.replace(/\/$/, "");
+    const llm = import.meta.env.VITE_LLM_API_URL?.trim();
+    if (llm && /^https?:\/\//i.test(llm)) return llm.replace(/\/$/, "");
+  } catch {
+    /* non-vite runtime */
+  }
+  return "";
+}
+
 export function defaultAiConfig(): AiConfig {
   return {
-    baseUrl: DEFAULT_BASE_URL,
+    baseUrl: envBaseUrl() || DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
-    apiKey: "",
+    apiKey: envApiKey(),
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
     reasoningEffort: "medium",
@@ -67,6 +93,7 @@ export function defaultAiConfig(): AiConfig {
 export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
 
 // localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
+// apiKey가 빈 문자열로 저장된 경우(미설정) env 폴백을 허용한다.
 export function loadAiConfig(): AiConfig {
   const base = defaultAiConfig();
   if (typeof localStorage === "undefined") return base;
@@ -74,12 +101,13 @@ export function loadAiConfig(): AiConfig {
     const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
     if (!raw) return base;
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
+    const storedKey = typeof parsed.apiKey === "string" ? parsed.apiKey.trim() : "";
     return {
       baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
       // 저장된 사용자 모델은 존중하되 비었으면 기본값.
       model: typeof parsed.model === "string" && parsed.model.trim() ? parsed.model.trim() : base.model,
       liteModel: typeof parsed.liteModel === "string" && parsed.liteModel.trim() ? parsed.liteModel.trim() : base.liteModel,
-      apiKey: typeof parsed.apiKey === "string" ? parsed.apiKey : base.apiKey,
+      apiKey: storedKey || base.apiKey || envApiKey(),
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
         ? Math.floor(Number(parsed.maxToolCalls))
         : base.maxToolCalls,

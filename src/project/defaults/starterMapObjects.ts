@@ -144,21 +144,24 @@ function addSecondVillageHouseDoor(map: GameMap): void {
 }
 
 function paintForestObjects(map: GameMap): void {
-  for (let y = 4; y < map.height - 4; y++) {
-    for (let x = 4; x < map.width - 4; x++) {
+  // 1칸 나무 조각(289/259 등)을 뿌리지 않는다.
+  // 침엽수(2단)·큰 나무(2×2) 스탬프만 쓰고, 시드 간격으로 과밀을 막는다.
+  for (let y = 4; y < map.height - 5; y++) {
+    for (let x = 4; x < map.width - 5; x++) {
       const point = { x, y };
       if (!acceptsUpperObject(map, point)) continue;
       const value = seed(point);
-      if (value % 89 === 0 && canStampUpper(map, point, BIG_TREE_PATTERN)) {
+      if (value % 97 === 0 && canStampUpper(map, point, BIG_TREE_PATTERN)) {
         stampUpper(map, point, BIG_TREE_PATTERN);
-      } else if (value % 67 === 0 && canStampUpper(map, point, CONIFER_PATTERN)) {
+        continue;
+      }
+      if (value % 71 === 0 && canStampUpper(map, point, CONIFER_PATTERN)) {
         stampUpper(map, point, CONIFER_PATTERN);
-      } else if (value % 43 === 0) {
-        setUpper(map, point, 289);
-      } else if (value % 59 === 0) {
+        continue;
+      }
+      // 꽃만 희소하게 — 나무 조각으로 오인되는 단일 타일 장식은 넣지 않는다.
+      if (value % 131 === 0) {
         setUpper(map, point, pick(FLOWER_TILES, point));
-      } else if (value % 97 === 0) {
-        setUpper(map, point, 259);
       }
     }
   }

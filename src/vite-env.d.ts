@@ -4,6 +4,8 @@ interface ImportMetaEnv {
   readonly VITE_YUNWU_API_KEY?: string;
   readonly VITE_LLM_API_KEY?: string;
   readonly VITE_LLM_API_URL?: string;
+  readonly VITE_OPENROUTER_BASE_URL?: string;
+  readonly VITE_OPENROUTER_MODEL?: string;
   readonly VITE_SUPABASE_ANON_KEY?: string;
   readonly VITE_SUPABASE_PROJECT_ID?: string;
   readonly VITE_SUPABASE_URL?: string;
@@ -52,6 +54,23 @@ interface Window {
   __RPG_ZZU_E2E_PROJECT__?: unknown;
   // AI 하네스 스냅샷(주입 포함 원본 메시지 + 감사 로그) — 콘솔/헤드리스 디버깅용.
   __rpgzzuAiHarness?: () => unknown;
+  // 에디터 basic/expert UI 모드 (src/editor/editorUiMode.ts).
+  __rpgzzuEditorUiMode?: {
+    readonly get: () => "basic" | "expert";
+    readonly set: (mode: "basic" | "expert") => void;
+    readonly chrome: () => unknown;
+    readonly brand: string;
+    readonly storageKey: string;
+  };
+  // MCP/에이전트 브리지 — 라이브 채팅 패널과 같은 세션 (src/editor/aiAssistantBridge.ts).
+  __rpgzzuAiBridge?: {
+    readonly send: (text: string) => Promise<unknown>;
+    readonly status: () => unknown;
+    readonly audit: () => unknown;
+    readonly harness: () => unknown;
+    readonly abort: () => void;
+    readonly connected: () => boolean;
+  };
   __rpgzzuCamera?: () => RpgZzuCameraDebug;
   __rpgzzuJuiceLog?: () => readonly RpgZzuRuntimeJuiceLogEntry[];
   __rpgzzuInput?: {

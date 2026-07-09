@@ -96,24 +96,58 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
 function renderDbRequiredScreen(error: unknown): void {
   if (!elements) return;
-  elements.topbar.textContent = "RPG ZZU - DB 연결 필요";
+  elements.topbar.textContent = "AI RPG MAKER";
   while (elements.main.firstChild) {
     elements.main.removeChild(elements.main.firstChild);
   }
   const panel = document.createElement("section");
-  panel.className = "db-required-panel";
+  panel.className = "db-required-panel db-required-hero";
   panel.dataset.testid = "db-required-panel";
+
+  const hero = document.createElement("div");
+  hero.className = "db-required-hero-art";
+  hero.dataset.testid = "db-required-hero";
+  const heroImg = document.createElement("img");
+  heroImg.className = "db-required-hero-image";
+  heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
+  heroImg.alt = "AI RPG Maker";
+  heroImg.decoding = "async";
+  // 생성 히어로 로드 실패 시 기존 타이틀 아트로 폴백
+  heroImg.addEventListener("error", () => {
+    if (heroImg.dataset.fallback === "1") return;
+    heroImg.dataset.fallback = "1";
+    heroImg.src = "/assets/generated/title/bright-rpg-maker-title-v2.png";
+  });
+  hero.append(heroImg);
+
+  const copy = document.createElement("div");
+  copy.className = "db-required-copy";
+  const kicker = document.createElement("p");
+  kicker.className = "db-required-kicker";
+  kicker.textContent = "AI RPG MAKER";
   const title = document.createElement("h1");
-  title.textContent = "DB 연결이 필요합니다";
+  title.textContent = "세계를 설계하고, 바로 플레이하세요";
   const body = document.createElement("p");
-  body.textContent = error instanceof Error ? error.message : "프로젝트를 열려면 Supabase DB 연결과 프로젝트 선택이 필요합니다.";
+  body.textContent =
+    error instanceof Error
+      ? error.message
+      : "프로젝트를 열려면 Supabase DB 연결과 프로젝트 선택이 필요합니다. .env.local 의 VITE_SUPABASE_* 값이 있으면 연결 폼에 자동으로 채워집니다.";
+  const chips = document.createElement("ul");
+  chips.className = "db-required-chips";
+  for (const label of ["맵·이벤트 편집", "AI 어시스턴트", "팀 프로젝트 DB"]) {
+    const li = document.createElement("li");
+    li.textContent = label;
+    chips.append(li);
+  }
   const action = document.createElement("button");
   action.type = "button";
   action.className = "btn primary";
   action.dataset.testid = "db-required-open-settings";
   action.textContent = "DB 연결 열기";
   action.addEventListener("click", () => openRequiredDbSettings());
-  panel.append(title, body, action);
+  copy.append(kicker, title, body, chips, action);
+
+  panel.append(hero, copy);
   elements.main.append(panel);
   openRequiredDbSettings();
 }
@@ -368,6 +402,13 @@ async function renderTopbar(): Promise<void> {
   const { renderTopbar: render } = await import("@/editor/panels/menu");
   render(elements.topbar);
 }
+
+// basic/expert 전환 시 탑바(클래식 툴바·메뉴 밀도)를 다시 그린다.
+void import("@/editor/editorUiMode").then(({ subscribeEditorUiMode }) => {
+  subscribeEditorUiMode(() => {
+    void renderTopbar();
+  });
+});
 
 function onMapEditHistoryChange(): void {
   void renderTopbar();

@@ -28,7 +28,8 @@ const ROAD_RECTS = [
 
 export function decorateStarterMap64(map: GameMap): void {
   paintNaturalBase(map);
-  paintBoundary(map);
+  // 맵 가장자리 WALL 프레임 제거(열린 필드). 내부 장식 벽 띠만 유지한다.
+  paintInteriorWallBands(map);
   paintGrassPatches(map);
   paintWaterAndShore(map);
   paintBridgeAndGroundDetails(map);
@@ -49,15 +50,7 @@ function paintNaturalBase(map: GameMap): void {
   }
 }
 
-function paintBoundary(map: GameMap): void {
-  for (let x = 0; x < map.width; x++) {
-    setLower(map, { x, y: 0 }, TILE.WALL);
-    setLower(map, { x, y: map.height - 1 }, TILE.WALL);
-  }
-  for (let y = 0; y < map.height; y++) {
-    setLower(map, { x: 0, y }, TILE.WALL);
-    setLower(map, { x: map.width - 1, y }, TILE.WALL);
-  }
+function paintInteriorWallBands(map: GameMap): void {
   fillLowerRect(map, { x: 3, y: 2, width: 23, height: 2 }, WALL_TILES);
   fillLowerRect(map, { x: 38, y: 2, width: 23, height: 2 }, WALL_TILES);
   fillLowerRect(map, { x: 3, y: 60, width: 23, height: 2 }, WALL_TILES);

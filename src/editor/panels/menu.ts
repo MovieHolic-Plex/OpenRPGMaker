@@ -3,6 +3,13 @@ import { addMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { showConfirm } from "@/editor/ui/modal";
 import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
+import {
+  EDITOR_PRODUCT_BRAND,
+  getEditorChrome,
+  getEditorUiMode,
+  setEditorUiMode,
+  type EditorUiMode,
+} from "@/editor/editorUiMode";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
@@ -52,18 +59,87 @@ export function renderTopbar(topbar: HTMLElement): void {
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   applyToolbarCollapsed(readToolbarCollapsed());
   const mode = getMode();
+  const uiMode = getEditorUiMode();
+  const chrome = getEditorChrome();
   const state = editorState.get();
   const history = getMapEditHistoryState();
-  const menuBar = el("div", { class: "rm2k3-menu-bar", dataset: { testid: "rm2k3-menu-bar" } });
+  const menuBar = el("div", {
+    class: "rm2k3-menu-bar editor-studio-menubar",
+    dataset: { testid: "rm2k3-menu-bar", editorUiMode: uiMode },
+  });
+  menuBar.append(renderProductBrand());
   for (const item of MENU_ITEMS) {
-    menuBar.append(renderMenu(item.id, item.label, menuCommands(item.id, state, history, topbar)));
+    if (item.id === "help" && !chrome.helpMenu) continue;
+    const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
+    menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
   }
+  menuBar.append(renderEditorUiModeToggle(topbar));
   menuBar.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
   menuBar.append(renderWindowControls());
 
-  const toolbar = el("div", { class: "rm2k3-toolbar classic-toolbar", dataset: { testid: "rm2k3-toolbar" } });
-  toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
-  topbar.append(menuBar, toolbar);
+  // Classic toolbar: expert edit surface only — gradual deprecation (not default in basic).
+  const showClassic = mode !== "edit" || chrome.classicToolbar;
+  topbar.append(menuBar);
+  if (showClassic) {
+    const toolbar = el("div", {
+      class: "rm2k3-toolbar classic-toolbar is-legacy-surface",
+      dataset: { testid: "rm2k3-toolbar", uiDensity: chrome.classicToolbar ? "expert" : "play" },
+    });
+    toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
+    topbar.append(toolbar);
+  }
+}
+
+function renderProductBrand(): HTMLElement {
+  return el("div", {
+    class: "editor-product-brand",
+    dataset: { testid: "editor-product-brand" },
+    attrs: { title: EDITOR_PRODUCT_BRAND },
+    children: [
+      el("span", { class: "editor-product-brand-mark", attrs: { "aria-hidden": "true" }, text: "✦" }),
+      el("span", { class: "editor-product-brand-text", text: EDITOR_PRODUCT_BRAND }),
+    ],
+  });
+}
+
+function renderEditorUiModeToggle(topbar: HTMLElement): HTMLElement {
+  const current = getEditorUiMode();
+  const group = el("div", {
+    class: "editor-ui-mode-toggle",
+    attrs: { role: "group", "aria-label": "에디터 UI 모드" },
+    dataset: { testid: "editor-ui-mode-toggle" },
+  });
+  const makeButton = (mode: EditorUiMode, label: string, testId: string): HTMLElement =>
+    el("button", {
+      class: `editor-ui-mode-btn${current === mode ? " is-active" : ""}`,
+      text: label,
+      attrs: {
+        type: "button",
+        "aria-pressed": current === mode ? "true" : "false",
+        title: mode === "basic" ? "기본 모드 — 간결한 편집 셸" : "전문가 모드 — 전체 도구·맵 트리",
+      },
+      dataset: { testid: testId, editorUiMode: mode },
+      on: {
+        click: (event) => {
+          event.stopPropagation();
+          setEditorUiMode(mode);
+          // Layout subscribe in editor.ts also reacts; this import covers late mounts.
+          void import("@/editor/panels/editor")
+            .then((mod) => {
+              mod.applyEditorUiModeLayout?.();
+            })
+            .catch(() => {
+              /* editor not loaded (boot/landing) */
+            });
+          renderTopbar(topbar);
+        },
+      },
+    });
+  group.append(
+    makeButton("basic", "기본 모드", "editor-ui-mode-basic"),
+    makeButton("expert", "전문가 모드", "editor-ui-mode-expert"),
+  );
+  return group;
 }
 
 export function readableTopbarIdentityLabel(label: string): string {

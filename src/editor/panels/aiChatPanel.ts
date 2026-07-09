@@ -7,6 +7,7 @@
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, type ChatDock } from "@/editor/editorState";
+import { getEditorChrome, getEditorUiMode } from "@/editor/editorUiMode";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
@@ -42,6 +43,13 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createCommandBarElements } from "./aiCommandBar";
 import { openAiSettingsModal } from "./aiSettingsModal";
+import {
+  isAiAssistantBridgeConnected,
+  registerAiAssistantBridge,
+  setAiBridgeLastStatus,
+  type AiBridgeAuditEntry,
+  type AiBridgeTurnResult,
+} from "@/editor/aiAssistantBridge";
 import {
   applyAiFontSize,
   clampPanelSize,
@@ -186,6 +194,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 로그 export로 "검토 대기" 멈춤을 진단 가능.
   const setStatus = (text: string, record = true): void => {
     status.textContent = text;
+    setAiBridgeLastStatus(text);
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
@@ -1579,9 +1588,79 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [volatileLogMount, stickyProposalZone],
   });
   const historyLogMount = el("div", { class: "ai-history-log-mount" });
+  const recentWorkList = el("div", {
+    class: "ai-recent-work-list",
+    dataset: { testid: "ai-recent-work-list" },
+    text: "아직 기록된 작업이 없습니다.",
+  });
+  const makeExpertQuickAction = (label: string, testId: string): HTMLElement =>
+    el("button", {
+      class: "ai-quick-action-btn",
+      text: label,
+      attrs: { type: "button", title: label },
+      dataset: { testid: testId },
+      on: {
+        click: () => {
+          input.value = label;
+          input.focus();
+          sendButton.click();
+        },
+      },
+    });
+  // Expert density board (hidden in basic via body.editor-ui-basic CSS + dataset).
+  const expertBoard = el("div", {
+    class: "ai-expert-board",
+    dataset: { testid: "ai-expert-board", uiDensity: "expert" },
+    children: [
+      el("section", {
+        class: "ai-expert-section",
+        dataset: { testid: "ai-quick-actions" },
+        children: [
+          el("div", { class: "ai-expert-section-title", text: "빠른 작업" }),
+          el("div", {
+            class: "ai-quick-action-grid",
+            children: [
+              makeExpertQuickAction("나무 더 배치해줘", "ai-quick-action-trees"),
+              makeExpertQuickAction("숲길을 자연스럽게 연결해줘", "ai-quick-action-path"),
+              makeExpertQuickAction("맵 가장자리에 경계 추가", "ai-quick-action-border"),
+              makeExpertQuickAction("적 몬스터 배치 제안", "ai-quick-action-monsters"),
+            ],
+          }),
+        ],
+      }),
+      el("section", {
+        class: "ai-expert-section",
+        dataset: { testid: "ai-automation-suggestions" },
+        children: [
+          el("div", { class: "ai-expert-section-title", text: "자동화 제안" }),
+          el("div", {
+            class: "ai-automation-empty",
+            text: "제안이 생기면 여기에 적용 버튼과 함께 표시됩니다.",
+            dataset: { testid: "ai-automation-empty" },
+          }),
+        ],
+      }),
+      el("section", {
+        class: "ai-expert-section",
+        dataset: { testid: "ai-recent-work" },
+        children: [
+          el("div", { class: "ai-expert-section-title", text: "최근 작업 기록" }),
+          recentWorkList,
+        ],
+      }),
+    ],
+  });
+  const syncExpertBoardVisibility = (): void => {
+    const dense = getEditorChrome().aiDenseSections;
+    expertBoard.hidden = !dense;
+    expertBoard.classList.toggle("is-hidden", !dense);
+    panel.dataset.uiDensity = dense ? "expert" : "basic";
+    panel.dataset.editorUiMode = getEditorUiMode();
+  };
   const mainColumn = el("div", {
     class: "ai-chat-main",
     children: [
+      expertBoard,
       historyLogMount,
       chipsHost,
     ],
@@ -1591,9 +1670,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const panel = el("aside", {
     class: "ai-chat-panel",
     attrs: { "aria-label": "AI 어시스턴트 채팅" },
-    dataset: { testid: "ai-panel" },
+    dataset: {
+      testid: "ai-panel",
+      uiDensity: getEditorChrome().aiDenseSections ? "expert" : "basic",
+      editorUiMode: getEditorUiMode(),
+    },
     children: [header, toolbar, body, collapsedRestore, risingOverlay, commandBar, proposalModalRoot],
   });
+  syncExpertBoardVisibility();
+  // Keep expert board in sync when user toggles basic/expert without remounting AI panel.
+  if (typeof document !== "undefined" && typeof MutationObserver === "function") {
+    const observer = new MutationObserver(() => syncExpertBoardVisibility());
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class", "data-editor-ui-mode"] });
+  }
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__rpgzzuAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
@@ -1859,6 +1948,115 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     });
   }
+
+  // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
+  const sleep = (ms: number): Promise<void> =>
+    new Promise((resolve) => {
+      if (typeof window !== "undefined" && typeof window.setTimeout === "function") window.setTimeout(resolve, ms);
+      else resolve();
+    });
+  const waitUntilIdle = async (timeoutMs: number): Promise<boolean> => {
+    const started = Date.now();
+    while (turnBusy) {
+      if (Date.now() - started > timeoutMs) return false;
+      await sleep(150);
+    }
+    return true;
+  };
+  const collectAudit = (): readonly AiBridgeAuditEntry[] => {
+    const merged = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
+    return merged.map((entry) => {
+      const kind = entry.kind;
+      if (kind === "tool") {
+        return { kind: "tool", name: entry.name, summary: entry.summary, at: entry.at };
+      }
+      if (kind === "assistant" || kind === "user" || kind === "status") {
+        return { kind, text: "text" in entry ? entry.text : undefined, at: entry.at };
+      }
+      return { kind: String(kind) };
+    });
+  };
+  const lastAssistantFromAudit = (): string | undefined => {
+    const audit = collectAudit();
+    for (let i = audit.length - 1; i >= 0; i -= 1) {
+      if (audit[i]?.kind === "assistant" && audit[i]?.text) return audit[i]?.text;
+    }
+    return undefined;
+  };
+  registerAiAssistantBridge({
+    send: async (text: string): Promise<AiBridgeTurnResult> => {
+      const trimmed = text.trim();
+      if (!trimmed) {
+        return { ok: false, error: "빈 메시지", status: {
+          ready: true, turnBusy, configReady: isAiConfigReady(loadAiConfig()), lastStatus: status.textContent ?? "대기",
+          bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
+        }, audit: collectAudit(), harness: controller.session?.getHarnessSnapshot() ?? null };
+      }
+      if (!isAiConfigReady(loadAiConfig())) {
+        openAiSettings("apiKey");
+        return {
+          ok: false,
+          error: "AI 설정(API 키)이 필요합니다. 에디터 설정 모달을 확인하세요.",
+          status: {
+            ready: true, turnBusy, configReady: false, lastStatus: status.textContent ?? "대기",
+            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
+          },
+          audit: collectAudit(),
+          harness: null,
+        };
+      }
+      const idle = await waitUntilIdle(120_000);
+      if (!idle) {
+        return {
+          ok: false,
+          error: "이전 턴이 끝나지 않아 전송하지 못했습니다.",
+          status: {
+            ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "대기",
+            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
+          },
+          audit: collectAudit(),
+          harness: controller.session?.getHarnessSnapshot() ?? null,
+        };
+      }
+      try {
+        await sendText(trimmed);
+        await waitUntilIdle(300_000);
+        const audit = collectAudit();
+        return {
+          ok: true,
+          status: {
+            ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "대기",
+            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
+          },
+          audit,
+          harness: controller.session?.getHarnessSnapshot() ?? null,
+          lastAssistantText: lastAssistantFromAudit(),
+        };
+      } catch (cause) {
+        return {
+          ok: false,
+          error: cause instanceof Error ? cause.message : String(cause),
+          status: {
+            ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "오류",
+            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
+          },
+          audit: collectAudit(),
+          harness: controller.session?.getHarnessSnapshot() ?? null,
+        };
+      }
+    },
+    getStatus: () => ({
+      ready: true,
+      turnBusy,
+      configReady: isAiConfigReady(loadAiConfig()),
+      lastStatus: status.textContent ?? "대기",
+      bridgeConnected: isAiAssistantBridgeConnected(),
+      panelMounted: true,
+    }),
+    getAudit: () => collectAudit(),
+    getHarness: () => controller.session?.getHarnessSnapshot() ?? null,
+    abort: () => abortActiveTurn(),
+  });
 
   return panel;
 }

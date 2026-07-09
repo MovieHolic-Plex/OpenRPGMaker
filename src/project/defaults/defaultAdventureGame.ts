@@ -392,14 +392,7 @@ function charsetGraphic(spriteId: string, characterIndex: number, direction: "do
 function makeMap(id: string, name: string, width: number, height: number): GameMap {
   const map = createBlankMap(name, width, height, DEFAULT_TILESET_ID, DEFAULT_TILE_SIZE);
   map.id = id;
-  for (let x = 0; x < width; x += 1) {
-    setLower(map, x, 0, TILE.WALL);
-    setLower(map, x, height - 1, TILE.WALL);
-  }
-  for (let y = 0; y < height; y += 1) {
-    setLower(map, 0, y, TILE.WALL);
-    setLower(map, width - 1, y, TILE.WALL);
-  }
+  // 외곽 WALL 프레임 없음 — 풀밭 가장자리 열린 맵.
   return map;
 }
 
