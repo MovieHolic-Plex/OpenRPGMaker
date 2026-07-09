@@ -572,14 +572,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     body.append(item);
     return item;
   };
-  const appendReasoning = (): { body: HTMLElement } => {
+  const appendReasoning = (): { box: HTMLElement; body: HTMLElement } => {
     revealVolatileZone();
     removeStartScreen();
     if (lastReasoning?.box.parentNode === log && log.childNodes[log.childNodes.length - 1] === lastReasoning.box) {
       lastReasoning.state.count += 1;
       lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, lastReasoning.body.hidden);
       log.scrollTop = log.scrollHeight;
-      return { body: appendReasoningItem(lastReasoning.body) };
+      return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
     }
     const body = el("div", { class: "ai-reasoning-body", dataset: { testid: "ai-reasoning-body" } });
     body.hidden = true;
@@ -597,7 +597,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.append(box);
     lastReasoning = { box, body, toggle, state };
     log.scrollTop = log.scrollHeight;
-    return { body: appendReasoningItem(body) };
+    return { box, body: appendReasoningItem(body) };
   };
 
   // 툴콜을 원문 버블로 쏟지 않고 접이식 한 줄 요약("🔧 툴 N회 실행 ▸")으로 묶는다.
@@ -1292,8 +1292,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let assistantBubble: HTMLElement | null = null;
-    let reasoningBox: { body: HTMLElement } | null = null;
+    let reasoningBox: { box: HTMLElement; body: HTMLElement } | null = null;
     const streamedBubbles: HTMLElement[] = [];
+    let currentStreamNodes: HTMLElement[] = [];
+    const trackCurrentStreamNode = (node: HTMLElement): void => {
+      if (!currentStreamNodes.includes(node)) currentStreamNodes.push(node);
+    };
+    const clearCurrentStreamAttempt = (): void => {
+      const discarded = new Set(currentStreamNodes);
+      currentStreamNodes.forEach((node) => node.remove());
+      for (let index = streamedBubbles.length - 1; index >= 0; index -= 1) {
+        if (discarded.has(streamedBubbles[index])) streamedBubbles.splice(index, 1);
+      }
+      if (lastReasoning && discarded.has(lastReasoning.box)) lastReasoning = null;
+      currentStreamNodes = [];
+      assistantBubble = null;
+      reasoningBox = null;
+    };
     const onEvent = (event: SessionEvent): void => {
       if (event.type === "phase") {
         runningPhaseStatus = phaseStatusText(event.value);
@@ -1301,8 +1316,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         else setStatus(runningPhaseStatus);
         return;
       }
+      if (event.type === "assistant_stream_reset") {
+        clearCurrentStreamAttempt();
+        return;
+      }
       if (event.type === "reasoning_token") {
-        if (!reasoningBox) reasoningBox = appendReasoning();
+        if (!reasoningBox) {
+          reasoningBox = appendReasoning();
+          trackCurrentStreamNode(reasoningBox.box);
+        }
         reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
         log.scrollTop = log.scrollHeight;
         return;
@@ -1312,6 +1334,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         if (!assistantBubble) {
           assistantBubble = appendBubble("assistant", "");
           streamedBubbles.push(assistantBubble);
+          trackCurrentStreamNode(assistantBubble);
           closeToolActivity(); // 응답이 시작되면 다음 툴은 새 그룹으로.
         }
         assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
@@ -1323,12 +1346,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         } else {
           assistantBubble.textContent = event.content;
         }
+        currentStreamNodes = [];
       } else if (event.type === "tool_call") {
         bumpToolProgress();
         appendToolLine(event.name, event.result, event.args);
         ghostPreviewUpdater.handleToolCall(event);
         assistantBubble = null; // 툴 이후 새 assistant 응답은 새 버블.
         reasoningBox = null; // 툴 이후 새 추론은 새 상자.
+        currentStreamNodes = [];
         // 밑그림(스펙) 확정: 중간과정 가시화 — 에셋별 할당 영역을 카드로 보여준다.
         if (event.name === "set_build_spec" && event.result.ok && event.result.data) {
           const spec = event.result.data as BuildSpec;
@@ -1505,9 +1530,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
     setStatus("영역 작업 중…");
     let assistantBubble: HTMLElement | null = null;
-    let reasoningBox: { body: HTMLElement } | null = null;
+    let reasoningBox: { box: HTMLElement; body: HTMLElement } | null = null;
     let assistantMessageDisplayed = false;
     const streamedBubbles: HTMLElement[] = [];
+    let currentStreamNodes: HTMLElement[] = [];
+    const trackCurrentStreamNode = (node: HTMLElement): void => {
+      if (!currentStreamNodes.includes(node)) currentStreamNodes.push(node);
+    };
+    const clearCurrentStreamAttempt = (): void => {
+      const discarded = new Set(currentStreamNodes);
+      currentStreamNodes.forEach((node) => node.remove());
+      for (let index = streamedBubbles.length - 1; index >= 0; index -= 1) {
+        if (discarded.has(streamedBubbles[index])) streamedBubbles.splice(index, 1);
+      }
+      if (lastReasoning && discarded.has(lastReasoning.box)) lastReasoning = null;
+      currentStreamNodes = [];
+      assistantBubble = null;
+      reasoningBox = null;
+    };
     const appendAssistantText = (content: string): void => {
       if (!content.trim()) return;
       assistantMessageDisplayed = true;
@@ -1522,8 +1562,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         else setStatus(runningPhaseStatus);
         return;
       }
+      if (event.type === "assistant_stream_reset") {
+        clearCurrentStreamAttempt();
+        return;
+      }
       if (event.type === "reasoning_token") {
-        if (!reasoningBox) reasoningBox = appendReasoning();
+        if (!reasoningBox) {
+          reasoningBox = appendReasoning();
+          trackCurrentStreamNode(reasoningBox.box);
+        }
         reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
         log.scrollTop = log.scrollHeight;
         return;
@@ -1533,6 +1580,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         if (!assistantBubble) {
           assistantBubble = appendBubble("assistant", "");
           streamedBubbles.push(assistantBubble);
+          trackCurrentStreamNode(assistantBubble);
           closeToolActivity();
         }
         assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
@@ -1540,7 +1588,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         return;
       }
       if (event.type === "assistant_message") {
-        appendAssistantText(event.content);
+        if (!event.content.trim()) return;
+        assistantMessageDisplayed = true;
+        if (assistantBubble) {
+          assistantBubble.textContent = event.content;
+          currentStreamNodes = [];
+        } else {
+          appendAssistantText(event.content);
+        }
         return;
       }
       if (event.type === "tool_call") {
@@ -1557,6 +1612,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         });
         assistantBubble = null;
         reasoningBox = null;
+        currentStreamNodes = [];
         return;
       }
       if (event.type === "status") {

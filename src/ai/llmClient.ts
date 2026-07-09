@@ -120,6 +120,8 @@ export interface ChatRequest {
   onToken?: (delta: string) => void;
   onReasoning?: (delta: string) => void;
   signal?: AbortSignal;
+  // AssistantSession처럼 상위 계층이 라운드 단위 재시도를 맡을 때 llmClient의 1회 재시도를 끈다.
+  disableTransientRetry?: boolean;
 }
 
 export interface ChatResult { message: ChatMessage; finishReason: string | null; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
@@ -200,7 +202,8 @@ function applyToolCallDelta(accum: Map<number, ToolCallAccum>, deltas: unknown):
 async function parseSseStream(
   body: ReadableStream<Uint8Array>,
   onToken?: (delta: string) => void,
-  onReasoning?: (delta: string) => void
+  onReasoning?: (delta: string) => void,
+  signal?: AbortSignal
 ): Promise<ChatResult> {
   const reader = body.getReader();
   const decoder = new TextDecoder();
@@ -241,23 +244,33 @@ async function parseSseStream(
   };
 
   let done = false;
-  while (!done) {
-    const { value, done: streamDone } = await reader.read();
-    if (streamDone) break;
-    buffer += decoder.decode(value, { stream: true });
-    // SSE 이벤트는 개행으로 구분. "data: " 접두 라인만 처리.
-    let nlIndex: number;
-    while ((nlIndex = buffer.indexOf("\n")) >= 0) {
-      const line = buffer.slice(0, nlIndex).replace(/\r$/, "");
-      buffer = buffer.slice(nlIndex + 1);
-      if (!line.startsWith("data:")) continue;
-      const payload = line.slice(5).trim();
-      if (!payload) continue;
-      if (handleData(payload)) {
-        done = true;
-        break;
+  try {
+    while (!done) {
+      const { value, done: streamDone } = await reader.read();
+      if (streamDone) break;
+      buffer += decoder.decode(value, { stream: true });
+      // SSE 이벤트는 개행으로 구분. "data: " 접두 라인만 처리.
+      let nlIndex: number;
+      while ((nlIndex = buffer.indexOf("\n")) >= 0) {
+        const line = buffer.slice(0, nlIndex).replace(/\r$/, "");
+        buffer = buffer.slice(nlIndex + 1);
+        if (!line.startsWith("data:")) continue;
+        const payload = line.slice(5).trim();
+        if (!payload) continue;
+        if (handleData(payload)) {
+          done = true;
+          break;
+        }
       }
     }
+  } catch (cause) {
+    if (signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
+    const detail = cause instanceof Error && cause.message ? ` ${cause.message}` : "";
+    throw new LlmError(`네트워크 오류: 스트리밍 연결이 끊겼습니다.${detail}`);
+  }
+
+  if (!done && finishReason === null) {
+    throw new LlmError("네트워크 오류: 스트리밍 연결이 조기 종료되었습니다.");
   }
 
   const message: ChatMessage = {
@@ -334,6 +347,7 @@ export async function chatCompletion(config: AiConfig, req: ChatRequest): Promis
         }
       : undefined,
   };
+  if (req.disableTransientRetry) return await chatCompletionOnce(config, guardedReq);
   try {
     return await chatCompletionOnce(config, guardedReq);
   } catch (cause) {
@@ -383,8 +397,9 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     throw new LlmError(humanizeStatus(response.status, body), response.status);
   }
 
-  if (stream && response.body) {
-    return await parseSseStream(response.body, req.onToken, req.onReasoning);
+  const contentType = response.headers?.get("Content-Type") ?? "";
+  if (stream && response.body && !contentType.toLowerCase().includes("application/json")) {
+    return await parseSseStream(response.body, req.onToken, req.onReasoning, req.signal);
   }
   const json = (await response.json()) as Record<string, unknown>;
   return parseNonStream(json);

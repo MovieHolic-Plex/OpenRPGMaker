@@ -268,6 +268,10 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
         void renderStageToolCall(stage, event);
       } else if (event.type === "status") {
         appendBubble("system", event.text);
+      } else if (event.type === "assistant_stream_reset") {
+        assistantText = "";
+        assistantBubble?.remove();
+        assistantBubble = null;
       } else {
         status.textContent = "추론 중…";
       }

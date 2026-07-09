@@ -52,6 +52,7 @@ export type SessionEvent =
   | { type: "assistant_token"; delta: string }
   | { type: "reasoning_token"; delta: string }
   | { type: "assistant_message"; content: string }
+  | { type: "assistant_stream_reset" }
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string };
@@ -329,7 +330,8 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
 
 // 검증 실패 허용 횟수(턴당). 초과하면 계획 폐기를 지시한다 — 루프 방지.
 const MAX_SPEC_REJECTIONS = 3;
-const ASSISTANT_TURN_RETRY_ATTEMPTS = 2;
+const ASSISTANT_TURN_RETRY_ATTEMPTS = 3;
+const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.";
 
 function specGateResult(summary: string, guidance: readonly string[]): ToolResult {
   return {
@@ -750,22 +752,28 @@ export class AssistantSession {
   ): Promise<ChatResult> {
     let attempt = 0;
     while (true) {
-      let streamedAny = false;
+      let receivedStreamDelta = false;
+      let emittedStreamDelta = false;
       const tokenGuard = emitTokens
         ? createRawMarkupTokenGuard((delta) => {
-            streamedAny = true;
+            emittedStreamDelta = true;
             onEvent({ type: "assistant_token", delta });
           })
         : null;
       try {
         const result = await this.chat(config, {
           ...req,
+          disableTransientRetry: true,
           onToken: emitTokens
-            ? (delta) => tokenGuard?.feed(delta)
+            ? (delta) => {
+                receivedStreamDelta = true;
+                tokenGuard?.feed(delta);
+              }
             : undefined,
           onReasoning: emitTokens
             ? (delta) => {
-                streamedAny = true;
+                receivedStreamDelta = true;
+                emittedStreamDelta = true;
                 onEvent({ type: "reasoning_token", delta });
               }
             : undefined,
@@ -778,13 +786,17 @@ export class AssistantSession {
           signal?.aborted ||
           isLlmAbortError(cause) ||
           !isRetryableLlmError(cause) ||
-          streamedAny ||
           attempt >= ASSISTANT_TURN_RETRY_ATTEMPTS
         ) {
           throw cause;
         }
         attempt += 1;
-        this.pushAudit({ kind: "status", text: `일시 오류 자동 재시도 ${attempt}/${ASSISTANT_TURN_RETRY_ATTEMPTS}` });
+        const text = receivedStreamDelta
+          ? `연결 끊김 — 재시도 중(${attempt}/${ASSISTANT_TURN_RETRY_ATTEMPTS})`
+          : `일시 오류 — 재시도 중(${attempt}/${ASSISTANT_TURN_RETRY_ATTEMPTS})`;
+        if (emittedStreamDelta) onEvent({ type: "assistant_stream_reset" });
+        onEvent({ type: "status", text });
+        this.pushAudit({ kind: "status", text });
         await sleep(LLM_RETRY_BACKOFF_MS * attempt);
       }
     }
@@ -829,7 +841,8 @@ export class AssistantSession {
           this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
           return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
-        const error = cause instanceof Error ? cause.message : String(cause);
+        const rawError = cause instanceof Error ? cause.message : String(cause);
+        const error = isRetryableLlmError(cause) ? appendTransientRetryGuidance(rawError) : rawError;
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
@@ -1223,6 +1236,11 @@ function parseToolCall(call: ToolCall): { name: string; args: Record<string, unk
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function appendTransientRetryGuidance(message: string): string {
+  if (message.includes(TRANSIENT_NETWORK_RETRY_GUIDANCE)) return message;
+  return `${message}\n${TRANSIENT_NETWORK_RETRY_GUIDANCE}`;
 }
 
 function stringValue(value: unknown): string | null {
