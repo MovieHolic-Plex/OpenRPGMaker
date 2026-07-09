@@ -1,4 +1,6 @@
 import { el } from "@/util/dom";
+import { store } from "@/project/store";
+import type { EventPageCondition } from "@/project/types";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import {
   renderActorCondition,
@@ -21,7 +23,6 @@ import {
   removeConditionAt,
   replaceConditionAt,
 } from "./pageConditionModel";
-import type { EventPageCondition } from "@/project/types";
 
 type AdvancedConditionKind = EventPageCondition["kind"];
 
@@ -205,17 +206,19 @@ function renderAdvancedConditionContent(
 }
 
 function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageCondition {
+  const project = store.getCurrent();
   switch (kind) {
     case "switch":
-      return { kind: "switch", switchId: "", value: true };
+      return { kind: "switch", switchId: project.switches[0]?.id ?? "", value: true };
     case "variable":
-      return { kind: "variable", variableId: "", op: ">=", value: 0 };
+      return { kind: "variable", variableId: project.variables[0]?.id ?? "", op: ">=", value: 0 };
     case "selfSwitch":
       return { kind: "selfSwitch", key: "A", value: true };
     case "item":
-      return { kind: "item", itemId: "", present: true };
+      // 빈 itemId는 참조 검증(page condition: itemId가 존재하지 않습니다)에 바로 걸린다.
+      return { kind: "item", itemId: project.database.items[0]?.id ?? "", present: true };
     case "actor":
-      return { kind: "actor", actorId: "", present: true };
+      return { kind: "actor", actorId: project.database.actors[0]?.id ?? "", present: true };
     case "gold":
       return { kind: "gold", op: ">=", amount: 0 };
     case "timer":

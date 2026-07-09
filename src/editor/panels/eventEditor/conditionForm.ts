@@ -477,6 +477,10 @@ function recordSelect(
   for (const [index, item] of list.entries()) {
     sel.append(el("option", { text: numberedName(index, item.name), attrs: { value: item.id } }));
   }
+  // 삭제된 레코드 id도 선택 표시 — 없으면 값이 조용히 비어 보여 조건이 깨진 것처럼 보인다.
+  if (currentId && !list.some((item) => item.id === currentId)) {
+    sel.append(el("option", { text: `${currentId} (없음)`, attrs: { value: currentId } }));
+  }
   sel.value = currentId;
   sel.addEventListener("change", () => onChange(sel.value));
   return sel;
