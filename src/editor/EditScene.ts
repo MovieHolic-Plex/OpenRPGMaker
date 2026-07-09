@@ -28,11 +28,14 @@ import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, t
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
-import { copyEventAt, eventLayerContextMenuItems, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
-import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
-import { isCellInsideSelection, regionTaskMenuItems } from "@/editor/panels/mapSelectionContextMenu";
+import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
+import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
+import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { isSignificantRegionDrag, regionRectFromDrag } from "@/editor/regionRightDrag";
+import { selectTileRegion } from "@/editor/mapClipboard";
 import { saveProjectNow } from "@/editor/saveActions";
 import { TilePaintEngine } from "@/editor/TilePaintEngine";
 import { DragOperationHandler } from "@/editor/DragOperationHandler";
@@ -55,6 +58,14 @@ type EventLayerClickTarget = {
   readonly ptr: Phaser.Input.Pointer;
   readonly x: number;
   readonly y: number;
+};
+
+/** 우클릭 드래그: 영역 선택 후 AI 팝오버. 클릭만이면 스포이트. */
+type RightRegionGesture = {
+  readonly mapId: MapId;
+  readonly start: { readonly x: number; readonly y: number };
+  readonly screen: { readonly x: number; readonly y: number };
+  moved: boolean;
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
@@ -140,9 +151,28 @@ export class EditScene extends PhaserRuntime.Scene {
   private cameraPanController: CameraPanController | null = null;
   private tilePaintEngine: TilePaintEngine | null = null;
   private dragOperationHandler: DragOperationHandler | null = null;
+  private rightRegionGesture: RightRegionGesture | null = null;
+  /** 맵 캔버스에서 우클릭이 시작되면 true. 버튼을 놓는 순간 contextmenu 가 문서 타겟으로 뜨는 경우 대비. */
+  private suppressBrowserContextMenuUntil = 0;
   private buildPalettePopup: HTMLElement | null = null;
   private buildPalettePopupKey = "";
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
+  /**
+   * 브라우저 기본 컨텍스트 메뉴만 차단.
+   * mousedown/pointerdown 에 preventDefault 하면 Phaser 우클릭 드래그가 먹통이 된다.
+   * 우클릭을 '놓는' 순간 contextmenu 가 canvas 밖(body 등)으로 발생하기도 해서 document capture + 시간창을 쓴다.
+   */
+  private readonly suppressCanvasBrowserMenu = (event: Event): void => {
+    if (!this.shouldSuppressBrowserContextMenu(event)) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  private readonly armCanvasRightButtonSuppress = (event: MouseEvent | PointerEvent): void => {
+    if (event.button !== 2) return;
+    if (!this.isEventOnEditCanvasSurface(event.target)) return;
+    // 버튼을 놓은 뒤 contextmenu 가 늦게 뜨는 브라우저를 위해 짧게 유지.
+    this.suppressBrowserContextMenuUntil = Date.now() + 1500;
+  };
 
   constructor() {
     super({ key: "EditScene" });
@@ -202,6 +232,8 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private cleanup(): void {
     this.unbindCanvasPanGuards();
+    this.unbindBrowserContextMenuGuards();
+    this.rightRegionGesture = null;
     this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
@@ -239,15 +271,14 @@ export class EditScene extends PhaserRuntime.Scene {
   // ── 입력 바인딩 ──
   private bindInput(): void {
     this.bindCanvasPanGuards();
+    this.bindBrowserContextMenuGuards();
     // 마우스 다운 → 드래그 중 계속 적용(페인트/충돌/지우개).
     this.input.on("pointerdown", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
       this.updateHoverPreview(ptr);
       if (this.isRightClick(ptr)) {
-        if (this.tryOpenRegionTaskMenu(ptr)) return; // 선택 영역 안 우클릭 → 영역 작업 메뉴
-        if (editorState.get().layer === "event") {
-          this.openEventLayerMenu(ptr);
-        }
+        // 우클릭: 드래그 시작하면 영역 AI, 클릭만이면 스포이트(아래 pointerup).
+        this.beginRightRegionGesture(ptr);
         return;
       }
       if (this.shouldPan(ptr)) {
@@ -264,6 +295,11 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
+      // 우클릭 제스처 중에는 버튼 플래그가 브라우저마다 들쭉날쭉해도 추적을 이어간다.
+      if (this.rightRegionGesture) {
+        this.updateRightRegionGesture(ptr);
+        return;
+      }
       if (this.getDragOperationHandler().active() && ptr.isDown) {
         this.updateDragOperation(ptr);
         return;
@@ -280,6 +316,10 @@ export class EditScene extends PhaserRuntime.Scene {
       }
     });
     this.input.on("pointerup", (ptr: Phaser.Input.Pointer) => {
+      if (this.rightRegionGesture) {
+        this.finishRightRegionGesture(ptr);
+        return;
+      }
       this.finishDragOperation(ptr);
       this.getDragOperationHandler().clearEventCandidate();
       this.isPainting = false;
@@ -312,8 +352,157 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cameraPanController?.unbindCanvasGuards();
   }
 
+  private bindBrowserContextMenuGuards(): void {
+    const canvas = this.game.canvas;
+    if (!canvas) return;
+    // 메뉴만 막고, pointer down/up 은 Phaser가 받아야 우클릭 드래그가 된다.
+    this.input.mouse?.disableContextMenu();
+    // document capture: 드래그 후 포인터가 캔버스 밖으로 나간 채 mouseup → contextmenu 가 body에 뜨는 경우 차단.
+    document.addEventListener("contextmenu", this.suppressCanvasBrowserMenu, true);
+    canvas.addEventListener("mousedown", this.armCanvasRightButtonSuppress, true);
+    canvas.addEventListener("pointerdown", this.armCanvasRightButtonSuppress, true);
+    const host = canvas.parentElement;
+    host?.addEventListener("mousedown", this.armCanvasRightButtonSuppress, true);
+    host?.addEventListener("pointerdown", this.armCanvasRightButtonSuppress, true);
+  }
+
+  private unbindBrowserContextMenuGuards(): void {
+    document.removeEventListener("contextmenu", this.suppressCanvasBrowserMenu, true);
+    const canvas = this.game.canvas;
+    if (!canvas) return;
+    canvas.removeEventListener("mousedown", this.armCanvasRightButtonSuppress, true);
+    canvas.removeEventListener("pointerdown", this.armCanvasRightButtonSuppress, true);
+    const host = canvas.parentElement;
+    host?.removeEventListener("mousedown", this.armCanvasRightButtonSuppress, true);
+    host?.removeEventListener("pointerdown", this.armCanvasRightButtonSuppress, true);
+    this.suppressBrowserContextMenuUntil = 0;
+  }
+
+  private shouldSuppressBrowserContextMenu(event: Event): boolean {
+    if (Date.now() < this.suppressBrowserContextMenuUntil) return true;
+    if (this.rightRegionGesture) return true;
+    return this.isEventOnEditCanvasSurface(event.target);
+  }
+
+  private isEventOnEditCanvasSurface(target: EventTarget | null): boolean {
+    if (!(target instanceof Element)) return false;
+    if (target === this.game.canvas) return true;
+    if (target.closest?.("[data-testid='edit-canvas']")) return true;
+    if (target.closest?.(".phaser-container")) return true;
+    if (target.closest?.(".editor-canvas-scroll-shell")) return true;
+    return false;
+  }
+
   private isRightClick(ptr: Phaser.Input.Pointer): boolean {
     return ptr.rightButtonDown() || ptr.button === 2;
+  }
+
+  private beginRightRegionGesture(ptr: Phaser.Input.Pointer): void {
+    const mapId = this.mapId();
+    if (!mapId) return;
+    const map = store.getCurrent().maps[mapId];
+    if (!map) return;
+    const start = this.pointerToTile(ptr);
+    if (start.x < 0 || start.y < 0 || start.x >= map.width || start.y >= map.height) return;
+    const screen = this.pointerScreenPosition(ptr);
+    this.rightRegionGesture = { mapId, start, screen, moved: false };
+    // mouseup 시 contextmenu 가 문서 타겟으로 뜨는 브라우저 대비.
+    this.suppressBrowserContextMenuUntil = Date.now() + 1500;
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    // 드래그 미리보기용 1×1 선택(클릭으로 끝나면 스포이트 시 지워도 됨).
+    selectTileRegion(mapId, { mapId, x: start.x, y: start.y, width: 1, height: 1 });
+  }
+
+  private updateRightRegionGesture(ptr: Phaser.Input.Pointer): void {
+    const gesture = this.rightRegionGesture;
+    if (!gesture) return;
+    const map = store.getCurrent().maps[gesture.mapId];
+    if (!map) return;
+    const end = this.pointerToTile(ptr);
+    const rect = regionRectFromDrag(gesture.start, end, { width: map.width, height: map.height });
+    if (!rect) return;
+    if (rect.x !== gesture.start.x || rect.y !== gesture.start.y || rect.width > 1 || rect.height > 1) {
+      gesture.moved = true;
+    }
+    selectTileRegion(gesture.mapId, {
+      mapId: gesture.mapId,
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+    });
+    this.lastPointerTile = end;
+  }
+
+  private finishRightRegionGesture(ptr: Phaser.Input.Pointer): void {
+    const gesture = this.rightRegionGesture;
+    this.rightRegionGesture = null;
+    // 버튼을 놓은 직후 contextmenu 가 한 번 더 올 수 있음.
+    this.suppressBrowserContextMenuUntil = Math.max(this.suppressBrowserContextMenuUntil, Date.now() + 800);
+    if (!gesture) return;
+    const map = store.getCurrent().maps[gesture.mapId];
+    if (!map) return;
+    const end = this.pointerToTile(ptr);
+    const rect = regionRectFromDrag(gesture.start, end, { width: map.width, height: map.height });
+    const significant = isSignificantRegionDrag(rect) || gesture.moved;
+
+    const screen = this.pointerScreenPosition(ptr);
+    if (significant && rect) {
+      // 우클릭 드래그 → 영역 확정 + 포인터 근처 AI 팝오버
+      selectTileRegion(gesture.mapId, {
+        mapId: gesture.mapId,
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+      });
+      this.openRegionAiPopover(gesture.mapId, rect, screen);
+      return;
+    }
+
+    // 이미 잡혀 있는 다중 선택 안을 우클릭 탭 → 그 영역 AI 팝오버 (스포이트 대신).
+    const existing = editorState.get().selection;
+    if (
+      existing &&
+      existing.mapId === gesture.mapId &&
+      isSignificantRegionDrag(existing) &&
+      isCellInsideSelection(existing, end.x, end.y)
+    ) {
+      this.openRegionAiPopover(
+        existing.mapId,
+        { x: existing.x, y: existing.y, width: existing.width, height: existing.height },
+        screen,
+      );
+      return;
+    }
+
+    // 우클릭 탭(1칸) → 스포이트. 이벤트 레이어에서는 기존 컨텍스트 메뉴 유지.
+    if (editorState.get().layer === "event") {
+      this.openEventLayerMenu(ptr);
+      return;
+    }
+    this.getTilePaintEngine().pickTileAtPointer(ptr);
+  }
+
+  private openRegionAiPopover(
+    mapId: MapId,
+    region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number },
+    screen: { readonly x: number; readonly y: number },
+  ): void {
+    if (!canEditMap(mapId)) {
+      toast(mapEditLockNotice(mapId), "error");
+      return;
+    }
+    requestAiSelectionContext(
+      { mapId, x: region.x, y: region.y, width: region.width, height: region.height },
+      false,
+    );
+    openRegionTaskModal({
+      mapId,
+      region,
+      anchor: { x: screen.x, y: screen.y },
+    });
   }
 
   private startPan(ptr: Phaser.Input.Pointer): void {
@@ -377,37 +566,6 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private applyAtPointer(ptr: Phaser.Input.Pointer): void {
     this.getTilePaintEngine().applyAtPointer(ptr);
-  }
-
-  // 우클릭 셀이 현재 맵의 활성 선택 영역 안이면 "이 영역에 AI 작업…" 메뉴를 연다.
-  // 이벤트 레이어에서는 기존 이벤트 항목도 함께 보여 아무것도 잃지 않는다. 편집 잠금
-  // 맵이면 열지 않는다(false 반환 → 기존 우클릭 동작으로 폴백).
-  private tryOpenRegionTaskMenu(ptr: Phaser.Input.Pointer): boolean {
-    const mapId = this.mapId();
-    if (!mapId || !canEditMap(mapId)) return false;
-    const selection = editorState.get().selection;
-    if (!selection || selection.mapId !== mapId) return false;
-    const { x, y } = this.pointerToTile(ptr);
-    if (!isCellInsideSelection(selection, x, y)) return false;
-
-    const point = this.pointerScreenPosition(ptr);
-    const map = store.getCurrent().maps[mapId];
-    const eventItems =
-      editorState.get().layer === "event"
-        ? eventLayerContextMenuItems({ mapId, x, y }).map((item, index) =>
-            index === 0 ? { ...item, separatorBefore: true } : item,
-          )
-        : [];
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    this.lastPointerTile = { x, y };
-    openMapContextMenu({
-      items: [...regionTaskMenuItems(selection), ...eventItems],
-      mapId,
-      mapName: `${map?.name ?? mapId} (${x},${y})`,
-      point,
-    });
-    return true;
   }
 
   private openEventLayerMenu(ptr: Phaser.Input.Pointer): void {

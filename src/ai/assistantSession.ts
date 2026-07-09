@@ -9,6 +9,7 @@ import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
+import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
 import {
@@ -146,11 +147,11 @@ export function pendingBuildLabel(tool: string, args: Record<string, unknown>): 
   }
 }
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
-// v3 어휘 프로포절(2026-07-07, 원칙 0): 승인 = origin:"user" 마킹은 '사용자 명시 수락'으로만.
-// requiresApproval 태깅이 메타데이터 자동 커밋·autoApprove 자동 수락 경로를 모두 차단하므로,
-// 이 툴의 draft 마킹이 store에 반영되는 유일한 경로가 명시 수락이 된다(자동 수락 = 승인 불인정).
+// 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인) 수락 시에만 origin:user.
+// requiresApproval 이 메타데이터 자동 커밋·autoApprove 를 막아 명시 수락만 합의로 친다.
 export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
-const VOCABULARY_APPROVAL_WARNING = "🔒 어휘 승인 제안: 수락하면 해당 타일/그룹이 승인 보캐뷸러리(origin:user)에 편입됩니다. 자동 승인은 적용되지 않습니다.";
+const VOCABULARY_APPROVAL_WARNING = "🔒 재료 합의 제안: 적용하면 해당 타일/그룹을 다음부터 바로 씁니다. 자동 적용되지 않습니다.";
+const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING = "🖼 맵에 이렇게 놓습니다 — [이대로 적용]하면 배치와 재료 합의가 함께 끝납니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지";
@@ -408,6 +409,8 @@ export class AssistantSession {
   private turnProposals = new Map<string, ProposedCall>();
   // 이번 턴에 "미승인 어휘"로 실패한 v3 시공 호출(§2.1.3) — 어휘 제안 카드에 첨부된다.
   private turnPendingBuilds = new Map<string, PendingBuild>();
+  /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
+  private turnWriteDedupe = new Map<string, ToolResult>();
   private eventBaseProposalKeys = new Map<string, string>();
   private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
@@ -608,6 +611,7 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
     this.turnPendingBuilds = new Map();
+    this.turnWriteDedupe = new Map();
     this.eventBaseProposalKeys = new Map();
 
     try {
@@ -967,10 +971,24 @@ export class AssistantSession {
         if (name === "set_build_spec") {
           toolResult = this.applyBuildSpec(args);
         } else {
-          const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
-          toolResult = isSpecGatePass(gate)
-            ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
-            : gate;
+          const dedupeKey = writeDedupeKey(name, args);
+          const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
+          if (cached) {
+            toolResult = {
+              ...cached,
+              summary: `${cached.summary} (이번 턴 동일 배치 재호출 — 건너뜀)`,
+              issues: [
+                ...(cached.issues ?? []),
+                { severity: "warning", code: "write-deduped", message: "같은 place_props 인자는 한 턴에 한 번만 실행됩니다." },
+              ],
+            };
+          } else {
+            const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
+            toolResult = isSpecGatePass(gate)
+              ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
+              : gate;
+            if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
+          }
         }
         // 승인+시공 융합(§2.1.3): 미승인 어휘로 거부된 v3 시공은 보류 시공으로 기록해
         // 이번 턴의 어휘 제안 카드에 첨부한다(수락 한 번 = 어휘 커밋 + 시공).
@@ -989,15 +1007,22 @@ export class AssistantSession {
 
         // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
         if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
+          const softConfirm = extractVocabSoftConfirm(toolResult.data);
           let proposal: ProposedCall = {
             name,
             args,
             summary: toolResult.summary,
             result: toolResult,
             destructive: DESTRUCTIVE_TOOLS.has(name),
-            requiresApproval: RULE_TOOLS.has(name) || DESTRUCTIVE_TOOLS.has(name) || VOCABULARY_PROPOSAL_TOOLS.has(name),
+            requiresApproval:
+              RULE_TOOLS.has(name)
+              || DESTRUCTIVE_TOOLS.has(name)
+              || VOCABULARY_PROPOSAL_TOOLS.has(name)
+              || softConfirm !== null,
           };
-          const approvalWarning = approvalWarningFor(name, args);
+          const approvalWarning = softConfirm
+            ? VOCAB_SOFT_CONFIRM_APPROVAL_WARNING
+            : approvalWarningFor(name, args);
           if (approvalWarning) proposal.approvalWarning = approvalWarning;
           proposal = this.withCarryoverWarningIfNeeded(proposal);
           this.upsertProposal(proposedByKey, proposal);
@@ -1140,6 +1165,16 @@ function proposalKey(proposal: ProposedCall): string {
   return `${proposal.name}:${JSON.stringify(proposal.args)}`;
 }
 
+/** 산포 툴 중복 억제 키 — seed 는 무시(같은 배치 의도 재호출 방지). */
+export function writeDedupeKey(name: string, args: Record<string, unknown>): string | null {
+  if (name !== "place_props") return null;
+  const mapId = typeof args.mapId === "string" ? args.mapId : "";
+  const propVocabId = typeof args.propVocabId === "string" ? args.propVocabId.trim() : "";
+  const count = typeof args.count === "number" ? args.count : args.count;
+  const area = args.area;
+  return `place_props|${mapId}|${JSON.stringify(area)}|${propVocabId}|${String(count)}`;
+}
+
 function moveEventTarget(proposal: ProposedCall): EventMoveTarget | null {
   if (proposal.name !== "move_event") return null;
   const mapId = stringValue(proposal.args.mapId);
@@ -1238,6 +1273,7 @@ function autoExpandedAssetKind(toolName: string): string {
       return "prop";
     case "build_house":
     case "build_house_kit":
+    case "build_house_lots":
     case "build_village":
       return "house";
     default:

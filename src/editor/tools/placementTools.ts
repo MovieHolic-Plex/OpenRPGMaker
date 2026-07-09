@@ -1,6 +1,10 @@
 import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
+import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
-import { isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
+import { isRoadTile } from "@/project/defaults/roadAutotile";
+import { isSandTile } from "@/project/defaults/sandAutotile";
+import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
+import { isTreeCanopyTileId, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, PaletteSlotRole, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { inMapBounds, passabilityWarning, requireMap, setLower, type Point } from "./mapHelpers";
@@ -56,6 +60,7 @@ type RankedChooseInput = {
   readonly placed: readonly Rect[];
   readonly preferSoftRules: boolean;
   readonly rankByPoint: ReadonlyMap<string, number>;
+  readonly remaining: number;
 };
 
 const AREA_SCHEMA: JsonSchema = {
@@ -66,7 +71,7 @@ const AREA_SCHEMA: JsonSchema = {
 
 const scatterObject: ToolDefinition = {
   name: "scatter_object",
-  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 프리셋이 있으면 groupId 대신 presetId+paletteRole을 우선 사용하라. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일 보호셀을 피한다. ${NATURALNESS_GUIDANCE}`,
+  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 프리셋이 있으면 groupId 대신 presetId+paletteRole을 우선 사용하라. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일·물·흙길/모래길·통행 불가 하층 보호셀을 피한다(avoidProtected 기본 true). poisson/cluster는 자연 샘플 rank 를 따르며, 요청 개수를 채울 수 없는 후보만 제외한다. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -82,7 +87,7 @@ const scatterObject: ToolDefinition = {
       naturalness: { type: "number", description: "0~1 자연도. <0.3 uniform, 0.3~0.7 poisson, >0.7 cluster(기본 0.5)" },
       mode: { type: "string", enum: ["uniform", "poisson", "cluster"], description: "자연산포 모드 명시 오버라이드" },
       seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 산포)" },
-      avoidProtected: { type: "boolean", description: "시작칸/이벤트/transfer 목적지/상위 타일 점유 칸 회피(기본 true)" },
+      avoidProtected: { type: "boolean", description: "시작칸/이벤트/transfer/상위 타일/물·흙길/모래길·통행 불가 하층 회피(기본 true)" },
       preferSoftRules: { type: "boolean", description: "soft/medium 규칙 만족을 우선(기본 true)" },
       applyStructure: { type: "boolean", description: "overlay/처마 생략 등 구조 규칙 자동 적용(기본 true)" },
     },
@@ -96,27 +101,59 @@ const scatterObject: ToolDefinition = {
     const picker = paletteTilePickerForTool(tileset, rawArgs, scatterSeedSignature(map, args));
     if (!picker && !args.groupId) throw new ToolError("scatter_object에는 groupId 또는 presetId+paletteRole이 필요합니다.", { code: "invalid-args", mapId: map.id });
     const group = picker ? syntheticPaletteGroup(picker) : groupById(map, draft, args.groupId as string);
-    const footprint = picker ? singleTileFootprint() : oneInstance(buildGroupSample(tileset, {
-      role: group.role,
-      tileIds: group.tileIds,
-      patternGrammar: group.patternGrammar,
-    }), group, tileset);
-    const blocked = args.avoidProtected ? blockedCells(draft, map) : new Set<string>();
-    const candidates = origins(map, args.area, footprint).filter((origin) => clearAt(map, footprint, origin, blocked));
+    // 문법 없는 다수 타일 prop 가방(소품 잡동사니)은 1칸씩 랜덤 타일로 뿌린다.
+    // 전체를 세로 쌍/한 줄 스탬프로 묶으면 벤치 좌우 타일이 위아래로 붙는 버그가 난다.
+    const bagProp = !picker && isBagPropGroup(group);
+    const footprint = picker
+      ? singleTileFootprint()
+      : bagProp
+        ? singleUpperPropFootprint(group.tileIds[0] ?? TILE.EMPTY, tileset)
+        : treeLayeredFootprint(group, tileset)
+          ?? oneInstance(buildGroupSample(tileset, {
+            role: group.role,
+            tileIds: group.tileIds,
+            patternGrammar: group.patternGrammar,
+          }), group, tileset);
+    const protectedCells = args.avoidProtected ? protectedEventCells(draft, map) : new Set<string>();
+    const candidates = origins(map, args.area, footprint).filter((origin) => footprintFits(map, footprint, origin, protectedCells));
     const legacySeed = scatterSeedSignature(map, args);
     const seed = args.seed === undefined ? legacySeed : String(args.seed);
     const ranked = args.mode === "uniform" ? null : rankedNaturalCandidates({ args, candidates, footprint, legacySeed, map });
     const placed: Rect[] = [];
+    const footprints: Footprint[] = [];
     for (let step = 0; step < args.count; step += 1) {
+      const stepFootprint = bagProp
+        ? bagPropFootprint(group, tileset, seed, step)
+        : footprint;
       const sourceCandidates = ranked?.ordered ?? candidates;
-      const allowed = sourceCandidates.filter((origin) => spaced(rectAt(origin, footprint), placed, args.minGap));
+      const allowed = sourceCandidates.filter((origin) => {
+        if (!footprintFits(map, stepFootprint, origin, protectedCells)) return false;
+        // 숲: 레이어가 다르면 발자국이 겹쳐도 됨(수관 upper + 밑동 lower).
+        return layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap);
+      });
       if (allowed.length === 0) break;
+      const remaining = args.count - placed.length;
       const chosen = ranked
-        ? chooseRanked({ allowed, choices: allowed, placed, footprint, minGap: args.minGap, map, group, preferSoftRules: args.preferSoftRules, rankByPoint: ranked.rankByPoint })
-        : chooseUniform({ allowed, placed, footprint, minGap: args.minGap, maxGap: args.maxGap, seed, step, map, group, preferSoftRules: args.preferSoftRules });
-      placed.push(rectAt(chosen, footprint));
+        ? chooseRanked({
+          allowed,
+          choices: allowed,
+          placed,
+          footprint: stepFootprint,
+          minGap: args.minGap,
+          map,
+          group,
+          preferSoftRules: args.preferSoftRules,
+          rankByPoint: ranked.rankByPoint,
+          remaining,
+        })
+        : chooseUniform({ allowed, placed, footprint: stepFootprint, minGap: args.minGap, maxGap: args.maxGap, seed, step, map, group, preferSoftRules: args.preferSoftRules });
+      placed.push(rectAt(chosen, stepFootprint));
+      footprints.push(stepFootprint);
     }
-    const touched = placed.flatMap((rect) => picker ? paintPaletteTile(map, tileset, picker, rect) : paint(map, footprint, rect));
+    const touched = placed.flatMap((rect, index) => {
+      if (picker) return paintPaletteTile(map, tileset, picker, { x: rect.x, y: rect.y });
+      return paint(map, footprints[index] ?? footprint, { x: rect.x, y: rect.y });
+    });
     const structureTouched = args.applyStructure && ((group.junctions?.length ?? 0) > 0 || (group.overlays?.length ?? 0) > 0)
       ? applyStructureEdits(map, resolvePlacementStructure({ map, tileset, group, placed }))
       : [];
@@ -289,6 +326,8 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
 }
 
 function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Footprint | null {
+  const layered = treeLayeredFootprint(group, tileset);
+  if (layered) return layered;
   if (group.patternGrammar?.kind !== "source_rect") return null;
   const topLeft = partTile(group, "topLeft", group.tileIds[0]);
   const topRight = partTile(group, "topRight", group.tileIds[1]);
@@ -303,7 +342,8 @@ function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Foo
       lower.push(TILE.EMPTY);
       upper.push(TILE.EMPTY);
     } else if (footprintLayer(tileset, group, tile) === "upper") {
-      lower.push(backingLower(tileset, tile));
+      // 수관: lower 를 비워 기존 밑동을 보존(숲 겹침). 잔디 백킹 금지.
+      lower.push(isTreeCanopyTileId(tile) ? TILE.EMPTY : backingLower(tileset, tile));
       upper.push(tile);
     } else {
       lower.push(tile);
@@ -319,6 +359,8 @@ function partTile(group: TileGroupMetadata, role: NonNullable<TileGroupMetadata[
 }
 
 function footprintLayer(tileset: TilesetDef, group: TileGroupMetadata, tile: number): "lower" | "upper" {
+  if (isTreeCanopyTileId(tile)) return "upper";
+  if (isTreeTrunkTileId(tile)) return "lower";
   if (group.defaultLayer === "upper" || group.role === "prop" || isUpperOnlyOverlayTile(tileset, tile)) return "upper";
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }
@@ -333,7 +375,8 @@ function defaultGrassTile(tileset: TilesetDef): number {
   return firstLower >= 0 ? firstLower : TILE.EMPTY;
 }
 
-function blockedCells(project: Project, map: GameMap): Set<string> {
+/** 이벤트·transfer·시작칸만 — 지형 점유는 footprintFits 가 레이어별로 본다(숲 겹침용). */
+function protectedEventCells(project: Project, map: GameMap): Set<string> {
   const blocked = new Set<string>();
   const visit = (commands: readonly Command[]): void => {
     for (const command of commands) {
@@ -347,7 +390,6 @@ function blockedCells(project: Project, map: GameMap): Set<string> {
       } else if (command.kind === "loop") visit(command.body);
     }
   };
-  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (map.upperTiles[y * map.width + x] !== TILE.EMPTY) blocked.add(key(x, y));
   for (const event of map.events) blocked.add(key(event.x, event.y));
   if (project.startMapId === map.id) blocked.add(key(project.startPos.x, project.startPos.y));
   for (const sourceMap of Object.values(project.maps)) {
@@ -360,6 +402,109 @@ function blockedCells(project: Project, map: GameMap): Set<string> {
   return blocked;
 }
 
+/**
+ * 숲/벤치/가구 등 다칸 소품 풋프린트.
+ * 나무: 수관 upper + 밑동 lower (숲 겹침).
+ * 벤치·탁자·과일박스: 전부 upper.
+ */
+function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): Footprint | null {
+  const id = group.id;
+
+  // 가로 벤치 327|328
+  if (id.includes("bench-horizontal")) {
+    const left = group.tileIds[0] ?? 327;
+    const right = group.tileIds[1] ?? 328;
+    return {
+      w: 2,
+      h: 1,
+      upper: [left, right],
+      lower: [TILE.EMPTY, TILE.EMPTY],
+    };
+  }
+
+  // 세로 의자 358|388 — 둘 다 upper (나무 밑동/수관 분리 금지)
+  if (id.includes("bench-vertical")) {
+    const top = group.patternGrammar?.parts.find((p) => p.role === "top")?.tileIds[0]
+      ?? group.tileIds[0]
+      ?? 358;
+    const bottom = group.patternGrammar?.parts.find((p) => p.role === "bottom")?.tileIds[0]
+      ?? group.tileIds[1]
+      ?? 388;
+    return {
+      w: 1,
+      h: 2,
+      upper: [top, bottom],
+      lower: [TILE.EMPTY, TILE.EMPTY],
+    };
+  }
+
+  // 가로 탁자 234|235|236 (산포 시 최소 3칸)
+  if (id.includes("table-horizontal")) {
+    return {
+      w: 3,
+      h: 1,
+      upper: [234, 235, 236],
+      lower: [TILE.EMPTY, TILE.EMPTY, TILE.EMPTY],
+    };
+  }
+
+  // 세로 탁자 144/174/204
+  if (id.includes("table-vertical")) {
+    return {
+      w: 1,
+      h: 3,
+      upper: [144, 174, 204],
+      lower: [TILE.EMPTY, TILE.EMPTY, TILE.EMPTY],
+    };
+  }
+
+  // 과일박스 202|203
+  if (id.includes("fruit-box")) {
+    return {
+      w: 2,
+      h: 1,
+      upper: [202, 203],
+      lower: [TILE.EMPTY, TILE.EMPTY],
+    };
+  }
+
+  // 세로 2칸 나무만: conifer/dry (vertical_expandable 가구·문은 여기 넣지 않음)
+  const verticalTree = id.includes("conifer-tree")
+    || id.includes("dry-tree");
+  if (verticalTree) {
+    const top = group.patternGrammar?.parts.find((p) => p.role === "top")?.tileIds[0]
+      ?? group.tileIds[0]
+      ?? TILE.EMPTY;
+    const bottom = group.patternGrammar?.parts.find((p) => p.role === "bottom")?.tileIds[0]
+      ?? group.tileIds[1]
+      ?? TILE.EMPTY;
+    return {
+      w: 1,
+      h: 2,
+      upper: [top, TILE.EMPTY],
+      lower: [TILE.EMPTY, bottom],
+    };
+  }
+  if (id.includes("broadleaf-tree")) {
+    const tl = partTile(group, "topLeft", group.tileIds[0]);
+    const tr = partTile(group, "topRight", group.tileIds[1]);
+    const bl = partTile(group, "bottomLeft", group.tileIds[2]);
+    const br = partTile(group, "bottomRight", group.tileIds[3]);
+    return {
+      w: 2,
+      h: 2,
+      upper: [tl, tr, TILE.EMPTY, TILE.EMPTY],
+      lower: [TILE.EMPTY, TILE.EMPTY, bl, br],
+    };
+  }
+  return null;
+}
+
+/** 흙길·모래 등 길/포장 하층 — 소품 산포 시 보호. */
+export function isPathSurfaceTile(tile: number): boolean {
+  return isRoadTile(tile) || isSandTile(tile) || tile === TILE.PATH;
+}
+
 function origins(map: GameMap, area: Area, footprint: Footprint): readonly Point[] {
   const points: Point[] = [];
   for (let y = area.y; y <= area.y + area.h - footprint.h; y += 1) {
@@ -370,9 +515,44 @@ function origins(map: GameMap, area: Area, footprint: Footprint): readonly Point
   return points;
 }
 
-function clearAt(map: GameMap, footprint: Footprint, origin: Point, blocked: ReadonlySet<string>): boolean {
-  for (let y = 0; y < footprint.h; y += 1) for (let x = 0; x < footprint.w; x += 1) if (blocked.has(key(origin.x + x, origin.y + y))) return false;
-  return inMapBounds(map, origin.x, origin.y) && inMapBounds(map, origin.x + footprint.w - 1, origin.y + footprint.h - 1);
+/**
+ * 레이어별 적합 — upper 만 쓸 칸은 기존 lower(밑동) 위를 허용(숲 겹침).
+ * lower 에 밑동을 쓸 칸은 잔디/빈 칸만(물·길·벽·다른 구조 금지).
+ */
+function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protectedCells: ReadonlySet<string>): boolean {
+  if (!inMapBounds(map, origin.x, origin.y) || !inMapBounds(map, origin.x + footprint.w - 1, origin.y + footprint.h - 1)) return false;
+  for (let y = 0; y < footprint.h; y += 1) {
+    for (let x = 0; x < footprint.w; x += 1) {
+      const mx = origin.x + x;
+      const my = origin.y + y;
+      if (protectedCells.has(key(mx, my))) return false;
+      const source = y * footprint.w + x;
+      const wantLower = footprint.lower[source] ?? TILE.EMPTY;
+      const wantUpper = footprint.upper[source] ?? TILE.EMPTY;
+      if (wantLower === TILE.EMPTY && wantUpper === TILE.EMPTY) continue;
+      const index = my * map.width + mx;
+      const haveLower = map.lowerTiles[index];
+      const haveUpper = map.upperTiles[index];
+      if (isLakeAutotileTile(haveLower) || isPathSurfaceTile(haveLower) || haveLower === TILE.WALL) return false;
+      if (wantUpper !== TILE.EMPTY) {
+        if (haveUpper !== TILE.EMPTY) return false;
+        // 수관은 잔디·빈 칸·기존 나무 밑동 위에만 (집 벽 위 금지)
+        if (
+          haveLower !== TILE.EMPTY
+          && haveLower !== TILE.GRASS
+          && !isTreeTrunkTileId(haveLower)
+        ) {
+          return false;
+        }
+      }
+      if (wantLower !== TILE.EMPTY) {
+        // 밑동 자리: 잔디/빈 칸만. 이미 밑동이 있으면 겹침 금지.
+        if (haveLower !== TILE.EMPTY && haveLower !== TILE.GRASS && haveLower !== wantLower) return false;
+        if (isTreeTrunkTileId(haveLower) && isTreeTrunkTileId(wantLower)) return false;
+      }
+    }
+  }
+  return true;
 }
 
 function rectAt(origin: Point, footprint: Footprint): Rect {
@@ -381,6 +561,42 @@ function rectAt(origin: Point, footprint: Footprint): Rect {
 
 function spaced(candidate: Rect, placed: readonly Rect[], minGap: number): boolean {
   return placed.every((rect) => !(candidate.x < rect.x + rect.w && candidate.x + candidate.w > rect.x && candidate.y < rect.y + rect.h && candidate.y + candidate.h > rect.y) && gap(candidate, rect) >= minGap);
+}
+
+/** 기하 간격 + 같은 레이어 충돌만 금지(upper 수관이 lower 밑동 칸에 겹치는 숲 허용). */
+function layeredSpaced(
+  candidate: Rect,
+  candidateFp: Footprint,
+  placed: readonly Rect[],
+  placedFps: readonly Footprint[],
+  minGap: number,
+): boolean {
+  for (let i = 0; i < placed.length; i += 1) {
+    const rect = placed[i]!;
+    const otherFp = placedFps[i] ?? candidateFp;
+    const overlaps = candidate.x < rect.x + rect.w
+      && candidate.x + candidate.w > rect.x
+      && candidate.y < rect.y + rect.h
+      && candidate.y + candidate.h > rect.y;
+    if (!overlaps) {
+      if (gap(candidate, rect) < minGap) return false;
+      continue;
+    }
+    // 겹치는 맵 칸에서 둘 다 upper 또는 둘 다 lower 를 쓰면 충돌
+    for (let y = Math.max(candidate.y, rect.y); y < Math.min(candidate.y + candidate.h, rect.y + rect.h); y += 1) {
+      for (let x = Math.max(candidate.x, rect.x); x < Math.min(candidate.x + candidate.w, rect.x + rect.w); x += 1) {
+        const ci = (y - candidate.y) * candidateFp.w + (x - candidate.x);
+        const oi = (y - rect.y) * otherFp.w + (x - rect.x);
+        const cU = candidateFp.upper[ci] ?? TILE.EMPTY;
+        const cL = candidateFp.lower[ci] ?? TILE.EMPTY;
+        const oU = otherFp.upper[oi] ?? TILE.EMPTY;
+        const oL = otherFp.lower[oi] ?? TILE.EMPTY;
+        if (cU !== TILE.EMPTY && oU !== TILE.EMPTY) return false;
+        if (cL !== TILE.EMPTY && oL !== TILE.EMPTY) return false;
+      }
+    }
+  }
+  return true;
 }
 
 function gap(a: Rect, b: Rect): number {
@@ -454,50 +670,97 @@ function chooseUniform(input: UniformChooseInput): Point {
   return choose({ ...input, choices: nearby.length > 0 ? nearby : allowed });
 }
 
+/**
+ * uniform: soft → 시드 해시. 좁은 영역 패킹은 poisson 경로 + minGap 이 담당.
+ * 전 후보 "남은 자리 최대화"는 넓은 들에서 격자 채우기를 만들어 산포가 깨지므로 쓰지 않는다.
+ */
 function choose(input: ChooseInput): Point {
-  const { choices, allowed, placed, footprint, minGap, seed, step, map, group, preferSoftRules } = input;
+  const { choices, seed, step, map, group, preferSoftRules, placed, footprint } = input;
   const first = choices[0];
   if (!first) throw new ToolError("배치 후보가 없습니다.", { code: "no-placement" });
   let best = first;
   let bestPenalty = Number.POSITIVE_INFINITY;
-  let bestFuture = -1;
   let bestRank = Number.POSITIVE_INFINITY;
   for (const candidate of choices) {
     const candidateRect = rectAt(candidate, footprint);
     const penalty = preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0;
-    const future = allowed.filter((origin) => (origin.x !== candidate.x || origin.y !== candidate.y) && spaced(rectAt(origin, footprint), [...placed, candidateRect], minGap)).length;
     const rank = hash(`${seed}|${step}|${candidate.x},${candidate.y}`);
-    if (penalty < bestPenalty || (penalty === bestPenalty && (future > bestFuture || (future === bestFuture && rank < bestRank)))) {
+    if (penalty < bestPenalty || (penalty === bestPenalty && rank < bestRank)) {
       best = candidate;
       bestPenalty = penalty;
-      bestFuture = future;
       bestRank = rank;
     }
   }
   return best;
 }
 
-function chooseRanked(input: RankedChooseInput): Point {
-  const { allowed, choices, placed, footprint, minGap, map, group, preferSoftRules, rankByPoint } = input;
+/**
+ * poisson/cluster: naturalScatter 샘플 rank 를 1순위로 고른다(넓은 들에서 진짜 랜덤 산포).
+ * 패킹 필터는 공간이 빠듯해 요청 개수를 못 채울 때만(needAfter > maxFuture).
+ * soft 규칙은 동점 처리.
+ */
+function chooseRanked(input: RankedChooseInput & { readonly remaining: number }): Point {
+  const { allowed, choices, placed, footprint, minGap, map, group, preferSoftRules, rankByPoint, remaining } = input;
   const first = choices[0];
   if (!first) throw new ToolError("배치 후보가 없습니다.", { code: "no-placement" });
-  let best = first;
-  let bestPenalty = Number.POSITIVE_INFINITY;
-  let bestFuture = -1;
-  let bestRank = Number.POSITIVE_INFINITY;
-  for (const candidate of choices) {
+
+  const scored = choices.map((candidate) => {
     const candidateRect = rectAt(candidate, footprint);
-    const penalty = preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0;
-    const future = allowed.filter((origin) => (origin.x !== candidate.x || origin.y !== candidate.y) && spaced(rectAt(origin, footprint), [...placed, candidateRect], minGap)).length;
-    const rank = rankByPoint.get(pointKey(candidate)) ?? Number.POSITIVE_INFINITY;
-    if (penalty < bestPenalty || (penalty === bestPenalty && (future > bestFuture || (future === bestFuture && rank < bestRank)))) {
-      best = candidate;
-      bestPenalty = penalty;
-      bestFuture = future;
-      bestRank = rank;
+    const future = allowed.filter(
+      (origin) =>
+        (origin.x !== candidate.x || origin.y !== candidate.y)
+        && spaced(rectAt(origin, footprint), [...placed, candidateRect], minGap),
+    ).length;
+    return {
+      candidate,
+      future,
+      rank: rankByPoint.get(pointKey(candidate)) ?? Number.POSITIVE_INFINITY,
+      penalty: preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0,
+    };
+  });
+
+  const maxFuture = scored.reduce((max, row) => Math.max(max, row.future), 0);
+  const needAfter = Math.max(0, remaining - 1);
+  // 여유 있으면 poisson rank 그대로. 좁을 때만 최대 잔여 자리 후보로 제한.
+  const tight = needAfter > maxFuture;
+  const pool = tight ? scored.filter((row) => row.future >= maxFuture) : scored;
+  const usePool = pool.length > 0 ? pool : scored;
+
+  let best = usePool[0]!;
+  for (const row of usePool) {
+    if (
+      row.rank < best.rank
+      || (row.rank === best.rank && row.penalty < best.penalty)
+      || (row.rank === best.rank && row.penalty === best.penalty && row.future > best.future)
+    ) {
+      best = row;
     }
   }
-  return best;
+  return best.candidate;
+}
+
+/** 문법 없는 prop 가방(3타일 이상) — 1칸 단위 랜덤 산포. */
+function isBagPropGroup(group: TileGroupMetadata): boolean {
+  if (group.patternGrammar) return false;
+  if (group.role !== "prop") return false;
+  return group.tileIds.length > 2;
+}
+
+function singleUpperPropFootprint(tileId: number, tileset: TilesetDef): Footprint {
+  const tile = Number.isInteger(tileId) && tileId >= 0 ? tileId : TILE.EMPTY;
+  return {
+    w: 1,
+    h: 1,
+    lower: [backingLower(tileset, tile)],
+    upper: [tile],
+  };
+}
+
+function bagPropFootprint(group: TileGroupMetadata, tileset: TilesetDef, seed: string, step: number): Footprint {
+  const ids = group.tileIds.filter((tile) => Number.isInteger(tile) && tile >= 0);
+  if (ids.length === 0) return singleUpperPropFootprint(TILE.EMPTY, tileset);
+  const tile = ids[hash(`${seed}|bag|${step}`) % ids.length] ?? ids[0];
+  return singleUpperPropFootprint(tile, tileset);
 }
 
 function hash(input: string): number {
@@ -518,8 +781,19 @@ function paint(map: GameMap, footprint: Footprint, origin: Point): readonly Poin
       const upper = footprint.upper[source] ?? TILE.EMPTY;
       if (lower === TILE.EMPTY && upper === TILE.EMPTY) continue;
       const target = (origin.y + y) * map.width + origin.x + x;
-      if (lower !== TILE.EMPTY && (lower !== TILE.GRASS || map.lowerTiles[target] === TILE.EMPTY)) setLower(map, origin.x + x, origin.y + y, lower);
-      if (upper !== TILE.EMPTY) map.upperTiles[(origin.y + y) * map.width + origin.x + x] = upper;
+      // 밑동(lower) 기록. 수관(upper)은 기존 밑동을 덮지 않음.
+      if (lower !== TILE.EMPTY) setLower(map, origin.x + x, origin.y + y, lower);
+      if (upper !== TILE.EMPTY) {
+        map.upperTiles[target] = upper;
+        // 빈 하층 위 수관이면 잔디 받침(투명 수관 아래 검정 방지). 밑동 위면 유지.
+        const haveLower = map.lowerTiles[target];
+        if (
+          isTreeCanopyTileId(upper)
+          && (haveLower === TILE.EMPTY || haveLower < 0)
+        ) {
+          setLower(map, origin.x + x, origin.y + y, TILE.GRASS);
+        }
+      }
       touched.push({ x: origin.x + x, y: origin.y + y });
     }
   }

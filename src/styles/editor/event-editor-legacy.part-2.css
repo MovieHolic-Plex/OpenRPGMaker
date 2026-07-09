@@ -175,8 +175,17 @@
 .tileset-db-preview-header {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   justify-content: space-between;
+  min-width: 0;
+}
+
+.tileset-db-preview-title-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -187,8 +196,32 @@
   margin-top: 1px;
 }
 
+.tileset-db-layer-filter {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.tileset-db-layer-filter button {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 600 11px/1.1 inherit;
+  min-height: 20px;
+  min-width: 40px;
+  padding: 0 6px;
+}
+
+.tileset-db-layer-filter button.active {
+  background: var(--surface-panel);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
 .tileset-db-preview-scale {
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
 }
 

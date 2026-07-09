@@ -18,16 +18,40 @@ export function openLoginModalIfNeeded(onIdentityChanged?: () => void): void {
   if (!canRenderFloatingUi()) return;
   if (isAutomationBootContext()) return;
   if (browserLocalStorage()?.getItem(LAST_LOGIN_METHOD_KEY)) return;
+  // AI 제안 카드가 떠 있으면 로그인 모달이 클릭을 가로채므로 게스트로 조용히 통과.
+  if (document.querySelector("[data-testid='ai-proposal-card'], [data-testid='ai-proposal-accept']")) {
+    completeMockLogin("게스트", "guest", onIdentityChanged);
+    return;
+  }
   openMockLoginModal(onIdentityChanged);
+}
+
+/** AI 제안 UI가 로그인 모달에 가리지 않도록 게스트 신원을 확보한다. */
+export function ensureGuestIdentityForAiSurface(onIdentityChanged?: () => void): void {
+  if (!canRenderFloatingUi()) return;
+  if (browserLocalStorage()?.getItem(LAST_LOGIN_METHOD_KEY)) {
+    document.querySelector("[data-testid='login-modal']")?.remove();
+    return;
+  }
+  completeMockLogin("게스트", "guest", onIdentityChanged);
 }
 
 // e2e/dev 부팅(프로젝트 주입·dev URL 파라미터)에서는 모달이 편집 표면 클릭을 가로채므로 자동 표시하지 않는다.
 function isAutomationBootContext(): boolean {
   if (typeof window === "undefined") return false;
   if (window.__RPG_ZZU_E2E_PROJECT__) return true;
+  if (navigator.webdriver) return true;
   const search = window.location?.search ?? "";
   const params = new URLSearchParams(search);
-  return params.has("freshProject") || params.has("devProject") || params.has("blankProject");
+  return (
+    params.has("freshProject")
+    || params.has("devProject")
+    || params.has("blankProject")
+    || params.has("aiBridge")
+    || params.has("softConfirm")
+    || params.has("sc2")
+    || params.has("sc3")
+  );
 }
 
 export function openMockLoginModal(onIdentityChanged?: () => void): void {

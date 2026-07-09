@@ -22,7 +22,7 @@ const TOWN_PATH_TILE_SET = new Set<number>(Object.values(SAND_TILE));
 //  - stampDbHouseVariant : 집(wide/compact/l × wood/plaster/stone) + 문 앞 도로 접근
 //  - paintTownPathNetwork/shapeAllTownPaths : 모래길 자동타일(중심/외곽/모서리)
 //  - stampTownMarket     : 시장 천막 2x2
-//  - 장식 타일: 나무(260/290), 꽃(288), 벤치(327/328), 석상(352/353), 횃불(381)
+//  - 장식 타일: 나무(260/290), 꽃(288), 벤치(327/328), 집앞(349~352), 횃불(381)
 
 const MARKET_TOWN_SIZE = 60;
 const COMBINED_TOWN_TILESET_ID = "easyrpg_chipset_combined_town";
@@ -33,8 +33,8 @@ const FLOWER = 288;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
 const QUEST_BOARD_SIGN = 320;
-const STATUE_LEFT = 352;
-const STATUE_RIGHT = 353;
+const STATUE_A = 382;
+const STATUE_B = 412;
 const TORCH = 381;
 
 // 격자 도로망: 가로 3줄(y=15/30/45) + 세로 3줄(x=15/30/45), 폭 3.
@@ -141,7 +141,7 @@ function decorateMarketSquare(map: GameMap): void {
   stampTownMarket(map, 19, 25);
   stampTownMarket(map, 25, 25);
   // 광장 중앙 석상 + 횃불
-  stampUpperPattern(map, { x: 22, y: 22 }, [[STATUE_LEFT, STATUE_RIGHT]]);
+  stampUpperPattern(map, { x: 22, y: 22 }, [[STATUE_A, STATUE_B]]);
   stampUpper(map, { x: 21, y: 22 }, TORCH);
   stampUpper(map, { x: 24, y: 22 }, TORCH);
   // 벤치 (광장 외곽 휴식 공간)

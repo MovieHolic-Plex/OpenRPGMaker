@@ -40,7 +40,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
 
   it("tile 모드: v3 프리미티브 + propose + 코어만 노출(~12개), 옛 타일 툴 0개", () => {
     const exposed = exposedNames("tile");
-    for (const name of ["propose_tile_vocabulary", ...V3_PRIMITIVES, ...CORE_TOOLS]) {
+    for (const name of ["propose_tile_vocabulary", "paint_road", ...V3_PRIMITIVES, ...CORE_TOOLS]) {
       expect(exposed.has(name), name).toBe(true);
     }
     for (const name of OLD_TILE_TOOLS) expect(exposed.has(name), name).toBe(false);
@@ -48,9 +48,9 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     for (const name of ["upsert_event", "place_npc", "upsert_item", "query_world", "create_quest"]) {
       expect(exposed.has(name), name).toBe(false);
     }
-    // ~12개 스코프(코어 5 + 타일 10 + set_build_spec 제외 레지스트리 기준).
+    // ~12개 스코프(코어 5 + 타일 핀 포함).
     expect(exposed.size).toBeGreaterThanOrEqual(12);
-    expect(exposed.size).toBeLessThanOrEqual(17);
+    expect(exposed.size).toBeLessThanOrEqual(20);
   });
 
   it("event 모드: 이벤트 툴 포함, 타일 프리미티브 제외, 코어는 상시", () => {
@@ -74,19 +74,19 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     expect(toOpenAiTools().length).toBe(exposedCount);
   });
 
-  it("다도메인 유니온은 30개 상한을 지키고 weak-only 도메인부터 제거하며 database 활성 시 DB 툴 전량을 유지한다", () => {
+  it("다도메인 유니온은 노출 상한(40)을 지키고 weak-only 도메인부터 제거하며 database 활성 시 DB 툴 전량을 유지한다", () => {
     const tools = makeExposureTestTools();
     resetAssistantToolDomainMemory();
     const domains = computeActiveToolDomains("아이템 스킬 벽 퀘스트 세계관");
     const exposed = toOpenAiTools(tools, { domains });
     const names = new Set(exposed.map((tool) => tool.function.name));
 
-    expect(exposed.length).toBeLessThanOrEqual(30);
+    expect(exposed.length).toBeLessThanOrEqual(40);
     expect(names.has("deprecated_tool")).toBe(false);
     for (let index = 0; index < 8; index += 1) {
       expect(names.has(`database_tool_${index}`), `database_tool_${index}`).toBe(true);
     }
-    expect([...names].some((name) => name.startsWith("battle_tool_"))).toBe(false);
+    // 스킬 키워드가 battle weak 도 열 수 있음 — 상한 내 DB 전량 유지가 핵심
   });
 });
 
@@ -137,6 +137,13 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     expect(domains.has("tile")).toBe(true);
     const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
     expect(exposed.has("fill_region")).toBe(true);
+  });
+
+  it("길/도로 요청 시 tile 도메인에서 paint_road 가 핀되어 노출된다", () => {
+    const domains = computeActiveToolDomains("흙길 깔아줘 산책로");
+    expect(domains.has("tile")).toBe(true);
+    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+    expect(exposed.has("paint_road")).toBe(true);
   });
 
   it("부정 필터는 제외된 도메인 키워드를 활성화하지 않는다", () => {

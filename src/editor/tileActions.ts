@@ -2,6 +2,7 @@ import { store, type ProjectChangeCell } from "@/project/store";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { expandHardClusterPlacement, type HardClusterTileEdit } from "@/editor/tools/clusterRulePlacement";
@@ -28,38 +29,88 @@ type TilePaintPlan =
   | { readonly edits: readonly PlannedTileEdit[]; readonly ok: true }
   | { readonly ok: false; readonly reason: string };
 
+export type TileStrokeCell = {
+  readonly layer: TileLayer;
+  readonly x: number;
+  readonly y: number;
+  readonly tile: number;
+};
+
 export function paintTile(mapId: MapId, layer: TileLayer, x: number, y: number, tile: number, options: TilePaintOptions = {}): void {
-  const targetLayer = effectiveLayerForCurrentMap(mapId, layer, tile);
+  paintTilesBulk(mapId, [{ layer, x, y, tile }], options);
+}
+
+/**
+ * 여러 칸을 **한 번의** map clone + emit + auto-save 스케줄로 칠한다.
+ * 브러시/스탬프/도형 드래그가 셀마다 updateMap 하면 structuredClone·repairTree·리스너가 N배.
+ */
+export function paintTilesBulk(
+  mapId: MapId,
+  strokes: readonly TileStrokeCell[],
+  options: TilePaintOptions = {},
+): void {
+  if (strokes.length === 0) return;
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
-  const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
-  const plan = !currentMap
-    ? { ok: true as const, edits: [] }
-    : options.clusterExpand === false
-      ? { ok: true as const, edits: inMap(currentMap, x, y) ? [{ layer: targetLayer, tile, x, y }] : [] }
-      : planManualClusterPaint(current, currentMap, tileset, targetLayer, x, y, tile);
-  if (!plan.ok) {
-    showClusterRejectionToast(plan.reason);
+  if (!currentMap) return;
+  const tileset = current.tilesets[currentMap.tilesetId];
+  const autoConnect = options.autoConnect ?? true;
+  const clusterExpand = options.clusterExpand !== false;
+
+  const planned: PlannedTileEdit[] = [];
+  let rejection: string | null = null;
+  for (const stroke of strokes) {
+    const targetLayer = effectiveLayer(tileset, stroke.layer, stroke.tile);
+    const plan = !clusterExpand
+      ? { ok: true as const, edits: inMap(currentMap, stroke.x, stroke.y) ? [{ layer: targetLayer, tile: stroke.tile, x: stroke.x, y: stroke.y }] : [] }
+      : planManualClusterPaint(current, currentMap, tileset, targetLayer, stroke.x, stroke.y, stroke.tile);
+    if (!plan.ok) {
+      rejection = plan.reason;
+      continue;
+    }
+    planned.push(...plan.edits);
+  }
+  if (planned.length === 0) {
+    if (rejection) showClusterRejectionToast(rejection);
     return;
   }
-  if (plan.edits.length === 0) return;
+  if (rejection && planned.length < strokes.length) {
+    // 일부만 실패 — 성공분은 적용, 실패 사유는 알림
+    showClusterRejectionToast(rejection);
+  }
+
+  // 같은 칸 중복: 나중 stroke 우선
+  const byKey = new Map<string, PlannedTileEdit>();
+  for (const edit of planned) {
+    byKey.set(`${edit.layer}:${edit.x},${edit.y}`, edit);
+  }
+  const edits = [...byKey.values()];
+
   store.updateMap(mapId, (m) => {
-    const lowerEdits: LowerTileEdit[] = [];
-    for (const edit of plan.edits) {
+    const lowerPoints: RoadPoint[] = [];
+    let lowerPrevious: number | undefined;
+    let lowerNext: number | undefined;
+    for (const edit of edits) {
       const previousTile = tileAt(m, edit.layer, edit.x, edit.y);
       setTileSafe(m, edit.layer, edit.x, edit.y, edit.tile);
       if (edit.layer === "lower") {
-        lowerEdits.push({
-          autoConnect: options.autoConnect ?? true,
-          layer: edit.layer,
-          nextTile: edit.tile,
-          points: [{ x: edit.x, y: edit.y }],
-          previousTile,
-        });
+        lowerPoints.push({ x: edit.x, y: edit.y });
+        // autotile trigger: 첫 previous/임의의 next 로 그룹 매칭 (bulk 동일 타일 페인트 가정)
+        if (lowerPrevious === undefined) lowerPrevious = previousTile;
+        lowerNext = edit.tile;
       }
     }
-    for (const edit of lowerEdits) shapeTerrainAfterLowerEdit(m, tileset, edit);
-  }, { cells: changedTileCellsForPlannedEdits(mapId, plan.edits, options.autoConnect ?? true) });
+    if (lowerPoints.length > 0 && autoConnect) {
+      shapeTerrainAfterLowerEdit(m, tileset, {
+        autoConnect: true,
+        layer: "lower",
+        nextTile: lowerNext ?? TILE.EMPTY,
+        points: lowerPoints,
+        previousTile: lowerPrevious,
+      });
+    }
+    repairTreePairsOnMap(m);
+  }, { cells: changedTileCellsForPlannedEdits(mapId, edits, autoConnect) });
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {
@@ -88,25 +139,77 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
 // 팔레트의 자동 레이어 전환(장식 타일 클릭 → 상위) 직후 빈 상위 레이어만 지워져
 // "지우개가 안 먹는" 무반응 버그의 수정 — 의도한 레이어에 내용이 있으면 그 레이어를 지운다.
 export function eraseVisibleTile(mapId: MapId, preferredLayer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {
+  eraseVisibleTilesBulk(mapId, preferredLayer, [{ x, y }], options);
+}
+
+export function eraseVisibleTilesBulk(
+  mapId: MapId,
+  preferredLayer: TileLayer,
+  points: readonly RoadPoint[],
+  options: TilePaintOptions = {},
+): void {
+  if (points.length === 0) return;
   const map = store.getCurrent().maps[mapId];
-  if (!map || !inMap(map, x, y)) return;
-  const index = y * map.width + x;
-  const occupied = (layer: TileLayer): boolean =>
-    ((layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index]) ?? TILE.EMPTY) !== TILE.EMPTY;
-  const fallback: TileLayer = preferredLayer === "upper" ? "lower" : "upper";
-  const layer = occupied(preferredLayer) ? preferredLayer : occupied(fallback) ? fallback : preferredLayer;
-  eraseTile(mapId, layer, x, y, options);
+  if (!map) return;
+  const strokes: { layer: TileLayer; x: number; y: number }[] = [];
+  for (const point of points) {
+    if (!inMap(map, point.x, point.y)) continue;
+    const index = point.y * map.width + point.x;
+    const occupied = (layer: TileLayer): boolean =>
+      ((layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index]) ?? TILE.EMPTY) !== TILE.EMPTY;
+    const fallback: TileLayer = preferredLayer === "upper" ? "lower" : "upper";
+    const layer = occupied(preferredLayer) ? preferredLayer : occupied(fallback) ? fallback : preferredLayer;
+    strokes.push({ layer, x: point.x, y: point.y });
+  }
+  eraseTilesBulk(mapId, strokes, options);
 }
 
 export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {
+  eraseTilesBulk(mapId, [{ layer, x, y }], options);
+}
+
+export function eraseTilesBulk(
+  mapId: MapId,
+  strokes: readonly { readonly layer: TileLayer; readonly x: number; readonly y: number }[],
+  options: TilePaintOptions = {},
+): void {
+  if (strokes.length === 0) return;
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
-  const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  if (!currentMap) return;
+  const tileset = current.tilesets[currentMap.tilesetId];
+  const autoConnect = options.autoConnect ?? true;
+  const valid = strokes.filter((s) => inMap(currentMap, s.x, s.y));
+  if (valid.length === 0) return;
+
+  const byKey = new Map<string, { layer: TileLayer; x: number; y: number }>();
+  for (const s of valid) byKey.set(`${s.layer}:${s.x},${s.y}`, s);
+  const unique = [...byKey.values()];
+
   store.updateMap(mapId, (m) => {
-    const previousTile = tileAt(m, layer, x, y);
-    setTileSafe(m, layer, x, y, TILE.EMPTY);
-    shapeTerrainAfterLowerEdit(m, tileset, { layer, points: [{ x, y }], previousTile, nextTile: TILE.EMPTY, autoConnect: options.autoConnect ?? true });
-  }, { cells: changedTileCellsForEdit(mapId, layer, [{ x, y }], options.autoConnect ?? true) });
+    const lowerPoints: RoadPoint[] = [];
+    let lowerPrevious: number | undefined;
+    for (const s of unique) {
+      const previousTile = tileAt(m, s.layer, s.x, s.y);
+      setTileSafe(m, s.layer, s.x, s.y, TILE.EMPTY);
+      if (s.layer === "lower") {
+        lowerPoints.push({ x: s.x, y: s.y });
+        if (lowerPrevious === undefined) lowerPrevious = previousTile;
+      }
+    }
+    if (lowerPoints.length > 0 && autoConnect) {
+      shapeTerrainAfterLowerEdit(m, tileset, {
+        autoConnect: true,
+        layer: "lower",
+        nextTile: TILE.EMPTY,
+        points: lowerPoints,
+        previousTile: lowerPrevious,
+      });
+    }
+    repairTreePairsOnMap(m);
+  }, {
+    cells: unique.flatMap((s) => changedTileCellsForEdit(mapId, s.layer, [{ x: s.x, y: s.y }], autoConnect)),
+  });
 }
 
 export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {
@@ -146,15 +249,10 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       }
     }
     shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: changedPoints, previousTile: target, nextTile: newTile, autoConnect: options.autoConnect ?? true });
+    repairTreePairsOnMap(m);
   }, {
     cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, options.autoConnect ?? true),
   });
-}
-
-function effectiveLayerForCurrentMap(mapId: MapId, requestedLayer: TileLayer, tile: number): TileLayer {
-  const project = store.getCurrent();
-  const map = project.maps[mapId];
-  return effectiveLayer(map ? project.tilesets[map.tilesetId] : undefined, requestedLayer, tile);
 }
 
 function planFillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number): { readonly layer: TileLayer; readonly points: readonly RoadPoint[] } {

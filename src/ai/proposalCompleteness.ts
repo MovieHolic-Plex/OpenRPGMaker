@@ -183,6 +183,7 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   if (call.name === "fill_region" || call.name === "tile_erase") return rectRegion(mapId, call.args.rect);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
   if (call.name === "build_house_kit") return wingRegions(mapId, call.args.wings);
+  if (call.name === "build_house_lots") return houseLotRegions(mapId, call.args.houses);
   // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
   if (call.name === "tile_structure") {
     const kind = stringValue(call.args.kind);
@@ -205,6 +206,16 @@ function originRect(mapId: string, args: Record<string, unknown>, w: number | nu
   const origin = pointValue(args.origin);
   if (origin === null || w === null || h === null) return [];
   return [{ mapId, x: origin.x, y: origin.y, w, h }];
+}
+
+function houseLotRegions(mapId: string, houses: unknown): AffectedRegion[] {
+  if (!Array.isArray(houses)) return [];
+  const regions: AffectedRegion[] = [];
+  for (const house of houses) {
+    if (!isRecord(house)) continue;
+    regions.push(...wingRegions(mapId, house.wings));
+  }
+  return regions;
 }
 
 function wingRegions(mapId: string, value: unknown): AffectedRegion[] {
@@ -352,7 +363,7 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
   if (call.name === "place_npc" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
-  if (call.name === "build_house" || call.name === "build_house_kit" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
+  if (call.name === "build_house" || call.name === "build_house_kit" || call.name === "build_house_lots" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
 }

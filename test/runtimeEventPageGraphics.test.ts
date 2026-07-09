@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
+import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID, TILE } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { renderTiles } from "@/player/playSceneMapRuntime";
@@ -90,6 +90,7 @@ describe("runtime event page graphics", () => {
     ];
     store.replace(project);
     const tileLayerChildren: unknown[] = [];
+    const upperTileLayerChildren: unknown[] = [];
     const scene = {
       map,
       session: startSession(project),
@@ -98,6 +99,12 @@ describe("runtime event page graphics", () => {
         removeAll: () => undefined,
         add: (image: unknown) => {
           tileLayerChildren.push(image);
+        },
+      },
+      upperTileLayer: {
+        removeAll: () => undefined,
+        add: (image: unknown) => {
+          upperTileLayerChildren.push(image);
         },
       },
       eventSprites: new Map<string, MockSprite>(),
@@ -125,5 +132,50 @@ describe("runtime event page graphics", () => {
     expect(lower?.y).toBe(48);
     expect(lower?.depth).toBeGreaterThan(upper?.depth ?? Number.POSITIVE_INFINITY);
     expect(tileLayerChildren.some((child) => isMockSprite(child))).toBe(false);
+    expect(upperTileLayerChildren.some((child) => isMockSprite(child))).toBe(false);
+  });
+
+  it("routes map upper tiles into upperTileLayer (★ above same-priority characters)", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.lowerTiles.fill(TILE.GRASS);
+    map.upperTiles.fill(-1);
+    map.upperTiles[1 * map.width + 1] = 260; // 침엽수 수관
+    store.replace(project);
+    const lowerKids: unknown[] = [];
+    const upperKids: unknown[] = [];
+    const scene = {
+      map,
+      session: startSession(project),
+      eventPositions: {},
+      tileLayer: {
+        removeAll: () => undefined,
+        add: (image: unknown) => {
+          lowerKids.push(image);
+        },
+      },
+      upperTileLayer: {
+        removeAll: () => undefined,
+        add: (image: unknown) => {
+          upperKids.push(image);
+        },
+      },
+      eventSprites: new Map(),
+      runtimeDom: {
+        clearEventMarkers: () => undefined,
+        upsertEventMarker: () => undefined,
+        syncMissingResourceError: () => undefined,
+      },
+      missingResources: new Set<string>(),
+      add: {
+        image: () => mockTileImage(),
+        sprite: () => mockSprite(0, 0),
+      },
+      runEvent: async () => undefined,
+      syncRuntimeState: () => undefined,
+    };
+    renderTiles(scene);
+    expect(upperKids.length).toBeGreaterThan(0);
+    expect(lowerKids.length).toBeGreaterThan(0);
   });
 });

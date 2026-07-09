@@ -11,6 +11,8 @@ export interface SpecAsset {
   layer?: "lower" | "upper";
   style?: string;
   note?: string;
+  /** 면 채우기 형태 힌트 — terrain/수역 원형은 circle. fill_region.shape 와 맞출 것. */
+  shape?: "rect" | "ellipse" | "circle";
   // 파괴(clear) 의도를 명시적으로 확인. 기존 구조물을 덮는 clear는 이 플래그가 있어야 통과한다.
   confirmDestroy?: boolean;
   // 배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때, 모델이 정리 방침을 선언한다.
@@ -64,7 +66,7 @@ interface CheckedAsset {
 // 프리미티브 내부(assertApprovedOrFail)가 그대로 수행한다. 단, fill_region은 넓은 지형 쓰기라 스펙
 // 자동 확장/구조물 보호 관례를 탄다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_village", "stamp_structure",
+  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",
   // 타일 v2 (2026-07-07 재구축)
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
@@ -73,7 +75,7 @@ export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
 ]);
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_village", "stamp_structure",
+  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
   "place_npc", "place_battle_blocker",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   "fill_region",
@@ -198,7 +200,13 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
   if (mapId === null) return [];
 
-  const wingRegionsForKit = wingsRegions(mapId, args.wings, toolName === "build_house_kit");
+  if (toolName === "build_house_lots") {
+    const lotWings = houseLotWings(args.houses);
+    const lotRegions = wingsRegions(mapId, lotWings, "yard");
+    if (lotRegions !== null) return lotRegions;
+  }
+
+  const wingRegionsForKit = wingsRegions(mapId, args.wings, toolName === "build_house_kit" ? "door" : false);
   if (wingRegionsForKit !== null) return wingRegionsForKit;
 
   const cellRegions = pointRegions(mapId, args.cells);
@@ -438,7 +446,24 @@ function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegio
   return { mapId, x: args.x, y: args.y, w: 1, h: 1 };
 }
 
-function wingsRegions(mapId: string, value: unknown, includeDoorFront: boolean): AffectedRegion[] | null {
+/** build_house_lots.houses[].wings 를 flat wings 배열로. */
+function houseLotWings(houses: unknown): unknown[] {
+  if (!Array.isArray(houses)) return [];
+  const wings: unknown[] = [];
+  for (const house of houses) {
+    if (typeof house !== "object" || house === null) continue;
+    const list = (house as Record<string, unknown>).wings;
+    if (!Array.isArray(list)) continue;
+    wings.push(...list);
+  }
+  return wings;
+}
+
+function wingsRegions(
+  mapId: string,
+  value: unknown,
+  front: false | "door" | "yard",
+): AffectedRegion[] | null {
   if (!Array.isArray(value) || value.length === 0) return null;
   const regions: AffectedRegion[] = [];
   for (const wing of value) {
@@ -446,8 +471,11 @@ function wingsRegions(mapId: string, value: unknown, includeDoorFront: boolean):
     const record = wing as Record<string, unknown>;
     if (!isFiniteNumber(record.x) || !isFiniteNumber(record.y) || !isFiniteNumber(record.w) || !isFiniteNumber(record.h)) return null;
     regions.push({ mapId, x: record.x, y: record.y, w: record.w, h: record.h });
-    if (includeDoorFront) {
+    if (front === "door") {
       regions.push({ mapId, x: record.x + Math.floor((record.w - 1) / 2), y: record.y + record.h, w: 1, h: 1 });
+    } else if (front === "yard") {
+      // 문 앞 마당 깊이 3칸 (build_house_lots 산포 영역)
+      regions.push({ mapId, x: record.x, y: record.y + record.h, w: record.w, h: 3 });
     }
   }
   return regions;

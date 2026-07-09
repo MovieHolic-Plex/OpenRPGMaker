@@ -13,11 +13,17 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { commitChangeset, summarizeChanges } from "@/editor/tools";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
+import {
+  formatLayoutValidationSummary,
+  layoutValidationBlocking,
+  validateLayoutPlacement,
+} from "@/project/lint/layoutPlacementValidate";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { ensureGuestIdentityForAiSurface } from "@/editor/teamWorkflowUi";
 import {
   callsWithVocabularyEdits,
   hasVocabularyEdits,
@@ -27,6 +33,8 @@ import {
 } from "./aiChatRenderers";
 import {
   collectPendingBuilds,
+  collectVocabSoftConfirms,
+  markSoftVocabApprovalsOnProject,
   proposalAcceptButtonLabel,
   rebindPendingBuildArgs,
   runPendingBuilds,
@@ -73,7 +81,42 @@ export function setAssistantMessageBadge(bubble: HTMLElement | null, state: AiMe
   bubble.prepend(badge);
 }
 
-export function renderProposalMapThumbnail(project: Project, mapId: string, kind: "before" | "after"): HTMLElement {
+export type ProposalMapCrop = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+
+/** before→after 타일 변경 bbox(+pad). 목업 썸네일 crop 용. */
+export function computeMapTileChangeBounds(before: Project, after: Project, mapId: string, pad = 2): ProposalMapCrop | null {
+  const base = before.maps[mapId];
+  const next = after.maps[mapId];
+  if (!base || !next || base.width !== next.width || base.height !== next.height) return null;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (let y = 0; y < base.height; y += 1) {
+    for (let x = 0; x < base.width; x += 1) {
+      const i = y * base.width + x;
+      if (base.lowerTiles[i] !== next.lowerTiles[i] || base.upperTiles[i] !== next.upperTiles[i]) {
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (!Number.isFinite(minX)) return null;
+  const x0 = Math.max(0, minX - pad);
+  const y0 = Math.max(0, minY - pad);
+  const x1 = Math.min(base.width - 1, maxX + pad);
+  const y1 = Math.min(base.height - 1, maxY + pad);
+  return { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+
+export function renderProposalMapThumbnail(
+  project: Project,
+  mapId: string,
+  kind: "before" | "after",
+  crop: ProposalMapCrop | null = null,
+): HTMLElement {
   const map = project.maps[mapId];
   const canvas = document.createElement("canvas") as HTMLCanvasElement;
   canvas.className = "ai-proposal-thumb-canvas";
@@ -90,11 +133,48 @@ export function renderProposalMapThumbnail(project: Project, mapId: string, kind
     wrap.dataset.fallback = "true";
     return wrap;
   }
-  const zoom = Math.min(1, 104 / Math.max(map.width * map.tileSize, map.height * map.tileSize, 1));
-  const selection = { x: -1, y: -1, zoom };
-  void drawTransferMapPreview({ canvas, project, mapId, selection, isCurrent: () => canvas.isConnected }).catch(() => {
-    drawTransferFallback({ canvas, map, selection });
-  });
+  const fullZoom = Math.min(1, 104 / Math.max(map.width * map.tileSize, map.height * map.tileSize, 1));
+  const selection = { x: -1, y: -1, zoom: fullZoom };
+  const finishCrop = (): void => {
+    if (!crop || crop.w < 1 || crop.h < 1) return;
+    const tile = map.tileSize;
+    const sx = crop.x * tile;
+    const sy = crop.y * tile;
+    const sw = crop.w * tile;
+    const sh = crop.h * tile;
+    if (sw <= 0 || sh <= 0 || canvas.width < sx + sw || canvas.height < sy + sh) return;
+    const slice = document.createElement("canvas");
+    slice.width = sw;
+    slice.height = sh;
+    const sliceCtx = slice.getContext("2d");
+    if (!sliceCtx) return;
+    sliceCtx.imageSmoothingEnabled = false;
+    sliceCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+    // 변경 영역 강조
+    sliceCtx.strokeStyle = kind === "after" ? "#7aa2ff" : "#94a3b8";
+    sliceCtx.lineWidth = Math.max(2, Math.floor(tile / 8));
+    sliceCtx.strokeRect(1, 1, sw - 2, sh - 2);
+    canvas.width = sw;
+    canvas.height = sh;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, sw, sh);
+    ctx.drawImage(slice, 0, 0);
+    const zoom = Math.min(1.5, 140 / Math.max(sw, sh, 1));
+    canvas.style.width = `${Math.max(48, sw * zoom)}px`;
+    canvas.style.height = `${Math.max(48, sh * zoom)}px`;
+    wrap.dataset.crop = `${crop.x},${crop.y},${crop.w}x${crop.h}`;
+  };
+  void drawTransferMapPreview({ canvas, project, mapId, selection, isCurrent: () => canvas.isConnected })
+    .then(() => {
+      if (!canvas.isConnected) return;
+      finishCrop();
+    })
+    .catch(() => {
+      drawTransferFallback({ canvas, map, selection });
+      finishCrop();
+    });
   return wrap;
 }
 
@@ -187,6 +267,27 @@ export function createProposalHost(options: {
     }
     const fusionApplied = fusionOutcomes.filter((entry) => entry.result.ok);
 
+    // soft-confirm 재료 합의(origin:user) — 목업 수락과 동시에 다음 시공부터 바로 씀.
+    const softMarked = markSoftVocabApprovalsOnProject(proposed, calls, selected);
+    const softList = collectVocabSoftConfirms(calls, selected);
+
+    // 배치 후 검증: 물 위 나무, 나무 짝, 지시 대비 나무 누락 등
+    const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
+    const instruction = lastUser && lastUser.kind === "user" ? lastUser.text : "";
+    const layoutIssues = validateLayoutPlacement(proposed, {
+      mapId: currentHistoryMapId() ?? undefined,
+      instruction,
+      toolNames: selectedCalls.map((call) => call.name),
+    });
+    const layoutBlocking = layoutValidationBlocking(layoutIssues);
+    if (layoutBlocking.length > 0) {
+      setStatus("배치 검증 실패");
+      const summary = formatLayoutValidationSummary(layoutIssues);
+      appendBubble("system", `❌ ${summary}`);
+      toast(summary, "error");
+      return;
+    }
+
     const commit = commitChangeset(proposed, store.getCurrent());
     if (!commit.ok) {
       setStatus("적용 실패");
@@ -221,9 +322,17 @@ export function createProposalHost(options: {
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${selectedCalls.length}건을 프로젝트에 적용했습니다.`);
     for (const outcome of fusionApplied) {
-      appendBubble("system", `🏗 승인하고 시공 — ${outcome.result.summary}`);
+      appendBubble("system", `🏗 이대로 시공 — ${outcome.result.summary}`);
     }
-    toast(fusionApplied.length > 0 ? "어휘를 승인하고 바로 시공했습니다." : "AI 변경안을 적용했습니다.", "ok");
+    if (softMarked > 0) {
+      appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
+    }
+    toast(
+      softMarked > 0 || fusionApplied.length > 0
+        ? "배치를 적용하고 재료를 합의했습니다."
+        : "AI 변경안을 적용했습니다.",
+      "ok",
+    );
     controller.session?.rebaseProject(store.getCurrent());
   };
 
@@ -300,10 +409,13 @@ export function createProposalHost(options: {
       return;
     }
 
+    ensureGuestIdentityForAiSurface();
     const warnings = proposalApprovalWarnings(result.proposedCalls);
+    const softConfirms = collectVocabSoftConfirms(result.proposedCalls);
     const beforeProject = store.getCurrent();
     const afterProject = controller.session?.getProposedProject() ?? beforeProject;
     const previewMapId = proposalPreviewMapId(result.proposedCalls, beforeProject, afterProject);
+    const mapCrop = previewMapId ? computeMapTileChangeBounds(beforeProject, afterProject, previewMapId) : null;
     const dependencies = proposalDependencyIndexes(result.proposedCalls);
     let selected = result.proposedCalls.map(() => true);
     const itemRows: HTMLElement[] = [];
@@ -394,8 +506,22 @@ export function createProposalHost(options: {
           ? [el("div", {
               class: "ai-proposal-thumbs",
               children: [
-                renderProposalMapThumbnail(beforeProject, previewMapId, "before"),
-                renderProposalMapThumbnail(afterProject, previewMapId, "after"),
+                renderProposalMapThumbnail(beforeProject, previewMapId, "before", mapCrop),
+                renderProposalMapThumbnail(afterProject, previewMapId, "after", mapCrop),
+              ],
+            })]
+          : []),
+        ...(softConfirms.length > 0
+          ? [el("div", {
+              class: "ai-proposal-soft-vocab",
+              dataset: { testid: "ai-proposal-soft-vocab" },
+              children: [
+                el("div", { class: "ai-proposal-soft-vocab-title", text: "이렇게 재료·배치를 쓸까요?" }),
+                ...softConfirms.map((soft) => el("div", {
+                  class: "ai-proposal-soft-vocab-row",
+                  text: `${soft.name} (${soft.role}) · 타일 ${soft.tileIds.slice(0, 4).join(",")}${soft.tileIds.length > 4 ? "…" : ""}`,
+                })),
+                el("div", { class: "ai-proposal-soft-vocab-hint", text: "위 맵 미리보기를 보고 [이대로 적용]을 누르면 배치와 재료 합의가 함께 끝납니다." }),
               ],
             })]
           : []),
@@ -415,7 +541,7 @@ export function createProposalHost(options: {
           children: [
             (acceptButton = el("button", {
               class: "ai-assistant-action ai-proposal-accept",
-              text: "수락해서 적용",
+              text: "이대로 적용",
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-accept" },
               on: {

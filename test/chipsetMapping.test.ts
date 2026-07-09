@@ -153,7 +153,87 @@ describe("chipset AI mapping", () => {
     expect(describeChipsetTile(327)).toMatchObject({
       key: "bench_object",
       usage: "decoration",
-      tags: expect.arrayContaining(["bench", "village", "upper"]),
+      tags: expect.arrayContaining(["bench", "horizontal", "upper"]),
+    });
+    expect(describeChipsetTile(358)).toMatchObject({
+      key: "bench_object",
+      tags: expect.arrayContaining(["vertical", "top"]),
+    });
+    expect(describeChipsetTile(388)).toMatchObject({
+      key: "bench_object",
+      tags: expect.arrayContaining(["vertical", "bottom"]),
+    });
+    expect(describeChipsetTile(349).key).toBe("house_yard_object");
+    expect(describeChipsetTile(353).key).toBe("cemetery_object");
+    expect(describeChipsetTile(383).key).toBe("cemetery_object");
+    expect(describeChipsetTile(322).key).toBe("wall_ladder_object");
+    expect(describeChipsetTile(235).tags).toEqual(expect.arrayContaining(["stretch"]));
+    expect(describeChipsetTile(112).tags).toEqual(expect.arrayContaining(["stretch"]));
+    // 원형 타워(2칸 폭) — 캡/베이스 upper, 몸·창문 lower solid
+    expect(describeChipsetTile(24)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "upper",
+      tags: expect.arrayContaining(["round-tower", "cap", "left"]),
+    });
+    expect(describeChipsetTile(25)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "upper",
+      tags: expect.arrayContaining(["round-tower", "cap", "right"]),
+    });
+    expect(describeChipsetTile(54)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "upper",
+      tags: expect.arrayContaining(["round-tower", "base"]),
+    });
+    expect(describeChipsetTile(55)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "upper",
+      tags: expect.arrayContaining(["round-tower", "base"]),
+    });
+    expect(describeChipsetTile(138)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "lower",
+      passage: "solid",
+      tags: expect.arrayContaining(["round-tower", "neck"]),
+    });
+    expect(describeChipsetTile(140).tags).toEqual(expect.arrayContaining(["body", "stretch"]));
+    expect(describeChipsetTile(142)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "lower",
+      passage: "solid",
+      tags: expect.arrayContaining(["round-tower", "window", "left"]),
+    });
+    expect(describeChipsetTile(143)).toMatchObject({
+      key: "castle_round_tower_object",
+      layer: "lower",
+      passage: "solid",
+      tags: expect.arrayContaining(["round-tower", "window", "right"]),
+    });
+    // 성 지붕 면 / 성벽 정면 (성채 맵 모듈)
+    expect(describeChipsetTile(18)).toMatchObject({
+      key: "castle_roof_object",
+      layer: "lower",
+      passage: "solid",
+      tags: expect.arrayContaining(["castle", "roof"]),
+    });
+    expect(describeChipsetTile(79)).toMatchObject({
+      key: "castle_roof_object",
+      layer: "lower",
+      passage: "solid",
+    });
+    expect(describeChipsetTile(21)).toMatchObject({
+      key: "castle_wall_face_object",
+      layer: "lower",
+      passage: "solid",
+      tags: expect.arrayContaining(["wall", "face", "top"]),
+    });
+    expect(describeChipsetTile(51)).toMatchObject({
+      key: "castle_wall_face_object",
+      tags: expect.arrayContaining(["body", "stretch"]),
+    });
+    expect(describeChipsetTile(81)).toMatchObject({
+      key: "castle_wall_face_object",
+      tags: expect.arrayContaining(["bottom"]),
     });
   });
 

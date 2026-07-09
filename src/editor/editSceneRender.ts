@@ -139,12 +139,13 @@ function renderTileCellLayer(
     if (upper >= 0) {
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, upper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
-      addTileObject(context, objects, upperTile, 2);
+      // depth 2 was too close to lower(0); keep upper clearly above lower stacks for canopy preview
+      addTileObject(context, objects, upperTile, 20);
     }
     for (const stackedUpper of tileStackAt(map, "upper", i)) {
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
-      addTileObject(context, objects, upperTile, 3);
+      addTileObject(context, objects, upperTile, 21);
     }
   }
   context.tileIndex?.set(tileIndexKey(layer, x, y), objects);

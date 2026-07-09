@@ -104,7 +104,8 @@
     justify-content: center;
     padding: 24px;
     position: fixed;
-    z-index: 2400;
+    /* AI 제안 모달(≈2500)보다 아래에 두어 soft-confirm [이대로 적용]을 가리지 않게 한다. */
+    z-index: 2100;
   }
 
   .team-login-card,

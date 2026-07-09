@@ -57,7 +57,7 @@ const HONEST_REPORT_RULE =
 const SPEC_RULE =
   "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침)는 좌표·buildOrder·맵 크기를 고쳐 재제출하고, 3회 실패하면 계획을 폐기해 스스로 새 배치를 설계하세요. 페인트/배치 툴이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다. 기존 구조물 파괴 위험은 자동 보정하지 않습니다. 사용자가 선택한 영역은 암묵적 명세입니다.";
 const CONSTRUCTION_ORDER_RULE =
-  "시공 공정 순서(준수): 벽(build_wall) → 문/창(place_door/place_window) → 지붕(build_roof) → 길(lay_path) → 소품(place_props). 배치 프리미티브는 승인된 어휘만 소비합니다. 미승인 어휘로 시공하려면: (1) propose_tile_vocabulary로 어휘를 제안하고, (2) **같은 턴에 곧바로** 그 그룹 id를 wallVocabId 등으로 넣어 시공 프리미티브(build_wall 등)를 호출하세요. 미승인 상태의 첫 호출은 실패하지만 그건 정상입니다 — 시스템이 그 시공을 승인 카드에 '보류 시공'으로 묶어, 사용자가 [승인하고 시공]을 한 번 누르면 어휘 승인과 시공이 함께 끝납니다. **제안만 하고 승인을 기다리며 턴을 끝내지 마세요 — 반드시 같은 턴에 시공 프리미티브까지 호출하세요.**";
+  "시공 공정: 길 paint_road → 집+마당 build_house_lots → 숲 등 place_props → NPC. **집:** LLM은 wings 위치·kitId·yard 꾸밈 태그만 정하고 build_house_lots 한 번(또는 소수)에 넘긴다. 마당 타일 좌표는 코드. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|chair|sign. 집 앞 소품을 place_props로 직접 몰아넣지 말 것. 숲/들/묘지 산포만 place_props(넓은 area, naturalness 0.55~0.7, minGap≥2, 구역 분할). 나무 id: harness-combined-town-conifer-tree. place_props 동일 인자 턴당 1회. 미합의 재료는 목업 확인.";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";
@@ -318,9 +318,9 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "단계별로 진행하고, 각 단계가 끝날 때마다 한 줄로 보고하세요(전부 끝날 때까지 멈추지 마세요):",
       "1. 부지 계획 — get_map_region으로 지형을 읽고 집·길 배치를 정하세요.",
-      "2. 집 — 공정 순서대로 집마다 build_wall(크기 다양하게) → place_door/place_window → build_roof로 겹치지 않게 지으세요.",
-      "3. 길 — lay_path로 집 문 앞들을 잇는 길을 깔고, 문 앞 통행을 확인하세요.",
-      "4. 소품·NPC — 수역/지면/바닥은 fill_region으로 채우고, 나무/소품은 place_props로 산포하고, place_npc로 테마에 맞는 이름·대사(2줄 이상)를 붙여 통행 가능 칸에 배치하세요.",
+      "2. 집+마당 — build_house_lots로 집마다 wings(위치)·kitId·yard 태그(mailbox/firewood/bench_h 등)만 정하세요. 문·타일 좌표는 코드가 합니다.",
+      "3. 길 — paint_road(또는 lay_path)로 집 문 앞들을 잇고 통행을 확인하세요.",
+      "4. 숲·들 소품·NPC — 나무는 place_props(물 밖). 집 앞 소품은 2단계에서 이미 처리. place_npc는 통행 가능 육지+이름·대사.",
       "5. 검증 — check_reachability로 모든 문 앞이 도달 가능한지 확인하고 문제를 고치세요.",
       CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,

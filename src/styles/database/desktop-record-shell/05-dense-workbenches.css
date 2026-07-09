@@ -345,12 +345,23 @@
     padding-bottom: 22px;
   }
 
+  /* 칩셋 전체(예: 480칸 16행): 부모 높이에 맞추고 프리뷰 박스 안에서만 스크롤.
+     min-height:0 만 두면 뷰포트가 0에 가까워져 하단 행이 잘려 보이던 문제 방지. */
   .database-modal-body .rm2k3-tileset-main .tileset-db-preview-wrap {
-    max-height: 390px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .database-modal-body .rm2k3-tileset-main .tileset-db-preview {
-    max-height: 368px;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
   }
 
   .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body {

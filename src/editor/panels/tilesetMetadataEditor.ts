@@ -9,6 +9,7 @@ import {
   passageText,
   textAreaControl,
 } from "@/editor/panels/tilesetMetadataControls";
+import { openTilesetSettingsModal } from "@/editor/panels/tilesetPassageModal";
 import {
   tabForTilesetMode,
   TILESET_TAB_MODES,
@@ -41,9 +42,13 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
         selectedTile,
         rerender,
         onApplyModeTile: (tile) => applyActiveModeClick(tileset.id, tile),
-        onSelectTile: (tile) => {
+        onSelectTile: (tile, options) => {
           selectedTile = tile;
+          // quiet: 우클릭 메뉴 — 전체 리마운트/스크롤 점프 금지
+          if (options?.quiet) return;
+          rerender();
         },
+        onOpenFullSheet: () => openTilesetSettingsModal(tileset.id, rerender),
       }),
     ],
   });
@@ -87,18 +92,34 @@ function renderToolBox(rerender: () => void): HTMLElement | null {
 function renderSelectedTilePanel(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
   const meta = metadataForTile(tileset, selectedTile);
+  const home = tileLayerHome(tileset, selectedTile);
+  const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
+  const sourceLabel = meta.source === "user" ? "직접 편집" : meta.source === "bundled-default" ? "하네스" : meta.source === "ai" ? "AI" : "미정";
   return el("section", {
     class: "tileset-db-selected-tile",
+    dataset: { testid: "tileset-selected-tile-panel" },
     children: [
       el("div", {
         class: "tileset-db-selected-header",
         children: [
           el("strong", { text: `${selectedTile}번 타일` }),
+          el("span", {
+            class: `tileset-selected-layer-badge layer-${home}`,
+            dataset: { testid: "tileset-selected-layer-badge" },
+            text: homeLabel,
+          }),
           el("span", { text: `통행 ${passageText(tileset, selectedTile)}` }),
+          el("span", {
+            class: "tileset-selected-source-badge",
+            dataset: { testid: "tileset-selected-source-badge" },
+            text: sourceLabel,
+          }),
         ],
       }),
+      // 라벨/설명: 탭·모드와 무관하게 항상 편집 (칩 클릭 → 바로 고치기)
+      ...renderTileMeaningEditors(tileset, meta),
       ...(tab === "rules" ? renderRuleControls(tileset, rerender) : []),
-      ...(tab === "knowledge" ? [renderSelectedTileUsage(tileset), ...renderKnowledgeFields(tileset, meta)] : []),
+      ...(tab === "knowledge" ? [renderSelectedTileUsage(tileset)] : []),
     ],
   });
 }
@@ -173,11 +194,22 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
   ];
 }
 
-function renderKnowledgeFields(tileset: TilesetDef, meta: TileAiMetadata): HTMLElement[] {
-  if (editMode !== "ai") return [];
+/** 선택 타일 라벨·설명 — 데이터베이스에서 바로 고치는 주 진입점. */
+function renderTileMeaningEditors(tileset: TilesetDef, meta: TileAiMetadata): HTMLElement[] {
   return [
-    textAreaControl("AI 라벨", meta.label, (value) => updateMetadata(tileset.id, { label: value }), "tileset-field-ai-label"),
-    textAreaControl("AI 설명", meta.description, (value) => updateMetadata(tileset.id, { description: value }), "tileset-field-ai-description"),
+    el("fieldset", {
+      class: "rm2k3-db-fieldset tileset-tile-meaning-edit",
+      dataset: { testid: "tileset-tile-meaning-edit" },
+      children: [
+        el("legend", { text: "의미 (라벨·설명)" }),
+        el("div", {
+          class: "tileset-rule-note",
+          text: "칩을 클릭한 뒤 여기서 고칩니다. 저장은 DB 확인/프로젝트 저장. source=user 로 표시되어 AI 검색·하네스보다 우선합니다.",
+        }),
+        textAreaControl("라벨", meta.label, (value) => updateMetadata(tileset.id, { label: value }), "tileset-field-ai-label"),
+        textAreaControl("설명", meta.description, (value) => updateMetadata(tileset.id, { description: value }), "tileset-field-ai-description"),
+      ],
+    }),
   ];
 }
 

@@ -218,7 +218,8 @@ export const CHIPSET_TILE_GROUPS = {
     ...tilesInRect({ left: 18, top: 8, right: 29, bottom: 15 }),
   ],
   treeObjects: [260, 262, 263, 289, 290, 292, 293],
-  flowerObjects: [288, 348, 351],
+  // 351은 화분(집 앞 마당) — flower가 아니라 houseYardObjects.
+  flowerObjects: [288, 348],
   stakeObjects: [378, 408, 438],
   fenceObjects: [378, 379, 380, 408, 409, 410, 438, 439],
   housePurpleStoneWallObjects: HOUSE_PURPLE_STONE_WALL_OBJECTS,
@@ -248,12 +249,47 @@ export const CHIPSET_TILE_GROUPS = {
   roofObjects: [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437],
   buildingFrontObjects: [414, 415, 416, 444, 445, 446, 474, 475, 476],
   tentObjects: [389, 418, 419, 448, 449, 477, 478, 479],
-  benchObjects: [327, 328, 357, 358],
+  // 칩셋 실사(Combined Town / Exterior) — 사용자 비전 강제 지정:
+  // - 가로 벤치 327|328 / 세로 의자 358(상)+388(하)
+  // - 집 앞 마당: 349장작·350우편함·351화분·352항아리
+  // - 묘지(집과 멀리): 323묘지·353묘비·383해골
+  // - 탁자 가로 234|235*|236 / 세로 144/174*/204 (중간 무제한 연장)
+  // - 탁자 옆 의자: 175(탁자 위·아래봄) 176(탁자 아래·위봄) 205(탁자 왼·오봄) 206(탁자 오른·왼봄)
+  // - 147등받이 없음 148등받이 있음 / 202|203 과일박스 / 237 나무상자
+  // - 116/146 나무문 / 322 벽 사다리(상위·통행가능) / 111|112*|113 돌계단
+  // - 28 성 열린창 58 성 창 88 깨진 창조각 / 231 마법진
+  // - 원형 타워(2칸 폭): 캡 upper 24|25, 목 lower 138|139, 몸 140|141, 창문 142|143, 베이스 upper 54|55
+  benchObjects: [327, 328, 358, 388],
+  benchHorizontalObjects: [327, 328],
+  benchVerticalObjects: [358, 388],
+  chairObjects: [147, 148, 175, 176, 205, 206],
+  tableHorizontalObjects: [234, 235, 236],
+  tableVerticalObjects: [144, 174, 204],
+  tableObjects: [144, 174, 204, 234, 235, 236],
+  houseYardObjects: [349, 350, 351, 352],
+  cemeteryObjects: [323, 353, 383],
+  wallLadderObjects: [322],
+  fruitBoxObjects: [202, 203],
+  woodBoxObjects: [237],
+  woodDoorPairObjects: [116, 146],
+  stoneStairObjects: [111, 112, 113],
+  castleWindowObjects: [28, 58, 88],
+  // 성 지붕·여장 면 (3×4) + 성벽 정면 (21/51/81) — map_castle_keep 실측 금본.
+  castleRoofDeckObjects: [18, 19, 20, 48, 49, 50, 78, 79, 80, 108, 109, 110],
+  castleWallFaceObjects: [21, 51, 81],
+  // 원형 타워 조각 — 사용자 맵 (18,18)–(19,24) 실측 금본.
+  castleRoundTowerCapObjects: [24, 25],
+  castleRoundTowerNeckObjects: [138, 139],
+  castleRoundTowerBodyObjects: [140, 141],
+  castleRoundTowerWindowObjects: [142, 143],
+  castleRoundTowerBaseObjects: [54, 55],
+  castleRoundTowerObjects: [24, 25, 54, 55, 138, 139, 140, 141, 142, 143],
+  magicCircleObjects: [231],
   vineObjects: [291, 321, 325, 355, 356],
-  signObjects: [319, 320, 327],
+  signObjects: [319, 320],
   fireObjects: [318, 381],
-  statueObjects: [352, 353, 382, 383, 412, 413],
-  smallObjects: [259, 318, 319, 320, 323, 327, 348, 349, 350, 351, 411, 440, 441, 442, 443, 472, 473],
+  statueObjects: [382, 412, 413],
+  smallObjects: [259, 318, 319, 320, 348, 349, 350, 351, 352, 411, 440, 441, 442, 443, 472, 473],
 } as const;
 
 export const CONFIRMED_CHIPSET_TILE_INDEXES = [
@@ -295,6 +331,20 @@ export const CONFIRMED_CHIPSET_TILE_INDEXES = [
   ...CHIPSET_TILE_GROUPS.buildingFrontObjects,
   ...CHIPSET_TILE_GROUPS.tentObjects,
   ...CHIPSET_TILE_GROUPS.benchObjects,
+  ...CHIPSET_TILE_GROUPS.chairObjects,
+  ...CHIPSET_TILE_GROUPS.tableObjects,
+  ...CHIPSET_TILE_GROUPS.houseYardObjects,
+  ...CHIPSET_TILE_GROUPS.cemeteryObjects,
+  ...CHIPSET_TILE_GROUPS.wallLadderObjects,
+  ...CHIPSET_TILE_GROUPS.fruitBoxObjects,
+  ...CHIPSET_TILE_GROUPS.woodBoxObjects,
+  ...CHIPSET_TILE_GROUPS.woodDoorPairObjects,
+  ...CHIPSET_TILE_GROUPS.stoneStairObjects,
+  ...CHIPSET_TILE_GROUPS.castleWindowObjects,
+  ...CHIPSET_TILE_GROUPS.castleRoofDeckObjects,
+  ...CHIPSET_TILE_GROUPS.castleWallFaceObjects,
+  ...CHIPSET_TILE_GROUPS.castleRoundTowerObjects,
+  ...CHIPSET_TILE_GROUPS.magicCircleObjects,
   ...CHIPSET_TILE_GROUPS.vineObjects,
   ...CHIPSET_TILE_GROUPS.signObjects,
   ...CHIPSET_TILE_GROUPS.fireObjects,
@@ -322,11 +372,20 @@ export function isPropOverlayChipsetTile(index: number): boolean {
     hasTile(CHIPSET_TILE_GROUPS.stakeObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.fenceObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.benchObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.chairObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.tableObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.houseYardObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.cemeteryObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.wallLadderObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.fruitBoxObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.woodBoxObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.magicCircleObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.vineObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.signObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.fireObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.statueObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.houseWindowObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.castleWindowObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.smallObjects, index)
   );
 }
@@ -356,9 +415,17 @@ function isBuildingBaseChipsetTile(index: number): boolean {
 
 export function isSolidChipsetTile(index: number): boolean {
   if (hasTile(CHIPSET_TILE_GROUPS.flowerObjects, index)) return false;
+  // 벽 사다리(322): 집 벽 위 상위 오버레이, 플레이어 통과 가능.
+  if (hasTile(CHIPSET_TILE_GROUPS.wallLadderObjects, index)) return false;
+  if (hasTile(CHIPSET_TILE_GROUPS.magicCircleObjects, index)) return false;
   return (
     isWaterChipsetTile(index) ||
     hasTile(CHIPSET_TILE_GROUPS.treeObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.stoneStairObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.woodDoorPairObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.castleRoofDeckObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.castleWallFaceObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.castleRoundTowerObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.houseObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.roofObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.woodStructureObjects, index) ||
@@ -419,6 +486,9 @@ export function dirtLikeTiles(): readonly number[] {
 
 function tileSemanticForIndex(index: number): TileSemantic {
   if (index === TILE.EMPTY) return semantic({ key: "empty", label: "Empty", aiLabel: "Empty tile: clears the selected map layer.", usage: "empty", tags: ["empty", "erase"] });
+  // 사용자 비전 강제 지정(Combined Town 실사) — 그룹 휴리스틱보다 우선.
+  const vision = visionTileSemantic(index);
+  if (vision) return vision;
   if (hasTile(CHIPSET_TILE_GROUPS.woodBridgeBody, index)) return semantic({ key: "wood_bridge_body", label: "Wood bridge", aiLabel: "Wood bridge body: lower-layer walkable bridge surface for crossing water.", usage: "path", tags: ["wood", "bridge", "walkable", "water-crossing"] });
   if (index === 378) return semantic({ key: "fence_object", label: "Fence", aiLabel: "Fence upper-left corner: use at the top-left of a fenced enclosure before horizontal rail 379.", usage: "decoration", tags: ["fence", "barrier", "village", "upper", "corner", "upper-left"] });
   if (index === 379) return semantic({ key: "fence_object", label: "Fence", aiLabel: "Fence top/bottom horizontal rail: repeat this tile across the upper or lower run between fence corners or terminators.", usage: "decoration", tags: ["fence", "barrier", "village", "upper", "horizontal", "repeat-horizontal"] });
@@ -473,6 +543,44 @@ function tileSemanticForIndex(index: number): TileSemantic {
   if (hasTile(CHIPSET_TILE_GROUPS.buildingFrontObjects, index)) return semantic({ key: "building_front_object", label: "Building front", aiLabel: "Building front object: upper-layer facade, door, or wall face for exterior buildings.", usage: "structure", tags: ["building", "facade", "door", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.tentObjects, index)) return semantic({ key: "tent_object", label: "Tent", aiLabel: "Tent object: upper-layer shelter or campsite structure.", usage: "structure", tags: ["tent", "shelter", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.benchObjects, index)) return semantic({ key: "bench_object", label: "Bench", aiLabel: "Bench object: upper-layer village furniture decoration.", usage: "decoration", tags: ["bench", "village", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.chairObjects, index)) return semantic({ key: "chair_object", label: "Chair", aiLabel: "Chair object: upper-layer seat furniture.", usage: "decoration", tags: ["chair", "furniture", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.tableObjects, index)) return semantic({ key: "table_object", label: "Table", aiLabel: "Table object: upper-layer table furniture; middle tiles can stretch.", usage: "decoration", tags: ["table", "furniture", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.houseYardObjects, index)) return semantic({ key: "house_yard_object", label: "House-yard prop", aiLabel: "House-yard prop: place in front of houses (firewood, mailbox, pot, jar).", usage: "decoration", tags: ["house-yard", "village", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.cemeteryObjects, index)) return semantic({ key: "cemetery_object", label: "Cemetery", aiLabel: "Cemetery prop: keep far from houses (grave, headstone, skeleton).", usage: "decoration", tags: ["cemetery", "grave", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.wallLadderObjects, index)) return semantic({ key: "wall_ladder_object", label: "Wall ladder", aiLabel: "Wall ladder: upper-layer passable overlay on house walls.", usage: "decoration", tags: ["ladder", "wall", "passable", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.fruitBoxObjects, index)) return semantic({ key: "fruit_box_object", label: "Fruit box", aiLabel: "Fruit crate pair: left 202 + right 203.", usage: "decoration", tags: ["crate", "fruit", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.woodBoxObjects, index)) return semantic({ key: "wood_box_object", label: "Wood box", aiLabel: "Wooden box prop (237).", usage: "decoration", tags: ["box", "crate", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.woodDoorPairObjects, index)) return semantic({ key: "wood_door_object", label: "Wood door", aiLabel: "Wooden door pair: top 116 above bottom 146.", usage: "structure", tags: ["door", "wood", "building"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.stoneStairObjects, index)) return semantic({ key: "stone_stair_object", label: "Stone stairs", aiLabel: "Stone stair strip: left 111, stretchable center 112, right 113.", usage: "structure", tags: ["stairs", "stone", "repeat-horizontal"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.castleWindowObjects, index)) return semantic({ key: "castle_window_object", label: "Castle window", aiLabel: "Castle window variant (open/closed/broken).", usage: "structure", tags: ["window", "castle"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.castleRoofDeckObjects, index)) {
+    return semantic({
+      key: "castle_roof_object",
+      label: "Castle roof deck",
+      aiLabel: "Castle roof/battlement deck tile (18–110 block). Paint as a rectangle: corners 18/20/108/110, edges 19/109/48|78, fill 49|79|50|80.",
+      usage: "structure",
+      tags: ["castle", "roof", "battlement", "deck"],
+    });
+  }
+  if (hasTile(CHIPSET_TILE_GROUPS.castleWallFaceObjects, index)) {
+    return semantic({
+      key: "castle_wall_face_object",
+      label: "Castle wall face",
+      aiLabel: "Castle wall face column: top 21, stretch mid 51, bottom 81. Place under roof-deck south edge or as curtain wall.",
+      usage: "structure",
+      tags: ["castle", "wall", "face"],
+    });
+  }
+  if (hasTile(CHIPSET_TILE_GROUPS.castleRoundTowerObjects, index)) {
+    return semantic({
+      key: "castle_round_tower_object",
+      label: "Castle round tower",
+      aiLabel: "Castle round tower piece: 2-wide vertical (cap 24|25 upper, neck 138|139, body 140|141, windows 142|143, base 54|55 upper).",
+      usage: "structure",
+      tags: ["castle", "round-tower", "tower", "structure"],
+    });
+  }
+  if (hasTile(CHIPSET_TILE_GROUPS.magicCircleObjects, index)) return semantic({ key: "magic_circle_object", label: "Magic circle", aiLabel: "Magic circle decoration (231), passable upper.", usage: "decoration", tags: ["magic", "ritual", "passable", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.vineObjects, index)) return semantic({ key: "vine_object", label: "Vines", aiLabel: "Vine object: upper-layer organic wall or ruin decoration.", usage: "decoration", tags: ["vine", "nature", "ruin", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.signObjects, index)) return semantic({ key: "sign_object", label: "Sign", aiLabel: "Sign object: upper-layer signpost or readable map marker.", usage: "decoration", tags: ["sign", "marker", "village", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.fireObjects, index)) return semantic({ key: "fire_object", label: "Fire", aiLabel: "Fire object: upper-layer torch or campfire decoration.", usage: "decoration", tags: ["fire", "torch", "campfire", "upper"] });
@@ -483,11 +591,207 @@ function tileSemanticForIndex(index: number): TileSemantic {
   return semantic({ key: `tile_${index}`, label: `Tile ${index}`, aiLabel: `Unmapped chipset tile ${index}: needs manual classification before AI placement.`, usage: "unknown", tags: ["unmapped"] });
 }
 
+/** Combined Town 실사 비전 강제 라벨 — 오분류 방지. */
+function visionTileSemantic(index: number): TileSemantic | null {
+  switch (index) {
+    case 327:
+      return semantic({ key: "bench_object", label: "Bench left", aiLabel: "Horizontal bench left half (327). Pair right with 328.", usage: "decoration", tags: ["bench", "horizontal", "left", "village", "upper"] });
+    case 328:
+      return semantic({ key: "bench_object", label: "Bench right", aiLabel: "Horizontal bench right half (328). Pair left with 327.", usage: "decoration", tags: ["bench", "horizontal", "right", "village", "upper"] });
+    case 358:
+      return semantic({ key: "bench_object", label: "Chair vertical top", aiLabel: "Vertical chair/bench top (358). Must sit directly above 388.", usage: "decoration", tags: ["bench", "chair", "vertical", "top", "village", "upper"] });
+    case 388:
+      return semantic({ key: "bench_object", label: "Chair vertical bottom", aiLabel: "Vertical chair/bench bottom (388). Must sit directly below 358.", usage: "decoration", tags: ["bench", "chair", "vertical", "bottom", "village", "upper"] });
+    case 349:
+      return semantic({ key: "house_yard_object", label: "Firewood pile", aiLabel: "Firewood pile (349). Place in front of houses.", usage: "decoration", tags: ["firewood", "house-yard", "village", "upper"] });
+    case 350:
+      return semantic({ key: "house_yard_object", label: "Mailbox", aiLabel: "Mailbox (350). Place in front of houses.", usage: "decoration", tags: ["mailbox", "house-yard", "village", "upper"] });
+    case 351:
+      return semantic({ key: "house_yard_object", label: "Flower pot", aiLabel: "Flower pot (351). Place in front of houses.", usage: "decoration", tags: ["pot", "flower-pot", "house-yard", "village", "upper"] });
+    case 352:
+      return semantic({ key: "house_yard_object", label: "Jar", aiLabel: "Storage jar (352). Place in front of houses.", usage: "decoration", tags: ["jar", "pot", "house-yard", "village", "upper"] });
+    case 353:
+      return semantic({ key: "cemetery_object", label: "Gravestone", aiLabel: "Gravestone (353). Keep far from houses in a cemetery area.", usage: "decoration", tags: ["gravestone", "cemetery", "grave", "upper"] });
+    case 323:
+      return semantic({ key: "cemetery_object", label: "Cemetery marker", aiLabel: "Cemetery/graveyard marker (323). Keep far from houses.", usage: "decoration", tags: ["cemetery", "grave", "upper"] });
+    case 383:
+      return semantic({ key: "cemetery_object", label: "Skeleton", aiLabel: "Skeleton remains (383). Cemetery/ruin prop — not a statue.", usage: "decoration", tags: ["skeleton", "cemetery", "ruin", "upper"] });
+    case 322:
+      return semantic({ key: "wall_ladder_object", label: "Wall ladder", aiLabel: "Wall ladder (322): upper-layer on house wall; player can walk through.", usage: "decoration", tags: ["ladder", "wall", "passable", "upper"] });
+    case 175:
+      return semantic({ key: "chair_object", label: "Chair face down", aiLabel: "Chair facing down (175). Place on the north/top side of a table.", usage: "decoration", tags: ["chair", "face-down", "table-north", "furniture", "upper"] });
+    case 176:
+      return semantic({ key: "chair_object", label: "Chair face up", aiLabel: "Chair facing up (176). Place on the south/bottom side of a table.", usage: "decoration", tags: ["chair", "face-up", "table-south", "furniture", "upper"] });
+    case 205:
+      return semantic({ key: "chair_object", label: "Chair face right", aiLabel: "Chair facing right (205). Place on the west/left side of a table.", usage: "decoration", tags: ["chair", "face-right", "table-west", "furniture", "upper"] });
+    case 206:
+      return semantic({ key: "chair_object", label: "Chair face left", aiLabel: "Chair facing left (206). Place on the east/right side of a table.", usage: "decoration", tags: ["chair", "face-left", "table-east", "furniture", "upper"] });
+    case 147:
+      return semantic({ key: "chair_object", label: "Stool", aiLabel: "Backless chair/stool (147).", usage: "decoration", tags: ["chair", "stool", "furniture", "upper"] });
+    case 148:
+      return semantic({ key: "chair_object", label: "Chair with back", aiLabel: "Chair with backrest (148).", usage: "decoration", tags: ["chair", "backrest", "furniture", "upper"] });
+    case 144:
+      return semantic({ key: "table_object", label: "Table vertical top", aiLabel: "Vertical table top (144). Above stretch body 174 and bottom 204.", usage: "decoration", tags: ["table", "vertical", "top", "furniture", "upper"] });
+    case 174:
+      return semantic({ key: "table_object", label: "Table vertical mid", aiLabel: "Vertical table middle (174). May stretch unlimited between 144 and 204.", usage: "decoration", tags: ["table", "vertical", "body", "stretch", "furniture", "upper"] });
+    case 204:
+      return semantic({ key: "table_object", label: "Table vertical bottom", aiLabel: "Vertical table bottom (204). Below stretch body 174.", usage: "decoration", tags: ["table", "vertical", "bottom", "furniture", "upper"] });
+    case 234:
+      return semantic({ key: "table_object", label: "Table horizontal left", aiLabel: "Horizontal table left (234). Pair with stretch mid 235 and right 236.", usage: "decoration", tags: ["table", "horizontal", "left", "furniture", "upper"] });
+    case 235:
+      return semantic({ key: "table_object", label: "Table horizontal mid", aiLabel: "Horizontal table middle (235). May stretch unlimited between 234 and 236.", usage: "decoration", tags: ["table", "horizontal", "body", "stretch", "furniture", "upper"] });
+    case 236:
+      return semantic({ key: "table_object", label: "Table horizontal right", aiLabel: "Horizontal table right (236). After stretch mid 235.", usage: "decoration", tags: ["table", "horizontal", "right", "furniture", "upper"] });
+    case 237:
+      return semantic({ key: "wood_box_object", label: "Wood box", aiLabel: "Wooden box (237).", usage: "decoration", tags: ["box", "crate", "upper"] });
+    case 202:
+      return semantic({ key: "fruit_box_object", label: "Fruit box left", aiLabel: "Fruit crate left (202). Pair right with 203.", usage: "decoration", tags: ["crate", "fruit", "left", "upper"] });
+    case 203:
+      return semantic({ key: "fruit_box_object", label: "Fruit box right", aiLabel: "Fruit crate right (203). Pair left with 202.", usage: "decoration", tags: ["crate", "fruit", "right", "upper"] });
+    case 116:
+      return semantic({ key: "wood_door_object", label: "Wood door top", aiLabel: "Wooden door top (116). Place directly above 146.", usage: "structure", tags: ["door", "wood", "top", "building"] });
+    case 146:
+      return semantic({ key: "wood_door_object", label: "Wood door bottom", aiLabel: "Wooden door bottom (146). Place directly below 116.", usage: "structure", tags: ["door", "wood", "bottom", "building"] });
+    case 111:
+      return semantic({ key: "stone_stair_object", label: "Stone stair left", aiLabel: "Stone stairs left cap (111). Center 112 may stretch; right is 113.", usage: "structure", tags: ["stairs", "stone", "left"] });
+    case 112:
+      return semantic({ key: "stone_stair_object", label: "Stone stair mid", aiLabel: "Stone stairs center (112). May stretch unlimited between 111 and 113.", usage: "structure", tags: ["stairs", "stone", "body", "stretch"] });
+    case 113:
+      return semantic({ key: "stone_stair_object", label: "Stone stair right", aiLabel: "Stone stairs right cap (113).", usage: "structure", tags: ["stairs", "stone", "right"] });
+    case 28:
+      return semantic({ key: "castle_window_object", label: "Castle open window", aiLabel: "Castle open window (28).", usage: "structure", tags: ["window", "castle", "open"] });
+    case 58:
+      return semantic({ key: "castle_window_object", label: "Castle window", aiLabel: "Castle window (58).", usage: "structure", tags: ["window", "castle"] });
+    case 88:
+      return semantic({ key: "castle_window_object", label: "Broken window shard", aiLabel: "Broken window shard (88).", usage: "structure", tags: ["window", "broken", "castle"] });
+    case 231:
+      return semantic({ key: "magic_circle_object", label: "Magic circle", aiLabel: "Magic circle (231), passable decoration.", usage: "decoration", tags: ["magic", "ritual", "passable", "upper"] });
+    // Combined Town 성 지붕·여장 면 + 성벽 정면 (사용자 비전 18~110)
+    case 18:
+      return semantic({ key: "castle_roof_object", label: "Castle roof NW", aiLabel: "Castle roof/battlement top-left corner (18).", usage: "structure", tags: ["castle", "roof", "battlement", "corner", "top-left"] });
+    case 19:
+      return semantic({ key: "castle_roof_object", label: "Castle roof N", aiLabel: "Castle roof/battlement top edge (19); stretch horizontally between 18 and 20.", usage: "structure", tags: ["castle", "roof", "battlement", "top", "stretch"] });
+    case 20:
+      return semantic({ key: "castle_roof_object", label: "Castle roof NE", aiLabel: "Castle roof/battlement top-right corner (20).", usage: "structure", tags: ["castle", "roof", "battlement", "corner", "top-right"] });
+    case 21:
+      return semantic({ key: "castle_wall_face_object", label: "Castle wall top", aiLabel: "Castle wall face top row (21); repeat horizontally under battlements.", usage: "structure", tags: ["castle", "wall", "face", "top", "stretch"] });
+    case 48:
+      return semantic({ key: "castle_roof_object", label: "Castle roof W", aiLabel: "Castle roof left edge (48); stretch vertically.", usage: "structure", tags: ["castle", "roof", "left", "stretch"] });
+    case 49:
+      return semantic({ key: "castle_roof_object", label: "Castle roof floor light", aiLabel: "Castle roof/battlement light gray floor fill (49).", usage: "structure", tags: ["castle", "roof", "floor", "light"] });
+    case 50:
+      return semantic({ key: "castle_roof_object", label: "Castle roof body", aiLabel: "Castle roof body (50); expand for large roof decks.", usage: "structure", tags: ["castle", "roof", "body", "stretch"] });
+    case 51:
+      return semantic({ key: "castle_wall_face_object", label: "Castle wall mid", aiLabel: "Castle wall face middle (51); stretch between top 21 and bottom 81.", usage: "structure", tags: ["castle", "wall", "face", "body", "stretch"] });
+    case 78:
+      return semantic({ key: "castle_roof_object", label: "Castle roof W lower", aiLabel: "Castle roof left edge lower segment (78).", usage: "structure", tags: ["castle", "roof", "left"] });
+    case 79:
+      return semantic({ key: "castle_roof_object", label: "Castle roof floor dark", aiLabel: "Castle roof/battlement dark gray floor fill (79).", usage: "structure", tags: ["castle", "roof", "floor", "dark"] });
+    case 80:
+      return semantic({ key: "castle_roof_object", label: "Castle roof body lower", aiLabel: "Castle roof lower body (80).", usage: "structure", tags: ["castle", "roof", "body"] });
+    case 81:
+      return semantic({ key: "castle_wall_face_object", label: "Castle wall bottom", aiLabel: "Castle wall face bottom row (81); ground contact.", usage: "structure", tags: ["castle", "wall", "face", "bottom", "stretch"] });
+    case 108:
+      return semantic({ key: "castle_roof_object", label: "Castle roof SW", aiLabel: "Castle roof bottom-left corner (108).", usage: "structure", tags: ["castle", "roof", "corner", "bottom-left"] });
+    case 109:
+      return semantic({ key: "castle_roof_object", label: "Castle roof S", aiLabel: "Castle roof bottom edge (109); stretch between 108 and 110.", usage: "structure", tags: ["castle", "roof", "bottom", "stretch"] });
+    case 110:
+      return semantic({ key: "castle_roof_object", label: "Castle roof SE", aiLabel: "Castle roof bottom-right corner (110).", usage: "structure", tags: ["castle", "roof", "corner", "bottom-right"] });
+    // 원형 타워(2칸 폭) — map_castle_keep (18,18)–(19,24) 실측
+    case 24:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower cap L", aiLabel: "Round tower roof/cap left (24). Upper layer; pair right with 25.", usage: "structure", tags: ["castle", "round-tower", "cap", "left", "upper"] });
+    case 25:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower cap R", aiLabel: "Round tower roof/cap right (25). Upper layer; pair left with 24.", usage: "structure", tags: ["castle", "round-tower", "cap", "right", "upper"] });
+    case 54:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower base L", aiLabel: "Round tower base left (54). Upper layer; pair right with 55; place under body column.", usage: "structure", tags: ["castle", "round-tower", "base", "left", "upper"] });
+    case 55:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower base R", aiLabel: "Round tower base right (55). Upper layer; pair left with 54.", usage: "structure", tags: ["castle", "round-tower", "base", "right", "upper"] });
+    case 138:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower neck L", aiLabel: "Round tower neck/top body left (138). Lower solid; pair right with 139; sits under cap 24.", usage: "structure", tags: ["castle", "round-tower", "neck", "left", "lower", "solid"] });
+    case 139:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower neck R", aiLabel: "Round tower neck/top body right (139). Lower solid; pair left with 138; sits under cap 25.", usage: "structure", tags: ["castle", "round-tower", "neck", "right", "lower", "solid"] });
+    case 140:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower body L", aiLabel: "Round tower body left (140). Lower solid; may stretch vertically; pair right with 141.", usage: "structure", tags: ["castle", "round-tower", "body", "left", "stretch", "lower", "solid"] });
+    case 141:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower body R", aiLabel: "Round tower body right (141). Lower solid; may stretch vertically; pair left with 140.", usage: "structure", tags: ["castle", "round-tower", "body", "right", "stretch", "lower", "solid"] });
+    case 142:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower window L", aiLabel: "Round tower window left (142). Lower solid window row; pair right with 143; insert into body stretch.", usage: "structure", tags: ["castle", "round-tower", "window", "left", "lower", "solid"] });
+    case 143:
+      return semantic({ key: "castle_round_tower_object", label: "Round tower window R", aiLabel: "Round tower window right (143). Lower solid window row; pair left with 142; the round tower's window pair.", usage: "structure", tags: ["castle", "round-tower", "window", "right", "lower", "solid"] });
+    default:
+      return null;
+  }
+}
+
 function semantic(definition: TileSemantic): TileSemantic {
   return definition;
 }
 
 function koreanTileLabel(key: string, index: number): string {
+  const visionKo: Record<number, string> = {
+    327: "벤치 좌",
+    328: "벤치 우",
+    358: "세로 의자 상",
+    388: "세로 의자 하",
+    349: "장작 더미",
+    350: "우편함",
+    351: "화분",
+    352: "항아리",
+    353: "묘비",
+    323: "묘지",
+    383: "해골",
+    322: "벽 사다리",
+    175: "의자(아래 봄)",
+    176: "의자(위 봄)",
+    205: "의자(오른쪽 봄)",
+    206: "의자(왼쪽 봄)",
+    147: "의자(등받이 없음)",
+    148: "의자(등받이 있음)",
+    144: "세로 탁자 상",
+    174: "세로 탁자 중",
+    204: "세로 탁자 하",
+    234: "가로 탁자 좌",
+    235: "가로 탁자 중",
+    236: "가로 탁자 우",
+    237: "나무 상자",
+    202: "과일박스 좌",
+    203: "과일박스 우",
+    116: "나무 문 상",
+    146: "나무 문 하",
+    111: "돌계단 좌",
+    112: "돌계단 중",
+    113: "돌계단 우",
+    28: "성 열린 창문",
+    58: "성 창문",
+    88: "깨진 창문조각",
+    231: "마법진",
+    18: "성 지붕 좌상",
+    19: "성 지붕 상단",
+    20: "성 지붕 우상",
+    21: "성벽 상단",
+    48: "성 지붕 좌측",
+    49: "성 지붕 바닥(옅은)",
+    50: "성 지붕 중단",
+    51: "성벽 중단",
+    78: "성 지붕 좌측(하)",
+    79: "성 지붕 바닥(진한)",
+    80: "성 지붕 중단(하)",
+    81: "성벽 하단",
+    108: "성 지붕 좌하",
+    109: "성 지붕 하단",
+    110: "성 지붕 우하",
+    24: "원형 타워 캡 좌",
+    25: "원형 타워 캡 우",
+    54: "원형 타워 베이스 좌",
+    55: "원형 타워 베이스 우",
+    138: "원형 타워 목 좌",
+    139: "원형 타워 목 우",
+    140: "원형 타워 몸 좌",
+    141: "원형 타워 몸 우",
+    142: "원형 타워 창문 좌",
+    143: "원형 타워 창문 우",
+  };
+  if (visionKo[index]) return visionKo[index]!;
   const labels: Record<string, string> = {
     empty: "빈 타일",
     wood_bridge_body: "나무 다리",
@@ -528,6 +832,18 @@ function koreanTileLabel(key: string, index: number): string {
     building_front_object: "건물 전면",
     tent_object: "천막",
     bench_object: "벤치",
+    chair_object: "의자",
+    table_object: "탁자",
+    house_yard_object: "집 앞 소품",
+    cemetery_object: "묘지 소품",
+    wall_ladder_object: "벽 사다리",
+    fruit_box_object: "과일박스",
+    wood_box_object: "나무 상자",
+    wood_door_object: "나무 문",
+    stone_stair_object: "돌계단",
+    castle_window_object: "성 창문",
+    castle_round_tower_object: "원형 타워",
+    magic_circle_object: "마법진",
     vine_object: "덩굴",
     sign_object: "표지판",
     fire_object: "불/횃불",
@@ -554,7 +870,13 @@ function repeatRoleForChipsetTile(index: number): ChipsetTileRepeatRole {
     hasTile(CHIPSET_TILE_GROUPS.woodFloorBody, index) ||
     hasTile(CHIPSET_TILE_GROUPS.darkWallBody, index) ||
     hasTile(CHIPSET_TILE_GROUPS.stoneFloorBody, index) ||
-    hasTile(CHIPSET_TILE_GROUPS.stoneWallBody, index)
+    hasTile(CHIPSET_TILE_GROUPS.stoneWallBody, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.castleRoundTowerBodyObjects, index) ||
+    index === 51 ||
+    index === 49 ||
+    index === 79 ||
+    index === 50 ||
+    index === 80
   ) {
     return "body";
   }

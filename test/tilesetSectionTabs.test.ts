@@ -5,6 +5,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
 import { getTilesetSectionTab, setTilesetMetadataEditMode, setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
+import { createEditorModalDirtyCloseController } from "@/editor/panels/editorModalDirtyState";
+import {
+  closeTilesetMeaningDialog,
+  closeTilesetTileContextMenu,
+  openTilesetTileContextMenu,
+} from "@/editor/panels/tilesetTileContextMenu";
 import { setTileLayerOverride, userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import { createBlankProject } from "@/project/defaults";
@@ -116,9 +122,94 @@ describe("타일셋 섹션 3탭 UI", () => {
     expect(findByTestId(editor, "tileset-section-tab-compose")).toBeTruthy();
     expect(findByTestId(editor, "tileset-rule-layer")).toBeTruthy();
     expect(findByTestId(editor, "tileset-rule-passage")).toBeTruthy();
-    // 규칙 탭에는 AI 메타/그룹 도구가 노출되지 않는다 — 기능 분리.
+    // 좌측 의미 폼(보조) + 칩 우클릭 메뉴(주 경로) — 둘 다 존재
+    expect(findByTestId(editor, "tileset-tile-meaning-edit")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-field-ai-label")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-field-ai-description")).toBeTruthy();
+    // 규칙 탭에는 AI 메타/그룹 모드 버튼이 노출되지 않는다 — 기능 분리.
     expect(findByTestId(editor, "tileset-edit-mode-ai")).toBeNull();
     expect(findByTestId(editor, "tileset-edit-mode-group")).toBeNull();
+  });
+
+  it("칩 우클릭 메뉴에서 의미 편집 대화상자를 연다", () => {
+    openTilesetTileContextMenu({
+      tilesetId: DEFAULT_TILESET_ID,
+      tile: 350,
+      clientX: 40,
+      clientY: 40,
+      rerender: () => {},
+    });
+    const menu = document.querySelector('[data-testid="tileset-tile-context-menu"]');
+    expect(menu).toBeTruthy();
+    const editBtn = document.querySelector('[data-testid="tileset-ctx-edit-meaning"]') as HTMLButtonElement | null;
+    expect(editBtn).toBeTruthy();
+    editBtn?.click();
+    expect(document.querySelector('[data-testid="tileset-meaning-dialog"]')).toBeTruthy();
+    expect(document.querySelector('[data-testid="tileset-meaning-dialog-label"]')).toBeTruthy();
+    const label = document.querySelector('[data-testid="tileset-meaning-dialog-label"]') as HTMLInputElement;
+    label.value = "우편함";
+    label.dispatchEvent(new Event("input"));
+    (document.querySelector('[data-testid="tileset-meaning-dialog-apply"]') as HTMLButtonElement)?.click();
+    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.tileMeta?.[350]?.label).toBe("우편함");
+    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.tileMeta?.[350]?.source).toBe("user");
+    closeTilesetMeaningDialog();
+    closeTilesetTileContextMenu();
+  });
+
+  it("Escape 는 타일 메뉴만 닫고 데이터베이스 모달은 닫지 않는다", () => {
+    let closed = false;
+    const controller = createEditorModalDirtyCloseController({
+      isDirty: () => false,
+      promptUnsavedChanges: () => "keep-editing" as const,
+      save: () => {},
+      discard: () => {},
+      close: () => {
+        closed = true;
+      },
+    });
+
+    openTilesetTileContextMenu({
+      tilesetId: DEFAULT_TILESET_ID,
+      tile: 350,
+      clientX: 20,
+      clientY: 20,
+      rerender: () => {},
+    });
+    expect(document.querySelector('[data-testid="tileset-tile-context-menu"]')).toBeTruthy();
+
+    // 메뉴가 열려 있으면 DB 모달 close 금지 (nested 가드)
+    controller.handleKeyDown({ key: "Escape", defaultPrevented: false } as Event);
+    expect(closed).toBe(false);
+
+    closeTilesetTileContextMenu();
+    // 메뉴 닫힌 뒤에는 Escape 가 DB 를 닫을 수 있음
+    controller.handleKeyDown({ key: "Escape", defaultPrevented: false } as Event);
+    expect(closed).toBe(true);
+  });
+
+  it("칩셋 프리뷰에 레이어 필터·범례·셀 layer 속성이 있다", () => {
+    const editor = renderEditor();
+    expect(findByTestId(editor, "tileset-layer-filter")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-layer-filter-all")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-layer-filter-lower")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-layer-filter-upper")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-layer-legend")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-sheet-info")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-selected-layer-badge")).toBeTruthy();
+
+    // 투명 칩 385 = 상위 홈. 셀 data-layer / class에 반영.
+    const upperCell = findByTestId(editor, `tileset-db-cell-${SLOPED_ROOF}`) as unknown as {
+      getAttribute?: (name: string) => string | null;
+      className?: string;
+    };
+    expect(upperCell.getAttribute?.("data-layer") ?? (upperCell as { dataset?: { layer?: string } }).dataset?.layer).toBe("upper");
+    const className = String(upperCell.className ?? "");
+    expect(className).toContain("layer-upper");
+
+    const lowerCell = findByTestId(editor, `tileset-db-cell-${STRAIGHT_ROOF}`) as unknown as {
+      className?: string;
+    };
+    expect(String(lowerCell.className ?? "")).toContain("layer-lower");
   });
 
   it("레이어 버튼으로 하위 확정하면 store에 반영되고 투명 칩 경고가 뜬다", () => {

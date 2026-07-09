@@ -16,7 +16,17 @@ import { toast } from "@/util/toast";
 import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
 import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
-export { eraseTile, eraseVisibleTile, fillTile, paintTile, toggleCollision } from "@/editor/tileActions";
+export {
+  eraseTile,
+  eraseTilesBulk,
+  eraseVisibleTile,
+  eraseVisibleTilesBulk,
+  fillTile,
+  paintTile,
+  paintTilesBulk,
+  toggleCollision,
+} from "@/editor/tileActions";
+export type { TileStrokeCell } from "@/editor/tileActions";
 import type { EncounterTableEntry, FieldSpawnDef, MapId, TilesetDef } from "@/project/types";
 
 // ── 맵 CRUD ──

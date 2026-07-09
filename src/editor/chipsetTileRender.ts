@@ -2,6 +2,8 @@ import type Phaser from "phaser";
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import { ensureTilesetTexture, isDefaultTilesetTexture } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
+import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
+import { TILE } from "@/project/defaults/constants";
 import {
   isLakeAutotileTile,
   lakeAutotileQuarterSources,
@@ -14,6 +16,7 @@ import {
   terrainQuarterSources,
   type TerrainQuarterSource,
 } from "@/project/defaults/terrainQuarterAutotile";
+import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
 
@@ -59,7 +62,26 @@ export function createChipsetTileObject(
   }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
+  // 숲 밑동(투명 칩)이 lower 에 단독이면 투명 부분이 검게 보임 → 잔디 받침 합성.
+  if (isDefaultTilesetTexture(tileset) && isTreeTrunkTileId(tile) && isTransparentChipsetTile(tile)) {
+    return createTrunkOnGrassObject(scene, tileset, x, y, tile);
+  }
   return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, tile);
+}
+
+/** lower 나무 밑동 + 잔디 받침(투명 픽셀이 잔디를 비추게). */
+function createTrunkOnGrassObject(
+  scene: Phaser.Scene,
+  tileset: TilesetDef,
+  x: number,
+  y: number,
+  trunkTile: number,
+): Phaser.GameObjects.Container {
+  const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
+  container.setSize(TILE_SIZE, TILE_SIZE);
+  container.add(createRawTileObject(scene, tileset, 0, 0, TILE.GRASS));
+  container.add(createRawTileObject(scene, tileset, 0, 0, trunkTile));
+  return container;
 }
 
 function resolveRenderArgs(
@@ -105,8 +127,11 @@ function createLakeQuarterObject(
   textureKey: string,
   part: LakeAutotileQuarterSource
 ): ChipsetTilePiece {
-  const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
-  const frameName = quarterFrameName(part.tile, part.quarter);
+  // 맵 셀 배치 위치(part.quarter/offset)와 칩셋 크롭(sourceQuarter)을 분리한다.
+  // 예: se 자리 ← tile 90/91/92 각각의 nw 8×8 애니.
+  const sourceQ = part.sourceQuarter;
+  const animationKey = quarterAnimationKey(textureKey, part.tile, sourceQ);
+  const frameName = quarterFrameName(part.tile, sourceQ);
   const image = animationKey
     ? scene.add.sprite(part.offsetX, part.offsetY, textureKey, frameName).play(animationKey)
     : scene.add.image(part.offsetX, part.offsetY, textureKey, frameName);

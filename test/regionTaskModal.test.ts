@@ -22,11 +22,15 @@ function flush(): Promise<void> {
 }
 
 describe("openRegionTaskModal", () => {
-  it("영역 칩·입력·실행 버튼을 렌더한다", () => {
+  it("영역 칩·입력·실행·헤더 로그 버튼을 렌더한다", () => {
     restoreDom = installFakeDom();
     const root = openModal({ mapId: "m1", region: REGION, run: vi.fn() });
     expect(findByTestId(root, "region-task-input")).not.toBeNull();
     expect(findByTestId(root, "region-task-run")).not.toBeNull();
+    const copy = findByTestId(root, "region-task-copy-log");
+    expect(copy).not.toBeNull();
+    expect(copy?.textContent).toBe("로그");
+    expect(copy?.getAttribute("disabled")).not.toBeNull();
     const chip = findByTestId(root, "region-task-chip");
     expect(chip?.textContent).toContain("(2,3) 4×5");
   });
@@ -46,9 +50,32 @@ describe("openRegionTaskModal", () => {
       ok: true,
       applied: true,
       changedCells: 5,
+      changedEvents: 0,
       clippedCells: 2,
       proposedCalls: 1,
       assistantText: "완료",
+      log: {
+        kind: "region-task-log" as const,
+        exportedAt: "2026-07-10T00:00:00.000Z",
+        mapId: "m1",
+        mapName: "맵",
+        region: REGION,
+        instruction: "침엽수로 채워",
+        composedMessage: "침엽수로 채워",
+        result: {
+          ok: true,
+          applied: true,
+          changedCells: 5,
+          changedEvents: 0,
+          clippedCells: 2,
+          proposedCalls: 1,
+          assistantText: "완료",
+        },
+        toolCalls: [],
+        uiEvents: [],
+        audit: [],
+        harness: null,
+      },
     }));
     const root = openModal({ mapId: "m1", region: REGION, run });
     const input = findByTestId(root, "region-task-input");
@@ -65,5 +92,58 @@ describe("openRegionTaskModal", () => {
     expect(summary).toContain("완료");
     expect(summary).toContain("5칸");
     expect(summary).toContain("2칸");
+    const copy = findByTestId(root, "region-task-copy-log");
+    expect(copy?.getAttribute("disabled")).toBeNull();
+  });
+
+  it("실행 후 로그 버튼이 클립보드에 JSON을 복사한다", async () => {
+    restoreDom = installFakeDom();
+    const writeText = vi.fn(async () => undefined);
+    Object.defineProperty(globalThis, "navigator", {
+      configurable: true,
+      value: { clipboard: { writeText } },
+    });
+    const run = vi.fn(async () => ({
+      ok: true,
+      applied: true,
+      changedCells: 1,
+      changedEvents: 0,
+      clippedCells: 0,
+      proposedCalls: 1,
+      assistantText: "ok",
+      log: {
+        kind: "region-task-log" as const,
+        exportedAt: "2026-07-10T00:00:00.000Z",
+        mapId: "m1",
+        mapName: "맵",
+        region: REGION,
+        instruction: "나무",
+        composedMessage: "나무",
+        result: {
+          ok: true,
+          applied: true,
+          changedCells: 1,
+          changedEvents: 0,
+          clippedCells: 0,
+          proposedCalls: 1,
+          assistantText: "ok",
+        },
+        toolCalls: [{ name: "place_props", args: { count: 1 }, summary: "배치" }],
+        uiEvents: [],
+        audit: [],
+        harness: null,
+      },
+    }));
+    const root = openModal({ mapId: "m1", region: REGION, run });
+    const input = findByTestId(root, "region-task-input");
+    if (input) input.value = "나무";
+    findByTestId(root, "region-task-run")?.click();
+    await flush();
+    findByTestId(root, "region-task-copy-log")?.click();
+    await flush();
+    expect(writeText).toHaveBeenCalledTimes(1);
+    const payload = writeText.mock.calls[0]?.[0] as string;
+    expect(payload).toContain("region-task-log");
+    expect(payload).toContain("place_props");
   });
 });

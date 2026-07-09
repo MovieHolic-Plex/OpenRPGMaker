@@ -9,7 +9,7 @@ import { selectTileRegion } from "@/editor/mapClipboard";
 import { moveEvent } from "@/editor/eventActions";
 import { placeStructureStamp, previewStructureStampCells, type StructureStampId } from "@/editor/structureStampTools";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
-import { paintTile } from "@/editor/actions";
+import { paintTilesBulk } from "@/editor/actions";
 import { committedEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
@@ -209,9 +209,17 @@ export class DragOperationHandler {
     const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
     if (cells.length === 0) return;
     recordProjectSnapshot(undefined, operation.mapId, { kind: "map" });
-    for (const cell of cells) {
-      paintTile(operation.mapId, operation.layer, cell.x, cell.y, operation.tile, { autoConnect: operation.autoConnect });
-    }
+    // 도형 드래그 전 칸을 한 번의 updateMap 으로 (N번 structuredClone 금지)
+    paintTilesBulk(
+      operation.mapId,
+      cells.map((cell) => ({
+        layer: operation.layer,
+        x: cell.x,
+        y: cell.y,
+        tile: operation.tile,
+      })),
+      { autoConnect: operation.autoConnect },
+    );
   }
 
   private commitStructureDrag(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {

@@ -1,4 +1,4 @@
-/* 선택 영역 AI 작업 모달 (우클릭 → "이 영역에 AI 작업…"). */
+/* 선택 영역 AI 작업 모달 (우클릭 메뉴 / 우클릭 드래그 팝오버). */
 .region-task-backdrop {
   align-items: center;
   background: rgba(7, 9, 14, 0.62);
@@ -8,6 +8,20 @@
   padding: var(--space-4);
   position: fixed;
   z-index: 1200;
+}
+
+/* 우클릭 드래그 직후: 어두운 풀스크린 대신 가벼운 클릭-아웃 레이어 + 포인터 근처 팝오버 */
+.region-task-backdrop-popover {
+  align-items: flex-start;
+  background: rgba(7, 9, 14, 0.18);
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.region-task-popover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(122, 162, 255, 0.25);
+  max-width: min(360px, calc(100vw - 24px));
+  z-index: 1201;
 }
 
 .region-task-modal {
@@ -31,8 +45,44 @@
   justify-content: space-between;
 }
 
+.region-task-title-row {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 1 auto;
+  gap: 6px;
+  min-width: 0;
+}
+
 .region-task-title {
   font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 제목 옆 작은 로그 복사 버튼 */
+.region-task-copy-log {
+  background: transparent;
+  border: 1px solid var(--editor-line, #3a4150);
+  border-radius: 999px;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 8px;
+}
+.region-task-copy-log:hover:not(:disabled) {
+  border-color: var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
+}
+.region-task-copy-log.is-ready:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent, #4a9eff) 55%, transparent);
+  color: var(--editor-text);
+}
+.region-task-copy-log:disabled {
+  cursor: default;
+  opacity: 0.4;
 }
 
 .region-task-chip {
@@ -79,16 +129,20 @@
   flex-direction: column;
   font-size: 12px;
   gap: 2px;
-  max-height: 140px;
+  max-height: 180px;
   overflow-y: auto;
 }
 .region-task-log:empty {
   display: none;
 }
 .region-task-log-line {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
+}
+.region-task-log-line.is-error {
+  color: var(--danger, #f87171);
 }
 
 .region-task-summary {
@@ -102,6 +156,7 @@
 
 .region-task-actions {
   display: flex;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 

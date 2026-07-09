@@ -230,10 +230,13 @@ const placeNpc: ToolDefinition = {
       );
     }
     const { x, y } = landing;
-    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    // graphic 생략 시 투명 고스트가 되지 않도록 주민 기본 캐릭터를 쓴다(함정/컷신은 별도 툴).
+    const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
+    const graphic = resolveGraphic(graphicSpec);
     const id = (args.id as string | undefined) ?? genId("ev_npc");
     const movement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
     const normalizationWarnings: string[] = [];
+    if (args.graphic === undefined) normalizationWarnings.push("graphic 생략 → query:\"villager\" 기본 적용");
     const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, { movement, warnings: normalizationWarnings });
     const event: GameEvent = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     assertEventShape(event);
@@ -327,9 +330,11 @@ const makeVillager: ToolDefinition = {
     const schedule = args.schedule !== undefined
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
-    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
+    const graphic = resolveGraphic(graphicSpec);
     const id = typeof args.id === "string" && args.id.trim() ? args.id.trim() : genId("ev_villager");
     const warnings: string[] = [];
+    if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
     const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
       movement: PASSIVE,
       warnings,

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { deserialize, serialize } from "@/project/io";
+import { passageMarkForTile } from "@/project/tilesetPassage";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, COMBINED_TOWN_HARNESS_GROUPS, DUNGEON_HARNESS_PREFIX, harnessLayerForTile, INTERIOR_HARNESS_PREFIX, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
@@ -38,6 +39,20 @@ describe("EasyRPG Combined Town tileset harness", () => {
     });
   });
 
+  it("tree canopies are upper ★ and trunks are lower solid for forest stacking", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    // 수관: upper + 통행 가능 → ★
+    expect(tileset.priority[260]).toBe("upper");
+    expect(passageMarkForTile(tileset, 260)).toBe("star");
+    expect(tileset.priority[262]).toBe("upper");
+    expect(passageMarkForTile(tileset, 262)).toBe("star");
+    // 밑동: lower + solid → 수관이 같은 칸 upper 에 겹침 가능
+    expect(tileset.priority[290]).toBe("lower");
+    expect(passageMarkForTile(tileset, 290)).toBe("x");
+    expect(tileset.priority[292]).toBe("lower");
+    expect(passageMarkForTile(tileset, 292)).toBe("x");
+  });
+
   it("seeds conifer, dry tree, broadleaf, flower, and bush cluster rules by default", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
     const group = (suffix: string) => tileset.tileGroups?.find((entry) => entry.id.endsWith(suffix));
@@ -62,6 +77,19 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(group("bush-props")?.rules).toEqual([
       expect.objectContaining({ kind: "spacing", params: { minGap: 2 }, strength: "soft" }),
     ]);
+    expect(group("bench-vertical")?.tileIds).toEqual([358, 388]);
+    expect(group("bench-vertical")?.patternGrammar?.kind).toBe("vertical_expandable");
+    expect(group("house-yard-props")?.tileIds).toEqual([349, 350, 351, 352]);
+    expect(group("cemetery-props")?.tileIds).toEqual([323, 353, 383]);
+    expect(group("table-horizontal")?.tileIds).toEqual([234, 235, 236]);
+    expect(group("table-vertical")?.tileIds).toEqual([144, 174, 204]);
+    expect(group("wood-door")?.tileIds).toEqual([116, 146]);
+    expect(group("stone-stairs")?.tileIds).toEqual([111, 112, 113]);
+    expect(group("wall-ladder")?.tileIds).toEqual([322]);
+    expect(tileset.tileMeta?.[358]?.label).toBe("세로 의자 상");
+    expect(tileset.tileMeta?.[383]?.label).toBe("해골");
+    expect(tileset.tileMeta?.[322]?.passage).toBe("passable");
+    expect(tileset.priority[322]).toBe("upper");
   });
 
   it("does not overwrite existing rules when the Combined Town harness is re-applied", () => {
@@ -203,6 +231,36 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(isHarnessStackableTile(tileset, 378)).toBe(true);
     expect(isHarnessStackableTile(tileset, TILE.TREE)).toBe(true);
     expect(harnessLayerForTile(tileset, TILE.TREE)).toBeNull();
+  });
+
+  it("seeds castle map modules (roof deck, wall face, round tower) from map_castle_keep gold", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const ids = new Set((tileset.tileGroups ?? []).map((g) => g.id));
+    expect(ids.has("harness-combined-town-castle-roof-deck")).toBe(true);
+    expect(ids.has("harness-combined-town-castle-wall-face")).toBe(true);
+    expect(ids.has("harness-combined-town-castle-round-tower")).toBe(true);
+
+    expect(tileset.tileMeta?.[19]).toMatchObject({
+      label: "성 지붕 상단",
+      role: "castle",
+      passage: "solid",
+      defaultLayer: "lower",
+      source: "bundled-default",
+    });
+    expect(tileset.tileMeta?.[51]).toMatchObject({
+      label: "성벽 중단",
+      role: "castle",
+      passage: "solid",
+      defaultLayer: "lower",
+    });
+    expect(tileset.tileMeta?.[142]).toMatchObject({
+      label: "원형 타워 창문 좌",
+      role: "castle",
+      passage: "solid",
+    });
+    expect(tileset.priority[24]).toBe("upper");
+    expect(tileset.priority[140]).toBe("lower");
+    expect(tileset.passability[21]).toEqual({ up: false, down: false, left: false, right: false });
   });
 });
 

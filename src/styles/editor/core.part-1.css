@@ -180,6 +180,15 @@ button.btn:disabled {
   position: relative;
   overflow: hidden;
 }
+/* 맵 캔버스: 브라우저 기본 우클릭 메뉴와 겹치지 않도록 (EditScene도 DOM preventDefault). */
+.editor-layout .canvas-area .phaser-container,
+.editor-layout .canvas-area .phaser-container canvas,
+.editor-layout [data-testid="edit-canvas"],
+.editor-layout [data-testid="edit-canvas"] canvas {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 .editor-layout .canvas-area .phaser-container {
   display: flex;
   align-items: center;

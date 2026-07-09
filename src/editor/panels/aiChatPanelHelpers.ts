@@ -107,10 +107,23 @@ export function isMetadataOnlyProposal(calls: readonly ProposedCall[]): boolean 
   return calls.length > 0 && calls.every((call) => METADATA_ONLY_TOOLS.has(call.name));
 }
 
+/** 제안 카드 본문이 이미 확인 UI인 경고 — 이중 「승인 확인」 모달을 띄우지 않는다. */
+export function isCardLevelApprovalWarning(warning: string): boolean {
+  return (
+    warning.includes("이대로 적용")
+    || warning.includes("재료 합의")
+    || warning.includes("목업")
+    || warning.includes("자동 적용되지 않습니다")
+    || warning.includes("맵에 이렇게 놓습니다")
+  );
+}
+
 // 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체. 경고가 없으면 동기 true를 돌려
 // 수락 경로가 마이크로태스크로 미뤄지지 않게 한다(적용 직후 상태를 읽는 흐름 보존).
+// soft-confirm/재료 합의 경고만 있으면 카드의 [이대로 적용]이 확인이므로 모달을 건너뛴다.
 export function confirmRuleApproval(warnings: readonly string[]): true | Promise<boolean> {
   if (warnings.length === 0) return true;
+  if (warnings.every(isCardLevelApprovalWarning)) return true;
   return showConfirm({ title: "승인 확인", message: `${warnings.join("\n")}\n\n이 규칙을 적용할까요?`, confirmLabel: "적용" });
 }
 

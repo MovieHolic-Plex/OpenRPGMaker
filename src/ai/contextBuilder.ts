@@ -31,7 +31,7 @@ const BALANCE_NOTE = [
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐(순서/비밀번호/아이템 게이트)=compile_puzzle, 조사 오브젝트=place_examine_hotspots, 컷신=script_cutscene, 추격 장면=make_chase_scene, NPC=place_npc/make_villager, 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명/분위기=set_lighting_volume/set_scene_mood, 수역/바닥=fill_region, 집/마을=build_house_kit/build_village, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐(순서/비밀번호/아이템 게이트)=compile_puzzle, 조사 오브젝트=place_examine_hotspots, 컷신=script_cutscene, 추격 장면=make_chase_scene, NPC=place_npc/make_villager, 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명/분위기=set_lighting_volume/set_scene_mood, 수역/바닥=fill_region(원형 호수 shape=circle, tileVocabId=물 오토타일 그룹), 집+마당=build_house_lots(집 위치·꾸밈 의도만 LLM, 산포 좌표는 코드), 마을 bulk=build_village, 성채=build_castle(지붕면·성벽·원형타워 모듈), 단일 집 외장만=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 
@@ -74,7 +74,7 @@ const INTRO = [
   "    먼저 set_build_spec으로 밑그림(명세)을 제출해 검증을 통과해야 실행됩니다. 명세 체크리스트 —",
   "    대상 맵, 에셋 목록(종류·개수·각 영역 x,y,w,h·스타일), 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
   "    맵이 요구 구조물 대비 작으면 build_house_kit/build_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).",
-  "    수역/지면/바닥처럼 면을 채우는 작업은 fill_region을 쓰고, 나무/바위/꽃 같은 오브젝트 산포만 place_props를 쓰세요.",
+  "    수역/지면/바닥 면은 fill_region만 쓴다. 호수·연못: tileVocabId=harness-combined-town-lake-water-autotile(또는 승인된 물 그룹), 원형·둥근 요청은 shape=circle(또는 ellipse) 필수 — rect만 쓰면 네모. 나무/바위/꽃은 place_props로 호수·물 칸 밖(통행 가능 육지)에만 산포; 물 위 place_props 금지(엔진도 스킵하지만 area를 물가로 좁히지 말 것).",
   "    사용자가 정하지 않은 항목은 합리적 기본값으로 채우고, 넓은 요청(마을 등)은 명세 요약을 한 줄로 보여준 뒤 진행하세요.",
   "    검증기가 겹침을 거부하면 좌표·buildOrder·맵 크기를 고쳐 재제출하세요. 3회 실패하면 그 계획은 폐기하고 스스로 새 배치를 설계하세요.",
   "    각 빌드 툴 호출이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다.",
@@ -161,7 +161,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 승인된 어휘만 소비하는 v3 공정 프리미티브(build_wall/place_door/place_window/build_roof/lay_path/place_props/fill_region)를 공정 순서(벽→문/창→지붕→길→소품, 수역·지면은 fill_region)대로 쓰세요. 어휘가 미승인이면 propose_tile_vocabulary로 먼저 합의하고, 모르는 어휘는 tile_query(ask=unapproved/palette)로 조회하세요.",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** build_house_lots — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용].",
     trimDigestLines(lines, 700),
   ].join("\n");
 }

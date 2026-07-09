@@ -72,13 +72,14 @@ describe("buildGroupSample", () => {
     expect(sample.upper).toEqual([10, TILE.EMPTY, 10, TILE.EMPTY, 10, 11, TILE.EMPTY, 11, TILE.EMPTY, 11]);
   });
 
-  it("shows grammarless two-tile prop samples as vertical pairs over grass", () => {
+  it("shows grammarless two-tile prop samples as vertical pairs with canopy upper and trunk lower", () => {
     const sample = buildGroupSample(tileset("upper"), { role: "prop", tileIds: [260, 290] });
 
     expect(sample.w).toBe(5);
     expect(sample.h).toBe(2);
-    expect(sample.lower).toEqual(Array.from({ length: 10 }, () => TILE.GRASS));
-    expect(sample.upper).toEqual([260, TILE.EMPTY, 260, TILE.EMPTY, 260, 290, TILE.EMPTY, 290, TILE.EMPTY, 290]);
+    // 수관 upper 행 + 밑동 lower 행 (숲 겹침용)
+    expect(sample.upper.slice(0, 5)).toEqual([260, TILE.EMPTY, 260, TILE.EMPTY, 260]);
+    expect(sample.lower.slice(5, 10)).toEqual([290, TILE.GRASS, 290, TILE.GRASS, 290]);
   });
 
   it("falls back to a single row when no structure grammar is known", () => {

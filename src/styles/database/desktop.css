@@ -16,8 +16,19 @@
     overflow: auto;
   }
 
+  /* 타일셋: 남는 모달 높이를 칩셋 프리뷰가 쓰도록 본문 전체 높이 사용 */
   .database-modal-body .db-body:has(.tileset-db-workspace) {
-    height: auto;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-body:has(.tileset-db-workspace) > .tileset-db-workspace,
+  .database-modal-body .db-body:has(.tileset-db-workspace) > .rm2k3-tileset-workspace {
+    height: 100%;
+    min-height: 0;
   }
 
   .database-modal-body .db-record-workspace {

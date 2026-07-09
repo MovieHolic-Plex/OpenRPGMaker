@@ -201,6 +201,15 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "build_house_kit":
       pushArea(rectArea(project, mapId, rectFromWings(args.wings), "build_house_kit", "집 키트"));
       break;
+    case "build_house_lots": {
+      const houses = Array.isArray(args.houses) ? args.houses : [];
+      for (const house of houses) {
+        if (!house || typeof house !== "object") continue;
+        const wings = (house as { wings?: unknown }).wings;
+        pushArea(rectArea(project, mapId, rectFromWings(wings), "build_house_lots", "집 부지"));
+      }
+      break;
+    }
     case "stamp_structure":
       pushArea(rectArea(project, mapId, rectFromOriginFixed(args, STRUCTURE_FOOTPRINT), "stamp_structure", "구조물 스탬프"));
       break;

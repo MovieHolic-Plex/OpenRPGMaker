@@ -19,6 +19,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 2. Read `openwiki/quickstart.md` for the repo shape and first files to inspect.
 3. Read the focused page for the area being changed:
    - Editor UI, map tools, events, database, resources, save/import/export: `openwiki/editor-workflows.md`
+   - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
    - Runtime, interpreter, battle, save/session behavior, project schema: `openwiki/runtime-and-data.md`
    - Boot flow, mode switching, module boundaries: `openwiki/architecture.md`
    - Test and evidence strategy: `openwiki/testing.md`

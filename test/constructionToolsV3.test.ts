@@ -1,6 +1,6 @@
 // test/constructionToolsV3.test.ts
 // 공정 프리미티브 6종 계약 테스트 (타일 툴 v3 — V3B).
-// 고정하는 계약: (1) 승인 어휘만 소비(미승인 = 하드 차단 + propose 안내) (2) layer 인자 없음 —
+// 고정하는 계약: (1) 존재하는 어휘는 soft-confirm 시공, 없는 id만 hard fail (2) layer 인자 없음 —
 // 어휘 layerHome이 결정 (3) 벽 없이 지붕 거부 / 문·창은 벽 셀에만 (4) lay_path는 8-이웃
 // variantMap 필수 (5) v2 배치 4종 deprecated(LLM 비노출, 실행 호환) (6) DEFAULT_MODEL 전환.
 
@@ -46,13 +46,14 @@ function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
 }
 
 describe("build_wall / build_roof (공정 1·3단계)", () => {
-  it("미승인 벽 어휘는 하드 차단된다(propose_tile_vocabulary 안내 + 재전송 예시)", () => {
+  it("미합의 벽 어휘는 soft-confirm으로 시공되고 vocabSoftConfirm 을 붙인다", () => {
     const { ctx } = context();
     const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: WALL_GROUP_ID });
-    expect(result.ok).toBe(false);
-    const text = `${result.summary} ${JSON.stringify(result.issues ?? [])}`;
-    expect(text).toContain("합의되지 않았습니다");
-    expect(text).toContain("propose_tile_vocabulary");
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ groupId: WALL_GROUP_ID, cells: 16 });
+    const soft = (result.data as { vocabSoftConfirm?: { name?: string } }).vocabSoftConfirm;
+    expect(soft?.name).toBeTruthy();
+    expect(result.diff?.warnings.join(" ") ?? "").toMatch(/목업 확인 대기 재료/);
   });
 
   it("승인된 9분할 벽을 rect에 시공하고(lower 홈) data.wallRegion을 반환한다", () => {
@@ -155,18 +156,32 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
     expect(ctx2.project.maps[MAP_ID].lowerTiles).toEqual(map.lowerTiles);
   });
 
-  it("place_props: 미승인 소품은 거부, 승인 그룹은 기존 산포 엔진으로 배치된다", () => {
+  it("place_props: 미합의 소품도 soft-confirm으로 배치되고, 승인 그룹도 동일 엔진으로 배치된다", () => {
     const { ctx, tileset } = context();
     const treeId = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
-    const rejected = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4 });
-    expect(rejected.ok).toBe(false);
-    expect(`${rejected.summary} ${JSON.stringify(rejected.issues ?? [])}`).toContain("propose_tile_vocabulary");
+    const soft = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4, seed: 3 });
+    expect(soft.ok, soft.summary).toBe(true);
+    expect((soft.data as { vocabSoftConfirm?: { groupId?: string } }).vocabSoftConfirm?.groupId).toBe(treeId);
+    const softPlaced = (soft.data as { placed?: number } | undefined)?.placed ?? 0;
+    expect(softPlaced).toBeGreaterThan(0);
 
     approve(tileset(), treeId);
     const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4, seed: 3 });
     expect(result.ok, result.summary).toBe(true);
     const placed = (result.data as { placed?: number } | undefined)?.placed ?? 0;
     expect(placed).toBeGreaterThan(0);
+    expect((result.data as { vocabSoftConfirm?: unknown }).vocabSoftConfirm).toBeUndefined();
+  });
+
+  it("place_props: 존재하지 않는 그룹 id는 하드 실패한다", () => {
+    const { ctx } = context();
+    const missing = runTool(ctx, "place_props", {
+      mapId: MAP_ID,
+      area: { x: 1, y: 1, w: 8, h: 8 },
+      propVocabId: "no-such-tree-group",
+      count: 1,
+    });
+    expect(missing.ok).toBe(false);
   });
 });
 
@@ -192,6 +207,72 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       LAKE_AUTOTILE_TILE.EDGE_WEST,
       LAKE_AUTOTILE_TILE.BODY,
     ]);
+  });
+
+  it("fill_region shape=circle: 9×9 박스 안 원만 채우고 모서리는 비운다(원형 호수)", () => {
+    const { ctx, tileset } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    approve(tileset(), WATER_GROUP_ID);
+    const rect = { x: 5, y: 5, w: 9, h: 9 };
+    const result = runTool(ctx, "fill_region", {
+      mapId: MAP_ID,
+      rect,
+      tileVocabId: WATER_GROUP_ID,
+      shape: "circle",
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ shape: "circle", bboxCells: 81 });
+    const filled = Number((result.data as { filled?: number }).filled ?? 0);
+    expect(filled).toBeGreaterThan(40);
+    expect(filled).toBeLessThan(81); // 원형은 네모보다 적게
+    const map = ctx.project.maps[MAP_ID];
+    // 네 모서리는 원 밖
+    for (const [x, y] of [
+      [5, 5],
+      [13, 5],
+      [5, 13],
+      [13, 13],
+    ] as const) {
+      expect(isLakeAutotileTile(map.lowerTiles[y * map.width + x]), `corner ${x},${y}`).toBe(false);
+    }
+    // 중심은 원 안
+    expect(isLakeAutotileTile(map.lowerTiles[9 * map.width + 9])).toBe(true);
+  });
+
+  it("place_props: 물 위에는 나무를 올리지 않는다", () => {
+    const { ctx, tileset } = context();
+    ctx.project.startPos = { x: 0, y: 0 };
+    approve(tileset(), WATER_GROUP_ID);
+    const treeId = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
+    approve(tileset(), treeId);
+    // 중앙 넓은 호수
+    const fill = runTool(ctx, "fill_region", {
+      mapId: MAP_ID,
+      rect: { x: 4, y: 4, w: 12, h: 10 },
+      tileVocabId: WATER_GROUP_ID,
+      shape: "rect",
+    });
+    expect(fill.ok, fill.summary).toBe(true);
+    const props = runTool(ctx, "place_props", {
+      mapId: MAP_ID,
+      area: { x: 4, y: 4, w: 12, h: 10 },
+      propVocabId: treeId,
+      count: 20,
+      seed: 1,
+    });
+    expect(props.ok, props.summary).toBe(true);
+    const map = ctx.project.maps[MAP_ID];
+    // 물 칸 위 upper 에 소품이 있으면 안 됨
+    let treesOnWater = 0;
+    for (let y = 4; y < 14; y += 1) {
+      for (let x = 4; x < 16; x += 1) {
+        const i = y * map.width + x;
+        if (isLakeAutotileTile(map.lowerTiles[i]) && map.upperTiles[i] !== TILE.EMPTY) treesOnWater += 1;
+      }
+    }
+    expect(treesOnWater).toBe(0);
+    // 호수 안 전부에 강제 산포하면 0개일 수 있음 — 그게 올바른 동작
+    expect((props.data as { placed?: number }).placed ?? 0).toBe(0);
   });
 
   it("fill_region: transfer 목적지가 통행 불가가 될 때 해당 칸만 제외하고 warning으로 통과한다", () => {

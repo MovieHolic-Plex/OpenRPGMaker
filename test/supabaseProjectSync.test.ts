@@ -3,6 +3,7 @@ import {
   DEFAULT_SUPABASE_PROJECT_ID,
   listSupabaseProjects,
   loadProjectFromSupabase,
+  recordSupabaseAiActivityLog,
   recordSupabaseAiAnalysisRun,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
@@ -462,6 +463,67 @@ describe("Supabase project sync", () => {
     }, TEST_CONFIG);
 
     expect(result.kind).toBe("not-configured");
+  });
+
+  it("records AI activity logs in Supabase", async () => {
+    const calls: FetchCall[] = [];
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      return new Response(null, { status: 201 });
+    }) satisfies typeof fetch);
+
+    const result = await recordSupabaseAiActivityLog({
+      logId: "11111111-1111-4111-8111-111111111111",
+      channel: "region",
+      instruction: "호수와 나무",
+      mapId: "map_1",
+      payload: { ok: true, toolCalls: [{ name: "fill_region" }] },
+    }, TEST_CONFIG);
+    const body = calls[0]?.init?.body;
+    if (typeof body !== "string") throw new Error("expected string body");
+    const payload = parseRecords(body)[0];
+    if (!payload) throw new Error("expected one AI activity row");
+
+    expect(result.kind).toBe("saved");
+    expect(String(calls[0]?.input)).toContain("/rest/v1/ai_activity_logs?");
+    expect(payload.log_id).toBe("11111111-1111-4111-8111-111111111111");
+    expect(payload.channel).toBe("region");
+    expect(payload.instruction).toBe("호수와 나무");
+    expect(payload.map_id).toBe("map_1");
+  });
+
+  it("falls back to ai_analysis_runs when activity table is missing", async () => {
+    const calls: FetchCall[] = [];
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      const url = String(input);
+      if (url.includes("ai_activity_logs")) {
+        return new Response(
+          JSON.stringify({
+            code: "PGRST205",
+            message: "Could not find the table 'rpg_zzu.ai_activity_logs' in the schema cache",
+          }),
+          { status: 404 },
+        );
+      }
+      return new Response(null, { status: 201 });
+    }) satisfies typeof fetch);
+
+    const result = await recordSupabaseAiActivityLog({
+      logId: "22222222-2222-4222-8222-222222222222",
+      channel: "chat",
+      instruction: "나무 1개",
+      payload: { toolCalls: [] },
+    }, TEST_CONFIG);
+
+    expect(result.kind).toBe("saved");
+    expect(calls.some((c) => String(c.input).includes("ai_activity_logs"))).toBe(true);
+    expect(calls.some((c) => String(c.input).includes("ai_analysis_runs"))).toBe(true);
+    const fallbackBody = calls.find((c) => String(c.input).includes("ai_analysis_runs"))?.init?.body;
+    if (typeof fallbackBody !== "string") throw new Error("expected fallback body");
+    const row = parseRecords(fallbackBody)[0];
+    expect(row?.tileset_id).toBe("__ai_activity__");
+    expect(row?.run_id).toBe("22222222-2222-4222-8222-222222222222");
   });
 });
 

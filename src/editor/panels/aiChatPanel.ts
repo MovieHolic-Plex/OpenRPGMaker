@@ -36,6 +36,7 @@ import {
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
+import { recordAiActivity } from "@/ai/activityLog";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
@@ -562,6 +563,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
+    let turnResult: TurnResult | null = null;
+    let turnCatchError: string | undefined;
     let assistantBubble: HTMLElement | null = null;
     let reasoningBox: { box: HTMLElement; body: HTMLElement } | null = null;
     const streamedBubbles: HTMLElement[] = [];
@@ -669,6 +672,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
     try {
       const result = await exec(onEvent, abortController.signal);
+      turnResult = result;
       endTurnProgress();
       if (result.stoppedReason === "aborted") {
         ghostPreviewUpdater.cancel();
@@ -726,11 +730,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
       turnFailed = true;
+      turnCatchError = cause instanceof Error ? cause.message : String(cause);
       endTurnProgress();
       ghostPreviewUpdater.cancel();
       clearAgentGhostPreview();
       setStatus("오류");
-      appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
+      appendBubble("system", `오류: ${turnCatchError}`);
     } finally {
       ghostPreviewUpdater.cancel();
       endTurnProgress();
@@ -741,6 +746,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (collapsed) panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
+      // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
+      const cfg = loadAiConfig();
+      const audit = session.getAuditEntries();
+      const toolFromAudit = audit
+        .filter((entry): entry is Extract<typeof entry, { kind: "tool" }> => entry.kind === "tool")
+        .map((entry) => ({
+          name: entry.name,
+          args: entry.args,
+          ok: entry.ok,
+          summary: entry.summary,
+        }));
+      const toolFromProposed = (turnResult?.proposedCalls ?? []).map((call) => ({
+        name: call.name,
+        args: call.args,
+        ok: call.result.ok,
+        summary: call.summary,
+      }));
+      void recordAiActivity({
+        channel: "chat",
+        instruction: requestText,
+        projectContextKey: projectConversationContextKey(store.getCurrent()),
+        model: cfg.model,
+        liteModel: cfg.liteModel,
+        result: {
+          ok: !turnFailed && turnResult?.stoppedReason !== "error" && !turnCatchError,
+          error: turnCatchError ?? turnResult?.error,
+          stoppedReason: turnResult?.stoppedReason,
+          proposedCalls: turnResult?.proposedCalls.length,
+          assistantText: turnResult?.assistantText,
+        },
+        toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed,
+        audit,
+      }).catch(() => {
+        /* ignore */
+      });
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
       if (pendingSends.length === 0) scheduleVolatileFade();

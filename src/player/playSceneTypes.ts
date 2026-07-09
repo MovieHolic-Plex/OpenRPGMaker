@@ -96,6 +96,8 @@ export interface PlayerRouteState {
 
 export interface PlaySceneContext extends Phaser.Scene {
   tileLayer: Phaser.GameObjects.Container;
+  /** ★ 상층 타일 전용 — depth 가 same 캐릭터보다 높아야 숲 수관이 캐릭터 위에 그린다. */
+  upperTileLayer: Phaser.GameObjects.Container;
   player: Phaser.GameObjects.Sprite;
   playerSprite: PlayerSpriteResource;
   input_: Input;

@@ -1,4 +1,5 @@
 import { TILE } from "@/project/defaults/constants";
+import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import type { TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 
 const EMPTY_TILE = TILE.EMPTY;
@@ -52,7 +53,8 @@ function buildBaseGroupSample(tileset: TilesetDef, input: GroupSampleInput): Gro
   if (grammar?.kind === "vertical_expandable") return verticalSample(tileset, input);
   if (grammar?.kind === "horizontal_expandable") return horizontalSample(tileset, input);
   if (grammar?.kind === "autotile_3x3") return autotileSample(tileset, input);
-  if (!grammar && input.role === "prop" && input.tileIds.length >= 2) return verticalSample(tileset, input);
+  // 문법 없는 prop 은 정확히 2타일(침엽수 등)일 때만 세로 쌍. 벤치·소품 가방(3+)은 세로로 묶지 않는다.
+  if (!grammar && input.role === "prop" && input.tileIds.length === 2) return verticalSample(tileset, input);
   if (input.role === "roof") return roofSample(tileset, input);
   return fallbackSample(tileset, input);
 }
@@ -139,6 +141,9 @@ function place(sample: GroupSample, tileset: TilesetDef, role: TileGroupRole, x:
 }
 
 function targetLayer(tileset: TilesetDef, role: TileGroupRole, tile: number): Layer {
+  // 숲: 수관 upper + 밑동 lower — 같은 칸에 겹쳐야 숲이 된다.
+  if (isTreeCanopyTileId(tile)) return "upper";
+  if (isTreeTrunkTileId(tile)) return "lower";
   if (role === "prop") return "upper";
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }

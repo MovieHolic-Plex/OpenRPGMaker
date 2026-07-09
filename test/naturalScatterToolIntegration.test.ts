@@ -74,7 +74,10 @@ function coniferPairs(map: GameMap): readonly Point[] {
   const pairs: Point[] = [];
   for (let y = 0; y < map.height - 1; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
-      if (map.upperTiles[y * map.width + x] === 260 && map.upperTiles[(y + 1) * map.width + x] === 290) pairs.push({ x, y });
+      const top = map.upperTiles[y * map.width + x] === 260;
+      const trunkLower = map.lowerTiles[(y + 1) * map.width + x] === 290;
+      const trunkUpperLegacy = map.upperTiles[(y + 1) * map.width + x] === 290;
+      if (top && (trunkLower || trunkUpperLegacy)) pairs.push({ x, y });
     }
   }
   return pairs;
@@ -187,6 +190,212 @@ describe("natural scatter tool integration", () => {
     expectOk(runScatter(second.ctx, second.mapId, { naturalness: 0.5, seed: 20260707 }));
 
     expect(coniferPairs(currentMap(first.ctx, first.mapId))).toEqual(coniferPairs(currentMap(second.ctx, second.mapId)));
+  });
+
+  it("scatter_object poisson changes placement when seed changes", () => {
+    const first = context();
+    const second = context();
+
+    expectOk(runScatter(first.ctx, first.mapId, { naturalness: 0.5, seed: 11 }));
+    expectOk(runScatter(second.ctx, second.mapId, { naturalness: 0.5, seed: 99 }));
+
+    expect(coniferPairs(currentMap(first.ctx, first.mapId))).not.toEqual(coniferPairs(currentMap(second.ctx, second.mapId)));
+  });
+
+  it("forest stacks canopy upper over trunk lower on the same cell", () => {
+    const { ctx, mapId } = context(10, 10);
+    // 두 그루를 세로로 한 칸 어긋나게: 아래 그루 수관이 위 그루 밑동 칸에 겹침
+    expectOk(
+      runTool(ctx, "scatter_object", {
+        mapId,
+        groupId: CONIFER_GROUP_ID,
+        area: { x: 3, y: 2, w: 1, h: 2 },
+        count: 1,
+        minGap: 0,
+        naturalness: 0,
+        seed: 1,
+        avoidProtected: false,
+      }),
+    );
+    expectOk(
+      runTool(ctx, "scatter_object", {
+        mapId,
+        groupId: CONIFER_GROUP_ID,
+        area: { x: 3, y: 3, w: 1, h: 2 },
+        count: 1,
+        minGap: 0,
+        naturalness: 0,
+        seed: 2,
+        avoidProtected: false,
+      }),
+    );
+    const map = currentMap(ctx, mapId);
+    // 첫 그루: upper(3,2)=260, lower(3,3)=290
+    // 둘째: upper(3,3)=260, lower(3,4)=290 → 칸 (3,3)에 lower 밑동 + upper 수관 겹침
+    expect(map.upperTiles[2 * map.width + 3]).toBe(260);
+    expect(map.lowerTiles[3 * map.width + 3]).toBe(290);
+    expect(map.upperTiles[3 * map.width + 3]).toBe(260);
+    expect(map.lowerTiles[4 * map.width + 3]).toBe(290);
+  });
+
+  it("scatter_object bag props place 1-cell tiles, not vertical pairs of first two ids", () => {
+    const { ctx, mapId } = context(16, 16);
+    const tileset = ctx.project.tilesets[currentMap(ctx, mapId).tilesetId];
+    const bagId = "test-bag-props";
+    tileset.tileGroups = [
+      ...(tileset.tileGroups ?? []).filter((g) => g.id !== bagId),
+      {
+        id: bagId,
+        name: "가방 소품",
+        role: "prop",
+        defaultLayer: "upper",
+        tileIds: [327, 328, 357, 358, 319],
+        description: "벤치 조각을 가방에 넣은 잘못된 예전 형태",
+        placementRules: "",
+      },
+    ];
+    for (const tile of [327, 328, 357, 358, 319]) tileset.priority[tile] = "upper";
+
+    expectOk(
+      runTool(ctx, "scatter_object", {
+        mapId,
+        groupId: bagId,
+        area: { x: 1, y: 1, w: 12, h: 12 },
+        count: 8,
+        minGap: 0,
+        naturalness: 0.5,
+        seed: 7,
+        avoidProtected: false,
+      }),
+    );
+
+    const map = currentMap(ctx, mapId);
+    let verticalBenchPairs = 0;
+    for (let y = 0; y < map.height - 1; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        const top = map.upperTiles[y * map.width + x];
+        const bot = map.upperTiles[(y + 1) * map.width + x];
+        if (top === 327 && bot === 328) verticalBenchPairs += 1;
+      }
+    }
+    expect(verticalBenchPairs, "bench left/right halves must not stamp as vertical pairs").toBe(0);
+  });
+
+  it("place_props bench-horizontal is only 327|328 (no 357/358 under it)", () => {
+    const { ctx, mapId } = context(14, 14);
+    expectOk(
+      runTool(ctx, "place_props", {
+        mapId,
+        area: { x: 2, y: 2, w: 6, h: 4 },
+        propVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}bench-horizontal`,
+        count: 1,
+        minGap: 0,
+        naturalness: 0.2,
+        seed: 1,
+      }),
+    );
+    const map = currentMap(ctx, mapId);
+    let foundH = false;
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width - 1; x += 1) {
+        if (map.upperTiles[y * map.width + x] === 327 && map.upperTiles[y * map.width + x + 1] === 328) {
+          foundH = true;
+          if (y + 1 < map.height) {
+            expect(map.upperTiles[(y + 1) * map.width + x]).not.toBe(357);
+            expect(map.upperTiles[(y + 1) * map.width + x + 1]).not.toBe(358);
+          }
+        }
+      }
+    }
+    expect(foundH).toBe(true);
+  });
+
+  it("place_props bench-vertical stamps 358 above 388 on upper only", () => {
+    const { ctx, mapId } = context(14, 14);
+    expectOk(
+      runTool(ctx, "place_props", {
+        mapId,
+        area: { x: 2, y: 2, w: 6, h: 6 },
+        propVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}bench-vertical`,
+        count: 1,
+        minGap: 0,
+        naturalness: 0.2,
+        seed: 1,
+      }),
+    );
+    const map = currentMap(ctx, mapId);
+    let foundV = false;
+    for (let y = 0; y < map.height - 1; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (map.upperTiles[y * map.width + x] === 358 && map.upperTiles[(y + 1) * map.width + x] === 388) {
+          foundV = true;
+          expect(map.lowerTiles[y * map.width + x]).not.toBe(358);
+          expect(map.lowerTiles[(y + 1) * map.width + x]).not.toBe(388);
+        }
+      }
+    }
+    expect(foundV).toBe(true);
+  });
+
+  it("scatter_object / place_props skip dirt road cells even though they are passable", () => {
+    const { ctx, mapId } = context(24, 24);
+    expectOk(
+      runTool(ctx, "paint_road", {
+        mapId,
+        points: [{ x: 2, y: 10 }, { x: 20, y: 10 }],
+        style: "dirt",
+        naturalness: 0,
+      }),
+    );
+    const roadKeys = new Set(roadCells(currentMap(ctx, mapId)).map((cell) => `${cell.x},${cell.y}`));
+    expect(roadKeys.size).toBeGreaterThan(5);
+
+    expectOk(
+      runTool(ctx, "scatter_object", {
+        mapId,
+        groupId: CONIFER_GROUP_ID,
+        area: { x: 1, y: 1, w: 22, h: 20 },
+        count: 20,
+        minGap: 0,
+        naturalness: 0.55,
+        seed: 3,
+        avoidProtected: true,
+      }),
+    );
+
+    const pairs = coniferPairs(currentMap(ctx, mapId));
+    expect(pairs.length).toBeGreaterThan(0);
+    for (const origin of pairs) {
+      expect(roadKeys.has(`${origin.x},${origin.y}`), `tree top on road ${origin.x},${origin.y}`).toBe(false);
+      expect(roadKeys.has(`${origin.x},${origin.y + 1}`), `tree bottom on road ${origin.x},${origin.y + 1}`).toBe(false);
+    }
+
+    // place_props 경로(그룹 위임)도 동일 보호.
+    const props = context(24, 24);
+    expectOk(
+      runTool(props.ctx, "paint_road", {
+        mapId: props.mapId,
+        points: [{ x: 2, y: 10 }, { x: 20, y: 10 }],
+        style: "dirt",
+        naturalness: 0,
+      }),
+    );
+    const propsRoad = new Set(roadCells(currentMap(props.ctx, props.mapId)).map((cell) => `${cell.x},${cell.y}`));
+    expectOk(
+      runTool(props.ctx, "place_props", {
+        mapId: props.mapId,
+        area: { x: 1, y: 1, w: 22, h: 20 },
+        propVocabId: CONIFER_GROUP_ID,
+        count: 16,
+        minGap: 0,
+        naturalness: 0.55,
+        seed: 5,
+      }),
+    );
+    for (const origin of coniferPairs(currentMap(props.ctx, props.mapId))) {
+      expect(propsRoad.has(`${origin.x},${origin.y}`)).toBe(false);
+      expect(propsRoad.has(`${origin.x},${origin.y + 1}`)).toBe(false);
+    }
   });
 
   it("build_house naturalness 0 preserves the requested origin", () => {

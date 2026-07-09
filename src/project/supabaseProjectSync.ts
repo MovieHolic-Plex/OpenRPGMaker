@@ -37,7 +37,7 @@ type SupabaseProjectListRow = {
   readonly title: string | null;
 };
 
-type SupabaseChildTable = "ai_analysis_runs" | "maps" | "tilesets";
+type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "maps" | "tilesets";
 type SupabaseCommitTable = "project_changes" | "project_commits";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
@@ -208,6 +208,107 @@ export async function recordSupabaseAiAnalysisRun(
     throw error;
   }
   return { kind: "saved" };
+}
+
+export type SupabaseAiActivityLogInput = {
+  readonly logId: string;
+  readonly channel: string;
+  readonly instruction: string;
+  readonly mapId?: string;
+  readonly payload: unknown;
+};
+
+/**
+ * 채팅/영역 AI 활동 로그 1건.
+ * 1) `ai_activity_logs` 전용 테이블
+ * 2) 없으면 기존 `ai_analysis_runs` 에 폴백 저장 (tileset_id = `__ai_activity__`)
+ *    — 마이그레이션 전에도 PostgREST로 조회 가능하게.
+ */
+export const AI_ACTIVITY_FALLBACK_TILESET_ID = "__ai_activity__";
+
+export async function recordSupabaseAiActivityLog(
+  input: SupabaseAiActivityLogInput,
+  config = supabaseProjectConfig(),
+): Promise<SupabaseSaveResult> {
+  if (!config) return { kind: "not-configured" };
+  try {
+    await upsertRows(config, "ai_activity_logs", "log_id", [aiActivityLogRow(config.projectId, input)]);
+    return { kind: "saved" };
+  } catch (error) {
+    const missingPrimary =
+      (error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error);
+    if (!missingPrimary) throw error;
+  }
+  // 폴백: 이미 존재하는 ai_analysis_runs 에 진단 페이로드를 심는다.
+  try {
+    await upsertRows(config, "ai_analysis_runs", "run_id", [
+      {
+        run_id: input.logId,
+        project_id: config.projectId,
+        tileset_id: AI_ACTIVITY_FALLBACK_TILESET_ID,
+        selected_tile_ids_json: [],
+        prompt_context_json: {
+          kind: "ai-activity-log",
+          channel: input.channel,
+          instruction: input.instruction.slice(0, 4000),
+          mapId: input.mapId ?? null,
+        },
+        result_json: input.payload,
+      },
+    ]);
+    return { kind: "saved" };
+  } catch (error) {
+    if (error instanceof SupabaseProjectSyncError && error.status === 404) {
+      return { kind: "not-configured" };
+    }
+    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    throw error;
+  }
+}
+
+/** 전용 테이블 + 폴백 테이블에서 최근 AI 활동 로그를 읽어 온다. */
+export async function listSupabaseAiActivityLogs(
+  limit = 20,
+  config = supabaseProjectConfig(),
+): Promise<readonly Record<string, unknown>[]> {
+  if (!config) return [];
+  const n = Math.max(1, Math.min(100, Math.floor(limit)));
+  try {
+    const primary = await fetchJsonArray(
+      `${config.url}/rest/v1/ai_activity_logs?select=log_id,channel,instruction,map_id,payload_json,created_at&order=created_at.desc&limit=${n}`,
+      config,
+    );
+    if (primary.length > 0) return primary;
+  } catch {
+    /* fall through */
+  }
+  try {
+    const rows = await fetchJsonArray(
+      `${config.url}/rest/v1/ai_analysis_runs?tileset_id=eq.${encodeURIComponent(AI_ACTIVITY_FALLBACK_TILESET_ID)}&select=run_id,project_id,prompt_context_json,result_json,created_at&order=created_at.desc&limit=${n}`,
+      config,
+    );
+    return rows.map((row) => ({
+      log_id: row.run_id,
+      channel: isRecord(row.prompt_context_json) ? row.prompt_context_json.channel : undefined,
+      instruction: isRecord(row.prompt_context_json) ? row.prompt_context_json.instruction : undefined,
+      map_id: isRecord(row.prompt_context_json) ? row.prompt_context_json.mapId : undefined,
+      payload_json: row.result_json,
+      created_at: row.created_at,
+      source: "ai_analysis_runs_fallback",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function fetchJsonArray(url: string, config: SupabaseProjectConfig): Promise<Record<string, unknown>[]> {
+  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read") });
+  if (!response.ok) {
+    throw new SupabaseProjectSyncError(await response.text(), response.status);
+  }
+  const parsed: unknown = await response.json();
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter(isRecord);
 }
 
 export async function recordProjectCommitToSupabase(
@@ -397,6 +498,10 @@ async function responseUpdatedRows(response: Response): Promise<boolean> {
 
 async function projectUpsertPayload(projectId: string, project: Project, serialized: string): Promise<Record<string, unknown>> {
   const currentJson: unknown = JSON.parse(serialized);
+  const terrainTemplateCount = Object.values(project.tilesets).reduce((sum, tileset) => {
+    const templates = (tileset as { terrainTemplates?: unknown }).terrainTemplates;
+    return sum + (Array.isArray(templates) ? templates.length : 0);
+  }, 0);
   return {
     project_id: projectId,
     title: project.meta.title.trim() || DEFAULT_PROJECT_TITLE,
@@ -405,6 +510,8 @@ async function projectUpsertPayload(projectId: string, project: Project, seriali
     current_sha256: await sha256Hex(serialized),
     map_count: Object.keys(project.maps).length,
     tileset_count: Object.keys(project.tilesets).length,
+    // DB NOT NULL — upsert 시 null 금지 (둥근 호수 저장 등 전체 저장 경로).
+    terrain_template_count: terrainTemplateCount,
   };
 }
 
@@ -549,6 +656,17 @@ function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput):
     selected_tile_ids_json: input.selectedTiles,
     prompt_context_json: input.promptContext,
     result_json: input.result,
+  };
+}
+
+function aiActivityLogRow(projectId: string, input: SupabaseAiActivityLogInput): Record<string, unknown> {
+  return {
+    log_id: input.logId,
+    project_id: projectId,
+    channel: input.channel,
+    instruction: input.instruction.slice(0, 4000),
+    map_id: input.mapId ?? null,
+    payload_json: input.payload,
   };
 }
 

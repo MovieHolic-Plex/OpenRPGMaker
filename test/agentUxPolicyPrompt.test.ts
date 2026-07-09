@@ -76,8 +76,10 @@ describe("agent UX policy prompt", () => {
 
   it("routes terrain surfaces to fill_region and scattered objects to place_props", () => {
     const text = prompt();
-    expect(text).toContain("수역/지면/바닥처럼 면을 채우는 작업은 fill_region");
-    expect(text).toContain("오브젝트 산포만 place_props");
+    expect(text).toContain("수역/지면/바닥 면은 fill_region만 쓴다");
+    expect(text).toContain("shape=circle");
+    expect(text).toContain("물 위 place_props 금지");
+    expect(text).toContain("호수·물 칸 밖");
   });
 
   it("routes common domain requests to high-level tools before low-level event upserts", () => {
@@ -93,8 +95,9 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("상점=set_shop_stock");
     expect(text).toContain("사냥터=make_hunting_ground");
     expect(text).toContain("조명/분위기=set_lighting_volume/set_scene_mood");
-    expect(text).toContain("수역/바닥=fill_region");
-    expect(text).toContain("집/마을=build_house_kit/build_village");
+    expect(text).toContain("수역/바닥=fill_region(원형 호수 shape=circle, tileVocabId=물 오토타일 그룹)");
+    expect(text).toContain("build_house_lots");
+    expect(text).toContain("build_village");
     expect(text).toContain("월드=plan_world/build_world");
     expect(text).toContain("퀘스트=define_quest→verify_quest");
     expect(text).toContain("upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용");

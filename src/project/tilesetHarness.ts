@@ -6,7 +6,11 @@ export {
   harnessLayerForTile,
   isCombinedTownTileset,
   isHarnessStackableTile,
+  isTreeCanopyTileId,
+  isTreeTrunkTileId,
   isUpperOnlyOverlayTile,
+  TREE_CANOPY_TILE_IDS,
+  TREE_TRUNK_TILE_IDS,
 } from "./tilesetHarness/combinedTown";
 export {
   COMBINED_TOWN_HARNESS_PREFIX,

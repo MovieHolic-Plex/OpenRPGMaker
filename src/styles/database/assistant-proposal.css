@@ -62,8 +62,29 @@
 .ai-proposal-thumb-canvas {
   border: 1px solid var(--border-default);
   image-rendering: pixelated;
-  max-height: 104px;
+  max-height: 160px;
   max-width: 100%;
+}
+.ai-proposal-soft-vocab {
+  background: color-mix(in srgb, var(--accent, #7aa2ff) 10%, var(--bg-inset));
+  border: 1px solid color-mix(in srgb, var(--accent, #7aa2ff) 28%, var(--border-subtle));
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+}
+.ai-proposal-soft-vocab-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+.ai-proposal-soft-vocab-row {
+  color: var(--text-1);
+  font-size: 11px;
+}
+.ai-proposal-soft-vocab-hint {
+  color: var(--text-2);
+  font-size: 10px;
 }
 .ai-proposal-items {
   display: grid;
@@ -235,6 +256,7 @@
 }
 
 /* ── 변경 제안 몰입 모달 ── */
+/* 로그인 모달(2100)보다 위에 두어 [이대로 적용]이 가려지지 않게 한다. */
 .ai-proposal-modal-backdrop {
   align-items: center;
   backdrop-filter: blur(3px);
@@ -244,7 +266,7 @@
   justify-content: center;
   padding: 24px;
   position: fixed;
-  z-index: 72;
+  z-index: 2500;
 }
 
 .ai-proposal-modal-backdrop[hidden] {

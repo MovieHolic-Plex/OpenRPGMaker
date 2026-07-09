@@ -1,17 +1,16 @@
 // project/tileVocabulary.ts
-// 승인 보캐뷸러리 판정 계층 (타일 툴 v3, 2026-07-07 설계 — 원칙 0: Zero-Trust Perception).
+// 어휘 접근 판정 계층 (타일 툴 v3).
 //
 // 규약:
-// - 승인의 유일한 표식은 origin === "user" (그룹: TileGroupMetadata.origin, 타일: tileMeta.origin).
-// - 제로 부트스트랩: 이 모듈은 절대 승인을 마킹하지 않는다. 마킹 경로는
-//   ① propose_tile_vocabulary 프로포절의 사용자 명시 수락(autoApprove 자동 수락 불인정 —
-//      assistantSession의 requiresApproval 게이트가 자동 커밋 경로를 차단한다)
-//   ② T1b 위저드/우클릭 교정(confirmedByUser=true → set_tile_metadata가 origin:"user" 기록)
-//   뿐이다. source:"user"는 v1 upsert가 자동으로 박으므로 승인 근거로 쓰지 않는다.
-// - V3B 공정 프리미티브(build_wall 등)는 assertApprovedOrFail로 미승인 어휘를 하드 차단한다.
+// - 영구 합의 표식은 origin === "user" (그룹: TileGroupMetadata.origin, 타일: tileMeta.origin).
+// - 시공 프리미티브는 미합의 재료를 하드 차단하지 않는다. resolveVocabForBuild 가
+//   approved | soft | missing 을 돌려 soft 면 맵에 그린 뒤 사용자 목업 확인으로 합의한다.
+// - origin:"user" 마킹은 (1) propose_tile_vocabulary 수락 (2) soft-confirm 제안 수락
+//   (3) T1b/위저드 confirmedByUser 경로에서만 한다. 이 모듈 자체는 마킹하지 않는다.
+// - assertApprovedOrFail 은 레거시/명시 승인 전용 API로 남긴다.
 
 import { ToolError } from "@/editor/tools/types";
-import type { TileGroupMetadata, TilesetDef } from "./types";
+import type { Project, TileGroupMetadata, TilesetDef } from "./types";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
 
@@ -107,7 +106,140 @@ export type VocabularyRef =
   | { readonly groupId: string; readonly tileId?: undefined }
   | { readonly tileId: number; readonly groupId?: undefined };
 
-// 미승인 어휘 하드 차단 — V3B 프리미티브가 소비하는 헬퍼(v2 '다시 보낼 형식 예시' 규약 승계).
+/** soft-confirm 카드/수락 훅이 소비하는 재료 스냅샷. */
+export interface VocabSoftConfirm {
+  readonly kind: "group" | "tile";
+  readonly groupId?: string;
+  readonly tileId?: number;
+  readonly tileIds: readonly number[];
+  readonly name: string;
+  readonly role: string;
+  readonly layerHome: VocabLayerHome;
+  readonly tilesetId: string;
+}
+
+export type VocabBuildAccess =
+  | { readonly status: "approved"; readonly kind: "group"; readonly group: TileGroupMetadata }
+  | { readonly status: "soft"; readonly kind: "group"; readonly group: TileGroupMetadata; readonly softConfirm: VocabSoftConfirm }
+  | { readonly status: "approved"; readonly kind: "tile"; readonly tileId: number }
+  | { readonly status: "soft"; readonly kind: "tile"; readonly tileId: number; readonly softConfirm: VocabSoftConfirm }
+  | { readonly status: "missing"; readonly message: string };
+
+export const VOCAB_SOFT_CONFIRM_WARNING_PREFIX = "목업 확인 대기 재료";
+
+export function isVocabSoftConfirm(value: unknown): value is VocabSoftConfirm {
+  if (typeof value !== "object" || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return (record.kind === "group" || record.kind === "tile")
+    && typeof record.name === "string"
+    && typeof record.role === "string"
+    && typeof record.tilesetId === "string"
+    && Array.isArray(record.tileIds);
+}
+
+export function extractVocabSoftConfirm(data: unknown): VocabSoftConfirm | null {
+  if (typeof data !== "object" || data === null) return null;
+  const soft = (data as { vocabSoftConfirm?: unknown }).vocabSoftConfirm;
+  return isVocabSoftConfirm(soft) ? soft : null;
+}
+
+/** 시공 툴용 어휘 해석 — 존재하는 재료는 soft 허용, 없는 id만 missing. */
+export function resolveVocabForBuild(tileset: TilesetDef, ref: VocabularyRef): VocabBuildAccess {
+  if (typeof ref.groupId === "string") {
+    const group = findGroup(tileset, ref.groupId);
+    if (!group) {
+      return {
+        status: "missing",
+        message: `타일 그룹을 찾을 수 없습니다: ${ref.groupId}. tile_query 또는 list 하네스 그룹 id를 확인하세요.`,
+      };
+    }
+    if (isApprovedGroup(tileset, group.id)) {
+      return { status: "approved", kind: "group", group };
+    }
+    return {
+      status: "soft",
+      kind: "group",
+      group,
+      softConfirm: softConfirmForGroup(tileset, group),
+    };
+  }
+  const tileId = ref.tileId;
+  if (!Number.isInteger(tileId) || tileId < 0 || tileId >= tileset.count) {
+    return {
+      status: "missing",
+      message: `타일 id 범위 밖: ${tileId} (0~${tileset.count - 1})`,
+    };
+  }
+  if (isApprovedTile(tileset, tileId)) {
+    return { status: "approved", kind: "tile", tileId };
+  }
+  return {
+    status: "soft",
+    kind: "tile",
+    tileId,
+    softConfirm: softConfirmForTile(tileset, tileId),
+  };
+}
+
+export function softConfirmForGroup(tileset: TilesetDef, group: TileGroupMetadata): VocabSoftConfirm {
+  return {
+    kind: "group",
+    groupId: group.id,
+    tileIds: [...group.tileIds],
+    name: group.name || group.id,
+    role: group.role || "prop",
+    layerHome: groupLayerHome(group),
+    tilesetId: tileset.id,
+  };
+}
+
+export function softConfirmForTile(tileset: TilesetDef, tileId: number): VocabSoftConfirm {
+  const meta = tileset.tileMeta?.[tileId];
+  return {
+    kind: "tile",
+    tileId,
+    tileIds: [tileId],
+    name: meta?.label?.trim() || `타일 ${tileId}`,
+    role: (typeof meta?.role === "string" && meta.role) || "prop",
+    layerHome: approvedTileLayerHome(tileset, tileId),
+    tilesetId: tileset.id,
+  };
+}
+
+/** 수락 시 soft 재료에 origin:user 를 박는다(영구 합의). */
+export function applyVocabSoftConfirmApprovals(project: Project, softConfirms: readonly VocabSoftConfirm[]): number {
+  let marked = 0;
+  for (const soft of softConfirms) {
+    const tileset = project.tilesets[soft.tilesetId];
+    if (!tileset) continue;
+    if (soft.kind === "group" && soft.groupId) {
+      const group = findGroup(tileset, soft.groupId);
+      if (!group) continue;
+      if (group.origin !== "user") {
+        group.origin = "user";
+        group.source = "user";
+        marked += 1;
+      }
+      continue;
+    }
+    if (soft.kind === "tile" && typeof soft.tileId === "number") {
+      if (!tileset.tileMeta) tileset.tileMeta = [];
+      const existing = tileset.tileMeta[soft.tileId] ?? { label: soft.name };
+      if (existing.origin === "user") continue;
+      tileset.tileMeta[soft.tileId] = {
+        ...existing,
+        label: existing.label || soft.name,
+        role: existing.role || soft.role,
+        origin: "user",
+        source: "user",
+      };
+      marked += 1;
+    }
+  }
+  return marked;
+}
+
+// 레거시: 명시 승인 전용 하드 차단. 시공 soft 경로는 resolveVocabForBuild 를 쓴다.
 export function assertApprovedOrFail(tileset: TilesetDef, ref: VocabularyRef): void {
   if (typeof ref.groupId === "string") {
     if (isApprovedGroup(tileset, ref.groupId)) return;

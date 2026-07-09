@@ -7,6 +7,7 @@
 //   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
+import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
@@ -98,8 +99,13 @@ export function runTool(
   }
 
   try {
+    // 후처리: 나무 밑동 위 수관(upper) 강제 — 고아 밑동(14,5 등) 방지.
+    const treeRepair = repairTreePairsOnProject(draft);
+    const treeRepairNote = formatTreePairRepairSummary(treeRepair);
+
     const diff = summarizeChanges(before, draft);
     if (exec.warnings) diff.warnings.push(...exec.warnings);
+    if (treeRepairNote) diff.warnings.push(treeRepairNote);
 
     // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
     const commit = commitChangeset(draft, before);
@@ -114,9 +120,10 @@ export function runTool(
 
     if (!options.dryRun) ctx.project = draft;
     const issues = [...(exec.issues ?? []), ...commit.issues];
+    const summary = treeRepairNote ? `${exec.summary} · ${treeRepairNote}` : exec.summary;
     return {
       ok: true,
-      summary: exec.summary,
+      summary,
       diff,
       issues: issues.length > 0 ? issues : undefined,
       data: exec.data,

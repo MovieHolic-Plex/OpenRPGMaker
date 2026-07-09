@@ -1,8 +1,7 @@
 // 영역 지정 AI 작업의 "하드 스코프" 보장. AI 제안(proposed)에서 지정 사각형 밖의
-// 타일 변경을 base 상태로 되돌린다. 타일 4구조(lower/upper Tiles·Stacks)만 대상이며
-// 다른 맵·타일셋·그룹 등 프로젝트 변경은 통과시킨다(배치에 필요한 그룹 정의 보존).
-// base/proposed는 변형하지 않는 순수 함수.
-import type { GameMap, MapId, Project } from "@/project/types";
+// 타일·이벤트 변경을 base 상태로 되돌린다. 다른 맵·타일셋·그룹 등 프로젝트 변경은
+// 통과시킨다(배치에 필요한 그룹 정의 보존). base/proposed는 변형하지 않는 순수 함수.
+import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 
 export interface RegionRect {
   readonly x: number;
@@ -98,9 +97,18 @@ export function clipMapCellsToRegion(
     }
   }
 
-  if (clippedCells === 0) return { project: proposed, clippedCells: 0 };
+  const nextEvents = clipEventsToRegion(baseMap.events ?? [], proposedMap.events ?? [], region);
+  // 타일 클립도 없고 이벤트도 proposed와 동일하면 복제 없이 통과.
+  if (clippedCells === 0 && eventsEqualList(proposedMap.events ?? [], nextEvents)) {
+    return { project: proposed, clippedCells: 0 };
+  }
 
-  const nextMap: GameMap = { ...proposedMap, lowerTiles: nextLower, upperTiles: nextUpper };
+  const nextMap: GameMap = {
+    ...proposedMap,
+    lowerTiles: nextLower,
+    upperTiles: nextUpper,
+    events: nextEvents,
+  };
   // 선택 필드는 비면 키 자체를 지워 원래 직렬화 형태를 유지(exactOptionalPropertyTypes 안전).
   const lowerField = stacksToField(nextLowerStacks);
   const upperField = stacksToField(nextUpperStacks);
@@ -111,4 +119,37 @@ export function clipMapCellsToRegion(
 
   const nextProject: Project = { ...proposed, maps: { ...proposed.maps, [mapId]: nextMap } };
   return { project: nextProject, clippedCells };
+}
+
+/**
+ * 영역 밖 이벤트는 base 상태로 고정, 영역 안은 proposed 허용.
+ * (영역 밖 신규 NPC 배치·영역 밖 이벤트 삭제/이동을 막는다.)
+ */
+export function clipEventsToRegion(
+  baseEvents: readonly GameEvent[],
+  proposedEvents: readonly GameEvent[],
+  region: RegionRect,
+): GameEvent[] {
+  const outsideFromBase = baseEvents
+    .filter((event) => !inRegion(event.x, event.y, region))
+    .map((event) => structuredClone(event));
+  const insideFromProposed = proposedEvents
+    .filter((event) => inRegion(event.x, event.y, region))
+    .map((event) => structuredClone(event));
+  return [...outsideFromBase, ...insideFromProposed];
+}
+
+function eventsEqualList(a: readonly GameEvent[], b: readonly GameEvent[]): boolean {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].map((e) => e.id).sort();
+  const sortedB = [...b].map((e) => e.id).sort();
+  for (let i = 0; i < sortedA.length; i += 1) if (sortedA[i] !== sortedB[i]) return false;
+  // id 집합이 같으면 좌표·이름 등 간단 비교
+  const byId = new Map(b.map((event) => [event.id, event]));
+  for (const event of a) {
+    const other = byId.get(event.id);
+    if (!other) return false;
+    if (event.x !== other.x || event.y !== other.y || event.pages?.[0]?.name !== other.pages?.[0]?.name) return false;
+  }
+  return true;
 }

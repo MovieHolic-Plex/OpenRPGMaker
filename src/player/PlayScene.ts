@@ -41,7 +41,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
-import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
+import { characterSpriteX, characterSpriteY, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import {
   registerAutonomousMover as registerSceneAutonomousMover,
@@ -74,6 +74,7 @@ const PhaserRuntime = getLoadedPhaser();
 
 export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare tileLayer: Phaser.GameObjects.Container;
+  declare upperTileLayer: Phaser.GameObjects.Container;
   declare player: Phaser.GameObjects.Sprite;
   declare playerSprite: PlayerSpriteResource;
   declare input_: Input;
@@ -142,6 +143,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
     this.tileLayer = this.add.container(0, 0);
+    this.tileLayer.setDepth(MAP_LOWER_LAYER_DEPTH);
+    this.upperTileLayer = this.add.container(0, 0);
+    this.upperTileLayer.setDepth(MAP_UPPER_LAYER_DEPTH);
     this.input_ = new Input(this);
     this.runtimeDom = new RuntimeDomOverlay(() => {
       const host: unknown = this.game.registry.get("dialogueHost");

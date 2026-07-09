@@ -57,7 +57,16 @@ export function createEditorModalDirtyCloseController(
   return {
     requestClose,
     handleKeyDown: (event) => {
-      if ("key" in event && event.key === "Escape") requestClose("escape");
+      if (!("key" in event) || event.key !== "Escape") return;
+      // 타일셋 우클릭 메뉴·의미 편집 등 중첩 UI가 Escape 를 이미 처리한 경우
+      if (typeof event.defaultPrevented === "boolean" && event.defaultPrevented) return;
+      // stopImmediatePropagation 으로 여기까지 안 오는 게 정석이지만, 방어적으로 한 번 더 검사.
+      const nested =
+        typeof document !== "undefined"
+        && (document.querySelector('[data-testid="tileset-tile-context-menu"]')
+          || document.querySelector('[data-testid="tileset-meaning-dialog"]'));
+      if (nested) return;
+      requestClose("escape");
     },
     handleBackdropMouseDown: (event, backdrop) => {
       if (event.target === backdrop) requestClose("backdrop");

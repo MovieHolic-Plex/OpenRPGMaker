@@ -168,6 +168,26 @@ describe("runRegionTask", () => {
     expect(applied()).toBeNull();
   });
 
+  it("영역 안 NPC만 바뀌어도 적용한다(타일 0칸이어도)", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    proposed.maps[MAP_ID].events = [
+      {
+        id: "ev_npc_1",
+        name: "주민",
+        x: 2,
+        y: 2,
+        pages: [{ id: "p1", conditions: [], trigger: "action", commands: [] }],
+      } as Project["maps"][string]["events"][number],
+    ];
+    const { deps, applied } = makeDeps(base, proposed);
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "NPC 배치" }, deps);
+    expect(result.ok).toBe(true);
+    expect(result.applied).toBe(true);
+    expect(result.changedEvents).toBe(1);
+    expect(applied()?.project.maps[MAP_ID].events?.some((e) => e.id === "ev_npc_1")).toBe(true);
+  });
+
   it("빈 지시는 오류로 막는다", async () => {
     const base = baseProject();
     const { deps, applied } = makeDeps(base, structuredClone(base));

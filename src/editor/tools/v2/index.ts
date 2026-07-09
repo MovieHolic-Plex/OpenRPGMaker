@@ -13,7 +13,8 @@ export const TILE_TOOLS_V2: readonly ToolDefinition[] = [...TILE_PLACE_TOOLS_V2,
 export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["paint_tiles", "tile_paint"],
   ["clear_region", "tile_paint"],
-  ["paint_road", "tile_road"],
+  // paint_road 는 deprecated 하지 않는다 — 흙길/모래 8방 오토타일 본선.
+  // (v2 tile_road → v3 lay_path 체인에 묻히면 AI가 길을 안 깔거나 비성형 경로만 씀)
   ["scatter_object", "tile_scatter"],
   ["build_house", "tile_structure"],
   ["stamp_structure", "tile_structure"],

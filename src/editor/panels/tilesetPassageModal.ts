@@ -31,11 +31,14 @@ function renderTilesetSettingsModal(tilesetId: string, close: () => void, rerend
   }
   const windowEl = el("section", { class: "tileset-settings-window", attrs: { role: "dialog", "aria-label": "칩셋 설정" } });
   const header = el("div", { class: "tileset-settings-header" });
+  const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
   header.append(
     el("div", {
       children: [
-        el("h2", { text: "칩셋 설정" }),
-        el("p", { text: `${tileset.name} · 통행 O/X/★ · 지형 태그` }),
+        el("h2", { text: "칩셋 전체 보기" }),
+        el("p", {
+          text: `${tileset.name} · ${tileset.count}칸 (${tileset.tilesPerRow}×${rows}) · 통행 O/X/★ 클릭 편집`,
+        }),
       ],
     }),
     el("button", { class: "btn", text: "닫기", dataset: { testid: "tileset-settings-close" }, on: { click: close } })

@@ -1,6 +1,8 @@
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTextureKey } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
+import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
+import { TILE } from "@/project/defaults/constants";
 import {
   isLakeAutotileTile,
   lakeAutotileQuarterSources,
@@ -13,11 +15,13 @@ import {
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
+import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
+// upper 컨테이너 depth 는 PlayScene 생성 시 MAP_UPPER_LAYER_DEPTH 로 고정.
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
@@ -55,6 +59,11 @@ interface RenderTilesSceneContext<
   readonly session: PlaySceneContext["session"];
   readonly eventPositions: PlaySceneContext["eventPositions"];
   readonly tileLayer: {
+    removeAll(removeChildren?: boolean): void;
+    add(image: TImage | TSprite | unknown): unknown;
+  };
+  /** 없으면 tileLayer 로 폴백(레거시 테스트). 플레이 씬은 반드시 별도 고 depth 컨테이너. */
+  readonly upperTileLayer?: {
     removeAll(removeChildren?: boolean): void;
     add(image: TImage | TSprite | unknown): unknown;
   };
@@ -102,6 +111,7 @@ export function renderTiles<
   TSprite extends RenderedEventSprite,
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
   scene.tileLayer.removeAll(true);
+  scene.upperTileLayer?.removeAll(true);
   for (const sprite of scene.eventSprites.values()) sprite.destroy();
   scene.eventSprites.clear();
   scene.runtimeDom.clearEventMarkers();
@@ -112,14 +122,22 @@ export function renderTiles<
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const index = y * map.width + x;
-      renderTile(scene, tileset, x, y, map.lowerTiles[index]);
-      for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile);
-      renderTile(scene, tileset, x, y, map.upperTiles[index]);
-      for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile);
+      renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
+      for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
+      renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
+      for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper");
     }
   }
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderEvents(scene);
+}
+
+function tileTargetLayer<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  layer: "lower" | "upper",
+): { add(image: TImage | TSprite | unknown): unknown } {
+  if (layer === "upper" && scene.upperTileLayer) return scene.upperTileLayer;
+  return scene.tileLayer;
 }
 
 function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -127,20 +145,33 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   tileset: TilesetDef,
   x: number,
   y: number,
-  tile: number
+  tile: number,
+  layer: "lower" | "upper",
 ): void {
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
-    renderLakeAutotile(scene, textureKey, x, y);
+    renderLakeAutotile(scene, textureKey, x, y, layer);
     return;
   }
   if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
     const terrainQuarters = terrainQuarterSources(scene.map, x, y);
     if (terrainQuarters) {
-      renderTerrainQuarter(scene, textureKey, x, y, terrainQuarters);
+      renderTerrainQuarter(scene, textureKey, x, y, terrainQuarters, layer);
       return;
     }
+  }
+  const target = tileTargetLayer(scene, layer);
+  // lower 투명 밑동: 잔디를 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
+  if (
+    layer === "lower"
+    && isDefaultTilesetTexture(tileset)
+    && isTreeTrunkTileId(tile)
+    && isTransparentChipsetTile(tile)
+  ) {
+    const grass = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${TILE.GRASS}`);
+    grass.setOrigin(0, 0);
+    target.add(grass);
   }
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
@@ -148,14 +179,15 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
     : scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`);
   image.setOrigin(0, 0);
-  scene.tileLayer.add(image);
+  target.add(image);
 }
 
 function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
   textureKey: string,
   x: number,
-  y: number
+  y: number,
+  layer: "lower" | "upper",
 ): void {
   for (const part of lakeAutotileQuarterSources(scene.map, x, y)) {
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
@@ -164,7 +196,7 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
       ? scene.add.sprite(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName).play(animationKey)
       : scene.add.image(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName);
     image.setOrigin(0, 0);
-    scene.tileLayer.add(image);
+    tileTargetLayer(scene, layer).add(image);
   }
 }
 
@@ -174,7 +206,8 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
   textureKey: string,
   x: number,
   y: number,
-  sources: readonly TerrainQuarterSource[]
+  sources: readonly TerrainQuarterSource[],
+  layer: "lower" | "upper",
 ): void {
   for (const part of sources) {
     const image = scene.add.image(
@@ -184,7 +217,7 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
       `tile_${part.tile}_${part.quarter}`
     );
     image.setOrigin(0, 0);
-    scene.tileLayer.add(image);
+    tileTargetLayer(scene, layer).add(image);
   }
 }
 

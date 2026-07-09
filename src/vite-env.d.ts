@@ -52,6 +52,15 @@ type RpgZzuCameraDebug = {
 
 interface Window {
   __RPG_ZZU_E2E_PROJECT__?: unknown;
+  // 영역 작업 마지막 로그 export (감사·툴·하네스) — 콘솔/헤드리스 디버깅용.
+  __rpgzzuRegionTaskLog?: unknown;
+  __rpgzzuLastRegionTaskLog?: () => unknown;
+  // AI 활동 로그 링버퍼 (채팅·영역 등) — localStorage + optional Supabase.
+  __rpgzzuAiActivityLog?: unknown;
+  __rpgzzuListAiActivityLogs?: (limit?: number) => readonly unknown[];
+  __rpgzzuGetAiActivityLog?: (id: string) => unknown;
+  __rpgzzuClearAiActivityLogs?: () => void;
+  __rpgzzuExportAiActivityLogs?: (limit?: number) => string;
   // AI 하네스 스냅샷(주입 포함 원본 메시지 + 감사 로그) — 콘솔/헤드리스 디버깅용.
   __rpgzzuAiHarness?: () => unknown;
   // 에디터 basic/expert UI 모드 (src/editor/editorUiMode.ts).

@@ -262,7 +262,7 @@ describe("assistantSession 승인 게이트 (명시 수락만 커밋)", () => {
     const result = await session.sendUserMessage("이 벽 타일들 승인해줘");
     expect(result.proposedCalls).toHaveLength(1);
     expect(result.proposedCalls[0].requiresApproval).toBe(true);
-    expect(result.proposedCalls[0].approvalWarning).toContain("어휘 승인");
+    expect(result.proposedCalls[0].approvalWarning).toMatch(/재료 합의|어휘 승인/);
     expect(proposalNeedsExplicitApproval(result.proposedCalls)).toBe(true);
     // 원 프로젝트는 아직 무변경 — 마킹은 명시 수락(스토어 반영) 전이다.
     expect(isApprovedGroup(project.tilesets[DEFAULT_TILESET_ID], groupId)).toBe(false);

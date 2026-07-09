@@ -1,10 +1,11 @@
 import type Phaser from "phaser";
 import {
-  paintTile,
-  eraseVisibleTile,
+  paintTilesBulk,
+  eraseVisibleTilesBulk,
   toggleCollision,
   fillTile,
 } from "@/editor/actions";
+import type { TileStrokeCell } from "@/editor/tileActions";
 import { editorState } from "@/editor/editorState";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
@@ -17,13 +18,6 @@ import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { toast } from "@/util/toast";
 import { placeStructureStamp } from "./structureStampTools";
-
-type BrushStroke = {
-  readonly centerX: number;
-  readonly centerY: number;
-  readonly size: number;
-  readonly applyCell: (x: number, y: number) => void;
-};
 
 export type TileLayer = "lower" | "upper";
 
@@ -109,12 +103,12 @@ export class TilePaintEngine {
           if (stamp) {
             applyStamp({ mapId: mid, layer: tileLayer, x, y, stamp, autoConnect: autoConnectMode });
           } else {
-            applyBrush({
-              centerX: x,
-              centerY: y,
-              size: brushSize,
-              applyCell: (brushX, brushY) => paintTile(mid, tileLayer, brushX, brushY, selectedTile, { autoConnect: autoConnectMode }),
-            });
+            // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
+            paintTilesBulk(
+              mid,
+              brushStrokeCells({ centerX: x, centerY: y, size: brushSize, layer: tileLayer, tile: selectedTile }),
+              { autoConnect: autoConnectMode },
+            );
           }
         }
         break;
@@ -126,12 +120,12 @@ export class TilePaintEngine {
         break;
       case "erase":
         if (firstStrokeTile) recordTileEditSnapshot(mid);
-        applyBrush({
-          centerX: x,
-          centerY: y,
-          size: brushSize,
-          applyCell: (brushX, brushY) => eraseVisibleTile(mid, tileLayer, brushX, brushY, { autoConnect: autoConnectMode }),
-        });
+        eraseVisibleTilesBulk(
+          mid,
+          tileLayer,
+          brushStrokePoints({ centerX: x, centerY: y, size: brushSize }),
+          { autoConnect: autoConnectMode },
+        );
         break;
       case "collision":
         recordTileEditSnapshot(mid, { includeTilesets: true });
@@ -199,13 +193,34 @@ function recordTileEditSnapshot(mapId: MapId, options: { readonly includeTileset
   recordProjectSnapshot(undefined, mapId, { kind: "map", includeTilesets: options.includeTilesets });
 }
 
-function applyBrush(stroke: BrushStroke): void {
+function brushStrokePoints(stroke: {
+  readonly centerX: number;
+  readonly centerY: number;
+  readonly size: number;
+}): readonly { x: number; y: number }[] {
   const offset = Math.floor(stroke.size / 2);
-  for (let y = stroke.centerY - offset; y <= stroke.centerY + offset; y++) {
-    for (let x = stroke.centerX - offset; x <= stroke.centerX + offset; x++) {
-      stroke.applyCell(x, y);
+  const points: { x: number; y: number }[] = [];
+  for (let y = stroke.centerY - offset; y <= stroke.centerY + offset; y += 1) {
+    for (let x = stroke.centerX - offset; x <= stroke.centerX + offset; x += 1) {
+      points.push({ x, y });
     }
   }
+  return points;
+}
+
+function brushStrokeCells(stroke: {
+  readonly centerX: number;
+  readonly centerY: number;
+  readonly size: number;
+  readonly layer: TileLayer;
+  readonly tile: number;
+}): readonly TileStrokeCell[] {
+  return brushStrokePoints(stroke).map((point) => ({
+    layer: stroke.layer,
+    x: point.x,
+    y: point.y,
+    tile: stroke.tile,
+  }));
 }
 
 function applyStamp(input: {
@@ -216,9 +231,16 @@ function applyStamp(input: {
   readonly x: number;
   readonly y: number;
 }): void {
-  for (const cell of input.stamp.cells) {
-    paintTile(input.mapId, input.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, { autoConnect: input.autoConnect });
-  }
+  paintTilesBulk(
+    input.mapId,
+    input.stamp.cells.map((cell) => ({
+      layer: input.layer,
+      x: input.x + cell.dx,
+      y: input.y + cell.dy,
+      tile: cell.tile,
+    })),
+    { autoConnect: input.autoConnect },
+  );
 }
 
 function applyPaletteStamp(input: {
@@ -232,12 +254,19 @@ function applyPaletteStamp(input: {
   // 스탬프 밖 이웃의 상위 레이어를 덮어쓰던 문제 차단 + 의도한 배열 보존.
   // 1칸 스탬프는 지형 오토타일(흙길/모래 등)이 기대대로 성형되도록 autoConnect 를 존중한다.
   const single = input.stamp.cells.length === 1;
-  for (const cell of input.stamp.cells) {
-    paintTile(input.mapId, cell.layer, input.x + cell.dx, input.y + cell.dy, cell.tile, {
+  paintTilesBulk(
+    input.mapId,
+    input.stamp.cells.map((cell) => ({
+      layer: cell.layer,
+      x: input.x + cell.dx,
+      y: input.y + cell.dy,
+      tile: cell.tile,
+    })),
+    {
       autoConnect: single ? input.autoConnect : false,
       clusterExpand: false,
-    });
-  }
+    },
+  );
 }
 
 function toolCanMutateMap(tool: string): boolean {

@@ -1,6 +1,7 @@
 import type { PendingBuild, ProposedCall } from "@/ai/assistantSession";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import type { VocabularyProposalCard } from "@/editor/tools/v3";
+import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm, type VocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 
 export interface SelectedPendingBuild {
@@ -55,6 +56,21 @@ export function runPendingBuilds(
 }
 
 export function proposalAcceptButtonLabel(hasPendingBuild: boolean, selectedCount: number, total: number): string {
-  if (hasPendingBuild) return selectedCount === total ? "승인하고 시공" : `선택 ${selectedCount}건 승인하고 시공`;
-  return selectedCount === total ? "수락해서 적용" : `선택 ${selectedCount}건 적용`;
+  if (hasPendingBuild) return selectedCount === total ? "이대로 적용" : `선택 ${selectedCount}건 이대로 적용`;
+  return selectedCount === total ? "이대로 적용" : `선택 ${selectedCount}건 적용`;
+}
+
+export function collectVocabSoftConfirms(calls: readonly ProposedCall[], selected?: readonly boolean[]): VocabSoftConfirm[] {
+  const out: VocabSoftConfirm[] = [];
+  calls.forEach((call, index) => {
+    if (selected && selected[index] !== true) return;
+    const soft = extractVocabSoftConfirm(call.result.data);
+    if (soft) out.push(soft);
+  });
+  return out;
+}
+
+/** soft-confirm 재료를 origin:user 로 확정(수락 훅). */
+export function markSoftVocabApprovalsOnProject(project: Project, calls: readonly ProposedCall[], selected?: readonly boolean[]): number {
+  return applyVocabSoftConfirmApprovals(project, collectVocabSoftConfirms(calls, selected));
 }

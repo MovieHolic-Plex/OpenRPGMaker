@@ -1,6 +1,7 @@
 import { loadProjectFromSupabase, recordSupabaseAiAnalysisRun, saveProjectToSupabase } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
+import { recordAiActivity } from "@/ai/activityLog";
 
 type StoredProject = {
   readonly found: boolean;
@@ -41,4 +42,23 @@ export async function clearSupabaseCanonicalProjectStore(): Promise<void> {
 
 export async function recordAiAnalysisRun(input: AiAnalysisRunInput): Promise<void> {
   await recordSupabaseAiAnalysisRun(input);
+  // 타일셋 분석도 통합 AI 활동 로그에 남긴다 (로컬 + 가능 시 activity 테이블).
+  void recordAiActivity({
+    channel: "tileset-analysis",
+    instruction: `tileset analysis ${input.tilesetId} (${input.selectedTiles.length} tiles)`,
+    mapId: undefined,
+    result: { ok: true, proposedCalls: 0 },
+    toolCalls: [
+      {
+        name: "tileset_ai_analysis",
+        args: { tilesetId: input.tilesetId, selectedTiles: input.selectedTiles },
+        ok: true,
+        summary: `selected ${input.selectedTiles.length}`,
+      },
+    ],
+    audit: [],
+    uiEvents: [{ promptContext: input.promptContext, result: input.result }],
+  }).catch(() => {
+    /* ignore */
+  });
 }
