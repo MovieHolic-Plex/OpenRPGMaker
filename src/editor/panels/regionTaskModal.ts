@@ -45,8 +45,15 @@ export interface RegionTaskModalOptions {
 }
 
 let modalRoot: HTMLElement | null = null;
+// 현재 열린 모달의 정리 콜백 — 새 모달이 열리거나(closeRegionTaskModal 선호출) 명시적으로
+// 닫힐 때 미해소 pending을 discard하고 구독을 해제한다(스펙: 새 영역 작업 시작 시 기존
+// pending discard). 이 콜백 내부에서 closeRegionTaskModal을 다시 호출하지 않는다(재귀 방지).
+let activeModalCleanup: (() => void) | null = null;
 
 export function closeRegionTaskModal(): void {
+  const cleanup = activeModalCleanup;
+  activeModalCleanup = null;
+  cleanup?.();
   modalRoot?.remove();
   modalRoot = null;
 }
@@ -112,6 +119,15 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     ?? ((project: Project, map: GameMap, rect: RegionRect) => renderRegionSnapshot(project, map, rect));
   const compareHost = el("div", { class: "region-task-compare-host" });
   let activePending: PendingRegionApply | null = null;
+  // renderPendingCompare가 건 subscribePendingRegionApply 구독의 해제 함수 — 모달 스코프에
+  // 저장해 activeModalCleanup(모달 교체/닫기 시)이 정확히 1회 해제할 수 있게 한다.
+  let pendingUnsubscribe: (() => void) | null = null;
+  activeModalCleanup = (): void => {
+    pendingUnsubscribe?.();
+    pendingUnsubscribe = null;
+    if (activePending && !activePending.settled) activePending.discard();
+    activePending = null;
+  };
 
   // applied: true=적용, false=버리기, null=외부(캔버스 인라인 툴바 등)에서 settle되어 결과를 알 수 없음.
   const settlePendingUi = (applied: boolean | null): void => {
@@ -136,15 +152,14 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // settle 되어도(썸네일 await 도중 포함) 모달 UI(요약/버튼 재활성화)가 반영되도록 구독한다.
     let selfSettling = false;
     let settledHandled = false;
-    let unsubscribe: (() => void) | null = null;
     const finalizeSettle = (applied: boolean | null): void => {
       if (settledHandled) return;
       settledHandled = true;
-      unsubscribe?.();
-      unsubscribe = null;
+      pendingUnsubscribe?.();
+      pendingUnsubscribe = null;
       settlePendingUi(applied);
     };
-    unsubscribe = subscribePendingRegionApply(() => {
+    pendingUnsubscribe = subscribePendingRegionApply(() => {
       if (selfSettling || !pending.settled) return;
       finalizeSettle(null);
     });
@@ -307,9 +322,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   };
 
+  // 실제 discard + 구독 해제는 activeModalCleanup(closeRegionTaskModal이 호출)이 담당 —
+  // 여기서 중복 처리하지 않는다(이중 discard 자체는 settled 가드로 무해하지만, 정리 로직을
+  // 한 곳에 모아 모달 교체 경로와 완전히 동일하게 유지한다).
   const discardAndClose = (): void => {
-    if (activePending && !activePending.settled) activePending.discard();
-    activePending = null;
     closeRegionTaskModal();
   };
 

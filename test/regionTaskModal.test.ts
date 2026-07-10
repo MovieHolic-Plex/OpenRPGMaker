@@ -224,4 +224,24 @@ describe("pending 비교 UI", () => {
     findByTestId(root, "region-task-close")?.dispatchEvent(new Event("click"));
     expect(result.pending!.settled).toBe(true); // 닫기 = discard
   });
+
+  it("모달 A가 pending 미해소 상태에서 새 모달 B를 열면 A의 pending이 discard된다(구독 leak 방지)", async () => {
+    restoreDom = installFakeDom();
+    const resultA = fakePendingResult();
+    openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트 A", autoRun: true,
+      run: async () => resultA,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    expect(resultA.pending!.settled).toBe(false); // A는 아직 pending 비교 UI 상태
+
+    // B를 여는 openRegionTaskModal() 내부의 closeRegionTaskModal() 선호출이 A의 정리 콜백
+    // (activeModalCleanup)을 실행해야 한다 — DOM만 지우고 discard/구독 해제를 건너뛰면 leak.
+    const rootB = openModal({ mapId: "m1", region: { x: 1, y: 1, width: 2, height: 2 }, run: vi.fn() });
+
+    expect(resultA.pending!.settled).toBe(true);
+    expect(findByTestId(rootB, "region-task-input")).not.toBeNull();
+  });
 });
