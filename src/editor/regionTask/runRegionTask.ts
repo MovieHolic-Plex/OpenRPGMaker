@@ -14,7 +14,12 @@ import {
 } from "@/ai/assistantSession";
 import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
-import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
+import {
+  clearAgentGhostPreview,
+  createThrottledAgentGhostPreviewUpdater,
+  setAgentGhostPreviewHidden,
+} from "@/editor/agentGhostPreview";
+import { setInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
@@ -27,6 +32,7 @@ import {
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
+import { setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 
 export interface RegionTaskSessionLike {
   sendUserMessage(text: string, onEvent?: (event: SessionEvent) => void): Promise<TurnResult>;
@@ -46,6 +52,8 @@ export interface RegionTaskOptions {
   readonly mapId: MapId;
   readonly region: RegionRect;
   readonly instruction: string;
+  /** 기본 "approval": 적용 전 승인 게이트. "immediate"는 레거시 즉시 적용. */
+  readonly gate?: "approval" | "immediate";
   readonly onEvent?: (event: SessionEvent) => void;
 }
 
@@ -103,10 +111,18 @@ export interface RegionTaskResult {
   readonly validationSummary?: string;
   /** 개발용 구조화 로그 — UI export / window.__rpgzzuRegionTaskLog */
   readonly log?: RegionTaskLogExport;
+  /** 승인 게이트(gate: "approval") 성공 시 반환 — 적용/버리기 전까지 유효. */
+  readonly pending?: PendingRegionApply;
 }
 
 export function describeRegionTaskResult(result: RegionTaskResult): string {
   if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
+  if (result.pending && !result.pending.settled) {
+    const parts: string[] = [];
+    if (result.changedCells > 0) parts.push(`${result.changedCells}칸 타일`);
+    if (result.changedEvents > 0) parts.push(`이벤트 ${result.changedEvents}건`);
+    return `제안 준비 — ${parts.join(" · ") || "변경"} · 적용 여부를 선택하세요`;
+  }
   if (!result.applied) {
     return result.changedCells === 0 && result.changedEvents === 0
       ? "이 영역에서 바뀐 것이 없습니다."
@@ -402,7 +418,6 @@ export async function runRegionTask(
   } else {
     ghostPreviewUpdater.flush();
   }
-  clearAgentGhostPreview();
 
   if (turn.stoppedReason === "aborted") {
     return attachLog({
@@ -434,6 +449,7 @@ export async function runRegionTask(
 
   // 타일만 보면 NPC-only 제안이 버려진다 — 이벤트 변경도 적용 조건에 포함.
   if (changedCells === 0 && changedEvents === 0) {
+    clearAgentGhostPreview();
     return attachLog({
       ok: true,
       applied: false,
@@ -460,6 +476,7 @@ export async function runRegionTask(
   });
   const blocking = layoutValidationBlocking(layoutIssues);
   if (blocking.length > 0) {
+    clearAgentGhostPreview();
     const validationSummary = formatLayoutValidationSummary(layoutIssues);
     return attachLog({
       ok: false,
@@ -474,14 +491,56 @@ export async function runRegionTask(
     }, turn);
   }
 
-  deps.applyProject(clipped, `영역 작업: ${instruction.slice(0, 40)}`, opts.mapId);
-  return attachLog({
+  const gate = opts.gate ?? "approval";
+  const label = `영역 작업: ${instruction.slice(0, 40)}`;
+  if (gate === "immediate") {
+    clearAgentGhostPreview();
+    deps.applyProject(clipped, label, opts.mapId);
+    return attachLog({
+      ok: true,
+      applied: true,
+      changedCells,
+      changedEvents,
+      clippedCells,
+      proposedCalls: turn.proposedCalls.length,
+      assistantText: turn.assistantText,
+    }, turn);
+  }
+
+  // 승인 게이트: 적용하지 않고 pending 등록 + 고스트 유지 + 캔버스 인라인 툴바 배선.
+  const pending = setPendingRegionApply({
+    baseProject: base,
+    clippedProject: clipped,
+    mapId: opts.mapId,
+    region: opts.region,
+    changedCells,
+    changedEvents,
+    instruction,
+    onApply: () => deps.applyProject(clipped, label, opts.mapId),
+    onDiscard: () => {},
+    onSettle: () => {
+      setInlineProposalActions(null);
+      setAgentGhostPreviewHidden(false);
+      clearAgentGhostPreview();
+    },
+  });
+  setInlineProposalActions({
+    accept: () => pending.apply(),
+    reject: () => pending.discard(),
+    holdOrigin: {
+      label: "원본 보기",
+      start: () => setAgentGhostPreviewHidden(true),
+      end: () => setAgentGhostPreviewHidden(false),
+    },
+  });
+  const gated = attachLog({
     ok: true,
-    applied: true,
+    applied: false,
     changedCells,
     changedEvents,
     clippedCells,
     proposedCalls: turn.proposedCalls.length,
     assistantText: turn.assistantText,
   }, turn);
+  return { ...gated, pending };
 }

@@ -1,11 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   buildRegionTaskMessage,
   countInRegionChangedCells,
+  describeRegionTaskResult,
   runRegionTask,
   type RegionTaskDeps,
   type RegionTaskSessionLike,
 } from "@/editor/regionTask/runRegionTask";
+import { __clearPendingRegionApplyForTest, getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
@@ -139,7 +141,10 @@ describe("runRegionTask", () => {
     proposed.maps[MAP_ID].lowerTiles[idx(8, 8)] = 7; // 영역 밖 → 클립 대상
     const { deps, applied } = makeDeps(base, proposed);
 
-    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" }, deps);
+    const result = await runRegionTask(
+      { mapId: MAP_ID, region: REGION, instruction: "여기 채워", gate: "immediate" },
+      deps,
+    );
 
     expect(result.ok).toBe(true);
     expect(result.applied).toBe(true);
@@ -181,7 +186,10 @@ describe("runRegionTask", () => {
       } as Project["maps"][string]["events"][number],
     ];
     const { deps, applied } = makeDeps(base, proposed);
-    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "NPC 배치" }, deps);
+    const result = await runRegionTask(
+      { mapId: MAP_ID, region: REGION, instruction: "NPC 배치", gate: "immediate" },
+      deps,
+    );
     expect(result.ok).toBe(true);
     expect(result.applied).toBe(true);
     expect(result.changedEvents).toBe(1);
@@ -208,5 +216,64 @@ describe("runRegionTask", () => {
     expect(result.ok).toBe(false);
     expect(result.error).toContain("네트워크");
     expect(applied()).toBeNull();
+  });
+});
+
+describe("승인 게이트 (gate: approval 기본)", () => {
+  beforeEach(() => __clearPendingRegionApplyForTest());
+
+  it("성공 시 적용하지 않고 pending을 반환한다", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5; // 영역 안
+    const { deps, applied } = makeDeps(base, proposed);
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "잔디로 채워줘" }, deps);
+
+    expect(result.ok).toBe(true);
+    expect(result.applied).toBe(false);
+    expect(result.pending).toBeDefined();
+    expect(applied()).toBeNull(); // 아직 미적용
+    result.pending!.apply();
+    expect(applied()).not.toBeNull(); // apply 시점에만 store 반영
+    expect(getPendingRegionApply()).toBeNull();
+  });
+
+  it("discard 시 applyProject가 호출되지 않는다", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5;
+    const { deps, applied } = makeDeps(base, proposed);
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "잔디로 채워줘" }, deps);
+    result.pending!.discard();
+    expect(applied()).toBeNull();
+  });
+
+  it("gate: immediate는 기존처럼 즉시 적용한다", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5;
+    const { deps, applied } = makeDeps(base, proposed);
+
+    const result = await runRegionTask(
+      { mapId: MAP_ID, region: REGION, instruction: "잔디로 채워줘", gate: "immediate" },
+      deps,
+    );
+
+    expect(result.applied).toBe(true);
+    expect(result.pending).toBeUndefined();
+    expect(applied()).not.toBeNull();
+  });
+});
+
+describe("describeRegionTaskResult — pending", () => {
+  it("pending이면 확인 대기 문구", () => {
+    const text = describeRegionTaskResult({
+      ok: true, applied: false, changedCells: 34, changedEvents: 2, clippedCells: 0,
+      proposedCalls: 3, assistantText: "",
+      pending: { settled: false } as never,
+    });
+    expect(text).toBe("제안 준비 — 34칸 타일 · 이벤트 2건 · 적용 여부를 선택하세요");
   });
 });
