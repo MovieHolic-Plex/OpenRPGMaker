@@ -12,6 +12,7 @@ import {
   selectLiteral,
   textControl,
 } from "@/editor/panels/databaseControls";
+import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -116,7 +117,7 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
       numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
         updateSystem((draft) => {
           draft.system.activeSlots = optionalPositiveInteger(value);
-        });
+        }, "system:active-slots");
       }),
       checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
         updateSystem((draft) => {
@@ -157,49 +158,49 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
       textControl("게임 타이틀", titleScreen.title, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.title = value;
-        });
+        }, "system:title-screen:title");
       }, "db-field-title-screen-title"),
       textControl("배경 리소스", titleBackgroundResourceId ?? "", (value) => {
         const resourceId = emptyToUndefined(value);
         updateSystem((draft) => {
           draft.system.titleScreen ??= defaultTitleScreenSettings();
           draft.system.titleScreen.backgroundResourceId = resourceId;
-        });
+        }, "system:title-screen:background");
       }, "db-field-title-screen-background"),
       numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.layout.titleX = clampStageCoordinate(value, 320);
-        });
+        }, "system:title-screen:title-x");
       }),
       numberField("타이틀 Y", "db-field-title-screen-title-y", titleScreen.layout.titleY, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.layout.titleY = clampStageCoordinate(value, 240);
-        });
+        }, "system:title-screen:title-y");
       }),
       numberField("선택지 X", "db-field-title-screen-menu-x", titleScreen.layout.menuX, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.layout.menuX = clampStageCoordinate(value, 320);
-        });
+        }, "system:title-screen:menu-x");
       }),
       numberField("선택지 Y", "db-field-title-screen-menu-y", titleScreen.layout.menuY, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.layout.menuY = clampStageCoordinate(value, 240);
-        });
+        }, "system:title-screen:menu-y");
       }),
       textControl("선택지 1", titleScreen.menuLabels.newGame, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.menuLabels.newGame = value;
-        });
+        }, "system:title-screen:menu-new-game");
       }, "db-field-title-screen-new-game"),
       textControl("선택지 2", titleScreen.menuLabels.continueGame, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.menuLabels.continueGame = value;
-        });
+        }, "system:title-screen:menu-continue");
       }, "db-field-title-screen-continue"),
       textControl("선택지 3", titleScreen.menuLabels.quit, (value) => {
         updateTitleScreen((titleScreenSettings) => {
           titleScreenSettings.menuLabels.quit = value;
-        });
+        }, "system:title-screen:menu-quit");
       }, "db-field-title-screen-quit"),
     ]),
     rm2k3Fieldset("그래픽 미리보기", [
@@ -312,7 +313,7 @@ function timeSystemFieldset(
             enabled: true,
             minutesPerRealSecond: Number.isFinite(value) && value > 0 ? value : DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
           });
-        });
+        }, "system:time:minutes-per-second");
       }),
       numberField("하루 시작 시", "db-field-system-time-day-start", timeSystem.dayStartHour ?? DEFAULT_DAY_START_HOUR, (value) => {
         updateSystem((draft) => {
@@ -321,7 +322,7 @@ function timeSystemFieldset(
             enabled: true,
             dayStartHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_START_HOUR,
           });
-        });
+        }, "system:time:day-start");
       }),
       numberField("하루 종료 시", "db-field-system-time-day-end", timeSystem.dayEndHour ?? DEFAULT_DAY_END_HOUR, (value) => {
         updateSystem((draft) => {
@@ -330,7 +331,7 @@ function timeSystemFieldset(
             enabled: true,
             dayEndHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_END_HOUR,
           });
-        });
+        }, "system:time:day-end");
       }),
       checkboxField("종료 시 강제 취침", "db-field-system-time-force-sleep", timeSystem.forceSleep === true, (checked) => {
         updateSystem((draft) => {
@@ -415,14 +416,19 @@ function parseTypes(value: string): string[] {
   return [...new Set(value.split(",").map((entry) => entry.trim()).filter(Boolean))];
 }
 
-function updateTitleScreen(mutator: (settings: ReturnType<typeof defaultTitleScreenSettings>) => void): void {
+function updateTitleScreen(mutator: (settings: ReturnType<typeof defaultTitleScreenSettings>) => void, snapshotKey?: string): void {
   updateSystem((draft) => {
     draft.system.titleScreen ??= defaultTitleScreenSettings();
     mutator(draft.system.titleScreen);
-  });
+  }, snapshotKey);
 }
 
-function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => void): void {
+// snapshotKey가 있으면 텍스트/숫자 연속 입력으로 보고 병합 스냅샷(recordCoalescedSnapshot)을,
+// 없으면 이산 토글/선택으로 보고 매번 새 스냅샷(recordProjectSnapshot)을 남긴다 — 그래야
+// 이 시스템 뷰의 모든 필드에서 Ctrl+Z가 똑같이 동작한다.
+function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => void, snapshotKey?: string): void {
+  if (snapshotKey) recordCoalescedSnapshot(`db-utility:${snapshotKey}`);
+  else recordProjectSnapshot();
   store.update(mutator, { scope: "system" });
 }
 

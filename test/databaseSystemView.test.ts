@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -34,6 +35,7 @@ describe("database system view", () => {
   beforeEach(() => {
     cleanupDom = installFakeDom();
     store.replace(createBlankProject());
+    resetMapEditHistory();
   });
 
   afterEach(() => {
@@ -98,5 +100,25 @@ describe("database system view", () => {
     title.dispatchEvent(new Event("input"));
 
     expect(store.getCurrent().system.titleScreen?.title).toBe("테스트 타이틀");
+  });
+
+  // fix(db): 이 뷰의 직행 store.update 19곳(+ 시스템 뷰 전체)이 undo 스냅샷을 안 남겨
+  // 같은 모달 안에서 어떤 편집은 Ctrl+Z가 되고 어떤 건 안 됐다. battleFlow(이산 선택)로
+  // 대표 검증한다 — 시스템 뷰의 모든 필드가 updateSystem()을 거치므로 이 경로 하나가
+  // 전체 뷰의 undo 배선을 검증한다.
+  it("records an undo snapshot when battleFlow changes, and undo restores the previous value", () => {
+    expect(getMapEditHistoryState().canUndo).toBe(false);
+    const host = renderSystem();
+    const before = store.getCurrent().system.battleFlow;
+
+    setSelectValue(host, "db-field-system-battle-flow", "strict");
+
+    expect(store.getCurrent().system.battleFlow).toBe("strict");
+    expect(getMapEditHistoryState().canUndo).toBe(true);
+
+    const undone = undoMapEdit();
+
+    expect(undone).toBe(true);
+    expect(store.getCurrent().system.battleFlow).toBe(before);
   });
 });

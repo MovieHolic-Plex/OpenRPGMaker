@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderSwitchesTab, renderVariablesTab } from "@/editor/panels/databaseUtilityViews";
+import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { renderSwitchesTab, renderTermsTab, renderVariablesTab } from "@/editor/panels/databaseUtilityViews";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -28,6 +29,7 @@ describe("database utility views", () => {
   beforeEach(() => {
     cleanupDom = installFakeDom();
     store.replace(createBlankProject());
+    resetMapEditHistory();
   });
 
   afterEach(() => {
@@ -94,5 +96,26 @@ describe("database utility views", () => {
     expect(row?.textContent).not.toContain("met-mayor");
     expect(storyFlags?.textContent).toContain("스토리 플래그 (읽기 전용)");
     expect(storyFlags?.textContent).toContain("met-mayor");
+  });
+
+  // fix(db): 용어 탭의 직행 store.update가 undo 스냅샷을 안 남겼다 — 다른 유틸리티 뷰
+  // 필드는 Ctrl+Z가 되는데 용어만 안 되는 비일관 상태였다.
+  it("records an undo snapshot when a term field changes, and undo restores the previous value", () => {
+    expect(getMapEditHistoryState().canUndo).toBe(false);
+    const host = renderUtility(renderTermsTab);
+    const before = store.getCurrent().meta.terms.skill;
+
+    const skillTerm = findByTestId(host, "db-field-skill-term");
+    if (!skillTerm) throw new Error("missing skill term field");
+    skillTerm.value = "Arts";
+    skillTerm.dispatchEvent(new Event("input"));
+
+    expect(store.getCurrent().meta.terms.skill).toBe("Arts");
+    expect(getMapEditHistoryState().canUndo).toBe(true);
+
+    const undone = undoMapEdit();
+
+    expect(undone).toBe(true);
+    expect(store.getCurrent().meta.terms.skill).toBe(before);
   });
 });

@@ -1,5 +1,6 @@
 import { addSwitch, addVariable, deleteSwitch, deleteVariable, renameSwitch, renameVariable } from "@/editor/actions";
 import { bulkRenameSwitches, bulkRenameVariables, type DeleteResult } from "@/editor/databaseActions";
+import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
 import {
   field,
   matchesNameOrId,
@@ -371,6 +372,7 @@ function termField(options: TermFieldOptions): HTMLElement {
   if (options.testid) input.dataset.testid = options.testid;
   input.addEventListener("input", () => {
     const next = input.value;
+    recordCoalescedSnapshot(`db-utility:term:${options.key}`);
     store.update((project) => {
       if (next.trim().length === 0) delete project.meta.terms[options.key];
       else project.meta.terms[options.key] = next;
