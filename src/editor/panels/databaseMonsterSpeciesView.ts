@@ -206,10 +206,10 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
     numberField("그래픽 Hue", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
       const current = currentSpecies(record.id, record);
       updateSpecies(record.id, { graphic: { ...current.graphic, graphicHue: value } });
-    }),
+    }, { min: 0, max: 360 }),
     numberField("포획률(0~1)", "db-monster-species-capture-rate", record.captureRate, (value) => {
       updateSpecies(record.id, { captureRate: value });
-    }),
+    }, { min: 0, max: 1 }),
     ...statFields(record),
     skillsByLevelField(record),
     evolutionsField(record)
