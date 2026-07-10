@@ -164,6 +164,10 @@ export interface ToolExposureOptions {
 }
 
 // 다도메인 region AI에서 place_props·place_npc가 함께 남도록 여유.
+// 주의: 이 핀 목록은 전역이다(일반 채팅 등 region-task 이외 흐름도 공유) — 여기 추가한
+// 도구만큼 다른 비핀 도구가 상한(40) 경합에서 밀려날 수 있다(2026-07-10 라이브 실측 수정으로
+// place_chest 등 region 가이드 도구를 추가하며 확인). 도메인별 페어 슬라이스 등 상한
+// 알고리즘 자체의 개선은 별도 과제로 남겨뒀다.
 const MAX_EXPOSED_TOOLS = 40;
 const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
   ["tile", new Set([

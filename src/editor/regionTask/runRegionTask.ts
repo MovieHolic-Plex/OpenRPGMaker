@@ -32,7 +32,7 @@ import {
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
-import { regionIntentDomainSeed, regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
+import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
@@ -299,10 +299,12 @@ export function buildRegionTaskMessage(
     "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
   ].join("\n");
   // intent 스코핑용 키워드 — "맵" 단독 과활성은 피하고 타일/이벤트/소품 쓰기 도메인을 우선한다.
-  // 라우팅된 카테고리의 가이드가 map/quest 등 다른 도메인 도구를 안내하는 경우, 그 도메인도
-  // 여기서 함께 열어야 가이드-노출 정합이 맞는다(2026-07-10 라이브 실측 — mirror_region 등 unknown tool).
-  const extraSeed = regionIntentDomainSeed(categories);
-  const domainSeed = `(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민${extraSeed ? ` ${extraSeed}` : ""})`;
+  // map/quest 등 다른 도메인 도구의 노출은 여기서 시드를 보태 여는 게 아니라, footer의
+  // "현재 맵" 문구·가이드 문구 자체의 키워드(예: quest-trigger의 "퀘스트")로 이미 자연히
+  // 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
+  // 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 도메인 시드 병합은 A/B 실측상 효과가
+  // 없는 죽은 복잡도로 판정돼 제거했다).
+  const domainSeed = "(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민)";
   return `${instruction.trim()}\n\n${domainSeed}\n${toolGuide}\n\n이 작업은 아래 선택 영역 안에서만 수행하라.\n${footer}`;
 }
 

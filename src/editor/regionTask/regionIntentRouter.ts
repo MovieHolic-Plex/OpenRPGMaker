@@ -1,14 +1,10 @@
 // 영역 작업 지시의 의도를 키워드로 감지해 카테고리별 도구 가이드를 주입한다(스펙 §3-A).
 // LLM 불사용 — assistantToolMode.INTENT_KEYWORDS(도구 노출 도메인)와 별개로,
-// 여기서는 "가이드 문장"을 고른다.
-//
-// 주의(2026-07-10 라이브 실측 수정): 가이드가 언급하는 도구가 실제로는 tile/event가 아닌
-// map/quest 도메인에 등록된 경우가 있다(mirror_region/clear_region/stamp_structure/
-// create_farm_plot/set_encounter_table/make_hunting_ground는 map, create_quest/
-// declare_story_flag는 quest — src/editor/tools/toolRegistry.ts의 withDomain 참고).
-// buildRegionTaskMessage의 기본 domainSeed("타일 지형 나무 소품 집 npc 이벤트 주민")는
-// tile/event만 여는데, 가이드는 그 밖의 도메인 도구도 안내하므로 모델이 가이드를 따르면
-// unknown tool이 된다. REGION_INTENT_DOMAIN_SEEDS로 카테고리별 부족분만 보충한다.
+// 여기서는 "가이드 문장"을 고른다. 도구 노출 자체는 tile/event/map 도메인이 이미
+// footer("[컨텍스트] 현재 맵:"의 "맵")·기본 domainSeed·가이드 문구의 키워드로 자연히
+// 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
+// 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 "도메인 시드" 병합은 A/B 실측상 아무
+// 효과가 없는 죽은 복잡도로 판정돼 제거했다).
 
 export type RegionIntentCategory =
   | "structure"
@@ -65,44 +61,6 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
 const CATEGORY_ORDER: readonly RegionIntentCategory[] = [
   "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
 ];
-
-// 카테고리 → 도메인 시드 문자열. 기본 domainSeed가 이미 tile/event를 여므로,
-// 그 두 도메인만으로 가이드의 모든 도구가 커버되는 카테고리는 빈 문자열("")이다.
-// assistantToolMode.INTENT_KEYWORDS의 strong 키워드를 그대로 재사용해 도메인을 연다.
-export const REGION_INTENT_DOMAIN_SEEDS: Readonly<Record<RegionIntentCategory, string>> = {
-  // build_house_kit/build_wall+fill_region은 tile(기본 시드로 이미 활성).
-  // stamp_structure/create_farm_plot는 map 도메인 — "맵"으로 보충.
-  structure: "맵",
-  // place_npc/make_villager/set_npc_schedule/set_shop_stock 전부 event(기본 시드로 이미 활성).
-  "npc-shop": "",
-  // create_transfer_pair는 event, place_door는 tile(둘 다 기본 시드로 이미 활성).
-  "door-transfer": "",
-  // place_chest/place_savepoint/place_examine_hotspots/script_cutscene은 event(기본 시드로 이미 활성).
-  // create_quest/declare_story_flag는 quest 도메인 — "퀘스트"로 보충.
-  "quest-trigger": "퀘스트",
-  // place_battle_blocker/place_trap/make_chase_scene은 event(기본 시드로 이미 활성).
-  // set_encounter_table/make_hunting_ground는 map 도메인 — "맵"으로 보충.
-  "battle-trap": "맵",
-  // set_lighting_volume/set_scene_mood 전부 event(기본 시드로 이미 활성).
-  mood: "",
-  // move_event/duplicate_event는 event(기본 시드로 이미 활성).
-  // mirror_region/clear_region은 map 도메인 — "맵"으로 보충.
-  transform: "맵",
-};
-
-/** categories에 필요한 도메인 시드 단어(중복 제거, 등장 순서)를 공백 결합한 문자열로 반환한다. */
-export function regionIntentDomainSeed(categories: readonly RegionIntentCategory[]): string {
-  const words: string[] = [];
-  for (const category of CATEGORY_ORDER) {
-    if (!categories.includes(category)) continue;
-    const seed = REGION_INTENT_DOMAIN_SEEDS[category];
-    if (!seed) continue;
-    for (const word of seed.split(/\s+/).filter(Boolean)) {
-      if (!words.includes(word)) words.push(word);
-    }
-  }
-  return words.join(" ");
-}
 
 function normalize(text: string): string {
   return text.toLowerCase().replace(/\s+/g, " ");
