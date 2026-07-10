@@ -42,7 +42,7 @@
 
 ### 2-C. 팝오버 before/after 썸네일
 
-- `src/editor/regionSnapshot.ts` (신규): `mapScreenshot.ts`의 레이어 draw 로직을 내부 공유 함수로 추출하고, `renderRegionSnapshot(project, map, region, opts?) => Promise<HTMLCanvasElement>` 제공(썸네일은 캔버스 요소를 직접 DOM에 부착). 영역만 크롭 렌더, 스케일은 썸네일 목표폭(~140px)에 맞춰 클램프(최소 1px/타일). 이벤트(NPC)는 차셋 스프라이트 1프레임을 셀 위에 오버레이(가능한 범위에서 단순 렌더, 실패 시 셀 마커로 폴백).
+- `src/editor/regionSnapshot.ts` (신규): `mapScreenshot.ts`의 레이어 draw 로직을 내부 공유 함수로 추출하고, `renderRegionSnapshot(project, map, region, opts?) => Promise<HTMLCanvasElement>` 제공(썸네일은 캔버스 요소를 직접 DOM에 부착). 영역만 크롭 렌더, 스케일은 썸네일 목표폭(~140px)에 맞춰 클램프(최소 1px/타일). 이벤트(NPC)는 셀 중앙의 파란 원 마커로 단순 표시(차셋 스프라이트 렌더는 후속 과제).
 - `regionTaskModal`: 실행 완료(성공) 시 요약 아래 `[before 썸네일][→][after 썸네일]` + `[✓ 적용] [✕ 버리기]` 버튼 행 표시. before = 실행 시점 base, after = clipped 결과. 썸네일 클릭 시 2배 확대 팝업(선택 사항 아님 — 포함).
 - 팝오버 닫기(✕/Esc/backdrop)·새 영역 작업 시작 시 pending은 `discard()`. 적용/버리기 후에는 요약을 결과 문구로 갱신("적용됨 — 34칸 타일 · 이벤트 2건" / "버려짐 — 맵 무변경").
 - `describeRegionTaskResult`는 pending 상태 문구를 추가: "제안 준비 — 34칸 타일 · 이벤트 2건 · 적용 여부를 선택하세요".
