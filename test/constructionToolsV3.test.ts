@@ -347,6 +347,17 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
   });
 });
 
+describe("잔디 채우기 (grass-autotile)", () => {
+  it("fill_region이 잔디 그룹으로 사각형을 채운다", () => {
+    const { ctx } = context();
+    const result = runTool(ctx, "fill_region", {
+      mapId: MAP_ID, rect: { x: 2, y: 2, w: 4, h: 3 }, tileVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}grass-autotile`,
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.diff?.warnings ?? []).some((warning) => warning.includes("목업 확인 대기"))).toBe(false); // 번들 시드라 soft 아님
+  });
+});
+
 describe("구 v2 배치 제거 + v3 정공법 (스택 단순화)", () => {
   it("구 v2 배치 이름은 레지스트리에서 제거되고 v3 공정 툴은 노출된다", () => {
     const exposed = new Set(toOpenAiTools().map((tool) => tool.function.name));
