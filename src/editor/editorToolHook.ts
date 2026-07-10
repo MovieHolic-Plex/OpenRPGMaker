@@ -141,7 +141,8 @@ export function installEditorToolHook(): void {
       const value = layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index];
       return value ?? null;
     },
-    // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 실제 store에 clip/적용한다.
+    // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
+    // 적용하려면 반환된 result.pending.apply() 또는 window.__rpgzzuRegionTaskPending.apply()를 호출.
     runMock: (mapId, region, writes) =>
       runRegionTask(
         { mapId, region, instruction: "headless mock" },

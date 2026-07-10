@@ -517,6 +517,7 @@ export async function runRegionTask(
     changedEvents,
     instruction,
     onApply: () => deps.applyProject(clipped, label, opts.mapId),
+    // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
     onDiscard: () => {},
     onSettle: () => {
       setInlineProposalActions(null);

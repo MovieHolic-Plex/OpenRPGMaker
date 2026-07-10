@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clearAgentGhostPreview, subscribeAgentGhostPreview, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { clipMapCellsToRegion, type RegionRect } from "@/editor/regionTask/clipToRegion";
+import { __clearPendingRegionApplyForTest } from "@/editor/regionTask/pendingRegionApply";
 import { runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
@@ -110,7 +111,10 @@ describe("clipMapCellsToRegion", () => {
 });
 
 describe("runRegionTask live ghost preview", () => {
-  it("성공한 쓰기 tool_call 뒤 세션 draft diff 프리뷰를 발행하고 종료 시 clear한다", async () => {
+  beforeEach(() => __clearPendingRegionApplyForTest());
+  afterEach(() => __clearPendingRegionApplyForTest());
+
+  it("성공한 쓰기 tool_call 뒤 세션 draft diff 프리뷰를 발행하고 승인 해소 시 clear한다", async () => {
     clearAgentGhostPreview();
     const base = baseProject();
     base.maps[MAP_ID].lowerTiles.fill(TILE.EMPTY);
@@ -141,6 +145,11 @@ describe("runRegionTask live ghost preview", () => {
     expect(seen.some((state) => state.previews.some((preview) =>
       preview.mapId === MAP_ID && preview.cells.some((cell) => cell.x === 2 && cell.y === 2 && cell.layer === "lower")
     ))).toBe(true);
+    // 승인 게이트(기본): run 직후에도 승인 전까지 고스트 프리뷰가 유지된다.
+    expect(result.pending).toBeDefined();
+    expect(seen.at(-1)?.previews.length).toBeGreaterThan(0);
+    // discard로 게이트가 해소되면 그제서야 clear된다.
+    result.pending!.discard();
     expect(seen.at(-1)?.previews).toEqual([]);
     unsubscribe();
   });
