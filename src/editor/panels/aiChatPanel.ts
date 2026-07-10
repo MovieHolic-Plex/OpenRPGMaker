@@ -120,14 +120,7 @@ export {
   mapIdsReferencedByCall,
   reassembleSelectedProposalProject,
 } from "./aiProposalSummary";
-export {
-  collectPendingBuilds,
-  proposalAcceptButtonLabel,
-  rebindPendingBuildArgs,
-  runPendingBuilds,
-  type PendingBuildOutcome,
-  type SelectedPendingBuild,
-} from "./aiProposalFusion";
+export { proposalAcceptButtonLabel } from "./aiProposalFusion";
 export {
   applyVocabularyCardEdits,
   callsWithVocabularyEdits,

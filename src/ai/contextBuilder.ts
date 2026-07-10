@@ -9,6 +9,7 @@ import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
+import { approvedVocabulary } from "@/project/tileVocabulary";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 
@@ -146,11 +147,23 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   const lines: string[] = [];
   for (const tilesetId of tilesetIds) {
     const tileset = project.tilesets[tilesetId];
-    if (!tileset || (tileset.palettePresets ?? []).length === 0) continue;
+    if (!tileset) continue;
+    const vocab = approvedVocabulary(tileset);
+    // 프리셋도 승인 그룹도 없으면 이 타일셋은 다이제스트에 보탤 것이 없다.
+    if ((tileset.palettePresets ?? []).length === 0 && vocab.groups.length === 0) continue;
     lines.push(`### ${tileset.name} (${tileset.id})`);
     for (const preset of tileset.palettePresets ?? []) {
       const slots = preset.slots.map((slot) => `${slot.role}:${slot.tileIds.length}`).join(", ");
       lines.push(`- ${preset.name} (${preset.id}${preset.locked ? ", locked" : ""}, ${preset.origin}) — ${slots || "slot 없음"}`);
+    }
+    if (vocab.groups.length > 0) {
+      const byRole = new Map<string, string[]>();
+      for (const group of vocab.groups) {
+        const bucket = byRole.get(group.role) ?? [];
+        bucket.push(`${group.id}(${group.name})`);
+        byRole.set(group.role, bucket);
+      }
+      for (const [role, entries] of byRole) lines.push(`- ${role}: ${entries.join(", ")}`);
     }
     const lowConfidence = (tileset.tileMeta ?? []).filter((meta) => {
       const score = confidenceScore(meta?.confidence);
@@ -161,7 +174,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** build_house_lots — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용].",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** build_house_lots — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 아래 그룹 id를 build_wall/lay_path/fill_region/place_props의 *VocabId 인자에 그대로 사용한다(추측 금지, 모르면 tile_query ask:\"vocab\").",
     trimDigestLines(lines, 700),
   ].join("\n");
 }

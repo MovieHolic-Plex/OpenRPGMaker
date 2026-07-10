@@ -58,17 +58,6 @@ export type SessionEvent =
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string };
 
-// 승인+시공 융합(2026-07-07 §2.1.3): v3 프리미티브가 "미승인 어휘"로 실패한 호출을
-// 어휘 제안 카드에 보류 시공으로 첨부한다 — 수락 한 번으로 어휘 커밋 + 시공이 끝난다.
-export interface PendingBuild {
-  readonly tool: string;
-  readonly args: Record<string, unknown>;
-  readonly label: string;
-  // 시공이 소비하는 어휘 id 인자 이름(예: wallVocabId)과 원래 값 — 카드 교정 시 리바인드용.
-  readonly vocabIdField: string;
-  readonly vocabId?: string;
-}
-
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
 export interface ProposedCall {
   name: string;
@@ -78,8 +67,6 @@ export interface ProposedCall {
   destructive: boolean; // remove_event 등 파괴적 작업.
   requiresApproval?: boolean;
   approvalWarning?: string;
-  // 이 어휘 제안이 수락되면 같은 제스처로 실행할 보류 시공(§2.1.3).
-  pendingBuilds?: readonly PendingBuild[];
 }
 
 export interface TurnResult {
@@ -112,40 +99,6 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 
 // 파괴적으로 간주하는 툴 이름.
 const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map"]);
-// v3 공정 프리미티브 → 어휘 id 인자 이름(§2.1.3 보류 시공 리바인드용).
-export const V3_PRIMITIVE_VOCAB_FIELDS: ReadonlyMap<string, string> = new Map([
-  ["build_wall", "wallVocabId"],
-  ["build_roof", "roofVocabId"],
-  ["place_door", "doorVocabId"],
-  ["place_window", "windowVocabId"],
-  ["lay_path", "pathVocabId"],
-  ["place_props", "propVocabId"],
-  ["fill_region", "tileVocabId"],
-]);
-
-// 보류 시공 카드 라벨(예: "벽 (8,6) 6×5") — 사용자가 무엇이 시공될지 카드에서 본다.
-export function pendingBuildLabel(tool: string, args: Record<string, unknown>): string {
-  const rect = isRecord(args.rect) ? args.rect : undefined;
-  const at = isRecord(args.at) ? args.at : undefined;
-  switch (tool) {
-    case "build_wall":
-      return rect ? `벽 (${String(rect.x)},${String(rect.y)}) ${String(rect.w)}×${String(rect.h)}` : "벽";
-    case "build_roof":
-      return "지붕";
-    case "place_door":
-      return at ? `문 (${String(at.x)},${String(at.y)})` : "문";
-    case "place_window":
-      return at ? `창문 (${String(at.x)},${String(at.y)})` : "창문";
-    case "lay_path":
-      return Array.isArray(args.points) ? `길 경유점 ${args.points.length}개` : "길";
-    case "place_props":
-      return typeof args.count === "number" ? `소품 ${args.count}개` : "소품";
-    case "fill_region":
-      return rect ? `영역 채우기 (${String(rect.x)},${String(rect.y)}) ${String(rect.w)}×${String(rect.h)}` : "영역 채우기";
-    default:
-      return tool;
-  }
-}
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 // 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인) 수락 시에만 origin:user.
 // requiresApproval 이 메타데이터 자동 커밋·autoApprove 를 막아 명시 수락만 합의로 친다.
@@ -407,8 +360,6 @@ export class AssistantSession {
   private specRejections = 0;
   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
   private turnProposals = new Map<string, ProposedCall>();
-  // 이번 턴에 "미승인 어휘"로 실패한 v3 시공 호출(§2.1.3) — 어휘 제안 카드에 첨부된다.
-  private turnPendingBuilds = new Map<string, PendingBuild>();
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
   private eventBaseProposalKeys = new Map<string, string>();
@@ -610,7 +561,6 @@ export class AssistantSession {
     this.carryoverWarningAdded = false;
     this.specRejections = 0;
     this.turnProposals = new Map();
-    this.turnPendingBuilds = new Map();
     this.turnWriteDedupe = new Map();
     this.eventBaseProposalKeys = new Map();
 
@@ -655,31 +605,10 @@ export class AssistantSession {
     return { ...proposal, result: appendDiffWarning(proposal.result, warning) };
   }
 
-  // 미승인 어휘로 실패한 v3 시공 호출을 보류 시공으로 기록한다(같은 호출 재시도는 1건으로 병합).
-  private recordPendingBuildIfUnapproved(name: string, args: Record<string, unknown>, result: ToolResult): void {
-    const vocabIdField = V3_PRIMITIVE_VOCAB_FIELDS.get(name);
-    if (!vocabIdField || result.ok) return;
-    if (!(result.issues ?? []).some((issue) => issue.code === "unapproved-vocabulary")) return;
-    const vocabId = typeof args[vocabIdField] === "string" ? (args[vocabIdField] as string) : undefined;
-    this.turnPendingBuilds.set(`${name}:${JSON.stringify(args)}`, {
-      tool: name,
-      args: structuredClone(args),
-      label: pendingBuildLabel(name, args),
-      vocabIdField,
-      ...(vocabId !== undefined ? { vocabId } : {}),
-    });
-  }
-
-  // 턴 종료 시 보류 시공을 마지막 어휘 제안 카드에 첨부한다(§2.1.3).
-  // 어휘 제안이 없으면 첨부할 카드가 없으므로 버린다(다음 턴에서 다시 제안됨).
+  // 턴 종료 시 누적된 제안을 배열로 넘긴다(과거엔 보류 시공을 여기서 첨부했으나
+  // soft-allow 전환으로 그 기계가 도달 불가가 되어 제거됐다 — 2026-07-11).
   private finalizeProposals(proposedByKey: Map<string, ProposedCall>): ProposedCall[] {
-    const calls = [...proposedByKey.values()];
-    if (this.turnPendingBuilds.size === 0) return calls;
-    const lastProposeIndex = calls.map((call) => call.name).lastIndexOf("propose_tile_vocabulary");
-    if (lastProposeIndex < 0) return calls;
-    return calls.map((call, index) =>
-      index === lastProposeIndex ? { ...call, pendingBuilds: [...this.turnPendingBuilds.values()] } : call
-    );
+    return [...proposedByKey.values()];
   }
 
   private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
@@ -990,9 +919,6 @@ export class AssistantSession {
             if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
           }
         }
-        // 승인+시공 융합(§2.1.3): 미승인 어휘로 거부된 v3 시공은 보류 시공으로 기록해
-        // 이번 턴의 어휘 제안 카드에 첨부한다(수락 한 번 = 어휘 커밋 + 시공).
-        this.recordPendingBuildIfUnapproved(name, args, toolResult);
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({

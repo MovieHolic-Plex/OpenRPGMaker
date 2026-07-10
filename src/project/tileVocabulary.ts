@@ -7,9 +7,8 @@
 //   approved | soft | missing 을 돌려 soft 면 맵에 그린 뒤 사용자 목업 확인으로 합의한다.
 // - origin:"user" 마킹은 (1) propose_tile_vocabulary 수락 (2) soft-confirm 제안 수락
 //   (3) T1b/위저드 confirmedByUser 경로에서만 한다. 이 모듈 자체는 마킹하지 않는다.
-// - assertApprovedOrFail 은 레거시/명시 승인 전용 API로 남긴다.
+// - 그룹 한정 예외: source === "bundled-default"(큐레이션 번들)는 origin:"user"와 동급 신뢰(2026-07-11).
 
-import { ToolError } from "@/editor/tools/types";
 import type { Project, TileGroupMetadata, TilesetDef } from "./types";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
@@ -44,12 +43,20 @@ export interface UnapprovedVocabularySummary {
   readonly sampleTileIds: readonly number[];
 }
 
+// 번들 하네스 그룹은 사람이 큐레이션한 재료라 zero-trust가 막으려는 "AI 추정 이름"이
+// 아니다. origin:"user"(명시 합의)와 동급으로 신뢰한다(2026-07-11 승인 시드).
+// 낱개 타일(tileMeta)에는 적용하지 않는다 — 라벨이 반자동 생성이라 목업 확인 유지.
+export function isTrustedGroupSource(group: TileGroupMetadata): boolean {
+  return group.origin === "user" || group.source === "bundled-default";
+}
+
 export function isApprovedTile(tileset: TilesetDef, tileId: number): boolean {
   return tileset.tileMeta?.[tileId]?.origin === "user";
 }
 
 export function isApprovedGroup(tileset: TilesetDef, groupId: string): boolean {
-  return findGroup(tileset, groupId)?.origin === "user";
+  const group = findGroup(tileset, groupId);
+  return group ? isTrustedGroupSource(group) : false;
 }
 
 // 그룹의 어휘 홈 레이어 — layerHome이 없으면 defaultLayer에서 유도(mixed/event → perCell).
@@ -62,7 +69,7 @@ export function groupLayerHome(group: TileGroupMetadata): VocabLayerHome {
 // 승인된 어휘 전체(승인 그룹 + 그룹에 속하지 않은 승인 낱개 타일 — 소품류).
 export function approvedVocabulary(tileset: TilesetDef): ApprovedVocabulary {
   const groups: ApprovedVocabularyGroup[] = (tileset.tileGroups ?? [])
-    .filter((group) => group.origin === "user")
+    .filter((group) => isTrustedGroupSource(group))
     .map((group) => ({
       id: group.id,
       name: group.name,
@@ -87,7 +94,7 @@ export function approvedVocabulary(tileset: TilesetDef): ApprovedVocabulary {
 
 // 미승인 어휘 요약 — tile_query ask:"unapproved"가 소비한다.
 export function unapprovedVocabulary(tileset: TilesetDef, limit = 10): UnapprovedVocabularySummary {
-  const unapprovedGroups = (tileset.tileGroups ?? []).filter((group) => group.origin !== "user");
+  const unapprovedGroups = (tileset.tileGroups ?? []).filter((group) => !isTrustedGroupSource(group));
   const unapprovedTileIds: number[] = [];
   (tileset.tileMeta ?? []).forEach((meta, tileId) => {
     if (!meta || meta.origin === "user") return;
@@ -100,6 +107,46 @@ export function unapprovedVocabulary(tileset: TilesetDef, limit = 10): Unapprove
     tileCount: unapprovedTileIds.length,
     sampleTileIds: unapprovedTileIds.slice(0, Math.max(0, limit)),
   };
+}
+
+// 한국어 재료어 → 그룹 검색어 확장(발견성). 정확 일치 실패 시 후보 제시에만 쓴다 — 자동 대체 금지.
+const VOCAB_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[] = [
+  [/돌벽|석벽|돌담/, ["stone", "wall", "castle"]],
+  [/벽/, ["wall"]],
+  [/길|도로/, ["path", "road", "dirt", "sand"]],
+  [/물|호수|연못|강/, ["water", "lake"]],
+  [/나무|수목/, ["tree", "conifer", "broadleaf"]],
+  [/울타리|담장/, ["fence"]],
+  [/지붕/, ["roof"]],
+  [/문/, ["door"]],
+  [/잔디|풀/, ["grass"]],
+];
+
+// 존재하지 않는 그룹 id 요청 실패에 후보를 제시한다(발견성 — 추측 루프를 1턴으로).
+export function suggestVocabGroups(
+  tileset: TilesetDef,
+  query: string,
+  limit = 3
+): { id: string; name: string; role: string }[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return [];
+  const terms = new Set<string>([needle]);
+  for (const [pattern, expansions] of VOCAB_QUERY_SYNONYMS) {
+    if (pattern.test(needle)) expansions.forEach((term) => terms.add(term));
+  }
+  const scored = (tileset.tileGroups ?? []).map((group) => {
+    const haystacks = [group.id, group.name, group.description ?? "", group.role].map((s) => s.toLowerCase());
+    let score = 0;
+    for (const term of terms) {
+      if (haystacks[0].includes(term)) score += 3; // id 일치가 가장 신뢰도 높음
+      if (haystacks[1].includes(term)) score += 2;
+      if (haystacks[2].includes(term)) score += 1;
+      if (haystacks[3].includes(term)) score += 1;
+    }
+    return { group, score };
+  }).filter((entry) => entry.score > 0);
+  scored.sort((a, b) => b.score - a.score || a.group.id.localeCompare(b.group.id));
+  return scored.slice(0, Math.max(0, limit)).map(({ group }) => ({ id: group.id, name: group.name, role: group.role }));
 }
 
 export type VocabularyRef =
@@ -237,46 +284,6 @@ export function applyVocabSoftConfirmApprovals(project: Project, softConfirms: r
     }
   }
   return marked;
-}
-
-// 레거시: 명시 승인 전용 하드 차단. 시공 soft 경로는 resolveVocabForBuild 를 쓴다.
-export function assertApprovedOrFail(tileset: TilesetDef, ref: VocabularyRef): void {
-  if (typeof ref.groupId === "string") {
-    if (isApprovedGroup(tileset, ref.groupId)) return;
-    const group = findGroup(tileset, ref.groupId);
-    const label = group ? `타일 그룹 '${group.name}'(${group.id})` : `타일 그룹 '${ref.groupId}'`;
-    throw new ToolError(unapprovedMessage(label, proposeExampleForGroup(tileset, group, ref.groupId)), { code: "unapproved-vocabulary" });
-  }
-  if (isApprovedTile(tileset, ref.tileId)) return;
-  const meta = tileset.tileMeta?.[ref.tileId];
-  const label = meta?.label ? `타일 ${ref.tileId}('${meta.label}')` : `타일 ${ref.tileId}`;
-  throw new ToolError(unapprovedMessage(label, proposeExampleForTile(ref.tileId, meta?.label)), { code: "unapproved-vocabulary" });
-}
-
-function unapprovedMessage(label: string, example: Record<string, unknown>): string {
-  return `${label}은(는) 아직 사용자와 합의되지 않았습니다. propose_tile_vocabulary로 승인을 받으세요. — 다시 보낼 형식 예시: ${JSON.stringify(example)}`;
-}
-
-function proposeExampleForGroup(tileset: TilesetDef, group: TileGroupMetadata | undefined, groupId: string): Record<string, unknown> {
-  return {
-    tilesetId: tileset.id,
-    items: [
-      {
-        kind: "group",
-        groupId,
-        name: group?.name ?? "9분할 벽",
-        role: group?.role ?? "wall",
-        patternKind: group?.patternGrammar?.kind ?? "nine_slice_expandable",
-        layerHome: group ? groupLayerHome(group) : "lower",
-      },
-    ],
-  };
-}
-
-function proposeExampleForTile(tileId: number, label: string | undefined): Record<string, unknown> {
-  return {
-    items: [{ kind: "tile", tileIds: [tileId], name: label || "우물", role: "prop", layerHome: "upper" }],
-  };
 }
 
 function approvedTileLayerHome(tileset: TilesetDef, tileId: number): VocabLayerHome {

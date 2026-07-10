@@ -32,6 +32,16 @@ function approve(tileset: TilesetDef, groupId: string): TileGroupMetadata {
   return group;
 }
 
+// 번들 하네스 그룹은 source:"bundled-default"로 시드 승인된다(2026-07-11). soft-confirm
+// 경로 자체를 검증하는 케이스는 이 헬퍼로 번들 신뢰를 제거해 미승인 상태로 되돌린다.
+function forceUnapproved(tileset: TilesetDef, groupId: string): TileGroupMetadata {
+  const group = tileset.tileGroups?.find((entry) => entry.id === groupId);
+  if (!group) throw new Error(`그룹 없음: ${groupId}`);
+  group.origin = undefined;
+  group.source = undefined;
+  return group;
+}
+
 function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
   const roof: TileGroupMetadata = {
     id: "test-roof", name: "빨간 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
@@ -47,7 +57,8 @@ function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
 
 describe("build_wall / build_roof (공정 1·3단계)", () => {
   it("미합의 벽 어휘는 soft-confirm으로 시공되고 vocabSoftConfirm 을 붙인다", () => {
-    const { ctx } = context();
+    const { ctx, tileset } = context();
+    forceUnapproved(tileset(), WALL_GROUP_ID);
     const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: WALL_GROUP_ID });
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({ groupId: WALL_GROUP_ID, cells: 16 });
@@ -81,6 +92,17 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
     expect(roofed.data).toMatchObject({ wallRegion: { x: 4, y: 6, w: 5, h: 3 }, roofRegion: { x: 4, y: 5, w: 5, h: 1 } });
     const map = ctx.project.maps[MAP_ID];
     expect(map.upperTiles[5 * map.width + 4]).toBe(60); // 지붕 홈 = upper(벽 보존)
+  });
+});
+
+describe("missing 어휘 실패 시 유사 그룹 후보 제시", () => {
+  it("build_wall을 존재하지 않는 wallVocabId(\"돌벽\")로 호출하면 비슷한 그룹 후보를 에러 메시지에 담는다", () => {
+    const { ctx } = context();
+    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: "돌벽" });
+    expect(result.ok).toBe(false);
+    const message = `${result.summary} ${JSON.stringify(result.issues ?? [])}`;
+    expect(message).toContain("비슷한 그룹");
+    expect(message).toMatch(/harness-combined-town-(timber-stone-wall-9slice|castle-wall-face)/);
   });
 });
 
@@ -159,6 +181,7 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
   it("place_props: 미합의 소품도 soft-confirm으로 배치되고, 승인 그룹도 동일 엔진으로 배치된다", () => {
     const { ctx, tileset } = context();
     const treeId = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
+    forceUnapproved(tileset(), treeId);
     const soft = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4, seed: 3 });
     expect(soft.ok, soft.summary).toBe(true);
     expect((soft.data as { vocabSoftConfirm?: { groupId?: string } }).vocabSoftConfirm?.groupId).toBe(treeId);
@@ -321,6 +344,17 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.EMPTY);
     expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.GRASS);
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
+  });
+});
+
+describe("잔디 채우기 (grass-autotile)", () => {
+  it("fill_region이 잔디 그룹으로 사각형을 채운다", () => {
+    const { ctx } = context();
+    const result = runTool(ctx, "fill_region", {
+      mapId: MAP_ID, rect: { x: 2, y: 2, w: 4, h: 3 }, tileVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}grass-autotile`,
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.diff?.warnings ?? []).some((warning) => warning.includes("목업 확인 대기"))).toBe(false); // 번들 시드라 soft 아님
   });
 });
 

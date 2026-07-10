@@ -3,27 +3,26 @@
 // 고정하는 계약: (1) 제로 부트스트랩 — 새 프로젝트 승인 집합은 공집합
 // (2) 승인 표식은 origin:"user" 뿐(source:"user"는 불인정)
 // (3) propose_tile_vocabulary 커밋 = 승인 마킹, 사실 배지는 마킹 전 분류로 계산
-// (4) 하드 차단 헬퍼는 미승인 시 ToolError + "다시 보낼 형식 예시"
-// (5) assistantSession이 requiresApproval로 자동 수락(autoApprove) 경로를 차단.
+// (4) assistantSession이 requiresApproval로 자동 수락(autoApprove) 경로를 차단.
 
 import { describe, expect, it } from "vitest";
 import { AssistantSession, proposalNeedsExplicitApproval, VOCABULARY_PROPOSAL_TOOLS } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { runTool, type ToolContext } from "@/editor/tools";
-import { ToolError } from "@/editor/tools/types";
 import { getGrammarProfile, tilesetGrammarProfile } from "@/editor/tools/v3";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import {
   approvedVocabulary,
-  assertApprovedOrFail,
   isApprovedGroup,
   isApprovedTile,
+  resolveVocabForBuild,
+  suggestVocabGroups,
   unapprovedVocabulary,
 } from "@/project/tileVocabulary";
-import type { TilesetDef } from "@/project/types";
+import type { TileGroupMetadata, TilesetDef } from "@/project/types";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
@@ -31,22 +30,26 @@ function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
 }
 
 // 엔진 분류가 "upper"인 타일(투명 배경 칩 등) — 사실 배지 모순 테스트용.
+// 번들 하네스 그룹에 이미 속한 타일은 제외한다 — 그룹 승인 시드(2026-07-11)로 인해
+// 그룹 소속 타일은 approvedVocabulary().tiles(낱개 승인 목록)에서 자연히 빠지므로,
+// "낱개 타일" 시나리오를 검증하려면 그 어떤 그룹에도 속하지 않은 타일이 필요하다.
 function findUpperTile(tileset: TilesetDef): number {
+  const grouped = new Set((tileset.tileGroups ?? []).flatMap((group) => group.tileIds));
   for (let tile = 0; tile < tileset.count; tile++) {
-    if (tileLayerHome(tileset, tile) === "upper") return tile;
+    if (tileLayerHome(tileset, tile) === "upper" && !grouped.has(tile)) return tile;
   }
   throw new Error("upper 분류 타일이 기본 타일셋에 없습니다");
 }
 
 describe("승인 보캐뷸러리 판정 (tileVocabulary)", () => {
-  it("제로 부트스트랩: 새 프로젝트의 승인 집합은 공집합이다 (하네스 그룹·번들 메타는 미승인)", () => {
+  it("제로 부트스트랩: 낱개 승인 타일은 공집합이나, 번들 하네스 그룹은 시드 승인된다 (2026-07-11)", () => {
     const { tileset } = context();
     const def = tileset();
-    expect(def.tileGroups?.length ?? 0).toBeGreaterThan(0); // 하네스 그룹은 존재하지만
+    expect(def.tileGroups?.length ?? 0).toBeGreaterThan(0); // 하네스 그룹은 존재하고
     const vocab = approvedVocabulary(def);
-    expect(vocab.groups).toHaveLength(0); // 어떤 것도 승인되지 않았다
-    expect(vocab.tiles).toHaveLength(0);
-    for (const group of def.tileGroups ?? []) expect(isApprovedGroup(def, group.id)).toBe(false);
+    expect(vocab.groups).toHaveLength(def.tileGroups!.length); // source:bundled-default라 전부 승인 시드
+    expect(vocab.tiles).toHaveLength(0); // 낱개 타일(tileMeta)은 여전히 zero-trust
+    for (const group of def.tileGroups ?? []) expect(isApprovedGroup(def, group.id)).toBe(true);
   });
 
   it("source:'user'만으로는 승인이 아니다 — origin:'user'가 유일한 표식", () => {
@@ -59,28 +62,6 @@ describe("승인 보캐뷸러리 판정 (tileVocabulary)", () => {
     expect(isApprovedTile(def, 5)).toBe(false);
     def.tileMeta![5].origin = "user";
     expect(isApprovedTile(def, 5)).toBe(true);
-  });
-
-  it("assertApprovedOrFail: 미승인이면 ToolError(합의 안내 + 재전송 예시), 승인 후 통과", () => {
-    const { tileset } = context();
-    const def = tileset();
-    const group = def.tileGroups![0];
-    let thrown: unknown;
-    try {
-      assertApprovedOrFail(def, { groupId: group.id });
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(ToolError);
-    const message = String((thrown as Error).message);
-    expect(message).toContain("아직 사용자와 합의되지 않았습니다");
-    expect(message).toContain("propose_tile_vocabulary");
-    expect(message).toContain("다시 보낼 형식 예시");
-    expect((thrown as ToolError).code).toBe("unapproved-vocabulary");
-
-    group.origin = "user";
-    expect(() => assertApprovedOrFail(def, { groupId: group.id })).not.toThrow();
-    expect(() => assertApprovedOrFail(def, { tileId: 3 })).toThrow(ToolError);
   });
 });
 
@@ -205,6 +186,9 @@ describe("propose_tile_vocabulary (v3 write 툴)", () => {
 describe("tile_query ask:'unapproved' + 문법 프로파일", () => {
   it("미승인 그룹/타일 요약(수량+대표 id)을 주고, 승인하면 수량이 줄어든다", () => {
     const { ctx, tileset } = context();
+    // 번들 그룹은 이제 시드 승인되므로, 미승인 흐름(soft) 자체를 검증하려면
+    // 픽스처 그룹 하나의 번들 신뢰를 제거해 미승인 상태로 되돌린다.
+    tileset().tileGroups![0].source = undefined;
     const before = runTool(ctx, "tile_query", { ask: "unapproved", limit: 5 });
     expect(before.ok, before.summary).toBe(true);
     const beforeData = before.data as { groupCount: number; groups: { id: string }[]; tileCount: number; sampleTileIds: number[] };
@@ -229,11 +213,65 @@ describe("tile_query ask:'unapproved' + 문법 프로파일", () => {
   });
 });
 
+describe("번들 하네스 그룹 승인 시드 (2026-07-11)", () => {
+  it("source:bundled-default 그룹은 origin 없이도 승인으로 판정된다", () => {
+    const { tileset } = context();
+    const def = tileset();
+    def.tileGroups = [{
+      id: "g-bundled", name: "번들 벽", role: "wall", defaultLayer: "lower",
+      tileIds: [1, 2, 3], description: "", placementRules: "", source: "bundled-default",
+    } as TileGroupMetadata];
+    expect(isApprovedGroup(def, "g-bundled")).toBe(true);
+    const access = resolveVocabForBuild(def, { groupId: "g-bundled" });
+    expect(access.status).toBe("approved");
+  });
+
+  it("AI가 만든 그룹(origin/source 없음 또는 origin:ai)은 여전히 soft다", () => {
+    const { tileset } = context();
+    const def = tileset();
+    def.tileGroups = [{
+      id: "g-ai", name: "AI 추정 벽", role: "wall", defaultLayer: "lower",
+      tileIds: [1], description: "", placementRules: "", origin: "ai",
+    } as TileGroupMetadata];
+    expect(isApprovedGroup(def, "g-ai")).toBe(false);
+    expect(resolveVocabForBuild(def, { groupId: "g-ai" }).status).toBe("soft");
+  });
+
+  it("unapprovedVocabulary는 번들 그룹을 미승인 목록에서 제외한다", () => {
+    const { tileset } = context();
+    const def = tileset();
+    def.tileGroups = [
+      { id: "g-b", name: "번들", role: "prop", defaultLayer: "lower", tileIds: [1], description: "", placementRules: "", source: "bundled-default" } as TileGroupMetadata,
+      { id: "g-a", name: "AI", role: "prop", defaultLayer: "lower", tileIds: [2], description: "", placementRules: "", origin: "ai" } as TileGroupMetadata,
+    ];
+    const summary = unapprovedVocabulary(def);
+    expect(summary.groups.map((g) => g.id)).toEqual(["g-a"]);
+  });
+});
+
+describe("suggestVocabGroups", () => {
+  it("'돌벽' 질의에 석벽 계열 그룹을 후보로 돌려준다", () => {
+    const { tileset } = context();
+    const ids = suggestVocabGroups(tileset(), "돌벽").map((s) => s.id);
+    expect(ids.length).toBeGreaterThan(0);
+    expect(ids.some((id) => id.includes("timber-stone-wall") || id.includes("castle-wall"))).toBe(true);
+  });
+
+  it("id 부분 문자열로도 찾는다", () => {
+    const { tileset } = context();
+    const ids = suggestVocabGroups(tileset(), "stone-wall").map((s) => s.id);
+    expect(ids.some((id) => id.includes("timber-stone-wall"))).toBe(true);
+  });
+});
+
 describe("assistantSession 승인 게이트 (명시 수락만 커밋)", () => {
   it("propose_tile_vocabulary 제안은 requiresApproval — autoApprove 자동 수락 경로가 차단된다", async () => {
     expect(VOCABULARY_PROPOSAL_TOOLS.has("propose_tile_vocabulary")).toBe(true);
     const project = createBlankProject();
     const groupId = project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].id;
+    // 승인 게이트 자체(명시 수락 전에는 무변경) 검증이 목적이므로, 번들 신뢰 시드를
+    // 제거해 groupId를 미승인 상태로 되돌린다.
+    project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].source = undefined;
     const steps: ChatResult[] = [
       {
         message: {

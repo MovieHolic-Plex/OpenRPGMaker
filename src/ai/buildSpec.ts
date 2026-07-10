@@ -62,9 +62,9 @@ interface CheckedAsset {
 }
 
 // v3 공정 프리미티브(build_wall 등 6종)는 여기 넣지 않는다(2026-07-07 타일 시공 흐름 재설계 §2.1.1):
-// v3는 승인 어휘 자체가 명세이므로 set_build_spec 게이트가 불필요하고, 미승인 하드 차단은
-// 프리미티브 내부(assertApprovedOrFail)가 그대로 수행한다. 단, fill_region은 넓은 지형 쓰기라 스펙
-// 자동 확장/구조물 보호 관례를 탄다.
+// v3는 승인 어휘 자체가 명세이므로 set_build_spec 게이트가 불필요하고, 시공 프리미티브는
+// resolveVocabForBuild soft-allow(미승인 재료도 맵에 그린 뒤 목업 확인으로 합의)를 그대로 탄다.
+// 단, fill_region은 넓은 지형 쓰기라 스펙 자동 확장/구조물 보호 관례를 탄다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",

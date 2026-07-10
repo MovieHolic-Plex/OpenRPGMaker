@@ -29,17 +29,12 @@ import {
   callsWithVocabularyEdits,
   hasVocabularyEdits,
   renderVocabularyCardList,
-  vocabularyCardsData,
   type VocabularyCardEdit,
 } from "./aiChatRenderers";
 import {
-  collectPendingBuilds,
   collectVocabSoftConfirms,
   markSoftVocabApprovalsOnProject,
   proposalAcceptButtonLabel,
-  rebindPendingBuildArgs,
-  runPendingBuilds,
-  type PendingBuildOutcome,
 } from "./aiProposalFusion";
 import {
   enforceProposalDependencies,
@@ -246,35 +241,7 @@ export function createProposalHost(options: {
       toast(`적용 실패: ${reassembled.message}`, "error");
       return;
     }
-    let proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
-
-    // 승인+시공 융합(§2.1.3)
-    const pendingSelections = collectPendingBuilds(calls, selected);
-    let fusionOutcomes: PendingBuildOutcome[] = [];
-    if (pendingSelections.length > 0) {
-      const selectedPosition = (callIndex: number): number => {
-        let position = -1;
-        for (let index = 0; index <= callIndex; index += 1) if (selected[index]) position += 1;
-        return position;
-      };
-      const builds = pendingSelections.map(({ callIndex, pending }) => {
-        const call = calls[callIndex];
-        const originalCards = vocabularyCardsData(call)?.cards ?? null;
-        const committedResult = reassembled?.ok ? reassembled.results[selectedPosition(callIndex)] : null;
-        const committedCards = committedResult
-          ? vocabularyCardsData({ name: call.name, result: committedResult })?.cards ?? null
-          : originalCards;
-        return { pending, args: rebindPendingBuildArgs(pending, originalCards, committedCards) };
-      });
-      const fused = runPendingBuilds(proposed, builds);
-      proposed = fused.project;
-      fusionOutcomes = fused.outcomes;
-      for (const outcome of fusionOutcomes.filter((entry) => !entry.result.ok)) {
-        appendBubble("system", `⚠️ 시공 실패 — ${outcome.pending.label}: ${outcome.result.summary}`);
-        toast(`시공 실패: ${outcome.pending.label}`, "error");
-      }
-    }
-    const fusionApplied = fusionOutcomes.filter((entry) => entry.result.ok);
+    const proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
 
     // soft-confirm 재료 합의(origin:user) — 목업 수락과 동시에 다음 시공부터 바로 씀.
     const softMarked = markSoftVocabApprovalsOnProject(proposed, calls, selected);
@@ -309,7 +276,7 @@ export function createProposalHost(options: {
     store.replace(proposed);
     focusAcceptedAgentChanges(before, proposed);
     const actualDiff = reassembled?.ok
-      ? combineDiffs([...reassembled.results, ...fusionApplied.map((entry) => entry.result)].map((result) => result.diff))
+      ? combineDiffs(reassembled.results.map((result) => result.diff))
       : summarizeChanges(before, proposed);
     recordProjectCommitFireAndForget({
       project: proposed,
@@ -317,7 +284,7 @@ export function createProposalHost(options: {
       reviewStatus: "approved",
       summary: aiHistoryLabel(selectedCalls),
       diff: actualDiff,
-      toolNames: [...selectedCalls.map((call) => call.name), ...fusionApplied.map((entry) => entry.pending.tool)],
+      toolNames: selectedCalls.map((call) => call.name),
     });
     resetManualProjectCommitBaseline(proposed);
     proposalHost.replaceChildren();
@@ -330,14 +297,11 @@ export function createProposalHost(options: {
       : { calls: selectedCalls, assistantBubble: null, summary: proposalHumanSummaryLine(selectedCalls) };
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${selectedCalls.length}건을 프로젝트에 적용했습니다.`);
-    for (const outcome of fusionApplied) {
-      appendBubble("system", `🏗 이대로 시공 — ${outcome.result.summary}`);
-    }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
     }
     toast(
-      softMarked > 0 || fusionApplied.length > 0
+      softMarked > 0
         ? "배치를 적용하고 재료를 합의했습니다."
         : "AI 변경안을 적용했습니다.",
       "ok",
@@ -454,8 +418,7 @@ export function createProposalHost(options: {
       if (acceptButton) {
         const count = selected.filter(Boolean).length;
         acceptButton.disabled = count === 0;
-        const hasPending = result.proposedCalls.some((call, index) => selected[index] === true && (call.pendingBuilds?.length ?? 0) > 0);
-        acceptButton.textContent = proposalAcceptButtonLabel(hasPending, count, result.proposedCalls.length);
+        acceptButton.textContent = proposalAcceptButtonLabel(count, result.proposedCalls.length);
       }
     };
 

@@ -45,8 +45,12 @@ describe("region AI placement harness", () => {
   it("ensureRegionPlacementHarness approves tree group so place_props succeeds", () => {
     const context = makeMapProject();
     const tileset = context.project.tilesets[context.project.maps[MAP_ID].tilesetId];
-    expect(approvedVocabulary(tileset).groups).toHaveLength(0);
+    // 번들 트리 그룹은 source:"bundled-default"로 이미 시드 승인되어 있다(2026-07-11).
+    // ensureRegionPlacementHarness는 이를 origin:"user"(영구 합의)로 승격한다.
+    expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_PRESETS.tree)).toBe(true);
+    expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS.tree)?.origin).not.toBe("user");
     ensureRegionPlacementHarness(tileset);
+    expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS.tree)?.origin).toBe("user");
     expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_PRESETS.tree)).toBe(true);
     expect(formatApprovedPropVocabHint(tileset)).toContain(BUILD_PALETTE_PRESETS.tree);
     expect(formatApprovedPropVocabHint(tileset)).toContain(REGION_PROP_VOCAB.woodBox);

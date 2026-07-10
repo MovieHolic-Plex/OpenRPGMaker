@@ -190,7 +190,7 @@ function issueFromItemError(index: number, cause: unknown): LintIssue {
 const proposeTileVocabulary: ToolDefinition = {
   name: "propose_tile_vocabulary",
   description:
-    "미승인 타일/그룹을 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). 기존 그룹 재제안은 groupId만 보내라(tileIds 불필요). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **중요: 이 툴만 부르고 멈추지 마라 — 제안 직후 같은 턴에 build_wall 등 시공 프리미티브를 그 그룹 id로 호출하면, 미승인 실패가 승인 카드에 보류 시공으로 묶여 사용자 수락 한 번으로 시공까지 끝난다.** 배치 프리미티브는 승인 어휘만 소비한다.",
+    "신규 재료(어휘에 없는 타일 조합)를 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). 기존 그룹 재제안은 groupId만 보내라(tileIds 불필요). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **이미 존재하는 그룹/타일로 시공할 때는 이 툴이 필요 없다 — build_wall 등 프리미티브를 바로 호출하면 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의된다.** 이 툴은 '어휘에 아직 없는 새 재료'를 정의할 때만 쓴다.",
   mode: "write",
   version: 3,
   parameters: {
@@ -256,7 +256,7 @@ const proposeTileVocabulary: ToolDefinition = {
     const names = cards.map((card) => `'${card.name}'`).join(", ");
     const failureSummary = issues.length > 0 ? ` 실패 ${issues.length}건은 issues에 보고했습니다.` : "";
     return {
-      summary: `타일 어휘 ${cards.length}건 제안(${names}).${failureSummary} 다음 단계(필수): 지금 같은 턴에 이 그룹 id를 wallVocabId/pathVocabId 등으로 넣어 시공 프리미티브(build_wall/lay_path 등)를 곧바로 호출하세요. 미승인 상태라 그 호출은 실패하지만, 시스템이 그 시공을 이 승인 카드에 '보류 시공'으로 묶어 사용자가 [승인하고 시공]을 한 번 누르면 어휘 승인+시공이 함께 끝납니다. 제안만 하고 턴을 끝내지 마세요.`,
+      summary: `타일 어휘 ${cards.length}건 제안(${names}).${failureSummary} 사용자가 카드에서 수락하면 어휘가 등록됩니다. 이미 존재하는 재료의 시공은 이 제안과 무관하게 build_wall/fill_region 등을 바로 호출하세요(미합의 재료도 맵 목업 후 확인).`,
       ...(warnings.length > 0 ? { warnings } : {}),
       ...(issues.length > 0 ? { issues } : {}),
       data: { tilesetId: tileset.id, grammarProfile: profile.id, cards },

@@ -17,14 +17,16 @@ describe("tileset AI setup mapping", () => {
     applyAiMappingAnswerForTest(tileset, selectedTiles, answer);
 
     const aiGroup = tileset.tileGroups?.find((group) => group.id.startsWith("ai-"));
+    // 2026-07-11 grass-autotile 하네스 그룹(T7)이 선택 범위의 대부분(240/270-272/300-302)에
+    // "잔디" 라벨을 이미 부여해두므로, 다수결 라벨링이 일반 "지형" 대신 "잔디"를 채택한다.
     expect(aiGroup).toEqual(expect.objectContaining({
       defaultLayer: "lower",
-      name: "자동 연결 지형",
+      name: "잔디 오토타일",
       role: "terrain",
     }));
     expect(tileset.tileMeta?.[271]).toEqual(expect.objectContaining({
       defaultLayer: "lower",
-      label: "지형 중앙",
+      label: "잔디 중앙",
       repeatability: "repeat",
       role: "body",
     }));

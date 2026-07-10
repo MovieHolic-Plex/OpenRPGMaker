@@ -117,6 +117,9 @@ describe("T2 — 승인 시 패턴 파츠 자동 생성 불변식", () => {
   it("nine_slice 9개 미만이면 승인 거부(pattern-underspecified) — 그룹이 커밋되지 않는다", () => {
     const { ctx, tileset } = contextWithMap();
     const before = tileset().tileGroups?.length ?? 0;
+    // 번들 하네스 그룹은 source:"bundled-default"로 이미 시드 승인되어 있다(2026-07-11) —
+    // "미승인 시도가 승인 목록을 늘리지 않는다"를 검증하려면 그 기준선을 잡아야 한다.
+    const approvedBefore = approvedVocabulary(tileset()).groups.length;
     const result = runTool(ctx, "propose_tile_vocabulary", {
       items: [{ kind: "group", tileIds: [301, 302, 303], name: "모자란벽", role: "wall", patternKind: "nine_slice_expandable", layerHome: "lower" }],
     });
@@ -124,7 +127,7 @@ describe("T2 — 승인 시 패턴 파츠 자동 생성 불변식", () => {
     expect(result.issues?.some((issue) => issue.code === "pattern-underspecified")).toBe(true);
     // 쓰기 draft가 폐기되어 부분 마킹이 남지 않는다.
     expect(tileset().tileGroups?.length ?? 0).toBe(before);
-    expect(approvedVocabulary(tileset()).groups).toHaveLength(0);
+    expect(approvedVocabulary(tileset()).groups).toHaveLength(approvedBefore);
   });
 
   it("vertical 2개(1×2 문 규약)는 top/bottom, 3의 배수는 top/repeatBody/bottom으로 파생된다", () => {
