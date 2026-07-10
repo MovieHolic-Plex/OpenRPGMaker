@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  REGION_INTENT_KEYWORDS,
   regionIntentGuideLines,
   routeRegionIntent,
   type RegionIntentCategory,
@@ -72,6 +73,30 @@ describe("routeRegionIntent — 코퍼스 50개 전수", () => {
       for (const category of expected) expect(routed).toContain(category);
     });
   }
+});
+
+describe("REGION_INTENT_KEYWORDS — 단음절 재유입 방지", () => {
+  it("모든 카테고리의 모든 키워드는 길이 2 이상이다(단음절은 무관한 문장에 오탐한다)", () => {
+    for (const [category, keywords] of Object.entries(REGION_INTENT_KEYWORDS)) {
+      for (const keyword of keywords) {
+        expect(keyword.length, `${category}: "${keyword}"`).toBeGreaterThanOrEqual(2);
+      }
+    }
+  });
+});
+
+describe("routeRegionIntent — 오탐 방지 네거티브 케이스", () => {
+  it("'전체적으로 예쁘게 꾸며줘'는 battle-trap으로 라우팅되지 않는다", () => {
+    expect(routeRegionIntent("전체적으로 예쁘게 꾸며줘")).not.toContain("battle-trap");
+  });
+
+  it("'완벽하게 다듬어줘'는 structure로 라우팅되지 않는다", () => {
+    expect(routeRegionIntent("완벽하게 다듬어줘")).not.toContain("structure");
+  });
+
+  it("'주민에게 주문서에 대해 질문하는 이벤트 만들어줘'는 door-transfer로 라우팅되지 않는다", () => {
+    expect(routeRegionIntent("주민에게 주문서에 대해 질문하는 이벤트 만들어줘")).not.toContain("door-transfer");
+  });
 });
 
 describe("regionIntentGuideLines / buildRegionTaskMessage 통합", () => {
