@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 133개 툴 — 쓰기 95, 읽기 38.
+> 총 136개 툴 — 쓰기 98, 읽기 38.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -36,6 +36,7 @@
 | `stamp_structure` | `mapId: string`, `template: l\|courtyard\|multi\|road\|plaster\|stone`, `origin: object`, `presetId?: string`, `paletteRole?: string`, `naturalness?: number`, `seed?: integer` | 집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 반환 diff에 문 좌표를 포함한다. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
 | `build_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone`, `presetId?: string`, `paletteRole?: string`, `naturalness?: number`, `seed?: integer` | 요청한 크기의 직사각형 집을 짓는다(지붕 4행 + 벽 + 문 + 창문 자동 구성). width 5~30, height 6~24, material: plaster(회벽)/wood(목재)/stone(석재). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. '10x10 집'처럼 크기가 지정된 집은 벽 타일을 직접 칠하지 말고 이 툴을 써라. 반환 data에 문 좌표 포함. naturalness(자연도) 기본 0.5. 사용자가 '정갈/반듯'을 원하면 0~0.2, '야생/자연/구불구불'을 원하면 0.8 이상을 쓰세요. |
 | `clear_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer`, `layer?: lower\|upper\|both`, `fill?: grass\|empty` | 맵의 사각 영역을 정리한다: 상위 레이어는 비우고, 하위 레이어는 잔디(fill=grass, 기본) 또는 빈 칸(fill=empty)으로 되돌린다. 잘못 배치한 구조물을 지울 때 사용. 이벤트는 지우지 않고 경고로 알린다. |
+| `mirror_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer`, `axis: horizontal\|vertical` | 사각 영역의 타일(하위/상위/스택)과 영역 안 이벤트 좌표를 좌우(horizontal) 또는 상하(vertical)로 대칭 변환한다. 결정적 변환 — 오토타일 경계는 보정하지 않으므로 필요하면 이후 다듬기 지시를 권한다. |
 | `set_start_position` | `mapId: string`, `x: integer`, `y: integer` | 게임 시작 맵/좌표를 지정한다. 통행 불가 타일이면 실패한다. |
 | `set_tile_passability` | `tilesetId?: string`, `tile: integer`, `passable: boolean` | 타일셋의 특정 타일 통행 가능 여부를 설정한다(4방향 일괄). 겉보기와 실제 통행성이 다른 타일을 고칠 때 사용. |
 | `set_map_properties` | `mapId: string`, `name?: string`, `encounterRate?: integer`, `troopIds?: array` | 맵 속성을 설정한다: name(이름), encounterRate(랜덤 인카운트율, 0=없음), troopIds(인카운트 적 그룹 — 실제 트룹 id여야 함). |
@@ -46,13 +47,15 @@
 | `remove_map` | `mapId: string` | 맵을 삭제한다(파괴적 — 꼭 필요할 때만, 이유를 먼저 설명). 시작 맵은 삭제 불가. 맵 트리/연결/이동(transfer) 참조는 함께 정리되며, 무결성 검증에 실패하면 거부된다. |
 | `generate_map` | `theme: village\|forest\|cave`, `name?: string`, `width: integer`, `height: integer`, `entrance?: object`, `pois?: array`, `chokepoints?: integer`, `seed?: integer`, `id?: string` | 테마(village/forest/cave) 맵을 생성한다(최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). |
 | `upsert_event` | `mapId: string`, `event: object` | 먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. 기존 GameEvent 구조 그대로 받아 shape 검증 후 맵에 upsert한다. NPC/주민/대화 이벤트 배치는 place_npc를 사용하라. upsert_event는 GameEvent 전체 shape를 아는 경우의 저수준 수정용. |
-| `place_npc` | `mapId: string`, `x: integer`, `y: integer`, `name: string`, `graphic?: object`, `movement?: fixed\|random`, `pages: array`, `id?: string` | NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager\|people\|npc\|human\|사람\|주민\|actor\|hero\|animal\|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. |
+| `place_npc` | `mapId: string`, `x: integer`, `y: integer`, `name: string`, `graphic?: object`, `movement?: fixed\|random`, `pages: array`, `id?: string` | 보물상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요. NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager\|people\|npc\|human\|사람\|주민\|actor\|hero\|animal\|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. |
 | `set_npc_schedule` | `mapId: string`, `eventId: string`, `schedule: array` | 기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다. |
 | `make_villager` | `mapId: string`, `name: string`, `graphic?: object`, `home: object`, `schedule?: array`, `dailyRoutine?: object`, `dialogue?: array`, `giftPrefs?: object`, `giftResponses?: object`, `shop?: object`, `id?: string` | home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다. |
 | `set_shop_stock` | `mapId: string`, `eventId: string`, `stock: array` | 기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. |
 | `create_transfer_pair` | `a: object`, `b: object`, `fade?: black\|white\|none` | 두 맵 사이 양방향 출입구를 원자적으로 생성한다. 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지). |
 | `place_battle_blocker` | `mapId: string`, `x: integer`, `y: integer`, `troopId: string`, `clearSwitchId?: string`, `intro?: array`, `victory?: array`, `victoryItems?: array`, `graphic?: object`, `id?: string` | 전투 블로커를 배치한다(전투 페이지 + 승리 후 투명 페이지). clearSwitchId로 재전투를 막는다. |
 | `place_trap` | `mapId: string`, `at?: object`, `cells?: array`, `trigger: touch\|action`, `message?: string`, `respawnCheckpoint?: boolean`, `graphic?: object`, `idPrefix?: string` | 즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다. |
+| `place_chest` | `mapId: string`, `x: integer`, `y: integer`, `contents: object`, `name?: string`, `id?: string` | 보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지). '상자를 열면 ~을 주는' 요청은 이 툴 하나로 끝낸다. |
+| `place_savepoint` | `mapId: string`, `x: integer`, `y: integer`, `name?: string`, `id?: string` | 세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). |
 | `make_chase_scene` | `mapId: string`, `chaser: object`, `killOnTouch?: boolean`, `safeZone?: object`, `activateSwitch?: string`, `checkpointOnEntry?: boolean` | 장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. |
 | `duplicate_event` | `fromMapId: string`, `eventId: string`, `toMapId: string`, `x: integer`, `y: integer`, `newId?: string` | 이벤트를 다른 맵/좌표로 복제한다. |
 | `remove_event` | `mapId: string`, `eventId: string` | 맵에서 이벤트를 제거한다(파괴적). |

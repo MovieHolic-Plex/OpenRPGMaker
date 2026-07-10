@@ -7,6 +7,8 @@ export interface RegionTaskStatusDetail {
   readonly mapId: string;
   readonly region: RegionRect;
   readonly running: boolean;
+  /** running=true일 때 세부 단계 — 생략 시 "running"으로 간주. */
+  readonly phase?: "running" | "pending";
 }
 
 export function dispatchRegionTaskStatus(detail: RegionTaskStatusDetail): void {
@@ -32,5 +34,6 @@ export function regionTaskStatusDetail(event: Event): RegionTaskStatusDetail | n
     !Number.isInteger(region.x) || !Number.isInteger(region.y) ||
     !Number.isInteger(region.width) || !Number.isInteger(region.height)
   ) return null;
-  return { mapId: candidate.mapId, region: region as RegionRect, running: candidate.running };
+  const phase = candidate.phase === "running" || candidate.phase === "pending" ? candidate.phase : undefined;
+  return { mapId: candidate.mapId, region: region as RegionRect, running: candidate.running, ...(phase ? { phase } : {}) };
 }

@@ -14,7 +14,12 @@ import {
 } from "@/ai/assistantSession";
 import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
-import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
+import {
+  clearAgentGhostPreview,
+  createThrottledAgentGhostPreviewUpdater,
+  setAgentGhostPreviewHidden,
+} from "@/editor/agentGhostPreview";
+import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
@@ -27,6 +32,9 @@ import {
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
+import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
+import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
 export interface RegionTaskSessionLike {
   sendUserMessage(text: string, onEvent?: (event: SessionEvent) => void): Promise<TurnResult>;
@@ -46,6 +54,8 @@ export interface RegionTaskOptions {
   readonly mapId: MapId;
   readonly region: RegionRect;
   readonly instruction: string;
+  /** 기본 "approval": 적용 전 승인 게이트. "immediate"는 레거시 즉시 적용. */
+  readonly gate?: "approval" | "immediate";
   readonly onEvent?: (event: SessionEvent) => void;
 }
 
@@ -103,10 +113,18 @@ export interface RegionTaskResult {
   readonly validationSummary?: string;
   /** 개발용 구조화 로그 — UI export / window.__rpgzzuRegionTaskLog */
   readonly log?: RegionTaskLogExport;
+  /** 승인 게이트(gate: "approval") 성공 시 반환 — 적용/버리기 전까지 유효. */
+  readonly pending?: PendingRegionApply;
 }
 
 export function describeRegionTaskResult(result: RegionTaskResult): string {
   if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
+  if (result.pending && !result.pending.settled) {
+    const parts: string[] = [];
+    if (result.changedCells > 0) parts.push(`${result.changedCells}칸 타일`);
+    if (result.changedEvents > 0) parts.push(`이벤트 ${result.changedEvents}건`);
+    return `제안 준비 — ${parts.join(" · ") || "변경"} · 적용 여부를 선택하세요`;
+  }
   if (!result.applied) {
     return result.changedCells === 0 && result.changedEvents === 0
       ? "이 영역에서 바뀐 것이 없습니다."
@@ -261,6 +279,8 @@ export function buildRegionTaskMessage(
   tileset?: TilesetDef,
 ): string {
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
+  const categories = routeRegionIntent(instruction);
+  const intentGuides = regionIntentGuideLines(categories);
   const toolGuide = [
     "영역 작업 도구 규칙:",
     "- 집/건물: build_house_kit (벽 타일로 직사각 채우기 금지)",
@@ -270,10 +290,20 @@ export function buildRegionTaskMessage(
     "- 길/도로: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},...] } — 흙길 오토타일 성형. 영역 안 동선·호수 둘레 산책로에 사용",
     "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",
     "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지",
-    "- 영역 작업은 즉시 적용된다. propose_tile_vocabulary 댄스는 하지 말 것",
+    ...intentGuides,
+    "- 지원하지 않는 요청 부분은 시도하지 말고, 마지막 응답에 '못 한 것: …' 한 줄로 명시하라",
+    // "적용" 표기 금지: assistantToolMode.INTENT_KEYWORDS.battle.strong의 단음절 "적"과
+    // 부분일치로 충돌해(2026-07-10 라이브 실측 수정) 이 고정 문구가 매 턴 battle+database
+    // 도메인을 허위로 열고 노출 상한(40)을 잠식해 mirror_region 등 map/quest 도구를 밀어냈다.
+    "- 결과는 사용자 승인 후에만 반영된다. propose_tile_vocabulary 댄스는 하지 말 것",
     "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
   ].join("\n");
   // intent 스코핑용 키워드 — "맵" 단독 과활성은 피하고 타일/이벤트/소품 쓰기 도메인을 우선한다.
+  // map/quest 등 다른 도메인 도구의 노출은 여기서 시드를 보태 여는 게 아니라, footer의
+  // "현재 맵" 문구·가이드 문구 자체의 키워드(예: quest-trigger의 "퀘스트")로 이미 자연히
+  // 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
+  // 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 도메인 시드 병합은 A/B 실측상 효과가
+  // 없는 죽은 복잡도로 판정돼 제거했다).
   const domainSeed = "(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민)";
   return `${instruction.trim()}\n\n${domainSeed}\n${toolGuide}\n\n이 작업은 아래 선택 영역 안에서만 수행하라.\n${footer}`;
 }
@@ -342,6 +372,9 @@ export async function runRegionTask(
   const map = base.maps[opts.mapId];
   if (!map) return { ...emptyBase, error: "맵을 찾을 수 없습니다." };
 
+  // 이전 pending의 onSettle(전역 고스트 정리)이 이번 실행의 프리뷰를 지우지 않도록 선-해소.
+  getPendingRegionApply()?.discard();
+
   // 영역 AI 세션용 작업본: 건축 팔레트와 동일 하네스로 나무/소품 그룹을 승인 상태로 연다.
   // (제로 부트스트랩 본선은 유지 — 여기만 region/build-palette 큐레이션 경로)
   const working = structuredClone(base);
@@ -402,7 +435,6 @@ export async function runRegionTask(
   } else {
     ghostPreviewUpdater.flush();
   }
-  clearAgentGhostPreview();
 
   if (turn.stoppedReason === "aborted") {
     return attachLog({
@@ -423,7 +455,8 @@ export async function runRegionTask(
   }
 
   const proposed = session.getProposedProject();
-  // 영역 AI는 채팅 soft-confirm UI 없이 즉시 적용 — soft 재료도 이 시점에 합의 처리.
+  // 영역 AI는 채팅 soft-confirm UI 없이 진행 — soft 재료 합의는 이 시점에 처리한다
+  // (적용 자체는 아래 승인 게이트를 통과한 뒤에야 store에 반영된다).
   const softs = turn.proposedCalls
     .map((call) => extractVocabSoftConfirm(call.result.data))
     .filter((soft): soft is NonNullable<typeof soft> => soft !== null);
@@ -434,6 +467,7 @@ export async function runRegionTask(
 
   // 타일만 보면 NPC-only 제안이 버려진다 — 이벤트 변경도 적용 조건에 포함.
   if (changedCells === 0 && changedEvents === 0) {
+    clearAgentGhostPreview();
     return attachLog({
       ok: true,
       applied: false,
@@ -460,6 +494,7 @@ export async function runRegionTask(
   });
   const blocking = layoutValidationBlocking(layoutIssues);
   if (blocking.length > 0) {
+    clearAgentGhostPreview();
     const validationSummary = formatLayoutValidationSummary(layoutIssues);
     return attachLog({
       ok: false,
@@ -474,14 +509,65 @@ export async function runRegionTask(
     }, turn);
   }
 
-  deps.applyProject(clipped, `영역 작업: ${instruction.slice(0, 40)}`, opts.mapId);
-  return attachLog({
+  const gate = opts.gate ?? "approval";
+  const label = `영역 작업: ${instruction.slice(0, 40)}`;
+  if (gate === "immediate") {
+    clearAgentGhostPreview();
+    deps.applyProject(clipped, label, opts.mapId);
+    return attachLog({
+      ok: true,
+      applied: true,
+      changedCells,
+      changedEvents,
+      clippedCells,
+      proposedCalls: turn.proposedCalls.length,
+      assistantText: turn.assistantText,
+    }, turn);
+  }
+
+  // 승인 게이트: 적용하지 않고 pending 등록 + 고스트 유지 + 캔버스 인라인 툴바 배선.
+  // regionInlineActions는 아래 setInlineProposalActions 호출 뒤에 값이 채워지지만,
+  // onSettle 클로저는 호출 시점(apply/discard 이후)에야 실행되므로 참조만 잡아두면 된다.
+  let regionInlineActions: InlineProposalActions | null = null;
+  const pending = setPendingRegionApply({
+    baseProject: base,
+    clippedProject: clipped,
+    mapId: opts.mapId,
+    region: opts.region,
+    changedCells,
+    changedEvents,
+    instruction,
+    onApply: () => deps.applyProject(clipped, label, opts.mapId),
+    // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
+    onDiscard: () => {},
+    onSettle: () => {
+      // CAS: 이 pending이 등록한 actions가 여전히 전역 슬롯이면(다른 등록자가 덮어쓰지 않았으면)만 지운다.
+      if (getInlineProposalActions() === regionInlineActions) setInlineProposalActions(null);
+      setAgentGhostPreviewHidden(false);
+      clearAgentGhostPreview();
+      // apply/discard 어느 경로(모달 버튼·캔버스 인라인 툴바·닫기·새 작업의 자동 discard)로
+      // settle 되든 배지/실행 상태를 여기서 한 번에 해제 — 개별 UI가 각자 해제하면 구멍이 생긴다.
+      dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
+    },
+  });
+  regionInlineActions = {
+    accept: () => pending.apply(),
+    reject: () => pending.discard(),
+    holdOrigin: {
+      label: "원본 보기",
+      start: () => setAgentGhostPreviewHidden(true),
+      end: () => setAgentGhostPreviewHidden(false),
+    },
+  };
+  setInlineProposalActions(regionInlineActions);
+  const gated = attachLog({
     ok: true,
-    applied: true,
+    applied: false,
     changedCells,
     changedEvents,
     clippedCells,
     proposedCalls: turn.proposedCalls.length,
     assistantText: turn.assistantText,
   }, turn);
+  return { ...gated, pending };
 }

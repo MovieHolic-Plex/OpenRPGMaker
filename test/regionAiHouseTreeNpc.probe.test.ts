@@ -168,6 +168,11 @@ describe("region AI house/tree/npc probe", () => {
       deps,
     );
 
+    // 승인 게이트(gate 기본값 "approval") 아래서는 runRegionTask가 store/project에
+    // 즉시 반영하지 않고 pending으로만 들고 있는다 — 라이브 LLM 결과가 실제로 맵에
+    // 반영되는지 검증하는 것이 이 프로브의 목적이므로, 여기서 명시적으로 승인한다.
+    result.pending?.apply();
+
     const map = project.maps[MAP_ID];
     const upperNonEmpty = map.upperTiles.filter((t) => t >= 0 && t !== TILE.EMPTY).length;
     const lowerDiff = map.lowerTiles.filter((t, i) => t !== TILE.GRASS).length;

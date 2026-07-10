@@ -164,6 +164,10 @@ export interface ToolExposureOptions {
 }
 
 // 다도메인 region AI에서 place_props·place_npc가 함께 남도록 여유.
+// 주의: 이 핀 목록은 전역이다(일반 채팅 등 region-task 이외 흐름도 공유) — 여기 추가한
+// 도구만큼 다른 비핀 도구가 상한(40) 경합에서 밀려날 수 있다(2026-07-10 라이브 실측 수정으로
+// place_chest 등 region 가이드 도구를 추가하며 확인). 도메인별 페어 슬라이스 등 상한
+// 알고리즘 자체의 개선은 별도 과제로 남겨뒀다.
 const MAX_EXPOSED_TOOLS = 40;
 const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
   ["tile", new Set([
@@ -178,8 +182,18 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     "tile_query",
     "propose_tile_vocabulary",
   ])],
-  ["event", new Set(["place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event"])],
-  ["map", new Set(["get_map_region", "show_map_region", "get_project_summary"])],
+  ["event", new Set([
+    "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event",
+    // 영역 작업 quest-trigger/mood/door-transfer 가이드 대표 도구(2026-07-10 라이브 실측 수정) —
+    // event 도메인 안에서도 EVENT_TOOLS/LIGHTING_TOOLS 뒤쪽 정의라 상한(40) 슬라이스에서 밀려
+    // place_chest 등이 노출 안 되던 문제.
+    "place_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
+  ])],
+  ["map", new Set([
+    "get_map_region", "show_map_region", "get_project_summary",
+    // 영역 작업 transform/battle-trap 가이드 대표 도구(2026-07-10 라이브 실측 수정).
+    "mirror_region", "set_encounter_table",
+  ])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
   ["tile", 0],

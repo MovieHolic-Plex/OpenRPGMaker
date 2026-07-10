@@ -4,6 +4,7 @@ import type { AgentFocusBounds, AgentFocusCell, AgentFocusTarget } from "@/edito
 import {
   agentGhostPreviewsForMap,
   getAgentGhostPreviewState,
+  isAgentGhostPreviewHidden,
   type AgentGhostBounds,
   type AgentGhostCell,
   type AgentGhostPreview,
@@ -39,15 +40,16 @@ export class AgentGhostPreviewRenderer {
     const previews = this.currentPreviews();
     if (previews.length === 0) return;
 
-    const group = this.scene.add.container(0, 0);
-    group.setName("agent-ghost-preview");
-    this.layer.add(group);
-
-    const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
-    for (const preview of previews) {
-      group.add(this.boundsGraphic(preview.bounds));
-      if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
-        for (const cell of preview.cells) group.add(this.cellRect(cell));
+    if (!isAgentGhostPreviewHidden()) {
+      const group = this.scene.add.container(0, 0);
+      group.setName("agent-ghost-preview");
+      this.layer.add(group);
+      const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
+      for (const preview of previews) {
+        group.add(this.boundsGraphic(preview.bounds));
+        if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
+          for (const cell of preview.cells) group.add(this.cellRect(cell));
+        }
       }
     }
     this.renderDomMarkers(previews);
@@ -70,6 +72,7 @@ export class AgentGhostPreviewRenderer {
       marker.style.top = `${rect.y}px`;
       marker.style.width = `${rect.width}px`;
       marker.style.height = `${rect.height}px`;
+      if (isAgentGhostPreviewHidden()) marker.classList.add("is-ghost-hidden");
       host.append(marker);
       this.domMarkers.push(marker);
     }

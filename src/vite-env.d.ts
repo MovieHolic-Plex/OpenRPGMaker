@@ -55,6 +55,12 @@ interface Window {
   // 영역 작업 마지막 로그 export (감사·툴·하네스) — 콘솔/헤드리스 디버깅용.
   __rpgzzuRegionTaskLog?: unknown;
   __rpgzzuLastRegionTaskLog?: () => unknown;
+  // 영역 작업 승인 게이트 pending (get/apply/discard) — E2E·디버깅용.
+  __rpgzzuRegionTaskPending?: {
+    get: () => unknown;
+    apply: () => void;
+    discard: () => void;
+  };
   // AI 활동 로그 링버퍼 (채팅·영역 등) — localStorage + optional Supabase.
   __rpgzzuAiActivityLog?: unknown;
   __rpgzzuListAiActivityLogs?: (limit?: number) => readonly unknown[];

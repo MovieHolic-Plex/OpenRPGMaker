@@ -62,6 +62,19 @@ const listeners = new Set<Listener>();
 let previews: AgentGhostPreview[] = [];
 let revision = 0;
 
+// 원본 보기(꾹 누름) 동안 렌더만 숨긴다 — 프리뷰 데이터는 유지(시각 토글).
+let hidden = false;
+
+export function isAgentGhostPreviewHidden(): boolean {
+  return hidden;
+}
+
+export function setAgentGhostPreviewHidden(next: boolean): void {
+  if (hidden === next) return;
+  hidden = next;
+  emit();
+}
+
 export function subscribeAgentGhostPreview(listener: Listener): () => void {
   listeners.add(listener);
   listener(getAgentGhostPreviewState());
@@ -195,6 +208,9 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "clear_region":
       pushArea(rectArea(project, mapId, rectFromXYWH(args), "clear_region", "영역 정리"));
       break;
+    case "mirror_region":
+      pushArea(rectArea(project, mapId, rectFromXYWH(args), "mirror_region", "대칭 변환"));
+      break;
     case "build_house":
       pushArea(rectArea(project, mapId, rectFromOriginSize(args), "build_house", "집 건설"));
       break;
@@ -221,6 +237,12 @@ export function summarizeAgentGhostPreviewForToolCall(
       break;
     case "place_battle_blocker":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_battle_blocker", "전투 이벤트 배치"));
+      break;
+    case "place_chest":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_chest", "보물상자 배치"));
+      break;
+    case "place_savepoint":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_savepoint", "세이브 포인트 배치"));
       break;
     case "set_start_position":
       pushArea(pointArea(project, mapId, pointFromXY(args), "set_start_position", "시작 위치"));

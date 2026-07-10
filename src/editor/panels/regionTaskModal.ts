@@ -5,7 +5,9 @@
 // 개발 편의: 헤더 「로그」 작은 버튼 → 감사/툴/하네스 JSON 클립보드 복사.
 import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
+import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
+import { nextSuggestedRegionCommands } from "@/editor/regionTask/suggestedCommands";
 import {
   describeRegionTaskResult,
   runRegionTask,
@@ -13,7 +15,8 @@ import {
   type RegionTaskLogExport,
   type RegionTaskResult,
 } from "@/editor/regionTask/runRegionTask";
-import type { MapId } from "@/project/types";
+import { renderRegionSnapshot } from "@/editor/regionSnapshot";
+import type { GameMap, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -38,11 +41,20 @@ export interface RegionTaskModalOptions {
   readonly anchor?: RegionTaskAnchor;
   // 테스트 주입: 기본은 실제 runRegionTask.
   readonly run?: RegionTaskRunner;
+  /** 테스트 주입: 썸네일 렌더러(기본 renderRegionSnapshot 캔버스). */
+  readonly renderSnapshot?: (project: Project, map: GameMap, region: RegionRect) => Promise<HTMLElement>;
 }
 
 let modalRoot: HTMLElement | null = null;
+// 현재 열린 모달의 정리 콜백 — 새 모달이 열리거나(closeRegionTaskModal 선호출) 명시적으로
+// 닫힐 때 미해소 pending을 discard하고 구독을 해제한다(스펙: 새 영역 작업 시작 시 기존
+// pending discard). 이 콜백 내부에서 closeRegionTaskModal을 다시 호출하지 않는다(재귀 방지).
+let activeModalCleanup: (() => void) | null = null;
 
 export function closeRegionTaskModal(): void {
+  const cleanup = activeModalCleanup;
+  activeModalCleanup = null;
+  cleanup?.();
   modalRoot?.remove();
   modalRoot = null;
 }
@@ -73,7 +85,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     text: "✕",
     attrs: { type: "button", "aria-label": "닫기" },
     dataset: { testid: "region-task-close" },
-    on: { click: () => closeRegionTaskModal() },
+    on: { click: () => discardAndClose() },
   });
   const titleRow = el("div", {
     class: "region-task-title-row",
@@ -87,12 +99,35 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     children: [titleRow, chip, closeButton],
   });
 
+  const suggestions = nextSuggestedRegionCommands(4);
   const textarea = el("textarea", {
     class: "region-task-input",
     attrs: { placeholder: "이 영역에 무엇을 할까요? 예: 침엽수 숲으로 채워줘", rows: "3" },
     dataset: { testid: "region-task-input" },
   }) as HTMLTextAreaElement;
-  if (options.initialInstruction) textarea.value = options.initialInstruction;
+  if (options.initialInstruction) {
+    textarea.value = options.initialInstruction;
+  } else {
+    textarea.setAttribute("placeholder", `이 영역에 무엇을 할까요? 예: ${suggestions[0].instruction}`);
+  }
+  const suggestionRow = el("div", {
+    class: "region-task-suggestions",
+    dataset: { testid: "region-task-suggestions" },
+    children: suggestions.map((command) =>
+      el("button", {
+        class: "region-task-suggest-chip",
+        text: command.label,
+        attrs: { type: "button", title: command.instruction },
+        dataset: { testid: `region-suggest-${command.id}` },
+        on: {
+          click: () => {
+            textarea.value = command.instruction;
+            textarea.focus();
+          },
+        },
+      }),
+    ),
+  });
 
   const log = el("div", { class: "region-task-log", dataset: { testid: "region-task-log" } });
   const summary = el("div", { class: "region-task-summary", dataset: { testid: "region-task-summary" } });
@@ -103,6 +138,109 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     attrs: { type: "button" },
     dataset: { testid: "region-task-run" },
   }) as HTMLButtonElement;
+
+  const renderSnapshot = options.renderSnapshot
+    ?? ((project: Project, map: GameMap, rect: RegionRect) => renderRegionSnapshot(project, map, rect));
+  const compareHost = el("div", { class: "region-task-compare-host" });
+  let activePending: PendingRegionApply | null = null;
+  // renderPendingCompare가 건 subscribePendingRegionApply 구독의 해제 함수 — 모달 스코프에
+  // 저장해 activeModalCleanup(모달 교체/닫기 시)이 정확히 1회 해제할 수 있게 한다.
+  let pendingUnsubscribe: (() => void) | null = null;
+  activeModalCleanup = (): void => {
+    pendingUnsubscribe?.();
+    pendingUnsubscribe = null;
+    if (activePending && !activePending.settled) activePending.discard();
+    activePending = null;
+  };
+
+  // applied: true=적용, false=버리기, null=외부(캔버스 인라인 툴바 등)에서 settle되어 결과를 알 수 없음.
+  const settlePendingUi = (applied: boolean | null): void => {
+    setSummary(
+      applied === true
+        ? `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`
+        : applied === false
+          ? "버려졌습니다 — 맵은 변경되지 않았습니다"
+          : "제안이 처리되었습니다",
+    );
+    compareHost.replaceChildren();
+    activePending = null;
+    // running:false 배지 해제는 pending.apply()/discard() → onSettle(runRegionTask.ts)에서
+    // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
+    runButton.disabled = false;
+    textarea.disabled = false;
+  };
+
+  const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
+    activePending = pending;
+    // 이 pending 전용 settle 감시 — 모달 버튼이 아니라 캔버스 인라인 툴바(✓/✗) 등 밖에서
+    // settle 되어도(썸네일 await 도중 포함) 모달 UI(요약/버튼 재활성화)가 반영되도록 구독한다.
+    let selfSettling = false;
+    let settledHandled = false;
+    const finalizeSettle = (applied: boolean | null): void => {
+      if (settledHandled) return;
+      settledHandled = true;
+      pendingUnsubscribe?.();
+      pendingUnsubscribe = null;
+      settlePendingUi(applied);
+    };
+    pendingUnsubscribe = subscribePendingRegionApply(() => {
+      if (selfSettling || !pending.settled) return;
+      finalizeSettle(null);
+    });
+
+    const map = pending.baseProject.maps[pending.mapId];
+    const clippedMap = pending.clippedProject.maps[pending.mapId];
+    const figures = el("div", { class: "region-task-compare", dataset: { testid: "region-task-compare" } });
+    const makeFigure = async (
+      label: string,
+      testid: string,
+      project: Project,
+      figureMap: GameMap | undefined,
+    ): Promise<HTMLElement> => {
+      const body = el("div", { class: "region-task-compare-canvas", dataset: { testid } });
+      if (figureMap) {
+        try {
+          const canvas = await renderSnapshot(project, figureMap, pending.region);
+          // 클릭 시 2배 확대 토글
+          canvas.addEventListener?.("click", () => body.classList.toggle("is-zoomed"));
+          body.append(canvas);
+        } catch {
+          body.append(el("span", { class: "region-task-compare-fallback", text: "미리보기 실패" }));
+        }
+      }
+      return el("figure", {
+        class: "region-task-compare-figure",
+        children: [body, el("figcaption", { text: label })],
+      });
+    };
+    figures.append(
+      await makeFigure("이전", "region-task-before", pending.baseProject, map),
+      el("span", { class: "region-task-compare-arrow", text: "→" }),
+      await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap),
+    );
+    // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
+    // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
+    if (pending.settled) return;
+    const applyButton = el("button", {
+      class: "region-task-apply",
+      text: "✓ 적용",
+      attrs: { type: "button" },
+      dataset: { testid: "region-task-apply" },
+      on: { click: () => { selfSettling = true; pending.apply(); finalizeSettle(true); } },
+    });
+    const discardButton = el("button", {
+      class: "region-task-discard",
+      text: "✕ 버리기",
+      attrs: { type: "button" },
+      dataset: { testid: "region-task-discard" },
+      on: { click: () => { selfSettling = true; pending.discard(); finalizeSettle(false); } },
+    });
+    compareHost.replaceChildren(
+      figures,
+      el("div", { class: "region-task-compare-actions", children: [applyButton, discardButton] }),
+    );
+    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
+  };
 
   let running = false;
   let lastLog: RegionTaskLogExport | undefined;
@@ -185,6 +323,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     try {
       const result = await run({ mapId: options.mapId, region, instruction, onEvent });
       setSummary(describeRegionTaskResult(result));
+      if (result.pending && !result.pending.settled) {
+        await renderPendingCompare(result.pending);
+      }
       lastLog = result.log;
       if (result.log) {
         setCopyEnabled(true);
@@ -197,10 +338,19 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       appendLog(String(cause), "region-task-log-line is-error");
     } finally {
       running = false;
-      dispatchRegionTaskStatus({ mapId: options.mapId, region, running: false });
-      runButton.disabled = false;
-      textarea.disabled = false;
+      if (!activePending) {
+        dispatchRegionTaskStatus({ mapId: options.mapId, region, running: false });
+        runButton.disabled = false;
+        textarea.disabled = false;
+      }
     }
+  };
+
+  // 실제 discard + 구독 해제는 activeModalCleanup(closeRegionTaskModal이 호출)이 담당 —
+  // 여기서 중복 처리하지 않는다(이중 discard 자체는 settled 가드로 무해하지만, 정리 로직을
+  // 한 곳에 모아 모달 교체 경로와 완전히 동일하게 유지한다).
+  const discardAndClose = (): void => {
+    closeRegionTaskModal();
   };
 
   runButton.addEventListener("click", () => void execute());
@@ -218,7 +368,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: asPopover ? "region-task-modal region-task-popover" : "region-task-modal",
     attrs: { role: "dialog", "aria-label": "영역 작업" },
     dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal" },
-    children: [header, textarea, log, summary, actions],
+    children: [header, textarea, suggestionRow, log, summary, compareHost, actions],
   });
   // Escape는 backdrop에 건다(포커스된 textarea의 keydown이 여기로 버블). document
   // 리스너를 피해 fakeDom과 실제 DOM 모두에서 동작.
@@ -227,12 +377,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dataset: { testid: "region-task-backdrop" },
     on: {
       click: (event) => {
-        if (event.target === backdrop) closeRegionTaskModal();
+        if (event.target === backdrop) discardAndClose();
       },
       keydown: (event) => {
         if ((event as KeyboardEvent).key === "Escape") {
           event.preventDefault();
-          closeRegionTaskModal();
+          discardAndClose();
         }
       },
     },

@@ -1,5 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { closeRegionTaskModal, openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const REGION = { x: 2, y: 3, width: 4, height: 5 };
@@ -145,5 +147,113 @@ describe("openRegionTaskModal", () => {
     const payload = writeText.mock.calls[0]?.[0] as string;
     expect(payload).toContain("region-task-log");
     expect(payload).toContain("place_props");
+  });
+});
+
+function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTaskResult {
+  const pending = setPendingRegionApply({
+    baseProject: { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never,
+    clippedProject: { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never,
+    mapId: "m1",
+    region: { x: 0, y: 0, width: 2, height: 2 },
+    changedCells: 3,
+    changedEvents: 0,
+    instruction: "테스트",
+    onApply: () => {},
+    onDiscard: () => {},
+    // 배지 해제(running:false) 발행은 실제로는 runRegionTask.ts의 onSettle이 담당한다 —
+    // 그 배선 자체의 검증은 test/regionTaskRun.test.ts(실제 runRegionTask 경유)가 맡고,
+    // 이 파일은 모달 UI(요약/버튼 재활성화/discard 호출)만 순수하게 확인한다.
+    onSettle: () => {},
+  });
+  return {
+    ok: true, applied: false, changedCells: 3, changedEvents: 0, clippedCells: 0,
+    proposedCalls: 1, assistantText: "", pending, ...overrides,
+  };
+}
+
+describe("pending 비교 UI", () => {
+  beforeEach(() => __clearPendingRegionApplyForTest());
+
+  it("pending 결과면 before/after 썸네일과 적용/버리기 버튼을 렌더한다", async () => {
+    restoreDom = installFakeDom();
+    const stub = () => Promise.resolve(document.createElement("div"));
+    const root = openModal({
+      mapId: "m1",
+      region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트",
+      autoRun: true,
+      run: async () => fakePendingResult(),
+      renderSnapshot: stub,
+    });
+    await flush();
+    expect(findByTestId(root, "region-task-compare")).not.toBeNull();
+    expect(findByTestId(root, "region-task-before")).not.toBeNull();
+    expect(findByTestId(root, "region-task-after")).not.toBeNull();
+    expect(findByTestId(root, "region-task-apply")).not.toBeNull();
+    expect(findByTestId(root, "region-task-discard")).not.toBeNull();
+  });
+
+  it("적용 클릭 시 pending.apply가 불리고 요약이 갱신되며 run/입력이 재활성화된다", async () => {
+    restoreDom = installFakeDom();
+    const result = fakePendingResult();
+    const root = openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트", autoRun: true,
+      run: async () => result,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    findByTestId(root, "region-task-apply")?.dispatchEvent(new Event("click"));
+    expect(result.pending!.settled).toBe(true);
+    expect(findByTestId(root, "region-task-summary")?.textContent).toContain("적용됨");
+    expect(findByTestId(root, "region-task-run")?.disabled).toBe(false);
+    expect(findByTestId(root, "region-task-input")?.disabled).toBe(false);
+  });
+
+  it("pending 미해소 상태에서 모달을 닫으면 discardAndClose가 pending.discard()를 호출한다", async () => {
+    restoreDom = installFakeDom();
+    const result = fakePendingResult();
+    const root = openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트", autoRun: true,
+      run: async () => result,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    findByTestId(root, "region-task-close")?.dispatchEvent(new Event("click"));
+    expect(result.pending!.settled).toBe(true); // 닫기 = discard
+  });
+
+  it("모달 A가 pending 미해소 상태에서 새 모달 B를 열면 A의 pending이 discard된다(구독 leak 방지)", async () => {
+    restoreDom = installFakeDom();
+    const resultA = fakePendingResult();
+    openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트 A", autoRun: true,
+      run: async () => resultA,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    expect(resultA.pending!.settled).toBe(false); // A는 아직 pending 비교 UI 상태
+
+    // B를 여는 openRegionTaskModal() 내부의 closeRegionTaskModal() 선호출이 A의 정리 콜백
+    // (activeModalCleanup)을 실행해야 한다 — DOM만 지우고 discard/구독 해제를 건너뛰면 leak.
+    const rootB = openModal({ mapId: "m1", region: { x: 1, y: 1, width: 2, height: 2 }, run: vi.fn() });
+
+    expect(resultA.pending!.settled).toBe(true);
+    expect(findByTestId(rootB, "region-task-input")).not.toBeNull();
+  });
+
+  it("추천 칩 클릭 시 입력창이 채워진다", () => {
+    restoreDom = installFakeDom();
+    const root = openModal({ mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 } });
+    const chips = findByTestId(root, "region-task-suggestions");
+    expect(chips).not.toBeNull();
+    const firstChip = chips!.querySelector("button") as HTMLElement;
+    firstChip.dispatchEvent(new Event("click"));
+    const input = findByTestId(root, "region-task-input") as HTMLTextAreaElement;
+    expect(input.value.length).toBeGreaterThan(5);
+    closeRegionTaskModal();
   });
 });

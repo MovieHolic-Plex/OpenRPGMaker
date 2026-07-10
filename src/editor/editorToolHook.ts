@@ -32,6 +32,7 @@ type RegionWrite = { readonly layer: "lower" | "upper"; readonly x: number; read
 
 // 헤드리스 영역 작업 검증용. Phaser 캔버스 입력/LLM 없이 실제 store에 clip/적용을 재현한다.
 type RegionTaskHarness = {
+  currentMapId: () => MapId;
   setSelection: (selection: { mapId: MapId; x: number; y: number; width: number; height: number } | null) => void;
   readCell: (mapId: MapId, layer: "lower" | "upper", x: number, y: number) => number | null;
   runMock: (mapId: MapId, region: RegionRect, writes: readonly RegionWrite[]) => Promise<RegionTaskResult>;
@@ -133,6 +134,7 @@ export function installEditorToolHook(): void {
   };
 
   w.__rpgzzuRegionTaskHarness = {
+    currentMapId: () => editorState.get().currentMapId ?? store.getCurrent().startMapId,
     setSelection: (selection) => editorState.set({ selection: selection ?? null }),
     readCell: (mapId, layer, x, y) => {
       const map = store.getCurrent().maps[mapId];
@@ -141,7 +143,8 @@ export function installEditorToolHook(): void {
       const value = layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index];
       return value ?? null;
     },
-    // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 실제 store에 clip/적용한다.
+    // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
+    // 적용하려면 반환된 result.pending.apply() 또는 window.__rpgzzuRegionTaskPending.apply()를 호출.
     runMock: (mapId, region, writes) =>
       runRegionTask(
         { mapId, region, instruction: "headless mock" },
@@ -152,7 +155,15 @@ export function installEditorToolHook(): void {
             store.replace(project);
           },
           createSession: (project) => ({
-            sendUserMessage: async () => ({ assistantText: "mock", proposedCalls: [], stoppedReason: "final" }),
+            // 실제 세션은 tool_call 이벤트로 고스트 프리뷰 업데이터를 흘려보내지만,
+            // 목업은 툴콜 스트림이 없으므로 여기서 직접 하나 흘려 캔버스 고스트/인라인
+            // 승인 툴바가 실제 세션과 동일하게 렌더되도록 재현한다(writes 자체는 getProposedProject가 반영).
+            sendUserMessage: async (_text, onEvent) => {
+              if (writes.length > 0) {
+                onEvent?.({ type: "tool_call", name: "paint_tiles", args: { mapId }, result: { ok: true, summary: "mock" } });
+              }
+              return { assistantText: "mock", proposedCalls: [], stoppedReason: "final" };
+            },
             getProposedProject: () => {
               const next = structuredClone(project);
               const map = next.maps[mapId];
