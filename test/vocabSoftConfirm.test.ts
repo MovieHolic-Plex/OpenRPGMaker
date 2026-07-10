@@ -21,6 +21,15 @@ function makeCtx() {
   expect(created.ok).toBe(true);
   context.project.maps[MAP_ID].lowerTiles.fill(TILE.GRASS);
   context.project.maps[MAP_ID].upperTiles.fill(TILE.EMPTY);
+  // 번들 하네스 그룹은 source:"bundled-default"로 시드 승인된다(2026-07-11). 이 스위트는
+  // soft-confirm 흐름 자체를 검증하므로, 테스트에 쓰는 TREE 그룹의 번들 신뢰를 제거해
+  // 미승인 상태로 되돌린다.
+  const tileset = context.project.tilesets[context.project.maps[MAP_ID].tilesetId];
+  const tree = tileset.tileGroups?.find((group) => group.id === TREE);
+  if (tree) {
+    tree.origin = undefined;
+    tree.source = undefined;
+  }
   return context;
 }
 

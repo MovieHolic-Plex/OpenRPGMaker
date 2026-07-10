@@ -8,6 +8,7 @@
 // - origin:"user" 마킹은 (1) propose_tile_vocabulary 수락 (2) soft-confirm 제안 수락
 //   (3) T1b/위저드 confirmedByUser 경로에서만 한다. 이 모듈 자체는 마킹하지 않는다.
 // - assertApprovedOrFail 은 레거시/명시 승인 전용 API로 남긴다.
+// - 그룹 한정 예외: source === "bundled-default"(큐레이션 번들)는 origin:"user"와 동급 신뢰(2026-07-11).
 
 import { ToolError } from "@/editor/tools/types";
 import type { Project, TileGroupMetadata, TilesetDef } from "./types";
@@ -44,12 +45,20 @@ export interface UnapprovedVocabularySummary {
   readonly sampleTileIds: readonly number[];
 }
 
+// 번들 하네스 그룹은 사람이 큐레이션한 재료라 zero-trust가 막으려는 "AI 추정 이름"이
+// 아니다. origin:"user"(명시 합의)와 동급으로 신뢰한다(2026-07-11 승인 시드).
+// 낱개 타일(tileMeta)에는 적용하지 않는다 — 라벨이 반자동 생성이라 목업 확인 유지.
+export function isTrustedGroupSource(group: TileGroupMetadata): boolean {
+  return group.origin === "user" || group.source === "bundled-default";
+}
+
 export function isApprovedTile(tileset: TilesetDef, tileId: number): boolean {
   return tileset.tileMeta?.[tileId]?.origin === "user";
 }
 
 export function isApprovedGroup(tileset: TilesetDef, groupId: string): boolean {
-  return findGroup(tileset, groupId)?.origin === "user";
+  const group = findGroup(tileset, groupId);
+  return group ? isTrustedGroupSource(group) : false;
 }
 
 // 그룹의 어휘 홈 레이어 — layerHome이 없으면 defaultLayer에서 유도(mixed/event → perCell).
@@ -62,7 +71,7 @@ export function groupLayerHome(group: TileGroupMetadata): VocabLayerHome {
 // 승인된 어휘 전체(승인 그룹 + 그룹에 속하지 않은 승인 낱개 타일 — 소품류).
 export function approvedVocabulary(tileset: TilesetDef): ApprovedVocabulary {
   const groups: ApprovedVocabularyGroup[] = (tileset.tileGroups ?? [])
-    .filter((group) => group.origin === "user")
+    .filter((group) => isTrustedGroupSource(group))
     .map((group) => ({
       id: group.id,
       name: group.name,
@@ -87,7 +96,7 @@ export function approvedVocabulary(tileset: TilesetDef): ApprovedVocabulary {
 
 // 미승인 어휘 요약 — tile_query ask:"unapproved"가 소비한다.
 export function unapprovedVocabulary(tileset: TilesetDef, limit = 10): UnapprovedVocabularySummary {
-  const unapprovedGroups = (tileset.tileGroups ?? []).filter((group) => group.origin !== "user");
+  const unapprovedGroups = (tileset.tileGroups ?? []).filter((group) => !isTrustedGroupSource(group));
   const unapprovedTileIds: number[] = [];
   (tileset.tileMeta ?? []).forEach((meta, tileId) => {
     if (!meta || meta.origin === "user") return;

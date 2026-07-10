@@ -58,6 +58,11 @@ const WALL_ARGS = { mapId: "m1", rect: { x: 3, y: 3, w: 4, h: 3 }, wallVocabId: 
 describe("soft-confirm construction proposals", () => {
   it("existing unapproved wall soft-allows and requires mockup approval", async () => {
     const ctx = contextWithMap();
+    // Bundled harness groups are seed-approved via source:"bundled-default" (2026-07-11).
+    // This test targets the soft-confirm path itself, so strip that trust from the fixture group.
+    const woodWall = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups!.find((entry) => entry.id === WOOD_WALL_GROUP_ID)!;
+    woodWall.origin = undefined;
+    woodWall.source = undefined;
     const wallArgs = { mapId: "m1", rect: { x: 4, y: 4, w: 5, h: 4 }, wallVocabId: WOOD_WALL_GROUP_ID };
     const chat = scriptedChat([
       toolCallMsg("build_wall", wallArgs, "c1"),

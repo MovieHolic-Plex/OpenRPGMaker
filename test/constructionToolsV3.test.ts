@@ -32,6 +32,16 @@ function approve(tileset: TilesetDef, groupId: string): TileGroupMetadata {
   return group;
 }
 
+// 번들 하네스 그룹은 source:"bundled-default"로 시드 승인된다(2026-07-11). soft-confirm
+// 경로 자체를 검증하는 케이스는 이 헬퍼로 번들 신뢰를 제거해 미승인 상태로 되돌린다.
+function forceUnapproved(tileset: TilesetDef, groupId: string): TileGroupMetadata {
+  const group = tileset.tileGroups?.find((entry) => entry.id === groupId);
+  if (!group) throw new Error(`그룹 없음: ${groupId}`);
+  group.origin = undefined;
+  group.source = undefined;
+  return group;
+}
+
 function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
   const roof: TileGroupMetadata = {
     id: "test-roof", name: "빨간 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
@@ -47,7 +57,8 @@ function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
 
 describe("build_wall / build_roof (공정 1·3단계)", () => {
   it("미합의 벽 어휘는 soft-confirm으로 시공되고 vocabSoftConfirm 을 붙인다", () => {
-    const { ctx } = context();
+    const { ctx, tileset } = context();
+    forceUnapproved(tileset(), WALL_GROUP_ID);
     const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: WALL_GROUP_ID });
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({ groupId: WALL_GROUP_ID, cells: 16 });
@@ -159,6 +170,7 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
   it("place_props: 미합의 소품도 soft-confirm으로 배치되고, 승인 그룹도 동일 엔진으로 배치된다", () => {
     const { ctx, tileset } = context();
     const treeId = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
+    forceUnapproved(tileset(), treeId);
     const soft = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4, seed: 3 });
     expect(soft.ok, soft.summary).toBe(true);
     expect((soft.data as { vocabSoftConfirm?: { groupId?: string } }).vocabSoftConfirm?.groupId).toBe(treeId);
