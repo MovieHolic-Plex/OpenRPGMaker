@@ -41,17 +41,18 @@
 }
 
 @media (max-width: 1280px) {
-  .map-item .map-tree-action,
-  .map-item .map-context-trigger,
-  .map-item .start-mark:empty {
-    visibility: hidden;
+  /* 좁은 폭: 고정 액션 컬럼이 이름(1fr)을 0으로 붕괴시키므로,
+     ⋮(컨텍스트 메뉴)와 시작★만 남기고 개별 액션·잠금 배지를 접는다.
+     figma-editor.css가 이 파일보다 나중에 import되어 동일 특이도에서 캐스케이드를
+     이기므로, body 접두사로 특이도를 한 단계 올려 폭 붕괴 규칙이 항상 이기게 한다. */
+  body .left-panel-stack[data-testid="left-map-root"] .map-item {
+    grid-template-columns: 10px 16px minmax(0, 1fr) 14px 18px;
   }
 
-  .map-item:hover .map-tree-action,
-  .map-item:hover .map-context-trigger,
-  .map-item:focus-within .map-tree-action,
-  .map-item:focus-within .map-context-trigger {
-    visibility: visible;
+  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-tree-action:not(.map-context-trigger),
+  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-parent-sel,
+  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-lock-badge {
+    display: none;
   }
 }
 
