@@ -197,6 +197,26 @@ function pushSnapshotForRedo(entry: HistoryEntry): void {
   if (undoStack.length > MAX_HISTORY) undoStack.shift();
 }
 
+/** 현재 undo 스택 깊이 — 세션 시작 시점 기록용(databaseModalDirtySession). */
+export function getMapEditHistoryDepth(): number {
+  return undoStack.length;
+}
+
+/**
+ * undo 스택을 depth 개로 절단하고 redo 스택을 비운다. 모달류 편집 세션의
+ * discard(열 때 상태로 복원)가 세션 중 쌓인 스냅샷을 폐기해, 폐기한 변경이
+ * 이후 Ctrl+Z 로 되살아나는 것을 막는다. MAX_HISTORY shift 로 기준 깊이가
+ * 이미 밀려났으면 현재 길이 이하로만 절단한다(과잉 보존은 허용, 과잉 삭제 금지).
+ */
+export function truncateMapEditHistoryToDepth(depth: number): void {
+  const target = Math.max(0, Math.min(depth, undoStack.length));
+  if (undoStack.length > target) undoStack.length = target;
+  redoStack = [];
+  topSignature = historyTopSignature();
+  lastCoalesceKey = null;
+  emitHistoryChange();
+}
+
 export function resetMapEditHistory(): void {
   undoStack = [];
   redoStack = [];
