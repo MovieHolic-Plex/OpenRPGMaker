@@ -19,8 +19,8 @@ export type EditorChromeVisibility = {
 };
 
 const BASIC_CHROME: EditorChromeVisibility = {
-  // 맵 전환이 가능해야 함 — 레퍼런스에 맵 트리가 없어도 목록은 기본 모드에 유지.
-  mapTree: true,
+  // 맵 전환은 아이콘 레일의 맵 플라이아웃(renderBasicLeftRail)에서 제공 — 좌측 맵트리 컬럼은 숨긴다.
+  mapTree: false,
   classicToolbar: false,
   canvasChromeDense: false,
   paletteFindPropsTabs: false,

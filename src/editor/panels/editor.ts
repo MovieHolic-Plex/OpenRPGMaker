@@ -392,6 +392,21 @@ function applyLayout(): void {
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
 
+  // 기본 모드: 아이콘 레일 48px 고정 — 리사이저 없음, 오버레이 안전영역은 레일+여백.
+  if (getEditorUiMode() === "basic") {
+    if (leftFolded) {
+      leftRoot.style.display = "none";
+      leftResizer.style.display = "none";
+      setEditorLeftSafe("12px");
+      return;
+    }
+    leftRoot.style.display = "";
+    leftRoot.style.width = "48px";
+    leftResizer.style.display = "none";
+    setEditorLeftSafe("60px");
+    return;
+  }
+
   if (leftFolded) {
     leftRoot.style.display = "none";
     leftResizer.style.display = "none";
@@ -488,19 +503,19 @@ function renderEditorStatusbar(container: HTMLElement): void {
   container.append(
     el("span", { class: "editor-statusbar-cell strong", text: `${layerStatusLabel(state.layer)} 편집 모드` }),
     el("span", { class: "editor-statusbar-cell", text: `맵: ${map?.name ?? mapId}` }),
-    el("span", { class: "editor-statusbar-cell", text: `타일: ${tileDisplayLabelForIndex(state.selectedTile)}` }),
+    el("span", { class: "editor-statusbar-cell sb-secondary", text: `타일: ${tileDisplayLabelForIndex(state.selectedTile)}` }),
     el("span", { class: "editor-statusbar-cell", text: `도구: ${toolStatusLabel(state.tool)}` }),
-    el("span", { class: "editor-statusbar-cell", text: `줌: ${state.zoom}x` }),
+    el("span", { class: "editor-statusbar-cell sb-secondary", text: `줌: ${state.zoom}x` }),
     el("span", {
-      class: "editor-statusbar-cell",
+      class: "editor-statusbar-cell sb-detail",
       children: ["좌표: ", el("span", { dataset: { testid: "cursor-position" }, text: "outside" })],
     }),
     el("span", {
-      class: "editor-statusbar-cell",
+      class: "editor-statusbar-cell sb-detail",
       children: ["하위: ", el("span", { dataset: { testid: "cursor-lower" }, text: "-" })],
     }),
     el("span", {
-      class: "editor-statusbar-cell",
+      class: "editor-statusbar-cell sb-detail",
       children: ["상위: ", el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
     }),
     renderMapEditLockStatus(getMapEditLockStatus(), mapId),

@@ -75,11 +75,11 @@ describe("editorUiMode", () => {
     expect(getEditorUiMode()).toBe("basic");
   });
 
-  it("basic chrome keeps event path and map tree while reducing density", () => {
+  it("basic chrome hides map tree column (map flyout owns switching) while reducing density", () => {
     const basic = chromeForMode("basic");
     const expert = chromeForMode("expert");
-    // Map list stays available so users can switch maps in basic.
-    expect(basic.mapTree).toBe(true);
+    // Map switching moved to the icon-rail map flyout — the left map-tree column is hidden in basic.
+    expect(basic.mapTree).toBe(false);
     expect(basic.classicToolbar).toBe(false);
     expect(basic.aiDenseSections).toBe(false);
     expect(basic.paletteFindPropsTabs).toBe(false);
@@ -104,7 +104,8 @@ describe("editorUiMode", () => {
     // chrome flags never include an "eventsBlocked" style switch
     const basic = chromeForMode("basic");
     expect("eventsBlocked" in basic).toBe(false);
-    expect(basic.mapTree).toBe(true);
+    // Map tree is hidden in basic; map switching is owned by the icon-rail map flyout
+    expect(basic.mapTree).toBe(false);
     // basic left rail also ships event tool
     const basicRail = await import("node:fs/promises").then((fs) =>
       fs.readFile(new URL("../src/editor/panels/basicLeftRail.ts", import.meta.url), "utf8"),

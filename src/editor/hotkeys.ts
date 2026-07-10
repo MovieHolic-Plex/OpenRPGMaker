@@ -80,6 +80,16 @@ export function handleHistoryHotkey(event: KeyboardEvent): boolean {
 /** 툴 순서: 숫자키 1..7 로 선택. tilePalette TOOLS 순서와 일치시킨다. */
 const TOOL_HOTKEYS: readonly Tool[] = ["paint", "fill", "eyedropper", "pan", "select", "collision", "event"];
 
+/** 문자 단축키(스펙 §4 3-B): 아이콘 레일 툴팁·커맨드 팔레트와 표기 일치. */
+const TOOL_LETTER_HOTKEYS: Readonly<Record<string, Tool>> = {
+  v: "select",
+  b: "paint",
+  e: "erase",
+  g: "fill",
+  n: "event",
+  i: "eyedropper",
+};
+
 /** 레이어 전환 시 이벤트 레이어면 도구를 event로, 나가면 paint로 되돌린다. */
 export function applyLayer(layer: Layer): void {
   const state = editorState.get();
@@ -139,6 +149,21 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
       editorState.set(toolPatch(tool, "lower"));
     } else {
       editorState.set(toolPatch(tool));
+    }
+    return true;
+  }
+
+  // 문자키 도구 전환 — 숫자키와 동일한 레이어 가드.
+  const letterTool = TOOL_LETTER_HOTKEYS[event.key.toLowerCase()];
+  if (letterTool && event.key.length === 1) {
+    event.preventDefault();
+    const state = editorState.get();
+    if (letterTool === "event") {
+      editorState.set({ tool: "event", layer: "event" });
+    } else if (state.layer === "event") {
+      editorState.set(toolPatch(letterTool, "lower"));
+    } else {
+      editorState.set(toolPatch(letterTool));
     }
     return true;
   }

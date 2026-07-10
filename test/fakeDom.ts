@@ -95,6 +95,21 @@ export class FakeElement extends FakeNode {
         .filter((token) => token && !removed.has(token))
         .join(" ");
     },
+    toggle: (token: string, force?: boolean): boolean => {
+      const has = this.className.split(/\s+/).includes(token);
+      const shouldAdd = force === undefined ? !has : force;
+      if (shouldAdd) {
+        const classes = new Set(this.className.split(/\s+/).filter(Boolean));
+        classes.add(token);
+        this.className = Array.from(classes).join(" ");
+      } else {
+        this.className = this.className
+          .split(/\s+/)
+          .filter((cls) => cls && cls !== token)
+          .join(" ");
+      }
+      return shouldAdd;
+    },
   };
 
   constructor(tagName: string) {
@@ -191,6 +206,8 @@ export function installFakeDom(): () => void {
     activeElement: null,
     body,
     createElement: (tagName: string) => new FakeElement(tagName),
+    // SVG 아이콘(makeSvgIcon)이 createElementNS를 쓴다 — 네임스페이스는 무시하고 일반 요소로 위임.
+    createElementNS: (_ns: string, tagName: string) => new FakeElement(tagName),
     createTextNode: (text: string) => {
       const node = new FakeNode();
       node.textContent = text;

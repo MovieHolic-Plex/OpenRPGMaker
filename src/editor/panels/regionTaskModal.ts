@@ -5,6 +5,7 @@
 // 개발 편의: 헤더 「로그」 작은 버튼 → 감사/툴/하네스 JSON 클립보드 복사.
 import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
+import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import {
   describeRegionTaskResult,
   runRegionTask,
@@ -159,6 +160,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       return;
     }
     running = true;
+    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
     runButton.disabled = true;
     textarea.disabled = true;
     setCopyEnabled(false);
@@ -195,6 +197,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       appendLog(String(cause), "region-task-log-line is-error");
     } finally {
       running = false;
+      dispatchRegionTaskStatus({ mapId: options.mapId, region, running: false });
       runButton.disabled = false;
       textarea.disabled = false;
     }

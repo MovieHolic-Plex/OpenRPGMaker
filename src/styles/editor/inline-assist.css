@@ -1,0 +1,125 @@
+/* src/styles/editor/inline-assist.css
+   캔버스 인라인 어시스트 — 선택 액션 칩, 제안 인라인 승인, 영역 작업 진행 배지. */
+
+.selection-action-chips {
+  align-items: center;
+  background: var(--editor-popover-bg, #151b2c);
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.selection-action-chip {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.selection-action-chip:hover,
+.selection-action-chip:focus-visible {
+  border-color: var(--editor-line-strong, #3a4a6a);
+  outline: none;
+}
+
+.selection-action-chip.is-primary {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 80%, #1a2744);
+  color: #fff;
+}
+
+.agent-ghost-preview {
+  pointer-events: none;
+}
+
+.ghost-inline-approval {
+  align-items: center;
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 94%, #000);
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  display: inline-flex;
+  gap: 4px;
+  left: 0;
+  padding: 3px 5px;
+  pointer-events: auto;
+  position: absolute;
+  top: -34px;
+}
+
+.ghost-inline-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.ghost-inline-btn.is-accept {
+  background: color-mix(in srgb, #2f9e63 80%, #12331f);
+  color: #fff;
+}
+
+.ghost-inline-btn.is-reject:hover {
+  border-color: #b3453f;
+  color: #ff9d97;
+}
+
+.ghost-inline-btn:hover,
+.ghost-inline-btn:focus-visible {
+  border-color: var(--editor-line-strong, #3a4a6a);
+  outline: none;
+}
+
+.ghost-inline-count {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 0 4px;
+}
+
+.region-task-badge {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 85%, #000);
+  border-radius: 999px;
+  color: #fff;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 10px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 30;
+  animation: region-task-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes region-task-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.command-palette-group {
+  color: var(--editor-text-soft, #7f8db0);
+  font: 700 10px/1.2 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.05em;
+  padding: 8px 6px 2px;
+  text-transform: uppercase;
+}
+
+.command-palette-hotkey {
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 5px;
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 600 10px/1 ui-monospace, monospace;
+  margin-left: auto;
+  padding: 2px 5px;
+}
+
+.command-palette-item.is-active {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 24%, transparent);
+}

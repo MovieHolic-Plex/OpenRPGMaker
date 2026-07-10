@@ -1,6 +1,9 @@
 // editor/panels/basicLeftRail.ts
-// 기본 모드 좌측 레일 — 레퍼런스(starter) 밀도로 도구·타일·레이어를 단순 표시.
-// 이벤트 편집 경로는 유지. 맵 트리는 editor.ts 맵 루트에서 별도 렌더.
+// 기본 모드 좌측 = 48px 아이콘 레일 + 플라이아웃(타일/레이어/맵).
+// 스펙: docs/superpowers/specs/2026-07-10-basic-mode-ai-ux-design.md §2.
+// - 도구 6개는 기존 data-testid(tool-*)를 유지한다.
+// - 플라이아웃은 캔버스 위 오버레이 — 좌패널 폭을 바꾸지 않아 WebGL 리사이즈가 없다.
+// - 상태는 모듈 레벨(재렌더에도 유지), 문서 리스너는 1회만 설치.
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -9,191 +12,259 @@ import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { makeSvgIcon, type SvgIconName } from "@/editor/panels/rpgMakerTileToolbarIcons";
+import { renderMapList } from "@/editor/panels/mapList";
+import {
+  basicFlyoutReducer,
+  buildFlyoutShell,
+  INITIAL_BASIC_FLYOUT_STATE,
+  type BasicFlyoutAction,
+  type BasicFlyoutId,
+  type BasicFlyoutState,
+} from "@/editor/panels/basicRailFlyout";
 
 type BasicTool = {
   readonly id: Tool;
   readonly label: string;
   readonly hint: string;
+  readonly icon: SvgIconName;
+  readonly hotkey: string;
 };
 
-// 레퍼런스 밀도의 핵심 도구 + 이벤트(요구사항: basic에서도 이벤트 편집 가능).
 const BASIC_TOOLS: readonly BasicTool[] = [
-  { id: "select", label: "선택", hint: "영역 선택" },
-  { id: "paint", label: "브러시", hint: "타일 칠하기" },
-  { id: "erase", label: "지우개", hint: "현재 레이어 지우기" },
-  { id: "fill", label: "채우기", hint: "영역 채우기" },
-  { id: "event", label: "이벤트", hint: "이벤트 배치·편집" },
-  { id: "eyedropper", label: "스포이트", hint: "맵에서 타일 집기" },
+  { id: "select", label: "선택", hint: "영역 선택", icon: "select", hotkey: "V" },
+  { id: "paint", label: "브러시", hint: "타일 칠하기", icon: "brush", hotkey: "B" },
+  { id: "erase", label: "지우개", hint: "현재 레이어 지우기", icon: "eraser", hotkey: "E" },
+  { id: "fill", label: "채우기", hint: "영역 채우기", icon: "fill", hotkey: "G" },
+  { id: "event", label: "이벤트", hint: "이벤트 배치·편집", icon: "event", hotkey: "N" },
+  { id: "eyedropper", label: "스포이트", hint: "맵에서 타일 집기", icon: "eyedropper", hotkey: "I" },
 ] as const;
 
-type BasicLayerRow = {
-  readonly id: Layer;
-  readonly label: string;
-  readonly hint: string;
-};
+type BasicLayerRow = { readonly id: Layer; readonly label: string; readonly short: string; readonly hint: string };
 
-// 레퍼런스 레이어 목록 톤: 타일=하위, 오브젝트=상위, 이벤트 유지.
 const BASIC_LAYERS: readonly BasicLayerRow[] = [
-  { id: "event", label: "이벤트", hint: "이벤트 레이어" },
-  { id: "upper", label: "오브젝트", hint: "상위(오브젝트) 레이어" },
-  { id: "lower", label: "타일", hint: "하위(지면) 레이어" },
+  { id: "event", label: "이벤트", short: "이", hint: "이벤트 레이어" },
+  { id: "upper", label: "오브젝트", short: "오", hint: "상위(오브젝트) 레이어" },
+  { id: "lower", label: "타일", short: "타", hint: "하위(지면) 레이어" },
 ] as const;
 
 const BASIC_TILE_CAP = 48;
+const FLYOUT_TITLES: Record<BasicFlyoutId, string> = { tiles: "타일", layers: "레이어", maps: "맵" };
+
+// 재렌더에도 살아남는 모듈 상태. tilePalette의 activeWorkTab 패턴과 동일.
+let flyoutState: BasicFlyoutState = INITIAL_BASIC_FLYOUT_STATE;
+let lastContainer: HTMLElement | null = null;
+let documentListenersInstalled = false;
+
+function dispatchFlyout(action: BasicFlyoutAction): void {
+  const next = basicFlyoutReducer(flyoutState, action);
+  if (next === flyoutState) return;
+  flyoutState = next;
+  if (lastContainer?.isConnected) renderBasicLeftRail(lastContainer);
+}
+
+function installDocumentListeners(): void {
+  if (documentListenersInstalled || typeof document === "undefined" || typeof document.addEventListener !== "function") return;
+  documentListenersInstalled = true;
+  document.addEventListener("pointerdown", (event) => {
+    if (flyoutState.open === null) return;
+    const target = event.target;
+    if (target instanceof Node && lastContainer?.contains(target)) return;
+    dispatchFlyout({ type: "outside-click" });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || flyoutState.open === null) return;
+    const target = event.target;
+    if (typeof HTMLElement !== "undefined" && target instanceof HTMLElement) {
+      const tag = target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
+    }
+    dispatchFlyout({ type: "escape" });
+  });
+}
 
 export function renderBasicLeftRail(container: HTMLElement): void {
   clearChildren(container);
+  lastContainer = container;
+  installDocumentListeners();
+
   const state = editorState.get();
   const project = store.getCurrent();
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+
   const shell = el("div", {
-    class: "basic-left-rail",
+    class: "basic-left-rail is-icon-rail",
     dataset: { testid: "basic-left-rail", uiDensity: "basic" },
   });
-
-  shell.append(makeToolsSection(state.tool));
-  if (!map) {
-    shell.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
-    container.append(shell);
-    return;
+  shell.append(makeToolsColumn(state.tool));
+  shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
+  shell.append(makePanelToggles(state.selectedTile, state.layer, tileset));
+  if (flyoutState.open) {
+    shell.append(makeFlyout(flyoutState.open, state.selectedTile, state.layer, tileset));
   }
-  const tileset = project.tilesets[map.tilesetId];
-  if (!tileset) {
-    shell.append(el("div", { class: "empty-hint", text: "타일셋이 없습니다." }));
-    container.append(shell);
-    return;
-  }
-
-  if (state.layer === "event") {
-    shell.append(
-      el("div", {
-        class: "basic-rail-hint",
-        text: "이벤트 레이어 — 맵에서 이벤트를 클릭하거나 빈 칸에 배치하세요.",
-        dataset: { testid: "basic-event-layer-hint" },
-      }),
-    );
-  } else {
-    shell.append(makeTilesSection(state.selectedTile, tileset));
-  }
-  shell.append(makeLayersSection(state.layer));
   container.append(shell);
 }
 
-function makeToolsSection(activeTool: Tool): HTMLElement {
-  const section = el("section", {
-    class: "basic-rail-section",
-    dataset: { testid: "basic-tools-section" },
-  });
-  section.append(el("h3", { class: "basic-rail-title", text: "도구" }));
-  const list = el("div", { class: "basic-tool-list", dataset: { testid: "basic-tool-list" } });
+function makeToolsColumn(activeTool: Tool): HTMLElement {
+  const list = el("div", { class: "basic-rail-icons", dataset: { testid: "basic-tool-list" } });
   for (const tool of BASIC_TOOLS) {
     const active = activeTool === tool.id;
     list.append(
       el("button", {
-        class: "basic-tool-row" + (active ? " is-active" : ""),
+        class: "basic-rail-btn" + (active ? " is-active" : ""),
         attrs: {
           type: "button",
-          title: tool.hint,
+          title: `${tool.label} (${tool.hotkey}) — ${tool.hint}`,
           "aria-label": tool.label,
           "aria-pressed": String(active),
         },
         dataset: { testid: `tool-${tool.id}`, basicTool: tool.id },
         on: {
           click: () => {
-            if (tool.id === "paint") editorState.set({ tool: "paint", paintShape: "pen" });
-            else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
+            if (tool.id === "paint") {
+              editorState.set(
+                editorState.get().layer === "event"
+                  ? { tool: "paint", paintShape: "pen", layer: "lower" }
+                  : { tool: "paint", paintShape: "pen" },
+              );
+            } else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
+            else if (editorState.get().layer === "event") editorState.set({ tool: tool.id, layer: "lower" });
             else editorState.set({ tool: tool.id });
           },
         },
-        children: [
-          el("span", { class: "basic-tool-label", text: tool.label }),
-        ],
+        children: [makeSvgIcon(tool.icon)],
       }),
     );
   }
-  section.append(list);
-  return section;
+  return list;
 }
 
-function makeTilesSection(selectedTile: number, tileset: TilesetDef): HTMLElement {
-  const section = el("section", {
-    class: "basic-rail-section",
-    dataset: { testid: "basic-tiles-section" },
+function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: TilesetDef | undefined): HTMLElement {
+  const wrap = el("div", { class: "basic-rail-icons basic-rail-panel-toggles" });
+
+  // 타일: 현재 선택 타일 썸네일을 아이콘으로. 이벤트 레이어에선 비활성.
+  const tileDisabled = activeLayer === "event" || !tileset;
+  const thumbSize = 26;
+  const tileThumbStyle =
+    !tileDisabled && tileset && selectedTile >= 0 && selectedTile < tileset.count
+      ? `width:${thumbSize}px;height:${thumbSize}px;${tilesetTileBackgroundStyle(tileset, selectedTile, thumbSize)}`
+      : `width:${thumbSize}px;height:${thumbSize}px;`;
+  const tileButton = el("button", {
+    class: "basic-rail-btn basic-rail-tile-toggle" + (flyoutState.open === "tiles" ? " is-open" : ""),
+    attrs: {
+      type: "button",
+      title: tileDisabled ? "이벤트 레이어에서는 타일을 선택하지 않습니다" : `타일 — 현재: ${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`,
+      "aria-label": "타일 패널",
+      "aria-expanded": String(flyoutState.open === "tiles"),
+    },
+    dataset: { testid: "basic-rail-toggle-tiles" },
+    on: { click: () => { if (!tileDisabled) dispatchFlyout({ type: "toggle", id: "tiles" }); } },
+    children: [el("span", { class: "basic-rail-tile-thumb", attrs: { style: tileThumbStyle, "aria-hidden": "true" } })],
   });
-  const head = el("div", { class: "basic-rail-head" });
-  head.append(el("h3", { class: "basic-rail-title", text: "타일" }));
-  head.append(
-    el("span", {
-      class: "basic-tileset-name",
-      text: tileset.name,
-      attrs: { title: tileset.name },
-      dataset: { testid: "palette-tileset-name" },
+  if (tileDisabled) tileButton.setAttribute("disabled", "");
+  wrap.append(tileButton);
+
+  const layerShort = BASIC_LAYERS.find((row) => row.id === activeLayer)?.short ?? "타";
+  wrap.append(
+    el("button", {
+      class: "basic-rail-btn" + (flyoutState.open === "layers" ? " is-open" : ""),
+      attrs: {
+        type: "button",
+        title: `레이어 — 현재: ${BASIC_LAYERS.find((r) => r.id === activeLayer)?.label ?? ""}`,
+        "aria-label": "레이어 패널",
+        "aria-expanded": String(flyoutState.open === "layers"),
+      },
+      dataset: { testid: "basic-rail-toggle-layers" },
+      on: { click: () => dispatchFlyout({ type: "toggle", id: "layers" }) },
+      children: [makeSvgIcon("layers"), el("span", { class: "basic-rail-badge", text: layerShort })],
     }),
   );
-  section.append(head);
 
-  const selectedLabel =
-    selectedTile >= 0 && selectedTile < tileset.count
-      ? `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`
-      : "없음";
+  wrap.append(
+    el("button", {
+      class: "basic-rail-btn" + (flyoutState.open === "maps" ? " is-open" : ""),
+      attrs: { type: "button", title: "맵 트리", "aria-label": "맵 패널", "aria-expanded": String(flyoutState.open === "maps") },
+      dataset: { testid: "basic-rail-toggle-maps" },
+      on: { click: () => dispatchFlyout({ type: "toggle", id: "maps" }) },
+      children: [makeSvgIcon("map")],
+    }),
+  );
+  return wrap;
+}
+
+function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer, tileset: TilesetDef | undefined): HTMLElement {
+  const body = el("div", { class: "basic-flyout-content" });
+  if (id === "tiles") {
+    if (activeLayer === "event") {
+      body.append(el("div", { class: "basic-rail-hint", text: "이벤트 레이어 — 타일 대신 이벤트를 배치합니다.", dataset: { testid: "basic-event-layer-hint" } }));
+    } else if (!tileset) {
+      body.append(el("div", { class: "empty-hint", text: "타일셋이 없습니다." }));
+    } else {
+      body.append(makeTilesBody(selectedTile, tileset));
+    }
+  } else if (id === "layers") {
+    body.append(makeLayersBody(activeLayer));
+  } else {
+    const host = el("div", { class: "basic-flyout-map-host" });
+    renderMapList(host);
+    body.append(host);
+  }
+  return buildFlyoutShell({
+    title: FLYOUT_TITLES[id],
+    pinned: flyoutState.pinned,
+    onPinToggle: () => dispatchFlyout({ type: "pin-toggle" }),
+    onClose: () => dispatchFlyout({ type: "escape" }),
+    body,
+  });
+}
+
+function makeTilesBody(selectedTile: number, tileset: TilesetDef): HTMLElement {
+  const section = el("div", { class: "basic-rail-section", dataset: { testid: "basic-tiles-section" } });
   section.append(
     el("div", {
       class: "basic-selected-tile",
-      text: selectedLabel,
+      text: selectedTile >= 0 && selectedTile < tileset.count ? `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}` : "없음",
       dataset: { testid: "selected-tile-status" },
     }),
   );
-
   const grid = el("div", { class: "basic-tile-grid", dataset: { testid: "basic-tile-grid" } });
-  const indexes = pickBasicTileIndexes(tileset, selectedTile);
-  for (const index of indexes) {
+  for (const index of pickBasicTileIndexes(tileset, selectedTile)) {
     const active = index === selectedTile;
     const cellSize = TILE_SIZE * 2;
-    const cell = el("button", {
-      class: "basic-tile-cell" + (active ? " is-active" : ""),
-      attrs: {
-        type: "button",
-        title: `${index} ${tileDisplayLabelForIndex(index)}`,
-        "aria-label": `타일 ${index}`,
-        "aria-pressed": String(active),
-        style: `width:${cellSize}px;height:${cellSize}px;${tilesetTileBackgroundStyle(tileset, index, cellSize)}`,
-      },
-      dataset: { testid: `basic-tile-${index}`, tileIndex: String(index) },
-      on: {
-        click: () => {
-          const layer = editorState.get().layer === "event" ? "lower" : editorState.get().layer;
-          editorState.set({ selectedTile: index, tool: "paint", paintShape: "pen", layer });
+    grid.append(
+      el("button", {
+        class: "basic-tile-cell" + (active ? " is-active" : ""),
+        attrs: {
+          type: "button",
+          title: `${index} ${tileDisplayLabelForIndex(index)}`,
+          "aria-label": `타일 ${index}`,
+          "aria-pressed": String(active),
+          style: `width:${cellSize}px;height:${cellSize}px;${tilesetTileBackgroundStyle(tileset, index, cellSize)}`,
         },
-      },
-    });
-    grid.append(cell);
-  }
-  if (indexes.length === 0) {
-    grid.append(el("div", { class: "empty-hint", text: "표시할 타일이 없습니다." }));
+        dataset: { testid: `basic-tile-${index}`, tileIndex: String(index) },
+        on: {
+          click: () => {
+            const layer = editorState.get().layer === "event" ? "lower" : editorState.get().layer;
+            editorState.set({ selectedTile: index, tool: "paint", paintShape: "pen", layer });
+          },
+        },
+      }),
+    );
   }
   section.append(grid);
   return section;
 }
 
-function makeLayersSection(activeLayer: Layer): HTMLElement {
-  const section = el("section", {
-    class: "basic-rail-section",
-    dataset: { testid: "basic-layers-section" },
-  });
-  section.append(el("h3", { class: "basic-rail-title", text: "레이어" }));
+function makeLayersBody(activeLayer: Layer): HTMLElement {
   const list = el("div", { class: "basic-layer-list", dataset: { testid: "basic-layer-list" } });
   for (const layer of BASIC_LAYERS) {
     const active = activeLayer === layer.id;
     list.append(
       el("button", {
         class: "basic-layer-row" + (active ? " is-active" : ""),
-        attrs: {
-          type: "button",
-          title: layer.hint,
-          "aria-label": layer.label,
-          "aria-pressed": String(active),
-        },
+        attrs: { type: "button", title: layer.hint, "aria-label": layer.label, "aria-pressed": String(active) },
         dataset: {
           testid: layer.id === "lower" ? "layer-lower" : layer.id === "upper" ? "layer-upper" : "layer-event",
           basicLayer: layer.id,
@@ -208,11 +279,10 @@ function makeLayersSection(activeLayer: Layer): HTMLElement {
       }),
     );
   }
-  section.append(list);
-  return section;
+  return list;
 }
 
-/** Prefer terrain-looking low indexes + keep current selection visible. */
+/** Prefer terrain-looking low indexes + keep current selection visible. (기존 로직 유지) */
 function pickBasicTileIndexes(tileset: TilesetDef, selectedTile: number): number[] {
   const out: number[] = [];
   const seen = new Set<number>();
@@ -222,7 +292,6 @@ function pickBasicTileIndexes(tileset: TilesetDef, selectedTile: number): number
     out.push(n);
   };
   if (selectedTile >= 0) push(selectedTile);
-  // Common grass/path/water-ish early ids first, then stride sample.
   for (let i = 0; i < Math.min(tileset.count, 80); i += 1) push(i);
   for (let i = 80; i < tileset.count && out.length < BASIC_TILE_CAP; i += 8) push(i);
   return out.slice(0, BASIC_TILE_CAP);

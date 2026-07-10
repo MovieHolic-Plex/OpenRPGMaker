@@ -1,0 +1,121 @@
+/* src/styles/shell/editor-responsive-expert.css
+   전문가 모드 1024px 완전 대응 (스펙 §5). 1024px 이상에서 줄바꿈·잘림·겹침 제거.
+   1024px 미만은 기존 720px 자동 접힘 경로에 맡긴다. */
+
+/* 1) 메뉴바: 라벨 줄바꿈 금지 */
+.rm2k3-menu-bar {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.rm2k3-menu-item,
+.editor-ui-mode-btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .editor-product-brand { margin-right: 8px; }
+  .editor-product-brand-text { display: none; } /* 로고(✦)만 남김 */
+  .rm2k3-menu-item { padding-left: 8px; padding-right: 8px; }
+  .editor-ui-mode-btn { padding: 0 8px; }
+  .editor-ui-mode-toggle { margin-left: 6px; }
+}
+
+/* 2) 좌패널 작업 탭: 줄바꿈 금지 + 좁은 폭 축소 */
+.palette-work-tab {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .palette-work-tab { font-size: 11px; padding-left: 6px; padding-right: 6px; }
+}
+
+/* 3) 맵 트리: 이름 우선(ellipsis), 행 액션은 hover/focus에서만 */
+.map-item .map-tree-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  /* 좁은 폭: 고정 액션 컬럼이 이름(1fr)을 0으로 붕괴시키므로,
+     ⋮(컨텍스트 메뉴)와 시작★만 남기고 개별 액션·잠금 배지를 접는다.
+     figma-editor.css가 이 파일보다 나중에 import되어 동일 특이도에서 캐스케이드를
+     이기므로, body 접두사로 특이도를 한 단계 올려 폭 붕괴 규칙이 항상 이기게 한다. */
+  body .left-panel-stack[data-testid="left-map-root"] .map-item {
+    grid-template-columns: 10px 16px minmax(0, 1fr) 14px 18px;
+  }
+
+  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-tree-action:not(.map-context-trigger),
+  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-parent-sel,
+  body .left-panel-stack[data-testid="left-map-root"] .map-item .map-lock-badge {
+    display: none;
+  }
+}
+
+/* 4) AI 패널: 입력 행이 절대 잘리지 않게 */
+.ai-command-input-stack,
+.ai-chat-input-row {
+  min-width: 0;
+}
+
+.ai-chat-input-row > textarea,
+.ai-chat-input-row > input {
+  min-width: 0;
+}
+
+.ai-chat-send {
+  flex: 0 0 auto;
+}
+
+/* 5) 빠른 작업 그리드: 좁으면 1열 */
+@media (max-width: 1280px) {
+  .ai-quick-action-grid { grid-template-columns: 1fr; }
+}
+
+/* 6) 캔버스 상단: 줌 툴바를 우측 고정 → 잠금 배너(좌측)와 절대 안 겹침 */
+@media (max-width: 1180px) {
+  .canvas-toolbar {
+    left: auto;
+    right: 12px;
+    transform: none;
+  }
+}
+
+/* 7) 상태바: 우선순위 숨김 (모드·맵·도구·잠금·DB는 항상 유지) */
+.editor-statusbar {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1280px) {
+  .editor-statusbar .sb-detail { display: none; }
+}
+
+@media (max-width: 1100px) {
+  .editor-statusbar .sb-secondary { display: none; }
+}
+
+/* 8) 클래식 툴바 오버플로우 */
+.classic-toolbar .rm2k3-toolbar-row {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.toolbar-overflow-popup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 320px;
+  padding: 6px;
+  position: absolute;
+  right: 4px;
+  top: 100%;
+  z-index: 80;
+}
