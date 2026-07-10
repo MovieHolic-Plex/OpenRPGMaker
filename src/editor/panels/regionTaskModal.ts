@@ -7,6 +7,7 @@ import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
+import { nextSuggestedRegionCommands } from "@/editor/regionTask/suggestedCommands";
 import {
   describeRegionTaskResult,
   runRegionTask,
@@ -98,12 +99,35 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     children: [titleRow, chip, closeButton],
   });
 
+  const suggestions = nextSuggestedRegionCommands(4);
   const textarea = el("textarea", {
     class: "region-task-input",
     attrs: { placeholder: "이 영역에 무엇을 할까요? 예: 침엽수 숲으로 채워줘", rows: "3" },
     dataset: { testid: "region-task-input" },
   }) as HTMLTextAreaElement;
-  if (options.initialInstruction) textarea.value = options.initialInstruction;
+  if (options.initialInstruction) {
+    textarea.value = options.initialInstruction;
+  } else {
+    textarea.setAttribute("placeholder", `이 영역에 무엇을 할까요? 예: ${suggestions[0].instruction}`);
+  }
+  const suggestionRow = el("div", {
+    class: "region-task-suggestions",
+    dataset: { testid: "region-task-suggestions" },
+    children: suggestions.map((command) =>
+      el("button", {
+        class: "region-task-suggest-chip",
+        text: command.label,
+        attrs: { type: "button", title: command.instruction },
+        dataset: { testid: `region-suggest-${command.id}` },
+        on: {
+          click: () => {
+            textarea.value = command.instruction;
+            textarea.focus();
+          },
+        },
+      }),
+    ),
+  });
 
   const log = el("div", { class: "region-task-log", dataset: { testid: "region-task-log" } });
   const summary = el("div", { class: "region-task-summary", dataset: { testid: "region-task-summary" } });
@@ -344,7 +368,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: asPopover ? "region-task-modal region-task-popover" : "region-task-modal",
     attrs: { role: "dialog", "aria-label": "영역 작업" },
     dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal" },
-    children: [header, textarea, log, summary, compareHost, actions],
+    children: [header, textarea, suggestionRow, log, summary, compareHost, actions],
   });
   // Escape는 backdrop에 건다(포커스된 textarea의 keydown이 여기로 버블). document
   // 리스너를 피해 fakeDom과 실제 DOM 모두에서 동작.

@@ -244,4 +244,16 @@ describe("pending 비교 UI", () => {
     expect(resultA.pending!.settled).toBe(true);
     expect(findByTestId(rootB, "region-task-input")).not.toBeNull();
   });
+
+  it("추천 칩 클릭 시 입력창이 채워진다", () => {
+    restoreDom = installFakeDom();
+    const root = openModal({ mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 } });
+    const chips = findByTestId(root, "region-task-suggestions");
+    expect(chips).not.toBeNull();
+    const firstChip = chips!.querySelector("button") as HTMLElement;
+    firstChip.dispatchEvent(new Event("click"));
+    const input = findByTestId(root, "region-task-input") as HTMLTextAreaElement;
+    expect(input.value.length).toBeGreaterThan(5);
+    closeRegionTaskModal();
+  });
 });

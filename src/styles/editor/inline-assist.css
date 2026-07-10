@@ -222,3 +222,28 @@
 .region-task-discard:hover {
   color: var(--editor-text, #e8eefc);
 }
+
+.region-task-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.region-task-suggest-chip {
+  background: color-mix(in srgb, var(--editor-popover-bg, #151b2c) 88%, #fff);
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 999px;
+  color: var(--editor-text-muted, #9aa8c7);
+  cursor: pointer;
+  font: 500 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.region-task-suggest-chip:hover,
+.region-task-suggest-chip:focus-visible {
+  border-color: var(--editor-blue, #3d6df0);
+  color: var(--editor-text, #e8eefc);
+  outline: none;
+}
