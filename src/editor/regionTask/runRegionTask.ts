@@ -32,6 +32,7 @@ import {
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
+import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
 import { setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
@@ -278,6 +279,7 @@ export function buildRegionTaskMessage(
   tileset?: TilesetDef,
 ): string {
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
+  const intentGuides = regionIntentGuideLines(routeRegionIntent(instruction));
   const toolGuide = [
     "영역 작업 도구 규칙:",
     "- 집/건물: build_house_kit (벽 타일로 직사각 채우기 금지)",
@@ -287,6 +289,8 @@ export function buildRegionTaskMessage(
     "- 길/도로: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},...] } — 흙길 오토타일 성형. 영역 안 동선·호수 둘레 산책로에 사용",
     "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",
     "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지",
+    ...intentGuides,
+    "- 지원하지 않는 요청 부분은 시도하지 말고, 마지막 응답에 '못 한 것: …' 한 줄로 명시하라",
     "- 영역 작업은 즉시 적용된다. propose_tile_vocabulary 댄스는 하지 말 것",
     "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
   ].join("\n");
