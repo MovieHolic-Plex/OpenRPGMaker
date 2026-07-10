@@ -10,22 +10,25 @@
   .database-modal-body .rm2k3-record-classes .rm2k3-detail-form {
     height: 100%;
     min-height: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
+  /* 11개 패널(장비/승급 포함) 전부를 grid-area 클래스로 명시 배치한다 — :nth-child 매핑은
+     패널 개수가 바뀔 때마다 조용히 어긋나며(P1), "장비" 패널이 그 피해자였다. */
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
     display: grid;
     gap: 8px;
     grid-template-areas:
       "name animation skills"
       "curves commands skills"
-      "exp commands options"
-      "state element equipment";
+      "exp commands promotion"
+      "options state element"
+      "equipment equipment equipment";
     grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1fr) minmax(270px, 0.82fr);
-    grid-template-rows: 84px 190px 118px minmax(119px, 1fr);
-    height: 100%;
+    grid-template-rows: 84px 190px 118px 84px minmax(64px, auto);
+    min-height: 100%;
     min-width: 0;
-    overflow: hidden;
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel {
@@ -39,16 +42,17 @@
     padding: 10px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(1) { grid-area: name; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(2) { grid-area: animation; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(3) { grid-area: curves; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(4) { grid-area: exp; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(5) { grid-area: commands; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(6) { grid-area: options; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(7) { grid-area: skills; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(8) { grid-area: state; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(9) { grid-area: element; }
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(10) { grid-area: equipment; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-name { grid-area: name; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-animation { grid-area: animation; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-curves { grid-area: curves; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-exp { grid-area: exp; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-commands { grid-area: commands; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-options { grid-area: options; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-skills { grid-area: skills; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-promotion { grid-area: promotion; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-state { grid-area: state; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-element { grid-area: element; }
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment { grid-area: equipment; }
 
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel legend {
     color: var(--text-1);
@@ -186,27 +190,38 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(8),
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(9) {
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-state,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-element {
     max-height: 100%;
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(3),
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(4),
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(5),
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(7),
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(10) {
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-curves,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-exp,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-commands,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-skills,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-promotion,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(6) {
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-options {
     display: grid;
     gap: 4px 10px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(6) legend {
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-options legend {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
+    display: grid;
+    gap: 4px 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-equipment legend {
     grid-column: 1 / -1;
   }
 }

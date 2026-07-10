@@ -1,6 +1,6 @@
 @media (min-width: 901px) {
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
-    grid-template-rows: 84px 190px 118px minmax(119px, 1fr);
+    grid-template-rows: 84px 190px 118px 84px minmax(64px, auto);
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-curve {
@@ -77,7 +77,7 @@
 
   .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
     grid-template-columns: minmax(300px, 0.85fr) minmax(300px, 0.82fr) minmax(300px, 1fr);
-    grid-template-rows: 96px 190px 126px minmax(80px, 1fr);
+    grid-template-rows: 72px 160px 96px 96px minmax(72px, 1fr);
     overflow: hidden;
   }
 }

@@ -1,10 +1,22 @@
-type DomGlobalName = "document" | "Node" | "HTMLElement" | "HTMLButtonElement";
+type DomGlobalName =
+  | "document"
+  | "Node"
+  | "HTMLElement"
+  | "HTMLButtonElement"
+  | "HTMLInputElement"
+  | "HTMLSelectElement"
+  | "HTMLImageElement"
+  | "HTMLTextAreaElement";
 
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
   readonly HTMLElement: typeof HTMLElement | undefined;
   readonly HTMLButtonElement: typeof HTMLButtonElement | undefined;
+  readonly HTMLInputElement: typeof HTMLInputElement | undefined;
+  readonly HTMLSelectElement: typeof HTMLSelectElement | undefined;
+  readonly HTMLImageElement: typeof HTMLImageElement | undefined;
+  readonly HTMLTextAreaElement: typeof HTMLTextAreaElement | undefined;
 };
 
 export class FakeNode {
@@ -43,6 +55,16 @@ export class FakeNode {
 
   remove(): void {
     this.parentNode?.removeChild(this);
+    this.parentNode = null;
+  }
+
+  replaceWith(...nodes: FakeNode[]): void {
+    const parent = this.parentNode;
+    if (!parent) return;
+    const index = parent.childNodes.indexOf(this);
+    if (index < 0) return;
+    for (const node of nodes) node.parentNode = parent;
+    parent.childNodes.splice(index, 1, ...nodes);
     this.parentNode = null;
   }
 
@@ -213,10 +235,20 @@ export function installFakeDom(): () => void {
     Node: globalThis.Node,
     HTMLElement: globalThis.HTMLElement,
     HTMLButtonElement: globalThis.HTMLButtonElement,
+    HTMLInputElement: globalThis.HTMLInputElement,
+    HTMLSelectElement: globalThis.HTMLSelectElement,
+    HTMLImageElement: globalThis.HTMLImageElement,
+    HTMLTextAreaElement: globalThis.HTMLTextAreaElement,
   } satisfies PreviousDomGlobals;
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
+  // 몬스터/장비 뷰 등이 `instanceof HTMLInputElement`(또는 Image/Select/TextArea)로 타입을
+  // 좁히는 패턴을 쓴다 — FakeElement가 그 전부를 흉내내므로 같은 클래스를 매핑해둔다.
+  defineDomGlobal("HTMLInputElement", FakeElement);
+  defineDomGlobal("HTMLSelectElement", FakeElement);
+  defineDomGlobal("HTMLImageElement", FakeElement);
+  defineDomGlobal("HTMLTextAreaElement", FakeElement);
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
   documentListeners = {};
@@ -259,6 +291,10 @@ export function installFakeDom(): () => void {
     restoreDomGlobal("Node", previous.Node);
     restoreDomGlobal("HTMLElement", previous.HTMLElement);
     restoreDomGlobal("HTMLButtonElement", previous.HTMLButtonElement);
+    restoreDomGlobal("HTMLInputElement", previous.HTMLInputElement);
+    restoreDomGlobal("HTMLSelectElement", previous.HTMLSelectElement);
+    restoreDomGlobal("HTMLImageElement", previous.HTMLImageElement);
+    restoreDomGlobal("HTMLTextAreaElement", previous.HTMLTextAreaElement);
   };
 }
 

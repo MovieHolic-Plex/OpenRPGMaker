@@ -221,7 +221,17 @@ function updateBattlerPoseDuration(index: number, poseKind: BattlerAnimationPose
 }
 
 function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[]): HTMLElement[] {
-  return terrains.flatMap((terrain, index) => [
+  // 레코드마다 래퍼 div로 감싸 grid-column:1/-1 을 부여한다 — 그렇지 않으면 필드(9개, 홀수)가
+  // 부모 2열 그리드에 flat하게 흘러 들어가 레코드 경계 없이 다음 레코드 필드와 뒤섞였다(P9).
+  return terrains.map((terrain, index) => el("div", {
+    class: "db-terrain-record",
+    dataset: { testid: `db-terrain-record-${index}` },
+    children: terrainRecordFields(terrain, index),
+  }));
+}
+
+function terrainRecordFields(terrain: DatabaseTerrainRecord, index: number): HTMLElement[] {
+  return [
     utilityTextRow({ label: ordinalLabel(index), value: terrain.name, testid: `db-field-terrain-name-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
       recordCoalescedSnapshot(`db-utility:terrain:${index}:name`);
       store.update((project) => {
@@ -285,7 +295,7 @@ function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[]): HTMLElem
         if (target) target.vehiclePassage.airshipLand = checked;
       });
     } }),
-  ]);
+  ];
 }
 
 function battleCommandEditorRows(commands: readonly DatabaseBattleCommandRecord[]): HTMLElement[] {

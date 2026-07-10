@@ -559,7 +559,7 @@
 
   .database-modal-body :is(.rm2k3-detail-skills, .rm2k3-detail-items, .rm2k3-detail-equipment) > :is(.field, .db-field):has(textarea),
   .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) > .db-items-rm2k3-workbench,
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:first-child {
+  .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic {
     grid-column: 1 / -1;
   }
 
@@ -624,7 +624,7 @@
   }
 
   .database-modal-body .rm2k3-detail-skills > .db-advanced-panel,
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:not(:first-child) {
+  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:not(.db-panel-equipment-graphic) {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
   }
 
@@ -784,11 +784,11 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:first-child {
+  .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic {
     grid-template-columns: minmax(220px, 0.8fr) minmax(260px, 1.2fr);
   }
 
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:first-child .db-field {
+  .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic .db-field {
     grid-template-columns: 64px minmax(0, 1fr);
   }
 
@@ -995,6 +995,9 @@
   }
 
   .database-modal-body .db-utility-form .db-search {
+    /* 4행 2열을 공유하는 db-utility-detail(약 128px)에 grid 기본 stretch로 끌려가
+       검색 입력창까지 128px로 늘어나 보였다(P11-A/qa-system). 자기 콘텐츠 높이로 고정. */
+    align-self: start;
     grid-column: 1;
     margin: 0;
   }
@@ -1139,7 +1142,7 @@
     height: 100%;
     max-height: 100%;
     min-height: 0;
-    overflow: hidden;
+    overflow: auto;
   }
 
   .database-modal-body .db-troops-classic-workbench {

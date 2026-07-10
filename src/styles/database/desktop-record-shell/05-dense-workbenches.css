@@ -92,7 +92,7 @@
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
-    grid-template-rows: 76px 168px 100px minmax(86px, 1fr);
+    grid-template-rows: 76px 168px 100px 76px minmax(56px, auto);
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel {
@@ -108,7 +108,7 @@
   }
 
   .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-rows: 82px 172px 106px minmax(62px, 1fr);
+    grid-template-rows: 64px 140px 84px 84px minmax(56px, 1fr);
   }
 
   .database-modal-body .rm2k3-detail-skills,
@@ -152,7 +152,7 @@
   }
 
   .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-rows: 76px 156px 96px minmax(130px, 1fr);
+    grid-template-rows: 60px 128px 76px 76px minmax(112px, 1fr);
   }
 
   .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
@@ -161,7 +161,7 @@
     padding: 10px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic {
     gap: 6px;
     grid-template-rows: auto minmax(104px, 1fr) 24px 24px;
     overflow: hidden;
@@ -171,12 +171,12 @@
     min-height: 104px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) .actor-check {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic .actor-check {
     min-height: 22px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7),
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-state,
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element {
     overflow: auto;
   }
 
@@ -325,15 +325,15 @@
   }
 
   .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-rows: 84px 160px 132px minmax(78px, 1fr);
+    grid-template-rows: 64px 128px 96px 96px minmax(78px, 1fr);
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4),
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(5) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-rewards,
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-critical {
     overflow: visible;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic {
     grid-template-rows: auto minmax(96px, 1fr) 24px 24px;
   }
 
@@ -341,7 +341,7 @@
     min-height: 96px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element {
     padding-bottom: 22px;
   }
 
@@ -377,8 +377,13 @@
     margin: 0;
   }
 
+  /* align-items 기본값(stretch)이면 grid 자식 fieldset이 행 트랙 높이에 맞춰 늘어나며
+     내용(레코드 목록)이 트랙보다 클 때 압착되어 legend까지 잘려 보였다(P9, qa-battle #7).
+     align-items:start 로 각 fieldset이 자기 콘텐츠 높이만큼만 차지하게 하고, 목록류만
+     별도 max-height+overflow:auto 로 스스로 스크롤하게 한다. */
   .database-modal-body .db-parity-form {
     align-content: start;
+    align-items: start;
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 5px;
@@ -403,6 +408,7 @@
     gap: 8px 14px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin: 0;
+    min-height: max-content;
     min-width: 0;
     padding: 14px;
   }
@@ -413,7 +419,7 @@
   }
 
   .database-modal-body .db-parity-form .rm2k3-db-fieldset:nth-child(2) {
-    max-height: 338px;
+    max-height: 420px;
     overflow: auto;
     padding-bottom: 18px;
   }
@@ -423,6 +429,23 @@
     color: var(--text-1);
     font: 700 15px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     padding: 0 4px;
+  }
+
+  /* 지형 레코드(9필드/레코드, 홀수)를 레코드 단위 래퍼로 감싸 구분선을 그린다 —
+     예전엔 필드가 flat 2열에 순서대로 흘러들어가 레코드 0001의 마지막 필드와 0002의
+     첫 필드가 같은 행 좌/우에 나란히 섞여 보였다(P9). */
+  .database-modal-body .db-parity-form .db-terrain-record {
+    border-top: 1px solid var(--db-modern-line-soft);
+    display: grid;
+    gap: 8px 14px;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 10px;
+  }
+
+  .database-modal-body .db-parity-form .db-terrain-record:first-child {
+    border-top: 0;
+    padding-top: 0;
   }
 
   .database-modal-body .db-parity-form .db-readonly-row {
@@ -767,15 +790,15 @@
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
-    grid-template-rows: 92px 248px 122px minmax(96px, 1fr);
+    grid-template-rows: 92px 248px 122px 88px minmax(64px, auto);
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(2),
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(5) {
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-animation,
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-commands {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel:nth-child(3) {
+  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-curves {
     overflow: hidden;
   }
 
@@ -827,12 +850,12 @@
     background: var(--bg-raised);
     border: 0;
     gap: 10px;
-    grid-template-rows: 96px 172px 132px minmax(194px, 1fr);
+    grid-template-rows: 76px 148px 96px 96px minmax(160px, 1fr);
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(1),
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4) {
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-name,
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-rewards {
     overflow: visible;
   }
 
@@ -841,8 +864,8 @@
     min-height: 26px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7),
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-state,
+  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-element {
     overflow: auto;
     padding-bottom: 14px;
   }
