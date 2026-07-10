@@ -213,6 +213,10 @@ function renderElementDamageRow(element: DatabaseElementRecord, index: number, g
       if (target) target.damageMultipliers = { ...target.damageMultipliers, [grade]: value };
     });
   });
+  // blur 시 클램프된 저장값을 입력창에 되써서 표시-저장 불일치를 없앤다(P4 계열).
+  input.addEventListener("change", () => {
+    input.value = String(clampDamageMultiplier(Number(input.value)));
+  });
   return el("label", {
     class: "db-elements-damage-row",
     children: [

@@ -99,6 +99,7 @@ test.describe("QA sweep: states tab", () => {
     await page.getByTestId("db-field-name").fill("QA상태경계값이름아주길게길게삼십자이상테스트하기");
     await page.getByTestId("db-state-removal-condition").selectOption("즉시 해제");
     await page.getByTestId("db-state-restriction").selectOption("행동 불가");
+    // 2파: 상태 수치 필드에 뷰 레벨 클램프가 배선됨 — 999 는 상한 100 으로 즉시 교정된다.
     await page.getByTestId("db-state-rating").fill("999");
     await page.getByTestId("db-state-accuracy").fill("0");
     await page.getByTestId("db-state-recover-turn").fill("-5");
@@ -113,7 +114,7 @@ test.describe("QA sweep: states tab", () => {
     await switchDatabaseTab(page, STATES_TAB);
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA상태경계값이름아주길게길게삼십자이상테스트하기");
     await expect(page.getByTestId("db-state-removal-condition")).toHaveValue("즉시 해제");
-    await expect(page.getByTestId("db-state-rating")).toHaveValue("999");
+    await expect(page.getByTestId("db-state-rating")).toHaveValue("100");
 
     const project1 = await exportedProject(page);
     const created = project1.database.states.find((state) => state.name === "QA상태경계값이름아주길게길게삼십자이상테스트하기");

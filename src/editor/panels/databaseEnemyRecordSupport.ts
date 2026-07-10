@@ -59,8 +59,8 @@ export function checkboxField(label: string, testid: string, checked: boolean, o
   return el("label", { class: "actor-check", children: [input, el("span", { text: label })] });
 }
 
-export function panel(title: string, children: HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
+export function panel(title: string, children: HTMLElement[], gridClass?: string): HTMLElement {
+  return el("fieldset", { class: gridClass ? `db-advanced-panel ${gridClass}` : "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
 }
 
 export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly action?: () => void }[]): void {

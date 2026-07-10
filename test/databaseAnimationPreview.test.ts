@@ -44,6 +44,7 @@ describe("database animation preview", () => {
 
     const panel = renderAnimationStagePanel({
       animation,
+      currentSelectedFrameCells: () => frames[0]?.cells.map((cell) => ({ ...cell })) ?? [],
       duplicateLastFrame: vi.fn(),
       frames,
       project,

@@ -49,8 +49,8 @@ test("classes 탭 CRUD 왕복 — 정체성/전투명령/옵션/스킬/승급/�
   await page.getByTestId("db-picker-class-state-rate-state_death").selectOption("A");
   await page.getByTestId("db-picker-class-element-rate-fire").selectOption("D");
 
-  // 장비 허용
-  await page.getByTestId("db-picker-class-equipment").selectOption("equip_mage_staff");
+  // 장비 허용 — 2파에서 단일 select(배열 파괴 Critical)를 다중 체크박스로 교체.
+  await page.getByTestId("db-field-class-equipment-equip_mage_staff").check();
 
   // 능력치 곡선
   await page.getByTestId("db-class-curve-edit-maxHp").click();

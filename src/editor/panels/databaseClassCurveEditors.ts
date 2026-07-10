@@ -35,19 +35,22 @@ export function classCurveCards(record: ClassRecord, refresh: () => void = () =>
 function openClassParameterDialog(record: ClassRecord, initialKey: ActorParameterKey, refresh: () => void = () => undefined): void {
   let activeKey = initialKey;
   let activeLevel = lastEditedParameterLevel(record.id, initialKey);
+  // 다이얼로그 안의 편집은 store 가 아니라 draft(사본)에 쌓는다 — "취소"가 진짜 취소가
+  // 되도록(P7). OK/적용을 눌러야만 store 에 커밋된다.
+  let draft = cloneParameterCurves(currentClassParameterCurves(record));
   const close = (): void => backdrop.remove();
   const levelInput = dialogNumberInput("db-class-parameter-level", activeLevel, 1, 99);
-  const valueInput = dialogNumberInput("db-class-parameter-value", parameterValueAtLevel(currentClassParameterCurves(record)[activeKey], activeLevel), 1, 99999);
+  const valueInput = dialogNumberInput("db-class-parameter-value", parameterValueAtLevel(draft[activeKey], activeLevel), 1, 99999);
   const valueLabel = el("span", { text: PARAMETER_LABELS[activeKey] });
   const graph = el("div", { class: "db-class-curve-dialog-graph" });
   const tabs = el("div", { class: "db-class-curve-tabs" });
 
   const syncValueInput = (): void => {
     valueLabel.textContent = PARAMETER_LABELS[activeKey];
-    valueInput.value = String(parameterValueAtLevel(currentClassParameterCurves(record)[activeKey], activeLevel));
+    valueInput.value = String(parameterValueAtLevel(draft[activeKey], activeLevel));
   };
   const renderGraph = (): void => {
-    const curve = currentClassParameterCurves(record)[activeKey];
+    const curve = draft[activeKey];
     graph.replaceChildren(...curve.map((value, index) => curveColumn(value, curve, index + 1, activeLevel, (level) => {
       activeLevel = level;
       levelInput.value = String(activeLevel);
@@ -68,24 +71,27 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
       } },
     })));
   };
-  const applyValue = (): void => {
-    activeLevel = clampDialogInteger(levelInput.valueAsNumber, 1, 99);
-    const value = clampDialogInteger(valueInput.valueAsNumber, 1, 99999);
-    const curves = currentClassParameterCurves(record);
-    const nextCurve = curves[activeKey].slice();
+  // 레벨/값 입력을 draft 에 반영(스토어 커밋 아님).
+  const applyValueToDraft = (): void => {
+    activeLevel = clampDialogInteger(dialogInputNumber(levelInput), 1, 99);
+    const value = clampDialogInteger(dialogInputNumber(valueInput), 1, 99999);
+    const nextCurve = draft[activeKey].slice();
     nextCurve[activeLevel - 1] = value;
-    updateDatabaseRecord("classes", record.id, { parameterCurves: { ...curves, [activeKey]: nextCurve } });
-    setLastEditedParameterLevel(record.id, activeKey, activeLevel);
+    draft = { ...draft, [activeKey]: nextCurve };
     levelInput.value = String(activeLevel);
     valueInput.value = String(value);
     renderGraph();
-    refresh();
   };
   const applyPreset = (preset: ClassCurvePreset): void => {
-    const curves = currentClassParameterCurves(record);
-    updateDatabaseRecord("classes", record.id, { parameterCurves: { ...curves, [activeKey]: presetCurve(curves[activeKey], preset) } });
+    draft = { ...draft, [activeKey]: presetCurve(draft[activeKey], preset) };
     syncValueInput();
     renderGraph();
+  };
+  // draft 전체를 store 에 커밋하고 요약 카드(refresh)를 갱신.
+  const commitDraft = (): void => {
+    applyValueToDraft();
+    updateDatabaseRecord("classes", record.id, { parameterCurves: cloneParameterCurves(draft) });
+    setLastEditedParameterLevel(record.id, activeKey, activeLevel);
     refresh();
   };
   const backdrop = el("div", {
@@ -102,7 +108,7 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
           el("aside", { class: "db-class-dialog-side", children: [
             dialogNumberLabel("레벨", levelInput),
             el("label", { class: "db-class-dialog-number", children: [valueLabel, valueInput] }),
-            el("button", { class: "btn", text: "적용", dataset: { testid: "db-class-parameter-apply" }, attrs: { type: "button" }, on: { click: applyValue } }),
+            el("button", { class: "btn", text: "적용", dataset: { testid: "db-class-parameter-apply" }, attrs: { type: "button" }, on: { click: commitDraft } }),
             panel("간단 설정", [
               presetButton("천재형", () => applyPreset("genius")),
               presetButton("우수형", () => applyPreset("superior")),
@@ -112,20 +118,22 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
           ] }),
         ] }),
         el("footer", { children: [
-          el("button", { class: "btn", text: "OK", dataset: { testid: "db-class-parameter-close" }, attrs: { type: "button" }, on: { click: close } }),
-          el("button", { class: "btn", text: "취소", attrs: { type: "button" }, on: { click: close } }),
-          el("button", { class: "btn", text: "도움말", attrs: { type: "button" } }),
+          el("button", { class: "btn", text: "OK", dataset: { testid: "db-class-parameter-close" }, attrs: { type: "button" }, on: { click: () => {
+            commitDraft();
+            close();
+          } } }),
+          el("button", { class: "btn", text: "취소", dataset: { testid: "db-class-parameter-cancel" }, attrs: { type: "button" }, on: { click: close } }),
         ] }),
       ],
     })],
   });
   levelInput.addEventListener("change", () => {
-    activeLevel = clampDialogInteger(levelInput.valueAsNumber, 1, 99);
+    activeLevel = clampDialogInteger(dialogInputNumber(levelInput), 1, 99);
     levelInput.value = String(activeLevel);
     syncValueInput();
     renderGraph();
   });
-  valueInput.addEventListener("change", applyValue);
+  valueInput.addEventListener("change", applyValueToDraft);
   renderTabs();
   renderGraph();
   document.body.append(backdrop);
@@ -135,6 +143,22 @@ type ClassCurvePreset = "genius" | "superior" | "standard" | "inferior";
 
 function currentClassParameterCurves(record: ClassRecord): ClassRecord["parameterCurves"] {
   return store.getCurrent().database.classes.find((entry) => entry.id === record.id)?.parameterCurves ?? record.parameterCurves;
+}
+
+function cloneParameterCurves(curves: ClassRecord["parameterCurves"]): ClassRecord["parameterCurves"] {
+  return {
+    maxHp: curves.maxHp.slice(),
+    maxMp: curves.maxMp.slice(),
+    attack: curves.attack.slice(),
+    defense: curves.defense.slice(),
+    mind: curves.mind.slice(),
+    agility: curves.agility.slice(),
+  };
+}
+
+// valueAsNumber 는 fake DOM 테스트 환경에 없다 — value 문자열 기반으로 통일.
+function dialogInputNumber(input: HTMLInputElement): number {
+  return input.value.trim() === "" ? Number.NaN : Number(input.value);
 }
 
 function lastEditedParameterLevel(classId: string, key: ActorParameterKey): number {
@@ -198,6 +222,7 @@ function previewSampleIndexes(length: number, activeLevel: number): number[] {
 
 function dialogNumberInput(testid: string, value: number, min: number, max: number): HTMLInputElement {
   const input = el("input", { dataset: { testid }, attrs: { type: "number", min: String(min), max: String(max), value: String(value) } }) as HTMLInputElement;
+  input.value = String(value);
   input.addEventListener("focus", () => input.select());
   return input;
 }

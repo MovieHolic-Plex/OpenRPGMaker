@@ -1,8 +1,8 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { store } from "@/project/store";
-import type { EquipmentRecord, EquipmentStatBonuses } from "@/project/types";
+import type { EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags } from "@/project/types";
 import { el } from "@/util/dom";
 
 type CheckboxFieldInput = {
@@ -38,10 +38,30 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
         onInput: (twoHanded) => updateDatabaseRecord("equipment", record.id, { twoHanded }),
         testid: "db-field-equipment-two-handed",
       }),
-      ...actorChoices(record),
-      ...classChoices(record),
+      // 기본 데이터에서 배우명=직업명이라 어느 쪽인지 구분 불가했다(P10) — 소제목으로 구분.
+      choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record)),
+      choiceGroup("직업별 허용", "db-equipment-class-permission-group", classChoices(record)),
     ]),
-    panel("상태", stateChoices(record)),
+    // 아이템 탭 equipmentProfile 블록과 동일한 효과 필드군 이식(P10 — 스키마·런타임은
+    // 이미 지원하는데 UI 만 없어 AI 도구로만 편집 가능했다).
+    panel("효과", equipmentEffectFields(record)),
+    panel("공격/방어 속성", [
+      choiceGroup("공격 속성", "db-equipment-attack-element-group", elementChoices(record, "attackElementIds")),
+      choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds")),
+    ]),
+    panel("상태", [
+      choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds")),
+      numberField("상태 부여율(%)", "db-field-equipment-state-infliction", record.stateInflictionChance, (stateInflictionChance) =>
+        updateDatabaseRecord("equipment", record.id, { stateInflictionChance }), { min: 0, max: 100 }
+      ),
+      choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds")),
+      selectLiteral("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, ["resist", "inflict"], (stateDefenseMode) =>
+        updateDatabaseRecord("equipment", record.id, { stateDefenseMode })
+      ),
+      numberField("상태 저항률(%)", "db-field-equipment-state-resistance", record.stateResistanceChance, (stateResistanceChance) =>
+        updateDatabaseRecord("equipment", record.id, { stateResistanceChance }), { min: 0, max: 100 }
+      ),
+    ]),
     panel("사용 효과", [
       selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) =>
         updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) })
@@ -57,7 +77,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
 }
 
 function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLElement {
-  return panel("장비 그래픽", [
+  const graphicPanel = panel("장비 그래픽", [
     resourcePickerControl({
       label: "이미지",
       resourceId: record.imageResourceId,
@@ -81,13 +101,15 @@ function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLEleme
       rerender,
     }),
   ]);
+  graphicPanel.classList.add("db-panel-equipment-graphic");
+  return graphicPanel;
 }
 
 function statField(input: StatFieldInput): HTMLElement {
   return numberField(input.label, input.testid, input.equipment.statBonuses[input.key], (value) => {
     const statBonuses = { ...currentEquipment(input.equipment).statBonuses, [input.key]: value };
     updateDatabaseRecord("equipment", input.equipment.id, { statBonuses });
-  });
+  }, { min: 0, max: 9999 });
 }
 
 function actorChoices(record: EquipmentRecord): HTMLElement[] {
@@ -116,17 +138,66 @@ function classChoices(record: EquipmentRecord): HTMLElement[] {
   );
 }
 
-function stateChoices(record: EquipmentRecord): HTMLElement[] {
+function stateChoices(record: EquipmentRecord, key: "stateInflictIds" | "stateDefenseIds"): HTMLElement[] {
+  // 기존 testid(db-field-equipment-state-<id>)는 부여 목록에서 유지한다 — e2e 호환.
+  const testIdPrefix = key === "stateInflictIds" ? "db-field-equipment-state" : "db-field-equipment-state-defense";
   return store.getCurrent().database.states.map((state) =>
     checkboxField({
-      checked: record.stateInflictIds.includes(state.id),
+      checked: record[key].includes(state.id),
       label: state.name,
       onInput: (checked) => updateDatabaseRecord("equipment", record.id, {
-        stateInflictIds: toggleId(currentEquipment(record).stateInflictIds, state.id, checked),
+        [key]: toggleId(currentEquipment(record)[key], state.id, checked),
       }),
-      testid: `db-field-equipment-state-${state.id}`,
+      testid: `${testIdPrefix}-${state.id}`,
     })
   );
+}
+
+function elementChoices(record: EquipmentRecord, key: "attackElementIds" | "elementalDefenseIds"): HTMLElement[] {
+  return (store.getCurrent().database.elements ?? []).map((element) =>
+    checkboxField({
+      checked: record[key].includes(element.id),
+      label: element.name,
+      onInput: (checked) => updateDatabaseRecord("equipment", record.id, {
+        [key]: toggleId(currentEquipment(record)[key], element.id, checked),
+      }),
+      testid: `db-field-equipment-${key}-${element.id}`,
+    })
+  );
+}
+
+// 아이템 탭 equipmentEffectFields(databaseItemRecordView.ts)와 동일한 9종 플래그.
+const EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEffectFlags; readonly label: string; readonly testid: string }[] = [
+  { key: "preemptive", label: "선제 공격", testid: "db-field-equipment-effect-preemptive" },
+  { key: "doubleAttack", label: "2회 공격", testid: "db-field-equipment-effect-double" },
+  { key: "attackAll", label: "전체 공격", testid: "db-field-equipment-effect-all" },
+  { key: "ignoreDodge", label: "회피 무시", testid: "db-field-equipment-effect-ignore-dodge" },
+  { key: "preventCriticalHits", label: "치명타 방지", testid: "db-field-equipment-effect-prevent-critical" },
+  { key: "increasePhysicalDodge", label: "물리 회피율 증가", testid: "db-field-equipment-effect-dodge" },
+  { key: "halfMpCost", label: "MP 소모 절반", testid: "db-field-equipment-effect-half-mp" },
+  { key: "negateTerrainDamage", label: "지형 피해 무효", testid: "db-field-equipment-effect-terrain" },
+  { key: "fixedEquipment", label: "장비 해제 불가", testid: "db-field-equipment-effect-fixed" },
+];
+
+function equipmentEffectFields(record: EquipmentRecord): HTMLElement[] {
+  return EFFECT_FLAG_FIELDS.map(({ key, label, testid }) =>
+    checkboxField({
+      checked: record.effectFlags[key],
+      label,
+      onInput: (value) => updateDatabaseRecord("equipment", record.id, {
+        effectFlags: { ...currentEquipment(record).effectFlags, [key]: value },
+      }),
+      testid,
+    })
+  );
+}
+
+function choiceGroup(title: string, testid: string, children: readonly HTMLElement[]): HTMLElement {
+  return el("div", {
+    class: "db-item-choice-list",
+    dataset: { testid },
+    children: [el("strong", { text: title }), ...children],
+  });
 }
 
 function checkboxField(input: CheckboxFieldInput): HTMLElement {

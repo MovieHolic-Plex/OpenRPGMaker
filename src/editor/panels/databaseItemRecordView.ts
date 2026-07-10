@@ -93,13 +93,13 @@ function equipmentPanels(record: ItemRecord): HTMLElement[] {
     panel("상태", [
       choiceList("상태", stateChoices(record, "stateInflictIds")),
       numberField("상태 부여율", "db-field-item-state-infliction", profile.stateInflictionChance, (stateInflictionChance) =>
-        updateCurrentEquipmentProfile(record, { stateInflictionChance })
+        updateCurrentEquipmentProfile(record, { stateInflictionChance }), { min: 0, max: 100 }
       ),
     ]),
     panel("전투", [
-      numberField("MP 소모", "db-field-item-mp-cost", profile.mpCost, (mpCost) => updateCurrentEquipmentProfile(record, { mpCost })),
-      numberField("명중률", "db-field-item-accuracy", profile.accuracy, (accuracy) => updateCurrentEquipmentProfile(record, { accuracy })),
-      numberField("치명타율", "db-field-item-critical-rate", profile.criticalRate, (criticalRate) => updateCurrentEquipmentProfile(record, { criticalRate })),
+      numberField("MP 소모", "db-field-item-mp-cost", profile.mpCost, (mpCost) => updateCurrentEquipmentProfile(record, { mpCost }), { min: 0, max: 999 }),
+      numberField("명중률", "db-field-item-accuracy", profile.accuracy, (accuracy) => updateCurrentEquipmentProfile(record, { accuracy }), { min: 0, max: 100 }),
+      numberField("치명타율", "db-field-item-critical-rate", profile.criticalRate, (criticalRate) => updateCurrentEquipmentProfile(record, { criticalRate }), { min: 0, max: 100 }),
       selectField("발동 스킬", "db-picker-item-invoke-skill", record.skillId ?? "", store.getCurrent().database.skills, (skillId) =>
         updateDatabaseRecord("items", record.id, { skillId: emptyToUndefined(skillId) })
       ),
@@ -250,23 +250,25 @@ function statBonusField(
   label: string,
   testid: string,
 ): HTMLElement {
+  // store normalize 와 동일 범위: 씨앗 보정 -50..50, 장비형 아이템 보정 -500..500 (P4).
+  const bounds = target === "seedParameterBonuses" ? { min: -50, max: 50 } : { min: -500, max: 500 };
   return numberField(label, testid, bonuses[key], (value) => {
     const current = currentItem(record);
     const currentBonuses = target === "seedParameterBonuses" ? current.seedParameterBonuses : current.equipmentProfile.statBonuses;
     const next = { ...currentBonuses, [key]: value };
     if (target === "seedParameterBonuses") updateDatabaseRecord("items", record.id, { seedParameterBonuses: next });
     if (target === "equipmentProfile") updateEquipmentProfile(current, { ...current.equipmentProfile, statBonuses: next });
-  });
+  }, bounds);
 }
 
 function recoveryFields(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string): HTMLElement[] {
   const value = record[key];
   return [
     numberField("%", `db-field-item-${testIdPrefix}-percent`, value.percentMax, (percentMax) =>
-      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } })
+      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } }), { min: 0, max: 100 }
     ),
     numberField("고정값", `db-field-item-${testIdPrefix}-flat`, value.flat, (flat) =>
-      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat } })
+      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat } }), { min: 0, max: 999 }
     ),
   ];
 }

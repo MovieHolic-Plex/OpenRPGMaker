@@ -19,6 +19,9 @@ export type AnimationPreviewContext = {
   readonly project: Project;
   readonly duplicateLastFrame: () => void;
   readonly updateSelectedFrameCells: (cells: readonly BattleAnimationCell[]) => void;
+  // 셀을 읽는 커맨드(일괄/복사/보간)는 렌더 시점 selectedFrame.cells 대신 이 getter 로
+  // store 최신 셀을 읽어야 직전 인라인 수정이 롤백되지 않는다(P2).
+  readonly currentSelectedFrameCells: () => BattleAnimationCell[];
 };
 
 export function renderAnimationStagePanel(context: AnimationPreviewContext): HTMLElement {
@@ -89,8 +92,8 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
         attrs: { type: "button", title: "현재 프레임 모든 셀에 동일 값 적용" },
         dataset: { testid: "db-animation-cell-batch" },
         on: {
-          click: () => openCellBatchDialog(context.selectedFrame.cells, (patch) => {
-            context.updateSelectedFrameCells(batchApplyCells(context.selectedFrame.cells, patch));
+          click: () => openCellBatchDialog(context.currentSelectedFrameCells(), (patch) => {
+            context.updateSelectedFrameCells(batchApplyCells(context.currentSelectedFrameCells(), patch));
           }),
         },
       }),
@@ -99,7 +102,7 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
         attrs: { type: "button", title: "현재 프레임 셀 복사" },
         on: {
           click: () => {
-            copiedAnimationCells = cloneCells(context.selectedFrame.cells);
+            copiedAnimationCells = cloneCells(context.currentSelectedFrameCells());
             pasteButton.disabled = false;
           },
         },

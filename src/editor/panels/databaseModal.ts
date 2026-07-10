@@ -38,6 +38,10 @@ export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "bat
 }
 
 export function openDatabaseModal(initialTab?: DatabaseTab): void {
+  // 재오픈 경로: DOM 만 뜯어내면 이전 인스턴스의 document keydown 리스너 2개가 남는다
+  // (M11 과 동일 원리) — 반드시 기존 인스턴스의 정식 close() 를 경유해 정리한다.
+  activeModal?.close();
+  // close() 가 backdrop 을 지우지만, 혹시 핸들 없이 남은 고아 DOM 도 방어적으로 제거.
   document.querySelector("[data-testid='database-modal']")?.remove();
   if (initialTab) setDatabaseActiveTab(initialTab);
   resetDatabaseRecordViewSession();

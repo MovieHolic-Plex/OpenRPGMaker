@@ -24,27 +24,60 @@ export function renderClassExperiencePanel(record: ClassRecord, host: HTMLElemen
 
 function openClassExperienceDialog(record: ClassRecord, refresh: () => void = () => undefined): void {
   const close = (): void => backdrop.remove();
-  const baseInput = dialogNumberInput("db-class-exp-base", currentClassExpCurve(record).base, 0, 999999);
-  const extraInput = dialogNumberInput("db-class-exp-extra", currentClassExpCurve(record).extra, 0, 999999);
-  const accelerationInput = dialogNumberInput("db-class-exp-acceleration", currentClassExpCurve(record).acceleration, 0, 999999);
+  // 다이얼로그 안의 편집은 draft 에만 쌓는다 — "취소"가 진짜 취소가 되도록(P7).
+  let draft: ClassRecord["expCurve"] = { ...currentClassExpCurve(record) };
+  let view: "total" | "delta" = "total";
+  const baseInput = dialogNumberInput("db-class-exp-base", draft.base, 0, 999999);
+  const extraInput = dialogNumberInput("db-class-exp-extra", draft.extra, 0, 999999);
+  const accelerationInput = dialogNumberInput("db-class-exp-acceleration", draft.acceleration, 0, 999999);
   const table = el("div", { class: "db-class-exp-table" });
   const graph = el("div", { class: "db-class-exp-dialog-graph" });
-  const applyCurve = (): void => {
-    updateDatabaseRecord("classes", record.id, {
-      expCurve: {
-        base: clampDialogInteger(baseInput.valueAsNumber, 0, 999999),
-        extra: clampDialogInteger(extraInput.valueAsNumber, 0, 999999),
-        acceleration: clampDialogInteger(accelerationInput.valueAsNumber, 0, 999999),
-      },
-    });
+  const totalTab = el("button", {
+    class: "active",
+    text: "누적 경험치",
+    dataset: { testid: "db-class-exp-tab-total" },
+    attrs: { type: "button" },
+    on: { click: () => setView("total") },
+  });
+  const deltaTab = el("button", {
+    text: "다음 레벨까지",
+    dataset: { testid: "db-class-exp-tab-delta" },
+    attrs: { type: "button" },
+    on: { click: () => setView("delta") },
+  });
+  const setView = (next: "total" | "delta"): void => {
+    view = next;
+    totalTab.className = next === "total" ? "active" : "";
+    deltaTab.className = next === "delta" ? "active" : "";
     renderExp();
-    refresh();
+  };
+  const readDraftFromInputs = (): void => {
+    draft = {
+      base: clampDialogInteger(dialogInputNumber(baseInput), 0, 999999),
+      extra: clampDialogInteger(dialogInputNumber(extraInput), 0, 999999),
+      acceleration: clampDialogInteger(dialogInputNumber(accelerationInput), 0, 999999),
+    };
+    baseInput.value = String(draft.base);
+    extraInput.value = String(draft.extra);
+    accelerationInput.value = String(draft.acceleration);
   };
   const renderExp = (): void => {
-    const curve = currentClassExpCurve(record);
-    const values = Array.from({ length: 99 }, (_, index) => totalExpForLevel(curve, index + 1));
-    table.replaceChildren(...values.map((value, index) => el("span", { text: `L${String(index + 1).padStart(2, " ")}: ${value.toLocaleString()}` })));
+    const totals = Array.from({ length: 99 }, (_, index) => totalExpForLevel(draft, index + 1));
+    // "다음 레벨까지" 뷰: 레벨 n → n+1 에 필요한 경험치(L99 는 최고 레벨 — 없음).
+    const values = view === "total"
+      ? totals
+      : totals.map((value, index) => (index + 1 < totals.length ? (totals[index + 1] ?? value) - value : 0));
+    table.replaceChildren(...values.map((value, index) => el("span", {
+      text: view === "delta" && index === totals.length - 1
+        ? `L${String(index + 1).padStart(2, " ")}: -`
+        : `L${String(index + 1).padStart(2, " ")}: ${value.toLocaleString()}`,
+    })));
     graph.replaceChildren(...values.map((value) => el("i", { attrs: { style: `height:${curveHeight(value, values)}%` } })));
+  };
+  const commitDraft = (): void => {
+    readDraftFromInputs();
+    updateDatabaseRecord("classes", record.id, { expCurve: { ...draft } });
+    refresh();
   };
   const backdrop = el("div", {
     class: "db-class-dialog-backdrop",
@@ -54,10 +87,7 @@ function openClassExperienceDialog(record: ClassRecord, refresh: () => void = ()
       attrs: { role: "dialog", "aria-label": "경험치 곡선 설정" },
       children: [
         el("header", { children: [el("strong", { text: "경험치 곡선" }), el("button", { text: "x", attrs: { type: "button" }, on: { click: close } })] }),
-        el("div", { class: "db-class-exp-dialog-tabs", children: [
-          el("button", { class: "active", text: "누적 경험치", attrs: { type: "button" } }),
-          el("button", { text: "다음 레벨까지", attrs: { type: "button" } }),
-        ] }),
+        el("div", { class: "db-class-exp-dialog-tabs", children: [totalTab, deltaTab] }),
         el("div", { class: "db-class-exp-dialog-body", children: [table, graph] }),
         el("div", { class: "db-class-exp-controls", children: [
           dialogNumberLabel("기본값", baseInput),
@@ -66,16 +96,18 @@ function openClassExperienceDialog(record: ClassRecord, refresh: () => void = ()
         ] }),
         el("footer", { children: [
           el("button", { class: "btn", text: "OK", dataset: { testid: "db-class-exp-close" }, attrs: { type: "button" }, on: { click: () => {
-            applyCurve();
+            commitDraft();
             close();
           } } }),
-          el("button", { class: "btn", text: "취소", attrs: { type: "button" }, on: { click: close } }),
-          el("button", { class: "btn", text: "도움말", attrs: { type: "button" } }),
+          el("button", { class: "btn", text: "취소", dataset: { testid: "db-class-exp-cancel" }, attrs: { type: "button" }, on: { click: close } }),
         ] }),
       ],
     })],
   });
-  [baseInput, extraInput, accelerationInput].forEach((input) => input.addEventListener("change", applyCurve));
+  [baseInput, extraInput, accelerationInput].forEach((input) => input.addEventListener("change", () => {
+    readDraftFromInputs();
+    renderExp();
+  }));
   renderExp();
   document.body.append(backdrop);
 }
@@ -117,6 +149,7 @@ function previewSampleLevels(): number[] {
 
 function dialogNumberInput(testid: string, value: number, min: number, max: number): HTMLInputElement {
   const input = el("input", { dataset: { testid }, attrs: { type: "number", min: String(min), max: String(max), value: String(value) } }) as HTMLInputElement;
+  input.value = String(value);
   input.addEventListener("focus", () => input.select());
   return input;
 }
@@ -128,4 +161,9 @@ function dialogNumberLabel(label: string, input: HTMLInputElement): HTMLElement 
 function clampDialogInteger(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, Math.trunc(value)));
+}
+
+// valueAsNumber 는 fake DOM 테스트 환경에 없다 — value 문자열 기반으로 통일.
+function dialogInputNumber(input: HTMLInputElement): number {
+  return input.value.trim() === "" ? Number.NaN : Number(input.value);
 }
