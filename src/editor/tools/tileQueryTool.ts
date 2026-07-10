@@ -21,7 +21,7 @@ const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약 — 배치 전 propose_tile_vocabulary 대상 확인).",
+    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약(신규 재료 정의가 필요한지 확인용 — 존재하는 재료 시공에는 불필요)).",
   mode: "read",
   version: 3,
   domains: ["core", "tile"],
@@ -74,8 +74,8 @@ const tileQuery: ToolDefinition = {
       const summary = unapprovedVocabulary(tileset, limit);
       return {
         summary:
-          `미승인 어휘: 그룹 ${summary.groupCount}개, 타일 ${summary.tileCount}개 — propose_tile_vocabulary로 어휘를 제안한 뒤, ` +
-          "같은 턴에 곧바로 그 그룹 id로 시공 프리미티브(build_wall 등)를 호출하세요.",
+          `미승인 어휘: 그룹 ${summary.groupCount}개, 타일 ${summary.tileCount}개 — 존재하는 그룹은 승인 여부와 무관하게 ` +
+          "시공 프리미티브(build_wall 등)를 바로 호출할 수 있습니다(미합의는 맵 목업 확인). 새 재료 정의가 필요할 때만 propose_tile_vocabulary를 쓰세요.",
         data: { tilesetId, ...summary },
       };
     }

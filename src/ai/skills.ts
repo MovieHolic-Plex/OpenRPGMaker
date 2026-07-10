@@ -375,7 +375,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "절차(준수):",
       "1. get_map_region으로 출발/경유/도착 지점의 실제 좌표를 파악하세요(추측 금지).",
-      `2. lay_path(mapId, points, pathVocabId)로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요(스타일 힌트: ${args.style}). 길 어휘가 미승인이면 propose_tile_vocabulary로 먼저 합의하세요.`,
+      `2. lay_path(mapId, points, pathVocabId)로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요(스타일 힌트: ${args.style}). 존재하는 길 어휘는 바로 쓸 수 있습니다(미합의는 목업 확인). 어휘에 없는 새 길 재료가 필요할 때만 propose_tile_vocabulary.`,
       "3. 길이 문 앞과 이어지는지, 끊긴 곳이 없는지 get_map_region으로 재확인하세요.",
       CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
