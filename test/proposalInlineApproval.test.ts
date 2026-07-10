@@ -21,6 +21,18 @@ describe("inline proposal actions registry", () => {
     expect(notified).toBe(2);
     unsub();
   });
+
+  it("CAS 해제 — A 등록 후 B가 덮어쓰면 A의 해제 시도는 무시된다(경합 방지)", () => {
+    const actionsA = { accept: () => {}, reject: () => {} };
+    const actionsB = { accept: () => {}, reject: () => {} };
+    setInlineProposalActions(actionsA);
+    // B가 A 모르게 슬롯을 덮어씀(last-writer-wins) — 예: 영역 pending이 채팅 제안 위에 등록.
+    setInlineProposalActions(actionsB);
+    // A가 자기 등록만 확인하고 해제(CAS): 현재 슬롯이 자신(actionsA)일 때만 지운다.
+    if (getInlineProposalActions() === actionsA) setInlineProposalActions(null);
+    // B의 등록은 A의 뒤늦은 해제에 영향받지 않고 그대로 남아야 한다.
+    expect(getInlineProposalActions()).toBe(actionsB);
+  });
 });
 
 describe("buildInlineApprovalToolbar", () => {

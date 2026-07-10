@@ -19,7 +19,7 @@ import {
   createThrottledAgentGhostPreviewUpdater,
   setAgentGhostPreviewHidden,
 } from "@/editor/agentGhostPreview";
-import { setInlineProposalActions } from "@/editor/proposalInlineApproval";
+import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
@@ -33,7 +33,7 @@ import {
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
-import { setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
 export interface RegionTaskSessionLike {
@@ -291,7 +291,7 @@ export function buildRegionTaskMessage(
     "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지",
     ...intentGuides,
     "- 지원하지 않는 요청 부분은 시도하지 말고, 마지막 응답에 '못 한 것: …' 한 줄로 명시하라",
-    "- 영역 작업은 즉시 적용된다. propose_tile_vocabulary 댄스는 하지 말 것",
+    "- 결과는 사용자가 승인해야 적용된다. propose_tile_vocabulary 댄스는 하지 말 것",
     "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
   ].join("\n");
   // intent 스코핑용 키워드 — "맵" 단독 과활성은 피하고 타일/이벤트/소품 쓰기 도메인을 우선한다.
@@ -362,6 +362,9 @@ export async function runRegionTask(
   const base = deps.getProject();
   const map = base.maps[opts.mapId];
   if (!map) return { ...emptyBase, error: "맵을 찾을 수 없습니다." };
+
+  // 이전 pending의 onSettle(전역 고스트 정리)이 이번 실행의 프리뷰를 지우지 않도록 선-해소.
+  getPendingRegionApply()?.discard();
 
   // 영역 AI 세션용 작업본: 건축 팔레트와 동일 하네스로 나무/소품 그룹을 승인 상태로 연다.
   // (제로 부트스트랩 본선은 유지 — 여기만 region/build-palette 큐레이션 경로)
@@ -443,7 +446,8 @@ export async function runRegionTask(
   }
 
   const proposed = session.getProposedProject();
-  // 영역 AI는 채팅 soft-confirm UI 없이 즉시 적용 — soft 재료도 이 시점에 합의 처리.
+  // 영역 AI는 채팅 soft-confirm UI 없이 진행 — soft 재료 합의는 이 시점에 처리한다
+  // (적용 자체는 아래 승인 게이트를 통과한 뒤에야 store에 반영된다).
   const softs = turn.proposedCalls
     .map((call) => extractVocabSoftConfirm(call.result.data))
     .filter((soft): soft is NonNullable<typeof soft> => soft !== null);
@@ -513,6 +517,9 @@ export async function runRegionTask(
   }
 
   // 승인 게이트: 적용하지 않고 pending 등록 + 고스트 유지 + 캔버스 인라인 툴바 배선.
+  // regionInlineActions는 아래 setInlineProposalActions 호출 뒤에 값이 채워지지만,
+  // onSettle 클로저는 호출 시점(apply/discard 이후)에야 실행되므로 참조만 잡아두면 된다.
+  let regionInlineActions: InlineProposalActions | null = null;
   const pending = setPendingRegionApply({
     baseProject: base,
     clippedProject: clipped,
@@ -525,7 +532,8 @@ export async function runRegionTask(
     // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
     onDiscard: () => {},
     onSettle: () => {
-      setInlineProposalActions(null);
+      // CAS: 이 pending이 등록한 actions가 여전히 전역 슬롯이면(다른 등록자가 덮어쓰지 않았으면)만 지운다.
+      if (getInlineProposalActions() === regionInlineActions) setInlineProposalActions(null);
       setAgentGhostPreviewHidden(false);
       clearAgentGhostPreview();
       // apply/discard 어느 경로(모달 버튼·캔버스 인라인 툴바·닫기·새 작업의 자동 discard)로
@@ -533,7 +541,7 @@ export async function runRegionTask(
       dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
     },
   });
-  setInlineProposalActions({
+  regionInlineActions = {
     accept: () => pending.apply(),
     reject: () => pending.discard(),
     holdOrigin: {
@@ -541,7 +549,8 @@ export async function runRegionTask(
       start: () => setAgentGhostPreviewHidden(true),
       end: () => setAgentGhostPreviewHidden(false),
     },
-  });
+  };
+  setInlineProposalActions(regionInlineActions);
   const gated = attachLog({
     ok: true,
     applied: false,

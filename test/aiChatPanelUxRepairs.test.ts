@@ -130,7 +130,7 @@ describe("선택 영역 AI 직결 칩", () => {
       options.onEvent?.({ type: "status", text: "영역 작업 시작" });
       options.onEvent?.({ type: "tool_call", name: "paint_tiles", args: { count: 2 }, result: { ok: true, summary: "타일 2칸" } });
       options.onEvent?.({ type: "assistant_message", content: "완료했습니다." });
-      return { ok: true, applied: true, changedCells: 2, clippedCells: 1, proposedCalls: 1, assistantText: "" };
+      return { ok: true, applied: true, changedCells: 2, changedEvents: 0, clippedCells: 1, proposedCalls: 1, assistantText: "" };
     });
     editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
     const panel = renderPanel({ regionTaskRunner: runner });

@@ -73,7 +73,6 @@ import {
 } from "./aiConversationLog";
 import { createProposalModalElements } from "./aiProposalModal";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
-import { setInlineProposalActions } from "@/editor/proposalInlineApproval";
 import {
   attachCompletenessWarnings,
   backupProjectSnapshot,
@@ -353,7 +352,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     conversationId = record.id;
     setPendingProposalMessage(null);
     setLastAppliedProposalMessage(null);
-    setInlineProposalActions(null);
+    proposalApi.clearInlineActionsIfMine();
     proposalHost.replaceChildren();
     closeProposalModal();
     chipsHost.replaceChildren();
@@ -1481,7 +1480,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         conversationId = genId("conv");
         setPendingProposalMessage(null);
         setLastAppliedProposalMessage(null);
-        setInlineProposalActions(null);
+        proposalApi.clearInlineActionsIfMine();
         proposalHost.replaceChildren();
         closeProposalModal();
         chipsHost.replaceChildren();

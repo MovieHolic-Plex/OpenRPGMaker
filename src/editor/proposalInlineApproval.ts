@@ -2,6 +2,13 @@
 // 캔버스 고스트 프리뷰 위 인라인 승인 툴바 (스펙 §3 2-B).
 // aiProposalCard가 pending 제안의 실제 수락/거부 경로를 등록하고,
 // agentPreviewRenderers가 마커에 툴바를 붙인다. 동일 핸들러 = 동일 lint/undo 경로.
+//
+// ⚠️ 규약: 전역 단일 슬롯, last-writer-wins. 채팅 제안(aiProposalCard)과 영역 pending
+// (runRegionTask)이 동시에 등록자가 될 수 있어, 한쪽이 무조건 `setInlineProposalActions(null)`로
+// 해제하면 그 사이 다른 쪽이 새로 등록한 actions를 지워버릴 수 있다(레이스).
+// 해제는 반드시 자기 등록 확인(CAS)으로만 한다:
+//   if (getInlineProposalActions() === mine) setInlineProposalActions(null);
+// (mine = 이 등록자가 setInlineProposalActions에 넘긴 그 객체 참조.)
 import { el } from "@/util/dom";
 
 export interface InlineProposalActions {

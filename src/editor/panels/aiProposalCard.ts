@@ -12,7 +12,7 @@ import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { commitChangeset, summarizeChanges } from "@/editor/tools";
-import { setInlineProposalActions } from "@/editor/proposalInlineApproval";
+import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import {
   formatLayoutValidationSummary,
@@ -192,6 +192,8 @@ export interface ProposalHostApi {
   acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean) => void;
   rejectProposal: () => void;
   applyMetadataKeepSession: (calls: readonly ProposedCall[]) => void;
+  /** 이 호스트가 마지막으로 등록한 인라인 승인 actions가 여전히 현재 슬롯이면(CAS) 해제한다. */
+  clearInlineActionsIfMine: () => void;
 }
 
 export function createProposalHost(options: {
@@ -219,6 +221,12 @@ export function createProposalHost(options: {
 
   let pendingProposalMessage: ProposalMessageState | null = null;
   let lastAppliedProposalMessage: ProposalMessageState | null = null;
+  // 이 호스트가 마지막으로 setInlineProposalActions에 넘긴 객체 참조 — CAS 해제용(전역 슬롯 경합 방지).
+  let myInlineActions: InlineProposalActions | null = null;
+  const clearInlineActionsIfMine = (): void => {
+    if (getInlineProposalActions() === myInlineActions) setInlineProposalActions(null);
+    myInlineActions = null;
+  };
 
   const applyAcceptedProposal = (
     calls: readonly ProposedCall[],
@@ -338,7 +346,7 @@ export function createProposalHost(options: {
   };
 
   const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits = false): void => {
-    setInlineProposalActions(null);
+    clearInlineActionsIfMine();
     const session = controller.session;
     if (!session) return;
     const selected = selectedState ? enforceProposalDependencies(selectedState, proposalDependencyIndexes(calls)) : calls.map(() => true);
@@ -356,7 +364,7 @@ export function createProposalHost(options: {
   };
 
   const rejectProposal = (): void => {
-    setInlineProposalActions(null);
+    clearInlineActionsIfMine();
     proposalHost.replaceChildren();
     closeProposalModal();
     clearAgentGhostPreview();
@@ -574,13 +582,14 @@ export function createProposalHost(options: {
     setAssistantMessageBadge(assistantBubble, "proposal");
     refreshSelectionUi();
     // 인라인 승인(캔버스 고스트 마커) — 카드의 실제 버튼 경로를 그대로 태운다.
-    setInlineProposalActions({
+    myInlineActions = {
       accept: () => { if (acceptButton && !acceptButton.disabled) acceptButton.click(); },
       reject: () => rejectButton?.click(),
       focusCard: () => {
         proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
       },
-    });
+    };
+    setInlineProposalActions(myInlineActions);
     proposalHost.append(card);
     proposalModalCount.textContent = `${result.proposedCalls.length}건`;
     proposalPill.textContent = `📋 변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;
@@ -603,6 +612,7 @@ export function createProposalHost(options: {
     renderProposal,
     acceptProposal,
     rejectProposal,
+    clearInlineActionsIfMine,
     applyMetadataKeepSession,
   };
 }

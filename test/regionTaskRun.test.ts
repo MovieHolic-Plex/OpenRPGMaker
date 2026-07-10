@@ -8,6 +8,7 @@ import {
   type RegionTaskSessionLike,
 } from "@/editor/regionTask/runRegionTask";
 import { __clearPendingRegionApplyForTest, getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail, type RegionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { TurnResult } from "@/ai/assistantSession";
@@ -310,6 +311,42 @@ describe("승인 게이트 (gate: approval 기본)", () => {
     expect(result.applied).toBe(true);
     expect(result.pending).toBeUndefined();
     expect(applied()).not.toBeNull();
+  });
+
+  it("자동 discard 순서 — 새 작업(B) 완료 후 고스트 프리뷰가 B의 것으로 남는다(A의 뒤늦은 onSettle이 지우지 않음)", async () => {
+    clearAgentGhostPreview();
+    const base = baseProject();
+    const proposedA: Project = structuredClone(base);
+    proposedA.maps[MAP_ID].lowerTiles[idx(1, 1)] = 5; // A 변경 셀(영역 안)
+    const proposedB: Project = structuredClone(base);
+    proposedB.maps[MAP_ID].lowerTiles[idx(2, 2)] = 7; // B 변경 셀(영역 안)
+
+    // write 툴(paint_tiles) tool_call을 흘려보내 ghostPreviewUpdater가 실제로 프리뷰를 갱신하게 한다.
+    const sessionWithToolCall = (proposed: Project): Partial<RegionTaskSessionLike> => ({
+      async sendUserMessage(_text, onEvent) {
+        onEvent?.({ type: "tool_call", name: "paint_tiles", args: { mapId: MAP_ID }, result: { ok: true, summary: "" } });
+        return finalTurn();
+      },
+      getProposedProject: () => proposed,
+    });
+
+    const { deps: depsA } = makeDeps(base, proposedA, sessionWithToolCall(proposedA));
+    const resultA = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "A 작업" }, depsA);
+    expect(resultA.pending).toBeDefined();
+    expect(resultA.pending!.settled).toBe(false);
+    expect(getAgentGhostPreviewState().previews.length).toBeGreaterThan(0); // A의 프리뷰가 반영됨
+
+    // B 실행: 함수 초입에서 A를 선-discard한 뒤, B 자신의 flush로 프리뷰를 새로 세팅해야 한다.
+    const { deps: depsB } = makeDeps(base, proposedB, sessionWithToolCall(proposedB));
+    const resultB = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "B 작업" }, depsB);
+
+    expect(resultA.pending!.settled).toBe(true); // B가 A를 자동 discard
+    expect(resultB.pending).toBeDefined();
+    expect(resultB.pending!.settled).toBe(false);
+    expect(getPendingRegionApply()).toBe(resultB.pending); // 현재 pending은 B
+
+    // 핵심 회귀 방지: A의 onSettle(전역 clearAgentGhostPreview)이 B가 이미 세팅한 프리뷰를 지우면 안 된다.
+    expect(getAgentGhostPreviewState().previews.length).toBeGreaterThan(0);
   });
 });
 

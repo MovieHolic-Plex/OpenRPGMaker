@@ -179,6 +179,7 @@
 .region-task-compare-canvas.is-zoomed {
   cursor: zoom-out;
   max-width: none;
+  overflow: visible;
   position: relative;
   z-index: 5;
 }
