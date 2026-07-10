@@ -208,6 +208,9 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "clear_region":
       pushArea(rectArea(project, mapId, rectFromXYWH(args), "clear_region", "영역 정리"));
       break;
+    case "mirror_region":
+      pushArea(rectArea(project, mapId, rectFromXYWH(args), "mirror_region", "대칭 변환"));
+      break;
     case "build_house":
       pushArea(rectArea(project, mapId, rectFromOriginSize(args), "build_house", "집 건설"));
       break;

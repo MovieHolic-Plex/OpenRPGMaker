@@ -673,6 +673,84 @@ const clearRegion: ToolDefinition = {
   },
 };
 
+// 영역 대칭 변환 — LLM 판단 없는 결정적 변환(코퍼스 mirror-symmetry가 "불가"이던 갭 해소).
+// 비대칭 오토타일 경계는 후처리하지 않는다(설명에 명시).
+const mirrorRegion: ToolDefinition = {
+  name: "mirror_region",
+  description:
+    "사각 영역의 타일(하위/상위/스택)과 영역 안 이벤트 좌표를 좌우(horizontal) 또는 상하(vertical)로 대칭 변환한다. 결정적 변환 — 오토타일 경계는 보정하지 않으므로 필요하면 이후 다듬기 지시를 권한다.",
+  mode: "write",
+  invalidArgsExample: { mapId: "map_1", x: 2, y: 2, w: 8, h: 6, axis: "horizontal" },
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      x: { type: "integer" },
+      y: { type: "integer" },
+      w: { type: "integer" },
+      h: { type: "integer" },
+      axis: { type: "string", enum: ["horizontal", "vertical"] },
+    },
+    required: ["mapId", "x", "y", "w", "h", "axis"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const axis = args.axis as "horizontal" | "vertical";
+    const x0 = Math.max(0, args.x as number);
+    const y0 = Math.max(0, args.y as number);
+    const x1 = Math.min(map.width, x0 + (args.w as number));
+    const y1 = Math.min(map.height, y0 + (args.h as number));
+    if (x1 <= x0 || y1 <= y0) throw new ToolError("대칭할 영역이 맵과 겹치지 않습니다.", { code: "invalid-args" });
+
+    const mirrorX = (x: number): number => (axis === "horizontal" ? x0 + (x1 - 1) - x : x);
+    const mirrorY = (y: number): number => (axis === "vertical" ? y0 + (y1 - 1) - y : y);
+
+    const srcLower = map.lowerTiles.slice();
+    const srcUpper = map.upperTiles.slice();
+    const srcLowerStacks = structuredClone(map.lowerTileStacks ?? {});
+    const srcUpperStacks = structuredClone(map.upperTileStacks ?? {});
+    const nextLowerStacks: Record<number, number[]> = structuredClone(map.lowerTileStacks ?? {});
+    const nextUpperStacks: Record<number, number[]> = structuredClone(map.upperTileStacks ?? {});
+
+    let cells = 0;
+    for (let y = y0; y < y1; y += 1) {
+      for (let x = x0; x < x1; x += 1) {
+        const di = y * map.width + x;
+        const si = mirrorY(y) * map.width + mirrorX(x);
+        map.lowerTiles[di] = srcLower[si];
+        map.upperTiles[di] = srcUpper[si];
+        const lowerStack = srcLowerStacks[si];
+        if (lowerStack) nextLowerStacks[di] = lowerStack.slice();
+        else delete nextLowerStacks[di];
+        const upperStack = srcUpperStacks[si];
+        if (upperStack) nextUpperStacks[di] = upperStack.slice();
+        else delete nextUpperStacks[di];
+        cells += 1;
+      }
+    }
+    if (Object.keys(nextLowerStacks).length > 0) map.lowerTileStacks = nextLowerStacks;
+    else delete map.lowerTileStacks;
+    if (Object.keys(nextUpperStacks).length > 0) map.upperTileStacks = nextUpperStacks;
+    else delete map.upperTileStacks;
+
+    let movedEvents = 0;
+    for (const event of map.events) {
+      if (event.x < x0 || event.x >= x1 || event.y < y0 || event.y >= y1) continue;
+      const nx = mirrorX(event.x);
+      const ny = mirrorY(event.y);
+      if (nx !== event.x || ny !== event.y) {
+        event.x = nx;
+        event.y = ny;
+        movedEvents += 1;
+      }
+    }
+    return {
+      summary: `${map.name} 영역 (${x0},${y0})~(${x1 - 1},${y1 - 1}) ${axis === "horizontal" ? "좌우" : "상하"} 대칭 — ${cells}칸, 이벤트 ${movedEvents}개 이동`,
+      data: { cells, movedEvents, axis },
+    };
+  },
+};
+
 const setStartPosition: ToolDefinition = {
   name: "set_start_position",
   description: "게임 시작 맵/좌표를 지정한다. 통행 불가 타일이면 실패한다.",
@@ -1132,7 +1210,7 @@ const removeMapTool: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, createFarmPlot, resizeMapTool, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, createFarmPlot, resizeMapTool, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };
