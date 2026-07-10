@@ -1023,6 +1023,160 @@ const makeChaseScene: ToolDefinition = {
   },
 };
 
+// 보물상자: "상자를 열면 X 지급"을 셀프스위치 2페이지로 완결하는 프리셋.
+// (코퍼스 hidden-treasure-chest / chest-potion-reward가 "부분 가능"이던 갭 해소)
+const placeChest: ToolDefinition = {
+  name: "place_chest",
+  description:
+    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지). '상자를 열면 ~을 주는' 요청은 이 툴 하나로 끝낸다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      x: { type: "integer" },
+      y: { type: "integer" },
+      contents: {
+        type: "object",
+        description: "{itemId?: string, gold?: number} — 최소 1개",
+        properties: { itemId: { type: "string" }, gold: { type: "integer" } },
+      },
+      name: { type: "string" },
+      id: { type: "string" },
+    },
+    required: ["mapId", "x", "y", "contents"],
+  },
+  invalidArgsExample: { mapId: "map_1", x: 5, y: 5, contents: { itemId: "item_potion", gold: 50 } },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const x = args.x as number;
+    const y = args.y as number;
+    if (!inMapBounds(map, x, y)) {
+      throw new ToolError(`상자 위치가 맵 밖입니다: (${x}, ${y})`, { code: "chest-out-of-bounds", mapId: map.id, x, y });
+    }
+    const contents = (args.contents ?? {}) as { itemId?: unknown; gold?: unknown };
+    const itemId = typeof contents.itemId === "string" && contents.itemId.length > 0 ? contents.itemId : undefined;
+    const gold = typeof contents.gold === "number" && Number.isFinite(contents.gold) && contents.gold > 0
+      ? Math.floor(contents.gold)
+      : undefined;
+    if (!itemId && !gold) {
+      throw new ToolError("contents.itemId 또는 contents.gold(양수) 중 최소 하나가 필요합니다.", { code: "chest-empty-contents" });
+    }
+    const warnings: string[] = [];
+    if (itemId && !draft.database.items.some((item) => item.id === itemId)) {
+      warnings.push(`아이템 '${itemId}'가 데이터베이스에 없습니다 — upsert_item으로 먼저 만들거나 기존 id를 쓰세요`);
+    }
+    const graphic = resolveGraphic({ query: "보물상자" });
+    const id = (args.id as string | undefined) ?? genId("ev_chest");
+    const name = (args.name as string | undefined) ?? "보물상자";
+    const rewardText = [itemId ?? null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
+    const trigger: Trigger = { kind: "action" };
+    const openCommands: Command[] = [
+      ...(itemId ? [{ kind: "changeItem", itemId, op: "+=", amount: 1 } as Command] : []),
+      ...(gold ? [{ kind: "changeGold", op: "+=", amount: gold } as Command] : []),
+      { kind: "text", body: `보물상자를 열었다! (${rewardText})` },
+      { kind: "setSelfSwitch", key: "A", value: true } as Command,
+    ];
+    const event: GameEvent = {
+      id,
+      x,
+      y,
+      trigger,
+      commands: [],
+      pages: [
+        {
+          id: `${id}_closed`,
+          name: `${name}(닫힘)`,
+          conditions: [{ kind: "selfSwitch", key: "A", value: false }],
+          graphic,
+          trigger,
+          priority: "same",
+          overlapForbidden: true,
+          animationType: "fixedGraphic",
+          movement: PASSIVE,
+          commands: openCommands,
+        },
+        {
+          id: `${id}_opened`,
+          name: `${name}(열림)`,
+          conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+          graphic,
+          trigger,
+          priority: "same",
+          overlapForbidden: true,
+          animationType: "fixedGraphic",
+          movement: PASSIVE,
+          commands: [{ kind: "text", body: "상자는 비어 있다." }],
+        },
+      ],
+    };
+    assertEventShape(event, warnings);
+    upsertEventIntoMap(map, event);
+    return {
+      summary: `${map.name}에 보물상자 '${name}' 배치 (${x}, ${y}) — 보상 ${rewardText}`,
+      data: { eventId: id, x, y },
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
+  },
+};
+
+// 세이브 포인트: 조사 → checkpointSave. (코퍼스 auto-save-point가 "불가"이던 갭 해소)
+const placeSavepoint: ToolDefinition = {
+  name: "place_savepoint",
+  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형).",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      x: { type: "integer" },
+      y: { type: "integer" },
+      name: { type: "string" },
+      id: { type: "string" },
+    },
+    required: ["mapId", "x", "y"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const x = args.x as number;
+    const y = args.y as number;
+    if (!inMapBounds(map, x, y)) {
+      throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${x}, ${y})`, { code: "savepoint-out-of-bounds", mapId: map.id, x, y });
+    }
+    const graphic = resolveGraphic({ query: "크리스탈" });
+    const id = (args.id as string | undefined) ?? genId("ev_save");
+    const name = (args.name as string | undefined) ?? "세이브 포인트";
+    const trigger: Trigger = { kind: "action" };
+    const event: GameEvent = {
+      id,
+      x,
+      y,
+      trigger,
+      commands: [],
+      pages: [
+        {
+          id: `${id}_page`,
+          name,
+          conditions: [],
+          graphic,
+          trigger,
+          priority: "below",
+          overlapForbidden: false,
+          animationType: "fixedGraphic",
+          movement: PASSIVE,
+          commands: [
+            { kind: "checkpointSave", label: "savepoint" },
+            { kind: "text", body: "이곳에 모험을 기록했다." },
+          ],
+        },
+      ],
+    };
+    assertEventShape(event);
+    upsertEventIntoMap(map, event);
+    return { summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})`, data: { eventId: id, x, y } };
+  },
+};
+
 function chaseSpec(value: unknown): {
   readonly at: Point;
   readonly graphic?: unknown;
@@ -1342,6 +1496,8 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   createTransferPair,
   placeBattleBlocker,
   placeTrap,
+  placeChest,
+  placeSavepoint,
   makeChaseScene,
   duplicateEvent,
   removeEvent,
