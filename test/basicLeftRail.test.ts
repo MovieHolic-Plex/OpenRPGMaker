@@ -41,6 +41,7 @@ describe("basic icon rail", () => {
     click("tool-paint");
     expect(editorState.get().tool).toBe("paint");
     expect(editorState.get().paintShape).toBe("pen");
+    expect(editorState.get().layer).toBe("lower");
   });
 
   it("타일 토글 → 플라이아웃에 타일 그리드, 타일 클릭 시 브러시 전환", () => {

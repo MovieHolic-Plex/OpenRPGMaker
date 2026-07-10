@@ -123,8 +123,13 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
         dataset: { testid: `tool-${tool.id}`, basicTool: tool.id },
         on: {
           click: () => {
-            if (tool.id === "paint") editorState.set({ tool: "paint", paintShape: "pen" });
-            else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
+            if (tool.id === "paint") {
+              editorState.set(
+                editorState.get().layer === "event"
+                  ? { tool: "paint", paintShape: "pen", layer: "lower" }
+                  : { tool: "paint", paintShape: "pen" },
+              );
+            } else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
             else if (editorState.get().layer === "event") editorState.set({ tool: tool.id, layer: "lower" });
             else editorState.set({ tool: tool.id });
           },

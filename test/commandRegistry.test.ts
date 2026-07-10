@@ -23,6 +23,16 @@ describe("commandRegistry", () => {
     expect(editorState.get().layer).toBe("event");
   });
 
+  it("이벤트 레이어에서 브러시 도구 명령 실행 시 하위 레이어로 탈출한다", () => {
+    editorState.set({ tool: "event", layer: "event" });
+    const commands = listEditorCommands();
+    const paint = commands.find((c) => c.id === "tool-paint");
+    paint!.run();
+    expect(editorState.get().tool).toBe("paint");
+    expect(editorState.get().paintShape).toBe("pen");
+    expect(editorState.get().layer).toBe("lower");
+  });
+
   it("모드 전환 명령이 basic↔expert를 토글한다", () => {
     const toggle = listEditorCommands().find((c) => c.id === "mode-toggle");
     toggle!.run();

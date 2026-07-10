@@ -26,8 +26,13 @@ const TOOL_COMMANDS: readonly { id: Tool; label: string; keywords: readonly stri
 ];
 
 function runTool(tool: Tool): void {
-  if (tool === "paint") editorState.set({ tool: "paint", paintShape: "pen" });
-  else if (tool === "event") editorState.set({ tool: "event", layer: "event" });
+  if (tool === "paint") {
+    editorState.set(
+      editorState.get().layer === "event"
+        ? { tool: "paint", paintShape: "pen", layer: "lower" }
+        : { tool: "paint", paintShape: "pen" },
+    );
+  } else if (tool === "event") editorState.set({ tool: "event", layer: "event" });
   else if (editorState.get().layer === "event") editorState.set({ tool, layer: "lower" });
   else editorState.set({ tool });
 }
