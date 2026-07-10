@@ -25,8 +25,33 @@ describe("inline proposal actions registry", () => {
 
 describe("buildInlineApprovalToolbar", () => {
   let restore: () => void;
-  beforeEach(() => { restore = installFakeDom(); });
-  afterEach(() => { restore(); setInlineProposalActions(null); });
+  let windowListeners: Map<string, EventListener[]>;
+  // CameraPanController와 동일한 window 레벨 폴백 패턴을 검증하기 위한 최소 window mock
+  // (test/mapHistoryPanel.test.ts의 기존 관례를 따름 — fakeDom.ts는 document/Node만 다룬다).
+  const dispatchOnWindow = (event: Event): void => {
+    for (const listener of [...(windowListeners.get(event.type) ?? [])]) listener(event);
+  };
+  beforeEach(() => {
+    restore = installFakeDom();
+    windowListeners = new Map();
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      writable: true,
+      value: {
+        addEventListener: (type: string, listener: EventListener) => {
+          windowListeners.set(type, [...(windowListeners.get(type) ?? []), listener]);
+        },
+        removeEventListener: (type: string, listener: EventListener) => {
+          windowListeners.set(type, (windowListeners.get(type) ?? []).filter((item) => item !== listener));
+        },
+      },
+    });
+  });
+  afterEach(() => {
+    restore();
+    setInlineProposalActions(null);
+    Reflect.deleteProperty(globalThis, "window");
+  });
 
   it("적용/거부/상세 버튼이 핸들러를 호출한다", () => {
     const hits: string[] = [];
@@ -59,6 +84,80 @@ describe("buildInlineApprovalToolbar", () => {
     expect(hold).not.toBeNull();
     hold!.dispatchEvent(new Event("pointerdown"));
     hold!.dispatchEvent(new Event("pointerup"));
+    expect(calls).toEqual(["start", "end"]);
+  });
+
+  it("리렌더로 버튼 DOM이 파괴돼도 window 폴백 pointerup으로 end가 정확히 1회 불린다", () => {
+    const calls: string[] = [];
+    const toolbar = renderWithFakeDom(() =>
+      buildInlineApprovalToolbar({
+        accept: () => {},
+        reject: () => {},
+        holdOrigin: {
+          label: "원본 보기",
+          start: () => calls.push("start"),
+          end: () => calls.push("end"),
+        },
+      }),
+    );
+    const hold = findByTestId(toolbar, "ghost-inline-hold-origin")!;
+    hold.dispatchEvent(new Event("pointerdown"));
+    expect(calls).toEqual(["start"]);
+    // 리렌더 시뮬레이션: 고스트 숨김 emit → 마커/툴바 재생성으로 버튼 노드가 파괴됨.
+    // 로컬 pointerup 핸들러는 더 이상 도달 불가 — window 폴백만이 end를 보장한다.
+    hold.remove();
+    dispatchOnWindow(new Event("pointerup"));
+    expect(calls).toEqual(["start", "end"]);
+    // 리스너가 해제됐으므로 재차 dispatch해도 중복 호출 없음.
+    dispatchOnWindow(new Event("pointerup"));
+    expect(calls).toEqual(["start", "end"]);
+  });
+
+  it("pointerdown을 두 번 눌러도 start는 한 번만 불리고 window 리스너도 중복 등록되지 않는다", () => {
+    const calls: string[] = [];
+    const toolbar = renderWithFakeDom(() =>
+      buildInlineApprovalToolbar({
+        accept: () => {},
+        reject: () => {},
+        holdOrigin: {
+          label: "원본 보기",
+          start: () => calls.push("start"),
+          end: () => calls.push("end"),
+        },
+      }),
+    );
+    const hold = findByTestId(toolbar, "ghost-inline-hold-origin")!;
+    hold.dispatchEvent(new Event("pointerdown"));
+    hold.dispatchEvent(new Event("pointerdown"));
+    expect(calls).toEqual(["start"]);
+    hold.remove();
+    // 리스너가 중복 등록됐다면 단일 pointerup에도 end가 2회 이상 불렸을 것.
+    dispatchOnWindow(new Event("pointerup"));
+    expect(calls).toEqual(["start", "end"]);
+  });
+
+  it("Space 키다운 후 버튼이 파괴돼도 window 폴백 keyup으로 end가 호출된다", () => {
+    const calls: string[] = [];
+    const toolbar = renderWithFakeDom(() =>
+      buildInlineApprovalToolbar({
+        accept: () => {},
+        reject: () => {},
+        holdOrigin: {
+          label: "원본 보기",
+          start: () => calls.push("start"),
+          end: () => calls.push("end"),
+        },
+      }),
+    );
+    const hold = findByTestId(toolbar, "ghost-inline-hold-origin")!;
+    const keydown = new Event("keydown", { cancelable: true });
+    Object.defineProperty(keydown, "key", { configurable: true, value: " " });
+    hold.dispatchEvent(keydown);
+    expect(calls).toEqual(["start"]);
+    hold.remove();
+    const keyup = new Event("keyup");
+    Object.defineProperty(keyup, "key", { configurable: true, value: " " });
+    dispatchOnWindow(keyup);
     expect(calls).toEqual(["start", "end"]);
   });
 

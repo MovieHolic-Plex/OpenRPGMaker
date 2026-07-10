@@ -66,15 +66,40 @@ export function buildInlineApprovalToolbar(actions: InlineProposalActions): HTML
   if (actions.holdOrigin) {
     const hold = actions.holdOrigin;
     let holding = false;
-    const start = (): void => {
-      if (holding) return;
-      holding = true;
-      hold.start();
-    };
+    // 리렌더 중 end 유실 방지: hold.start()가 emit → 마커/툴바 재생성을 유발해
+    // 이 버튼 DOM 자체가 파괴될 수 있다(로컬 pointerup/keyup 핸들러가 붙은 노드가 통째로 사라짐).
+    // window 레벨 폴백을 걸어 버튼 생존 여부와 무관하게 end() 짝을 보장한다(CameraPanController 패턴).
+    let detachWindowFallback: (() => void) | null = null;
+    const canUseWindowFallback = (): boolean =>
+      typeof window !== "undefined" && typeof window.addEventListener === "function";
     const end = (): void => {
       if (!holding) return;
       holding = false;
+      detachWindowFallback?.();
+      detachWindowFallback = null;
       hold.end();
+    };
+    const attachWindowFallback = (): void => {
+      if (!canUseWindowFallback()) return;
+      const finishOnPointer = (): void => end();
+      const finishOnKey = (event: Event): void => {
+        const key = (event as KeyboardEvent).key;
+        if (key === " " || key === "Enter") end();
+      };
+      window.addEventListener("pointerup", finishOnPointer);
+      window.addEventListener("pointercancel", finishOnPointer);
+      window.addEventListener("keyup", finishOnKey);
+      detachWindowFallback = (): void => {
+        window.removeEventListener("pointerup", finishOnPointer);
+        window.removeEventListener("pointercancel", finishOnPointer);
+        window.removeEventListener("keyup", finishOnKey);
+      };
+    };
+    const start = (): void => {
+      if (holding) return;
+      holding = true;
+      attachWindowFallback();
+      hold.start();
     };
     children.push(
       el("button", {
