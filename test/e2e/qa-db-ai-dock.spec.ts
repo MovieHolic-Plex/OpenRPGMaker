@@ -46,3 +46,69 @@ test.describe("QA — DB 모달 AI 바 (M7)", () => {
     await expect(page.getByTestId("database-ai-bar")).toBeHidden();
   });
 });
+
+test.describe("QA — DB 모달 사이드 도킹 (M8)", () => {
+  test("도크 전환 → 맵 캔버스가 포인터를 받는다 → 창 모드 복원", async ({ page }) => {
+    await gotoExpertEditor(page);
+    await openDatabase(page);
+
+    const windowEl = page.locator(".database-modal-window");
+    await expect(windowEl).toHaveAttribute("aria-modal", "true");
+
+    await page.getByTestId("database-dock-toggle").click();
+    await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
+    await expect(windowEl).toHaveAttribute("role", "complementary");
+    expect(await windowEl.getAttribute("aria-modal")).toBeNull();
+
+    // 왼쪽 노출 영역에서 맵 캔버스가 최상위다(백드롭이 포인터를 가로채지 않는다).
+    const canvas = page.locator("[data-testid='edit-canvas'] canvas");
+    const box = await canvas.boundingBox();
+    if (!box) throw new Error("missing editor canvas");
+    const px = Math.floor(box.x + Math.min(box.width * 0.2, 160));
+    const py = Math.floor(box.y + box.height / 2);
+    const topElement = await page.evaluate(([x, y]) => {
+      const hit = document.elementFromPoint(x ?? 0, y ?? 0);
+      return {
+        isCanvas: hit instanceof HTMLCanvasElement,
+        inEditCanvas: Boolean(hit?.closest("[data-testid='edit-canvas']")),
+      };
+    }, [px, py]);
+    expect(topElement.isCanvas || topElement.inEditCanvas).toBe(true);
+
+    // Phaser 입력 도달: 캔버스 호버로 상태줄 좌표가 "outside" → 실제 좌표로 바뀐다.
+    await page.mouse.move(px, py);
+    await page.mouse.move(px + 40, py + 24);
+    await expect.poll(async () => (await page.getByTestId("cursor-position").textContent()) ?? "").not.toBe("outside");
+
+    // 캔버스 클릭도 도크를 닫지 않는다(도크에서 바깥 클릭 닫기 비활성).
+    await page.mouse.click(px, py);
+    await expect(page.getByTestId("database-modal")).toBeVisible();
+    await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
+
+    // 창 모드 복원: aria/클래스 원상 + 백드롭이 다시 포인터를 가로챈다.
+    await page.getByTestId("database-dock-toggle").click();
+    await expect(page.getByTestId("database-modal")).not.toHaveClass(/is-docked/);
+    await expect(windowEl).toHaveAttribute("role", "dialog");
+    await expect(windowEl).toHaveAttribute("aria-modal", "true");
+    const blockedByBackdrop = await page.evaluate(([x, y]) => {
+      const hit = document.elementFromPoint(x ?? 0, y ?? 0);
+      return Boolean(hit?.closest("[data-testid='database-modal']"));
+    }, [px, py]);
+    expect(blockedByBackdrop).toBe(true);
+  });
+
+  test("도크 상태는 localStorage 에 저장되어 다음 오픈에 복원된다", async ({ page }) => {
+    await gotoExpertEditor(page);
+    await openDatabase(page);
+    await page.getByTestId("database-dock-toggle").click();
+    await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
+
+    // Escape 는 도크에서도 닫기로 동작한다.
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("database-modal")).toBeHidden();
+
+    await openDatabase(page);
+    await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
+    await expect(page.locator(".database-modal-window")).toHaveAttribute("role", "complementary");
+  });
+});

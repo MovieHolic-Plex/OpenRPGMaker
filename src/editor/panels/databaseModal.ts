@@ -57,6 +57,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   if (initialTab) setDatabaseActiveTab(initialTab);
   resetDatabaseRecordViewSession();
   const dirtySession = createDatabaseModalDirtySession();
+  // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
+  let dockMode = false;
 
   const body = el("div", { class: "database-modal-body" });
   const maximizeButton = el("button", {
@@ -71,9 +73,15 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     attrs: { type: "button", title: "닫기", "aria-label": "데이터베이스 닫기" },
     dataset: { testid: "database-modal-close" },
   }) as HTMLButtonElement;
+  const dockToggleButton = el("button", {
+    class: "database-modal-dock-toggle",
+    text: "⇥",
+    attrs: { type: "button", title: "사이드 도크로 전환", "aria-label": "사이드 도크로 전환" },
+    dataset: { testid: "database-dock-toggle" },
+  }) as HTMLButtonElement;
   const windowControls = el("div", {
     class: "database-modal-controls",
-    children: [maximizeButton, closeButton],
+    children: [dockToggleButton, maximizeButton, closeButton],
   });
   // ── AI 연결(M7): 제목 옆 ✨ AI 토글 → 헤더 아래 인라인 바(입력+실행+닫기). ──
   // 응답/제안 카드는 기존 채팅 패널 흐름 그대로 — 여기서는 전송과 도크 열기만 한다.
@@ -241,9 +249,19 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
 
   activeModal = { close, requestClose: controller.requestClose };
   controller.bindCloseButton(closeButton);
-  maximizeButton.addEventListener("click", () => toggleMaximizedDatabaseModal(maximizeButton));
-  header.addEventListener("dblclick", () => toggleMaximizedDatabaseModal(maximizeButton));
-  backdrop.addEventListener("mousedown", (event) => controller.handleBackdropMouseDown(event, backdrop));
+  // 도크 모드에서는 최대화·드래그를 비활성, 바깥 클릭 닫기도 끈다(맵 조작이 곧 바깥 클릭).
+  maximizeButton.addEventListener("click", () => {
+    if (dockMode) return;
+    toggleMaximizedDatabaseModal(maximizeButton);
+  });
+  header.addEventListener("dblclick", () => {
+    if (dockMode) return;
+    toggleMaximizedDatabaseModal(maximizeButton);
+  });
+  backdrop.addEventListener("mousedown", (event) => {
+    if (dockMode) return;
+    controller.handleBackdropMouseDown(event, backdrop);
+  });
   document.addEventListener("keydown", controller.handleKeyDown);
   document.addEventListener("keydown", handleHistoryKeyDown);
   const footerStatus = el("div", {
@@ -290,12 +308,67 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   });
   const windowEl = backdrop.querySelector(".database-modal-window");
   if (windowEl instanceof HTMLElement) {
-    header.addEventListener("mousedown", (event) => startModalDrag(windowEl, event));
+    header.addEventListener("mousedown", (event) => {
+      if (dockMode) return;
+      startModalDrag(windowEl, event);
+    });
   }
   windowEl?.append(footer);
+  // ── 사이드 도킹(M8): 백드롭 투명·포인터 통과 + 창 우측 고정. 맵 캔버스는 그대로 조작 가능. ──
+  const applyDockMode = (next: boolean): void => {
+    if (!(windowEl instanceof HTMLElement)) return;
+    dockMode = next;
+    writeStoredDockMode(next);
+    backdrop.classList.toggle("is-docked", next);
+    if (next) {
+      // 드래그/최대화가 남긴 상태를 정리하고 우측 고정으로 전환한다.
+      stopModalDrag();
+      windowEl.classList.remove("maximized", "floating");
+      windowEl.style.left = "";
+      windowEl.style.top = "";
+      windowEl.style.width = "";
+      windowEl.style.height = "";
+      maximizeButton.textContent = "□";
+      // 도크는 모달이 아니다 — 포커스를 가두지 않고 맵과 병행 조작하는 보조 패널.
+      windowEl.setAttribute("role", "complementary");
+      windowEl.removeAttribute("aria-modal");
+    } else {
+      windowEl.setAttribute("role", "dialog");
+      windowEl.setAttribute("aria-modal", "true");
+    }
+    maximizeButton.disabled = next;
+    maximizeButton.setAttribute("aria-disabled", String(next));
+    dockToggleButton.textContent = next ? "⇤" : "⇥";
+    const label = next ? "창 모드로 복원" : "사이드 도크로 전환";
+    dockToggleButton.setAttribute("title", label);
+    dockToggleButton.setAttribute("aria-label", label);
+  };
+  dockToggleButton.addEventListener("click", () => applyDockMode(!dockMode));
   document.body.append(backdrop);
   renderDatabasePanel(body);
+  // 지난 세션의 도크 상태 복원 — 렌더 후 적용해도 클래스/aria 만 바꾸므로 안전하다.
+  if (readStoredDockMode()) applyDockMode(true);
   closeButton.focus();
+}
+
+const DB_DOCK_MODE_KEY = "rpg-zzu:db-dock-mode";
+
+function readStoredDockMode(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(DB_DOCK_MODE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeStoredDockMode(next: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DB_DOCK_MODE_KEY, next ? "1" : "0");
+  } catch {
+    // 저장 실패(프라이빗 모드 등)는 무시 — 토글 자체는 동작해야 한다.
+  }
 }
 
 // 레코드형 탭 → DatabaseCollection 매핑 (그 외 탭은 선택 레코드 개념이 없다).

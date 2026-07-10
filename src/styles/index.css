@@ -42,6 +42,7 @@
 @import "./database/desktop-record-shell.css";
 @import "./database/virtual-list.css";
 @import "./database/ai-bar.css";
+@import "./database/dock.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";

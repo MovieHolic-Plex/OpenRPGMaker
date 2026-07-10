@@ -147,6 +147,10 @@ export class FakeElement extends FakeNode {
     return this.attrs[name] ?? null;
   }
 
+  removeAttribute(name: string): void {
+    delete this.attrs[name];
+  }
+
   // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
   // 작성돼 있으므로(예: `if (!context) return;`), 여기선 그 계약만 지켜준다.
   getContext(): null {
@@ -181,6 +185,15 @@ export class FakeElement extends FakeNode {
   focus(): void {
     const doc = globalThis.document as unknown as { activeElement?: FakeElement };
     doc.activeElement = this;
+  }
+
+  closest(selector: string): FakeElement | null {
+    let current: FakeElement | null = this;
+    while (current) {
+      if (matchesSelector(current, selector)) return current;
+      current = current.parentElement;
+    }
+    return null;
   }
 
   querySelector(selector: string): FakeElement | null {
