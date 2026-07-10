@@ -271,6 +271,7 @@ function terrainTagForGroup(group: CombinedTownHarnessGroup, fallback: number): 
 
 function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: string): string {
   if (group.id.includes("dirt-road")) return roadLabel(tile);
+  if (group.id.includes("grass-autotile")) return "잔디";
   if (group.id.includes("lake-water")) return "물 오토타일";
   if (group.id.includes("conifer-tree")) return tile === 260 ? "침엽수 상단" : "침엽수 하단";
   if (group.id.includes("dry-tree")) return tile === 261 ? "마른나무 상단" : "마른나무 하단";
