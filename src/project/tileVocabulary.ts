@@ -109,6 +109,46 @@ export function unapprovedVocabulary(tileset: TilesetDef, limit = 10): Unapprove
   };
 }
 
+// 한국어 재료어 → 그룹 검색어 확장(발견성). 정확 일치 실패 시 후보 제시에만 쓴다 — 자동 대체 금지.
+const VOCAB_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[] = [
+  [/돌벽|석벽|돌담/, ["stone", "wall", "castle"]],
+  [/벽/, ["wall"]],
+  [/길|도로/, ["path", "road", "dirt", "sand"]],
+  [/물|호수|연못|강/, ["water", "lake"]],
+  [/나무|수목/, ["tree", "conifer", "broadleaf"]],
+  [/울타리|담장/, ["fence"]],
+  [/지붕/, ["roof"]],
+  [/문/, ["door"]],
+  [/잔디|풀/, ["grass"]],
+];
+
+// 존재하지 않는 그룹 id 요청 실패에 후보를 제시한다(발견성 — 추측 루프를 1턴으로).
+export function suggestVocabGroups(
+  tileset: TilesetDef,
+  query: string,
+  limit = 3
+): { id: string; name: string; role: string }[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return [];
+  const terms = new Set<string>([needle]);
+  for (const [pattern, expansions] of VOCAB_QUERY_SYNONYMS) {
+    if (pattern.test(needle)) expansions.forEach((term) => terms.add(term));
+  }
+  const scored = (tileset.tileGroups ?? []).map((group) => {
+    const haystacks = [group.id, group.name, group.description ?? "", group.role].map((s) => s.toLowerCase());
+    let score = 0;
+    for (const term of terms) {
+      if (haystacks[0].includes(term)) score += 3; // id 일치가 가장 신뢰도 높음
+      if (haystacks[1].includes(term)) score += 2;
+      if (haystacks[2].includes(term)) score += 1;
+      if (haystacks[3].includes(term)) score += 1;
+    }
+    return { group, score };
+  }).filter((entry) => entry.score > 0);
+  scored.sort((a, b) => b.score - a.score || a.group.id.localeCompare(b.group.id));
+  return scored.slice(0, Math.max(0, limit)).map(({ group }) => ({ id: group.id, name: group.name, role: group.role }));
+}
+
 export type VocabularyRef =
   | { readonly groupId: string; readonly tileId?: undefined }
   | { readonly tileId: number; readonly groupId?: undefined };

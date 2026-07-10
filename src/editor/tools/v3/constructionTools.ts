@@ -10,6 +10,7 @@ import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import {
   resolveVocabForBuild,
+  suggestVocabGroups,
   VOCAB_SOFT_CONFIRM_WARNING_PREFIX,
   type VocabLayerHome,
   type VocabSoftConfirm,
@@ -104,7 +105,11 @@ function requireBuildGroup(tileset: TilesetDef, vocabId: unknown, field: string,
   if (typeof vocabId !== "string" || vocabId.length === 0) failWithExample(`${field}(어휘 그룹 id)가 필요합니다`, example);
   const access = resolveVocabForBuild(tileset, { groupId: vocabId });
   if (access.status === "missing") {
-    throw new ToolError(`${access.message} — 다시 보낼 형식 예시: ${JSON.stringify(example)}`, { code: "group-not-found" });
+    const suggestions = suggestVocabGroups(tileset, vocabId);
+    const hint = suggestions.length > 0
+      ? ` 비슷한 그룹: ${suggestions.map((s) => `${s.id}(${s.name}/${s.role})`).join(", ")} — 이 중 하나로 다시 호출하세요.`
+      : ` tile_query ask:"vocab"으로 전체 그룹 id를 조회하세요.`;
+    throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(example)}`, { code: "group-not-found" });
   }
   if (access.kind !== "group") {
     throw new ToolError(`${field}는 그룹 id여야 합니다`, { code: "group-not-found" });

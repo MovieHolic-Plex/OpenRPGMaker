@@ -95,6 +95,17 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
   });
 });
 
+describe("missing 어휘 실패 시 유사 그룹 후보 제시", () => {
+  it("build_wall을 존재하지 않는 wallVocabId(\"돌벽\")로 호출하면 비슷한 그룹 후보를 에러 메시지에 담는다", () => {
+    const { ctx } = context();
+    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: "돌벽" });
+    expect(result.ok).toBe(false);
+    const message = `${result.summary} ${JSON.stringify(result.issues ?? [])}`;
+    expect(message).toContain("비슷한 그룹");
+    expect(message).toMatch(/harness-combined-town-(timber-stone-wall-9slice|castle-wall-face)/);
+  });
+});
+
 describe("place_door / place_window (공정 2단계 — 벽 셀에만)", () => {
   it("벽 셀이 아니면 거부하고, 벽 셀에는 어휘 layerHome대로 설치한다", () => {
     const { ctx, tileset } = context();

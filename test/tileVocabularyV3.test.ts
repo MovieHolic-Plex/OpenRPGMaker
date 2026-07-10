@@ -19,6 +19,7 @@ import {
   isApprovedGroup,
   isApprovedTile,
   resolveVocabForBuild,
+  suggestVocabGroups,
   unapprovedVocabulary,
 } from "@/project/tileVocabulary";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -245,6 +246,21 @@ describe("번들 하네스 그룹 승인 시드 (2026-07-11)", () => {
     ];
     const summary = unapprovedVocabulary(def);
     expect(summary.groups.map((g) => g.id)).toEqual(["g-a"]);
+  });
+});
+
+describe("suggestVocabGroups", () => {
+  it("'돌벽' 질의에 석벽 계열 그룹을 후보로 돌려준다", () => {
+    const { tileset } = context();
+    const ids = suggestVocabGroups(tileset(), "돌벽").map((s) => s.id);
+    expect(ids.length).toBeGreaterThan(0);
+    expect(ids.some((id) => id.includes("timber-stone-wall") || id.includes("castle-wall"))).toBe(true);
+  });
+
+  it("id 부분 문자열로도 찾는다", () => {
+    const { tileset } = context();
+    const ids = suggestVocabGroups(tileset(), "stone-wall").map((s) => s.id);
+    expect(ids.some((id) => id.includes("timber-stone-wall"))).toBe(true);
   });
 });
 
