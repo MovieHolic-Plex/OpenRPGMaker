@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildGroupSample } from "@/ai/groupSampleBuilder";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { runTool } from "@/editor/tools/toolRunner";
-import { allTools } from "@/editor/tools/toolRegistry";
+import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
@@ -143,13 +143,12 @@ describe("set_group_layout", () => {
     expect(groupOf(ctx).patternGrammar).toBeUndefined();
   });
 
-  it("레지스트리와 툴 브라우저 카테고리에 등록된다", () => {
-    // Given: the tool registry and browser category metadata.
+  it("레지스트리에 등록되고 브라우저는 활성 툴만 노출한다", () => {
     const toolNames = allTools().map((tool) => tool.name);
-    const categoryNames = TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name));
-
-    // Then: set_group_layout is exposed in both surfaces.
+    // set_group_layout 은 deprecated 레거시 — getTool 호환만 유지, 브라우저 숨김.
     expect(toolNames).toContain("set_group_layout");
-    expect(categoryNames).toContain("set_group_layout");
+    expect(getTool("set_group_layout")?.deprecated).toBe(true);
+    const categoryNames = TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name));
+    expect(categoryNames).not.toContain("set_group_layout");
   });
 });

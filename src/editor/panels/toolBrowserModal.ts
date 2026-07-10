@@ -1,37 +1,8 @@
 // editor/panels/toolBrowserModal.ts
-// 🧰 AI 툴 브라우저 — 어시스턴트가 쓸 수 있는 툴을 사용자에게 카테고리별로 보여준다.
-// "AI한테 뭘 시킬 수 있는지"를 사용자가 알아야 좋은 요청이 나온다.
+// 🧰 AI 툴 브라우저 — 활성(비-deprecated) 툴만 도메인별로 보여준다.
 
-import { BATTLE_TOOLS } from "@/editor/tools/battleTools";
-import { CLUSTER_RULE_TOOLS } from "@/editor/tools/clusterRuleTools";
-import { DB_TOOLS } from "@/editor/tools/dbTools";
-import { ENDING_TOOLS } from "@/editor/tools/endingTools";
-import { EVENT_TOOLS } from "@/editor/tools/eventTools";
-import { EXPORT_TOOLS } from "@/editor/tools/exportTools";
-import { MAP_GEN_TOOLS } from "@/editor/tools/generateMapTool";
-import { GROUP_LAYOUT_TOOLS } from "@/editor/tools/groupLayoutTools";
-import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
-import { HISTORY_TOOLS } from "@/editor/tools/historyTools";
-import { INVESTIGATION_TOOLS } from "@/editor/tools/investigationTools";
-import { MAP_TOOLS } from "@/editor/tools/mapTools";
-import { TILE_TOOLS_V2 } from "@/editor/tools/v2";
-import { HOUSE_KIT_TOOLS } from "@/editor/tools/houseKitTools";
-import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "@/editor/tools/v3";
-import { LIGHTING_TOOLS } from "@/editor/tools/lightingTools";
-import { VILLAGE_TOOLS } from "@/editor/tools/villageBuilder";
-import { PALETTE_PRESET_TOOLS } from "@/editor/tools/palettePresetTools";
-import { PLAY_TOOLS } from "@/editor/tools/playTools";
-import { PLACEMENT_TOOLS } from "@/editor/tools/toolRegistry";
-import { QUERY_TOOLS } from "@/editor/tools/queryTools";
-import { QUEST_TOOLS } from "@/editor/tools/questTools";
-import { RANGE_CLASSIFY_TOOLS } from "@/editor/tools/rangeClassifyTools";
-import { REFACTOR_TOOLS } from "@/editor/tools/refactorTools";
-import { STORY_TOOLS } from "@/editor/tools/storyTools";
-import { TILE_METADATA_TOOLS } from "@/editor/tools/tileMetadataTools";
-import { TIME_TOOLS } from "@/editor/tools/timeTools";
+import { activeTools } from "@/editor/tools/toolRegistry";
 import type { ToolDefinition } from "@/editor/tools/types";
-import { VISION_QUERY_TOOLS } from "@/editor/tools/visionQueryTools";
-import { WORLD_TOOLS } from "@/editor/tools/worldTools";
 import { el } from "@/util/dom";
 
 interface ToolCategory {
@@ -39,46 +10,48 @@ interface ToolCategory {
   readonly tools: readonly ToolDefinition[];
 }
 
-const PLACEMENT_CATEGORIES: readonly ToolCategory[] = PLACEMENT_TOOLS.length > 0
-  ? [{ label: "오브젝트 배치", tools: PLACEMENT_TOOLS }]
-  : [];
+const DOMAIN_LABEL: Record<string, string> = {
+  core: "핵심",
+  tile: "타일/시공",
+  map: "맵",
+  event: "이벤트/NPC",
+  database: "데이터베이스",
+  world: "세계관",
+  quest: "퀘스트/서사",
+  battle: "전투",
+  system: "시스템",
+  other: "기타",
+};
 
-// 레지스트리와 같은 원본 배열을 카테고리로 묶는다(추가 유지비 없음 — 배열이 곧 진실).
-export const TOOL_CATEGORIES: readonly ToolCategory[] = [
-  { label: "타일 v3 (승인 어휘)", tools: VOCABULARY_TOOLS_V3 },
-  { label: "타일 v3 (공정 시공)", tools: CONSTRUCTION_TOOLS_V3 },
-  { label: "집 키트(하네싱)", tools: HOUSE_KIT_TOOLS },
-  { label: "마을 시공", tools: VILLAGE_TOOLS },
-  { label: "타일 v2", tools: TILE_TOOLS_V2 },
-  { label: "맵 편집", tools: MAP_TOOLS },
-  { label: "맵 생성", tools: MAP_GEN_TOOLS },
-  ...PLACEMENT_CATEGORIES,
-  { label: "이벤트/NPC", tools: EVENT_TOOLS },
-  { label: "조사/퍼즐", tools: INVESTIGATION_TOOLS },
-  { label: "조명/호러", tools: LIGHTING_TOOLS },
-  { label: "시간/달력", tools: TIME_TOOLS },
-  { label: "엔딩", tools: ENDING_TOOLS },
-  { label: "데이터베이스", tools: DB_TOOLS },
-  { label: "세계관", tools: WORLD_TOOLS },
-  { label: "퀘스트", tools: QUEST_TOOLS },
-  { label: "서사 상태", tools: STORY_TOOLS },
-  { label: "전투", tools: BATTLE_TOOLS },
-  { label: "리팩토링", tools: REFACTOR_TOOLS },
-  { label: "작업 기록", tools: HISTORY_TOOLS },
-  { label: "내보내기", tools: EXPORT_TOOLS },
-  { label: "플레이테스트", tools: PLAY_TOOLS },
-  { label: "조회", tools: QUERY_TOOLS },
-  { label: "팔레트 프리셋", tools: PALETTE_PRESET_TOOLS },
-  { label: "타일 지식(단어장)", tools: TILE_METADATA_TOOLS },
-  { label: "클러스터 규칙", tools: CLUSTER_RULE_TOOLS },
-  { label: "클러스터 구성", tools: GROUP_LAYOUT_TOOLS },
-  { label: "타일 샘플 조회", tools: GROUP_SAMPLE_TOOLS },
-  { label: "맵 비전 조회", tools: VISION_QUERY_TOOLS },
-  { label: "타일 범위 제안", tools: RANGE_CLASSIFY_TOOLS },
-];
+const DOMAIN_ORDER = ["core", "tile", "map", "event", "database", "world", "quest", "battle", "system", "other"] as const;
+
+function primaryDomain(tool: ToolDefinition): string {
+  const domains = tool.domains ?? [];
+  if (domains.includes("core") && domains.every((d) => d === "core")) return "core";
+  return domains.find((d) => d !== "core") ?? "other";
+}
+
+function buildActiveCategories(): ToolCategory[] {
+  const buckets = new Map<string, ToolDefinition[]>();
+  for (const tool of activeTools()) {
+    const domain = primaryDomain(tool);
+    const list = buckets.get(domain) ?? [];
+    list.push(tool);
+    buckets.set(domain, list);
+  }
+  return DOMAIN_ORDER
+    .filter((domain) => (buckets.get(domain)?.length ?? 0) > 0)
+    .map((domain) => ({
+      label: DOMAIN_LABEL[domain] ?? domain,
+      tools: buckets.get(domain) ?? [],
+    }));
+}
+
+// 활성 툴 전량 — 카테고리 누락 방지 (레지스트리 activeTools 가 단일 소스).
+export const TOOL_CATEGORIES: readonly ToolCategory[] = buildActiveCategories();
 
 export function totalToolCount(): number {
-  return TOOL_CATEGORIES.reduce((total, category) => total + category.tools.length, 0);
+  return activeTools().length;
 }
 
 const DESTRUCTIVE_NAMES = new Set(["remove_event", "remove_map"]);
@@ -88,13 +61,13 @@ export const FREQUENT_TOOL_NAMES = [
   "place_npc",
   "build_house_kit",
   "build_wall",
-  "lay_path",
+  "paint_road",
   "fill_region",
-  "tile_paint",
+  "place_props",
   "place_door",
-  "transfer_player",
   "propose_tile_vocabulary",
   "generate_map",
+  "tile_query",
 ] as const;
 
 export function frequentTools(): readonly ToolDefinition[] {

@@ -18,7 +18,7 @@ import type { VocabLayerHome } from "@/project/tileVocabulary";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import type { Project, TileAiMetadata, TileGroupLayer, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
-import { coerceEnum, failWithExample, optionalEnum } from "../v2/tileToolsV2Support";
+import { coerceEnum, failWithExample, optionalEnum } from "../toolArgCoerce";
 import { tilesetGrammarProfile, type GrammarPatternKind } from "./grammarProfiles";
 import { derivePatternGrammar, isExpandablePatternKind } from "./rmTypeExpander";
 

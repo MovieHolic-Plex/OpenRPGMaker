@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { closeRegionTaskModal, openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import {
+  closeRegionTaskModal,
+  openRegionTaskModal,
+  positionRegionTaskPopover,
+} from "@/editor/panels/regionTaskModal";
 import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -254,6 +258,68 @@ describe("pending 비교 UI", () => {
     firstChip.dispatchEvent(new Event("click"));
     const input = findByTestId(root, "region-task-input") as HTMLTextAreaElement;
     expect(input.value.length).toBeGreaterThan(5);
+    closeRegionTaskModal();
+  });
+
+  it("앵커 팝오버는 뷰포트 밖으로 나가지 않게 left/top/maxHeight를 클램프한다", () => {
+    const g = globalThis as typeof globalThis & { innerWidth?: number; innerHeight?: number };
+    const prevW = Object.getOwnPropertyDescriptor(globalThis, "innerWidth");
+    const prevH = Object.getOwnPropertyDescriptor(globalThis, "innerHeight");
+    Object.defineProperty(globalThis, "innerWidth", { configurable: true, value: 800 });
+    Object.defineProperty(globalThis, "innerHeight", { configurable: true, value: 600 });
+
+    const style: Record<string, string> = {};
+    const panel = {
+      style,
+      getBoundingClientRect: () =>
+        ({
+          width: 360,
+          height: 500,
+          left: 500,
+          top: 400,
+          right: 860,
+          bottom: 900,
+          x: 500,
+          y: 400,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    } as unknown as HTMLElement;
+
+    // 앵커가 화면 하단 근처 → 아래로 넘치면 top이 당겨지고 maxHeight ≤ 뷰포트.
+    positionRegionTaskPopover(panel, { x: 500, y: 400 });
+
+    const left = Number.parseFloat(style.left);
+    const top = Number.parseFloat(style.top);
+    const maxH = Number.parseFloat(style.maxHeight);
+    expect(left).toBeGreaterThanOrEqual(12);
+    expect(left + 360).toBeLessThanOrEqual(800 - 12 + 1);
+    expect(top).toBeGreaterThanOrEqual(12);
+    expect(top + Math.min(500, maxH)).toBeLessThanOrEqual(600 - 12 + 1);
+    expect(maxH).toBeLessThanOrEqual(600 - 24);
+    expect(style.maxHeight).toMatch(/px$/);
+
+    if (prevW) Object.defineProperty(globalThis, "innerWidth", prevW);
+    else Reflect.deleteProperty(g, "innerWidth");
+    if (prevH) Object.defineProperty(globalThis, "innerHeight", prevH);
+    else Reflect.deleteProperty(g, "innerHeight");
+  });
+
+  it("anchor로 열면 region-task-popover testid와 fixed 위치가 잡힌다", () => {
+    restoreDom = installFakeDom();
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      anchor: { x: 100, y: 500 },
+      run: vi.fn(),
+    });
+    const pop = findByTestId(root, "region-task-popover");
+    expect(pop).not.toBeNull();
+    // style 객체가 fakeDom에 있으면 검사, 없으면 testid 존재만으로 통과.
+    const style = (pop as { style?: { position?: string; maxHeight?: string } })?.style;
+    if (style) {
+      expect(style.position).toBe("fixed");
+      expect(style.maxHeight).toBeTruthy();
+    }
     closeRegionTaskModal();
   });
 });

@@ -29,7 +29,9 @@ export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, reado
   "door-transfer": ["입구", "출구", "텔레포트", "포탈", "계단", "다음 맵", "이어지"],
   "quest-trigger": [
     "퀘스트", "조사", "표지판", "제단", "사당", "전설", "이야기", "대화", "컷신",
-    "연출", "트리거", "플래그", "스위치", "상자", "보물", "열쇠", "잠긴", "잠금",
+    "연출", "트리거", "플래그", "스위치",
+    // bare "상자"/"박스"는 장식 소품(place_props wood-box)과 혼동 — 보물·개봉 맥락만 라우팅.
+    "보물상자", "보물 상자", "보물", "열쇠", "잠긴", "잠금", "상자를 열", "상자 열",
     "세이브", "저장", "우물",
   ],
   "battle-trap": ["몬스터", "전투", "인카운터", "함정", "추격", "쫓아", "슬라임", "유령"],
@@ -47,7 +49,7 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
   "door-transfer":
     "- 문/이동: create_transfer_pair {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트 왕복 쌍을 한 번에. 문 시각 배치는 place_door",
   "quest-trigger":
-    "- 상호작용: place_chest(보물상자 — contents.itemId/gold 지급, 개봉 기억), place_savepoint(세이브 포인트), place_examine_hotspots(조사 지점), create_quest/declare_story_flag(퀘스트·플래그), script_cutscene(연출·대사). 보물상자·세이브포인트는 반드시 place_chest/place_savepoint를 쓸 것 — place_npc나 upsert_event로 흉내내지 말 것.",
+    "- 상호작용: place_chest(보물상자 — contents.itemId/gold 지급, 개봉 기억), place_savepoint(세이브 포인트), place_examine_hotspots(조사 지점), create_quest/declare_story_flag(퀘스트·플래그), script_cutscene(연출·대사). 보물상자·세이브포인트는 반드시 place_chest/place_savepoint — place_npc/upsert_event 흉내 금지. 장식 박스·나무상자는 place_chest 금지(place_props wood-box).",
   "battle-trap":
     "- 전투: set_encounter_table/make_hunting_ground(인카운터 구역), place_battle_blocker(지키는 몬스터), place_trap(함정), make_chase_scene(추격전)",
   mood:

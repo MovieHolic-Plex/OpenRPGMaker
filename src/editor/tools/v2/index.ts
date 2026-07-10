@@ -1,36 +1,38 @@
-// editor/tools/v2/index.ts
-// 타일 v2 툴 집합 — v1 타일 툴 25종을 9종으로 대체한다 (2026-07-07 전면 재구축).
-// 배경: v1 스키마 부실(중첩 미명세/required-properties 불일치)로 모델 오호출·재시도 폭주.
-// v2 계약: 완전한 스키마 + 별칭 수용 + 모든 오류에 "다시 보낼 형식 예시" 동봉. 엔진은 v1 재사용.
+// 호환 레이어 잔여 — 구 v2 배치 래퍼(tile_paint 등)는 제거됨.
+// V1 툴 이름은 여전히 레지스트리에 deprecated 로 남고, 정준 대체 이름을 가리킨다.
 
-import { TILE_KNOWLEDGE_TOOLS_V2 } from "./tileKnowledgeV2";
-import { TILE_PLACE_TOOLS_V2 } from "./tilePlaceV2";
-import type { ToolDefinition } from "../types";
-
-export const TILE_TOOLS_V2: readonly ToolDefinition[] = [...TILE_PLACE_TOOLS_V2, ...TILE_KNOWLEDGE_TOOLS_V2];
-
-// v2가 대체하는 v1 툴 → 대체 v2 툴 이름. 레지스트리가 이 표로 deprecated 마킹한다.
+/** 레거시 툴 이름 → 현재 권장 툴 (LLM 비노출 마킹용). */
 export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
-  ["paint_tiles", "tile_paint"],
-  ["clear_region", "tile_paint"],
-  // paint_road 는 deprecated 하지 않는다 — 흙길/모래 8방 오토타일 본선.
-  // (v2 tile_road → v3 lay_path 체인에 묻히면 AI가 길을 안 깔거나 비성형 경로만 씀)
-  ["scatter_object", "tile_scatter"],
-  ["build_house", "tile_structure"],
-  ["stamp_structure", "tile_structure"],
-  ["preview_house", "tile_structure"],
-  ["set_tile_metadata", "tile_metadata"],
-  ["set_tile_rules", "tile_metadata"],
-  ["set_tile_passability", "tile_metadata"],
-  ["upsert_tile_group", "tile_group"],
-  ["delete_tile_group", "tile_group"],
-  ["set_group_junction", "tile_group"],
-  ["set_group_overlay", "tile_group"],
-  ["set_cluster_rule", "tile_cluster_rule"],
-  ["upsert_palette_preset", "tile_palette_preset"],
+  // 배치: v3 정공법
+  ["paint_tiles", "fill_region"],
+  ["clear_region", "tile_erase"],
+  // paint_road 는 활성 유지 (흙길 오토타일 본선) — 여기 넣지 않음
+  ["scatter_object", "place_props"],
+  ["build_house", "build_house_kit"],
+  ["stamp_structure", "build_house_kit"],
+  ["preview_house", "build_house_kit"],
+  // 지식 쓰기: 승인 어휘
+  ["set_tile_metadata", "propose_tile_vocabulary"],
+  ["set_tile_rules", "propose_tile_vocabulary"],
+  ["set_tile_passability", "propose_tile_vocabulary"],
+  ["upsert_tile_group", "propose_tile_vocabulary"],
+  ["delete_tile_group", "propose_tile_vocabulary"],
+  ["set_group_junction", "propose_tile_vocabulary"],
+  ["set_group_overlay", "propose_tile_vocabulary"],
+  ["set_cluster_rule", "propose_tile_vocabulary"],
+  ["upsert_palette_preset", "propose_tile_vocabulary"],
+  // 조회: tile_query 통합
   ["get_tile_info", "tile_query"],
   ["list_unclassified_tiles", "tile_query"],
   ["query_tiles", "tile_query"],
   ["analyze_map_tile_usage", "tile_query"],
   ["find_similar_tiles", "tile_query"],
+]);
+
+/** @deprecated 구 v2 배치 이름 — 더 이상 레지스트리에 없음. 테스트/문서용. */
+export const REMOVED_V2_PLACE_TOOLS: ReadonlyMap<string, string> = new Map([
+  ["tile_paint", "fill_region"],
+  ["tile_road", "paint_road"],
+  ["tile_scatter", "place_props"],
+  ["tile_structure", "build_house_kit"],
 ]);

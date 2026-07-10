@@ -113,9 +113,29 @@ describe("regionIntentGuideLines / buildRegionTaskMessage 통합", () => {
     expect(message).toContain("못 한 것");
   });
 
-  it("매치 없는 지시는 기본 가이드만 (place_chest 미포함)", () => {
+  it("매치 없는 지시는 quest-trigger 전용 상호작용 가이드 없이 기본+박스 구분 줄만", () => {
     const message = buildRegionTaskMessage("이 영역을 잔디로 채워줘", "맵", "m1", { x: 0, y: 0, width: 4, height: 4 });
-    expect(message).not.toContain("place_chest");
-    expect(message).toContain("build_house_kit"); // 기본 가이드 유지
+    // place_chest는 박스 vs 보물 구분 고정 문구에만 등장 — 상호작용 가이드 블록(place_examine_hotspots 등)은 없음
+    expect(message).not.toContain("place_examine_hotspots");
+    expect(message).toContain("build_house_kit");
+    expect(message).toContain("wood-box");
+  });
+
+  it("'박스 2개'는 quest-trigger(place_chest)로 가지 않고 wood-box place_props를 안내한다", () => {
+    expect(routeRegionIntent("박스 2개 설치해줘")).not.toContain("quest-trigger");
+    const message = buildRegionTaskMessage("박스 2개 설치해줘", "맵", "m1", { x: 0, y: 0, width: 4, height: 4 });
+    expect(message).toContain("harness-combined-town-wood-box");
+    expect(message).toContain("small-props 가방");
+    // 기본 가이드에 wood-box 줄이 항상 있음; quest-trigger 전용 place_chest 강제 문장은 없음
+    expect(message).toContain("place_chest 금지");
+  });
+
+  it("'상자 2개' bare는 더 이상 quest-trigger로 오탐하지 않는다", () => {
+    expect(routeRegionIntent("상자 2개")).not.toContain("quest-trigger");
+  });
+
+  it("'보물상자'·'상자를 열면'은 quest-trigger로 간다", () => {
+    expect(routeRegionIntent("보물상자를 하나 숨겨줘")).toContain("quest-trigger");
+    expect(routeRegionIntent("상자를 열면 포션을 주게")).toContain("quest-trigger");
   });
 });

@@ -1030,7 +1030,9 @@ const makeChaseScene: ToolDefinition = {
 const placeChest: ToolDefinition = {
   name: "place_chest",
   description:
-    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지). '상자를 열면 ~을 주는' 요청은 이 툴 하나로 끝낸다.",
+    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지). " +
+    "'보물상자'·'상자를 열면 ~을 주는' 요청만 이 툴. " +
+    "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지.",
   mode: "write",
   parameters: {
     type: "object",

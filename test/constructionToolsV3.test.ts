@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from "vitest";
 import { getTool, runTool, toOpenAiTools, type ToolContext } from "@/editor/tools";
-import { V2_TILE_SUPERSEDED } from "@/editor/tools/v3";
+import { REMOVED_V2_PLACE_TOOLS } from "@/editor/tools/v2";
 import { buildEightNeighborVariantMap } from "@/editor/tools/v3/rmTypeExpander";
 import { DEFAULT_MODEL } from "@/ai/llmClient";
 import { isPassable } from "@/project/collision";
@@ -324,15 +324,13 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
   });
 });
 
-describe("v2 배치 4종 deprecated + 모델 전환 (V3B)", () => {
-  it("tile_paint/road/scatter/structure는 LLM 비노출·실행 호환·supersededBy 매핑, v3 툴은 노출된다", () => {
+describe("구 v2 배치 제거 + v3 정공법 (스택 단순화)", () => {
+  it("구 v2 배치 이름은 레지스트리에서 제거되고 v3 공정 툴은 노출된다", () => {
     const exposed = new Set(toOpenAiTools().map((tool) => tool.function.name));
-    for (const [v2Name, v3Name] of V2_TILE_SUPERSEDED) {
+    for (const [v2Name, next] of REMOVED_V2_PLACE_TOOLS) {
+      expect(getTool(v2Name), v2Name).toBeUndefined();
       expect(exposed.has(v2Name), v2Name).toBe(false);
-      const tool = getTool(v2Name);
-      expect(tool?.deprecated, v2Name).toBe(true);
-      expect(tool?.supersededBy, v2Name).toBe(v3Name);
-      expect(tool?.version, v2Name).toBe(2);
+      expect(getTool(next), `${v2Name}→${next}`).toBeDefined();
     }
     for (const name of ["build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase"]) {
       expect(exposed.has(name), name).toBe(true);
