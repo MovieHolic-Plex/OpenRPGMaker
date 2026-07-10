@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clampPanelSize, loadPanelSize, PANEL_SIZE_LIMITS, renderAiChatPanel, savePanelSize } from "@/editor/panels/aiChatPanel";
 import { computeSideChatWidth, SIDE_CHAT_WIDTH } from "@/editor/panels/aiPanelLayout";
 import { filterToolCategories, openToolBrowserModal, TOOL_CATEGORIES, totalToolCount } from "@/editor/panels/toolBrowserModal";
-import { allTools } from "@/editor/tools";
+import { activeTools } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
@@ -76,19 +76,19 @@ describe("패널 크기 커스텀", () => {
 });
 
 describe("툴 브라우저", () => {
-  it("카테고리 합계가 레지스트리 전체와 일치한다 — 새 툴 추가 시 브라우저 누락 방지", () => {
-    expect(totalToolCount()).toBe(allTools().length);
+  it("카테고리 합계가 활성 툴과 일치한다 — deprecated 레거시는 브라우저 숨김", () => {
+    expect(totalToolCount()).toBe(activeTools().length);
     const categoryNames = new Set(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name)));
-    for (const tool of allTools()) {
-      expect(categoryNames.has(tool.name), `브라우저에 누락된 툴: ${tool.name}`).toBe(true);
+    for (const tool of activeTools()) {
+      expect(categoryNames.has(tool.name), `브라우저에 누락된 활성 툴: ${tool.name}`).toBe(true);
     }
   });
 
   it("검색 필터가 이름/설명 부분 일치로 동작한다", () => {
     const byName = filterToolCategories("place_npc");
     expect(byName.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("place_npc");
-    const byDescription = filterToolCategories("울타리");
-    expect(byDescription.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("upsert_tile_group");
+    const byDescription = filterToolCategories("소품");
+    expect(byDescription.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("place_props");
     expect(filterToolCategories("존재하지않는검색어xyz")).toEqual([]);
   });
 

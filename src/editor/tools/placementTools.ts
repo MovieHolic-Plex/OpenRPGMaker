@@ -69,31 +69,11 @@ const AREA_SCHEMA: JsonSchema = {
   required: ["x", "y", "w", "h"],
 };
 
-const scatterObject: ToolDefinition = {
-  name: "scatter_object",
-  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 프리셋이 있으면 groupId 대신 presetId+paletteRole을 우선 사용하라. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일·물·흙길/모래길·통행 불가 하층 보호셀을 피한다(avoidProtected 기본 true). poisson/cluster는 자연 샘플 rank 를 따르며, 요청 개수를 채울 수 없는 후보만 제외한다. ${NATURALNESS_GUIDANCE}`,
-  mode: "write",
-  parameters: {
-    type: "object",
-    properties: {
-      mapId: { type: "string" },
-      groupId: { type: "string" },
-      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 1×1 타일 산포" },
-      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
-      area: AREA_SCHEMA,
-      count: { type: "integer" },
-      minGap: { type: "integer", description: "오브젝트 사이 최소 빈 칸 수(기본 1)" },
-      maxGap: { type: "integer", description: "흩뿌림 후보를 고를 때 선호하는 최대 빈 칸 수(기본 3)" },
-      naturalness: { type: "number", description: "0~1 자연도. <0.3 uniform, 0.3~0.7 poisson, >0.7 cluster(기본 0.5)" },
-      mode: { type: "string", enum: ["uniform", "poisson", "cluster"], description: "자연산포 모드 명시 오버라이드" },
-      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 산포)" },
-      avoidProtected: { type: "boolean", description: "시작칸/이벤트/transfer/상위 타일/물·흙길/모래길·통행 불가 하층 회피(기본 true)" },
-      preferSoftRules: { type: "boolean", description: "soft/medium 규칙 만족을 우선(기본 true)" },
-      applyStructure: { type: "boolean", description: "overlay/처마 생략 등 구조 규칙 자동 적용(기본 true)" },
-    },
-    required: ["mapId", "area", "count"],
-  },
-  run(draft, rawArgs): ToolExecResult {
+/**
+ * 산포 엔진 — place_props(v3)와 레거시 scatter_object 툴이 공유.
+ * 새 코드는 ToolDefinition 이름 대신 이 함수를 호출할 것.
+ */
+export function runScatterObject(draft: Project, rawArgs: Record<string, unknown>): ToolExecResult {
     const args = parseArgs(rawArgs);
     const map = requireMap(draft, args.mapId);
     const tileset = draft.tilesets[map.tilesetId];
@@ -169,7 +149,33 @@ const scatterObject: ToolDefinition = {
       data: { mode: args.mode, naturalness: args.naturalness, placed: placed.length, requested: args.count, skipped, tilesPlaced: placed.length * atomicTileCount },
       warnings: warning ? [warning] : undefined,
     };
+}
+
+const scatterObject: ToolDefinition = {
+  name: "scatter_object",
+  description: `타일 그룹 오브젝트를 영역 안에 여러 개 흩뿌려 배치한다. 프리셋이 있으면 groupId 대신 presetId+paletteRole을 우선 사용하라. 풋프린트 단위로 원자 배치하며 시작칸/이벤트/transfer/상위 타일·물·흙길/모래길·통행 불가 하층 보호셀을 피한다(avoidProtected 기본 true). poisson/cluster는 자연 샘플 rank 를 따르며, 요청 개수를 채울 수 없는 후보만 제외한다. ${NATURALNESS_GUIDANCE}`,
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      groupId: { type: "string" },
+      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 1×1 타일 산포" },
+      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
+      area: AREA_SCHEMA,
+      count: { type: "integer" },
+      minGap: { type: "integer", description: "오브젝트 사이 최소 빈 칸 수(기본 1)" },
+      maxGap: { type: "integer", description: "흩뿌림 후보를 고를 때 선호하는 최대 빈 칸 수(기본 3)" },
+      naturalness: { type: "number", description: "0~1 자연도. <0.3 uniform, 0.3~0.7 poisson, >0.7 cluster(기본 0.5)" },
+      mode: { type: "string", enum: ["uniform", "poisson", "cluster"], description: "자연산포 모드 명시 오버라이드" },
+      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 산포)" },
+      avoidProtected: { type: "boolean", description: "시작칸/이벤트/transfer/상위 타일/물·흙길/모래길·통행 불가 하층 회피(기본 true)" },
+      preferSoftRules: { type: "boolean", description: "soft/medium 규칙 만족을 우선(기본 true)" },
+      applyStructure: { type: "boolean", description: "overlay/처마 생략 등 구조 규칙 자동 적용(기본 true)" },
+    },
+    required: ["mapId", "area", "count"],
   },
+  run: runScatterObject,
 };
 
 export const PLACEMENT_TOOLS: readonly ToolDefinition[] = [scatterObject];

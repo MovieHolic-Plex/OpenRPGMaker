@@ -25,6 +25,7 @@ import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panel
 import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
 import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import {
   formatLayoutValidationSummary,
@@ -239,11 +240,23 @@ export function ensureRegionPlacementHarness(tileset: TilesetDef): void {
   ensureBuildPalettePresets(tileset);
 }
 
+/** 장식 박스 전용 그룹 — small-props 가방과 혼동되면 랜덤 소품이 깔린다(라이브 사고 2026-07-10). */
+export const REGION_PROP_VOCAB = {
+  woodBox: `${COMBINED_TOWN_HARNESS_PREFIX}wood-box`,
+  fruitBox: `${COMBINED_TOWN_HARNESS_PREFIX}fruit-box`,
+  smallProps: BUILD_PALETTE_PRESETS.prop,
+} as const;
+
 /** 영역 메시지에 넣을 소품/지형 그룹 id 힌트(존재하면 soft-confirm 으로 바로 place_props 가능). */
 export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): string {
-  if (!tileset) return "- 소품 어휘: (타일셋 없음) harness-combined-town-conifer-tree 등 그룹 id 사용";
+  if (!tileset) {
+    return `- 소품 어휘: (타일셋 없음) ${BUILD_PALETTE_PRESETS.tree}, ${REGION_PROP_VOCAB.woodBox}, ${REGION_PROP_VOCAB.fruitBox} 등`;
+  }
+  // wood/fruit-box를 small-props보다 앞에 — "박스 2개"가 랜덤 마을 소품 가방으로 빠지지 않게.
   const preferred = [
     BUILD_PALETTE_PRESETS.tree,
+    REGION_PROP_VOCAB.woodBox,
+    REGION_PROP_VOCAB.fruitBox,
     BUILD_PALETTE_PRESETS.prop,
     BUILD_PALETTE_PRESETS.path,
     BUILD_PALETTE_PRESETS.water,
@@ -254,13 +267,13 @@ export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): st
     .filter((group): group is NonNullable<typeof group> => Boolean(group));
   const propish = groups.filter((group) =>
     group.role === "prop" || group.role === "terrain" || group.role === "water" || group.role === "fence"
-    || /tree|prop|bush|flower|fence|path|water|road/i.test(group.id)
+    || /tree|prop|bush|flower|fence|path|water|road|box/i.test(group.id)
   );
   const ordered = [
     ...preferredFound,
     ...propish.filter((group) => !preferred.includes(group.id)),
   ];
-  const unique = [...new Map(ordered.map((group) => [group.id, group])).values()].slice(0, 8);
+  const unique = [...new Map(ordered.map((group) => [group.id, group])).values()].slice(0, 10);
   if (unique.length === 0) {
     return `- 소품 어휘: tile_query로 그룹 id를 찾아 place_props 호출 (없는 id만 실패, 미합의도 맵 목업 확인)`;
   }
@@ -286,6 +299,9 @@ export function buildRegionTaskMessage(
     "- 집/건물: build_house_kit (벽 타일로 직사각 채우기 금지)",
     "- 나무/바위/꽃 산포: place_props + 아래 그룹 id (정식 id만, 예 harness-combined-town-conifer-tree). 같은 place_props는 1회",
     formatApprovedPropVocabHint(tileset),
+    // 툴콜링 사고: "박스 2개" → small-props 랜덤 산포. 전용 그룹 id를 강제한다.
+    `- 장식 박스/나무상자/나무박스: place_props { propVocabId: \"${REGION_PROP_VOCAB.woodBox}\", count:N } (타일 237). 과일박스= \"${REGION_PROP_VOCAB.fruitBox}\" (202|203). small-props 가방·place_chest로 대체 금지`,
+    "- 보물상자(열면 아이템/골드·개봉 기억): place_chest 만. '박스'/'나무상자' 요청에 place_chest 금지",
     "- 지면/수역/바닥 면: fill_region — 호수=물 그룹(harness-combined-town-lake-water-autotile) + 원형·둥근은 shape=circle(필수). rect만 쓰면 네모. 타원=ellipse",
     "- 길/도로: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},...] } — 흙길 오토타일 성형. 영역 안 동선·호수 둘레 산책로에 사용",
     "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",

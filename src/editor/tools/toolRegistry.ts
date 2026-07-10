@@ -28,41 +28,35 @@ import { STORY_TOOLS } from "./storyTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import { TIME_TOOLS } from "./timeTools";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
-import { TILE_TOOLS_V2, V1_TILE_SUPERSEDED } from "./v2";
-import { CONSTRUCTION_TOOLS_V3, V2_TILE_SUPERSEDED, VOCABULARY_TOOLS_V3 } from "./v3";
+import { V1_TILE_SUPERSEDED } from "./v2";
+import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
 import { CASTLE_TOOLS } from "./castleBuilder";
 import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
+import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
 
 export { PLACEMENT_TOOLS };
 
-// 툴 홍수 제거(2026-07-07 §2.2.1): v3 승인 어휘 흐름과 경쟁하는 옛 타일 지식 툴을
-// LLM 노출에서 제외한다(getTool/실행 호환 유지). 작은 모델이 v3 정공법 대신 이 툴들로 새던 문제.
+// 구 비전/샘플 조회 등은 tile_query로 통합 — 레지스트리에 남아 있으면 deprecated.
 export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
-  ["tile_group", "propose_tile_vocabulary"],
   ["set_group_layout", "propose_tile_vocabulary"],
   ["suggest_group_from_range", "propose_tile_vocabulary"],
-  ["tile_metadata", "propose_tile_vocabulary"],
-  ["tile_cluster_rule", "propose_tile_vocabulary"],
   ["render_group_sample", "tile_query"],
   ["show_tile_grid", "tile_query"],
   ["show_tiles", "tile_query"],
 ]);
 
-// v2 재구축(2026-07-07): 모든 기존 툴은 version 1로 태깅하고, 타일 계열 v1은 v2 대체와 함께
-// deprecated 처리한다(LLM 노출 제외 — getTool/실행 호환은 유지).
-// v3 공정 프리미티브(V3B): v2 배치 4종도 같은 방식으로 deprecated 마킹한다(version 2 유지).
-// 옛 타일 지식 툴(§2.2.1)도 동일 방식 — supersededBy는 v3 정공법 진입점을 가리킨다.
-function tagV1(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
+// 레거시 툴 이름에 deprecated + supersededBy 부여 (LLM 비노출, getTool 실행 호환).
+function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
   return tools.map((tool) => {
-    const supersededByV1 = V1_TILE_SUPERSEDED.get(tool.name);
-    if (supersededByV1) return { ...tool, version: 1 as const, deprecated: true, supersededBy: supersededByV1 };
-    const supersededByV2 = V2_TILE_SUPERSEDED.get(tool.name);
-    if (supersededByV2) return { ...tool, version: tool.version ?? (2 as const), deprecated: true, supersededBy: supersededByV2 };
-    const supersededByV3 = LEGACY_TILE_KNOWLEDGE_SUPERSEDED.get(tool.name);
-    if (supersededByV3) return { ...tool, version: tool.version ?? (1 as const), deprecated: true, supersededBy: supersededByV3 };
+    if (tool.deprecated) return tool;
+    const superseded =
+      V1_TILE_SUPERSEDED.get(tool.name) ?? LEGACY_TILE_KNOWLEDGE_SUPERSEDED.get(tool.name);
+    if (superseded) {
+      return { ...tool, version: tool.version ?? (1 as const), deprecated: true, supersededBy: superseded };
+    }
     return { ...tool, version: tool.version ?? (1 as const) };
   });
 }
@@ -102,15 +96,15 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
   }));
 }
 
-// 레지스트리(순서 = 카탈로그 표시 순서). v3 승인 보캐뷸러리 → v2 타일 툴 순으로 앞에 온다.
-export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
+// 레지스트리 순서: 정공법(v3) 먼저 → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
+export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_KIT_TOOLS, "tile"),
   ...withDomain(HOUSE_LOT_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
-  ...withDomain(TILE_TOOLS_V2, "tile"),
+  ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
@@ -128,7 +122,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagV1([
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
-  ...withDomain(QUERY_TOOLS, "map"), // 혼합 패밀리 — NAME_DOMAIN_OVERRIDES가 우선한다.
+  ...withDomain(QUERY_TOOLS, "map"),
   ...withDomain(TILE_METADATA_TOOLS, "tile"),
   ...withDomain(CLUSTER_RULE_TOOLS, "tile"),
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),
@@ -146,6 +140,11 @@ export function getTool(name: string): ToolDefinition | undefined {
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;
+}
+
+/** LLM/UI에 보여줄 활성 툴만 (deprecated 제외). */
+export function activeTools(): readonly ToolDefinition[] {
+  return TOOL_REGISTRY.filter((tool) => tool.deprecated !== true);
 }
 
 export interface OpenAiTool {

@@ -20,7 +20,14 @@
 
 .region-task-popover {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(122, 162, 255, 0.25);
+  /* 결과 로그·before/after 비교가 커져도 뷰포트 밖으로 밀리지 않게 */
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
   max-width: min(360px, calc(100vw - 24px));
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: 1201;
 }
 
@@ -36,6 +43,15 @@
   max-width: min(520px, calc(100vw - 32px));
   padding: var(--space-4);
   width: 100%;
+}
+
+/* 중앙 모달도 긴 로그/비교 UI 시 화면 밖으로 넘치지 않게 */
+.region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal {
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .region-task-header {

@@ -30,6 +30,16 @@ This page describes how an agent should operate on this project using the local 
 - For UI/editor work, drive the editor through a browser or Playwright scenario and save evidence.
 - Report what was verified and what remains unverified.
 
+## Tool-calling architecture (human review map)
+
+For a structural map of tool calling (exposure, pin+cap 40, region vs chat, box/wood-box incident), read:
+
+- `docs/2026-07-10-tool-calling-architecture-review.md`
+
+**Stack (after 2026-07-10 simplify):** LLM surface is **v3 construction + builders + `paint_road` + `tile_query` + non-tile domains**. Old v2 place wrappers (`tile_paint`/`tile_scatter`/…) are **removed** from the registry. Legacy v1 names (`paint_tiles`, `scatter_object`, …) stay for `getTool`/tests as `deprecated` engines; `place_props` calls `runScatterObject` directly. UI tool browser lists `activeTools()` only.
+
+Auto-generated schema dump (not policy): `docs/tool-catalog.md`.
+
 ## Headless Tool and MCP Access
 
 - Use `node scripts/rpgzzu-tools.mjs --project test/fixtures/projects/battle-v3.json get_project_summary '{}'` to run editor tools outside the browser.

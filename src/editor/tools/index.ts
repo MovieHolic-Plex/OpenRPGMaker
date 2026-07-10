@@ -13,6 +13,7 @@ export type {
 } from "./types";
 export { ToolError } from "./types";
 export {
+  activeTools,
   allTools,
   getTool,
   toOpenAiTools,

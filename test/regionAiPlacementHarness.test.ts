@@ -3,6 +3,7 @@ import {
   buildRegionTaskMessage,
   ensureRegionPlacementHarness,
   formatApprovedPropVocabHint,
+  REGION_PROP_VOCAB,
 } from "@/editor/regionTask/runRegionTask";
 import { BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { toOpenAiTools } from "@/editor/tools";
@@ -48,6 +49,7 @@ describe("region AI placement harness", () => {
     ensureRegionPlacementHarness(tileset);
     expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_PRESETS.tree)).toBe(true);
     expect(formatApprovedPropVocabHint(tileset)).toContain(BUILD_PALETTE_PRESETS.tree);
+    expect(formatApprovedPropVocabHint(tileset)).toContain(REGION_PROP_VOCAB.woodBox);
 
     const props = runTool(context, "place_props", {
       mapId: MAP_ID,
@@ -60,6 +62,37 @@ describe("region AI placement harness", () => {
     const upper = context.project.maps[MAP_ID].upperTiles.filter((tile) => tile >= 0 && tile !== TILE.EMPTY).length;
     const lowerDiff = context.project.maps[MAP_ID].lowerTiles.filter((tile) => tile !== TILE.GRASS).length;
     expect(upper + lowerDiff).toBeGreaterThan(0);
+  });
+
+  it("place_props wood-box places tile 237 (not random small-props)", () => {
+    const context = makeMapProject();
+    const tileset = context.project.tilesets[context.project.maps[MAP_ID].tilesetId];
+    ensureRegionPlacementHarness(tileset);
+    const result = runTool(context, "place_props", {
+      mapId: MAP_ID,
+      area: { x: 5, y: 5, w: 4, h: 3 },
+      propVocabId: REGION_PROP_VOCAB.woodBox,
+      count: 2,
+      seed: 3,
+      minGap: 1,
+    });
+    expect(result.ok).toBe(true);
+    const woodTiles = context.project.maps[MAP_ID].upperTiles.filter((tile) => tile === 237).length;
+    expect(woodTiles).toBeGreaterThanOrEqual(1);
+    expect(woodTiles).toBeLessThanOrEqual(2);
+  });
+
+  it("박스 지시 메시지에 wood-box id가 small-props보다 앞에 노출된다", () => {
+    const project = makeMapProject().project;
+    const tileset = project.tilesets[project.maps[MAP_ID].tilesetId];
+    ensureRegionPlacementHarness(tileset);
+    const msg = buildRegionTaskMessage("박스 2개 설치해줘", "하네스", MAP_ID, REGION, tileset);
+    const woodIdx = msg.indexOf(REGION_PROP_VOCAB.woodBox);
+    const bagIdx = msg.indexOf(REGION_PROP_VOCAB.smallProps);
+    expect(woodIdx).toBeGreaterThanOrEqual(0);
+    // 전용 가이드 줄 + vocab 힌트 모두 wood-box 포함
+    expect(msg).toMatch(/장식 박스.*wood-box/);
+    if (bagIdx >= 0) expect(woodIdx).toBeLessThan(bagIdx);
   });
 
   it("place_npc without graphic uses villager charset, not transparent", () => {

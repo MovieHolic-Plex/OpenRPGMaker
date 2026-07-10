@@ -18,9 +18,9 @@ import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } f
 import { inMapBounds, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
 import { wobblePath, poissonScatter } from "../naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
-import { isPathSurfaceTile, PLACEMENT_TOOLS } from "../placementTools";
+import { isPathSurfaceTile, runScatterObject } from "../placementTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
-import { byName, coerceInt, coercePoint, coercePointArray, compactArgs, failWithExample } from "../v2/tileToolsV2Support";
+import { coerceInt, coercePoint, coercePointArray, compactArgs, failWithExample } from "../toolArgCoerce";
 import { tilesetGrammarProfile } from "./grammarProfiles";
 import {
   expandRoof,
@@ -31,8 +31,6 @@ import {
   type CellEdit,
   type Rect,
 } from "./rmTypeExpander";
-
-const v1Scatter = byName(PLACEMENT_TOOLS, "scatter_object");
 
 const WALL_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, wallVocabId: "plaster-wall-9slice" };
 const ROOF_EXAMPLE = { mapId: "map_1", roofVocabId: "red-roof", wallRect: { x: 8, y: 6, w: 6, h: 4 } };
@@ -510,7 +508,11 @@ const layPath: ToolDefinition = {
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). 나무/바위/꽃/벤치/집앞소품용. 물·흙길/모래길·통행 불가 하층·기존 upper 점유 칸은 건너뛴다. propVocabId는 정식 그룹 id 또는 낱개 타일 id. 같은 area·id·count는 한 턴에 한 번만. 마을 전체에 흩뿌리려면 area를 넓히고(권장 8x6 이상) naturalness 0.55~0.7·minGap 2 이상으로 여러 구역에 나눠 호출 — naturalness 0.3 미만은 uniform이라 한곳에 뭉친다. 미합의 재료도 맵에 그려 soft-confirm. 면 채우기는 fill_region.",
+    "소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). 나무/바위/꽃/벤치/집앞소품용. " +
+    "박스·나무상자·나무박스 요청: propVocabId=harness-combined-town-wood-box(또는 \"237\"), count=개수 — small-props 가방으로 대체 금지. " +
+    "과일박스: harness-combined-town-fruit-box. small-props는 표지판·횃불 등 잔여 잡소품용. " +
+    "물·흙길/모래길·통행 불가 하층·기존 upper 점유 칸은 건너뛴다. propVocabId는 정식 그룹 id 또는 낱개 타일 id. " +
+    "같은 area·id·count는 한 턴에 한 번만. 마을 전체에 흩뿌리려면 area를 넓히고(권장 8x6 이상) naturalness 0.55~0.7·minGap 2 이상으로 여러 구역에 나눠 호출 — naturalness 0.3 미만은 uniform이라 한곳에 뭉친다. 미합의 재료도 맵에 그려 soft-confirm. 면 채우기는 fill_region.",
   mode: "write",
   version: 3,
   parameters: {
@@ -542,8 +544,8 @@ const placeProps: ToolDefinition = {
     if (group) {
       const access = resolveVocabForBuild(tileset, { groupId: group.id });
       const soft = access.status === "soft" && access.kind === "group" ? access.softConfirm : undefined;
-      // 기존 산포 엔진 재사용(클러스터 hard 규칙 유지).
-      const scattered = v1Scatter.run(draft, compactArgs({
+      // 산포 엔진 직호출(클러스터 hard 규칙 유지) — ToolDefinition 이름 의존 제거.
+      const scattered = runScatterObject(draft, compactArgs({
         mapId: args.mapId, area: args.area, count, groupId: group.id,
         minGap: args.minGap, naturalness: args.naturalness, seed: args.seed,
       }));
@@ -740,12 +742,3 @@ const tileErase: ToolDefinition = {
 };
 
 export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps, fillRegion, tileErase];
-
-// v3가 대체하는 v2 배치 툴 → 대체 v3 툴 이름. 레지스트리가 이 표로 deprecated 마킹한다
-// (V1_TILE_SUPERSEDED와 동일 방식 — LLM 비노출, getTool/실행 호환 유지).
-export const V2_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
-  ["tile_paint", "tile_erase"],
-  ["tile_road", "lay_path"],
-  ["tile_scatter", "place_props"],
-  ["tile_structure", "build_wall"],
-]);

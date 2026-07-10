@@ -146,6 +146,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   // renderPendingCompare가 건 subscribePendingRegionApply 구독의 해제 함수 — 모달 스코프에
   // 저장해 activeModalCleanup(모달 교체/닫기 시)이 정확히 1회 해제할 수 있게 한다.
   let pendingUnsubscribe: (() => void) | null = null;
+  // windowNode 생성 후 할당 — 로그/비교 UI 성장 시 뷰포트 재클램프.
+  let schedulePopoverReposition: () => void = () => undefined;
   activeModalCleanup = (): void => {
     pendingUnsubscribe?.();
     pendingUnsubscribe = null;
@@ -168,6 +170,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
     runButton.disabled = false;
     textarea.disabled = false;
+    schedulePopoverReposition();
   };
 
   const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
@@ -240,6 +243,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       el("div", { class: "region-task-compare-actions", children: [applyButton, discardButton] }),
     );
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
+    schedulePopoverReposition();
   };
 
   let running = false;
@@ -343,6 +347,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         runButton.disabled = false;
         textarea.disabled = false;
       }
+      schedulePopoverReposition();
     }
   };
 
@@ -370,6 +375,16 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal" },
     children: [header, textarea, suggestionRow, log, summary, compareHost, actions],
   });
+  /** 로그/비교 UI가 커진 뒤에도 뷰포트 안에 남도록 재클램프 (레이아웃 반영 후 1프레임). */
+  schedulePopoverReposition = (): void => {
+    if (!asPopover || !options.anchor) return;
+    const reposition = (): void => {
+      if (!windowNode.isConnected) return;
+      positionRegionTaskPopover(windowNode, options.anchor!);
+    };
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(reposition);
+    else reposition();
+  };
   // Escape는 backdrop에 건다(포커스된 textarea의 keydown이 여기로 버블). document
   // 리스너를 피해 fakeDom과 실제 DOM 모두에서 동작.
   const backdrop = el("div", {
@@ -399,22 +414,51 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   return backdrop;
 }
 
-function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTaskAnchor): void {
+/**
+ * 앵커 근처 fixed 팝오버를 뷰포트 안으로 클램프.
+ * 결과 로그·before/after로 높이가 커진 뒤에도 재호출해야 화면 밖으로 밀리지 않는다.
+ */
+export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTaskAnchor): void {
   const margin = 12;
-  const width = Math.min(360, Math.max(280, window.innerWidth - margin * 2));
+  // browser: globalThis === window; tests can stub globalThis.innerWidth/Height without full window.
+  const view = globalThis as { innerWidth?: number; innerHeight?: number };
+  const vw = typeof view.innerWidth === "number" && view.innerWidth > 0 ? view.innerWidth : 1024;
+  const vh = typeof view.innerHeight === "number" && view.innerHeight > 0 ? view.innerHeight : 768;
+  const maxWidth = Math.min(360, Math.max(200, vw - margin * 2));
+  const maxHeight = Math.max(160, vh - margin * 2);
+
   panel.style.position = "fixed";
-  panel.style.width = `${width}px`;
+  panel.style.width = `${maxWidth}px`;
   panel.style.maxWidth = `min(360px, calc(100vw - ${margin * 2}px))`;
-  // 먼저 배치한 뒤 실측 크기로 화면 안으로 클램프.
-  panel.style.left = `${anchor.x + 12}px`;
-  panel.style.top = `${anchor.y + 12}px`;
-  const rect = panel.getBoundingClientRect?.() ?? { width, height: 220, left: anchor.x, top: anchor.y };
+  panel.style.maxHeight = `${maxHeight}px`;
+  // 임시 배치 후 실측 → 좌/우·위/아래 플립·클램프.
   let left = anchor.x + 12;
   let top = anchor.y + 12;
-  if (left + rect.width > window.innerWidth - margin) left = Math.max(margin, anchor.x - rect.width - 12);
-  if (top + rect.height > window.innerHeight - margin) top = Math.max(margin, window.innerHeight - rect.height - margin);
+  panel.style.left = `${left}px`;
+  panel.style.top = `${top}px`;
+
+  const rect = panel.getBoundingClientRect?.() ?? {
+    width: maxWidth,
+    height: Math.min(220, maxHeight),
+    left,
+    top,
+  };
+  const width = Math.min(rect.width || maxWidth, maxWidth);
+  // maxHeight를 넘기면 CSS overflow로 스크롤 — 위치 계산은 클램프된 높이를 기준으로.
+  const height = Math.min(rect.height || 220, maxHeight);
+
+  if (left + width > vw - margin) left = Math.max(margin, anchor.x - width - 12);
   if (left < margin) left = margin;
+  if (left + width > vw - margin) left = Math.max(margin, vw - width - margin);
+
+  if (top + height > vh - margin) {
+    const above = anchor.y - height - 12;
+    if (above >= margin) top = above;
+    else top = Math.max(margin, vh - height - margin);
+  }
   if (top < margin) top = margin;
+  if (top + height > vh - margin) top = Math.max(margin, vh - height - margin);
+
   panel.style.left = `${Math.round(left)}px`;
   panel.style.top = `${Math.round(top)}px`;
 }
