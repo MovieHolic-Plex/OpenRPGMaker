@@ -5,7 +5,7 @@ import {
   setInlineProposalActions,
   subscribeInlineProposalActions,
 } from "@/editor/proposalInlineApproval";
-import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 
 describe("inline proposal actions registry", () => {
   afterEach(() => setInlineProposalActions(null));
@@ -40,5 +40,30 @@ describe("buildInlineApprovalToolbar", () => {
       (findByTestId(document.body as unknown as FakeElement, id) as unknown as HTMLElement).click();
     }
     expect(hits).toEqual(["accept", "reject", "focus"]);
+  });
+
+  it("holdOrigin이 있으면 원본 보기 버튼을 렌더하고 pointerdown/up으로 start/end를 부른다", () => {
+    const calls: string[] = [];
+    const toolbar = renderWithFakeDom(() =>
+      buildInlineApprovalToolbar({
+        accept: () => calls.push("accept"),
+        reject: () => calls.push("reject"),
+        holdOrigin: {
+          label: "원본 보기",
+          start: () => calls.push("start"),
+          end: () => calls.push("end"),
+        },
+      }),
+    );
+    const hold = findByTestId(toolbar, "ghost-inline-hold-origin");
+    expect(hold).not.toBeNull();
+    hold!.dispatchEvent(new Event("pointerdown"));
+    hold!.dispatchEvent(new Event("pointerup"));
+    expect(calls).toEqual(["start", "end"]);
+  });
+
+  it("focusCard가 없으면 상세 버튼을 렌더하지 않는다", () => {
+    const toolbar = renderWithFakeDom(() => buildInlineApprovalToolbar({ accept: () => {}, reject: () => {} }));
+    expect(findByTestId(toolbar, "ghost-inline-detail")).toBeNull();
   });
 });

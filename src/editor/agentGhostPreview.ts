@@ -62,6 +62,19 @@ const listeners = new Set<Listener>();
 let previews: AgentGhostPreview[] = [];
 let revision = 0;
 
+// 원본 보기(꾹 누름) 동안 렌더만 숨긴다 — 프리뷰 데이터는 유지(시각 토글).
+let hidden = false;
+
+export function isAgentGhostPreviewHidden(): boolean {
+  return hidden;
+}
+
+export function setAgentGhostPreviewHidden(next: boolean): void {
+  if (hidden === next) return;
+  hidden = next;
+  emit();
+}
+
 export function subscribeAgentGhostPreview(listener: Listener): () => void {
   listeners.add(listener);
   listener(getAgentGhostPreviewState());

@@ -123,3 +123,19 @@
 .command-palette-item.is-active {
   background: color-mix(in srgb, var(--editor-blue, #3d6df0) 24%, transparent);
 }
+
+/* 원본 보기(홀드) — 고스트 시각만 숨기고 툴바는 유지 */
+.agent-ghost-preview.is-ghost-hidden {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ghost-inline-btn.is-hold {
+  border-style: dashed;
+}
+
+.ghost-inline-btn.is-hold:active {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 40%, #1a2236);
+  color: #fff;
+}
