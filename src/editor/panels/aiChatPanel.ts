@@ -37,7 +37,9 @@ import {
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
-import { recordAiActivity } from "@/ai/activityLog";
+import { listAiActivityLogs, recordAiActivity } from "@/ai/activityLog";
+import { buildRecentAiWorkCard, buildTryRegionCard } from "@/editor/panels/aiStartScreenCards";
+import { nextSuggestedRegionCommands } from "@/editor/regionTask/suggestedCommands";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
@@ -1134,6 +1136,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           on: { click: () => restoreConversationById(resumeCandidate.id) },
         })]
       : [];
+    // 기본 모드 전용 발견성 카드 — 채팅 시작 시 시작 화면과 함께 사라진다(스펙 §5).
+    const basicCards: HTMLElement[] = [];
+    if (typeof document !== "undefined" && document.body?.classList?.contains?.("editor-ui-basic")) {
+      basicCards.push(
+        buildTryRegionCard({
+          commands: nextSuggestedRegionCommands(3),
+          onPick: (instruction) => {
+            input.value = instruction;
+            input.focus();
+          },
+        }),
+      );
+      const recent = buildRecentAiWorkCard(listAiActivityLogs(3), new Date());
+      if (recent) basicCards.push(recent);
+    }
     return el("div", {
       class: "ai-start-screen",
       dataset: { testid: "ai-start-screen" },
@@ -1141,6 +1158,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         el("div", { class: "ai-start-title", text: "무엇을 만들까요?" }),
         el("div", { class: "ai-start-sub", text: "Ctrl+K 명령 · / 스킬 · 영역 선택 후 ✨ 칩으로 시작하세요." }),
         ...resume,
+        ...basicCards,
         el("div", { class: "ai-start-grid", children: cards }),
         el("div", {
           class: "ai-start-guide",
