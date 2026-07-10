@@ -131,7 +131,11 @@ test.describe("QA sweep: equipment tab", () => {
 
     const consoleErrors: string[] = [];
     page.on("console", (msg) => {
-      if (msg.type() === "error" && !msg.text().includes("127.0.0.1:17831")) consoleErrors.push(msg.text());
+      if (msg.type() !== "error") return;
+      // 127.0.0.1:17831 dev-tool ping은 URL 없이 아래 일반 문구로만 찍힌다(qa-items.spec.ts와 동일 필터).
+      if (msg.text() === "Failed to load resource: net::ERR_CONNECTION_REFUSED") return;
+      if (msg.text().includes("127.0.0.1:17831")) return;
+      consoleErrors.push(msg.text());
     });
     page.on("pageerror", (err) => consoleErrors.push(String(err)));
 
