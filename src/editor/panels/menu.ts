@@ -33,6 +33,7 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { saveProjectNow } from "@/editor/saveActions";
+import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
@@ -410,6 +411,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
+  installToolbarOverflow(row);
   return row;
 }
 
@@ -437,6 +439,7 @@ async function openSelectedEventTestWindow(): Promise<void> {
 function classicPlayToolbarRow(mode: string): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
   row.append(playModeButton(mode));
+  installToolbarOverflow(row);
   return row;
 }
 

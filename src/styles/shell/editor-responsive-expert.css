@@ -99,3 +99,23 @@
 @media (max-width: 1100px) {
   .editor-statusbar .sb-secondary { display: none; }
 }
+
+/* 8) 클래식 툴바 오버플로우 */
+.classic-toolbar .rm2k3-toolbar-row {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.toolbar-overflow-popup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 320px;
+  padding: 6px;
+  position: absolute;
+  right: 4px;
+  top: 100%;
+  z-index: 80;
+}
