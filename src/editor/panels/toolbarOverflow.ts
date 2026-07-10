@@ -44,13 +44,23 @@ export function installToolbarOverflow(row: HTMLElement): () => void {
     popup.hidden = !popup.hidden;
     moreButton.setAttribute("aria-expanded", String(!popup.hidden));
   });
-  document.addEventListener("pointerdown", onOutside);
+  // onOutside의 자가 정리 분기가 observer.disconnect()를 참조해야 하므로, observer는
+  // reflow/ResizeObserver 생성보다 먼저 선언해 둔다(초기화는 아래에서).
+  let observer: ResizeObserver;
   function onOutside(event: Event): void {
+    // 호출자가 dispose()를 깜빡하고 row가 DOM에서 분리된 채 남아 있으면(방어선),
+    // 리스너 스스로를 해제해 document 리스너 누적을 막는다.
+    if (!row.isConnected) {
+      document.removeEventListener("pointerdown", onOutside);
+      observer.disconnect();
+      return;
+    }
     if (popup.hidden) return;
     if (event.target instanceof Node && (popup.contains(event.target) || moreButton.contains(event.target))) return;
     popup.hidden = true;
     moreButton.setAttribute("aria-expanded", "false");
   }
+  document.addEventListener("pointerdown", onOutside);
 
   // 원본 순서를 기억해 두고, 리사이즈마다 전부 행으로 되돌린 뒤 다시 계산한다.
   const items = Array.from(row.children).filter((node): node is HTMLElement => node instanceof HTMLElement);
@@ -70,7 +80,7 @@ export function installToolbarOverflow(row: HTMLElement): () => void {
     for (const item of items.slice(count)) popup.append(item);
   };
 
-  const observer = new ResizeObserver(() => reflow());
+  observer = new ResizeObserver(() => reflow());
   observer.observe(row);
   reflow();
   return () => {

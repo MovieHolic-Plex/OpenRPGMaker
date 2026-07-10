@@ -55,8 +55,14 @@ type MenuCommand =
 
 let activeMenuPopup: HTMLElement | null = null;
 let popupOutsideListener: (() => void) | null = null;
+// renderTopbar가 재실행될 때마다 classicToolbarRow/classicPlayToolbarRow가 새 row에
+// installToolbarOverflow를 걸므로, 이전 호출이 남긴 document 리스너/ResizeObserver를
+// 재구축 직전에 반드시 해제해야 세션 내 리스너 누적을 막을 수 있다.
+let disposeToolbarOverflows: (() => void)[] = [];
 
 export function renderTopbar(topbar: HTMLElement): void {
+  for (const dispose of disposeToolbarOverflows) dispose();
+  disposeToolbarOverflows = [];
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   applyToolbarCollapsed(readToolbarCollapsed());
   const mode = getMode();
@@ -411,7 +417,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
   );
-  installToolbarOverflow(row);
+  disposeToolbarOverflows.push(installToolbarOverflow(row));
   return row;
 }
 
@@ -439,7 +445,7 @@ async function openSelectedEventTestWindow(): Promise<void> {
 function classicPlayToolbarRow(mode: string): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
   row.append(playModeButton(mode));
-  installToolbarOverflow(row);
+  disposeToolbarOverflows.push(installToolbarOverflow(row));
   return row;
 }
 
