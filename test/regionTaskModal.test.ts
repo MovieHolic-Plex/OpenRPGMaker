@@ -1,5 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { closeRegionTaskModal, openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const REGION = { x: 2, y: 3, width: 4, height: 5 };
@@ -145,5 +147,76 @@ describe("openRegionTaskModal", () => {
     const payload = writeText.mock.calls[0]?.[0] as string;
     expect(payload).toContain("region-task-log");
     expect(payload).toContain("place_props");
+  });
+});
+
+function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTaskResult {
+  const pending = setPendingRegionApply({
+    baseProject: { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never,
+    clippedProject: { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never,
+    mapId: "m1",
+    region: { x: 0, y: 0, width: 2, height: 2 },
+    changedCells: 3,
+    changedEvents: 0,
+    instruction: "테스트",
+    onApply: () => {},
+    onDiscard: () => {},
+    onSettle: () => {},
+  });
+  return {
+    ok: true, applied: false, changedCells: 3, changedEvents: 0, clippedCells: 0,
+    proposedCalls: 1, assistantText: "", pending, ...overrides,
+  };
+}
+
+describe("pending 비교 UI", () => {
+  beforeEach(() => __clearPendingRegionApplyForTest());
+
+  it("pending 결과면 before/after 썸네일과 적용/버리기 버튼을 렌더한다", async () => {
+    restoreDom = installFakeDom();
+    const stub = () => Promise.resolve(document.createElement("div"));
+    const root = openModal({
+      mapId: "m1",
+      region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트",
+      autoRun: true,
+      run: async () => fakePendingResult(),
+      renderSnapshot: stub,
+    });
+    await flush();
+    expect(findByTestId(root, "region-task-compare")).not.toBeNull();
+    expect(findByTestId(root, "region-task-before")).not.toBeNull();
+    expect(findByTestId(root, "region-task-after")).not.toBeNull();
+    expect(findByTestId(root, "region-task-apply")).not.toBeNull();
+    expect(findByTestId(root, "region-task-discard")).not.toBeNull();
+  });
+
+  it("적용 클릭 시 pending.apply가 불리고 요약이 갱신된다", async () => {
+    restoreDom = installFakeDom();
+    const result = fakePendingResult();
+    const root = openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트", autoRun: true,
+      run: async () => result,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    findByTestId(root, "region-task-apply")?.dispatchEvent(new Event("click"));
+    expect(result.pending!.settled).toBe(true);
+    expect(findByTestId(root, "region-task-summary")?.textContent).toContain("적용됨");
+  });
+
+  it("pending 미해소 상태에서 모달을 닫으면 discard 된다", async () => {
+    restoreDom = installFakeDom();
+    const result = fakePendingResult();
+    const root = openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트", autoRun: true,
+      run: async () => result,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    findByTestId(root, "region-task-close")?.dispatchEvent(new Event("click"));
+    expect(result.pending!.settled).toBe(true); // 닫기 = discard
   });
 });

@@ -139,3 +139,86 @@
   background: color-mix(in srgb, var(--editor-blue, #3d6df0) 40%, #1a2236);
   color: #fff;
 }
+
+/* 영역 작업 before/after 비교 */
+.region-task-compare {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.region-task-compare-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+
+.region-task-compare-figure figcaption {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 600 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+.region-task-compare-canvas {
+  background: var(--editor-popover-bg, #151b2c);
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 8px;
+  cursor: zoom-in;
+  max-width: 150px;
+  overflow: hidden;
+}
+
+.region-task-compare-canvas canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.region-task-compare-canvas.is-zoomed {
+  cursor: zoom-out;
+  max-width: none;
+  position: relative;
+  z-index: 5;
+}
+
+.region-task-compare-canvas.is-zoomed canvas {
+  transform: scale(2);
+  transform-origin: top left;
+}
+
+.region-task-compare-arrow {
+  color: var(--editor-text-muted, #9aa8c7);
+  font-size: 16px;
+}
+
+.region-task-compare-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.region-task-apply,
+.region-task-discard {
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  border-radius: 8px;
+  cursor: pointer;
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 7px 14px;
+}
+
+.region-task-apply {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 80%, #10214a);
+  color: #fff;
+}
+
+.region-task-discard {
+  background: transparent;
+  color: var(--editor-text-muted, #9aa8c7);
+}
+
+.region-task-discard:hover {
+  color: var(--editor-text, #e8eefc);
+}
