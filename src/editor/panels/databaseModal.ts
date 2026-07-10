@@ -14,6 +14,29 @@ import {
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
+type ActiveDatabaseModalHandle = {
+  readonly close: () => void;
+  readonly requestClose: (attempt: EditorModalCloseAttempt) => void;
+};
+
+let activeModal: ActiveDatabaseModalHandle | null = null;
+
+// 모달 내부의 다른 뷰(예: 트룹의 "전투 테스트" 버튼)가 모달을 닫아야 할 때 쓰는 훅.
+// document.querySelector(...)?.remove()로 DOM만 뜯어내면 openDatabaseModal이 등록한
+// document keydown 리스너 2개가 정리되지 않고 남는다(M11) — 반드시 이 훅을 통해서만 닫는다.
+//
+// "battleTest"는 읽기 행위이므로 dirty 세션 확인 없이 즉시 close()만 수행한다(리스너 정리가
+// 목적) — discard는 하지 않는다. 자동 저장 모델이라 데이터는 이미 안전하다(C2와 정합).
+// 그 외 reason은 기존처럼 controller.requestClose를 거쳐 dirty 프롬프트를 존중한다.
+export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "battleTest"): void {
+  if (!activeModal) return;
+  if (reason === "battleTest") {
+    activeModal.close();
+    return;
+  }
+  activeModal.requestClose(reason);
+}
+
 export function openDatabaseModal(initialTab?: DatabaseTab): void {
   document.querySelector("[data-testid='database-modal']")?.remove();
   if (initialTab) setDatabaseActiveTab(initialTab);
@@ -65,6 +88,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     document.removeEventListener("keydown", controller.handleKeyDown);
     document.removeEventListener("keydown", handleHistoryKeyDown);
     stopModalDrag();
+    activeModal = null;
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {
@@ -104,6 +128,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     close,
   });
 
+  activeModal = { close, requestClose: controller.requestClose };
   controller.bindCloseButton(closeButton);
   maximizeButton.addEventListener("click", () => toggleMaximizedDatabaseModal(maximizeButton));
   header.addEventListener("dblclick", () => toggleMaximizedDatabaseModal(maximizeButton));

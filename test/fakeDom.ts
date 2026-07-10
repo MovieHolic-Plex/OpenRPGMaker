@@ -125,6 +125,12 @@ export class FakeElement extends FakeNode {
     return this.attrs[name] ?? null;
   }
 
+  // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
+  // 작성돼 있으므로(예: `if (!context) return;`), 여기선 그 계약만 지켜준다.
+  getContext(): null {
+    return null;
+  }
+
   addEventListener(type: string, listener: EventListenerOrEventListenerObject | null): void {
     if (listener === null) return;
     const listeners = this.listeners[type] ?? [];
@@ -191,6 +197,15 @@ function createFakeStyle(): Record<string, string> & { setProperty: (name: strin
   return style;
 }
 
+// installFakeDom()이 재설치될 때마다 새로 비운다 — 모듈 스코프에 두는 이유는 테스트가
+// document 리스너 누수를 단언할 때(예: 모달 close()가 keydown 리스너를 제대로 정리했는지)
+// documentListenerCount()로 바깥에서 조회할 수 있어야 하기 때문(fix(db) M11).
+let documentListeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
+
+export function documentListenerCount(type: string): number {
+  return documentListeners[type]?.length ?? 0;
+}
+
 export function installFakeDom(): () => void {
   const body = new FakeElement("body");
   const previous = {
@@ -204,7 +219,7 @@ export function installFakeDom(): () => void {
   defineDomGlobal("HTMLButtonElement", FakeElement);
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
-  const documentListeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
+  documentListeners = {};
   defineDomGlobal("document", {
     activeElement: null,
     body,

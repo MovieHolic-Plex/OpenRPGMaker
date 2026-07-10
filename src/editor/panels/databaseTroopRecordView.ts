@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
@@ -41,7 +42,10 @@ function topControls(record: TroopRecord, rerender: () => void): HTMLElement {
         rerender();
       }),
       actionButton("전투 테스트", "db-troop-battle-test", () => {
-        document.querySelector("[data-testid='database-modal']")?.remove();
+        // DOM을 직접 뜯어내지 않는다 — openDatabaseModal이 등록한 document keydown
+        // 리스너 2개가 정리되지 않고 새는 문제(M11)가 있었다. 훅을 통해 정식 close()를
+        // 태운다(읽기 행위라 dirty 확인/discard 없이 즉시 닫힘 — 자동 저장이라 안전).
+        requestDatabaseModalClose("battleTest");
         void openTroopBattleTestModal(record.id);
       }),
       actionButton("배경 변경", "db-troop-change-background", () => {
