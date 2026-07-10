@@ -252,12 +252,24 @@ describe("tileset palette AX tools T1a", () => {
     expect(prompt).toContain("낮은 신뢰(confidence<0.5) 타일 1개");
   });
 
-  it("contextBuilder omits tile vocabulary digest when presets are absent", () => {
+  it("contextBuilder omits tile vocabulary digest when presets and approved groups are both absent", () => {
     const project = createBlankProject();
+    // 번들 하네스 그룹은 source:bundled-default로 시드 승인되므로(2026-07-11), 다이제스트가
+    // 진짜로 "보여줄 것이 없을 때" 생략되는지 검증하려면 그룹도 함께 비워야 한다.
+    startTileset(project).tileGroups = [];
 
     const prompt = buildSystemPrompt(project, { budgetChars: 20000 });
 
     expect(prompt).not.toContain("## 타일 어휘 다이제스트");
+  });
+
+  it("contextBuilder includes tile vocabulary digest with approved group ids by role even without presets", () => {
+    const project = createBlankProject();
+
+    const prompt = buildSystemPrompt(project, { budgetChars: 20000 });
+
+    expect(prompt).toContain("## 타일 어휘 다이제스트");
+    expect(prompt).toMatch(/wall:/);
   });
 
   it("query_tiles filters by preset and role and returns tile details", () => {
