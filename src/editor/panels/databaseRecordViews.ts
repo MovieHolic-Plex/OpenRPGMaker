@@ -10,6 +10,7 @@ import {
   updateDatabaseRecord,
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
+import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { equipmentFields, itemFields, skillFields } from "@/editor/panels/databaseBasicRecordFields";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
@@ -142,26 +143,69 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
         },
       },
     }),
-    el("button", {
-      class: "btn danger small",
-      text: "삭제",
-      dataset: { testid: "db-delete-selected" },
-      on: {
-        click: () => {
-          const selected = selectedRecordIdForSession(collection);
-          if (!selected) return;
-          const result = deleteDatabaseRecord(collection, selected);
-          if (!result.ok) {
-            toast(result.message, "error");
-            return;
-          }
-          setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id);
-          rerender();
-        },
-      },
-    })
+    deleteButton(collection, rerender)
   );
   return wrap;
+}
+
+const DELETE_CONFIRM_LABEL = "정말 삭제?";
+const DELETE_IDLE_LABEL = "삭제";
+const DELETE_CONFIRM_WINDOW_MS = 3000;
+
+// 삭제는 원클릭 즉시 실행하지 않는다 — 같은 버튼을 DELETE_CONFIRM_WINDOW_MS 안에 한 번 더
+// 눌러야 확정되는 2단계 확인이다(무확인 삭제로 인한 소실 사고 방지).
+function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
+  let armedUntil = 0;
+  let resetTimer: number | null = null;
+
+  const button = el("button", {
+    class: "btn danger small",
+    text: DELETE_IDLE_LABEL,
+    dataset: { testid: "db-delete-selected" },
+    on: {
+      click: () => {
+        const selected = selectedRecordIdForSession(collection);
+        if (!selected) return;
+
+        // 참조 가드 실패는 어차피 삭제할 수 없는 시도이므로 기존처럼 즉시(1클릭) 에러를 알린다
+        // — 확인 단계를 강제하지 않는다.
+        const blockedMessage = databaseReferenceMessage(collection, selected);
+        if (blockedMessage) {
+          toast(blockedMessage, "error");
+          return;
+        }
+
+        const now = Date.now();
+        if (now > armedUntil) {
+          armedUntil = now + DELETE_CONFIRM_WINDOW_MS;
+          button.textContent = DELETE_CONFIRM_LABEL;
+          button.classList.add("confirming");
+          if (resetTimer !== null) window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            resetTimer = null;
+            if (Date.now() >= armedUntil) {
+              button.textContent = DELETE_IDLE_LABEL;
+              button.classList.remove("confirming");
+            }
+          }, DELETE_CONFIRM_WINDOW_MS + 100);
+          return;
+        }
+
+        armedUntil = 0;
+        button.textContent = DELETE_IDLE_LABEL;
+        button.classList.remove("confirming");
+        const result = deleteDatabaseRecord(collection, selected);
+        if (!result.ok) {
+          toast(result.message, "error");
+          return;
+        }
+        toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
+        setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id);
+        rerender();
+      },
+    },
+  });
+  return button;
 }
 
 function recordSearch(collection: DatabaseCollection, rerender: () => void): HTMLElement {

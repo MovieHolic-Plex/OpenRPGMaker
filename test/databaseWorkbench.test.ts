@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { addDatabaseRecord, deleteDatabaseRecord } from "@/editor/databaseActions";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { DATABASE_FOOTER_ACTION_TEST_IDS } from "@/editor/panels/databaseWorkbench";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -99,6 +100,55 @@ describe("Database RM2K3 workbench context", () => {
       expect(row.disabled || row.attrs.disabled === "true").toBe(true);
       expect(row.attrs["aria-hidden"]).toBe("true");
     }
+  });
+});
+
+describe("Database record deletion — 2-step confirm", () => {
+  it("arms a confirm state on the first click without deleting the record", () => {
+    const skillId = addDatabaseRecord("skills");
+    setSelectedRecordId("skills", skillId);
+    const host = renderRecordHost("skills");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click();
+
+    expect(deleteButton?.textContent).toBe("정말 삭제?");
+    expect(deleteButton?.className.split(/\s+/u)).toContain("confirming");
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === skillId)).toBe(true);
+  });
+
+  it("deletes on a second click and shows an undo-hint toast", () => {
+    const skillId = addDatabaseRecord("skills");
+    setSelectedRecordId("skills", skillId);
+    const host = renderRecordHost("skills");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click();
+    deleteButton?.click();
+
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === skillId)).toBe(false);
+    const toastEl = document.querySelector<HTMLElement>("[data-testid='toast']");
+    expect(toastEl?.textContent).toContain("삭제했습니다");
+    expect(toastEl?.textContent).toContain("Ctrl+Z");
+  });
+
+  it("still reports a reference-guard failure immediately on the first click (no confirm step needed)", () => {
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    store.update((project) => {
+      project.system.startActorIds = [actorId];
+    });
+    setSelectedRecordId("actors", actorId);
+    const host = renderRecordHost("actors");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click();
+
+    // 참조 가드 실패는 기존처럼 1클릭 즉시 에러 — 확인 상태로 넘어가지 않고, 레코드도 남는다.
+    // (databaseReferenceMessage 자체의 가드 메시지/커버리지는 test/databaseReferenceGuards.test.ts
+    // 몫 — 여기선 2단계 확인 도입이 가드 실패 경로를 건드리지 않는다는 것만 확인한다.)
+    expect(deleteButton?.textContent).toBe("삭제");
+    expect(deleteButton?.className.split(/\s+/u)).not.toContain("confirming");
+    expect(store.getCurrent().database.actors.some((entry) => entry.id === actorId)).toBe(true);
   });
 });
 
