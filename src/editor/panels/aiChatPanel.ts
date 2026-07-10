@@ -39,7 +39,7 @@ import {
 } from "@/ai/conversationStore";
 import { listAiActivityLogs, recordAiActivity } from "@/ai/activityLog";
 import { buildRecentAiWorkCard, buildTryRegionCard } from "@/editor/panels/aiStartScreenCards";
-import { nextSuggestedRegionCommands } from "@/editor/regionTask/suggestedCommands";
+import { nextStartScreenSuggestedCommands } from "@/editor/regionTask/suggestedCommands";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
@@ -1141,7 +1141,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (typeof document !== "undefined" && document.body?.classList?.contains?.("editor-ui-basic")) {
       basicCards.push(
         buildTryRegionCard({
-          commands: nextSuggestedRegionCommands(3),
+          commands: nextStartScreenSuggestedCommands(3),
           onPick: (instruction) => {
             input.value = instruction;
             input.focus();

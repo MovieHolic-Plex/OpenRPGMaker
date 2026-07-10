@@ -23,15 +23,36 @@ export const SUGGESTED_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
 ] as const;
 
 let rotation = 0;
+// 시작 화면 카드("이렇게 해보세요")는 모달과 별도의 로테이션 순번을 쓴다 — 두 진입점이 같은 카운터를
+// 공유하면 "새 대화"를 누를 때마다 모달 쪽 로테이션이 예측 불가하게 어긋난다.
+let startScreenRotation = 0;
+
+function rotate(counter: number, count: number): { readonly picked: SuggestedRegionCommand[]; readonly next: number } {
+  const total = SUGGESTED_REGION_COMMANDS.length;
+  const start = counter % total;
+  const next = (counter + count) % total;
+  const picked = Array.from({ length: Math.min(count, total) }, (_, index) => SUGGESTED_REGION_COMMANDS[(start + index) % total]);
+  return { picked, next };
+}
 
 /** 모달이 열릴 때 4개(기본)를 순서대로 로테이션해 돌려준다. */
 export function nextSuggestedRegionCommands(count = 4): SuggestedRegionCommand[] {
-  const total = SUGGESTED_REGION_COMMANDS.length;
-  const start = rotation % total;
-  rotation = (rotation + count) % total;
-  return Array.from({ length: Math.min(count, total) }, (_, index) => SUGGESTED_REGION_COMMANDS[(start + index) % total]);
+  const { picked, next } = rotate(rotation, count);
+  rotation = next;
+  return picked;
+}
+
+/** 기본 모드 시작 화면 카드가 3개(기본)를 순서대로 로테이션해 돌려준다 — 모달과 독립된 카운터. */
+export function nextStartScreenSuggestedCommands(count = 3): SuggestedRegionCommand[] {
+  const { picked, next } = rotate(startScreenRotation, count);
+  startScreenRotation = next;
+  return picked;
 }
 
 export function __resetSuggestedRegionRotationForTest(): void {
   rotation = 0;
+}
+
+export function __resetStartScreenSuggestedRotationForTest(): void {
+  startScreenRotation = 0;
 }
