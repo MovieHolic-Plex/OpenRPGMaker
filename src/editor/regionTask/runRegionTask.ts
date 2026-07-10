@@ -33,6 +33,7 @@ import {
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 import { setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
 export interface RegionTaskSessionLike {
   sendUserMessage(text: string, onEvent?: (event: SessionEvent) => void): Promise<TurnResult>;
@@ -523,6 +524,9 @@ export async function runRegionTask(
       setInlineProposalActions(null);
       setAgentGhostPreviewHidden(false);
       clearAgentGhostPreview();
+      // apply/discard 어느 경로(모달 버튼·캔버스 인라인 툴바·닫기·새 작업의 자동 discard)로
+      // settle 되든 배지/실행 상태를 여기서 한 번에 해제 — 개별 UI가 각자 해제하면 구멍이 생긴다.
+      dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
     },
   });
   setInlineProposalActions({

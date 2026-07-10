@@ -119,7 +119,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       : "버려졌습니다 — 맵은 변경되지 않았습니다");
     compareHost.replaceChildren();
     activePending = null;
-    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: false });
+    // running:false 배지 해제는 pending.apply()/discard() → onSettle(runRegionTask.ts)에서
+    // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
     runButton.disabled = false;
     textarea.disabled = false;
   };
@@ -174,7 +175,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       figures,
       el("div", { class: "region-task-compare-actions", children: [applyButton, discardButton] }),
     );
-    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
+    // 썸네일 렌더(await) 도중 이미 discard/apply 등으로 settle 됐다면 stale 발행을 막는다.
+    if (activePending === pending) {
+      dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
+    }
   };
 
   let running = false;
