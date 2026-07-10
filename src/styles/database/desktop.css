@@ -126,22 +126,6 @@
     padding: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs,
-  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
-    grid-template-columns: 220px 220px 220px 1fr;
-    height: auto;
-    margin: 0 2px -1px;
-    padding: 0 0 0 1px;
-  }
-
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tab,
-  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tab {
-    font-size: 12px;
-    height: 18px;
-    line-height: 17px;
-    min-height: 18px;
-  }
-
   .database-modal-body:has(.rm2k3-record-enemies) .db-tabs,
   .database-modal-body:has(.rm2k3-record-troops) .db-tabs {
     background: var(--bg-raised);
@@ -198,10 +182,6 @@
     grid-template-rows: 56px minmax(0, 1fr);
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs {
-    display: none;
-  }
-
   .database-modal-body:has(.rm2k3-record-enemies) .db-tabs {
     align-items: end;
     background: var(--bg-raised);
@@ -251,10 +231,6 @@
 
   .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
     padding: 10px;
-  }
-
-  .database-modal-body:has(.rm2k3-record-actors) .db-classic-group-tabs {
-    margin: 0 2px -1px;
   }
 
   .database-modal-body:has(.rm2k3-record-actors) .db-tabs {
@@ -316,10 +292,6 @@
   .database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
     background: var(--bg-raised);
     grid-template-rows: 56px minmax(0, 1fr);
-  }
-
-  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
-    display: none;
   }
 
   .database-modal-body:has(.rm2k3-record-troops) .db-tabs {

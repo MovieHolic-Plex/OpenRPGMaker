@@ -1,22 +1,3 @@
-.db-classic-group-tabs {
-  display: grid;
-  grid-template-columns: 172px 172px 172px 1fr;
-  gap: 1px;
-  margin: 0 1px -1px;
-  padding: 0 0 0 1px;
-  font-size: 12px;
-}
-
-.db-classic-group-tab {
-  min-height: 16px;
-  border: 1px solid var(--rm2k3-border-dark, var(--border-default));
-  border-bottom-color: var(--rm2k3-surface-raised, var(--border-subtle));
-  background: var(--rm2k3-surface, var(--bg-raised));
-  color: var(--rm2k3-text, var(--text-1));
-  line-height: 15px;
-  text-align: center;
-}
-
 .actor-classic-sheet {
   min-width: 0;
   padding: 2px;
@@ -283,10 +264,6 @@
 }
 
 @media (max-width: 1040px) {
-  .db-classic-group-tabs {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
   .actor-classic-sheet .actor-editor-grid {
     grid-template-columns: 150px minmax(290px, 1fr) minmax(330px, 1fr);
     gap: 4px;

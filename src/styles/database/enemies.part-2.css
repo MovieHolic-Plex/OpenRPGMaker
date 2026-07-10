@@ -38,7 +38,6 @@
     padding: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs,
   .database-modal-body:has(.rm2k3-record-enemies) .rm2k3-record-identity {
     display: none;
   }

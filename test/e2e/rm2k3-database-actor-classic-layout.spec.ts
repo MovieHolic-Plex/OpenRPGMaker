@@ -9,10 +9,9 @@ test("actor database uses Korean classic RPG Maker actor sheet layout", async ({
 
   const modal = page.getByTestId("database-modal");
   await expect(modal).toBeVisible();
-  await expect(page.getByTestId("db-classic-group-tabs")).toContainText("용어");
-  await expect(page.getByTestId("db-classic-group-tabs")).toContainText("시스템");
-  await expect(page.getByTestId("db-classic-group-tabs")).toContainText("시스템 2");
-  await expect(page.getByTestId("db-classic-group-tabs")).toContainText("공용 이벤트");
+  // 핸들러 없는 장식용 그룹탭("용어"/"시스템"/"시스템 2"/"공용 이벤트")은 fix(db)에서
+  // 제거됐다 — 클릭해도 아무 일도 일어나지 않는 가짜 컨트롤이었다.
+  await expect(page.getByTestId("db-classic-group-tabs")).toHaveCount(0);
 
   const sheet = page.getByTestId("actor-classic-sheet");
   await expect(sheet).toBeVisible();

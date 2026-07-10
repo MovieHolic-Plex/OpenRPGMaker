@@ -104,16 +104,6 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
 
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
-  const groupTabs = el("div", {
-    class: "db-classic-group-tabs",
-    dataset: { testid: "db-classic-group-tabs" },
-    children: [
-      classicGroupTab("용어"),
-      classicGroupTab("시스템"),
-      classicGroupTab("시스템 2"),
-      classicGroupTab("공용 이벤트"),
-    ],
-  });
   const header = el("div", { class: "db-tabs" });
   const body = el("div", { class: "db-body" });
   for (const tab of orderedTabs) {
@@ -136,7 +126,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
   }
 
   renderActiveTab(body, container);
-  container.append(groupTabs, header, body);
+  container.append(header, body);
 }
 
 // 이미 마운트된 패널을 부분 갱신한다(본문만 다시 그림). undo/redo 재렌더 경로용.
@@ -156,10 +146,6 @@ function updateTabButtons(header: HTMLElement): void {
     if (button.dataset.testid === activeTestId) button.classList.add("active");
     else button.classList.remove("active");
   }
-}
-
-function classicGroupTab(label: string): HTMLElement {
-  return el("span", { class: "db-classic-group-tab", text: label });
 }
 
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
