@@ -104,7 +104,7 @@
 
 | 이름 | 파라미터 | 설명 |
 | --- | --- | --- |
-| `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|unapproved`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약(신규 재료 정의가 필요한지 확인용 — 존재하는 재료 시공에는 불필요)). |
+| `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|unapproved\|vocab`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약(신규 재료 정의가 필요한지 확인용 — 존재하는 재료 시공에는 불필요)), vocab(사용 가능 어휘 그룹 전체 — 시공 id를 모를 때 여기부터). |
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `list_endings` | (없음) | 프로젝트 엔딩 레지스트리를 나열하고 조건 충돌/priority 그림자 warning을 함께 반환한다. |
 | `query_world` | `type?: character\|place\|faction\|event\|item\|concept\|guideline`, `tags?: array`, `text?: string`, `limit?: integer` | 세계관 개체와 관계를 조회한다. type/tags/text로 필터링해 상세(body/refs/relations)를 읽고, 세계관을 수정하기 전 현재 내용을 확인하라. |

@@ -1,7 +1,7 @@
 // 타일 지식 통합 조회 — 활성 LLM 툴 (core 노출).
 // 구 v2 지식 쓰기 래퍼(tile_metadata/group/…)는 제거. 쓰기는 propose_tile_vocabulary.
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import { unapprovedVocabulary } from "@/project/tileVocabulary";
+import { approvedVocabulary, unapprovedVocabulary } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { QUERY_TOOLS } from "./queryTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
@@ -16,12 +16,12 @@ const v1QueryTiles = byName(QUERY_TOOLS, "query_tiles");
 const v1FindSimilar = byName(VISION_QUERY_TOOLS, "find_similar_tiles");
 
 const QUERY_EXAMPLE = { ask: "palette", role: "decor", limit: 20 };
-const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "unapproved"] as const;
+const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "unapproved", "vocab"] as const;
 
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약(신규 재료 정의가 필요한지 확인용 — 존재하는 재료 시공에는 불필요)).",
+    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약(신규 재료 정의가 필요한지 확인용 — 존재하는 재료 시공에는 불필요)), vocab(사용 가능 어휘 그룹 전체 — 시공 id를 모를 때 여기부터).",
   mode: "read",
   version: 3,
   domains: ["core", "tile"],
@@ -77,6 +77,23 @@ const tileQuery: ToolDefinition = {
           `미승인 어휘: 그룹 ${summary.groupCount}개, 타일 ${summary.tileCount}개 — 존재하는 그룹은 승인 여부와 무관하게 ` +
           "시공 프리미티브(build_wall 등)를 바로 호출할 수 있습니다(미합의는 맵 목업 확인). 새 재료 정의가 필요할 때만 propose_tile_vocabulary를 쓰세요.",
         data: { tilesetId, ...summary },
+      };
+    }
+    if (ask === "vocab") {
+      const tilesetId = typeof args.tilesetId === "string" && args.tilesetId ? args.tilesetId : DEFAULT_TILESET_ID;
+      const tileset = draft.tilesets[tilesetId];
+      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: DEFAULT_TILESET_ID });
+      const vocab = approvedVocabulary(tileset);
+      const byRole = new Map<string, number>();
+      for (const group of vocab.groups) byRole.set(group.role, (byRole.get(group.role) ?? 0) + 1);
+      const roleSummary = [...byRole.entries()].map(([role, count]) => `${role} ${count}`).join(", ");
+      return {
+        summary: `사용 가능 어휘 그룹 ${vocab.groups.length}개(${roleSummary}) + 낱개 타일 ${vocab.tiles.length}개. 그룹 id를 wallVocabId/pathVocabId/tileVocabId/propVocabId에 그대로 넣어 시공 프리미티브를 호출하세요.`,
+        data: {
+          tilesetId,
+          groups: vocab.groups.map((g) => ({ id: g.id, name: g.name, role: g.role, layerHome: g.layerHome, ...(g.patternKind ? { patternKind: g.patternKind } : {}) })),
+          looseTiles: vocab.tiles.map((t) => ({ tileId: t.tileId, label: t.label, layerHome: t.layerHome })),
+        },
       };
     }
     return failWithExample("알 수 없는 tile_query ask입니다", QUERY_EXAMPLE);
