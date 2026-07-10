@@ -1,32 +1,55 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
+import { eventDisplayName } from "@/editor/eventMarkerUx";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
 
 type CommandReferenceCollection = DatabaseCollection | "monsterSpecies";
 
 export function commandsReference(project: Project, collection: CommandReferenceCollection, id: string): boolean {
-  return (
-    project.commonEvents.some((event) => commandListReferences(event.commands, collection, id)) ||
-    Object.values(project.maps).some((map) =>
-      map.events.some(
-        (event) =>
-          conditionReferencesDatabase(event.condition, collection, id) ||
-          eventGiftPrefsReferences(event, collection, id) ||
-          commandListReferences(event.commands, collection, id) ||
-          (event.pages ?? []).some(
-            (page) =>
-              page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
-              commandListReferences(page.commands, collection, id)
-          )
-      )
-    ) ||
-    project.database.troops.some((troop) =>
-      troop.battleEventPages.some(
-        (page) =>
-          page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
-          commandListReferences(page.commands, collection, id)
-      )
-    )
-  );
+  return commandsReferenceLocations(project, collection, id).length > 0;
+}
+
+// 삭제 거부 메시지에 "무엇이 어디서 참조하는지" 위치 정보를 채우기 위한 참조 위치 목록.
+// commandsReference()와 같은 구조를 순회하지만 첫 매치에서 멈추지 않고 전부 모은다
+// (호출부가 첫 건 + "외 N-1건" 요약을 만들 수 있도록).
+export type DatabaseReferenceLocation =
+  | { readonly kind: "mapEvent"; readonly mapName: string; readonly eventName: string; readonly eventId: string }
+  | { readonly kind: "commonEvent"; readonly eventName: string; readonly eventId: string }
+  | { readonly kind: "troopBattleEvent"; readonly troopName: string; readonly pageName: string };
+
+export function commandsReferenceLocations(project: Project, collection: CommandReferenceCollection, id: string): DatabaseReferenceLocation[] {
+  const locations: DatabaseReferenceLocation[] = [];
+
+  for (const event of project.commonEvents) {
+    if (commandListReferences(event.commands, collection, id)) {
+      locations.push({ kind: "commonEvent", eventName: event.name, eventId: event.id });
+    }
+  }
+
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const matches =
+        conditionReferencesDatabase(event.condition, collection, id) ||
+        eventGiftPrefsReferences(event, collection, id) ||
+        commandListReferences(event.commands, collection, id) ||
+        (event.pages ?? []).some(
+          (page) =>
+            page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
+            commandListReferences(page.commands, collection, id)
+        );
+      if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
+    }
+  }
+
+  for (const troop of project.database.troops) {
+    for (const page of troop.battleEventPages) {
+      const matches =
+        page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
+        commandListReferences(page.commands, collection, id);
+      if (matches) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: page.name });
+    }
+  }
+
+  return locations;
 }
 
 export function commandsResourceReference(project: Project, resourceId: string): boolean {

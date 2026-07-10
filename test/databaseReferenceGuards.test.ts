@@ -57,7 +57,73 @@ describe("database reference guards for command-bearing records", () => {
     const result = deleteDatabaseRecord("items", itemId);
 
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.message).toContain("이벤트 명령");
+    // fix(db): 삭제 거부 메시지는 "무엇이"뿐 아니라 "어디서"(커먼 이벤트 이름) 참조하는지도 밝힌다.
+    if (!result.ok) {
+      expect(result.message).toContain("커먼 이벤트");
+      expect(result.message).toContain("Reference CE");
+    }
+  });
+
+  it("names the referencing map and event in the deletion-block message", () => {
+    const actorId = addDatabaseRecord("actors");
+    const mapId = firstMapId();
+    updateDatabaseRecord("actors", actorId, { initialEquipment: {} });
+    const mapName = store.getCurrent().maps[mapId]?.name ?? "";
+    expect(mapName.length).toBeGreaterThan(0);
+
+    store.update((project) => {
+      project.maps[mapId]?.events.push({
+        id: "ev_named_location",
+        x: 2,
+        y: 3,
+        trigger: { kind: "action" },
+        pages: [{ id: "page_1", name: "이름 있는 이벤트", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }],
+        commands: [{ kind: "changeParty", actorId, action: "add" }],
+      });
+    });
+
+    const result = deleteDatabaseRecord("actors", actorId);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.message).toContain(mapName);
+      expect(result.message).toContain("이름 있는 이벤트");
+      expect(result.message).toContain("ev_named_location");
+    }
+  });
+
+  it("names the first referencing record for direct field references (e.g. a class learning a skill)", () => {
+    const skillId = addDatabaseRecord("skills");
+    const classId = store.getCurrent().database.classes[0]?.id ?? "";
+    const className = store.getCurrent().database.classes[0]?.name ?? "";
+    expect(classId).not.toBe("");
+    updateDatabaseRecord("classes", classId, { learnedSkills: [{ level: 1, skillId }] });
+
+    const result = deleteDatabaseRecord("skills", skillId);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.message).toContain(className);
+      expect(result.message).toContain("배웁니다");
+    }
+  });
+
+  it("appends an '외 N-1건' summary when more than one location references the record", () => {
+    const actorId = addDatabaseRecord("actors");
+    updateDatabaseRecord("actors", actorId, { initialEquipment: {} });
+    const mapId = firstMapId();
+
+    store.update((project) => {
+      project.maps[mapId]?.events.push(
+        { id: "ev_ref_1", x: 0, y: 0, trigger: { kind: "action" }, commands: [{ kind: "changeParty", actorId, action: "add" }] },
+        { id: "ev_ref_2", x: 1, y: 1, trigger: { kind: "action" }, commands: [{ kind: "changeParty", actorId, action: "remove" }] }
+      );
+    });
+
+    const result = deleteDatabaseRecord("actors", actorId);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.message).toContain("외 1건");
   });
 
   it("blocks deleting records referenced by battle event page commands and conditions", () => {

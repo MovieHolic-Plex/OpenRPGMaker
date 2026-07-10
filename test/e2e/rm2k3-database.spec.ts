@@ -204,7 +204,8 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
 
   await page.getByTestId("db-tab-skills").click();
   await page.getByTestId("db-delete-selected").click();
-  await expect(page.getByTestId("toast")).toContainText("주인공이 이 스킬을 사용 중입니다.");
+  // fix(db): 삭제 거부 메시지가 어떤 레코드가 참조하는지(이름)도 포함하도록 풍부화됐다.
+  await expect(page.getByTestId("toast")).toContainText("주인공 'Actor QA'이 이 스킬을 사용 중입니다.");
   await page.getByTestId("db-tab-enemies").click();
   await page.locator(".db-search input").fill("");
   await page.getByRole("button", { name: /Enemy QA/ }).click();

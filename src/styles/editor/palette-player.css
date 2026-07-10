@@ -513,6 +513,15 @@
   transition: opacity 0.2s, transform 0.2s;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   pointer-events: none;
+  /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
+     너비를 제한하고 2줄까지만 보여준 뒤 자른다. */
+  max-width: min(520px, calc(100vw - 32px));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
 .toast.show {
   opacity: 1;

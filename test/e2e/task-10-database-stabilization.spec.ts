@@ -31,7 +31,9 @@ test("database reference guard blocks a skill used only by event command referen
   await page.getByRole("button", { name: /Task 10 Command Skill/u }).click();
   await expect(page.getByTestId("db-field-name")).toHaveValue("Task 10 Command Skill");
   await page.getByTestId("db-delete-selected").click();
-  await expect(page.getByTestId("toast")).toContainText("이벤트 명령이 이 스킬을 사용 중입니다.");
+  // fix(db): 삭제 거부 메시지가 "무엇이 어디서" 참조하는지(커먼 이벤트 이름/id) 포함하도록
+  // 풍부화됐다.
+  await expect(page.getByTestId("toast")).toContainText("커먼 이벤트 'Task 10 Skill Ref'(ce_task10_skill)이 이 스킬을 사용 중입니다.");
   await expect(page.getByRole("button", { name: /Task 10 Command Skill/u })).toBeVisible();
   await page.screenshot({ path: `${EVIDENCE_DIR}/db-reference-blocking-toast.png`, fullPage: true });
 });
