@@ -70,6 +70,20 @@ describe("editor keyboard shortcuts", () => {
     expect(handleEditorKey(keyEvent("q"))).toBe(false);
   });
 
+  it("문자 단축키 V/B/E/G/N/I가 도구를 전환한다", () => {
+    expect(handleEditorKey(keyEvent("v"))).toBe(true);
+    expect(editorState.get().tool).toBe("select");
+    expect(handleEditorKey(keyEvent("e"))).toBe(true);
+    expect(editorState.get().tool).toBe("erase");
+    expect(handleEditorKey(keyEvent("n"))).toBe(true);
+    expect(editorState.get().tool).toBe("event");
+    expect(editorState.get().layer).toBe("event");
+    // 이벤트 레이어에서 타일 도구 문자키 → 하위 레이어로 복귀
+    expect(handleEditorKey(keyEvent("b"))).toBe(true);
+    expect(editorState.get().tool).toBe("paint");
+    expect(editorState.get().layer).toBe("lower");
+  });
+
   it("deletes the selected event on the event layer", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

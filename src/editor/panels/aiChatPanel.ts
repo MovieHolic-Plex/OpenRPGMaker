@@ -1239,6 +1239,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const clearSelectionTaskContext = (): void => {
     if (!selectionTaskActive) return;
     selectionTaskActive = false;
+    dismissedSelectionKey = selectionKeyOf(editorState.get().selection);
     refreshContextChips();
   };
   const renderSelectionTaskChip = (
@@ -1265,8 +1266,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }),
       ],
     });
+  // 선택 영역 칩 자동 부착(스펙 §4 3-C): 새 선택은 자동 활성, ×로 끈 선택은 키가 같는 동안 재부착 금지.
+  let dismissedSelectionKey: string | null = null;
+  const selectionKeyOf = (sel: { mapId: string; x: number; y: number; width: number; height: number } | null): string | null =>
+    sel ? `${sel.mapId}:${sel.x}:${sel.y}:${sel.width}:${sel.height}` : null;
   const refreshContextChips = (): void => {
     if (typeof document === "undefined") return; // fakeDom 해제 후 잔존 구독 가드(테스트).
+    const currentSelection = editorState.get().selection;
+    const currentKey = selectionKeyOf(currentSelection);
+    if (currentKey && currentKey !== dismissedSelectionKey) selectionTaskActive = true;
+    if (!currentKey) dismissedSelectionKey = null;
     const ctx = getSkillContext();
     const chips = [el("span", { class: "ai-context-chip", text: `🗺 ${ctx.mapName ?? "맵 없음"}` })];
     const selection = currentSelectionForRegionTask();

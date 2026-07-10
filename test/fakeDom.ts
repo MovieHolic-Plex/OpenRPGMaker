@@ -95,6 +95,21 @@ export class FakeElement extends FakeNode {
         .filter((token) => token && !removed.has(token))
         .join(" ");
     },
+    toggle: (token: string, force?: boolean): boolean => {
+      const has = this.className.split(/\s+/).includes(token);
+      const shouldAdd = force === undefined ? !has : force;
+      if (shouldAdd) {
+        const classes = new Set(this.className.split(/\s+/).filter(Boolean));
+        classes.add(token);
+        this.className = Array.from(classes).join(" ");
+      } else {
+        this.className = this.className
+          .split(/\s+/)
+          .filter((cls) => cls && cls !== token)
+          .join(" ");
+      }
+      return shouldAdd;
+    },
   };
 
   constructor(tagName: string) {
