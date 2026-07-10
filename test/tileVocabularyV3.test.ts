@@ -3,22 +3,19 @@
 // 고정하는 계약: (1) 제로 부트스트랩 — 새 프로젝트 승인 집합은 공집합
 // (2) 승인 표식은 origin:"user" 뿐(source:"user"는 불인정)
 // (3) propose_tile_vocabulary 커밋 = 승인 마킹, 사실 배지는 마킹 전 분류로 계산
-// (4) 하드 차단 헬퍼는 미승인 시 ToolError + "다시 보낼 형식 예시"
-// (5) assistantSession이 requiresApproval로 자동 수락(autoApprove) 경로를 차단.
+// (4) assistantSession이 requiresApproval로 자동 수락(autoApprove) 경로를 차단.
 
 import { describe, expect, it } from "vitest";
 import { AssistantSession, proposalNeedsExplicitApproval, VOCABULARY_PROPOSAL_TOOLS } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { runTool, type ToolContext } from "@/editor/tools";
-import { ToolError } from "@/editor/tools/types";
 import { getGrammarProfile, tilesetGrammarProfile } from "@/editor/tools/v3";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import {
   approvedVocabulary,
-  assertApprovedOrFail,
   isApprovedGroup,
   isApprovedTile,
   resolveVocabForBuild,
@@ -64,29 +61,6 @@ describe("승인 보캐뷸러리 판정 (tileVocabulary)", () => {
     expect(isApprovedTile(def, 5)).toBe(false);
     def.tileMeta![5].origin = "user";
     expect(isApprovedTile(def, 5)).toBe(true);
-  });
-
-  it("assertApprovedOrFail: 미승인이면 ToolError(합의 안내 + 재전송 예시), 승인 후 통과", () => {
-    const { tileset } = context();
-    const def = tileset();
-    const group = def.tileGroups![0];
-    group.source = undefined; // 하드 차단 경로 검증: 번들 신뢰 시드를 제거해 미승인 상태로 되돌린다
-    let thrown: unknown;
-    try {
-      assertApprovedOrFail(def, { groupId: group.id });
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(ToolError);
-    const message = String((thrown as Error).message);
-    expect(message).toContain("아직 사용자와 합의되지 않았습니다");
-    expect(message).toContain("propose_tile_vocabulary");
-    expect(message).toContain("다시 보낼 형식 예시");
-    expect((thrown as ToolError).code).toBe("unapproved-vocabulary");
-
-    group.origin = "user";
-    expect(() => assertApprovedOrFail(def, { groupId: group.id })).not.toThrow();
-    expect(() => assertApprovedOrFail(def, { tileId: 3 })).toThrow(ToolError);
   });
 });
 

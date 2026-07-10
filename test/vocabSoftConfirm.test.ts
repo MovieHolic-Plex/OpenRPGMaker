@@ -71,7 +71,7 @@ describe("vocab soft-confirm", () => {
       requiresApproval: true,
     };
     expect(collectVocabSoftConfirms([call])).toHaveLength(1);
-    expect(proposalAcceptButtonLabel(false, 1, 1)).toBe("이대로 적용");
+    expect(proposalAcceptButtonLabel(1, 1)).toBe("이대로 적용");
 
     const marked = markSoftVocabApprovalsOnProject(ctx.project, [call]);
     expect(marked).toBeGreaterThan(0);

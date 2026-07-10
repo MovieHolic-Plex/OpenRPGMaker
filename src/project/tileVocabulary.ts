@@ -7,10 +7,8 @@
 //   approved | soft | missing 을 돌려 soft 면 맵에 그린 뒤 사용자 목업 확인으로 합의한다.
 // - origin:"user" 마킹은 (1) propose_tile_vocabulary 수락 (2) soft-confirm 제안 수락
 //   (3) T1b/위저드 confirmedByUser 경로에서만 한다. 이 모듈 자체는 마킹하지 않는다.
-// - assertApprovedOrFail 은 레거시/명시 승인 전용 API로 남긴다.
 // - 그룹 한정 예외: source === "bundled-default"(큐레이션 번들)는 origin:"user"와 동급 신뢰(2026-07-11).
 
-import { ToolError } from "@/editor/tools/types";
 import type { Project, TileGroupMetadata, TilesetDef } from "./types";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
@@ -246,46 +244,6 @@ export function applyVocabSoftConfirmApprovals(project: Project, softConfirms: r
     }
   }
   return marked;
-}
-
-// 레거시: 명시 승인 전용 하드 차단. 시공 soft 경로는 resolveVocabForBuild 를 쓴다.
-export function assertApprovedOrFail(tileset: TilesetDef, ref: VocabularyRef): void {
-  if (typeof ref.groupId === "string") {
-    if (isApprovedGroup(tileset, ref.groupId)) return;
-    const group = findGroup(tileset, ref.groupId);
-    const label = group ? `타일 그룹 '${group.name}'(${group.id})` : `타일 그룹 '${ref.groupId}'`;
-    throw new ToolError(unapprovedMessage(label, proposeExampleForGroup(tileset, group, ref.groupId)), { code: "unapproved-vocabulary" });
-  }
-  if (isApprovedTile(tileset, ref.tileId)) return;
-  const meta = tileset.tileMeta?.[ref.tileId];
-  const label = meta?.label ? `타일 ${ref.tileId}('${meta.label}')` : `타일 ${ref.tileId}`;
-  throw new ToolError(unapprovedMessage(label, proposeExampleForTile(ref.tileId, meta?.label)), { code: "unapproved-vocabulary" });
-}
-
-function unapprovedMessage(label: string, example: Record<string, unknown>): string {
-  return `${label}은(는) 아직 사용자와 합의되지 않았습니다. propose_tile_vocabulary로 승인을 받으세요. — 다시 보낼 형식 예시: ${JSON.stringify(example)}`;
-}
-
-function proposeExampleForGroup(tileset: TilesetDef, group: TileGroupMetadata | undefined, groupId: string): Record<string, unknown> {
-  return {
-    tilesetId: tileset.id,
-    items: [
-      {
-        kind: "group",
-        groupId,
-        name: group?.name ?? "9분할 벽",
-        role: group?.role ?? "wall",
-        patternKind: group?.patternGrammar?.kind ?? "nine_slice_expandable",
-        layerHome: group ? groupLayerHome(group) : "lower",
-      },
-    ],
-  };
-}
-
-function proposeExampleForTile(tileId: number, label: string | undefined): Record<string, unknown> {
-  return {
-    items: [{ kind: "tile", tileIds: [tileId], name: label || "우물", role: "prop", layerHome: "upper" }],
-  };
 }
 
 function approvedTileLayerHome(tileset: TilesetDef, tileId: number): VocabLayerHome {
