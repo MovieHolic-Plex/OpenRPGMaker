@@ -8,6 +8,7 @@ import {
   updateDatabaseRecord,
   type DatabaseCollection,
 } from "@/editor/databaseActions";
+import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { createBlankProject, DEFAULT_ANIMATION_ID, DEFAULT_ENEMY_ID, DEFAULT_ITEM_ID, DEFAULT_SKILL_ID, DEFAULT_TROOP_ID } from "@/project/defaults";
 import { normalizeEnemyRecord } from "@/project/databaseRecordModel";
 import { deserialize, serialize } from "@/project/io";
@@ -285,7 +286,7 @@ describe("Database actions", () => {
     for (const record of createdRecords) {
       expect(restored.database[record.collection].some((entry) => entry.id === record.id)).toBe(false);
       expect(restored.database[record.collection].find((entry) => entry.id === record.copyId)?.name).toBe(
-        `${record.name} Copy`,
+        `${record.name} 사본`,
       );
     }
   });
@@ -302,6 +303,30 @@ describe("Database actions", () => {
     // 시드된 슬롯 전체의 id는 고유해야 한다.
     expect(new Set(project.switches.map((entry) => entry.id)).size).toBe(project.switches.length);
     expect(new Set(project.variables.map((entry) => entry.id)).size).toBe(project.variables.length);
+  });
+
+  // fix(db): bulkRename이 개수만큼 루프를 돌며 renameSwitch/addSwitch(각각 자체
+  // recordProjectSnapshot 호출)를 불러 "범위 적용" 1클릭이 Ctrl+Z 5회를 요구했다
+  // (qa-system-report.md). 루프 전체를 감싸는 스냅샷 1개로 통합돼야 한다.
+  it("bulk-renames a switch range with exactly one undo snapshot", () => {
+    resetMapEditHistory();
+    expect(getMapEditHistoryState().canUndo).toBe(false);
+
+    bulkRenameSwitches(500, 5, "QARANGE");
+
+    const project = store.getCurrent();
+    expect(project.switches.slice(499, 504).map((entry) => entry.name)).toEqual([
+      "QARANGE 0500",
+      "QARANGE 0501",
+      "QARANGE 0502",
+      "QARANGE 0503",
+      "QARANGE 0504",
+    ]);
+
+    const undone = undoMapEdit();
+    expect(undone).toBe(true);
+    expect(getMapEditHistoryState().canUndo).toBe(false);
+    expect(store.getCurrent().switches.slice(499, 504).every((entry) => entry.name.trim().length === 0)).toBe(true);
   });
 
   it("rejects malformed v3 database references with an actionable message", () => {

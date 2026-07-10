@@ -123,6 +123,25 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
   }
 }
 
+// 몬스터의 포획 species 참조(EnemyRecord.speciesId)를 검사한다.
+// monsterSpecies는 DatabaseCollection(= keyof DatabaseRecords)에 편입돼 있지 않아
+// databaseReferenceMessage()의 switch를 타지 않으므로 species 삭제 경로에서 직접 호출한다.
+export function monsterSpeciesReferenceMessage(speciesId: string): string | null {
+  const project = store.getCurrent();
+  const enemies = project.database.enemies.filter((record) => record.speciesId === speciesId);
+  if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 species를 포획 species로 사용 중입니다.");
+  return null;
+}
+
+// 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)
+// 전용 필드이고 에디터가 들고 있는 Project(session: ProjectSession)에는 애초에 존재하지
+// 않는다(session.ts:96 vs project.ts:99-107) — 즉 편집 시점에 검사 가능한 정적 DB 참조가
+// 없다. 항상 null을 반환하지만, 향후 다른 레코드(퀘스트 등)가 cropId를 정적으로 참조하게
+// 되면 이 자리에 검사를 추가하면 된다. 삭제 자체는 2단계 확인으로만 보호한다.
+export function cropReferenceMessage(_cropId: string): string | null {
+  return null;
+}
+
 export function commonEventReferenceMessage(id: string): string | null {
   const project = store.getCurrent();
   if (

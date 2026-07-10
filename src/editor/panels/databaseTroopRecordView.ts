@@ -32,11 +32,30 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
   );
 }
 
+// databaseRecordViews.ts의 updateRecordRowLabel과 동일한 동작 — 리스트 행 라벨/타이틀만
+// 직접 갱신해 포커스·스크롤을 건드리지 않는다.
+function updateTroopRowLabel(id: string, name: string): void {
+  if (typeof document === "undefined") return;
+  const row = document.querySelector(`[data-testid='db-record-row-${id}']`);
+  if (!(row instanceof HTMLElement)) return;
+  const nameNode = row.querySelector(".db-list-name");
+  if (nameNode instanceof HTMLElement) nameNode.textContent = name || "(이름 없음)";
+  row.setAttribute("title", `${name} (${id})`);
+}
+
 function topControls(record: TroopRecord, rerender: () => void): HTMLElement {
   return el("section", {
     class: "db-troop-top-controls",
     children: [
-      classicPanel("이름", [textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("troops", record.id, { name }))]),
+      classicPanel("이름", [textField("이름", "db-field-name", record.name, (name) => {
+        updateDatabaseRecord("troops", record.id, { name });
+        // troops는 databaseRecordViews.ts의 공용 nameField(onRename→updateRecordRowLabel)
+        // 경로에서 제외되고(databaseAdvancedRecordViews.ts가 troops를 자체 폼으로 위임)
+        // 이 필드가 자체 textField를 쓴다 — 타이핑 중에는 포커스 유지를 위해 전체
+        // rerender를 부르지 않으므로, 다른 탭처럼 좌측 리스트 행만 직접 갱신한다
+        // (qa-troops-report.md m5).
+        updateTroopRowLabel(record.id, name);
+      })]),
       actionButton("이름 생성", "db-troop-generate-name", () => {
         updateDatabaseRecord("troops", record.id, { name: generatedTroopName(record) });
         rerender();

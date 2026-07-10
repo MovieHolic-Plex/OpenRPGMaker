@@ -1,4 +1,5 @@
 import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { nextPassageMark, passageMarkForTile, setPassageMark, type PassageMark } from "@/project/tilesetPassage";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
@@ -95,6 +96,7 @@ function renderPassageButton(tileset: TilesetDef, tilesetId: string, index: numb
     dataset: { testid: `tileset-passage-cell-${index}` },
     on: {
       click: () => {
+        recordProjectSnapshot();
         store.update((project) => {
           const target = project.tilesets[tilesetId];
           if (!target) return;

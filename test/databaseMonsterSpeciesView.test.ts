@@ -1,0 +1,133 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+let previousWindow: typeof globalThis.window | undefined;
+
+function stubWindowTimers(): void {
+  previousWindow = globalThis.window;
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: {
+      setTimeout: (handler: TimerHandler): number => {
+        if (typeof handler === "function") handler();
+        return 0;
+      },
+      clearTimeout,
+    },
+  });
+}
+
+function restoreWindow(): void {
+  if (previousWindow === undefined) Reflect.deleteProperty(globalThis, "window");
+  else Object.defineProperty(globalThis, "window", { configurable: true, value: previousWindow });
+}
+
+function renderUtility(render: (host: HTMLElement, rerender: () => void) => void): FakeElement {
+  const host = document.createElement("div") as unknown as FakeElement;
+  const rerender = (): void => {
+    host.replaceChildren();
+    render(host as unknown as HTMLElement, rerender);
+  };
+  rerender();
+  return host;
+}
+
+describe("database monster species view", () => {
+  let cleanupDom: (() => void) | undefined;
+
+  beforeEach(() => {
+    cleanupDom = installFakeDom();
+    stubWindowTimers();
+    store.replace(createBlankProject());
+    resetMapEditHistory();
+  });
+
+  afterEach(() => {
+    cleanupDom?.();
+    cleanupDom = undefined;
+    restoreWindow();
+  });
+
+  // fix(db): statFields/hue/resourcePicker 콜백이 렌더 시점 record를 클로저로 캡처한 채
+  // baseStats를 스프레드해, rerender 없이 연속 편집하면 직전 편집이 스테일 스냅샷 위에
+  // 덮여 사라졌다(HP→MP→공격 순서 입력 시 마지막 필드만 저장 — qa-enemies-report.md).
+  it("preserves every stat field when edited sequentially without an intervening rerender", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")?.click();
+    const id = store.getCurrent().database.monsterSpecies?.at(-1)?.id;
+    if (!id) throw new Error("missing species id");
+
+    const setNumber = (testid: string, value: string): void => {
+      const input = findByTestId(host, testid);
+      if (!input) throw new Error(`missing field ${testid}`);
+      input.value = value;
+      input.dispatchEvent(new Event("input"));
+    };
+
+    setNumber("db-monster-species-hp", "64");
+    setNumber("db-monster-species-mp", "30");
+    setNumber("db-monster-species-atk", "21");
+    setNumber("db-monster-species-def", "22");
+    setNumber("db-monster-species-mind", "23");
+    setNumber("db-monster-species-agi", "24");
+    setNumber("db-monster-species-hue", "120");
+
+    const record = store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === id);
+    expect(record?.baseStats).toEqual({ maxHp: 64, maxMp: 30, attack: 21, defense: 22, mind: 23, agility: 24 });
+    expect(record?.graphic.graphicHue).toBe(120);
+  });
+
+  it("duplicates with a 사본 suffix and blocks delete while an enemy references the species", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    const before = (store.getCurrent().database.monsterSpecies ?? []).length;
+    findByTestId(host, "db-monster-species-add")?.click();
+    const id = store.getCurrent().database.monsterSpecies?.at(-1)?.id;
+    if (!id) throw new Error("missing species id");
+
+    findByTestId(host, "db-monster-species-duplicate")?.click();
+    const species = store.getCurrent().database.monsterSpecies ?? [];
+    expect(species).toHaveLength(before + 2);
+    const duplicatedId = species.at(-1)?.id;
+    expect(species.at(-1)?.name).toBe("새 species 사본");
+    if (!duplicatedId) throw new Error("missing duplicated species id");
+
+    // duplicate is auto-selected — reference it (not the original) so the delete
+    // button below targets the referenced record and the guard actually engages.
+    const enemyId = store.getCurrent().database.enemies[0]?.id;
+    if (!enemyId) throw new Error("missing default enemy");
+    store.update((project) => {
+      const enemy = project.database.enemies.find((entry) => entry.id === enemyId);
+      if (enemy) enemy.speciesId = duplicatedId;
+    });
+
+    const deleteButton = findByTestId(host, "db-monster-species-delete");
+    if (!deleteButton) throw new Error("missing delete button");
+    deleteButton.click();
+    expect(deleteButton.textContent).toBe("삭제"); // blocked — never arms
+    expect(store.getCurrent().database.monsterSpecies).toHaveLength(before + 2);
+  });
+
+  it("requires a second click before deleting an unreferenced species, and undo restores it", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")?.click();
+    const before = (store.getCurrent().database.monsterSpecies ?? []).length;
+
+    const deleteButton = findByTestId(host, "db-monster-species-delete");
+    if (!deleteButton) throw new Error("missing delete button");
+    deleteButton.click();
+    expect(deleteButton.textContent).toBe("정말 삭제?");
+    expect(store.getCurrent().database.monsterSpecies).toHaveLength(before);
+
+    deleteButton.click();
+    expect(store.getCurrent().database.monsterSpecies).toHaveLength(before - 1);
+
+    expect(getMapEditHistoryState().canUndo).toBe(true);
+    const undone = undoMapEdit();
+    expect(undone).toBe(true);
+    expect(store.getCurrent().database.monsterSpecies).toHaveLength(before);
+  });
+});
