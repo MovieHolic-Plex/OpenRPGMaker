@@ -49,10 +49,11 @@ afterEach(() => {
 });
 
 describe("Database RM2K3 workbench context", () => {
+  // "취소" 버튼은 "닫기"와 완전히 동일한 동작이던 중복 컨트롤이라 제거했다(fix(db): 저장 모델 UI
+  // 정직화). testid 상수에서도 cancel 을 뺀다 — 더 이상 어떤 버튼도 이 testid 를 쓰지 않는다.
   it("keeps the footer actions stable", () => {
     expect(DATABASE_FOOTER_ACTION_TEST_IDS).toEqual({
       apply: "database-footer-apply",
-      cancel: "database-footer-cancel",
       ok: "database-footer-ok",
     });
   });

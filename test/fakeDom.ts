@@ -202,6 +202,9 @@ export function installFakeDom(): () => void {
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
+  // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
+  // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
+  const documentListeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   defineDomGlobal("document", {
     activeElement: null,
     body,
@@ -215,6 +218,26 @@ export function installFakeDom(): () => void {
     },
     querySelector: (selector: string) => body.querySelector(selector),
     querySelectorAll: (selector: string) => body.querySelectorAll(selector),
+    addEventListener: (type: string, listener: EventListenerOrEventListenerObject | null): void => {
+      if (listener === null) return;
+      const listeners = documentListeners[type] ?? [];
+      listeners.push(listener);
+      documentListeners[type] = listeners;
+    },
+    removeEventListener: (type: string, listener: EventListenerOrEventListenerObject | null): void => {
+      if (listener === null) return;
+      const listeners = documentListeners[type];
+      if (!listeners) return;
+      documentListeners[type] = listeners.filter((entry) => entry !== listener);
+    },
+    dispatchEvent: (event: Event): boolean => {
+      if (event.target === null) Object.defineProperty(event, "target", { configurable: true, value: body });
+      for (const listener of documentListeners[event.type] ?? []) {
+        if (typeof listener === "function") listener(event);
+        else listener.handleEvent(event);
+      }
+      return !event.defaultPrevented;
+    },
   });
   return () => {
     restoreDomGlobal("document", previous.document);
