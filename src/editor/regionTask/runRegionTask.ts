@@ -32,7 +32,7 @@ import {
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
-import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
+import { regionIntentDomainSeed, regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
@@ -279,7 +279,8 @@ export function buildRegionTaskMessage(
   tileset?: TilesetDef,
 ): string {
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
-  const intentGuides = regionIntentGuideLines(routeRegionIntent(instruction));
+  const categories = routeRegionIntent(instruction);
+  const intentGuides = regionIntentGuideLines(categories);
   const toolGuide = [
     "영역 작업 도구 규칙:",
     "- 집/건물: build_house_kit (벽 타일로 직사각 채우기 금지)",
@@ -291,11 +292,17 @@ export function buildRegionTaskMessage(
     "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지",
     ...intentGuides,
     "- 지원하지 않는 요청 부분은 시도하지 말고, 마지막 응답에 '못 한 것: …' 한 줄로 명시하라",
-    "- 결과는 사용자가 승인해야 적용된다. propose_tile_vocabulary 댄스는 하지 말 것",
+    // "적용" 표기 금지: assistantToolMode.INTENT_KEYWORDS.battle.strong의 단음절 "적"과
+    // 부분일치로 충돌해(2026-07-10 라이브 실측 수정) 이 고정 문구가 매 턴 battle+database
+    // 도메인을 허위로 열고 노출 상한(40)을 잠식해 mirror_region 등 map/quest 도구를 밀어냈다.
+    "- 결과는 사용자 승인 후에만 반영된다. propose_tile_vocabulary 댄스는 하지 말 것",
     "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
   ].join("\n");
   // intent 스코핑용 키워드 — "맵" 단독 과활성은 피하고 타일/이벤트/소품 쓰기 도메인을 우선한다.
-  const domainSeed = "(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민)";
+  // 라우팅된 카테고리의 가이드가 map/quest 등 다른 도메인 도구를 안내하는 경우, 그 도메인도
+  // 여기서 함께 열어야 가이드-노출 정합이 맞는다(2026-07-10 라이브 실측 — mirror_region 등 unknown tool).
+  const extraSeed = regionIntentDomainSeed(categories);
+  const domainSeed = `(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민${extraSeed ? ` ${extraSeed}` : ""})`;
   return `${instruction.trim()}\n\n${domainSeed}\n${toolGuide}\n\n이 작업은 아래 선택 영역 안에서만 수행하라.\n${footer}`;
 }
 

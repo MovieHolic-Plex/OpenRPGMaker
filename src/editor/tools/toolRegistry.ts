@@ -178,8 +178,18 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     "tile_query",
     "propose_tile_vocabulary",
   ])],
-  ["event", new Set(["place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event"])],
-  ["map", new Set(["get_map_region", "show_map_region", "get_project_summary"])],
+  ["event", new Set([
+    "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event",
+    // 영역 작업 quest-trigger/mood/door-transfer 가이드 대표 도구(2026-07-10 라이브 실측 수정) —
+    // event 도메인 안에서도 EVENT_TOOLS/LIGHTING_TOOLS 뒤쪽 정의라 상한(40) 슬라이스에서 밀려
+    // place_chest 등이 노출 안 되던 문제.
+    "place_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
+  ])],
+  ["map", new Set([
+    "get_map_region", "show_map_region", "get_project_summary",
+    // 영역 작업 transform/battle-trap 가이드 대표 도구(2026-07-10 라이브 실측 수정).
+    "mirror_region", "set_encounter_table",
+  ])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
   ["tile", 0],
