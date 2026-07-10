@@ -102,6 +102,14 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
 }
 
+export function getDatabaseActiveTab(): DatabaseTab {
+  return activeTab;
+}
+
+export function databaseTabLabel(tab: DatabaseTab): string {
+  return tabs.find((entry) => entry.id === tab)?.label ?? tab;
+}
+
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   const header = el("div", { class: "db-tabs" });

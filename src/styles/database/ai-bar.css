@@ -1,0 +1,68 @@
+/* DB 3파 M7 — 데이터베이스 모달 헤더 아래 인라인 AI 바 (✨ AI 토글로 열림). */
+
+.database-ai-toggle {
+  align-items: center;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 700 11px/1 "Malgun Gothic", "Segoe UI", sans-serif;
+  gap: 2px;
+  height: 18px;
+  margin-left: auto;
+  padding: 0 6px;
+}
+
+.database-ai-toggle[aria-expanded="true"] {
+  background: var(--accent-muted);
+}
+
+.database-ai-bar {
+  align-items: center;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.database-ai-bar[hidden] {
+  display: none;
+}
+
+.database-ai-input {
+  background: var(--surface-workbench, var(--bg-raised));
+  border: 1px solid var(--border-default);
+  color: var(--text-primary, var(--text-1));
+  flex: 1 1 auto;
+  font-size: 12px;
+  height: 24px;
+  min-width: 0;
+  padding: 0 6px;
+}
+
+.database-ai-run,
+.database-ai-close {
+  align-items: center;
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary, var(--text-1));
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  height: 24px;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.database-ai-run {
+  font-weight: 700;
+}
