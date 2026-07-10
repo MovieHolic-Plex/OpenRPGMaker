@@ -8,6 +8,7 @@ import {
   type RegionTaskSessionLike,
 } from "@/editor/regionTask/runRegionTask";
 import { __clearPendingRegionApplyForTest, getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail, type RegionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
@@ -33,6 +34,29 @@ function baseProject(): Project {
 
 function idx(x: number, y: number): number {
   return y * W + x;
+}
+
+// window 스텁 — dispatchRegionTaskStatus/REGION_TASK_STATUS_EVENT 배선 검증용
+// 최소 이벤트 버스(test/regionTaskStatus.test.ts와 동일 패턴).
+function installFakeWindow(): () => void {
+  const listeners = new Map<string, EventListener[]>();
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: {
+      addEventListener: (type: string, listener: EventListener) => {
+        listeners.set(type, [...(listeners.get(type) ?? []), listener]);
+      },
+      removeEventListener: (type: string, listener: EventListener) => {
+        listeners.set(type, (listeners.get(type) ?? []).filter((item) => item !== listener));
+      },
+      dispatchEvent: (event: Event) => {
+        for (const listener of listeners.get(event.type) ?? []) listener(event);
+        return true;
+      },
+    },
+  });
+  return () => Reflect.deleteProperty(globalThis, "window");
 }
 
 // turn result 형태를 만족하는 최소 스텁.
@@ -248,6 +272,28 @@ describe("승인 게이트 (gate: approval 기본)", () => {
     const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "잔디로 채워줘" }, deps);
     result.pending!.discard();
     expect(applied()).toBeNull();
+  });
+
+  it("pending.discard() 시 실제 onSettle 배선이 running:false 배지 해제 이벤트를 발행한다", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5; // 영역 안
+    const { deps } = makeDeps(base, proposed);
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "잔디로 채워줘" }, deps);
+    expect(result.pending).toBeDefined();
+
+    const restoreWindow = installFakeWindow();
+    try {
+      const events: (RegionTaskStatusDetail | null)[] = [];
+      const listener = (event: Event): void => { events.push(regionTaskStatusDetail(event)); };
+      window.addEventListener(REGION_TASK_STATUS_EVENT, listener);
+      result.pending!.discard();
+      window.removeEventListener(REGION_TASK_STATUS_EVENT, listener);
+      expect(events.some((detail) => detail?.mapId === MAP_ID && detail?.running === false)).toBe(true);
+    } finally {
+      restoreWindow();
+    }
   });
 
   it("gate: immediate는 기존처럼 즉시 적용한다", async () => {

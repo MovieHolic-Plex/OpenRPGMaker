@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { closeRegionTaskModal, openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { dispatchRegionTaskStatus, REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -13,41 +12,15 @@ function openModal(options: Parameters<typeof openRegionTaskModal>[0]): FakeElem
 }
 
 let restoreDom: (() => void) | null = null;
-let restoreWindow: (() => void) | null = null;
 
 afterEach(() => {
   closeRegionTaskModal();
   restoreDom?.();
   restoreDom = null;
-  restoreWindow?.();
-  restoreWindow = null;
 });
 
 function flush(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
-}
-
-// window 스텁 — dispatchRegionTaskStatus/REGION_TASK_STATUS_EVENT 배선 검증용
-// 최소 이벤트 버스(test/regionTaskStatus.test.ts와 동일 패턴).
-function installFakeWindow(): () => void {
-  const listeners = new Map<string, EventListener[]>();
-  Object.defineProperty(globalThis, "window", {
-    configurable: true,
-    writable: true,
-    value: {
-      addEventListener: (type: string, listener: EventListener) => {
-        listeners.set(type, [...(listeners.get(type) ?? []), listener]);
-      },
-      removeEventListener: (type: string, listener: EventListener) => {
-        listeners.set(type, (listeners.get(type) ?? []).filter((item) => item !== listener));
-      },
-      dispatchEvent: (event: Event) => {
-        for (const listener of listeners.get(event.type) ?? []) listener(event);
-        return true;
-      },
-    },
-  });
-  return () => Reflect.deleteProperty(globalThis, "window");
 }
 
 describe("openRegionTaskModal", () => {
@@ -188,11 +161,10 @@ function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTas
     instruction: "테스트",
     onApply: () => {},
     onDiscard: () => {},
-    // 실제 runRegionTask.ts의 onSettle과 동일하게 settle 시 배지 해제 이벤트를 발행 —
-    // 모달은 더 이상 이 이벤트를 직접 쏘지 않으므로(settlePendingUi 참고) 여기서 배선을 재현한다.
-    onSettle: () => {
-      dispatchRegionTaskStatus({ mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 }, running: false });
-    },
+    // 배지 해제(running:false) 발행은 실제로는 runRegionTask.ts의 onSettle이 담당한다 —
+    // 그 배선 자체의 검증은 test/regionTaskRun.test.ts(실제 runRegionTask 경유)가 맡고,
+    // 이 파일은 모달 UI(요약/버튼 재활성화/discard 호출)만 순수하게 확인한다.
+    onSettle: () => {},
   });
   return {
     ok: true, applied: false, changedCells: 3, changedEvents: 0, clippedCells: 0,
@@ -239,12 +211,8 @@ describe("pending 비교 UI", () => {
     expect(findByTestId(root, "region-task-input")?.disabled).toBe(false);
   });
 
-  it("pending 미해소 상태에서 모달을 닫으면 discard 되고 배지 해제 이벤트(running:false)가 발행된다", async () => {
+  it("pending 미해소 상태에서 모달을 닫으면 discardAndClose가 pending.discard()를 호출한다", async () => {
     restoreDom = installFakeDom();
-    restoreWindow = installFakeWindow();
-    const events: (ReturnType<typeof regionTaskStatusDetail>)[] = [];
-    const listener = (event: Event): void => { events.push(regionTaskStatusDetail(event)); };
-    window.addEventListener(REGION_TASK_STATUS_EVENT, listener);
     const result = fakePendingResult();
     const root = openModal({
       mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
@@ -255,7 +223,5 @@ describe("pending 비교 UI", () => {
     await flush();
     findByTestId(root, "region-task-close")?.dispatchEvent(new Event("click"));
     expect(result.pending!.settled).toBe(true); // 닫기 = discard
-    window.removeEventListener(REGION_TASK_STATUS_EVENT, listener);
-    expect(events.some((detail) => detail?.running === false)).toBe(true);
   });
 });

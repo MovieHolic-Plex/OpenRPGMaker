@@ -5,7 +5,7 @@
 // 개발 편의: 헤더 「로그」 작은 버튼 → 감사/툴/하네스 JSON 클립보드 복사.
 import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
-import type { PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import {
   describeRegionTaskResult,
@@ -113,10 +113,15 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   const compareHost = el("div", { class: "region-task-compare-host" });
   let activePending: PendingRegionApply | null = null;
 
-  const settlePendingUi = (applied: boolean): void => {
-    setSummary(applied
-      ? `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`
-      : "버려졌습니다 — 맵은 변경되지 않았습니다");
+  // applied: true=적용, false=버리기, null=외부(캔버스 인라인 툴바 등)에서 settle되어 결과를 알 수 없음.
+  const settlePendingUi = (applied: boolean | null): void => {
+    setSummary(
+      applied === true
+        ? `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`
+        : applied === false
+          ? "버려졌습니다 — 맵은 변경되지 않았습니다"
+          : "제안이 처리되었습니다",
+    );
     compareHost.replaceChildren();
     activePending = null;
     // running:false 배지 해제는 pending.apply()/discard() → onSettle(runRegionTask.ts)에서
@@ -127,6 +132,23 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
     activePending = pending;
+    // 이 pending 전용 settle 감시 — 모달 버튼이 아니라 캔버스 인라인 툴바(✓/✗) 등 밖에서
+    // settle 되어도(썸네일 await 도중 포함) 모달 UI(요약/버튼 재활성화)가 반영되도록 구독한다.
+    let selfSettling = false;
+    let settledHandled = false;
+    let unsubscribe: (() => void) | null = null;
+    const finalizeSettle = (applied: boolean | null): void => {
+      if (settledHandled) return;
+      settledHandled = true;
+      unsubscribe?.();
+      unsubscribe = null;
+      settlePendingUi(applied);
+    };
+    unsubscribe = subscribePendingRegionApply(() => {
+      if (selfSettling || !pending.settled) return;
+      finalizeSettle(null);
+    });
+
     const map = pending.baseProject.maps[pending.mapId];
     const clippedMap = pending.clippedProject.maps[pending.mapId];
     const figures = el("div", { class: "region-task-compare", dataset: { testid: "region-task-compare" } });
@@ -157,28 +179,28 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       el("span", { class: "region-task-compare-arrow", text: "→" }),
       await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap),
     );
+    // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
+    // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
+    if (pending.settled) return;
     const applyButton = el("button", {
       class: "region-task-apply",
       text: "✓ 적용",
       attrs: { type: "button" },
       dataset: { testid: "region-task-apply" },
-      on: { click: () => { pending.apply(); settlePendingUi(true); } },
+      on: { click: () => { selfSettling = true; pending.apply(); finalizeSettle(true); } },
     });
     const discardButton = el("button", {
       class: "region-task-discard",
       text: "✕ 버리기",
       attrs: { type: "button" },
       dataset: { testid: "region-task-discard" },
-      on: { click: () => { pending.discard(); settlePendingUi(false); } },
+      on: { click: () => { selfSettling = true; pending.discard(); finalizeSettle(false); } },
     });
     compareHost.replaceChildren(
       figures,
       el("div", { class: "region-task-compare-actions", children: [applyButton, discardButton] }),
     );
-    // 썸네일 렌더(await) 도중 이미 discard/apply 등으로 settle 됐다면 stale 발행을 막는다.
-    if (activePending === pending) {
-      dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
-    }
+    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
   };
 
   let running = false;
