@@ -1,0 +1,100 @@
+/* src/styles/shell/editor-responsive-expert.css
+   전문가 모드 1024px 완전 대응 (스펙 §5). 1024px 이상에서 줄바꿈·잘림·겹침 제거.
+   1024px 미만은 기존 720px 자동 접힘 경로에 맡긴다. */
+
+/* 1) 메뉴바: 라벨 줄바꿈 금지 */
+.rm2k3-menu-bar {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.rm2k3-menu-item,
+.editor-ui-mode-btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .editor-product-brand { margin-right: 8px; }
+  .editor-product-brand-text { display: none; } /* 로고(✦)만 남김 */
+  .rm2k3-menu-item { padding-left: 8px; padding-right: 8px; }
+  .editor-ui-mode-btn { padding: 0 8px; }
+  .editor-ui-mode-toggle { margin-left: 6px; }
+}
+
+/* 2) 좌패널 작업 탭: 줄바꿈 금지 + 좁은 폭 축소 */
+.palette-work-tab {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .palette-work-tab { font-size: 11px; padding-left: 6px; padding-right: 6px; }
+}
+
+/* 3) 맵 트리: 이름 우선(ellipsis), 행 액션은 hover/focus에서만 */
+.map-item .map-tree-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .map-item .map-tree-action,
+  .map-item .map-context-trigger,
+  .map-item .start-mark:empty {
+    visibility: hidden;
+  }
+
+  .map-item:hover .map-tree-action,
+  .map-item:hover .map-context-trigger,
+  .map-item:focus-within .map-tree-action,
+  .map-item:focus-within .map-context-trigger {
+    visibility: visible;
+  }
+}
+
+/* 4) AI 패널: 입력 행이 절대 잘리지 않게 */
+.ai-command-input-stack,
+.ai-chat-input-row {
+  min-width: 0;
+}
+
+.ai-chat-input-row > textarea,
+.ai-chat-input-row > input {
+  min-width: 0;
+}
+
+.ai-chat-send {
+  flex: 0 0 auto;
+}
+
+/* 5) 빠른 작업 그리드: 좁으면 1열 */
+@media (max-width: 1280px) {
+  .ai-quick-action-grid { grid-template-columns: 1fr; }
+}
+
+/* 6) 캔버스 상단: 줌 툴바를 우측 고정 → 잠금 배너(좌측)와 절대 안 겹침 */
+@media (max-width: 1180px) {
+  .canvas-toolbar {
+    left: auto;
+    right: 12px;
+    transform: none;
+  }
+}
+
+/* 7) 상태바: 우선순위 숨김 (모드·맵·도구·잠금·DB는 항상 유지) */
+.editor-statusbar {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1280px) {
+  .editor-statusbar .sb-detail { display: none; }
+}
+
+@media (max-width: 1100px) {
+  .editor-statusbar .sb-secondary { display: none; }
+}
