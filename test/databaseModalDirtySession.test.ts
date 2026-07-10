@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import {
+  getMapEditHistoryDebugEntries,
+  getMapEditHistoryState,
+  recordProjectSnapshot,
+  resetMapEditHistory,
+  undoMapEdit,
+} from "@/editor/mapEditHistory";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -66,5 +72,34 @@ describe("database modal dirty session", () => {
     // (c) undo 를 실행해도 폐기한 편집은 부활하지 않는다(되감을 스냅샷이 없음).
     expect(undoMapEdit()).toBe(false);
     expect(store.getCurrent().database.actors[0]?.name).toBe(originalName);
+  });
+
+  it("discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened", () => {
+    const originalName = store.getCurrent().database.actors[0]?.name ?? "";
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+
+    // 스택을 포화 상태(MAX_HISTORY)로 채운다 — 세션 중 push 가 MAX_HISTORY shift 로
+    // 상쇄돼 길이가 그대로 유지되는 상황(깊이 기준 절단이 무동작이 되는 조건)을 재현한다.
+    for (let index = 0; index < 55; index += 1) {
+      recordProjectSnapshot(`prefill ${index}`);
+      store.update((project) => {
+        project.database.actors[0].nickname = `prefill-${index}`;
+      });
+    }
+    expect(getMapEditHistoryDebugEntries().length).toBeGreaterThanOrEqual(50);
+
+    const dirtySession = createDatabaseModalDirtySession();
+    updateDatabaseRecord("actors", actorId, { name: "Discarded After Saturation" });
+    dirtySession.discard();
+
+    expect(store.getCurrent().database.actors[0]?.name).toBe(originalName);
+
+    // discard 이후 몇 번을 undo 하든 폐기한 편집(Discarded After Saturation)은
+    // 절대 부활하지 않아야 한다 — MAX_HISTORY 포화로 깊이 기준 절단이 무동작이던 회귀.
+    let guard = 0;
+    while (undoMapEdit() && guard < 200) {
+      guard += 1;
+      expect(store.getCurrent().database.actors[0]?.name).not.toBe("Discarded After Saturation");
+    }
   });
 });

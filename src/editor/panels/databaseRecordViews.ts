@@ -154,8 +154,12 @@ const DELETE_CONFIRM_WINDOW_MS = 3000;
 
 // 삭제는 원클릭 즉시 실행하지 않는다 — 같은 버튼을 DELETE_CONFIRM_WINDOW_MS 안에 한 번 더
 // 눌러야 확정되는 2단계 확인이다(무확인 삭제로 인한 소실 사고 방지).
+// armedRecordId 로 "어떤 레코드에 대해 armed 되었는지"를 추적한다 — 그렇지 않으면
+// A 를 arm 한 뒤 3초 내 B 로 선택을 바꾸고 삭제를 다시 누르면 B 가 확인 없이
+// 즉시 삭제되는 사고가 난다(armed 상태가 레코드 전환을 가로질러 생존).
 function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   let armedUntil = 0;
+  let armedRecordId: string | null = null;
   let resetTimer: number | null = null;
 
   const button = el("button", {
@@ -176,7 +180,11 @@ function deleteButton(collection: DatabaseCollection, rerender: () => void): HTM
         }
 
         const now = Date.now();
-        if (now > armedUntil) {
+        const isArmedForSelected = armedRecordId === selected && now <= armedUntil;
+        if (!isArmedForSelected) {
+          // 새로 arm 하는 대상이 이전 armed 대상과 달라도(레코드 전환) 그냥 이 레코드로
+          // 다시 arm 한다 — 삭제하지 않고 "정말 삭제?" 상태와 타이머만 리셋.
+          armedRecordId = selected;
           armedUntil = now + DELETE_CONFIRM_WINDOW_MS;
           button.textContent = DELETE_CONFIRM_LABEL;
           button.classList.add("confirming");
@@ -184,6 +192,7 @@ function deleteButton(collection: DatabaseCollection, rerender: () => void): HTM
           resetTimer = window.setTimeout(() => {
             resetTimer = null;
             if (Date.now() >= armedUntil) {
+              armedRecordId = null;
               button.textContent = DELETE_IDLE_LABEL;
               button.classList.remove("confirming");
             }
@@ -192,6 +201,7 @@ function deleteButton(collection: DatabaseCollection, rerender: () => void): HTM
         }
 
         armedUntil = 0;
+        armedRecordId = null;
         button.textContent = DELETE_IDLE_LABEL;
         button.classList.remove("confirming");
         const result = deleteDatabaseRecord(collection, selected);

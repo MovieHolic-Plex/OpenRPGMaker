@@ -132,6 +132,29 @@ describe("Database record deletion — 2-step confirm", () => {
     expect(toastEl?.textContent).toContain("Ctrl+Z");
   });
 
+  it("re-arms for the newly selected record instead of deleting it when selection changes mid-confirm", () => {
+    const firstSkillId = store.getCurrent().database.skills[0]?.id ?? "";
+    const secondSkillId = addDatabaseRecord("skills");
+    setSelectedRecordId("skills", firstSkillId);
+    const host = renderRecordHost("skills");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click(); // arm 상태: firstSkillId
+
+    const secondRow = findByTestId(host, `db-record-row-${secondSkillId}`);
+    secondRow?.click(); // 3초 확인 창 내 다른 레코드로 선택 전환
+
+    deleteButton?.click(); // 이전 armed 대상(firstSkillId)과 달라 삭제하지 않고 재-arm 되어야 함
+
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === secondSkillId)).toBe(true);
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === firstSkillId)).toBe(true);
+    expect(deleteButton?.textContent).toBe("정말 삭제?");
+    expect(deleteButton?.className.split(/\s+/u)).toContain("confirming");
+
+    deleteButton?.click(); // 재-armed 된 대상(secondSkillId)에 대한 확정 클릭 — 이번엔 삭제된다
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === secondSkillId)).toBe(false);
+  });
+
   it("still reports a reference-guard failure immediately on the first click (no confirm step needed)", () => {
     const actorId = store.getCurrent().database.actors[0]?.id ?? "";
     store.update((project) => {
