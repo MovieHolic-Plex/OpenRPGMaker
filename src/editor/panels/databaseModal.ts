@@ -195,9 +195,25 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     const tag = active.tagName;
     return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || active.isContentEditable === true;
   };
+  // 편집 중 스킵된 갱신은 버리지 않고 보류했다가(pendingRefresh) 포커스가 본문을
+  // 떠날 때 반영한다 — 편집 도중 도착한 AI/외부 변경이 영구 stale 되는 것 방지(3파 리뷰 Medium).
+  let pendingRefresh = false;
+  const flushPendingRefresh = (): void => {
+    if (!pendingRefresh || modalClosed) return;
+    pendingRefresh = false;
+    scheduleModalRefresh();
+  };
+  body.addEventListener("focusout", () => {
+    // focusout 시점엔 activeElement 가 아직 이전 값일 수 있어 rAF 뒤에 재판정한다.
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => { if (!isEditingInsideModalBody()) flushPendingRefresh(); });
+    else if (!isEditingInsideModalBody()) flushPendingRefresh();
+  });
   const unsubscribeStore = store.subscribe((_project, change) => {
     if (change.scope !== "database" && change.scope !== "project") return;
-    if (isEditingInsideModalBody()) return;
+    if (isEditingInsideModalBody()) {
+      pendingRefresh = true;
+      return;
+    }
     scheduleModalRefresh();
   });
   const close = (): void => {

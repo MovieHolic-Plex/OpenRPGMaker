@@ -205,6 +205,33 @@ describe("database modal live refresh on store change (M7-②)", () => {
     // 재렌더가 스킵됐으므로 리스트 행 노드가 그대로다(교체되지 않음).
     expect(findByTestId(modalRoot(), `db-record-row-${enemyId}`)).toBe(rowBefore);
   });
+
+  it("flushes the skipped refresh when focus leaves the modal body (3파 리뷰 Medium)", () => {
+    setDatabaseActiveTab("enemies");
+    openDatabaseModal("enemies");
+    const modal = modalRoot();
+    const enemyId = store.getCurrent().database.enemies[0]?.id ?? "";
+    const rowBefore = findByTestId(modal, `db-record-row-${enemyId}`);
+    expect(rowBefore).not.toBeNull();
+
+    const anyInput = modal.querySelectorAll("input").find((entry) => findByTestId(modal, "database-ai-bar")?.contains(entry) !== true);
+    if (!anyInput) throw new Error("no input inside modal body");
+    anyInput.focus();
+
+    // 편집 중 도착한 외부(AI) 변경 — 스킵되지만 pendingRefresh 로 보류돼야 한다.
+    store.update((draft) => {
+      const enemy = draft.database.enemies.find((entry) => entry.id === enemyId);
+      if (enemy) enemy.name = "편집 중 도착한 AI 변경";
+    }, { scope: "database", collection: "enemies" });
+    expect(findByTestId(modalRoot(), `db-record-row-${enemyId}`)).toBe(rowBefore);
+
+    // 포커스가 본문을 떠나면(blur→focusout 버블) 보류분이 반영된다.
+    (document as unknown as { activeElement: unknown }).activeElement = null;
+    anyInput.dispatchEvent(new Event("focusout", { bubbles: true }));
+
+    const row = findByTestId(modalRoot(), `db-record-row-${enemyId}`);
+    expect(row?.textContent ?? "").toContain("편집 중 도착한 AI 변경");
+  });
 });
 
 describe("database modal unsubscribes on close (M7-③)", () => {
