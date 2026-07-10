@@ -28,22 +28,21 @@ for (const size of SIZES) {
 
       // 3) 보내기 버튼이 뷰포트 안에 온전히 존재
       const send = page.locator(".ai-chat-send").first();
-      if (await send.isVisible()) {
-        const box = await send.boundingBox();
-        expect(box).toBeTruthy();
-        expect(box!.x + box!.width).toBeLessThanOrEqual(size.width + 1);
-      }
+      await expect(send).toBeVisible();
+      const box = await send.boundingBox();
+      expect(box).toBeTruthy();
+      expect(box!.x + box!.width).toBeLessThanOrEqual(size.width + 1);
 
       if (mode === "expert") {
         // 4) 맵 트리 이름이 실제 폭을 가진다
         const name = page.locator(".map-tree-name").first();
-        if (await name.count() > 0) {
-          const nameBox = await name.boundingBox();
-          expect(nameBox && nameBox.width).toBeGreaterThan(20);
-        }
-        // 5) 클래식 툴바 오버플로우 시 ⋯ 토글 표시(1024에서만 기대)
+        await expect(name).toBeVisible();
+        const nameBox = await name.boundingBox();
+        expect(nameBox && nameBox.width).toBeGreaterThan(20);
+        // 5) 클래식 툴바 오버플로우: 1024px에서는 ⋯ 토글이 실제로 나타나야 한다
         if (size.width === 1024) {
-          await expect(page.locator("[data-testid='rpg-maker-tile-toolbar']").first()).toBeVisible();
+          const overflowToggle = page.locator("[data-testid='toolbar-overflow-toggle']").first();
+          await expect(overflowToggle).toBeVisible();
         }
       } else {
         // 기본 모드: 아이콘 레일 존재 + 폭 48
