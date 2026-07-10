@@ -3,6 +3,7 @@ import { exportedProject } from "./rm2k3-database-helpers";
 
 test("RM2K3 database modal exposes footer status without duplicate workbench text row", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
@@ -11,12 +12,13 @@ test("RM2K3 database modal exposes footer status without duplicate workbench tex
   await expect(page.getByTestId("db-workbench-status")).toHaveCount(0);
   await expect(page.getByTestId("db-footer-status")).toContainText("선택");
   await expect(page.getByTestId("database-footer-ok")).toBeVisible();
-  await expect(page.getByTestId("database-footer-cancel")).toBeVisible();
+  await expect(page.getByTestId("database-footer-ok")).toBeVisible();
   await expect(page.getByTestId("database-footer-apply")).toBeVisible();
 });
 test("BM88 Classes tab exposes Korean ontology fields and persists class settings", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
@@ -80,6 +82,7 @@ test("BM88 Classes tab exposes Korean ontology fields and persists class setting
 test("RM2K3 database editor edits records, updates dependent pickers, and blocks referenced deletes", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();

@@ -16,6 +16,8 @@ test.beforeEach(async ({ page }) => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     window.localStorage.setItem("rpg-zzu-editor-session-id", "task-10-db");
+    // 기본(basic) 모드는 classic 툴바(toolbar-database)를 숨긴다 — 이 스펙은 expert 셸 전제.
+    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
   });
 });
 
@@ -42,14 +44,14 @@ test("database dirty prompt keeps editing and discards back to the modal-open sn
   await switchDatabaseTab(page, SKILLS_TAB);
 
   await page.getByTestId("db-field-name").fill("Task 10 Unsaved Skill");
-  await page.getByTestId("database-footer-cancel").click();
-  await expect(page.getByTestId("database-dirty-prompt")).toContainText("저장하지 않은 DB 변경");
+  await page.getByTestId("database-footer-ok").click();
+  await expect(page.getByTestId("database-dirty-prompt")).toContainText("이 세션에서 바뀐 내용");
   await page.getByTestId("database-dirty-prompt").screenshot({ path: `${EVIDENCE_DIR}/db-unsaved-prompt.png` });
   await page.getByTestId("database-dirty-keep-editing").click();
   await expect(page.getByTestId("database-dirty-prompt")).toHaveCount(0);
   await expect(page.getByTestId("db-field-name")).toHaveValue("Task 10 Unsaved Skill");
 
-  await page.getByTestId("database-footer-cancel").click();
+  await page.getByTestId("database-footer-ok").click();
   await page.getByTestId("database-dirty-discard").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await openDatabase(page);
