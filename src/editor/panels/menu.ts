@@ -81,8 +81,13 @@ export function renderTopbar(topbar: HTMLElement): void {
     menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
   }
   menuBar.append(renderEditorUiModeToggle(topbar));
-  menuBar.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
-  menuBar.append(renderWindowControls());
+  // History + identity sit as trailing icon buttons (right end), before window chrome.
+  const trailing = el("div", {
+    class: "editor-topbar-trailing",
+    dataset: { testid: "editor-topbar-trailing" },
+  });
+  trailing.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar), renderWindowControls());
+  menuBar.append(trailing);
 
   // Classic toolbar: expert edit surface only — gradual deprecation (not default in basic).
   const showClassic = mode !== "edit" || chrome.classicToolbar;
@@ -157,9 +162,13 @@ export function readableTopbarIdentityLabel(label: string): string {
 function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
   const control = renderIdentityTopbarControl(() => renderTopbar(topbar));
   const label = control.querySelector<HTMLElement>("[data-testid='topbar-identity-label']");
-  if (label) label.textContent = readableTopbarIdentityLabel(label.textContent ?? "");
-  control.querySelector(".team-identity-kind")?.remove();
-  control.querySelector(".team-identity-kind-text")?.remove();
+  if (label) {
+    const readable = readableTopbarIdentityLabel(label.textContent ?? "");
+    label.textContent = readable;
+    const title = `편집 신원 — ${readable}`;
+    control.setAttribute("title", title);
+    control.setAttribute("aria-label", title);
+  }
   return control;
 }
 

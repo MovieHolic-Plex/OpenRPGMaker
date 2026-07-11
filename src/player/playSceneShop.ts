@@ -1,6 +1,7 @@
 import { changeGold, changeItem } from "@/project/session";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
+import { resolveShopMerchantGold } from "@/project/shopStock";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import {
@@ -24,6 +25,8 @@ export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean> {
   const items = shopItems(step);
   const terms = resolveTerms(store.getCurrent());
+  // 방문마다 상인 소지금을 명령값(기본 100G)으로 초기화. 방문 중 매입/매도로 증감.
+  let merchantGold = resolveShopMerchantGold(step.merchantGold);
   return new Promise((resolve) => {
     const overlay = createShopOverlay();
     let view: ShopView = "menu";
@@ -81,13 +84,23 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
               mode,
               prompt: statusText,
               terms,
+              merchantGold,
               setStatus,
               showMenu,
               onItem: (item, nextMode, count) => {
-                const completed = handleShopTransaction(scene, item, nextMode, count, setStatus);
-                if (!completed) return;
+                const result = handleShopTransaction(scene, item, nextMode, count, merchantGold);
+                if (!result.ok) {
+                  setStatus(result.status);
+                  return;
+                }
+                // 상태 메시지 리렌더 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
+                merchantGold = result.merchantGold;
                 transactionCompleted = true;
-                if (nextMode === "buy") finish();
+                if (nextMode === "buy") {
+                  finish();
+                  return;
+                }
+                setStatus(result.status);
               },
             })
       );
@@ -125,35 +138,45 @@ function shopItems(step: ShopStep): ItemRecord[] {
     .filter((item): item is ItemRecord => Boolean(item));
 }
 
-function handleShopTransaction(
+type ShopTransactionResult =
+  | { readonly ok: false; readonly status: string }
+  | { readonly ok: true; readonly status: string; readonly merchantGold: number };
+
+/** 순수 거래 규칙 — 상인 소지금 한도를 포함. 단위 테스트용 export. */
+export function handleShopTransaction(
   scene: PlaySceneContext,
   item: ItemRecord,
   mode: ShopMode,
   count: number,
-  setStatus: (text: string) => void
-): boolean {
+  merchantGold: number
+): ShopTransactionResult {
+  const qty = Math.max(1, Math.floor(count) || 1);
   if (mode === "sell") {
     const owned = scene.session.inventory[item.id] ?? 0;
-    if (owned < count) {
-      setStatus("You do not have enough.");
+    if (owned < qty) {
       scene.syncRuntimeState();
-      return false;
+      return { ok: false, status: "You do not have enough." };
     }
-    changeItem(scene.session, item.id, "-=", count);
-    changeGold(scene.session, "+=", sellPrice(item) * count);
+    const payout = sellPrice(item) * qty;
+    if (merchantGold < payout) {
+      scene.syncRuntimeState();
+      return { ok: false, status: "상인의 돈이 부족합니다." };
+    }
+    changeItem(scene.session, item.id, "-=", qty);
+    changeGold(scene.session, "+=", payout);
     scene.syncRuntimeState();
-    setStatus(`${item.name} sold.`);
-    return true;
+    return { ok: true, status: `${item.name} sold.`, merchantGold: merchantGold - payout };
   }
-  if (scene.session.gold < item.price * count) {
-    setStatus("Not enough money.");
+  const cost = item.price * qty;
+  if (scene.session.gold < cost) {
     scene.syncRuntimeState();
-    return false;
+    return { ok: false, status: "Not enough money." };
   }
-  changeGold(scene.session, "-=", item.price * count);
-  changeItem(scene.session, item.id, "+=", count);
+  changeGold(scene.session, "-=", cost);
+  changeItem(scene.session, item.id, "+=", qty);
   scene.syncRuntimeState();
-  return true;
+  // 플레이어 구매금은 상인 소지금으로 들어간다(이후 매입 여력 증가).
+  return { ok: true, status: `${item.name} purchased.`, merchantGold: merchantGold + cost };
 }
 
 function mountCommerceOverlay(scene: PlaySceneContext, overlay: HTMLElement): void {

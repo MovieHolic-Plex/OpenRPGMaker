@@ -34,13 +34,20 @@ let connecting = false;
 // 🔌 아이콘 + 버튼 스타일을 명시한다.
 export function renderDbConnectionStatus(status: DbPersistenceStatus, onRefresh: StatusRefresh): HTMLElement {
   const autoSave = store.getAutoSaveState();
+  // 평시(준비됨 + 저장 대기 없음)는 짧은 라벨만. 상태 변화·오류일 때만 부가 문구 노출.
+  const quietReady = status.kind === "ready" && autoSave.kind === "idle";
+  const children: HTMLElement[] = [
+    el("span", { class: "db-connection-label", text: `🔌 ${dbConnectionStatusText(status)}` }),
+  ];
+  if (!quietReady) {
+    children.push(
+      el("span", { class: "db-autosave-state", text: autoSaveStatusText(autoSave), dataset: { testid: "db-autosave-state" } }),
+    );
+  }
   const button = el("button", {
     class: `editor-statusbar-cell db-connection-status db-connection-chip-button ${status.kind} autosave-${autoSave.kind}`,
     attrs: { title: dbConnectionStatusButtonTitle(status, autoSave), type: "button" },
-    children: [
-      el("span", { class: "db-connection-label", text: `🔌 ${dbConnectionStatusText(status)}` }),
-      el("span", { class: "db-autosave-state", text: autoSaveStatusText(autoSave), dataset: { testid: "db-autosave-state" } }),
-    ],
+    children,
     dataset: { testid: "db-connection-status" },
     on: {
       click: () => openDbConnectionSettings(onRefresh),
@@ -394,9 +401,10 @@ function closeDbConnectionSettings(): void {
 function dbConnectionStatusText(status: DbPersistenceStatus): string {
   switch (status.kind) {
     case "ready":
-      return `DB 연동: 준비됨 (${dbConfigSourceLabel(status.source)})`;
+      // 상세 source는 title 툴팁에만 — 상태바 폭 절약.
+      return "DB 연동";
     case "not-configured":
-      return `DB 연동: 설정 필요 (${dbConfigSourceLabel(status.source)})`;
+      return "DB 연동: 설정 필요";
     case "disabled":
       return "DB 연동: 꺼짐";
   }

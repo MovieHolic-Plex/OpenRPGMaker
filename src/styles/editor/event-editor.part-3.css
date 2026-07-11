@@ -738,10 +738,10 @@
 }
 
 /* [치명-1/치명-2] auto-fit 그리드는 단순 폼에만 적용한다.
-   선택지 인라인 에디터(.event-command-choices-inline)와 레코드 폼(.event-command-record-form)은
-   자체 레이아웃을 가지므로 여기서 제외 — 트랙 폭보다 넓은 자식이 이웃 위로 겹쳐 렌더되던 원인. */
+   선택지/레코드/문장/상점 등 자체 레이아웃 폼은 제외 — 트랙 폭보다 넓은 자식이
+   이웃 위로 겹치거나 듀얼 리스트가 가로로 찢어지던 원인. */
 .event-command-edit-body > div > span,
-.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor) {
+.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor):not(.commerce-command-body):not(.shop-processing-command-body):not(.event-command-edit-summary) {
   align-items: end;
   display: grid;
   gap: 10px;

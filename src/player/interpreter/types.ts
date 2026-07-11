@@ -100,6 +100,8 @@ export type StepResult =
       quantityMode?: "single" | "select";
       shopType?: ShopType;
       messageType?: ShopMessageType;
+      /** 상인 소지금(플레이어 물품 매입 예산). 생략 시 기본 100G. */
+      merchantGold?: number;
       branchOnTransaction?: boolean;
     }
   | { kind: "inn"; price: number }

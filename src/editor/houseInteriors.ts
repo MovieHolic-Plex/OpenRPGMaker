@@ -1,7 +1,6 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { INTERIOR_HOUSE_TILE, INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
-import { TILE } from "@/project/defaults";
-import { DEFAULT_TILE_SIZE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import type { HouseKitId } from "./houseKit";

@@ -1,10 +1,21 @@
 import type { Command, ItemId, Project, Season, ShopStockEntry } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
 
+/** 상점 명령에 merchantGold 가 없을 때 상인이 쓸 기본 소지금. */
+export const DEFAULT_SHOP_MERCHANT_GOLD = 100;
+
 export type ResolvedShopStockItem = {
   readonly itemId: ItemId;
   readonly price?: number;
 };
+
+/** 상인 소지금. 생략/비정상이면 기본 100G, 음수는 0으로 클램프. */
+export function resolveShopMerchantGold(merchantGold: number | undefined): number {
+  if (typeof merchantGold !== "number" || !Number.isFinite(merchantGold)) {
+    return DEFAULT_SHOP_MERCHANT_GOLD;
+  }
+  return Math.max(0, Math.floor(merchantGold));
+}
 
 export function resolveShopStock(
   project: Project,

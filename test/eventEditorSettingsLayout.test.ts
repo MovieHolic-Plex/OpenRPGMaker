@@ -52,8 +52,8 @@ describe("event editor settings column layout", () => {
     expect(direct).toHaveLength(2);
     expect(direct[0]?.classList.contains("event-page-number-tabs")).toBe(true);
     expect(direct[1]?.classList.contains("event-editor-settings-main")).toBe(true);
-    // schedule must live inside main, not as a 54px-wide third grid cell
-    expect(direct[1]?.querySelector("[data-testid='event-schedule-section']")).toBeTruthy();
+    // RM2003 셸: 스케줄 패널은 마운트하지 않음. 페이지 설정만 settings-main 안.
+    expect(direct[1]?.querySelector("[data-testid='event-schedule-section']")).toBeNull();
     expect(direct[1]?.querySelector(".event-page-props")).toBeTruthy();
   });
 });

@@ -75,12 +75,16 @@ describe("default editor-authored adventure game", () => {
     const waterTiles = village.lowerTiles.filter((tile) => tile === TILE.WATER).length;
     const sandTiles = village.lowerTiles.filter((tile) => tile === TILE.SAND).length;
     const houseDoorTiles = village.lowerTiles.filter((tile) => tile === 329 || tile === 359).length;
-    const marketTiles = village.upperTiles.filter((tile) => tile === 411 || tile === 412 || tile === 413).length;
+    const marketCounterTiles = village.upperTiles.filter((tile) => tile === 234 || tile === 235 || tile === 236).length;
+    const tentAwningTiles = village.upperTiles.filter((tile) =>
+      tile === 411 || tile === 412 || tile === 413 || tile === 441 || tile === 442 || tile === 443
+    ).length;
 
     expect(waterTiles).toBeGreaterThanOrEqual(120);
     expect(sandTiles).toBeGreaterThanOrEqual(40);
     expect(houseDoorTiles).toBeGreaterThanOrEqual(6);
-    expect(marketTiles).toBeGreaterThanOrEqual(3);
+    expect(marketCounterTiles).toBeGreaterThanOrEqual(3);
+    expect(tentAwningTiles).toBe(0);
   });
 
   it("uses distinct EasyRPG character graphics for major NPC roles", () => {

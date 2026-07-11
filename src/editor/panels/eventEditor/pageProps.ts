@@ -30,7 +30,7 @@ import type { Command, EventPage, EventPageCondition, GameEvent, MapId, Trigger 
 
 export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const name = el("input", {
-    attrs: { type: "text" },
+    attrs: { type: "text", placeholder: "이벤트 이름" },
     value: page.name,
     dataset: { testid: "event-page-name-input" },
   }) as HTMLInputElement;
@@ -38,13 +38,30 @@ export function renderEventNameControl(mapId: MapId, eventId: string, page: Even
   return el("label", {
     class: "event-editor-name-field",
     dataset: { testid: "event-classic-name" },
-    children: [el("span", { text: "Name" }), name],
+    children: [el("span", { text: "이름" }), name],
   });
 }
 
 export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("div", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
   const pages = ev.pages ?? [];
+  const canPaste = hasCopiedEventPage();
+  const canDelete = pages.length > 1;
+  const actions: HTMLElement[] = [
+    pageButton("새 페이지", "event-page-add", "페이지 추가", "new", () => addEventPage(mapId, ev.id)),
+    pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
+  ];
+  // 비활성 버튼은 자리만 차지하므로 사용 가능할 때만 노출한다.
+  if (canPaste) {
+    actions.push(
+      pageButton("붙여넣기", "event-page-paste", "페이지 붙여넣기", "paste", () => pasteEventPage(mapId, ev.id))
+    );
+  }
+  if (canDelete) {
+    actions.push(
+      pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id))
+    );
+  }
   wrap.append(
     el("span", {
       class: "event-classic-marker",
@@ -53,25 +70,14 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
     }),
     el("div", {
       class: "event-page-action-buttons",
-      children: [
-        pageButton("새 페이지", "event-page-add", "페이지 추가", "new", () => addEventPage(mapId, ev.id)),
-        pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
-        pageButton(
-          "붙여넣기",
-          "event-page-paste",
-          hasCopiedEventPage() ? "페이지 붙여넣기" : "아직 복사 버퍼가 없습니다.",
-          "paste",
-          () => pasteEventPage(mapId, ev.id),
-          !hasCopiedEventPage()
-        ),
-        pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () => deleteEventPage(mapId, ev.id, activePage.id), pages.length <= 1),
-      ],
+      dataset: { count: String(actions.length) },
+      children: actions,
     })
   );
   return wrap;
 }
 
-export function renderClassicPageTabStrip(ev: GameEvent, activePage: EventPage): HTMLElement {
+export function renderClassicPageTabStrip(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const pages = ev.pages ?? [];
   const pageButtons = el("div", {
     class: "event-page-number-tabs",
@@ -92,6 +98,15 @@ export function renderClassicPageTabStrip(ev: GameEvent, activePage: EventPage):
       })
     );
   });
+  pageButtons.append(
+    el("button", {
+      class: "btn event-page-tab-add",
+      text: "+",
+      attrs: { type: "button", title: "새 페이지 추가", "aria-label": "새 페이지 추가" },
+      dataset: { testid: "event-page-tab-add" },
+      on: { click: () => addEventPage(mapId, ev.id) },
+    })
+  );
   return pageButtons;
 }
 
@@ -300,12 +315,16 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     updateEventPage(mapId, eventId, page.id, { overlapForbidden: overlap.checked });
   });
 
+  // RM2003: 조건 패널은 항상 펼친다. 활성 개수만 메타로 표시.
+  const activeConditionCount = page.conditions?.length ?? 0;
   wrap.append(
-    rm2k3Fieldset(
-      "조건",
-      el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page) }),
-      "event-classic-conditions"
-    ),
+    collapsibleSection({
+      title: "조건",
+      testId: "event-classic-conditions",
+      open: true,
+      meta: activeConditionCount > 0 ? `${activeConditionCount}개 활성` : "항상",
+      body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page) }),
+    }),
     el("div", {
       class: "event-page-bottom-grid",
       children: [
@@ -338,6 +357,31 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     })
   );
   return wrap;
+}
+
+function collapsibleSection(options: {
+  readonly title: string;
+  readonly testId: string;
+  readonly open: boolean;
+  readonly meta: string;
+  readonly body: HTMLElement;
+}): HTMLElement {
+  const details = el("details", {
+    class: "event-rm2k3-fieldset event-collapsible-section",
+    dataset: { testid: options.testId },
+  }) as HTMLDetailsElement;
+  details.open = options.open;
+  details.append(
+    el("summary", {
+      class: "event-collapsible-summary",
+      children: [
+        el("span", { class: "event-collapsible-title", text: options.title }),
+        el("span", { class: "event-collapsible-meta", text: options.meta }),
+      ],
+    }),
+    el("div", { class: "event-collapsible-body", children: [options.body] })
+  );
+  return details;
 }
 
 function renderEventPageSafetyWarning(page: EventPage): HTMLElement {

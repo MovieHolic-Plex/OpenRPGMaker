@@ -23,9 +23,9 @@ const SMALL_HARBOR_HOUSE_PATTERN = [
   [132, 133, 329, 133, 134],
   [162, 163, 359, 163, 164],
 ] as const;
-const MARKET_CANOPY_PATTERN = [
-  [411, 412, 413],
-  [441, 442, 443],
+/** 장터 카운터 (234–236) — 천막 411–443 사용 금지 */
+const MARKET_COUNTER_PATTERN = [
+  [234, 235, 235, 236],
 ] as const;
 const DEFAULT_GRAPHIC = {
   sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID },
@@ -121,7 +121,7 @@ function decorateHarborVillage(map: GameMap): void {
   stampLower(map, { x: 3, y: 3 }, SMALL_HARBOR_HOUSE_PATTERN);
   stampLower(map, { x: 17, y: 4 }, SMALL_HARBOR_HOUSE_PATTERN);
   stampLower(map, { x: 4, y: 20 }, SMALL_HARBOR_HOUSE_PATTERN);
-  stampUpper(map, { x: 9, y: 10 }, MARKET_CANOPY_PATTERN);
+  stampUpper(map, { x: 9, y: 10 }, MARKET_COUNTER_PATTERN);
   stampUpper(map, { x: 17, y: 18 }, [[327, 328], [288, -1]]);
   stampUpper(map, { x: 21, y: 11 }, [[260, -1, 288], [290, -1, -1]]);
 }

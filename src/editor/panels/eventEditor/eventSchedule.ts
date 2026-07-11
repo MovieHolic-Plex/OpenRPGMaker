@@ -1,3 +1,6 @@
+// NPC 일일 스케줄(GameEvent.schedule) 편집 패널.
+// RM2003 이벤트 창에는 없는 모던 데이터이므로 기본 이벤트 에디터 셸에는 마운트하지 않는다.
+// set_npc_schedule / make_villager 툴 경로와 수동 디버깅용으로 모듈만 유지한다.
 import { updateEvent } from "@/editor/eventActions";
 import type { GameEvent, MapId, NpcScheduleEntry } from "@/project/types";
 import { el } from "@/util/dom";

@@ -256,6 +256,10 @@ export const REGION_PROP_VOCAB = {
 
 /** 영역 메시지에 넣을 소품/지형 그룹 id 힌트(존재하면 soft-confirm 으로 바로 place_props 가능). */
 export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): string {
+  return formatMaterialLabelHint(tileset);
+}
+
+export function formatMaterialLabelHint(tileset: TilesetDef | undefined): string {
   if (!tileset) {
     return `- 소품 어휘: (타일셋 없음) ${BUILD_PALETTE_PRESETS.tree}, ${REGION_PROP_VOCAB.woodBox}, ${REGION_PROP_VOCAB.fruitBox} 등`;
   }
@@ -282,10 +286,10 @@ export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): st
   ];
   const unique = [...new Map(ordered.map((group) => [group.id, group])).values()].slice(0, 10);
   if (unique.length === 0) {
-    return `- 소품 어휘: tile_query로 그룹 id를 찾아 place_props 호출 (없는 id만 실패, 미합의도 맵 목업 확인)`;
+    return `- 소품 재료: tile_query ask:"labels" 로 라벨/설명을 찾아 place_props material 에 넣기 (그룹 id 금지)`;
   }
-  const list = unique.map((group) => `${group.id}(${group.name}/${group.role})`).join(", ");
-  return `- 소품·지형 그룹 id(place_props/fill_region — 바로 호출, 미합의는 목업 확인): ${list}`;
+  const list = unique.map((group) => `${group.name}(${group.role})`).join(", ");
+  return `- 소품·지형 material 라벨 예(place_props/fill_region — 그룹 id 금지, 미합의는 목업 확인): ${list}`;
 }
 
 // aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).
@@ -304,12 +308,12 @@ export function buildRegionTaskMessage(
   const toolGuide = [
     "영역 작업 도구 규칙:",
     "- 집/건물: build_house_kit (벽 타일로 직사각 채우기 금지)",
-    "- 나무/바위/꽃 산포: place_props + 아래 그룹 id (정식 id만, 예 harness-combined-town-conifer-tree). 같은 place_props는 1회",
-    formatApprovedPropVocabHint(tileset),
+    "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회",
+    formatMaterialLabelHint(tileset),
     // 툴콜링 사고: "박스 2개" → small-props 랜덤 산포. 전용 그룹 id를 강제한다.
-    `- 장식 박스/나무상자/나무박스: place_props { propVocabId: \"${REGION_PROP_VOCAB.woodBox}\", count:N } (타일 237). 과일박스= \"${REGION_PROP_VOCAB.fruitBox}\" (202|203). small-props 가방·place_chest로 대체 금지`,
+    `- 장식 박스/나무상자/나무박스: place_props { material: \"나무 상자\", count:N }. 과일박스= material:\"과일박스\". small-props 가방·place_chest로 대체 금지`,
     "- 보물상자(열면 아이템/골드·개봉 기억): place_chest 만. '박스'/'나무상자' 요청에 place_chest 금지",
-    "- 지면/수역/바닥 면: fill_region — 호수=물 그룹(harness-combined-town-lake-water-autotile) + 원형·둥근은 shape=circle(필수). rect만 쓰면 네모. 타원=ellipse",
+    "- 지면/수역/바닥 면: fill_region { material:\"물\" 또는 \"잔디\" } + 원형·둥근은 shape=circle(필수). 그룹 id 금지. rect만 쓰면 네모. 타원=ellipse",
     "- 길/도로: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},...] } — 흙길 오토타일 성형. 영역 안 동선·호수 둘레 산책로에 사용",
     "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",
     "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지",

@@ -1,16 +1,16 @@
 // editor/tools/v3/constructionTools.ts
 // 공정 프리미티브 6종 (타일 툴 v3 — V3B).
 //
-// 계약: version 3, layer 인자 없음(어휘 layerHome). 존재하는 재료는 soft-allow 로 맵에 그리고
-// vocabSoftConfirm 을 붙여 사용자 목업 확인으로 합의한다. 없는 id만 하드 실패.
+// 계약: version 3, layer 인자 없음(어휘 layerHome). 재료는 material=타일 label/description
+// (vocabId/그룹 id 금지). soft-allow + vocabSoftConfirm.
 // 공정 순서: build_wall → place_door/place_window → build_roof → lay_path → place_props.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import {
-  resolveVocabForBuild,
-  suggestVocabGroups,
+  resolveMaterialByLabel,
+  suggestMaterialsByLabel,
   VOCAB_SOFT_CONFIRM_WARNING_PREFIX,
   type VocabLayerHome,
   type VocabSoftConfirm,
@@ -33,23 +33,23 @@ import {
   type Rect,
 } from "./rmTypeExpander";
 
-const WALL_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, wallVocabId: "plaster-wall-9slice" };
-const ROOF_EXAMPLE = { mapId: "map_1", roofVocabId: "red-roof", wallRect: { x: 8, y: 6, w: 6, h: 4 } };
-const DOOR_EXAMPLE = { mapId: "map_1", at: { x: 10, y: 9 }, doorVocabId: "wood-door" };
-const WINDOW_EXAMPLE = { mapId: "map_1", at: { x: 9, y: 7 }, windowVocabId: "house-window" };
-const PATH_EXAMPLE = { mapId: "map_1", points: [{ x: 2, y: 12 }, { x: 14, y: 12 }, { x: 20, y: 8 }], pathVocabId: "dirt-path", naturalness: 0.5 };
-const PROPS_EXAMPLE = { mapId: "map_1", area: { x: 2, y: 2, w: 18, h: 12 }, propVocabId: "harness-combined-town-conifer-tree", count: 8, naturalness: 0.6 };
+const WALL_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, material: "흰 집 벽" };
+const ROOF_EXAMPLE = { mapId: "map_1", material: "빨간 지붕", wallRect: { x: 8, y: 6, w: 6, h: 4 } };
+const DOOR_EXAMPLE = { mapId: "map_1", at: { x: 10, y: 9 }, material: "문" };
+const WINDOW_EXAMPLE = { mapId: "map_1", at: { x: 9, y: 7 }, material: "창문" };
+const PATH_EXAMPLE = { mapId: "map_1", points: [{ x: 2, y: 12 }, { x: 14, y: 12 }, { x: 20, y: 8 }], material: "흙길", naturalness: 0.5 };
+const PROPS_EXAMPLE = { mapId: "map_1", area: { x: 2, y: 2, w: 18, h: 12 }, material: "침엽수", count: 8, naturalness: 0.6 };
 const FILL_EXAMPLE = {
   mapId: "map_1",
   rect: { x: 28, y: 28, w: 10, h: 8 },
-  tileVocabId: "lake-water-autotile",
+  material: "물",
   layer: "lower",
   shape: "rect",
 };
 const FILL_CIRCLE_EXAMPLE = {
   mapId: "map_1",
   rect: { x: 20, y: 18, w: 12, h: 12 },
-  tileVocabId: "harness-combined-town-lake-water-autotile",
+  material: "물",
   layer: "lower",
   shape: "circle",
 };
@@ -100,19 +100,36 @@ interface BuildGroupAccess {
   readonly softConfirm?: VocabSoftConfirm;
 }
 
-// 시공용 그룹 조회 — 존재하면 soft 허용, 없으면 hard fail.
-function requireBuildGroup(tileset: TilesetDef, vocabId: unknown, field: string, example: Record<string, unknown>): BuildGroupAccess {
-  if (typeof vocabId !== "string" || vocabId.length === 0) failWithExample(`${field}(어휘 그룹 id)가 필요합니다`, example);
-  const access = resolveVocabForBuild(tileset, { groupId: vocabId });
+/** 재료 문자열(타일 label/description) → 전개 그룹. vocabId 금지. */
+function requireMaterialGroup(
+  tileset: TilesetDef,
+  material: unknown,
+  example: Record<string, unknown>,
+  options: { preferRoles?: readonly string[]; requireAutotileGroup?: boolean } = {},
+): BuildGroupAccess {
+  if (typeof material !== "string" || material.trim().length === 0) {
+    failWithExample("material(타일 라벨/설명, 예: \"물\"·\"침엽수\"·\"흰 집 벽\")이 필요합니다", example);
+  }
+  const access = resolveMaterialByLabel(tileset, material, {
+    preferGroup: true,
+    preferRoles: options.preferRoles,
+    requireAutotileGroup: options.requireAutotileGroup,
+  });
   if (access.status === "missing") {
-    const suggestions = suggestVocabGroups(tileset, vocabId);
+    const suggestions = access.suggestions.length > 0
+      ? access.suggestions
+      : suggestMaterialsByLabel(tileset, material, 5);
     const hint = suggestions.length > 0
-      ? ` 비슷한 그룹: ${suggestions.map((s) => `${s.id}(${s.name}/${s.role})`).join(", ")} — 이 중 하나로 다시 호출하세요.`
-      : ` tile_query ask:"vocab"으로 전체 그룹 id를 조회하세요.`;
-    throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(example)}`, { code: "group-not-found" });
+      ? ` 비슷한 라벨: ${suggestions.map((s) => `"${s.label}"`).join(", ")} — material에 이 문자열을 넣으세요.`
+      : ` tile_query ask:"labels" 로 타일 라벨/설명을 조회하세요.`;
+    // 레거시 테스트/로그 호환 키워드 "비슷한 그룹" 도 함께 표기
+    throw new ToolError(`${access.message}${hint.replace("비슷한 라벨", "비슷한 라벨(그룹)")} — 다시 보낼 형식 예시: ${JSON.stringify(example)}`, { code: "material-not-found" });
   }
   if (access.kind !== "group") {
-    throw new ToolError(`${field}는 그룹 id여야 합니다`, { code: "group-not-found" });
+    throw new ToolError(
+      `material "${material}" 은(는) 단일 타일("${access.matchedLabel}")입니다. 벽/지붕/길/수역은 패턴 재료 라벨이 필요합니다.`,
+      { code: "material-needs-group" },
+    );
   }
   if (access.status === "soft") return { group: access.group, softConfirm: access.softConfirm };
   return { group: access.group };
@@ -298,7 +315,7 @@ function isWallCell(map: GameMap, tileset: TilesetDef, x: number, y: number): bo
 const buildWall: ToolDefinition = {
   name: "build_wall",
   description:
-    "벽 어휘로 벽을 시공한다(v3 공정 1단계). rect에 9분할/기둥 패턴을 전개하며 레이어는 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 시공 후 place_door/place_window → build_roof.",
+    "material(타일 라벨/설명)로 벽을 시공한다(v3). rect에 9분할/기둥 패턴 전개. 그룹 id 금지. 시공 후 place_door/place_window → build_roof.",
   mode: "write",
   version: 3,
   parameters: {
@@ -310,15 +327,15 @@ const buildWall: ToolDefinition = {
         properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
         required: ["x", "y", "w", "h"],
       },
-      wallVocabId: { type: "string", description: "벽 어휘 그룹 id(tile_query ask=unapproved/palette로 조회)" },
+      material: { type: "string", description: "벽 재료: 타일 라벨/설명(예: \"흰 집 벽\"). 그룹 id 금지" },
     },
-    required: ["mapId", "rect", "wallVocabId"],
+    required: ["mapId", "rect", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, WALL_EXAMPLE);
     const rect = coerceRect(args.rect, "rect", WALL_EXAMPLE);
     requireRectInMap(map, rect, "rect", WALL_EXAMPLE);
-    const { group, softConfirm } = requireBuildGroup(tileset, args.wallVocabId, "wallVocabId", WALL_EXAMPLE);
+    const { group, softConfirm } = requireMaterialGroup(tileset, args.material, WALL_EXAMPLE, { preferRoles: ["wall"] });
     const profile = tilesetGrammarProfile(tileset);
     const expansion = expandWall(tileset, group, rect, profile, WALL_EXAMPLE);
     const applied = applyEdits(map, expansion.edits);
@@ -339,17 +356,17 @@ const buildRoof: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      roofVocabId: { type: "string", description: "지붕 어휘 그룹 id" },
+      material: { type: "string", description: "지붕 재료: 타일 라벨/설명. 그룹 id 금지" },
       wallRect: {
         type: "object", description: "지붕을 얹을 벽 영역(생략 시 자동 감지)",
         properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
       },
     },
-    required: ["mapId", "roofVocabId"],
+    required: ["mapId", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, ROOF_EXAMPLE);
-    const { group, softConfirm } = requireBuildGroup(tileset, args.roofVocabId, "roofVocabId", ROOF_EXAMPLE);
+    const { group, softConfirm } = requireMaterialGroup(tileset, args.material, ROOF_EXAMPLE, { preferRoles: ["roof"] });
     const wallRegion = args.wallRect !== undefined ? coerceRect(args.wallRect, "wallRect", ROOF_EXAMPLE) : detectWallRegion(map, tileset);
     if (!wallRegion) {
       throw new ToolError(
@@ -368,10 +385,10 @@ const buildRoof: ToolDefinition = {
 };
 
 // 문/창문 공용: 대상 셀이 벽 어휘 셀이 아니면 거부(공정 순서 강제).
-function placeOnWall(kind: "door" | "window", draft: Project, args: Record<string, unknown>, idField: string, example: Record<string, unknown>): ToolExecResult {
+function placeOnWall(kind: "door" | "window", draft: Project, args: Record<string, unknown>, example: Record<string, unknown>): ToolExecResult {
   const { map, tileset } = requireMapContext(draft, args, example);
   const at = coercePoint(args.at, "at", example);
-  const { group, softConfirm } = requireBuildGroup(tileset, args[idField], idField, example);
+  const { group, softConfirm } = requireMaterialGroup(tileset, args.material, example, { preferRoles: ["prop"] });
   if (!isWallCell(map, tileset, at.x, at.y)) {
     throw new ToolError(
       `(${at.x},${at.y})은(는) 벽 셀(벽 어휘 타일)이 아닙니다. 먼저 build_wall로 벽을 짓고 벽 위 좌표를 지정하세요. — 다시 보낼 형식 예시: ${JSON.stringify(example)}`,
@@ -415,12 +432,12 @@ const placeDoor: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       at: { type: "object", description: "문 하단 칸(벽 셀)", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] },
-      doorVocabId: { type: "string", description: "문 어휘 그룹 id" },
+      material: { type: "string", description: "문 재료: 타일 라벨/설명(예: \"문\"). 그룹 id 금지" },
     },
-    required: ["mapId", "at", "doorVocabId"],
+    required: ["mapId", "at", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    return placeOnWall("door", draft, args, "doorVocabId", DOOR_EXAMPLE);
+    return placeOnWall("door", draft, args, DOOR_EXAMPLE);
   },
 };
 
@@ -435,12 +452,12 @@ const placeWindow: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       at: { type: "object", description: "창문 칸(벽 셀)", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] },
-      windowVocabId: { type: "string", description: "창문 어휘 그룹 id" },
+      material: { type: "string", description: "창문 재료: 타일 라벨/설명(예: \"창문\"). 그룹 id 금지" },
     },
-    required: ["mapId", "at", "windowVocabId"],
+    required: ["mapId", "at", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    return placeOnWall("window", draft, args, "windowVocabId", WINDOW_EXAMPLE);
+    return placeOnWall("window", draft, args, WINDOW_EXAMPLE);
   },
 };
 
@@ -473,17 +490,17 @@ const layPath: ToolDefinition = {
         type: "array", description: "경유점 [{x,y},...] 2개 이상",
         items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] },
       },
-      pathVocabId: { type: "string", description: "길 어휘 그룹 id" },
+      material: { type: "string", description: "길 재료: 타일 라벨/설명(예: \"흙길\"). 그룹 id 금지" },
       naturalness: { type: "number", description: "0~1. 0=직선, 0.5=기본, 0.8+=구불구불" },
       seed: { type: "integer", description: "결정론 시드(생략 가능)" },
     },
-    required: ["mapId", "points", "pathVocabId"],
+    required: ["mapId", "points", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, PATH_EXAMPLE);
     const points = coercePointArray(args.points, "points", PATH_EXAMPLE);
     if (points.length < 2) failWithExample("points는 경유점 2개 이상이어야 합니다", PATH_EXAMPLE);
-    const { group, softConfirm } = requireBuildGroup(tileset, args.pathVocabId, "pathVocabId", PATH_EXAMPLE);
+    const { group, softConfirm } = requireMaterialGroup(tileset, args.material, PATH_EXAMPLE, { preferRoles: ["terrain"] });
     const autotile = autotileGroupForVocab(tileset, group);
     if (!autotile || (autotile.neighborhood ?? 4) !== 8) {
       throw new ToolError(
@@ -513,11 +530,7 @@ const layPath: ToolDefinition = {
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "소품 어휘를 area 안에 자연 산포한다(v3 공정 5단계). 나무/바위/꽃/벤치/집앞소품용. " +
-    "박스·나무상자·나무박스 요청: propVocabId=harness-combined-town-wood-box(또는 \"237\"), count=개수 — small-props 가방으로 대체 금지. " +
-    "과일박스: harness-combined-town-fruit-box. small-props는 표지판·횃불 등 잔여 잡소품용. " +
-    "물·흙길/모래길·통행 불가 하층·기존 upper 점유 칸은 건너뛴다. propVocabId는 정식 그룹 id 또는 낱개 타일 id. " +
-    "같은 area·id·count는 한 턴에 한 번만. 마을 전체에 흩뿌리려면 area를 넓히고(권장 8x6 이상) naturalness 0.55~0.7·minGap 2 이상으로 여러 구역에 나눠 호출 — naturalness 0.3 미만은 uniform이라 한곳에 뭉친다. 미합의 재료도 맵에 그려 soft-confirm. 면 채우기는 fill_region.",
+    "소품을 area 안에 자연 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.",
   mode: "write",
   version: 3,
   parameters: {
@@ -530,45 +543,44 @@ const placeProps: ToolDefinition = {
         properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
         required: ["x", "y", "w", "h"],
       },
-      propVocabId: { type: "string", description: "소품 어휘: 그룹 id 또는 낱개 타일 id(숫자 문자열)" },
+      material: { type: "string", description: "소품 재료: 타일 라벨/설명(예: \"침엽수\", \"나무 상자\"). 그룹 id 금지" },
       count: { type: "integer", description: "배치 개수" },
       minGap: { type: "integer", description: "간격(기본 1; 마을 산포는 2+ 권장)" },
       naturalness: { type: "number", description: "0~1(기본 0.5). <0.3=한곳 뭉침(uniform), 0.3~0.7=poisson 산포, >0.7=cluster" },
       seed: { type: "integer" },
     },
-    required: ["mapId", "area", "propVocabId", "count"],
+    required: ["mapId", "area", "material", "count"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, PROPS_EXAMPLE);
     const area = coerceRect(args.area, "area", PROPS_EXAMPLE);
     const count = coerceInt(args.count, "count", PROPS_EXAMPLE);
-    const rawId = typeof args.propVocabId === "string" ? args.propVocabId.trim() : "";
-    if (!rawId) failWithExample("propVocabId(소품 어휘)가 필요합니다", PROPS_EXAMPLE);
+    const material = typeof args.material === "string" ? args.material.trim() : "";
+    if (!material) failWithExample("material(타일 라벨/설명, 예: \"침엽수\"·\"나무 상자\")이 필요합니다", PROPS_EXAMPLE);
 
-    const group = tileset.tileGroups?.find((entry) => entry.id === rawId);
-    if (group) {
-      const access = resolveVocabForBuild(tileset, { groupId: group.id });
-      const soft = access.status === "soft" && access.kind === "group" ? access.softConfirm : undefined;
-      // 산포 엔진 직호출(클러스터 hard 규칙 유지) — ToolDefinition 이름 의존 제거.
+    const access = resolveMaterialByLabel(tileset, material, {
+      preferGroup: true,
+      preferRoles: ["prop", "terrain"],
+    });
+    if (access.status === "missing") {
+      const suggestions = access.suggestions.length > 0 ? access.suggestions : suggestMaterialsByLabel(tileset, material, 5);
+      const hint = suggestions.length > 0
+        ? ` 비슷한 라벨: ${suggestions.map((s) => `"${s.label}"`).join(", ")}`
+        : ` tile_query ask:"labels" 로 조회`;
+      throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(PROPS_EXAMPLE)}`, { code: "material-not-found" });
+    }
+
+    if (access.kind === "group") {
+      const soft = access.status === "soft" ? access.softConfirm : undefined;
       const scattered = runScatterObject(draft, compactArgs({
-        mapId: args.mapId, area: args.area, count, groupId: group.id,
+        mapId: args.mapId, area: args.area, count, groupId: access.group.id,
         minGap: args.minGap, naturalness: args.naturalness, seed: args.seed,
       }));
       return withSoftConfirm(scattered, soft);
     }
-    if (!/^\d+$/.test(rawId)) {
-      const access = resolveVocabForBuild(tileset, { groupId: rawId });
-      throw new ToolError(
-        access.status === "missing" ? access.message : `소품 그룹을 해석할 수 없습니다: ${rawId}`,
-        { code: "group-not-found" },
-      );
-    }
-    const tileId = Number(rawId);
-    const tileAccess = resolveVocabForBuild(tileset, { tileId });
-    if (tileAccess.status === "missing") {
-      throw new ToolError(tileAccess.message, { code: "tile-not-found" });
-    }
-    const soft = tileAccess.status === "soft" ? tileAccess.softConfirm : undefined;
+
+    const tileId = access.tileId;
+    const soft = access.status === "soft" ? access.softConfirm : undefined;
     const naturalness = naturalnessArg(args);
     const minGap = typeof args.minGap === "number" && Number.isInteger(args.minGap) ? Math.max(0, args.minGap) : 1;
     const signature = `place_props|${map.id}|${area.x},${area.y},${area.w},${area.h}|${tileId}|${count}|${naturalnessLabel(naturalness)}`;
@@ -581,16 +593,16 @@ const placeProps: ToolDefinition = {
     for (const cell of scatter.points) {
       if (!inMapBounds(map, cell.x, cell.y)) continue;
       const index = cell.y * map.width + cell.x;
-      if (map.upperTiles[index] !== TILE.EMPTY) continue; // 기존 소품/구조물 보존.
-      if (!isPassable(draft, map, cell.x, cell.y)) continue; // 물·벽 등 통행 불가 위 금지.
-      if (isPathSurfaceTile(map.lowerTiles[index])) continue; // 흙길/모래길 위 금지.
+      if (map.upperTiles[index] !== TILE.EMPTY) continue;
+      if (!isPassable(draft, map, cell.x, cell.y)) continue;
+      if (isPathSurfaceTile(map.lowerTiles[index])) continue;
       if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
       else setLower(map, cell.x, cell.y, tileId);
       placed += 1;
     }
     return withSoftConfirm({
-      summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h}에 소품(타일 ${tileId}) ${placed}/${count}개 산포 — 자연도 ${naturalnessLabel(naturalness)}.`,
-      data: { placed, requested: count, tileId },
+      summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h}에 소품(${access.matchedLabel || tileId}) ${placed}/${count}개 산포 — 자연도 ${naturalnessLabel(naturalness)}.`,
+      data: { placed, requested: count, tileId, material: access.matchedLabel },
     }, soft);
   },
 };
@@ -612,7 +624,7 @@ function assertFillRegionGroup(group: TileGroupMetadata, autotile: AutotileGroup
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "오토타일/애니메이션 지형 어휘 그룹으로 영역을 채운다(v3). shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용. 나무/바위/꽃은 place_props. lower 기본. transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용. 나무/바위/꽃은 place_props. lower 기본. transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,
@@ -626,7 +638,7 @@ const fillRegion: ToolDefinition = {
         properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
         required: ["x", "y", "w", "h"],
       },
-      tileVocabId: { type: "string", description: "autotile_3x3/animated_terrain 지형 그룹 id" },
+      material: { type: "string", description: "지형 재료: 타일 라벨/설명(예: \"물\", \"잔디\"). 그룹 id 금지" },
       layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower. 수역/바닥은 lower를 사용한다" },
       shape: {
         type: "string",
@@ -634,7 +646,7 @@ const fillRegion: ToolDefinition = {
         description: "기본 rect. 원형 호수/둥근 연못=circle, 타원 호수=ellipse. '원형' 요청에 rect 금지",
       },
     },
-    required: ["mapId", "rect", "tileVocabId"],
+    required: ["mapId", "rect", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const shapeExample = args.shape === "circle" || args.shape === "ellipse" ? FILL_CIRCLE_EXAMPLE : FILL_EXAMPLE;
@@ -644,7 +656,7 @@ const fillRegion: ToolDefinition = {
     const shape = coerceFillShape(args.shape, FILL_CIRCLE_EXAMPLE);
     const layer = args.layer === undefined ? "lower" : args.layer;
     if (layer !== "lower" && layer !== "upper") failWithExample("layer는 lower/upper 중 하나여야 합니다", shapeExample);
-    const { group, softConfirm } = requireBuildGroup(tileset, args.tileVocabId, "tileVocabId", shapeExample);
+    const { group, softConfirm } = requireMaterialGroup(tileset, args.material, shapeExample, { preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     const autotile = autotileGroupForVocab(tileset, group);
     assertFillRegionGroup(group, autotile);
     const body = fillBodyTile(group, autotile);

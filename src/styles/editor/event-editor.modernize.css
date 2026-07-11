@@ -366,30 +366,17 @@
 
 /* ---- [P2] 모던 전용 파생 뷰: 라이브 미리보기 / 플로우차트 (기본 접힘) ---- */
 
-/* 실행 내용 fieldset 의 그리드 높이를 잠식하지 않도록 커맨드 컬럼 하단에 떠 있는
-   오버레이로 배치 (RM2003 창 비율 e2e 계약 보존 — contents fieldset 높이 불변). */
+/* 보조 도구(미리보기/플로우)는 event-editor-aux-tools 안에서 인플로우로 배치.
+   absolute 오버레이는 접힌 상태에서도 리스트 하단을 가려 밀도를 해친다. */
 .event-editor-commands-column {
   position: relative;
 }
 
 .event-script-modern-views {
-  /* AI 드로어 바(하단 in-flow)를 가리지 않도록 그 위에 띄운다. */
-  bottom: 48px;
-  display: grid;
-  gap: 6px;
-  left: 8px;
-  position: absolute;
-  right: 8px;
-  z-index: 6;
-}
-
-.event-script-live-preview,
-.event-script-flowchart {
-  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 96%, var(--bg-raised));
-  border: 1px solid var(--border-soft, var(--border-subtle));
-  border-radius: 8px;
-  box-shadow: 0 -2px 14px rgba(10, 14, 24, 0.28);
-  padding: 0;
+  display: contents;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .event-script-live-preview[open] .event-script-live-preview-body {
@@ -399,21 +386,6 @@
 
 .event-script-flowchart[open] .event-flowchart-body {
   max-height: 300px;
-}
-
-.event-script-live-preview > summary,
-.event-script-flowchart > summary {
-  color: var(--text-muted, var(--text-2));
-  cursor: pointer;
-  font: 700 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  padding: 7px 12px;
-  user-select: none;
-}
-
-.event-script-live-preview[open] > summary,
-.event-script-flowchart[open] > summary {
-  border-bottom: 1px solid var(--border-soft, var(--border-subtle));
-  color: var(--accent, var(--text-1));
 }
 
 .event-script-live-preview-body {

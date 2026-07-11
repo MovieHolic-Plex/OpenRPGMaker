@@ -7,13 +7,12 @@ import { createHouseDoorEvent, createHouseInteriorMap } from "@/editor/houseInte
 import { appendToTree } from "@/editor/mapTreeActions";
 import { DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { TILE } from "@/project/defaults/constants";
-import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { Command, GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 import { EVENT_TOOLS } from "./eventTools";
 import {
   isYardDecorKind,
-  propVocabIdForYardDecor,
+  materialForYardDecor,
   yardAreaForHouse,
   yardScatterParams,
   type YardDecorKind,
@@ -73,7 +72,8 @@ const MAX_SIZE = 256;
 const DEFAULT_SIZE = 50;
 const DEFAULT_HOUSES = 8;
 const MIN_HOUSES = 4;
-const MAX_HOUSES = 12;
+/** 대형 마을(100×100 등)용 — 예전 12 상한은 대형 시공에 부족 */
+const MAX_HOUSES = 32;
 const PLAZA_WIDTH = 8;
 const PLAZA_HEIGHT = 6;
 const HOUSE_MARGIN = 2;
@@ -148,10 +148,6 @@ const YARD_STYLE_POOLS: Record<YardStyle, readonly (readonly YardDecorKind[])[]>
   ],
   minimal: [["mailbox"], ["flowers"], ["pot"], ["sign"], ["jar"]],
 };
-const TREE_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
-const FLOWER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}flower-props`;
-const BENCH_H_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}bench-horizontal`;
-const TABLE_H_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}table-horizontal`;
 const VILLAGE_NPC_GRAPHIC_REFS: readonly (readonly [textureKey: string, characterIndex: number])[] = [
   ["tex_easyrpg_charset_people1", 0],
   ["tex_easyrpg_charset_people2", 0],
@@ -321,7 +317,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           description: "집 계획 [{kitId?, yard?, ownerName?}]. 개수만 쓰려면 houseCount.",
           items: { type: "object" },
         },
-        houseCount: { type: "integer", description: "집 수(4~12). houses 없을 때 사용." },
+        houseCount: { type: "integer", description: "집 수(4~32). houses 없을 때 사용." },
         housePlans: { type: "array", items: { type: "object" }, description: "houses 별칭" },
         npcs: {
           type: "array",
@@ -657,7 +653,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           },
           required: ["x", "y", "w", "h"],
         },
-        houses: { type: "integer", description: "목표 집 수(기본 8, 4~12). housePlans가 있으면 그 길이가 우선." },
+        houses: { type: "integer", description: "목표 집 수(기본 8, 4~32). housePlans가 있으면 그 길이가 우선." },
         housePlans: {
           type: "array",
           description:
@@ -1722,7 +1718,7 @@ function placeVillageDecor(
       placed += placePropsCount(draft, {
         mapId: map.id,
         area: yardArea,
-        propVocabId: propVocabIdForYardDecor(kind),
+        material: materialForYardDecor(kind),
         count: 1,
         minGap: scatter.minGap,
         naturalness: scatter.naturalness,
@@ -1741,7 +1737,7 @@ function placeVillageDecor(
     placed += placePropsCount(draft, {
       mapId: map.id,
       area: plazaInner,
-      propVocabId: BENCH_H_GROUP_ID,
+      material: "벤치",
       count: 2,
       minGap: 2,
       naturalness: 0.45,
@@ -1750,7 +1746,7 @@ function placeVillageDecor(
     placed += placePropsCount(draft, {
       mapId: map.id,
       area: plazaInner,
-      propVocabId: FLOWER_GROUP_ID,
+      material: "꽃",
       count: 3,
       minGap: 1,
       naturalness: 0.55,
@@ -1759,7 +1755,7 @@ function placeVillageDecor(
     placed += placePropsCount(draft, {
       mapId: map.id,
       area: plazaInner,
-      propVocabId: TABLE_H_GROUP_ID,
+      material: "가로 탁자",
       count: 1,
       minGap: 2,
       naturalness: 0.4,
@@ -1769,7 +1765,7 @@ function placeVillageDecor(
     placed += placePropsCount(draft, {
       mapId: map.id,
       area: plazaInner,
-      propVocabId: FLOWER_GROUP_ID,
+      material: "꽃",
       count: 6,
       minGap: 1,
       naturalness: 0.65,
@@ -1778,7 +1774,7 @@ function placeVillageDecor(
     placed += placePropsCount(draft, {
       mapId: map.id,
       area: plazaInner,
-      propVocabId: BENCH_H_GROUP_ID,
+      material: "벤치",
       count: 1,
       minGap: 2,
       naturalness: 0.5,
@@ -1802,7 +1798,7 @@ function placeVillageDecor(
       placed += placePropsCount(draft, {
         mapId: map.id,
         area: band,
-        propVocabId: TREE_GROUP_ID,
+        material: "침엽수",
         count: treeCount,
         minGap: 2,
         naturalness: 0.55,

@@ -143,37 +143,37 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
   return el("div", {
     class: "event-editor-modal-footer",
     children: [
-      el("span", {
-        class: "event-editor-draft-status",
-        text: cancelHint,
-        dataset: { testid: "event-editor-draft-status" },
-      }),
-      el("button", {
-        class: "event-editor-footer-settings",
-        text: "⚙",
-        attrs: { type: "button", title: "설정", "aria-label": "설정" },
-      }),
-      // [중간-6] 파괴적 동작(삭제)을 확인/취소 묶음에서 분리해 좌측에 배치.
       el("div", {
-        class: "event-editor-footer-danger",
+        class: "event-editor-footer-leading",
         children: [
-          footerButton("삭제", "event-delete", () => {
-            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+          // 파괴적 동작은 확인 묶음과 분리해 좌측에 둔다.
+          el("div", {
+            class: "event-editor-footer-danger",
+            children: [
+              footerButton("삭제", "event-delete", () => {
+                if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+              }),
+            ],
+          }),
+          el("span", {
+            class: "event-editor-draft-status",
+            text: cancelHint,
+            dataset: { testid: "event-editor-draft-status" },
           }),
         ],
       }),
       el("div", {
         class: "event-editor-footer-actions",
         children: [
-          footerButton("확인", "event-editor-ok", () => {
-            saveEventDraft(request.mapId, request.eventId);
-            close(true);
-          }, true),
           footerButton("취소", "event-editor-cancel", () => close()),
           footerButton("적용", "event-editor-apply", () => {
             saveEventDraft(request.mapId, request.eventId);
             beginExistingEventDraft(request.mapId, request.eventId);
           }),
+          footerButton("확인", "event-editor-ok", () => {
+            saveEventDraft(request.mapId, request.eventId);
+            close(true);
+          }, true),
           footerButton("도움말", "event-editor-help"),
         ],
       }),

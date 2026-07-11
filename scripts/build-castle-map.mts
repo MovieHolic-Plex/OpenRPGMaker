@@ -293,7 +293,7 @@ console.log(road);
 runOk(ctx, "place_props", {
   mapId: MAP_ID,
   area: { x: inner.x + 4, y: inner.y + 4, w: 10, h: 6 },
-  propVocabId: "harness-combined-town-bench-horizontal",
+  material: "벤치",
   count: 2,
   minGap: 3,
   naturalness: 0.55,
@@ -302,7 +302,7 @@ runOk(ctx, "place_props", {
 runOk(ctx, "place_props", {
   mapId: MAP_ID,
   area: { x: keep.x + 2, y: keep.y + 5, w: 6, h: 3 },
-  propVocabId: "harness-combined-town-magic-circle",
+  material: "마법진",
   count: 1,
   minGap: 0,
   naturalness: 0.4,

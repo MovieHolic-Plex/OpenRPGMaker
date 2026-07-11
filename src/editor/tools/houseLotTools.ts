@@ -6,7 +6,7 @@ import { HOUSE_KIT_TOOLS } from "./houseKitTools";
 import {
   houseBBox,
   isYardDecorKind,
-  propVocabIdForYardDecor,
+  materialForYardDecor,
   yardAreaForHouse,
   yardScatterParams,
   type HouseWing,
@@ -173,13 +173,13 @@ export function runBuildHouseLots(draft: Project, args: Record<string, unknown>)
     for (let d = 0; d < house.yard.length; d += 1) {
       const plan = house.yard[d]!;
       const count = Math.max(1, plan.count ?? 1);
-      const propVocabId = propVocabIdForYardDecor(plan.kind);
+      const material = materialForYardDecor(plan.kind);
       const scatter = yardScatterParams(plan.kind);
       try {
         const propsResult = placeProps.run(draft, {
           mapId,
           area: yardArea,
-          propVocabId,
+          material,
           count,
           minGap: scatter.minGap,
           naturalness: scatter.naturalness,

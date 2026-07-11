@@ -183,17 +183,62 @@ function itemStage(cmd: Extract<Command, { kind: "changeItem" }>): HTMLElement {
 
 function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
   const project = store.getCurrent();
-  const win = el("div", { class: "ecp-shop-window" });
-  applySystemGraphic(win);
-  win.append(el("div", { class: "ecp-shop-title", text: `상점 · ${cmd.itemIds.length}개 상품` }));
-  const grid = el("div", { class: "ecp-item-grid" });
-  for (const id of cmd.itemIds.slice(0, 12)) {
+  // System.png border-image fill 을 쓰면 하단 팔레트 스트립(0123456789)이
+  // 미리보기 전체를 덮어 "배경이 깨진" 것처럼 보인다. 상점 프리뷰는 솔리드 창으로 둔다.
+  const win = el("div", { class: "ecp-shop-window ecp-shop-window-clean", dataset: { testid: "ecp-shop-window" } });
+  const shopType =
+    cmd.shopType === "buyOnly" ? "구매 전용" : cmd.shopType === "sellOnly" ? "판매 전용" : "구매/판매";
+  const message =
+    cmd.messageType === "business"
+      ? "무엇이 필요하신가요?"
+      : cmd.messageType === "direct"
+        ? "아이템을 선택하세요"
+        : "어서 오세요";
+  const merchantGold = typeof cmd.merchantGold === "number" && Number.isFinite(cmd.merchantGold)
+    ? Math.max(0, Math.floor(cmd.merchantGold))
+    : 100;
+  win.append(
+    el("div", {
+      class: "ecp-shop-title",
+      text: `상점 · ${cmd.itemIds.length}개 · ${shopType}`,
+    }),
+    el("div", { class: "ecp-shop-message", text: message }),
+    el("div", {
+      class: "ecp-shop-merchant-gold",
+      dataset: { testid: "ecp-shop-merchant-gold" },
+      text: `상인 소지금 ${merchantGold.toLocaleString("ko-KR")} G`,
+    })
+  );
+  const list = el("div", { class: "ecp-shop-item-list" });
+  for (const id of cmd.itemIds.slice(0, 8)) {
     const record = project.database.items.find((item) => item.id === id);
-    grid.append(el("div", { class: "ecp-item-cell", attrs: { title: record?.name ?? id }, children: [heroIcon(record?.iconResourceId ?? record?.imageResourceId, record?.name ?? id, 24)] }));
+    const name = record?.name ?? id;
+    const price = record ? `${record.price.toLocaleString("ko-KR")} G` : "—";
+    list.append(
+      el("div", {
+        class: "ecp-shop-item-row",
+        attrs: { title: record?.description?.trim() || name },
+        children: [
+          el("div", {
+            class: "ecp-shop-item-icon",
+            children: [heroIcon(record?.iconResourceId ?? record?.imageResourceId, name, 22)],
+          }),
+          el("span", { class: "ecp-shop-item-name", text: name }),
+          el("span", { class: "ecp-shop-item-price", text: price }),
+        ],
+      })
+    );
   }
-  if (cmd.itemIds.length === 0) grid.append(el("div", { class: "ecp-item-cell empty", text: "상품 없음" }));
-  win.append(grid);
-  const stage = el("div", { class: "ecp-stage" });
+  if (cmd.itemIds.length === 0) {
+    list.append(el("div", { class: "ecp-shop-item-empty", text: "상품 없음" }));
+  } else if (cmd.itemIds.length > 8) {
+    list.append(el("div", { class: "ecp-shop-item-more", text: `외 ${cmd.itemIds.length - 8}개…` }));
+  }
+  win.append(list);
+  if (cmd.branchOnTransaction) {
+    win.append(el("div", { class: "ecp-shop-branch-note", text: "거래 후 분기 있음" }));
+  }
+  const stage = el("div", { class: "ecp-stage ecp-shop-stage" });
   stage.append(win);
   return stage;
 }

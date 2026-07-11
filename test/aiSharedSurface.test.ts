@@ -62,9 +62,9 @@ describe("AI shared surface (basic/expert)", () => {
   it("labels dock mode as 사이드/플로팅 and updates menu copy", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
     const modeBtn = findByTestId(panel, "ai-dock-mode-btn");
-    const headerBtn = findByTestId(panel, "ai-dock-mode-btn-header");
+    // 헤더 뱃지는 제거 — 커맨드 바 토글 + 더보기 메뉴만 유지.
+    expect(findByTestId(panel, "ai-dock-mode-btn-header")).toBeNull();
     expect(modeBtn?.textContent).toBe("사이드");
-    expect(headerBtn?.textContent).toBe("사이드");
     expect(modeBtn?.dataset.dockMode).toBe("side");
 
     findByTestId(panel, "ai-more-menu-toggle")?.click();

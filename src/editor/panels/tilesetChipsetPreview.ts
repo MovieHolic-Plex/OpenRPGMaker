@@ -13,7 +13,7 @@ import {
   startGroupDrag,
   stopGroupDrag,
 } from "@/editor/panels/tilesetGroupEditor";
-import { cellTitle, hasAiMetadata, passageText } from "@/editor/panels/tilesetMetadataControls";
+import { cellTitle, hasAiMetadata, isUnlabeledTile, passageText } from "@/editor/panels/tilesetMetadataControls";
 import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContextMenu";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tileLayerHome, type TileLayerHome } from "@/editor/tileLayerClassification";
@@ -32,6 +32,8 @@ type ChipsetPreviewModel = {
   readonly onSelectTile: (tile: number, options?: { readonly quiet?: boolean }) => void;
   /** Optional: open full-sheet passage modal from the preview chrome. */
   readonly onOpenFullSheet?: () => void;
+  /** 미라벨(라벨·설명 비어 있음) 타일만 강조 */
+  readonly unlabeledOnly?: boolean;
 };
 
 type LayerFilter = "all" | "lower" | "upper";
@@ -40,7 +42,16 @@ type LayerFilter = "all" | "lower" | "upper";
 const PREVIEW_SCALES = [2, 3, 4] as const;
 let previewScale: number = 2;
 let layerFilter: LayerFilter = "all";
+let unlabeledOnlyFilter = false;
 let previewPanState: PreviewPanState | null = null;
+
+export function getUnlabeledOnlyFilter(): boolean {
+  return unlabeledOnlyFilter;
+}
+
+export function setUnlabeledOnlyFilter(value: boolean): void {
+  unlabeledOnlyFilter = value;
+}
 
 export function renderChipsetPreviewPanel(model: ChipsetPreviewModel): HTMLElement {
   return el("div", {
@@ -51,6 +62,7 @@ export function renderChipsetPreviewPanel(model: ChipsetPreviewModel): HTMLEleme
 }
 
 function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
+  const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
   return el("div", {
     class: "tileset-db-preview-header",
     children: [
@@ -66,6 +78,23 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
               renderLayerFilterButton({ filter: "all", text: "전체", title: "하위·상위 전부 표시", model }),
               renderLayerFilterButton({ filter: "lower", text: "하위", title: "하위 레이어 타일만 강조", model }),
               renderLayerFilterButton({ filter: "upper", text: "상위", title: "상위 레이어 타일만 강조", model }),
+              el("button", {
+                class: unlabeledOn ? "active" : "",
+                text: "미라벨",
+                attrs: {
+                  type: "button",
+                  role: "tab",
+                  title: "라벨·설명이 비어 있는 타일만 강조",
+                  "aria-selected": String(unlabeledOn),
+                },
+                dataset: { testid: "tileset-filter-unlabeled" },
+                on: {
+                  click: () => {
+                    unlabeledOnlyFilter = !unlabeledOnlyFilter;
+                    stableRerender(model.rerender);
+                  },
+                },
+              }),
             ],
           }),
         ],
@@ -209,7 +238,9 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
 
 function previewMetaText(model: ChipsetPreviewModel, rows: number): string {
   const filterLabel = layerFilter === "all" ? "전체 레이어" : layerFilter === "lower" ? "하위만" : "상위만";
-  return `${model.tileset.count}칩 · ${model.tileset.tilesPerRow}열×${rows}행 · ${previewScale}x · ${filterLabel} · ${modeHelpText(model.mode)} · 스크롤: 휠·←→↑↓·중클릭 드래그 (전체 시트)`;
+  const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
+  const unlabeledLabel = unlabeledOn ? " · 미라벨 강조" : "";
+  return `${model.tileset.count}칩 · ${model.tileset.tilesPerRow}열×${rows}행 · ${previewScale}x · ${filterLabel}${unlabeledLabel} · ${modeHelpText(model.mode)} · 스크롤: 휠·←→↑↓·중클릭 드래그 (전체 시트)`;
 }
 
 function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonElement {
@@ -217,20 +248,24 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
   const home = tileLayerHome(model.tileset, index);
   const selected = index === model.selectedTile ? " selected" : "";
   const aiSelected = model.mode === "ai" && isAiTileSelected(index) ? " ai-selected" : "";
-  const dimmed = isLayerDimmed(home) ? " layer-dimmed" : "";
+  const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
+  const unlabeled = isUnlabeledTile(model.tileset, index);
+  const dimmed = isLayerDimmed(home) || (unlabeledOn && !unlabeled) ? " layer-dimmed" : "";
+  const unlabeledClass = unlabeled ? " unlabeled" : "";
   const rerender = () => stableRerender(model.rerender);
   return el("button", {
-    class: `tileset-db-cell mark-${mark} layer-${home}${selected}${aiSelected}${dimmed}${model.mode === "group" ? groupCellClass(index) : ""}`,
+    class: `tileset-db-cell mark-${mark} layer-${home}${selected}${aiSelected}${dimmed}${unlabeledClass}${model.mode === "group" ? groupCellClass(index) : ""}`,
     text: cellText(model, index),
     attrs: {
       type: "button",
-      title: `${cellTitle(model.tileset, index)} · ${layerHomeLabel(home)} · 우클릭: 의미/통행/레이어`,
-      "aria-label": `타일 ${index} ${layerHomeLabel(home)}. 우클릭으로 의미 편집`,
+      title: `${cellTitle(model.tileset, index)} · ${layerHomeLabel(home)}${unlabeled ? " · 미라벨" : ""} · 우클릭: 의미/통행/레이어`,
+      "aria-label": `타일 ${index} ${layerHomeLabel(home)}${unlabeled ? " 미라벨" : ""}. 우클릭으로 의미 편집`,
     },
     dataset: {
       testid: `tileset-db-cell-${index}`,
       layer: home,
       tile: String(index),
+      unlabeled: unlabeled ? "1" : "0",
     },
     on: {
       click: (event) => handleTileClick(model, index, event),

@@ -1,0 +1,679 @@
+/* 상점 처리 / 여관 / 문장 표시 서브다이얼로그 — 전용 레이아웃.
+   범용 auto-fit 그리드(.event-command-edit-body > div > div)에서 제외되어야 한다. */
+
+/* ---- 공통 commerce 골격 ---- */
+
+/* 우측 프리뷰가 요약 역할을 하므로 상점/문장 폼의 상단 mono 요약 줄은 숨긴다.
+   auto-fit 그리드보다 높은 특이도로 이겨야 한다. */
+.event-command-edit-body > div > .event-command-edit-summary:is(
+  :has(+ .shop-processing-command-body),
+  :has(+ .commerce-command-body),
+  :has(+ .event-command-text-editor)
+),
+.event-command-edit-body:has(.shop-processing-command-body) > div > .event-command-edit-summary,
+.event-command-edit-body:has(.event-command-text-editor) > div > .event-command-edit-summary {
+  display: none !important;
+}
+
+.event-command-edit-body .commerce-command-body,
+.event-command-edit-body .shop-processing-command-body {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.commerce-command-body-inline.inn-command-body,
+.commerce-command-body-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commerce-command-field {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(90px, auto) minmax(0, 1fr);
+  align-items: center;
+}
+
+.commerce-command-title {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.commerce-command-hint {
+  color: var(--text-dim, var(--text-3, #8b93a7));
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.commerce-command-input,
+.shop-processing-message-select {
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 6px;
+  color: var(--text-1, #e9ecf5);
+  font: 500 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 32px;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.commerce-command-input:focus,
+.shop-processing-message-select:focus,
+.shop-processing-item-select:focus {
+  border-color: var(--accent, #6ea8ff);
+  outline: 2px solid color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+  outline-offset: 0;
+}
+
+.commerce-command-option {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  font: 500 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.commerce-command-empty {
+  background: var(--bg-inset, #14161c);
+  border: 1px dashed var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 16px;
+  text-align: center;
+}
+
+.commerce-command-summary {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.12)) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+  border-radius: 6px;
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 8px 10px;
+}
+
+/* ---- 상점 설정 카드 ---- */
+
+.shop-processing-settings {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.shop-processing-settings .shop-processing-option,
+.shop-processing-settings .shop-processing-merchant-gold {
+  grid-column: 1 / -1;
+}
+
+.shop-processing-merchant-gold-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 160px) auto;
+}
+
+.shop-processing-merchant-gold-unit {
+  color: #ffe07a;
+  font: 700 13px/1 Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+.shop-processing-fieldset {
+  background: var(--bg-raised, #20242e);
+  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  border-radius: 8px;
+  margin: 0;
+  min-width: 0;
+  padding: 10px 12px 12px;
+}
+
+.shop-processing-fieldset > legend {
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  padding: 0 4px;
+}
+
+.shop-processing-segment {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.shop-processing-segment-option {
+  align-items: center;
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 6px;
+  color: var(--text-2, #aeb6c8);
+  cursor: pointer;
+  display: flex;
+  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 8px;
+  text-align: center;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.shop-processing-segment-option:hover {
+  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 45%, transparent);
+  color: var(--text-1, #e9ecf5);
+}
+
+.shop-processing-segment-option.is-selected,
+.shop-processing-segment-option:has(.shop-processing-segment-input:checked) {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.18)) 90%, transparent);
+  border-color: var(--accent, #6ea8ff);
+  color: var(--text-1, #e9ecf5);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
+}
+
+.shop-processing-segment-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.shop-processing-check {
+  width: 100%;
+}
+
+.shop-processing-message .shop-processing-message-select {
+  margin-top: 2px;
+}
+
+/* ---- 판매 아이템 듀얼 리스트 ---- */
+
+.shop-processing-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shop-processing-items-hint {
+  margin: -2px 0 2px;
+}
+
+.shop-processing-item-grid {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  min-height: 220px;
+  min-width: 0;
+}
+
+.shop-processing-list-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  min-width: 0;
+}
+
+.shop-processing-list-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.shop-processing-list-title {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.shop-processing-list-count {
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 999px;
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  min-width: 22px;
+  padding: 3px 7px;
+  text-align: center;
+}
+
+/* e2e/selectOption 호환용 네이티브 select — 크기 유지, 시각적으로만 숨김 */
+.shop-processing-native-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0.01;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shop-processing-item-list-shell {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 200px;
+  min-width: 0;
+}
+
+.shop-processing-item-list {
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 8px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 280px;
+  min-height: 180px;
+  overflow: auto;
+  padding: 6px;
+}
+
+.shop-processing-item-empty {
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: auto;
+  padding: 16px 8px;
+  text-align: center;
+}
+
+.shop-processing-item-row {
+  align-items: flex-start;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-1, #e9ecf5);
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  padding: 7px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.shop-processing-item-row:hover {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.12)) 80%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+}
+
+.shop-processing-item-row.is-selected {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.2)) 90%, transparent);
+  border-color: var(--accent, #6ea8ff);
+}
+
+.shop-processing-item-icon {
+  display: grid;
+  height: 28px;
+  place-items: center;
+  width: 28px;
+}
+
+.shop-processing-item-icon .rich-record-icon,
+.shop-processing-item-icon .rich-record-icon-crop,
+.shop-processing-item-icon .rich-record-initial,
+.shop-processing-item-icon img {
+  height: 24px;
+  image-rendering: pixelated;
+  width: 24px;
+}
+
+.shop-processing-item-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shop-processing-item-topline {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.shop-processing-item-name {
+  font: 700 12px/1.25 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shop-processing-item-price {
+  color: #ffe07a;
+  flex: none;
+  font: 700 11px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.shop-processing-item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.shop-processing-item-type {
+  color: var(--accent, #6ea8ff);
+  font: 700 10px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.shop-processing-item-desc {
+  color: var(--text-2, #aeb6c8);
+  display: -webkit-box;
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.shop-processing-item-detail {
+  background: color-mix(in srgb, var(--bg-raised, #20242e) 92%, var(--accent-muted, rgba(110, 168, 255, 0.12)));
+  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  border-radius: 8px;
+  margin-top: 4px;
+  padding: 10px 12px;
+}
+
+.shop-processing-item-detail-empty {
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+.shop-processing-item-detail-main {
+  align-items: flex-start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 48px minmax(0, 1fr);
+}
+
+.shop-processing-item-detail-icon-wrap {
+  display: grid;
+  height: 48px;
+  place-items: center;
+  width: 48px;
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 8px;
+}
+
+.shop-processing-item-detail-icon-wrap .rich-record-icon,
+.shop-processing-item-detail-icon-wrap .rich-record-icon-crop,
+.shop-processing-item-detail-icon-wrap .rich-record-initial,
+.shop-processing-item-detail-icon-wrap img,
+.shop-processing-item-detail-icon {
+  height: 32px !important;
+  image-rendering: pixelated;
+  width: 32px !important;
+}
+
+.shop-processing-item-detail-title {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.shop-processing-item-detail-title strong {
+  font: 750 14px/1.25 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.shop-processing-item-detail-price {
+  color: #ffe07a;
+  font: 700 13px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+.shop-processing-item-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.shop-processing-badge {
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 999px;
+  color: var(--text-2, #aeb6c8);
+  font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  padding: 4px 8px;
+}
+
+.shop-processing-item-detail-desc {
+  color: var(--text-1, #e9ecf5);
+  font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 8px 0 0;
+}
+
+.shop-processing-item-controls {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 22px;
+}
+
+.shop-processing-move-button {
+  min-width: 72px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.shop-processing-move-button:disabled {
+  opacity: 0.45;
+}
+
+/* ---- 거래 분기 컨트롤 ---- */
+
+.shop-processing-branch-controls {
+  background: var(--bg-raised, #20242e);
+  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.shop-processing-branch-controls.is-hidden {
+  display: none;
+}
+
+.shop-processing-branch-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.shop-processing-branch-title {
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.shop-processing-branch-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.shop-processing-branch-add {
+  min-width: 64px;
+}
+
+/* 좁은 편집 열: 듀얼 리스트를 세로 스택 */
+@media (max-width: 900px) {
+  .shop-processing-settings {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-processing-item-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shop-processing-item-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .shop-processing-segment {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 명령 편집 모달 2열에서 왼쪽 폼이 세로로 넘치지 않게 */
+.event-command-edit-columns > .event-command-edit-body:has(.shop-processing-command-body) {
+  max-height: min(68vh, 620px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.event-subdialog-window.wide:has(.shop-processing-command-body) {
+  width: min(860px, calc(100vw - 24px));
+  max-height: min(92vh, 780px);
+}
+
+.event-subdialog-window.wide:has(.shop-processing-command-body) .event-subdialog-body {
+  max-height: min(calc(92vh - 56px), 720px);
+  overflow: auto;
+}
+
+/* ---- 문장 표시 전용 서브다이얼로그 ---- */
+
+.event-command-text-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 2px 0 0;
+}
+
+.event-command-text-label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-command-text-label > span {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-text-label > input,
+.event-command-text-label > textarea {
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 6px;
+  color: var(--text-1, #e9ecf5);
+  font: 500 13px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.event-command-text-label > textarea {
+  font-family: var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  min-height: 120px;
+  resize: vertical;
+}
+
+.event-command-text-label > input:focus,
+.event-command-text-label > textarea:focus {
+  border-color: var(--accent, #6ea8ff);
+  outline: 2px solid color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+}
+
+.event-command-text-body-label {
+  flex: 1 1 auto;
+}
+
+.event-command-text-line-guide {
+  color: var(--text-dim, var(--text-3, #8b93a7));
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-text-line-count {
+  color: var(--text-2, #aeb6c8);
+  font: 600 12px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+}
+
+.event-command-text-line-count.invalid {
+  color: var(--danger, #e08a8a);
+}
+
+.event-command-text-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle, #2a2e38);
+}
+
+.event-command-text-action {
+  background: var(--surface-button, var(--bg-raised, #20242e));
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 6px;
+  color: var(--text-1, #e9ecf5);
+  cursor: pointer;
+  font: 700 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 76px;
+  padding: 6px 14px;
+}
+
+.event-command-text-action.primary {
+  background: var(--accent, #6ea8ff);
+  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 86%, black);
+  color: var(--text-inverse, #0b1020);
+}
+
+.event-command-text-action.primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.event-command-text-action:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 55%, transparent);
+}
+
+.event-subdialog-window.wide:has(.event-command-text-dialog) {
+  width: min(560px, calc(100vw - 24px));
+}
+
+/* 문장 표시 인라인 에디터(명령 편집 모달) 라벨 정렬 보강 */
+.event-command-edit-body .event-command-text-editor .inline-field {
+  align-items: start;
+  grid-template-columns: minmax(56px, 72px) minmax(0, 1fr);
+}
+
+.event-command-edit-body .event-command-text-editor .inline-field:has(textarea) {
+  grid-template-columns: 1fr;
+}
+
+.event-command-edit-body .event-command-text-editor .inline-field > span {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 8px;
+}
+
+.event-command-edit-body .event-command-text-editor .inline-field:has(textarea) > span {
+  padding-top: 0;
+}

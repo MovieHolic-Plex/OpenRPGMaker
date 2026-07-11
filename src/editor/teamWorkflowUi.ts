@@ -61,23 +61,29 @@ export function openMockLoginModal(onIdentityChanged?: () => void): void {
 
 export function renderIdentityTopbarControl(onIdentityChanged: () => void): HTMLElement {
   const identity = currentHumanEditorIdentity();
+  const title = `편집 신원 — ${identity.label}`;
   const button = el("button", {
-    class: "team-identity-button",
+    class: "team-identity-button is-icon-only",
     attrs: {
       "aria-haspopup": "menu",
       "aria-expanded": "false",
-      title: "편집 신원",
+      "aria-label": title,
+      title,
       type: "button",
     },
     dataset: { testid: "topbar-identity" },
     children: [
-      el("span", { class: `team-identity-kind ${identity.kind}`, text: identityIcon(identity), attrs: { "aria-hidden": "true" } }),
-      el("span", { class: "team-identity-label", text: identity.label, dataset: { testid: "topbar-identity-label" } }),
-      el("span", { class: "team-identity-kind-text", text: identity.kind === "agent" ? "에이전트" : "사람" }),
+      makeTopbarIcon("person"),
+      el("span", {
+        class: "team-identity-label is-visually-hidden",
+        text: identity.label,
+        dataset: { testid: "topbar-identity-label" },
+      }),
     ],
     on: {
       click: (event) => {
         event.stopPropagation();
+        closeCommitHistoryPanel();
         toggleIdentityMenu(button, identity, onIdentityChanged);
       },
     },
@@ -87,14 +93,21 @@ export function renderIdentityTopbarControl(onIdentityChanged: () => void): HTML
 
 export function renderCommitHistoryButton(): HTMLElement {
   return el("button", {
-    class: "team-history-button",
-    attrs: { title: "커밋 히스토리", type: "button" },
-    text: "히스토리",
+    class: "team-history-button is-icon-only",
+    attrs: {
+      title: "커밋 히스토리",
+      "aria-label": "커밋 히스토리",
+      "aria-expanded": "false",
+      "aria-haspopup": "dialog",
+      type: "button",
+    },
     dataset: { testid: "commit-history-toggle" },
+    children: [makeTopbarIcon("history")],
     on: {
       click: (event) => {
         event.stopPropagation();
-        toggleCommitHistoryPanel();
+        closeIdentityMenu();
+        toggleCommitHistoryPanel(event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined);
       },
     },
   });
@@ -248,31 +261,49 @@ function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIde
     ],
   });
   const rect = anchor.getBoundingClientRect();
-  menu.style.left = `${Math.round(rect.left)}px`;
+  // Prefer right-align under the icon so the menu stays near the topbar trailing cluster.
+  const menuWidth = 220;
+  const left = Math.max(8, Math.min(Math.round(rect.right - menuWidth), Math.round(viewportWidth() - menuWidth - 8)));
+  menu.style.left = `${left}px`;
   menu.style.top = `${Math.round(rect.bottom + 6)}px`;
   document.body.append(menu);
   activeIdentityMenu = menu;
   input.focus();
-  window.setTimeout(() => document.addEventListener("pointerdown", onDocumentPointerDown), 0);
+  window.setTimeout(() => document.addEventListener("pointerdown", onTeamPopoverPointerDown), 0);
 }
 
-function onDocumentPointerDown(event: Event): void {
-  // 메뉴 내부 pointerdown 에 닫으면 버튼 click 이벤트가 소실된다 (실브라우저 결함, 유닛 fake DOM 은 못 잡음)
-  if (activeIdentityMenu && event.target instanceof Node && activeIdentityMenu.contains(event.target)) return;
+function onTeamPopoverPointerDown(event: Event): void {
+  // 팝오버 내부 pointerdown 에 닫으면 버튼 click 이벤트가 소실된다 (실브라우저 결함, 유닛 fake DOM 은 못 잡음)
+  const target = event.target;
+  if (!(target instanceof Node)) {
+    closeIdentityMenu();
+    closeCommitHistoryPanel();
+    return;
+  }
+  if (activeIdentityMenu?.contains(target)) return;
+  if (activeCommitPanel?.contains(target)) return;
+  if (target instanceof Element) {
+    if (target.closest("[data-testid='topbar-identity']")) return;
+    if (target.closest("[data-testid='commit-history-toggle']")) return;
+  }
   closeIdentityMenu();
+  closeCommitHistoryPanel();
 }
 
 function closeIdentityMenu(): void {
-  document.removeEventListener("pointerdown", onDocumentPointerDown);
-  activeIdentityMenu?.remove();
+  if (!activeIdentityMenu) {
+    document.querySelectorAll<HTMLElement>("[data-testid='topbar-identity']").forEach((node) => node.setAttribute("aria-expanded", "false"));
+    return;
+  }
+  activeIdentityMenu.remove();
   activeIdentityMenu = null;
   document.querySelectorAll<HTMLElement>("[data-testid='topbar-identity']").forEach((node) => node.setAttribute("aria-expanded", "false"));
+  maybeRemoveTeamPopoverListener();
 }
 
-function toggleCommitHistoryPanel(): void {
+function toggleCommitHistoryPanel(anchor?: HTMLElement): void {
   if (activeCommitPanel) {
-    activeCommitPanel.remove();
-    activeCommitPanel = null;
+    closeCommitHistoryPanel();
     return;
   }
   const panel = el("section", {
@@ -282,8 +313,31 @@ function toggleCommitHistoryPanel(): void {
   });
   activeCommitPanel = panel;
   document.body.append(panel);
+  if (anchor) {
+    anchor.setAttribute("aria-expanded", "true");
+    const rect = anchor.getBoundingClientRect();
+    panel.style.top = `${Math.round(rect.bottom + 6)}px`;
+    panel.style.right = `${Math.max(8, Math.round(viewportWidth() - rect.right))}px`;
+  }
   renderCommitPanelLoading(panel);
   void refreshCommitPanel(panel);
+  window.setTimeout(() => document.addEventListener("pointerdown", onTeamPopoverPointerDown), 0);
+}
+
+function closeCommitHistoryPanel(): void {
+  if (!activeCommitPanel) {
+    document.querySelectorAll<HTMLElement>("[data-testid='commit-history-toggle']").forEach((node) => node.setAttribute("aria-expanded", "false"));
+    return;
+  }
+  activeCommitPanel.remove();
+  activeCommitPanel = null;
+  document.querySelectorAll<HTMLElement>("[data-testid='commit-history-toggle']").forEach((node) => node.setAttribute("aria-expanded", "false"));
+  maybeRemoveTeamPopoverListener();
+}
+
+function maybeRemoveTeamPopoverListener(): void {
+  if (activeIdentityMenu || activeCommitPanel) return;
+  document.removeEventListener("pointerdown", onTeamPopoverPointerDown);
 }
 
 function renderCommitPanelLoading(panel: HTMLElement): void {
@@ -378,8 +432,29 @@ function oauthProviderName(method: "google" | "github"): string {
   return method === "google" ? "Google" : "GitHub";
 }
 
-function identityIcon(identity: EditorIdentity): string {
-  return identity.kind === "agent" ? "AI" : "사람";
+type TopbarIconName = "history" | "person";
+
+function makeTopbarIcon(name: TopbarIconName): SVGSVGElement {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 22 22");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "1.8");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.classList.add("team-topbar-icon");
+  const paths =
+    name === "history"
+      ? ["M11 5v6l4 2", "M11 19a8 8 0 1 0-7.1-4.2", "M4 14.5l.6-3.2 2.9 1.5"]
+      : ["M11 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z", "M5 18.5c1.4-2.6 3.5-4 6-4s4.6 1.4 6 4"];
+  for (const d of paths) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    svg.append(path);
+  }
+  return svg;
 }
 
 function browserLocalStorage(): Storage | null {
@@ -392,4 +467,10 @@ function browserLocalStorage(): Storage | null {
 
 function canRenderFloatingUi(): boolean {
   return typeof document !== "undefined" && typeof document.querySelector === "function" && Boolean(document.body);
+}
+
+function viewportWidth(): number {
+  if (typeof window === "undefined") return 800;
+  const width = window.innerWidth;
+  return typeof width === "number" && Number.isFinite(width) && width > 0 ? width : 800;
 }

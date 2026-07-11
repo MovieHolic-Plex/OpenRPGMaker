@@ -2,6 +2,8 @@
 // 어휘 접근 판정 계층 (타일 툴 v3).
 //
 // 규약:
+// - LLM/시공 툴 재료 지정은 **그룹 id(vocabId)가 아니라** 타일 label·description 문자열이다.
+// - resolveMaterialByLabel 이 라벨/설명을 매칭해 타일 또는 그 타일이 속한 전개 그룹을 고른다.
 // - 영구 합의 표식은 origin === "user" (그룹: TileGroupMetadata.origin, 타일: tileMeta.origin).
 // - 시공 프리미티브는 미합의 재료를 하드 차단하지 않는다. resolveVocabForBuild 가
 //   approved | soft | missing 을 돌려 soft 면 맵에 그린 뒤 사용자 목업 확인으로 합의한다.
@@ -109,44 +111,330 @@ export function unapprovedVocabulary(tileset: TilesetDef, limit = 10): Unapprove
   };
 }
 
-// 한국어 재료어 → 그룹 검색어 확장(발견성). 정확 일치 실패 시 후보 제시에만 쓴다 — 자동 대체 금지.
-const VOCAB_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[] = [
-  [/돌벽|석벽|돌담/, ["stone", "wall", "castle"]],
-  [/벽/, ["wall"]],
-  [/길|도로/, ["path", "road", "dirt", "sand"]],
-  [/물|호수|연못|강/, ["water", "lake"]],
-  [/나무|수목/, ["tree", "conifer", "broadleaf"]],
-  [/울타리|담장/, ["fence"]],
-  [/지붕/, ["roof"]],
-  [/문/, ["door"]],
-  [/잔디|풀/, ["grass"]],
+// 한국어 재료어 동의어 — 라벨/설명 매칭 점수 보조용(자동 대체 아님).
+// 패턴은 쿼리 전체에 대해 test — 느슨한 부분일치(예: '벽'⊂'돌벽')로 다른 재료를 끌어오지 않는다.
+const MATERIAL_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[] = [
+  [/돌벽|석벽|돌담|stone[-_]?wall|목골|석재/, ["돌벽", "석벽", "돌담", "석재", "목골", "stone", "castle", "timber"]],
+  [/흰\s*집\s*벽|회벽|^벽$/, ["흰 집 벽", "회벽", "벽", "흰"]],
+  [/흙길|모래길|dirt|sand|^길$|^도로$/, ["흙길", "모래", "길", "도로"]],
+  [/^물$|호수|연못|^강$|lake|water/, ["물", "호수", "연못", "강", "오토타일"]],
+  [/침엽수|conifer/, ["침엽수"]],
+  [/활엽수|broadleaf/, ["활엽수"]],
+  [/마른나무/, ["마른나무"]],
+  [/^나무$|수목/, ["침엽수", "나무", "수목"]],
+  [/울타리|담장/, ["울타리"]],
+  [/지붕|roof/, ["지붕"]],
+  [/^문$|입구|door/, ["문", "입구", "나무 문"]],
+  [/창문|window/, ["창문"]],
+  [/잔디|풀|grass/, ["잔디"]],
+  [/나무\s*상자|나무상자/, ["나무 상자", "상자"]],
+  [/과일\s*박스|과일박스/, ["과일박스", "과일"]],
+  [/벤치/, ["벤치"]],
+  [/^꽃$|꽃\/|꽃·/, ["꽃"]],
 ];
 
-// 존재하지 않는 그룹 id 요청 실패에 후보를 제시한다(발견성 — 추측 루프를 1턴으로).
+export interface MaterialSuggestion {
+  readonly label: string;
+  readonly description: string;
+  readonly tileId: number;
+  readonly role?: string;
+}
+
+export interface ResolveMaterialOptions {
+  /** 그룹 전개(벽/지붕/길/수역)가 필요하면 true. false면 단일 타일 산포도 허용. */
+  readonly preferGroup?: boolean;
+  /** 이 role 을 가진 그룹/타일을 우선. */
+  readonly preferRoles?: readonly string[];
+  /** fill_region 등 오토타일 그룹만. */
+  readonly requireAutotileGroup?: boolean;
+}
+
+export type MaterialResolveResult =
+  | {
+      readonly status: "approved" | "soft";
+      readonly kind: "group";
+      readonly group: TileGroupMetadata;
+      readonly tileId: number;
+      readonly matchedLabel: string;
+      readonly matchedDescription: string;
+      readonly softConfirm?: VocabSoftConfirm;
+    }
+  | {
+      readonly status: "approved" | "soft";
+      readonly kind: "tile";
+      readonly tileId: number;
+      readonly matchedLabel: string;
+      readonly matchedDescription: string;
+      readonly softConfirm?: VocabSoftConfirm;
+    }
+  | {
+      readonly status: "missing";
+      readonly message: string;
+      readonly suggestions: readonly MaterialSuggestion[];
+    };
+
+function normalizeMaterialQuery(query: string): string {
+  return query.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function materialQueryTerms(query: string): string[] {
+  const needle = normalizeMaterialQuery(query);
+  if (!needle) return [];
+  const terms = new Set<string>([needle]);
+  for (const [pattern, expansions] of MATERIAL_QUERY_SYNONYMS) {
+    if (pattern.test(needle)) expansions.forEach((term) => terms.add(term.toLowerCase()));
+  }
+  return [...terms];
+}
+
+function scoreTextMatch(haystack: string, terms: readonly string[]): number {
+  const text = haystack.trim().toLowerCase();
+  if (!text) return 0;
+  let best = 0;
+  for (const term of terms) {
+    if (!term) continue;
+    if (text === term) best = Math.max(best, 100);
+    else if (text.startsWith(term) || term.startsWith(text)) best = Math.max(best, 80);
+    else if (text.includes(term)) best = Math.max(best, 55);
+    else if (term.length >= 2 && term.includes(text) && text.length >= 2) best = Math.max(best, 40);
+  }
+  return best;
+}
+
+function tileLabelDescription(tileset: TilesetDef, tileId: number): { label: string; description: string; role?: string } {
+  const meta = tileset.tileMeta?.[tileId];
+  const label = typeof meta?.label === "string" ? meta.label.trim() : "";
+  const description = typeof meta?.description === "string" ? meta.description.trim() : "";
+  const role = typeof meta?.role === "string" && meta.role ? meta.role : undefined;
+  return { label, description, ...(role ? { role } : {}) };
+}
+
+function groupContainingTile(tileset: TilesetDef, tileId: number): TileGroupMetadata | undefined {
+  const groups = tileset.tileGroups ?? [];
+  // 멤버가 적고 패턴이 있는 그룹을 우선(가방 그룹보다 구조 그룹).
+  const hits = groups.filter((group) => group.tileIds.includes(tileId));
+  if (hits.length === 0) return undefined;
+  hits.sort((a, b) => {
+    const aPat = a.patternGrammar ? 1 : 0;
+    const bPat = b.patternGrammar ? 1 : 0;
+    if (aPat !== bPat) return bPat - aPat;
+    return a.tileIds.length - b.tileIds.length;
+  });
+  return hits[0];
+}
+
+function isAutotileGroup(group: TileGroupMetadata): boolean {
+  const kind = group.patternGrammar?.kind;
+  return kind === "autotile_3x3" || kind === "animated_terrain" || group.role === "water";
+}
+
+/** 타일 label/description 만으로 재료를 고른다. 그룹 id·vocabId 는 입력으로 쓰지 않는다. */
+export function resolveMaterialByLabel(
+  tileset: TilesetDef,
+  query: string,
+  options: ResolveMaterialOptions = {},
+): MaterialResolveResult {
+  const raw = query.trim();
+  if (!raw) {
+    return { status: "missing", message: "material(타일 라벨/설명)이 비어 있습니다.", suggestions: [] };
+  }
+  // 명시적 그룹 id 스타일 입력을 거절 — 라벨 경로로 유도.
+  if (/^harness-|^group-|^test-/.test(raw) || raw.includes("-combined-town-") || raw.includes("_vocab")) {
+    return {
+      status: "missing",
+      message: `material에 그룹 id("${raw}")를 넣지 마세요. 타일 라벨·설명(예: "물", "침엽수", "나무 상자")을 쓰세요.`,
+      suggestions: suggestMaterialsByLabel(tileset, raw.replace(/^harness-combined-town-/, "").replace(/-/g, " "), 5),
+    };
+  }
+
+  const terms = materialQueryTerms(raw);
+  type Scored = {
+    tileId: number;
+    score: number;
+    label: string;
+    description: string;
+    role?: string;
+  };
+  const scored: Scored[] = [];
+  const count = tileset.count;
+  for (let tileId = 0; tileId < count; tileId += 1) {
+    const { label, description, role } = tileLabelDescription(tileset, tileId);
+    if (!label && !description) continue;
+    const labelScore = scoreTextMatch(label, terms);
+    const descScore = scoreTextMatch(description, terms);
+    let score = Math.max(labelScore, descScore > 0 ? descScore - 5 : 0);
+    if (score <= 0) continue;
+    if (options.preferRoles?.length && role && options.preferRoles.includes(role)) score += 12;
+    scored.push({ tileId, score, label, description, role });
+  }
+  scored.sort((a, b) => b.score - a.score || a.tileId - b.tileId);
+  // 약매칭(부분 포함만)은 후보 제시에 쓰고, 자동 시공은 강한 매칭만 채택.
+  const strong = scored.filter((hit) => hit.score >= 70);
+
+  if (strong.length === 0) {
+    return {
+      status: "missing",
+      message: `라벨/설명이 "${raw}" 인 타일을 찾지 못했습니다. tile_query ask:"labels" 로 후보를 확인하세요.`,
+      suggestions: suggestMaterialsByLabel(tileset, raw, 5),
+    };
+  }
+
+  const preferGroup = options.preferGroup !== false || options.requireAutotileGroup === true;
+  for (const hit of strong.slice(0, 24)) {
+    const group = groupContainingTile(tileset, hit.tileId);
+    if (options.requireAutotileGroup) {
+      if (!group || !isAutotileGroup(group)) continue;
+      return materialAccessForGroup(tileset, group, hit);
+    }
+    if (preferGroup && group && (group.patternGrammar || group.tileIds.length > 1)) {
+      if (options.preferRoles?.length && !options.preferRoles.includes(group.role) && hit.role && !options.preferRoles.includes(hit.role)) {
+        continue;
+      }
+      return materialAccessForGroup(tileset, group, hit);
+    }
+    if (!options.requireAutotileGroup && !preferGroup) {
+      return materialAccessForTile(tileset, hit);
+    }
+    // preferGroup 이어도 단일 타일 메타만 있으면 타일로 반환
+    if (!group) return materialAccessForTile(tileset, hit);
+  }
+
+  // 그룹 필수였는데 실패 → 단일 타일 폴백(산포) 또는 missing
+  if (options.requireAutotileGroup) {
+    return {
+      status: "missing",
+      message: `"${raw}" 에 해당하는 오토타일/수역 재료(라벨·설명)를 찾지 못했습니다.`,
+      suggestions: suggestMaterialsByLabel(tileset, raw, 5),
+    };
+  }
+  const best = strong[0]!;
+  return materialAccessForTile(tileset, best);
+}
+
+function materialAccessForGroup(
+  tileset: TilesetDef,
+  group: TileGroupMetadata,
+  hit: { tileId: number; label: string; description: string },
+): MaterialResolveResult {
+  const access = resolveVocabForBuild(tileset, { groupId: group.id });
+  if (access.status === "missing" || access.kind !== "group") {
+    return {
+      status: "missing",
+      message: access.status === "missing" ? access.message : `재료 그룹을 해석할 수 없습니다: ${group.name}`,
+      suggestions: [],
+    };
+  }
+  if (access.status === "soft") {
+    return {
+      status: "soft",
+      kind: "group",
+      group: access.group,
+      tileId: hit.tileId,
+      matchedLabel: hit.label,
+      matchedDescription: hit.description,
+      softConfirm: access.softConfirm,
+    };
+  }
+  return {
+    status: "approved",
+    kind: "group",
+    group: access.group,
+    tileId: hit.tileId,
+    matchedLabel: hit.label,
+    matchedDescription: hit.description,
+  };
+}
+
+function materialAccessForTile(
+  tileset: TilesetDef,
+  hit: { tileId: number; label: string; description: string },
+): MaterialResolveResult {
+  const access = resolveVocabForBuild(tileset, { tileId: hit.tileId });
+  if (access.status === "missing" || access.kind !== "tile") {
+    return {
+      status: "missing",
+      message: access.status === "missing" ? access.message : `타일 ${hit.tileId} 을(를) 해석할 수 없습니다`,
+      suggestions: [],
+    };
+  }
+  if (access.status === "soft") {
+    return {
+      status: "soft",
+      kind: "tile",
+      tileId: hit.tileId,
+      matchedLabel: hit.label,
+      matchedDescription: hit.description,
+      softConfirm: access.softConfirm,
+    };
+  }
+  return {
+    status: "approved",
+    kind: "tile",
+    tileId: hit.tileId,
+    matchedLabel: hit.label,
+    matchedDescription: hit.description,
+  };
+}
+
+/** 라벨/설명 기준 재료 후보(에러 힌트·tile_query). */
+export function suggestMaterialsByLabel(
+  tileset: TilesetDef,
+  query: string,
+  limit = 5,
+): MaterialSuggestion[] {
+  const terms = materialQueryTerms(query);
+  if (terms.length === 0) {
+    // 빈 쿼리: 라벨이 있는 타일 일부
+    const out: MaterialSuggestion[] = [];
+    for (let tileId = 0; tileId < tileset.count && out.length < limit; tileId += 1) {
+      const { label, description, role } = tileLabelDescription(tileset, tileId);
+      if (!label) continue;
+      out.push({ label, description, tileId, ...(role ? { role } : {}) });
+    }
+    return out;
+  }
+  const scored: { score: number; suggestion: MaterialSuggestion }[] = [];
+  for (let tileId = 0; tileId < tileset.count; tileId += 1) {
+    const { label, description, role } = tileLabelDescription(tileset, tileId);
+    if (!label && !description) continue;
+    const score = Math.max(scoreTextMatch(label, terms), scoreTextMatch(description, terms));
+    if (score <= 0) continue;
+    scored.push({
+      score,
+      suggestion: { label: label || `타일 ${tileId}`, description, tileId, ...(role ? { role } : {}) },
+    });
+  }
+  scored.sort((a, b) => b.score - a.score || a.suggestion.tileId - b.suggestion.tileId);
+  // 같은 라벨 중복 제거
+  const seen = new Set<string>();
+  const unique: MaterialSuggestion[] = [];
+  for (const entry of scored) {
+    const key = entry.suggestion.label;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(entry.suggestion);
+    if (unique.length >= limit) break;
+  }
+  return unique;
+}
+
+/** @deprecated 그룹 id 검색 — 호환용. 신규 코드는 suggestMaterialsByLabel 사용. */
 export function suggestVocabGroups(
   tileset: TilesetDef,
   query: string,
   limit = 3
 ): { id: string; name: string; role: string }[] {
-  const needle = query.trim().toLowerCase();
-  if (!needle) return [];
-  const terms = new Set<string>([needle]);
-  for (const [pattern, expansions] of VOCAB_QUERY_SYNONYMS) {
-    if (pattern.test(needle)) expansions.forEach((term) => terms.add(term));
+  const materials = suggestMaterialsByLabel(tileset, query, limit * 2);
+  const out: { id: string; name: string; role: string }[] = [];
+  const seen = new Set<string>();
+  for (const material of materials) {
+    const group = groupContainingTile(tileset, material.tileId);
+    if (!group || seen.has(group.id)) continue;
+    seen.add(group.id);
+    out.push({ id: group.id, name: group.name, role: group.role });
+    if (out.length >= limit) break;
   }
-  const scored = (tileset.tileGroups ?? []).map((group) => {
-    const haystacks = [group.id, group.name, group.description ?? "", group.role].map((s) => s.toLowerCase());
-    let score = 0;
-    for (const term of terms) {
-      if (haystacks[0].includes(term)) score += 3; // id 일치가 가장 신뢰도 높음
-      if (haystacks[1].includes(term)) score += 2;
-      if (haystacks[2].includes(term)) score += 1;
-      if (haystacks[3].includes(term)) score += 1;
-    }
-    return { group, score };
-  }).filter((entry) => entry.score > 0);
-  scored.sort((a, b) => b.score - a.score || a.group.id.localeCompare(b.group.id));
-  return scored.slice(0, Math.max(0, limit)).map(({ group }) => ({ id: group.id, name: group.name, role: group.role }));
+  return out;
 }
 
 export type VocabularyRef =

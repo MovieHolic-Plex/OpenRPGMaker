@@ -460,6 +460,7 @@ export function executeCommand(
         quantityMode: command.quantityMode,
         shopType: command.shopType,
         messageType: command.messageType,
+        merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,
       });
     case "inn":

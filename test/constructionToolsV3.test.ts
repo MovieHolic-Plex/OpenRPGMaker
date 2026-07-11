@@ -45,13 +45,24 @@ function forceUnapproved(tileset: TilesetDef, groupId: string): TileGroupMetadat
 function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
   const roof: TileGroupMetadata = {
     id: "test-roof", name: "빨간 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
-    tileIds: [60, 61, 62], description: "", placementRules: "", origin: "user",
+    tileIds: [60, 61, 62], description: "빨간 지붕 재료", placementRules: "", origin: "user",
     patternGrammar: {
       kind: "horizontal_expandable", minWidth: 2, preserveCaps: true, repeat: "body",
       parts: [{ role: "leftCap", tileIds: [60] }, { role: "repeatBody", tileIds: [61] }, { role: "rightCap", tileIds: [62] }],
     },
   };
   tileset.tileGroups!.push(roof);
+  tileset.tileMeta ??= [];
+  for (const tile of [60, 61, 62]) {
+    tileset.tileMeta[tile] = {
+      ...(tileset.tileMeta[tile] ?? {}),
+      label: "빨간 지붕",
+      description: "빨간 지붕 재료",
+      role: "roof",
+      origin: "user",
+      source: "user",
+    };
+  }
   return roof;
 }
 
@@ -59,7 +70,7 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
   it("미합의 벽 어휘는 soft-confirm으로 시공되고 vocabSoftConfirm 을 붙인다", () => {
     const { ctx, tileset } = context();
     forceUnapproved(tileset(), WALL_GROUP_ID);
-    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: WALL_GROUP_ID });
+    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, material: "흰 집 벽" });
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({ groupId: WALL_GROUP_ID, cells: 16 });
     const soft = (result.data as { vocabSoftConfirm?: { name?: string } }).vocabSoftConfirm;
@@ -70,7 +81,7 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
   it("승인된 9분할 벽을 rect에 시공하고(lower 홈) data.wallRegion을 반환한다", () => {
     const { ctx, tileset } = context();
     const group = approve(tileset(), WALL_GROUP_ID);
-    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: WALL_GROUP_ID });
+    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, material: "흰 집 벽" });
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({ wallRegion: { x: 2, y: 5, w: 4, h: 4 }, cells: 16, groupId: WALL_GROUP_ID });
     const map = ctx.project.maps[MAP_ID];
@@ -81,13 +92,13 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
   it("벽 없이 build_roof는 거부되고('먼저 build_wall'), 벽을 지으면 자동 감지로 벽 위에 얹는다", () => {
     const { ctx, tileset } = context();
     addApprovedRoof(tileset());
-    const rejected = runTool(ctx, "build_roof", { mapId: MAP_ID, roofVocabId: "test-roof" });
+    const rejected = runTool(ctx, "build_roof", { mapId: MAP_ID, material: "빨간 지붕" });
     expect(rejected.ok).toBe(false);
     expect(`${rejected.summary} ${JSON.stringify(rejected.issues ?? [])}`).toContain("먼저 build_wall");
 
     approve(tileset(), WALL_GROUP_ID);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 5, h: 3 }, wallVocabId: WALL_GROUP_ID }).ok).toBe(true);
-    const roofed = runTool(ctx, "build_roof", { mapId: MAP_ID, roofVocabId: "test-roof" });
+    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
+    const roofed = runTool(ctx, "build_roof", { mapId: MAP_ID, material: "빨간 지붕" });
     expect(roofed.ok, roofed.summary).toBe(true);
     expect(roofed.data).toMatchObject({ wallRegion: { x: 4, y: 6, w: 5, h: 3 }, roofRegion: { x: 4, y: 5, w: 5, h: 1 } });
     const map = ctx.project.maps[MAP_ID];
@@ -96,13 +107,18 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
 });
 
 describe("missing 어휘 실패 시 유사 그룹 후보 제시", () => {
-  it("build_wall을 존재하지 않는 wallVocabId(\"돌벽\")로 호출하면 비슷한 그룹 후보를 에러 메시지에 담는다", () => {
+  it("build_wall을 존재하지 않는 material로 호출하면 비슷한 라벨 후보를 에러 메시지에 담는다", () => {
     const { ctx } = context();
-    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: "돌벽" });
+    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, material: "없는벽재료xyz999" });
     expect(result.ok).toBe(false);
     const message = `${result.summary} ${JSON.stringify(result.issues ?? [])}`;
-    expect(message).toContain("비슷한 그룹");
-    expect(message).toMatch(/harness-combined-town-(timber-stone-wall-9slice|castle-wall-face)/);
+    expect(message).toMatch(/비슷한 라벨|비슷한 그룹|labels|찾지 못했/);
+  });
+
+  it("material \"돌벽\" 은 석벽/목골 라벨 매칭으로 시공된다(그룹 id 불필요)", () => {
+    const { ctx } = context();
+    const result = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, material: "돌벽" });
+    expect(result.ok, result.summary).toBe(true);
   });
 });
 
@@ -112,20 +128,31 @@ describe("place_door / place_window (공정 2단계 — 벽 셀에만)", () => {
     approve(tileset(), WALL_GROUP_ID);
     const door: TileGroupMetadata = {
       id: "test-door", name: "나무문", role: "prop", defaultLayer: "lower", layerHome: "lower",
-      tileIds: [30, 31], description: "", placementRules: "", origin: "user",
+      tileIds: [30, 31], description: "테스트 나무문", placementRules: "", origin: "user",
       patternGrammar: {
         kind: "vertical_expandable", minHeight: 2, preserveCaps: true, repeat: "body",
         parts: [{ role: "top", tileIds: [30] }, { role: "bottom", tileIds: [31] }],
       },
     };
     tileset().tileGroups!.push(door);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, wallVocabId: WALL_GROUP_ID }).ok).toBe(true);
+    tileset().tileMeta ??= [];
+    for (const tile of [30, 31]) {
+      tileset().tileMeta[tile] = {
+        ...(tileset().tileMeta[tile] ?? {}),
+        label: "테스트 나무문",
+        description: "테스트 나무문",
+        role: "prop",
+        origin: "user",
+        source: "user",
+      };
+    }
+    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 2, y: 5, w: 4, h: 4 }, material: "흰 집 벽" }).ok).toBe(true);
 
-    const offWall = runTool(ctx, "place_door", { mapId: MAP_ID, at: { x: 0, y: 0 }, doorVocabId: "test-door" });
+    const offWall = runTool(ctx, "place_door", { mapId: MAP_ID, at: { x: 0, y: 0 }, material: "테스트 나무문" });
     expect(offWall.ok).toBe(false);
     expect(`${offWall.summary} ${JSON.stringify(offWall.issues ?? [])}`).toContain("벽 셀");
 
-    const onWall = runTool(ctx, "place_door", { mapId: MAP_ID, at: { x: 3, y: 8 }, doorVocabId: "test-door" });
+    const onWall = runTool(ctx, "place_door", { mapId: MAP_ID, at: { x: 3, y: 8 }, material: "테스트 나무문" });
     expect(onWall.ok, onWall.summary).toBe(true);
     const map = ctx.project.maps[MAP_ID];
     expect(map.lowerTiles[8 * map.width + 3]).toBe(31); // 문 하단(1×2 세로 규약)
@@ -137,12 +164,23 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
   function addApprovedPath(tileset: TilesetDef, withAutotile: boolean): void {
     const memberTileIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
     tileset.tileGroups!.push({
-      id: "test-path", name: "흙길", role: "terrain", defaultLayer: "lower",
-      tileIds: memberTileIds, description: "", placementRules: "", origin: "user",
+      id: "test-path", name: "테스트흙길", role: "terrain", defaultLayer: "lower",
+      tileIds: memberTileIds, description: "테스트 전용 흙길", placementRules: "", origin: "user",
     });
+    tileset.tileMeta ??= [];
+    for (const tile of memberTileIds) {
+      tileset.tileMeta[tile] = {
+        ...(tileset.tileMeta[tile] ?? {}),
+        label: "테스트흙길",
+        description: "테스트 전용 흙길",
+        role: "terrain",
+        origin: "user",
+        source: "user",
+      };
+    }
     if (withAutotile) {
       tileset.autotileGroups = [{
-        id: "test-path-8", name: "흙길8", neighborhood: 8, memberTileIds,
+        id: "test-path-8", name: "테스트흙길8", neighborhood: 8, memberTileIds,
         variantMap: buildEightNeighborVariantMap(
           { body: 1, edgeN: 2, edgeS: 3, edgeW: 4, edgeE: 5, cornerNW: 6, cornerNE: 7, cornerSW: 8, cornerSE: 9 },
           { innerNW: 10, innerNE: 11, innerSW: 12, innerSE: 13 }
@@ -154,7 +192,7 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
   it("8-이웃 variantMap 오토타일 정의가 없으면 거부한다(승인 시 오토타일 정의 필요)", () => {
     const { ctx, tileset } = context();
     addApprovedPath(tileset(), false);
-    const result = runTool(ctx, "lay_path", { mapId: MAP_ID, points: [{ x: 1, y: 12 }, { x: 10, y: 12 }], pathVocabId: "test-path" });
+    const result = runTool(ctx, "lay_path", { mapId: MAP_ID, points: [{ x: 1, y: 12 }, { x: 10, y: 12 }], material: "테스트흙길" });
     expect(result.ok).toBe(false);
     expect(`${result.summary} ${JSON.stringify(result.issues ?? [])}`).toContain("8-이웃 variantMap");
   });
@@ -162,7 +200,7 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
   it("승인 어휘 + 8-이웃 variantMap이면 결정론(seed)으로 길을 깔고 외곽/inner corner를 재계산한다", () => {
     const { ctx, tileset } = context();
     addApprovedPath(tileset(), true);
-    const args = { mapId: MAP_ID, points: [{ x: 1, y: 12 }, { x: 10, y: 12 }], pathVocabId: "test-path", naturalness: 0, seed: 7 };
+    const args = { mapId: MAP_ID, points: [{ x: 1, y: 12 }, { x: 10, y: 12 }], material: "테스트흙길", naturalness: 0, seed: 7 };
     const result = runTool(ctx, "lay_path", args);
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as { pathCells: number; reshaped: number };
@@ -182,26 +220,26 @@ describe("lay_path / place_props (공정 4·5단계)", () => {
     const { ctx, tileset } = context();
     const treeId = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
     forceUnapproved(tileset(), treeId);
-    const soft = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4, seed: 3 });
+    const soft = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, material: "침엽수", count: 4, seed: 3 });
     expect(soft.ok, soft.summary).toBe(true);
     expect((soft.data as { vocabSoftConfirm?: { groupId?: string } }).vocabSoftConfirm?.groupId).toBe(treeId);
     const softPlaced = (soft.data as { placed?: number } | undefined)?.placed ?? 0;
     expect(softPlaced).toBeGreaterThan(0);
 
     approve(tileset(), treeId);
-    const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, propVocabId: treeId, count: 4, seed: 3 });
+    const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 1, y: 1, w: 16, h: 10 }, material: "침엽수", count: 4, seed: 3 });
     expect(result.ok, result.summary).toBe(true);
     const placed = (result.data as { placed?: number } | undefined)?.placed ?? 0;
     expect(placed).toBeGreaterThan(0);
     expect((result.data as { vocabSoftConfirm?: unknown }).vocabSoftConfirm).toBeUndefined();
   });
 
-  it("place_props: 존재하지 않는 그룹 id는 하드 실패한다", () => {
+  it("place_props: 존재하지 않는 라벨은 하드 실패한다", () => {
     const { ctx } = context();
     const missing = runTool(ctx, "place_props", {
       mapId: MAP_ID,
       area: { x: 1, y: 1, w: 8, h: 8 },
-      propVocabId: "no-such-tree-group",
+      material: "존재하지않는소품xyz",
       count: 1,
     });
     expect(missing.ok).toBe(false);
@@ -213,7 +251,7 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     const { ctx, tileset } = context();
     ctx.project.startPos = { x: 0, y: 0 };
     approve(tileset(), WATER_GROUP_ID);
-    const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 4, w: 10, h: 8 }, tileVocabId: WATER_GROUP_ID });
+    const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 4, w: 10, h: 8 }, material: "물" });
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({ filled: 80, requested: 80, groupId: WATER_GROUP_ID, layer: "lower" });
     const map = ctx.project.maps[MAP_ID];
@@ -240,7 +278,7 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     const result = runTool(ctx, "fill_region", {
       mapId: MAP_ID,
       rect,
-      tileVocabId: WATER_GROUP_ID,
+      material: "물",
       shape: "circle",
     });
     expect(result.ok, result.summary).toBe(true);
@@ -272,14 +310,14 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     const fill = runTool(ctx, "fill_region", {
       mapId: MAP_ID,
       rect: { x: 4, y: 4, w: 12, h: 10 },
-      tileVocabId: WATER_GROUP_ID,
+      material: "물",
       shape: "rect",
     });
     expect(fill.ok, fill.summary).toBe(true);
     const props = runTool(ctx, "place_props", {
       mapId: MAP_ID,
       area: { x: 4, y: 4, w: 12, h: 10 },
-      propVocabId: treeId,
+      material: "침엽수",
       count: 20,
       seed: 1,
     });
@@ -311,7 +349,7 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
     });
 
-    const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 5, w: 5, h: 5 }, tileVocabId: WATER_GROUP_ID });
+    const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 5, w: 5, h: 5 }, material: "물" });
     const after = ctx.project.maps[MAP_ID];
     expect(result.ok, result.summary).toBe(true);
     expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
@@ -351,7 +389,7 @@ describe("잔디 채우기 (grass-autotile)", () => {
   it("fill_region이 잔디 그룹으로 사각형을 채운다", () => {
     const { ctx } = context();
     const result = runTool(ctx, "fill_region", {
-      mapId: MAP_ID, rect: { x: 2, y: 2, w: 4, h: 3 }, tileVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}grass-autotile`,
+      mapId: MAP_ID, rect: { x: 2, y: 2, w: 4, h: 3 }, material: "물",
     }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     expect((result.diff?.warnings ?? []).some((warning) => warning.includes("목업 확인 대기"))).toBe(false); // 번들 시드라 soft 아님

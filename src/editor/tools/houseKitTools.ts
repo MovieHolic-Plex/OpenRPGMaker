@@ -39,7 +39,8 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       type: "object",
       properties: {
         mapId: { type: "string", description: "대상 맵 id" },
-        kitId: { type: "string", enum: Object.keys(HOUSE_KITS), description: "재질 키트" },
+        // static enum — Object.keys(HOUSE_KITS) at module init can TDZ under circular imports
+        kitId: { type: "string", enum: ["blue-stone", "bright-plaster"], description: "재질 키트" },
         wings: {
           type: "array",
           description: "건물 질량을 이루는 날개 사각형 목록(타일 좌표, 벽+지붕 포함 전체 외곽)",

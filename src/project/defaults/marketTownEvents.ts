@@ -49,7 +49,7 @@ export function addMarketTownEvents(map: GameMap): void {
       characterIndex: 2,
       defeatedSwitchId: MARKET_QUEST.eastMonsterDefeated,
       troopId: "troop_bat_swarm",
-      intro: "동쪽길 천막 위에서 박쥐떼가 내려앉았다!",
+      intro: "동쪽길 나무 위에서 박쥐떼가 내려앉았다!",
     },
   ];
   for (const monster of monsters) map.events.push(createMonsterEvent(monster));

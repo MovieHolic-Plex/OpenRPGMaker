@@ -57,7 +57,7 @@ const HONEST_REPORT_RULE =
 const SPEC_RULE =
   "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침)는 좌표·buildOrder·맵 크기를 고쳐 재제출하고, 3회 실패하면 계획을 폐기해 스스로 새 배치를 설계하세요. 페인트/배치 툴이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다. 기존 구조물 파괴 위험은 자동 보정하지 않습니다. 사용자가 선택한 영역은 암묵적 명세입니다.";
 const CONSTRUCTION_ORDER_RULE =
-  "시공 공정: 길 paint_road → 집+마당 build_house_lots → 숲 등 place_props → NPC. **집:** LLM은 wings 위치·kitId·yard 꾸밈 태그만 정하고 build_house_lots 한 번(또는 소수)에 넘긴다. 마당 타일 좌표는 코드. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|chair|sign. 집 앞 소품을 place_props로 직접 몰아넣지 말 것. 숲/들/묘지 산포만 place_props(넓은 area, naturalness 0.55~0.7, minGap≥2, 구역 분할). 나무 id: harness-combined-town-conifer-tree. place_props 동일 인자 턴당 1회. 미합의 재료는 목업 확인.";
+  "시공 공정: 길 paint_road → 집+마당 build_house_lots → 숲 등 place_props → NPC. **집:** LLM은 wings 위치·kitId·yard 꾸밈 태그만 정하고 build_house_lots 한 번(또는 소수)에 넘긴다. 마당 타일 좌표는 코드. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|chair|sign. 집 앞 소품을 place_props로 직접 몰아넣지 말 것. 숲/들/묘지 산포만 place_props(넓은 area, naturalness 0.55~0.7, minGap≥2, 구역 분할). 나무 material: \"침엽수\". place_props 동일 인자 턴당 1회. 미합의 재료는 목업 확인.";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";
@@ -266,10 +266,10 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "절차(준수 — 공정 순서: 벽→문/창→지붕):",
       args.shape === "l"
-        ? "1. ㄴ자 집은 build_wall(mapId, rect, wallVocabId)을 직교 rect 2개로 겹쳐 호출해 조합하세요. 절대 벽 타일을 직접 칠하지 마세요."
-        : "1. build_wall(mapId, rect{x,y,w,h}, wallVocabId)로 벽을 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
-      "2. place_door(mapId, at, doorVocabId)로 문을, place_window(mapId, at, windowVocabId)로 창문을 벽 셀에 다세요.",
-      "3. build_roof(mapId, roofVocabId)로 지붕을 얹으세요(wallRect 생략 시 벽 자동 감지).",
+        ? "1. ㄴ자 집은 build_wall(mapId, rect, material)을 직교 rect 2개로 겹쳐 호출해 조합하세요. 절대 벽 타일을 직접 칠하지 마세요."
+        : "1. build_wall(mapId, rect{x,y,w,h}, material)로 벽을 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
+      "2. place_door(mapId, at, material)로 문을, place_window(mapId, at, material)로 창문을 벽 셀에 다세요.",
+      "3. build_roof(mapId, material)로 지붕을 얹으세요(wallRect 생략 시 벽 자동 감지).",
       "4. 완성 후 문 좌표를 보고하고, 문 앞이 통행 가능한지 get_map_region으로 확인하세요.",
       CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
@@ -379,7 +379,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "",
       "절차(준수):",
       "1. get_map_region으로 출발/경유/도착 지점의 실제 좌표를 파악하세요(추측 금지).",
-      `2. lay_path(mapId, points, pathVocabId)로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요(스타일 힌트: ${args.style}). 존재하는 길 어휘는 바로 쓸 수 있습니다(미합의는 목업 확인). 어휘에 없는 새 길 재료가 필요할 때만 propose_tile_vocabulary.`,
+      `2. lay_path(mapId, points, material)로 폴리라인을 깔되, 건물·물을 관통하지 않게 꺾으세요(스타일 힌트: ${args.style}). 존재하는 길 어휘는 바로 쓸 수 있습니다(미합의는 목업 확인). 어휘에 없는 새 길 재료가 필요할 때만 propose_tile_vocabulary.`,
       "3. 길이 문 앞과 이어지는지, 끊긴 곳이 없는지 get_map_region으로 재확인하세요.",
       CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,

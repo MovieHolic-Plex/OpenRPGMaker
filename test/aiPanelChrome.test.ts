@@ -119,22 +119,20 @@ describe("AI 패널 크롬", () => {
     expect(restore).toBeTruthy();
   });
 
-  it("시작 화면은 설명을 카드 밖 안내 블록으로 분리한다", () => {
+  it("시작 화면은 짧은 스킬 카드만 두고 설명은 title에 둔다", () => {
     const panel = renderPanel();
     const startScreen = findByTestId(panel, "ai-start-screen");
-    const guide = findByTestId(panel, "ai-start-guide");
     const card = findByTestId(panel, "ai-start-build-house");
     if (!startScreen || !card) throw new Error("start screen missing");
 
     const cardTitle = card.getAttribute("title");
 
-    expect(guide).toBeTruthy();
-    expect(guide?.querySelector("details")).toBeTruthy();
-    expect(guide?.querySelector("summary")?.textContent).toBe("ⓘ 스킬 안내");
+    // 긴 스킬 안내 블록은 제거 — 카드 title + 슬래시(/)로 탐색.
+    expect(findByTestId(panel, "ai-start-guide")).toBeNull();
     expect(card.querySelector(".ai-start-card-desc")).toBeNull();
     expect(cardTitle).toBeTruthy();
     expect(card.textContent).not.toContain(cardTitle ?? "");
-    expect(guide?.textContent).toContain(cardTitle ?? "");
+    expect(startScreen.textContent).toContain("영역을 선택하거나");
   });
 
   it("기존 localStorage 접힘 키를 그대로 읽고 쓴다", () => {

@@ -3,20 +3,26 @@ import { SHOP_TRANSACTION_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import type { Command, ItemId, ShopMessageType, ShopType } from "@/project/types";
-import type { ItemRecord } from "@/project/types/database";
+import type { ItemRecord, ItemType } from "@/project/types/database";
 import { commandKindSelect, selectedOptionValue } from "./dom";
 import { COMMAND_KIND_OPTIONS } from "./options";
+import { imageIconOf, recordIconElement } from "./recordPicker";
 import type { CommandEditContext } from "./types";
 
 type ShopCommand = Extract<Command, { kind: "shop" }>;
 type InnCommand = Extract<Command, { kind: "inn" }>;
-type ShopTypeOption = { readonly value: ShopType; readonly label: string };
+type ShopTypeOption = { readonly value: ShopType; readonly label: string; readonly hint: string };
 type ShopMessageOption = { readonly value: ShopMessageType; readonly label: string };
+type ShopItemList = {
+  readonly root: HTMLElement;
+  readonly select: HTMLSelectElement;
+  get value(): string;
+};
 
 const SHOP_TYPE_OPTIONS: readonly ShopTypeOption[] = [
-  { value: "normal", label: "구매/판매" },
-  { value: "buyOnly", label: "구매 전용" },
-  { value: "sellOnly", label: "판매 전용" },
+  { value: "normal", label: "구매/판매", hint: "사고팔기 모두 가능" },
+  { value: "buyOnly", label: "구매 전용", hint: "플레이어만 구매" },
+  { value: "sellOnly", label: "판매 전용", hint: "플레이어만 판매" },
 ];
 
 const SHOP_MESSAGE_OPTIONS: readonly ShopMessageOption[] = [
@@ -24,6 +30,21 @@ const SHOP_MESSAGE_OPTIONS: readonly ShopMessageOption[] = [
   { value: "business", label: "B: 무엇이 필요하신가요?" },
   { value: "direct", label: "C: 아이템을 선택하세요" },
 ];
+
+const ITEM_TYPE_LABELS: Record<ItemType, string> = {
+  normalGoods: "일반",
+  weapon: "무기",
+  shield: "방패",
+  body: "갑옷",
+  head: "투구",
+  accessory: "장신구",
+  medicine: "회복",
+  book: "서적",
+  seed: "씨앗",
+  special: "특수",
+  switch: "스위치",
+};
+
 export function shopBody(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const project = store.getCurrent();
   const wrap = el("div", {
@@ -31,8 +52,7 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
     dataset: { testid: "shop-command-body" },
   });
   wrap.append(
-    shopTopOptions(context, command),
-    shopMessageSelect(context, command),
+    shopSettingsCard(context, command),
     shopItemsPanel(context, command, project.database.items),
     shopTransactionBranchControls(context, command),
     selectedSummary(project.database.items, command.itemIds)
@@ -42,7 +62,7 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
 
 export function innBody(context: CommandEditContext, command: InnCommand): HTMLElement {
   const wrap = el("div", {
-    class: "commerce-command-body commerce-command-body-inline",
+    class: "commerce-command-body commerce-command-body-inline inn-command-body",
     dataset: { testid: "inn-command-body" },
   });
   const price = document.createElement("input");
@@ -51,6 +71,7 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
   price.value = String(command.price);
   price.title = "여관 요금";
   price.dataset.testid = "inn-price-input";
+  price.className = "commerce-command-input";
   price.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, {
       kind: "inn",
@@ -58,24 +79,71 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
     });
   });
   wrap.append(
-    el("label", { class: "commerce-command-title", text: "여관 요금" }),
-    price,
-    el("span", { class: "commerce-command-hint", text: "숙박 시 차감할 금액입니다." })
+    el("div", {
+      class: "commerce-command-field",
+      children: [
+        el("label", { class: "commerce-command-title", text: "여관 요금" }),
+        price,
+        el("span", { class: "commerce-command-hint", text: "숙박 시 차감할 금액입니다." }),
+      ],
+    })
   );
   return wrap;
 }
 
-function shopTopOptions(context: CommandEditContext, command: ShopCommand): HTMLElement {
+function shopSettingsCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
   return el("div", {
-    class: "shop-processing-top",
-    children: [shopTypeGroup(context, command), shopBranchOption(context, command)],
+    class: "shop-processing-settings",
+    children: [
+      shopTypeGroup(context, command),
+      shopMessageSelect(context, command),
+      shopMerchantGoldField(context, command),
+      shopBranchOption(context, command),
+    ],
   });
+}
+
+function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand): HTMLElement {
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "0";
+  input.step = "1";
+  input.value = String(command.merchantGold ?? 100);
+  input.className = "commerce-command-input shop-processing-merchant-gold-input";
+  input.dataset.testid = "shop-merchant-gold";
+  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금";
+  input.addEventListener("change", () => {
+    const parsed = Number.parseInt(input.value, 10);
+    const merchantGold = Number.isFinite(parsed) ? Math.max(0, parsed) : 100;
+    input.value = String(merchantGold);
+    context.actions.replaceCommand(context.path, { ...command, merchantGold });
+  });
+  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-merchant-gold" });
+  fieldset.append(
+    el("legend", { text: "상인 소지금" }),
+    el("div", {
+      class: "shop-processing-merchant-gold-row",
+      children: [
+        input,
+        el("span", { class: "shop-processing-merchant-gold-unit", text: "G" }),
+      ],
+    }),
+    el("p", {
+      class: "commerce-command-hint",
+      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G. 상점이 열릴 때마다 이 값으로 시작합니다.",
+    })
+  );
+  return fieldset;
 }
 
 function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const groupName = `shop-type-${context.path.join("-") || "root"}`;
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-type" });
   fieldset.append(el("legend", { text: "상점 종류" }));
+  const segment = el("div", {
+    class: "shop-processing-segment",
+    attrs: { role: "radiogroup", "aria-label": "상점 종류" },
+  });
   const current = shopTypeValue(command);
   for (const option of SHOP_TYPE_OPTIONS) {
     const radio = document.createElement("input");
@@ -84,12 +152,19 @@ function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLE
     radio.value = option.value;
     radio.checked = current === option.value;
     radio.dataset.testid = `shop-type-${option.value}`;
+    radio.className = "shop-processing-segment-input";
     radio.addEventListener("change", () => {
       if (!radio.checked) return;
       context.actions.replaceCommand(context.path, withShopType(command, option.value));
     });
-    fieldset.append(optionLabel(radio, option.label));
+    const label = el("label", {
+      class: `shop-processing-segment-option${current === option.value ? " is-selected" : ""}`,
+      attrs: { title: option.hint },
+      children: [radio, el("span", { text: option.label })],
+    });
+    segment.append(label);
   }
+  fieldset.append(segment);
   return fieldset;
 }
 
@@ -106,7 +181,17 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option" });
-  fieldset.append(el("legend", { text: "분기" }), optionLabel(checkbox, "구매/판매했을 때 분기"));
+  fieldset.append(
+    el("legend", { text: "분기" }),
+    el("label", {
+      class: "commerce-command-option shop-processing-check",
+      children: [checkbox, el("span", { text: "구매/판매했을 때 분기" })],
+    }),
+    el("p", {
+      class: "commerce-command-hint",
+      text: "거래가 끝난 뒤 아래 분기 명령을 실행합니다.",
+    })
+  );
   return fieldset;
 }
 
@@ -114,7 +199,7 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
   const branchSel = commandKindSelect("text");
   const add = el("button", {
     class: "btn shop-processing-branch-add",
-    text: "+",
+    text: "추가",
     dataset: { testid: "shop-add-transaction-branch-command" },
     attrs: { type: "button" },
     on: {
@@ -128,13 +213,29 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
   return el("div", {
     class: `shop-processing-branch-controls${hiddenClass}`,
     dataset: { testid: "shop-transaction-branch-controls" },
-    children: [el("span", { text: "구매/판매 분기" }), branchSel, add],
+    children: [
+      el("div", {
+        class: "shop-processing-branch-head",
+        children: [
+          el("span", { class: "shop-processing-branch-title", text: "구매/판매 분기" }),
+          el("span", {
+            class: "commerce-command-hint",
+            text: "거래 후 실행할 명령",
+          }),
+        ],
+      }),
+      el("div", {
+        class: "shop-processing-branch-row",
+        children: [branchSel, add],
+      }),
+    ],
   });
 }
 
 function shopMessageSelect(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const select = document.createElement("select");
   select.dataset.testid = "shop-message-type";
+  select.className = "commerce-command-input shop-processing-message-select";
   select.value = messageTypeValue(command);
   for (const option of SHOP_MESSAGE_OPTIONS) {
     const optionNode = document.createElement("option");
@@ -155,42 +256,276 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     .map((id) => items.find((item) => item.id === id))
     .filter((item): item is ItemRecord => Boolean(item));
   const availableItems = items.filter((item) => !command.itemIds.includes(item.id));
-  const selectedList = itemSelect("shop-selected-items", selectedItems);
-  const availableList = itemSelect("shop-available-items", availableItems);
-  const add = itemMoveButton("추가", "shop-add-item", () => {
-    if (!availableList.value) return;
-    context.actions.replaceCommand(context.path, {
-      ...command,
-      itemIds: addItemId(command.itemIds, availableList.value),
-    });
+
+  const commitItems = (itemIds: readonly ItemId[]) => {
+    context.actions.replaceCommand(context.path, { ...command, itemIds: [...itemIds] });
+  };
+
+  const selectedList = shopItemList("shop-selected-items", selectedItems, {
+    emptyText: "판매할 아이템을 오른쪽에서 추가하세요.",
+    onActivate: (itemId) => commitItems(command.itemIds.filter((id) => id !== itemId)),
   });
-  const remove = itemMoveButton("제거", "shop-remove-item", () => {
+  const availableList = shopItemList("shop-available-items", availableItems, {
+    emptyText: "추가할 아이템이 없습니다.",
+    onActivate: (itemId) => commitItems(addItemId(command.itemIds, itemId)),
+  });
+
+  const add = itemMoveButton("추가 →", "shop-add-item", () => {
+    if (!availableList.value) return;
+    commitItems(addItemId(command.itemIds, availableList.value));
+  });
+  const remove = itemMoveButton("← 제거", "shop-remove-item", () => {
     if (!selectedList.value) return;
-    context.actions.replaceCommand(context.path, {
-      ...command,
-      itemIds: command.itemIds.filter((id) => id !== selectedList.value),
-    });
+    commitItems(command.itemIds.filter((id) => id !== selectedList.value));
+  });
+  const moveUp = itemMoveButton("▲", "shop-move-item-up", () => {
+    if (!selectedList.value) return;
+    commitItems(moveItemId(command.itemIds, selectedList.value, -1));
+  });
+  const moveDown = itemMoveButton("▼", "shop-move-item-down", () => {
+    if (!selectedList.value) return;
+    commitItems(moveItemId(command.itemIds, selectedList.value, 1));
   });
   add.disabled = availableItems.length === 0;
   remove.disabled = selectedItems.length === 0;
-  const controls = el("div", { class: "shop-processing-item-controls", children: [add, remove] });
+  moveUp.disabled = selectedItems.length < 2;
+  moveDown.disabled = selectedItems.length < 2;
+
+  // 네이티브 select 변경(e2e selectOption)도 커밋에 연결
+  availableList.select.addEventListener("change", () => {
+    highlightListSelection(availableList.root, availableList.select.value);
+  });
+  selectedList.select.addEventListener("change", () => {
+    highlightListSelection(selectedList.root, selectedList.select.value);
+  });
+
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-items" });
-  fieldset.append(el("legend", { text: "판매 아이템" }));
+  fieldset.append(
+    el("legend", { text: "판매 아이템" }),
+    el("p", {
+      class: "commerce-command-hint shop-processing-items-hint",
+      text: "아이콘 · 설명 · 가격 표시 · 더블클릭으로 추가/제거",
+    })
+  );
   if (items.length === 0) {
-    fieldset.append(el("div", { class: "commerce-command-empty", text: "등록된 아이템이 없습니다." }));
+    fieldset.append(
+      el("div", {
+        class: "commerce-command-empty",
+        text: "등록된 아이템이 없습니다. 데이터베이스에서 아이템을 추가하세요.",
+      })
+    );
     return fieldset;
   }
+
+  const detail = itemDetailPanel(selectedItems[0] ?? availableItems[0] ?? null);
+  const syncDetail = (itemId: string, pool: readonly ItemRecord[]) => {
+    const record = pool.find((item) => item.id === itemId) ?? null;
+    detail.render(record);
+  };
+  selectedList.root.addEventListener("shop-item-select", ((event: CustomEvent<{ itemId: string }>) => {
+    syncDetail(event.detail.itemId, selectedItems);
+  }) as EventListener);
+  availableList.root.addEventListener("shop-item-select", ((event: CustomEvent<{ itemId: string }>) => {
+    syncDetail(event.detail.itemId, availableItems);
+  }) as EventListener);
+
+  const controls = el("div", {
+    class: "shop-processing-item-controls",
+    children: [add, remove, moveUp, moveDown],
+  });
+
   fieldset.append(
     el("div", {
       class: "shop-processing-item-grid",
-      children: [selectedList, controls, availableList],
-    })
+      children: [
+        listColumn("판매 목록", selectedItems.length, selectedList.root, "shop-selected-column"),
+        controls,
+        listColumn("추가 가능", availableItems.length, availableList.root, "shop-available-column"),
+      ],
+    }),
+    detail.root
   );
   return fieldset;
 }
 
-function optionLabel(input: HTMLInputElement, text: string): HTMLElement {
-  return el("label", { class: "commerce-command-option", children: [input, el("span", { text })] });
+function listColumn(title: string, count: number, listRoot: HTMLElement, testId: string): HTMLElement {
+  return el("div", {
+    class: "shop-processing-list-column",
+    dataset: { testid: testId },
+    children: [
+      el("div", {
+        class: "shop-processing-list-head",
+        children: [
+          el("span", { class: "shop-processing-list-title", text: title }),
+          el("span", { class: "shop-processing-list-count", text: `${count}` }),
+        ],
+      }),
+      listRoot,
+    ],
+  });
+}
+
+function shopItemList(
+  testId: string,
+  items: readonly ItemRecord[],
+  options: { readonly emptyText: string; readonly onActivate: (itemId: string) => void }
+): ShopItemList {
+  const project = store.getCurrent();
+  const select = document.createElement("select");
+  select.className = "shop-processing-native-select";
+  select.dataset.testid = testId;
+  select.size = Math.max(2, items.length || 2);
+  select.multiple = false;
+  for (const item of items) {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = `${item.name}  ·  ${formatPrice(item.price)}`;
+    option.dataset.testid = `shop-list-item-${item.id}`;
+    select.append(option);
+  }
+  if (items.length > 0) {
+    select.selectedIndex = 0;
+    select.value = items[0]!.id;
+  }
+
+  const list = el("div", {
+    class: "shop-processing-item-list",
+    attrs: { role: "listbox", "aria-label": testId },
+  });
+
+  if (items.length === 0) {
+    list.append(el("div", { class: "shop-processing-item-empty", text: options.emptyText }));
+  } else {
+    for (const item of items) {
+      const selected = item.id === select.value;
+      const row = el("button", {
+        class: `shop-processing-item-row${selected ? " is-selected" : ""}`,
+        attrs: {
+          type: "button",
+          role: "option",
+          "aria-selected": selected ? "true" : "false",
+          title: itemDetailTitle(item),
+        },
+        dataset: { testid: `shop-item-row-${item.id}`, itemId: item.id },
+      });
+      row.append(
+        el("div", {
+          class: "shop-processing-item-icon",
+          children: [recordIconElement(imageIconOf(project, item.iconResourceId ?? item.imageResourceId), item.name)],
+        }),
+        el("div", {
+          class: "shop-processing-item-copy",
+          children: [
+            el("div", {
+              class: "shop-processing-item-topline",
+              children: [
+                el("span", { class: "shop-processing-item-name", text: item.name }),
+                el("span", { class: "shop-processing-item-price", text: formatPrice(item.price) }),
+              ],
+            }),
+            el("div", {
+              class: "shop-processing-item-meta",
+              children: [
+                el("span", { class: "shop-processing-item-type", text: itemTypeLabel(item.type) }),
+                el("span", {
+                  class: "shop-processing-item-desc",
+                  text: item.description?.trim() || "설명 없음",
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+      row.addEventListener("click", () => {
+        select.value = item.id;
+        highlightListSelection(list, item.id);
+        list.dispatchEvent(new CustomEvent("shop-item-select", { detail: { itemId: item.id }, bubbles: true }));
+      });
+      row.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        options.onActivate(item.id);
+      });
+      list.append(row);
+    }
+  }
+
+  const root = el("div", {
+    class: "shop-processing-item-list-shell",
+    children: [select, list],
+  });
+
+  return {
+    root,
+    select,
+    get value() {
+      return select.value;
+    },
+  };
+}
+
+function highlightListSelection(listRoot: HTMLElement, itemId: string): void {
+  const list = listRoot.classList.contains("shop-processing-item-list")
+    ? listRoot
+    : listRoot.querySelector(".shop-processing-item-list");
+  if (!(list instanceof HTMLElement)) return;
+  for (const row of list.querySelectorAll<HTMLElement>(".shop-processing-item-row")) {
+    const selected = row.dataset.itemId === itemId;
+    row.classList.toggle("is-selected", selected);
+    row.setAttribute("aria-selected", selected ? "true" : "false");
+  }
+}
+
+function itemDetailPanel(initial: ItemRecord | null): { root: HTMLElement; render: (item: ItemRecord | null) => void } {
+  const project = store.getCurrent();
+  const root = el("div", {
+    class: "shop-processing-item-detail",
+    dataset: { testid: "shop-item-detail" },
+  });
+
+  const render = (item: ItemRecord | null) => {
+    root.replaceChildren();
+    if (!item) {
+      root.append(el("div", { class: "shop-processing-item-detail-empty", text: "아이템을 선택하면 상세 정보가 표시됩니다." }));
+      return;
+    }
+    const icon = recordIconElement(imageIconOf(project, item.iconResourceId ?? item.imageResourceId), item.name);
+    icon.classList.add("shop-processing-item-detail-icon");
+    root.append(
+      el("div", {
+        class: "shop-processing-item-detail-main",
+        children: [
+          el("div", { class: "shop-processing-item-detail-icon-wrap", children: [icon] }),
+          el("div", {
+            class: "shop-processing-item-detail-copy",
+            children: [
+              el("div", {
+                class: "shop-processing-item-detail-title",
+                children: [
+                  el("strong", { text: item.name }),
+                  el("span", { class: "shop-processing-item-detail-price", text: formatPrice(item.price) }),
+                ],
+              }),
+              el("div", {
+                class: "shop-processing-item-detail-badges",
+                children: [
+                  el("span", { class: "shop-processing-badge", text: itemTypeLabel(item.type) }),
+                  el("span", { class: "shop-processing-badge", text: item.consumable ? "소모품" : "비소모" }),
+                  el("span", { class: "shop-processing-badge", text: occasionLabel(item) }),
+                ],
+              }),
+              el("p", {
+                class: "shop-processing-item-detail-desc",
+                text: item.description?.trim() || "설명이 없습니다.",
+              }),
+            ],
+          }),
+        ],
+      })
+    );
+  };
+
+  render(initial);
+  return { root, render };
 }
 
 function itemMoveButton(text: string, testId: string, click: () => void): HTMLButtonElement {
@@ -203,28 +538,42 @@ function itemMoveButton(text: string, testId: string, click: () => void): HTMLBu
   return button;
 }
 
-function itemSelect(testId: string, items: readonly ItemRecord[]): HTMLSelectElement {
-  const select = document.createElement("select");
-  select.size = 14;
-  select.className = "shop-processing-item-select";
-  select.dataset.testid = testId;
-  for (const item of items) {
-    select.append(itemOption(item));
-  }
-  if (select.options.length > 0) select.selectedIndex = 0;
-  return select;
+function itemTypeLabel(type: ItemType): string {
+  return ITEM_TYPE_LABELS[type] ?? type;
 }
 
-function itemOption(item: ItemRecord): HTMLOptionElement {
-  const option = document.createElement("option");
-  option.value = item.id;
-  option.textContent = `${item.name}    ${item.price}`;
-  option.dataset.testid = `shop-list-item-${item.id}`;
-  return option;
+function occasionLabel(item: ItemRecord): string {
+  if (item.occasion === "battle") return "전투 전용";
+  if (item.occasion === "field") return "필드 전용";
+  if (item.occasion === "never") return "사용 불가";
+  if (item.occasionBattle && !item.occasionField) return "전투 위주";
+  if (item.occasionField && !item.occasionBattle) return "필드 위주";
+  return "언제든";
+}
+
+function itemDetailTitle(item: ItemRecord): string {
+  const desc = item.description?.trim() || "설명 없음";
+  return `${item.name} (${formatPrice(item.price)})\n${itemTypeLabel(item.type)} · ${desc}`;
+}
+
+function formatPrice(price: number): string {
+  return `${price.toLocaleString("ko-KR")} G`;
 }
 
 function addItemId(current: readonly ItemId[], itemId: string): ItemId[] {
   return current.includes(itemId) ? [...current] : [...current, itemId];
+}
+
+function moveItemId(current: readonly ItemId[], itemId: string, delta: -1 | 1): ItemId[] {
+  const index = current.indexOf(itemId);
+  if (index < 0) return [...current];
+  const target = index + delta;
+  if (target < 0 || target >= current.length) return [...current];
+  const next = [...current];
+  const [moved] = next.splice(index, 1);
+  if (!moved) return [...current];
+  next.splice(target, 0, moved);
+  return next;
 }
 
 function shopTypeValue(command: ShopCommand): ShopType {

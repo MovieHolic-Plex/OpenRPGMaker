@@ -1,6 +1,5 @@
 // 집 부지(lot) 주변 꾸밈 — LLM은 의도 태그만 고르고, 좌표·산포는 전부 여기(결정론).
 
-import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { GameMap } from "@/project/types";
 
 export type YardDecorKind =
@@ -41,36 +40,41 @@ export type HouseWing = { readonly x: number; readonly y: number; readonly w: nu
 
 export type YardArea = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
-/** 의도 태그 → place_props propVocabId (그룹 id 또는 타일 숫자 문자열). */
-export function propVocabIdForYardDecor(kind: YardDecorKind): string {
+/** 의도 태그 → place_props material(타일 라벨/설명). 그룹 id 금지. */
+export function materialForYardDecor(kind: YardDecorKind): string {
   switch (kind) {
     case "firewood":
-      return "349";
+      return "장작 더미";
     case "mailbox":
-      return "350";
+      return "우편함";
     case "pot":
-      return "351";
+      return "화분";
     case "jar":
-      return "352";
+      return "항아리";
     case "bench_h":
-      return `${COMBINED_TOWN_HARNESS_PREFIX}bench-horizontal`;
+      return "벤치";
     case "bench_v":
-      return `${COMBINED_TOWN_HARNESS_PREFIX}bench-vertical`;
+      return "세로 의자";
     case "flowers":
-      return `${COMBINED_TOWN_HARNESS_PREFIX}flower-props`;
+      return "꽃";
     case "fruit_box":
-      return `${COMBINED_TOWN_HARNESS_PREFIX}fruit-box`;
+      return "과일박스";
     case "wood_box":
-      return `${COMBINED_TOWN_HARNESS_PREFIX}wood-box`;
+      return "나무 상자";
     case "table_h":
-      return `${COMBINED_TOWN_HARNESS_PREFIX}table-horizontal`;
+      return "가로 탁자";
     case "sign":
-      return "320";
+      return "표지판";
     default: {
       const _exhaustive: never = kind;
       return _exhaustive;
     }
   }
+}
+
+/** @deprecated materialForYardDecor 사용 */
+export function propVocabIdForYardDecor(kind: YardDecorKind): string {
+  return materialForYardDecor(kind);
 }
 
 /** 집 wings 합집합 bbox. */

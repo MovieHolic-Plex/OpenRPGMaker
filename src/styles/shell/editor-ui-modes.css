@@ -66,6 +66,12 @@ body.editor-ui-basic .classic-toolbar.is-legacy-surface {
   display: none !important;
 }
 
+/* ── Basic statusbar: keep layer / map / tool / DB; hide secondary noise ── */
+body.editor-ui-basic .editor-statusbar .sb-secondary,
+body.editor-ui-basic .editor-statusbar .sb-detail {
+  display: none;
+}
+
 /* Map tree: always available when chrome.mapTree; only hide via .is-ui-hidden. */
 .left-panel-stack.is-ui-hidden,
 .resizer-map-tree.is-ui-hidden {
@@ -83,15 +89,52 @@ body.editor-ui-basic .canvas-toolbar.is-basic-chrome .zoom-button,
   display: inline-flex;
 }
 
-/* ── Basic icon rail + flyout ──────────────────────────────────── */
+/* ── Basic icon rail + flyout ────────────────────────────────────
+   figma-editor.css loads after this file and sets left-palette padding +
+   overflow:hidden for expert sheet scrolling. Basic mode must beat those
+   with higher specificity so the 48px rail stays square and flyouts are
+   not clipped (layer/map toggles open overlays to the right of the rail).
+*/
 
+body.editor-ui-basic .editor-layout .left-panel,
 body.editor-ui-basic .left-panel {
-  min-width: 48px;
+  /* Single-column icon rail — no expert map-tree grid row.
+     z-index must beat .canvas-area (later sibling, position:relative) so
+     flyouts that spill right are clickable and visible over the map. */
+  container-type: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  grid-template-rows: none;
+  min-width: 48px !important;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  padding: 0 !important;
+  position: relative;
   width: 48px;
-  overflow: visible;
+  z-index: 50;
 }
 
-body.editor-ui-basic .left-panel-stack {
+body.editor-ui-basic .editor-layout .left-panel-stack,
+body.editor-ui-basic .left-panel-stack,
+body.editor-ui-basic .left-panel-stack[data-testid="left-palette-root"],
+body.editor-ui-basic .left-panel-stack[data-testid="left-map-root"] {
+  border-bottom: 0;
+  flex: 1 1 auto;
+  max-width: none;
+  min-height: 0;
+  min-width: 0;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  padding: 0 !important;
+}
+
+body.editor-ui-basic .basic-left-rail.is-icon-rail {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: visible;
 }
 
@@ -99,9 +142,9 @@ body.editor-ui-basic .left-panel-stack {
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   height: 100%;
-  padding: 8px 0;
+  padding: 10px 0 12px;
   position: relative;
   width: 48px;
 }
@@ -110,7 +153,18 @@ body.editor-ui-basic .left-panel-stack {
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+/* Layer switcher sits under tools; panel toggles pin near mid-bottom of rail. */
+.basic-rail-layer-switcher {
+  flex-shrink: 0;
+}
+
+.basic-rail-panel-toggles {
+  margin-top: auto;
+  padding-top: 4px;
 }
 
 .basic-rail-btn {
@@ -121,6 +175,7 @@ body.editor-ui-basic .left-panel-stack {
   color: var(--editor-text-muted, #9aa8c7);
   cursor: pointer;
   display: flex;
+  flex-shrink: 0;
   height: 36px;
   justify-content: center;
   position: relative;
@@ -128,6 +183,8 @@ body.editor-ui-basic .left-panel-stack {
 }
 
 .basic-rail-btn svg {
+  display: block;
+  flex: 0 0 auto;
   height: 20px;
   width: 20px;
 }
@@ -153,8 +210,10 @@ body.editor-ui-basic .left-panel-stack {
 
 .basic-rail-sep {
   background: var(--editor-line, #2a3550);
+  flex-shrink: 0;
   height: 1px;
-  width: 28px;
+  margin: 2px 0;
+  width: 22px;
 }
 
 .basic-rail-tile-thumb {
@@ -165,15 +224,21 @@ body.editor-ui-basic .left-panel-stack {
   image-rendering: pixelated;
 }
 
+/* Layer badge: compact corner chip that does not unbalance the 36px icon. */
 .basic-rail-badge {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 80%, #000);
-  border-radius: 7px;
-  bottom: -2px;
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 88%, #0a1020);
+  border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+  border-radius: 6px;
+  bottom: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   color: #fff;
-  font: 700 9px/1 var(--font-ui, system-ui, sans-serif);
-  padding: 2px 4px;
+  font: 700 8px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -0.02em;
+  min-width: 12px;
+  padding: 2px 3px;
   position: absolute;
-  right: -2px;
+  right: 1px;
+  text-align: center;
 }
 
 .basic-rail-flyout {
@@ -183,12 +248,12 @@ body.editor-ui-basic .left-panel-stack {
   box-shadow: var(--shadow-pop, 0 12px 32px rgba(0, 0, 0, 0.45));
   display: flex;
   flex-direction: column;
-  left: 54px;
-  max-height: calc(100% - 12px);
+  left: calc(100% + 6px);
+  max-height: min(78vh, calc(100vh - 80px));
   position: absolute;
   top: 6px;
   width: 300px;
-  z-index: 60;
+  z-index: 80;
 }
 
 /* 맵 플라이아웃: 이름 목록이 읽히도록 조금 넓게 */
@@ -239,20 +304,25 @@ body.editor-ui-basic .left-panel-stack {
   }
 }
 
-/* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통) */
-.editor-layout .left-panel {
+/* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통)
+   basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-basic 규칙). */
+body.editor-ui-expert .editor-layout .left-panel,
+.editor-layout.editor-layout-expert .left-panel {
   min-width: 0;
   overflow-x: hidden;
 }
 
-.editor-layout .left-panel-stack {
+body.editor-ui-expert .editor-layout .left-panel-stack,
+.editor-layout.editor-layout-expert .left-panel-stack {
   max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
 }
 
-.left-panel-stack[data-testid="left-palette-root"],
-.left-panel-stack[data-testid="left-map-root"] {
+body.editor-ui-expert .left-panel-stack[data-testid="left-palette-root"],
+body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"],
+.editor-layout.editor-layout-expert .left-panel-stack[data-testid="left-palette-root"],
+.editor-layout.editor-layout-expert .left-panel-stack[data-testid="left-map-root"] {
   overflow-x: hidden !important;
 }
 
@@ -697,7 +767,4 @@ body.editor-ui-basic .ai-expert-board {
   padding: 10px 12px;
 }
 
-/* Basic: left stack gives more room to palette + map tree */
-body.editor-ui-basic .left-panel {
-  /* keep existing width; rail scrolls inside */
-}
+/* Basic rail layout is fully specified in the icon-rail block above. */

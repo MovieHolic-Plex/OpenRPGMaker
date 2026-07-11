@@ -2200,6 +2200,10 @@ body.ai-panel-docked .editor-layout {
   border-color: color-mix(in srgb, var(--warning) 50%, transparent);
   color: var(--warning);
 }
+/* 사이드 패널: 도크 뱃지는 더보기 메뉴로만 — 입력줄 뱃지 소음 제거 */
+.ai-chat-panel.chat-dock-side .ai-dock-mode-btn {
+  display: none;
+}
 
 /* Side: full-height column with left accent */
 .editor-layout .ai-chat-side-panel {

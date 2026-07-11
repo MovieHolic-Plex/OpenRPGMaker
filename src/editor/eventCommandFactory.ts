@@ -127,6 +127,7 @@ export function newCommand(kind: Command["kind"]): Command {
         quantityMode: "single",
         shopType: "normal",
         messageType: "welcome",
+        merchantGold: 100,
         branchOnTransaction: false,
         transactionBranch: [],
       };
