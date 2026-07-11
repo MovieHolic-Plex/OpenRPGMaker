@@ -9,7 +9,6 @@ export type DatabaseWorkbenchSummary = {
 
 export const DATABASE_FOOTER_ACTION_TEST_IDS = {
   apply: "database-footer-apply",
-  cancel: "database-footer-cancel",
   ok: "database-footer-ok",
 } as const;
 
@@ -22,5 +21,5 @@ export function databaseWorkbenchStatusText(summary: DatabaseWorkbenchSummary): 
 }
 
 export function databaseFooterStatusText(): string {
-  return "선택한 레코드를 확인한 뒤 OK, 적용 또는 취소를 선택하세요.";
+  return "변경은 즉시 반영되고 자동 저장됩니다. 실수는 Ctrl+Z, 또는 닫을 때 '열 때 상태로 되돌리기'를 선택하세요.";
 }

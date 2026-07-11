@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("RM2K3 database record list resets modal state and exposes decorative fillers", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
@@ -13,7 +14,7 @@ test("RM2K3 database record list resets modal state and exposes decorative fille
   await skillRows.nth(1).click();
   await expect(skillRows.nth(1)).toHaveAttribute("aria-pressed", "true");
 
-  await page.getByTestId("database-footer-cancel").click();
+  await page.getByTestId("database-footer-ok").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await page.getByTestId("toolbar-database").click();
   await expect(page.locator('[data-testid^="db-record-row-"]').first()).toHaveAttribute("aria-pressed", "true");

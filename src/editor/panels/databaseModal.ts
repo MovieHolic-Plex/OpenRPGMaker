@@ -134,13 +134,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       }),
       el("button", {
         class: "database-footer-button",
-        text: "취소",
-        attrs: { type: "button" },
-        dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.cancel },
-      }),
-      el("button", {
-        class: "database-footer-button",
-        text: "적용",
+        text: "지금 저장",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.apply },
         on: {
@@ -158,7 +152,6 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       }),
     ],
   });
-  controller.bindCancelButton(footer.querySelector(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.cancel}']`) ?? closeButton);
   const windowEl = backdrop.querySelector(".database-modal-window");
   if (windowEl instanceof HTMLElement) {
     header.addEventListener("mousedown", (event) => startModalDrag(windowEl, event));
@@ -175,13 +168,13 @@ function renderDirtyPrompt(
 ): HTMLElement {
   return el("section", {
     class: "database-modal-dirty-prompt",
-    attrs: { "aria-label": "저장하지 않은 데이터베이스 변경" },
+    attrs: { "aria-label": "이 세션에서 바뀐 데이터베이스 내용" },
     dataset: { closeAttempt: attempt, testid: "database-dirty-prompt" },
     children: [
-      el("strong", { text: "저장하지 않은 DB 변경이 있습니다." }),
+      el("strong", { text: "이 세션에서 바뀐 내용이 있습니다. 어떻게 할까요?" }),
       el("span", { text: closeAttemptMessage(attempt) }),
-      dirtyPromptButton("저장", "database-dirty-save", EDITOR_MODAL_DIRTY_DECISION.Save, onDecision, "primary"),
-      dirtyPromptButton("버리기", "database-dirty-discard", EDITOR_MODAL_DIRTY_DECISION.Discard, onDecision),
+      dirtyPromptButton("저장하고 닫기", "database-dirty-save", EDITOR_MODAL_DIRTY_DECISION.Save, onDecision, "primary"),
+      dirtyPromptButton("열 때 상태로 되돌리고 닫기", "database-dirty-discard", EDITOR_MODAL_DIRTY_DECISION.Discard, onDecision),
       dirtyPromptButton("계속 편집", "database-dirty-keep-editing", EDITOR_MODAL_DIRTY_DECISION.KeepEditing, onDecision),
     ],
   });
@@ -204,15 +197,16 @@ function dirtyPromptButton(
 }
 
 function closeAttemptMessage(attempt: EditorModalCloseAttempt): string {
+  const restoreNote = "되돌리기는 이 모달을 연 시점의 DB 상태로 복구합니다.";
   switch (attempt) {
     case "cancel":
-      return "닫기 전에 저장하거나, 모달을 열 때의 DB 상태로 되돌릴 수 있습니다.";
+      return `닫기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
     case "escape":
-      return "Escape로 닫기 전에 변경 내용을 어떻게 처리할지 선택하세요.";
+      return `Escape로 닫기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
     case "backdrop":
-      return "바깥 영역을 눌러 닫기 전에 변경 내용을 어떻게 처리할지 선택하세요.";
+      return `바깥 영역을 눌러 닫기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
     case "x":
-      return "닫기 버튼을 누르기 전에 변경 내용을 어떻게 처리할지 선택하세요.";
+      return `닫기 버튼을 누르기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
   }
 }
 
