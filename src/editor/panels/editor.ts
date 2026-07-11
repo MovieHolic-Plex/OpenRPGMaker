@@ -179,7 +179,7 @@ export function renderEditor(main: HTMLElement): void {
   bindMapTreeResizer();
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
-  void startEditGame(phaserContainer).then(() => fitCanvas());
+  void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
   unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
@@ -231,7 +231,7 @@ export function applyEditorUiModeLayout(): void {
     refreshStatusbar();
   }
   applyLayout();
-  fitCanvas();
+  scheduleFitCanvas();
 }
 
 export function teardownEditor(): void {
@@ -271,7 +271,7 @@ export function toggleLeftPanel(): void {
   leftUserOverride = true;
   applyLayout();
   saveEditorLayout();
-  fitCanvas();
+  scheduleFitCanvas();
 }
 
 function refreshStatusbar(): void {
@@ -288,7 +288,7 @@ export function toggleChatDock(): void {
   applyChatDockLayout();
   applyLayout();
   saveEditorLayout();
-  fitCanvas();
+  scheduleFitCanvas();
 }
 
 function applyChatDockLayout(): void {
@@ -358,7 +358,7 @@ function projectExportNodeElement(): HTMLElement {
 
 function onWindowResize(): void {
   applyLayout();
-  fitCanvas();
+  scheduleFitCanvas();
 }
 
 function applyLayout(): void {
@@ -460,7 +460,7 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
   renderMapEditLockBanner(mapLockBannerRoot);
   renderEditorStatusbar(statusBarRoot);
   updateProjectExport();
-  fitCanvas();
+  scheduleFitCanvas();
 }
 
 function renderMapEditLockBanner(container: HTMLElement): void {
@@ -495,15 +495,17 @@ function renderEditorStatusbar(container: HTMLElement): void {
   const state = editorState.get();
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
-  container.append(
-    el("span", { class: "editor-statusbar-cell strong", text: `${layerStatusLabel(state.layer)} 편집 모드` }),
+  const lockStatus = getMapEditLockStatus();
+  // 기본 표면: 레이어·맵·도구만 전면. 타일/줌/좌표/칩 번호는 보조(CSS로 basic에서 숨김, expert·좁은 폭 우선순위).
+  const cells: HTMLElement[] = [
+    el("span", { class: "editor-statusbar-cell strong", text: layerStatusLabel(state.layer) }),
     el("span", { class: "editor-statusbar-cell", text: `맵: ${map?.name ?? mapId}` }),
     el("span", { class: "editor-statusbar-cell sb-secondary", text: `타일: ${tileDisplayLabelForIndex(state.selectedTile)}` }),
-    el("span", { class: "editor-statusbar-cell", text: `도구: ${toolStatusLabel(state.tool)}` }),
+    el("span", { class: "editor-statusbar-cell", text: toolStatusLabel(state.tool) }),
     el("span", { class: "editor-statusbar-cell sb-secondary", text: `줌: ${state.zoom}x` }),
     el("span", {
       class: "editor-statusbar-cell sb-detail",
-      children: ["좌표: ", el("span", { dataset: { testid: "cursor-position" }, text: "outside" })],
+      children: [el("span", { dataset: { testid: "cursor-position" }, text: "outside" })],
     }),
     el("span", {
       class: "editor-statusbar-cell sb-detail",
@@ -513,9 +515,19 @@ function renderEditorStatusbar(container: HTMLElement): void {
       class: "editor-statusbar-cell sb-detail",
       children: ["상위: ", el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
     }),
-    renderMapEditLockStatus(getMapEditLockStatus(), mapId),
-    renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar)
-  );
+  ];
+  // "확보/확인 전"은 소음 — 잠김·확인 중·장애일 때만 표시.
+  if (shouldShowMapEditLockStatus(lockStatus, mapId)) {
+    cells.push(renderMapEditLockStatus(lockStatus, mapId));
+  }
+  cells.push(renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar));
+  container.append(...cells);
+}
+
+/** 맵 잠금 칩: 평시(idle/held)는 숨기고 사용자 조치가 필요할 때만 노출. */
+function shouldShowMapEditLockStatus(status: MapEditLockStatus, mapId: string): boolean {
+  if (status.kind === "idle" || status.mapId !== mapId) return false;
+  return status.kind === "checking" || status.kind === "locked" || status.kind === "unavailable";
 }
 
 function renderMapEditLockStatus(status: MapEditLockStatus, mapId: string): HTMLElement {
@@ -682,7 +694,7 @@ function bindLeftResizer(): void {
     const onDrag = (moveEvent: MouseEvent): void => {
       leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, Math.min(LEFT_PANEL_MAX_WIDTH, startWidth + moveEvent.clientX - startX));
       applyLayout();
-      fitCanvas();
+      scheduleFitCanvas();
     };
     const onUp = (): void => {
       document.removeEventListener("mousemove", onDrag);
@@ -706,7 +718,7 @@ function bindMapTreeResizer(): void {
       const nextHeight = startHeight - (moveEvent.clientY - startY);
       mapTreeHeight = clamp(nextHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT);
       applyLayout();
-      fitCanvas();
+      scheduleFitCanvas();
     };
     const onUp = (): void => {
       document.removeEventListener("mousemove", onDrag);
@@ -720,12 +732,56 @@ function bindMapTreeResizer(): void {
   });
 }
 
+/** 맵 캔버스를 scroll-shell / 가용 영역에 맞게 리사이즈. 레이아웃 직후 0 크기면 다음 프레임에 재시도. */
 function fitCanvas(): void {
   if (!phaserHost) return;
   const game = getGame();
   if (!game) return;
-  const rect = phaserHost.getBoundingClientRect();
-  game.scale.resize(Math.max(200, Math.floor(rect.width)), Math.max(200, Math.floor(rect.height)));
+  // 컨테이너가 캔버스 고유 크기에 묶이지 않도록 부모 셸(absolute fill) 기준으로 잰다.
+  const shell = phaserHost.closest(".editor-canvas-scroll-shell") as HTMLElement | null;
+  const measureEl = shell && shell.clientWidth > 0 ? shell : phaserHost;
+  const w = Math.max(200, Math.floor(measureEl.clientWidth || measureEl.getBoundingClientRect().width));
+  const h = Math.max(200, Math.floor(measureEl.clientHeight || measureEl.getBoundingClientRect().height));
+  if (w < 32 || h < 32) {
+    scheduleFitCanvas();
+    return;
+  }
+  const prev = game.scale.gameSize;
+  if (prev && Math.abs(prev.width - w) < 1 && Math.abs(prev.height - h) < 1) {
+    // 버퍼는 맞아도 CSS가 남아 있으면 강제 맞춤
+    syncCanvasCssSize(game, w, h);
+    return;
+  }
+  game.scale.resize(w, h);
+  syncCanvasCssSize(game, w, h);
+}
+
+function syncCanvasCssSize(game: { canvas?: HTMLCanvasElement | null }, w: number, h: number): void {
+  const canvas = game.canvas;
+  if (!canvas) return;
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+  canvas.style.display = "block";
+  // 호스트는 %로 셸을 채우고, 버퍼 크기만 w×h로 맞춘다(고정 px는 다음 리사이즈를 막음).
+  if (phaserHost) {
+    phaserHost.style.width = "100%";
+    phaserHost.style.height = "100%";
+  }
+}
+
+let fitCanvasRaf = 0;
+function scheduleFitCanvas(): void {
+  if (typeof requestAnimationFrame !== "function") {
+    fitCanvas();
+    return;
+  }
+  if (fitCanvasRaf) cancelAnimationFrame(fitCanvasRaf);
+  fitCanvasRaf = requestAnimationFrame(() => {
+    fitCanvasRaf = 0;
+    fitCanvas();
+    // 레이아웃이 한 프레임 늦게 잡히는 경우(좌패널/AI 도크) 한 번 더
+    requestAnimationFrame(() => fitCanvas());
+  });
 }
 
 function loadEditorLayout(): LoadedEditorLayout {

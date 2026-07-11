@@ -30,7 +30,7 @@ function countFromSummary(summary: string, pattern: RegExp): number {
 
 function isTreeScatter(call: ProposedCall): boolean {
   if (call.name !== "scatter_object" && call.name !== "tile_scatter" && call.name !== "place_props") return false;
-  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : typeof call.args.propVocabId === "string" ? call.args.propVocabId : "";
+  const groupId = typeof call.args.groupId === "string" ? call.args.groupId : typeof call.args.material === "string" ? call.args.material : typeof call.args.propVocabId === "string" ? call.args.propVocabId : "";
   const haystack = `${groupId} ${call.summary}`.toLowerCase();
   return /나무|tree|숲|활엽|침엽|conifer|broadleaf/u.test(haystack);
 }

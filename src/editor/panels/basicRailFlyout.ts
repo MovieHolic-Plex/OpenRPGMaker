@@ -2,7 +2,7 @@
 // 캔버스를 리사이즈하지 않는 오버레이(스펙 §2). 상태는 순수 리듀서로 관리해 단위테스트한다.
 import { el } from "@/util/dom";
 
-export type BasicFlyoutId = "tiles" | "layers" | "maps";
+export type BasicFlyoutId = "tiles" | "maps";
 
 export interface BasicFlyoutState {
   readonly open: BasicFlyoutId | null;

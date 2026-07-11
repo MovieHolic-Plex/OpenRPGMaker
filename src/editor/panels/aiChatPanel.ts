@@ -1101,9 +1101,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     void sendText(prompt, skill.displayAs?.(args) ?? `${skill.icon} ${skill.name}`);
   };
 
-  // 빈 대화 시작 화면 — 인사 + 큰 스킬 카드. 위상에 맞는 첫인상.
+  // 빈 대화 시작 화면 — 짧은 안내 + 핵심 스킬 카드만 (나머지 / · Ctrl+K).
   const buildStartScreen = (): HTMLElement => {
-    const featured = ["interview", "build-house", "map-audit", "build-village", "demo-teach", "quest-builder"];
+    const featured = ["interview", "build-house", "map-audit"];
     const byId = new Map(listAllSkills().map((skill) => [skill.id, skill]));
     const featuredSkills = featured
       .map((id) => byId.get(id))
@@ -1118,15 +1118,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           el("span", { class: "ai-start-card-name", text: skill.name }),
         ],
         on: { click: () => drawer.run(skill) },
-      })
-    );
-    const guideItems = featuredSkills.map((skill) =>
-      el("li", {
-        children: [
-          el("strong", { text: skill.name }),
-          " — ",
-          el("span", { text: skill.description }),
-        ],
       })
     );
     const resume = resumeCandidate
@@ -1155,22 +1146,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       dataset: { testid: "ai-start-screen" },
       children: [
         el("div", { class: "ai-start-title", text: "무엇을 만들까요?" }),
-        el("div", { class: "ai-start-sub", text: "Ctrl+K 명령 · / 스킬 · 영역 선택 후 ✨ 칩으로 시작하세요." }),
+        el("div", { class: "ai-start-sub", text: "영역을 선택하거나 / 로 스킬을 찾으세요." }),
         ...resume,
         ...sharedCards,
         el("div", { class: "ai-start-grid", children: cards }),
-        el("div", {
-          class: "ai-start-guide",
-          dataset: { testid: "ai-start-guide" },
-          children: [
-            el("details", {
-              children: [
-                el("summary", { text: "ⓘ 스킬 안내" }),
-                el("ul", { children: guideItems }),
-              ],
-            }),
-          ],
-        }),
       ],
     });
   };
@@ -1405,17 +1384,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "chat-dock-toggle-bar" },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
-  // 노출 토글: 현재 모드를 라벨로 보여 주고 클릭 시 반대 모드로 전환.
+  // 도크 모드 토글: 플로팅 커맨드 바와 더보기 메뉴에만 둔다(헤더 뱃지 제거 = 시각 소음 감소).
   const dockModeButton = el("button", {
     class: "ai-dock-mode-btn",
     attrs: { type: "button" },
     dataset: { testid: "ai-dock-mode-btn", dockMode: currentChatDock() },
-    on: { click: onDockToggleClick },
-  }) as HTMLButtonElement;
-  const headerDockModeButton = el("button", {
-    class: "ai-dock-mode-btn ai-dock-mode-btn-header",
-    attrs: { type: "button" },
-    dataset: { testid: "ai-dock-mode-btn-header", dockMode: currentChatDock() },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
   exportButton = el("button", {
@@ -1556,12 +1529,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       ? "현재: 사이드 패널(대화·기록 전체). 클릭하면 플로팅 바로 전환"
       : "현재: 플로팅 바(맵 위 입력). 클릭하면 사이드 패널로 고정";
     const menuLabel = side ? "플로팅 바로 전환" : "사이드 패널로 고정";
-    for (const btn of [dockModeButton, headerDockModeButton]) {
-      btn.textContent = label;
-      btn.dataset.dockMode = mode;
-      btn.setAttribute("title", nextHint);
-      btn.setAttribute("aria-label", nextHint);
-    }
+    dockModeButton.textContent = label;
+    dockModeButton.dataset.dockMode = mode;
+    dockModeButton.setAttribute("title", nextHint);
+    dockModeButton.setAttribute("aria-label", nextHint);
     moreMenuDockItem.textContent = menuLabel;
     moreMenuDockItem.setAttribute("title", nextHint);
     if (commandDockItem) {
@@ -1618,6 +1589,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     closeMoreMenu();
     onDockToggleClick();
   });
+  // 더보기: 일상 액션만. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
   moreMenu.replaceChildren(
     moreMenuItem("되돌리기", "ai-more-undo", () => undoLastButton.click()),
     moreMenuItem("내보내기", "ai-more-export", () => exportButton?.click()),
@@ -1626,10 +1598,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.click();
       applyHistoryOpen(true);
     }),
-    moreMenuItem("툴 브라우저", "ai-more-tools", () => toolsButton.click()),
-    moreMenuItem("AI 내부 로그", "ai-more-harness", () => harnessButton.click()),
-    moreMenuItem("스튜디오", "ai-more-studio", () => studioButton.click()),
-    moreMenuItem("글자 크기", "ai-more-font", () => fontButton.click())
+    moreMenuItem("툴 브라우저", "ai-more-tools", () => toolsButton.click())
   );
   const moreWrap = el("div", {
     class: "ai-more-wrap",
@@ -1641,7 +1610,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [
       el("div", {
         class: "ai-header-title-row",
-        children: [titleEl, headerDockModeButton],
+        children: [titleEl],
       }),
       el("span", {
         class: "ai-header-actions",
@@ -1903,24 +1872,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       attrs: { type: "button", role: "menuitem" },
       dataset: { testid: "ai-command-menu-tools" },
       on: { click: () => { closeCommandMenu(); toolsButton.click(); } },
-    }),
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "AI 내부 로그",
-      attrs: { type: "button", role: "menuitem", title: "계획·툴 호출·주입 원문 타임라인" },
-      on: { click: () => { closeCommandMenu(); harnessButton.click(); } },
-    }),
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "스튜디오",
-      attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { closeCommandMenu(); applyStudio(true); } },
-    }),
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "글자 크기",
-      attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { closeCommandMenu(); fontButton.click(); } },
     })
   );
 

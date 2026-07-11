@@ -54,11 +54,18 @@ describe("basic icon rail", () => {
     expect(editorState.get().tool).toBe("paint");
   });
 
-  it("레이어 토글 → 플라이아웃에서 layer-upper 클릭 시 레이어 전환", () => {
-    click("basic-rail-toggle-layers");
-    renderBasicLeftRail(container);
+  it("레일에서 하위/상위/이벤트 레이어를 바로 고른다", () => {
+    expect(findByTestId(container as unknown as FakeElement, "basic-layer-list")).toBeTruthy();
     click("layer-upper");
     expect(editorState.get().layer).toBe("upper");
+    renderBasicLeftRail(container);
+    click("layer-event");
+    expect(editorState.get().layer).toBe("event");
+    expect(editorState.get().tool).toBe("event");
+    renderBasicLeftRail(container);
+    click("layer-lower");
+    expect(editorState.get().layer).toBe("lower");
+    expect(editorState.get().tool).toBe("paint");
   });
 
   it("맵 토글 → 플라이아웃에 기본 맵 목록 렌더 (전문가 인라인 액션 없음)", () => {

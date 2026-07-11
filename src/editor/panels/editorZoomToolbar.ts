@@ -100,9 +100,18 @@ async function downloadCurrentMapScreenshot(): Promise<void> {
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = screenshot.fileName;
+    anchor.rel = "noopener";
+    document.body.append(anchor);
     anchor.click();
-    URL.revokeObjectURL(url);
-    toast(copiedToClipboard ? "맵 PNG를 저장하고 클립보드에 복사했습니다" : "맵 PNG를 저장했습니다", "ok");
+    anchor.remove();
+    // revoke 를 너무 빨리 하면 다운로드 실패하는 브라우저 있음
+    window.setTimeout(() => URL.revokeObjectURL(url), 2_000);
+    toast(
+      copiedToClipboard
+        ? `맵 PNG 저장·복사 (${screenshot.width}×${screenshot.height}, ×${screenshot.scale})`
+        : `맵 PNG 저장 (${screenshot.width}×${screenshot.height}, ×${screenshot.scale})`,
+      "ok",
+    );
   } catch (error) {
     if (requestSeq !== mapScreenshotRequestSeq) return;
     if (error instanceof MapScreenshotError) {
@@ -137,13 +146,17 @@ function publishMapScreenshotPending(map: GameMap): void {
 
 async function publishMapScreenshotResult(screenshot: MapScreenshot, map: GameMap): Promise<void> {
   const resultNode = mapScreenshotResultNode();
+  // 큰 dataUrl 을 DOM 에 넣으면 UI 가 멈추므로 작은 맵만 포함
+  const includeDataUrl = screenshot.blob.size < 1_500_000;
   resultNode.textContent = JSON.stringify({
     byteLength: screenshot.blob.size,
-    dataUrl: await blobToDataUrl(screenshot.blob),
+    ...(includeDataUrl ? { dataUrl: await blobToDataUrl(screenshot.blob) } : {}),
     fileName: screenshot.fileName,
     mapId: map.id,
     mapName: map.name,
     mapSize: { height: map.height, width: map.width },
+    pixelSize: { height: screenshot.height, width: screenshot.width },
+    scale: screenshot.scale,
     state: "done",
   });
 }

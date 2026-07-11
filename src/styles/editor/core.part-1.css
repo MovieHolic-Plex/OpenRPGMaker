@@ -172,13 +172,16 @@ button.btn:disabled {
   width: 320px;
 }
 .editor-layout .canvas-area {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* 가운데 정렬하면 캔버스가 작을 때 사방에 빈 여백이 남음 → stretch로 가용 영역 가득 */
+  align-items: stretch;
   background: var(--bg-canvas);
-  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: stretch;
+  min-height: 0;
+  min-width: 0;
   overflow: hidden;
+  position: relative;
 }
 /* 맵 캔버스: 브라우저 기본 우클릭 메뉴와 겹치지 않도록 (EditScene도 DOM preventDefault). */
 .editor-layout .canvas-area .phaser-container,

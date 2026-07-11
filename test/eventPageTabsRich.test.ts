@@ -44,7 +44,7 @@ function richConditions(): EventPageCondition[] {
 }
 
 function renderStrip(pages: EventPage[], activePage: EventPage = pages[0]!): FakeElement {
-  const strip = renderClassicPageTabStrip(gameEvent(pages), activePage);
+  const strip = renderClassicPageTabStrip("map_start", gameEvent(pages), activePage);
   if (!(strip instanceof FakeElement)) throw new Error("expected FakeElement render");
   return strip;
 }

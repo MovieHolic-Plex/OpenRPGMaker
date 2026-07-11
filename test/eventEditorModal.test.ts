@@ -164,10 +164,10 @@ describe("RPG Maker style event editor entry points", () => {
     const content = fakeContainer();
     renderEventEditorContent(content, project.startMapId, "event-1");
 
+    // 붙여넣기는 복사 버퍼가 있을 때만, 삭제는 페이지 2개 이상일 때만 노출.
     const pageActionExpectations = [
       ["event-page-add", "새 페이지"],
       ["event-page-copy", "페이지 복사"],
-      ["event-page-paste", "붙여넣기"],
       ["event-page-delete", "페이지 삭제"],
     ] as const;
     for (const [testId, label] of pageActionExpectations) {
@@ -175,9 +175,11 @@ describe("RPG Maker style event editor entry points", () => {
       expect(button?.textContent).toContain(label);
       expect(button?.querySelector(".event-page-button-icon")).not.toBeNull();
     }
+    expect(content.querySelector('[data-testid="event-page-paste"]')).toBeNull();
 
     const tabStrip = content.querySelector('[data-testid="event-classic-page-tabs"]');
-    expect(tabStrip?.textContent).toBe("123");
+    expect(tabStrip?.textContent).toContain("123");
+    expect(content.querySelector('[data-testid="event-page-tab-add"]')).not.toBeNull();
     expect(content.querySelector('[data-testid="event-page-tab-3"]')?.className).toContain("active");
   });
 

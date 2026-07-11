@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderCommandPreview } from "@/editor/panels/eventEditor/commandPreview";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
-import { openEventCommandEditDialog } from "@/editor/panels/eventEditor/commandEditDialog";
+import {
+  openEventCommandEditDialog,
+  shouldRerenderCommandForm,
+} from "@/editor/panels/eventEditor/commandEditDialog";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -112,6 +115,88 @@ describe("command edit modal — image-rich preview", () => {
     expect(ok).toBeTruthy();
     ok?.click();
     expect(applied).toEqual(original);
+  });
+
+  it("rebuilds shop dual lists after add so selected items stay in sync", () => {
+    const project = store.getCurrent();
+    const first = project.database.items[0];
+    const second = project.database.items[1];
+    expect(first && second).toBeTruthy();
+    if (!first || !second) return;
+
+    openEventCommandEditDialog({
+      initial: { kind: "shop", itemIds: [first.id] },
+      lockKind: true,
+      onApply: () => {},
+    });
+    const body = globalThis.document.body as unknown as FakeNode;
+    const available = findByTestId(body, "shop-available-items") as FakeElement | null;
+    const add = findByTestId(body, "shop-add-item");
+    expect(available && add).toBeTruthy();
+    if (!available || !add) return;
+
+    // select second item from available list
+    available.value = second.id;
+    add.click();
+
+    const selected = findByTestId(body, "shop-selected-items") as FakeElement | null;
+    expect(selected).toBeTruthy();
+    const optionValues = selected
+      ? [...selected.childNodes]
+          .filter((node): node is FakeElement => node instanceof FakeElement && node.tagName === "OPTION")
+          .map((option) => option.value)
+      : [];
+    expect(optionValues).toContain(first.id);
+    expect(optionValues).toContain(second.id);
+
+    const summary = findByTestId(body, "shop-selection-summary");
+    expect(summary?.textContent).toContain(first.name);
+    expect(summary?.textContent).toContain(second.name);
+  });
+
+  it("shows shop transaction branch controls when branch checkbox is enabled", () => {
+    openEventCommandEditDialog({
+      initial: { kind: "shop", itemIds: [] },
+      lockKind: true,
+      onApply: () => {},
+    });
+    const body = globalThis.document.body as unknown as FakeNode;
+    const branch = findByTestId(body, "shop-branch-on-transaction") as FakeElement | null;
+    expect(branch).toBeTruthy();
+    if (!branch) return;
+    branch.checked = true;
+    branch.dispatchEvent(new Event("change", { bubbles: true }));
+
+    const controls = findByTestId(body, "shop-transaction-branch-controls");
+    expect(controls).toBeTruthy();
+    expect(controls?.className.includes("is-hidden")).toBe(false);
+  });
+
+  it("shouldRerenderCommandForm flags shop list/branch and choices cancel changes", () => {
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "shop", itemIds: ["a"] },
+        { kind: "shop", itemIds: ["a", "b"] }
+      )
+    ).toBe(true);
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "shop", itemIds: [], branchOnTransaction: false },
+        { kind: "shop", itemIds: [], branchOnTransaction: true }
+      )
+    ).toBe(true);
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "shop", itemIds: ["a"], messageType: "welcome" },
+        { kind: "shop", itemIds: ["a"], messageType: "direct" }
+      )
+    ).toBe(false);
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "choices", options: [{ text: "예", branch: [] }] },
+        { kind: "choices", options: [{ text: "예", branch: [] }], cancelBehavior: "branch" }
+      )
+    ).toBe(true);
   });
 });
 
