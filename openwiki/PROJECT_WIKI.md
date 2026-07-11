@@ -20,6 +20,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 3. Read the focused page for the area being changed:
    - Editor UI, map tools, events, database, resources, save/import/export: `openwiki/editor-workflows.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
+   - Large river/market village generation (bbox → houses → roads): `openwiki/large-village-generation.md`
    - Runtime, interpreter, battle, save/session behavior, project schema: `openwiki/runtime-and-data.md`
    - Boot flow, mode switching, module boundaries: `openwiki/architecture.md`
    - Test and evidence strategy: `openwiki/testing.md`
