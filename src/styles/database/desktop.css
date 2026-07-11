@@ -126,22 +126,6 @@
     padding: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs,
-  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
-    grid-template-columns: 220px 220px 220px 1fr;
-    height: auto;
-    margin: 0 2px -1px;
-    padding: 0 0 0 1px;
-  }
-
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tab,
-  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tab {
-    font-size: 12px;
-    height: 18px;
-    line-height: 17px;
-    min-height: 18px;
-  }
-
   .database-modal-body:has(.rm2k3-record-enemies) .db-tabs,
   .database-modal-body:has(.rm2k3-record-troops) .db-tabs {
     background: var(--bg-raised);
@@ -198,10 +182,6 @@
     grid-template-rows: 56px minmax(0, 1fr);
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-classic-group-tabs {
-    display: none;
-  }
-
   .database-modal-body:has(.rm2k3-record-enemies) .db-tabs {
     align-items: end;
     background: var(--bg-raised);
@@ -253,10 +233,6 @@
     padding: 10px;
   }
 
-  .database-modal-body:has(.rm2k3-record-actors) .db-classic-group-tabs {
-    margin: 0 2px -1px;
-  }
-
   .database-modal-body:has(.rm2k3-record-actors) .db-tabs {
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-default);
@@ -298,10 +274,11 @@
     grid-template-areas:
       "name graphic actions"
       "stats graphic actions"
-      "rewards critical actions"
-      "state element options";
+      "species rewards actions"
+      "critical options actions"
+      "state element actions";
     grid-template-columns: minmax(360px, 0.88fr) minmax(360px, 0.9fr) minmax(430px, 1fr);
-    grid-template-rows: auto auto auto minmax(170px, 1fr);
+    grid-template-rows: auto auto auto auto minmax(170px, 1fr);
   }
 
   .database-modal-window:has(.rm2k3-record-troops) {
@@ -316,10 +293,6 @@
   .database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
     background: var(--bg-raised);
     grid-template-rows: 56px minmax(0, 1fr);
-  }
-
-  .database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
-    display: none;
   }
 
   .database-modal-body:has(.rm2k3-record-troops) .db-tabs {
@@ -451,6 +424,9 @@
     padding: 10px;
   }
 
+  /* 1280px 뷰포트 실측 워크벤치 폭(~852px)보다 이전 min-content 합(430+520+gap=962px)이
+     넘쳐 우측 설정 패널·이벤트 툴바가 스크롤 수단 없이 잘렸다(P9 M1). 최소폭을 낮춰
+     실제 폭 안에 들어오게 하고, 그래도 넘치면 아래 overflow:auto가 안전망 역할을 한다. */
   .database-modal-body .db-troops-classic-workbench {
     display: grid;
     gap: 12px;
@@ -458,17 +434,19 @@
       "top top"
       "preview events"
       "members events";
-    grid-template-columns: minmax(430px, 0.95fr) minmax(520px, 1fr);
+    grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1fr);
     grid-template-rows: auto minmax(300px, 1fr) auto;
     height: 100%;
     min-width: 0;
     width: 100%;
   }
 
+  /* 설정 패널(수동/자동 라디오 2 + 참전 수 + 포획 불가, 4컨트롤)이 180px에 갇혀
+     라디오 라벨이 글자 단위로 세로 줄바꿈되던 문제(P9 M2) — 컬럼을 넓힌다. */
   .database-modal-body .db-troop-top-controls {
     border-bottom: 0;
     gap: 8px;
-    grid-template-columns: minmax(240px, 1fr) 132px 132px 132px 180px;
+    grid-template-columns: minmax(200px, 1fr) 116px 116px 116px 280px;
     height: auto;
     padding-bottom: 0;
   }
@@ -504,6 +482,19 @@
     height: auto;
     min-height: 52px;
     padding: 12px;
+  }
+
+  .database-modal-body .db-troop-top-controls > .db-troop-classic-panel:last-child {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    row-gap: 6px;
+  }
+
+  .database-modal-body .db-troop-top-controls > .db-troop-classic-panel:last-child .db-troop-radio,
+  .database-modal-body .db-troop-top-controls > .db-troop-classic-panel:last-child .db-field,
+  .database-modal-body .db-troop-top-controls > .db-troop-classic-panel:last-child .actor-check {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .database-modal-body .db-troop-top-controls > .db-troop-classic-panel:first-child .db-field {

@@ -1,5 +1,6 @@
-import { addSwitch, addVariable, deleteSwitch, deleteVariable, renameSwitch, renameVariable } from "@/editor/actions";
+import { addSwitch, addVariable, deleteSwitch, deleteVariable } from "@/editor/actions";
 import { bulkRenameSwitches, bulkRenameVariables, type DeleteResult } from "@/editor/databaseActions";
+import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
 import {
   field,
   matchesNameOrId,
@@ -11,12 +12,61 @@ import { defaultTermValue, type TermKey } from "@/project/terms";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
+const DELETE_CONFIRM_LABEL = "정말 삭제?";
+const DELETE_IDLE_LABEL = "삭제";
+const DELETE_CONFIRM_WINDOW_MS = 3000;
+
 let switchSearch = "";
 let selectedSwitchId = "";
 let variableSearch = "";
 let selectedVariableId = "";
 let utilitySearchTimer: number | null = null;
 let pendingUtilityFocusId = "";
+
+// 스위치/변수 이름 입력란은 키 입력마다 호출된다 — editor/actions.ts의 renameSwitch/
+// renameVariable을 그대로 쓰면 매번 recordProjectSnapshot()(비-코얼레스)이 실행돼
+// 5글자 타이핑에 Ctrl+Z 5번이 필요해진다(qa-system-report.md). terms 필드와 동일하게
+// recordCoalescedSnapshot으로 직접 마무리한다.
+function renameSwitchCoalesced(id: string, name: string): void {
+  recordCoalescedSnapshot(`db-utility:switch-name:${id}`);
+  store.update((project) => {
+    const record = project.switches.find((entry) => entry.id === id);
+    if (record) record.name = name;
+  }, { scope: "database", collection: "switches" });
+}
+
+function renameVariableCoalesced(id: string, name: string): void {
+  recordCoalescedSnapshot(`db-utility:variable-name:${id}`);
+  store.update((project) => {
+    const record = project.variables.find((entry) => entry.id === id);
+    if (record) record.name = name;
+  }, { scope: "database", collection: "variables" });
+}
+
+// 삭제 자체(참조 가드 + undo 스냅샷)는 기존 deleteSwitch/deleteVariable을 그대로 쓰되,
+// 성공한 뒤에는 세션 런타임 값(session.switches[id]/variables[id])도 함께 지운다 — 그러지
+// 않으면 슬롯을 "+ 추가"로 재사용할 때 이전 값(true/숫자)을 그대로 물려받는다
+// (qa-system-report.md). deleteSwitch가 이미 recordProjectSnapshot을 호출했으므로 이
+// 후속 store.update는 별도 스냅샷 없이 같은 undo 묶음에 들어간다.
+function deleteSwitchWithCleanup(id: string): DeleteResult {
+  const result = deleteSwitch(id);
+  if (result.ok) {
+    store.update((project) => {
+      delete project.session.switches[id];
+    }, { scope: "database", collection: "switches" });
+  }
+  return result;
+}
+
+function deleteVariableWithCleanup(id: string): DeleteResult {
+  const result = deleteVariable(id);
+  if (result.ok) {
+    store.update((project) => {
+      delete project.session.variables[id];
+    }, { scope: "database", collection: "variables" });
+  }
+  return result;
+}
 
 type UtilityNamedRowsOptions = {
   readonly kind: "switch" | "variable";
@@ -68,11 +118,11 @@ export function renderSwitchesTab(host: HTMLElement, rerender: () => void): void
     switchSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ kind: "switch", emptyMessage: "아직 스위치가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteSwitch, records, query: switchSearch, rerender, selectedId: selectedSwitchId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "switch", emptyMessage: "아직 스위치가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteSwitchWithCleanup, records, query: switchSearch, rerender, selectedId: selectedSwitchId, setSelectedId: (id) => {
     selectedSwitchId = id;
     rerender();
   } }));
-  form.append(utilityDetail({ label: "스위치 이름", record: records.find((record) => record.id === selectedSwitchId), onName: renameSwitch, onDelete: deleteSwitch, rerender }));
+  form.append(utilityDetail({ label: "스위치 이름", record: records.find((record) => record.id === selectedSwitchId), onName: renameSwitchCoalesced, onDelete: deleteSwitchWithCleanup, rerender }));
   form.append(storyFlagList());
   focusPendingUtilityName(form);
 }
@@ -89,11 +139,11 @@ export function renderVariablesTab(host: HTMLElement, rerender: () => void): voi
     variableSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ kind: "variable", emptyMessage: "아직 변수가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteVariable, records, query: variableSearch, rerender, selectedId: selectedVariableId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "variable", emptyMessage: "아직 변수가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteVariableWithCleanup, records, query: variableSearch, rerender, selectedId: selectedVariableId, setSelectedId: (id) => {
     selectedVariableId = id;
     rerender();
   } }));
-  form.append(utilityDetail({ label: "변수 이름", record: records.find((record) => record.id === selectedVariableId), onName: renameVariable, onDelete: deleteVariable, rerender }));
+  form.append(utilityDetail({ label: "변수 이름", record: records.find((record) => record.id === selectedVariableId), onName: renameVariableCoalesced, onDelete: deleteVariableWithCleanup, rerender }));
   form.append(storyFlagList());
   focusPendingUtilityName(form);
 }
@@ -241,25 +291,71 @@ function namedRow(options: UtilityNamedRowOptions): HTMLElement {
       el("span", { class: "db-list-name", text: options.name }),
     ],
   });
-  const deleteButton = el("button", {
-    class: "btn danger tiny db-utility-row-delete",
-    text: "삭제",
-    attrs: { type: "button", "aria-label": `${options.name} 삭제` },
-    dataset: { testid: `db-delete-${options.id}` },
+  const deleteButton = twoStepDeleteButton({
+    className: "btn danger tiny db-utility-row-delete",
+    ariaLabel: `${options.name} 삭제`,
+    testid: `db-delete-${options.id}`,
+    onDelete: () => options.onDelete(options.id),
+    onDeleted: () => {
+      if (selectedSwitchId === options.id) selectedSwitchId = "";
+      if (selectedVariableId === options.id) selectedVariableId = "";
+      options.rerender();
+    },
+  });
+  return el("div", { class: "db-utility-row-wrap", children: [row, deleteButton] });
+}
+
+type TwoStepDeleteButtonOptions = {
+  readonly ariaLabel?: string;
+  readonly className: string;
+  readonly onDelete: () => DeleteResult;
+  readonly onDeleted: () => void;
+  readonly testid: string;
+};
+
+// 다른 레코드 탭과 동일한 2단계 확인 패턴 — 스위치/변수는 DatabaseCollection 밖이라
+// 공용 deleteButton(databaseAdvancedRecordViews.ts)을 재사용할 수 없으므로 여기서
+// 같은 계약을 재현한다(qa-system-report.md Minor: 2단계 확인 없음).
+function twoStepDeleteButton(options: TwoStepDeleteButtonOptions): HTMLElement {
+  let armedUntil = 0;
+  let resetTimer: number | null = null;
+  const button = el("button", {
+    class: options.className,
+    text: DELETE_IDLE_LABEL,
+    attrs: { type: "button", ...(options.ariaLabel ? { "aria-label": options.ariaLabel } : {}) },
+    dataset: { testid: options.testid },
     on: {
       click: () => {
-        const result = options.onDelete(options.id);
+        const now = Date.now();
+        if (now > armedUntil) {
+          armedUntil = now + DELETE_CONFIRM_WINDOW_MS;
+          button.textContent = DELETE_CONFIRM_LABEL;
+          button.classList.add("confirming");
+          if (resetTimer !== null) window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            resetTimer = null;
+            if (Date.now() >= armedUntil) {
+              armedUntil = 0;
+              button.textContent = DELETE_IDLE_LABEL;
+              button.classList.remove("confirming");
+            }
+          }, DELETE_CONFIRM_WINDOW_MS + 100);
+          return;
+        }
+        armedUntil = 0;
+        button.textContent = DELETE_IDLE_LABEL;
+        button.classList.remove("confirming");
+        const result = options.onDelete();
         if (!result.ok) {
           toast(result.message, "error");
           return;
         }
-        if (selectedSwitchId === options.id) selectedSwitchId = "";
-        if (selectedVariableId === options.id) selectedVariableId = "";
-        options.rerender();
+        toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
+        options.onDeleted();
       },
     },
   });
-  return el("div", { class: "db-utility-row-wrap", children: [row, deleteButton] });
+  return button;
 }
 
 function storyFlagList(): HTMLElement {
@@ -337,24 +433,21 @@ function utilityDetail(options: UtilityDetailOptions): HTMLElement {
     value: record.name,
   });
   input.addEventListener("input", () => options.onName(record.id, input.value));
+  const deleteButton = twoStepDeleteButton({
+    className: "btn danger small",
+    testid: "db-utility-selected-delete",
+    onDelete: () => options.onDelete(record.id),
+    onDeleted: () => {
+      if (selectedSwitchId === record.id) selectedSwitchId = "";
+      if (selectedVariableId === record.id) selectedVariableId = "";
+      options.rerender();
+    },
+  });
   return el("div", {
     class: "db-utility-detail",
     children: [
       el("label", { children: [el("span", { text: options.label }), input] }),
-      el("button", {
-        class: "btn danger small",
-        text: "삭제",
-        on: {
-          click: () => {
-            const result = options.onDelete(record.id);
-            if (!result.ok) {
-              toast(result.message, "error");
-              return;
-            }
-            options.rerender();
-          },
-        },
-      }),
+      deleteButton,
     ],
   });
 }
@@ -371,6 +464,7 @@ function termField(options: TermFieldOptions): HTMLElement {
   if (options.testid) input.dataset.testid = options.testid;
   input.addEventListener("input", () => {
     const next = input.value;
+    recordCoalescedSnapshot(`db-utility:term:${options.key}`);
     store.update((project) => {
       if (next.trim().length === 0) delete project.meta.terms[options.key];
       else project.meta.terms[options.key] = next;

@@ -16,16 +16,30 @@
   --rm2k3-enemy-graphic-preview-width: 242px;
 }
 
+/* 좁은(<901px) 폭에서는 이름 순서대로 세로 1열 스택 — 아래 desktop 오버라이드가
+   901px+ 에서 grid-template-areas 를 깔아주면 .db-enemy-panel-* 클래스가 자동으로
+   해당 영역에 배치된다(참조하는 area 이름이 없으면 grid-area는 조용히 무시되고
+   DOM 순서대로 auto-place 되므로 이 규칙 하나로 두 폭 모두 안전하다). */
 .database-modal-body .db-enemy-bm101-workbench {
   display: grid;
   gap: 6px;
   grid-column: 1 / -1;
-  grid-template-areas:
-    "name name graphic graphic"
-    "stats rewards graphic graphic"
-    "critical options rates rates"
-    "state element actions actions";
-  grid-template-columns: var(--rm2k3-enemy-panel-width) var(--rm2k3-enemy-panel-width) minmax(150px, 1fr) minmax(150px, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* grid-area 이름은 아래 @media(≥901px)의 template-areas에서만 정의된다 — 톱레벨에 두면
+   미정의 이름을 받은 아이템이 전부 같은 암시적 셀에 겹친다(<901px 패널 겹침, 2파 리뷰 #1). */
+@media (min-width: 901px) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-name { grid-area: name; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-stats { grid-area: stats; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic { grid-area: graphic; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-species { grid-area: species; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-rewards { grid-area: rewards; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-critical { grid-area: critical; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-options { grid-area: options; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-state { grid-area: state; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element { grid-area: element; }
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-actions { grid-area: actions; }
 }
 
 .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
@@ -39,16 +53,6 @@
   min-width: 0;
   padding: 8px 6px 6px;
 }
-
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(1) { grid-area: name; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(2) { grid-area: stats; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) { grid-area: graphic; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4) { grid-area: rewards; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(5) { grid-area: critical; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(6) { grid-area: options; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7) { grid-area: state; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) { grid-area: element; }
-.database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(9) { grid-area: actions; }
 
 .database-modal-body .db-enemy-bm101-workbench .db-field,
 .database-modal-body .db-enemy-dialog .db-field {

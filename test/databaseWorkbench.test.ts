@@ -87,19 +87,43 @@ describe("Database RM2K3 workbench context", () => {
     expect(searchInput(renderRecordHost("skills")).value).toBe("");
   });
 
-  it("Given class visual filler rows When automation queries records Then fillers are decorative non-records", () => {
+  // 가짜 직업 채움 행("마검사"/"기사"/... disabled aria-hidden 행)은 목록 아래를 시각적으로
+  // 채우기만 하는 죽은 컨트롤이었다 — fix(db)에서 제거했다. classes 탭은 이제 다른 탭과
+  // 동일하게 실제 레코드만 렌더하고 검색도 실동작한다.
+  it("Given the classes tab When rendered Then no decorative filler rows or group tabs exist", () => {
     const host = renderRecordHost("classes");
     const recordRows = allElements(host).filter((node) => node.dataset.testid?.startsWith("db-record-row-"));
     const fillerRows = allElements(host).filter((node) => node.className.split(/\s+/u).includes("db-list-row-visual-filler"));
 
     expect(recordRows).toHaveLength(store.getCurrent().database.classes.length);
-    expect(fillerRows.length).toBeGreaterThan(0);
-    for (const row of fillerRows) {
-      expect(row.dataset.testid).toBeUndefined();
-      expect(row.dataset.recordId).toBeUndefined();
-      expect(row.disabled || row.attrs.disabled === "true").toBe(true);
-      expect(row.attrs["aria-hidden"]).toBe("true");
-    }
+    expect(fillerRows).toHaveLength(0);
+    expect(findByTestId(host, "db-classic-group-tabs")).toBeNull();
+  });
+
+  it("Given a search on the classes tab When a query is typed Then the record list actually filters (no more classes special-case)", () => {
+    const classes = store.getCurrent().database.classes;
+    expect(classes.length).toBeGreaterThan(1);
+    const target = classes[0];
+
+    // 검색어 저장은 세션 상태를 통해 이뤄지므로(디바운스된 rerender 콜백을 거치지 않고도),
+    // 새로 렌더된 호스트에서 필터링 결과를 확인한다 — 다른 케이스("isolated blank search")와
+    // 동일한 패턴.
+    const searchHost = renderRecordHost("classes");
+    const searchField = searchInput(searchHost);
+    searchField.value = target.name;
+    searchField.dispatchEvent(new Event("input"));
+
+    const filteredHost = renderRecordHost("classes");
+    const visibleRows = allElements(filteredHost).filter((node) => node.dataset.testid?.startsWith("db-record-row-"));
+    expect(visibleRows.some((row) => row.dataset.recordId === target.id)).toBe(true);
+    expect(visibleRows.length).toBeLessThan(classes.length);
+
+    const noMatchField = searchInput(renderRecordHost("classes"));
+    noMatchField.value = "존재하지않는검색어zzz";
+    noMatchField.dispatchEvent(new Event("input"));
+    const noMatchHost = renderRecordHost("classes");
+    const noMatchRows = allElements(noMatchHost).filter((node) => node.dataset.testid?.startsWith("db-record-row-"));
+    expect(noMatchRows).toHaveLength(0);
   });
 });
 

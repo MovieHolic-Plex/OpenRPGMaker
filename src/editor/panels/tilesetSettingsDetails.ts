@@ -1,4 +1,5 @@
 import { textControl } from "@/editor/panels/databaseControls";
+import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { renderPalettePresetEditor } from "@/editor/panels/palettePresetEditor";
 import { renderTilesetCheckerSummary } from "@/editor/panels/tilesetCheckerSummary";
 import { openTilesetReviewWizard } from "@/editor/panels/tilesetReviewWizard";
@@ -45,7 +46,7 @@ function renderTilesetProperties(tileset: TilesetDef, rerender: () => void): HTM
       el("fieldset", {
         class: "rm2k3-db-fieldset rm2k3-tileset-name-field",
         dataset: { testid: "tileset-rm2k3-name" },
-        children: [el("legend", { text: "이름" }), textControl("", tileset.name, (value) => updateTilesetName(tileset.id, value))],
+        children: [el("legend", { text: "이름" }), textControl("", tileset.name, (value) => updateTilesetName(tileset.id, value), "tileset-rm2k3-name-input")],
       }),
       el("fieldset", {
         class: "rm2k3-db-fieldset rm2k3-tileset-graphic-field",
@@ -192,6 +193,8 @@ function disabledButton(spec: DisabledButtonSpec): HTMLButtonElement {
 }
 
 function updateTilesetName(tilesetId: string, value: string): void {
+  // 텍스트 입력 스트림(키 입력마다 호출) — 1파 4c042b9와 동일하게 커밋 단위로 병합한다.
+  recordCoalescedSnapshot(`tileset-name:${tilesetId}`);
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (target) target.name = value;
@@ -199,6 +202,7 @@ function updateTilesetName(tilesetId: string, value: string): void {
 }
 
 function updateTilesetTransparentColor(tilesetId: string, value: string): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (!target) return;
@@ -207,6 +211,7 @@ function updateTilesetTransparentColor(tilesetId: string, value: string): void {
 }
 
 function clearTilesetTransparentColor(tilesetId: string): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (target) delete target.transparentColor;

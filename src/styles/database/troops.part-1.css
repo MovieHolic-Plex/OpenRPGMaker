@@ -47,14 +47,6 @@
   padding: 10px 14px 0;
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tabs {
-  display: grid;
-  grid-template-columns: 220px 227px 239px 284px;
-  height: 20px;
-  margin: 0;
-}
-
-.database-modal-body:has(.rm2k3-record-troops) .db-classic-group-tab,
 .database-modal-body:has(.rm2k3-record-troops) .db-tab {
   background: var(--bg-raised);
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
@@ -216,7 +208,9 @@
   display: block;
   margin: 0;
   min-width: 0;
-  overflow: hidden;
+  /* overflow:hidden 이었을 때 워크벤치가 폭을 넘치면(P9 M1) 스크롤 수단 자체가 없어
+     우측 설정 패널·이벤트 툴바에 도달 불가했다 — 열 최소폭을 낮춘 것과 별개로 안전망. */
+  overflow: auto;
   padding: 0;
 }
 

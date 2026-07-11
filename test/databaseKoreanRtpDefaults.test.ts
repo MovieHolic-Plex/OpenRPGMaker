@@ -41,7 +41,6 @@ const requiredUiLabels = [
   "용어",
   "스위치",
   "변수",
-  "최대 개수",
   "설정...",
 ] as const;
 

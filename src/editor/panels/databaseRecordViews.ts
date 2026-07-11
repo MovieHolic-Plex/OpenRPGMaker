@@ -256,11 +256,11 @@ function recordList(
   records: DatabaseRecords[DatabaseCollection],
   onSelect: (id: string) => void
 ): HTMLElement {
-  const effectiveSearchQuery = collection === "classes" ? "" : searchQueryForCollection(collection);
+  const searchQuery = searchQueryForCollection(collection);
   const visible: VisibleRow[] = [];
   let visibleIndex = 0;
   for (const [originalIndex, record] of records.entries()) {
-    if (effectiveSearchQuery && !matchesNameOrId(record.name, record.id, effectiveSearchQuery)) continue;
+    if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
     visibleIndex += 1;
     visible.push({ record, originalIndex, visibleIndex });
   }
@@ -271,11 +271,6 @@ function recordList(
     onScroll: (scrollTop) => setListScrollTopForCollection(collection, scrollTop),
     renderRow: (entry) => recordListRow(collection, entry, records.length, onSelect),
   });
-
-  // 직업 탭의 장식용 채움 행(가상화 대상이 아니며 항상 목록 뒤에 유지).
-  if (collection === "classes" && records.length < 18) {
-    virtualList.element.append(...classFillerRows(records.length));
-  }
 
   // 탭 전환 후 되돌아올 때 리스트 스크롤 위치를 복원한다.
   const restoredScrollTop = listScrollTopForCollection(collection);
@@ -308,25 +303,6 @@ function recordListRow(
     ],
     on: { click: () => onSelect(record.id) },
   });
-}
-
-function classFillerRows(startIndex: number): HTMLElement[] {
-  const visualClassNames = ["마검사", "기사", "무투가", "도적", "해적", "사무라이", "닌자", "성기사", "암흑기사", "현자", "음유시인", "소환사"];
-  const fillers: HTMLElement[] = [];
-  for (let fillerIndex = startIndex; fillerIndex < 18; fillerIndex += 1) {
-    const name = visualClassNames[fillerIndex - startIndex] ?? "";
-    fillers.push(
-      el("button", {
-        class: "db-list-row db-list-row-visual-filler",
-        attrs: { "aria-hidden": "true", disabled: "true", tabindex: "-1", type: "button" },
-        children: [
-          el("span", { class: "db-list-number", text: `${ordinalLabel(fillerIndex)}:` }),
-          el("span", { class: "db-list-name", text: name }),
-        ],
-      })
-    );
-  }
-  return fillers;
 }
 
 function scheduleFrame(run: () => void): void {
@@ -389,10 +365,7 @@ function recordForm(
 function recordListFooter(count: number): HTMLElement {
   return el("div", {
     class: "rm2k3-record-list-footer",
-    children: [
-      el("button", { class: "database-footer-button rm2k3-maximum-button", text: "최대 개수", attrs: { disabled: "true", type: "button" } }),
-      el("span", { class: "rm2k3-record-count", text: `${count}개` }),
-    ],
+    children: [el("span", { class: "rm2k3-record-count", text: `${count}개` })],
   });
 }
 

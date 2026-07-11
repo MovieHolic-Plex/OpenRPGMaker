@@ -1,4 +1,3 @@
-import { addSwitch, addVariable, renameSwitch, renameVariable } from "@/editor/actions";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { duplicateInto } from "@/editor/databaseCopy";
 import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databaseReferences";
@@ -272,21 +271,50 @@ export function bulkRenameVariables(start: number, count: number, prefix: string
   bulkRename(start, count, prefix, "variable");
 }
 
+// 범위 일괄 이름 변경은 사용자에게 "한 번의 동작"이다 — 이전에는 개수만큼 루프를 돌며
+// renameSwitch/addSwitch(각각 자체 recordProjectSnapshot 호출)를 호출해 Ctrl+Z를 N번
+// 눌러야 되돌려졌다(qa-system-report.md). 여기서는 루프 전체를 감싸는 스냅샷 1개만
+// 남기고, 실제 이름 변경/슬롯 추가는 actions.ts의 헬퍼를 거치지 않고 직접 수행한다.
 function bulkRename(start: number, count: number, prefix: string, kind: "switch" | "variable"): void {
-  for (let offset = 0; offset < count; offset++) {
-    const number = start + offset;
-    const label = `${prefix} ${number.toString().padStart(4, "0")}`;
-    const list = kind === "switch" ? store.getCurrent().switches : store.getCurrent().variables;
-    const existing = list[number - 1];
-    if (existing) {
-      if (kind === "switch") renameSwitch(existing.id, label);
-      else renameVariable(existing.id, label);
-    } else if (kind === "switch") {
-      addSwitch(label);
-    } else {
-      addVariable(label);
-    }
+  recordProjectSnapshot();
+  if (kind === "switch") {
+    store.update((project) => {
+      for (let offset = 0; offset < count; offset++) {
+        const number = start + offset;
+        const label = `${prefix} ${number.toString().padStart(4, "0")}`;
+        const existing = project.switches[number - 1];
+        if (existing) {
+          existing.name = label;
+          continue;
+        }
+        project.switches.push({ id: nextNumberedSlotId("sw", project.switches), name: label });
+      }
+    }, { scope: "database", collection: "switches" });
+    return;
   }
+  store.update((project) => {
+    for (let offset = 0; offset < count; offset++) {
+      const number = start + offset;
+      const label = `${prefix} ${number.toString().padStart(4, "0")}`;
+      const existing = project.variables[number - 1];
+      if (existing) {
+        existing.name = label;
+        continue;
+      }
+      project.variables.push({ id: nextNumberedSlotId("var", project.variables), name: label });
+    }
+  }, { scope: "database", collection: "variables" });
+}
+
+// editor/actions.ts의 nextNumberedId와 동일한 규칙(빈 순번 탐색, 다 차면 genId로 폴백).
+// 그쪽 함수는 export되어 있지 않아 재사용할 수 없으므로 동일 로직을 여기 재현한다.
+function nextNumberedSlotId(prefix: "sw" | "var", records: readonly { readonly id: string }[]): string {
+  const existingIds = new Set(records.map((record) => record.id));
+  for (let index = 1; index < records.length + 10000; index += 1) {
+    const id = `${prefix}_${String(index).padStart(4, "0")}`;
+    if (!existingIds.has(id)) return id;
+  }
+  return genId(prefix);
 }
 
 function isBattleAnimationScope(value: unknown): value is BattleAnimationScope {

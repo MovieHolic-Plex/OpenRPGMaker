@@ -13,9 +13,42 @@ export function textControl(label: string, value: string, onInput: (value: strin
   return field(label, input);
 }
 
-export function numberField(label: string, testid: string, value: number, onInput: (value: number) => void): HTMLElement {
-  const input = el("input", { attrs: { type: "number" }, value, dataset: { testid } });
-  input.addEventListener("input", () => onInput(Number(input.value)));
+export type NumberFieldBounds = { readonly min: number; readonly max: number };
+
+/**
+ * 숫자 필드. bounds 를 주면 percentField 패턴으로 입력 즉시 클램프하고
+ * 클램프된 값을 input.value 에 되써서 화면과 저장값이 어긋나지 않게 한다(P4).
+ * bounds 가 없어도 blur(change) 시 표시값을 숫자로 정규화해 NaN/빈 입력 잔상을 막는다.
+ */
+export function numberField(
+  label: string,
+  testid: string,
+  value: number,
+  onInput: (value: number) => void,
+  bounds?: NumberFieldBounds
+): HTMLElement {
+  const attrs: Record<string, string> = { type: "number" };
+  if (bounds) {
+    attrs.min = String(bounds.min);
+    attrs.max = String(bounds.max);
+  }
+  const input = el("input", { attrs, value, dataset: { testid } });
+  const normalize = (raw: number): number => {
+    const numeric = Number.isFinite(raw) ? raw : bounds ? bounds.min : 0;
+    if (!bounds) return numeric;
+    return Math.min(bounds.max, Math.max(bounds.min, numeric));
+  };
+  input.addEventListener("input", () => {
+    const next = normalize(Number(input.value));
+    // 클램프가 실제로 값을 바꿨을 때만 되쓴다 — 타이핑 중 커서 점프 방지.
+    if (bounds && input.value !== "" && String(next) !== input.value) input.value = String(next);
+    onInput(next);
+  });
+  input.addEventListener("change", () => {
+    const next = normalize(Number(input.value));
+    input.value = String(next);
+    onInput(next);
+  });
   return field(label, input);
 }
 
@@ -122,6 +155,10 @@ function literalLabel(value: string): string {
       return "부여";
     case "remove":
       return "해제";
+    case "resist":
+      return "저항";
+    case "inflict":
+      return "공격 시 부여";
     case "switch":
       return "스위치";
     case "medicine":

@@ -113,16 +113,14 @@ describe("Database panel partial refresh (undo/redo path)", () => {
     const container = document.createElement("div") as unknown as FakeElement;
     renderDatabasePanel(container as unknown as HTMLElement);
     const headerBefore = container.querySelector(".db-tabs");
-    const groupTabsBefore = findByTestId(container, "db-classic-group-tabs");
     const bodyBefore = container.querySelector(".db-body");
     expect(headerBefore).not.toBeNull();
     expect(bodyBefore).not.toBeNull();
 
     refreshDatabasePanel(container as unknown as HTMLElement);
 
-    // 헤더/그룹탭 스캐폴드는 동일 인스턴스로 유지되고 본문만 다시 그려진다.
+    // 헤더 스캐폴드는 동일 인스턴스로 유지되고 본문만 다시 그려진다.
     expect(container.querySelector(".db-tabs")).toBe(headerBefore);
-    expect(findByTestId(container, "db-classic-group-tabs")).toBe(groupTabsBefore);
     expect(container.querySelector(".db-body")).toBe(bodyBefore);
     expect(container.querySelectorAll(".db-tabs").length).toBe(1);
     expect(bodyBefore?.childNodes.length).toBeGreaterThan(0);

@@ -43,15 +43,40 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
 }
 
 /**
- * 포커스가 텍스트 편집 컨트롤(input/textarea/select/contentEditable)에 있는지 판별.
- * 이 경우 Ctrl+Z/Y 는 브라우저 기본 텍스트 실행취소가 우선되어야 하므로
- * 히스토리 단축키를 처리하지 않는다.
+ * 브라우저 네이티브 텍스트 undo 의 대상이 아닌 input type 목록.
+ * 체크박스/라디오/버튼류에 포커스가 있을 때 Ctrl+Z 를 무시하면 사용자 입장에서는
+ * "단축키가 그냥 씹힌다" — 이들은 텍스트 편집이 아니므로 히스토리 단축키를 처리한다.
  */
-function isTextEditingFocus(event: KeyboardEvent): boolean {
+const NON_TEXT_INPUT_TYPES: ReadonlySet<string> = new Set([
+  "button",
+  "checkbox",
+  "color",
+  "file",
+  "hidden",
+  "image",
+  "radio",
+  "range",
+  "reset",
+  "submit",
+]);
+
+/**
+ * 포커스가 텍스트 편집 컨트롤(텍스트형 input/textarea/contentEditable)에 있는지 판별.
+ * 이 경우 Ctrl+Z/Y 는 브라우저 기본 텍스트 실행취소가 우선되어야 하므로
+ * 히스토리 단축키를 처리하지 않는다. checkbox/radio/range/button 형 input 은
+ * 텍스트 편집이 아니므로 여기서 제외한다(P11-C: 체크박스 포커스 중 Ctrl+Z 무반응).
+ */
+export function isTextEditingFocus(event: KeyboardEvent): boolean {
   const target = event.target;
   if (typeof HTMLElement === "undefined" || !(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (tag === "INPUT") {
+    // 테스트 더블 등 getAttribute 가 없는 최소 객체도 허용 — type 미상은 text 로 간주.
+    const attrType = typeof target.getAttribute === "function" ? target.getAttribute("type") : null;
+    const rawType = attrType ?? (target as HTMLInputElement).type ?? "";
+    return !NON_TEXT_INPUT_TYPES.has(String(rawType).toLowerCase());
+  }
+  if (tag === "TEXTAREA" || tag === "SELECT") return true;
   return target.isContentEditable;
 }
 

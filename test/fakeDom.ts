@@ -1,10 +1,22 @@
-type DomGlobalName = "document" | "Node" | "HTMLElement" | "HTMLButtonElement";
+type DomGlobalName =
+  | "document"
+  | "Node"
+  | "HTMLElement"
+  | "HTMLButtonElement"
+  | "HTMLInputElement"
+  | "HTMLSelectElement"
+  | "HTMLImageElement"
+  | "HTMLTextAreaElement";
 
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
   readonly HTMLElement: typeof HTMLElement | undefined;
   readonly HTMLButtonElement: typeof HTMLButtonElement | undefined;
+  readonly HTMLInputElement: typeof HTMLInputElement | undefined;
+  readonly HTMLSelectElement: typeof HTMLSelectElement | undefined;
+  readonly HTMLImageElement: typeof HTMLImageElement | undefined;
+  readonly HTMLTextAreaElement: typeof HTMLTextAreaElement | undefined;
 };
 
 export class FakeNode {
@@ -43,6 +55,16 @@ export class FakeNode {
 
   remove(): void {
     this.parentNode?.removeChild(this);
+    this.parentNode = null;
+  }
+
+  replaceWith(...nodes: FakeNode[]): void {
+    const parent = this.parentNode;
+    if (!parent) return;
+    const index = parent.childNodes.indexOf(this);
+    if (index < 0) return;
+    for (const node of nodes) node.parentNode = parent;
+    parent.childNodes.splice(index, 1, ...nodes);
     this.parentNode = null;
   }
 
@@ -125,6 +147,16 @@ export class FakeElement extends FakeNode {
     return this.attrs[name] ?? null;
   }
 
+  removeAttribute(name: string): void {
+    delete this.attrs[name];
+  }
+
+  // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
+  // 작성돼 있으므로(예: `if (!context) return;`), 여기선 그 계약만 지켜준다.
+  getContext(): null {
+    return null;
+  }
+
   addEventListener(type: string, listener: EventListenerOrEventListenerObject | null): void {
     if (listener === null) return;
     const listeners = this.listeners[type] ?? [];
@@ -153,6 +185,15 @@ export class FakeElement extends FakeNode {
   focus(): void {
     const doc = globalThis.document as unknown as { activeElement?: FakeElement };
     doc.activeElement = this;
+  }
+
+  closest(selector: string): FakeElement | null {
+    let current: FakeElement | null = this;
+    while (current) {
+      if (matchesSelector(current, selector)) return current;
+      current = current.parentElement;
+    }
+    return null;
   }
 
   querySelector(selector: string): FakeElement | null {
@@ -191,6 +232,15 @@ function createFakeStyle(): Record<string, string> & { setProperty: (name: strin
   return style;
 }
 
+// installFakeDom()이 재설치될 때마다 새로 비운다 — 모듈 스코프에 두는 이유는 테스트가
+// document 리스너 누수를 단언할 때(예: 모달 close()가 keydown 리스너를 제대로 정리했는지)
+// documentListenerCount()로 바깥에서 조회할 수 있어야 하기 때문(fix(db) M11).
+let documentListeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
+
+export function documentListenerCount(type: string): number {
+  return documentListeners[type]?.length ?? 0;
+}
+
 export function installFakeDom(): () => void {
   const body = new FakeElement("body");
   const previous = {
@@ -198,13 +248,23 @@ export function installFakeDom(): () => void {
     Node: globalThis.Node,
     HTMLElement: globalThis.HTMLElement,
     HTMLButtonElement: globalThis.HTMLButtonElement,
+    HTMLInputElement: globalThis.HTMLInputElement,
+    HTMLSelectElement: globalThis.HTMLSelectElement,
+    HTMLImageElement: globalThis.HTMLImageElement,
+    HTMLTextAreaElement: globalThis.HTMLTextAreaElement,
   } satisfies PreviousDomGlobals;
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
+  // 몬스터/장비 뷰 등이 `instanceof HTMLInputElement`(또는 Image/Select/TextArea)로 타입을
+  // 좁히는 패턴을 쓴다 — FakeElement가 그 전부를 흉내내므로 같은 클래스를 매핑해둔다.
+  defineDomGlobal("HTMLInputElement", FakeElement);
+  defineDomGlobal("HTMLSelectElement", FakeElement);
+  defineDomGlobal("HTMLImageElement", FakeElement);
+  defineDomGlobal("HTMLTextAreaElement", FakeElement);
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
-  const documentListeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
+  documentListeners = {};
   defineDomGlobal("document", {
     activeElement: null,
     body,
@@ -244,6 +304,10 @@ export function installFakeDom(): () => void {
     restoreDomGlobal("Node", previous.Node);
     restoreDomGlobal("HTMLElement", previous.HTMLElement);
     restoreDomGlobal("HTMLButtonElement", previous.HTMLButtonElement);
+    restoreDomGlobal("HTMLInputElement", previous.HTMLInputElement);
+    restoreDomGlobal("HTMLSelectElement", previous.HTMLSelectElement);
+    restoreDomGlobal("HTMLImageElement", previous.HTMLImageElement);
+    restoreDomGlobal("HTMLTextAreaElement", previous.HTMLTextAreaElement);
   };
 }
 

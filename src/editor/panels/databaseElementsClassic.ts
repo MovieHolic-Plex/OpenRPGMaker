@@ -1,4 +1,5 @@
 import { clampElementListCount, resizeElementRecords } from "@/editor/databaseElementList";
+import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { isElementKind, readonlyValue, selectUtilityRecord } from "@/editor/panels/databaseUtilityRecordControls";
 import { store } from "@/project/store";
@@ -59,6 +60,7 @@ function renderElementsClassicList(elements: readonly DatabaseElementRecord[], h
         dataset: { testid: "db-elements-maximum-number" },
         on: {
           click: () => openElementMaxCountDialog(elements.length, (count) => {
+            recordProjectSnapshot();
             store.update((project) => {
               project.database.elements = resizeElementRecords(project.database.elements ?? [], count);
             }, { scope: "database", collection: "elements" });
@@ -152,6 +154,7 @@ function renderElementNameGroup(element: DatabaseElementRecord, index: number): 
   input.addEventListener("focus", () => selectUtilityRecord("elements", index));
   input.addEventListener("input", () => {
     const value = input.value;
+    recordCoalescedSnapshot(`db-utility:elements:${index}:name`);
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.name = value;
@@ -178,6 +181,7 @@ function elementKindRadio(kind: DatabaseElementRecord["kind"], checked: boolean,
   input.addEventListener("focus", () => selectUtilityRecord("elements", index));
   input.addEventListener("change", () => {
     if (!input.checked) return;
+    recordProjectSnapshot();
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.kind = isElementKind(input.value) ? input.value : "physical";
@@ -203,10 +207,15 @@ function renderElementDamageRow(element: DatabaseElementRecord, index: number, g
   input.addEventListener("focus", () => selectUtilityRecord("elements", index));
   input.addEventListener("input", () => {
     const value = clampDamageMultiplier(Number(input.value));
+    recordCoalescedSnapshot(`db-utility:elements:${index}:damage:${grade}`);
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.damageMultipliers = { ...target.damageMultipliers, [grade]: value };
     });
+  });
+  // blur 시 클램프된 저장값을 입력창에 되써서 표시-저장 불일치를 없앤다(P4 계열).
+  input.addEventListener("change", () => {
+    input.value = String(clampDamageMultiplier(Number(input.value)));
   });
   return el("label", {
     class: "db-elements-damage-row",

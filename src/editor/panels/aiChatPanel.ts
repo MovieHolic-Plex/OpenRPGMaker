@@ -2118,6 +2118,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     getAudit: () => collectAudit(),
     getHarness: () => controller.session?.getHarnessSnapshot() ?? null,
     abort: () => abortActiveTurn(),
+    // DB 모달 AI 바 등 외부 진입점이 "채팅 도크 열기"를 요청할 때 — 접힘만 해제한다.
+    openPanel: () => restoreCollapsed(),
   });
 
   return panel;

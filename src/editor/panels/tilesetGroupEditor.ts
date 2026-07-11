@@ -1,4 +1,5 @@
 import { field } from "@/editor/panels/databaseControls";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { TileGroupLayer, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
@@ -113,6 +114,7 @@ function saveGroup(tilesetId: string, count: number, rerender: () => void): void
     description: groupDraftDescription,
     placementRules: groupDraftRules,
   };
+  recordProjectSnapshot();
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (!target) return;

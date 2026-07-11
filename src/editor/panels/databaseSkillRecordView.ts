@@ -44,20 +44,21 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       updateDatabaseRecord("skills", record.id, { type })
     ),
     panel("소모와 명중", [
+      // bounds 는 store 측 normalizeSkillRecord 의 클램프와 동일하게 유지한다(P4 — 표시·저장 일치).
       numberField("MP", "db-field-skill-mp-flat", record.mpCost.flat, (flat) =>
-        updateDatabaseRecord("skills", record.id, { mpCost: { ...currentSkill(record).mpCost, flat } })
+        updateDatabaseRecord("skills", record.id, { mpCost: { ...currentSkill(record).mpCost, flat } }), { min: 0, max: 9999 }
       ),
       numberField("MP %", "db-field-skill-mp-percent", record.mpCost.percentMax, (percentMax) =>
-        updateDatabaseRecord("skills", record.id, { mpCost: { ...currentSkill(record).mpCost, percentMax } })
+        updateDatabaseRecord("skills", record.id, { mpCost: { ...currentSkill(record).mpCost, percentMax } }), { min: 0, max: 100 }
       ),
       numberField("성공률", "db-field-skill-success", record.successRate, (successRate) =>
-        updateDatabaseRecord("skills", record.id, { successRate })
+        updateDatabaseRecord("skills", record.id, { successRate }), { min: 0, max: 100 }
       ),
       numberField("명중률", "db-field-skill-hit-rate", record.hitRate, (hitRate) =>
-        updateDatabaseRecord("skills", record.id, { hitRate })
+        updateDatabaseRecord("skills", record.id, { hitRate }), { min: 0, max: 100 }
       ),
       numberField("분산", "db-field-skill-variance", record.variance, (variance) =>
-        updateDatabaseRecord("skills", record.id, { variance })
+        updateDatabaseRecord("skills", record.id, { variance }), { min: 0, max: 100 }
       ),
     ]),
     effectPanel,

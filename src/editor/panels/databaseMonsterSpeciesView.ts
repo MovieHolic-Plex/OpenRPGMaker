@@ -1,5 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { duplicateInto } from "@/editor/databaseCopy";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { monsterSpeciesReferenceMessage } from "@/editor/databaseReferences";
 import { emptyToUndefined, numberField, textControl } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { imageIconOf, recordIconElement } from "@/editor/panels/eventEditor/recordPicker";
@@ -8,6 +10,11 @@ import { store } from "@/project/store";
 import type { ActorLearnedSkill, EnemyStats, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
+import { toast } from "@/util/toast";
+
+const DELETE_CONFIRM_LABEL = "정말 삭제?";
+const DELETE_IDLE_LABEL = "삭제";
+const DELETE_CONFIRM_WINDOW_MS = 3000;
 
 let selectedSpeciesId: string | undefined;
 
@@ -70,25 +77,88 @@ function toolbar(rerender: () => void): HTMLElement {
       },
     },
   });
-  const remove = el("button", {
+  const duplicate = el("button", {
+    class: "db-toolbar-button",
+    text: "복제",
+    attrs: { type: "button" },
+    dataset: { testid: "db-monster-species-duplicate" },
+    on: {
+      click: () => {
+        const id = selectedSpeciesId;
+        if (!id) return;
+        const copyId = genId("species");
+        recordProjectSnapshot();
+        store.update((project) => {
+          project.database.monsterSpecies ??= [];
+          duplicateInto(project.database.monsterSpecies, id, copyId);
+        }, { scope: "database", collection: "monsterSpecies" });
+        selectedSpeciesId = copyId;
+        rerender();
+      },
+    },
+  });
+  const remove = deleteSpeciesButton(rerender);
+  return el("div", { class: "db-toolbar", children: [add, duplicate, remove] });
+}
+
+// 다른 레코드 탭(databaseAdvancedRecordViews.ts의 deleteButton)과 동일한 2단계 확인 +
+// 참조 가드 패턴 — monsterSpecies는 DatabaseCollection에 편입돼 있지 않아 그 공용 구현을
+// 그대로 재사용할 수 없으므로 이 뷰에서 같은 계약을 재현한다.
+function deleteSpeciesButton(rerender: () => void): HTMLElement {
+  let armedId: string | null = null;
+  let armedUntil = 0;
+  let resetTimer: number | null = null;
+
+  const button = el("button", {
     class: "db-toolbar-button danger",
-    text: "삭제",
+    text: DELETE_IDLE_LABEL,
     attrs: { type: "button" },
     dataset: { testid: "db-monster-species-delete" },
     on: {
       click: () => {
         const id = selectedSpeciesId;
         if (!id) return;
+
+        const blockedMessage = monsterSpeciesReferenceMessage(id);
+        if (blockedMessage) {
+          toast(blockedMessage, "error");
+          return;
+        }
+
+        const now = Date.now();
+        const isArmed = armedId === id && now <= armedUntil;
+        if (!isArmed) {
+          armedId = id;
+          armedUntil = now + DELETE_CONFIRM_WINDOW_MS;
+          button.textContent = DELETE_CONFIRM_LABEL;
+          button.classList.add("confirming");
+          if (resetTimer !== null) window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            resetTimer = null;
+            if (Date.now() >= armedUntil) {
+              armedId = null;
+              button.textContent = DELETE_IDLE_LABEL;
+              button.classList.remove("confirming");
+            }
+          }, DELETE_CONFIRM_WINDOW_MS + 100);
+          return;
+        }
+
+        armedId = null;
+        armedUntil = 0;
+        button.textContent = DELETE_IDLE_LABEL;
+        button.classList.remove("confirming");
         recordProjectSnapshot();
         store.update((project) => {
           project.database.monsterSpecies = (project.database.monsterSpecies ?? []).filter((record) => record.id !== id);
         }, { scope: "database", collection: "monsterSpecies" });
         selectedSpeciesId = undefined;
+        toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
         rerender();
       },
     },
   });
-  return el("div", { class: "db-toolbar", children: [add, remove] });
+  return button;
 }
 
 function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
@@ -119,11 +189,12 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
       currentHue: record.graphic.graphicHue,
       dialogTitle: "Species 몬스터 그래픽",
       onChange: (result) => {
+        const current = currentSpecies(record.id, record);
         updateSpecies(record.id, {
           graphic: {
-            ...record.graphic,
+            ...current.graphic,
             monsterResourceId: emptyToUndefined(result.resourceId),
-            graphicHue: result.graphicHue ?? record.graphic.graphicHue,
+            graphicHue: result.graphicHue ?? current.graphic.graphicHue,
           },
         });
       },
@@ -133,11 +204,12 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
       updateSpecies(record.id, { types: parseTypes(value) });
     }, "db-monster-species-types"),
     numberField("그래픽 Hue", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
-      updateSpecies(record.id, { graphic: { ...record.graphic, graphicHue: value } });
-    }),
+      const current = currentSpecies(record.id, record);
+      updateSpecies(record.id, { graphic: { ...current.graphic, graphicHue: value } });
+    }, { min: 0, max: 360 }),
     numberField("포획률(0~1)", "db-monster-species-capture-rate", record.captureRate, (value) => {
       updateSpecies(record.id, { captureRate: value });
-    }),
+    }, { min: 0, max: 1 }),
     ...statFields(record),
     skillsByLevelField(record),
     evolutionsField(record)
@@ -145,9 +217,19 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
   return form;
 }
 
+// 뮤테이션 직전 store에서 레코드를 refetch한다. statFields/hue/resourcePicker 콜백이
+// 렌더 시점의 record를 클로저로 캡처한 채 스프레드하면, rerender 없이 연속 편집할 때마다
+// 직전 편집이 스테일 스냅샷 위에 덮여 사라진다(HP→MP→공격 순서 입력 시 마지막 필드만 저장).
+function currentSpecies(id: string, fallback: MonsterSpeciesRecord): MonsterSpeciesRecord {
+  return store.getCurrent().database.monsterSpecies?.find((record) => record.id === id) ?? fallback;
+}
+
 function statFields(record: MonsterSpeciesRecord): HTMLElement[] {
   const field = (label: string, key: keyof EnemyStats, testid: string): HTMLElement =>
-    numberField(label, testid, record.baseStats[key], (value) => updateSpecies(record.id, { baseStats: { ...record.baseStats, [key]: value } }));
+    numberField(label, testid, record.baseStats[key], (value) => {
+      const current = currentSpecies(record.id, record);
+      updateSpecies(record.id, { baseStats: { ...current.baseStats, [key]: value } });
+    });
   return [
     field("HP", "maxHp", "db-monster-species-hp"),
     field("MP", "maxMp", "db-monster-species-mp"),

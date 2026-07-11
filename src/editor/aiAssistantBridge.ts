@@ -39,6 +39,8 @@ export type AiAssistantBridgeHandlers = {
   readonly getAudit: () => readonly AiBridgeAuditEntry[];
   readonly getHarness: () => unknown;
   readonly abort: () => void;
+  /** 채팅 패널이 접혀 있으면 펼친다(도크 열기). 선택 — 구 등록부 호환. */
+  readonly openPanel?: () => void;
 };
 
 type BridgeCommand =
@@ -87,6 +89,19 @@ export function unregisterAiAssistantBridge(): void {
   if (typeof window !== "undefined") {
     delete window.__rpgzzuAiBridge;
   }
+}
+
+// DB 모달 등 에디터 내부 진입점이 같은 채팅 세션으로 메시지를 보낼 때 쓰는 공개 API.
+// 패널이 아직 마운트되지 않았으면 ok:false 결과를 돌려준다(throw 하지 않는다).
+export function sendAiAssistantMessage(text: string): Promise<AiBridgeTurnResult> {
+  return runSend(text);
+}
+
+// 접혀 있는 채팅 패널(도크)을 펼친다. 패널 미마운트/미지원이면 false.
+export function openAiAssistantPanel(): boolean {
+  if (!handlers?.openPanel) return false;
+  handlers.openPanel();
+  return true;
 }
 
 function getStatusSnapshot(): AiBridgeStatus {

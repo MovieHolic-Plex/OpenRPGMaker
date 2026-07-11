@@ -1,10 +1,12 @@
 import { store } from "@/project/store";
+import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { cloneDefaultAutotileGroups } from "@/project/defaults/autotileGroups";
 import { buildEdgeCornerVariantMap, type EdgeCornerTileSet } from "@/project/defaults/autotileEngine";
 import type { AutotileGroup, PassFlag, TilesetId } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
 export function setTerrainTag(tilesetId: TilesetId, tile: number, terrain: number): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset || tile < 0 || tile >= tileset.count) return;
@@ -17,6 +19,7 @@ export function setTerrainTag(tilesetId: TilesetId, tile: number, terrain: numbe
 // 타일셋의 특정 타일 통행(passability) 방향 플래그를 토글.
 // 인스펙터에서 편집 — toggleCollision(맵 좌표 기반)과 달리 타일 인덱스 기반.
 export function setTilePassageFlag(tilesetId: TilesetId, tile: number, direction: keyof PassFlag, passable: boolean): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset || tile < 0 || tile >= tileset.count) return;
@@ -30,6 +33,7 @@ export function setTilePassageFlag(tilesetId: TilesetId, tile: number, direction
 
 // 타일셋의 특정 타일 통행을 전체 통과/전체 막힘으로 일괄 설정.
 export function setTilePassageBulk(tilesetId: TilesetId, tile: number, passable: boolean): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset || tile < 0 || tile >= tileset.count) return;
@@ -44,6 +48,7 @@ export function setTilePassageBulk(tilesetId: TilesetId, tile: number, passable:
 // 새 오토타일 그룹을 추가하고 그 id 를 반환한다(빈 4방향 그룹).
 export function addAutotileGroup(tilesetId: TilesetId, name: string): string | null {
   let created: string | null = null;
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset) return;
@@ -63,6 +68,7 @@ export function addAutotileGroup(tilesetId: TilesetId, name: string): string | n
 
 // 내장 기본 그룹(흙길/모래)을 편집 가능한 형태로 채워 넣는다(이미 있으면 덧붙임).
 export function seedDefaultAutotileGroups(tilesetId: TilesetId): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset) return;
@@ -71,6 +77,7 @@ export function seedDefaultAutotileGroups(tilesetId: TilesetId): void {
 }
 
 export function removeAutotileGroup(tilesetId: TilesetId, groupId: string): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     if (!tileset?.autotileGroups) return;
@@ -82,6 +89,9 @@ export function removeAutotileGroup(tilesetId: TilesetId, groupId: string): void
 type AutotileGroupPatch = Partial<Pick<AutotileGroup, "name" | "neighborhood" | "memberTileIds" | "connectTileIds" | "triggerTileIds" | "variantMap">>;
 
 export function updateAutotileGroup(tilesetId: TilesetId, groupId: string, patch: AutotileGroupPatch): void {
+  // patch에 "name" 같은 텍스트 필드가 오면 키 입력마다 호출될 수 있으므로 코얼레스한다.
+  // 필드 조합(패치 키)이 바뀌면 다른 편집으로 간주해 새 스냅샷을 남긴다.
+  recordCoalescedSnapshot(`tileset-autotile-group:${tilesetId}:${groupId}:${Object.keys(patch).sort().join(",")}`);
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     const group = tileset?.autotileGroups?.find((entry) => entry.id === groupId);
@@ -97,6 +107,7 @@ export function updateAutotileGroup(tilesetId: TilesetId, groupId: string, patch
 
 // 단일 비트마스크 항목을 편집한다. tile 이 null 이면 매핑을 제거한다.
 export function setAutotileVariant(tilesetId: TilesetId, groupId: string, mask: number, tile: number | null): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     const group = tileset?.autotileGroups?.find((entry) => entry.id === groupId);
@@ -110,6 +121,7 @@ export function setAutotileVariant(tilesetId: TilesetId, groupId: string, mask: 
 
 // 9분류(몸통/4변/4모서리) 타일로 16종 variantMap 을 일괄 채운다.
 export function fillAutotileVariantMap(tilesetId: TilesetId, groupId: string, tiles: EdgeCornerTileSet): void {
+  recordProjectSnapshot();
   store.update((project) => {
     const tileset = project.tilesets[tilesetId];
     const group = tileset?.autotileGroups?.find((entry) => entry.id === groupId);

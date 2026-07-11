@@ -71,6 +71,7 @@ export type ExportedProject = {
     items: {
       id: string;
       name: string;
+      price: number;
       skillId?: string;
       switchId?: string;
       description: string;

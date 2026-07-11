@@ -86,14 +86,9 @@
     white-space: normal;
   }
 
-  .database-modal-body .rm2k3-record-equipment .rm2k3-detail-equipment > .db-advanced-panel:first-child {
-    grid-template-columns: minmax(200px, 0.72fr) minmax(320px, 1.28fr);
-  }
-
-  .database-modal-body .rm2k3-record-equipment .rm2k3-detail-equipment > .db-advanced-panel:first-child .db-field {
-    grid-template-columns: 64px minmax(180px, 1fr);
-  }
-
+  /* db-panel-equipment-graphic 클래스 기반 규칙(04-modern-records.css)이 1차 배치를 맡는다.
+     여기서는 이미지 필드 testid 기준 :has() 규칙만 유지 — 위치(:first-child)에 의존하지 않아
+     equipmentFields()가 그래픽 패널 앞에 이름/가격/부위 필드를 붙여도 항상 매치된다(P1). */
   .database-modal-body .rm2k3-record-equipment .rm2k3-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) {
     grid-template-columns: minmax(200px, 0.72fr) minmax(320px, 1.28fr);
   }

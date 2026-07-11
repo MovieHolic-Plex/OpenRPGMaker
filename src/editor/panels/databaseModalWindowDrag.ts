@@ -30,6 +30,8 @@ export function startModalDrag(windowEl: HTMLElement, event: MouseEvent): void {
 export function stopModalDrag(): void {
   modalDragState = null;
   document.body.classList.remove("database-modal-dragging");
+  // window 가 없는 환경(테스트 node)에서도 close() 경로가 안전하게 지나가도록 가드.
+  if (typeof window === "undefined") return;
   window.removeEventListener("mousemove", handleModalDragMove);
   window.removeEventListener("mouseup", stopModalDrag);
 }

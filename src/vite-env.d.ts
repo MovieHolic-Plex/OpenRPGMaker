@@ -86,6 +86,8 @@ interface Window {
     readonly abort: () => void;
     readonly connected: () => boolean;
   };
+  // DB 모달 인라인 AI 바의 마지막 전송 요청 — E2E가 실 LLM 호출 없이 전송 도달을 검증.
+  __rpgzzuDbAiLastRequest?: { readonly message: string; readonly at: string };
   __rpgzzuCamera?: () => RpgZzuCameraDebug;
   __rpgzzuJuiceLog?: () => readonly RpgZzuRuntimeJuiceLogEntry[];
   __rpgzzuInput?: {

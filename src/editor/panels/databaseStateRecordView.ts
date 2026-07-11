@@ -13,7 +13,11 @@ const RESTRICTION_OPTIONS = ["없음", "행동 불가", "아군에게 공격 불
 
 export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HTMLElement {
   const database = store.getCurrent().database;
-  const referencingSkills = database.skills.filter((skill) => skill.effect?.kind === "switch");
+  // 이 상태를 실제로 참조(stateEffects.stateId)하는 스킬만 — effect.kind === "switch" 는
+  // 스위치 조작 스킬 여부일 뿐 상태 참조와 무관했다(P10, 삭제 가드 databaseReferences.ts와 동일 조건).
+  const referencingSkills = database.skills.filter((skill) =>
+    skill.stateEffects?.some((effect) => effect.stateId === state.id)
+  );
   const referencingItems = database.items.filter((item) =>
     item.stateEffects?.some((effect) => effect.stateId === state.id)
   );
@@ -32,27 +36,27 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
             update({ removalCondition })
           ),
           colorControl(ontology),
-          numberField("우선도", "db-state-rating", ontology.rating, (priority) => update({ priority })),
+          numberField("우선도", "db-state-rating", ontology.rating, (priority) => update({ priority }), { min: 0, max: 100 }),
           selectLiteral("제한", "db-state-restriction", ontology.restriction, RESTRICTION_OPTIONS, (restriction) =>
             update({ restriction })
           ),
         ]),
         panel("명중률 보정", [
           numberField("성공률", "db-state-accuracy", ontology.accuracyModifier, (accuracyModifier) =>
-            update({ accuracyModifier })
+            update({ accuracyModifier }), { min: 0, max: 100 }
           ),
         ]),
         panel("특수", specialFlags(baseOntology, state, update)),
         panel("상태 유효도", rateRows(ontology)),
         panel("회복 방법", [
           numberField("자연 회복(턴부터)", "db-state-recover-turn", ontology.recoverNaturallyFromTurn, (recoverNaturallyFromTurn) =>
-            update({ recoverNaturallyFromTurn })
+            update({ recoverNaturallyFromTurn }), { min: 0, max: 999 }
           ),
           numberField("회복 확률(%)", "db-state-recover-chance", ontology.recoverNaturallyChance, (recoverNaturallyChance) =>
-            update({ recoverNaturallyChance })
+            update({ recoverNaturallyChance }), { min: 0, max: 100 }
           ),
           numberField("피격 회복(%)", "db-state-hit-recover", ontology.recoverWhenHitChance, (recoverWhenHitChance) =>
-            update({ recoverWhenHitChance })
+            update({ recoverWhenHitChance }), { min: 0, max: 100 }
           ),
         ]),
         panel("행동 제한", [
@@ -62,18 +66,18 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
         ]),
         panel("HP", [
           numberField("전투 중(턴당%)", "db-state-hp-turn", numericRelease(state.hpReleaseTurn, baseOntology.hpTurn), (hpReleaseTurn) =>
-            update({ hpReleaseTurn })
+            update({ hpReleaseTurn }), { min: -100, max: 100 }
           ),
           numberField("맵 이동(걸음당)", "db-state-hp-move", numericRelease(state.hpReleaseStep, baseOntology.hpMove), (hpReleaseStep) =>
-            update({ hpReleaseStep })
+            update({ hpReleaseStep }), { min: -999, max: 999 }
           ),
         ]),
         panel("MP", [
           numberField("전투 중(턴당%)", "db-state-mp-turn", numericRelease(state.mpReleaseTurn, baseOntology.mpTurn), (mpReleaseTurn) =>
-            update({ mpReleaseTurn })
+            update({ mpReleaseTurn }), { min: -100, max: 100 }
           ),
           numberField("맵 이동(걸음당)", "db-state-mp-move", numericRelease(state.mpReleaseStep, baseOntology.mpMove), (mpReleaseStep) =>
-            update({ mpReleaseStep })
+            update({ mpReleaseStep }), { min: -999, max: 999 }
           ),
         ]),
         animationPanel(state, ontology, update),
@@ -161,7 +165,7 @@ function animationPanel(
   const index = state.animationIndex ?? ontology.animationIndex;
   return panel("애니메이션", [
     el("div", { class: "db-state-animation-preview", text: "상태" }),
-    numberField("번호", "db-state-animation-index", index, (animationIndex) => update({ animationIndex })),
+    numberField("번호", "db-state-animation-index", index, (animationIndex) => update({ animationIndex }), { min: 0, max: 999 }),
   ]);
 }
 

@@ -13,6 +13,9 @@ import type {
   BattleAnimationTiming,
 } from "@/project/types";
 import { el } from "@/util/dom";
+// 전투 애니메이션 편집기 레이아웃 수술(P8 Critical: 196px 압착·+프레임 버튼 가림·프리뷰
+// 비표시) — 배치 A 소유 CSS 파일과 충돌하지 않도록 신규 파일로 분리해 TS 에서 로드한다.
+import "@/styles/database/animation-editor.css";
 
 const DEFAULT_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const DEFAULT_CELL: BattleAnimationCell = { pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true };
@@ -31,6 +34,9 @@ type AnimationEditorContext = {
   readonly rerender: () => void;
   readonly duplicateLastFrame: () => void;
   readonly updateSelectedFrameCells: (cells: readonly BattleAnimationCell[]) => void;
+  // 렌더 시점 배열(selectedFrame.cells)은 인라인 입력 후 스테일해진다(P2 데이터 소실) —
+  // 셀을 읽는 모든 뮤테이션은 이 getter 로 store 에서 최신 셀을 refetch 해야 한다.
+  readonly currentSelectedFrameCells: () => BattleAnimationCell[];
 };
 
 export function renderBattleAnimationRecordForm(form: HTMLElement, animation: BattleAnimationRecord): HTMLElement {
@@ -60,6 +66,7 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
       updateFrameCells(animation.id, selectedFrameIndex, cells);
       rerender();
     },
+    currentSelectedFrameCells: () => currentFrameCells(animation.id, selectedFrameIndex),
   };
 
   form.classList.add("animation-detail-form");
@@ -239,7 +246,8 @@ function cellTablePanel(context: AnimationEditorContext): HTMLElement {
           dataset: { testid: "db-animation-cell-add" },
           on: {
             click: () => {
-              const nextCells = [...cells, { ...DEFAULT_CELL }];
+              // 렌더 시점 cells 클로저는 인라인 수정 이후 스테일 — store 에서 refetch(P2).
+              const nextCells = [...context.currentSelectedFrameCells(), { ...DEFAULT_CELL }];
               updateFrameCells(context.animation.id, context.selectedFrameIndex, nextCells);
               context.rerender();
             },
@@ -255,7 +263,9 @@ function cellTablePanel(context: AnimationEditorContext): HTMLElement {
 function cellEditableRow(context: AnimationEditorContext, cell: BattleAnimationCell, index: number): HTMLElement {
   const row = el("tr");
   const updateCell = (patch: Partial<BattleAnimationCell>) => {
-    const nextCells = context.selectedFrame.cells.map((c, i) => (i === index ? { ...c, ...patch } : c));
+    // context.selectedFrame.cells 는 렌더 시점 스냅샷 — 직전 인라인 수정을 되돌리지 않도록
+    // store 에서 최신 셀을 읽어 패치한다(P2).
+    const nextCells = context.currentSelectedFrameCells().map((c, i) => (i === index ? { ...c, ...patch } : c));
     updateFrameCells(context.animation.id, context.selectedFrameIndex, nextCells);
   };
   const numInput = (value: number, testid: string, onInput: (v: number) => void): HTMLInputElement => {
@@ -270,7 +280,7 @@ function cellEditableRow(context: AnimationEditorContext, cell: BattleAnimationC
     el("td", { children: [numInput(cell.y, `db-animation-cell-y-${index}`, (y) => updateCell({ y }))] }),
     el("td", { children: [numInput(cell.zoom, `db-animation-cell-zoom-${index}`, (zoom) => updateCell({ zoom }))] }),
     el("td", { children: [numInput(cell.opacity, `db-animation-cell-opacity-${index}`, (opacity) => updateCell({ opacity }))] }),
-    el("td", { children: [visibleCheckbox(cell, () => updateCell({ visible: !cell.visible }))] }),
+    el("td", { children: [visibleCheckbox(cell, (visible) => updateCell({ visible }))] }),
     el("td", { text: toneText(cell.tone) }),
     el("td", {
       children: [
@@ -281,7 +291,7 @@ function cellEditableRow(context: AnimationEditorContext, cell: BattleAnimationC
           dataset: { testid: `db-animation-cell-delete-${index}` },
           on: {
             click: () => {
-              const nextCells = context.selectedFrame.cells.filter((_, i) => i !== index);
+              const nextCells = context.currentSelectedFrameCells().filter((_, i) => i !== index);
               updateFrameCells(context.animation.id, context.selectedFrameIndex, nextCells);
               context.rerender();
             },
@@ -293,10 +303,11 @@ function cellEditableRow(context: AnimationEditorContext, cell: BattleAnimationC
   return row;
 }
 
-function visibleCheckbox(cell: BattleAnimationCell, onToggle: () => void): HTMLInputElement {
+function visibleCheckbox(cell: BattleAnimationCell, onToggle: (visible: boolean) => void): HTMLInputElement {
   const input = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
   input.checked = cell.visible;
-  input.addEventListener("change", onToggle);
+  // 렌더 시점 cell.visible 클로저로 반전하면 rerender 없는 연속 토글이 씹힌다 — UI 상태 기준.
+  input.addEventListener("change", () => onToggle(input.checked));
   return input;
 }
 
@@ -387,6 +398,13 @@ function deleteAnimationFrame(id: string, frames: readonly BattleAnimationFrame[
   updateDatabaseRecord("battleAnimations", id, { frames: nextFrames });
   editorState.set({ selectedAnimationFrameIndex: Math.max(0, index - 1) });
   rerender();
+}
+
+// store 에서 선택 프레임의 최신 셀을 refetch(P2 스테일 클로저 방지).
+function currentFrameCells(id: string, frameIndex: number): BattleAnimationCell[] {
+  const record = store.getCurrent().database.battleAnimations.find((a) => a.id === id);
+  const frames = normalizedFrames(record?.frames);
+  return frames[frameIndex]?.cells ?? [{ ...DEFAULT_CELL }];
 }
 
 // 선택 프레임의 셀 배열을 통째로 교체.

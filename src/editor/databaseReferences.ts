@@ -1,58 +1,145 @@
-import { commandsReference, commandsResourceReference, switchVariableReferencedInProject } from "@/editor/databaseCommandReferences";
+import { commandsReferenceLocations, commandsResourceReference, switchVariableReferencedInProject, type DatabaseReferenceLocation } from "@/editor/databaseCommandReferences";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
-import type { Command, ItemRecord, SkillRecord } from "@/project/types";
+import type { Command, ItemRecord, Project, SkillRecord } from "@/project/types";
+
+// 참조 거부 메시지는 "무엇이" 뿐 아니라 "어디서" 참조하는지도 밝힌다 — 그래야 사용자가
+// 실제로 가서 참조를 끊을 수 있다. 레코드 참조는 첫 매치 레코드 이름을, 이벤트 명령
+// 참조는 첫 매치의 맵/이벤트(또는 커먼 이벤트/전투 이벤트) 이름을 포함하고, 매치가
+// 여럿이면 "외 N-1건"을 덧붙인다.
+function namedReferenceMessage(sourceLabel: string, matches: readonly { readonly name: string }[], verbPhrase: string): string | null {
+  if (matches.length === 0) return null;
+  const name = matches[0]!.name || "(이름 없음)";
+  return `${sourceLabel} '${name}'이 ${verbPhrase}${extraSuffix(matches.length)}`;
+}
+
+function commandLocationMessage(project: Project, collection: Parameters<typeof commandsReferenceLocations>[1], id: string, targetLabel: string): string | null {
+  const locations = commandsReferenceLocations(project, collection, id);
+  if (locations.length === 0) return null;
+  return `${formatLocation(locations[0]!, targetLabel)}${extraSuffix(locations.length)}`;
+}
+
+function formatLocation(location: DatabaseReferenceLocation, targetLabel: string): string {
+  const target = withObjectParticle(targetLabel);
+  switch (location.kind) {
+    case "mapEvent":
+      return `'${location.mapName}' 맵의 이벤트 '${location.eventName}'(${location.eventId})이 이 ${target} 사용 중입니다.`;
+    case "commonEvent":
+      return `커먼 이벤트 '${location.eventName}'(${location.eventId})이 이 ${target} 사용 중입니다.`;
+    case "troopBattleEvent":
+      return `적 그룹 '${location.troopName}'의 전투 이벤트 '${location.pageName}'이 이 ${target} 사용 중입니다.`;
+  }
+}
+
+function extraSuffix(matchCount: number): string {
+  return matchCount > 1 ? ` (외 ${matchCount - 1}건)` : "";
+}
+
+// 한글 받침 유무에 따라 "을/를" 조사를 붙인다(예: "스킬을" vs "몬스터를"). targetLabel이
+// 호출부마다 다른 콜렉션 이름이라 하드코딩 대신 마지막 음절의 받침 여부로 판별한다.
+function withObjectParticle(word: string): string {
+  const lastChar = word.at(-1) ?? "";
+  const code = lastChar.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return `${word}를`;
+  const hasBatchim = (code - 0xac00) % 28 !== 0;
+  return hasBatchim ? `${word}을` : `${word}를`;
+}
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
   const project = store.getCurrent();
   switch (collection) {
-    case "skills":
-      if (project.database.actors.some((record) => record.learnedSkills.some((skill) => skill.skillId === id))) return "주인공이 이 스킬을 사용 중입니다.";
-      if (project.database.classes.some((record) => record.learnedSkills.some((skill) => skill.skillId === id))) return "직업이 이 스킬을 사용 중입니다.";
-      if (project.database.items.some((record) => record.skillId === id)) return "아이템이 이 스킬을 사용 중입니다.";
-      if (project.database.equipment.some((record) => record.skillId === id || record.usableAsItemSkillId === id)) return "장비가 이 스킬을 사용 중입니다.";
-      if (project.database.enemies.some((record) => record.actions.some((action) => action.skillId === id))) return "몬스터가 이 스킬을 사용 중입니다.";
-      if (commandsReference(project, "skills", id)) return "이벤트 명령이 이 스킬을 사용 중입니다.";
-      return null;
-    case "enemies":
-      if (project.database.troops.some((record) => record.enemyIds.includes(id) || record.members?.some((member) => member.enemyId === id))) return "적 그룹이 이 몬스터를 사용 중입니다.";
-      if (commandsReference(project, "enemies", id)) return "이벤트/전투 조건이 이 몬스터를 사용 중입니다.";
-      return null;
+    case "skills": {
+      const actors = project.database.actors.filter((record) => record.learnedSkills.some((skill) => skill.skillId === id));
+      if (actors.length) return namedReferenceMessage("주인공", actors, "이 스킬을 사용 중입니다.");
+      const classes = project.database.classes.filter((record) => record.learnedSkills.some((skill) => skill.skillId === id));
+      if (classes.length) return namedReferenceMessage("직업", classes, "이 스킬을 배웁니다.");
+      const items = project.database.items.filter((record) => record.skillId === id);
+      if (items.length) return namedReferenceMessage("아이템", items, "이 스킬을 사용 중입니다.");
+      const equipment = project.database.equipment.filter((record) => record.skillId === id || record.usableAsItemSkillId === id);
+      if (equipment.length) return namedReferenceMessage("장비", equipment, "이 스킬을 사용 중입니다.");
+      const enemies = project.database.enemies.filter((record) => record.actions.some((action) => action.skillId === id));
+      if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 스킬을 사용 중입니다.");
+      return commandLocationMessage(project, "skills", id, "스킬");
+    }
+    case "enemies": {
+      const troops = project.database.troops.filter((record) => record.enemyIds.includes(id) || record.members?.some((member) => member.enemyId === id));
+      if (troops.length) return namedReferenceMessage("적 그룹", troops, "이 몬스터를 사용 중입니다.");
+      return commandLocationMessage(project, "enemies", id, "몬스터");
+    }
     case "actors":
       if (project.system.startActorIds.includes(id)) return "시스템 시작 파티가 이 주인공을 사용 중입니다.";
       if (project.session.partyActorIds.includes(id)) return "현재 파티가 이 주인공을 사용 중입니다.";
-      if (commandsReference(project, "actors", id)) return "이벤트 명령/조건이 이 주인공을 사용 중입니다.";
+      return commandLocationMessage(project, "actors", id, "주인공");
+    case "classes": {
+      const actors = project.database.actors.filter((record) => record.classId === id);
+      if (actors.length) return namedReferenceMessage("주인공", actors, "이 직업을 사용 중입니다.");
+      const equipment = project.database.equipment.filter((record) => record.equippableClassIds.includes(id));
+      if (equipment.length) return namedReferenceMessage("장비", equipment, "이 직업을 사용 중입니다.");
+      const items = project.database.items.filter((record) => record.usableClassIds.includes(id) || record.equipmentProfile.equippableClassIds.includes(id));
+      if (items.length) return namedReferenceMessage("아이템/장비 효과", items, "이 직업을 사용 중입니다.");
       return null;
-    case "classes":
-      if (project.database.actors.some((record) => record.classId === id)) return "주인공이 이 직업을 사용 중입니다.";
-      if (project.database.equipment.some((record) => record.equippableClassIds.includes(id))) return "장비가 이 직업을 사용 중입니다.";
-      if (project.database.items.some((record) => record.usableClassIds.includes(id) || record.equipmentProfile.equippableClassIds.includes(id))) return "아이템/장비 효과가 이 직업을 사용 중입니다.";
+    }
+    case "equipment": {
+      const actors = project.database.actors.filter((record) => Object.values(record.initialEquipment).includes(id));
+      if (actors.length) return namedReferenceMessage("주인공", actors, "이 장비를 사용 중입니다.");
+      const classes = project.database.classes.filter((record) => record.equipmentPermissions.equipmentIds.includes(id));
+      if (classes.length) return namedReferenceMessage("직업", classes, "이 장비를 사용 중입니다.");
+      return commandLocationMessage(project, "equipment", id, "장비");
+    }
+    case "battleAnimations": {
+      const actors = project.database.actors.filter((record) => record.unarmedAnimationId === id);
+      if (actors.length) return namedReferenceMessage("주인공", actors, "이 전투 애니메이션을 사용 중입니다.");
+      const classes = project.database.classes.filter((record) => record.animationId === id);
+      if (classes.length) return namedReferenceMessage("직업", classes, "이 전투 애니메이션을 사용 중입니다.");
+      const skills = project.database.skills.filter((record) => record.animationId === id);
+      if (skills.length) return namedReferenceMessage("스킬", skills, "이 전투 애니메이션을 사용 중입니다.");
+      const items = project.database.items.filter((record) => record.animationId === id);
+      if (items.length) return namedReferenceMessage("아이템", items, "이 전투 애니메이션을 사용 중입니다.");
       return null;
-    case "equipment":
-      if (project.database.actors.some((record) => Object.values(record.initialEquipment).includes(id))) return "주인공이 이 장비를 사용 중입니다.";
-      if (project.database.classes.some((record) => record.equipmentPermissions.equipmentIds.includes(id))) return "직업이 이 장비를 사용 중입니다.";
-      if (commandsReference(project, "equipment", id)) return "이벤트 명령이 이 장비를 사용 중입니다.";
-      return null;
-    case "battleAnimations":
-      if (project.database.actors.some((record) => record.unarmedAnimationId === id)) return "주인공이 이 전투 애니메이션을 사용 중입니다.";
-      if (project.database.classes.some((record) => record.animationId === id)) return "직업이 이 전투 애니메이션을 사용 중입니다.";
-      if (project.database.skills.some((record) => record.animationId === id)) return "스킬이 이 전투 애니메이션을 사용 중입니다.";
-      if (project.database.items.some((record) => record.animationId === id)) return "아이템이 이 전투 애니메이션을 사용 중입니다.";
-      return null;
+    }
     case "troops":
       if (project.system.initialTroopId === id) return "시스템 기본 전투가 이 적 그룹을 사용 중입니다.";
-      if (commandsReference(project, "troops", id)) return "이벤트 명령이 이 적 그룹을 사용 중입니다.";
+      return commandLocationMessage(project, "troops", id, "적 그룹");
+    case "items": {
+      const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id);
+      if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 아이템을 보상으로 사용 중입니다.");
+      return commandLocationMessage(project, "items", id, "아이템");
+    }
+    case "states": {
+      const skills = project.database.skills.filter((record) => record.stateEffects?.some((effect) => effect.stateId === id));
+      if (skills.length) return namedReferenceMessage("스킬", skills, "이 상태를 사용 중입니다.");
+      const items = project.database.items.filter(
+        (record) =>
+          record.stateEffects.some((effect) => effect.stateId === id) ||
+          record.healStateIds.includes(id) ||
+          record.equipmentProfile.stateInflictIds.includes(id) ||
+          record.equipmentProfile.stateDefenseIds.includes(id)
+      );
+      if (items.length) return namedReferenceMessage("아이템", items, "이 상태를 사용 중입니다.");
+      const equipment = project.database.equipment.filter((record) => record.stateInflictIds.includes(id));
+      if (equipment.length) return namedReferenceMessage("장비", equipment, "이 상태를 사용 중입니다.");
       return null;
-    case "items":
-      if (project.database.enemies.some((record) => record.rewards.dropItemId === id)) return "몬스터 보상이 이 아이템을 사용 중입니다.";
-      if (commandsReference(project, "items", id)) return "이벤트 명령이 이 아이템을 사용 중입니다.";
-      return null;
-    case "states":
-      if (project.database.skills.some((record) => record.stateEffects?.some((effect) => effect.stateId === id))) return "스킬이 이 상태를 사용 중입니다.";
-      if (project.database.items.some((record) => record.stateEffects.some((effect) => effect.stateId === id) || record.healStateIds.includes(id) || record.equipmentProfile.stateInflictIds.includes(id) || record.equipmentProfile.stateDefenseIds.includes(id))) return "아이템이 이 상태를 사용 중입니다.";
-      if (project.database.equipment.some((record) => record.stateInflictIds.includes(id))) return "장비가 이 상태를 사용 중입니다.";
-      return null;
+    }
   }
+}
+
+// 몬스터의 포획 species 참조(EnemyRecord.speciesId)를 검사한다.
+// monsterSpecies는 DatabaseCollection(= keyof DatabaseRecords)에 편입돼 있지 않아
+// databaseReferenceMessage()의 switch를 타지 않으므로 species 삭제 경로에서 직접 호출한다.
+export function monsterSpeciesReferenceMessage(speciesId: string): string | null {
+  const project = store.getCurrent();
+  const enemies = project.database.enemies.filter((record) => record.speciesId === speciesId);
+  if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 species를 포획 species로 사용 중입니다.");
+  return null;
+}
+
+// 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)
+// 전용 필드이고 에디터가 들고 있는 Project(session: ProjectSession)에는 애초에 존재하지
+// 않는다(session.ts:96 vs project.ts:99-107) — 즉 편집 시점에 검사 가능한 정적 DB 참조가
+// 없다. 항상 null을 반환하지만, 향후 다른 레코드(퀘스트 등)가 cropId를 정적으로 참조하게
+// 되면 이 자리에 검사를 추가하면 된다. 삭제 자체는 2단계 확인으로만 보호한다.
+export function cropReferenceMessage(_cropId: string): string | null {
+  return null;
 }
 
 export function commonEventReferenceMessage(id: string): string | null {

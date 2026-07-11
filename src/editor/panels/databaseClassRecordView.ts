@@ -57,17 +57,17 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
     class: "db-class-bm88-workbench",
     dataset: { testid: "db-classes-bm88-workbench" },
     children: [
-      panel("이름", [nameInput(record)]),
-      panel("애니메이션", [spritePreview(record), animationSelect(record)]),
-      panel("능력치 곡선", [curveGrid]),
-      panel("경험치 곡선", [expPanel]),
-      panel("전투 명령", battleCommandControls(record)),
-      panel("옵션", optionControls(record)),
-      panel("스킬", [skillTable(record)]),
-      panel("승급", promotionControls(record)),
-      panel("상태 유효도", rateRows(record, "state")),
-      panel("속성 유효도", rateRows(record, "element")),
-      panel("장비", [equipmentSelect(record)]),
+      panel("이름", [nameInput(record)], "db-class-panel-name"),
+      panel("애니메이션", [spritePreview(record), animationSelect(record)], "db-class-panel-animation"),
+      panel("능력치 곡선", [curveGrid], "db-class-panel-curves"),
+      panel("경험치 곡선", [expPanel], "db-class-panel-exp"),
+      panel("전투 명령", battleCommandControls(record), "db-class-panel-commands"),
+      panel("옵션", optionControls(record), "db-class-panel-options"),
+      panel("스킬", [skillTable(record)], "db-class-panel-skills"),
+      panel("승급", promotionControls(record), "db-class-panel-promotion"),
+      panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state"),
+      panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element"),
+      panel("장비", [equipmentSelect(record)], "db-class-panel-equipment"),
     ],
   }));
 }
@@ -286,10 +286,30 @@ function skillTable(record: ClassRecord): HTMLElement {
   });
 }
 
+// 허용 장비는 배열 필드(equipmentIds[])다 — 단일 select 는 상호작용 즉시 6→1 로 배열을
+// 파괴했다(P10 Critical). 체크박스 목록으로 배열을 보존한다.
 function equipmentSelect(record: ClassRecord): HTMLElement {
-  return selectFromRecords("허용 장비", "db-picker-class-equipment", record.equipmentPermissions.equipmentIds[0] ?? "", store.getCurrent().database.equipment, (equipmentId) =>
-    updateDatabaseRecord("classes", record.id, { equipmentPermissions: { ...record.equipmentPermissions, equipmentIds: equipmentId ? [equipmentId] : [] } })
-  );
+  const rows = store.getCurrent().database.equipment.map((equipment) => {
+    const input = el("input", {
+      attrs: { type: "checkbox" },
+      dataset: { testid: `db-field-class-equipment-${equipment.id}` },
+    }) as HTMLInputElement;
+    input.checked = record.equipmentPermissions.equipmentIds.includes(equipment.id);
+    input.addEventListener("change", () => {
+      const permissions = currentClass(record).equipmentPermissions;
+      const has = permissions.equipmentIds.includes(equipment.id);
+      const equipmentIds = input.checked
+        ? (has ? [...permissions.equipmentIds] : [...permissions.equipmentIds, equipment.id])
+        : permissions.equipmentIds.filter((id) => id !== equipment.id);
+      updateDatabaseRecord("classes", record.id, { equipmentPermissions: { ...permissions, equipmentIds } });
+    });
+    return el("label", { class: "actor-check", children: [input, el("span", { text: equipment.name })] });
+  });
+  return el("div", {
+    class: "db-class-equipment-checklist",
+    dataset: { testid: "db-class-equipment-checklist" },
+    children: rows,
+  });
 }
 
 function promotionControls(record: ClassRecord): HTMLElement[] {
@@ -399,8 +419,8 @@ function checkboxField(record: ClassRecord, key: keyof ClassRecord["options"], l
   return el("label", { class: "actor-check", children: [input, el("span", { text: label })] });
 }
 
-function panel(title: string, children: HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
+function panel(title: string, children: HTMLElement[], gridClass?: string): HTMLElement {
+  return el("fieldset", { class: gridClass ? `db-advanced-panel ${gridClass}` : "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
 }
 
 function selectFromRecords(label: string, testid: string, value: string, records: readonly { readonly id: string; readonly name: string }[], onChange: (value: string) => void): HTMLElement {

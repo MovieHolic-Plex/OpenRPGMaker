@@ -1,5 +1,5 @@
 @media (min-width: 901px) {
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(1) .db-field {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-name .db-field {
     grid-template-columns: 72px minmax(0, 1fr);
   }
 
@@ -21,7 +21,7 @@
     width: 100%;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic {
     gap: 8px;
     grid-template-columns: minmax(0, 1fr) 78px;
     grid-template-rows: auto minmax(136px, 1fr) auto auto;
@@ -73,12 +73,12 @@
     padding: 0 8px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) .actor-check {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic .actor-check {
     grid-column: 1 / -1;
     min-height: 26px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(3) .db-field {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic .db-field {
     display: none;
   }
 
@@ -93,7 +93,7 @@
     grid-template-columns: 34px minmax(0, 1fr);
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(6) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-options {
     align-content: start;
   }
 
@@ -125,18 +125,18 @@
     width: 70px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7),
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-state,
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element {
     align-content: start;
     gap: 0;
     overflow: auto;
     padding-bottom: 10px;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(2),
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(4),
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(7),
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel:nth-child(8) {
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-stats,
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-rewards,
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-state,
+  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element {
     overflow: auto;
   }
 
