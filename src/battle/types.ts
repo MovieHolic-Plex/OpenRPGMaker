@@ -14,7 +14,7 @@ import type {
   TroopId,
 } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
-import type { MonsterCaughtAt, MonsterInstanceIvs } from "@/project/session";
+import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
 import type { Rng } from "@/util/rng";
 
 export type { BattleFlow } from "@/project/types";
@@ -97,11 +97,16 @@ export interface BattlePartyProgress {
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
   readonly partyActorIds?: readonly string[];
+  // 몬스터 전투 모드(옵션 A): 값이 있고 비어있지 않으면 영웅 대신 이 몬스터 파티로 전투한다.
+  // 없거나 빈 배열이면 기존 액터 경로가 100% 유지된다(회귀 0).
+  readonly monsterParty?: readonly MonsterInstance[];
 }
 
 export interface BattleBattlerSnapshot {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
+  // 플레이어 몬스터 배틀러의 종족 id(스프라이트/타입 해석용). 액터·적 스냅샷은 미설정.
+  readonly speciesId?: MonsterSpeciesId;
   readonly classId?: string;
   readonly name: string;
   readonly hp: number;

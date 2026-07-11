@@ -650,6 +650,8 @@ export interface SystemRecords {
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
   monsterCollection?: boolean;
+  // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
+  monsterBattleParty?: boolean;
   giftSystem?: boolean;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;

@@ -2,9 +2,17 @@ import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/proje
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, MonsterSpeciesId, Project, SkillId } from "@/project/types";
 import type { BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
+import type { MonsterInstance } from "@/project/session";
+import {
+  monsterBattleStats,
+  monsterCurrentHp,
+  monsterDisplayName,
+  monsterSkillIds,
+  monsterSpeciesById,
+} from "@/project/monsterCollection";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
 const CHARGE_FLOOR = 0.02;
@@ -33,6 +41,8 @@ export interface MutableBattler {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   readonly classId?: string;
+  // 플레이어 몬스터 배틀러의 종족 id(타입 상성/스프라이트 해석용). 액터·적은 미설정.
+  readonly speciesId?: MonsterSpeciesId;
   readonly name: string;
   readonly maxHp: number;
   readonly maxMp: number;
@@ -222,6 +232,41 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
   });
 }
 
+// MonsterInstance 파티를 전투 배틀러로 변환한다(옵션 A: 영웅 대신 몬스터가 출전).
+// recordId=instanceId 불변식: 같은 종 여러 마리의 교체/활성슬롯/참여 추적이 recordId 키(runtime.ts).
+// speciesId 로 반드시 recordId 를 대신하지 않는다(그러면 동종 다수 시 슬롯 붕괴).
+export function monsterBattlers(project: Project, monsters: readonly MonsterInstance[]): MutableBattler[] {
+  return monsters.map((instance, index) => {
+    const species = monsterSpeciesById(project, instance.speciesId);
+    const stats = monsterBattleStats(project, species, instance);
+    const currentHp = monsterCurrentHp(project, instance); // 진입 부상 유지
+    return {
+      id: instance.instanceId,
+      recordId: instance.instanceId,
+      speciesId: instance.speciesId, // 타입/스프라이트 해석용(신규 optional 필드)
+      name: monsterDisplayName(project, instance),
+      maxHp: stats.maxHp,
+      hp: Math.min(currentHp, stats.maxHp),
+      maxMp: stats.maxMp,
+      mp: stats.maxMp,
+      attackPower: stats.attack,
+      defense: stats.defense,
+      mind: stats.mind,
+      agility: stats.agility,
+      chargeRate: chargeRateFor(stats.agility),
+      skillIds: monsterSkillIds(project, instance),
+      battleX: 248 + (index % 2) * 32,
+      battleY: 70 + index * 24,
+      gauge: 0,
+      stateIds: [],
+      stateTurns: {},
+      defending: false,
+      hidden: false,
+      captured: false,
+    };
+  });
+}
+
 export function average(values: readonly number[]): number {
   if (values.length === 0) return 0;
   return values.reduce((sum, value) => sum + value, 0) / values.length;
@@ -234,6 +279,7 @@ export function battlerSnapshot(
   return {
     id: battler.id,
     recordId: battler.recordId,
+    speciesId: battler.speciesId,
     name: battler.name,
     classId: battler.classId,
     hp: battler.hp,

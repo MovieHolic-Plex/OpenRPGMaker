@@ -1,6 +1,6 @@
 import type { Rng } from "@/util/rng";
 import { mulberry32 } from "@/util/rng";
-import { ACTOR_LEVEL_MAX, totalExpForLevel } from "@/project/actorModel";
+import { ACTOR_LEVEL_MAX, clampLevel, totalExpForLevel } from "@/project/actorModel";
 import type {
   ActorExperienceCurve,
   ActorLearnedSkill,
@@ -19,6 +19,45 @@ import type {
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
 
 export const MONSTER_PARTY_MAX = 6;
+
+// L99/L1 스탯 배율(튜닝 대상, 배치 6에서 재조정). 이차 보간으로 액터 normalizeCurve 곡률과 정합.
+const MONSTER_GROWTH = { maxHp: 10, maxMp: 8, attack: 9, defense: 8, mind: 8, agility: 6 } as const;
+
+export type MonsterBattleStats = {
+  readonly maxHp: number;
+  readonly maxMp: number;
+  readonly attack: number;
+  readonly defense: number;
+  readonly mind: number;
+  readonly agility: number;
+};
+
+// 종족 baseStats + 개체값(IV)을 레벨에 따라 이차 보간으로 스케일링한다.
+// L1(ratio=0)에서 정확히 base+iv 를 반환해 monsterMaxHpFor 구값과 비트 동일(하위호환 불변식).
+export function monsterStatAtLevel(base: number, iv: number, level: number, growth: number): number {
+  const ratio = (clampLevel(level) - 1) / (ACTOR_LEVEL_MAX - 1); // L1→0.0, L99→1.0
+  const grown = (base + iv) * (1 + (growth - 1) * ratio * ratio);
+  return Math.max(1, Math.round(grown));
+}
+
+// 배치 2(monsterBattlers)의 능력치 진입점. IV 스키마는 {hp,atk,def,spd} 4종이라 maxMp·mind는 IV 0.
+export function monsterBattleStats(
+  _project: Project,
+  species: MonsterSpeciesRecord | undefined,
+  instance: MonsterInstance
+): MonsterBattleStats {
+  const b = species?.baseStats ?? { maxHp: 1, maxMp: 0, attack: 1, defense: 1, mind: 1, agility: 1 };
+  const iv = instance.ivs ?? { hp: 0, atk: 0, def: 0, spd: 0 };
+  const level = instance.level;
+  return {
+    maxHp: Math.max(1, monsterStatAtLevel(b.maxHp, iv.hp, level, MONSTER_GROWTH.maxHp)),
+    maxMp: Math.max(0, monsterStatAtLevel(b.maxMp, 0, level, MONSTER_GROWTH.maxMp)),
+    attack: monsterStatAtLevel(b.attack, iv.atk, level, MONSTER_GROWTH.attack),
+    defense: monsterStatAtLevel(b.defense, iv.def, level, MONSTER_GROWTH.defense),
+    mind: monsterStatAtLevel(b.mind, 0, level, MONSTER_GROWTH.mind),
+    agility: monsterStatAtLevel(b.agility, iv.spd, level, MONSTER_GROWTH.agility),
+  };
+}
 
 export type GiveMonsterInput = {
   readonly speciesId: MonsterSpeciesId;
@@ -350,7 +389,7 @@ function normalizeSkillsByLevel(skills: readonly Partial<ActorLearnedSkill>[] | 
 }
 
 function monsterMaxHpFor(_project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {
-  return Math.max(1, (species?.baseStats.maxHp ?? 1) + (instance.ivs?.hp ?? 0));
+  return Math.max(1, monsterStatAtLevel(species?.baseStats.maxHp ?? 1, instance.ivs?.hp ?? 0, instance.level, MONSTER_GROWTH.maxHp));
 }
 
 function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {

@@ -245,7 +245,10 @@ function actorNode(actor: BattleBattlerSnapshot): HTMLElement {
   node.dataset.recordId = actor.recordId;
   node.dataset.facing = "left";
   node.setAttribute("aria-label", actor.name);
-  const resourceId = battleCharsetResourceId(actor.recordId);
+  // 몬스터 배틀러(speciesId 有)는 종족 그래픽으로, 액터는 기존 battleCharset 로 렌더한다.
+  const resourceId = actor.speciesId
+    ? monsterSpeciesResourceId(actor.speciesId)
+    : battleCharsetResourceId(actor.recordId);
   if (resourceId) {
     node.dataset.battleCharsetResourceId = resourceId;
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
@@ -368,6 +371,10 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
 
 function battleCharsetResourceId(recordId: string): string | undefined {
   return store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.battleCharacterResourceId;
+}
+
+function monsterSpeciesResourceId(speciesId: string): string | undefined {
+  return store.getCurrent().database.monsterSpecies?.find((species) => species.id === speciesId)?.graphic.monsterResourceId;
 }
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {

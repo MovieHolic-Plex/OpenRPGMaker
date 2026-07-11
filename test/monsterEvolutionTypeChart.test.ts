@@ -65,8 +65,10 @@ describe("monster evolution", () => {
     expect(evolved.speciesId).toBe("species_king_slime");
     expect(evolved.nickname).toBe("방울");
     expect(evolved.level).toBe(7);
-    expect(evolved.currentHp).toBe(21);
-    expect(monsterMaxHp(project, evolved)).toBe(42);
+    // 배치 1(레벨 스케일링) 반영: L7 maxHp 는 base(42)에 이차 보간이 얹혀 43,
+    // 진화 시 HP 비율(9/19)을 보존해 currentHp 는 round(43×9/19)=20 이 된다.
+    expect(evolved.currentHp).toBe(20);
+    expect(monsterMaxHp(project, evolved)).toBe(43);
     expect(evolved.skillIds).toEqual(expect.arrayContaining(["skill_leaf", "skill_water"]));
   });
 

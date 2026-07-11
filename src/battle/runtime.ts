@@ -3,12 +3,12 @@
 import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
-import { actorBattlers, average, battlerSnapshot, enemyBattlers, type MutableBattler } from "@/battle/battleBattlers";
+import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterBattlers, type MutableBattler } from "@/battle/battleBattlers";
 import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
-import { typeChartMultiplierFor } from "@/battle/typeChart";
+import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
@@ -80,17 +80,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const rng: Rng = options.rng ?? mulberry32(1);
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
-  const actors = actorBattlers(options.project, {
-    names: options.party?.names,
-    levels: options.party?.levels,
-    vitals: options.party?.vitals,
-    paramBonuses: options.party?.paramBonuses,
-    equipment: options.party?.equipment,
-    skillIds: options.party?.skillIds,
-    classOverrides: options.party?.classOverrides,
-    stateIds: options.party?.stateIds,
-    partyActorIds: options.party?.partyActorIds,
-  });
+  // 모드 분기(옵션 A): 몬스터 파티가 주어지면 영웅 대신 몬스터가 출전한다.
+  // 비어있으면 기존 액터 경로 100% 유지(회귀 0). activeActorIds 는 recordId=instanceId 로 자동 정합.
+  const monsterParty = options.party?.monsterParty;
+  const actors = monsterParty && monsterParty.length > 0
+    ? monsterBattlers(options.project, monsterParty)
+    : actorBattlers(options.project, {
+        names: options.party?.names,
+        levels: options.party?.levels,
+        vitals: options.party?.vitals,
+        paramBonuses: options.party?.paramBonuses,
+        equipment: options.party?.equipment,
+        skillIds: options.party?.skillIds,
+        classOverrides: options.party?.classOverrides,
+        stateIds: options.party?.stateIds,
+        partyActorIds: options.party?.partyActorIds,
+      });
   const enemies = enemyBattlers(options.project, troopRecord);
   const activeSlots = normalizeActiveSlots(options.activeSlots ?? troopRecord.activeSlots ?? options.project.system.activeSlots, actors.length);
   let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
@@ -992,7 +997,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function elementMultiplierFor(elementId: string | undefined, user: MutableBattler, target: MutableBattler): number {
     if (!elementId) return 1;
     const element = options.project.database.elements?.find((entry) => entry.id === elementId);
-    const typeMultiplier = typeChartMultiplierFor(options.project, elementId, user.recordId, target.recordId);
+    // 배틀러 types 를 직접 해석한다(플레이어 몬스터 STAB/약점 + enemy 대칭 상성).
+    const typeMultiplier = typeChartMultiplierForTypes(
+      options.project,
+      elementId,
+      battlerTypes(options.project, user),
+      battlerTypes(options.project, target)
+    );
     if (!element?.damageMultipliers) return typeMultiplier;
     // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
     const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);

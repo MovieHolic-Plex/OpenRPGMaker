@@ -6,6 +6,7 @@ import { actorBattlers } from "@/battle/battleBattlers";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
+import type { MonsterInstance } from "@/project/session";
 import { mulberry32, type Rng } from "@/util/rng";
 
 export interface StrictBattleScriptCommand {
@@ -24,6 +25,9 @@ export interface SimulateBattleInput {
   readonly heroLevel: number;
   readonly inventory?: Record<string, number>;
   readonly partyActorIds?: readonly string[];
+  // 몬스터 전투 모드(옵션 A): 값이 있고 비어있지 않으면 영웅 대신 이 몬스터 파티로 전투한다.
+  // strictScript 의 actorId 는 몬스터의 instanceId 를 쓴다(recordId=instanceId).
+  readonly monsterParty?: readonly MonsterInstance[];
   // 저HP(≤30%) 시 AI가 사용할 회복 아이템 id. 없으면 아이템을 쓰지 않는다.
   readonly potionItemId?: string;
   readonly n?: number;
@@ -68,6 +72,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
   const levels: Record<string, number> = {};
   for (const actorId of partyActorIds) levels[actorId] = input.heroLevel;
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
+  const monsterMode = (input.monsterParty?.length ?? 0) > 0;
 
   const options: BattleRuntimeOptions = {
     project: input.project,
@@ -76,7 +81,9 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     canLose: true,
     battleFlow: input.battleFlow,
     activeSlots: input.activeSlots,
-    party: { levels, experience: {}, partyActorIds: [...partyActorIds] },
+    party: monsterMode
+      ? { levels: {}, experience: {}, monsterParty: input.monsterParty }
+      : { levels, experience: {}, partyActorIds: [...partyActorIds] },
     sessionState: { switches: {}, variables: {}, inventory },
     captureLocation: { mapId: input.project.startMapId, x: input.project.startPos.x, y: input.project.startPos.y },
     onMonsterCaptured: (capture) => {

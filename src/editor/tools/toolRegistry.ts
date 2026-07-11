@@ -17,6 +17,7 @@ import { HOUSE_LOT_TOOLS } from "./houseLotTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { MAP_TOOLS } from "./mapTools";
+import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
 import { PLACEMENT_TOOLS } from "./placementTools";
@@ -122,6 +123,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),
+  ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
