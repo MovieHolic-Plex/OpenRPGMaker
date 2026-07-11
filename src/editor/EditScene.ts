@@ -37,7 +37,13 @@ import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { setEditorMapViewport } from "@/editor/editorMapViewport";
+import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
+import {
+  anchoredBuildPalettePosition,
+  anchoredSelectionChipsPosition,
+} from "@/editor/selectionOverlayAnchor";
 import { isSignificantRegionDrag, regionRectFromDrag } from "@/editor/regionRightDrag";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { saveProjectNow } from "@/editor/saveActions";
@@ -73,8 +79,6 @@ type RightRegionGesture = {
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
-const BUILD_PALETTE_GAP_PX = 8;
-const BUILD_PALETTE_CANVAS_PADDING_PX = 8;
 
 type TileRect = {
   readonly x: number;
@@ -89,16 +93,6 @@ type CameraView = {
   readonly zoom: number;
 };
 
-type PixelSize = {
-  readonly width: number;
-  readonly height: number;
-};
-
-type PixelPoint = {
-  readonly x: number;
-  readonly y: number;
-};
-
 export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize = TILE_SIZE): TileRect {
   return {
     x: Math.round((rect.x * tileSize - camera.scrollX) * camera.zoom),
@@ -108,26 +102,8 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
   };
 }
 
-export function anchoredBuildPalettePosition(input: {
-  readonly selectionRect: TileRect;
-  readonly popupSize: PixelSize;
-  readonly canvasSize: PixelSize;
-  readonly gap?: number;
-  readonly padding?: number;
-}): PixelPoint {
-  const gap = input.gap ?? BUILD_PALETTE_GAP_PX;
-  const padding = input.padding ?? BUILD_PALETTE_CANVAS_PADDING_PX;
-  const maxX = Math.max(padding, input.canvasSize.width - input.popupSize.width - padding);
-  const maxY = Math.max(padding, input.canvasSize.height - input.popupSize.height - padding);
-  const rightX = input.selectionRect.x + input.selectionRect.width + gap;
-  const leftX = input.selectionRect.x - input.popupSize.width - gap;
-  const preferredX = rightX + input.popupSize.width + padding <= input.canvasSize.width ? rightX : leftX;
-  const centeredY = input.selectionRect.y + input.selectionRect.height / 2 - input.popupSize.height / 2;
-  return {
-    x: clampNumber(preferredX, padding, maxX),
-    y: clampNumber(centeredY, padding, maxY),
-  };
-}
+// 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
+export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
@@ -221,6 +197,7 @@ export class EditScene extends PhaserRuntime.Scene {
       onPanMove: () => {
         this.refreshAgentGhostDomMarkers();
         this.renderBuildPaletteOverlay();
+        this.publishMapViewport();
       },
     });
     this.eventClickFeedbackLayer = this.add.container(0, 0);
@@ -268,6 +245,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.regionTaskBadge?.remove();
     this.regionTaskBadge = null;
     this.activeRegionTask = null;
+    setEditorMapViewport(null);
   }
 
   private handleResize(): void {
@@ -870,6 +848,7 @@ export class EditScene extends PhaserRuntime.Scene {
     renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, tileIndex: this.tileIndex, resetCamera });
     this.renderEventLayerClickFeedback();
     this.renderAgentGhostPreview();
+    this.publishMapViewport();
     if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.renderBuildPaletteOverlay();
   }
@@ -931,6 +910,31 @@ export class EditScene extends PhaserRuntime.Scene {
       state.selectedEventId ?? "none",
       selectionKey,
     ].join("|");
+  }
+
+  /** AI 어시스턴트용: 현재 카메라가 비추는 타일 뷰포트를 게시한다. */
+  private publishMapViewport(): void {
+    const mapId = this.mapId();
+    const project = store.getCurrent();
+    const map = mapId ? project.maps[mapId] : undefined;
+    if (!mapId || !map) {
+      setEditorMapViewport(null);
+      return;
+    }
+    const camera = this.cameras.main;
+    const tileSize = map.tileSize || TILE_SIZE;
+    const snapshot = computeMapViewport(
+      map,
+      {
+        scrollX: camera.scrollX,
+        scrollY: camera.scrollY,
+        zoom: camera.zoom,
+        viewWidthPx: this.scale.width,
+        viewHeightPx: this.scale.height,
+        tileSize,
+      },
+    );
+    setEditorMapViewport(snapshot);
   }
 
   private cameraViewKey(mapId: MapId): string {
@@ -1040,6 +1044,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const canvas = this.game.canvas;
     const host = canvas.parentElement;
     if (!host) return;
+    const isChips = popup.classList.contains("selection-action-chips");
     const camera = this.cameras.main;
     const selectionRect = tileRectToScreenRect(selection, {
       scrollX: camera.scrollX,
@@ -1048,19 +1053,31 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     const canvasRect = canvas.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
+    // visibility:hidden 첫 프레임에서 0 크기가 나올 수 있어 칩/팔레트 기본값을 다르게 둔다.
+    const fallback = isChips ? { width: 240, height: 40 } : { width: 228, height: 140 };
     const popupRect = popup.getBoundingClientRect();
     const popupSize = {
-      width: Math.max(1, popupRect.width || popup.offsetWidth || 184),
-      height: Math.max(1, popupRect.height || popup.offsetHeight || 140),
+      width: Math.max(1, popupRect.width || popup.offsetWidth || fallback.width),
+      height: Math.max(1, popupRect.height || popup.offsetHeight || fallback.height),
     };
     const canvasSize = {
       width: Math.max(1, canvasRect.width || canvas.width),
       height: Math.max(1, canvasRect.height || canvas.height),
     };
-    const point = anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
+    const point = isChips
+      ? anchoredSelectionChipsPosition({ selectionRect, popupSize, canvasSize })
+      : anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
     popup.style.left = `${Math.round(canvasRect.left - hostRect.left + point.x)}px`;
     popup.style.top = `${Math.round(canvasRect.top - hostRect.top + point.y)}px`;
     popup.style.visibility = "";
+    // 실제 렌더 크기로 한 번 더 맞춤(칩 바가 가로로 늘어난 뒤 중앙 정렬 보정).
+    if (isChips && (popupRect.width < 8 || popupRect.height < 8)) {
+      requestAnimationFrame(() => {
+        if (this.buildPalettePopup === popup && popup.isConnected) {
+          this.positionBuildPaletteOverlay(selection);
+        }
+      });
+    }
   }
 
   private clearBuildPaletteOverlay(): void {
@@ -1103,8 +1120,4 @@ function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
   if (!node) return;
   node.textContent = text;
-}
-
-function clampNumber(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }

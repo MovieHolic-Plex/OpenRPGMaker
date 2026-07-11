@@ -12,12 +12,27 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
+import {
+  formatViewportContextBlock,
+  mapRegionForContext,
+  type MapViewportSnapshot,
+} from "./mapViewportContext";
 
 export interface ContextOptions {
   // 현재 에디터에서 열려 있는 맵(있으면 주변 영역을 요약에 포함).
   currentMapId?: string;
   // 시스템+컨텍스트 문자 예산(근사). 초과분은 조회 툴 안내로 대체.
   budgetChars?: number;
+  /** 사용자가 지금 보고 있는 맵 카메라 뷰포트(타일 좌표). 없으면 좌상단 fallback. */
+  viewport?: MapViewportSnapshot | null;
+  /** 매 턴 최신 뷰포트(세션이 send 시 호출). viewport보다 우선. */
+  getViewport?: () => MapViewportSnapshot | null | undefined;
+}
+
+export function resolveContextViewport(options: ContextOptions): MapViewportSnapshot | null {
+  const live = options.getViewport?.();
+  if (live) return live;
+  return options.viewport ?? null;
 }
 
 const DEFAULT_BUDGET = 12000;
@@ -32,7 +47,7 @@ const BALANCE_NOTE = [
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐(순서/비밀번호/아이템 게이트)=compile_puzzle, 조사 오브젝트=place_examine_hotspots, 컷신=script_cutscene, 추격 장면=make_chase_scene, NPC=place_npc/make_villager, 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명/분위기=set_lighting_volume/set_scene_mood, 수역/바닥=fill_region(원형 호수 shape=circle, tileVocabId=물 오토타일 그룹), 집+마당=build_house_lots(집 위치·꾸밈 의도만 LLM, 산포 좌표는 코드), 마을 bulk=build_village, 성채=build_castle(지붕면·성벽·원형타워 모듈), 단일 집 외장만=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots, 컷신=script_cutscene, 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 집+마당=build_house_lots, **마을=run_village_session(LLM이 buildOrder 기획: 호수/강→water 먼저, 그다음 settlement=집→길, 숲, critique, look) 또는 start_village_session+advance_village_build; 숏컷 run_village_pipeline. 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)** — 빈 build_village 금지에 가깝다, 성채=build_castle, 단일 집=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 
@@ -68,7 +83,8 @@ const INTRO = [
   "    새 구조물을 찍기 전, 겹치는 이전 실패물이 있으면 먼저 clear_region으로 정리하세요.",
   "    단, '집/구조물의 주변(근처)을 청소'하라는 요청은 그 구조물을 덮지 말고 둘러싼 빈 칸만 정리하는 뜻입니다 —",
   "    방금 지은 집을 지우지 마세요. 기존 구조물을 정말 철거하려면 파괴적 변경임을 짧게 설명하고 clear 에셋에 confirmDestroy:true를 명시하세요.",
-  "    스펙 검증기가 구조물을 덮는 clear를 거부하면, 영역을 구조물 바깥으로 좁혀 재제출하세요(맵의 실제 타일이 곧 '무엇이 지어져 있는지'의 기억입니다).",
+  "    **호수/물/길 치우기:** get_map_region의 data.water.bounds로 위치를 잡고, set_build_spec clear에 **confirmDestroy:true**를 넣으세요(물도 비잔디라 구조물 보호에 걸림). 전체 맵 52×52를 show/get_map_region으로 반복 스캔하지 마세요.",
+  "    스펙 검증기가 구조물을 덮는 clear를 거부하면, 영역을 구조물 바깥으로 좁히거나 confirmDestroy:true로 재제출하세요.",
   "14. 타일의 규칙(레이어/통행/지형 태그)은 set_tile_rules로 설정합니다. 레이어(auto/lower/upper) 변경은",
   "    사용자가 명시적으로 요청했을 때만 confirmedByUser=true로 호출하세요.",
   "15. 스펙 게이트(반드시 준수): 공간 쓰기 작업(집/마을/길/청소/NPC·전투 배치/수역·지면 채우기 등 맵에 무언가를 놓는 일)은",
@@ -111,23 +127,41 @@ function summarySection(project: Project): string {
   return ["## 프로젝트 요약", "```json", JSON.stringify(result.data, null, 2), "```"].join("\n");
 }
 
-function mapRegionSection(project: Project, mapId: string | undefined): string {
-  const id = mapId && project.maps[mapId] ? mapId : project.startMapId;
+function mapRegionSection(
+  project: Project,
+  mapId: string | undefined,
+  viewport: MapViewportSnapshot | null,
+): string {
+  const id =
+    (viewport?.mapId && project.maps[viewport.mapId] ? viewport.mapId : null)
+    ?? (mapId && project.maps[mapId] ? mapId : null)
+    ?? project.startMapId;
   const map = project.maps[id];
   if (!map) return "";
-  // 맵 전체가 크면 좌상단 일부만(상세는 get_map_region으로 조회하도록 유도).
-  const w = Math.min(map.width, 20);
-  const h = Math.min(map.height, 20);
+  const region = mapRegionForContext(map, viewport?.mapId === map.id ? viewport : null);
   const ctx: ToolContext = { project };
-  const result = runTool(ctx, "get_map_region", { mapId: id, x: 0, y: 0, w, h });
+  const result = runTool(ctx, "get_map_region", {
+    mapId: id,
+    x: region.x,
+    y: region.y,
+    w: region.w,
+    h: region.h,
+  });
   if (!result.ok || result.data === undefined) return "";
-  return [
+  const parts: string[] = [];
+  if (viewport && viewport.mapId === map.id) {
+    parts.push(formatViewportContextBlock(viewport, map.name));
+  }
+  parts.push(
     `## 현재 맵 요약(${map.name}, ${map.width}×${map.height})`,
-    "좌상단 일부만 표시. 다른 영역은 get_map_region으로 조회하세요.",
+    viewport && viewport.mapId === map.id
+      ? `뷰포트 중심 (${viewport.centerX},${viewport.centerY}) 주변 (${region.x},${region.y}) ${region.w}×${region.h}. 다른 영역은 get_map_region으로 조회하세요.`
+      : "좌상단 일부만 표시(뷰포트 없음). 다른 영역은 get_map_region으로 조회하세요.",
     "```json",
     JSON.stringify(result.data, null, 2),
     "```",
-  ].join("\n");
+  );
+  return parts.join("\n");
 }
 
 function worldDigestSection(project: Project): string {
@@ -174,7 +208,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** build_house_lots — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 아래 그룹 id를 build_wall/lay_path/fill_region/place_props의 *VocabId 인자에 그대로 사용한다(추측 금지, 모르면 tile_query ask:\"vocab\").",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** build_house_lots — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. **마을:** run_village_session / build_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지에 가깝다). 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle + get_map_region data.water.bounds. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 아래 그룹 id를 build_wall/lay_path/fill_region/place_props의 *VocabId 인자에 그대로 사용한다(추측 금지, 모르면 tile_query ask:\"vocab\").",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
@@ -336,7 +370,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   const worldDigest = worldDigestSection(project);
   if (worldDigest) sections.push(worldDigest);
 
-  const mapSection = mapRegionSection(project, options.currentMapId);
+  const viewport = resolveContextViewport(options);
+  const mapSection = mapRegionSection(project, options.currentMapId, viewport);
   if (mapSection) sections.push(mapSection);
 
   let assembled = sections.join("\n\n");

@@ -12,10 +12,14 @@ type SimilarTileScore = {
 const DEFAULT_SIMILAR_TILE_LIMIT = 12;
 const MAX_SIMILAR_TILE_LIMIT = 48;
 
+/** show_map_region 한 변 상한 — 전맵 스캔은 이미지·토큰 폭주. */
+const SHOW_MAP_REGION_MAX_SPAN = 24;
+
 const showMapRegion: ToolDefinition = {
   name: "show_map_region",
   description:
-    "맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라.",
+    "맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라. " +
+    `한 변 최대 ${SHOW_MAP_REGION_MAX_SPAN}타일(초과분은 중심 기준으로 잘림). 호수 위치는 get_map_region의 water.bounds를 쓰고, 전체 맵을 반복 스캔하지 마라.`,
   mode: "read",
   invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8 },
   parameters: {
@@ -31,7 +35,20 @@ const showMapRegion: ToolDefinition = {
   },
   run(project, args): ToolExecResult {
     const map = requireMap(project, stringArg(args, "mapId"));
-    const region = clampedRegion(map, integerArg(args, "x"), integerArg(args, "y"), integerArg(args, "w"), integerArg(args, "h"));
+    let region = clampedRegion(map, integerArg(args, "x"), integerArg(args, "y"), integerArg(args, "w"), integerArg(args, "h"));
+    const warnings: string[] = [];
+    if (region.w > SHOW_MAP_REGION_MAX_SPAN || region.h > SHOW_MAP_REGION_MAX_SPAN) {
+      const cx = region.x + Math.floor(region.w / 2);
+      const cy = region.y + Math.floor(region.h / 2);
+      const w = Math.min(region.w, SHOW_MAP_REGION_MAX_SPAN);
+      const h = Math.min(region.h, SHOW_MAP_REGION_MAX_SPAN);
+      const x = Math.max(0, Math.min(map.width - w, cx - Math.floor(w / 2)));
+      const y = Math.max(0, Math.min(map.height - h, cy - Math.floor(h / 2)));
+      warnings.push(
+        `요청 ${region.w}×${region.h}이 커서 ${w}×${h}로 잘랐습니다(중심 근처). 호수는 get_map_region water.bounds 사용.`,
+      );
+      region = { x, y, w, h };
+    }
     const lower: number[][] = [];
     const upper: number[][] = [];
     for (let row = 0; row < region.h; row += 1) {
@@ -48,6 +65,7 @@ const showMapRegion: ToolDefinition = {
     return {
       summary: `맵 미리보기: (${region.x},${region.y}) ${region.w}×${region.h} (${map.name})`,
       data: { h: region.h, lower, mapId: map.id, upper, w: region.w, x: region.x, y: region.y },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

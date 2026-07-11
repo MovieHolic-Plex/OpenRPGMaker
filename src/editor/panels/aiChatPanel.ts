@@ -7,7 +7,6 @@
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, type ChatDock } from "@/editor/editorState";
-import { getEditorChrome, getEditorUiMode } from "@/editor/editorUiMode";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
@@ -29,6 +28,7 @@ import {
 import type { BuildSpec } from "@/ai/buildSpec";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
+import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
   deriveTitle,
   loadConversation,
@@ -85,6 +85,7 @@ import {
   isMetadataOnlyProposal,
   isWriteTool,
   phaseStatusText,
+  statusToneOf,
   STUDIO_MODE_KEY,
   VOLATILE_OVERLAY_IDLE_MS,
   type ChatController,
@@ -187,10 +188,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
   };
 
-  const status = el("span", { class: "ai-assistant-status", text: "대기", dataset: { testid: "ai-status" } });
+  const status = el("span", {
+    class: "ai-assistant-status",
+    text: "대기",
+    dataset: { testid: "ai-status", statusTone: "idle" },
+  });
   // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 로그 export로 "검토 대기" 멈춤을 진단 가능.
   const setStatus = (text: string, record = true): void => {
     status.textContent = text;
+    status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
@@ -306,7 +312,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       backupProjectSnapshot();
       controller.session = new AssistantSession(store.getCurrent(), {
         config: loadAiConfig(),
-        contextOptions: { currentMapId: editorState.get().currentMapId ?? undefined },
+        contextOptions: {
+          currentMapId: editorState.get().currentMapId ?? undefined,
+          // 매 턴 EditScene이 게시한 카메라 중심/가시 영역 — "여기" 해석용.
+          getViewport: () => getEditorMapViewport(),
+        },
         // 비전(BUG C): '보여줘' 툴 이미지를 렌더해 비전 모델에 전달한다(브라우저 전용).
         renderImages: renderToolImages,
         // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
@@ -1128,21 +1138,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           on: { click: () => restoreConversationById(resumeCandidate.id) },
         })]
       : [];
-    // 기본 모드 전용 발견성 카드 — 채팅 시작 시 시작 화면과 함께 사라진다(스펙 §5).
-    const basicCards: HTMLElement[] = [];
-    if (typeof document !== "undefined" && document.body?.classList?.contains?.("editor-ui-basic")) {
-      basicCards.push(
-        buildTryRegionCard({
-          commands: nextStartScreenSuggestedCommands(3),
-          onPick: (instruction) => {
-            input.value = instruction;
-            input.focus();
-          },
-        }),
-      );
-      const recent = buildRecentAiWorkCard(listAiActivityLogs(3), new Date());
-      if (recent) basicCards.push(recent);
-    }
+    // 시작 화면은 기본/전문가 공통 — 에디터 셸 밀도와 무관한 동일 AI 표면.
+    const sharedCards: HTMLElement[] = [
+      buildTryRegionCard({
+        commands: nextStartScreenSuggestedCommands(3),
+        onPick: (instruction) => {
+          input.value = instruction;
+          input.focus();
+        },
+      }),
+    ];
+    const recent = buildRecentAiWorkCard(listAiActivityLogs(3), new Date());
+    if (recent) sharedCards.push(recent);
     return el("div", {
       class: "ai-start-screen",
       dataset: { testid: "ai-start-screen" },
@@ -1150,7 +1157,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         el("div", { class: "ai-start-title", text: "무엇을 만들까요?" }),
         el("div", { class: "ai-start-sub", text: "Ctrl+K 명령 · / 스킬 · 영역 선택 후 ✨ 칩으로 시작하세요." }),
         ...resume,
-        ...basicCards,
+        ...sharedCards,
         el("div", { class: "ai-start-grid", children: cards }),
         el("div", {
           class: "ai-start-guide",
@@ -1385,7 +1392,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     else editorState.set({ chatDock: currentChatDock() === "side" ? "float" : "side" });
     refreshDockLabels();
   };
-  // 도크 전환은 햄버거 전용 (헤더/커맨드바 중복 제거). testid 호환용 숨은 버튼.
+  // testid 호환용 숨은 토글(레이아웃 테스트·E2E).
   const dockToggleButton = el("button", {
     class: "ai-chat-tools-button",
     attrs: { type: "button", hidden: "", "aria-hidden": "true" },
@@ -1396,6 +1403,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-tools-button ai-command-bar-dock-toggle",
     attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "chat-dock-toggle-bar" },
+    on: { click: onDockToggleClick },
+  }) as HTMLButtonElement;
+  // 노출 토글: 현재 모드를 라벨로 보여 주고 클릭 시 반대 모드로 전환.
+  const dockModeButton = el("button", {
+    class: "ai-dock-mode-btn",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-dock-mode-btn", dockMode: currentChatDock() },
+    on: { click: onDockToggleClick },
+  }) as HTMLButtonElement;
+  const headerDockModeButton = el("button", {
+    class: "ai-dock-mode-btn ai-dock-mode-btn-header",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-dock-mode-btn-header", dockMode: currentChatDock() },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
   exportButton = el("button", {
@@ -1524,13 +1544,33 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const moreMenuDockItem = el("button", {
     class: "ai-more-menu-item",
-    text: "플로팅으로 이동",
+    text: "플로팅 바로 전환",
     attrs: { type: "button", role: "menuitem" },
     dataset: { testid: "ai-more-dock" },
   }) as HTMLButtonElement;
+  let commandDockItem: HTMLButtonElement | null = null;
+  const applyDockModeChrome = (mode: ChatDock): void => {
+    const side = mode === "side";
+    const label = side ? "사이드" : "플로팅";
+    const nextHint = side
+      ? "현재: 사이드 패널(대화·기록 전체). 클릭하면 플로팅 바로 전환"
+      : "현재: 플로팅 바(맵 위 입력). 클릭하면 사이드 패널로 고정";
+    const menuLabel = side ? "플로팅 바로 전환" : "사이드 패널로 고정";
+    for (const btn of [dockModeButton, headerDockModeButton]) {
+      btn.textContent = label;
+      btn.dataset.dockMode = mode;
+      btn.setAttribute("title", nextHint);
+      btn.setAttribute("aria-label", nextHint);
+    }
+    moreMenuDockItem.textContent = menuLabel;
+    moreMenuDockItem.setAttribute("title", nextHint);
+    if (commandDockItem) {
+      commandDockItem.textContent = menuLabel;
+      commandDockItem.setAttribute("title", nextHint);
+    }
+  };
   const refreshMoreMenuDockLabel = (): void => {
-    const mode = currentChatDock();
-    moreMenuDockItem.textContent = mode === "side" ? "플로팅으로 이동" : "사이드로 이동";
+    applyDockModeChrome(currentChatDock());
   };
   refreshMoreMenuDockLabel();
   const closeMoreMenu = (): void => {
@@ -1599,7 +1639,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const header = el("div", {
     class: "ai-chat-header",
     children: [
-      titleEl,
+      el("div", {
+        class: "ai-header-title-row",
+        children: [titleEl, headerDockModeButton],
+      }),
       el("span", {
         class: "ai-header-actions",
         children: [newSessionButton, settingsButton, moreWrap],
@@ -1626,11 +1669,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     inputRow,
     statusGroup,
   });
-  // float: ⚙ + ☰ 상시 (헤더 숨김 대응). 메뉴 토글 아이콘을 햄버거로.
+  // float: ⚙ + 도크 모드 + ☰ 상시 (헤더 숨김 대응). 메뉴 토글 아이콘을 햄버거로.
   commandMenuToggle.textContent = "☰";
   commandMenuToggle.setAttribute("title", "더보기");
   commandMenuToggle.setAttribute("aria-label", "더보기 메뉴");
-  statusGroup.prepend(commandBarSettingsButton);
+  statusGroup.prepend(commandBarSettingsButton, dockModeButton);
   const volatileLogMount = el("div", {
     class: "ai-rising-volatile-zone",
     dataset: { testid: "ai-rising-volatile-zone" },
@@ -1651,82 +1694,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [volatileLogMount, stickyProposalZone],
   });
   const historyLogMount = el("div", { class: "ai-history-log-mount" });
-  const recentWorkList = el("div", {
-    class: "ai-recent-work-list",
-    dataset: { testid: "ai-recent-work-list" },
-    text: "아직 기록된 작업이 없습니다.",
-  });
-  const makeExpertQuickAction = (label: string, testId: string): HTMLElement =>
-    el("button", {
-      class: "ai-quick-action-btn",
-      text: label,
-      attrs: { type: "button", title: label },
-      dataset: { testid: testId },
-      on: {
-        click: () => {
-          input.value = label;
-          input.focus();
-          sendButton.click();
-        },
-      },
-    });
-  // Expert density board (hidden in basic via body.editor-ui-basic CSS + dataset).
-  const expertBoard = el("div", {
-    class: "ai-expert-board",
-    dataset: { testid: "ai-expert-board", uiDensity: "expert" },
-    children: [
-      el("section", {
-        class: "ai-expert-section",
-        dataset: { testid: "ai-quick-actions" },
-        children: [
-          el("div", { class: "ai-expert-section-title", text: "빠른 작업" }),
-          el("div", {
-            class: "ai-quick-action-grid",
-            children: [
-              makeExpertQuickAction("나무 더 배치해줘", "ai-quick-action-trees"),
-              makeExpertQuickAction("숲길을 자연스럽게 연결해줘", "ai-quick-action-path"),
-              makeExpertQuickAction("맵 가장자리에 경계 추가", "ai-quick-action-border"),
-              makeExpertQuickAction("적 몬스터 배치 제안", "ai-quick-action-monsters"),
-            ],
-          }),
-        ],
-      }),
-      el("section", {
-        class: "ai-expert-section",
-        dataset: { testid: "ai-automation-suggestions" },
-        children: [
-          el("div", { class: "ai-expert-section-title", text: "자동화 제안" }),
-          el("div", {
-            class: "ai-automation-empty",
-            text: "제안이 생기면 여기에 적용 버튼과 함께 표시됩니다.",
-            dataset: { testid: "ai-automation-empty" },
-          }),
-        ],
-      }),
-      el("section", {
-        class: "ai-expert-section",
-        dataset: { testid: "ai-recent-work" },
-        children: [
-          el("div", { class: "ai-expert-section-title", text: "최근 작업 기록" }),
-          recentWorkList,
-        ],
-      }),
-    ],
-  });
-  const syncExpertBoardVisibility = (): void => {
-    const dense = getEditorChrome().aiDenseSections;
-    expertBoard.hidden = !dense;
-    expertBoard.classList.toggle("is-hidden", !dense);
-    panel.dataset.uiDensity = dense ? "expert" : "basic";
-    panel.dataset.editorUiMode = getEditorUiMode();
-  };
+  // AI 표면은 기본/전문가 공통 — expert-only board 없음. 시작 화면·스킬·기록이 동일.
   const mainColumn = el("div", {
     class: "ai-chat-main",
-    children: [
-      expertBoard,
-      historyLogMount,
-      chipsHost,
-    ],
+    children: [historyLogMount, chipsHost],
   });
   const body = el("div", { class: "ai-chat-body", children: [mainColumn, drawer.element] });
 
@@ -1735,17 +1706,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { "aria-label": "AI 어시스턴트 채팅" },
     dataset: {
       testid: "ai-panel",
-      uiDensity: getEditorChrome().aiDenseSections ? "expert" : "basic",
-      editorUiMode: getEditorUiMode(),
+      uiDensity: "shared",
+      chatDock: currentChatDock(),
     },
     children: [header, toolbar, body, collapsedRestore, risingOverlay, commandBar, proposalModalRoot],
   });
-  syncExpertBoardVisibility();
-  // Keep expert board in sync when user toggles basic/expert without remounting AI panel.
-  if (typeof document !== "undefined" && typeof MutationObserver === "function") {
-    const observer = new MutationObserver(() => syncExpertBoardVisibility());
-    observer.observe(document.body, { attributes: true, attributeFilter: ["class", "data-editor-ui-mode"] });
-  }
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__rpgzzuAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
@@ -1889,9 +1854,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     commandMenu.hidden = true;
     commandMenuToggle.setAttribute("aria-expanded", "false");
   };
-  const commandDockItem = el("button", {
+  commandDockItem = el("button", {
     class: "ai-command-menu-item",
-    text: "플로팅으로 이동",
+    text: "플로팅 바로 전환",
     attrs: { type: "button", role: "menuitem" },
     dataset: { testid: "ai-command-menu-dock" },
     on: {
@@ -1901,17 +1866,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
   }) as HTMLButtonElement;
-  const refreshCommandDockLabel = (): void => {
-    commandDockItem.textContent = currentChatDock() === "side" ? "플로팅으로 이동" : "사이드로 이동";
-  };
-  refreshCommandDockLabel();
   refreshDockLabels = (): void => {
-    refreshMoreMenuDockLabel();
-    refreshCommandDockLabel();
+    const mode = currentChatDock();
+    panel.dataset.chatDock = mode;
+    applyDockModeChrome(mode);
   };
   refreshDockLabels();
   commandMenuToggle.addEventListener("click", () => {
-    if (!commandMenu.hidden) refreshCommandDockLabel();
+    if (!commandMenu.hidden) refreshMoreMenuDockLabel();
   });
   commandMenu.replaceChildren(
     el("button", {

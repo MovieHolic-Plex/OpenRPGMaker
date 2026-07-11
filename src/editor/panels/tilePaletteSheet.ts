@@ -68,12 +68,12 @@ export function makeChipsetSheet(args: MakeChipsetSheetArgs): HTMLElement {
     class: "chipset-sheet tile-palette chipset-sheet-filtered",
     dataset: { testid: "tile-palette" },
     attrs: {
+      // 고정 폭(--chipset-width) 제거: 좁은 패널 가로 스크롤 원인.
+      // 셀은 CSS에서 auto-fill + 고정 픽셀(스프라이트 정렬용).
       style: [
         `--chipset-cols:${args.tileset.tilesPerRow}`,
         `--chipset-rows:${rows}`,
         `--chipset-cell:${CHIPSET_CELL_SIZE}px`,
-        `--chipset-width:${args.tileset.tilesPerRow * CHIPSET_CELL_SIZE}px`,
-        `--chipset-height:${rows * CHIPSET_CELL_SIZE}px`,
       ].join(";"),
     },
   });

@@ -124,11 +124,16 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       );
     }
   });
-  settingsColumn.append(
-    renderClassicPageTabStrip(ev, activePage),
-    renderEventPageProps(mapId, ev.id, activePage),
-    renderEventScheduleSection(mapId, ev)
-  );
+  // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
+  // 스케줄을 본문과 분리해 직접 append하면 3번째 자식이 좌측 54px 칸에 떨어져 UI가 찌그러진다.
+  const settingsMain = el("div", {
+    class: "event-editor-settings-main",
+    children: [
+      renderEventPageProps(mapId, ev.id, activePage),
+      renderEventScheduleSection(mapId, ev),
+    ],
+  });
+  settingsColumn.append(renderClassicPageTabStrip(ev, activePage), settingsMain);
   commandsColumn.append(
     renderCommandToolbar(cmdList, actions, commandHistory),
     el("fieldset", {

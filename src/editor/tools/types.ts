@@ -9,12 +9,14 @@ import type { Project } from "@/project/types";
 export type JsonSchemaType = "object" | "array" | "string" | "number" | "integer" | "boolean";
 
 export interface JsonSchema {
-  readonly type: JsonSchemaType | readonly JsonSchemaType[];
+  readonly type?: JsonSchemaType | readonly JsonSchemaType[];
   readonly description?: string;
   readonly properties?: Record<string, JsonSchema>;
   readonly required?: readonly string[];
   readonly items?: JsonSchema;
   readonly enum?: readonly (string | number)[];
+  /** JSON Schema oneOf (툴 인자 유니온). type 없이 쓰일 수 있다. */
+  readonly oneOf?: readonly JsonSchema[];
   // 깊은 구조(이벤트/커맨드 등)는 기존 shape 검증기에 위임하므로 스키마에선 자유 형태를 허용한다.
   readonly additionalProperties?: boolean;
 }
@@ -48,6 +50,7 @@ export interface ToolResult {
   summary: string; // 사람/모델 공용 1-2문장
   diff?: ChangeSummary; // 쓰기 툴의 구조화된 diff
   issues?: LintIssue[]; // 게이트 실패 사유(모델 자가수정용)
+  warnings?: string[]; // 읽기/쓰기 비차단 경고(영역 잘림 등)
   data?: unknown; // 읽기 툴 반환값
 }
 
@@ -125,6 +128,15 @@ export interface SimplePage {
   readonly showText?: readonly string[];
   readonly messages?: readonly string[];
   readonly text?: string;
+  /** 대화 페이스. 생략 시 place_npc graphic charset에서 자동 매핑. */
+  readonly face?: {
+    readonly resourceId?: string;
+    readonly faceIndex?: number;
+    readonly position?: "left" | "right";
+    readonly flipHorizontally?: boolean;
+    readonly textureKey?: string;
+    readonly characterIndex?: number;
+  };
   readonly choices?: readonly SimplePageChoice[];
   readonly commands?: readonly unknown[];
 }

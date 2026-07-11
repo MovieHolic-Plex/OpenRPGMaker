@@ -309,6 +309,22 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
   if (group.id.includes("wall-ladder")) return "벽 사다리";
   if (group.id.includes("fruit-box")) return tile === 202 ? "과일박스 좌" : "과일박스 우";
   if (group.id.includes("wood-box")) return "나무 상자";
+  if (group.id.includes("wood-floor-deck")) {
+    if (tile === 222) return "나무 바닥 바디";
+    if (tile === 192) return "나무 바닥 변형";
+    return "나무 바닥 데크";
+  }
+  if (group.id.includes("timber-post-rail")) {
+    if (tile === 223) return "목조 난간 바디";
+    if (tile === 193) return "목조 기둥";
+    return "목조 난간/기둥";
+  }
+  if (group.id.includes("market-rail-upper")) {
+    if (tile === 468) return "장터 레일 좌";
+    if (tile === 469) return "장터 레일 중";
+    return "장터 레일 우";
+  }
+  if (group.id.includes("stone-step-slab")) return "돌단/석판";
   if (group.id.includes("magic-circle")) return "마법진";
   if (group.id.includes("wood-door")) return tile === 116 ? "나무 문 상" : "나무 문 하";
   if (group.id.includes("stone-stairs")) {

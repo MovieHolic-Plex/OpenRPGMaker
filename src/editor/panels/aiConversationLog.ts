@@ -12,14 +12,102 @@ import {
   reasoningToggleText,
   renderToolActivityEntry,
 } from "./aiChatRenderers";
-import { displayUserAuditText, type TileGridData } from "./aiChatPanelHelpers";
+import {
+  aiDayKey,
+  displayUserAuditText,
+  formatAiDayLabel,
+  parseAiDayDate,
+  type TileGridData,
+} from "./aiChatPanelHelpers";
 
 export type AiBubbleRole = "user" | "assistant" | "tool" | "system";
 
-export function markPriorTurns(log: HTMLElement): void {
-  for (const child of Array.from(log.childNodes)) {
-    (child as HTMLElement).classList?.add?.("is-prior-turn");
+function logElements(log: HTMLElement): HTMLElement[] {
+  return Array.from(log.childNodes).filter(
+    (node): node is HTMLElement => Boolean(node && (node as HTMLElement).classList)
+  );
+}
+
+/** 기록 뷰용 날짜 구분선 — 같은 날이면 생략. */
+export function ensureDayDivider(log: HTMLElement, at: Date = new Date()): HTMLElement | null {
+  const key = aiDayKey(at);
+  let lastKey: string | null = null;
+  for (const child of logElements(log)) {
+    const day = child.dataset?.dayKey;
+    if (day) lastKey = day;
   }
+  if (lastKey === key) return null;
+  const divider = el("div", {
+    class: "ai-day-divider",
+    dataset: { testid: "ai-day-divider", dayKey: key },
+    children: [el("span", { class: "ai-day-divider-label", text: formatAiDayLabel(at) })],
+  });
+  log.append(divider);
+  return divider;
+}
+
+/**
+ * 새 사용자 턴이 시작되면 직전 턴 노드를 접이식 그룹으로 묶는다.
+ * 미니 스트림(rising overlay)은 `.is-prior-turn` 숨김을 유지하고,
+ * 전체 기록/사이드 도크에서는 토글로 펼친다.
+ */
+export function markPriorTurns(log: HTMLElement): void {
+  const children = logElements(log);
+  const keep: HTMLElement[] = [];
+  const toWrap: HTMLElement[] = [];
+  for (const child of children) {
+    if (child.classList.contains("ai-start-screen") || child.classList.contains("ai-day-divider")) {
+      keep.push(child);
+      continue;
+    }
+    if (child.classList.contains("ai-turn-group") || child.classList.contains("is-prior-turn")) {
+      child.classList.add("is-prior-turn");
+      keep.push(child);
+      continue;
+    }
+    toWrap.push(child);
+  }
+  if (toWrap.length === 0) return;
+
+  for (const node of toWrap) node.classList.add("is-prior-turn");
+
+  const previewSource = toWrap.find((node) => node.classList.contains("ai-chat-user"));
+  const preview = (previewSource?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim().slice(0, 36) || "이전 턴";
+
+  const body = el("div", {
+    class: "ai-turn-group-body",
+    dataset: { testid: "ai-turn-group-body" },
+  });
+  // FakeElement.append는 이전 부모에서 떼지 않을 수 있어 remove 후 붙인다.
+  for (const node of toWrap) {
+    node.parentNode?.removeChild?.(node);
+    body.append(node);
+  }
+
+  const group = el("div", {
+    class: "ai-turn-group is-prior-turn is-collapsed",
+    dataset: { testid: "ai-turn-group" },
+  });
+  const toggle = el("button", {
+    class: "ai-turn-group-toggle",
+    attrs: {
+      type: "button",
+      title: "이전 턴 펼치기/접기",
+      "aria-expanded": "false",
+      "aria-label": "이전 턴 펼치기/접기",
+    },
+    dataset: { testid: "ai-turn-group-toggle" },
+    text: `▸ ${preview}`,
+    on: {
+      click: () => {
+        const collapsed = group.classList.toggle("is-collapsed");
+        toggle.textContent = `${collapsed ? "▸" : "▾"} ${preview}`;
+        toggle.setAttribute("aria-expanded", String(!collapsed));
+      },
+    },
+  });
+  group.append(toggle, body);
+  log.replaceChildren(...keep, group);
 }
 
 export function appendConversationBubble(options: {
@@ -28,10 +116,15 @@ export function appendConversationBubble(options: {
   readonly text: string;
   readonly revealVolatileZone: () => void;
   readonly removeStartScreen: () => void;
+  /** 복원·감사 로그용 시각(날짜 구분선). */
+  readonly at?: Date | string | null;
 }): HTMLElement {
   options.revealVolatileZone();
   options.removeStartScreen();
-  if (options.role === "user") markPriorTurns(options.log);
+  if (options.role === "user") {
+    ensureDayDivider(options.log, parseAiDayDate(options.at));
+    markPriorTurns(options.log);
+  }
   const bubble = el("div", {
     class: `ai-chat-bubble ai-chat-${options.role}`,
     dataset: { testid: `ai-bubble-${options.role}` },
@@ -81,8 +174,8 @@ export function createConversationLogHost(options: {
 }): ConversationLogHost {
   const { log, revealVolatileZone, removeStartScreen } = options;
 
-  const appendBubble = (role: AiBubbleRole, text: string): HTMLElement =>
-    appendConversationBubble({ log, role, text, revealVolatileZone, removeStartScreen });
+  const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
+    appendConversationBubble({ log, role, text, revealVolatileZone, removeStartScreen, at });
 
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
   // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
@@ -155,12 +248,12 @@ export function createConversationLogHost(options: {
   const renderConversationEntry = (entry: AuditEntry): void => {
     if (entry.kind === "user") {
       closeToolActivity();
-      appendBubble("user", displayUserAuditText(entry.text));
+      appendBubble("user", displayUserAuditText(entry.text), entry.at);
       return;
     }
     if (entry.kind === "assistant" && entry.text.trim()) {
       closeToolActivity();
-      appendBubble("assistant", entry.text);
+      appendBubble("assistant", entry.text, entry.at);
       return;
     }
     if (entry.kind === "tool") {

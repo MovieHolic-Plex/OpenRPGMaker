@@ -148,13 +148,13 @@
   display: block;
   height: min(540px, calc(100vh - 214px));
   max-height: min(540px, calc(100vh - 214px));
-  min-height: 320px;
+  min-height: min(280px, 36vh);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   position: relative;
   scrollbar-gutter: stable;
-  scrollbar-width: auto;
+  scrollbar-width: thin;
   touch-action: pan-y;
   width: 100%;
 }
@@ -526,16 +526,19 @@
 }
 
 .chipset-grid {
-  --chipset-cell: calc((100cqw - 9px) / 6);
+  --chipset-cell: 32px;
   box-sizing: border-box;
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(6, minmax(0, var(--chipset-cell)));
+  /* 패널 안에 들어가는 칸만 배치 — 가로 스크롤 없음 */
+  grid-template-columns: repeat(auto-fill, var(--chipset-cell));
   grid-auto-rows: var(--chipset-cell);
   justify-content: start;
   padding: 2px;
   position: static;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .chipset-tile {
@@ -543,6 +546,7 @@
   background-color: transparent;
   background-repeat: no-repeat;
   border: 1px solid transparent;
+  box-sizing: border-box;
   cursor: crosshair;
   height: var(--chipset-cell);
   overflow: hidden;
@@ -599,21 +603,22 @@
 
 .chipset-tile.classified::after {
   align-items: center;
-  background: rgba(10, 36, 106, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(10, 36, 106, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
   color: var(--text-inverse);
   content: "✓";
   display: flex;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  height: 13px;
+  height: 11px;
   justify-content: center;
   line-height: 1;
+  opacity: 0.75;
   position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 13px;
+  right: 1px;
+  top: 1px;
+  width: 11px;
 }
 
 .chipset-tile.range-selected {

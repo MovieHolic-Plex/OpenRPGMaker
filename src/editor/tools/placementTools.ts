@@ -1,5 +1,4 @@
 import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
-import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";

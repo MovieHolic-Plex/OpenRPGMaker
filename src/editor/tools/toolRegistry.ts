@@ -32,6 +32,7 @@ import { V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
 import { CASTLE_TOOLS } from "./castleBuilder";
 import { VILLAGE_TOOLS } from "./villageBuilder";
+import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
@@ -103,6 +104,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HOUSE_KIT_TOOLS, "tile"),
   ...withDomain(HOUSE_LOT_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
+  ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),

@@ -3,10 +3,11 @@ import type { GameMap, Project, TilesetDef } from "@/project/types";
 
 export type RenderedToolImage = { readonly dataUrl: string; readonly label: string };
 
-const MAX_IMAGE_DIMENSION = 768;
+const MAX_IMAGE_DIMENSION = 512;
 const MAX_TILE_SWATCHES = 12;
 const TILE_SWATCH_SCALE = 6;
-const TILE_GRID_SCALE = 3;
+/** 맵 미리보기 타일 배율 — 너무 크면 base64가 컨텍스트를 잠식(16×16×3×16px ≈ 거대). */
+const TILE_GRID_SCALE = 2;
 const MIN_SWATCH_SIZE = 48;
 const MAX_SWATCH_COLUMNS = 6;
 const EMPTY_TILE = -1;
@@ -18,6 +19,20 @@ type UnknownRecord = { readonly [key: string]: unknown };
 type TileGridPayload = { readonly tileset: TilesetDef; readonly x: number; readonly y: number; readonly w: number; readonly h: number; readonly lower: readonly (readonly number[])[]; readonly upper: readonly (readonly number[])[] };
 
 const tilesetImagePromises = new Map<string, Promise<HTMLImageElement>>();
+
+/** 뷰포트/영역 타일 그리드를 데이터 URL 이미지로 렌더(어시스턴트 턴 시작 비전 주입용). */
+export async function renderMapRegionImages(
+  project: Project,
+  data: unknown,
+  label = "에디터 뷰포트",
+): Promise<RenderedToolImage[]> {
+  if (typeof document === "undefined") return [];
+  try {
+    return await renderTileGrid(project, data, label);
+  } catch {
+    return [];
+  }
+}
 
 export async function renderToolImages(project: Project, toolName: string, data: unknown): Promise<RenderedToolImage[]> {
   if (typeof document === "undefined") return [];

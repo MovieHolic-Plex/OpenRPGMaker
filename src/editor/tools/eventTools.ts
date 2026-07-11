@@ -8,12 +8,13 @@ import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, Dir, EventPage, EventPageCondition, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Dir, EventPage, EventPageCondition, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
   type CutsceneBeat,
 } from "@/editor/cutscene";
+import { faceGraphicForCharset } from "@/assets/charsetFaceMap";
 import {
   charsetGraphic,
   compileSimplePages,
@@ -27,6 +28,35 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
+
+/** place_npc/make_villager face 인자 → FaceGraphic. graphic charset과 맞춰 자동 추론도 가능. */
+function resolvePlaceNpcFaceArg(
+  faceArg: unknown,
+  graphicSpec: GraphicSpec,
+): FaceGraphic | null | undefined {
+  if (faceArg && typeof faceArg === "object" && !Array.isArray(faceArg)) {
+    const rec = faceArg as Record<string, unknown>;
+    if (typeof rec.resourceId === "string" && rec.resourceId.trim()) {
+      return {
+        resourceId: rec.resourceId.trim(),
+        faceIndex: typeof rec.faceIndex === "number" ? rec.faceIndex : 0,
+        position: rec.position === "right" ? "right" : "left",
+        flipHorizontally: rec.flipHorizontally === true,
+      };
+    }
+    if (typeof rec.textureKey === "string") {
+      return faceGraphicForCharset(
+        rec.textureKey,
+        typeof rec.characterIndex === "number" ? rec.characterIndex : 0,
+      );
+    }
+  }
+  // graphic {textureKey, characterIndex}면 여기서 선매핑 (query는 compile 단계에서 graphic으로)
+  if (graphicSpec && "textureKey" in graphicSpec && typeof graphicSpec.textureKey === "string") {
+    return faceGraphicForCharset(graphicSpec.textureKey, graphicSpec.characterIndex ?? 0);
+  }
+  return undefined; // compileSimplePage가 graphic에서 추론
+}
 const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
 const PLACE_NPC_OBJECT_GIMMICK_HINT = "보물상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요.";
@@ -198,7 +228,7 @@ const upsertEvent: ToolDefinition = {
 
 const placeNpc: ToolDefinition = {
   name: "place_npc",
-  description: `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.`,
+  description: `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. **대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -208,6 +238,10 @@ const placeNpc: ToolDefinition = {
       y: { type: "integer" },
       name: { type: "string" },
       graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
+      face: {
+        type: "object",
+        description: "대화 페이스 {resourceId,faceIndex} 또는 {textureKey,characterIndex}. 생략 시 graphic에서 자동 매핑.",
+      },
       movement: { type: "string", enum: ["fixed", "random"] },
       pages: { type: "array", description: "SimplePage[]", items: { type: "object" } },
       id: { type: "string" },
@@ -239,7 +273,12 @@ const placeNpc: ToolDefinition = {
     const movement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
     const normalizationWarnings: string[] = [];
     if (args.graphic === undefined) normalizationWarnings.push("graphic 생략 → query:\"villager\" 기본 적용");
-    const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, { movement, warnings: normalizationWarnings });
+    const faceArg = resolvePlaceNpcFaceArg(args.face, graphicSpec);
+    const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, {
+      movement,
+      warnings: normalizationWarnings,
+      face: faceArg,
+    });
     const event: GameEvent = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
@@ -340,6 +379,7 @@ const makeVillager: ToolDefinition = {
     const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
       movement: PASSIVE,
       warnings,
+      face: resolvePlaceNpcFaceArg(args.face, graphicSpec),
     });
     const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");
     const giftResponses = parseGiftResponses(args.giftResponses, "giftResponses");

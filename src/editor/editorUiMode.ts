@@ -25,6 +25,7 @@ const BASIC_CHROME: EditorChromeVisibility = {
   canvasChromeDense: false,
   paletteFindPropsTabs: false,
   helpMenu: false,
+  // AI 어시스턴트 UI는 기본/전문가 동일 표면(모드 분기 없음).
   aiDenseSections: false,
   gameMenuLabel: "실행",
 };
@@ -35,7 +36,8 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   canvasChromeDense: true,
   paletteFindPropsTabs: true,
   helpMenu: true,
-  aiDenseSections: true,
+  // AI 패널은 셸 밀도와 무관 — expert도 dense AI board를 쓰지 않는다.
+  aiDenseSections: false,
   gameMenuLabel: "게임",
 };
 

@@ -289,6 +289,10 @@ export const CHIPSET_TILE_GROUPS = {
   signObjects: [319, 320],
   fireObjects: [318, 381],
   statueObjects: [382, 412, 413],
+  // 마켓 공터 실측: 하단 가로 레일 468|469*|470, 가장자리 돌단/슬랩 268
+  marketRailObjects: [468, 469, 470],
+  marketRailHorizontalObjects: [468, 469, 470],
+  stoneStepObjects: [268],
   smallObjects: [259, 318, 319, 320, 348, 349, 350, 351, 352, 411, 440, 441, 442, 443, 472, 473],
 } as const;
 
@@ -386,6 +390,9 @@ export function isPropOverlayChipsetTile(index: number): boolean {
     hasTile(CHIPSET_TILE_GROUPS.statueObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.houseWindowObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.castleWindowObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.tentObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.marketRailObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.stoneStepObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.smallObjects, index)
   );
 }
@@ -408,8 +415,8 @@ function isBuildingBaseChipsetTile(index: number): boolean {
     hasTile(CHIPSET_TILE_GROUPS.woodStructureObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.timberPostStructureObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.roofObjects, index) ||
-    hasTile(CHIPSET_TILE_GROUPS.buildingFrontObjects, index) ||
-    hasTile(CHIPSET_TILE_GROUPS.tentObjects, index)
+    hasTile(CHIPSET_TILE_GROUPS.buildingFrontObjects, index)
+    // tentObjects 제외: 텐트는 잔디 위 상위 오버레이(하위면 지면을 지움 + 상위 팔레트에서 안 보임)
   );
 }
 
@@ -550,6 +557,42 @@ function tileSemanticForIndex(index: number): TileSemantic {
   if (hasTile(CHIPSET_TILE_GROUPS.wallLadderObjects, index)) return semantic({ key: "wall_ladder_object", label: "Wall ladder", aiLabel: "Wall ladder: upper-layer passable overlay on house walls.", usage: "decoration", tags: ["ladder", "wall", "passable", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.fruitBoxObjects, index)) return semantic({ key: "fruit_box_object", label: "Fruit box", aiLabel: "Fruit crate pair: left 202 + right 203.", usage: "decoration", tags: ["crate", "fruit", "upper"] });
   if (hasTile(CHIPSET_TILE_GROUPS.woodBoxObjects, index)) return semantic({ key: "wood_box_object", label: "Wood box", aiLabel: "Wooden box prop (237).", usage: "decoration", tags: ["box", "crate", "upper"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.marketRailObjects, index)) {
+    if (index === 468) {
+      return semantic({
+        key: "market_rail_object",
+        label: "Market rail left",
+        aiLabel: "Market/deck upper rail left cap (468). Pair with stretch mid 469 and right 470. Solid upper barrier.",
+        usage: "decoration",
+        tags: ["rail", "fence", "market", "horizontal", "left", "upper", "solid"],
+      });
+    }
+    if (index === 469) {
+      return semantic({
+        key: "market_rail_object",
+        label: "Market rail mid",
+        aiLabel: "Market/deck upper rail middle (469). Stretch unlimited between left 468 and right 470. Solid upper barrier.",
+        usage: "decoration",
+        tags: ["rail", "fence", "market", "horizontal", "body", "stretch", "upper", "solid"],
+      });
+    }
+    return semantic({
+      key: "market_rail_object",
+      label: "Market rail right",
+      aiLabel: "Market/deck upper rail right cap (470). After stretch mid 469. Solid upper barrier.",
+      usage: "decoration",
+      tags: ["rail", "fence", "market", "horizontal", "right", "upper", "solid"],
+    });
+  }
+  if (hasTile(CHIPSET_TILE_GROUPS.stoneStepObjects, index)) {
+    return semantic({
+      key: "stone_step_object",
+      label: "Stone step slab",
+      aiLabel: "Stone step/slab prop (268): upper-layer solid block used as a short step, curb, or market edge accent (map_market_reference gold).",
+      usage: "decoration",
+      tags: ["stone", "step", "slab", "curb", "market", "upper", "solid"],
+    });
+  }
   if (hasTile(CHIPSET_TILE_GROUPS.woodDoorPairObjects, index)) return semantic({ key: "wood_door_object", label: "Wood door", aiLabel: "Wooden door pair: top 116 above bottom 146.", usage: "structure", tags: ["door", "wood", "building"] });
   if (hasTile(CHIPSET_TILE_GROUPS.stoneStairObjects, index)) return semantic({ key: "stone_stair_object", label: "Stone stairs", aiLabel: "Stone stair strip: left 111, stretchable center 112, right 113.", usage: "structure", tags: ["stairs", "stone", "repeat-horizontal"] });
   if (hasTile(CHIPSET_TILE_GROUPS.castleWindowObjects, index)) return semantic({ key: "castle_window_object", label: "Castle window", aiLabel: "Castle window variant (open/closed/broken).", usage: "structure", tags: ["window", "castle"] });
@@ -754,6 +797,10 @@ function koreanTileLabel(key: string, index: number): string {
     235: "가로 탁자 중",
     236: "가로 탁자 우",
     237: "나무 상자",
+    268: "돌단/석판",
+    468: "장터 레일 좌",
+    469: "장터 레일 중",
+    470: "장터 레일 우",
     202: "과일박스 좌",
     203: "과일박스 우",
     116: "나무 문 상",
@@ -839,6 +886,8 @@ function koreanTileLabel(key: string, index: number): string {
     wall_ladder_object: "벽 사다리",
     fruit_box_object: "과일박스",
     wood_box_object: "나무 상자",
+    market_rail_object: "장터 레일",
+    stone_step_object: "돌단/석판",
     wood_door_object: "나무 문",
     stone_stair_object: "돌계단",
     castle_window_object: "성 창문",

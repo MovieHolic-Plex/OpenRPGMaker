@@ -23,12 +23,6 @@ export type LayoutValidateOptions = {
   readonly toolNames?: readonly string[];
 };
 
-/** 침엽수/마른나무 세로 2칸 쌍. */
-const VERTICAL_TREE_PAIRS: readonly { readonly top: number; readonly bottom: number; readonly name: string }[] = [
-  { top: 260, bottom: 290, name: "침엽수" },
-  { top: 261, bottom: 291, name: "마른나무" },
-];
-
 const TREE_TILE_IDS = new Set<number>([
   260, 290, 261, 291,
   262, 263, 292, 293, // 활엽수 2×2

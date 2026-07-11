@@ -27,11 +27,15 @@
   color: var(--text-primary);
   font-size: 12px;
   gap: 3px;
-  grid-template-columns: 14px 14px minmax(0, 1fr) 36px 14px 18px 18px 18px 46px 18px;
+  /* 가로 스크롤 유발하는 과다 컬럼 제거 */
+  grid-template-columns: 14px 14px minmax(0, 1fr) 14px auto;
+  max-width: 100%;
   min-height: 20px;
+  min-width: 0;
   padding-bottom: 1px !important;
   padding-top: 1px !important;
   display: grid;
+  width: 100%;
 }
 
 .left-panel-stack[data-testid="left-map-root"] .map-tree-name {

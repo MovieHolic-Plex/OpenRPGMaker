@@ -85,7 +85,8 @@ export function defaultAiConfig(): AiConfig {
     apiKey: envApiKey(),
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
-    reasoningEffort: "medium",
+    // MiniMax-M3 등은 medium/high에서 추론 토큰이 과도하게 길어질 수 있어 기본은 low.
+    reasoningEffort: "low",
     autoApprove: false,
   };
 }
@@ -133,7 +134,31 @@ export function saveAiConfig(config: AiConfig): void {
 
 export function configForLiteModel(config: AiConfig): AiConfig {
   const liteModel = config.liteModel?.trim() || DEFAULT_LITE_MODEL;
-  return { ...config, model: liteModel, liteModel };
+  // 실행(툴 루프) 단계는 추론 비활성 — 벽시계·비용 폭주 방지.
+  return { ...config, model: liteModel, liteModel, reasoningEffort: "off" };
+}
+
+/** minimax 등 장문 reasoning 모델 탐지. */
+export function isLongReasoningModel(model: string): boolean {
+  return model.trim().toLowerCase().includes("minimax");
+}
+
+/**
+ * 요청 직전 reasoning 정책 적용.
+ * - lite/execute: 이미 off
+ * - MiniMax + medium → low 로 캡(사용자가 high를 고른 경우만 medium까지 허용)
+ * - 그 외는 설정 유지
+ */
+export function configWithReasoningPolicy(config: AiConfig): AiConfig {
+  if (config.reasoningEffort === "off") return config;
+  if (!isLongReasoningModel(config.model)) return config;
+  if (config.reasoningEffort === "medium") {
+    return { ...config, reasoningEffort: "low" };
+  }
+  if (config.reasoningEffort === "high") {
+    return { ...config, reasoningEffort: "medium" };
+  }
+  return config;
 }
 
 // OpenAI tools 배열의 요소 형태(toolRegistry.toOpenAiTools() 결과와 동일 구조).
@@ -197,9 +222,12 @@ function headers(config: AiConfig): Record<string, string> {
 }
 
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
-  const body: Record<string, unknown> = { model: config.model, messages: req.messages, stream, max_tokens: config.maxTokens };
+  const effective = configWithReasoningPolicy(config);
+  const body: Record<string, unknown> = { model: effective.model, messages: req.messages, stream, max_tokens: effective.maxTokens };
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
-  if (config.reasoningEffort && config.reasoningEffort !== "off") body.reasoning = { effort: config.reasoningEffort };
+  if (effective.reasoningEffort && effective.reasoningEffort !== "off") {
+    body.reasoning = { effort: effective.reasoningEffort };
+  }
   return JSON.stringify(body);
 }
 

@@ -11,10 +11,15 @@ import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
-import { buildSystemPrompt, type ContextOptions } from "./contextBuilder";
+import { buildSystemPrompt, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import {
+  formatViewportContextBlock,
+  mapRegionImagePayload,
+} from "./mapViewportContext";
 import {
   chatCompletion,
   configForLiteModel,
+  configWithReasoningPolicy,
   isLlmAbortError,
   isRetryableLlmError,
   LLM_RETRY_BACKOFF_MS,
@@ -546,7 +551,9 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal
   ): Promise<TurnResult> {
-    this.messages.push({ role: "user", content: text });
+    // 매 턴: 에디터 뷰포트 좌표(+가능하면 맵 이미지)를 사용자 메시지에 붙여 "여기" 해석을 빠르게 한다.
+    const userContent = await this.buildUserTurnContent(text);
+    this.messages.push({ role: "user", content: userContent });
     this.pushAudit({ kind: "user", text });
     beginAssistantToolDomainTurn(text);
     this.currentTurnToolDomains = computeActiveToolDomains(text);
@@ -637,7 +644,44 @@ export class AssistantSession {
   }
 
   private phaseConfig(phase: AssistantPhase): AiConfig {
-    return phase === "execute" ? configForLiteModel(this.config) : this.config;
+    const base = phase === "execute" ? configForLiteModel(this.config) : this.config;
+    // MiniMax 등 장문 추론 모델: 정책으로 effort 캡(실행 단계는 추론 off).
+    return configWithReasoningPolicy(base);
+  }
+
+  /** 사용자 텍스트 + 뷰포트 블록 + (브라우저) 뷰포트 맵 이미지. */
+  private async buildUserTurnContent(text: string): Promise<string | ContentPart[]> {
+    const viewport = resolveContextViewport(this.contextOptions);
+    if (!viewport) return text;
+
+    const map = this.ctx.project.maps[viewport.mapId];
+    const mapName = map?.name ?? viewport.mapId;
+    const viewportBlock = formatViewportContextBlock(viewport, mapName);
+    const combinedText = `${viewportBlock}\n\n---\n\n${text}`;
+
+    if (!this.renderImages || !map) return combinedText;
+
+    const payload = mapRegionImagePayload(this.ctx.project, viewport.mapId, viewport);
+    if (!payload) return combinedText;
+
+    try {
+      const images = await this.renderImages(this.ctx.project, "show_map_region", payload);
+      if (images.length === 0) return combinedText;
+      const parts: ContentPart[] = [
+        { type: "text", text: combinedText },
+        {
+          type: "text",
+          text: `아래는 사용자가 지금 보고 있는 맵 화면 근처 미리보기입니다 (${viewport.x},${viewport.y}) ${viewport.w}×${viewport.h}. "여기" 해석 시 이 이미지를 우선하세요.`,
+        },
+      ];
+      for (const image of images) {
+        parts.push({ type: "text", text: image.label });
+        parts.push({ type: "image_url", image_url: { url: image.dataUrl, detail: "low" } });
+      }
+      return parts;
+    } catch {
+      return combinedText;
+    }
   }
 
   private emitPhase(onEvent: (event: SessionEvent) => void, phase: AssistantPhase): void {
@@ -1227,6 +1271,7 @@ function estimateOutputTokens(message: ChatMessage): number {
 }
 
 // 모델에 되돌려줄 툴 결과(자가수정을 위해 issues를 포함).
+// show_map_region 등의 거대한 lower/upper 2D 배열은 컨텍스트를 폭파시키므로 생략한다(이미지는 별도 주입).
 function toolResultForModel(result: ToolResult): Record<string, unknown> {
   return {
     ok: result.ok,
@@ -1234,8 +1279,53 @@ function toolResultForModel(result: ToolResult): Record<string, unknown> {
     diff: result.diff,
     // issues가 있으면 원인을 읽고 인자를 고쳐 재시도하라는 신호.
     issues: result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message })),
-    data: result.data,
+    ...(result.warnings && result.warnings.length > 0 ? { warnings: result.warnings } : {}),
+    data: compactToolDataForModel(result.data),
   };
+}
+
+function compactToolDataForModel(data: unknown): unknown {
+  if (data === null || data === undefined || typeof data !== "object") return data;
+  const rec = data as Record<string, unknown>;
+
+  // 비전 툴: 전체 타일 행렬 생략 (픽셀 이미지가 별도 user 메시지로 감).
+  if (Array.isArray(rec.lower) || Array.isArray(rec.upper)) {
+    const w = typeof rec.w === "number" ? rec.w : undefined;
+    const h = typeof rec.h === "number" ? rec.h : undefined;
+    return {
+      mapId: rec.mapId,
+      x: rec.x,
+      y: rec.y,
+      w,
+      h,
+      tileArraysOmitted: true,
+      note: "lower/upper 타일 배열은 컨텍스트 절약을 위해 생략됨. 같은 턴에 주입된 맵 이미지를 보거나, 좌표는 x/y/w/h·summary를 사용. 호수 위치는 get_map_region의 data.water.bounds를 우선.",
+    };
+  }
+
+  // get_map_region: 과대 그리드는 샘플+water 메타만.
+  if (Array.isArray(rec.grid)) {
+    const grid = rec.grid as string[];
+    const totalChars = grid.reduce((sum, row) => sum + row.length, 0);
+    if (totalChars > 900) {
+      const step = Math.max(1, Math.ceil(Math.sqrt(totalChars / 600)));
+      const sampled = grid.filter((_, index) => index % step === 0).map((row) => {
+        if (row.length <= 40) return row;
+        let out = "";
+        for (let i = 0; i < row.length; i += step) out += row[i];
+        return out;
+      });
+      return {
+        ...rec,
+        grid: sampled,
+        gridSampled: true,
+        gridSampleStep: step,
+        note: "그리드가 커서 샘플링됨. 호수 좌표는 water.bounds를 쓰고, 상세는 작은 영역으로 재조회.",
+      };
+    }
+  }
+
+  return data;
 }
 
 function parseToolCall(call: ToolCall): { name: string; args: Record<string, unknown> } {

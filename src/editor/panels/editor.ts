@@ -217,14 +217,9 @@ export function applyEditorUiModeLayout(): void {
     canvasToolbarRoot.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "basic";
   }
   if (aiChatPanelRoot) {
-    aiChatPanelRoot.dataset.uiDensity = chrome.aiDenseSections ? "expert" : "basic";
-    if (chrome.aiDenseSections) {
-      aiChatPanelRoot.classList.add("ai-density-expert");
-      aiChatPanelRoot.classList.remove("ai-density-basic");
-    } else {
-      aiChatPanelRoot.classList.add("ai-density-basic");
-      aiChatPanelRoot.classList.remove("ai-density-expert");
-    }
+    // AI 표면은 에디터 basic/expert와 무관 — 항상 공유 UI.
+    aiChatPanelRoot.dataset.uiDensity = "shared";
+    aiChatPanelRoot.classList.remove("ai-density-expert", "ai-density-basic");
   }
   // Re-render left/map chrome so palette tabs match density; keep event layer path live.
   // 맵 트리는 basic에서도 표시(맵 전환) — 숨기지 않는다.

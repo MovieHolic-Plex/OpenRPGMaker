@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AI_CONFIG_STORAGE_KEY, chatCompletion, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
+import {
+  AI_CONFIG_STORAGE_KEY,
+  chatCompletion,
+  configForLiteModel,
+  configWithReasoningPolicy,
+  defaultAiConfig,
+  loadAiConfig,
+} from "@/ai/llmClient";
 
 type ResponseLike = Pick<Response, "body" | "json" | "ok" | "status" | "text">;
 type FetchStub = (input: RequestInfo | URL, init?: RequestInit) => Promise<ResponseLike>;
@@ -84,16 +91,43 @@ function installLocalStorage(value: unknown): void {
 }
 
 describe("OpenRouter reasoning 요청", () => {
-  it("reasoningEffort가 high이면 요청 본문에 reasoning effort를 넣는다", async () => {
-    // Given: reasoning을 켠 OpenRouter 설정.
+  it("비-minimax 모델에서 reasoningEffort high면 요청 본문에 high를 넣는다", async () => {
     const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
-    const config = { ...defaultAiConfig(), apiKey: "sk-test", reasoningEffort: "high" as const };
+    const config = {
+      ...defaultAiConfig(),
+      apiKey: "sk-test",
+      model: "openai/gpt-4o",
+      reasoningEffort: "high" as const,
+    };
 
-    // When: 실제 chatCompletion 경로로 요청한다.
     await chatCompletion(config, { messages: [{ role: "user", content: "hi" }] });
 
-    // Then: fetch에 전달된 JSON에 reasoning effort가 포함된다.
     expect(sentBody(fetchMock)).toMatchObject({ reasoning: { effort: "high" } });
+  });
+
+  it("minimax + medium 설정은 요청 시 low로 캡한다(장문 추론 완화)", async () => {
+    const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
+    const config = {
+      ...defaultAiConfig(),
+      apiKey: "sk-test",
+      model: "minimax/minimax-m3",
+      reasoningEffort: "medium" as const,
+    };
+
+    await chatCompletion(config, { messages: [{ role: "user", content: "hi" }] });
+
+    expect(sentBody(fetchMock)).toMatchObject({ reasoning: { effort: "low" } });
+  });
+
+  it("configForLiteModel은 reasoning을 off로 끈다", () => {
+    const lite = configForLiteModel({
+      ...defaultAiConfig(),
+      model: "minimax/minimax-m3",
+      liteModel: "google/gemini-3.1-flash-lite",
+      reasoningEffort: "high",
+    });
+    expect(lite.reasoningEffort).toBe("off");
+    expect(configWithReasoningPolicy(lite).reasoningEffort).toBe("off");
   });
 
   it("reasoningEffort가 off이면 요청 본문에 reasoning 키를 넣지 않는다", async () => {
@@ -160,23 +194,15 @@ describe("AI reasoning 설정 로드", () => {
     expect(config.reasoningEffort).toBe("low");
   });
 
-  it("잘못된 reasoningEffort는 medium으로 되돌린다", () => {
-    // Given: localStorage에 지원하지 않는 값이 저장되어 있다.
+  it("잘못된 reasoningEffort는 기본(low)으로 되돌린다", () => {
     installLocalStorage({ reasoningEffort: "max" });
-
-    // When: 설정을 로드한다.
     const config = loadAiConfig();
-
-    // Then: 기본 reasoning effort를 쓴다.
-    expect(config.reasoningEffort).toBe("medium");
+    expect(config.reasoningEffort).toBe("low");
   });
 
-  it("기본 reasoningEffort는 medium이다", () => {
-    // Given/When: 기본 설정을 만든다.
+  it("기본 reasoningEffort는 low이다(MiniMax 장문 추론 완화)", () => {
     const config = defaultAiConfig();
-
-    // Then: OpenRouter thinking 기본값은 medium이다.
-    expect(config.reasoningEffort).toBe("medium");
+    expect(config.reasoningEffort).toBe("low");
   });
 });
 

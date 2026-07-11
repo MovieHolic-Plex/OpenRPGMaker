@@ -288,10 +288,34 @@
   background: transparent;
   display: grid;
   gap: 14px;
+  /* 정확히 2 자식: 페이지 탭 스트립 + settings-main (조건/그래픽/스케줄) */
   grid-template-columns: 54px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
   overflow: hidden;
   padding: 0;
+}
+
+.event-editor-settings-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.event-editor-settings-main .event-page-props {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.event-editor-settings-main .event-schedule-section {
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .event-page-number-tabs {
@@ -299,8 +323,10 @@
   align-items: stretch;
   display: grid;
   gap: 10px;
+  grid-row: 1 / -1;
   margin: 0;
   min-height: 0;
+  overflow: auto;
   padding: 0;
 }
 
@@ -771,15 +797,25 @@
   grid-row: 1;
 }
 
-/* [중간-6] 삭제(파괴적 동작)를 좌측으로 분리: 설정 / 삭제 / (여백) / 확인·취소·적용·도움말 */
+/* [중간-6] 푸터 자식 순서: draft-status | 설정 | 삭제 | 확인·취소·적용·도움말 (4칸 — 3칸이면 status가 48px에 찌그러짐) */
 .event-editor-modal-footer {
   align-items: center;
   background: var(--bg-raised);
   border-top: 1px solid var(--border-subtle);
   display: grid;
   gap: 12px;
-  grid-template-columns: 48px auto minmax(0, 1fr);
-  padding: 0 25px;
+  grid-template-columns: minmax(160px, 1.2fr) 48px auto minmax(0, 1.6fr);
+  min-height: 56px;
+  padding: 8px 25px;
+}
+
+.event-editor-draft-status {
+  color: var(--event-modern-text-soft, var(--text-2));
+  font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-editor-footer-danger {

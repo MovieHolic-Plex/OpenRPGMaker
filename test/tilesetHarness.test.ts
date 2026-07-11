@@ -83,6 +83,28 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(group("cemetery-props")?.tileIds).toEqual([323, 353, 383]);
     expect(group("table-horizontal")?.tileIds).toEqual([234, 235, 236]);
     expect(group("table-vertical")?.tileIds).toEqual([144, 174, 204]);
+    expect(group("wood-floor-deck")?.tileIds).toEqual(CHIPSET_TILE_GROUPS.woodFloorBody);
+    expect(group("wood-floor-deck")).toMatchObject({
+      role: "terrain",
+      defaultLayer: "lower",
+      source: "bundled-default",
+    });
+    expect(group("timber-post-rail")?.tileIds).toEqual([...CHIPSET_TILE_GROUPS.timberPostStructureObjects]);
+    expect(group("timber-post-rail")?.defaultLayer).toBe("lower");
+    expect(tileset.priority[222]).toBe("lower");
+    expect(passageMarkForTile(tileset, 222)).not.toBe("x");
+    expect(passageMarkForTile(tileset, 223)).toBe("x");
+    expect(tileset.tileMeta?.[222]?.label).toBe("나무 바닥 바디");
+    expect(tileset.tileMeta?.[223]?.label).toBe("목조 난간 바디");
+    expect(group("market-rail-upper")?.tileIds).toEqual([468, 469, 470]);
+    expect(group("market-rail-upper")?.patternGrammar?.kind).toBe("horizontal_expandable");
+    expect(group("stone-step-slab")?.tileIds).toEqual([268]);
+    expect(tileset.priority[468]).toBe("upper");
+    expect(tileset.priority[268]).toBe("upper");
+    expect(passageMarkForTile(tileset, 468)).toBe("x");
+    expect(passageMarkForTile(tileset, 268)).toBe("x");
+    expect(tileset.tileMeta?.[468]?.label).toBe("장터 레일 좌");
+    expect(tileset.tileMeta?.[268]?.label).toBe("돌단/석판");
     expect(group("wood-door")?.tileIds).toEqual([116, 146]);
     expect(group("stone-stairs")?.tileIds).toEqual([111, 112, 113]);
     expect(group("wall-ladder")?.tileIds).toEqual([322]);

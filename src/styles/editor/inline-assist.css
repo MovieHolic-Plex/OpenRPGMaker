@@ -1,7 +1,10 @@
 /* src/styles/editor/inline-assist.css
    캔버스 인라인 어시스트 — 선택 액션 칩, 제안 인라인 승인, 영역 작업 진행 배지. */
 
-.selection-action-chips {
+/* 선택 영역 인라인 칩: phaser-container 안에서 absolute 오버레이.
+   position 없으면 flex 형제로 캔버스를 밀고 left/top이 무시된다. */
+.selection-action-chips,
+.selection-action-chips.build-palette-floating {
   align-items: center;
   background: var(--editor-popover-bg, #151b2c);
   border: 1px solid var(--editor-line-strong, #3a4a6a);
@@ -9,7 +12,12 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   display: inline-flex;
   gap: 4px;
+  left: 0;
   padding: 4px 6px;
+  pointer-events: auto;
+  position: absolute;
+  top: 0;
+  z-index: 30;
 }
 
 .selection-action-chip {

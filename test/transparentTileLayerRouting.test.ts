@@ -18,14 +18,15 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 const BENCH = 357;
 const SLOPED_ROOF = 385;
-const CONIFER = 290;
+const CONIFER_CANOPY = 260; // 투명 수관 — 상위
+const CONIFER_TRUNK = 290; // 투명 밑동 — 숲 스택을 위해 하위 유지
 const STRAIGHT_ROOF = 404; // 불투명 직선 지붕면 — 하위 유지.
 const WATER = TILE.WATER; // 120 — 불투명 오토타일, 하위 유지.
 
 describe("투명 칩 데이터/분류", () => {
   it("생성된 투명 타일 목록이 스프라이트형 칩을 포함하고 지면 칩은 제외한다", () => {
     const set = new Set(COMBINED_TOWN_TRANSPARENT_TILES);
-    for (const tile of [BENCH, SLOPED_ROOF, CONIFER]) expect(set.has(tile), `타일 ${tile}`).toBe(true);
+    for (const tile of [BENCH, SLOPED_ROOF, CONIFER_CANOPY, CONIFER_TRUNK]) expect(set.has(tile), `타일 ${tile}`).toBe(true);
     for (const tile of [TILE.GRASS, WATER, STRAIGHT_ROOF]) expect(set.has(tile), `타일 ${tile}`).toBe(false);
     expect(isTransparentChipsetTile(SLOPED_ROOF)).toBe(true);
     expect(isUpperChipsetTile(SLOPED_ROOF)).toBe(true);
@@ -33,14 +34,26 @@ describe("투명 칩 데이터/분류", () => {
 
   it("새 타일셋에서 투명 칩은 priority=upper, 홈 레이어=upper, 하위 팔레트에서 숨김", () => {
     const tileset = defaultTileset();
-    for (const tile of [BENCH, SLOPED_ROOF, CONIFER]) {
+    for (const tile of [BENCH, SLOPED_ROOF, CONIFER_CANOPY]) {
       expect(tileset.priority[tile], `priority[${tile}]`).toBe("upper");
       expect(tileLayerHome(tileset, tile), `home[${tile}]`).toBe("upper");
       expect(tileVisibleOnLayer(tileset, tile, "lower"), `팔레트 하위[${tile}]`).toBe(false);
       expect(tileVisibleOnLayer(tileset, tile, "upper"), `팔레트 상위[${tile}]`).toBe(true);
     }
+    // 나무 밑동은 투명해도 하위(수관과 같은 칸 스택)
+    expect(tileLayerHome(tileset, CONIFER_TRUNK)).toBe("lower");
+    expect(tileVisibleOnLayer(tileset, CONIFER_TRUNK, "lower")).toBe(true);
     // 불투명 직선 지붕면은 여전히 하위가 홈이다.
     expect(tileLayerHome(tileset, STRAIGHT_ROOF)).toBe("lower");
+  });
+
+  it("텐트(448)는 상위 오버레이 — 상위 팔레트에 보이고 칠하면 잔디(lower)를 지우지 않는다", () => {
+    const TENT = 448;
+    const tileset = defaultTileset();
+    expect(isUpperChipsetTile(TENT)).toBe(true);
+    expect(tileLayerHome(tileset, TENT)).toBe("upper");
+    expect(tileVisibleOnLayer(tileset, TENT, "upper")).toBe(true);
+    expect(tileVisibleOnLayer(tileset, TENT, "lower")).toBe(false);
   });
 
   it("저장된 프로젝트 치유: 예전 분류로 lower로 남은 priority를 로드 시 upper로 승격한다", () => {

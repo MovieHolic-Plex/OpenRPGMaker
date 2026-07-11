@@ -14,6 +14,7 @@ import { projectWithoutEventDrafts } from "./eventDrafts";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
+import { repairMapTreeOrphans } from "@/editor/mapTreeActions";
 import type { GameMap, MapId, Project } from "./types";
 
 export type ProjectChangeCell = {
@@ -218,6 +219,7 @@ class ProjectStore {
     const draft: Project = structuredClone(this.current);
     mutator(draft);
     ensureProjectMapConnections(draft);
+    ensureMapTreeCoversAllMaps(draft);
     ensureSwitchVariableSlots(draft);
     removeLegacySpriteReferences(draft);
     this.current = draft;
@@ -375,6 +377,7 @@ class ProjectStore {
   private async normalizeCurrentProject(): Promise<void> {
     const changed = [
       ensureProjectMapConnections(this.current),
+      ensureMapTreeCoversAllMaps(this.current),
       ensureSwitchVariableSlots(this.current),
       ensureBundledTilesets(this.current),
       repairInteriorTransparentPropLayers(this.current),
@@ -400,6 +403,10 @@ function ensureProjectMapConnections(project: Project): boolean {
   if (Array.isArray(project.mapConnections)) return false;
   project.mapConnections = [];
   return true;
+}
+
+function ensureMapTreeCoversAllMaps(project: Project): boolean {
+  return repairMapTreeOrphans(project);
 }
 
 function autoSaveStateForFlushResult(result: ProjectFlushResult): AutoSaveState {

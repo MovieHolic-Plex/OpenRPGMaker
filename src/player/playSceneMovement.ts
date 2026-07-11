@@ -217,6 +217,12 @@ function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
   const nx = scene.tileX + delta.x;
   const ny = scene.tileY + delta.y;
   if (!canMove(store.getCurrent(), scene.map, scene.tileX, scene.tileY, nx, ny)) return false; // 막히면 건너뜀
+  // Force-move routes still respect same-as-characters solid events (RM2K3 character collision).
+  const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
+  if (blockingEvent) {
+    firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
+    return false;
+  }
   scene.dashing = false;
   scene.movingFrom = { x: scene.tileX, y: scene.tileY };
   scene.movingTo = { x: nx, y: ny };
