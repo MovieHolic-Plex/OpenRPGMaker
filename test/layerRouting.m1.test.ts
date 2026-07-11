@@ -111,6 +111,51 @@ describe("eraseVisibleTile — 지우개 무반응 버그 회귀(2026-07-08)", (
     expect(lowerAt(map, 5, 5)).toBe(TILE.EMPTY);
     expect(upperAt(map, 5, 5)).toBe(TILE.FLOWERS);
   });
+
+  it("수관(upper)을 지우면 밑동(lower)까지 같이 지워 repair 복구를 막는다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId];
+    // 침엽수: 밑동 lower (8,10)=290, 수관 upper (8,9)=260
+    map.lowerTiles[10 * map.width + 8] = 290;
+    map.upperTiles[9 * map.width + 8] = 260;
+
+    eraseVisibleTile(mapId, "upper", 8, 9);
+
+    const after = currentMap();
+    expect(upperAt(after, 8, 9)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 8, 10)).toBe(TILE.EMPTY);
+  });
+
+  it("밑동(lower)을 지우면 수관(upper)도 같이 지운다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId];
+    map.lowerTiles[12 * map.width + 6] = 290;
+    map.upperTiles[11 * map.width + 6] = 260;
+
+    eraseVisibleTile(mapId, "lower", 6, 12);
+
+    const after = currentMap();
+    expect(lowerAt(after, 6, 12)).toBe(TILE.EMPTY);
+    expect(upperAt(after, 6, 11)).toBe(TILE.EMPTY);
+  });
+
+  it("활엽수 2×2 수관 한쪽을 지우면 2×2 전체가 비워진다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId];
+    // (4,5)(5,5) canopy 262|263, (4,6)(5,6) trunk 292|293
+    map.upperTiles[5 * map.width + 4] = 262;
+    map.upperTiles[5 * map.width + 5] = 263;
+    map.lowerTiles[6 * map.width + 4] = 292;
+    map.lowerTiles[6 * map.width + 5] = 293;
+
+    eraseVisibleTile(mapId, "upper", 4, 5);
+
+    const after = currentMap();
+    expect(upperAt(after, 4, 5)).toBe(TILE.EMPTY);
+    expect(upperAt(after, 5, 5)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 4, 6)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 5, 6)).toBe(TILE.EMPTY);
+  });
 });
 
 describe("editorState 레이어 전환", () => {

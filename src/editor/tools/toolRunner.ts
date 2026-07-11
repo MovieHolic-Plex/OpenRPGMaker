@@ -81,6 +81,7 @@ export function runTool(
         ok: true,
         summary: exec.summary,
         ...(exec.issues && exec.issues.length > 0 ? { issues: exec.issues } : {}),
+        ...(exec.warnings && exec.warnings.length > 0 ? { warnings: exec.warnings } : {}),
         data: exec.data,
       };
     } catch (cause) {

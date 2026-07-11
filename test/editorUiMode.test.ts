@@ -86,7 +86,8 @@ describe("editorUiMode", () => {
     // Event editing is not gated off by chrome flags — layers/tools stay in shared shell.
     expect(expert.mapTree).toBe(true);
     expect(expert.classicToolbar).toBe(true);
-    expect(expert.aiDenseSections).toBe(true);
+    // AI assistant chrome is mode-agnostic (same surface for basic/expert).
+    expect(expert.aiDenseSections).toBe(false);
     expect(expert.helpMenu).toBe(true);
   });
 

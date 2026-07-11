@@ -5,7 +5,8 @@
 import { TOOL_REGISTRY } from "./toolRegistry";
 import type { JsonSchema, JsonSchemaType, ToolDefinition } from "./types";
 
-function typeSummary(type: JsonSchemaType | readonly JsonSchemaType[]): string {
+function typeSummary(type: JsonSchemaType | readonly JsonSchemaType[] | undefined): string {
+  if (type === undefined) return "any";
   return (Array.isArray(type) ? type : [type]).join("\\|");
 }
 
@@ -16,7 +17,11 @@ function paramSummary(schema: JsonSchema): string {
   return props
     .map(([name, prop]) => {
       const mark = required.has(name) ? "" : "?";
-      const type = prop.enum ? prop.enum.join("\\|") : typeSummary(prop.type);
+      const type = prop.enum
+        ? prop.enum.join("\\|")
+        : prop.oneOf
+          ? "oneOf"
+          : typeSummary(prop.type);
       return `\`${name}${mark}: ${type}\``;
     })
     .join(", ");

@@ -2,12 +2,13 @@
 // place_npc 등이 받는 고수준 입력(SimplePage/graphic.query)을 EventPage/graphic으로 컴파일한다.
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
+import { faceGraphicFromEventGraphic, faceGraphicForCharset } from "@/assets/charsetFaceMap";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { npcGraphicExampleLabels, resolveNpcGraphic } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
-import type { Command, EventPage, EventPageCondition, EventPageGraphic } from "@/project/types";
+import type { Command, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic } from "@/project/types";
 import { ToolError } from "./types";
 import type { SimplePage } from "./types";
 
@@ -21,6 +22,10 @@ type EventCompileOptions = {
   readonly priority?: EventPage["priority"];
   readonly warnings?: string[];
   readonly path?: string;
+  /** 대화 시 표시할 페이스. 생략 시 graphic charset에서 자동 매핑. */
+  readonly face?: FaceGraphic | null;
+  /** false면 changeFace를 넣지 않음(기본 true: NPC 대사는 페이스 필수). */
+  readonly injectFace?: boolean;
 };
 
 type RecordValue = Record<string, unknown>;
@@ -303,7 +308,31 @@ export function compileSimplePage(
 ): EventPage {
   const path = options.path ?? "page";
   const commands: Command[] = [];
-  for (const line of pageLines(page)) commands.push(textCommand(name, line));
+  const lines = pageLines(page);
+  const hasText = lines.length > 0
+    || (page.choices && page.choices.length > 0)
+    || (page.commands && page.commands.length > 0);
+  // NPC 대화에 페이스 칩셋 필수 — graphic charset → faceset 자동 매핑 (명시 face 우선)
+  const injectFace = options.injectFace !== false;
+  if (injectFace && hasText) {
+    const face = options.face
+      ?? faceFromSimplePage(page)
+      ?? faceGraphicFromEventGraphic(graphic);
+    if (face) {
+      commands.push({
+        kind: "changeFace",
+        resourceId: face.resourceId,
+        faceIndex: face.faceIndex,
+        position: face.position ?? "left",
+        flipHorizontally: face.flipHorizontally ?? false,
+      });
+    } else {
+      options.warnings?.push(
+        `NPC '${name}' 페이스 매핑 실패 — charset graphic에 대응 faceset이 없다. graphic을 people1/2·actor1/2로 지정하라.`,
+      );
+    }
+  }
+  for (const line of lines) commands.push(textCommand(name, line));
   if (page.choices && page.choices.length > 0) {
     commands.push({
       kind: "choices",
@@ -327,6 +356,27 @@ export function compileSimplePage(
     movement: options.movement ?? PASSIVE_MOVEMENT,
     commands,
   };
+}
+
+function faceFromSimplePage(page: SimplePage): FaceGraphic | null {
+  const raw = page.face;
+  if (!raw || typeof raw !== "object") return null;
+  const rec = raw as Record<string, unknown>;
+  if (typeof rec.resourceId === "string" && rec.resourceId.trim()) {
+    return {
+      resourceId: rec.resourceId.trim(),
+      faceIndex: typeof rec.faceIndex === "number" ? rec.faceIndex : 0,
+      position: rec.position === "right" ? "right" : "left",
+      flipHorizontally: rec.flipHorizontally === true,
+    };
+  }
+  if (typeof rec.textureKey === "string") {
+    return faceGraphicForCharset(
+      rec.textureKey,
+      typeof rec.characterIndex === "number" ? rec.characterIndex : 0,
+    );
+  }
+  return null;
 }
 
 export { PASSIVE_MOVEMENT };

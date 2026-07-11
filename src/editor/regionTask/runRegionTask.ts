@@ -21,6 +21,7 @@ import {
 } from "@/editor/agentGhostPreview";
 import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
@@ -146,7 +147,13 @@ const defaultDeps: RegionTaskDeps = {
   },
   createSession: (project, mapId) => new AssistantSession(project, {
     config: configForLiteModel(loadAiConfig()),
-    contextOptions: { currentMapId: mapId },
+    contextOptions: {
+      currentMapId: mapId,
+      getViewport: () => {
+        const snap = getEditorMapViewport();
+        return snap?.mapId === mapId ? snap : null;
+      },
+    },
   }),
 };
 

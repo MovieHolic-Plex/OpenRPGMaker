@@ -191,6 +191,163 @@ body.editor-ui-basic .left-panel-stack {
   z-index: 60;
 }
 
+/* 맵 플라이아웃: 이름 목록이 읽히도록 조금 넓게 */
+.basic-rail-flyout.is-maps {
+  width: min(340px, calc(100vw - 64px));
+}
+
+/* 타일 시트 플라이아웃: 작은 창에서도 시트를 넓게 */
+.basic-rail-flyout.is-tiles {
+  width: min(420px, calc(100vw - 64px));
+  max-height: min(78vh, calc(100% - 8px));
+}
+
+.basic-rail-flyout.is-tiles .basic-flyout-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 8px 10px 10px;
+}
+
+.basic-rail-flyout.is-tiles .basic-flyout-content,
+.basic-rail-flyout.is-tiles .basic-rail-section {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.basic-rail-flyout.is-tiles .basic-tile-grid {
+  flex: 1 1 auto;
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  max-height: min(56vh, 480px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 짧은 뷰포트: 맵 트리가 시트 공간을 잡아먹지 않게 */
+@media (max-height: 720px) {
+  .left-panel-stack[data-testid="left-map-root"] {
+    max-height: min(140px, 22vh);
+    min-height: 72px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] {
+    min-height: 0;
+  }
+}
+
+/* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통) */
+.editor-layout .left-panel {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.editor-layout .left-panel-stack {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.left-panel-stack[data-testid="left-palette-root"],
+.left-panel-stack[data-testid="left-map-root"] {
+  overflow-x: hidden !important;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet,
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  width: 100% !important;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* 시트 크게 보기 팝오버 */
+.chipset-sheet-popout-backdrop {
+  background: rgba(6, 10, 20, 0.55);
+  inset: 0;
+  position: fixed;
+  z-index: 1200;
+}
+
+.chipset-sheet-popout {
+  background: var(--editor-popover-bg, #151b2c);
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  max-height: min(88vh, 900px);
+  max-width: min(720px, calc(100vw - 24px));
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, calc(100vw - 24px));
+  z-index: 1201;
+}
+
+.chipset-sheet-popout-head {
+  align-items: center;
+  border-bottom: 1px solid var(--editor-line, #2a3550);
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.chipset-sheet-popout-head h2 {
+  color: var(--editor-text, #e8eefc);
+  flex: 1 1 auto;
+  font: 700 14px/1.2 var(--font-ui, system-ui, sans-serif);
+  margin: 0;
+}
+
+.chipset-sheet-popout-body {
+  container-type: inline-size;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 12px 14px;
+}
+
+.chipset-sheet-popout-body .chipset-sheet.tile-palette {
+  border: 0;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
+}
+
+.chipset-sheet-popout-body .chipset-grid {
+  --chipset-cell: clamp(32px, calc((100cqw - 16px) / 10), 48px);
+  grid-template-columns: repeat(auto-fill, minmax(var(--chipset-cell), 1fr));
+  width: 100%;
+}
+
+.palette-sheet-tools {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin: 0 0 6px;
+}
+
+.palette-sheet-tools .btn {
+  font-size: 11px;
+  height: 26px;
+  padding: 0 10px;
+}
+
 .basic-flyout-head {
   align-items: center;
   border-bottom: 1px solid var(--editor-line, #2a3550);
@@ -237,7 +394,171 @@ body.editor-ui-basic .left-panel-stack {
 .basic-flyout-map-host {
   display: flex;
   flex-direction: column;
-  min-height: 160px;
+  gap: 0;
+  min-height: 120px;
+}
+
+/* ── Basic map list (not expert left-panel chrome) ─────────────── */
+
+.basic-flyout-map-host .map-tree-panel.is-basic-flyout {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.basic-flyout-map-host .map-tree-header-basic {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.basic-flyout-map-host .map-tree-basic-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.basic-flyout-map-host .map-tree-basic-count {
+  color: var(--editor-text, #e8eefc);
+  font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+.basic-flyout-map-host .map-tree-basic-hint {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+.basic-flyout-map-host .map-tree-basic-add {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 22%, #1a2236);
+  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 50%, transparent);
+  border-radius: 9px;
+  color: #fff;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
+  height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.basic-flyout-map-host .map-tree-basic-add:hover,
+.basic-flyout-map-host .map-tree-basic-add:focus-visible {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 38%, #1a2236);
+  outline: none;
+}
+
+.basic-flyout-map-host .map-tree-list-basic {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  padding: 2px 0 4px;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic {
+  align-items: center;
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 88%, #000);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 22px 16px minmax(0, 1fr) auto 28px;
+  min-height: 40px;
+  padding: 6px 8px 6px 6px !important;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic:hover,
+.basic-flyout-map-host .map-item.map-item-basic:focus-visible {
+  border-color: var(--editor-line-strong, #3a4a6a);
+  outline: none;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic.active {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, #1a2236);
+  border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 30%, transparent);
+  font-weight: 600;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 13px/1.25 var(--font-ui, system-ui, sans-serif);
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-icon {
+  font-size: 12px;
+  opacity: 0.85;
+  width: 14px;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-toggle {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--editor-text-muted, #9aa8c7);
+  cursor: pointer;
+  display: inline-flex;
+  height: 26px;
+  justify-content: center;
+  padding: 0;
+  width: 22px;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-toggle:hover:not(:disabled) {
+  background: color-mix(in srgb, #fff 8%, transparent);
+  color: var(--editor-text, #e8eefc);
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .start-mark.is-start {
+  background: color-mix(in srgb, #e8b84a 22%, transparent);
+  border: 1px solid color-mix(in srgb, #e8b84a 45%, transparent);
+  border-radius: 999px;
+  color: #f3d98a;
+  font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 4px 7px;
+  white-space: nowrap;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-more {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--editor-text-muted, #9aa8c7);
+  cursor: pointer;
+  font: 700 16px/1 var(--font-ui, system-ui, sans-serif);
+  height: 28px;
+  letter-spacing: 0.02em;
+  width: 28px;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-more:hover,
+.basic-flyout-map-host .map-item.map-item-basic .map-tree-more:focus-visible {
+  background: color-mix(in srgb, #fff 10%, transparent);
+  border-color: var(--editor-line-strong, #3a4a6a);
+  color: var(--editor-text, #e8eefc);
+  outline: none;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic.drop-target {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 18%, #1a2236);
+  outline: 1px dashed color-mix(in srgb, var(--editor-blue, #3d6df0) 70%, transparent);
+  outline-offset: -2px;
+}
+
+.basic-flyout-map-host .map-item.map-item-basic.dragging {
+  opacity: 0.65;
 }
 
 .basic-rail-section {

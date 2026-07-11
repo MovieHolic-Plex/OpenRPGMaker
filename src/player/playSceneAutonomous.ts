@@ -7,7 +7,7 @@ import {
   movementDeltaForCommand,
   nextMoveCommandForScene,
 } from "@/player/playSceneAutonomousCommands";
-import { canNpcMove } from "@/player/playSceneAutonomousMapActions";
+import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousMapActions";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
@@ -61,13 +61,14 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     const nx = position.x + movement.x;
     const ny = position.y + movement.y;
     const frameDir = applyFacing(mover, movement.face);
-    if (!movement.jump && nx === scene.tileX && ny === scene.tileY && !mover.through) {
+    // eventTouch fires when the event tries to step onto the player (including mid-move destination).
+    if (!movement.jump && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       completeRouteCommand(mover);
       continue;
     }
-    if (canNpcMove({ project, scene, mover, from: position, to: { x: nx, y: ny } }, movement)) {
+    if (canNpcMove({ project, scene, mover, eventId, from: position, to: { x: nx, y: ny } }, movement)) {
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
       mover.activeMove = { fromX: position.x, fromY: position.y, toX: nx, toY: ny, dir: frameDir, baseFrame, elapsedMs: 0 };
       if (sprite) {
@@ -113,6 +114,12 @@ function updateChaseNpc(
   }
   const frameDir = applyFacing(mover, decision.dir);
   if (decision.kind === "touch") {
+    fireEventTouch(scene, eventId, view.trigger.kind);
+    setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+    return;
+  }
+  // Chase pathfinding only sees the player's committed tile. Mid-move destination still blocks.
+  if (!mover.through && isPlayerOccupyingTile(scene, decision.x, decision.y)) {
     fireEventTouch(scene, eventId, view.trigger.kind);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;

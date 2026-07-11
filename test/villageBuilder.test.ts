@@ -30,6 +30,14 @@ interface VillageData {
   readonly mapId: string;
   readonly bounds?: { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
   readonly housesBuilt: number;
+  readonly fencesEnabled?: boolean;
+  readonly fencedHouses?: number;
+  readonly fenceTiles?: number;
+  readonly pathStyle?: string;
+  readonly theme?: string;
+  readonly planId?: string;
+  readonly decorEnabled?: boolean;
+  readonly decorPlaced?: number;
   readonly doorsConnected: number;
   readonly roadComponents: number;
   readonly npcCount: number;
@@ -100,9 +108,231 @@ describe("build_village", () => {
     expect(data.npcCount).toBe(10);
     expect(data.interiorCount).toBe(8);
     expect(data.doorEventCount).toBe(8);
+    expect(data.fencesEnabled).toBe(true);
+    expect(data.fencedHouses).toBe(8);
+    expect((data.fenceTiles ?? 0) > 0).toBe(true);
+    expect(data.pathStyle).toBe("sand");
+    expect(data.decorEnabled).toBe(true);
+    expect((data.decorPlaced ?? 0) > 0).toBe(true);
     // 문 타일 무결성: 진입로가 집을 관통해 문을 덮으면 146 개수가 줄어든다 (회귀 방지).
     expect(map.lowerTiles.filter((tile) => tile === 146)).toHaveLength(8);
     expect(map.lowerTiles.filter((tile) => tile === 116)).toHaveLength(8);
+    // 울타리 타일(상단 오버레이)이 실제 배치됐는지.
+    const fenceTiles = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
+    expect(map.upperTiles.some((tile) => fenceTiles.has(tile))).toBe(true);
+  });
+
+  it("pathStyle:dirt 로 흙길을 쓸 수 있다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("마을 흙길") };
+    const result = runTool(context, "build_village", { seed: 7, pathStyle: "dirt", decor: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = villageData(result.data);
+    expect(data.pathStyle).toBe("dirt");
+    expect(data.doorsConnected).toBe(8);
+    expect(data.roadComponents).toBe(1);
+  });
+
+  it("theme/housePlans 의도를 받아 집 수와 키트에 반영한다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("의도 마을") };
+    const result = runTool(context, "build_village", {
+      seed: 3,
+      theme: "강가 어촌 장터",
+      housePlans: [
+        { kitId: "bright-plaster", yard: ["fruit_box", "bench_h"] },
+        { kitId: "blue-stone", yard: ["mailbox", "flowers"] },
+        { kitId: "bright-plaster", yard: ["wood_box"] },
+        { kitId: "blue-stone", yard: ["firewood", "pot"] },
+      ],
+      npcs: [{ name: "어부", lines: ["파도가 잔잔하다."] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = villageData(result.data);
+    expect(data.housesBuilt).toBe(4);
+    expect(data.pathStyle).toBe("sand");
+    expect(data.theme).toBe("강가 어촌 장터");
+    const kits = data.houses.map((house) => house.kitId);
+    expect(kits).toEqual(["bright-plaster", "blue-stone", "bright-plaster", "blue-stone"]);
+    expect(data.houses[0]?.ownerName).toBe("어부");
+  });
+
+  it("강촌마을 쿼리는 강+숲 필수 스펙을 뽑고 맵에 수역·나무를 깐다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("강촌") };
+    const planned = runTool(context, "plan_village", {
+      theme: "강촌마을",
+      seed: 9,
+      houses: [
+        { kitId: "blue-stone", yard: ["mailbox"] },
+        { kitId: "bright-plaster", yard: ["flowers"] },
+        { kitId: "blue-stone", yard: ["pot"] },
+        { kitId: "bright-plaster", yard: ["jar"] },
+      ],
+    });
+    expect(planned.ok, planned.summary).toBe(true);
+    const plan = (planned.data as { plan: { requirements: { landmarks: string[]; mustExist: string[] } } }).plan;
+    expect(plan.requirements.landmarks).toEqual(expect.arrayContaining(["river", "forest"]));
+    expect(plan.requirements.mustExist.some((line) => line.includes("강"))).toBe(true);
+    expect(plan.requirements.mustExist.some((line) => line.includes("숲"))).toBe(true);
+
+    const built = runTool(context, "build_village", {
+      planId: (planned.data as { planId: string }).planId,
+    });
+    expect(built.ok, built.summary).toBe(true);
+    const data = villageData(built.data);
+    const map = context.project.maps[data.mapId];
+    const waterish = map.lowerTiles.filter((tile) => tile === 120 || tile === 150 || tile === 180 || tile === 210 || (tile >= 0 && tile <= 210 && [0, 30, 60, 90, 120, 150, 180, 210].includes(tile % 30 === 0 ? tile : -1))).length;
+    // 수역 타일이 의미 있게 깔렸는지(오토타일 변형 포함) — evaluate 메트릭으로 재판정
+    const look = runTool(context, "evaluate_village_look", {
+      mapId: data.mapId,
+      planId: (planned.data as { planId: string }).planId,
+    });
+    expect(look.ok, look.summary).toBe(true);
+    const report = look.data as {
+      ok: boolean;
+      metrics: { waterCells: number; treeCells: number };
+      requirementsMet?: { kind: string; ok: boolean }[];
+    };
+    expect(report.metrics.waterCells).toBeGreaterThanOrEqual(30);
+    expect(report.metrics.treeCells).toBeGreaterThanOrEqual(20);
+    expect(report.requirementsMet?.find((r) => r.kind === "river")?.ok).toBe(true);
+    expect(report.requirementsMet?.find((r) => r.kind === "forest")?.ok).toBe(true);
+    void waterish;
+  });
+
+  it("run_village_session 이 멀티턴 체크리스트로 강촌을 시공하고 2×2 나무를 심는다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("세션 강촌") };
+    const result = runTool(context, "run_village_session", {
+      theme: "강촌마을",
+      query: "강촌마을",
+      seed: 77,
+      width: 50,
+      height: 50,
+      mapName: "강촌마을",
+      roadWidth: 3,
+      settlementLayout: "street-grid",
+      budgetTurns: 14,
+      houses: [
+        { kitId: "blue-stone", yard: ["mailbox", "flowers"] },
+        { kitId: "bright-plaster", yard: ["firewood", "pot"] },
+        { kitId: "blue-stone", yard: ["jar"] },
+        { kitId: "bright-plaster", yard: ["wood_box"] },
+      ],
+      npcs: [{ name: "촌장", lines: ["강이 맑다."] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as {
+      ok: boolean;
+      mapId: string;
+      sessionId: string;
+      status: string;
+      evaluation?: { ok: boolean; metrics: { tree2x2Clusters: number; waterCells: number; treeCells: number } };
+      session: { checklist: { id: string; status: string }[] };
+    };
+    expect(data.mapId).toBeTruthy();
+    expect(data.status).toBe("complete");
+    expect(data.session.checklist.find((c) => c.id === "forest_big")?.status).toBe("done");
+    const map = context.project.maps[data.mapId];
+    expect(map).toBeTruthy();
+    const look = runTool(context, "evaluate_village_look", {
+      mapId: data.mapId,
+      planId: (runTool(context, "get_village_session", { sessionId: data.sessionId }).data as { planId: string }).planId,
+    });
+    expect(look.ok, look.summary).toBe(true);
+    const report = look.data as { metrics: { tree2x2Clusters: number; waterCells: number }; ok: boolean };
+    expect(report.metrics.waterCells).toBeGreaterThanOrEqual(30);
+    expect(report.metrics.tree2x2Clusters).toBeGreaterThanOrEqual(3);
+
+    const assets = runTool(context, "list_village_tree_assets", {});
+    expect(assets.ok).toBe(true);
+    expect(JSON.stringify(assets.data)).toContain("broadleaf-tree-2x2");
+  });
+
+  it("run_village_pipeline 이 plan→build→spec→look 을 돌린다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("파이프라인 마을") };
+    const result = runTool(context, "run_village_pipeline", {
+      maxAttempts: 2,
+      theme: "강가 어촌 장터",
+      pathStyle: "sand",
+      yardStyle: "market",
+      plazaStyle: "market",
+      plazaLayout: "south",
+      seed: 5,
+      houses: [
+        { kitId: "bright-plaster", yard: ["fruit_box", "bench_h"] },
+        { kitId: "blue-stone", yard: ["mailbox", "flowers"] },
+        { kitId: "bright-plaster", yard: ["wood_box"] },
+        { kitId: "blue-stone", yard: ["sign", "jar"] },
+      ],
+      npcs: [{ name: "어부", lines: ["파도."] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as {
+      ok: boolean;
+      mapId: string;
+      planId: string;
+      evaluation: { ok: boolean; score: number; feedbackForLlm: string };
+      build: { housesBuilt: number };
+    };
+    expect(data.mapId).toBeTruthy();
+    expect(data.planId).toBeTruthy();
+    expect(data.build.housesBuilt).toBe(4);
+    expect(data.evaluation.feedbackForLlm).toContain("[village_gate]");
+    expect(context.project.maps[data.mapId]).toBeTruthy();
+  });
+
+  it("plan_village → build_village(planId) → critique_village 3층 흐름", () => {
+    const context: ToolContext = { project: createEmptyToolProject("계획 마을") };
+    const planned = runTool(context, "plan_village", {
+      theme: "강가 어촌 장터",
+      pathStyle: "sand",
+      yardStyle: "market",
+      plazaStyle: "market",
+      plazaLayout: "south",
+      edgeTrees: "conifer",
+      seed: 11,
+      houses: [
+        { kitId: "bright-plaster", yard: ["fruit_box", "bench_h"], ownerName: "어부" },
+        { kitId: "blue-stone", yard: ["mailbox", "flowers"], ownerName: "포구지기" },
+        { kitId: "bright-plaster", yard: ["wood_box", "pot"] },
+        { kitId: "blue-stone", yard: ["sign", "jar"] },
+      ],
+      npcs: [
+        { name: "어부", lines: ["그물이 무겁다."] },
+        { name: "장사꾼", lines: ["모래길이 발에 좋다."] },
+      ],
+    });
+    expect(planned.ok, planned.summary).toBe(true);
+    const planData = planned.data as { planId: string; plan: { summary: string; pathStyle: string }; previewSummary: string };
+    expect(planData.planId).toBeTruthy();
+    expect(planData.plan.pathStyle).toBe("sand");
+    expect(planData.previewSummary).toContain("어촌");
+
+    const built = runTool(context, "build_village", { planId: planData.planId });
+    expect(built.ok, built.summary).toBe(true);
+    const data = villageData(built.data);
+    expect(data.housesBuilt).toBe(4);
+    expect(data.pathStyle).toBe("sand");
+    expect(data.planId).toBe(planData.planId);
+    const critique = (built.data as { critique?: { ok: boolean } }).critique;
+    expect(critique).toBeTruthy();
+
+    const crit = runTool(context, "critique_village", {
+      mapId: data.mapId,
+      doorFronts: data.houses.map((house) => house.front),
+    });
+    expect(crit.ok, crit.summary).toBe(true);
+    expect((crit.data as { ok: boolean }).ok).toBe(true);
+  });
+
+  it("fences:false면 울타리를 깔지 않는다", () => {
+    const context: ToolContext = { project: createEmptyToolProject("마을 울타리 없음") };
+    const result = runTool(context, "build_village", { seed: 7, fences: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = villageData(result.data);
+    const map = context.project.maps[data.mapId];
+    expect(data.fencesEnabled).toBe(false);
+    expect(data.fencedHouses).toBe(0);
+    const fenceTiles = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
+    expect(map.upperTiles.some((tile) => fenceTiles.has(tile))).toBe(false);
   });
 
   it("기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)", () => {
@@ -241,7 +471,9 @@ describe("build_village", () => {
     expect(result.ok, result.summary).toBe(true);
     const data = villageData(result.data);
     expect(data.bounds).toEqual(bounds);
-    expect(data.roadComponents).toBe(1);
+    // 폭 2~3 길·평행 오프셋 이후에도 문 연결은 유지 (성분 수는 레이아웃에 따라 1 이상)
+    expect(data.roadComponents).toBeGreaterThanOrEqual(1);
+    expect(data.doorsConnected).toBe(data.housesBuilt);
     expect(data.houses.every((house) => pointInRect(house.doorAt, bounds) && pointInRect(house.front, bounds))).toBe(true);
     const map = context.project.maps[data.mapId];
     expect(map.events.filter((event) => event.id.startsWith("ev_village_")).every((event) => pointInRect(event, bounds))).toBe(true);

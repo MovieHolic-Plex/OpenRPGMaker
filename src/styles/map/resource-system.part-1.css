@@ -111,21 +111,31 @@
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
   box-shadow: none;
-  height: 768px;
-  min-height: 768px;
-  min-width: 1024px;
-  width: 1024px;
+  /* 스크롤 셸을 꽉 채운다. 고정 1024×768은 작은 중앙 영역 + 가로스크롤을 만든다. */
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.editor-layout .canvas-area .phaser-container > canvas {
+  display: block;
 }
 
 .editor-canvas-scroll-shell {
-  bottom: 22px;
+  /* 크롬 높이: 상태바(기본 22px) / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀. */
+  bottom: var(--editor-canvas-chrome-bottom, 22px);
   height: auto;
   left: 0;
   overflow: auto;
   position: absolute;
   right: 0;
   scrollbar-gutter: stable both-edges;
-  top: 30px;
+  top: var(--editor-canvas-chrome-top, 30px);
   width: auto;
 }
 

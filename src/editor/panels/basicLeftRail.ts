@@ -207,17 +207,20 @@ function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer,
   } else if (id === "layers") {
     body.append(makeLayersBody(activeLayer));
   } else {
-    const host = el("div", { class: "basic-flyout-map-host" });
-    renderMapList(host);
+    const host = el("div", { class: "basic-flyout-map-host", dataset: { testid: "basic-map-list-host" } });
+    renderMapList(host, { variant: "basic" });
     body.append(host);
   }
-  return buildFlyoutShell({
+  const shell = buildFlyoutShell({
     title: FLYOUT_TITLES[id],
     pinned: flyoutState.pinned,
     onPinToggle: () => dispatchFlyout({ type: "pin-toggle" }),
     onClose: () => dispatchFlyout({ type: "escape" }),
     body,
   });
+  if (id === "maps") shell.classList.add("is-maps");
+  if (id === "tiles") shell.classList.add("is-tiles");
+  return shell;
 }
 
 function makeTilesBody(selectedTile: number, tileset: TilesetDef): HTMLElement {

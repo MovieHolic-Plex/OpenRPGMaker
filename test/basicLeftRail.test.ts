@@ -61,9 +61,16 @@ describe("basic icon rail", () => {
     expect(editorState.get().layer).toBe("upper");
   });
 
-  it("맵 토글 → 플라이아웃에 맵 트리 렌더", () => {
+  it("맵 토글 → 플라이아웃에 기본 맵 목록 렌더 (전문가 인라인 액션 없음)", () => {
     click("basic-rail-toggle-maps");
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "map-tree")).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "map-add")).toBeTruthy();
+    // 전문가 패널 전용 인라인 컨트롤은 기본 플라이아웃에 없음
+    const mapId = store.getCurrent().startMapId;
+    expect(findByTestId(container as unknown as FakeElement, `map-parent-select-${mapId}`)).toBeFalsy();
+    expect(findByTestId(container as unknown as FakeElement, `map-delete-${mapId}`)).toBeFalsy();
+    expect(findByTestId(container as unknown as FakeElement, `map-more-${mapId}`)).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "basic-map-list-host")).toBeTruthy();
   });
 });

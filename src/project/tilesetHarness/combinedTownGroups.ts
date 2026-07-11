@@ -544,6 +544,51 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "나무 상자(237) 단독 소품.",
     "passable",
   ),
+  // 장터 데크·부두 바닥. fill_region(오토타일 전용) 대신 paint_tiles rect / place 로 면 채움.
+  lowerPassableTerrainGroup(
+    "wood-floor-deck",
+    "나무 바닥 데크",
+    [...CHIPSET_TILE_GROUPS.woodFloorBody],
+    "나무 바닥(192·222·228–230). 하위 통행 가능. 장터 데크·부두 면적 채움용. 대표 바디 222.",
+  ),
+  // 맵 하단 난간 한 줄(223) 등 목조 구조. 통행 불가 경계.
+  lowerSolidGroup(
+    "timber-post-rail",
+    "목조 난간/기둥",
+    [...CHIPSET_TILE_GROUPS.timberPostStructureObjects],
+    "목조 기둥·난간(193–197, 223–227). 하위 solid. 장터/데크 가장자리 가로 반복에 223 바디를 쓴다.",
+  ),
+  // 마켓 공터 y=8 금본: 상위 가로 레일 468|469*|470 (통행 불가). timber 223과 별 세트.
+  mixedStackGroup(
+    "market-rail-upper",
+    "장터 레일(상위)",
+    [...CHIPSET_TILE_GROUPS.marketRailHorizontalObjects],
+    "장터/데크 상위 레일: 좌 468 + 중 469(무제한 연장) + 우 470. 통행 불가. 마켓 공터 (1,8)–(8,8) 금본.",
+    "solid",
+    {
+      patternGrammar: {
+        axis: "horizontal",
+        kind: "horizontal_expandable",
+        minWidth: 3,
+        minHeight: 1,
+        parts: [
+          { role: "leftCap", tileIds: [468] },
+          { role: "repeatBody", tileIds: [469] },
+          { role: "rightCap", tileIds: [470] },
+        ],
+        preserveCaps: true,
+        repeat: "body",
+      },
+    },
+  ),
+  // 마켓 공터 (0,4)/(0,7) 금본: 회색 돌단·석판 소품.
+  mixedStackGroup(
+    "stone-step-slab",
+    "돌단/석판",
+    [...CHIPSET_TILE_GROUPS.stoneStepObjects],
+    "돌단·석판(268). 상위 solid. 장터 가장자리 단·연석·짧은 계단 느낌 장식.",
+    "solid",
+  ),
   mixedStackGroup(
     "magic-circle",
     "마법진",
@@ -598,6 +643,27 @@ function wall9Slice(id: string, name: string, tileIds: readonly number[], descri
 
 function lowerSolidGroup(id: string, name: string, tileIds: readonly number[], placementRules: string): CombinedTownHarnessGroup {
   return { id: `${COMBINED_TOWN_HARNESS_PREFIX}${id}`, name, role: "building", defaultLayer: "lower", tileIds, description: placementRules, placementRules, confidence: "high", source: "bundled-default", passage: "solid", repeatability: "fixed" };
+}
+
+function lowerPassableTerrainGroup(
+  id: string,
+  name: string,
+  tileIds: readonly number[],
+  placementRules: string,
+): CombinedTownHarnessGroup {
+  return {
+    id: `${COMBINED_TOWN_HARNESS_PREFIX}${id}`,
+    name,
+    role: "terrain",
+    defaultLayer: "lower",
+    tileIds,
+    description: placementRules,
+    placementRules,
+    confidence: "high",
+    source: "bundled-default",
+    passage: "passable",
+    repeatability: "repeat",
+  };
 }
 
 function lowerStackGroup(id: string, name: string, tileIds: readonly number[], placementRules: string): CombinedTownHarnessGroup {

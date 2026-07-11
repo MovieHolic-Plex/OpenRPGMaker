@@ -6,7 +6,8 @@
 // - 그룹 미소속 타일은 priority를 따르되, priority가 전부 lower인(=실질 분류가 없는)
 //   타일셋에서는 기존처럼 요청 레이어를 존중해야 하므로 "both"로 본다.
 import { userTileLayerOverride } from "@/editor/runtimeTileMetadata";
-import { harnessGroupForTile, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
+import { isPropOverlayChipsetTile } from "@/project/defaults/chipsetMapping";
+import { harnessGroupForTile, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
 export type TileLayerHome = "lower" | "upper" | "both";
@@ -21,7 +22,11 @@ export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome 
   if (override) return override;
   // 2) 투명 배경 칩은 그룹/priority보다 먼저 상위 전용으로 판정한다 — 하위에 깔리면
   //    투명 부분 아래에 지형이 없어 검게 보인다(예: 벤치 357, 사선 지붕 385).
+  //    나무 밑동(290…)은 투명해도 하위(수관과 같은 칸 스택).
+  if (isTreeTrunkTileId(tile)) return "lower";
   if (isUpperOnlyOverlayTile(tileset, tile)) return "upper";
+  // 3) 소품 오버레이(텐트 448 등) — 하네스 그룹이 없어도 상위.
+  if (isPropOverlayChipsetTile(tile)) return "upper";
   const group = harnessGroupForTile(tileset, tile);
   if (group) {
     if (group.defaultLayer === "lower") return group.stackable === true ? "upper" : "lower";

@@ -39,30 +39,74 @@ type MapActionContext = {
   readonly mapName: string;
 };
 
+export type MapListVariant = "panel" | "basic";
+
 const collapsedMapIds = new Set<MapId>();
 let currentMapListContainer: HTMLElement | null = null;
+let currentMapListVariant: MapListVariant = "panel";
 
-export function renderMapList(container: HTMLElement): void {
+export function renderMapList(container: HTMLElement, options?: { readonly variant?: MapListVariant }): void {
   currentMapListContainer = container;
+  currentMapListVariant = options?.variant ?? "panel";
   clearChildren(container);
   const project = store.getCurrent();
   const state = editorState.get();
   const activeId = state.currentMapId ?? project.startMapId;
   expandPathToMap(project.mapTree, activeId);
 
-  const section = el("div", { class: "panel-section map-tree-panel", dataset: { testid: "map-tree" } });
-  const header = el("div", { class: "map-tree-header" });
-  header.append(el("h3", { text: `맵 트리 ${Object.keys(project.maps).length}` }));
-  header.append(makeMapTreeHeaderActions(activeId, project.mapTree));
-  section.append(header);
+  const isBasic = currentMapListVariant === "basic";
+  const mapCount = Object.keys(project.maps).length;
+  const section = el("div", {
+    class: "panel-section map-tree-panel" + (isBasic ? " is-basic-flyout" : ""),
+    dataset: { testid: "map-tree", mapListVariant: currentMapListVariant },
+  });
 
+  if (isBasic) {
+    // 기본 모드: 플라이아웃 제목과 겹치지 않게 카운트 + 새 맵만
+    const header = el("div", { class: "map-tree-header map-tree-header-basic" });
+    header.append(
+      el("div", {
+        class: "map-tree-basic-meta",
+        children: [
+          el("span", { class: "map-tree-basic-count", text: `${mapCount}개 맵` }),
+          el("span", { class: "map-tree-basic-hint", text: "우클릭 · ⋯ 더보기" }),
+        ],
+      }),
+    );
+    header.append(
+      el("button", {
+        class: "map-tree-basic-add",
+        text: "+ 새 맵",
+        attrs: { type: "button", title: "맵 추가" },
+        dataset: { testid: "map-add" },
+        on: {
+          click: () => {
+            const id = addMap("새 맵");
+            selectEditorMap(id);
+          },
+        },
+      }),
+    );
+    section.append(header);
+  } else {
+    const header = el("div", { class: "map-tree-header" });
+    header.append(el("h3", { text: `맵 트리 ${mapCount}` }));
+    header.append(makeMapTreeHeaderActions(activeId, project.mapTree));
+    section.append(header);
+  }
+
+  const tree = el("div", {
+    class: isBasic ? "map-tree-list map-tree-list-basic" : "map-tree-list",
+    attrs: { role: "tree", "aria-label": "맵 목록" },
+  });
   const allMapIds = new Set(Object.keys(project.maps));
   renderNode({
     context: { activeId, allMapIds, startMapId: project.startMapId },
     depth: 0,
-    host: section,
+    host: tree,
     node: project.mapTree,
   });
+  section.append(tree);
 
   container.append(section);
 }
@@ -80,6 +124,7 @@ function renderNode(spec: RenderNodeSpec): void {
     mapId: node.mapId,
     mapName: map?.name || "(이름 없음)",
   };
+  const isBasicRow = currentMapListVariant === "basic";
   const item = el("div", {
     class: [
       "map-item",
@@ -92,7 +137,10 @@ function renderNode(spec: RenderNodeSpec): void {
       "aria-selected": String(node.mapId === context.activeId),
       draggable: depth > 0 ? "true" : "false",
       role: "treeitem",
-      style: `--map-depth:${depth}; padding-left:${6 + depth * 18}px;`,
+      // 기본 모드는 grid + margin으로 들여쓰기 (전문가 패널의 빽빽한 padding-left 그리드 회피)
+      style: isBasicRow
+        ? `--map-depth:${depth}; margin-left:${depth * 12}px;`
+        : `--map-depth:${depth}; padding-left:${6 + depth * 18}px;`,
       tabindex: "0",
     },
     dataset: { testid: `map-tree-node-${node.mapId}` },
@@ -155,6 +203,8 @@ function renderNode(spec: RenderNodeSpec): void {
   });
   if (hasChildren) item.setAttribute("aria-expanded", String(!isCollapsed));
 
+  if (isBasicRow) item.classList.add("map-item-basic");
+
   item.append(
     treeToggle(node.mapId, hasChildren, isCollapsed),
     el("span", {
@@ -162,53 +212,75 @@ function renderNode(spec: RenderNodeSpec): void {
       attrs: { "aria-hidden": "true" },
     }),
     el("span", { class: "map-tree-name", text: map?.name || "(이름 없음)" }),
-    mapLockBadge(node.mapId)
   );
 
-  item.append(el("span", { class: "start-mark", text: isStart ? "★" : "", attrs: { "aria-hidden": "true" } }));
+  if (isBasicRow) {
+    // 기본 모드: 이름 중심 + 시작 표시 + ⋯ 메뉴 (전문가용 인라인 버튼 제거)
+    if (isStart) {
+      item.append(el("span", { class: "start-mark is-start", text: "시작", attrs: { title: "시작 맵" } }));
+    }
+    item.append(
+      el("button", {
+        class: "map-tree-more",
+        text: "⋯",
+        attrs: { type: "button", title: "맵 메뉴", "aria-label": `${actionContext.mapName} 메뉴` },
+        dataset: { testid: `map-more-${node.mapId}` },
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            if (!(event instanceof MouseEvent)) return;
+            openMapActions(actionContext, { x: event.clientX, y: event.clientY });
+          },
+        },
+      }),
+    );
+  } else {
+    item.append(mapLockBadge(node.mapId));
+    item.append(el("span", { class: "start-mark", text: isStart ? "★" : "", attrs: { "aria-hidden": "true" } }));
 
-  item.append(
-    treeAction({
-      action: () => addChildAndSelect(node.mapId),
-      icon: "map-child",
-      label: "하위 맵 추가",
-      testId: `map-add-child-${node.mapId}`,
-    }),
-    treeAction({
-      action: () => setStartMap(node.mapId),
-      icon: "map-start",
-      label: "시작 맵으로 지정",
-      testId: `map-set-start-${node.mapId}`,
-    }),
-    treeContextMenuAction(actionContext)
-  );
+    item.append(
+      treeAction({
+        action: () => addChildAndSelect(node.mapId),
+        icon: "map-child",
+        label: "하위 맵 추가",
+        testId: `map-add-child-${node.mapId}`,
+      }),
+      treeAction({
+        action: () => setStartMap(node.mapId),
+        icon: "map-start",
+        label: "시작 맵으로 지정",
+        testId: `map-set-start-${node.mapId}`,
+      }),
+      treeContextMenuAction(actionContext),
+    );
 
-  const parentSel = el("select", {
-    class: "map-parent-sel",
-    attrs: { title: "부모 맵 변경", "aria-label": "부모 맵 변경" },
-    dataset: { testid: `map-parent-select-${node.mapId}` },
-  }) as HTMLSelectElement;
-  parentSel.append(el("option", { text: "(루트)", attrs: { value: "" } }));
-  for (const id of context.allMapIds) {
-    if (id === node.mapId) continue;
-    parentSel.append(el("option", { text: project.maps[id]?.name || id, attrs: { value: id } }));
+    const parentSel = el("select", {
+      class: "map-parent-sel",
+      attrs: { title: "부모 맵 변경", "aria-label": "부모 맵 변경" },
+      dataset: { testid: `map-parent-select-${node.mapId}` },
+    }) as HTMLSelectElement;
+    parentSel.append(el("option", { text: "(루트)", attrs: { value: "" } }));
+    for (const id of context.allMapIds) {
+      if (id === node.mapId) continue;
+      parentSel.append(el("option", { text: project.maps[id]?.name || id, attrs: { value: id } }));
+    }
+    parentSel.addEventListener("change", () => {
+      const parentId = parentSel.value;
+      if (parentId) moveMapInTree(node.mapId, parentId);
+    });
+    parentSel.addEventListener("click", (event) => event.stopPropagation());
+    item.append(parentSel);
+
+    item.append(
+      treeAction({
+        action: () => deleteAndSelectNext(node.mapId),
+        disabled: !actionContext.canDelete,
+        icon: "trash",
+        label: "맵 삭제",
+        testId: `map-delete-${node.mapId}`,
+      }),
+    );
   }
-  parentSel.addEventListener("change", () => {
-    const parentId = parentSel.value;
-    if (parentId) moveMapInTree(node.mapId, parentId);
-  });
-  parentSel.addEventListener("click", (event) => event.stopPropagation());
-  item.append(parentSel);
-
-  item.append(
-    treeAction({
-      action: () => deleteAndSelectNext(node.mapId),
-      disabled: !actionContext.canDelete,
-      icon: "trash",
-      label: "맵 삭제",
-      testId: `map-delete-${node.mapId}`,
-    })
-  );
   host.append(item);
 
   if (!isCollapsed) {
@@ -336,7 +408,9 @@ function pathToMap(node: MapTreeNode, mapId: MapId, path: MapId[] = []): readonl
 }
 
 function rerenderMapList(): void {
-  if (currentMapListContainer) renderMapList(currentMapListContainer);
+  if (currentMapListContainer) {
+    renderMapList(currentMapListContainer, { variant: currentMapListVariant });
+  }
 }
 
 function mapTreeIcon(depth: number, mapName: string, hasChildren: boolean): string {

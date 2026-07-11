@@ -84,6 +84,7 @@ function installBrowserGlobals(): void {
     writable: true,
     value: {
       localStorage: storage,
+      location: { search: "?aiBridge=0", href: "http://localhost/?aiBridge=0" },
       setTimeout: (handler: TimerHandler) => {
         if (typeof handler === "function") handler();
         return 0;
@@ -307,7 +308,7 @@ describe("UXD proposal panel integration", () => {
     expect(pill.hidden).toBe(true);
   });
 
-  it("미니 스트림: 새 턴이 시작되면 이전 턴 버블에 is-prior-turn을 표시한다", async () => {
+  it("미니 스트림: 새 턴이 시작되면 이전 턴을 접이식 그룹으로 묶는다", async () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "첫 응답." }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
     const panel = renderPanel();
@@ -321,13 +322,18 @@ describe("UXD proposal panel integration", () => {
     await flushAsync();
 
     const log = findByTestId(panel, "ai-chat-log") as FakeElement;
-    const bubbles = log.childNodes as unknown as FakeElement[];
-    // 첫 턴(사용자+어시스턴트)은 prior-turn, 두번째 턴은 현재 턴이라 표시 없음.
-    expect(bubbles.length).toBeGreaterThanOrEqual(4);
-    expect(bubbles[0]?.className).toContain("is-prior-turn");
-    expect(bubbles[1]?.className).toContain("is-prior-turn");
-    const current = bubbles.slice(-2);
-    for (const bubble of current) expect(bubble?.className ?? "").not.toContain("is-prior-turn");
+    const priorGroup = findByTestId(log, "ai-turn-group");
+    expect(priorGroup).toBeTruthy();
+    expect(priorGroup?.className).toContain("is-prior-turn");
+    expect(priorGroup?.className).toContain("is-collapsed");
+    expect(findByTestId(log, "ai-day-divider")).toBeTruthy();
+    // 현재 턴 버블은 prior-turn이 아니다.
+    const currentUser = [...(log.querySelectorAll?.(".ai-chat-user") ?? [])].at(-1)
+      ?? log.childNodes[log.childNodes.length - 2];
+    const currentAssistant = [...(log.querySelectorAll?.(".ai-chat-assistant") ?? [])].at(-1)
+      ?? log.childNodes[log.childNodes.length - 1];
+    expect((currentUser as FakeElement)?.className ?? "").not.toContain("is-prior-turn");
+    expect((currentAssistant as FakeElement)?.className ?? "").not.toContain("is-prior-turn");
   });
 
   it("거부하면 원 응답에 폐기됨 배지를 붙이고 본문을 딤 처리한다", async () => {

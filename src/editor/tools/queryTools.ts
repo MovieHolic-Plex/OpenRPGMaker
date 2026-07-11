@@ -6,7 +6,9 @@
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { searchResources, type ResourceSearchKind } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";
 import { questDefId } from "@/project/quest/questDef";
@@ -25,6 +27,11 @@ import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+
+/** 호수/강 등 물 지형(레거시 WATER 상수 + 칩셋/오토타일). */
+export function isMapWaterTile(tile: number): boolean {
+  return tile === TILE.WATER || isWaterChipsetTile(tile) || isLakeAutotileTile(tile);
+}
 
 // 커맨드 트리를 재귀 순회(fork/choices/loop 분기 포함).
 function walkCommands(commands: readonly Command[], visit: (command: Command) => void): void {
@@ -89,17 +96,50 @@ const getProjectSummary: ToolDefinition = {
 function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
   if (hasEvent) return "E";
   const i = y * map.width + x;
-  const lower = map.lowerTiles[i];
-  const upper = map.upperTiles[i];
-  if (upper === TILE.WATER || lower === TILE.WATER) return "~";
+  const lower = map.lowerTiles[i] ?? TILE.EMPTY;
+  const upper = map.upperTiles[i] ?? TILE.EMPTY;
+  // 호수 오토타일·칩셋 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
+  if (isMapWaterTile(lower) || isMapWaterTile(upper)) return "~";
   if (upper === TILE.TREE || lower === TILE.TREE) return "T";
   if (lower === TILE.WALL) return "#";
   return isPassable(project, map, x, y) ? "." : "#";
 }
 
+/** 영역 안 물 타일(~) 바운딩 박스. 없으면 null. */
+export function waterBoundsInMap(
+  map: GameMap,
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+): { readonly cellCount: number; readonly x: number; readonly y: number; readonly w: number; readonly h: number } | null {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -1;
+  let maxY = -1;
+  let cellCount = 0;
+  for (let y = y0; y < y1; y += 1) {
+    for (let x = x0; x < x1; x += 1) {
+      const i = y * map.width + x;
+      const lower = map.lowerTiles[i] ?? TILE.EMPTY;
+      const upper = map.upperTiles[i] ?? TILE.EMPTY;
+      if (!isMapWaterTile(lower) && !isMapWaterTile(upper)) continue;
+      cellCount += 1;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+  }
+  if (cellCount === 0) return null;
+  return { cellCount, x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
+
 const getMapRegion: ToolDefinition = {
   name: "get_map_region",
-  description: "맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물, T=나무, E=이벤트)로 반환한다.",
+  description:
+    "맵 영역을 시맨틱 문자 그리드(#=벽/통행불가, .=통행가능, ~=물/호수, T=나무, E=이벤트)로 반환한다. " +
+    "data.water에 물 칸 수·바운딩 박스가 포함된다(호수 찾기용). 전체 맵(52×52)을 한 번에 부르지 말고 뷰포트/관심 영역(권장 ≤24×24)부터 조회하라.",
   mode: "read",
   invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8 },
   parameters: {
@@ -132,9 +172,29 @@ const getMapRegion: ToolDefinition = {
     const events = map.events
       .filter((event) => event.x >= x0 && event.x < x1 && event.y >= y0 && event.y < y1)
       .map((event) => ({ id: event.id, x: event.x, y: event.y, pages: (event.pages ?? []).length }));
+    const water = waterBoundsInMap(map, x0, y0, x1, y1);
+    const area = Math.max(1, (x1 - x0) * (y1 - y0));
+    const large = area > 24 * 24;
+    const warnings: string[] = [];
+    if (large) {
+      warnings.push(
+        `영역 ${x1 - x0}×${y1 - y0}이 큼 — 다음엔 뷰포트 근처(≤24×24)로 좁혀 조회하세요. 호수는 data.water.bounds를 쓰세요.`,
+      );
+    }
+    const waterSummary = water
+      ? `물 ${water.cellCount}칸 bounds=(${water.x},${water.y}) ${water.w}×${water.h}`
+      : "물 0칸";
     return {
-      summary: `${map.name} 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개`,
-      data: { grid: rows, legend: { "#": "통행 불가/벽", ".": "통행 가능", "~": "물", T: "나무", E: "이벤트" }, events },
+      summary: `${map.name} 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
+      data: {
+        grid: rows,
+        legend: { "#": "통행 불가/벽", ".": "통행 가능", "~": "물/호수", T: "나무", E: "이벤트" },
+        events,
+        water: water
+          ? { cellCount: water.cellCount, bounds: { x: water.x, y: water.y, w: water.w, h: water.h } }
+          : { cellCount: 0, bounds: null },
+      },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

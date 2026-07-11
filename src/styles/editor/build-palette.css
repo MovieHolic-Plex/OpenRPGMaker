@@ -18,6 +18,13 @@
   color: #f8fafc;
 }
 
+/* 캔버스 위 플로팅(건축 팔레트·선택 칩 공용 슬롯). */
+.build-palette-floating {
+  pointer-events: auto;
+  position: absolute;
+  z-index: 30;
+}
+
 .build-palette-popup.build-palette-floating {
   right: auto;
   top: auto;

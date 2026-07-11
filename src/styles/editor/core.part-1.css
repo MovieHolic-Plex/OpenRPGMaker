@@ -190,9 +190,8 @@ button.btn:disabled {
 }
 
 .editor-layout .canvas-area .phaser-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* block + relative: 선택 칩/배지 absolute 오버레이가 캔버스 flex 레이아웃을 밀지 않음 */
+  display: block;
   overflow: hidden;
   position: relative;
 }

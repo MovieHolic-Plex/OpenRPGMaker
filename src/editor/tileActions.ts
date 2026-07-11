@@ -4,11 +4,28 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
+import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { expandHardClusterPlacement, type HardClusterTileEdit } from "@/editor/tools/clusterRulePlacement";
 import { toast } from "@/util/toast";
 import type { AutotileGroup, Command, GameMap, MapId, PassFlag, Project, TilesetDef } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
+
+/** 밑동 → 수관 (repairTreePairs 와 동일). 지우개 시 짝을 같이 지운다. */
+const TRUNK_TO_CANOPY: Readonly<Record<number, number>> = {
+  290: 260,
+  291: 261,
+  292: 262,
+  293: 263,
+};
+const CANOPY_TO_TRUNK: Readonly<Record<number, number>> = {
+  260: 290,
+  261: 291,
+  262: 292,
+  263: 293,
+};
+
+type EraseStroke = { readonly layer: TileLayer; readonly x: number; readonly y: number };
 
 type RoadPoint = { readonly x: number; readonly y: number };
 
@@ -151,12 +168,13 @@ export function eraseVisibleTilesBulk(
   if (points.length === 0) return;
   const map = store.getCurrent().maps[mapId];
   if (!map) return;
-  const strokes: { layer: TileLayer; x: number; y: number }[] = [];
+  const strokes: EraseStroke[] = [];
   for (const point of points) {
     if (!inMap(map, point.x, point.y)) continue;
     const index = point.y * map.width + point.x;
     const occupied = (layer: TileLayer): boolean =>
       ((layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index]) ?? TILE.EMPTY) !== TILE.EMPTY;
+    // preferred 레이어가 비어 있을 때만 반대 레이어로 폴백 (팔레트 자동 상위 전환 후 무반응 방지)
     const fallback: TileLayer = preferredLayer === "upper" ? "lower" : "upper";
     const layer = occupied(preferredLayer) ? preferredLayer : occupied(fallback) ? fallback : preferredLayer;
     strokes.push({ layer, x: point.x, y: point.y });
@@ -170,7 +188,7 @@ export function eraseTile(mapId: MapId, layer: TileLayer, x: number, y: number, 
 
 export function eraseTilesBulk(
   mapId: MapId,
-  strokes: readonly { readonly layer: TileLayer; readonly x: number; readonly y: number }[],
+  strokes: readonly EraseStroke[],
   options: TilePaintOptions = {},
 ): void {
   if (strokes.length === 0) return;
@@ -182,8 +200,11 @@ export function eraseTilesBulk(
   const valid = strokes.filter((s) => inMap(currentMap, s.x, s.y));
   if (valid.length === 0) return;
 
-  const byKey = new Map<string, { layer: TileLayer; x: number; y: number }>();
-  for (const s of valid) byKey.set(`${s.layer}:${s.x},${s.y}`, s);
+  // 지우기 전에 나무 짝·hard 클러스터 동반 칸까지 확장 (안 하면 repairTreePairs가 수관을 복구)
+  const expanded = expandEraseCompanions(currentMap, tileset, valid, options.clusterExpand !== false);
+
+  const byKey = new Map<string, EraseStroke>();
+  for (const s of expanded) byKey.set(`${s.layer}:${s.x},${s.y}`, s);
   const unique = [...byKey.values()];
 
   store.updateMap(mapId, (m) => {
@@ -206,10 +227,109 @@ export function eraseTilesBulk(
         previousTile: lowerPrevious,
       });
     }
+    // 의도적으로 짝을 지운 뒤에는 수관을 다시 심지 않도록, 남은 고아 밑동만 정리
     repairTreePairsOnMap(m);
   }, {
     cells: unique.flatMap((s) => changedTileCellsForEdit(mapId, s.layer, [{ x: s.x, y: s.y }], autoConnect)),
   });
+}
+
+/**
+ * 지우개 동반 확장:
+ * - hard 클러스터(침엽수 1×2, 활엽수 2×2, 벤치 등) 전체
+ * - 나무 수관↔밑동 짝 (repairTreePairs 복구 방지)
+ */
+function expandEraseCompanions(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  strokes: readonly EraseStroke[],
+  clusterExpand: boolean,
+): EraseStroke[] {
+  const out = new Map<string, EraseStroke>();
+  const add = (layer: TileLayer, x: number, y: number): void => {
+    if (!inMap(map, x, y)) return;
+    out.set(`${layer}:${x},${y}`, { layer, x, y });
+  };
+
+  for (const stroke of strokes) {
+    add(stroke.layer, stroke.x, stroke.y);
+    const tile = tileAt(map, stroke.layer, stroke.x, stroke.y);
+    if (tile === undefined || tile === TILE.EMPTY || tile < 0) continue;
+
+    // hard 클러스터 동반 칸
+    if (clusterExpand && tileset) {
+      const expanded = expandHardClusterPlacement({
+        map,
+        origin: { x: stroke.x, y: stroke.y },
+        originLayer: stroke.layer,
+        tile,
+        tileset,
+      });
+      if (expanded.ok) {
+        for (const edit of expanded.edits) {
+          add(edit.layer, edit.x, edit.y);
+          // 같은 좌표에 다른 레이어로 깔린 짝 타일도 비움
+          const other: TileLayer = edit.layer === "upper" ? "lower" : "upper";
+          const otherTile = tileAt(map, other, edit.x, edit.y);
+          if (otherTile !== undefined && otherTile !== TILE.EMPTY && otherTile >= 0) {
+            if (isTreeTrunkTileId(otherTile) || isTreeCanopyTileId(otherTile) || otherTile === edit.tile) {
+              add(other, edit.x, edit.y);
+            }
+          }
+        }
+      }
+    }
+
+    // 나무 짝 명시 (클러스터 규칙이 한쪽만 있어도 복구 방지)
+    if (isTreeCanopyTileId(tile) && stroke.layer === "upper") {
+      const trunk = CANOPY_TO_TRUNK[tile];
+      if (trunk !== undefined && stroke.y + 1 < map.height) {
+        const belowLower = map.lowerTiles[(stroke.y + 1) * map.width + stroke.x] ?? TILE.EMPTY;
+        const belowUpper = map.upperTiles[(stroke.y + 1) * map.width + stroke.x] ?? TILE.EMPTY;
+        if (belowLower === trunk) add("lower", stroke.x, stroke.y + 1);
+        if (belowUpper === trunk) add("upper", stroke.x, stroke.y + 1);
+        // 활엽수 2×2: 옆 수관·옆 밑동
+        if (tile === 262 || tile === 263) {
+          const dx = tile === 262 ? 1 : -1;
+          const nx = stroke.x + dx;
+          if (inMap(map, nx, stroke.y)) {
+            const sideCanopy = map.upperTiles[stroke.y * map.width + nx] ?? TILE.EMPTY;
+            if (isTreeCanopyTileId(sideCanopy)) add("upper", nx, stroke.y);
+            if (stroke.y + 1 < map.height) {
+              const sideTrunkL = map.lowerTiles[(stroke.y + 1) * map.width + nx] ?? TILE.EMPTY;
+              const sideTrunkU = map.upperTiles[(stroke.y + 1) * map.width + nx] ?? TILE.EMPTY;
+              if (isTreeTrunkTileId(sideTrunkL)) add("lower", nx, stroke.y + 1);
+              if (isTreeTrunkTileId(sideTrunkU)) add("upper", nx, stroke.y + 1);
+            }
+          }
+        }
+      }
+    }
+    if (isTreeTrunkTileId(tile)) {
+      const canopy = TRUNK_TO_CANOPY[tile];
+      if (canopy !== undefined && stroke.y > 0) {
+        const above = map.upperTiles[(stroke.y - 1) * map.width + stroke.x] ?? TILE.EMPTY;
+        if (above === canopy || isTreeCanopyTileId(above)) add("upper", stroke.x, stroke.y - 1);
+        // 활엽수 2×2 옆 밑동
+        if (tile === 292 || tile === 293) {
+          const dx = tile === 292 ? 1 : -1;
+          const nx = stroke.x + dx;
+          if (inMap(map, nx, stroke.y)) {
+            const sideL = map.lowerTiles[stroke.y * map.width + nx] ?? TILE.EMPTY;
+            const sideU = map.upperTiles[stroke.y * map.width + nx] ?? TILE.EMPTY;
+            if (isTreeTrunkTileId(sideL)) add("lower", nx, stroke.y);
+            if (isTreeTrunkTileId(sideU)) add("upper", nx, stroke.y);
+            if (stroke.y > 0) {
+              const sideCanopy = map.upperTiles[(stroke.y - 1) * map.width + nx] ?? TILE.EMPTY;
+              if (isTreeCanopyTileId(sideCanopy)) add("upper", nx, stroke.y - 1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return [...out.values()];
 }
 
 export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newTile: number, options: TilePaintOptions = {}): void {

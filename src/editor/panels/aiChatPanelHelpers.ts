@@ -257,3 +257,67 @@ export function isAiAssistDetail(value: unknown): value is AiAssistDetail {
     Number.isInteger(detail.total)
   );
 }
+
+/** 상태 배지·접힘 FAB 점과 맞추는 톤. UI 폴리시(제안 6). */
+export type AiStatusTone = "idle" | "running" | "review" | "error" | "ok";
+
+export function statusToneOf(text: string): AiStatusTone {
+  const t = text.trim();
+  if (!t) return "idle";
+  if (t === "오류" || t.startsWith("오류") || t.includes("실패")) return "error";
+  if (t.includes("검토 대기")) return "review";
+  if (
+    t === "적용됨" ||
+    t === "완료" ||
+    t.startsWith("완료") ||
+    t.includes("밑그림 확정") ||
+    t.includes("대화 복원")
+  ) {
+    return "ok";
+  }
+  if (
+    t.includes("초") ||
+    t.includes("도구") ||
+    t.includes("계획") ||
+    t.includes("실행") ||
+    t.includes("검수") ||
+    t.includes("생각") ||
+    t.includes("영역 작업") ||
+    t.includes("중단") ||
+    t.endsWith("중…") ||
+    t.endsWith("중...")
+  ) {
+    return "running";
+  }
+  // 대기 / 새 대화 / 이전 대화 등
+  return "idle";
+}
+
+export function aiDayKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export function formatAiDayLabel(date: Date): string {
+  try {
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "short",
+    });
+  } catch {
+    return aiDayKey(date);
+  }
+}
+
+export function parseAiDayDate(at?: Date | string | null): Date {
+  if (at instanceof Date && !Number.isNaN(at.getTime())) return at;
+  if (typeof at === "string" && at.trim()) {
+    const parsed = new Date(at);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+  return new Date();
+}

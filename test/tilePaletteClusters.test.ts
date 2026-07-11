@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import {
   createTileClusterSections,
@@ -189,6 +190,11 @@ describe("tile palette cluster partition", () => {
 });
 
 describe("tile palette cluster UI", () => {
+  beforeEach(() => {
+    // 기본 모드는 아이콘 레일이라 시트/그룹 세그먼트가 없음 — 전문가 팔레트 경로 검증
+    resetEditorUiModeForTests("expert");
+  });
+
   it("renders cluster view by default and persists sheet view when the sheet segment is clicked", () => {
     const root = renderPalette();
 
@@ -199,6 +205,7 @@ describe("tile palette cluster UI", () => {
 
     expect(storage.getItem("rpg-zzu:palette-view")).toBe("sheet");
     expect(findByTestId(root, "tile-palette")).not.toBeNull();
+    expect(findByTestId(root, "palette-sheet-expand")).not.toBeNull();
   });
 
   it("work tabs switch paint / find / props panes", () => {

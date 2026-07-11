@@ -208,7 +208,8 @@ export function paintRoofDeck(map: GameMap, x0: number, y0: number, w: number, h
       const right = x === ww - 1;
       const top = y === 0;
       const bottom = y === hh - 1;
-      let tile = CASTLE_ROOF.BODY;
+      // as const 리터럴 유니온에 묶이지 않도록 number로 승격
+      let tile: number = CASTLE_ROOF.BODY;
       if (top && left) tile = CASTLE_ROOF.TL;
       else if (top && right) tile = CASTLE_ROOF.TR;
       else if (top) tile = CASTLE_ROOF.T;

@@ -261,7 +261,15 @@ function makePaintTabBody(input: {
           tileset,
         });
 
-  root.append(makePaintTitleRow(tileLayer, paletteView));
+  root.append(
+    makePaintTitleRow(
+      tileLayer,
+      paletteView,
+      tileset,
+      state.selectedTile,
+      state.activePaletteStamp,
+    ),
+  );
   root.append(palette);
   return { root, palette };
 }
@@ -389,7 +397,13 @@ function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
 }
 
-function makePaintTitleRow(layer: Exclude<Layer, "event">, paletteView: PaletteViewMode): HTMLElement {
+function makePaintTitleRow(
+  layer: Exclude<Layer, "event">,
+  paletteView: PaletteViewMode,
+  tileset: TilesetDef,
+  selectedTile: number,
+  activePaletteStamp: PaletteStamp | null,
+): HTMLElement {
   const row = el("div", { class: "tile-palette-title-row" });
   row.append(
     el("h3", {
@@ -397,22 +411,109 @@ function makePaintTitleRow(layer: Exclude<Layer, "event">, paletteView: PaletteV
       text: layer === "upper" ? "타일 · 상위" : "타일 · 하위",
     })
   );
-  row.append(
+  const controls = el("div", { class: "tile-palette-title-controls" });
+  controls.append(
     el("div", {
-      class: "tile-palette-title-controls",
+      class: "palette-view-segment",
+      attrs: { role: "group", "aria-label": "타일 팔레트 보기" },
       children: [
-        el("div", {
-          class: "palette-view-segment",
-          attrs: { role: "group", "aria-label": "타일 팔레트 보기" },
-          children: [
-            makePaletteViewButton("cluster", "그룹", paletteView),
-            makePaletteViewButton("sheet", "시트", paletteView),
-          ],
-        }),
+        makePaletteViewButton("cluster", "그룹", paletteView),
+        makePaletteViewButton("sheet", "시트", paletteView),
       ],
-    })
+    }),
   );
+  // 좁은 패널에서 시트 까기 어려울 때 — 큰 팝아웃으로 고르기
+  controls.append(
+    el("button", {
+      class: "btn palette-sheet-expand",
+      text: "크게",
+      attrs: {
+        type: "button",
+        title: "타일 시트를 크게 열어 고르기",
+        "aria-label": "타일 시트 크게 보기",
+      },
+      dataset: { testid: "palette-sheet-expand" },
+      on: {
+        click: () => {
+          openChipsetSheetPopout({
+            layer,
+            tileset,
+            selectedTile,
+            activePaletteStamp,
+          });
+        },
+      },
+    }),
+  );
+  row.append(controls);
   return row;
+}
+
+function openChipsetSheetPopout(args: {
+  readonly layer: Exclude<Layer, "event">;
+  readonly tileset: TilesetDef;
+  readonly selectedTile: number;
+  readonly activePaletteStamp: PaletteStamp | null;
+}): void {
+  if (typeof document === "undefined") return;
+  document.querySelector("[data-testid='chipset-sheet-popout']")?.remove();
+  document.querySelector("[data-testid='chipset-sheet-popout-backdrop']")?.remove();
+
+  const close = (): void => {
+    backdrop.remove();
+    popout.remove();
+  };
+
+  const backdrop = el("div", {
+    class: "chipset-sheet-popout-backdrop",
+    dataset: { testid: "chipset-sheet-popout-backdrop" },
+    on: { click: close },
+  });
+
+  const sheet = makeChipsetSheet({
+    activePaletteStamp: args.activePaletteStamp,
+    layer: args.layer,
+    onCreatePaletteStamp: setPaletteStampFromDrag,
+    onSelectTile: (index) => {
+      selectPaletteTile(index);
+      // 선택 후 팝아웃 유지 — 여러 타일 연속 고르기 편하게. 닫기는 ✕/바깥클릭
+    },
+    selectedTile: args.selectedTile,
+    tileset: args.tileset,
+  });
+
+  const popout = el("div", {
+    class: "chipset-sheet-popout",
+    attrs: { role: "dialog", "aria-label": "타일 시트 크게 보기" },
+    dataset: { testid: "chipset-sheet-popout" },
+    children: [
+      el("div", {
+        class: "chipset-sheet-popout-head",
+        children: [
+          el("h2", { text: args.layer === "upper" ? "타일 시트 · 상위" : "타일 시트 · 하위" }),
+          el("button", {
+            class: "btn",
+            text: "닫기",
+            attrs: { type: "button", "aria-label": "닫기" },
+            dataset: { testid: "chipset-sheet-popout-close" },
+            on: { click: close },
+          }),
+        ],
+      }),
+      el("div", {
+        class: "chipset-sheet-popout-body",
+        children: [sheet],
+      }),
+    ],
+  });
+
+  document.body.append(backdrop, popout);
+  const onKey = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape") return;
+    close();
+    document.removeEventListener("keydown", onKey);
+  };
+  document.addEventListener("keydown", onKey);
 }
 
 function makePaletteViewButton(view: PaletteViewMode, label: string, activeView: PaletteViewMode): HTMLButtonElement {

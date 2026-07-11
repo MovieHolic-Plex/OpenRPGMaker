@@ -159,7 +159,10 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
           const at = built.sample ? ` 예: (${built.sample.x},${built.sample.y})` : "";
           issues.push({
             severity: "error",
-            message: `clear 에셋 '${asset.id}'가 기존 구조물을 덮습니다(${built.count}칸${at}). '주변만' 청소하려면 구조물을 피해 영역을 좁히고, 정말 철거하려면 confirmDestroy:true를 넣으세요.`,
+            message:
+              `clear 에셋 '${asset.id}'가 기존 구조물·비잔디 지형(호수/물·길·나무 등)을 덮습니다(${built.count}칸${at}). ` +
+              `호수·물·길을 치우는 요청이면 이 에셋에 confirmDestroy:true를 넣고 set_build_spec을 재제출하세요. ` +
+              `'주변만' 청소면 구조물·물을 피해 영역을 좁히세요.`,
           });
         }
         continue;
