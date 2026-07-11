@@ -4,6 +4,7 @@
 // 쓰기/읽기/에러복구를 골고루 포함한다.
 
 import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
+import { createBlankProject } from "@/project/defaults";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { Project } from "@/project/types";
@@ -209,6 +210,28 @@ const GOLDEN_SUMMARY_SOLUTION: readonly ToolCall[] = [
   // 읽기만 하므로 프로젝트를 변경하지 않는다(정답 시퀀스는 비어 있음).
 ];
 
+// 11) 몬스터 수집(포켓몬 코어): 수집 ON + 전투 파티 모드 ON + 스타터 지급 이벤트.
+// 저작 시점 session.monsterParty는 빈 채로 남는다(give_starter_monsters는 런타임 이벤트만 만든다).
+// 따라서 스타터 매처는 session.monsterParty가 아니라 system 플래그 + 스타터 지급 이벤트로 판정한다.
+const givesStarterMonster = hasEventWithCommand("giveMonster");
+export const GOLDEN_MONSTER: GoldenTask = {
+  id: "monster-collection",
+  prompt: "포켓몬처럼 몬스터를 잡아서 내 파티로 전투하는 게임으로 만들어줘. 스타터도 주고.",
+  initialProject: createBlankProject,
+  matchers: [
+    custom("몬스터 수집 ON", (project) => project.system.monsterCollection === true),
+    custom("몬스터 전투 파티 모드 ON", (project) => project.system.monsterBattleParty === true),
+    custom("스타터 지급 이벤트 존재", (project) =>
+      givesStarterMonster.check(project) ||
+      Object.values(project.maps).some((map) => map.events.some((event) => event.id.startsWith("ev_starter_monsters")))
+    ),
+  ],
+};
+const GOLDEN_MONSTER_SOLUTION: readonly ToolCall[] = [
+  { name: "configure_monster_system", args: { enabled: true, battleParty: true } },
+  { name: "give_starter_monsters", args: { speciesIds: ["species_leafling", "species_sparkit", "species_aqualing"] } },
+];
+
 export const GOLDEN_TASKS: readonly GoldenTask[] = [
   GOLDEN_INN,
   GOLDEN_SHOP,
@@ -220,6 +243,7 @@ export const GOLDEN_TASKS: readonly GoldenTask[] = [
   GOLDEN_LAYOUT,
   GOLDEN_ERROR_RECOVERY,
   GOLDEN_SUMMARY,
+  GOLDEN_MONSTER,
 ];
 
 // 태스크 id → 정답 시퀀스(오프라인 채점).
@@ -234,6 +258,7 @@ export const GOLDEN_SOLUTIONS: Record<string, readonly ToolCall[]> = {
   "town-layout": GOLDEN_LAYOUT_SOLUTION,
   "error-recovery": GOLDEN_ERROR_SOLUTION,
   summary: GOLDEN_SUMMARY_SOLUTION,
+  "monster-collection": GOLDEN_MONSTER_SOLUTION,
 };
 
 // LLM 러너가 참조할 개별 태스크 export(테스트/외부 재사용).

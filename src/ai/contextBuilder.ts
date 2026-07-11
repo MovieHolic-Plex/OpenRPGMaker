@@ -43,11 +43,13 @@ const BALANCE_NOTE = [
   "- 영웅 Lv1 기준: HP 514 / 공격 45 / 방어 59.",
   "- 데미지 공식: power + 공격/2 − 방어/2 (음수면 1로 클램프).",
   "- 새 적/스킬 수치는 이 곡선에 비례해 정하라. 과도한 값은 밸런스를 깨뜨린다.",
+  "- 몬스터 스탯은 레벨 스케일링됨(GROWTH maxHp×10·attack×9 등 L1→L99). 종족 baseStats는 영웅 곡선보다 낮게 잡아라(L1 몬스터가 곧 base+iv).",
 ].join("\n");
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
   "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots, 컷신=script_cutscene, 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 집+마당=build_house_lots, **마을=run_village_session(LLM이 buildOrder 기획: 호수/강→water 먼저, 그다음 settlement=집→길, 숲, critique, look) 또는 start_village_session+advance_village_build; 숏컷 run_village_pipeline. 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)** — 빈 build_village 금지에 가깝다, 성채=build_castle, 단일 집=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "몬스터수집/포켓몬=configure_monster_system(enabled+battleParty)→종족 define_monster_species→give_starter_monsters, 야생조우=make_hunting_ground/set_encounter_table, 포켓몬 오버월드=POKEMON_OVERWORLD_PRESET 그룹으로 fill_region(grass/tall_grass/dirt_route/water).",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 

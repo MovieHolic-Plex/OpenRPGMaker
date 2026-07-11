@@ -10,6 +10,7 @@ import {
   type ClusterGroupSnapshot,
 } from "@/ai/clusterAssistPrompt";
 import { store } from "@/project/store";
+import { pokemonPresetGroupIds, pokemonPresetRoleLabels } from "@/project/defaults";
 
 export type SkillParamType = "enum" | "number" | "text";
 export interface SkillRectArg {
@@ -453,6 +454,41 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       HONEST_REPORT_RULE,
     ].join("\n"),
     displayAs: (args) => `🎒 아이템 생성 — ${args.count}개 (${String(args.concept).slice(0, 30)})`,
+  },
+  {
+    id: "make-monster-collection",
+    icon: "🐾",
+    name: "몬스터 수집 게임",
+    description: "포켓몬처럼 몬스터를 잡아 파티로 전투하는 게임을 한 번에 배선합니다(수집 ON+스타터+야생 조우+오버월드).",
+    source: "system",
+    kind: "prompt",
+    params: [
+      { key: "theme", label: "테마", type: "text", placeholder: "예: 숲 마을에서 시작하는 3속성 스타터" },
+      { key: "starterCount", label: "스타터 수", type: "number", min: 1, max: 3, defaultValue: 3 },
+    ],
+    buildPrompt: (args) => {
+      const theme = textArg(args, "theme");
+      const starterCount = Math.max(1, Math.min(3, Math.round(numberArg(args, "starterCount", 3))));
+      const roleLabels = pokemonPresetRoleLabels().map((entry) => `${entry.role}(${entry.label})`).join(", ");
+      const groupIds = pokemonPresetGroupIds().join(", ");
+      return [
+        `'${theme || "포켓몬풍 몬스터 수집"}' 테마의 몬스터 수집 게임을 만들어 주세요. 스타터 ${starterCount}종.`,
+        "잡은 몬스터가 실제 전투에 출전하는 완결된 게임이 되도록 아래 순서를 지키세요:",
+        "",
+        "1. configure_monster_system({enabled:true, battleParty:true})를 먼저 호출하세요 — 이걸 켜야 전투에 '포획' 커맨드가 뜨고, 잡은 몬스터가 영웅 대신 파티로 출전합니다(둘 다 필수).",
+        `2. 스타터 ${starterCount}종 + 야생 1~2종을 준비하세요. 번들 종족(species_leafling·species_sparkit·species_aqualing, 야생 species_wild_slime 등)을 get_database_records(monsterSpecies)로 먼저 확인해 재사용하세요. 부족하면 define_monster_species로 새로 정의하되 types는 2개 이하, baseStats는 영웅 곡선보다 낮게(L1 몬스터가 곧 base+iv) 잡으세요.`,
+        "3. give_starter_monsters({speciesIds:[...위 스타터 종족...]})로 게임 시작 시 스타터를 고르는 지급 이벤트를 만드세요.",
+        "4. 야생 조우 — make_hunting_ground 또는 set_encounter_table로 잔디/키큰 풀에서 야생 몬스터가 등장하도록 배선하세요.",
+        `5. 오버월드 — POKEMON_OVERWORLD_PRESET role로 fill_region을 grass_field 전면 → dirt_route 루트 → tall_grass 인카운터 구역 → water 순으로 깔고, 나무/꽃은 place_props로 산포하세요. role→라벨: ${roleLabels}. 이 프리셋의 그룹 id(${groupIds})를 fill_region/lay_path/place_props의 *VocabId 인자에 그대로 넣으세요(추측 금지).`,
+        SPEC_RULE,
+        HONEST_REPORT_RULE,
+      ].join("\n");
+    },
+    displayAs: (args) => {
+      const theme = textArg(args, "theme");
+      const starterCount = Math.max(1, Math.min(3, Math.round(numberArg(args, "starterCount", 3))));
+      return `🐾 몬스터 수집 게임 — ${theme ? theme.slice(0, 30) : "기본"} / 스타터 ${starterCount}종`;
+    },
   },
 ];
 
