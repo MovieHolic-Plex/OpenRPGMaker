@@ -252,6 +252,8 @@ export type Command =
       quantityMode?: "single" | "select";
       shopType?: ShopType;
       messageType?: ShopMessageType;
+      /** 상인이 플레이어 물품을 살 때 쓸 소지금. 생략 시 런타임 기본 100G. */
+      merchantGold?: number;
       stock?: ShopStockEntry[];
       branchOnTransaction?: boolean;
       transactionBranch?: Command[];
