@@ -20,8 +20,12 @@ import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession 
 
 export const MONSTER_PARTY_MAX = 6;
 
-// L99/L1 스탯 배율(튜닝 대상, 배치 6에서 재조정). 이차 보간으로 액터 normalizeCurve 곡률과 정합.
-const MONSTER_GROWTH = { maxHp: 10, maxMp: 8, attack: 9, defense: 8, mind: 8, agility: 6 } as const;
+// L99/L1 스탯 배율(배치 6 실측 튜닝, test/pkmnBalanceB6.test.ts 가 고정 시드로 단정).
+// defense 만 5: 적 트룹 스탯이 고정이라 방어 성장 8은 중반 이후 피해가 최소치로 붕괴(만피 승리)했다.
+const MONSTER_GROWTH = { maxHp: 10, maxMp: 8, attack: 9, defense: 5, mind: 8, agility: 6 } as const;
+// 곡선 지수. 기존 이차(2.0)는 L20까지 성장 +4% 이하라 레벨업 체감 불가·동급 트룹 전패
+// (실측 winRate 0~0.34)였다. 1.5로 L10 +9%p·L20 +43%p·L35 +117%p(hp 기준) 수준.
+const MONSTER_GROWTH_CURVE_EXPONENT = 1.5;
 
 export type MonsterBattleStats = {
   readonly maxHp: number;
@@ -32,11 +36,12 @@ export type MonsterBattleStats = {
   readonly agility: number;
 };
 
-// 종족 baseStats + 개체값(IV)을 레벨에 따라 이차 보간으로 스케일링한다.
+// 종족 baseStats + 개체값(IV)을 레벨에 따라 멱곡선(지수 1.5)으로 스케일링한다.
 // L1(ratio=0)에서 정확히 base+iv 를 반환해 monsterMaxHpFor 구값과 비트 동일(하위호환 불변식).
+// L99(ratio=1)에서는 지수와 무관하게 (base+iv)×growth.
 export function monsterStatAtLevel(base: number, iv: number, level: number, growth: number): number {
   const ratio = (clampLevel(level) - 1) / (ACTOR_LEVEL_MAX - 1); // L1→0.0, L99→1.0
-  const grown = (base + iv) * (1 + (growth - 1) * ratio * ratio);
+  const grown = (base + iv) * (1 + (growth - 1) * Math.pow(ratio, MONSTER_GROWTH_CURVE_EXPONENT));
   return Math.max(1, Math.round(grown));
 }
 
