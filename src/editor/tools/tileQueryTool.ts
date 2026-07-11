@@ -1,7 +1,7 @@
 // 타일 지식 통합 조회 — 활성 LLM 툴 (core 노출).
 // 구 v2 지식 쓰기 래퍼(tile_metadata/group/…)는 제거. 쓰기는 propose_tile_vocabulary.
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import { approvedVocabulary, unapprovedVocabulary } from "@/project/tileVocabulary";
+import { approvedVocabulary, suggestMaterialsByLabel, unapprovedVocabulary } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { QUERY_TOOLS } from "./queryTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
@@ -16,12 +16,12 @@ const v1QueryTiles = byName(QUERY_TOOLS, "query_tiles");
 const v1FindSimilar = byName(VISION_QUERY_TOOLS, "find_similar_tiles");
 
 const QUERY_EXAMPLE = { ask: "palette", role: "decor", limit: 20 };
-const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "unapproved", "vocab"] as const;
+const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "unapproved", "vocab", "labels"] as const;
 
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기 — 칠할 타일을 모를 때 여기부터), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 어휘 요약(신규 재료 정의가 필요한지 확인용 — 존재하는 재료 시공에는 불필요)), vocab(사용 가능 어휘 그룹 전체 — 시공 id를 모를 때 여기부터).",
+    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터).",
   mode: "read",
   version: 3,
   domains: ["core", "tile"],
@@ -37,6 +37,7 @@ const tileQuery: ToolDefinition = {
       category: { type: "string", description: "ask=palette" },
       presetId: { type: "string", description: "ask=palette" },
       limit: { type: "integer" },
+      query: { type: "string", description: "ask=labels 전용: 라벨/설명 검색어(예: 물, 침엽수)" },
     },
     required: ["ask"],
   },
@@ -88,12 +89,43 @@ const tileQuery: ToolDefinition = {
       for (const group of vocab.groups) byRole.set(group.role, (byRole.get(group.role) ?? 0) + 1);
       const roleSummary = [...byRole.entries()].map(([role, count]) => `${role} ${count}`).join(", ");
       return {
-        summary: `사용 가능 어휘 그룹 ${vocab.groups.length}개(${roleSummary}) + 낱개 타일 ${vocab.tiles.length}개. 그룹 id를 wallVocabId/pathVocabId/tileVocabId/propVocabId에 그대로 넣어 시공 프리미티브를 호출하세요.`,
+        summary: `사용 가능 재료 그룹 ${vocab.groups.length}개(${roleSummary}) + 낱개 타일 ${vocab.tiles.length}개. 시공 시 material 에 타일 라벨/설명을 넣으세요(그룹 id·vocabId 금지). ask:"labels" 로 라벨 목록 조회.`,
         data: {
           tilesetId,
-          groups: vocab.groups.map((g) => ({ id: g.id, name: g.name, role: g.role, layerHome: g.layerHome, ...(g.patternKind ? { patternKind: g.patternKind } : {}) })),
+          // 그룹 id는 엔진 내부 참고용 — LLM은 material 라벨을 쓴다.
+          groups: vocab.groups.map((g) => ({ name: g.name, role: g.role, layerHome: g.layerHome, ...(g.patternKind ? { patternKind: g.patternKind } : {}) })),
           looseTiles: vocab.tiles.map((t) => ({ tileId: t.tileId, label: t.label, layerHome: t.layerHome })),
         },
+      };
+    }
+    if (ask === "labels") {
+      const tilesetId = typeof args.tilesetId === "string" && args.tilesetId ? args.tilesetId : DEFAULT_TILESET_ID;
+      const tileset = draft.tilesets[tilesetId];
+      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: DEFAULT_TILESET_ID });
+      const limit = typeof args.limit === "number" && Number.isInteger(args.limit) && args.limit > 0 ? Math.min(args.limit, 80) : 40;
+      const query = typeof args.query === "string" ? args.query : "";
+      const materials = suggestMaterialsByLabel(tileset, query, limit);
+      // 라벨이 비어 있으면 전체 스캔 샘플
+      const labels: { tileId: number; label: string; description: string; role?: string }[] = [];
+      if (materials.length > 0) {
+        for (const m of materials) labels.push({ tileId: m.tileId, label: m.label, description: m.description, ...(m.role ? { role: m.role } : {}) });
+      } else {
+        for (let tileId = 0; tileId < tileset.count && labels.length < limit; tileId += 1) {
+          const meta = tileset.tileMeta?.[tileId];
+          const label = typeof meta?.label === "string" ? meta.label.trim() : "";
+          const description = typeof meta?.description === "string" ? meta.description.trim() : "";
+          if (!label && !description) continue;
+          labels.push({
+            tileId,
+            label: label || `타일 ${tileId}`,
+            description,
+            ...(typeof meta?.role === "string" && meta.role ? { role: meta.role } : {}),
+          });
+        }
+      }
+      return {
+        summary: `타일 라벨 ${labels.length}개 — place_props/fill_region/build_wall 등의 material 인자에 label 문자열을 넣으세요(그룹 id 금지).`,
+        data: { tilesetId, query: query || null, labels },
       };
     }
     return failWithExample("알 수 없는 tile_query ask입니다", QUERY_EXAMPLE);

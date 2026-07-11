@@ -21,6 +21,8 @@ export {
   type TownHouseShowcaseStyle,
 } from "./townShowcaseMaps";
 export { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
+// villageShoppingStreetBuild 는 toolRunner/store 순환을 유발하므로 defaultMaps 에서 re-export 하지 않음.
+// createVillageShoppingStreet* 는 villageShoppingStreetMap / defaultProject 경로를 사용.
 
 const STARTER_MAP_SIZE = 30;
 const LOG_CABIN_SHOWCASE_SIZE = 32;

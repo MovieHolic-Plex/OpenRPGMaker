@@ -150,7 +150,7 @@ const plaza = { x: 14, y: 16, w: 12, h: 8 };
 runOk(ctx, "place_props", {
   mapId,
   area: plaza,
-  propVocabId: "harness-combined-town-bench-horizontal",
+  material: "벤치",
   count: 2,
   minGap: 2,
   naturalness: 0.35,
@@ -159,7 +159,7 @@ runOk(ctx, "place_props", {
 runOk(ctx, "place_props", {
   mapId,
   area: plaza,
-  propVocabId: "harness-combined-town-flower-props",
+  material: "꽃",
   count: 3,
   minGap: 1,
   naturalness: 0.45,
@@ -168,7 +168,7 @@ runOk(ctx, "place_props", {
 runOk(ctx, "place_props", {
   mapId,
   area: plaza,
-  propVocabId: "harness-combined-town-table-horizontal",
+  material: "가로 탁자",
   count: 1,
   minGap: 2,
   naturalness: 0.35,
@@ -178,7 +178,7 @@ runOk(ctx, "place_props", {
 runOk(ctx, "place_props", {
   mapId,
   area: { x: 15, y: 17, w: 5, h: 4 },
-  propVocabId: "harness-combined-town-fruit-box",
+  material: "과일박스",
   count: 2,
   minGap: 1,
   naturalness: 0.25,
@@ -187,7 +187,7 @@ runOk(ctx, "place_props", {
 runOk(ctx, "place_props", {
   mapId,
   area: { x: 21, y: 20, w: 4, h: 3 },
-  propVocabId: "harness-combined-town-wood-box",
+  material: "나무 상자",
   count: 2,
   minGap: 1,
   naturalness: 0.25,

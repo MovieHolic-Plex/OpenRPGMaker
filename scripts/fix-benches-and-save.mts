@@ -40,7 +40,7 @@ const ctx = { project };
 const placed = runTool(ctx, "place_props", {
   mapId: "map_lake_village",
   area: { x: 20, y: 36, w: 12, h: 4 },
-  propVocabId: "harness-combined-town-bench-horizontal",
+  material: "벤치",
   count: 3,
   naturalness: 0.3,
   minGap: 2,

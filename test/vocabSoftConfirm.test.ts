@@ -51,7 +51,7 @@ describe("vocab soft-confirm", () => {
     const result = runTool(ctx, "place_props", {
       mapId: MAP_ID,
       area: { x: 2, y: 2, w: 10, h: 8 },
-      propVocabId: TREE,
+      material: TREE,
       count: 2,
       seed: 11,
     });
@@ -64,7 +64,7 @@ describe("vocab soft-confirm", () => {
 
     const call: ProposedCall = {
       name: "place_props",
-      args: { mapId: MAP_ID, propVocabId: TREE },
+      args: { mapId: MAP_ID, material: TREE },
       summary: result.summary,
       result,
       destructive: false,

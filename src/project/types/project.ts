@@ -55,6 +55,42 @@ export interface GameMap {
   farmableArea?: Rect[];
   // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.
   defaultLighting?: LightingState;
+  /**
+   * 생성·시공 시 bbox 설계도. 타일 시공 후에도 남겨 두어
+   * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
+   */
+  layoutPlan?: MapLayoutPlan;
+}
+
+/** 맵 기물 영역 (집 롯·시장·숲·강 등). 시공 후에도 좌표·역할 유지. */
+export interface MapLayoutRegion {
+  id: string;
+  /** river | lake | plaza | market | house | forest | custom… */
+  role: string;
+  /** 사용자/에이전트 질의용 표시명 (예: "파랑 지붕 집", "중앙 상점") */
+  label: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** 집 키트 등 부가 속성 */
+  kitId?: string;
+  shape?: string;
+  yardTheme?: string;
+  tags?: string[];
+  doorAt?: { x: number; y: number };
+  front?: { x: number; y: number };
+  hasFence?: boolean;
+}
+
+export interface MapLayoutPlan {
+  version: 1;
+  kind: string;
+  seed?: number;
+  generatedAt?: string;
+  regions: MapLayoutRegion[];
+  roadAnchors?: { id: string; x: number; y: number }[];
+  notes?: string;
 }
 
 export interface EncounterTableEntry {

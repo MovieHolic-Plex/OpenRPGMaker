@@ -17,12 +17,11 @@ const FLOWER = 288;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
 const WATER = 120;
-const MARKET_TOP_LEFT = 411;
-const MARKET_TOP_MID = 412;
-const MARKET_TOP_RIGHT = 413;
-const MARKET_BOTTOM_LEFT = 441;
-const MARKET_BOTTOM_MID = 442;
-const MARKET_BOTTOM_RIGHT = 443;
+/** 장터 카운터 — 천막 411–443 사용 금지 */
+const TABLE_L = 234;
+const TABLE_M = 235;
+const TABLE_R = 236;
+const WOOD_BOX = 237;
 const TOWN_PATH_TILES = new Set<number>(Object.values(SAND_TILE));
 
 type CityHouse = TilePoint & {
@@ -92,10 +91,8 @@ function stampHouseDecor(map: GameMap, house: CityHouse): void {
       stampUpperPattern(map, { x: house.x + 2, y: house.y + 13 }, [[FLOWER, -1, FLOWER], [-1, FLOWER, -1]]);
       return;
     case "market":
-      stampUpperPattern(map, { x: house.x + 1, y: house.y + 13 }, [
-        [MARKET_TOP_LEFT, MARKET_TOP_MID, MARKET_TOP_RIGHT],
-        [MARKET_BOTTOM_LEFT, MARKET_BOTTOM_MID, MARKET_BOTTOM_RIGHT],
-      ]);
+      stampUpperPattern(map, { x: house.x + 1, y: house.y + 12 }, [[WOOD_BOX, FLOWER, -1, WOOD_BOX]]);
+      stampUpperPattern(map, { x: house.x + 1, y: house.y + 13 }, [[TABLE_L, TABLE_M, TABLE_M, TABLE_R]]);
       return;
     case "bench":
       stampUpperPattern(map, { x: house.x + 2, y: house.y + 13 }, [[BENCH_LEFT, BENCH_RIGHT], [FLOWER, -1]]);
@@ -145,8 +142,8 @@ function stampTownDetails(map: GameMap): void {
   stampLowerRect(map, { x: 23, y: 33 }, 3, 3, WATER);
   stampUpperPattern(map, { x: 12, y: 18 }, [[BENCH_LEFT, BENCH_RIGHT], [FLOWER, -1], [-1, FLOWER]]);
   stampUpperPattern(map, { x: 27, y: 17 }, [[BENCH_LEFT, BENCH_RIGHT], [-1, FLOWER], [FLOWER, -1]]);
-  stampUpperPattern(map, { x: 41, y: 31 }, [[MARKET_TOP_LEFT, MARKET_TOP_MID, MARKET_TOP_RIGHT], [MARKET_BOTTOM_LEFT, MARKET_BOTTOM_MID, MARKET_BOTTOM_RIGHT]]);
-  stampUpperPattern(map, { x: 24, y: 39 }, [[MARKET_TOP_LEFT, MARKET_TOP_MID, MARKET_TOP_RIGHT], [MARKET_BOTTOM_LEFT, MARKET_BOTTOM_MID, MARKET_BOTTOM_RIGHT]]);
+  stampUpperPattern(map, { x: 41, y: 31 }, [[TABLE_L, TABLE_M, TABLE_M, TABLE_R], [WOOD_BOX, FLOWER, -1, WOOD_BOX]]);
+  stampUpperPattern(map, { x: 24, y: 39 }, [[TABLE_L, TABLE_M, TABLE_M, TABLE_R], [WOOD_BOX, -1, FLOWER, WOOD_BOX]]);
   stampUpperPattern(map, { x: 4, y: 31 }, [[FLOWER, -1, FLOWER]]);
   stampUpperPattern(map, { x: 29, y: 36 }, [[FLOWER, FLOWER]]);
   stampUpperPattern(map, { x: 44, y: 43 }, [[FLOWER], [FLOWER]]);

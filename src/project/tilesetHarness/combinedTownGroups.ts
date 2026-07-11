@@ -322,11 +322,11 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     role: "building",
     defaultLayer: "lower",
     tileIds: [...CHIPSET_TILE_GROUPS.stoneStairObjects],
-    description: "돌계단: 좌 111 + 중 112(무제한 연장) + 우 113.",
-    placementRules: "가로로 전개. 112는 중앙 반복.",
+    description: "돌계단: 좌 111 + 중 112(무제한 연장) + 우 113. RM2k3 가로 층계 — 밟을 수 있음(좌우 4-dir은 harness 후처리).",
+    placementRules: "가로로 전개. 112는 중앙 반복. 절벽 옆 진입용.",
     confidence: "high",
     source: "bundled-default",
-    passage: "solid",
+    passage: "passable",
     repeatability: "repeat",
     patternGrammar: {
       axis: "horizontal",
@@ -374,8 +374,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "bench-horizontal",
     "벤치(가로)",
     [327, 328],
-    "가로 벤치: 좌 327 + 우 328 (1×2). 세로 의자는 bench-vertical(358|388).",
-    "passable",
+    "가로 벤치: 좌 327 + 우 328 (1×2). 세로 의자는 bench-vertical(358|388). 통행 불가(×).",
+    "solid",
     {
       patternGrammar: {
         axis: "horizontal",
@@ -396,8 +396,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "bench-vertical",
     "의자(세로)",
     [358, 388],
-    "세로 의자/벤치: 상 358 + 하 388 (1×2). 둘 다 상위 레이어.",
-    "passable",
+    "세로 의자/벤치: 상 358 + 하 388 (1×2). 둘 다 상위 레이어. 통행 불가(×).",
+    "solid",
     {
       patternGrammar: {
         axis: "vertical",
@@ -418,8 +418,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "table-horizontal",
     "탁자(가로)",
     [...CHIPSET_TILE_GROUPS.tableHorizontalObjects],
-    "가로 탁자: 좌 234 + 중 235(무제한 연장) + 우 236. 상위 레이어.",
-    "passable",
+    "가로 탁자: 좌 234 + 중 235(무제한 연장) + 우 236. 상위 레이어. 통행 불가(×) — 상점 카운터.",
+    "solid",
     {
       patternGrammar: {
         axis: "horizontal",
@@ -440,8 +440,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "table-vertical",
     "탁자(세로)",
     [...CHIPSET_TILE_GROUPS.tableVerticalObjects],
-    "세로 탁자: 상 144 + 중 174(무제한 연장) + 하 204. 상위 레이어.",
-    "passable",
+    "세로 탁자: 상 144 + 중 174(무제한 연장) + 하 204. 상위 레이어. 통행 불가(×).",
+    "solid",
     {
       patternGrammar: {
         axis: "vertical",
@@ -462,22 +462,22 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "table-chairs",
     "탁자 옆 의자",
     [175, 176, 205, 206],
-    "탁자 옆 의자: 175=탁자 위(아래 봄), 176=탁자 아래(위 봄), 205=탁자 왼(오 봄), 206=탁자 오른(왼 봄). 단독 산포 시 탁자 그룹과 함께 배치.",
-    "passable",
+    "탁자 옆 의자: 175=탁자 위(아래 봄), 176=탁자 아래(위 봄), 205=탁자 왼(오 봄), 206=탁자 오른(왼 봄). 통행 불가(×).",
+    "solid",
   ),
   mixedStackGroup(
     "free-chairs",
     "의자(단독)",
     [147, 148],
-    "147=등받이 없는 의자, 148=등받이 있는 의자. 단독 배치.",
-    "passable",
+    "147=등받이 없는 의자, 148=등받이 있는 의자. 단독 배치. 통행 불가(×).",
+    "solid",
   ),
   mixedStackGroup(
     "house-yard-props",
     "집 앞 마당 소품",
     [...CHIPSET_TILE_GROUPS.houseYardObjects],
-    "집 앞에 두는 마당 소품: 349장작, 350우편함, 351화분, 352항아리. 가방 1칸 산포.",
-    "passable",
+    "집 앞에 두는 마당 소품: 349장작, 350우편함, 351화분, 352항아리. 통행 불가(×).",
+    "solid",
     {
       rules: [
         {
@@ -494,8 +494,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "cemetery-props",
     "묘지 소품",
     [...CHIPSET_TILE_GROUPS.cemeteryObjects],
-    "묘지: 323묘지, 353묘비, 383해골. 집과 멀리 떨어진 곳에만 배치.",
-    "passable",
+    "묘지: 323묘지, 353묘비, 383해골. 집과 멀리. 통행 불가(×).",
+    "solid",
     {
       rules: [
         {
@@ -519,8 +519,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "fruit-box",
     "과일박스",
     [...CHIPSET_TILE_GROUPS.fruitBoxObjects],
-    "과일박스: 좌 202 + 우 203 (1×2).",
-    "passable",
+    "과일박스: 좌 202 + 우 203 (1×2). 통행 불가(×).",
+    "solid",
     {
       patternGrammar: {
         axis: "horizontal",
@@ -541,8 +541,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "wood-box",
     "나무 상자",
     [...CHIPSET_TILE_GROUPS.woodBoxObjects],
-    "나무 상자(237) 단독 소품.",
-    "passable",
+    "나무 상자(237) 단독 소품. 통행 불가(×).",
+    "solid",
   ),
   // 장터 데크·부두 바닥. fill_region(오토타일 전용) 대신 paint_tiles rect / place 로 면 채움.
   lowerPassableTerrainGroup(
@@ -612,8 +612,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
           && !(CHIPSET_TILE_GROUPS.cemeteryObjects as readonly number[]).includes(tile),
       ),
     ],
-    "표지판·횃불·석상 등 잔여 소품 가방. 벤치·집앞·묘지·탁자는 전용 그룹 사용.",
-    "passable",
+    "표지판·횃불·석상 등 잔여 소품 가방. 통행 불가(×). 꽃·사다리는 별 그룹.",
+    "solid",
   ),
   // 헤드리스 플레이테스트로 검증된 통행성 함정 타일(핸드오프 0.4) — 겉보기와 달리 통행이 막히는 돌바닥.
   lowerSolidGroup("stone-floor-trap", "돌바닥", [TILE.FLOOR, 343], "겉보기엔 평평해 통행 가능해 보이지만 실측 결과 통행이 막히는 돌바닥입니다. 장식용 바닥 마감으로만 사용하세요."),

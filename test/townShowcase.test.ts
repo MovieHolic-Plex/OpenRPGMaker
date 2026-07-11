@@ -92,7 +92,7 @@ describe("town showcase maps", () => {
         map.lowerTiles[at(map, 9, 6)] ?? TILE.EMPTY,
         countUpperTile(map, 260),
         countUpperTile(map, 288),
-        countUpperTile(map, 411),
+        countUpperTile(map, 234),
         countUpperTile(map, 327),
         countTownPathTiles(map),
       ].join(":");

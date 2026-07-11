@@ -4,7 +4,7 @@ import { DEFAULT_TILE_SIZE, TILE } from "./constants";
 import {
   stampTownCityPlot,
   stampTownHouseStyle,
-  stampTownMarket,
+  stampTownMarketCounter,
   townHouseShowcaseName,
   type TownCityPlotStyle,
   type TownHouseShowcaseStyle,
@@ -53,8 +53,8 @@ export function createTownCityShowcaseMap(): GameMap {
   for (const plot of TOWN_CITY_PLOTS) stampTownCityPlot(map, plot.style, plot.x, plot.y);
   shapeAllTownPaths(map);
   clearUpperTilesOnTownPath(map);
-  stampTownMarket(map, 47, 47);
-  stampTownMarket(map, 51, 55);
+  stampTownMarketCounter(map, 47, 47);
+  stampTownMarketCounter(map, 51, 55);
   return map;
 }
 

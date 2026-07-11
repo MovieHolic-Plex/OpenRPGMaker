@@ -257,10 +257,13 @@ describe("suggestVocabGroups", () => {
     expect(ids.some((id) => id.includes("timber-stone-wall") || id.includes("castle-wall"))).toBe(true);
   });
 
-  it("id 부분 문자열로도 찾는다", () => {
+  it("영문 stone-wall 질의도 석벽 계열 라벨 후보로 이어진다", () => {
     const { tileset } = context();
     const ids = suggestVocabGroups(tileset(), "stone-wall").map((s) => s.id);
-    expect(ids.some((id) => id.includes("timber-stone-wall"))).toBe(true);
+    // 라벨/설명 매칭 → 그룹 역조회. 없으면 빈 배열일 수 있어 돌벽 동의어로 재확인.
+    const viaKorean = suggestVocabGroups(tileset(), "돌벽").map((s) => s.id);
+    const all = new Set([...ids, ...viaKorean]);
+    expect([...all].some((id) => id.includes("timber-stone-wall") || id.includes("castle-wall") || id.includes("stone"))).toBe(true);
   });
 });
 

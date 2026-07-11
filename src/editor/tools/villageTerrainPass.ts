@@ -1,15 +1,10 @@
 // 방안 E 하이브리드: Blueprint/requirements → 제약 마스크 → 지형 패스(시공 솔버).
 // 지금 솔버 = fill_region(오토타일) + place_props. 이후 WFC로 water/forest 마스크만 교체 가능.
 
-import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { GameMap, Project } from "@/project/types";
 import type { ToolDefinition } from "./types";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
-
-const WATER_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}lake-water-autotile`;
-const TREE_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
-const BROADLEAF_2X2_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
 
 export interface Rect {
   readonly x: number;
@@ -135,7 +130,7 @@ export function applyTerrainPassFromMasks(
       const result = props.run(draft, {
         mapId: map.id,
         area: rect,
-        propVocabId: TREE_GROUP,
+        material: "침엽수",
         count,
         minGap: 2,
         naturalness: 0.6,
@@ -155,7 +150,7 @@ export function applyTerrainPassFromMasks(
       const big = props.run(draft, {
         mapId: map.id,
         area: rect,
-        propVocabId: BROADLEAF_2X2_GROUP,
+        material: "활엽수",
         count: bigCount,
         minGap: 3,
         naturalness: 0.55,
@@ -279,7 +274,7 @@ function runFill(
     const result = fill.run(draft, {
       mapId,
       rect,
-      tileVocabId: WATER_GROUP,
+      material: "물",
       layer: "lower",
       shape,
     });
