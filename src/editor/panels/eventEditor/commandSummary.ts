@@ -92,6 +92,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(messageWindowFormatLabel(cmd.format)),
     plainPart(" / "),
     valuePart(messageWindowPositionLabel(cmd.position)),
+    ...(cmd.preventObscuringPlayer ? [plainPart(" / "), valuePart("가림 방지")] : []),
     ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
   ),
   choices: (cmd) => commandLine(
@@ -104,7 +105,16 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   inputWait: (cmd) => cmd.variableId
     ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
     : [commandPart("입력 대기")],
-  inputNumber: (cmd) => commandLine("숫자 입력", valuePart(recordName("variable", cmd.variableId)), plainPart(" / "), valuePart(String(cmd.digits)), plainPart("자리")),
+  inputNumber: (cmd) =>
+    commandLine(
+      "숫자 입력",
+      valuePart(recordName("variable", cmd.variableId)),
+      plainPart(" / "),
+      valuePart(String(cmd.digits)),
+      plainPart("자리"),
+      ...(cmd.prompt?.trim() ? [plainPart(" · "), valuePart(cmd.prompt.trim())] : []),
+      ...(cmd.showPad ? [plainPart(" · "), valuePart("키패드")] : [])
+    ),
   label: (cmd) => commandLine("라벨", valuePart(cmd.name)),
   gotoLabel: (cmd) => commandLine("라벨로 점프", valuePart(cmd.name)),
   loop: (cmd) => commandLine("반복", valuePart(String(cmd.body.length)), plainPart("개 명령")),

@@ -1,8 +1,7 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { applySystemGraphic } from "@/player/systemGraphics";
-import { renderFacesetPreview } from "./facesetPreview";
+import { renderFacesetCrop } from "./facesetPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
 import { facesetIconOf, initialBadge, recordIconElement } from "./recordPicker";
 import { commandLabel } from "./commandPicker";
@@ -12,6 +11,9 @@ import { previewForkFlow } from "./previewForkFlow";
 import { previewMoveRoute } from "./previewMoveRoute";
 import { previewPicture } from "./previewPicture";
 import type { Command } from "@/project/types";
+
+/** In-game face size inside the message-window mock (48×48 source, scaled for readability). */
+const PREVIEW_FACE_SIZE = 96;
 
 // [중간-3] 프리뷰 문맥: 직전 changeFace 상태 등 리스트 문맥을 프리뷰에 전달.
 export type CommandPreviewContext = {
@@ -45,6 +47,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
   choices: choicesMock,
+  inputNumber: inputNumberStage,
   transfer: transferStage,
   moveEvent: previewMoveRoute,
   fork: previewForkFlow,
@@ -81,59 +84,115 @@ function messageWindowMock(
   face?: CommandPreviewContext["face"]
 ): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
+  // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
+  // 메시지 프리뷰는 windowskin-rm2003 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
   const win = el("div", {
     class: `ecp-message-window${faceRight ? " face-right" : ""}${face ? " with-face" : ""}`,
     dataset: { testid: "ecp-message-window" },
   });
-  applySystemGraphic(win);
   // [중간-3] 직전 changeFace 상태가 있으면 화자 얼굴을 프리뷰에 반영.
+  // Crop only — no editor resource-id chrome inside the play mock.
   if (face) {
     win.append(
-      renderFacesetPreview({
+      renderFacesetCrop({
         resourceId: face.resourceId,
         faceIndex: face.faceIndex,
-        position: "left",
-        flipHorizontally: false,
+        displaySize: PREVIEW_FACE_SIZE,
       })
     );
   }
-  if (speaker) win.append(el("div", { class: "ecp-message-speaker", text: speaker }));
-  win.append(el("div", { class: "ecp-message-body", text: body || "..." }));
+  const textCol = el("div", { class: "ecp-message-text" });
+  if (speaker) textCol.append(el("div", { class: "ecp-message-speaker", text: speaker }));
+  textCol.append(el("div", { class: "ecp-message-body", text: body || "..." }));
+  win.append(textCol);
   stage.append(win);
   return stage;
 }
 
 function faceStage(cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
-  const stage = el("div", { class: "ecp-stage" });
-  const win = el("div", { class: `ecp-message-window with-face${cmd.position === "right" ? " face-right" : ""}` });
-  applySystemGraphic(win);
+  // Play mock: face graphic as it will appear next to dialogue — not the editor label card.
+  const stage = el("div", { class: "ecp-stage ecp-face-stage" });
+  const win = el("div", {
+    class: `ecp-message-window with-face ecp-face-message${cmd.position === "right" ? " face-right" : ""}`,
+    dataset: { testid: "ecp-message-window" },
+  });
   win.append(
-    renderFacesetPreview({
+    renderFacesetCrop({
       resourceId: cmd.resourceId,
       faceIndex: cmd.faceIndex,
-      position: cmd.position,
       flipHorizontally: cmd.flipHorizontally,
+      displaySize: PREVIEW_FACE_SIZE,
     }),
-    el("div", { class: "ecp-message-body muted", text: cmd.position === "right" ? "얼굴이 오른쪽에 표시됩니다" : "얼굴이 왼쪽에 표시됩니다" })
+    el("div", {
+      class: "ecp-message-text",
+      children: [
+        el("div", {
+          class: "ecp-message-body",
+          text: "대사 창에\n이 얼굴이 표시됩니다.",
+        }),
+      ],
+    })
   );
   stage.append(win);
+  const side = cmd.position === "right" ? "오른쪽" : "왼쪽";
+  const faceNo = Math.max(0, Math.trunc(cmd.faceIndex)) + 1;
+  stage.append(
+    el("div", {
+      class: "ecp-face-caption",
+      text: `${side} · 얼굴 ${faceNo}${cmd.flipHorizontally ? " · 좌우 반전" : ""}`,
+      dataset: { testid: "ecp-face-caption" },
+    })
+  );
   return stage;
 }
 
 function settingsMessageMock(cmd: Extract<Command, { kind: "displayTextSettings" }>): HTMLElement {
-  const stage = el("div", { class: `ecp-stage pos-${cmd.position}` });
   const transparent = cmd.format === "transparent";
-  const win = el("div", { class: `ecp-message-window${transparent ? " transparent" : ""}` });
-  if (!transparent) applySystemGraphic(win);
-  win.append(el("div", { class: "ecp-message-body muted", text: `${transparent ? "투명" : "일반"} 창 · ${positionLabel(cmd.position)}` }));
+  const stage = el("div", {
+    class: `ecp-stage pos-${cmd.position}`,
+    dataset: { testid: "ecp-settings-stage" },
+  });
+  // 플레이어 위치를 무대 중앙에 두고, 가림 방지 시 창이 플레이어를 피한 느낌을 준다.
+  stage.append(el("div", { class: "ecp-player-pawn", attrs: { title: "플레이어" }, text: "★" }));
+  const win = el("div", {
+    class: `ecp-message-window${transparent ? " transparent" : ""}`,
+    dataset: { testid: "ecp-message-window" },
+  });
+  win.append(
+    el("div", { class: "ecp-message-speaker", text: "미리보기" }),
+    el("div", {
+      class: "ecp-message-body",
+      text: transparent
+        ? "투명 창으로 표시됩니다.\n배경 없이 글자만 보입니다."
+        : "일반 창으로 표시됩니다.\n이후 문장 표시에 적용됩니다.",
+    })
+  );
   stage.append(win);
-  return stage;
+
+  const badges = el("div", { class: "ecp-settings-badges", dataset: { testid: "ecp-settings-badges" } });
+  badges.append(el("span", { class: "ecp-move-badge", text: transparent ? "투명" : "일반" }));
+  badges.append(el("span", { class: "ecp-move-badge", text: positionLabel(cmd.position) }));
+  badges.append(
+    el("span", {
+      class: `ecp-move-badge${cmd.preventObscuringPlayer ? "" : " off"}`,
+      text: cmd.preventObscuringPlayer ? "가림 방지 ON" : "가림 방지 OFF",
+    })
+  );
+  badges.append(
+    el("span", {
+      class: `ecp-move-badge${cmd.allowEventMovementDuringWait ? "" : " off"}`,
+      text: cmd.allowEventMovementDuringWait ? "이벤트 이동 허용" : "이벤트 이동 정지",
+    })
+  );
+
+  const wrap = el("div", { class: "ecp-settings-preview" });
+  wrap.append(stage, badges);
+  return wrap;
 }
 
 function choicesMock(cmd: Extract<Command, { kind: "choices" }>): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
   const win = el("div", { class: "ecp-message-window" });
-  applySystemGraphic(win);
   if (cmd.prompt) win.append(el("div", { class: "ecp-message-body", text: cmd.prompt }));
   const list = el("div", { class: "ecp-choice-list" });
   cmd.options.forEach((option, index) => list.append(el("div", { class: "ecp-choice", text: `▶ ${option.text || `선택지 ${index + 1}`}` })));
@@ -141,6 +200,62 @@ function choicesMock(cmd: Extract<Command, { kind: "choices" }>): HTMLElement {
   win.append(list);
   stage.append(win);
   return stage;
+}
+
+/** 숫자 입력 — System.png fill 팔레트 오염을 피하려고 상점 미리보기와 같이 솔리드 창. */
+function inputNumberStage(cmd: Extract<Command, { kind: "inputNumber" }>): HTMLElement {
+  const digits = Math.max(1, Math.min(6, Math.trunc(cmd.digits) || 1));
+  const title = cmd.prompt?.trim() || "숫자 입력";
+  const stage = el("div", { class: "ecp-stage ecp-number-stage" });
+  const win = el("div", {
+    class: "ecp-number-window ecp-number-window-clean",
+    dataset: { testid: "ecp-number-window" },
+  });
+  win.append(el("div", { class: "ecp-number-title", text: title }));
+
+  const slots = el("div", {
+    class: "ecp-number-slots",
+    dataset: { testid: "ecp-number-slots" },
+  });
+  // 미리보기 샘플: 왼쪽부터 채워진 자릿수 예시 (123… 패턴).
+  const sample = "123456".slice(0, digits);
+  for (let i = 0; i < digits; i += 1) {
+    const ch = sample[i] ?? "0";
+    slots.append(
+      el("div", {
+        class: `ecp-number-slot${i < sample.length ? " filled" : ""}${i === Math.min(sample.length, digits - 1) ? " cursor" : ""}`,
+        text: ch,
+      })
+    );
+  }
+  win.append(slots);
+
+  if (cmd.showPad) {
+    const pad = el("div", { class: "ecp-number-pad", dataset: { testid: "ecp-number-pad" } });
+    for (const key of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "←", "0", "OK"] as const) {
+      pad.append(el("div", { class: `ecp-number-pad-key${key === "OK" ? " ok" : ""}`, text: key }));
+    }
+    win.append(pad);
+  }
+
+  win.append(
+    el("div", {
+      class: "ecp-number-meta",
+      dataset: { testid: "ecp-number-meta" },
+      text: `${digits}자리 · 변수 ${variablePreviewName(cmd.variableId)}`,
+    })
+  );
+  stage.append(win);
+  return stage;
+}
+
+function variablePreviewName(variableId: string): string {
+  if (!variableId) return "(미선택)";
+  const project = store.getCurrent();
+  const index = project.variables.findIndex((entry) => entry.id === variableId);
+  if (index < 0) return variableId;
+  const name = project.variables[index]?.name?.trim();
+  return name ? `${String(index + 1).padStart(4, "0")}: ${name}` : String(index + 1).padStart(4, "0");
 }
 
 function transferStage(cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {

@@ -14,7 +14,11 @@ import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { openNewEventCommandKindDialog } from "./commandEditDialog";
-import { renderEventGraphicIcon, renderEventGraphicPreview } from "./eventGraphicPreview";
+import {
+  PAGE_TAB_ICON_PREVIEW_SCALE,
+  renderEventGraphicIcon,
+  renderEventGraphicPreview,
+} from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
@@ -131,7 +135,7 @@ function pageTabThumbnail(page: EventPage): HTMLElement {
     class: "event-page-tab-thumb",
     attrs: { "aria-hidden": "true" },
     dataset: { testid: "event-page-tab-thumb" },
-    children: [renderEventGraphicIcon(page.graphic)],
+    children: [renderEventGraphicIcon(page.graphic, { scale: PAGE_TAB_ICON_PREVIEW_SCALE })],
   });
 }
 

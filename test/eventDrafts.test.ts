@@ -3,11 +3,17 @@ import { createEventDraft, beginExistingEventDraft, discardEventDraft, saveEvent
 import { editorState } from "@/editor/editorState";
 import { setEventPageTextCommand } from "@/editor/eventPages";
 import { createBlankProject } from "@/project/defaults";
-import { eventDraftDiffById, projectWithoutEventDrafts } from "@/project/eventDrafts";
+import {
+  eventDraftDiffById,
+  projectWithoutEventDrafts,
+  projectWithPreservedEventDrafts,
+} from "@/project/eventDrafts";
+import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  _resetEventDraftVaultForTest();
+  store.replaceProject(createBlankProject());
   editorState.set({ selectedEventId: null, selectedEventPageId: null });
 });
 
@@ -96,14 +102,18 @@ describe("event draft lifecycle", () => {
     expect(editorState.get().selectedEventPageId).toBe("event_multi_page_2");
   });
 
-  it("keeps a newly clicked event out of persisted project data until save", () => {
+  it("persists the working body of a new draft so autosave can recover mid-edit work", () => {
     const mapId = store.getCurrent().startMapId;
     const initialEventCount = store.getCurrent().maps[mapId].events.length;
     const initialPersistedCount = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events.length;
     const eventId = createEventDraft(mapId, 2, 2);
 
     expect(store.getCurrent().maps[mapId].events).toHaveLength(initialEventCount + 1);
-    expect(projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events).toHaveLength(initialPersistedCount);
+    // Working body is durable; only draft *metadata* is stripped for storage.
+    const persistedWhileDraft = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events;
+    expect(persistedWhileDraft).toHaveLength(initialPersistedCount + 1);
+    expect(persistedWhileDraft.find((event) => event.id === eventId)?.draft).toBeUndefined();
+    expect(store.getCurrent().maps[mapId].events.find((event) => event.id === eventId)?.draft?.kind).toBe("new");
 
     const diff = eventDraftDiffById(store.getCurrent(), mapId, eventId);
     expect(diff?.kind).toBe("created");
@@ -138,7 +148,7 @@ describe("event draft lifecycle", () => {
     expect(editorState.get().selectedEventPageId).toBe(pageId);
   });
 
-  it("keeps edits diffable and out of persisted project data until save", () => {
+  it("keeps edit diffs while also persisting the working body for recovery", () => {
     const mapId = store.getCurrent().startMapId;
     const eventId = createEventDraft(mapId, 4, 4);
     saveEventDraft(mapId, eventId);
@@ -148,8 +158,17 @@ describe("event draft lifecycle", () => {
     beginExistingEventDraft(mapId, eventId);
     setEventPageTextCommand(mapId, eventId, pageId, undefined, "changed before save");
 
+    // Working body is what autosave writes (continuous recovery).
     const beforeSave = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events.find((event) => event.id === eventId);
-    expect(beforeSave?.pages?.[0]?.commands).toEqual([]);
+    expect(beforeSave?.pages?.[0]?.commands[0]).toEqual({
+      kind: "text",
+      body: "changed before save",
+      speaker: undefined,
+    });
+    // Draft metadata still carries the pre-edit original for Cancel.
+    const live = store.getCurrent().maps[mapId].events.find((event) => event.id === eventId);
+    expect(live?.draft?.kind).toBe("edit");
+    expect(live?.draft?.original?.pages?.[0]?.commands).toEqual([]);
     const diff = eventDraftDiffById(store.getCurrent(), mapId, eventId);
     expect(diff?.kind).toBe("updated");
     expect(diff?.changes.map((change) => change.path)).toContain("event.pages[0].commands[0]");
@@ -160,6 +179,40 @@ describe("event draft lifecycle", () => {
     expect(afterSave?.pages?.[0]?.commands[0]).toEqual({
       kind: "text",
       body: "changed before save",
+      speaker: undefined,
+    });
+  });
+
+  it("reapplies draft metadata onto a metadata-stripped autosave snapshot", () => {
+    const mapId = store.getCurrent().startMapId;
+    const newEventId = createEventDraft(mapId, 6, 6);
+    const existingId = createEventDraft(mapId, 7, 7);
+    saveEventDraft(mapId, existingId);
+    beginExistingEventDraft(mapId, existingId);
+    const pageId = store.getCurrent().maps[mapId].events.find((event) => event.id === existingId)?.pages?.[0]?.id;
+    if (!pageId) throw new Error("default event page missing");
+    setEventPageTextCommand(mapId, existingId, pageId, undefined, "still editing");
+
+    const live = store.getCurrent();
+    const saved = projectWithoutEventDrafts(live);
+    // Working bodies survive strip; draft metadata does not.
+    expect(saved.maps[mapId].events.some((event) => event.id === newEventId)).toBe(true);
+    expect(saved.maps[mapId].events.find((event) => event.id === newEventId)?.draft).toBeUndefined();
+    expect(saved.maps[mapId].events.find((event) => event.id === existingId)?.pages?.[0]?.commands[0]).toEqual({
+      kind: "text",
+      body: "still editing",
+      speaker: undefined,
+    });
+
+    const restored = projectWithPreservedEventDrafts(saved, live);
+    const restoredNew = restored.maps[mapId].events.find((event) => event.id === newEventId);
+    const restoredEdit = restored.maps[mapId].events.find((event) => event.id === existingId);
+    expect(restoredNew?.draft?.kind).toBe("new");
+    expect(restoredNew?.x).toBe(6);
+    expect(restoredEdit?.draft?.kind).toBe("edit");
+    expect(restoredEdit?.pages?.[0]?.commands[0]).toEqual({
+      kind: "text",
+      body: "still editing",
       speaker: undefined,
     });
   });

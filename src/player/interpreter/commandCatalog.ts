@@ -360,6 +360,8 @@ export function executeCommand(
         kind: "inputNumber",
         variableId: command.variableId,
         digits: command.digits,
+        prompt: command.prompt,
+        showPad: command.showPad,
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "label":

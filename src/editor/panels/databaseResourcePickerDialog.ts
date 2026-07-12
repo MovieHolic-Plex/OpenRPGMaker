@@ -1,3 +1,4 @@
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHARSET_CHARACTER_COUNT,
   CHARSET_FRAME_HEIGHT,
@@ -5,7 +6,6 @@ import {
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
   EASYRPG_BACKDROP_ASSETS,
-  EASYRPG_CHARSET_ASSETS,
   EASYRPG_FACESET_ASSETS,
   EASYRPG_MONSTER_ASSETS,
   EASYRPG_SYSTEM2_ASSETS,
@@ -19,6 +19,12 @@ import {
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
+import {
+  SCARLOXY_BACKDROP_ASSETS,
+  SCARLOXY_MONSTER_ASSETS,
+  SCARLOXY_MONSTER_ICON_ASSETS,
+  SCARLOXY_UI_ICON_ASSETS,
+} from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
@@ -322,10 +328,11 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       for (const asset of EASYRPG_FACESET_ASSETS) add(asset.id, asset.name);
       break;
     case "charset":
-      for (const asset of EASYRPG_CHARSET_ASSETS) add(asset.id, asset.name);
+      for (const asset of CHARSET_ASSETS) add(asset.id, asset.name);
       break;
     case "monster":
       for (const asset of EASYRPG_MONSTER_ASSETS) add(asset.id, asset.name);
+      for (const asset of SCARLOXY_MONSTER_ASSETS) add(asset.id, asset.name);
       break;
     case "title":
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
@@ -338,10 +345,13 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       break;
     case "backdrop":
       for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
+      for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       break;
     case "icon":
     case "image":
       for (const asset of CC0_ICON_ASSETS) add(asset.id, asset.name);
+      for (const asset of SCARLOXY_MONSTER_ICON_ASSETS) add(asset.id, asset.name);
+      for (const asset of SCARLOXY_UI_ICON_ASSETS) add(asset.id, asset.name);
       break;
     case "battleCharset":
       break;

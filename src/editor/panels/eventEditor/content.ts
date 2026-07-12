@@ -75,9 +75,19 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     return;
   }
 
-  const ev = map.events.find((event) => event.id === eventId);
+  let ev = map.events.find((event) => event.id === eventId);
   if (!ev) {
-    section.append(el("div", { class: "empty-hint", text: "이벤트를 찾을 수 없습니다." }));
+    // Autosave/replace races must never blank the open editor — restore from vault once.
+    if (store.restoreEventDraftFromVault(mapId, eventId)) {
+      ev = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId);
+    }
+  }
+  if (!ev) {
+    section.append(el("div", {
+      class: "empty-hint",
+      text: "이벤트를 찾을 수 없습니다. 편집 세션이 끊겼다면 맵에서 이벤트를 다시 열어 주세요.",
+      dataset: { testid: "event-editor-missing" },
+    }));
     container.append(section);
     return;
   }

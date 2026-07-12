@@ -1,10 +1,10 @@
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHARSET_CHARACTER_COUNT,
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
-  EASYRPG_CHARSET_ASSETS,
   charsetFrameIndex,
   charsetFrameSource,
   decodeCharsetFrameIndex,
@@ -47,7 +47,7 @@ export function renderNpcGraphicPicker(
   root.className = "npc-graphic-picker event-graphic-rm-picker";
   root.dataset.testid = "npc-graphic-picker";
 
-  const resourceList = renderGraphicResourceList(EASYRPG_CHARSET_ASSETS, (asset) => {
+  const resourceList = renderGraphicResourceList(CHARSET_ASSETS, (asset) => {
     applySelection({ ...selection, asset });
   });
 
@@ -159,7 +159,7 @@ function initialSelection(page: EventPage): NpcGraphicSelection {
 }
 
 function firstCharsetAsset(): EasyRpgCharsetAsset {
-  const first = EASYRPG_CHARSET_ASSETS[0];
+  const first = CHARSET_ASSETS[0];
   if (!first) {
     throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
   }
@@ -167,7 +167,7 @@ function firstCharsetAsset(): EasyRpgCharsetAsset {
 }
 
 function findCharsetAsset(textureKey: string): EasyRpgCharsetAsset | undefined {
-  return EASYRPG_CHARSET_ASSETS.find((asset) => asset.textureKey === textureKey);
+  return CHARSET_ASSETS.find((asset) => asset.textureKey === textureKey);
 }
 
 function applyPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection, scale: number): void {

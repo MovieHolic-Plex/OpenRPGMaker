@@ -1,13 +1,15 @@
-import { el } from "@/util/dom";
+import { clearChildren, el } from "@/util/dom";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, Dir, MapId, MoveCommand } from "@/project/types";
 import type { CommandEditContext } from "./types";
 import {
+  DIRECTIONAL_MOVE_TEST_IDS,
   MOVE_ROUTE_COMMAND_ROWS,
   moveCommandLabel,
   type MoveRouteCommandContext,
 } from "./moveRouteCommandCatalog";
+import { previewMoveRoute } from "./previewMoveRoute";
 
 const routeParameterDrafts = new Map<string, MoveRouteCommandContext>();
 
@@ -15,6 +17,12 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   const wrap = el("div", { class: "move-route-editor", dataset: { testid: "move-route-editor" } });
   const parameterKey = context.path.join(".");
   const parameterDraft = routeParameterDrafts.get(parameterKey) ?? inferRouteParameters(cmd.route.moves);
+
+  // 로컬 경로 상태: replaceCommand 가 폼을 재빌드하지 않으므로(shouldRerenderCommandForm)
+  // 이동 단계 추가는 여기서 관리하고 동기화만 한다.
+  let moves: MoveCommand[] = [...cmd.route.moves];
+  let selectedIndex = moves.length > 0 ? moves.length - 1 : -1;
+
   // 대상: 이 이벤트("") / 주인공(PLAYER_MOVE_TARGET) / 특정 이벤트(임의 ID).
   const targetKindOf = (id: string): "this" | "player" | "event" =>
     id === PLAYER_MOVE_TARGET ? "player" : id === "" ? "this" : "event";
@@ -35,12 +43,13 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
   const resolvedEventId = (): string => {
     if (targetSelect.value === "player") return PLAYER_MOVE_TARGET;
     if (targetSelect.value === "this") return "";
-    return eventIdIn.value;
+    return eventIdIn.value.trim();
   };
   const syncTargetVisibility = () => {
     eventIdIn.style.display = targetSelect.value === "event" ? "" : "none";
   };
   syncTargetVisibility();
+
   const repeat = el("input", {
     attrs: { type: "checkbox" },
     dataset: { testid: "move-route-repeat-checkbox" },
@@ -51,6 +60,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     dataset: { testid: "move-route-wait-checkbox" },
   });
   wait.checked = cmd.route.wait === true;
+
   const switchIdIn = el("input", {
     attrs: { type: "text", placeholder: "스위치 ID" },
     value: parameterDraft.switchId,
@@ -78,106 +88,248 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     dataset: { testid: "move-route-npc-target-y-input" },
   });
   const npcTargetDirection = directionSelect(parameterDraft.npcTargetDirection);
+
+  const commandList = el("div", {
+    class: "move-route-command-list",
+    dataset: { testid: "move-route-command-list" },
+  });
+  const previewHost = el("div", {
+    class: "move-route-path-preview",
+    dataset: { testid: "move-route-path-preview" },
+  });
+  // 숨김 요약: 기존 e2e/도구가 move-route-summary 텍스트를 읽을 수 있게 유지.
+  const summary = el("div", {
+    class: "move-route-summary empty-hint",
+    text: "",
+    dataset: { testid: "move-route-summary" },
+  });
+  const deleteButton = el("button", {
+    class: "btn small",
+    text: "선택 삭제",
+    attrs: { type: "button" },
+    dataset: { testid: "move-route-delete-selected" },
+  });
+  const clearButton = el("button", {
+    class: "btn small danger",
+    text: "비우기",
+    attrs: { type: "button" },
+    dataset: { testid: "move-route-clear" },
+  });
+
+  const parameterContext = (): MoveRouteCommandContext => ({
+    switchId: switchIdIn.value.trim(),
+    spriteId: graphicIdIn.value.trim(),
+    soundId: soundIdIn.value.trim(),
+    npcTargetMapId: npcTargetMap.value,
+    npcTargetX: parseInt(npcTargetX.value, 10) || 0,
+    npcTargetY: parseInt(npcTargetY.value, 10) || 0,
+    npcTargetDirection: toDirection(npcTargetDirection.value),
+  });
+
+  const persistParameters = () => {
+    routeParameterDrafts.set(parameterKey, parameterContext());
+  };
+
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "moveEvent",
       eventId: resolvedEventId(),
-      route: { moves: cmd.route.moves, repeat: repeat.checked, wait: wait.checked },
+      route: { moves: [...moves], repeat: repeat.checked, wait: wait.checked },
     });
   };
+
+  const renderList = () => {
+    clearChildren(commandList);
+    if (moves.length === 0) {
+      commandList.append(
+        el("div", {
+          class: "move-route-list-empty",
+          text: "(이동 단계 없음)",
+        })
+      );
+    } else {
+      moves.forEach((move, index) => {
+        commandList.append(
+          el("button", {
+            class: selectedIndex === index ? "move-route-list-row selected" : "move-route-list-row",
+            text: `${index + 1}. ${moveCommandLabel(move)}`,
+            attrs: { type: "button" },
+            dataset: { testid: `move-route-command-${index + 1}` },
+            on: {
+              click: () => {
+                selectedIndex = index;
+                renderList();
+              },
+            },
+          })
+        );
+      });
+    }
+    summary.textContent = moves.map(moveCommandLabel).join(" -> ") || "(이동 단계 없음)";
+    deleteButton.disabled = selectedIndex < 0 || selectedIndex >= moves.length;
+    clearButton.disabled = moves.length === 0;
+  };
+
+  const renderPreview = () => {
+    clearChildren(previewHost);
+    previewHost.append(
+      previewMoveRoute({
+        kind: "moveEvent",
+        eventId: resolvedEventId(),
+        route: { moves: [...moves], repeat: repeat.checked, wait: wait.checked },
+      })
+    );
+  };
+
+  const syncUi = () => {
+    renderList();
+    renderPreview();
+    apply();
+  };
+
   targetSelect.addEventListener("change", () => {
+    if (targetSelect.value !== "event") eventIdIn.value = "";
     syncTargetVisibility();
     apply();
+    renderPreview();
   });
-  eventIdIn.addEventListener("change", apply);
-  repeat.addEventListener("change", apply);
+  eventIdIn.addEventListener("change", () => {
+    // e2e/직접 입력: ID 가 있으면 특정 이벤트 대상으로 승격.
+    if (eventIdIn.value.trim()) {
+      targetSelect.value = "event";
+      syncTargetVisibility();
+    }
+    apply();
+    renderPreview();
+  });
+  repeat.addEventListener("change", () => {
+    apply();
+    renderPreview();
+  });
   wait.addEventListener("change", apply);
   for (const input of [switchIdIn, graphicIdIn, soundIdIn, npcTargetMap, npcTargetX, npcTargetY, npcTargetDirection]) {
-    input.addEventListener("input", () => {
-      routeParameterDrafts.set(parameterKey, {
-        switchId: switchIdIn.value.trim(),
-        spriteId: graphicIdIn.value.trim(),
-        soundId: soundIdIn.value.trim(),
-        npcTargetMapId: npcTargetMap.value,
-        npcTargetX: parseInt(npcTargetX.value, 10) || 0,
-        npcTargetY: parseInt(npcTargetY.value, 10) || 0,
-        npcTargetDirection: toDirection(npcTargetDirection.value),
-      });
-    });
-    input.addEventListener("change", () => {
-      routeParameterDrafts.set(parameterKey, {
-        switchId: switchIdIn.value.trim(),
-        spriteId: graphicIdIn.value.trim(),
-        soundId: soundIdIn.value.trim(),
-        npcTargetMapId: npcTargetMap.value,
-        npcTargetX: parseInt(npcTargetX.value, 10) || 0,
-        npcTargetY: parseInt(npcTargetY.value, 10) || 0,
-        npcTargetDirection: toDirection(npcTargetDirection.value),
-      });
-    });
+    input.addEventListener("input", persistParameters);
+    input.addEventListener("change", persistParameters);
   }
+
   const controls = el("div", { class: "move-route-controls" });
   for (const row of MOVE_ROUTE_COMMAND_ROWS) {
     for (const item of row) {
+      const children: HTMLElement[] = [];
+      if (item.icon) {
+        children.push(
+          el("span", {
+            class: "move-route-command-icon",
+            attrs: { "aria-hidden": "true" },
+            dataset: { glyph: item.icon },
+          })
+        );
+      }
+      children.push(el("span", { class: "move-route-command-label", text: item.label }));
+      const directional = DIRECTIONAL_MOVE_TEST_IDS.has(item.testId);
       controls.append(
         el("button", {
-          class: "btn small",
-          text: item.label,
+          class: directional
+            ? "btn small move-route-add-command move-route-add-command-directional"
+            : "btn small move-route-add-command",
+          attrs: { type: "button" },
           dataset: { testid: `move-route-add-${item.testId}` },
+          children,
           on: {
             click: () => {
-              const move = item.createCommand({
-                switchId: switchIdIn.value.trim(),
-                spriteId: graphicIdIn.value.trim(),
-                soundId: soundIdIn.value.trim(),
-                npcTargetMapId: npcTargetMap.value,
-                npcTargetX: parseInt(npcTargetX.value, 10) || 0,
-                npcTargetY: parseInt(npcTargetY.value, 10) || 0,
-                npcTargetDirection: toDirection(npcTargetDirection.value),
-              });
-              if (move) replaceMoveRoute(context, resolvedEventId(), repeat.checked, [...cmd.route.moves, move], wait.checked);
+              const move = item.createCommand(parameterContext());
+              if (!move) return;
+              moves = [...moves, move];
+              selectedIndex = moves.length - 1;
+              syncUi();
             },
           },
         })
       );
     }
   }
-  controls.append(
-    el("button", {
-      class: "btn small danger",
-      text: "비우기",
-      dataset: { testid: "move-route-clear" },
-      on: { click: () => replaceMoveRoute(context, resolvedEventId(), repeat.checked, [], wait.checked) },
-    })
-  );
-  const repeatLabel = el("label", { text: "반복" });
-  repeatLabel.prepend(repeat);
-  const waitLabel = el("label", { text: "완료까지 대기" });
-  waitLabel.prepend(wait);
+
+  deleteButton.addEventListener("click", () => {
+    if (selectedIndex < 0 || selectedIndex >= moves.length) return;
+    moves = moves.filter((_, index) => index !== selectedIndex);
+    selectedIndex = moves.length === 0 ? -1 : Math.min(selectedIndex, moves.length - 1);
+    syncUi();
+  });
+  clearButton.addEventListener("click", () => {
+    moves = [];
+    selectedIndex = -1;
+    syncUi();
+  });
+
+  const repeatLabel = el("label", { class: "move-route-option", children: [repeat, el("span", { text: "반복" })] });
+  const waitLabel = el("label", {
+    class: "move-route-option",
+    children: [wait, el("span", { text: "완료까지 대기" })],
+  });
+
   wrap.append(
-    el("div", { children: [el("span", { class: "move-route-target-label", text: "대상" }), targetSelect, eventIdIn, repeatLabel, waitLabel] }),
-    el("div", { class: "move-route-parameters", children: [switchIdIn, graphicIdIn, soundIdIn, npcTargetMap, npcTargetX, npcTargetY, npcTargetDirection] }),
-    controls,
     el("div", {
-      class: "empty-hint",
-      text: cmd.route.moves.map(moveCommandLabel).join(" -> ") || "(이동 단계 없음)",
-      dataset: { testid: "move-route-summary" },
+      class: "move-route-toolbar",
+      children: [
+        el("div", {
+          class: "move-route-target-row",
+          children: [
+            el("span", { class: "move-route-target-label", text: "대상" }),
+            targetSelect,
+            eventIdIn,
+          ],
+        }),
+        el("div", { class: "move-route-options", children: [repeatLabel, waitLabel] }),
+      ],
+    }),
+    el("div", {
+      class: "move-route-parameters",
+      children: [
+        labeledField("스위치", switchIdIn),
+        labeledField("그래픽", graphicIdIn),
+        labeledField("효과음", soundIdIn),
+        labeledField("NPC 맵", npcTargetMap),
+        labeledField("X", npcTargetX),
+        labeledField("Y", npcTargetY),
+        labeledField("방향", npcTargetDirection),
+      ],
+    }),
+    el("div", {
+      class: "move-route-main",
+      children: [
+        el("div", {
+          class: "move-route-list-panel",
+          children: [
+            el("div", { class: "move-route-panel-title", text: "이동 명령" }),
+            commandList,
+            previewHost,
+            summary,
+            el("div", {
+              class: "move-route-list-actions",
+              children: [deleteButton, clearButton],
+            }),
+          ],
+        }),
+        el("div", {
+          class: "move-route-controls-panel",
+          children: [
+            el("div", { class: "move-route-panel-title", text: "명령 추가" }),
+            controls,
+          ],
+        }),
+      ],
     })
   );
+
+  renderList();
+  renderPreview();
   return wrap;
 }
 
-function replaceMoveRoute(
-  context: CommandEditContext,
-  eventId: string,
-  repeat: boolean,
-  moves: MoveCommand[],
-  wait: boolean
-): void {
-  context.actions.replaceCommand(context.path, {
-    kind: "moveEvent",
-    eventId,
-    route: { moves, repeat, wait },
+function labeledField(label: string, control: HTMLElement): HTMLElement {
+  return el("label", {
+    class: "move-route-parameter-field",
+    children: [el("span", { text: label }), control],
   });
 }
 

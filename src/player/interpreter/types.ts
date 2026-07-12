@@ -33,7 +33,14 @@ export type StepResult =
   | { kind: "waitForAllMovement" }
   | { kind: "stopAllMovement" }
   | { kind: "inputWait"; variableId?: string }
-  | { kind: "inputNumber"; variableId: string; digits: number; settings: MessageWindowSettings }
+  | {
+      kind: "inputNumber";
+      variableId: string;
+      digits: number;
+      prompt?: string;
+      showPad?: boolean;
+      settings: MessageWindowSettings;
+    }
   | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
   | { kind: "advanceTime"; minutes?: number; days?: number }

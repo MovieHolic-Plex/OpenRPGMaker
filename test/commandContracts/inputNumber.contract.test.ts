@@ -71,4 +71,18 @@ describe("inputNumber 계약", () => {
     expect(result.pauses[0]?.kind).toBe("inputNumber");
     expect(result.finished).toBe(true);
   });
+
+  it("선택 필드: prompt/showPad 가 pause 에 전달된다", () => {
+    const result = runCommandContract(
+      [{ kind: "inputNumber", variableId: "var_custom", digits: 2, prompt: "비밀번호", showPad: true }],
+      { answers: [12] }
+    );
+    expect(result.pauses[0]).toMatchObject({
+      kind: "inputNumber",
+      prompt: "비밀번호",
+      showPad: true,
+      digits: 2,
+    });
+    expect(result.session.variables.var_custom).toBe(12);
+  });
 });

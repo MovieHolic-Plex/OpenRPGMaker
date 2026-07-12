@@ -1,9 +1,9 @@
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
-  EASYRPG_CHARSET_ASSETS,
   charsetFrameIndex,
   charsetFrameSource,
   decodeCharsetFrameIndex,
@@ -14,7 +14,13 @@ import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKey
 import type { AutonomousMovement, EventPageGraphic } from "@/project/types";
 
 const PREVIEW_SCALE = 2;
+/** Compact icons for event list / world cards (~16.5×22). */
 const ICON_PREVIEW_SCALE = 0.6875;
+/**
+ * Page-tab thumbnails: 48×64 charset cell (scale 2) so the side strip tab
+ * is almost filled by the character graphic; page number overlays the bottom.
+ */
+export const PAGE_TAB_ICON_PREVIEW_SCALE = 2;
 const DEFAULT_FRONT_FRAME = {
   characterIndex: 0,
   direction: "down",
@@ -25,11 +31,14 @@ export function renderEventGraphicPreview(graphic: EventPageGraphic, movementTyp
   return renderEventGraphicElement(graphic, "event-graphic-preview", PREVIEW_SCALE, movementType, "event-page-graphic-preview");
 }
 
-export function renderEventGraphicIcon(graphic: EventPageGraphic): HTMLElement {
+export function renderEventGraphicIcon(
+  graphic: EventPageGraphic,
+  options?: { readonly scale?: number }
+): HTMLElement {
   return renderEventGraphicElement(
     graphic,
     "event-graphic-preview event-graphic-icon-preview",
-    ICON_PREVIEW_SCALE,
+    options?.scale ?? ICON_PREVIEW_SCALE,
     "fixed",
     "event-page-graphic-icon-preview"
   );
@@ -143,5 +152,5 @@ function movementTitle(movementType: AutonomousMovement): string {
 }
 
 function findCharsetAsset(textureKey: string): EasyRpgCharsetAsset | undefined {
-  return EASYRPG_CHARSET_ASSETS.find((asset) => asset.textureKey === textureKey);
+  return CHARSET_ASSETS.find((asset) => asset.textureKey === textureKey);
 }

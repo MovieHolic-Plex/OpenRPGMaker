@@ -12,6 +12,7 @@ import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceReso
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
 import { assert } from "./guards";
 
 export function collectResourceIds(project: Project): Set<string> {
@@ -29,6 +30,7 @@ export function collectResourceIds(project: Project): Set<string> {
     if ("textureKey" in asset) ids.add(asset.textureKey);
   }
   for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
+  for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   return ids;
 }
 

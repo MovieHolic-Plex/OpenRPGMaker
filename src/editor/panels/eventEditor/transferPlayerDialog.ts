@@ -73,19 +73,35 @@ function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest,
   const fadeGroup = fadeControls(draft, () => rerenderFooter());
   let previewRenderVersion = 0;
 
+  const previewFitDisplay = () => {
+    // Leave a small inset so the scaled canvas does not clip against the frame border.
+    const inset = 4;
+    return {
+      maxWidth: Math.max(1, preview.clientWidth - inset),
+      maxHeight: Math.max(1, preview.clientHeight - inset),
+    };
+  };
+
   const rerenderAll = () => {
     previewRenderVersion += 1;
     const renderVersion = previewRenderVersion;
     renderTree(tree, project, draft, rerenderAll);
+    const fitDisplay = previewFitDisplay();
     drawTransferMapPreview({
       canvas,
       project,
       mapId: draft.mapId,
       selection: draft,
+      fitDisplay,
       isCurrent: () => renderVersion === previewRenderVersion,
     }).catch(() => {
       if (renderVersion === previewRenderVersion) {
-        drawTransferFallback({ canvas, map: project.maps[draft.mapId], selection: draft });
+        drawTransferFallback({
+          canvas,
+          map: project.maps[draft.mapId],
+          selection: draft,
+          fitDisplay,
+        });
       }
     });
     rerenderFooter();
@@ -125,13 +141,15 @@ function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest,
     el("div", { class: "transfer-player-dialog", children: [
       tree,
       preview,
-      el("fieldset", { class: "transfer-player-direction", children: [
-        el("legend", { text: "방향" }),
-        directionGroup,
-      ] }),
-      el("fieldset", { class: "transfer-player-direction", children: [
-        el("legend", { text: "페이드" }),
-        fadeGroup,
+      el("div", { class: "transfer-player-controls", children: [
+        el("fieldset", { class: "transfer-player-direction", children: [
+          el("legend", { text: "방향" }),
+          directionGroup,
+        ] }),
+        el("fieldset", { class: "transfer-player-direction", children: [
+          el("legend", { text: "페이드" }),
+          fadeGroup,
+        ] }),
       ] }),
       el("div", { class: "transfer-player-footer", children: [
         status,
@@ -156,7 +174,10 @@ function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest,
       ] }),
     ] })
   );
-  rerenderAll();
+  // Layout must settle so preview.clientWidth/Height are non-zero before fit-to-box scale.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => rerenderAll());
+  });
 }
 
 function fadeControls(draft: TransferDraft, onChange: () => void): HTMLElement {

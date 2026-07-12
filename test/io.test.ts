@@ -180,13 +180,15 @@ describe("deserialize 거부", () => {
         x: 1,
         y: 1,
         trigger: { kind: "action" },
-        commands: [{ kind: "inputNumber", variableId: "var_pin", digits: 6 }],
+        commands: [{ kind: "inputNumber", variableId: "var_pin", digits: 6, prompt: "PIN", showPad: true }],
       },
     ];
     expect(deserialize(JSON.stringify(obj)).maps[mapId].events[0].commands[0]).toMatchObject({
       kind: "inputNumber",
       variableId: "var_pin",
       digits: 6,
+      prompt: "PIN",
+      showPad: true,
     });
 
     obj.maps[mapId].events[0].commands[0].digits = 7;

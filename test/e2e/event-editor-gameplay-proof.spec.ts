@@ -146,14 +146,26 @@ async function authorAndEditTextCommand(page: Page): Promise<void> {
 async function authorTransferCommand(page: Page): Promise<void> {
   await page.getByTestId("event-command-empty-line").dblclick();
   const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("event-command-picker-tab-2").click();
+  await picker.getByTestId("event-command-picker-tab-1").click();
   await picker.getByTestId("command-picker-add-transfer").click();
   const commandDialog = page.getByTestId("event-command-edit-dialog");
   await expect(commandDialog).toBeVisible();
   await commandDialog.getByTestId("transfer-player-open").click();
   const dialog = page.getByTestId("event-transfer-player-dialog");
   await dialog.getByTestId("transfer-player-map-map_route").click();
-  await dialog.getByTestId("transfer-player-map-preview").click({ position: { x: 2 * 16 + 8, y: 2 * 16 + 8 } });
+  const transferPreview = dialog.getByTestId("transfer-player-map-preview");
+  const transferClick = await transferPreview.evaluate((node) => {
+    if (!(node instanceof HTMLCanvasElement)) throw new Error("transfer preview is not a canvas");
+    const tileSize = 16;
+    const tileX = 2;
+    const tileY = 2;
+    const rect = node.getBoundingClientRect();
+    return {
+      x: ((tileX + 0.5) * tileSize / Math.max(1, node.width)) * rect.width,
+      y: ((tileY + 0.5) * tileSize / Math.max(1, node.height)) * rect.height,
+    };
+  });
+  await transferPreview.click({ position: transferClick });
   await dialog.getByTestId("transfer-player-direction-right").check();
   await screenshot(page, "03-editor-transfer-direction-popup.png");
   await dialog.getByTestId("transfer-player-ok").click();

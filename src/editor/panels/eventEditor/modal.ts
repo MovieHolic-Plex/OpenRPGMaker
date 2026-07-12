@@ -3,6 +3,7 @@ import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   beginExistingEventDraft,
+  checkpointEventDraft,
   createEventDraft,
   discardEventDraft,
   saveEventDraft,
@@ -16,6 +17,7 @@ import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 const EVENT_EDITOR_CLOSE_EVENT = "rpgzzu:event-editor-close";
+const EVENT_EDITOR_CHECKPOINT_MS = 1500;
 
 type OpenEventEditorRequest = {
   readonly mapId: MapId;
@@ -61,6 +63,12 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   });
   let stableRendered = false;
   const refresh = () => {
+    // Full dynamic re-render resets overflow; restore scroll so edits in the lower
+    // page-prop grid (graphic / movement / living destinations) do not jump to top.
+    const scrollSnapshots = captureEventEditorScroll(dynamicBody);
+    // If a store race dropped the event, reattach from vault before paint.
+    const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
+    if (!live) store.restoreEventDraftFromVault(request.mapId, request.eventId);
     if (!stableRendered) {
       clearChildren(stableBody);
       renderEventEditorStable(stableBody, request.mapId, request.eventId);
@@ -68,17 +76,27 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     }
     clearChildren(dynamicBody);
     renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
+    restoreEventEditorScroll(dynamicBody, scrollSnapshots);
+    // Keep title in sync when draft meta changes after autosave reattach.
+    const title = header.querySelector("h2");
+    if (title) title.textContent = eventEditorTitle(request.mapId, request.eventId);
   };
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);
+  const checkpointTimer = globalThis.setInterval(() => {
+    checkpointEventDraft(request.mapId, request.eventId);
+  }, EVENT_EDITOR_CHECKPOINT_MS);
   backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, close));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
+    globalThis.clearInterval(checkpointTimer);
     if (!saved) discardEventDraft(request.mapId, request.eventId);
     unsubscribeStore();
     unsubscribeEditor();
   });
   document.body.append(backdrop);
+  // Immediate durable checkpoint so a crash right after open still recovers.
+  checkpointEventDraft(request.mapId, request.eventId);
   refresh();
   focusFirstDialogControl(backdrop);
 }
@@ -139,7 +157,9 @@ function eventDisplayNameOf(event: { readonly pages?: readonly { readonly name: 
 
 function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
   const draftKind = store.getCurrent().maps[request.mapId]?.events.find((event) => event.id === request.eventId)?.draft?.kind;
-  const cancelHint = draftKind === "new" ? "취소하면 새 이벤트가 생성되지 않습니다." : "취소하면 저장 전 변경을 폐기합니다.";
+  const cancelHint = draftKind === "new"
+    ? "편집 중 내용은 자동 저장됩니다. 취소하면 이 새 이벤트를 삭제합니다."
+    : "편집 중 내용은 자동 저장됩니다. 취소하면 열기 전 상태로 되돌립니다.";
   return el("div", {
     class: "event-editor-modal-footer",
     children: [
@@ -250,6 +270,55 @@ function focusFirstDialogControl(root: HTMLElement): void {
   );
   if (first instanceof HTMLElement) first.focus({ preventScroll: true });
   root.scrollTo({ left: 0, top: 0 });
+}
+
+/** Scroll hosts that reappear after every store/editor re-render of the dynamic body. */
+const EVENT_EDITOR_SCROLL_SELECTORS = [
+  ".event-editor-settings-main",
+  ".event-page-props",
+  ".event-page-number-tabs",
+  ".cmd-list",
+  ".event-editor-commands-column",
+] as const;
+
+type EventEditorScrollSnapshot = {
+  readonly selector: (typeof EVENT_EDITOR_SCROLL_SELECTORS)[number];
+  readonly left: number;
+  readonly top: number;
+};
+
+function captureEventEditorScroll(root: HTMLElement): readonly EventEditorScrollSnapshot[] {
+  return EVENT_EDITOR_SCROLL_SELECTORS.flatMap((selector) => {
+    const element = root.querySelector(selector);
+    if (!(element instanceof HTMLElement)) return [];
+    return [{
+      selector,
+      left: readScrollNumber(element, "scrollLeft"),
+      top: readScrollNumber(element, "scrollTop"),
+    }];
+  });
+}
+
+function restoreEventEditorScroll(root: HTMLElement, snapshots: readonly EventEditorScrollSnapshot[]): void {
+  applyEventEditorScroll(root, snapshots);
+  if (typeof window === "undefined" || typeof window.requestAnimationFrame !== "function") return;
+  // Layout can settle after paint (images / grid); re-apply once so the jump does not return.
+  window.requestAnimationFrame(() => applyEventEditorScroll(root, snapshots));
+}
+
+function applyEventEditorScroll(root: HTMLElement, snapshots: readonly EventEditorScrollSnapshot[]): void {
+  for (const snapshot of snapshots) {
+    if (snapshot.left === 0 && snapshot.top === 0) continue;
+    const element = root.querySelector(snapshot.selector);
+    if (!(element instanceof HTMLElement)) continue;
+    element.scrollLeft = snapshot.left;
+    element.scrollTop = snapshot.top;
+  }
+}
+
+function readScrollNumber(node: HTMLElement, key: "scrollLeft" | "scrollTop"): number {
+  const value = (node as unknown as Record<string, unknown>)[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 function displayEventNumber(mapId: MapId, eventId: string): string {

@@ -1,4 +1,5 @@
-import { el } from "@/util/dom";
+import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
+import { clearChildren, el } from "@/util/dom";
 import { recordUsageHint } from "./recordUsageHint";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { choicesBody } from "./commandBodyChoices";
@@ -141,8 +142,13 @@ function insertAtCursor(body: HTMLTextAreaElement, code: string): void {
 
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   const wrap = el("div", { class: "event-command-face-editor" });
+  const previewHost = el("div", {
+    class: "event-command-face-preview-host",
+    dataset: { testid: "event-command-face-preview-host" },
+  });
   const resource = el("input", {
-    attrs: { type: "text", placeholder: "얼굴 그래픽 리소스 ID" },
+    class: "event-command-face-resource-input",
+    attrs: { type: "text", placeholder: "얼굴 그래픽 리소스 ID", spellcheck: "false" },
     value: cmd.resourceId,
     dataset: { testid: "event-command-face-resource" },
   }) as HTMLInputElement;
@@ -151,35 +157,114 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     value: String(cmd.faceIndex + 1),
     dataset: { testid: "event-command-face-index" },
   }) as HTMLInputElement;
-  const position = selectWithOptions([
-    { value: "left", label: "왼쪽" },
-    { value: "right", label: "오른쪽" },
-  ] as const, cmd.position, "event-command-face-position");
+  const position = selectWithOptions(
+    [
+      { value: "left", label: "왼쪽" },
+      { value: "right", label: "오른쪽" },
+    ] as const,
+    cmd.position,
+    "event-command-face-position"
+  );
   const flip = checkboxControl(cmd.flipHorizontally, "event-command-face-flip-horizontal");
-  const apply = () => {
-    context.actions.replaceCommand(context.path, {
-      kind: "changeFace",
-      resourceId: resource.value.trim(),
-      faceIndex: clampFaceIndex(faceIndex.value),
-      position: position.value === "right" ? "right" : "left",
-      flipHorizontally: flip.checked,
-    });
+
+  const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
+    kind: "changeFace",
+    resourceId: resource.value.trim(),
+    faceIndex: clampFaceIndex(faceIndex.value),
+    position: position.value === "right" ? "right" : "left",
+    flipHorizontally: flip.checked,
+  });
+
+  const refreshPreview = (): void => {
+    const draft = readDraft();
+    clearChildren(previewHost);
+    previewHost.append(
+      renderFacesetPreview({
+        resourceId: draft.resourceId,
+        faceIndex: draft.faceIndex,
+        position: draft.position,
+        flipHorizontally: draft.flipHorizontally,
+        displaySize: 112,
+      })
+    );
   };
+
+  const apply = (): void => {
+    context.actions.replaceCommand(context.path, readDraft());
+    refreshPreview();
+  };
+
   resource.addEventListener("change", apply);
+  resource.addEventListener("input", () => {
+    // Live left-card refresh while typing; staged commit still on change/blur via apply.
+    refreshPreview();
+  });
   faceIndex.addEventListener("change", apply);
+  faceIndex.addEventListener("input", refreshPreview);
   position.addEventListener("change", apply);
   flip.addEventListener("change", apply);
+
+  const openPicker = (): void => {
+    const draft = readDraft();
+    openDatabaseResourcePickerDialog({
+      kind: "faceset",
+      title: "얼굴 그래픽 선택",
+      currentId: draft.resourceId,
+      currentFaceIndex: draft.faceIndex,
+      allowClear: true,
+      testidPrefix: "event-command-face-resource-dialog",
+      onConfirm: (result) => {
+        resource.value = result.resourceId;
+        faceIndex.value = String((result.faceIndex ?? 0) + 1);
+        apply();
+      },
+    });
+  };
+
+  const clearResource = (): void => {
+    resource.value = "";
+    faceIndex.value = "1";
+    apply();
+  };
+
+  refreshPreview();
+
+  const resourceRow = el("div", {
+    class: "event-command-face-resource-row",
+    children: [
+      resource,
+      el("button", {
+        class: "btn small event-command-face-pick",
+        text: "설정…",
+        attrs: { type: "button", "aria-label": "얼굴 그래픽 리소스 선택" },
+        dataset: { testid: "event-command-face-resource-set" },
+        on: { click: openPicker },
+      }),
+      el("button", {
+        class: "btn small event-command-face-clear",
+        text: "해제",
+        attrs: { type: "button" },
+        dataset: { testid: "event-command-face-resource-clear" },
+        on: { click: clearResource },
+      }),
+    ],
+  });
+
   wrap.append(
-    renderFacesetPreview({
-      resourceId: cmd.resourceId,
-      faceIndex: cmd.faceIndex,
-      position: cmd.position,
-      flipHorizontally: cmd.flipHorizontally,
-    }),
-    fieldControl("얼굴 그래픽", resource),
-    fieldControl("얼굴 번호", faceIndex),
-    fieldControl("표시 위치", position),
-    fieldControl("좌우 반전", flip)
+    previewHost,
+    el("div", {
+      class: "event-command-face-fields",
+      children: [
+        fieldControl("얼굴 그래픽", resourceRow),
+        fieldControl("얼굴 번호", faceIndex),
+        fieldControl("표시 위치", position),
+        fieldControl("좌우 반전", flip),
+        el("p", {
+          class: "event-command-face-hint",
+          text: "이후 문장 표시 창에 이 얼굴이 붙습니다. 오른쪽 미리보기는 플레이 시 대사 창 모습입니다.",
+        }),
+      ],
+    })
   );
   return wrap;
 }
@@ -188,7 +273,11 @@ function displayTextSettingsBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "displayTextSettings" }>
 ): HTMLElement {
-  const wrap = el("span", {});
+  // RM2k3 문장 표시 설정과 같이 형식/위치/옵션을 그룹으로 나눈다.
+  const wrap = el("div", {
+    class: "event-command-message-settings",
+    dataset: { testid: "event-command-message-settings" },
+  });
   const format = selectWithOptions(MESSAGE_WINDOW_FORMAT_OPTIONS, cmd.format, "event-command-message-format");
   const position = selectWithOptions(MESSAGE_WINDOW_POSITION_OPTIONS, cmd.position, "event-command-message-position");
   const preventObscuring = checkboxControl(cmd.preventObscuringPlayer, "event-command-message-prevent-obscuring");
@@ -207,12 +296,37 @@ function displayTextSettingsBody(
   preventObscuring.addEventListener("change", apply);
   allowMovement.addEventListener("change", apply);
   wrap.append(
-    fieldControl("표시 형식", format),
-    fieldControl("표시 위치", position),
-    fieldControl("플레이어 가림 방지", preventObscuring),
-    fieldControl("대기 중 이벤트 이동", allowMovement)
+    settingsGroup("윈도우 표시 형식", [
+      fieldControl("표시 형식", format),
+      el("p", {
+        class: "event-command-settings-hint",
+        text: "일반은 창 스킨 배경, 투명은 글자만 표시합니다.",
+      }),
+    ]),
+    settingsGroup("윈도우 위치", [
+      fieldControl("표시 위치", position),
+      el("p", {
+        class: "event-command-settings-hint",
+        text: "이후 문장·선택지·숫자 입력 창의 기본 위치를 바꿉니다.",
+      }),
+    ]),
+    settingsGroup("옵션", [
+      fieldControl("플레이어 가림 방지", preventObscuring),
+      fieldControl("대기 중 이벤트 이동", allowMovement),
+      el("p", {
+        class: "event-command-settings-hint",
+        text: "가림 방지는 플레이어와 겹치면 창 위치를 자동 조정합니다. 이동 허용은 메시지 대기 중 다른 이벤트 이동을 허용합니다.",
+      }),
+    ])
   );
   return wrap;
+}
+
+function settingsGroup(title: string, children: readonly HTMLElement[]): HTMLElement {
+  return el("fieldset", {
+    class: "event-command-settings-group",
+    children: [el("legend", { text: title }), ...children],
+  });
 }
 
 function checkboxControl(checked: boolean, testId: string): HTMLInputElement {

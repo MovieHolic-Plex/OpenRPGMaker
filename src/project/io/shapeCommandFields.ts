@@ -38,8 +38,12 @@ function validateCommandShape(label: string, value: unknown): void {
     case "inputNumber": {
       requireString(`${label}.variableId`, command.variableId);
       const digits = requireNumber(`${label}.digits`, command.digits);
-      if (Number.isInteger(digits) && digits >= 1 && digits <= 6) return;
-      throw new ProjectFormatError(`${label}.digits가 잘못되었습니다.`);
+      if (!(Number.isInteger(digits) && digits >= 1 && digits <= 6)) {
+        throw new ProjectFormatError(`${label}.digits가 잘못되었습니다.`);
+      }
+      if (command.prompt !== undefined) requireString(`${label}.prompt`, command.prompt);
+      if (command.showPad !== undefined) requireBoolean(`${label}.showPad`, command.showPad);
+      return;
     }
     case "fork":
       validateConditionShape(`${label}.condition`, command.condition);

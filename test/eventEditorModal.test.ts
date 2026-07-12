@@ -6,6 +6,7 @@ import { renderEventEditorContent } from "@/editor/panels/eventEditor/content";
 import { openNpcGraphicDialog } from "@/editor/panels/eventEditor/graphicDialog";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { createBlankProject } from "@/project/defaults";
+import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
@@ -54,10 +55,14 @@ function deleteKeyEvent(): KeyboardEvent {
 
 describe("RPG Maker style event editor entry points", () => {
   beforeEach(() => {
+    _resetEventDraftVaultForTest();
     restoreFakeDom = installFakeDom();
+    store.replaceProject(createBlankProject());
   });
 
   afterEach(() => {
+    document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]')?.remove();
+    _resetEventDraftVaultForTest();
     restoreFakeDom();
     vi.unstubAllGlobals();
   });
@@ -327,6 +332,34 @@ describe("RPG Maker style event editor entry points", () => {
     expect(confirmDeletion).not.toHaveBeenCalled();
     expect(store.getCurrent().maps[project.startMapId].events.some((event) => event.id === "event-1")).toBe(true);
     expect(document.querySelector('[data-testid="event-editor-modal"]')).not.toBeNull();
+  });
+
+  it("preserves settings scroll when page props re-render after an edit", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = eventPage();
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: page.id });
+
+    openEventEditorModal(project.startMapId, "event-1");
+    const settingsMain = document.querySelector<HTMLElement>(".event-editor-settings-main");
+    const cmdList = document.querySelector<HTMLElement>(".cmd-list");
+    if (!settingsMain || !cmdList) throw new Error("Expected event editor scroll hosts");
+
+    (settingsMain as unknown as { scrollTop: number }).scrollTop = 180;
+    (cmdList as unknown as { scrollTop: number }).scrollTop = 64;
+
+    const movementType = document.querySelector<HTMLSelectElement>('[data-testid="event-page-movement-type"]');
+    if (!movementType) throw new Error("Expected movement type control");
+    movementType.value = "random";
+    movementType.dispatchEvent(new Event("change", { bubbles: true }));
+
+    const settingsAfter = document.querySelector<HTMLElement>(".event-editor-settings-main");
+    const cmdListAfter = document.querySelector<HTMLElement>(".cmd-list");
+    expect((settingsAfter as unknown as { scrollTop: number } | null)?.scrollTop).toBe(180);
+    expect((cmdListAfter as unknown as { scrollTop: number } | null)?.scrollTop).toBe(64);
+    expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.movement.type).toBe("random");
   });
 
 });

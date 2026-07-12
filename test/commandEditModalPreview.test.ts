@@ -44,6 +44,7 @@ describe("command edit modal — image-rich preview", () => {
       { kind: "changeFace", resourceId: "", faceIndex: 0, position: "left", flipHorizontally: false },
       { kind: "displayTextSettings", format: "transparent", position: "top", preventObscuringPlayer: false, allowEventMovementDuringWait: false },
       { kind: "choices", options: [{ text: "예", branch: [] }, { text: "아니오", branch: [] }] },
+      { kind: "inputNumber", variableId: project.variables[0]?.id ?? "var_0001", digits: 3, prompt: "PIN 입력", showPad: true },
       { kind: "fork", condition: { kind: "switch", switchId, value: true }, then: [{ kind: "text", body: "참" }], else: [] },
       { kind: "moveEvent", eventId: PLAYER_MOVE_TARGET, route: { moves: [{ kind: "move", dir: "left" }, { kind: "move", dir: "up" }], repeat: false } },
       { kind: "transfer", mapId, x: 3, y: 4 },
@@ -73,6 +74,85 @@ describe("command edit modal — image-rich preview", () => {
     expect(preview.textContent).toContain("마을에 온 걸");
   });
 
+  it("renders digit-slot preview for inputNumber with prompt and optional pad", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({ kind: "inputNumber", variableId: "", digits: 4, prompt: "비밀번호", showPad: true })
+    );
+    expect(findByTestId(preview, "ecp-number-window")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-number-slots")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-number-pad")).toBeTruthy();
+    expect(preview.textContent).toContain("비밀번호");
+    expect(preview.textContent).toContain("4자리");
+    const slots = findByTestId(preview, "ecp-number-slots");
+    // FakeDom uses childNodes (no HTMLElement.children).
+    expect(slots?.childNodes?.length).toBe(4);
+  });
+
+  it("changeFace play mock shows a tall message window with crop-only face (no editor meta card)", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "changeFace",
+        resourceId: "easyrpg-faceset-actor1",
+        faceIndex: 0,
+        position: "left",
+        flipHorizontally: false,
+      })
+    );
+    expect(findByTestId(preview, "ecp-message-window")).toBeTruthy();
+    expect(findByTestId(preview, "event-command-face-crop-shell")).toBeTruthy();
+    expect(findByTestId(preview, "event-command-face-crop")).toBeTruthy();
+    expect(findByTestId(preview, "event-command-face-preview")).toBeNull();
+    expect(preview.textContent).toContain("대사 창에");
+    expect(findByTestId(preview, "ecp-face-caption")?.textContent).toContain("왼쪽");
+    expect(findByTestId(preview, "ecp-face-caption")?.textContent).toContain("얼굴 1");
+  });
+
+  it("renders displayTextSettings with clean windowskin mock, position stage, and option badges", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "displayTextSettings",
+        format: "normal",
+        position: "bottom",
+        preventObscuringPlayer: true,
+        allowEventMovementDuringWait: false,
+      })
+    );
+    const win = findByTestId(preview, "ecp-message-window");
+    expect(win).toBeTruthy();
+    // System.png 시트를 인라인 border-image 로 붙이지 않는다 (팔레트 오염 방지).
+    expect(String(win?.style?.borderImageSource ?? "")).not.toMatch(/System\.png/i);
+    expect(win?.dataset?.systemResource).toBeUndefined();
+    expect(findByTestId(preview, "ecp-settings-stage")?.className).toContain("pos-bottom");
+    const badges = findByTestId(preview, "ecp-settings-badges");
+    expect(badges?.textContent).toContain("일반");
+    expect(badges?.textContent).toContain("하단");
+    expect(badges?.textContent).toContain("가림 방지 ON");
+    expect(badges?.textContent).toContain("이벤트 이동 정지");
+  });
+
+  it("groups displayTextSettings form into format/position/options fieldsets", () => {
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        { path: [], actions: noopActions, lockKind: true },
+        {
+          kind: "displayTextSettings",
+          format: "transparent",
+          position: "top",
+          preventObscuringPlayer: false,
+          allowEventMovementDuringWait: true,
+        }
+      )
+    );
+    expect(findByTestId(body, "event-command-message-settings")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-format")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-position")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-prevent-obscuring")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-allow-movement")).toBeTruthy();
+    expect(body.textContent).toContain("윈도우 표시 형식");
+    expect(body.textContent).toContain("윈도우 위치");
+    expect(body.textContent).toContain("옵션");
+  });
+
   it("shows the move tape with direction chips and repeat/wait badges (SVG-less env falls back to tape)", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "moveEvent", eventId: "", route: { moves: [{ kind: "move", dir: "up" }, { kind: "wait" }], repeat: true, wait: true } })
@@ -82,6 +162,33 @@ describe("command edit modal — image-rich preview", () => {
     expect(tape?.textContent).toContain("↑");
     expect(preview.textContent).toContain("반복");
     expect(preview.textContent).toContain("완료까지 대기");
+  });
+
+  it("move-route editor stacks multiple adds locally and shows path preview + command list", () => {
+    let staged: Command = { kind: "moveEvent", eventId: "", route: { moves: [], repeat: false } };
+    const actions: CommandListActions = {
+      ...noopActions,
+      replaceCommand: (_path, command) => {
+        staged = command;
+      },
+    };
+    const body = renderWithFakeDom(() => renderCommandBody({ path: [], actions, lockKind: true }, staged));
+    expect(findByTestId(body, "move-route-editor")).toBeTruthy();
+    expect(findByTestId(body, "move-route-path-preview")).toBeTruthy();
+    expect(findByTestId(body, "move-route-command-list")).toBeTruthy();
+
+    findByTestId(body, "move-route-add-move-up")?.click();
+    findByTestId(body, "move-route-add-move-right")?.click();
+    expect(staged.kind).toBe("moveEvent");
+    if (staged.kind !== "moveEvent") return;
+    expect(staged.route.moves).toEqual([
+      { kind: "move", dir: "up" },
+      { kind: "move", dir: "right" },
+    ]);
+    expect(findByTestId(body, "move-route-command-1")?.textContent).toContain("위 이동");
+    expect(findByTestId(body, "move-route-command-2")?.textContent).toContain("오른쪽 이동");
+    expect(findByTestId(body, "move-route-summary")?.textContent).toContain("위 이동 -> 오른쪽 이동");
+    expect(findByTestId(body, "ecp-move-preview")).toBeTruthy();
   });
 
   it("summarizes fork branches with then/else counts", () => {

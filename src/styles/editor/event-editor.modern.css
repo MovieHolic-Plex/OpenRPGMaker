@@ -349,8 +349,11 @@
 
 .event-editor-settings-main .event-page-props {
   flex: 1 1 auto;
+  max-width: 100%;
   min-height: 0;
-  overflow: auto;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .event-page-number-tabs {
@@ -372,8 +375,14 @@
   font-size: 16px;
   height: auto;
   min-height: 52px;
-  min-width: 52px;
+  min-width: 0;
   padding: 0;
+  width: 100%;
+}
+
+/* 리치 페이지 탭: 캐릭터 그래픽 fill + 하단 번호 overlay (세부 스타일은 p1-pagetabs) */
+.event-page-number-tabs .btn.event-page-tab-rich {
+  min-height: 72px;
 }
 
 .event-page-number-tabs .event-page-tab-add {
@@ -457,8 +466,11 @@
   align-content: start;
   display: grid;
   gap: 10px;
+  max-width: 100%;
   min-height: 0;
-  overflow: auto;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding-right: 0;
 }
 
@@ -468,8 +480,17 @@
   border-radius: 8px;
   box-shadow: none;
   margin: 0;
+  max-width: 100%;
   min-width: 0;
+  /* 고정 패널만 가로 넘침 차단. details 접이식(조건)은 콘텐츠 높이가 잘리면 안 됨 */
+  overflow-x: hidden;
+  overflow-y: visible;
   padding: 12px 14px;
+}
+
+.event-rm2k3-fieldset.event-collapsible-section {
+  /* 조건 접이식: 요약+본문이 자연 높이로 펼쳐지도록 */
+  overflow: visible;
 }
 
 .event-rm2k3-fieldset legend {
@@ -490,33 +511,40 @@
 .event-editor-modal-body .event-condition-row {
   align-items: center;
   display: grid;
-  gap: 8px;
-  grid-template-columns: 24px 82px minmax(0, 1fr) max-content;
+  gap: 6px;
+  /* 라벨·접미어는 내용만큼, 컨트롤만 수축 — 접미어가 "이"처럼 한 글자로 잘리지 않게 */
+  grid-template-columns: 18px max-content minmax(0, 1fr) max-content;
+  max-width: 100%;
   min-height: 32px;
+  min-width: 0;
 }
 
 .event-editor-modal-body .event-condition-control {
+  max-width: 100%;
   min-width: 0;
+  overflow: hidden;
 }
 
 .event-editor-modal-body .event-condition-control.switch,
 .event-editor-modal-body .event-condition-control.record {
   display: grid;
+  max-width: 100%;
 }
 
 .event-editor-modal-body .event-condition-control.variable {
-  align-items: center;
+  align-items: stretch;
   display: grid;
   gap: 6px;
-  grid-template-columns: minmax(0, 1fr) 176px;
+  /* 좁은 설정 열에서 1fr+고정폭이 삐져나가지 않도록 세로 스택 */
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .event-editor-modal-body .event-condition-control.timer {
   align-items: center;
   display: grid;
-  gap: 5px;
-  grid-template-columns: 48px max-content 48px max-content;
-  justify-content: start;
+  gap: 4px;
+  grid-template-columns: minmax(36px, 1fr) max-content minmax(36px, 1fr) max-content;
+  max-width: 100%;
 }
 
 .event-condition-id-picker {
@@ -524,10 +552,12 @@
   display: grid;
   gap: 6px;
   grid-template-columns: minmax(0, 1fr) 30px;
+  max-width: 100%;
   min-width: 0;
 }
 
 .event-condition-id-picker .btn.small {
+  flex: 0 0 auto;
   min-height: 28px;
   min-width: 30px;
   padding: 0;
@@ -537,7 +567,8 @@
   align-items: center;
   display: grid;
   gap: 6px;
-  grid-template-columns: minmax(74px, 1fr) 64px;
+  grid-template-columns: minmax(0, 1fr) minmax(48px, 64px);
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -549,14 +580,24 @@
   white-space: nowrap;
 }
 
+.event-condition-label {
+  flex: 0 0 auto;
+}
+
 .event-condition-suffix {
   color: var(--event-modern-text-soft);
-  min-width: 66px;
+  flex: 0 0 auto;
+  max-width: 6.5em;
+  overflow: hidden;
   text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-condition-control select,
 .event-condition-control input {
+  box-sizing: border-box;
+  max-width: 100%;
   min-width: 0;
   width: 100%;
 }
@@ -564,13 +605,24 @@
 .event-page-bottom-grid {
   display: grid;
   gap: 8px;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  /* 설정 열(~320–480px)에서 2열이 버튼/셀렉트를 밀어내지 않도록 단일 열 */
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.event-page-bottom-left,
+.event-page-bottom-right {
+  max-width: 100%;
+  min-width: 0;
 }
 
 .event-graphic-control {
   display: grid;
   gap: 8px 10px;
-  grid-template-columns: 84px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
+  max-width: 100%;
+  min-width: 0;
 }
 
 .event-graphic-control input[data-testid="event-page-sprite-input"] {
@@ -578,7 +630,9 @@
 }
 
 .event-graphic-control .btn {
+  max-width: 100%;
   min-height: 34px;
+  min-width: 0;
 }
 
 .event-priority-block,
@@ -918,35 +972,53 @@
   align-items: stretch;
   background: var(--bg-raised);
   border: 1px solid var(--event-modern-line);
-  border-radius: 6px;
+  border-radius: 8px;
   display: grid;
   gap: 0;
-  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  min-width: 0;
   overflow: hidden;
+  width: 100%;
+}
+
+.event-command-face-preview-host {
+  background: var(--event-modern-field-muted);
+  border-right: 1px solid var(--event-modern-line);
+  min-height: 180px;
+  min-width: 0;
 }
 
 .event-command-face-editor .event-command-face-preview {
-  background: var(--event-modern-field-muted);
+  background: transparent;
   border: 0;
-  border-right: 1px solid var(--event-modern-line);
   display: grid;
   gap: 12px;
-  grid-column: 1;
-  grid-row: span 2;
-  grid-template-columns: 70px minmax(0, 1fr);
-  min-height: 156px;
-  padding: 34px 16px;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100%;
+  justify-items: center;
+  min-height: 180px;
+  padding: 18px 14px;
+  text-align: center;
+}
+
+.event-command-face-editor .event-command-face-preview-copy {
+  align-content: start;
+  justify-items: center;
+  text-align: center;
+  width: 100%;
 }
 
 .event-command-face-crop {
+  background-image: var(--face-url);
   background-position: var(--face-scaled-x) var(--face-scaled-y);
+  background-repeat: no-repeat;
   background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
   border: 1px solid var(--border-subtle);
   border-radius: 2px;
-  height: var(--face-display-height);
+  height: var(--face-display-height, 96px);
   image-rendering: pixelated;
   overflow: hidden;
-  width: var(--face-display-width);
+  width: var(--face-display-width, 96px);
 }
 
 .event-command-face-preview-copy {
@@ -959,7 +1031,7 @@
 .event-command-face-preview-copy strong,
 .event-command-face-preview[data-empty="true"] strong {
   color: var(--text-1);
-  font: 700 14px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font: 700 13px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -968,24 +1040,35 @@
 .event-command-face-preview-copy span,
 .event-command-face-preview[data-empty="true"] span {
   color: var(--text-2);
-  font: 500 13px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  white-space: nowrap;
+  font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-fields {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  padding: 4px 0;
 }
 
 .event-command-face-editor .inline-field {
   align-content: start;
-  background: var(--bg-raised);
-  border-left: 1px solid var(--event-modern-line);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--event-modern-line);
   display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 1fr);
-  min-height: 78px;
-  padding: 14px 16px;
+  gap: 6px;
+  grid-template-columns: minmax(88px, 110px) minmax(0, 1fr);
+  min-height: 0;
+  padding: 10px 14px;
+}
+
+.event-command-face-editor .inline-field:last-of-type {
+  border-bottom: 0;
 }
 
 .event-command-face-editor .inline-field > span {
   color: var(--event-modern-text-soft);
-  font: 700 13px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font: 700 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   white-space: nowrap;
 }
 
@@ -995,23 +1078,40 @@
   border-color: var(--event-modern-border-strong);
   color: var(--text-1);
   font-weight: 600;
+  min-width: 0;
   width: 100%;
+}
+
+.event-command-face-resource-row {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-width: 0;
 }
 
 .event-command-face-editor .inline-field:has(input[type="checkbox"]) {
   align-items: center;
-  grid-template-columns: 22px minmax(0, 1fr);
-  padding-top: 44px;
+  grid-template-columns: minmax(88px, 110px) 22px minmax(0, 1fr);
 }
 
 .event-command-face-editor .inline-field:has(input[type="checkbox"]) > span {
-  grid-column: 2;
+  grid-column: 1;
   grid-row: 1;
 }
 
 .event-command-face-editor .inline-field input[type="checkbox"] {
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 1;
+  justify-self: start;
+}
+
+.event-command-face-hint {
+  border-top: 1px solid var(--event-modern-line);
+  color: var(--text-2);
+  font: 500 11px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+  padding: 10px 14px 12px;
 }
 
 /* 푸터: 좌측 삭제+힌트 | 우측 취소·적용·확인·도움말 */
@@ -1157,23 +1257,23 @@
   }
 
   .event-editor-modal-body .event-condition-row {
-    gap: 6px;
-    grid-template-columns: 20px 62px minmax(0, 1fr) minmax(24px, max-content);
+    gap: 4px;
+    grid-template-columns: 16px max-content minmax(0, 1fr) max-content;
   }
 
   .event-editor-modal-body .event-condition-control.variable {
     gap: 4px;
-    grid-template-columns: minmax(0, 1fr) minmax(82px, 104px);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .event-condition-threshold {
     gap: 4px;
-    grid-template-columns: minmax(42px, 1fr) 42px;
+    grid-template-columns: minmax(0, 1fr) 42px;
   }
 
   .event-editor-modal-body .event-condition-control.timer {
     gap: 4px;
-    grid-template-columns: 44px max-content 44px max-content;
+    grid-template-columns: minmax(32px, 1fr) max-content minmax(32px, 1fr) max-content;
   }
 
   .event-page-bottom-grid {

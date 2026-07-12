@@ -207,5 +207,9 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
       prev.options.length !== next.options.length
     );
   }
+  if (prev.kind === "inputNumber" && next.kind === "inputNumber") {
+    // 자릿수 칩 active / 키패드 토글 등 폼 구조 동기화.
+    return prev.digits !== next.digits || Boolean(prev.showPad) !== Boolean(next.showPad);
+  }
   return false;
 }
