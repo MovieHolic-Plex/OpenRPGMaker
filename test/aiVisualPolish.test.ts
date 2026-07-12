@@ -15,7 +15,7 @@ describe("AI 상태 톤(제안 6)", () => {
     expect(statusToneOf("오류")).toBe("error");
     expect(statusToneOf("오류: 키 없음")).toBe("error");
     expect(statusToneOf("검토 대기")).toBe("review");
-    expect(statusToneOf("계획 중(m3) … 12초 · 도구 3/200")).toBe("running");
+    expect(statusToneOf("계획 중… 12초 · 도구 3")).toBe("running");
     expect(statusToneOf("실행 중(flash) … 3초 · 도구 1/200")).toBe("running");
     expect(statusToneOf("중단 중…")).toBe("running");
     expect(statusToneOf("적용됨")).toBe("ok");

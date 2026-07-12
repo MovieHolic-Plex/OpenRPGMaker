@@ -5,7 +5,6 @@ import {
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
-  EASYRPG_CHARSET_ASSETS,
 } from "@/assets/easyrpgRtp";
 import {
   chipsetLoadTextureKey,
@@ -15,6 +14,8 @@ import {
   rawChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import type { Project } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
@@ -63,6 +64,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_retro_house", path: "assets/easyrpg-chipset-retro-house-transparent.png", name: "EasyRPG RTP retro House ChipSet" },
   { textureKey: "tex_easyrpg_chipset_combined_town", path: "assets/easyrpg-chipset-combined-town-transparent.png", name: "EasyRPG RTP Combined Town ChipSet" },
   { textureKey: "tex_easyrpg_chipset_retro_world", path: "assets/easyrpg-chipset-retro-world-transparent.png", name: "EasyRPG RTP retro World ChipSet" },
+  ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
 export function bundledEasyRpgTilesetId(textureKey: string): string {
@@ -70,7 +72,7 @@ export function bundledEasyRpgTilesetId(textureKey: string): string {
 }
 
 export const BUNDLED_EASYRPG_CHARSET_ASSETS =
-  EASYRPG_CHARSET_ASSETS satisfies readonly BundledImageAsset[];
+  CHARSET_ASSETS satisfies readonly BundledImageAsset[];
 
 const EXTRA_BUNDLED_IMAGE_ASSETS = [
   ...BUNDLED_EASYRPG_CHIPSET_ASSETS,

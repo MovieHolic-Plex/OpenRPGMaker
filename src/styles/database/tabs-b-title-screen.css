@@ -15,7 +15,8 @@
   --rm2k3-title-ornament-shadow: rgba(13, 57, 136, 0.58);
   --rm2k3-title-text: #ffffff;
   --rm2k3-title-shadow: #06185c;
-  background-color: #7fd3ff;
+  /* fallback only when no Title image — avoid painting over RTP Title1 */
+  background-color: #101820;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -25,6 +26,7 @@
   isolation: isolate;
   overflow: hidden;
 }
+/* 인라인 background-image(Title1 등)가 있을 때는 하늘색 폴백/강한 그라데이션을 약하게 */
 .rm-title-screen::before,
 .rm-title-screen::after {
   content: "";
@@ -35,13 +37,15 @@
 }
 .rm-title-screen::before {
   background:
-    radial-gradient(circle at 50% 18%, var(--rm2k3-title-sky-glow), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 48%, rgba(42, 132, 67, 0.14));
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), transparent 40%);
+  opacity: 0.55;
 }
 .rm-title-screen::after {
   background:
-    linear-gradient(90deg, var(--rm2k3-title-vignette), transparent 18%, transparent 82%, var(--rm2k3-title-vignette)),
-    linear-gradient(180deg, transparent 62%, rgba(11, 55, 38, 0.16));
+    linear-gradient(90deg, rgba(0, 0, 0, 0.12), transparent 14%, transparent 86%, rgba(0, 0, 0, 0.12)),
+    linear-gradient(180deg, transparent 70%, rgba(0, 0, 0, 0.18));
+  opacity: 0.7;
 }
 .rm-title-screen .rm-title-screen-title {
   color: var(--rm2k3-title-text);

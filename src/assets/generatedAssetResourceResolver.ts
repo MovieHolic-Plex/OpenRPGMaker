@@ -1,4 +1,5 @@
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
+import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
@@ -31,6 +32,10 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-item-potion-red-icon": "/assets/generated/rm2k3/potion-red-icon.png",
   "generated-item-potion-red-image": "/assets/generated/rm2k3/potion-red-image.png",
   "generated-troop-preview-slime": "/assets/generated/rm2k3/troop-preview-slime.png",
+  // Side-view battle field art (not EasyRPG sky panoramas).
+  "generated-battle-reference-forest": "/generated/battle-reference-forest.png",
+  // CSS 9-slice windowskin (EasyRPG System/*.png sheets are icon strips, not windowskins).
+  "windowskin-rm2003": "/assets/ui/windowskin-rm2003.png",
 };
 
 const LEGACY_PACKAGED_RESOURCE_URLS: Record<string, string> = {
@@ -45,7 +50,10 @@ export type AssetResourceResolutionOptions = {
 export function resolveAssetResourceUrl(resourceId: string | undefined, options: AssetResourceResolutionOptions = {}): string | null {
   if (!hasResourceId(resourceId)) return null;
   const packagedUrl =
-    LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ?? resolveEasyRpgRuntimeAssetUrl(resourceId) ?? resolveCc0IconAssetUrl(resourceId);
+    LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ??
+    resolveEasyRpgRuntimeAssetUrl(resourceId) ??
+    resolveScarloxyAssetUrl(resourceId) ??
+    resolveCc0IconAssetUrl(resourceId);
   if (packagedUrl !== null) return packagedUrl;
   const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;
   if (uploadedUrl !== undefined) return safeUploadedResourceUrl(uploadedUrl);

@@ -2,6 +2,8 @@ import { store, type ProjectChangeCell } from "@/project/store";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+// Autotile groups: RM-style — painting a group body (e.g. dirt 421, dark wall 366)
+// always reshapes edges/corners. Manual autoConnectMode does not suppress that.
 import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -103,6 +105,10 @@ export function paintTilesBulk(
   }
   const edits = [...byKey.values()];
 
+  // Pre-check: any lower stroke that paints/overwrites an autotile trigger must reshape
+  // even when UI Manual is on (RM brush contract). Dirty-cell expansion follows.
+  const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
+
   store.updateMap(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
     let lowerPrevious: number | undefined;
@@ -117,7 +123,7 @@ export function paintTilesBulk(
         lowerNext = edit.tile;
       }
     }
-    if (lowerPoints.length > 0 && autoConnect) {
+    if (lowerPoints.length > 0 && shapeAutotile) {
       shapeTerrainAfterLowerEdit(m, tileset, {
         autoConnect: true,
         layer: "lower",
@@ -127,7 +133,7 @@ export function paintTilesBulk(
       });
     }
     repairTreePairsOnMap(m);
-  }, { cells: changedTileCellsForPlannedEdits(mapId, edits, autoConnect) });
+  }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile) });
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {
@@ -152,9 +158,9 @@ export function toggleCollision(mapId: MapId, x: number, y: number): void {
   });
 }
 
-// 지우개 도구용: 선택 레이어가 비어 있으면 실제로 점유된(보이는) 레이어를 지운다.
-// 팔레트의 자동 레이어 전환(장식 타일 클릭 → 상위) 직후 빈 상위 레이어만 지워져
-// "지우개가 안 먹는" 무반응 버그의 수정 — 의도한 레이어에 내용이 있으면 그 레이어를 지운다.
+// 지우개 도구용 레이어 선택.
+// - 상위 레이어: 상위만 지운다 (하위로 폴백하지 않음 — 상위 모드에서 바닥이 같이 지워지던 UX 방지).
+// - 하위 레이어: 하위가 비어 있고 상위가 점유면 상위로 폴백 (하위 모드에서 보이는 장식 제거).
 export function eraseVisibleTile(mapId: MapId, preferredLayer: TileLayer, x: number, y: number, options: TilePaintOptions = {}): void {
   eraseVisibleTilesBulk(mapId, preferredLayer, [{ x, y }], options);
 }
@@ -174,9 +180,10 @@ export function eraseVisibleTilesBulk(
     const index = point.y * map.width + point.x;
     const occupied = (layer: TileLayer): boolean =>
       ((layer === "upper" ? map.upperTiles[index] : map.lowerTiles[index]) ?? TILE.EMPTY) !== TILE.EMPTY;
-    // preferred 레이어가 비어 있을 때만 반대 레이어로 폴백 (팔레트 자동 상위 전환 후 무반응 방지)
-    const fallback: TileLayer = preferredLayer === "upper" ? "lower" : "upper";
-    const layer = occupied(preferredLayer) ? preferredLayer : occupied(fallback) ? fallback : preferredLayer;
+    let layer: TileLayer = preferredLayer;
+    if (preferredLayer === "lower" && !occupied("lower") && occupied("upper")) {
+      layer = "upper";
+    }
     strokes.push({ layer, x: point.x, y: point.y });
   }
   eraseTilesBulk(mapId, strokes, options);
@@ -207,6 +214,14 @@ export function eraseTilesBulk(
   for (const s of expanded) byKey.set(`${s.layer}:${s.x},${s.y}`, s);
   const unique = [...byKey.values()];
 
+  const eraseEdits: PlannedTileEdit[] = unique.map((s) => ({
+    layer: s.layer,
+    x: s.x,
+    y: s.y,
+    tile: TILE.EMPTY,
+  }));
+  const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, eraseEdits, autoConnect);
+
   store.updateMap(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
     let lowerPrevious: number | undefined;
@@ -218,7 +233,7 @@ export function eraseTilesBulk(
         if (lowerPrevious === undefined) lowerPrevious = previousTile;
       }
     }
-    if (lowerPoints.length > 0 && autoConnect) {
+    if (lowerPoints.length > 0 && shapeAutotile) {
       shapeTerrainAfterLowerEdit(m, tileset, {
         autoConnect: true,
         layer: "lower",
@@ -230,7 +245,7 @@ export function eraseTilesBulk(
     // 의도적으로 짝을 지운 뒤에는 수관을 다시 심지 않도록, 남은 고아 밑동만 정리
     repairTreePairsOnMap(m);
   }, {
-    cells: unique.flatMap((s) => changedTileCellsForEdit(mapId, s.layer, [{ x: s.x, y: s.y }], autoConnect)),
+    cells: unique.flatMap((s) => changedTileCellsForEdit(mapId, s.layer, [{ x: s.x, y: s.y }], shapeAutotile)),
   });
 }
 
@@ -337,6 +352,17 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
   const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  const autoConnect = options.autoConnect ?? true;
+  const prevAtStart =
+    currentMap && fillPlan.points[0]
+      ? tileAt(currentMap, fillPlan.layer, fillPlan.points[0]!.x, fillPlan.points[0]!.y)
+      : undefined;
+  const shapeAutotile =
+    fillPlan.layer === "lower"
+    && (
+      autoConnect
+      || editTriggersAnyAutotile(tileset, prevAtStart, newTile)
+    );
   store.updateMap(mapId, (m) => {
     if (!inMap(m, x, y)) return;
     const targetLayer = effectiveLayer(tileset, layer, newTile);
@@ -368,10 +394,16 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
         queue.push(ni);
       }
     }
-    shapeTerrainAfterLowerEdit(m, tileset, { layer: targetLayer, points: changedPoints, previousTile: target, nextTile: newTile, autoConnect: options.autoConnect ?? true });
+    shapeTerrainAfterLowerEdit(m, tileset, {
+      layer: targetLayer,
+      points: changedPoints,
+      previousTile: target,
+      nextTile: newTile,
+      autoConnect: shapeAutotile,
+    });
     repairTreePairsOnMap(m);
   }, {
-    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, options.autoConnect ?? true),
+    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile),
   });
 }
 
@@ -580,4 +612,36 @@ function shapeTerrainAfterLowerEdit(m: GameMap, tileset: TilesetDef | undefined,
       shapeAutotileGroupAround(m, group, edit.points);
     }
   }
+}
+
+/** True when previous or next tile is an autotile group trigger/member. */
+function editTriggersAnyAutotile(
+  tileset: TilesetDef | undefined,
+  previousTile: number | undefined,
+  nextTile: number,
+): boolean {
+  for (const group of autotileGroupsForTileset(tileset)) {
+    if (autotileEditTriggersGroup(group, previousTile, nextTile)) return true;
+  }
+  return false;
+}
+
+/**
+ * RM-style: painting/erasing an autotile brush (dirt body, sand, interior dark wall 366…)
+ * always reshapes, even if the palette Auto/Manual toggle is Manual.
+ * Manual only skips reshape for non-autotile strokes (exact single-tile placement).
+ */
+function lowerEditsNeedAutotileShape(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  edits: readonly PlannedTileEdit[],
+  autoConnectRequested: boolean,
+): boolean {
+  if (autoConnectRequested) return true;
+  for (const edit of edits) {
+    if (edit.layer !== "lower") continue;
+    const previous = tileAt(map, "lower", edit.x, edit.y);
+    if (editTriggersAnyAutotile(tileset, previous, edit.tile)) return true;
+  }
+  return false;
 }

@@ -1,7 +1,10 @@
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
-import { isTerrainQuarterTile, terrainQuarterSources } from "@/project/defaults/terrainQuarterAutotile";
-import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
+import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
+import {
+  supportsChipsetQuarterComposition,
+  tilesetImageUrl,
+} from "@/editor/tilesetImage";
 import type { GameMap, MapId, Project, TilesetDef } from "@/project/types";
 
 export type TransferPreviewSelection = {
@@ -10,11 +13,18 @@ export type TransferPreviewSelection = {
   readonly zoom: number;
 };
 
+/** Optional CSS display box. When set, zoom=1 scales the map to fill the box (contain). */
+export type TransferPreviewFitDisplay = {
+  readonly maxWidth: number;
+  readonly maxHeight: number;
+};
+
 export type DrawTransferMapPreviewRequest = {
   readonly canvas: HTMLCanvasElement;
   readonly project: Project;
   readonly mapId: MapId;
   readonly selection: TransferPreviewSelection;
+  readonly fitDisplay?: TransferPreviewFitDisplay;
   readonly isCurrent?: () => boolean;
 };
 
@@ -22,6 +32,7 @@ export type DrawTransferFallbackRequest = {
   readonly canvas: HTMLCanvasElement;
   readonly map: GameMap | undefined;
   readonly selection: TransferPreviewSelection;
+  readonly fitDisplay?: TransferPreviewFitDisplay;
 };
 
 export async function drawTransferMapPreview(request: DrawTransferMapPreviewRequest): Promise<void> {
@@ -30,7 +41,7 @@ export async function drawTransferMapPreview(request: DrawTransferMapPreviewRequ
   if (!map || !tileset) return;
   const image = await loadImage(tilesetImageUrl(tileset));
   if (request.isCurrent?.() === false) return;
-  setupCanvas(request.canvas, map, request.selection.zoom);
+  setupCanvas(request.canvas, map, request.selection.zoom, request.fitDisplay);
   const context = request.canvas.getContext("2d");
   if (!context) return;
   context.imageSmoothingEnabled = false;
@@ -45,7 +56,7 @@ export async function drawTransferMapPreview(request: DrawTransferMapPreviewRequ
 
 export function drawTransferFallback(request: DrawTransferFallbackRequest): void {
   if (!request.map) return;
-  setupCanvas(request.canvas, request.map, request.selection.zoom);
+  setupCanvas(request.canvas, request.map, request.selection.zoom, request.fitDisplay);
   const context = request.canvas.getContext("2d");
   if (!context) return;
   context.fillStyle = "#003dcb";
@@ -54,11 +65,23 @@ export function drawTransferFallback(request: DrawTransferFallbackRequest): void
   drawMarker(context, request.map, request.selection);
 }
 
-function setupCanvas(canvas: HTMLCanvasElement, map: GameMap, zoom: number): void {
+function setupCanvas(
+  canvas: HTMLCanvasElement,
+  map: GameMap,
+  zoom: number,
+  fitDisplay?: TransferPreviewFitDisplay,
+): void {
   canvas.width = map.width * map.tileSize;
   canvas.height = map.height * map.tileSize;
-  canvas.style.width = `${canvas.width * zoom}px`;
-  canvas.style.height = `${canvas.height * zoom}px`;
+  let scale = Math.max(0.01, zoom);
+  if (fitDisplay && fitDisplay.maxWidth > 0 && fitDisplay.maxHeight > 0) {
+    // Contain: fill the preview box as much as possible while preserving aspect ratio.
+    // User zoom (1 / 0.5 / 0.25) multiplies relative to that filled size.
+    const fitScale = Math.min(fitDisplay.maxWidth / canvas.width, fitDisplay.maxHeight / canvas.height);
+    scale = Math.max(0.01, fitScale * zoom);
+  }
+  canvas.style.width = `${Math.max(1, Math.round(canvas.width * scale))}px`;
+  canvas.style.height = `${Math.max(1, Math.round(canvas.height * scale))}px`;
 }
 
 function drawLayer(
@@ -73,16 +96,20 @@ function drawLayer(
     if (tile < 0) continue;
     const x = index % map.width;
     const y = Math.floor(index / map.width);
-    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
+    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
       for (const part of lakeAutotileQuarterSources(map, x, y)) {
         drawRawTile(context, image, tileset, part.tile, x, y, part.offsetX, part.offsetY, tileset.tileSize / 2);
       }
       continue;
     }
-    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
-      const terrainQuarters = terrainQuarterSources(map, x, y);
-      if (terrainQuarters) {
-        for (const part of terrainQuarters) {
+    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset)) {
+      const composition = chipsetQuarterComposition(map, tileset, x, y);
+      if (composition) {
+        if (composition.underlayTile !== undefined) {
+          drawRawTile(context, image, tileset, composition.underlayTile, x, y, 0, 0, tileset.tileSize);
+        }
+        for (const part of composition.sources) {
           drawRawTile(context, image, tileset, part.tile, x, y, part.offsetX, part.offsetY, tileset.tileSize / 2);
         }
         continue;

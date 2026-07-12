@@ -116,6 +116,9 @@ export interface ClassOptions {
 
 export type BattleFlow = "gauge" | "strict";
 
+/** 전투 화면 UI 스킨 — classic: RM2003풍 창 배치, pokemon: 포켓몬풍 정보 박스/명령 그리드. */
+export type BattleUiStyle = "classic" | "pokemon";
+
 export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event";
 
 export interface ClassBattleCommand {
@@ -646,6 +649,7 @@ export interface SystemRecords {
   battleBgmResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
+  battleUiStyle?: BattleUiStyle;
   activeSlots?: number;
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;

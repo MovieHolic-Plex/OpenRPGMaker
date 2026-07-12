@@ -3,7 +3,8 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, MonsterSpeciesId, Project, SkillId } from "@/project/types";
-import type { BattleBattlerSnapshot } from "@/battle/types";
+import { resolveBattlerPose } from "@/battle/battlePose";
+import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
 import type { MonsterInstance } from "@/project/session";
 import {
@@ -51,7 +52,7 @@ export interface MutableBattler {
   readonly mind: number;
   readonly agility: number;
   readonly chargeRate: number;
-  readonly skillIds: readonly SkillId[];
+  skillIds: SkillId[];
   readonly enemyActions?: readonly EnemyActionPattern[];
   readonly battleX?: number;
   readonly battleY?: number;
@@ -274,9 +275,13 @@ export function average(values: readonly number[]): number {
 
 export function battlerSnapshot(
   battler: MutableBattler,
-  position?: { readonly battleX?: number; readonly battleY?: number }
+  position?: { readonly battleX?: number; readonly battleY?: number },
+  poseContext?: {
+    readonly lastActionResult?: BattleActionResultSnapshot;
+    readonly showActionPose?: boolean;
+  }
 ): BattleBattlerSnapshot {
-  return {
+  const base = {
     id: battler.id,
     recordId: battler.recordId,
     speciesId: battler.speciesId,
@@ -294,6 +299,14 @@ export function battlerSnapshot(
     stateIds: battler.stateIds,
     skillIds: battler.skillIds,
     captured: battler.captured === true ? true : undefined,
+  };
+  return {
+    ...base,
+    pose: resolveBattlerPose({
+      battler: base,
+      lastActionResult: poseContext?.lastActionResult,
+      showActionPose: poseContext?.showActionPose,
+    }),
   };
 }
 

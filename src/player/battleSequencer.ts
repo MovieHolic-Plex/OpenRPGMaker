@@ -10,6 +10,8 @@ import {
 
 export const BATTLE_INTRO_MS = 1_200;
 export const BATTLE_ACTING_MS = 550;
+/** Brief freeze on a damaging connect before impact UI continues. */
+export const BATTLE_HITSTOP_MS = 120;
 export const BATTLE_IMPACT_MS = 750;
 export const BATTLE_RESOLVE_MS = 400;
 export const BATTLE_RESULT_STAGE_MS = 450;
@@ -29,6 +31,8 @@ export interface BattleSequencerHooks {
   readonly onDirectorState: (state: BattleDirectorState) => void;
   readonly onSyncView: () => void;
   readonly onDamageFeedback: (feedback: DamageFeedback | undefined) => void;
+  /** True while the short hit-stop hold is active for a damaging hit. */
+  readonly onHitFeel?: (active: boolean, feedback?: DamageFeedback) => void;
   readonly onResultStage: (stage: number) => void;
   readonly onSequenceBusy: (busy: boolean) => void;
 }
@@ -184,10 +188,20 @@ export function createBattleSequencer(
       hooks.onDirectorState({ ...actingState, step: "acting", lines: [actingState.lines[0] ?? ""] });
       hooks.onSyncView();
       delay(() => {
+        const feedback = damageFeedback(command, before, after);
         hooks.onDirectorState(actingState);
-        hooks.onDamageFeedback(damageFeedback(command, before, after));
+        hooks.onDamageFeedback(feedback);
+        if (feedback && !feedback.healing) {
+          hooks.onHitFeel?.(true, feedback);
+        }
         hooks.onSyncView();
-        delay(() => resolveEnemyTurns(actingState), BATTLE_IMPACT_MS);
+        const afterHitStop = (): void => {
+          hooks.onHitFeel?.(false, feedback);
+          hooks.onSyncView();
+          delay(() => resolveEnemyTurns(actingState), BATTLE_IMPACT_MS);
+        };
+        if (feedback && !feedback.healing) delay(afterHitStop, BATTLE_HITSTOP_MS);
+        else afterHitStop();
       }, BATTLE_ACTING_MS);
     },
     runAfterEnemyAdvance(before: BattleSnapshot, after: BattleSnapshot): void {
@@ -199,9 +213,12 @@ export function createBattleSequencer(
         lines: ["적의 행동!", after.lastActionResult.skillName ?? "공격이 이어진다."],
         targetId: after.lastActionResult.targetId,
       });
-      hooks.onDamageFeedback(damageFeedbackFromSnapshots(before, after));
+      const feedback = damageFeedbackFromSnapshots(before, after);
+      hooks.onDamageFeedback(feedback);
+      if (feedback && !feedback.healing) hooks.onHitFeel?.(true, feedback);
       hooks.onSyncView();
-      delay(() => {
+      const finish = (): void => {
+        hooks.onHitFeel?.(false, feedback);
         const snapshot = runtime.snapshot();
         if (snapshot.result) {
           revealResult(snapshot, commandPromptState(snapshot));
@@ -212,7 +229,8 @@ export function createBattleSequencer(
         hooks.onDamageFeedback(undefined);
         hooks.onSyncView();
         setBusy(false);
-      }, BATTLE_IMPACT_MS);
+      };
+      delay(finish, (feedback && !feedback.healing ? BATTLE_HITSTOP_MS : 0) + BATTLE_IMPACT_MS);
     },
     cancel(): void {
       clearTimers();

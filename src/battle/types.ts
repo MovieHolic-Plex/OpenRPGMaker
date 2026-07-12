@@ -74,6 +74,11 @@ export interface BattleSessionState {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly gold?: number;
+  readonly partyActorIds?: readonly string[];
+  readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  readonly actorExperience?: Readonly<Record<string, number>>;
+  readonly actorLevels?: Readonly<Record<string, number>>;
   readonly gameTime?: GameTime;
   readonly friendship?: Readonly<Record<string, number>>;
 }
@@ -102,6 +107,8 @@ export interface BattlePartyProgress {
   readonly monsterParty?: readonly MonsterInstance[];
 }
 
+export type { BattleBattlerPose } from "@/battle/battlePose";
+
 export interface BattleBattlerSnapshot {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
@@ -118,9 +125,18 @@ export interface BattleBattlerSnapshot {
   readonly battleY?: number;
   readonly defeated: boolean;
   readonly defending: boolean;
+  /** Side-view pose for the current resolve beat (idle/attack/hit/defend/dead). */
+  readonly pose: import("@/battle/battlePose").BattleBattlerPose;
   readonly stateIds: readonly string[];
   readonly skillIds: readonly SkillId[];
   readonly captured?: boolean;
+}
+
+export interface BattleHitFeelSnapshot {
+  readonly targetId: string;
+  readonly amount: number;
+  readonly critical: boolean;
+  readonly healing: boolean;
 }
 
 export interface BattleAnimationSnapshot {
@@ -227,6 +243,11 @@ export interface BattleEventStateSnapshot {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly gold?: number;
+  readonly partyActorIds?: readonly string[];
+  readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  readonly actorExperience?: Readonly<Record<string, number>>;
+  readonly actorLevels?: Readonly<Record<string, number>>;
 }
 
 export interface BattleSnapshot {
@@ -242,6 +263,8 @@ export interface BattleSnapshot {
   readonly enemies: readonly BattleBattlerSnapshot[];
   readonly lastAnimation?: BattleAnimationSnapshot;
   readonly lastActionResult?: BattleActionResultSnapshot;
+  /** Present when the last resolved action should show hit-feel juice. */
+  readonly hitFeel?: BattleHitFeelSnapshot;
   readonly lastCaptureResult?: BattleCaptureResultSnapshot;
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly result?: BattleResult;

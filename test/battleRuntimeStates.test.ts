@@ -33,6 +33,8 @@ describe("battle runtime — 상태이상 연결", () => {
     const project = battleProject();
     const hero = normalizeActorRecord(project.database.actors[0]);
     const bigExp = totalExpForLevel(hero.expCurve, 5);
+    const slime = project.database.enemies.find((record) => record.id === "enemy_slime");
+    if (slime) slime.stats = { ...slime.stats, maxHp: 1, defense: 0 };
 
     const runtime = createBattleRuntime({
       project,
@@ -41,7 +43,10 @@ describe("battle runtime — 상태이상 연결", () => {
       canLose: true,
       party: { levels: { actor_hero: 1 }, experience: { actor_hero: bigExp } },
     });
-    runtime.tick(1_000);
+    for (let i = 0; i < 500; i += 1) {
+      runtime.tick(50);
+      if (runtime.snapshot().phase === "actorCommand") break;
+    }
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
 
     const snapshot = runtime.snapshot();

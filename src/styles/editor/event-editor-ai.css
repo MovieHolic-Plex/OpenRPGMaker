@@ -2,18 +2,15 @@
    토큰만 사용(TOKENS.md) — 하드코딩 색 금지. */
 
 .ai-event-assist {
-  margin-top: var(--space-2);
+  margin-top: 0;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-m);
   background: var(--bg-raised);
 }
 
 .ai-event-assist-summary {
-  padding: var(--space-2) var(--space-3);
   color: var(--text-2);
-  font-size: 12px;
   cursor: pointer;
-  border-radius: var(--radius-m);
   transition: background var(--transition-fast), color var(--transition-fast);
   user-select: none;
 }
@@ -25,9 +22,6 @@
 
 .ai-event-assist[open] > .ai-event-assist-summary {
   color: var(--text-1);
-  border-bottom: 1px solid var(--border-subtle);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
 }
 
 .ai-event-assist-body {

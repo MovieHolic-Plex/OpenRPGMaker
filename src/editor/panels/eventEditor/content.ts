@@ -22,7 +22,6 @@ import { renderCommandList } from "./commandList";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
-import { renderEventScheduleSection } from "./eventSchedule";
 import {
   renderClassicPageTabStrip,
   renderEventNameControl,
@@ -76,9 +75,19 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     return;
   }
 
-  const ev = map.events.find((event) => event.id === eventId);
+  let ev = map.events.find((event) => event.id === eventId);
   if (!ev) {
-    section.append(el("div", { class: "empty-hint", text: "이벤트를 찾을 수 없습니다." }));
+    // Autosave/replace races must never blank the open editor — restore from vault once.
+    if (store.restoreEventDraftFromVault(mapId, eventId)) {
+      ev = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId);
+    }
+  }
+  if (!ev) {
+    section.append(el("div", {
+      class: "empty-hint",
+      text: "이벤트를 찾을 수 없습니다. 편집 세션이 끊겼다면 맵에서 이벤트를 다시 열어 주세요.",
+      dataset: { testid: "event-editor-missing" },
+    }));
     container.append(section);
     return;
   }
@@ -125,29 +134,32 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
-  // 스케줄을 본문과 분리해 직접 append하면 3번째 자식이 좌측 54px 칸에 떨어져 UI가 찌그러진다.
+  // NPC schedule 은 RM2003 이벤트 창에 없는 모던 데이터 — 에디터 UI에 노출하지 않는다
+  // (set_npc_schedule / make_villager 툴·project JSON 으로만 유지).
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
-    children: [
-      renderEventPageProps(mapId, ev.id, activePage),
-      renderEventScheduleSection(mapId, ev),
-    ],
+    children: [renderEventPageProps(mapId, ev.id, activePage)],
   });
-  settingsColumn.append(renderClassicPageTabStrip(ev, activePage), settingsMain);
+  settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage), settingsMain);
   commandsColumn.append(
-    renderCommandToolbar(cmdList, actions, commandHistory),
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
       dataset: { testid: "event-classic-contents" },
       children: [
-        el("legend", { text: "실행 내용" }),
+        el("legend", { class: "event-contents-legend", text: "실행 내용" }),
+        renderCommandToolbar(cmdList, actions, commandHistory),
         cmdList,
       ],
     }),
-    // 커맨드 리스트 하단 AI Assist(자연어 → 커맨드 JSON 생성/프리뷰/삽입).
-    renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
-    // [P2] 모던 전용 파생 뷰(라이브 미리보기/플로우차트) — 기본 접힘, RM2003 화면 옆에 선다.
-    renderEventScriptModernViews(activePage)
+    // 하단 보조 도구: AI / 미리보기 / 플로우 — 접힘 시 한 줄 칩, 실행 내용 높이 우선.
+    el("div", {
+      class: "event-editor-aux-tools",
+      dataset: { testid: "event-editor-aux-tools" },
+      children: [
+        renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
+        renderEventScriptModernViews(activePage),
+      ],
+    })
   );
 
   const workbench = el("div", {
@@ -230,18 +242,38 @@ function renderCommandToolbar(
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "실행 내용 도구" },
     children: [
-      toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-      toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
-      toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
-      toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1))),
-      toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
-      toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions))),
-      toolbarButton("+", "명령 추가", "event-command-toolbar-add", () =>
-        cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
-          new MouseEvent("dblclick", { bubbles: true, cancelable: true })
-        )
+      toolGroup(
+        toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
+        toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo())
+      ),
+      toolGroup(
+        toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
+        toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)))
+      ),
+      toolGroup(
+        toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
+        toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)))
+      ),
+      toolbarButton(
+        "+",
+        "명령 추가",
+        "event-command-toolbar-add",
+        () =>
+          cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
+            new MouseEvent("dblclick", { bubbles: true, cancelable: true })
+          ),
+        false,
+        true
       ),
     ],
+  });
+}
+
+function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {
+  return el("div", {
+    class: "event-editor-command-tool-group",
+    attrs: { role: "group" },
+    children: buttons,
   });
 }
 
@@ -250,10 +282,11 @@ function toolbarButton(
   title: string,
   testId: string,
   onClick?: () => void,
-  disabled = false
+  disabled = false,
+  primary = false
 ): HTMLButtonElement {
   return el("button", {
-    class: "event-editor-command-tool",
+    class: "event-editor-command-tool" + (primary ? " primary" : ""),
     text,
     attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
     dataset: { testid: testId },

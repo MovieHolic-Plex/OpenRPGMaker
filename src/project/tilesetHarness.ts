@@ -19,6 +19,7 @@ export {
 } from "./tilesetHarness/combinedTownGroups";
 export {
   applyEasyRpgThemeMetadataPacks,
+  createInteriorWallFrameAutotileGroup,
   DUNGEON_HARNESS_GROUPS,
   DUNGEON_HARNESS_PREFIX,
   DUNGEON_METADATA_PACK_ID,
@@ -29,5 +30,8 @@ export {
   INTERIOR_METADATA_PACK_ID,
   INTERIOR_METADATA_PACK_VERSION,
   INTERIOR_TEXTURE_KEY,
+  INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID,
+  INTERIOR_WALL_FRAME_FLOOR_TILE,
+  INTERIOR_WALL_FRAME_TILES,
   isThemePackTileset,
 } from "./tilesetHarness/themePacks";

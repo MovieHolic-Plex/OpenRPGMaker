@@ -266,6 +266,8 @@ async function consumeBlockingStep(
     case "inputNumber":
       return resumeWithValue(scene, interpreter, await dialogue.showNumberInput({
         digits: step.digits,
+        prompt: step.prompt,
+        showPad: step.showPad,
         settings: step.settings,
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,

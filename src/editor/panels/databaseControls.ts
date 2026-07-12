@@ -216,6 +216,10 @@ function literalLabel(value: string): string {
       return "게이지";
     case "strict":
       return "엄격 턴제";
+    case "classic":
+      return "클래식 (RM2003풍)";
+    case "pokemon":
+      return "포켓몬풍";
     case "event":
       return "이벤트";
     case "physical":

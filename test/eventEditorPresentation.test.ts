@@ -80,6 +80,20 @@ describe("event editor presentation", () => {
 
     expect(icon.dataset.testid).toBe("event-page-graphic-icon-preview");
     expect(icon.classList.contains("event-graphic-icon-preview")).toBe(true);
+    // Default list icon stays compact (~0.6875 scale → 16.5×22).
+    expect(icon.style.width).toBe(`${RESOURCE_SLICING.charset.cellWidth * 0.6875}px`);
+    expect(icon.style.height).toBe(`${RESOURCE_SLICING.charset.cellHeight * 0.6875}px`);
+  });
+
+  it("renders page-tab icons at full charset cell size", () => {
+    const graphic = {
+      sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" },
+    } satisfies EventPageGraphic;
+
+    const icon = renderWithFakeDom(() => renderEventGraphicIcon(graphic, { scale: 1 }));
+
+    expect(icon.style.width).toBe(`${RESOURCE_SLICING.charset.cellWidth}px`);
+    expect(icon.style.height).toBe(`${RESOURCE_SLICING.charset.cellHeight}px`);
   });
 
   it("renders runtime support badges in the command list", () => {
@@ -182,9 +196,11 @@ describe("event editor presentation", () => {
     expect(findByTestId(body, "event-command-edit-summary")?.textContent).toContain("오른쪽");
     expect(findByTestId(body, "event-command-edit-summary")?.textContent).not.toContain("right");
     expect(findByTestId(body, "event-command-face-index")?.attrs.max).toBe(String(RESOURCE_SLICING.faceset.count));
+    expect(findByTestId(body, "event-command-face-resource-set")).not.toBeNull();
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-x"]).toBe("-48px");
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-y"]).toBe("-48px");
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-sheet-size"]).toBe("192px");
+    expect(findByTestId(body, "event-command-face-crop")?.style["--face-display-width"]).toBe("112px");
   });
 
   it("explains missing face graphic previews instead of leaving a blank slot", () => {

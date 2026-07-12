@@ -21,43 +21,42 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] {
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   overflow: auto;
-  padding: 8px;
+  padding: 12px;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-window {
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.34);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
   color: var(--text-1);
-  font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  width: min(836px, calc(100vw - 16px));
+  font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  width: min(920px, calc(100vw - 24px));
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header {
   align-items: center;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border-default);
-  min-height: 39px;
-  padding: 7px 8px 5px;
+  min-height: 44px;
+  padding: 12px 16px;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header h3 {
   color: var(--text-1);
-  font: 400 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 700 16px/22px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-close {
   background: var(--bg-raised);
-  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-  border-style: solid;
-  border-width: 1px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
   color: var(--text-1);
-  font: 400 18px/19px Arial, sans-serif;
-  height: 24px;
+  font: 700 16px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  height: 28px;
   min-width: 28px;
   padding: 0;
 }
@@ -65,62 +64,67 @@
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-body {
   display: block;
   overflow: hidden;
-  padding: 6px 12px 8px;
+  padding: 14px 16px 16px;
 }
 
 .transfer-player-dialog {
   display: grid;
-  gap: 6px 8px;
-  grid-template-columns: 306px minmax(0, 1fr);
-  grid-template-rows: 338px 58px 42px;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  grid-template-rows: minmax(360px, 42vh) auto auto;
   min-width: 0;
 }
 
 .transfer-player-tree,
 .transfer-player-preview {
   background: var(--bg-raised);
-  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
-  border-style: solid;
-  border-width: 2px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
   min-height: 0;
   overflow: auto;
 }
 
 .transfer-player-tree {
-  padding: 4px 5px;
+  padding: 10px;
 }
 
 .transfer-player-project {
   color: var(--text-1);
-  font: 400 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  padding-left: 24px;
+  font: 700 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  padding: 4px 8px 8px 28px;
   position: relative;
 }
 
 .transfer-player-project::before {
   background: #f4d774;
   border: 1px solid #7b6b20;
+  border-radius: 3px;
   content: "";
   height: 14px;
-  left: 2px;
+  left: 6px;
   position: absolute;
-  top: 4px;
-  width: 18px;
+  top: 6px;
+  width: 16px;
 }
 
 .transfer-player-map-list {
   display: grid;
-  padding-left: 28px;
+  gap: 2px;
+  padding-left: 8px;
 }
 
 .transfer-player-map-row {
   background: transparent;
   border: 0;
+  border-radius: 6px;
   color: var(--text-1);
-  font: 400 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  min-height: 23px;
+  cursor: pointer;
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 32px;
   overflow: hidden;
-  padding: 0 5px 0 24px;
+  padding: 6px 10px 6px 30px;
   position: relative;
   text-align: left;
   text-overflow: ellipsis;
@@ -130,63 +134,81 @@
 .transfer-player-map-row::before {
   background: #7fffd4;
   border: 1px solid #008060;
+  border-radius: 3px;
   content: "";
-  height: 16px;
-  left: 3px;
+  height: 14px;
+  left: 8px;
   position: absolute;
-  top: 3px;
-  width: 16px;
+  top: 9px;
+  width: 14px;
 }
 
 .transfer-player-map-row.selected {
-  background: var(--bg-raised);
+  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 78%, var(--bg-raised));
+  color: var(--accent, var(--text-1));
 }
 
 .transfer-player-preview {
-  align-content: start;
-  background: var(--bg-raised);
-  display: grid;
-  justify-content: start;
+  align-items: center;
+  background: #0b1220;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
 }
 
 .transfer-player-preview canvas {
   display: block;
+  flex: 0 0 auto;
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.transfer-player-controls {
+  display: grid;
+  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  min-width: 0;
 }
 
 .transfer-player-direction {
   align-items: center;
-  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-  border-style: solid;
-  border-width: 2px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
   display: flex;
-  gap: 18px;
-  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 10px 14px;
   margin: 0;
-  padding: 8px 14px 10px;
+  min-width: 0;
+  padding: 10px 14px 12px;
 }
 
 .transfer-player-direction legend {
   color: var(--text-1);
-  font: 400 17px/19px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 700 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 0 4px;
 }
 
 .transfer-player-direction-options {
   align-items: center;
   display: flex;
-  gap: 45px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 }
 
 .transfer-player-direction-options label {
   align-items: center;
+  color: var(--text-1);
+  cursor: pointer;
   display: inline-flex;
   gap: 6px;
   white-space: nowrap;
 }
 
 .transfer-player-direction-options span {
-  font: 400 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  color: var(--text-1);
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .transfer-player-footer {
@@ -194,43 +216,48 @@
   display: grid;
   gap: 10px;
   grid-column: 1 / -1;
-  grid-template-columns: minmax(250px, 1fr) auto 134px 134px;
+  grid-template-columns: minmax(220px, 1fr) auto auto auto;
 }
 
 .transfer-player-status {
   align-content: center;
   background: var(--bg-raised);
-  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
-  border-style: solid;
-  border-width: 2px;
-  color: #003070;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-1);
   display: grid;
-  font: 700 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  padding: 0 10px;
+  font: 700 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .transfer-player-zoom {
   align-items: center;
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .transfer-player-zoom-button,
 .transfer-player-button {
   background: var(--bg-raised);
-  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-  border-style: solid;
-  border-width: 2px;
-  box-shadow: inset -1px -1px 0 var(--border-default), inset 1px 1px 0 var(--border-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
   color: var(--text-1);
-  font: 700 17px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  min-width: 40px;
-  padding: 0 12px;
+  cursor: pointer;
+  font: 650 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 34px;
+  min-width: 44px;
+  padding: 6px 12px;
 }
 
 .transfer-player-zoom-button.active {
-  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
-  box-shadow: inset 1px 1px 0 var(--border-default);
+  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 78%, var(--bg-raised));
+  border-color: var(--accent, var(--border-default));
+  color: var(--accent, var(--text-1));
 }
 
 @media (max-width: 1240px) {
@@ -673,7 +700,6 @@
 .event-page-move-route fieldset,
 .event-page-move-route-delete-box,
 .transfer-player-tree,
-.transfer-player-preview,
 .transfer-player-direction,
 .transfer-player-status,
 .event-graphic-picker-frame,
@@ -738,10 +764,10 @@
 }
 
 /* [치명-1/치명-2] auto-fit 그리드는 단순 폼에만 적용한다.
-   선택지 인라인 에디터(.event-command-choices-inline)와 레코드 폼(.event-command-record-form)은
-   자체 레이아웃을 가지므로 여기서 제외 — 트랙 폭보다 넓은 자식이 이웃 위로 겹쳐 렌더되던 원인. */
+   선택지/레코드/문장/상점/이동경로 등 자체 레이아웃 폼은 제외 — 트랙 폭보다 넓은 자식이
+   이웃 위로 겹치거나 듀얼 리스트가 가로로 찢어지던 원인. */
 .event-command-edit-body > div > span,
-.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor) {
+.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor):not(.commerce-command-body):not(.shop-processing-command-body):not(.event-command-edit-summary):not(.event-command-face-editor):not(.move-route-editor) {
   align-items: end;
   display: grid;
   gap: 10px;
@@ -835,12 +861,34 @@
 .event-command-face-editor {
   align-items: stretch;
   display: grid;
-  gap: 10px;
-  grid-template-columns: 144px repeat(2, minmax(120px, 1fr));
+  gap: 12px;
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
 }
 
-.event-command-face-editor .event-command-face-preview {
-  grid-row: span 2;
+.event-command-face-preview-host {
+  min-width: 0;
+}
+
+.event-command-face-fields {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-command-face-resource-row {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-width: 0;
+}
+
+.event-command-face-hint {
+  color: var(--text-dim, var(--text-2));
+  font: 500 11px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
 }
 
 .event-command-faceset-preview {
@@ -856,10 +904,10 @@
   border-width: 1px;
   color: var(--event-rm-text, var(--text-1));
   display: grid;
-  gap: 8px;
+  gap: 10px;
   grid-template-columns: auto minmax(0, 1fr);
-  min-height: 88px;
-  padding: 8px;
+  min-height: 120px;
+  padding: 12px;
 }
 
 .event-command-face-preview[data-empty="true"] {
@@ -869,25 +917,27 @@
 
 .event-command-face-crop {
   background-image: var(--face-url);
-  background-position: var(--face-x) var(--face-y);
+  background-position: var(--face-scaled-x) var(--face-scaled-y);
   background-repeat: no-repeat;
-  background-size: var(--face-sheet-size) var(--face-sheet-size);
+  background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
   border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
   border-style: solid;
   border-width: 1px;
   flex: 0 0 auto;
-  height: 48px;
+  height: var(--face-display-height, 96px);
   image-rendering: pixelated;
-  width: 48px;
+  overflow: hidden;
+  width: var(--face-display-width, 96px);
 }
 
-.event-command-face-preview.flipped .event-command-face-crop {
+.event-command-face-preview.flipped .event-command-face-crop,
+.event-command-face-crop-shell.flipped .event-command-face-crop {
   transform: scaleX(-1);
 }
 
 .event-command-face-preview-copy {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -903,6 +953,14 @@
 .event-command-face-preview[data-empty="true"] span {
   color: var(--text-dim, var(--text-1));
   font: 600 11px/1.3 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.event-command-face-preview-id {
+  color: var(--text-dim, var(--text-2));
+  font: 500 10px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-command-edit-body .field:has(.m2-resource-picker) {
@@ -1407,37 +1465,62 @@
 }
 
 .event-page-move-route legend,
-.transfer-player-direction legend,
 .event-graphic-radio-group legend {
   color: var(--text-muted, var(--text-2));
   font: 750 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 0 4px;
 }
 
+.transfer-player-direction legend {
+  color: color-mix(in srgb, var(--text, var(--text-1)) 88%, var(--text-muted, var(--text-2)));
+  font: 750 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 0 4px;
+}
+
 .event-page-move-route-frequency-radios span,
 .event-page-move-route-options span,
 .event-page-move-route-parameters span,
-.transfer-player-direction-options span,
 .event-graphic-radio-option {
   color: var(--text, var(--text-1));
   font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
+.transfer-player-direction-options span {
+  color: var(--text, var(--text-1));
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
 .event-page-move-route-command-list,
 .transfer-player-tree,
-.transfer-player-preview,
 .event-graphic-resource-list {
   background: var(--event-popup-field, var(--bg-raised));
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
 }
 
+/* Map preview keeps a dark stage so the map reads clearly and fills the pane. */
+.transfer-player-preview {
+  background: color-mix(in srgb, #0b1220 88%, var(--event-popup-field, var(--bg-raised)));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  padding: 0;
+}
+
 .event-page-move-route-list-row,
-.transfer-player-map-row,
-.transfer-player-project,
 .event-graphic-resource-row {
   color: var(--text, var(--text-1));
   font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.transfer-player-map-row,
+.transfer-player-project {
+  color: var(--text, var(--text-1));
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.transfer-player-project {
+  font-weight: 700;
 }
 
 .event-page-move-route-list-row {
@@ -1456,9 +1539,16 @@
 }
 
 .transfer-player-dialog {
+  gap: 12px;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  grid-template-rows: minmax(360px, 42vh) auto auto;
+}
+
+.transfer-player-controls {
+  display: grid;
   gap: 10px;
-  grid-template-columns: 306px minmax(0, 1fr);
-  grid-template-rows: 348px 60px 42px;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
 }
 
 .transfer-command-editor {
@@ -1476,20 +1566,19 @@
   padding: 6px 9px;
 }
 
-.transfer-player-tree,
-.transfer-player-preview {
-  padding: 8px;
+.transfer-player-tree {
+  padding: 10px;
 }
 
 .transfer-player-map-row {
   border-radius: 6px;
-  min-height: 28px;
-  padding-block: 4px;
+  min-height: 32px;
+  padding-block: 6px;
 }
 
 .transfer-player-status {
-  color: var(--accent, var(--accent));
-  font: 750 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text, var(--text-1));
+  font: 700 14px/20px ui-monospace, "Cascadia Mono", "Consolas", monospace;
   padding: 0 12px;
 }
 
@@ -1539,6 +1628,14 @@
   .transfer-player-dialog,
   .event-graphic-picker-frame,
   .event-record-picker-frame {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .transfer-player-dialog {
+    grid-template-rows: minmax(240px, 36vh) auto auto;
+  }
+
+  .transfer-player-controls {
     grid-template-columns: minmax(0, 1fr);
   }
 

@@ -327,10 +327,13 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
     antialias: false,
     pixelArt: true,
     scale: {
-      mode: PhaserRuntime.Scale.NONE,
+      // RESIZE: 부모(.phaser-container / scroll-shell) 크기에 맞춰 버퍼를 키운다.
+      // NONE + 초기 800×600만 쓰면 레이아웃 전에 fit이 실패하면 작은 캔버스가 남는다.
+      mode: PhaserRuntime.Scale.RESIZE,
       width: 800,
       height: 600,
       parent,
+      autoCenter: PhaserRuntime.Scale.NO_CENTER,
     },
     scene: [EditScene],
   });

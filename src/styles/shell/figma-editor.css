@@ -40,11 +40,18 @@
     padding: 0 18px;
   }
 
+  .editor-topbar-trailing {
+    align-items: center;
+    display: inline-flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+
   .rm2k3-window-controls {
     align-items: center;
     display: inline-flex;
     gap: 4px;
-    margin-left: auto;
+    margin-left: 2px;
   }
 
   .team-history-button,
@@ -59,19 +66,35 @@
     font: 600 12px/1 var(--font-ui);
     gap: 8px;
     height: 32px;
+    justify-content: center;
     letter-spacing: 0;
-    margin-left: 8px;
+    margin-left: 0;
     padding: 0 10px;
+  }
+
+  .team-history-button.is-icon-only,
+  .team-identity-button.is-icon-only {
+    gap: 0;
+    padding: 0;
+    width: 32px;
   }
 
   .team-history-button:hover,
   .team-history-button:focus-visible,
+  .team-history-button[aria-expanded="true"],
   .team-identity-button:hover,
   .team-identity-button:focus-visible,
   .team-identity-button[aria-expanded="true"] {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     outline: none;
+  }
+
+  .team-topbar-icon {
+    display: block;
+    flex: 0 0 auto;
+    height: 18px;
+    width: 18px;
   }
 
   .team-identity-kind,
@@ -89,6 +112,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .team-identity-label.is-visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
   }
 
   .team-identity-kind-text {
@@ -1003,6 +1038,12 @@
 
   .editor-layout .canvas-area .phaser-container > canvas {
     display: block;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .editor-canvas-scroll-shell {
+    overflow: hidden;
   }
 
   .canvas-toolbar {

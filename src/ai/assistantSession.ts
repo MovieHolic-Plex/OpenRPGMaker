@@ -1139,10 +1139,10 @@ function proposalKey(proposal: ProposedCall): string {
 export function writeDedupeKey(name: string, args: Record<string, unknown>): string | null {
   if (name !== "place_props") return null;
   const mapId = typeof args.mapId === "string" ? args.mapId : "";
-  const propVocabId = typeof args.propVocabId === "string" ? args.propVocabId.trim() : "";
+  const material = typeof args.material === "string" ? args.material.trim() : typeof args.propVocabId === "string" ? args.propVocabId.trim() : "";
   const count = typeof args.count === "number" ? args.count : args.count;
   const area = args.area;
-  return `place_props|${mapId}|${JSON.stringify(area)}|${propVocabId}|${String(count)}`;
+  return `place_props|${mapId}|${JSON.stringify(area)}|${material}|${String(count)}`;
 }
 
 function moveEventTarget(proposal: ProposedCall): EventMoveTarget | null {

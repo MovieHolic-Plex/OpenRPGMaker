@@ -50,7 +50,7 @@ test("transfer command opens an RPG Maker style Transfer Player picker", async (
   await page.getByTestId("event-command-empty-line").dblclick();
   const picker = page.getByTestId("event-command-picker");
   await expect(picker).toBeVisible();
-  await picker.getByTestId("event-command-picker-tab-2").click();
+  await picker.getByTestId("event-command-picker-tab-1").click();
   await picker.getByTestId("command-picker-add-transfer").click();
   const commandDialog = page.getByTestId("event-command-edit-dialog");
   await expect(commandDialog).toBeVisible();
@@ -70,7 +70,19 @@ test("transfer command opens an RPG Maker style Transfer Player picker", async (
   if (!previewBox) throw new Error("missing transfer preview");
   await expect.poll(() => countEventMarkerPixels(preview, 64, 112, 16)).toBeGreaterThan(8);
   await dialog.screenshot({ path: `${EVIDENCE_DIR}/transfer-player-dialog-interior-events.png` });
-  await preview.click({ position: { x: 72, y: 104 } });
+  // Click tile (4,6) using CSS-space coords (preview may be scaled to fill the pane).
+  const clickAt = await preview.evaluate((node) => {
+    if (!(node instanceof HTMLCanvasElement)) throw new Error("transfer preview is not a canvas");
+    const tileSize = 16;
+    const tileX = 4;
+    const tileY = 6;
+    const rect = node.getBoundingClientRect();
+    return {
+      x: ((tileX + 0.5) * tileSize / Math.max(1, node.width)) * rect.width,
+      y: ((tileY + 0.5) * tileSize / Math.max(1, node.height)) * rect.height,
+    };
+  });
+  await preview.click({ position: clickAt });
   await dialog.getByTestId("transfer-player-direction-right").check();
   await dialog.getByTestId("transfer-player-fade-none").check();
   await dialog.getByTestId("transfer-player-ok").click();

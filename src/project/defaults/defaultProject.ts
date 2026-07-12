@@ -23,6 +23,8 @@ import {
   defaultTerms,
 } from "./defaultDatabase";
 import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
+import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
+import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
 import { createTrainingExampleMaps } from "./trainingExampleMaps";
 import {
   createBlankMap,
@@ -42,7 +44,6 @@ import {
   type TownHouseShowcaseStyle,
   singleNodeTree,
 } from "./defaultMaps";
-
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 const BLANK_PROJECT_START_MAP_ID = "map_blank_start";
 const BLANK_PROJECT_MAP_WIDTH = 20;
@@ -60,6 +61,20 @@ export function createBlankProject(): Project {
 export function createSampleAdventureProject(): Project {
   const project = createProjectWithMaps(createAdventureMaps(), 0);
   configureAdventureProject(project);
+  return project;
+}
+
+// Scarloxy MPWSP01 팩 데모 — 팩 칩셋/캐릭셋/몬스터/전투 배경/이펙트를 조합한 예시.
+export function createScarloxyDemoProject(): Project {
+  const project = createProjectWithMaps(createScarloxyDemoMaps(), 0);
+  configureScarloxyDemoProject(project);
+  return project;
+}
+
+// Scarloxy 포켓몬풍 데모 — 스타터 선택/야생 포획/진화 등 몬스터 수집 시스템 예시.
+export function createScarloxyPokemonDemoProject(): Project {
+  const project = createProjectWithMaps(createScarloxyPokemonDemoMaps(), 0);
+  configureScarloxyPokemonDemoProject(project);
   return project;
 }
 
@@ -98,6 +113,22 @@ export function createMarketTownProject(): Project {
   const project = createProjectWithStarterMap(createMarketTownMap());
   // 시장 광장 입구에서 시작하도록 시작 위치 조정.
   project.startPos = marketTownStartPos();
+  return project;
+}
+
+export function createVillageShoppingStreetProject(): Project {
+  // Lazy import — villageShoppingStreetBuild → toolRunner/store 순환을 defaultProject 초기화에서 끊음
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const {
+    buildVillageShoppingStreetProject,
+    villageShoppingStreetStartPos,
+  } = require("./villageShoppingStreetBuild") as typeof import("./villageShoppingStreetBuild");
+  // build_village 슬롯·HOUSE_MARGIN 알고리즘 + 동쪽 상점가 (하드코딩 집 origin 금지)
+  const built = buildVillageShoppingStreetProject({ seed: 11, houses: 6 });
+  const project = built.project;
+  if (!project.startPos || project.startPos.x < 0) {
+    project.startPos = villageShoppingStreetStartPos();
+  }
   return project;
 }
 

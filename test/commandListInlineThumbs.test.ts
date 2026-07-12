@@ -92,14 +92,17 @@ describe("커맨드 리스트 인라인 썸네일 (P1)", () => {
     expect(latest && latest.kind === "text" ? latest.body : "").toContain("\\c[1]");
   });
 
-  it("문장 프리뷰는 previewFace 문맥이 있으면 얼굴 프리뷰를 포함한다", () => {
+  it("문장 프리뷰는 previewFace 문맥이 있으면 얼굴 크롭(에디터 카드 아님)을 포함한다", () => {
     const withFace = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "text", body: "안녕" }, { face: { resourceId: FACE_RESOURCE, faceIndex: 1 } })
     );
-    expect(findByTestId(withFace, "event-command-face-preview")).not.toBeNull();
+    expect(findByTestId(withFace, "event-command-face-crop-shell")).not.toBeNull();
+    expect(findByTestId(withFace, "event-command-face-crop")).not.toBeNull();
+    // Play mock must not embed editor resource-id chrome.
+    expect(findByTestId(withFace, "event-command-face-preview")).toBeNull();
     const withoutFace = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "text", body: "안녕" })
     );
-    expect(findByTestId(withoutFace, "event-command-face-preview")).toBeNull();
+    expect(findByTestId(withoutFace, "event-command-face-crop-shell")).toBeNull();
   });
 });

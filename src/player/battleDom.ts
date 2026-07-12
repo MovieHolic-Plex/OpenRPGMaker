@@ -23,12 +23,14 @@ import {
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { battleField, battlePartyStatus, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
+import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
 import {
   BATTLE_RESULT_HOLD_MS,
   createBattleSequencer,
   type DamageFeedback,
 } from "@/player/battleSequencer";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
+import { store } from "@/project/store";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
@@ -49,6 +51,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const root = document.createElement("section");
   root.className = "battle-scene";
   root.dataset.testid = "battle-scene";
+  // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
+  root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
   applyBattleSystemGraphic(root);
   options.host.append(root);
 
@@ -112,6 +116,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
+      if (feedback) {
+        const targetNode =
+          field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`)
+          ?? field.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${feedback.targetId}"]`)
+          ?? field.querySelector<HTMLElement>(`[data-testid="battle-actor-${feedback.targetId}"]`);
+        emitBattleJuice(feedback.critical ? "hit-critical" : feedback.healing ? "command-confirm" : "hit-damage", targetNode);
+        if (!feedback.healing) flashBattleField(root, feedback.critical ? "critical" : "hit");
+      }
+    },
+    onHitFeel(active, feedback) {
+      root.dataset.battleHitFeel = active ? "true" : "false";
+      root.classList.toggle("battle-hit-stop", active);
+      if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
+      else root.classList.remove("battle-hit-stop-critical");
     },
     onResultStage(stage) {
       resultRevealStage = stage;

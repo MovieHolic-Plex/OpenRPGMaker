@@ -12,9 +12,9 @@ describe("basicFlyoutReducer", () => {
     let s: BasicFlyoutState = INITIAL_BASIC_FLYOUT_STATE;
     s = basicFlyoutReducer(s, { type: "toggle", id: "tiles" });
     expect(s.open).toBe("tiles");
-    s = basicFlyoutReducer(s, { type: "toggle", id: "layers" });
-    expect(s.open).toBe("layers");
-    s = basicFlyoutReducer(s, { type: "toggle", id: "layers" });
+    s = basicFlyoutReducer(s, { type: "toggle", id: "maps" });
+    expect(s.open).toBe("maps");
+    s = basicFlyoutReducer(s, { type: "toggle", id: "maps" });
     expect(s.open).toBeNull();
   });
 

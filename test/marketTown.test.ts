@@ -7,7 +7,9 @@ import type { Command, GameMap } from "@/project/types";
 const DB_DOOR_TOP = 329;
 const DB_DOOR_BOTTOM = 359;
 const TOWN_PATH_TILES = new Set<number>(Object.values(SAND_TILE));
-const MARKET_AWNING_TILES = new Set([411, 412, 413, 441, 442, 443]);
+/** 장터 카운터 (천막 411–443 금지) */
+const MARKET_COUNTER_TILES = new Set([234, 235, 236]);
+const WOOD_FLOOR_BODY = 222;
 const TREE_TILE = 260;
 const TREE_BOTTOM_TILE = 290;
 const QUEST_BOARD_SIGN_TILE = 320;
@@ -63,9 +65,15 @@ describe("market town map", () => {
     // 주택 8채 → DB 도어 쌍 8개
     expect(countLowerDoorPairs(map)).toBe(8);
 
-    // 시장 천막(상점가 랜드마크)이 존재
-    const awningCount = map.upperTiles.filter((tile) => MARKET_AWNING_TILES.has(tile)).length;
-    expect(awningCount).toBeGreaterThanOrEqual(8);
+    // 시장 나무 데크 + 카운터 (천막 없음)
+    const woodFloorCount = map.lowerTiles.filter((tile) => tile === WOOD_FLOOR_BODY).length;
+    expect(woodFloorCount).toBeGreaterThanOrEqual(40);
+    const counterCount = map.upperTiles.filter((tile) => MARKET_COUNTER_TILES.has(tile)).length;
+    expect(counterCount).toBeGreaterThanOrEqual(8);
+    const tentAwning = map.upperTiles.filter((tile) =>
+      tile === 411 || tile === 412 || tile === 413 || tile === 441 || tile === 442 || tile === 443
+    ).length;
+    expect(tentAwning).toBe(0);
   });
 
   it("lays a connected grid road network with shaped sand edges", () => {

@@ -1,4 +1,5 @@
-import { EASYRPG_CHARSET_ASSETS, charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Dir, EventPageGraphic, GameMap, Project } from "@/project/types";
 import type { PlaySession, RuntimeFollower } from "@/project/session";
 import { defaultActorCharacterResourceId } from "@/project/actorModel";
@@ -107,7 +108,7 @@ function followerFromInput(
 }
 
 function actorFollowerGraphic(resourceId: string): EventPageGraphic | undefined {
-  const asset = EASYRPG_CHARSET_ASSETS.find((entry) => entry.id === resourceId || entry.textureKey === resourceId);
+  const asset = CHARSET_ASSETS.find((entry) => entry.id === resourceId || entry.textureKey === resourceId);
   const textureKey = asset?.textureKey ?? resourceId;
   return {
     sprite: { type: "bundled", id: textureKey },

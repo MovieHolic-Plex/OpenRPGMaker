@@ -147,26 +147,28 @@ describe("선택 영역 AI 직결 칩", () => {
       mapId,
       region: { x: 1, y: 2, width: 3, height: 4 },
     });
+    // "영역 작업 시작" 같은 status는 상태줄만 — 채팅 로그에는 안 쌓는다(lean UI).
+    expect(findByTestId(panel, "ai-status")?.textContent).not.toBe("영역 작업 시작");
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
-    expect(logText).toContain("영역 작업 시작");
+    expect(logText).not.toContain("영역 작업 시작");
     expect(logText).toContain("paint_tiles");
     expect(logText).toContain("완료했습니다.");
-    expect(logText).toContain("완료 — 2칸 변경 · 영역 밖 1칸 차단");
+    expect(logText).toMatch(/완료/);
   });
 });
 
 describe("진행 상태와 중단", () => {
   it("진행 배지는 경과초와 도구 카운터를 함께 표시한다", () => {
-    expect(formatAiRunningStatus(0, 37_400, 5)).toBe("생각 중… 37초 · 도구 5/30");
+    expect(formatAiRunningStatus(0, 37_400, 5)).toBe("생각 중… 37초 · 도구 5");
   });
 
   it("오케스트레이션 phase가 있으면 진행 배지에 phase 라벨을 합쳐 표시한다", () => {
-    expect(formatAiRunningStatus(0, 12_400, 3, 200, "계획 중(m3)")).toBe("계획 중(m3) … 12초 · 도구 3/200");
-    expect(formatAiRunningStatus(0, 45_900, 12, 200, "실행 중(flash)")).toBe("실행 중(flash) … 45초 · 도구 12/200");
+    expect(formatAiRunningStatus(0, 12_400, 3, 200, "계획 중")).toBe("계획 중… 12초 · 도구 3");
+    expect(formatAiRunningStatus(0, 45_900, 12, 200, "실행 중")).toBe("실행 중… 45초 · 도구 12");
   });
 
   it("진행 배지는 음수 경과시간을 0초로 보정한다", () => {
-    expect(formatAiRunningStatus(10_000, 9_000, 0)).toBe("생각 중… 0초 · 도구 0/30");
+    expect(formatAiRunningStatus(10_000, 9_000, 0)).toBe("생각 중… 0초");
   });
 
   it("패널에 중단 버튼이 있고 기본 상태에서는 비활성화되어 있다", () => {

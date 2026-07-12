@@ -76,6 +76,7 @@ function syncActorGroup(field: HTMLElement, actors: readonly BattleBattlerSnapsh
     const node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
     if (!node) continue;
     node.classList.toggle("defeated", actor.defeated);
+    applyBattlerPose(node, actor.pose);
     syncStatusIcons(node, actor);
   }
 }
@@ -84,6 +85,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   node.classList.toggle("battle-target-candidate", snapshot.targetSelection?.targetEnemyIds.includes(enemy.id) ?? false);
   node.classList.toggle("battle-target-selected", snapshot.targetSelection?.selectedEnemyId === enemy.id);
   node.classList.toggle("defeated", enemy.defeated);
+  applyBattlerPose(node, enemy.pose);
   node.dataset.battleTargetable = snapshot.targetSelection?.targetEnemyIds.includes(enemy.id) ? "true" : "false";
   if (node instanceof HTMLButtonElement) {
     node.disabled = enemy.defeated || !snapshot.targetSelection?.targetEnemyIds.includes(enemy.id);
@@ -96,6 +98,21 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   const hpBar = node.querySelector<HTMLElement>(".battle-enemy-hp-bar");
   if (hpBar) hpBar.style.setProperty("--battle-stat", `${hpPercent(enemy.hp, enemy.maxHp)}%`);
   syncStatusIcons(node, enemy);
+}
+
+function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
+  node.dataset.battlePose = pose;
+  node.classList.toggle("battle-pose-idle", pose === "idle");
+  node.classList.toggle("battle-pose-attack", pose === "attack");
+  node.classList.toggle("battle-pose-hit", pose === "hit");
+  node.classList.toggle("battle-pose-defend", pose === "defend");
+  node.classList.toggle("battle-pose-dead", pose === "dead");
+  const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
+  if (sprite?.classList.contains("battle-actor-sprite")) {
+    // Generated battle sheets: 3 columns × idle/attack/hit along X.
+    const col = pose === "attack" ? 1 : pose === "hit" || pose === "dead" ? 2 : 0;
+    sprite.style.backgroundPosition = `-${col * 36}px 0`;
+  }
 }
 
 function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void {
@@ -187,6 +204,7 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot): HT
       enemyNode.append(image);
     }
   }
+  applyBattlerPose(enemyNode, enemy.pose);
   const name = document.createElement("span");
   name.className = "battle-enemy-name";
   name.textContent = enemy.name;
@@ -256,6 +274,7 @@ function actorNode(actor: BattleBattlerSnapshot): HTMLElement {
       node.append(actorBattleImage(actor.name, resourceId, url));
     }
   }
+  applyBattlerPose(node, actor.pose);
   node.append(statusIconCluster(actor));
   if (actor.defeated) node.classList.add("defeated");
   const platform = document.createElement("span");

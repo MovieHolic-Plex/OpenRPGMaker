@@ -207,16 +207,24 @@ async function authorTransferEvent(
   await page.getByTestId("event-page-priority-select").selectOption("below");
   await page.getByTestId("event-command-empty-line").dblclick();
   const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("event-command-picker-tab-2").click();
+  await picker.getByTestId("event-command-picker-tab-1").click();
   await picker.getByTestId("command-picker-add-transfer").click();
   const command = page.getByTestId("event-command-transfer").first();
   await command.locator(".cmd-head").dblclick();
   await command.getByTestId("transfer-player-open").click();
   const dialog = page.getByTestId("event-transfer-player-dialog");
   await dialog.getByTestId(`transfer-player-map-${spec.targetMapId}`).click();
-  await dialog.getByTestId("transfer-player-map-preview").click({
-    position: { x: spec.targetPoint.x * 16 + 8, y: spec.targetPoint.y * 16 + 8 },
-  });
+  const transferPreview = dialog.getByTestId("transfer-player-map-preview");
+  const transferClick = await transferPreview.evaluate((node, point) => {
+    if (!(node instanceof HTMLCanvasElement)) throw new Error("transfer preview is not a canvas");
+    const tileSize = 16;
+    const rect = node.getBoundingClientRect();
+    return {
+      x: ((point.x + 0.5) * tileSize / Math.max(1, node.width)) * rect.width,
+      y: ((point.y + 0.5) * tileSize / Math.max(1, node.height)) * rect.height,
+    };
+  }, spec.targetPoint);
+  await transferPreview.click({ position: transferClick });
   await dialog.getByTestId(`transfer-player-direction-${spec.direction}`).check();
   await dialog.getByTestId("transfer-player-ok").click();
 }

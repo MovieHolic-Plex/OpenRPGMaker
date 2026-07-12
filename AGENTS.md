@@ -7,6 +7,7 @@ Before making code changes, read:
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
 2. The focused OpenWiki page for the area you will edit:
    - `openwiki/editor-workflows.md` for editor UI, map editing, events, database, resources, and save/import/export.
+   - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - `openwiki/runtime-and-data.md` for play mode, interpreter, battles, sessions, persistence, and schema changes.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.

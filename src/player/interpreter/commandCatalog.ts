@@ -360,6 +360,8 @@ export function executeCommand(
         kind: "inputNumber",
         variableId: command.variableId,
         digits: command.digits,
+        prompt: command.prompt,
+        showPad: command.showPad,
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "label":
@@ -460,6 +462,7 @@ export function executeCommand(
         quantityMode: command.quantityMode,
         shopType: command.shopType,
         messageType: command.messageType,
+        merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,
       });
     case "inn":

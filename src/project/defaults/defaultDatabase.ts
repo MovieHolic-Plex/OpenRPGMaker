@@ -67,7 +67,9 @@ export function defaultSystem(): SystemRecords {
   return {
     startActorIds: defaultStarterActorIds(),
     titleResourceId: "easyrpg-title-title1",
-    systemResourceId: "easyrpg-system-system",
+    // CSS-ready 9-slice windowskin. EasyRPG System/*.png is a chrome sheet (orange key + icons), not a windowskin.
+    systemResourceId: "windowskin-rm2003",
+    // System2 stays as gauge/number chrome only — never used as border-image fill.
     battleSystemResourceId: "easyrpg-system2-system2-c",
     battleBgmResourceId: "easyrpg-music-battle-1",
     initialTroopId: DEFAULT_TROOP_ID,

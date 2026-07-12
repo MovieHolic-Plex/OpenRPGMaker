@@ -23,16 +23,16 @@ const CLEAR_UPPER = new Set([
 
 const YARD = "harness-combined-town-house-yard-props";
 const CEMETERY = "harness-combined-town-cemetery-props";
-const BENCH_H = "harness-combined-town-bench-horizontal";
+const BENCH_H = "벤치";
 const BENCH_V = "harness-combined-town-bench-vertical";
-const TABLE_H = "harness-combined-town-table-horizontal";
+const TABLE_H = "가로 탁자";
 const TABLE_V = "harness-combined-town-table-vertical";
 const FREE_CHAIR = "harness-combined-town-free-chairs";
 const TABLE_CHAIRS = "harness-combined-town-table-chairs";
-const FRUIT = "harness-combined-town-fruit-box";
-const WOOD_BOX = "harness-combined-town-wood-box";
-const MAGIC = "harness-combined-town-magic-circle";
-const FLOWERS = "harness-combined-town-flower-props";
+const FRUIT = "과일박스";
+const WOOD_BOX = "나무 상자";
+const MAGIC = "마법진";
+const FLOWERS = "꽃";
 
 function loadEnv(): Record<string, string> {
   const env: Record<string, string> = {};
@@ -132,7 +132,7 @@ for (const job of jobs) {
     runOk(ctx, "place_props", {
       mapId: MAP_ID,
       area: job.area,
-      propVocabId: job.id,
+      material: job.id,
       count: job.count,
       minGap: job.minGap,
       naturalness: job.naturalness,

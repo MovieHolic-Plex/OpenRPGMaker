@@ -70,8 +70,18 @@ export function compatibleStampIdForTile(activeStampId: TileStampId | null, tile
 }
 
 export function isAutoConnectCandidate(tile: number, tileset?: TilesetDef): boolean {
+  if (tileset?.autotileGroups?.some((group) => group.memberTileIds.includes(tile) || group.connectTileIds?.includes(tile))) {
+    return true;
+  }
   const meaning = tileSemanticMeaning(tile, tileset);
-  return meaning.has("autotile") || meaning.has("road") || meaning.has("dirt");
+  return (
+    meaning.has("autotile")
+    || meaning.has("road")
+    || meaning.has("dirt")
+    || meaning.has("wall")
+    || meaning.has("floor")
+    || meaning.has("sand")
+  );
 }
 
 function roadPlusStamp(tile: number): TileStamp {

@@ -55,6 +55,42 @@ export interface GameMap {
   farmableArea?: Rect[];
   // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.
   defaultLighting?: LightingState;
+  /**
+   * 생성·시공 시 bbox 설계도. 타일 시공 후에도 남겨 두어
+   * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
+   */
+  layoutPlan?: MapLayoutPlan;
+}
+
+/** 맵 기물 영역 (집 롯·시장·숲·강 등). 시공 후에도 좌표·역할 유지. */
+export interface MapLayoutRegion {
+  id: string;
+  /** river | lake | plaza | market | house | forest | custom… */
+  role: string;
+  /** 사용자/에이전트 질의용 표시명 (예: "파랑 지붕 집", "중앙 상점") */
+  label: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** 집 키트 등 부가 속성 */
+  kitId?: string;
+  shape?: string;
+  yardTheme?: string;
+  tags?: string[];
+  doorAt?: { x: number; y: number };
+  front?: { x: number; y: number };
+  hasFence?: boolean;
+}
+
+export interface MapLayoutPlan {
+  version: 1;
+  kind: string;
+  seed?: number;
+  generatedAt?: string;
+  regions: MapLayoutRegion[];
+  roadAnchors?: { id: string; x: number; y: number }[];
+  notes?: string;
 }
 
 export interface EncounterTableEntry {
@@ -147,6 +183,39 @@ export interface VillageInfoDocument {
   markdown: string;
 }
 
+// AI 문서(하이브리드 블록) — AI가 present_doc 툴로 만드는 리치 설명 문서.
+// 구조화 블록은 프로젝트의 살아있는 데이터(타일셋)를 참조해 렌더되고,
+// html 블록은 샌드박스 iframe 탈출구다. optional이라 마이그레이션 불필요.
+export type AiDocBlock =
+  | { kind: "markdown"; text: string }
+  | { kind: "table"; headers: string[]; rows: string[][] }
+  | {
+      kind: "sheetMap";
+      tilesetId: string;
+      zones: { col: number; row: number; w: number; h: number; label: string; color?: string }[];
+    }
+  | {
+      kind: "tileBlockCard";
+      tilesetId: string;
+      col: number;
+      row: number;
+      w: number;
+      h: number;
+      title: string;
+      caption?: string;
+      badge?: string;
+    }
+  | { kind: "paintDemo"; tilesetId: string; blockCol: number; blockRow: number; title?: string }
+  | { kind: "html"; src: string };
+
+export interface AiDocument {
+  id: string;
+  title: string;
+  createdAt: string;
+  blocks: AiDocBlock[];
+  pinned?: boolean;
+}
+
 // 테스트 상태 프리셋(Phase 4-1). 스위치/변수/인벤토리/골드/시작 좌표를 부분 저장해
 // 테스트 플레이/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
 export interface TestPreset {
@@ -201,6 +270,8 @@ export interface Project {
   maps: Record<MapId, GameMap>;
   mapConnections?: MapConnection[];
   villageInfoDocuments?: VillageInfoDocument[];
+  // AI 리치 설명 문서(채팅 present_doc 툴 산출물). optional이라 마이그레이션 불필요.
+  aiDocuments?: AiDocument[];
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
   // 선언적 퀘스트 정의(Phase 3). questCompiler가 스위치/변수/이벤트로 컴파일하며,

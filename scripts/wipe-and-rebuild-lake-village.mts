@@ -72,7 +72,7 @@ logs.push(
   runOk(ctx, "fill_region", {
     mapId: MAP_ID,
     rect: { x: 3, y: 4, w: 20, h: 18 },
-    tileVocabId: BUILD_PALETTE_PRESETS.water,
+    material: BUILD_PALETTE_PRESETS.water,
     layer: "lower",
     shape: "circle",
   }),
@@ -203,16 +203,16 @@ for (const house of houses) {
 
 const CONIFER = BUILD_PALETTE_PRESETS.tree;
 const BROADLEAF = "harness-combined-town-broadleaf-tree-2x2";
-const BENCH_H = "harness-combined-town-bench-horizontal";
+const BENCH_H = "벤치";
 const BENCH_V = "harness-combined-town-bench-vertical";
-const FLOWERS = "harness-combined-town-flower-props";
+const FLOWERS = "꽃";
 const YARD = "harness-combined-town-house-yard-props";
 const CEMETERY = "harness-combined-town-cemetery-props";
-const TABLE_H = "harness-combined-town-table-horizontal";
+const TABLE_H = "가로 탁자";
 const TABLE_V = "harness-combined-town-table-vertical";
-const FRUIT = "harness-combined-town-fruit-box";
-const WOOD_BOX = "harness-combined-town-wood-box";
-const MAGIC = "harness-combined-town-magic-circle";
+const FRUIT = "과일박스";
+const WOOD_BOX = "나무 상자";
+const MAGIC = "마법진";
 const FREE_CHAIR = "harness-combined-town-free-chairs";
 const TABLE_CHAIRS = "harness-combined-town-table-chairs";
 
@@ -227,7 +227,7 @@ for (const [area, coniferCount, broadCount, seed] of [
     runOk(ctx, "place_props", {
       mapId: MAP_ID,
       area,
-      propVocabId: CONIFER,
+      material: CONIFER,
       count: coniferCount,
       naturalness: 0.92,
       minGap: 0,
@@ -238,7 +238,7 @@ for (const [area, coniferCount, broadCount, seed] of [
     runOk(ctx, "place_props", {
       mapId: MAP_ID,
       area,
-      propVocabId: BROADLEAF,
+      material: BROADLEAF,
       count: broadCount,
       naturalness: 0.9,
       minGap: 0,
@@ -262,7 +262,7 @@ for (const [area, count, seed] of [
     runOk(ctx, "place_props", {
       mapId: MAP_ID,
       area,
-      propVocabId: YARD,
+      material: YARD,
       count,
       naturalness: 0.35,
       minGap: 1,
@@ -288,7 +288,7 @@ for (const prop of plaza) {
     runOk(ctx, "place_props", {
       mapId: MAP_ID,
       area: prop.area,
-      propVocabId: prop.id,
+      material: prop.id,
       count: prop.count,
       naturalness: prop.naturalness,
       minGap: prop.minGap,
@@ -302,7 +302,7 @@ logs.push(
   runOk(ctx, "place_props", {
     mapId: MAP_ID,
     area: { x: 2, y: 48, w: 12, h: 6 },
-    propVocabId: CEMETERY,
+    material: CEMETERY,
     count: 8,
     naturalness: 0.5,
     minGap: 1,
@@ -315,7 +315,7 @@ logs.push(
   runOk(ctx, "place_props", {
     mapId: MAP_ID,
     area: { x: 10, y: 3, w: 6, h: 4 },
-    propVocabId: MAGIC,
+    material: MAGIC,
     count: 1,
     naturalness: 0.15,
     minGap: 0,

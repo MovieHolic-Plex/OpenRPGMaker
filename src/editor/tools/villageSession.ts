@@ -786,7 +786,7 @@ function stepForestConifer(
     placed += placeProps(draft, {
       mapId: map.id,
       area,
-      propVocabId: CONIFER_GROUP,
+      material: "침엽수",
       count,
       minGap: 2,
       naturalness: 0.6,
@@ -814,7 +814,7 @@ function stepForestBig(
     placed += placeProps(draft, {
       mapId: map.id,
       area,
-      propVocabId: BROADLEAF_2X2_GROUP,
+      material: "활엽수",
       count,
       minGap: 3,
       naturalness: 0.55,
@@ -834,7 +834,7 @@ function stepForestBig(
       placed += placeProps(draft, {
         mapId: map.id,
         area: bank,
-        propVocabId: BROADLEAF_2X2_GROUP,
+        material: "활엽수",
         count: 2,
         minGap: 3,
         naturalness: 0.5,
@@ -929,29 +929,29 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
   }
   if (areas.length === 0) areas = edgeBands(map);
 
-  const groups =
+  const materials =
     style === "mixed"
-      ? [CONIFER_GROUP, BROADLEAF_2X2_GROUP]
+      ? (["침엽수", "활엽수"] as const)
       : style === "conifer"
-        ? [CONIFER_GROUP]
-        : [BROADLEAF_2X2_GROUP];
+        ? (["침엽수"] as const)
+        : (["활엽수"] as const);
 
   let placed = 0;
-  for (let g = 0; g < groups.length; g += 1) {
-    const group = groups[g]!;
-    const isBig = group === BROADLEAF_2X2_GROUP;
+  for (let g = 0; g < materials.length; g += 1) {
+    const material = materials[g]!;
+    const isBig = material === "활엽수";
     for (let i = 0; i < areas.length; i += 1) {
       const area = areas[i]!;
       const defaultCount = isBig
         ? Math.max(3, Math.min(10, Math.floor((area.w * area.h) / 28)))
         : Math.max(4, Math.floor((area.w * area.h) / 14));
       const count = typeof args.count === "number"
-        ? Math.max(1, Math.floor(args.count / groups.length / areas.length))
+        ? Math.max(1, Math.floor(args.count / materials.length / areas.length))
         : defaultCount;
       placed += placeProps(draft, {
         mapId,
         area,
-        propVocabId: group,
+        material,
         count,
         minGap: isBig ? Math.max(minGap, 3) : minGap,
         naturalness: 0.55,
@@ -968,7 +968,7 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
       style,
       placed,
       tree2x2Clusters: clusters,
-      assets: groups,
+      materials: [...materials],
     },
     warnings: warnings.length > 0 ? warnings : undefined,
   };

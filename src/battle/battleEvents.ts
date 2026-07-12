@@ -11,8 +11,11 @@ export type BattleEventRuntimeState = {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
   readonly inventory: Record<string, number>;
-  readonly partyActorIds?: readonly string[];
-  readonly gold?: number;
+  partyActorIds?: string[];
+  gold?: number;
+  actorSkillIds?: Record<string, string[]>;
+  actorExperience?: Record<string, number>;
+  actorLevels?: Record<string, number>;
   readonly timers?: Record<string, number>;
   readonly gameTime?: GameTime;
   readonly friendship?: Record<string, number>;
@@ -81,6 +84,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       switches: options.state.switches,
       variables: options.state.variables,
       inventory: options.state.inventory,
+      gold: options.state.gold ?? 0,
+      partyActorIds: [...(options.state.partyActorIds ?? [])],
+      actorSkillIds: { ...(options.state.actorSkillIds ?? {}) },
+      actorExperience: { ...(options.state.actorExperience ?? {}) },
+      actorLevels: { ...(options.state.actorLevels ?? {}) },
     };
   }
 
@@ -236,6 +244,58 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           actor.mp = actor.maxMp;
         }
         return false;
+      case "changeGold": {
+        const current = options.state.gold ?? 0;
+        options.state.gold = Math.max(0, applyVitalOperation(current, command.op, command.amount));
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `gold→${options.state.gold}` });
+        return false;
+      }
+      case "changeExp": {
+        options.state.actorExperience ??= {};
+        for (const actor of resolveActorTargets(command.actorId)) {
+          const id = actor.recordId;
+          const current = options.state.actorExperience[id] ?? 0;
+          options.state.actorExperience[id] = Math.max(0, applyVitalOperation(current, command.op, command.amount));
+        }
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeExp ${command.actorId}` });
+        return false;
+      }
+      case "changeLevel": {
+        options.state.actorLevels ??= {};
+        for (const actor of resolveActorTargets(command.actorId)) {
+          const id = actor.recordId;
+          const current = options.state.actorLevels[id] ?? 1;
+          options.state.actorLevels[id] = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+        }
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeLevel ${command.actorId}` });
+        return false;
+      }
+      case "learnSkill": {
+        options.state.actorSkillIds ??= {};
+        const targets = resolveActorTargets(command.actorId);
+        for (const actor of targets) {
+          const id = actor.recordId;
+          const known = new Set(options.state.actorSkillIds[id] ?? actor.skillIds);
+          known.add(command.skillId);
+          options.state.actorSkillIds[id] = [...known];
+          if (!actor.skillIds.includes(command.skillId)) {
+            actor.skillIds = [...actor.skillIds, command.skillId];
+          }
+        }
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `learnSkill ${command.skillId}` });
+        return false;
+      }
+      case "changeParty": {
+        options.state.partyActorIds ??= [];
+        const list = options.state.partyActorIds;
+        if (command.action === "add") {
+          if (!list.includes(command.actorId)) list.push(command.actorId);
+        } else {
+          options.state.partyActorIds = list.filter((id) => id !== command.actorId);
+        }
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeParty ${command.action} ${command.actorId}` });
+        return false;
+      }
       case "m2Command": {
         const result = executeM2Command(command, {
           actors: options.actors,
@@ -257,9 +317,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "setEventGraphicPattern":
       case "changeTile":
       case "battleProcessing":
-      case "learnSkill":
-      case "changeGold":
-      case "changeParty":
       case "showPicture":
       case "erasePicture":
       case "playAudio":
@@ -275,8 +332,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "timer":
       case "inputNumber":
       case "changeFace":
-      case "changeExp":
-      case "changeLevel":
       case "changeEquipment":
       case "enterHeroName":
       case "setSelfSwitch":

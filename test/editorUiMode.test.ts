@@ -81,14 +81,13 @@ describe("editorUiMode", () => {
     // Map switching moved to the icon-rail map flyout — the left map-tree column is hidden in basic.
     expect(basic.mapTree).toBe(false);
     expect(basic.classicToolbar).toBe(false);
-    expect(basic.aiDenseSections).toBe(false);
-    expect(basic.paletteFindPropsTabs).toBe(false);
     // Event editing is not gated off by chrome flags — layers/tools stay in shared shell.
     expect(expert.mapTree).toBe(true);
     expect(expert.classicToolbar).toBe(true);
-    // AI assistant chrome is mode-agnostic (same surface for basic/expert).
-    expect(expert.aiDenseSections).toBe(false);
     expect(expert.helpMenu).toBe(true);
+    // AI assistant chrome is mode-agnostic — there is no AI density flag at all.
+    expect("aiDenseSections" in basic).toBe(false);
+    expect("aiDenseSections" in expert).toBe(false);
   });
 
   it("uses AI RPG MAKER as the product brand string", () => {
@@ -113,5 +112,20 @@ describe("editorUiMode", () => {
     );
     expect(basicRail).toMatch(/id:\s*"event"/);
     expect(basicRail).toMatch(/testid:\s*`tool-\$\{tool\.id\}`|tool-event|event/);
+  });
+
+  it("basic icon rail CSS keeps flyouts unclipped above the canvas", async () => {
+    const fs = await import("node:fs/promises");
+    const css = await fs.readFile(new URL("../src/styles/shell/editor-ui-modes.css", import.meta.url), "utf8");
+    const indexCss = await fs.readFile(new URL("../src/styles/index.css", import.meta.url), "utf8");
+    // Cascade: density modes after figma shell skin
+    const figmaIdx = indexCss.indexOf('figma-editor.css');
+    const modesIdx = indexCss.indexOf("editor-ui-modes.css");
+    expect(figmaIdx).toBeGreaterThan(-1);
+    expect(modesIdx).toBeGreaterThan(figmaIdx);
+    // Overflow + stacking so layer/map flyouts are not under the map canvas
+    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*overflow:\s*visible\s*!important/);
+    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*z-index:\s*50/);
+    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*padding:\s*0\s*!important/);
   });
 });

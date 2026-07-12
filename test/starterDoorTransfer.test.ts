@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createStarterMap } from "@/project/defaults";
-import { addStarterHouseDoor, createStarterHouseInteriorMap } from "@/project/defaults/starterHouseTransfer";
+import {
+  addStarterHouseDoor,
+  createStarterHouseInteriorMap,
+  STARTER_HOUSE_SLIME_EVENT_ID,
+  STARTER_HOUSE_SLIME_POS,
+} from "@/project/defaults/starterHouseTransfer";
+import { DEFAULT_TROOP_ID } from "@/project/defaults/constants";
 
 describe("starter door transfer defaults", () => {
   it("builds a starter house door and matching interior transfer", () => {
@@ -16,6 +22,9 @@ describe("starter door transfer defaults", () => {
     const exit = interior.events.find((event) => event.id === "event_starter_house_exit");
     const exitPage = exit?.pages?.[0];
     const exitTransfer = exitPage?.commands.find((command) => command.kind === "transfer");
+    const slime = interior.events.find((event) => event.id === STARTER_HOUSE_SLIME_EVENT_ID);
+    const slimePage = slime?.pages?.[0];
+    const slimeBattle = slimePage?.commands.find((command) => command.kind === "battleProcessing");
 
     // Then: player-touch transfers connect the exterior door and interior exit.
     expect(interior.name).toBe("시작 집 내부");
@@ -38,5 +47,18 @@ describe("starter door transfer defaults", () => {
       trigger: { kind: "playerTouch" },
     });
     expect(exitTransfer).toEqual({ kind: "transfer", mapId: starter.id, x: 7, y: 11, fade: "black" });
+    // And: an indoor yard slime is ready for quick battle tests.
+    expect(slime).toMatchObject({
+      x: STARTER_HOUSE_SLIME_POS.x,
+      y: STARTER_HOUSE_SLIME_POS.y,
+      trigger: { kind: "eventTouch" },
+    });
+    expect(slimePage?.graphic?.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_monster1" });
+    expect(slimeBattle).toEqual({
+      kind: "battleProcessing",
+      troopId: DEFAULT_TROOP_ID,
+      canEscape: true,
+      canLose: true,
+    });
   });
 });

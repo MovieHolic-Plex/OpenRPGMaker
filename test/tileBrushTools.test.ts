@@ -114,6 +114,26 @@ describe("tile brush tools", () => {
 
     expect(store.getCurrent().maps[mapId].lowerTiles[2 * map.width + 2]).toBe(DIRT_ROAD_TILE.BODY);
   });
+
+
+
+  it("keeps neighboring dirt-road members unchanged when autoConnect is Manual", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId]!;
+    // seed a 3x1 dirt body strip, then paint center with Manual — neighbors stay put
+    paintTile(mapId, "lower", 1, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    paintTile(mapId, "lower", 2, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    paintTile(mapId, "lower", 3, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    const leftBefore = store.getCurrent().maps[mapId]!.lowerTiles[2 * map.width + 1];
+    const rightBefore = store.getCurrent().maps[mapId]!.lowerTiles[2 * map.width + 3];
+
+    paintTile(mapId, "lower", 2, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+
+    const after = store.getCurrent().maps[mapId]!;
+    expect(after.lowerTiles[2 * map.width + 1]).toBe(leftBefore);
+    expect(after.lowerTiles[2 * map.width + 2]).toBe(DIRT_ROAD_TILE.BODY);
+    expect(after.lowerTiles[2 * map.width + 3]).toBe(rightBefore);
+  });
 });
 
 function customMetadataTileset(): TilesetDef {

@@ -4,8 +4,11 @@ import {
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createMarketTownProject,
+  createVillageShoppingStreetProject,
   createRetroHouseShowcaseProject,
   createSampleAdventureProject,
+  createScarloxyDemoProject,
+  createScarloxyPokemonDemoProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
   createTownArchitectureCityProject,
@@ -34,6 +37,7 @@ const DEV_SMALL_HOUSE_VARIANT_PARAM = "smallHouseVariant";
 const DEV_HOUSE_TEMPLATE_GALLERY_PARAM = "houseTemplateGallery";
 const DEV_SHOP_SHOWCASE_PARAM = "shopShowcase";
 const DEV_MARKET_TOWN_PARAM = "marketTown";
+const DEV_VILLAGE_SHOPPING_STREET_PARAM = "villageShoppingStreet";
 const SUPABASE_CANONICAL_PROJECT_PARAM = "supabaseRecovered";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
@@ -49,6 +53,8 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (params.has(DEV_FRESH_PROJECT_PARAM)) return createSampleAdventureProject();
   if (!params.has(DEV_PROJECT_PARAM)) return null;
   if (hasSampleAdventureParam(params)) return createSampleAdventureProject();
+  if (params.has("scarloxyPokemonDemo")) return createScarloxyPokemonDemoProject();
+  if (params.has("scarloxyDemo")) return createScarloxyDemoProject();
   if (params.has(DEV_LOG_CABIN_SHOWCASE_PARAM)) return createLogCabinShowcaseProject();
   if (params.has(DEV_RETRO_HOUSE_SHOWCASE_PARAM)) return createRetroHouseShowcaseProject();
   if (params.has(DEV_SHOP_SHOWCASE_PARAM)) return createShopShowcaseProject();
@@ -59,6 +65,7 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (params.has(DEV_TOWN_ARCHITECTURE_CITY_PARAM)) return createTownArchitectureCityProject();
   if (params.has(DEV_TOWN_ARCHITECTURE_TEST_PARAM)) return createTownArchitectureTestProject();
   if (params.has(DEV_MARKET_TOWN_PARAM)) return createMarketTownProject();
+  if (params.has(DEV_VILLAGE_SHOPPING_STREET_PARAM)) return createVillageShoppingStreetProject();
   if (params.has(DEV_HOUSE_TEMPLATE_GALLERY_PARAM) || params.get(DEV_SMALL_HOUSE_VARIANT_PARAM) === "all") {
     return createHouseTemplateGalleryProject();
   }

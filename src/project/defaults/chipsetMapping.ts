@@ -1,3 +1,4 @@
+import type { PassFlag } from "../types";
 import { DEFAULT_TILES_PER_ROW, TILE } from "./constants";
 import { CHIPSET_ANIMATION_FRAME_TILES } from "./chipsetAnimation";
 import { COMBINED_TOWN_TRANSPARENT_TILES } from "./generatedChipsetTransparency";
@@ -429,10 +430,11 @@ export function isSolidChipsetTile(index: number): boolean {
   // 벽 사다리(322): 집 벽 위 상위 오버레이, 플레이어 통과 가능.
   if (hasTile(CHIPSET_TILE_GROUPS.wallLadderObjects, index)) return false;
   if (hasTile(CHIPSET_TILE_GROUPS.magicCircleObjects, index)) return false;
+  // 돌계단(111–113): RM2k3 층계 — 밟는 칩(○ + 4방향). 완전 차단(×) 아님.
+  if (hasTile(CHIPSET_TILE_GROUPS.stoneStairObjects, index)) return false;
   return (
     isWaterChipsetTile(index) ||
     hasTile(CHIPSET_TILE_GROUPS.treeObjects, index) ||
-    hasTile(CHIPSET_TILE_GROUPS.stoneStairObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.woodDoorPairObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.castleRoofDeckObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.castleWallFaceObjects, index) ||
@@ -444,8 +446,62 @@ export function isSolidChipsetTile(index: number): boolean {
     hasTile(CHIPSET_TILE_GROUPS.darkWallBody, index) ||
     hasTile(CHIPSET_TILE_GROUPS.stoneWall, index) ||
     hasTile(CHIPSET_TILE_GROUPS.structureSolid, index) ||
+    // 가구·잡화 소품: RM2k3 식으로 지나갈 수 없음 (꽃·마법진·사다리는 위에서 제외)
+    hasTile(CHIPSET_TILE_GROUPS.tableObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.benchObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.chairObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.woodBoxObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.fruitBoxObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.houseYardObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.cemeteryObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.signObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.fireObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.statueObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.tentObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.fenceObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.stakeObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.marketRailObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.stoneStepObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.upperObjects, index)
   );
+}
+
+/**
+ * RM2k3 식 데크/절벽 가장자리 칩 — woodFloorBody 변형의 4방향 통행.
+ * 본체 222는 전방향, 가장자리는 바깥 방향만 닫아 “층”을 흉내 낸다.
+ */
+export const RM2K3_WOOD_FLOOR_PASSABILITY = {
+  body: 222,
+  edgeWest: 228, // left 닫힘 — 데크 서측
+  edgeEast: 229, // right 닫힘
+  edgeNorth: 230, // up 닫힘
+  edgeSouth: 192, // down 닫힘
+} as const;
+
+export function rm2k3WoodFloorPassFlag(tile: number): PassFlag | null {
+  switch (tile) {
+    case RM2K3_WOOD_FLOOR_PASSABILITY.body:
+      return { up: true, down: true, left: true, right: true };
+    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest:
+      return { up: true, down: true, left: false, right: true };
+    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast:
+      return { up: true, down: true, left: true, right: false };
+    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth:
+      return { up: false, down: true, left: true, right: true };
+    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth:
+      return { up: true, down: false, left: true, right: true };
+    default:
+      return null;
+  }
+}
+
+/**
+ * 돌계단(111–113): 밟는 칩(○ 전방향).
+ * 고상/절벽 분리는 데크 가장자리 4-dir이 담당 — 계단 자체를 상하 막으면
+ * 도로(2칸 폭)에서 층계로 못 올라가고 층계 칸끼리도 못 움직인다.
+ */
+export function rm2k3StairPassFlag(): PassFlag {
+  return { up: true, down: true, left: true, right: true };
 }
 
 export function terrainTagForChipsetTile(index: number): number {

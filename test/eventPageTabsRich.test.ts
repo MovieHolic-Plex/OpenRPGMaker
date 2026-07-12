@@ -44,7 +44,7 @@ function richConditions(): EventPageCondition[] {
 }
 
 function renderStrip(pages: EventPage[], activePage: EventPage = pages[0]!): FakeElement {
-  const strip = renderClassicPageTabStrip(gameEvent(pages), activePage);
+  const strip = renderClassicPageTabStrip("map_start", gameEvent(pages), activePage);
   if (!(strip instanceof FakeElement)) throw new Error("expected FakeElement render");
   return strip;
 }
@@ -65,22 +65,27 @@ describe("rich event page tabs", () => {
     restoreFakeDom();
   });
 
-  it("renders a graphic micro-thumbnail inside every page tab", () => {
+  it("renders a graphic thumbnail inside every page tab", () => {
     const pages = [
       eventPage("page-1"),
       eventPage("page-2", { graphic: { sprite: { type: "bundled", id: "unknown-sprite" } } }),
+      eventPage("page-3", { graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } } }),
     ];
     const strip = renderStrip(pages);
 
     const tab1 = findByTestId(strip, "event-page-tab-1");
     const tab2 = findByTestId(strip, "event-page-tab-2");
+    const tab3 = findByTestId(strip, "event-page-tab-3");
     expect(tab1).not.toBeNull();
     expect(tab2).not.toBeNull();
+    expect(tab3).not.toBeNull();
 
     const thumb1 = findByTestId(tab1!, "event-page-tab-thumb");
     const thumb2 = findByTestId(tab2!, "event-page-tab-thumb");
+    const thumb3 = findByTestId(tab3!, "event-page-tab-thumb");
     expect(thumb1).not.toBeNull();
     expect(thumb2).not.toBeNull();
+    expect(thumb3).not.toBeNull();
 
     const emptyIcon = findByTestId(thumb1!, "event-page-graphic-icon-preview");
     expect(emptyIcon).not.toBeNull();
@@ -89,6 +94,12 @@ describe("rich event page tabs", () => {
     const spriteIcon = findByTestId(thumb2!, "event-page-graphic-icon-preview");
     expect(spriteIcon).not.toBeNull();
     expect(spriteIcon?.dataset.spriteId).toBe("unknown-sprite");
+
+    // Page tabs use 48×64 charset cells (scale 2) so the graphic fills the tab.
+    const fullIcon = findByTestId(thumb3!, "event-page-graphic-icon-preview");
+    expect(fullIcon).not.toBeNull();
+    expect(fullIcon?.style.width).toBe("48px");
+    expect(fullIcon?.style.height).toBe("64px");
   });
 
   it("renders condition badges capped at three plus an overflow counter", () => {

@@ -5,8 +5,11 @@ import { CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
+import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
+import { INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
@@ -77,7 +80,7 @@ const CHARSET_CATEGORY_SYNONYMS: Record<string, readonly string[]> = {
 };
 
 function charsetDerivedTags(textureKey: string): string[] {
-  const shortKey = textureKey.replace(/^tex_easyrpg_charset_/, "");
+  const shortKey = textureKey.replace(/^tex_(?:easyrpg|scarloxy)_charset_/, "");
   const base = shortKey.replace(/\d+$/, "");
   return [shortKey, base, ...(CHARSET_CATEGORY_SYNONYMS[base] ?? [])];
 }
@@ -121,13 +124,26 @@ function monsterCandidates(): ResourceCandidate[] {
       label: asset.name,
       tags: [...moodTagsForAsset(asset), asset.id, ...idWords(asset.id), ...idWords(asset.name)],
     }));
-  return [...generated, ...builtin, ...rtpMonsters];
+  const scarloxyMonsters = SCARLOXY_MONSTER_ASSETS.map((asset) => ({
+    id: asset.id,
+    label: asset.name,
+    tags: ["monster", "enemy", "scarloxy", ...asset.tags, asset.id, ...idWords(asset.id)],
+  }));
+  return [...generated, ...builtin, ...rtpMonsters, ...scarloxyMonsters];
+}
+
+// 타일셋 텍스처에 맞는 번들 시맨틱 테이블 선택.
+// 타일 인덱스는 칩셋마다 의미가 다르므로 combined_town 테이블을 다른 칩셋에 적용하면 오답이 된다.
+function bundledTileSemantics(tileset: TilesetDef | undefined): readonly { index: number; label: string; tags: readonly string[] }[] {
+  if (tileset?.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_SEMANTICS;
+  // 기본(타일셋 미지정 포함): combined_town — 기존 동작 유지.
+  return COMBINED_TOWN_TILE_SEMANTICS;
 }
 
 // 번들 시맨틱 + 프로젝트 사용자 메타데이터 병합. 같은 타일이면 사용자 라벨이 이기고 태그는 합친다.
 function tileCandidates(tileset: TilesetDef | undefined): ResourceCandidate[] {
   const byTile = new Map<number, { label: string; tags: string[] }>();
-  for (const entry of COMBINED_TOWN_TILE_SEMANTICS) {
+  for (const entry of bundledTileSemantics(tileset)) {
     byTile.set(entry.index, { label: entry.label, tags: [...entry.tags] });
   }
   if (tileset) {
@@ -175,11 +191,18 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "monster":
       return monsterCandidates();
     case "backdrop":
-      return EASYRPG_BACKDROP_ASSETS.map((asset) => ({
-        id: `backdrop:${asset.id}`,
-        label: asset.name,
-        tags: moodTagsForAsset(asset),
-      }));
+      return [
+        ...EASYRPG_BACKDROP_ASSETS.map((asset) => ({
+          id: `backdrop:${asset.id}`,
+          label: asset.name,
+          tags: moodTagsForAsset(asset),
+        })),
+        ...SCARLOXY_BACKDROP_ASSETS.map((asset) => ({
+          id: `backdrop:${asset.id}`,
+          label: asset.name,
+          tags: ["backdrop", "battle", "scarloxy", ...asset.tags, ...idWords(asset.id)],
+        })),
+      ];
     case "bgm":
       return EASYRPG_MUSIC_ASSETS.map((asset) => ({
         id: `bgm:${asset.id}`,

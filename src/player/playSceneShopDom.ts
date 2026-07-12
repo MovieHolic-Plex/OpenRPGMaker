@@ -20,6 +20,8 @@ type ShopItemsRenderRequest = {
   readonly mode: ShopMode;
   readonly prompt: string;
   readonly terms: ResolvedTerms;
+  /** 방문 중 남은 상인 소지금(매입 예산). */
+  readonly merchantGold: number;
   readonly setStatus: (text: string) => void;
   readonly showMenu: () => void;
   readonly onItem: ShopItemAction;
@@ -72,7 +74,11 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   side.className = "runtime-shop-side";
   side.append(shopBluePanel("runtime-shop-party-panel", [partyPreview(request.scene)]));
   side.append(shopBluePanel("runtime-shop-owned-panel", [ownedPanel(request.scene, request.items[0])]));
-  side.append(shopBluePanel("runtime-shop-gold-panel", [goldPanel(request.scene, request.terms)]));
+  side.append(
+    shopBluePanel("runtime-shop-gold-panel", [
+      goldPanel(request.scene, request.terms, request.merchantGold, request.mode),
+    ])
+  );
   main.append(side);
   shell.append(main, shopBluePanel("runtime-shop-prompt-panel", [shopPrompt(request.prompt, request.terms, request.showMenu)]));
   return shell;
@@ -284,6 +290,33 @@ function statLine(label: string, value: number): HTMLElement {
   });
 }
 
-function goldPanel(scene: PlaySceneContext, terms: ResolvedTerms): HTMLElement {
-  return el("div", { class: "runtime-shop-gold", text: `${scene.session.gold}${terms.gold}` });
+function goldPanel(
+  scene: PlaySceneContext,
+  terms: ResolvedTerms,
+  merchantGold: number,
+  mode: ShopMode
+): HTMLElement {
+  const wrap = el("div", {
+    class: "runtime-shop-gold",
+    dataset: { testid: "shop-gold-panel" },
+  });
+  wrap.append(
+    el("div", {
+      class: "runtime-shop-gold-line",
+      dataset: { testid: "shop-player-gold" },
+      text: `${scene.session.gold}${terms.gold}`,
+    }),
+    el("div", {
+      class: "runtime-shop-gold-line runtime-shop-merchant-gold",
+      dataset: { testid: "shop-merchant-gold" },
+      text: `상인 ${merchantGold}${terms.gold}`,
+      attrs: {
+        title:
+          mode === "sell"
+            ? "상인이 플레이어 물품을 살 때 남은 소지금"
+            : "상인 소지금(플레이어 구매 시 증가)",
+      },
+    })
+  );
+  return wrap;
 }

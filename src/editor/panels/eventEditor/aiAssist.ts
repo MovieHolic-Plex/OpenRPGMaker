@@ -166,7 +166,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
   });
 
   root.append(
-    el("summary", { class: "ai-event-assist-summary", text: "✨ AI로 명령 생성" }),
+    el("summary", {
+      class: "ai-event-assist-summary event-aux-chip-summary",
+      children: [
+        el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "✦" }),
+        el("span", { class: "event-aux-chip-label", text: "AI 명령" }),
+      ],
+    }),
     el("div", {
       class: "ai-event-assist-body",
       children: [

@@ -1,6 +1,14 @@
 import type { PassFlag, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { DEFAULT_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
-import { DIRT_ROAD_TILE, TERRAIN_TAG, describeChipsetTile, isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
+import {
+  DIRT_ROAD_TILE,
+  TERRAIN_TAG,
+  describeChipsetTile,
+  isTransparentChipsetTile,
+  rm2k3StairPassFlag,
+  rm2k3WoodFloorPassFlag,
+  RM2K3_WOOD_FLOOR_PASSABILITY,
+} from "@/project/defaults/chipsetMapping";
 import {
   COMBINED_TOWN_HARNESS_GROUPS,
   COMBINED_TOWN_HARNESS_PREFIX,
@@ -37,6 +45,8 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
     for (const tile of group.tileIds) changed = applyTileContract(tileset, group, tile) || changed;
   }
   changed = enforceTransparentOverlayPriority(tileset) || changed;
+  // RM2k3 데크/층계: wood floor 가장자리 4방향 + 돌계단 가로 통행 (그룹 일괄 passable 이후 덮어씀)
+  changed = applyRm2k3ElevationPassability(tileset) || changed;
   const current = tileset.tileGroups ?? [];
   const suppressed = normalizeSuppressedHarnessGroupIds(tileset);
   if (suppressed.changed) changed = true;
@@ -205,6 +215,46 @@ function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
   return meta?.source === "user" || meta?.userLocked === true;
 }
 
+/** RM2k3: 데크 가장자리 칩 4방향 + 가로 돌계단. userLocked 메타는 건드리지 않음. */
+function applyRm2k3ElevationPassability(tileset: TilesetDef): boolean {
+  let changed = false;
+  const woodTiles = [
+    RM2K3_WOOD_FLOOR_PASSABILITY.body,
+    RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest,
+    RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast,
+    RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth,
+    RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth,
+  ] as const;
+  for (const tile of woodTiles) {
+    if (isUserRuntimeMeta(tileset.tileMeta?.[tile])) continue;
+    const flag = rm2k3WoodFloorPassFlag(tile);
+    if (!flag || tile >= tileset.passability.length) continue;
+    if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(flag)) {
+      tileset.passability[tile] = { ...flag };
+      changed = true;
+    }
+    if (tileset.priority[tile] !== "lower") {
+      tileset.priority[tile] = "lower";
+      changed = true;
+    }
+  }
+  // 돌계단 111–113: 밟을 수 있는 ○ (전방향). 고상 분리는 데크 edge 칩이 담당.
+  const stairFlag = rm2k3StairPassFlag();
+  for (const tile of [111, 112, 113] as const) {
+    if (isUserRuntimeMeta(tileset.tileMeta?.[tile])) continue;
+    if (tile >= tileset.passability.length) continue;
+    if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(stairFlag)) {
+      tileset.passability[tile] = { ...stairFlag };
+      changed = true;
+    }
+    if (tileset.priority[tile] !== "lower") {
+      tileset.priority[tile] = "lower";
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 function ensureTileMetaLength(tileset: TilesetDef): void {
   tileset.tileMeta ??= [];
   while (tileset.tileMeta.length < tileset.count) tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
@@ -259,7 +309,13 @@ export function harnessGroupForTile(
 // - mixed면 passage로 분기: 통행 가능(passable/star)은 upper 오버레이, 고형(solid)은 lower.
 function resolveRuntimeLayer(group: CombinedTownHarnessGroup): "lower" | "upper" {
   if (group.defaultLayer === "upper") return "upper";
-  if (group.defaultLayer === "mixed") return group.passage === "solid" ? "lower" : "upper";
+  // mixed + stackable 소품(탁자·상자·벤치 등): 통행 ×여도 상위 유지.
+  // RM2k3 가구는 상위 ×(막힘)이며, lower로 내리면 투명 칩이 검게 보인다.
+  // (나무 수관/밑동은 setTileRuntimeContract 특수 분기가 priority를 덮어쓴다.)
+  if (group.defaultLayer === "mixed") {
+    if (group.stackable) return "upper";
+    return group.passage === "solid" ? "lower" : "upper";
+  }
   return "lower";
 }
 
@@ -311,8 +367,11 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
   if (group.id.includes("fruit-box")) return tile === 202 ? "과일박스 좌" : "과일박스 우";
   if (group.id.includes("wood-box")) return "나무 상자";
   if (group.id.includes("wood-floor-deck")) {
-    if (tile === 222) return "나무 바닥 바디";
-    if (tile === 192) return "나무 바닥 변형";
+    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.body) return "나무 바닥 바디";
+    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest) return "나무 바닥 서측(←막힘)";
+    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast) return "나무 바닥 동측(→막힘)";
+    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth) return "나무 바닥 북측(↑막힘)";
+    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth) return "나무 바닥 남측(↓막힘)";
     return "나무 바닥 데크";
   }
   if (group.id.includes("timber-post-rail")) {

@@ -71,11 +71,6 @@
   flex: 0 0 auto;
 }
 
-/* 5) 빠른 작업 그리드: 좁으면 1열 */
-@media (max-width: 1280px) {
-  .ai-quick-action-grid { grid-template-columns: 1fr; }
-}
-
 /* 6) 캔버스 상단: 줌 툴바를 우측 고정 → 잠금 배너(좌측)와 절대 안 겹침 */
 @media (max-width: 1180px) {
   .canvas-toolbar {

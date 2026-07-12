@@ -3,6 +3,7 @@ import { editorState } from "@/editor/editorState";
 import { updateEventPage } from "@/editor/eventPages";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { createBlankProject } from "@/project/defaults";
+import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -37,7 +38,7 @@ function seedOpenEventEditor(): EventPage {
   const project = createBlankProject();
   const page = eventPage();
   project.maps[project.startMapId].events = [gameEvent(page)];
-  store.replace(project);
+  store.replaceProject(project);
   editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: page.id });
   openEventEditorModal(project.startMapId, "event-1");
   return page;
@@ -62,10 +63,13 @@ function keydown(key: string): KeyboardEvent {
 
 describe("event editor modal close draft cleanup", () => {
   beforeEach(() => {
+    _resetEventDraftVaultForTest();
     restoreFakeDom = installFakeDom();
   });
 
   afterEach(() => {
+    document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]')?.remove();
+    _resetEventDraftVaultForTest();
     restoreFakeDom();
   });
 

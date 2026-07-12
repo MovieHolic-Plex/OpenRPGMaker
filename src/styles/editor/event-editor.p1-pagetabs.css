@@ -1,48 +1,75 @@
-/* P1: 페이지 탭 리치화 (높음-5) */
-/* 좌측 세로 페이지 탭에 그래픽 마이크로 썸네일 + 페이지 번호 + 조건 배지를 세로 스택으로 배치. */
+/* P1: 페이지 탭 리치화 — 캐릭터 그래픽으로 탭을 채우고 번호를 하단에 overlay. */
 
 .event-page-number-tabs .btn.event-page-tab-rich {
-  align-content: center;
-  display: grid;
-  gap: 2px;
-  grid-template-rows: 16px auto auto;
-  height: auto;
-  justify-items: center;
-  min-height: 56px;
+  display: block;
+  height: 72px;
+  min-height: 72px;
   overflow: hidden;
-  padding: 5px 2px 4px;
+  padding: 0;
+  position: relative;
+  width: 100%;
 }
 
 .event-page-tab-thumb {
-  align-items: flex-start;
+  align-items: center;
+  bottom: 0;
   display: flex;
-  height: 16px;
   justify-content: center;
+  left: 0;
   overflow: hidden;
+  padding: 4px 2px 16px;
   pointer-events: none;
-  width: 18px;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .event-page-tab-thumb .event-graphic-icon-preview {
   flex: none;
   image-rendering: pixelated;
+  /* 48×64 (scale 2) 셀이 탭 면적을 거의 채우도록 */
+  max-height: 100%;
+  max-width: 100%;
 }
 
-/* 그래픽 없음/미지원 → 빈 칸 placeholder */
+/* 그래픽 없음/미지원 → 탭 비율에 맞는 빈 칸 placeholder */
 .event-page-tab-thumb .event-graphic-icon-preview[data-empty="true"],
 .event-page-tab-thumb .event-graphic-icon-preview[data-unsupported="true"] {
   background: transparent;
   border: 1px dashed var(--event-modern-border, currentColor);
-  border-radius: 3px;
-  height: 14px !important;
+  border-radius: 4px;
+  height: 48px !important;
   opacity: 0.45;
-  width: 12px !important;
+  width: 36px !important;
 }
 
 .event-page-tab-number {
-  font-size: 15px;
+  align-items: flex-end;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--bg-raised, #1a1d26) 88%, transparent) 0%,
+    color-mix(in srgb, var(--bg-raised, #1a1d26) 55%, transparent) 55%,
+    transparent 100%
+  );
+  bottom: 0;
+  color: var(--text-1, #e9ecf3);
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  justify-content: center;
+  left: 0;
+  letter-spacing: 0.02em;
   line-height: 1;
+  padding: 10px 2px 4px;
   pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+  z-index: 2;
+}
+
+.event-page-number-tabs .btn.event-page-tab-rich.active .event-page-tab-number {
+  color: var(--event-modern-accent, #6c79f2);
 }
 
 .event-page-tab-badges {
@@ -50,15 +77,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1px;
-  justify-content: center;
-  max-width: 46px;
-  min-height: 10px;
+  justify-content: flex-end;
+  max-width: calc(100% - 4px);
+  min-height: 0;
+  padding: 0;
   pointer-events: none;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  z-index: 3;
 }
 
 .event-page-tab-badge {
   align-items: center;
-  background: var(--event-modern-accent-soft, rgba(96, 128, 192, 0.25));
+  background: color-mix(in srgb, var(--bg-raised, #1a1d26) 72%, var(--event-modern-accent-soft, rgba(96, 128, 192, 0.45)));
   border: 1px solid var(--event-modern-border, rgba(96, 128, 192, 0.5));
   border-radius: 2px;
   color: var(--text-1, inherit);
@@ -67,30 +99,31 @@
   justify-content: center;
   min-width: 10px;
   padding: 1px 1px 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
 }
 
 .event-page-tab-badge-switch {
-  background: rgba(88, 160, 96, 0.28);
+  background: rgba(88, 160, 96, 0.55);
 }
 
 .event-page-tab-badge-variable {
-  background: rgba(96, 128, 208, 0.28);
+  background: rgba(96, 128, 208, 0.55);
 }
 
 .event-page-tab-badge-item {
-  background: rgba(200, 152, 72, 0.3);
+  background: rgba(200, 152, 72, 0.55);
 }
 
 .event-page-tab-badge-actor {
-  background: rgba(176, 96, 176, 0.28);
+  background: rgba(176, 96, 176, 0.55);
 }
 
 .event-page-tab-badge-timer {
-  background: rgba(192, 88, 88, 0.28);
+  background: rgba(192, 88, 88, 0.55);
 }
 
 .event-page-tab-badge-more {
-  background: transparent;
+  background: color-mix(in srgb, var(--bg-raised, #1a1d26) 70%, transparent);
   border-style: dashed;
-  opacity: 0.8;
+  opacity: 0.9;
 }

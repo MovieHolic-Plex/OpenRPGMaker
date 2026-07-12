@@ -1,4 +1,5 @@
 import { clearChildren, el } from "@/util/dom";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHOICE_CANCEL_BRANCH_INDEX,
   FORK_ELSE_BRANCH_INDEX,
@@ -19,7 +20,6 @@ import {
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
-  EASYRPG_CHARSET_ASSETS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
@@ -207,7 +207,7 @@ function renderFaceCrop16(resourceId: string, faceIndex: number): HTMLElement | 
 
 // 캐릭터칩 대표 프레임(캐릭터 0, 아래, 가운데)을 높이 16px 로 크롭.
 function renderCharsetSprite16(spriteId: string): HTMLElement | null {
-  const asset = EASYRPG_CHARSET_ASSETS.find((entry) => entry.textureKey === spriteId);
+  const asset = CHARSET_ASSETS.find((entry) => entry.textureKey === spriteId);
   if (!asset) return null;
   const scale = 16 / CHARSET_FRAME_HEIGHT;
   const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });

@@ -39,6 +39,19 @@ export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRe
   };
 }
 
+/** Side-view battle field art. EasyRPG "backdrop" pack is mostly sky panoramas — not usable as JRPG battlebacks. */
+export const DEFAULT_BATTLE_FIELD_BACKGROUND_ID = "generated-battle-reference-forest";
+
+/** Only rewrite panoramas that read as unusable battle fields (noise / pure black night). */
+const SKY_PANORAMA_BATTLEBACK_IDS = new Set([
+  "easyrpg-backdrop-night-sky1",
+  "easyrpg-backdrop-night-sky2",
+  "easyrpg-backdrop-dimension-rift",
+  "easyrpg-backdrop-planet1",
+  "easyrpg-backdrop-planet2",
+  "easyrpg-backdrop-planet3",
+]);
+
 export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">): TroopRecord {
   const members = normalizeMembers(record.members, record.enemyIds);
   return {
@@ -48,11 +61,19 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     members,
     autoAlign: record.autoAlign ?? true,
     uncapturable: record.uncapturable === true,
-    previewBackgroundResourceId: cleanOptionalId(record.previewBackgroundResourceId),
+    previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
     battleEventPages: record.battleEventPages ?? [],
   };
+}
+
+/** Rewrite sky-panorama "backdrops" to a real side-view field; leave custom/forest ids alone. */
+export function normalizeBattleFieldBackgroundId(value: unknown): string | undefined {
+  const id = cleanOptionalId(value);
+  if (!id) return undefined;
+  if (SKY_PANORAMA_BATTLEBACK_IDS.has(id)) return DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  return id;
 }
 
 function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow | undefined {

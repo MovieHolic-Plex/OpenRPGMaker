@@ -6,6 +6,12 @@
   width: min(780px, calc(100vw - 24px));
 }
 
+/* 이동 경로 설정: 폼 자체에 리스트+프리뷰+버튼 그리드가 있어 더 넓게 잡는다. */
+.event-subdialog-window.wide:has(.move-route-editor) {
+  height: min(720px, calc(100vh - 24px));
+  width: min(1120px, calc(100vw - 24px));
+}
+
 .event-command-edit-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
@@ -13,8 +19,22 @@
   align-items: start;
 }
 
+/* 이동 경로: 본문 폼이 주 작업면. 우측 범용 프리뷰는 접어 버튼 폭을 확보. */
+.event-command-edit-columns:has(.move-route-editor) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-columns:has(.move-route-editor) > .event-command-preview-panel {
+  display: none;
+}
+
 .event-command-edit-columns > .event-command-edit-body {
   min-width: 0;
+}
+
+.event-command-edit-columns:has(.move-route-editor) > .event-command-edit-body {
+  max-height: min(580px, calc(100vh - 140px));
+  overflow: auto;
 }
 
 @media (max-width: 720px) {
@@ -62,28 +82,190 @@
 .ecp-stage.pos-center { place-items: center; }
 .ecp-stage.pos-bottom { place-items: end center; }
 
-/* RM2003 메시지 창 (배경/보더 이미지는 applySystemGraphic 인라인이 우선) */
+/* RM2003 메시지 창 목업.
+   EasyRPG System.png(160×80 전체 시트) 를 border-image fill 로 쓰면 팔레트/숫자
+   스트립이 창 안을 덮어 깨져 보인다. 에디터 프리뷰는 전용 9-slice windowskin 만 사용. */
 .ecp-message-window {
   width: 100%;
   max-width: 96%;
-  min-height: 54px;
+  min-height: 72px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 10px 12px;
-  border: 2px solid var(--rm2k3-command-blue, #2b4c9b);
-  border-radius: 4px;
-  background: rgba(8, 16, 48, 0.92);
+  box-sizing: border-box;
+  border: 8px solid transparent;
+  border-image-source: url("/assets/ui/windowskin-rm2003.png");
+  border-image-slice: 24 fill;
+  border-image-width: 8px;
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: var(--runtime-window-fill-fallback, #123c9a);
   color: #f4f6ff;
-  font: 400 13px/1.5 "Malgun Gothic", Tahoma, sans-serif;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  font: 400 13px/1.45 "Malgun Gothic", Tahoma, sans-serif;
+  box-shadow: none;
+  image-rendering: pixelated;
+  /* 실수로 applySystemGraphic 이 붙어도 System.png fill 이 새지 않게 */
+  --runtime-window-skin: url("/assets/ui/windowskin-rm2003.png");
 }
-.ecp-message-window.with-face { flex-direction: row; align-items: center; gap: 10px; }
+.ecp-message-window.with-face {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+  min-height: 120px;
+}
 .ecp-message-window.face-right { flex-direction: row-reverse; }
-.ecp-message-window.transparent { background: transparent; border-style: dashed; box-shadow: none; }
+.ecp-message-window.transparent {
+  background: transparent;
+  background-image: none !important;
+  border-image: none !important;
+  border-style: dashed;
+  border-color: rgba(180, 200, 255, 0.45);
+  border-width: 2px;
+  box-shadow: none;
+}
+.ecp-message-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  min-width: 0;
+}
 .ecp-message-speaker { font-weight: 700; color: var(--rm2k3-command-teal, #ffd76e); font-size: 12px; }
 .ecp-message-body { white-space: pre-wrap; word-break: break-word; }
 .ecp-message-body.muted { color: #b9c2e0; font-size: 12px; }
+
+/* changeFace play mock — larger face crop, no editor meta chrome inside the window */
+.ecp-face-stage {
+  gap: 8px;
+}
+.ecp-face-stage.ecp-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  aspect-ratio: auto;
+  min-height: 200px;
+}
+.ecp-face-message {
+  min-height: 128px;
+  width: 100%;
+  max-width: 100%;
+}
+.ecp-message-window .event-command-face-crop-shell {
+  flex: 0 0 auto;
+  align-self: center;
+}
+.ecp-message-window .event-command-face-crop {
+  background-image: var(--face-url);
+  background-position: var(--face-scaled-x) var(--face-scaled-y);
+  background-repeat: no-repeat;
+  background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 2px;
+  height: var(--face-display-height, 96px);
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: var(--face-display-width, 96px);
+}
+.ecp-message-window .event-command-face-crop-shell.flipped .event-command-face-crop {
+  transform: scaleX(-1);
+}
+.ecp-message-window .event-command-face-crop-shell[data-empty="true"] {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border-radius: 2px;
+  display: grid;
+  height: 96px;
+  justify-items: center;
+  width: 96px;
+}
+.ecp-message-window .event-command-face-crop-missing {
+  color: #b9c2e0;
+  font-size: 22px;
+  font-weight: 700;
+}
+.ecp-face-caption {
+  color: var(--text-2, #aeb6c8);
+  font: 600 11px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+/* 문장 표시 설정 프리뷰: 무대 + 옵션 배지 */
+.ecp-settings-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ecp-settings-preview .ecp-stage {
+  position: relative;
+}
+.ecp-player-pawn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  background: rgba(255, 215, 110, 0.18);
+  border: 1px solid rgba(255, 215, 110, 0.55);
+  color: #ffd76e;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+.ecp-settings-preview .ecp-message-window {
+  position: relative;
+  z-index: 1;
+}
+.ecp-settings-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.ecp-settings-badges .ecp-move-badge.off {
+  opacity: 0.55;
+  background: var(--bg-inset, #14161c);
+  color: var(--text-2, #aeb6c8);
+  border-color: var(--border-default, #3a3f4b);
+}
+
+/* 문장 표시 설정 폼 그룹 */
+.event-command-message-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.event-command-settings-group {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 8px;
+  background: var(--bg-inset, rgba(0, 0, 0, 0.14));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.event-command-settings-group > legend {
+  padding: 0 6px;
+  font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+}
+.event-command-settings-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-2, #aeb6c8);
+}
 
 .ecp-choice-list { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
 .ecp-choice { padding: 2px 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.06); font-size: 12px; }
@@ -126,9 +308,360 @@
 .ecp-result-screen.title { background: linear-gradient(180deg, #0a1230, #1a2a5a); color: #ffe07a; }
 .ecp-result-screen.ending { background: #000; color: #eee; }
 
-/* 상점 창 */
-.ecp-shop-window { width: 100%; padding: 10px; border: 2px solid var(--rm2k3-command-blue, #2b4c9b); border-radius: 4px; background: rgba(8, 16, 48, 0.92); color: #f4f6ff; }
-.ecp-shop-title { font-weight: 700; font-size: 12px; margin-bottom: 8px; }
+/* 숫자 입력 창 — System.png fill 금지, 자릿수 슬롯 목업. */
+.ecp-number-stage {
+  place-items: center;
+  padding: 12px;
+}
+.ecp-number-window,
+.ecp-number-window-clean {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, #2b4c9b);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(22, 28, 44, 0.98), rgba(12, 16, 28, 0.98));
+  color: #f4f6ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-image: none !important;
+  background-image: none !important;
+}
+.ecp-number-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--rm2k3-command-blue, #9ec0ff);
+}
+.ecp-number-slots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+.ecp-number-slot {
+  min-width: 22px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid rgba(245, 251, 255, 0.35);
+  background: rgba(4, 12, 40, 0.88);
+  color: rgba(244, 251, 255, 0.35);
+  font: 700 16px/1 "Malgun Gothic", Tahoma, sans-serif;
+  border-radius: 2px;
+}
+.ecp-number-slot.filled {
+  border-color: #f5d04a;
+  color: #f4f6ff;
+}
+.ecp-number-slot.cursor {
+  box-shadow: 0 0 0 1px rgba(255, 246, 168, 0.5);
+}
+.ecp-number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(28px, 1fr));
+  gap: 4px;
+  width: 100%;
+  max-width: 148px;
+}
+.ecp-number-pad-key {
+  min-height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(245, 251, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+  color: #e9ecf5;
+  border-radius: 3px;
+}
+.ecp-number-pad-key.ok {
+  background: rgba(110, 168, 255, 0.22);
+  border-color: var(--accent, #6ea8ff);
+  color: #9ec0ff;
+}
+.ecp-number-meta {
+  font-size: 11px;
+  color: #aeb6c8;
+  text-align: center;
+}
+
+/* 숫자 입력 편집 폼 */
+.input-number-command-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.input-number-digits-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.input-number-digit-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.input-number-digit-chip {
+  min-width: 28px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 4px;
+  background: var(--bg-raised, #20242e);
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+  cursor: pointer;
+}
+.input-number-digit-chip:hover {
+  border-color: var(--accent, #6ea8ff);
+  color: var(--text-1, #e9ecf5);
+}
+.input-number-digit-chip.active {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, transparent);
+  border-color: var(--accent, #6ea8ff);
+  color: var(--accent, #6ea8ff);
+}
+.input-number-pad-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-number-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 숫자 입력 창 — System.png fill 금지, 자릿수 슬롯 목업. */
+.ecp-number-stage {
+  place-items: center;
+  padding: 12px;
+}
+.ecp-number-window,
+.ecp-number-window-clean {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, #2b4c9b);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(22, 28, 44, 0.98), rgba(12, 16, 28, 0.98));
+  color: #f4f6ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-image: none !important;
+  background-image: none !important;
+}
+.ecp-number-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--rm2k3-command-blue, #9ec0ff);
+}
+.ecp-number-slots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+.ecp-number-slot {
+  min-width: 22px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid rgba(245, 251, 255, 0.35);
+  background: rgba(4, 12, 40, 0.88);
+  color: rgba(244, 251, 255, 0.35);
+  font: 700 16px/1 "Malgun Gothic", Tahoma, sans-serif;
+  border-radius: 2px;
+}
+.ecp-number-slot.filled {
+  border-color: #f5d04a;
+  color: #f4f6ff;
+}
+.ecp-number-slot.cursor {
+  box-shadow: 0 0 0 1px rgba(255, 246, 168, 0.5);
+}
+.ecp-number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(28px, 1fr));
+  gap: 4px;
+  width: 100%;
+  max-width: 148px;
+}
+.ecp-number-pad-key {
+  min-height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(245, 251, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+  color: #e9ecf5;
+  border-radius: 3px;
+}
+.ecp-number-pad-key.ok {
+  background: rgba(110, 168, 255, 0.22);
+  border-color: var(--accent, #6ea8ff);
+  color: #9ec0ff;
+}
+.ecp-number-meta {
+  font-size: 11px;
+  color: #aeb6c8;
+  text-align: center;
+}
+
+/* 숫자 입력 편집 폼 */
+.input-number-command-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.input-number-digits-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.input-number-digit-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.input-number-digit-chip {
+  min-width: 28px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 4px;
+  background: var(--bg-raised, #20242e);
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+  cursor: pointer;
+}
+.input-number-digit-chip:hover {
+  border-color: var(--accent, #6ea8ff);
+  color: var(--text-1, #e9ecf5);
+}
+.input-number-digit-chip.active {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, transparent);
+  border-color: var(--accent, #6ea8ff);
+  color: var(--accent, #6ea8ff);
+}
+.input-number-pad-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-number-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 상점 창 — System.png border-image fill 금지(팔레트 스트립 오염). 솔리드 목업만. */
+.ecp-shop-stage {
+  place-items: stretch center;
+  align-content: center;
+  padding: 12px;
+}
+.ecp-shop-window,
+.ecp-shop-window-clean {
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, #2b4c9b);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(22, 28, 44, 0.98), rgba(12, 16, 28, 0.98));
+  color: #f4f6ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  /* applySystemGraphic 이 실수로 붙어도 fill 이 새지 않게 */
+  border-image: none !important;
+  background-image: none !important;
+}
+.ecp-shop-title {
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: var(--rm2k3-command-blue, #9ec0ff);
+}
+.ecp-shop-message {
+  font-size: 11px;
+  color: #ffd76e;
+  margin-bottom: 4px;
+}
+.ecp-shop-merchant-gold {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffe07a;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.ecp-shop-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow: auto;
+}
+.ecp-shop-item-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 6px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.ecp-shop-item-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+.ecp-shop-item-icon img,
+.ecp-shop-item-icon .rich-record-icon,
+.ecp-shop-item-icon .rich-record-initial {
+  width: 22px;
+  height: 22px;
+  image-rendering: pixelated;
+}
+.ecp-shop-item-name {
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ecp-shop-item-price {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffe07a;
+  white-space: nowrap;
+}
+.ecp-shop-item-empty,
+.ecp-shop-item-more {
+  font-size: 11px;
+  color: #aeb6c8;
+  padding: 6px 4px;
+  text-align: center;
+}
+.ecp-shop-branch-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #58e08a;
+}
 .ecp-item-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .ecp-item-cell { display: grid; place-items: center; aspect-ratio: 1; background: rgba(255, 255, 255, 0.06); border-radius: 4px; }
 .ecp-item-cell.empty { grid-column: 1 / -1; aspect-ratio: auto; padding: 8px; font-size: 12px; opacity: 0.6; }

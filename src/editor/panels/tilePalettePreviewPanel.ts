@@ -61,15 +61,36 @@ export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLEleme
   const similar = similarTilesForTile({ tileset: model.tileset, tile: model.selectedTile, limit: 8 });
   const used = map ? usedLocationsForTile({ map, tile: model.selectedTile, limit: 6 }) : [];
   const panel = el("div", { class: "tile-brush-assist", dataset: { testid: "tile-brush-assist" } });
+  const autoOn = model.autoConnectMode;
+  const candidate = isAutoConnectCandidate(model.selectedTile, model.tileset);
   panel.append(
     el("div", {
       class: "tile-brush-row tile-brush-mode-row",
       children: [
         el("span", { class: "tile-brush-label", text: "연결" }),
+        el("button", {
+          class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
+          text: autoOn ? "Auto" : "Manual",
+          attrs: {
+            type: "button",
+            title: autoOn
+              ? "자동 연결 ON — 이웃 지형까지 재검사합니다. 클릭하면 Manual."
+              : "수동 배치 ON — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다.",
+            "aria-pressed": String(autoOn),
+            "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
+          },
+          dataset: { testid: "auto-connect-mode-toggle" },
+          on: {
+            click: () => {
+              editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
+              model.rerender();
+            },
+          },
+        }),
         el("span", {
-          class: "tile-brush-chip" + (model.autoConnectMode && isAutoConnectCandidate(model.selectedTile, model.tileset) ? " active" : ""),
-          text: model.autoConnectMode && isAutoConnectCandidate(model.selectedTile, model.tileset) ? "Auto" : "Manual",
-          dataset: { testid: "auto-connect-mode-label" },
+          class: "tile-brush-hint",
+          text: candidate ? (autoOn ? "이웃 성형" : "오토타일 브러시(항상 성형)") : "이 타일 단독",
+          dataset: { testid: "auto-connect-mode-hint" },
         }),
       ],
     })

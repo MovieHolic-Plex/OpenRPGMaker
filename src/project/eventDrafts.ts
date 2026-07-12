@@ -29,16 +29,16 @@ export function eventWithoutDraft(event: GameEvent): PersistedGameEvent {
   return snapshot;
 }
 
+/**
+ * Events as they should survive autosave/export.
+ * Editor draft metadata is stripped, but the **working body** of open drafts is kept
+ * so mid-edit work is durable (new + edit). Cancel still uses in-memory `draft` meta
+ * / vault to discard or restore originals within the session.
+ */
 export function committedEvents(events: readonly GameEvent[]): GameEvent[] {
   const committed: GameEvent[] = [];
   for (const event of events) {
-    if (!event.draft) {
-      committed.push(structuredClone(event));
-      continue;
-    }
-    if (event.draft.kind === "edit" && event.draft.original) {
-      committed.push(structuredClone(event.draft.original));
-    }
+    committed.push(eventWithoutDraft(structuredClone(event)));
   }
   return committed;
 }
@@ -53,6 +53,30 @@ export function projectWithoutEventDrafts(project: Project): Project {
   const next = structuredClone(project);
   for (const map of Object.values(next.maps)) {
     map.events = committedEvents(map.events);
+  }
+  return next;
+}
+
+/**
+ * Re-apply in-memory event editor drafts onto a draft-free saved project.
+ * Autosave strips draft *metadata* but keeps working bodies; this restores
+ * `draft.kind` / `draft.original` so Cancel still works after a remote merge.
+ */
+export function projectWithPreservedEventDrafts(saved: Project, live: Project): Project {
+  const next = structuredClone(saved);
+  for (const [mapId, liveMap] of Object.entries(live.maps)) {
+    const targetMap = next.maps[mapId];
+    if (!targetMap) continue;
+    for (const liveEvent of liveMap.events) {
+      if (!liveEvent.draft) continue;
+      const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
+      if (index >= 0) {
+        // Prefer live working body + draft meta over the stripped snapshot.
+        targetMap.events[index] = structuredClone(liveEvent);
+      } else {
+        targetMap.events.push(structuredClone(liveEvent));
+      }
+    }
   }
   return next;
 }

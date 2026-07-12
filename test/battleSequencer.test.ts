@@ -2,7 +2,13 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import * as advanceModule from "@/battle/battleRuntimeAdvance";
 import { deserialize } from "@/project/io";
-import { createBattleSequencer, BATTLE_ACTING_MS, BATTLE_RESOLVE_MS } from "@/player/battleSequencer";
+import {
+  createBattleSequencer,
+  BATTLE_ACTING_MS,
+  BATTLE_HITSTOP_MS,
+  BATTLE_IMPACT_MS,
+  BATTLE_RESOLVE_MS,
+} from "@/player/battleSequencer";
 import battleFixture from "./fixtures/projects/battle-v3.json";
 
 function battleRuntime() {
@@ -67,14 +73,27 @@ describe("battle sequencer", () => {
     expect(steps[0]).toBe("acting");
     expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_ACTING_MS);
 
+    // After acting hold → damage + hit-stop schedule
     queue.shift()?.callback();
     expect(steps).toContain("impact");
+    expect(steps).toContain("damage");
+    expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_HITSTOP_MS);
 
+    // Hit-stop ends → impact dwell, then enemy resolve chain
     queue.shift()?.callback();
-    expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_RESOLVE_MS);
+    expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_IMPACT_MS);
 
-    queue.shift()?.callback();
+    let guard = 0;
+    while (queue.length > 0 && guard < 10) {
+      queue.shift()?.callback();
+      guard += 1;
+    }
     expect(advanceSpy).toHaveBeenCalled();
+    const delays = schedule.mock.calls.map((call) => call[1] as number);
+    expect(delays).toContain(BATTLE_ACTING_MS);
+    expect(delays).toContain(BATTLE_HITSTOP_MS);
+    expect(delays).toContain(BATTLE_IMPACT_MS);
+    expect(delays).toContain(BATTLE_RESOLVE_MS);
   });
 
   it("finishes a player turn in charging director state until actorCommand returns", () => {

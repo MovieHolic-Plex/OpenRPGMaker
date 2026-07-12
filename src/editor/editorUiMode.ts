@@ -8,13 +8,14 @@ export const EDITOR_PRODUCT_BRAND = "AI RPG MAKER";
 export type EditorUiMode = "basic" | "expert";
 export const DEFAULT_EDITOR_UI_MODE: EditorUiMode = "basic";
 
+// AI 어시스턴트 UI는 기본/전문가 동일 표면 — chrome 플래그로 분기하지 않는다.
+// 팔레트 작업탭(칠하기/찾기/속성)도 플래그가 아니라 renderTilePalette의 basic 조기
+// return(아이콘 레일)으로 갈라진다.
 export type EditorChromeVisibility = {
   readonly mapTree: boolean;
   readonly classicToolbar: boolean;
   readonly canvasChromeDense: boolean;
-  readonly paletteFindPropsTabs: boolean;
   readonly helpMenu: boolean;
-  readonly aiDenseSections: boolean;
   readonly gameMenuLabel: string;
 };
 
@@ -23,10 +24,7 @@ const BASIC_CHROME: EditorChromeVisibility = {
   mapTree: false,
   classicToolbar: false,
   canvasChromeDense: false,
-  paletteFindPropsTabs: false,
   helpMenu: false,
-  // AI 어시스턴트 UI는 기본/전문가 동일 표면(모드 분기 없음).
-  aiDenseSections: false,
   gameMenuLabel: "실행",
 };
 
@@ -34,10 +32,7 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   mapTree: true,
   classicToolbar: true,
   canvasChromeDense: true,
-  paletteFindPropsTabs: true,
   helpMenu: true,
-  // AI 패널은 셸 밀도와 무관 — expert도 dense AI board를 쓰지 않는다.
-  aiDenseSections: false,
   gameMenuLabel: "게임",
 };
 

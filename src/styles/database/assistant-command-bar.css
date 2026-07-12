@@ -64,16 +64,36 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   align-items: stretch;
   bottom: auto;
   flex: 0 0 auto;
-  grid-template-columns: 32px minmax(0, 1fr);
+  /* 사이드: 좌측 ☰ 없이 입력 스택만 — 헤더에 더보기/설정이 있음 */
+  grid-template-columns: minmax(0, 1fr);
   left: auto;
   position: relative;
   right: auto;
   z-index: 1;
+  gap: 6px;
+  padding: 8px 10px 10px;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-menu-toggle {
+  display: none;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-settings-button {
+  display: none;
 }
 
 .ai-chat-panel.chat-dock-side .ai-command-bar .ai-status-group {
   grid-column: 1 / -1;
-  justify-self: start;
+  justify-self: stretch;
+}
+
+/* 대기/새 대화 등 idle 상태는 하단 점유를 줄인다 */
+.ai-command-bar .ai-assistant-status[data-status-tone="idle"] {
+  display: none;
+}
+
+.ai-command-bar .ai-status-group:not(:has(.ai-abort-button:not([hidden]))):not(:has(.ai-assistant-status:not([data-status-tone="idle"]))) {
+  display: none;
 }
 
 /* 스튜디오에선 좌패널이 어차피 패널 뒤에 있으므로 스튜디오 폭 기준 중앙 정렬. */
@@ -255,20 +275,34 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 .ai-command-input-stack {
   background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  box-shadow: var(--shadow-modal);
+  border-radius: 4px;
+  box-shadow: none;
   display: grid;
-  gap: 4px;
-  padding: 6px;
+  gap: 2px;
+  padding: 4px 6px;
+}
+
+.ai-chat-panel.chat-dock-side .ai-command-input-stack {
+  box-shadow: none;
+  border-color: var(--border-subtle);
 }
 
 .ai-command-bar .ai-status-group {
   align-self: center;
-  background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
-  border: 1px solid var(--border-subtle);
-  border-radius: 999px;
-  box-shadow: var(--shadow-pop);
-  padding: 5px 7px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  gap: 6px;
+  min-height: 0;
+  padding: 0 2px;
+}
+
+.ai-command-bar .ai-assistant-status {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 @media (max-width: 720px) {

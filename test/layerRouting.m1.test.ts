@@ -75,17 +75,17 @@ describe("레이어 독립성 — 한 레이어 편집이 다른 레이어를 �
 });
 
 
-describe("eraseVisibleTile — 지우개 무반응 버그 회귀(2026-07-08)", () => {
-  // 팔레트 자동 레이어 전환으로 layer=upper가 된 상태에서 빈 상위만 지워
-  // 아무 일도 안 일어나던 버그: 선택 레이어가 비었으면 보이는 레이어를 지운다.
-  it("upper가 비어 있으면 lower의 보이는 타일을 지운다", () => {
+describe("eraseVisibleTile — 레이어별 지우개 범위", () => {
+  // 상위 레이어 지우개는 상위만 건드린다. 빈 상위에서 하위로 폴백하면 바닥이 같이 지워진다.
+  it("upper가 비어 있어도 lower는 보존한다", () => {
     const mapId = store.getCurrent().startMapId;
     paintTile(mapId, "lower", 3, 3, TILE.WATER);
 
     eraseVisibleTile(mapId, "upper", 3, 3);
 
     const map = currentMap();
-    expect(lowerAt(map, 3, 3)).toBe(TILE.EMPTY);
+    expect(upperAt(map, 3, 3)).toBe(TILE.EMPTY);
+    expect(lowerAt(map, 3, 3)).toBe(TILE.WATER);
   });
 
   it("upper에 내용이 있으면 upper만 지우고 lower는 보존한다", () => {

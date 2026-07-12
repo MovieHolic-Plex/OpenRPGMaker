@@ -40,6 +40,12 @@ import type {
   BattleTargetSelectionSnapshot,
   TargetedActorCommand,
 } from "@/battle/types";
+import { resolveBattleBackdrop } from "@/battle/battleBackdrop";
+import { hitFeelFromActionResult } from "@/battle/battlePose";
+import {
+  DEFAULT_BATTLE_FIELD_BACKGROUND_ID,
+  normalizeBattleFieldBackgroundId,
+} from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
 
 export type {
@@ -99,7 +105,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const enemies = enemyBattlers(options.project, troopRecord);
   const activeSlots = normalizeActiveSlots(options.activeSlots ?? troopRecord.activeSlots ?? options.project.system.activeSlots, actors.length);
   let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
-  let backdropResourceId = options.backdropResourceId ?? troopRecord.previewBackgroundResourceId ?? options.project.system.battleSystemResourceId;
+  // override → troop → terrain(at location) → forest. Never System2 gauge sheets.
+  let backdropResourceId = resolveBattleBackdrop({
+    project: options.project,
+    troopId: options.troopId,
+    overrideResourceId: options.backdropResourceId,
+    location: options.captureLocation
+      ? { mapId: options.captureLocation.mapId, x: options.captureLocation.x, y: options.captureLocation.y }
+      : undefined,
+  });
 
   let phase: BattlePhase = battleFlow === "strict" ? "actorCommand" : "charging";
   let activeActorId: ActorId | undefined;
@@ -125,6 +139,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
     inventory: { ...sessionState.inventory },
+    gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
+    partyActorIds: [...(sessionState.partyActorIds ?? options.party?.partyActorIds ?? options.project.system.startActorIds)],
+    actorSkillIds: { ...(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}) },
+    actorExperience: { ...(sessionState.actorExperience ?? options.party?.experience ?? {}) },
+    actorLevels: { ...(sessionState.actorLevels ?? options.party?.levels ?? {}) },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
@@ -137,7 +156,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     state: battleEventState,
     revealEnemy: revealEnemyTarget,
     changeBattleback: (resourceId) => {
-      backdropResourceId = resourceId;
+      backdropResourceId =
+        normalizeBattleFieldBackgroundId(resourceId)
+        ?? resolveBattleBackdrop({
+          project: options.project,
+          troopId: options.troopId,
+          location: options.captureLocation
+            ? { mapId: options.captureLocation.mapId, x: options.captureLocation.x, y: options.captureLocation.y }
+            : undefined,
+        })
+        ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
     },
   });
   markActiveParticipants();
@@ -166,6 +194,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       phase = "actorCommand";
       activeActorId = ready.battler.recordId;
+      // Clear prior resolve pose so command select shows idle/defend only.
+      lastActionResult = undefined;
+      lastAnimation = undefined;
       return;
     }
     performEnemyTurn(ready.battler);
@@ -579,6 +610,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function snapshot(): BattleSnapshot {
     const enemiesInBattle = visibleEnemies();
     const forcedActor = forcedSwitchActor();
+    // Action poses while lastActionResult is live (cleared when the next command phase begins).
+    const showActionPose = Boolean(lastActionResult);
+    const poseContext = { lastActionResult, showActionPose };
     return {
       phase,
       battleFlow,
@@ -587,11 +621,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       forcedSwitchActorId: forcedActor?.recordId,
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
       participatingActorIds: [...participatingActorIds],
-      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index))),
-      reserveActors: reserveActors().map((actor) => battlerSnapshot(actor)),
-      enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy)),
+      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index), poseContext)),
+      reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
+      enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy, undefined, poseContext)),
       lastAnimation,
       lastActionResult,
+      hitFeel: hitFeelFromActionResult(lastActionResult),
       lastCaptureResult,
       capturedMonsters,
       result,

@@ -39,6 +39,20 @@ export function hasAiMetadata(tileset: TilesetDef, tile: number): boolean {
   return meta.label.trim().length > 0 || meta.description.trim().length > 0;
 }
 
+/** 라벨·설명 둘 다 비어 있으면 미설정 (사용자/하네스 확정 전) */
+export function isUnlabeledTile(tileset: TilesetDef, tile: number): boolean {
+  const meta = metadataForTile(tileset, tile);
+  return meta.label.trim().length === 0 && meta.description.trim().length === 0;
+}
+
+export function listUnlabeledTileIds(tileset: TilesetDef): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < tileset.count; i += 1) {
+    if (isUnlabeledTile(tileset, i)) out.push(i);
+  }
+  return out;
+}
+
 export function passageText(tileset: TilesetDef, tile: number): string {
   const mark = passageMarkForTile(tileset, tile);
   return mark === "star" ? "★" : mark.toUpperCase();

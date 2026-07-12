@@ -45,6 +45,8 @@ function renderPanel(): FakeElement {
 describe("패널 접기", () => {
   it("접기 버튼 클릭으로 접히고 상태가 localStorage에 저장된다", () => {
     const panel = renderPanel();
+    // 부팅 기본 접힘 → 펼친 뒤 접기/펼치기 왕복
+    findByTestId(panel, "ai-collapsed-restore")?.click();
     const collapse = findByTestId(panel, "ai-collapse");
     expect(collapse).not.toBeNull();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
@@ -58,8 +60,8 @@ describe("패널 접기", () => {
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
   });
 
-  it("저장된 접힘 상태가 다음 렌더에서 복원된다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+  it("부팅 시 저장값이 펼침이어도 기본은 접힘이다", () => {
+    storage.set("rpg-zzu:ai-panel-collapsed", "0");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
   });

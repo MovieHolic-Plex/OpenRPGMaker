@@ -1,5 +1,9 @@
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
-import { isDefaultTilesetTexture, tilesetTextureKey } from "@/editor/tilesetImage";
+import {
+  isDefaultTilesetTexture,
+  supportsChipsetQuarterComposition,
+  tilesetTextureKey,
+} from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
@@ -9,9 +13,8 @@ import {
   type LakeAutotileQuarter,
 } from "@/project/defaults/lakeAutotile";
 import {
-  isTerrainQuarterTile,
-  terrainQuarterSources,
-  type TerrainQuarterSource,
+  chipsetQuarterComposition,
+  type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { tileStackAt } from "@/project/mapOverlayTiles";
@@ -150,14 +153,15 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
 ): void {
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
-  if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
+  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
     renderLakeAutotile(scene, textureKey, x, y, layer);
     return;
   }
-  if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
-    const terrainQuarters = terrainQuarterSources(scene.map, x, y);
-    if (terrainQuarters) {
-      renderTerrainQuarter(scene, textureKey, x, y, terrainQuarters, layer);
+  if (layer === "lower" && supportsChipsetQuarterComposition(tileset)) {
+    const composition = chipsetQuarterComposition(scene.map, tileset, x, y);
+    if (composition) {
+      renderTerrainQuarter(scene, textureKey, x, y, composition, layer);
       return;
     }
   }
@@ -206,10 +210,15 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
   textureKey: string,
   x: number,
   y: number,
-  sources: readonly TerrainQuarterSource[],
+  composition: ChipsetQuarterComposition,
   layer: "lower" | "upper",
 ): void {
-  for (const part of sources) {
+  if (composition.underlayTile !== undefined) {
+    const underlay = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${composition.underlayTile}`);
+    underlay.setOrigin(0, 0);
+    tileTargetLayer(scene, layer).add(underlay);
+  }
+  for (const part of composition.sources) {
     const image = scene.add.image(
       x * TILE_SIZE + part.offsetX,
       y * TILE_SIZE + part.offsetY,
@@ -258,6 +267,9 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
 
 export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.eventPositions = initialRuntimeEventPositions(scene.map.events);
+  // destroy 없이 clear만 하면 이전 맵의 NPC 스프라이트가 표시 목록에 고아로 남아
+  // 맵 전이 때마다 "NPC 복사" 현상이 생긴다 — 팔로워와 동일하게 파괴 후 비운다.
+  for (const sprite of scene.eventSprites.values()) sprite.destroy();
   scene.eventSprites.clear();
   for (const sprite of scene.followerSprites.values()) sprite.destroy();
   scene.followerSprites.clear();

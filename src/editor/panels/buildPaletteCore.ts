@@ -139,8 +139,8 @@ export function applyBuildPalettePrimitiveToProject(
   else if (primitive === "path") ok = stampPath(rect, run);
   else if (primitive === "river") ok = fillRoleTile(ctx.project, rect, "water");
   else if (primitive === "roof") ok = fillRoof(ctx.project, rect);
-  else if (primitive === "tree") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), propVocabId: BUILD_PALETTE_PRESETS.tree, count: countForArea(rect, 6), naturalness: 0.55, seed: seedFor(rect, "tree") });
-  else if (primitive === "prop") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), propVocabId: BUILD_PALETTE_PRESETS.prop, count: countForArea(rect, 10), naturalness: 0.45, seed: seedFor(rect, "prop") });
+  else if (primitive === "tree") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "침엽수", count: countForArea(rect, 6), naturalness: 0.55, seed: seedFor(rect, "tree") });
+  else if (primitive === "prop") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "마을 소품", count: countForArea(rect, 10), naturalness: 0.45, seed: seedFor(rect, "prop") });
   else if (primitive === "npc") ok = run("place_npc", { mapId: rect.mapId, x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2), name: "주민", pages: [{ lines: ["안녕하세요."] }] });
 
   const failed = toolResults.find((result) => !result.ok);
@@ -348,7 +348,7 @@ function stampPath(rect: BuildPaletteSelection, run: (name: string, args: Record
   return run("lay_path", {
     mapId: rect.mapId,
     points: [{ x: rect.x, y }, { x: rect.x + rect.width - 1, y }],
-    pathVocabId: BUILD_PALETTE_PRESETS.path,
+    material: "흙길",
     naturalness: 0,
     seed: seedFor(rect, "path"),
   });

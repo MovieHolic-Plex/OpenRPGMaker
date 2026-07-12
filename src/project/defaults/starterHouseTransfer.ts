@@ -1,14 +1,20 @@
-import type { GameMap, MapId } from "../types";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
+import type { EventPageGraphic, GameMap, MapId } from "../types";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TROOP_ID, TILE } from "./constants";
 
 export const STARTER_HOUSE_INTERIOR_MAP_ID = "map_starter_house_interior";
 
 const STARTER_HOUSE_DOOR_EVENT_ID = "event_starter_house_door";
 const STARTER_HOUSE_EXIT_EVENT_ID = "event_starter_house_exit";
+/** 실내 공터 테스트용 슬라임. 접촉 시 troop_slime 전투. */
+export const STARTER_HOUSE_SLIME_EVENT_ID = "event_starter_house_slime";
 export const STARTER_HOUSE_DOOR_APPROACH = { x: 7, y: 10 } as const;
 export const STARTER_HOUSE_INTERIOR_ENTRY = { x: 4, y: 6 } as const;
 export const STARTER_HOUSE_INTERIOR_EXIT = { x: 4, y: 7 } as const;
+/** 문 옆 공터 중앙 — 입구 (4,6)/(4,7) 와 겹치지 않음. */
+export const STARTER_HOUSE_SLIME_POS = { x: 10, y: 5 } as const;
 const STARTER_HOUSE_INTERIOR_SIZE = { width: 20, height: 15 } as const;
+const SLIME_CHARSET_ID = "tex_easyrpg_charset_monster1";
 
 export function addStarterHouseDoor(map: GameMap): void {
   map.events.push({
@@ -92,6 +98,44 @@ export function createStarterHouseInteriorMap(returnMapId: MapId): GameMap {
           },
         ],
       },
+      starterHouseSlimeEvent(),
     ],
+  };
+}
+
+function starterHouseSlimeEvent(): GameMap["events"][number] {
+  const graphic = slimeCharsetGraphic();
+  return {
+    id: STARTER_HOUSE_SLIME_EVENT_ID,
+    x: STARTER_HOUSE_SLIME_POS.x,
+    y: STARTER_HOUSE_SLIME_POS.y,
+    trigger: { kind: "eventTouch" },
+    commands: [],
+    pages: [
+      {
+        id: `${STARTER_HOUSE_SLIME_EVENT_ID}_page`,
+        name: "공터 슬라임",
+        conditions: [],
+        graphic,
+        trigger: { kind: "eventTouch" },
+        priority: "same",
+        overlapForbidden: true,
+        animationType: "normal",
+        // 공터에서 천천히 돌아다니며 접촉 시 전투 — 전투 테스트용.
+        movement: { type: "random", speed: 2, frequency: 3 },
+        commands: [
+          { kind: "text", speaker: "슬라임", body: "푸르르… (실내 공터 테스트 몬스터)" },
+          { kind: "battleProcessing", troopId: DEFAULT_TROOP_ID, canEscape: true, canLose: true },
+        ],
+      },
+    ],
+  };
+}
+
+function slimeCharsetGraphic(): EventPageGraphic {
+  return {
+    sprite: { type: "bundled", id: SLIME_CHARSET_ID },
+    direction: "down",
+    pattern: charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 }),
   };
 }

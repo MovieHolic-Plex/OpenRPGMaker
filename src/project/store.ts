@@ -11,6 +11,14 @@ import {
   saveProjectToSupabase,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import {
+  applyEventDraftVault,
+  clearEventDraftVault,
+  loadEventDraftVaultFromLocalStorage,
+  persistEventDraftVaultNow,
+  preserveEventDraftsOnProject,
+  syncEventDraftVaultFromProject,
+} from "./eventDraftVault";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
@@ -84,7 +92,7 @@ class ProjectStore {
     try {
       const devShowcaseProject = createDevShowcaseProjectForLocation();
       if (devShowcaseProject) {
-        this.current = loadDevProjectOverride() ?? devShowcaseProject;
+        this.adoptProject(loadDevProjectOverride() ?? devShowcaseProject, { restoreVault: true });
         this.remotePersistenceEnabled = false;
         this.remotePersistenceDisabledReason = "dev-showcase";
       } else {
@@ -102,7 +110,7 @@ class ProjectStore {
             this.persistedBaseline = null;
             throw new DbConnectionRequiredError("No project row exists for the selected DB project ID.");
           }
-          this.current = project;
+          this.adoptProject(project, { restoreVault: true });
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -135,7 +143,7 @@ class ProjectStore {
   // 깨진 원격/로컬 프로젝트를 덮어쓰지 않도록 원격 저장은 끈 채 시작한다 —
   // 사용자는 이후 DB 연결 설정에서 명시적으로 다시 연결/저장할 수 있다.
   async loadFallbackProject(project: Project): Promise<void> {
-    this.current = project;
+    this.adoptProject(project, { restoreVault: true });
     this.remotePersistenceEnabled = false;
     this.remotePersistenceDisabledReason = "load-failed";
     this.persistedBaseline = null;
@@ -206,13 +214,29 @@ class ProjectStore {
     }
   }
 
-  replace(project: Project): void {
+  replace(project: Project, options: { readonly preserveEventDrafts?: boolean } = {}): void {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
-    this.current = project;
+    // Default: keep open event editor drafts across undo/AI/accept/remote merges.
+    // Pass preserveEventDrafts:false only for intentional full project switches
+    // (new project / import / sample load) via replaceProject().
+    if (options.preserveEventDrafts === false) {
+      this.current = project;
+      syncEventDraftVaultFromProject(this.current);
+    } else {
+      this.current = preserveEventDraftsOnProject(project, this.current);
+      syncEventDraftVaultFromProject(this.current);
+    }
     this.dirtySinceLastPersist = true;
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
+  }
+
+  /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
+  replaceProject(project: Project): void {
+    clearEventDraftVault();
+    persistEventDraftVaultNow();
+    this.replace(project, { preserveEventDrafts: false });
   }
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
@@ -223,6 +247,7 @@ class ProjectStore {
     ensureSwitchVariableSlots(draft);
     removeLegacySpriteReferences(draft);
     this.current = draft;
+    syncEventDraftVaultFromProject(this.current);
     this.dirtySinceLastPersist = true;
     this.emit(change);
     this.scheduleAutoSave();
@@ -249,6 +274,7 @@ class ProjectStore {
         [mapId]: draftMap,
       },
     };
+    syncEventDraftVaultFromProject(this.current);
     this.dirtySinceLastPersist = true;
     this.emit({ scope: "map", mapId, ...change });
     this.scheduleAutoSave();
@@ -278,10 +304,28 @@ class ProjectStore {
   }
 
   async clearAll(): Promise<void> {
+    clearEventDraftVault();
+    persistEventDraftVaultNow();
     this.current = createBlankProject();
     this.dirtySinceLastPersist = true;
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
+  }
+
+  /**
+   * Force-restore a single open draft from the vault into the live project.
+   * Used by the event editor when a store race briefly drops the event mid-edit.
+   */
+  restoreEventDraftFromVault(mapId: MapId, eventId: string): boolean {
+    if (this.current.maps[mapId]?.events.some((entry) => entry.id === eventId)) return true;
+    const withVault = applyEventDraftVault(structuredClone(this.current));
+    if (!withVault.maps[mapId]?.events.some((entry) => entry.id === eventId)) return false;
+    this.current = withVault;
+    syncEventDraftVaultFromProject(this.current);
+    this.dirtySinceLastPersist = true;
+    this.emit({ scope: "map", mapId });
+    this.scheduleAutoSave();
+    return true;
   }
 
   subscribe(listener: Listener): () => void {
@@ -346,6 +390,10 @@ class ProjectStore {
   }
 
   private async persistCurrent(): Promise<ProjectFlushResult> {
+    // Always checkpoint open drafts to localStorage before remote I/O so a
+    // tab crash mid-save can still recover the event editor session.
+    syncEventDraftVaultFromProject(this.current);
+    persistEventDraftVaultNow();
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
@@ -356,6 +404,7 @@ class ProjectStore {
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
+    // Working bodies of open drafts are included; only draft *metadata* is stripped.
     const persistedProject = projectWithoutEventDrafts(this.current);
     const result = this.persistedBaseline
       ? await saveProjectMapPatchToSupabase({ project: persistedProject, baseProject: this.persistedBaseline })
@@ -363,15 +412,32 @@ class ProjectStore {
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? persistedProject;
-    this.persistedBaseline = structuredClone(savedProject);
+    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
     this.dirtySinceLastPersist = false;
     if (result.project) {
-      this.current = structuredClone(result.project);
+      // Remote merge can drop draft metadata and race with live edits — reattach both.
+      this.current = preserveEventDraftsOnProject(result.project, this.current);
+      syncEventDraftVaultFromProject(this.current);
       this.emit({ scope: "project" });
     }
     recordManualProjectCommitAfterSave(savedProject);
     this.refreshSupabaseResourceCache();
     return result;
+  }
+
+  /**
+   * Load/switch to a project while restoring any crash-recovered event drafts
+   * for the current DB project id.
+   */
+  private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
+    clearEventDraftVault();
+    if (options.restoreVault) {
+      loadEventDraftVaultFromLocalStorage();
+      this.current = applyEventDraftVault(project);
+    } else {
+      this.current = project;
+    }
+    syncEventDraftVaultFromProject(this.current);
   }
 
   private async normalizeCurrentProject(): Promise<void> {

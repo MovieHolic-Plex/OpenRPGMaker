@@ -1,11 +1,11 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHARSET_FRAME_HEIGHT,
   CHARSET_FRAME_WIDTH,
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
-  EASYRPG_CHARSET_ASSETS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
@@ -166,7 +166,7 @@ function graphicParameterRow(value: string, onChange: (value: string) => void): 
     dataset: { testid: "event-page-move-route-graphic-select" },
   });
   select.append(el("option", { text: "(직접 입력)", attrs: { value: "" } }));
-  for (const asset of EASYRPG_CHARSET_ASSETS) {
+  for (const asset of CHARSET_ASSETS) {
     select.append(el("option", { text: charsetOptionLabel(asset.fileName, asset.group), attrs: { value: asset.textureKey } }));
   }
   const input = el("input", {
@@ -223,11 +223,11 @@ function charsetOptionLabel(fileName: string, group: string): string {
 }
 
 function knownCharsetKey(textureKey: string): boolean {
-  return EASYRPG_CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
+  return CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
 }
 
 function updateGraphicChip(chip: HTMLElement, textureKey: string): void {
-  const asset = EASYRPG_CHARSET_ASSETS.find((item) => item.textureKey === textureKey);
+  const asset = CHARSET_ASSETS.find((item) => item.textureKey === textureKey);
   chip.dataset.spriteId = textureKey;
   chip.style.width = `${CHARSET_FRAME_WIDTH}px`;
   chip.style.height = `${CHARSET_FRAME_HEIGHT}px`;

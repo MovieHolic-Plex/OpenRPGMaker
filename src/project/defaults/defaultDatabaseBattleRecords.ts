@@ -157,7 +157,7 @@ function defaultTroopRecords(): TroopRecord[] {
       enemyIds: [DEFAULT_ENEMY_ID],
       members: [{ enemyId: DEFAULT_ENEMY_ID, x: 168, y: 112 }],
       autoAlign: false,
-      previewBackgroundResourceId: "easyrpg-backdrop-sky1",
+      previewBackgroundResourceId: "generated-battle-reference-forest",
       battleEventPages: [],
     }),
     normalizeTroopRecord({
@@ -169,7 +169,7 @@ function defaultTroopRecords(): TroopRecord[] {
         { enemyId: "enemy_meadow_slime", x: 192, y: 136 },
       ],
       autoAlign: false,
-      previewBackgroundResourceId: "easyrpg-backdrop-dawn1",
+      previewBackgroundResourceId: "generated-battle-reference-forest",
       battleEventPages: [],
     }),
     normalizeTroopRecord({
@@ -182,7 +182,7 @@ function defaultTroopRecords(): TroopRecord[] {
         { enemyId: "enemy_cave_bat", x: 224, y: 88 },
       ],
       autoAlign: false,
-      previewBackgroundResourceId: "easyrpg-backdrop-night-sky1",
+      previewBackgroundResourceId: "generated-battle-reference-forest",
       battleEventPages: [],
     }),
     normalizeTroopRecord({
@@ -195,7 +195,7 @@ function defaultTroopRecords(): TroopRecord[] {
         { enemyId: DEFAULT_ENEMY_ID, x: 220, y: 128 },
       ],
       autoAlign: false,
-      previewBackgroundResourceId: "easyrpg-backdrop-sunset1",
+      previewBackgroundResourceId: "generated-battle-reference-forest",
       battleEventPages: [],
     }),
     normalizeTroopRecord({
@@ -208,7 +208,8 @@ function defaultTroopRecords(): TroopRecord[] {
         { enemyId: "enemy_cave_bat", x: 224, y: 88 },
       ],
       autoAlign: false,
-      previewBackgroundResourceId: "easyrpg-backdrop-dimension-rift",
+      // Real side-view battle field art — not EasyRPG Night Sky / Dimension Rift panoramas.
+      previewBackgroundResourceId: "generated-battle-reference-forest",
       battleEventPages: [],
     }),
     normalizeTroopRecord({
@@ -218,7 +219,7 @@ function defaultTroopRecords(): TroopRecord[] {
       members: [{ enemyId: "enemy_dragon", x: 168, y: 104, hidden: false }],
       autoAlign: false,
       uncapturable: true,
-      previewBackgroundResourceId: "easyrpg-backdrop-dimension-rift",
+      previewBackgroundResourceId: "generated-battle-reference-forest",
       battleEventPages: [],
     }),
   ];

@@ -4,11 +4,13 @@ import { renderChipsetPreviewPanel } from "@/editor/panels/tilesetChipsetPreview
 import { renderTileGroupPanel } from "@/editor/panels/tilesetGroupEditor";
 import {
   ensureTileMeta,
+  listUnlabeledTileIds,
   metadataForTile,
   numberControl,
   passageText,
   textAreaControl,
 } from "@/editor/panels/tilesetMetadataControls";
+import { getUnlabeledOnlyFilter, setUnlabeledOnlyFilter } from "@/editor/panels/tilesetChipsetPreview";
 import { openTilesetSettingsModal } from "@/editor/panels/tilesetPassageModal";
 import {
   tabForTilesetMode,
@@ -40,6 +42,7 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
         tileset,
         mode: editMode,
         selectedTile,
+        unlabeledOnly: getUnlabeledOnlyFilter(),
         rerender,
         onApplyModeTile: (tile) => applyActiveModeClick(tileset.id, tile),
         onSelectTile: (tile, options) => {
@@ -61,10 +64,104 @@ function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLEleme
     class: "tileset-db-edit-sidebar",
     children: [
       ...(toolbox ? [toolbox] : []),
+      ...(tab === "knowledge" ? [renderUnlabeledQueuePanel(tileset, rerender)] : []),
       renderSelectedTilePanel(tileset, rerender),
       ...(editMode === "ai" ? [renderAiQuestionPanel(tileset, rerender, selectFirstAppliedTile)] : []),
       ...(editMode === "group" ? [renderTileGroupPanel(tileset, rerender)] : []),
       ...(tab === "compose" ? [renderAutotileEditorPanel(tileset, rerender)] : []),
+    ],
+  });
+}
+
+/** 라벨·설명이 비어 있는 타일만 모아 순서대로 채우는 큐 */
+function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const unlabeled = listUnlabeledTileIds(tileset);
+  const filterOn = getUnlabeledOnlyFilter();
+  const idxInQueue = unlabeled.indexOf(selectedTile);
+  const go = (delta: number) => {
+    if (unlabeled.length === 0) return;
+    if (idxInQueue < 0) {
+      selectedTile = unlabeled[0]!;
+    } else {
+      const next = (idxInQueue + delta + unlabeled.length) % unlabeled.length;
+      selectedTile = unlabeled[next]!;
+    }
+    setUnlabeledOnlyFilter(true);
+    rerender();
+  };
+  return el("section", {
+    class: "tileset-unlabeled-queue",
+    dataset: { testid: "tileset-unlabeled-queue" },
+    children: [
+      el("div", {
+        class: "tileset-unlabeled-queue-header",
+        children: [
+          el("strong", { text: "미라벨 타일 큐" }),
+          el("span", {
+            dataset: { testid: "tileset-unlabeled-count" },
+            text: unlabeled.length === 0 ? "완료" : `${unlabeled.length}개 남음`,
+          }),
+        ],
+      }),
+      el("p", {
+        class: "tileset-rule-note",
+        text: "라벨·설명이 둘 다 비어 있는 칩. 아래 필드로 채운 뒤 다음 → 로 순회합니다. 칩셋 미리보기의「미라벨」필터와 연동.",
+      }),
+      el("div", {
+        class: "tileset-unlabeled-queue-actions",
+        children: [
+          el("button", {
+            class: "database-footer-button",
+            text: "이전",
+            attrs: { type: "button", disabled: unlabeled.length === 0 ? "true" : undefined },
+            dataset: { testid: "tileset-unlabeled-prev" },
+            on: { click: () => go(-1) },
+          }),
+          el("button", {
+            class: "database-footer-button",
+            text: idxInQueue >= 0 ? `다음 (${idxInQueue + 1}/${unlabeled.length})` : "첫 미라벨",
+            attrs: { type: "button", disabled: unlabeled.length === 0 ? "true" : undefined },
+            dataset: { testid: "tileset-unlabeled-next" },
+            on: { click: () => go(1) },
+          }),
+          el("button", {
+            class: `database-footer-button${filterOn ? " active" : ""}`,
+            text: filterOn ? "미라벨 필터 ON" : "미라벨 필터",
+            attrs: { type: "button" },
+            dataset: { testid: "tileset-unlabeled-filter-toggle" },
+            on: {
+              click: () => {
+                setUnlabeledOnlyFilter(!getUnlabeledOnlyFilter());
+                rerender();
+              },
+            },
+          }),
+        ],
+      }),
+      ...(unlabeled.length > 0 && unlabeled.length <= 48
+        ? [
+            el("div", {
+              class: "tileset-unlabeled-id-list",
+              dataset: { testid: "tileset-unlabeled-id-list" },
+              children: unlabeled.slice(0, 48).map((id) =>
+                el("button", {
+                  class: id === selectedTile ? "active" : "",
+                  text: String(id),
+                  attrs: { type: "button", title: `타일 ${id}` },
+                  on: {
+                    click: () => {
+                      selectedTile = id;
+                      setUnlabeledOnlyFilter(true);
+                      rerender();
+                    },
+                  },
+                }),
+              ),
+            }),
+          ]
+        : unlabeled.length > 48
+          ? [el("div", { class: "tileset-rule-note", text: `처음 48개 id만 목록 표시 (전체 ${unlabeled.length})` })]
+          : []),
     ],
   });
 }

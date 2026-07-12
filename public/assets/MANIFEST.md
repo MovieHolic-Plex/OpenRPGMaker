@@ -68,6 +68,19 @@ light from top-left.
 - **용도**: generated EasyRPG RTP runtime package entries for Resource Manager and project resource references.
 - **출처/라이선스**: EasyRPG RTP `ChipSet/*.png`, pinned in `public/assets/easyrpg/rtp-manifest.json`. License text and authors are mirrored in `public/assets/easyrpg/COPYING` and `public/assets/easyrpg/AUTHORS.md`.
 
+## scarloxy/*.png
+- **출처/라이선스**: Scarloxy "Monster Taming Game Essentials" (https://scarloxy.itch.io/mpwsp01, 구매본), CC-BY 4.0. `ATTRIBUTION.md` 참조.
+- **생성**: `scripts/import-scarloxy-pack.py` 가 `vendor/scarloxy-mpwsp01/graphics/` 원본(2x/4x 업스케일본)을 원본 해상도로 복원해 변환. 수동 편집 금지 — 스크립트를 고치고 재실행할 것. 블록 배치는 `src/assets/scarloxyPackManifest.json` 에 기록된다.
+- **구성**:
+  - `scarloxy-chipset-{grassland,wilds,indoor}.png`: 480x256/16px RM2K3 ChipSet. 초원+마을 건물 / 사막·설원+해안+유적+아레나 / 실내. 물 타일은 정적(비기본 칩셋은 물 애니메이션 미지원). 오토타일 미지원 — 지형 전환은 일반 타일.
+  - `scarloxy-charset-people{1,2}.png`: 288x256/24x32 RM2K3 CharSet. 팩 캐릭터 10종(4프레임 걸음→3패턴 매핑, 32px 프레임→24x32 중앙 크롭).
+  - `scarloxy-monster-*.png`: 96x96 정적 배틀러(원본 idle 첫 프레임). `scarloxy-monster-icon-*.png`: 메뉴 아이콘.
+  - `scarloxy-backdrop-{forest,ice,sand}.png`: 640x360 전투 배경.
+  - `scarloxy-battle-anim-*.png`: 96x96 4프레임 가로 스트립(384x96). DB 기본 레코드 `anim_scarloxy_*` 가 사용. 크로마키(초록) 간섭 없음을 검증함.
+  - `scarloxy-ui-*.png`: 스탯 아이콘.
+- **버전 히스토리**:
+  - v1 (2026-07-12): 최초 변환·등록. 등록 코드는 `src/assets/scarloxyPack.ts`.
+
 ---
 
 ## 정밀수정 워크플로우

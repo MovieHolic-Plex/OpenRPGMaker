@@ -66,13 +66,31 @@ function applyBattleStatesToSession(session: PlaySession, actors: readonly Battl
   }
 }
 
-// 전투 이벤트 상태(아이템 소모, 전투 이벤트가 바꾼 스위치/변수)를 세션에 되돌려 쓴다.
+// 전투 이벤트 상태(아이템 소모, 전투 이벤트가 바꾼 스위치/변수/골드/파티/스킬)를 세션에 되돌려 쓴다.
 // 전투 개시 때 세션에서 시드된 사본이므로 그대로 덮어써도 안전하다.
 function applyBattleEventStateToSession(session: PlaySession, eventState: BattleEventStateSnapshot | undefined): void {
   if (!eventState) return;
   for (const [key, value] of Object.entries(eventState.switches)) session.switches[key] = value;
   for (const [key, value] of Object.entries(eventState.variables)) session.variables[key] = value;
   for (const [key, value] of Object.entries(eventState.inventory)) session.inventory[key] = value;
+  if (typeof eventState.gold === "number") session.gold = Math.max(0, Math.trunc(eventState.gold));
+  if (eventState.partyActorIds) session.partyActorIds = [...eventState.partyActorIds];
+  if (eventState.actorSkillIds) {
+    session.actorSkillIds ??= {};
+    for (const [actorId, skills] of Object.entries(eventState.actorSkillIds)) {
+      session.actorSkillIds[actorId] = [...skills];
+    }
+  }
+  if (eventState.actorExperience) {
+    for (const [actorId, exp] of Object.entries(eventState.actorExperience)) {
+      session.actorExperience[actorId] = Math.max(0, Math.trunc(exp));
+    }
+  }
+  if (eventState.actorLevels) {
+    for (const [actorId, level] of Object.entries(eventState.actorLevels)) {
+      session.actorLevels[actorId] = Math.max(1, Math.min(99, Math.trunc(level)));
+    }
+  }
 }
 
 // 전투 종료 시점의 아군 HP/MP를 세션 바이탈에 되돌려 쓴다(레벨업 가산 이전에 수행).

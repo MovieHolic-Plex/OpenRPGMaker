@@ -1,8 +1,9 @@
 // editor/panels/basicLeftRail.ts
-// 기본 모드 좌측 = 48px 아이콘 레일 + 플라이아웃(타일/레이어/맵).
+// 기본 모드 좌측 = 48px 아이콘 레일 + 레이어 직접 선택 + 플라이아웃(타일/맵).
 // 스펙: docs/superpowers/specs/2026-07-10-basic-mode-ai-ux-design.md §2.
 // - 도구 6개는 기존 data-testid(tool-*)를 유지한다.
-// - 플라이아웃은 캔버스 위 오버레이 — 좌패널 폭을 바꾸지 않아 WebGL 리사이즈가 없다.
+// - 하위/상위/이벤트 레이어는 레일에서 바로 고른다 (플라이아웃 없음).
+// - 타일·맵 플라이아웃은 캔버스 위 오버레이 — 좌패널 폭을 바꾸지 않아 WebGL 리사이즈가 없다.
 // - 상태는 모듈 레벨(재렌더에도 유지), 문서 리스너는 1회만 설치.
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
@@ -40,16 +41,24 @@ const BASIC_TOOLS: readonly BasicTool[] = [
   { id: "eyedropper", label: "스포이트", hint: "맵에서 타일 집기", icon: "eyedropper", hotkey: "I" },
 ] as const;
 
-type BasicLayerRow = { readonly id: Layer; readonly label: string; readonly short: string; readonly hint: string };
+type BasicLayerRow = {
+  readonly id: Layer;
+  readonly label: string;
+  readonly short: string;
+  readonly hint: string;
+  readonly icon: SvgIconName;
+  readonly hotkey: string;
+};
 
+/** Rail order: 하위 → 상위 → 이벤트 (직접 선택, 플라이아웃 없음). */
 const BASIC_LAYERS: readonly BasicLayerRow[] = [
-  { id: "event", label: "이벤트", short: "이", hint: "이벤트 레이어" },
-  { id: "upper", label: "오브젝트", short: "오", hint: "상위(오브젝트) 레이어" },
-  { id: "lower", label: "타일", short: "타", hint: "하위(지면) 레이어" },
+  { id: "lower", label: "하위", short: "하", hint: "하위(지면) 레이어", icon: "tile", hotkey: "F5" },
+  { id: "upper", label: "상위", short: "상", hint: "상위(오브젝트) 레이어", icon: "layers", hotkey: "F6" },
+  { id: "event", label: "이벤트", short: "이", hint: "이벤트 레이어", icon: "event", hotkey: "F7" },
 ] as const;
 
 const BASIC_TILE_CAP = 48;
-const FLYOUT_TITLES: Record<BasicFlyoutId, string> = { tiles: "타일", layers: "레이어", maps: "맵" };
+const FLYOUT_TITLES: Record<BasicFlyoutId, string> = { tiles: "타일", maps: "맵" };
 
 // 재렌더에도 살아남는 모듈 상태. tilePalette의 activeWorkTab 패턴과 동일.
 let flyoutState: BasicFlyoutState = INITIAL_BASIC_FLYOUT_STATE;
@@ -100,6 +109,8 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   });
   shell.append(makeToolsColumn(state.tool));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
+  shell.append(makeLayerSwitcher(state.layer));
+  shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
   shell.append(makePanelToggles(state.selectedTile, state.layer, tileset));
   if (flyoutState.open) {
     shell.append(makeFlyout(flyoutState.open, state.selectedTile, state.layer, tileset));
@@ -141,6 +152,44 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
   return list;
 }
 
+function applyLayerSelection(layer: Layer): void {
+  if (layer === "event") {
+    editorState.set({ layer: "event", tool: "event" });
+    return;
+  }
+  const tool = editorState.get().tool === "event" ? "paint" : editorState.get().tool;
+  editorState.set({ layer, tool });
+}
+
+function makeLayerSwitcher(activeLayer: Layer): HTMLElement {
+  const list = el("div", {
+    class: "basic-rail-icons basic-rail-layer-switcher",
+    dataset: { testid: "basic-layer-list" },
+    attrs: { role: "group", "aria-label": "레이어" },
+  });
+  for (const layer of BASIC_LAYERS) {
+    const active = activeLayer === layer.id;
+    list.append(
+      el("button", {
+        class: "basic-rail-btn" + (active ? " is-active" : ""),
+        attrs: {
+          type: "button",
+          title: `${layer.label} (${layer.hotkey}) — ${layer.hint}`,
+          "aria-label": layer.label,
+          "aria-pressed": String(active),
+        },
+        dataset: {
+          testid: layer.id === "lower" ? "layer-lower" : layer.id === "upper" ? "layer-upper" : "layer-event",
+          basicLayer: layer.id,
+        },
+        on: { click: () => applyLayerSelection(layer.id) },
+        children: [makeSvgIcon(layer.icon), el("span", { class: "basic-rail-badge", text: layer.short })],
+      }),
+    );
+  }
+  return list;
+}
+
 function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: TilesetDef | undefined): HTMLElement {
   const wrap = el("div", { class: "basic-rail-icons basic-rail-panel-toggles" });
 
@@ -166,22 +215,6 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
   if (tileDisabled) tileButton.setAttribute("disabled", "");
   wrap.append(tileButton);
 
-  const layerShort = BASIC_LAYERS.find((row) => row.id === activeLayer)?.short ?? "타";
-  wrap.append(
-    el("button", {
-      class: "basic-rail-btn" + (flyoutState.open === "layers" ? " is-open" : ""),
-      attrs: {
-        type: "button",
-        title: `레이어 — 현재: ${BASIC_LAYERS.find((r) => r.id === activeLayer)?.label ?? ""}`,
-        "aria-label": "레이어 패널",
-        "aria-expanded": String(flyoutState.open === "layers"),
-      },
-      dataset: { testid: "basic-rail-toggle-layers" },
-      on: { click: () => dispatchFlyout({ type: "toggle", id: "layers" }) },
-      children: [makeSvgIcon("layers"), el("span", { class: "basic-rail-badge", text: layerShort })],
-    }),
-  );
-
   wrap.append(
     el("button", {
       class: "basic-rail-btn" + (flyoutState.open === "maps" ? " is-open" : ""),
@@ -204,8 +237,6 @@ function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer,
     } else {
       body.append(makeTilesBody(selectedTile, tileset));
     }
-  } else if (id === "layers") {
-    body.append(makeLayersBody(activeLayer));
   } else {
     const host = el("div", { class: "basic-flyout-map-host", dataset: { testid: "basic-map-list-host" } });
     renderMapList(host, { variant: "basic" });
@@ -258,31 +289,6 @@ function makeTilesBody(selectedTile: number, tileset: TilesetDef): HTMLElement {
   }
   section.append(grid);
   return section;
-}
-
-function makeLayersBody(activeLayer: Layer): HTMLElement {
-  const list = el("div", { class: "basic-layer-list", dataset: { testid: "basic-layer-list" } });
-  for (const layer of BASIC_LAYERS) {
-    const active = activeLayer === layer.id;
-    list.append(
-      el("button", {
-        class: "basic-layer-row" + (active ? " is-active" : ""),
-        attrs: { type: "button", title: layer.hint, "aria-label": layer.label, "aria-pressed": String(active) },
-        dataset: {
-          testid: layer.id === "lower" ? "layer-lower" : layer.id === "upper" ? "layer-upper" : "layer-event",
-          basicLayer: layer.id,
-        },
-        on: {
-          click: () => {
-            if (layer.id === "event") editorState.set({ layer: "event", tool: "event" });
-            else editorState.set({ layer: layer.id, tool: editorState.get().tool === "event" ? "paint" : editorState.get().tool });
-          },
-        },
-        children: [el("span", { class: "basic-layer-label", text: layer.label })],
-      }),
-    );
-  }
-  return list;
 }
 
 /** Prefer terrain-looking low indexes + keep current selection visible. (기존 로직 유지) */

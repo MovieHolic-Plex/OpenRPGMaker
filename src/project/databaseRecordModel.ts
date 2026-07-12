@@ -43,6 +43,26 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
   };
 }
 
+/** Runtime CSS border-image windowskin. EasyRPG System/*.png sheets are not valid 9-slice skins. */
+export const DEFAULT_RUNTIME_WINDOW_SKIN_ID = "windowskin-rm2003";
+
+const EASYRPG_SYSTEM_SHEET_IDS = new Set([
+  "easyrpg-system-system",
+  "easyrpg-system-system-a",
+  "easyrpg-system-system-b",
+  "easyrpg-system-system-c",
+  "easyrpg-system-royal",
+]);
+
+export function normalizeSystemWindowSkinId(value: unknown): string | undefined {
+  const id = cleanOptionalId(value);
+  if (!id) return undefined;
+  // System2 gauge sheets must never be stored as the window skin either.
+  if (id.startsWith("easyrpg-system2-")) return DEFAULT_RUNTIME_WINDOW_SKIN_ID;
+  if (EASYRPG_SYSTEM_SHEET_IDS.has(id)) return DEFAULT_RUNTIME_WINDOW_SKIN_ID;
+  return id;
+}
+
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
@@ -50,11 +70,13 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   return {
     startActorIds: cleanIds(system.startActorIds),
     titleResourceId,
-    systemResourceId: cleanOptionalId(system.systemResourceId),
+    systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
     battleBgmResourceId: cleanOptionalId(system.battleBgmResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
+    // 기본(classic)은 저장하지 않고, 명시적 pokemon 선택만 보존한다.
+    ...(system.battleUiStyle === "pokemon" ? { battleUiStyle: "pokemon" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),

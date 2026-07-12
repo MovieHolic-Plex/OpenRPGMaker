@@ -129,6 +129,6 @@ describe("default database starter party", () => {
       monsterResourceId: "generated-enemy-dragon-01",
     });
     expect(troop?.members).toEqual([{ enemyId: "enemy_dragon", x: 168, y: 104, hidden: false }]);
-    expect(troop?.previewBackgroundResourceId).toBe("easyrpg-backdrop-dimension-rift");
+    expect(troop?.previewBackgroundResourceId).toBe("generated-battle-reference-forest");
   });
 });

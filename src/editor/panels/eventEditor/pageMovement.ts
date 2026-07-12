@@ -51,6 +51,7 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
       class: "event-page-movement-basics",
       children: [
         type,
+        // 정지여도 빈도 슬롯은 유지(비활성) — RM/e2e 계약. 경로 버튼만 custom 일 때 활성.
         compactLabel("빈도:", frequency, !hasAutonomousMovement),
         customRoute,
       ],

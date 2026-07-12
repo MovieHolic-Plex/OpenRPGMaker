@@ -765,8 +765,9 @@ const FENCE_BOTTOM_LEFT = 438;
 const FENCE_BOTTOM_RIGHT = 410;
 const BENCH_LEFT = 327;
 const BENCH_RIGHT = 328;
-const MARKET_AWNING_TOP = [411, 412, 413] as const;
-const MARKET_AWNING_BOTTOM = [441, 442, 443] as const;
+/** 장터 카운터 — 천막 411–443 사용 금지 */
+const MARKET_COUNTER = [234, 235, 235, 236] as const;
+const WOOD_BOX = 237;
 
 type FenceRectInput = {
   readonly origin: TilePoint;
@@ -836,12 +837,12 @@ function buildPlazaTwoStoryVariant(map: GameMap): void {
     { x: 0, y: 10, width: 4, height: 4 },
   ]);
   placeUpperTiles(map, [
-    { tile: MARKET_AWNING_TOP[0], x: 1, y: 12 },
-    { tile: MARKET_AWNING_TOP[1], x: 2, y: 12 },
-    { tile: MARKET_AWNING_TOP[2], x: 3, y: 12 },
-    { tile: MARKET_AWNING_BOTTOM[0], x: 1, y: 13 },
-    { tile: MARKET_AWNING_BOTTOM[1], x: 2, y: 13 },
-    { tile: MARKET_AWNING_BOTTOM[2], x: 3, y: 13 },
+    { tile: MARKET_COUNTER[0], x: 1, y: 12 },
+    { tile: MARKET_COUNTER[1], x: 2, y: 12 },
+    { tile: MARKET_COUNTER[2], x: 3, y: 12 },
+    { tile: MARKET_COUNTER[3], x: 4, y: 12 },
+    { tile: WOOD_BOX, x: 1, y: 11 },
+    { tile: WOOD_BOX, x: 4, y: 11 },
     { tile: BENCH_LEFT, x: 17, y: 14 },
     { tile: BENCH_RIGHT, x: 18, y: 14 },
     { tile: TILE.FLOWERS, x: 5, y: 16 },

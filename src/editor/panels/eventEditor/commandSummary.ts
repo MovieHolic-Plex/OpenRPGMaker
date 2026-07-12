@@ -92,6 +92,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(messageWindowFormatLabel(cmd.format)),
     plainPart(" / "),
     valuePart(messageWindowPositionLabel(cmd.position)),
+    ...(cmd.preventObscuringPlayer ? [plainPart(" / "), valuePart("가림 방지")] : []),
     ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
   ),
   choices: (cmd) => commandLine(
@@ -104,7 +105,16 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   inputWait: (cmd) => cmd.variableId
     ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
     : [commandPart("입력 대기")],
-  inputNumber: (cmd) => commandLine("숫자 입력", valuePart(recordName("variable", cmd.variableId)), plainPart(" / "), valuePart(String(cmd.digits)), plainPart("자리")),
+  inputNumber: (cmd) =>
+    commandLine(
+      "숫자 입력",
+      valuePart(recordName("variable", cmd.variableId)),
+      plainPart(" / "),
+      valuePart(String(cmd.digits)),
+      plainPart("자리"),
+      ...(cmd.prompt?.trim() ? [plainPart(" · "), valuePart(cmd.prompt.trim())] : []),
+      ...(cmd.showPad ? [plainPart(" · "), valuePart("키패드")] : [])
+    ),
   label: (cmd) => commandLine("라벨", valuePart(cmd.name)),
   gotoLabel: (cmd) => commandLine("라벨로 점프", valuePart(cmd.name)),
   loop: (cmd) => commandLine("반복", valuePart(String(cmd.body.length)), plainPart("개 명령")),
@@ -235,7 +245,14 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
   stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
   cutsceneControl: (cmd) => commandLine("컷신 제어", valuePart(cmd.mode === "begin" ? "시작" : "종료"), ...(cmd.skippable ? [plainPart(" / "), valuePart("스킵 가능")] : [])),
-  shop: (cmd) => commandLine("상점 처리", valuePart(String(cmd.itemIds.length)), plainPart("개")),
+  shop: (cmd) =>
+    commandLine(
+      "상점 처리",
+      valuePart(String(cmd.itemIds.length)),
+      plainPart("개"),
+      plainPart("·"),
+      valuePart(`${cmd.merchantGold ?? 100}G`)
+    ),
   inn: (cmd) => commandLine("여관 처리", valuePart(String(cmd.price)), plainPart("G")),
   checkpointSave: (cmd) => commandLine("체크포인트 저장", valuePart(cmd.label || "세션")),
   killPlayer: (cmd) => commandLine("즉사", valuePart(cmd.message || "게임 오버")),

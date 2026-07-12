@@ -8,8 +8,9 @@
 
 import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
+import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness";
+import { COMBINED_TOWN_HARNESS_PREFIX, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
 import { tileMetaLocked } from "@/project/tilesetPalette";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
@@ -162,16 +163,27 @@ function ensureTileMetaSlot(tileset: TilesetDef, tile: number): TileAiMetadata {
   return tileset.tileMeta[tile];
 }
 
-const BUNDLED_TILE_LABELS = new Map<number, string>(
+const COMBINED_TOWN_TILE_LABELS = new Map<number, string>(
   COMBINED_TOWN_TILE_SEMANTICS.map((entry) => [entry.index, entry.label])
 );
+
+const INTERIOR_TILE_LABELS = new Map<number, string>(
+  INTERIOR_TILE_SEMANTICS.map((entry) => [entry.index, entry.label])
+);
+
+// 타일셋 텍스처에 맞는 번들 라벨 테이블 — 칩셋마다 같은 인덱스의 의미가 다르다.
+// (던전 칩셋은 아직 전용 테이블이 없어 기존 동작대로 combined_town을 쓴다.)
+function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
+  if (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_LABELS;
+  return COMBINED_TOWN_TILE_LABELS;
+}
 
 // 타일의 "알려진 라벨"(사용자 메타 > 번들 시맨틱). 지형 템플릿 조회의 라벨 조인 등에 쓴다.
 export function knownTileLabel(tileset: TilesetDef, tile: number): string | undefined {
   const meta = tileset.tileMeta?.[tile];
   const userLabel = meta?.label.trim();
   if (userLabel) return userLabel;
-  return BUNDLED_TILE_LABELS.get(tile);
+  return bundledTileLabels(tileset).get(tile);
 }
 
 // ── get_tile_info ────────────────────────────────────────────────
@@ -691,7 +703,7 @@ const analyzeMapTileUsage: ToolDefinition = {
       const hasUserMeta = Boolean(meta && (meta.label.trim() || meta.description.trim()));
       const knownVia: TileUsageStat["knownVia"] = hasUserMeta
         ? meta?.source === "user" ? "user" : "ai"
-        : BUNDLED_TILE_LABELS.has(tile) ? "bundled"
+        : bundledTileLabels(tileset).has(tile) ? "bundled"
         : groupedTiles.has(tile) ? "group"
         : null;
       // 인접 통계: 이 타일 칸들의 바로 아래/위 칸 합성 타일 최빈값.
@@ -716,7 +728,7 @@ const analyzeMapTileUsage: ToolDefinition = {
         count: entry.cells.length,
         described: knownVia !== null,
         knownVia,
-        label: hasUserMeta ? (meta?.label || undefined) : BUNDLED_TILE_LABELS.get(tile),
+        label: hasUserMeta ? (meta?.label || undefined) : bundledTileLabels(tileset).get(tile),
         sampleRegion: largestClusterBbox(map, entry.cells),
         mostCommonBelow: modeOf(belowCounts),
         mostCommonAbove: modeOf(aboveCounts),

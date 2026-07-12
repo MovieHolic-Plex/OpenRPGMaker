@@ -18,7 +18,7 @@ import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
-import { createSampleAdventureProject, createTrainingExamplesProject } from "@/project/defaults";
+import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createTrainingExamplesProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -80,9 +80,14 @@ export function renderTopbar(topbar: HTMLElement): void {
     const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
     menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
   }
-  menuBar.append(renderEditorUiModeToggle(topbar));
-  menuBar.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
-  menuBar.append(renderWindowControls());
+  menuBar.append(renderEditorUiModeToggle());
+  // History + identity sit as trailing icon buttons (right end), before window chrome.
+  const trailing = el("div", {
+    class: "editor-topbar-trailing",
+    dataset: { testid: "editor-topbar-trailing" },
+  });
+  trailing.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar), renderWindowControls());
+  menuBar.append(trailing);
 
   // Classic toolbar: expert edit surface only — gradual deprecation (not default in basic).
   const showClassic = mode !== "edit" || chrome.classicToolbar;
@@ -109,7 +114,7 @@ function renderProductBrand(): HTMLElement {
   });
 }
 
-function renderEditorUiModeToggle(topbar: HTMLElement): HTMLElement {
+function renderEditorUiModeToggle(): HTMLElement {
   const current = getEditorUiMode();
   const group = el("div", {
     class: "editor-ui-mode-toggle",
@@ -129,16 +134,9 @@ function renderEditorUiModeToggle(topbar: HTMLElement): HTMLElement {
       on: {
         click: (event) => {
           event.stopPropagation();
+          // 구독자가 나머지를 처리한다: editor.ts(applyEditorUiModeLayout) + app/mode.ts(renderTopbar).
+          // 여기서 직접 다시 그리면 전환 1회에 레이아웃/탑바가 2번씩 렌더된다.
           setEditorUiMode(mode);
-          // Layout subscribe in editor.ts also reacts; this import covers late mounts.
-          void import("@/editor/panels/editor")
-            .then((mod) => {
-              mod.applyEditorUiModeLayout?.();
-            })
-            .catch(() => {
-              /* editor not loaded (boot/landing) */
-            });
-          renderTopbar(topbar);
         },
       },
     });
@@ -157,9 +155,13 @@ export function readableTopbarIdentityLabel(label: string): string {
 function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
   const control = renderIdentityTopbarControl(() => renderTopbar(topbar));
   const label = control.querySelector<HTMLElement>("[data-testid='topbar-identity-label']");
-  if (label) label.textContent = readableTopbarIdentityLabel(label.textContent ?? "");
-  control.querySelector(".team-identity-kind")?.remove();
-  control.querySelector(".team-identity-kind-text")?.remove();
+  if (label) {
+    const readable = readableTopbarIdentityLabel(label.textContent ?? "");
+    label.textContent = readable;
+    const title = `편집 신원 — ${readable}`;
+    control.setAttribute("title", title);
+    control.setAttribute("aria-label", title);
+  }
   return control;
 }
 
@@ -329,6 +331,8 @@ function menuCommands(
         item("새 프로젝트", "menu-project-new", () => void newProject()),
         item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
         item("학습 예시 12맵", "menu-project-training-examples", () => void newTrainingExamplesProject()),
+        item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
+        item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
@@ -532,15 +536,31 @@ async function newProject(): Promise<void> {
 
 async function newTrainingExamplesProject(): Promise<void> {
   if (!(await showConfirm({ title: "학습 예시 12맵", message: "현재 작업을 지우고 학습 예시 12맵 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
-  store.replace(createTrainingExamplesProject());
+  store.replaceProject(createTrainingExamplesProject());
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("학습 예시 12맵을 불러왔습니다 — 각 맵 이름의 주제대로 예시를 채워넣으세요", "ok");
 }
 
+async function newScarloxyPokemonDemoProject(): Promise<void> {
+  if (!(await showConfirm({ title: "Scarloxy 포켓몬풍 데모", message: "현재 작업을 지우고 Scarloxy 포켓몬풍 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replaceProject(createScarloxyPokemonDemoProject());
+  const project = store.getCurrent();
+  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  toast("Scarloxy 포켓몬풍 데모를 불러왔습니다 — 박사에게 스타터를 받고 남쪽 풀숲에서 포획해 보세요", "ok");
+}
+
+async function newScarloxyDemoProject(): Promise<void> {
+  if (!(await showConfirm({ title: "Scarloxy 데모", message: "현재 작업을 지우고 Scarloxy 몬스터 초원 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replaceProject(createScarloxyDemoProject());
+  const project = store.getCurrent();
+  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  toast("Scarloxy 몬스터 초원 데모를 불러왔습니다", "ok");
+}
+
 async function newSampleAdventureProject(): Promise<void> {
   if (!(await showConfirm({ title: "예제 프로젝트", message: "현재 작업을 지우고 예제 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
-  store.replace(createSampleAdventureProject());
+  store.replaceProject(createSampleAdventureProject());
   const project = store.getCurrent();
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
   toast("예제 프로젝트를 불러왔습니다", "ok");
@@ -680,7 +700,7 @@ function replaceProjectFromJson(json: string): void {
 }
 
 function replaceProject(project: Project): void {
-  store.replace(project);
+  store.replaceProject(project);
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null });
   toast("가져오기 완료", "ok");
 }

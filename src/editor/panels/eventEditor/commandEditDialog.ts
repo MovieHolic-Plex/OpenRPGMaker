@@ -61,10 +61,11 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         },
         replaceCommand: (path, command) => {
           if (path.length === 0) {
-            // 같은 종류의 필드 편집이면 폼을 재빌드하지 않고 프리뷰만 갱신(입력 포커스 보존).
-            const structural = stagedCommand.kind !== command.kind;
+            // 같은 종류의 단순 필드 편집이면 폼을 재빌드하지 않고 프리뷰만 갱신(입력 포커스 보존).
+            // 상점 아이템 목록/분기 토글처럼 폼 DOM 구조가 바뀌는 경우는 재빌드한다.
+            const prev = stagedCommand;
             stagedCommand = structuredClone(command);
-            if (structural) renderEditor();
+            if (shouldRerenderCommandForm(prev, stagedCommand)) renderEditor();
             else renderPreview();
             return;
           }
@@ -73,9 +74,9 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           if (replaceIndex === undefined) return;
           const list = commandContainer(stagedCommand, containerPath);
           if (!list) return;
-          const structural = list[replaceIndex]?.kind !== command.kind;
+          const prev = list[replaceIndex];
           list[replaceIndex] = structuredClone(command);
-          if (structural) renderEditor();
+          if (!prev || shouldRerenderCommandForm(prev, list[replaceIndex]!)) renderEditor();
           else renderPreview();
         },
         deleteCommand: (path) => {
@@ -188,4 +189,27 @@ export function openNewEventCommandKindDialog(kind: Command["kind"], onApply: (c
 function commandEditTitle(command: Command): string {
   if (command.kind === "m2Command") return m2CommandById(command.commandId)?.label ?? command.commandId;
   return commandLabel(command.kind);
+}
+
+/** 종류 변경 또는 폼 DOM 구조가 바뀌는 필드 변경이면 true — 프리뷰-only 갱신으로는 부족. */
+export function shouldRerenderCommandForm(prev: Command, next: Command): boolean {
+  if (prev.kind !== next.kind) return true;
+  if (prev.kind === "shop" && next.kind === "shop") {
+    return (
+      Boolean(prev.branchOnTransaction) !== Boolean(next.branchOnTransaction) ||
+      prev.itemIds.length !== next.itemIds.length ||
+      prev.itemIds.some((id, index) => id !== next.itemIds[index])
+    );
+  }
+  if (prev.kind === "choices" && next.kind === "choices") {
+    return (
+      (prev.cancelBehavior ?? "choice2") !== (next.cancelBehavior ?? "choice2") ||
+      prev.options.length !== next.options.length
+    );
+  }
+  if (prev.kind === "inputNumber" && next.kind === "inputNumber") {
+    // 자릿수 칩 active / 키패드 토글 등 폼 구조 동기화.
+    return prev.digits !== next.digits || Boolean(prev.showPad) !== Boolean(next.showPad);
+  }
+  return false;
 }

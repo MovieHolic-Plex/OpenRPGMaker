@@ -201,6 +201,8 @@ export function createProposalHost(options: {
   readonly controller: ChatController;
   readonly appendBubble: (role: "user" | "assistant" | "tool" | "system", text: string) => HTMLElement;
   readonly setStatus: (text: string, record?: boolean) => void;
+  /** 제안 적용/거부 직후 — AI 자동 펼침 패널을 다시 접을 때 사용. */
+  readonly onProposalSettled?: () => void;
 }): ProposalHostApi {
   const {
     proposalHost,
@@ -212,6 +214,7 @@ export function createProposalHost(options: {
     controller,
     appendBubble,
     setStatus,
+    onProposalSettled,
   } = options;
 
   let pendingProposalMessage: ProposalMessageState | null = null;
@@ -307,6 +310,7 @@ export function createProposalHost(options: {
       "ok",
     );
     controller.session?.rebaseProject(store.getCurrent());
+    onProposalSettled?.();
   };
 
   const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits = false): void => {
@@ -337,6 +341,7 @@ export function createProposalHost(options: {
     pendingProposalMessage = null;
     appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
     controller.session?.rebaseProject(store.getCurrent());
+    onProposalSettled?.();
   };
 
   const applyMetadataKeepSession = (calls: readonly ProposedCall[]): void => {

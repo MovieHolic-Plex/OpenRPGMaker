@@ -38,7 +38,13 @@ function renderLivePreview(page: EventPage): HTMLElement {
     dataset: { testid: "event-script-live-preview" },
   }) as HTMLDetailsElement;
   if (openLivePreview.has(page.id)) details.open = true;
-  const summary = el("summary", { text: "라이브 미리보기 (스텝 재생)" });
+  const summary = el("summary", {
+    class: "event-aux-chip-summary",
+    children: [
+      el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "▶" }),
+      el("span", { class: "event-aux-chip-label", text: "미리보기" }),
+    ],
+  });
   details.append(summary);
   details.addEventListener("toggle", () => {
     if (details.open) openLivePreview.add(page.id);
@@ -189,7 +195,15 @@ function renderFlowchart(page: EventPage): HTMLElement {
     dataset: { testid: "event-script-flowchart" },
   }) as HTMLDetailsElement;
   if (openFlowchart.has(page.id)) details.open = true;
-  details.append(el("summary", { text: "플로우차트 보기" }));
+  details.append(
+    el("summary", {
+      class: "event-aux-chip-summary",
+      children: [
+        el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "◎" }),
+        el("span", { class: "event-aux-chip-label", text: "플로우" }),
+      ],
+    })
+  );
   details.addEventListener("toggle", () => {
     if (details.open) openFlowchart.add(page.id);
     else openFlowchart.delete(page.id);

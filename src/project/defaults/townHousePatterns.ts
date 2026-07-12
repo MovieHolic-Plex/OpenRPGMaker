@@ -40,12 +40,12 @@ export function stampTownHouseStyle(
   switch (style) {
     case "courtyard":
       stampTemplateHouse(map, { approachHeight: 6, material: "stone", originX, originY, variant: "wide" });
-      stampTownMarket(map, originX + 1, originY + 12);
+      stampTownMarketCounter(map, originX + 1, originY + 12);
       stampUpperPattern(map, originX + 12, originY + 12, [[FLOWER, -1, FLOWER]]);
       return;
     case "multi":
       stampTemplateHouse(map, { approachHeight: 6, material: "plaster", originX, originY, variant: "compact" });
-      stampTownMarket(map, originX + 11, originY + 12);
+      stampTownMarketCounter(map, originX + 11, originY + 12);
       stampUpperPattern(map, originX + 1, originY + 13, [[BENCH_LEFT, BENCH_RIGHT], [FLOWER, -1]]);
       return;
     case "road":
@@ -79,11 +79,23 @@ export function stampTownCityPlot(map: GameMap, style: TownCityPlotStyle, origin
   }
 }
 
+const TABLE_L = 234;
+const TABLE_M = 235;
+const TABLE_R = 236;
+const WOOD_BOX = 237;
+
+/**
+ * 장터 부스 소품 — 카운터(234–236) + 상자. 천막(411–443) 사용 금지.
+ * @deprecated 이름 호환용. 신규 코드는 stampTownMarketCounter 사용.
+ */
 export function stampTownMarket(map: GameMap, x: number, y: number): void {
-  stampUpperPattern(map, x, y, [
-    [411, 412, 413],
-    [441, 442, 443],
-  ]);
+  stampTownMarketCounter(map, x, y);
+}
+
+/** 카운터 4칸 + 위 상자 (upper only) */
+export function stampTownMarketCounter(map: GameMap, x: number, y: number): void {
+  stampUpperPattern(map, x, y, [[TABLE_L, TABLE_M, TABLE_M, TABLE_R]]);
+  if (y > 0) stampUpperPattern(map, x, y - 1, [[WOOD_BOX, FLOWER, -1, WOOD_BOX]]);
 }
 
 function stampTemplateHouse(
