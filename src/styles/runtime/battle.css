@@ -642,6 +642,81 @@
   animation: battle-screen-shake 0.35s steps(4, end) 2;
 }
 
+/* Side-view pose presentation (data-battle-pose from runtime snapshot). */
+.battle-actor-group .battle-actor[data-battle-pose="attack"] {
+  transform: translate(-50%, -45%) translateX(-12px);
+  transition: transform 80ms steps(2, end);
+}
+.battle-actor-group .battle-actor[data-battle-pose="hit"] {
+  filter: brightness(1.35) saturate(0.7);
+  transform: translate(-50%, -45%) translateX(6px);
+}
+.battle-actor-group .battle-actor[data-battle-pose="defend"] {
+  transform: translate(-50%, -45%) translateX(4px);
+  filter: brightness(0.95);
+}
+.battle-actor[data-battle-pose="dead"],
+.battle-enemy[data-battle-pose="dead"] {
+  opacity: 0.35;
+  filter: grayscale(0.8);
+}
+.battle-enemy[data-battle-pose="attack"] {
+  transform: translate(-50%, -72%) translateX(10px);
+  transition: transform 80ms steps(2, end);
+}
+.battle-enemy[data-battle-pose="hit"] {
+  filter: brightness(1.35) saturate(0.7);
+  transform: translate(-50%, -72%) translateX(-8px);
+}
+
+/* Brief hit-stop freeze + flash on connect. */
+.battle-scene.battle-hit-stop {
+  animation: battle-hit-stop-pulse 120ms steps(2, end);
+}
+.battle-scene.battle-hit-stop .battle-field {
+  filter: contrast(1.08) brightness(1.05);
+}
+.battle-scene.battle-hit-stop-critical .battle-field {
+  filter: contrast(1.15) brightness(1.12) saturate(1.2);
+}
+@keyframes battle-hit-stop-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.012); }
+  100% { transform: scale(1); }
+}
+
+.battle-juice-hit {
+  animation: battle-juice-hit 0.35s steps(3, end);
+}
+.battle-juice-critical {
+  animation: battle-juice-critical 0.42s steps(4, end);
+}
+.battle-juice-miss {
+  animation: battle-juice-miss 0.3s steps(2, end);
+}
+.battle-juice-swing {
+  animation: battle-juice-swing 0.28s steps(2, end);
+}
+@keyframes battle-juice-hit {
+  0% { filter: brightness(1); transform: translate(-50%, -72%); }
+  40% { filter: brightness(1.8); transform: translate(-50%, -72%) translateX(4px); }
+  100% { filter: brightness(1); transform: translate(-50%, -72%); }
+}
+@keyframes battle-juice-critical {
+  0% { filter: brightness(1) hue-rotate(0deg); }
+  30% { filter: brightness(2) hue-rotate(-20deg); }
+  100% { filter: brightness(1) hue-rotate(0deg); }
+}
+@keyframes battle-juice-miss {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes battle-juice-swing {
+  0% { transform: translate(-50%, -45%); }
+  50% { transform: translate(-50%, -45%) translateX(-12px); }
+  100% { transform: translate(-50%, -45%); }
+}
+
 .battle-scene.battle-screen-flash::before {
   animation: battle-screen-flash 0.22s steps(2, end) 3;
   background: rgba(180, 190, 255, 0.45);
@@ -2975,4 +3050,192 @@
 .battle-command,
 .battle-enemy-list-row {
   cursor: pointer;
+}
+
+/* =========================================================================
+   포켓몬풍 전투 UI 스킨 — system.battleUiStyle = "pokemon"
+   (battleDom.ts가 .battle-scene에 data-battle-ui-style을 스탬프한다)
+   주의: 위쪽 '모던' 스킨이 레이아웃을 !important로 강제하므로, 여기서도
+   레이아웃 속성은 !important + 더 높은 특이성으로 이긴다.
+   레이아웃: 좌상단 적 정보 박스 + 필드 우하단 아군 정보 박스(플로팅),
+   하단 바는 좌측 메시지 창 / 우측 2열 명령 그리드.
+   ========================================================================= */
+
+.battle-scene[data-battle-ui-style="pokemon"] {
+  --battle-hud-height: 74px;
+  --pkmn-panel-bg: linear-gradient(180deg, #fdfdf4 0%, #edeadb 100%);
+  --pkmn-panel-border: #45443c;
+  --pkmn-text: #2e3238;
+  --pkmn-muted: #70747a;
+  --pkmn-accent: #e43b44;
+  grid-template-columns: minmax(0, 1fr) 128px !important;
+  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
+}
+
+/* 트룹 이름 배너는 감춘다 — 적 정보 박스가 이름을 담당 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-title {
+  display: none !important;
+}
+
+/* --- 좌상단 적 정보 박스 (모던 스킨이 숨긴 적 목록 패널을 부활·재배치) --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
+  display: block !important;
+  position: absolute !important;
+  /* absolute 그리드 자식은 배정된 그리드 영역이 containing block이 된다 — 씬 전체로 확장 */
+  grid-column: 1 / -1 !important;
+  grid-row: 1 / -1 !important;
+  top: 4px !important;
+  left: 4px !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: min(46%, 132px) !important;
+  z-index: 8 !important;
+  background: var(--pkmn-panel-bg);
+  border: 2px solid var(--pkmn-panel-border);
+  border-image: none;
+  border-radius: 8px 8px 8px 2px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  padding: 2px 5px 3px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--pkmn-text) !important;
+  text-shadow: none !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::before {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
+  color: var(--pkmn-muted) !important;
+  margin-left: 5px;
+}
+
+/* --- 필드 우하단 아군 정보 박스 --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party {
+  position: absolute !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 1 / -1 !important;
+  right: 4px !important;
+  left: auto !important;
+  top: auto !important;
+  bottom: calc(var(--battle-hud-height) + 7px) !important;
+  width: min(52%, 148px) !important;
+  height: auto !important;
+  z-index: 8 !important;
+  grid-template-rows: none !important;
+  grid-auto-rows: auto !important;
+  background: var(--pkmn-panel-bg);
+  border: 2px solid var(--pkmn-panel-border);
+  border-image: none;
+  border-radius: 8px 2px 8px 8px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  padding: 2px 5px 3px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-state,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-atb-label {
+  color: var(--pkmn-text) !important;
+  text-shadow: none !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp {
+  color: var(--pkmn-muted) !important;
+}
+
+/* --- 하단 바: 좌측 메시지 창 --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
+  margin: 2px 1px 2px 2px !important;
+  background: linear-gradient(180deg, #262b33 0%, #1c2027 100%);
+  border: 2px solid #5b636d;
+  border-image: none;
+  border-radius: 8px;
+  color: #f4f6f8;
+  text-shadow: none;
+  align-content: center;
+}
+
+/* 클래식은 명령 단계에서 메시지 창을 숨기지만, 포켓몬풍은 항상 하단 좌측을 채운다 */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="command"] .battle-message-window {
+  display: grid !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-message-window {
+  display: none !important;
+}
+
+/* --- 하단 바: 우측 명령 그리드 --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
+  margin: 2px 2px 2px 1px !important;
+  background: var(--pkmn-panel-bg);
+  border: 2px solid var(--pkmn-panel-border);
+  border-image: none;
+  border-radius: 8px;
+  padding: 3px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+  gap: 2px !important;
+}
+
+/* 서브메뉴(기술/아이템/포획 목록)는 행이 길어 1열 + 자동 높이로 전환 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: none !important;
+  grid-auto-rows: minmax(9px, auto) !important;
+  gap: 1px !important;
+  overflow-y: auto;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  background: #ffffff;
+  border: 2px solid #b9b7a6 !important;
+  border-radius: 6px !important;
+  color: var(--pkmn-text);
+  text-shadow: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
+  color: var(--pkmn-text);
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
+  color: var(--pkmn-muted);
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command::before {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu .battle-command:first-of-type {
+  background: #fff6f0;
+  border-color: var(--pkmn-accent) !important;
+  outline: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-submenu-header {
+  color: var(--pkmn-muted);
+  text-shadow: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-prompt {
+  border-bottom-color: #d4d2c4;
+  color: var(--pkmn-accent);
+  text-shadow: none;
+}
+
+/* 적 스프라이트를 살짝 키워 1:1 대치 느낌 강화 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image {
+  transform: scale(1.12);
+  transform-origin: 50% 100%;
 }

@@ -46,8 +46,14 @@ export function playBattle(
       switches: scene.session.switches,
       variables: scene.session.variables,
       inventory: scene.session.inventory,
+      gold: scene.session.gold,
+      partyActorIds: scene.session.partyActorIds,
+      actorSkillIds: scene.session.actorSkillIds,
+      actorExperience: scene.session.actorExperience,
+      actorLevels: scene.session.actorLevels,
       gameTime: scene.session.gameTime,
     },
+    // Terrain at the player's tile feeds battle backdrop when troop has no preview.
     captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
     onMonsterCaptured: (capture) => {
       giveMonster(project, scene.session, {

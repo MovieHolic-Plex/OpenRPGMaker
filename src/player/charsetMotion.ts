@@ -1,5 +1,5 @@
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
-  EASYRPG_CHARSET_ASSETS,
   charsetFrameIndex,
   decodeCharsetFrameIndex,
   type CharsetDirection,
@@ -11,7 +11,7 @@ export const NPC_WALK_FRAME_MS = 80;
 const WALK_PATTERNS = [0, 1, 2, 1] as const;
 
 export function isEasyRpgCharsetTextureKey(textureKey: string): boolean {
-  return EASYRPG_CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
+  return CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
 }
 
 export function charsetWalkFrameIndex(
