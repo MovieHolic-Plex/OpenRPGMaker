@@ -7,7 +7,7 @@ import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
 import { setTerrainTag } from "@/editor/tilesetActions";
 import { TILE_SIZE } from "@/assets/bundled";
-import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
 import { renderTilePaletteClusters, type PaletteViewMode } from "@/editor/panels/tilePaletteClusters";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
@@ -210,7 +210,7 @@ function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTML
   const label =
     selectedTile < 0 || selectedTile >= tileset.count
       ? "없음"
-      : `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`;
+      : `${selectedTile} ${quickTileName(tileset, selectedTile)}`;
   return el("div", {
     class: "selected-tile-status",
     text: label,
@@ -369,7 +369,7 @@ function makeQuickTilePicker(
   const matches = quickTileIndexes(tileset).slice(0, 96);
   for (const index of matches) {
     // 빠른 선택은 검색 편의상 전 레이어를 보여 주되, 다른 레이어 타일은 흐리게 표시한다.
-    grid.append(makeQuickTileCell(index, selectedTile === index, tileVisibleOnLayer(tileset, index, layer)));
+    grid.append(makeQuickTileCell(tileset, index, selectedTile === index, tileVisibleOnLayer(tileset, index, layer)));
   }
   if (matches.length === 0) {
     grid.append(el("div", { class: "empty-hint quick-tile-empty", text: "검색 결과 없음" }));
@@ -582,25 +582,41 @@ function writePaletteStorage(key: string, value: string): void {
   localStorage.setItem(key, value);
 }
 
+// combined_town 전용 정적 테이블(describeChipsetTile)을 다른 칩셋에 쓰면 오답 —
+// 비기본 칩셋(실내 등)은 프로젝트 tileMeta 라벨을 쓴다. (2026-07-12 라벨 통일 라운드)
+function quickTileName(tileset: TilesetDef, index: number): string {
+  if (isDefaultTilesetTexture(tileset)) return tileDisplayLabelForIndex(index);
+  return tileset.tileMeta?.[index]?.label?.trim() || `타일 ${index}`;
+}
+
 function quickTileIndexes(tileset: TilesetDef): readonly number[] {
   const normalizedQuery = tileSearchQuery.trim().toLowerCase();
   const source =
     activeTileCategory === "recent"
       ? recentTiles.filter((index) => index < tileset.count)
       : Array.from({ length: tileset.count }, (_, index) => index);
+  const combined = isDefaultTilesetTexture(tileset);
   return source.filter((index) => {
-    const tile = describeChipsetTile(index);
-    if (!matchesCategory(activeTileCategory, tile.tags, tile.usage, tileset.priority[index] ?? "lower")) return false;
+    if (combined) {
+      const tile = describeChipsetTile(index);
+      if (!matchesCategory(activeTileCategory, tile.tags, tile.usage, tileset.priority[index] ?? "lower")) return false;
+      if (normalizedQuery.length === 0) return true;
+      return [
+        String(index),
+        tile.label,
+        tile.description,
+        tile.aiLabel,
+        tile.key,
+        tile.tags.join(" "),
+        tileDisplayLabelForIndex(index),
+      ].some((value) => value.toLowerCase().includes(normalizedQuery));
+    }
+    const meta = tileset.tileMeta?.[index];
+    const tags = meta?.tags ?? (meta?.role ? [meta.role] : []);
+    if (!matchesCategory(activeTileCategory, tags, meta?.role ?? "", tileset.priority[index] ?? "lower")) return false;
     if (normalizedQuery.length === 0) return true;
-    return [
-      String(index),
-      tile.label,
-      tile.description,
-      tile.aiLabel,
-      tile.key,
-      tile.tags.join(" "),
-      tileDisplayLabelForIndex(index),
-    ].some((value) => value.toLowerCase().includes(normalizedQuery));
+    return [String(index), meta?.label ?? "", meta?.description ?? "", meta?.role ?? "", tags.join(" ")]
+      .some((value) => value.toLowerCase().includes(normalizedQuery));
   });
 }
 
@@ -619,8 +635,10 @@ function matchesCategory(
   return usage === "decoration" || layer === "upper";
 }
 
-function makeQuickTileCell(index: number, active: boolean, currentLayer: boolean): HTMLButtonElement {
-  const name = `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`;
+function makeQuickTileCell(tileset: TilesetDef, index: number, active: boolean, currentLayer: boolean): HTMLButtonElement {
+  const name = isDefaultTilesetTexture(tileset)
+    ? `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`
+    : quickTileName(tileset, index);
   return el("button", {
     class: "quick-tile-cell" + (active ? " active" : "") + (currentLayer ? "" : " muted"),
     attrs: {

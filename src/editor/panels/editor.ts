@@ -1,5 +1,7 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
+import { dismissCoachMarks, maybeStartBasicCoachMarks } from "@/editor/coachMarks";
+import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import {
   applyEditorUiModeClasses,
   getEditorChrome,
@@ -10,6 +12,7 @@ import {
   ensureCurrentMapLock,
   getMapEditLockStatus,
   isMapEditLockTakeoverImmediate,
+  lockOwnerPhrase,
   mapEditLockLastActivityText,
   subscribeMapEditLocks,
   takeoverMapLock,
@@ -183,7 +186,13 @@ export function renderEditor(main: HTMLElement): void {
   unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
   unsubEditor = editorState.subscribe(() => refreshPanels());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
-  unsubUiMode = subscribeEditorUiMode(() => applyEditorUiModeLayout());
+  unsubUiMode = subscribeEditorUiMode(() => {
+    applyEditorUiModeLayout();
+    // 코치마크는 기본 모드 전용 — 투어 중 전문가로 전환하면 닫는다(미완주는 다음 방문에 재개).
+    if (getEditorUiMode() !== "basic") dismissCoachMarks();
+  });
+  installSelectionChipHint();
+  maybeStartBasicCoachMarks();
 }
 
 /** Re-apply basic/expert density without tearing down Phaser or AI session. */
@@ -303,16 +312,46 @@ function applyChatDockLayout(): void {
 
 // 저장 스킵/로컬 저장 모드 배너: 임시 URL 모드 등에서
 // 저장이 조용히 스킵되어 세션 작업물이 통째로 증발하던 문제 — 모드를 화면에 명시한다.
+// 임시 세션 배너는 오류가 아니라 정보 — 인라인 '내보내기' + 닫기(세션 동안 유지)를 제공한다.
+let persistenceBannerDismissed = false;
+
 function renderPersistenceModeBanner(): HTMLElement | null {
   const status = store.getDbPersistenceStatus();
   if (status.kind !== "disabled") return null;
   if (status.reason === "dev-showcase") {
     const saveSkipped = isSaveSkippedLocation();
-    return el("div", {
+    if (saveSkipped && persistenceBannerDismissed) return null;
+    const banner = el("div", {
       class: `persistence-mode-banner ${saveSkipped ? "is-save-skipped" : "is-local-only"}`,
       dataset: { testid: "save-skip-banner" },
-      text: persistenceModeBannerText(status.reason, saveSkipped),
     });
+    banner.append(el("span", { class: "persistence-mode-banner-text", text: persistenceModeBannerText(status.reason, saveSkipped) }));
+    if (saveSkipped) {
+      banner.append(
+        el("button", {
+          class: "persistence-mode-banner-action",
+          text: "내보내기",
+          attrs: { type: "button", title: "프로젝트를 파일로 내보내 보존합니다" },
+          dataset: { testid: "save-skip-banner-export" },
+          on: {
+            click: () => void import("@/editor/panels/menu").then((menu) => menu.exportProjectPackage()),
+          },
+        }),
+        el("button", {
+          class: "persistence-mode-banner-close",
+          text: "✕",
+          attrs: { type: "button", title: "이 세션 동안 배너 숨기기", "aria-label": "임시 세션 배너 닫기" },
+          dataset: { testid: "save-skip-banner-close" },
+          on: {
+            click: () => {
+              persistenceBannerDismissed = true;
+              banner.remove();
+            },
+          },
+        }),
+      );
+    }
+    return banner;
   }
   // load-failed(복구 모드): 원격 저장이 꺼진 채 편집 중임을 알린다.
   return el("div", {
@@ -324,7 +363,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
 
 export function persistenceModeBannerText(reason: string, saveSkipped: boolean): string {
   if (reason === "dev-showcase" && saveSkipped) {
-    return "임시 세션 — 작업이 저장되지 않습니다. 보존하려면 '내보내기'를 사용하세요.";
+    return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
   }
   if (reason === "dev-showcase") return "개발 모드 — 원격 DB 대신 이 브라우저에만 저장됩니다.";
   return "복구 모드 — 원격 DB 저장이 꺼져 있습니다. 상태바의 'DB 연동'에서 다시 연결하거나 '내보내기'로 백업하세요.";
@@ -456,7 +495,7 @@ function renderMapEditLockBanner(container: HTMLElement): void {
   container.append(
     el("span", {
       class: "map-lock-banner-text",
-      text: `${status.ownerLabel} 세션이 편집 중 · ${mapEditLockLastActivityText(status)}`,
+      text: `${lockOwnerPhrase(status.ownerLabel)} · ${mapEditLockLastActivityText(status)}`,
       dataset: { testid: "map-lock-banner-text" },
     }),
     el("button", {
@@ -545,7 +584,7 @@ async function requestMapLockTakeover(status: Extract<MapEditLockStatus, { reado
     // 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체.
     const confirmed = await showConfirm({
       title: "편집 권한 가져오기",
-      message: `${status.ownerLabel} 세션이 최근 활동했습니다. 편집 권한을 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
+      message: `${lockOwnerPhrase(status.ownerLabel)}이고 최근까지 활동했습니다. 편집 권한을 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
       confirmLabel: "가져오기",
     });
     if (!confirmed) return;
@@ -591,18 +630,20 @@ function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): strin
     case "held":
       return `${status.mapName} 편집 권한을 이 브라우저가 잡고 있습니다.`;
     case "locked":
-      return `${status.mapName} 맵은 ${status.ownerLabel} 세션이 편집 중입니다. ${mapEditLockLastActivityText(status)}.`;
+      return `${status.mapName} 맵은 지금 ${lockOwnerPhrase(status.ownerLabel)}입니다. ${mapEditLockLastActivityText(status)}.`;
     case "unavailable":
       return `${status.mapName} 잠금 확인 실패: ${status.message}. 편집은 허용하지만 수동 저장 충돌 검사는 유지됩니다.`;
   }
 }
 
 function layerStatusLabel(layer: Layer): string {
+  // 기본 모드는 레일과 같은 결과 중심 용어(바닥/장식)를 쓴다 — 표면마다 용어가 다르면 초보가 헤맨다.
+  const basic = getEditorUiMode() === "basic";
   switch (layer) {
     case "lower":
-      return "하위 레이어";
+      return basic ? "바닥 레이어" : "하위 레이어";
     case "upper":
-      return "상위 레이어";
+      return basic ? "장식 레이어" : "상위 레이어";
     case "event":
       return "이벤트 레이어";
   }

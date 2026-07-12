@@ -161,9 +161,15 @@ function tileCandidates(tileset: TilesetDef | undefined): ResourceCandidate[] {
       if (!label && !description && !(meta.tags?.length)) return;
       const entry = byTile.get(tile) ?? { label: label || `타일 ${tile}`, tags: [] };
       if (label) {
-        // 사용자 라벨이 우선 — 기존(번들) 라벨은 태그로 강등해 계속 검색되게 한다.
-        if (entry.label !== label) entry.tags.push(entry.label);
-        entry.label = label;
+        // 사용자 수기 라벨만 큐레이션(번들 시맨틱)을 이긴다 — 하네스 시드 라벨(bundled-default)은
+        // 태그로 강등해 계속 검색되게 한다(구버전은 source 불문 밀어내서 큐레이션이 가려졌음).
+        const userAuthored = meta.source === "user" || meta.origin === "user";
+        if (userAuthored) {
+          if (entry.label !== label) entry.tags.push(entry.label);
+          entry.label = label;
+        } else if (entry.label !== label) {
+          entry.tags.push(label);
+        }
       }
       if (description) entry.tags.push(description);
       entry.tags.push(...(meta.tags ?? []));

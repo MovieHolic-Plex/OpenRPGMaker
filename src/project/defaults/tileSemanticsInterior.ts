@@ -41,18 +41,19 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
 
   // ── 실외 지형(잔디/흙/모래/자갈) — 이 칩셋은 마을 외곽+실내 겸용 ────────────────
   ...entries([7, 127, 247, 361, 364, 240, 241, 242, 270, 271, 272, 300, 301, 302, 330, 331, 332], "잔디", "terrain", "passable", ["grass", "풀밭", "야외"]),
-  ...entries([243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335], "짙은 잔디 경계", "terrain", "passable", ["grass", "dark grass", "풀밭", "경계"]),
-  ...entries([6, 8, 36, 37, 38, 66, 67, 68, 96, 97, 98], "흙땅", "terrain", "passable", ["dirt", "흙", "맨땅"]),
+  ...entries([243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335], "짙은 잔디 경계", "terrain", "passable", ["grass", "dark grass", "풀밭", "경계", "월드맵"]),
+  ...entries([6, 8, 36, 37, 38, 66, 67, 68, 96, 97, 98], "흙땅", "terrain", "passable", ["dirt", "흙", "맨땅", "월드맵"]),
   ...entries([9, 39, 69, 99], "모래-잔디 경계", "terrain", "passable", ["sand", "모래", "경계"]),
-  ...entries([10, 11, 40, 41, 70, 71, 100, 101], "모래밭", "terrain", "passable", ["sand", "모래", "사장"]),
+  ...entries([10, 11, 40, 41, 70, 71, 100, 101], "모래밭", "terrain", "passable", ["sand", "모래", "사장", "월드맵"]),
   ...entries([246, 248, 276, 277, 278, 306, 307, 308, 336, 337, 338], "자갈 포장 바닥", "terrain", "passable", ["cobblestone", "포장", "자갈", "돌길"]),
   ...entries([252, 253], "이끼 낀 돌바닥", "terrain", "passable", ["moss", "이끼", "돌바닥"]),
   ...entries([132], "잡석 바닥", "terrain", "passable", ["rubble", "잡석", "자갈"]),
   ...entries([133], "꽃 자갈땅", "terrain", "passable", ["flower", "꽃", "자갈"]),
   ...entries([192, 193], "거친 흙바닥", "terrain", "passable", ["dirt", "흙", "거친 땅"]),
   ...entries([222, 223], "새싹 밭", "terrain", "passable", ["farm", "garden", "밭", "새싹", "텃밭"]),
-  ...entries([360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452], "산울타리 수풀", "tree", "solid", ["hedge", "bush", "덤불", "수풀", "울타리"]),
-  ...entries([363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "흙무더기 군집", "terrain", "solid", ["mound", "흙무더기", "두둑"]),
+  // 2026-07-12 사용자 정정: 이 시트는 월드맵과 공용 — 수풀 블롭은 '숲', 흙무더기는 '산' 표현.
+  ...entries([360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452], "숲 수풀(월드맵 겸용)", "tree", "solid", ["forest", "숲", "수풀", "덤불", "월드맵"]),
+  ...entries([363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "산 둔덕(월드맵 겸용)", "terrain", "solid", ["mountain", "산", "둔덕", "흙무더기", "월드맵"]),
   one(282, "바위 더미", "decoration", "solid", ["rock", "바위", "돌무더기"]),
   one(283, "절벽 바위(어둠)", "wall", "solid", ["rock", "cliff", "바위", "절벽"]),
 
@@ -136,7 +137,8 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
 
   // ── 투명 소품(분홍 배경, upper 레이어) — 벽걸이 ─────────────────────────────────
   one(24, "벽 횃불", "decoration", "passable", ["torch", "횃불", "조명", "벽걸이"]),
-  one(26, "작은 명패", "decoration", "passable", ["plaque", "명패", "액자", "벽걸이"]),
+  // 2026-07-12 사용자 판정(×24 vision 부합): 명패가 아니라 벽 스위치 — 금속판+함몰 슬롯+돌기.
+  one(26, "벽 스위치(레버)", "decoration", "passable", ["switch", "lever", "스위치", "레버", "장치", "벽걸이"]),
   one(27, "무기점 간판", "sign", "passable", ["sign", "간판", "무기", "weapon shop", "상점"]),
   one(28, "방어구점 간판", "sign", "passable", ["sign", "간판", "방어구", "armor shop", "상점"]),
   one(29, "잡화점 간판", "sign", "passable", ["sign", "간판", "잡화", "item shop", "상점"]),
@@ -204,8 +206,8 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
   one(298, "의자(좌향)", "furniture", "passable", ["chair", "의자", "측면"]),
   one(87, "갑옷 전시대 상단", "decoration", "passable", ["armor", "갑옷", "전시", "동상"]),
   one(117, "갑옷 전시대 하단", "decoration", "passable", ["armor", "갑옷", "전시", "동상"]),
-  one(88, "흉상 상단", "decoration", "passable", ["bust", "흉상", "조각상", "동상"]),
-  one(118, "흉상 받침", "decoration", "passable", ["bust", "흉상", "조각상", "받침"]),
+  one(88, "여자 흉상 상단", "decoration", "passable", ["bust", "여자 흉상", "조각상", "동상"]),
+  one(118, "여자 흉상 받침", "decoration", "passable", ["bust", "여자 흉상", "조각상", "받침"]),
   one(89, "돌기둥 상단", "decoration", "passable", ["pillar", "돌기둥", "기둥"]),
   one(119, "돌기둥 하단", "decoration", "passable", ["pillar", "돌기둥", "기둥"]),
   one(318, "붉은 커튼 좌", "decoration", "passable", ["curtain", "커튼", "장막"]),
@@ -262,15 +264,36 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
   // 더 있는 형태로 추정 — 2026-07-12 경계 검사: 478 아래변 배경 0/16). 소스 재로드 시 확장 후보.
   one(446, "붉은 의자 등받이", "furniture", "passable", ["throne", "의자", "왕좌", "등받이"]),
   one(476, "붉은 의자 좌석(하단 절단)", "furniture", "passable", ["throne", "의자", "왕좌", "좌석"]),
-  ...entries([448, 449, 478, 479], "대형 왕좌(하단 행 절단)", "furniture", "passable", ["throne", "왕좌", "옥좌", "왕"]),
+  // 2026-07-12 사용자 정정: 왕좌는 3×2 — 좌열(447/477)이 RTP에서 잘려 빈칸이었고(피아노와 같은
+  // 오프셋 결손, 478 왼변 개방 0/16), 449/479 미러로 보완 작화해 완성했다.
+  ...entries([447, 448, 449, 477, 478, 479], "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)", "furniture", "passable", ["throne", "왕좌", "옥좌", "왕"]),
   one(470, "해골 유골", "decoration", "passable", ["skull", "해골", "유골", "뼈"]),
   one(471, "곡물 자루", "decoration", "passable", ["grain", "곡물", "자루", "포대", "창고"]),
   one(472, "나무 사다리", "decoration", "passable", ["ladder", "사다리", "창고"]),
   one(473, "장대 사다리", "decoration", "passable", ["ladder", "사다리", "장대"]),
-  // 357 = 피아노 왼쪽 칸이어야 할 자리(사용자 확인). 2026-07-12 검증: 우리 시트는 EasyRPG RTP
-  // ChipSet/Interior.png와 SHA-256 동일 — 즉 RTP 자체가 왼쪽이 잘린 2칸 피아노를 담고 있다
-  // (358 왼변은 건반이 중간에 잘린 채 개방, 357은 빈칸 — 3칸 원화를 1칸 밀어 넣은 클론 오프셋 실수 추정).
-  // 복구하려면 소스 재로드가 아니라 357에 왼쪽 측판을 보완 작화해야 한다(359 미러 기반 후보).
-  one(357, "빈 타일(피아노 좌 슬롯 — RTP 자체 결손, 보완 작화 후보)", "decoration", "passable", ["empty", "빈 타일", "피아노", "누락"]),
-  ...entries([447, 477], "빈 투명 타일", "decoration", "passable", ["empty", "빈 타일", "투명"]),
+  // 357 = 피아노 왼쪽 측판. EasyRPG RTP 원본은 이 칸이 비고 358 왼변이 잘려 있었다(클론 오프셋 실수
+  // 추정 — SHA-256으로 RTP 동일본 확인). 2026-07-12 보완 작화: 359 좌우 미러로 채움(이음새 diff 313).
+  one(357, "피아노 좌(보완 작화)", "furniture", "passable", ["piano", "organ", "피아노", "오르간", "악기"]),
+
+  // ── 2026-07-12 fable 감사: 잔여 미분류 18타일 등재(480/480 완료) ─────────────
+  // 책장은 3×3 세트(좌 18/48/78 · 중 19/49/79 가로 반복 · 우 20/50/80).
+  one(18, "책장 상단(좌)", "furniture", "solid", ["bookshelf", "책장", "상판", "서재"]),
+  one(19, "책장 상단(중·가로 반복)", "furniture", "solid", ["bookshelf", "책장", "상판", "반복"]),
+  one(20, "책장 상단(우)", "furniture", "solid", ["bookshelf", "책장", "상판", "서재"]),
+  one(48, "책장 중단(좌·책 2단)", "furniture", "solid", ["bookshelf", "책장", "책", "서재"]),
+  one(49, "책장 중단(중·가로 반복)", "furniture", "solid", ["bookshelf", "책장", "책", "반복"]),
+  one(50, "책장 중단(우)", "furniture", "solid", ["bookshelf", "책장", "책", "서재"]),
+  one(78, "책장 하단(좌·서랍)", "furniture", "solid", ["bookshelf", "책장", "서랍", "서재"]),
+  one(79, "책장 하단(중·가로 반복)", "furniture", "solid", ["bookshelf", "책장", "서랍", "반복"]),
+  one(80, "책장 하단(우)", "furniture", "solid", ["bookshelf", "책장", "서랍", "서재"]),
+  // 연민트 벽면(가칭) 오토타일 3×4(9~11열×4~7행): 하단 테두리 없는 수직면(벽 방식) — 재질 명명 대기.
+  one(130, "잔디(연민트 벽면 오토타일 배경 슬롯)", "floor", "passable", ["잔디", "오토타일", "배경 슬롯"]),
+  one(131, "연민트 벽면(가칭) 오목 코너 소스", "wall", "solid", ["벽면", "오토타일", "오목 코너"]),
+  one(160, "연민트 벽면(가칭) 상단 캡(중)", "wall", "solid", ["벽", "몰딩", "상단"]),
+  one(161, "연민트 벽면(가칭) 상단 캡(우)", "wall", "solid", ["벽", "몰딩", "상단"]),
+  one(190, "연민트 벽면(가칭) 몸통(중·세로 반복)", "wall", "solid", ["벽", "몸통", "반복"]),
+  one(191, "연민트 벽면(가칭) 몸통(우)", "wall", "solid", ["벽", "몸통"]),
+  one(220, "연민트 벽면(가칭) 몸통(중·세로 반복 — 190과 동일)", "wall", "solid", ["벽", "몸통", "반복"]),
+  one(221, "연민트 벽면(가칭) 몸통(우·음영 변형)", "wall", "solid", ["벽", "몸통"]),
+  one(250, "잔디(청록 카펫 오토타일 배경 슬롯 — 130과 동일)", "floor", "passable", ["잔디", "오토타일", "배경 슬롯"]),
 ];

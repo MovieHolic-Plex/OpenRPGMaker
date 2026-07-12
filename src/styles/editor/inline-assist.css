@@ -111,6 +111,46 @@
   50% { opacity: 0.55; }
 }
 
+/* 팔레트 항목은 슬래시 드로어(.ai-slash-item)의 14px+1fr 그리드를 쓰지 않는다 —
+   리스트가 flex 컨테이너가 아니라 버튼이 shrink-to-fit으로 붕괴해 라벨이 한 글자만 남는다. */
+.command-palette-window.ai-skill-palette-window {
+  max-width: min(560px, 92vw);
+}
+
+.command-palette-list {
+  display: flex;
+  flex-direction: column;
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+}
+
+.command-palette-item.ai-slash-item {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.command-palette-item .ai-slash-item-name {
+  flex: 0 1 auto;
+}
+
+.command-palette-item .ai-slash-item-desc {
+  color: var(--editor-text-muted, #9aa8c7);
+  display: block;
+  flex: 1 1 auto;
+  font-size: 11px;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-palette-hotkey {
+  flex: 0 0 auto;
+}
+
 .command-palette-group {
   color: var(--editor-text-soft, #7f8db0);
   font: 700 10px/1.2 var(--font-ui, system-ui, sans-serif);

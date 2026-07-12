@@ -12,6 +12,7 @@ import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSub
 import {
   applyBattleDirectorState,
   battleMessageWindow,
+  battleResultRewardRowCount,
   battleEventDirectorState,
   battleResultPanel,
   chargingDirectorState,
@@ -22,10 +23,11 @@ import {
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
-import { battleField, battlePartyStatus, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
+import { battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
 import {
   BATTLE_RESULT_HOLD_MS,
+  BATTLE_RESULT_STAGE_MS,
   createBattleSequencer,
   type DamageFeedback,
 } from "@/player/battleSequencer";
@@ -108,6 +110,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   };
 
   const sequencer = createBattleSequencer(options.runtime, {
+    onCaptureCinematic(targetId, success) {
+      return playCaptureCinematic(field, targetId, success);
+    },
     onDirectorState(state) {
       directorState = battleEventDirectorState(options.runtime.snapshot(), state);
     },
@@ -142,6 +147,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   root.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
+    const snapshot = options.runtime.snapshot();
+    // 결과 화면에서는 어디를 클릭해도 종료 확정("클릭으로 계속" 프롬프트와 확인 버튼 포함).
+    if (snapshot.result) {
+      if (!resultSent) {
+        resultSent = true;
+        window.clearTimeout(resultTimer ?? undefined);
+        options.onResult(snapshot.result, snapshot);
+      }
+      return;
+    }
     const target = event.target.closest<HTMLElement>(".battle-enemy[data-battle-targetable='true']");
     if (!target?.dataset.testid) return;
     confirmTargetSelection(target.dataset.testid);
@@ -256,12 +271,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       resultHost.replaceChildren();
       return;
     }
+    // 결과 화면 동안은 뒤늦게 뜬 데미지 팝업 잔상을 매 동기화마다 걷어낸다.
+    for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
     let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
     if (!panel) {
       const created = battleResultPanel(snapshot, resultRevealStage);
       if (!created) return;
       resultHost.replaceChildren(created);
       panel = created;
+      // 뒤늦게 살아있는 데미지 팝업이 결과 화면 위로 새지 않도록 정리하고, 결과 연출을 1회 발화.
+      for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
+      emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
+      flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }
@@ -270,19 +291,30 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const result = snapshot.result;
     if (!result || resultSent) return;
     resultSent = true;
+    // 보상 행이 모두 공개될 시간을 보장한 뒤에도 잠시 머문다(클릭/Z로 즉시 종료 가능).
+    const revealMs = (battleResultRewardRowCount(snapshot) + 1) * BATTLE_RESULT_STAGE_MS;
     resultTimer = window.setTimeout(() => {
       options.onResult(result, snapshot);
-    }, BATTLE_RESULT_HOLD_MS);
+    }, Math.max(BATTLE_RESULT_HOLD_MS, revealMs + BATTLE_RESULT_HOLD_MS));
   }
 
   function runActorCommand(command: ActorCommand): void {
     if (sequenceBusy) return;
     const before = options.runtime.snapshot();
+    emitSwingJuice(command, before);
     options.runtime.performActorCommand(command);
     const afterCommand = options.runtime.snapshot();
     submenu = null;
     panelOptions.submenu = null;
     sequencer.runAfterActorCommand(command, before, afterCommand);
+  }
+
+  function emitSwingJuice(command: ActorCommand | TargetedActorCommand, snapshot: BattleSnapshot): void {
+    if (command.kind !== "attack" && command.kind !== "skill") return;
+    const actorNode = snapshot.activeActorId
+      ? findBattlerNode(field, snapshot.activeActorId)
+      : null;
+    emitBattleJuice("attack-swing", actorNode ?? undefined);
   }
 
   function beginTargetCommand(command: TargetedActorCommand): void {
@@ -303,6 +335,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const pending = before.targetSelection?.command;
     if (before.phase !== "targetSelect" || !pending) return;
     const command = concreteTargetCommand(pending, enemyId);
+    emitSwingJuice(command, before);
     options.runtime.selectTargetEnemy(enemyId);
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {

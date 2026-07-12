@@ -178,12 +178,13 @@ function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
   return COMBINED_TOWN_TILE_LABELS;
 }
 
-// 타일의 "알려진 라벨"(사용자 메타 > 번들 시맨틱). 지형 템플릿 조회의 라벨 조인 등에 쓴다.
+// 타일의 "알려진 라벨"(사용자 수기 메타 > 번들 시맨틱 > 하네스 시드). 지형 템플릿 조회의 라벨 조인 등에 쓴다.
 export function knownTileLabel(tileset: TilesetDef, tile: number): string | undefined {
   const meta = tileset.tileMeta?.[tile];
-  const userLabel = meta?.label.trim();
-  if (userLabel) return userLabel;
-  return bundledTileLabels(tileset).get(tile);
+  const metaLabel = meta?.label.trim();
+  // 사용자 수기 라벨만 큐레이션을 이긴다 — 하네스 시드 라벨은 큐레이션과 같거나(실내) 그룹 조립 라벨이다.
+  if (metaLabel && (meta?.source === "user" || meta?.origin === "user")) return metaLabel;
+  return bundledTileLabels(tileset).get(tile) ?? (metaLabel || undefined);
 }
 
 // ── get_tile_info ────────────────────────────────────────────────

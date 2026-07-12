@@ -1,6 +1,8 @@
 import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
+import type { MonsterInstance } from "@/project/session";
+import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
@@ -34,6 +36,10 @@ export interface MutableBattler {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   readonly classId?: string;
+  // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.
+  // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
+  readonly monsterInstanceId?: string;
+  readonly speciesId?: string;
   readonly name: string;
   readonly maxHp: number;
   readonly maxMp: number;
@@ -186,6 +192,39 @@ function parameterWithBonus(curve: readonly number[], level: number, bonus: numb
   return Math.max(min, value);
 }
 
+// 파티 몬스터(MonsterInstance 배열, 필드 순서대로)를 아군측 배틀러로 합성한다.
+// 액터 파이프라인 대신 이 배틀러들이 필드에 나서면 "내 포켓몬이 싸운다"가 성립한다.
+export function monsterPartyBattlers(project: Project, instances: readonly MonsterInstance[]): MutableBattler[] {
+  return instances.map((instance, index) => {
+    const stats = monsterBattleStats(project, instance);
+    const hp = monsterCurrentHp(project, instance);
+    return {
+      id: `mon:${instance.instanceId}`,
+      recordId: `mon:${instance.instanceId}` as ActorId,
+      monsterInstanceId: instance.instanceId,
+      speciesId: instance.speciesId,
+      name: monsterDisplayName(project, instance),
+      maxHp: stats.maxHp,
+      hp,
+      maxMp: stats.maxMp,
+      mp: stats.maxMp,
+      attackPower: stats.attack,
+      defense: stats.defense,
+      mind: stats.mind,
+      agility: stats.agility,
+      chargeRate: chargeRateFor(stats.agility),
+      battleX: 248 + (index % 2) * 32,
+      battleY: 70 + index * 24,
+      gauge: 0,
+      stateIds: [],
+      stateTurns: {},
+      defending: false,
+      skillIds: monsterSkillIds(project, instance),
+      hidden: false,
+    } satisfies MutableBattler;
+  });
+}
+
 export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
   const members = troop.members?.length
     ? troop.members
@@ -241,6 +280,8 @@ export function battlerSnapshot(
     recordId: battler.recordId,
     name: battler.name,
     classId: battler.classId,
+    monsterInstanceId: battler.monsterInstanceId,
+    speciesId: battler.speciesId,
     hp: battler.hp,
     maxHp: battler.maxHp,
     mp: battler.mp,

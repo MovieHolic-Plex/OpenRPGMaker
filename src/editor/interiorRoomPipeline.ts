@@ -77,12 +77,14 @@ export const VR = {
   BEAM_SE: DARK_WALL_TILE.CORNER_SOUTH_EAST,
   ALCOVE_L: 396,
   ALCOVE_R: 398,
+  // 책장은 3×3 세트(좌 18/48/78 · 중 19/49/79 가로 반복 · 우 20/50/80) — 2026-07-12 fable 감사 확정.
+  // 2×3 조립은 좌+우 열을 쓴다. (구버그: 하단을 78+79(좌+중)로 조립해 우측 프레임이 사라졌었음)
   BOOK_TL: 18,
   BOOK_TR: 20,
   BOOK_ML: 48,
   BOOK_MR: 50,
   BOOK_BL: 78,
-  BOOK_BR: 79,
+  BOOK_BR: 80,
   WINDOW: 56,
   RELIGIOUS: 59,
   PICTURE_L: 114,
@@ -119,7 +121,41 @@ export const VR = {
   TABLE_L: 325,
   TABLE_R: 326,
   STOOL: 266,
+  // 2026-07-12 감사 어휘 확장 — "소재 부족" 리뷰 해소. 전부 tileSemanticsInterior 정본 대조 완료.
+  TABLE_R3: 327, //        긴 탁자 오른끝(325|326*|327 3칸 세트)
+  PIANO_L: 357, //         보완 작화된 왼쪽 측판
+  PIANO_M: 358,
+  PIANO_R: 359,
+  MIRROR_T: 269, //        대형 거울(세로 2칸, 벽 걸침)
+  MIRROR_B: 299,
+  CLOCK_T: 389, //         괘종시계(세로 2칸, 벽 걸침)
+  CLOCK_B: 419,
+  BUST_T: 88, //           흉상(석상, 세로 2칸)
+  BUST_B: 118,
+  ARMOR_T: 87, //          갑옷 전시대(세로 2칸)
+  ARMOR_B: 117,
+  DISPLAY_T: 263, //       물약·검 진열대(세로 2칸)
+  DISPLAY_B: 293,
+  SQUARE_TABLE: 328, //    사각 탁자(1칸) — 의자 짝 규칙의 기준 가구
+  CRYSTAL_BALL: 329, //    수정구 점술대
+  STAIRS_L: 465, //        가로 계단(좌·몸통 반복·우)
+  STAIRS_M: 466,
+  STAIRS_R: 467,
 } as const;
+
+// 3×3 러그(lower 카펫) — 청록/붉은 카펫 오토타일 세트의 테두리+몸통.
+const RUG_TEAL: readonly (readonly number[])[] = [
+  [279, 280, 281],
+  [309, 310, 311],
+  [339, 340, 341],
+];
+const RUG_RED: readonly (readonly number[])[] = [
+  [375, 376, 377],
+  [405, 406, 407],
+  [435, 436, 437],
+];
+// 러그 위도 보행 가능 — isWalkFloor가 러그를 바닥으로 취급하지 않으면 러그가 가구 후보지를 잠식한다.
+const RUG_TILE_SET = new Set<number>([...RUG_TEAL.flat(), ...RUG_RED.flat()]);
 
 /** Where a prop may be placed. */
 export type PropSurface =
@@ -162,7 +198,16 @@ export const PROP_SURFACE: Readonly<Record<number, PropSurface>> = {
   [VR.KETTLE]: "openFloor",
   [VR.TABLE_L]: "openFloor",
   [VR.TABLE_R]: "openFloor",
+  [VR.TABLE_R3]: "openFloor",
   [VR.STOOL]: "openFloor",
+  [VR.SQUARE_TABLE]: "openFloor",
+  [VR.CRYSTAL_BALL]: "openFloor",
+  [VR.MIRROR_T]: "againstWallFloor",
+  [VR.CLOCK_T]: "againstWallFloor",
+  [VR.BUST_T]: "againstWallFloor",
+  [VR.ARMOR_T]: "againstWallFloor",
+  [VR.DISPLAY_T]: "againstWallFloor",
+  [VR.PIANO_L]: "againstWallFloor",
 };
 
 export type RoomLayer =
@@ -197,6 +242,8 @@ export type RoomSpec = {
   readonly w: number;
   readonly h: number;
   readonly theme?: InteriorRoomTheme;
+  // 방별 바닥 재질(예: 돌바닥 12, 널 바닥 102, 돗자리 139). 미지정이면 plan.floorTile → 나무 바닥 72.
+  readonly floorTile?: number;
 };
 
 export type InteriorRoomTheme = "bedroom" | "study" | "dining" | "kitchen" | "storage" | "tavern";
@@ -223,6 +270,8 @@ export type InteriorRoomPlan = {
   readonly rooms?: readonly RoomSpec[];
   // 방 사이 파티션 개구부 — 파티션 최상단(트림 행) 좌표. 세로로 바닥까지(최대 3칸) 뚫린다.
   readonly innerDoors?: readonly DoorSpec[];
+  // 기본 바닥 재질 — 파이프라인 내부 표현은 72로 유지하고 가구 배치 후 리틴트한다.
+  readonly floorTile?: number;
 };
 
 export type InteriorRoomSession = {
@@ -505,6 +554,8 @@ export function applyInteriorRoomLayer(
       const next = cloneMap(map);
       const floor = floorMaskFromPlan(plan);
       paintFurniture(next, floor, plan);
+      // 배치가 끝난 뒤 바닥 재질 교체 — 벽 문법·성형·러그는 72 기준으로 이미 완료된 상태.
+      retintFloorMaterials(next, plan);
       return { map: next, layer, summary: `furniture theme=${plan.theme}`, warnings, ok: true };
     }
     case "entrance": {
@@ -596,6 +647,29 @@ function roomFloorMask(plan: InteriorRoomPlan, room: RoomSpec, floor: boolean[])
 
 function floorMaskFromMap(map: GameMap): boolean[] {
   return map.lowerTiles.map((t) => t === VR.FLOOR);
+}
+
+/**
+ * 바닥 재질 리틴트 — 나무 바닥(72)으로 완성된 셀만 room.floorTile/plan.floorTile로 교체한다.
+ * 러그(카펫)·문턱·가구 하단(setL 조각)은 72가 아니므로 자동으로 보존된다.
+ * 방 사이 복도 carve 셀은 어느 방 마스크에도 안 속해 기본 나무 바닥으로 남는다(의도).
+ */
+function retintFloorMaterials(map: GameMap, plan: InteriorRoomPlan): void {
+  const retint = (mask: boolean[], tile: number | undefined) => {
+    if (tile === undefined || tile === VR.FLOOR) return;
+    for (let i = 0; i < mask.length; i += 1) {
+      if (mask[i] && map.lowerTiles[i] === VR.FLOOR) map.lowerTiles[i] = tile;
+    }
+  };
+  const rooms = plan.rooms ?? [];
+  if (rooms.length > 0) {
+    const floor = floorMaskFromPlan(plan);
+    for (const room of rooms) {
+      retint(roomFloorMask(plan, room, floor), room.floorTile ?? plan.floorTile);
+    }
+    return;
+  }
+  retint(floorMaskFromPlan(plan), plan.floorTile);
 }
 
 /**
@@ -796,22 +870,44 @@ function paintThemeFurniture(
   const northFloor = listNorthFloor(floor, map);
   const corners = listCorners(floor, map, door);
   const open = listOpenFloor(floor, map, door);
+  const wallSnap = listWallSnapFloor(floor, map, door);
+  const area = floor.filter(Boolean).length;
+  // 장식 로테이션 — 같은 테마 방이 복붙으로 보이지 않게 방 위치 기반으로 세트를 바꾼다.
+  const variant = ((room?.x ?? door.x) + (room?.y ?? door.y)) % 3;
   const plan = { theme, door } as const;
   // No indoor plants (user rule).
 
   if (plan.theme === "bedroom") {
     placeBedPair(map, northFloor, plan.door);
-    placeWallMount(map, wallFace, [VR.WINDOW]);
-    placePicturePair(map, wallFace);
-    placeCorner(map, corners, [VR.GRAIN, VR.BOX]);
-    placeOpen(map, open, [VR.CHAIR_RIGHT, VR.CHAIR_LEFT]);
+    placeTallPairU(map, northFloor, plan.door, VR.MIRROR_T, VR.MIRROR_B);
+    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW]);
+    else if (variant === 1) placePicturePair(map, wallFace);
+    else placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
+    const tableSet = placeTableChairSet(map, open, plan.door);
+    // 러그 앵커링: 위에 얹힌 가구가 있을 때만(탁자 세트 발밑) + 방이 넓을 때만 + 방마다 남발 금지.
+    if (tableSet && area >= 24 && variant !== 2) placeRugUnder(map, tableSet.x, tableSet.y, RUG_TEAL);
+    placeCorner(map, corners, [VR.BOX]);
     return;
   }
   if (plan.theme === "study") {
-    // bookshelf flush against west+north: prefer NW corner floor under wall face
-    placeBookshelfAgainstWall(map, northFloor, floor);
-    placeWallMount(map, wallFace, [VR.WINDOW, VR.RELIGIOUS, VR.SWORD_RACK]);
-    placePicturePair(map, wallFace);
+    // 서가 열: 방 폭에 비례해 책장 반복 배치 + 반드시 '읽을 자리'(책상+의자)를 만든다.
+    const bboxW = floorBboxWidth(floor, map);
+    const shelvesPerRow = Math.max(1, Math.floor(bboxW / 6));
+    placeBookshelfRow(map, northFloor, plan.door, shelvesPerRow);
+    // 대형 서재(도서관)는 방을 가로지르는 프리스탠딩 서가 열을 한 줄 더 깐다.
+    if (area >= 80 && northFloor.length > 0) {
+      const rowY = Math.min(...northFloor.map((c) => c.y)) + 4;
+      const midRow: Array<{ x: number; y: number }> = [];
+      for (let x = 0; x < map.width; x += 1) {
+        if (floor[rowY * map.width + x]) midRow.push({ x, y: rowY });
+      }
+      placeBookshelfRow(map, midRow, plan.door, shelvesPerRow);
+    }
+    placeTableChairSet(map, open, plan.door);
+    placeOpen(map, open, [VR.CRYSTAL_BALL]);
+    placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
+    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW, VR.RELIGIOUS]);
+    else placePicturePair(map, wallFace);
     placeCorner(map, corners, [VR.BOX, VR.GRAIN]);
     if (corners[0] && isWalkFloor(map, corners[0].x, corners[0].y) && isUpperEmpty(map, corners[0].x, corners[0].y)) {
       setU(map, corners[0].x, corners[0].y, VR.CABINET_U);
@@ -822,46 +918,300 @@ function paintThemeFurniture(
     return;
   }
   if (plan.theme === "kitchen") {
-    // 화덕(21+51 세로쌍)을 북벽에 붙이고, 조리 소품을 주변에 배치.
-    placeStovePair(map, northFloor, plan.door);
-    placeWallMount(map, wallFace, [VR.WINDOW, VR.FRUIT_SHELF, VR.SHELF_JARS]);
-    const kitchenCenter = centroid(open);
-    if (kitchenCenter && isWalkFloor(map, kitchenCenter.x, kitchenCenter.y) && isUpperEmpty(map, kitchenCenter.x, kitchenCenter.y)) {
-      setU(map, kitchenCenter.x, kitchenCenter.y, VR.CAULDRON);
+    // 화덕(21+51 세로쌍)을 북벽에 붙이고, 솥은 화덕 옆(바닥 산포 금지).
+    const stove = placeStovePair(map, northFloor, plan.door);
+    if (stove) {
+      const cx = stove.x + 1;
+      if (isWalkFloor(map, cx, stove.y) && isUpperEmpty(map, cx, stove.y)) setU(map, cx, stove.y, VR.CAULDRON);
+      if (isWalkFloor(map, cx + 1, stove.y) && isUpperEmpty(map, cx + 1, stove.y)) setU(map, cx + 1, stove.y, VR.KETTLE);
     }
+    placeWallMount(map, wallFace, [VR.WINDOW, VR.FRUIT_SHELF, VR.SHELF_JARS]);
     placeCorner(map, corners, [VR.BUCKET, VR.JARS, VR.GRAIN]);
-    placeOpen(map, open, [VR.KETTLE, VR.STOOL]);
+    placeAgainstWall(map, wallSnap, [VR.BARREL, VR.JARS]);
     return;
   }
   if (plan.theme === "storage") {
-    // 창고: 구석마다 궤짝/통/자루, 벽에 사다리, 남는 바닥에도 짐을 흩어 둔다.
-    // cornerFloor 소품이라도 창고에서는 열린 바닥에 쌓인 짐으로 두는 게 자연스럽다(placeOpenAny).
+    // 창고: 적재물은 벽 스냅이 기본(중앙 부유 금지) — 물량은 면적 비례.
     placeWallMount(map, wallFace, [VR.LADDER, VR.WINDOW]);
     placeCorner(map, corners, [VR.CRATE, VR.BARREL, VR.GRAIN, VR.BOX, VR.JARS]);
-    placeOpenAny(map, open, [VR.BARREL, VR.GRAIN, VR.CRATE, VR.BOX]);
+    const loads = Math.max(4, Math.floor(area / 8));
+    placeAgainstWall(map, wallSnap, repeatTiles([VR.BARREL, VR.CRATE, VR.JARS, VR.BOX], loads));
     return;
   }
   if (plan.theme === "tavern") {
-    // 선술집: 긴 탁자(325|326 hard 쌍) + 양옆 의자, 술통/간판.
-    placeLongTablePair(map, open, plan.door);
-    placeWallMount(map, wallFace, [VR.TAVERN_SIGN, VR.WINDOW]);
+    // 선술집/홀: 긴 탁자(3칸) 면적 비례 + 의자는 탁자 인접만, 피아노·진열대·술통.
+    const tables = Math.max(1, Math.floor(area / 45));
+    let placedTable: { x: number; y: number } | null = null;
+    for (let i = 0; i < tables; i += 1) {
+      const t = placeLongTable3(map, open, plan.door);
+      if (t && !placedTable) placedTable = t;
+    }
+    // 필수 가구 보장: 긴 탁자가 전부 실패하면 사각 탁자 세트라도 반드시 놓는다.
+    if (!placedTable) placeTableChairSet(map, open, plan.door);
+    placePianoTriple(map, northFloor, plan.door);
+    placeTallPairU(map, northFloor, plan.door, VR.DISPLAY_T, VR.DISPLAY_B);
+    placeWallMount(map, wallFace, [VR.TAVERN_SIGN, VR.WINDOW, VR.SWORD_RACK]);
     placeCorner(map, corners, [VR.BARREL, VR.BUCKET, VR.JARS]);
-    placeOpen(map, open, [VR.STOOL, VR.CHAIR_LEFT]);
+    placeAgainstWall(map, wallSnap, [VR.BARREL, VR.BARREL]);
     return;
   }
-  // dining
-  const center = centroid(open);
-  if (center) {
-    setU(map, center.x, center.y, VR.TABLE_TOP);
-    if (isWalkFloor(map, center.x, center.y + 1)) setU(map, center.x, center.y + 1, VR.TABLE_BOT);
-    if (isWalkFloor(map, center.x - 1, center.y + 1)) setU(map, center.x - 1, center.y + 1, VR.CHAIR_RIGHT);
-    if (isWalkFloor(map, center.x + 1, center.y + 1)) setU(map, center.x + 1, center.y + 1, VR.CHAIR_LEFT);
+  // dining — 장탁자(3칸) 면적 비례, 러그는 상석 탁자 발밑에만, 잔해류(깨진 유리/바닥 구멍)는 금지.
+  const tables = Math.max(1, Math.floor(area / 40));
+  let headTable: { x: number; y: number } | null = null;
+  for (let i = 0; i < tables; i += 1) {
+    const t = placeLongTable3(map, open, plan.door);
+    if (t && !headTable) headTable = t;
   }
-  placeWallMount(map, wallFace, [VR.WINDOW]);
-  placeCorner(map, corners, [VR.GRAIN, VR.BOX, VR.BOX]);
-  // floor debris only on floor — never wall
-  if (open[2] && isUpperEmpty(map, open[2].x, open[2].y)) setU(map, open[2].x, open[2].y, VR.BROKEN_GLASS);
-  if (open[5]) setL(map, open[5].x, open[5].y, VR.FLOOR_HOLE);
+  // 필수 가구 보장: 식탁 없는 식당 금지 — 긴 탁자가 안 들어가면 사각 탁자 세트로 대체.
+  if (!headTable) headTable = placeTableChairSet(map, open, plan.door);
+  if (headTable && area >= 24) placeRugUnder(map, headTable.x, headTable.y, RUG_RED);
+  placeTallPairU(map, northFloor, plan.door, VR.DISPLAY_T, VR.DISPLAY_B);
+  if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW]);
+  else placePicturePair(map, wallFace);
+  placeCorner(map, corners, [VR.JARS, VR.BOX]);
+}
+
+// ── 배치 규칙 헬퍼(2026-07-12): 짝 가구·벽 스냅·밀도 ─────────────────────────
+
+/**
+ * 벽에 붙은 바닥 셀 목록(문 행/문 열 제외) — 통·궤짝·짐의 벽 스냅 배치용.
+ * "북벽 일렬 진열"을 막기 위해 서/동/남/북 그룹을 라운드로빈으로 섞어 반환한다.
+ */
+function listWallSnapFloor(
+  floor: boolean[],
+  map: GameMap,
+  door: DoorSpec,
+): Array<{ x: number; y: number }> {
+  const F = (x: number, y: number) =>
+    inBounds(x, y, map.width, map.height) && floor[y * map.width + x] === true;
+  const west: Array<{ x: number; y: number }> = [];
+  const east: Array<{ x: number; y: number }> = [];
+  const south: Array<{ x: number; y: number }> = [];
+  const north: Array<{ x: number; y: number }> = [];
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (!F(x, y) || y === door.y || x === door.x) continue;
+      if (!F(x - 1, y)) west.push({ x, y });
+      else if (!F(x + 1, y)) east.push({ x, y });
+      else if (!F(x, y + 1)) south.push({ x, y });
+      else if (!F(x, y - 1)) north.push({ x, y });
+    }
+  }
+  const groups = [west, east, south, north];
+  const mixed: Array<{ x: number; y: number }> = [];
+  const longest = Math.max(...groups.map((g) => g.length));
+  for (let i = 0; i < longest; i += 1) {
+    for (const g of groups) if (g[i]) mixed.push(g[i]!);
+  }
+  return mixed;
+}
+
+/** 벽 스냅 셀에 소품을 차례로 놓는다(통행 가능한 upper 소품 전제). */
+function placeAgainstWall(
+  map: GameMap,
+  cells: Array<{ x: number; y: number }>,
+  tiles: readonly number[],
+): void {
+  let ci = 0;
+  for (const tile of tiles) {
+    while (
+      ci < cells.length
+      && (!isWalkFloor(map, cells[ci]!.x, cells[ci]!.y) || !isUpperEmpty(map, cells[ci]!.x, cells[ci]!.y))
+    ) {
+      ci += 1;
+    }
+    if (ci >= cells.length) break;
+    setU(map, cells[ci]!.x, cells[ci]!.y, tile);
+    ci += 2; // 다닥다닥 붙지 않게 한 칸 간격
+  }
+}
+
+function repeatTiles(pattern: readonly number[], count: number): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < count; i += 1) out.push(pattern[i % pattern.length]!);
+  return out;
+}
+
+/** 키 큰 세로쌍(거울/시계/흉상/갑옷/진열대) — 상단은 벽면 행 upper, 하단은 북측 바닥 upper. */
+function placeTallPairU(
+  map: GameMap,
+  northFloor: Array<{ x: number; y: number }>,
+  door: DoorSpec,
+  top: number,
+  bottom: number,
+): boolean {
+  const wall = houseShellWallMembers();
+  for (const c of northFloor) {
+    if (c.x === door.x) continue;
+    if (!isWalkFloor(map, c.x, c.y)) continue;
+    if (!wall.has(getL(map, c.x, c.y - 1))) continue;
+    if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y - 1)) continue;
+    // hard pair — 절대 반쪽 배치 금지
+    setU(map, c.x, c.y - 1, top);
+    setU(map, c.x, c.y, bottom);
+    return true;
+  }
+  return false;
+}
+
+/** 중심에서 가까운 순서로 후보를 정렬 — 좌상단 우선 순회가 만드는 '북벽 몰림'을 막는다. */
+function sortByCenter(
+  open: Array<{ x: number; y: number }>,
+  center: { x: number; y: number } | null,
+): Array<{ x: number; y: number }> {
+  if (!center) return open;
+  const d2 = (c: { x: number; y: number }) => (c.x - center.x) ** 2 + (c.y - center.y) ** 2;
+  return [center, ...[...open].sort((a, b) => d2(a) - d2(b))];
+}
+
+/** 사각 탁자(328) + 인접 의자 — 의자는 탁자 없이 단독 배치 금지 규칙의 기준 구현. */
+function placeTableChairSet(
+  map: GameMap,
+  open: Array<{ x: number; y: number }>,
+  door: DoorSpec,
+): { x: number; y: number } | null {
+  const candidates = sortByCenter(open, centroid(open));
+  for (const c of candidates) {
+    if (c.y === door.y) continue;
+    if (!isWalkFloor(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y)) continue;
+    if (!isWalkFloor(map, c.x + 1, c.y) || !isUpperEmpty(map, c.x + 1, c.y)) continue;
+    setU(map, c.x, c.y, VR.SQUARE_TABLE);
+    setU(map, c.x + 1, c.y, VR.CHAIR_LEFT);
+    if (isWalkFloor(map, c.x - 1, c.y) && isUpperEmpty(map, c.x - 1, c.y)) setU(map, c.x - 1, c.y, VR.CHAIR_RIGHT);
+    return { x: c.x, y: c.y };
+  }
+  return null;
+}
+
+/** 긴 탁자 3칸(325|326|327) + 양끝 의자 + 위아래 스툴 — 의자·스툴은 탁자 인접만. */
+function placeLongTable3(
+  map: GameMap,
+  open: Array<{ x: number; y: number }>,
+  door: DoorSpec,
+): { x: number; y: number } | null {
+  const candidates = sortByCenter(open, centroid(open));
+  for (const c of candidates) {
+    if (c.y === door.y || c.y + 1 === door.y) continue;
+    // 좌석군 간 통로 확보: 탁자 행(5칸 밴드)은 완전히 비어야 하고,
+    // 위아래 행도 바닥인 칸은 비어 있어야 한다(다른 탁자·의자와 맞물림 금지).
+    let ok = true;
+    for (let dy = -1; dy <= 1 && ok; dy += 1) {
+      for (let dx = -1; dx <= 3 && ok; dx += 1) {
+        const x = c.x + dx;
+        const y = c.y + dy;
+        if (dy === 0) {
+          if (!isWalkFloor(map, x, y) || !isUpperEmpty(map, x, y)) ok = false;
+        } else if (isWalkFloor(map, x, y) && !isUpperEmpty(map, x, y)) {
+          ok = false;
+        }
+      }
+    }
+    if (!ok) continue;
+    setU(map, c.x, c.y, VR.TABLE_L);
+    setU(map, c.x + 1, c.y, VR.TABLE_R);
+    setU(map, c.x + 2, c.y, VR.TABLE_R3);
+    setU(map, c.x - 1, c.y, VR.CHAIR_RIGHT);
+    setU(map, c.x + 3, c.y, VR.CHAIR_LEFT);
+    if (isWalkFloor(map, c.x + 1, c.y - 1) && isUpperEmpty(map, c.x + 1, c.y - 1)) setU(map, c.x + 1, c.y - 1, VR.STOOL);
+    if (isWalkFloor(map, c.x + 1, c.y + 1) && isUpperEmpty(map, c.x + 1, c.y + 1)) setU(map, c.x + 1, c.y + 1, VR.STOOL);
+    return { x: c.x + 1, y: c.y };
+  }
+  return null;
+}
+
+/** 피아노 3칸(357|358|359) — 북벽에 붙여 배치. 357은 2026-07-12 보완 작화로 완성. */
+function placePianoTriple(
+  map: GameMap,
+  northFloor: Array<{ x: number; y: number }>,
+  door: DoorSpec,
+): boolean {
+  const byY = new Map<number, Array<{ x: number; y: number }>>();
+  for (const c of northFloor) {
+    const row = byY.get(c.y) ?? [];
+    row.push(c);
+    byY.set(c.y, row);
+  }
+  for (const [y, row] of byY) {
+    const xs = new Set(row.map((c) => c.x));
+    for (const c of [...row].sort((a, b) => a.x - b.x)) {
+      if (!xs.has(c.x + 1) || !xs.has(c.x + 2)) continue;
+      if ([0, 1, 2].some((dx) => c.x + dx === door.x)) continue;
+      if ([0, 1, 2].some((dx) => !isWalkFloor(map, c.x + dx, y) || !isUpperEmpty(map, c.x + dx, y))) continue;
+      setU(map, c.x, y, VR.PIANO_L);
+      setU(map, c.x + 1, y, VR.PIANO_M);
+      setU(map, c.x + 2, y, VR.PIANO_R);
+      return true;
+    }
+  }
+  return false;
+}
+
+/** 3×3 러그를 가구군 발밑에 깐다(앵커링) — 위에 얹힌 가구 없는 단독 러그 금지 규칙. */
+function placeRugUnder(
+  map: GameMap,
+  cx: number,
+  cy: number,
+  rug: readonly (readonly number[])[],
+): boolean {
+  for (let dy = 0; dy < 3; dy += 1) {
+    for (let dx = 0; dx < 3; dx += 1) {
+      const x = cx - 1 + dx;
+      const y = cy - 1 + dy;
+      if (!inBounds(x, y, map.width, map.height) || getL(map, x, y) !== VR.FLOOR) return false;
+    }
+  }
+  for (let dy = 0; dy < 3; dy += 1) {
+    for (let dx = 0; dx < 3; dx += 1) {
+      setL(map, cx - 1 + dx, cy - 1 + dy, rug[dy]![dx]!);
+    }
+  }
+  return true;
+}
+
+/** 바닥 마스크의 가로 폭(bbox) — 서가 열 개수 산정용. */
+function floorBboxWidth(floor: boolean[], map: GameMap): number {
+  let minX = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (!floor[y * map.width + x]) continue;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+    }
+  }
+  return maxX >= minX ? maxX - minX + 1 : 0;
+}
+
+/** 서가 열 — 북벽을 따라 책장(2×3)을 최대 count개, 1칸 간격으로 배치. */
+function placeBookshelfRow(
+  map: GameMap,
+  northFloor: Array<{ x: number; y: number }>,
+  door: DoorSpec,
+  count: number,
+): void {
+  const sorted = [...northFloor].sort((a, b) => a.x - b.x || a.y - b.y);
+  let placed = 0;
+  let minNextX = Number.NEGATIVE_INFINITY;
+  for (const c of sorted) {
+    if (placed >= count) break;
+    if (c.x < minNextX) continue;
+    if ([0, 1].some((dx) => c.x + dx === door.x)) continue;
+    let ok = true;
+    for (let dy = 0; dy < 3 && ok; dy += 1) {
+      for (let dx = 0; dx < 2 && ok; dx += 1) {
+        if (!isWalkFloor(map, c.x + dx, c.y + dy)) ok = false;
+      }
+    }
+    if (!ok) continue;
+    setL(map, c.x, c.y, VR.BOOK_TL);
+    setL(map, c.x + 1, c.y, VR.BOOK_TR);
+    setL(map, c.x, c.y + 1, VR.BOOK_ML);
+    setL(map, c.x + 1, c.y + 1, VR.BOOK_MR);
+    setL(map, c.x, c.y + 2, VR.BOOK_BL);
+    setL(map, c.x + 1, c.y + 2, VR.BOOK_BR);
+    placed += 1;
+    minNextX = c.x + 3; // 책장 2칸 + 통로 1칸
+  }
 }
 
 /**
@@ -873,7 +1223,7 @@ function placeStovePair(
   map: GameMap,
   northFloor: Array<{ x: number; y: number }>,
   door: DoorSpec,
-): boolean {
+): { x: number; y: number } | null {
   const wall = houseShellWallMembers();
   for (const c of northFloor) {
     if (c.x === door.x) continue;
@@ -883,31 +1233,9 @@ function placeStovePair(
     // hard pair — never place half stove (21 must be immediately above 51)
     setU(map, c.x, c.y - 1, VR.STOVE_TOP);
     setL(map, c.x, c.y, VR.STOVE_BOT);
-    return true;
+    return { x: c.x, y: c.y };
   }
-  return false;
-}
-
-/** Long table as atomic hard pair 325|326 near the open-floor centroid, chairs at both ends. */
-function placeLongTablePair(
-  map: GameMap,
-  open: Array<{ x: number; y: number }>,
-  door: DoorSpec,
-): boolean {
-  const center = centroid(open);
-  const candidates = center ? [center, ...open] : open;
-  for (const c of candidates) {
-    if (c.y === door.y) continue;
-    if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x + 1, c.y)) continue;
-    if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x + 1, c.y)) continue;
-    // hard pair — never place half table (325 must be immediately left of 326)
-    setU(map, c.x, c.y, VR.TABLE_L);
-    setU(map, c.x + 1, c.y, VR.TABLE_R);
-    if (isWalkFloor(map, c.x - 1, c.y) && isUpperEmpty(map, c.x - 1, c.y)) setU(map, c.x - 1, c.y, VR.CHAIR_RIGHT);
-    if (isWalkFloor(map, c.x + 2, c.y) && isUpperEmpty(map, c.x + 2, c.y)) setU(map, c.x + 2, c.y, VR.CHAIR_LEFT);
-    return true;
-  }
-  return false;
+  return null;
 }
 
 /** Place bed as atomic hard pair 355|356 on against-wall floor. */
@@ -926,41 +1254,6 @@ function placeBedPair(
     return true;
   }
   return false;
-}
-
-/**
- * Bookshelf against west+north: west-most north-perimeter columns, 2×3 footprint
- * snug under cream face (no floating mid-room).
- */
-function placeBookshelfAgainstWall(
-  map: GameMap,
-  northFloor: Array<{ x: number; y: number }>,
-  floor: boolean[],
-): void {
-  const w = map.width;
-  const F = (x: number, y: number) =>
-    inBounds(x, y, w, map.height) && floor[y * w + x] === true;
-  // prefer cells that also have west wall (no floor west)
-  const sorted = [...northFloor].sort((a, b) => a.x - b.x || a.y - b.y);
-  for (const c of sorted) {
-    if (F(c.x - 1, c.y)) continue; // not against west wall
-    if (
-      isWalkFloor(map, c.x, c.y)
-      && isWalkFloor(map, c.x + 1, c.y)
-      && isWalkFloor(map, c.x, c.y + 1)
-      && isWalkFloor(map, c.x + 1, c.y + 1)
-      && isWalkFloor(map, c.x, c.y + 2)
-      && isWalkFloor(map, c.x + 1, c.y + 2)
-    ) {
-      setL(map, c.x, c.y, VR.BOOK_TL);
-      setL(map, c.x + 1, c.y, VR.BOOK_TR);
-      setL(map, c.x, c.y + 1, VR.BOOK_ML);
-      setL(map, c.x + 1, c.y + 1, VR.BOOK_MR);
-      setL(map, c.x, c.y + 2, VR.BOOK_BL);
-      setL(map, c.x + 1, c.y + 2, VR.BOOK_BR);
-      return;
-    }
-  }
 }
 
 /** Picture is a horizontal pair 114|115 on the same wall-face row — never split vertically. */
@@ -1043,26 +1336,6 @@ function placeOpen(
     if (oi >= open.length) break;
     setU(map, open[oi]!.x, open[oi]!.y, tile);
     oi += 2;
-  }
-}
-
-/** placeOpen과 같지만 표면 분류를 묻지 않는다 — 창고처럼 바닥에 짐을 흩어 두는 테마용. */
-function placeOpenAny(
-  map: GameMap,
-  open: Array<{ x: number; y: number }>,
-  tiles: readonly number[],
-): void {
-  let oi = Math.floor(open.length / 4);
-  for (const tile of tiles) {
-    while (
-      oi < open.length
-      && (!isWalkFloor(map, open[oi]!.x, open[oi]!.y) || !isUpperEmpty(map, open[oi]!.x, open[oi]!.y))
-    ) {
-      oi += 1;
-    }
-    if (oi >= open.length) break;
-    setU(map, open[oi]!.x, open[oi]!.y, tile);
-    oi += 3;
   }
 }
 
@@ -1333,7 +1606,8 @@ function centroid(cells: Array<{ x: number; y: number }>): { x: number; y: numbe
 }
 
 function isWalkFloor(map: GameMap, x: number, y: number): boolean {
-  return getL(map, x, y) === VR.FLOOR;
+  const tile = getL(map, x, y);
+  return tile === VR.FLOOR || RUG_TILE_SET.has(tile);
 }
 
 function cloneMap(map: GameMap): GameMap {

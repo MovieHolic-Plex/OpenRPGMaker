@@ -1158,7 +1158,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     void sendText(prompt, `/${skill.id}`);
   };
 
-  // 빈 대화 시작 화면 — 깔끔한 최소 상태. (비주얼 카드 등은 나중에)
+  // 빈 대화 시작 화면 — 최소 힌트 + 클릭 한 번으로 입력창을 채우는 예시 3개.
+  // 예시는 전송하지 않고 입력창만 채운다(키 미설정 오류 회피 + 편집 여지).
+  const START_EXAMPLE_PROMPTS: readonly { readonly label: string; readonly prompt: string }[] = [
+    { label: "🏘 작은 마을 만들기", prompt: "빈 곳에 집 두세 채와 길이 이어진 작은 마을을 만들어줘." },
+    { label: "🌲 지형 다듬기", prompt: "맵 가장자리를 나무와 수풀로 자연스럽게 다듬어줘." },
+    { label: "💬 NPC 대사 넣기", prompt: "마을 주민 NPC를 하나 만들고 말을 걸면 인사하는 대사를 넣어줘." },
+  ];
   const buildStartScreen = (): HTMLElement => {
     const resume = resumeCandidate
       ? [el("button", {
@@ -1176,8 +1182,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ...resume,
         el("div", {
           class: "ai-start-empty-hint",
-          text: "아래에 요청을 입력하세요",
+          text: "아래에 요청을 입력하세요 — 예를 들어:",
           dataset: { testid: "ai-start-empty-hint" },
+        }),
+        el("div", {
+          class: "ai-start-examples",
+          dataset: { testid: "ai-start-examples" },
+          children: START_EXAMPLE_PROMPTS.map((example, index) =>
+            el("button", {
+              class: "ai-start-example-chip",
+              text: example.label,
+              attrs: { type: "button", title: example.prompt },
+              dataset: { testid: `ai-start-example-${index}` },
+              on: {
+                click: () => {
+                  input.value = example.prompt;
+                  input.focus();
+                },
+              },
+            }),
+          ),
+        }),
+        el("div", {
+          class: "ai-start-shortcut-hint",
+          text: "Ctrl+K 명령·맵·스킬 검색 · 캔버스에서 영역을 드래그하면 ✨ AI 작업",
+          dataset: { testid: "ai-start-shortcut-hint" },
         }),
       ],
     });
@@ -1784,12 +1813,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     autoCollapseTimer = null;
   };
   // 접힌 패널을 AI 작업용으로 펼친다. 이미 열려 있으면 폭만 유지하고 종료 후 재접기 플래그는 유지.
+  // 자동 경로 — 사용자의 저장된 접힘 선택(savePanelCollapsed)은 건드리지 않는다.
   expandForAiWork = (): void => {
     clearAutoCollapseTimer();
     if (!collapsed) return;
     collapsed = false;
     if (studio) applyStudio(false);
-    savePanelCollapsed(false);
     applyCollapsed();
   };
   // AI 작업 종료 후 맵 우선으로 접기 (이미 펼쳐 있던 경우 포함).
@@ -1800,7 +1829,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       collapseAfterAiWork = false;
       collapsed = true;
       if (studio) applyStudio(false);
-      savePanelCollapsed(true);
       applyCollapsed();
       return;
     }
@@ -1811,7 +1839,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       collapseAfterAiWork = false;
       collapsed = true;
       if (studio) applyStudio(false);
-      savePanelCollapsed(true);
       applyCollapsed();
     }, AUTO_COLLAPSE_AFTER_AI_MS);
   };
