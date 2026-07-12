@@ -1,6 +1,10 @@
 import type Phaser from "phaser";
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
-import { ensureTilesetTexture, isDefaultTilesetTexture } from "@/editor/tilesetImage";
+import {
+  ensureTilesetTexture,
+  isDefaultTilesetTexture,
+  supportsChipsetQuarterComposition,
+} from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
@@ -12,9 +16,8 @@ import {
 } from "@/project/defaults/lakeAutotile";
 import { roadAutotileTileForCell } from "@/project/defaults/roadAutotile";
 import {
-  isTerrainQuarterTile,
-  terrainQuarterSources,
-  type TerrainQuarterSource,
+  chipsetQuarterComposition,
+  type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
@@ -53,12 +56,13 @@ export function createChipsetTileObject(
   const resolved = resolveRenderArgs(map, tilesetOrX, xOrY, yOrTile, tileOrUndefined);
   if (!resolved) return createMissingTileObject(scene, xOrY, yOrTile);
   const { tile, tileset, x, y } = resolved;
-  if (isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
+  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
   }
-  if (isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
-    const terrainQuarters = terrainQuarterSources(map, x, y);
-    if (terrainQuarters) return createTerrainQuarterObject(scene, tileset, x, y, terrainQuarters);
+  if (supportsChipsetQuarterComposition(tileset) && map.lowerTiles[y * map.width + x] === tile) {
+    const composition = chipsetQuarterComposition(map, tileset, x, y);
+    if (composition) return createTerrainQuarterObject(scene, tileset, x, y, composition);
   }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
@@ -145,12 +149,15 @@ function createTerrainQuarterObject(
   tileset: TilesetDef,
   x: number,
   y: number,
-  sources: readonly TerrainQuarterSource[]
+  composition: ChipsetQuarterComposition
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
   container.setSize(TILE_SIZE, TILE_SIZE);
+  if (composition.underlayTile !== undefined) {
+    container.add(createRawTileObject(scene, tileset, 0, 0, composition.underlayTile));
+  }
   const textureKey = ensureTilesetTexture(scene, tileset);
-  for (const part of sources) {
+  for (const part of composition.sources) {
     const image = scene.add.image(part.offsetX, part.offsetY, textureKey, `tile_${part.tile}_${part.quarter}`);
     image.setOrigin(0, 0);
     container.add(image);

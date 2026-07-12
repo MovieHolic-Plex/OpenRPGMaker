@@ -1,11 +1,13 @@
 // 맵 타일 레이어 → 2D 캔버스 렌더(오프스크린). mapScreenshot(전체 맵)과
 // regionSnapshot(영역 크롭 썸네일)이 공유한다. scale은 픽셀 배율(연속값 허용).
-import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
+import {
+  supportsChipsetQuarterComposition,
+  tilesetImageUrl,
+} from "@/editor/tilesetImage";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import {
-  isTerrainQuarterTile,
-  terrainQuarterSources,
-  type TerrainQuarterSource,
+  chipsetQuarterComposition,
+  type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import type { GameMap, TilesetDef } from "@/project/types";
@@ -61,14 +63,15 @@ function drawLayer(
     if (tile < 0) continue;
     const x = index % map.width;
     const y = Math.floor(index / map.width);
-    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isLakeAutotileTile(tile)) {
+    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함(supportsChipsetQuarterComposition).
+    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
       drawLakeAutotile(context, image, map, tileset, x, y, scale);
       continue;
     }
-    if (tiles === map.lowerTiles && isDefaultTilesetTexture(tileset) && isTerrainQuarterTile(tile)) {
-      const terrainQuarters = terrainQuarterSources(map, x, y);
-      if (terrainQuarters) {
-        drawTerrainQuarter(context, image, tileset, x, y, terrainQuarters, scale);
+    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset)) {
+      const composition = chipsetQuarterComposition(map, tileset, x, y);
+      if (composition) {
+        drawTerrainQuarter(context, image, tileset, x, y, composition, scale);
         continue;
       }
     }
@@ -103,10 +106,13 @@ function drawTerrainQuarter(
   tileset: TilesetDef,
   x: number,
   y: number,
-  sources: readonly TerrainQuarterSource[],
+  composition: ChipsetQuarterComposition,
   scale: number,
 ): void {
-  for (const part of sources) {
+  if (composition.underlayTile !== undefined) {
+    drawRawTile(context, image, tileset, composition.underlayTile, x, y, scale);
+  }
+  for (const part of composition.sources) {
     const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
     const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
     const targetX = (x * tileset.tileSize + part.offsetX) * scale;

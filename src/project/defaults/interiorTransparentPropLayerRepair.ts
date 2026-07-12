@@ -38,7 +38,8 @@ function replacementInteriorFloor(map: GameMap, index: number, transparentProps:
     const tile = map.lowerTiles[neighbor];
     if (tile >= 0 && !transparentProps.has(tile)) return tile;
   }
-  return 270;
+  // 이웃이 전부 소품이면 실내 기본 나무 바닥(72)으로 복구한다 — 270은 현재 칩셋에서 잔디.
+  return 72;
 }
 
 function neighboringTileIndexes(map: GameMap, index: number): readonly number[] {

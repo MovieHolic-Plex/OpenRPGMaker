@@ -1,5 +1,7 @@
 import { DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "./autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
+import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
+import type { TilesetDef } from "../types";
 
 // 모래/흙길 지형의 RM2003식 8×8 쿼터 합성 렌더링.
 // 저장 타일 ID는 기존 9-슬라이스 결과를 유지하고, 렌더 시점에 각 쿼터가 필요한
@@ -12,6 +14,11 @@ export type TerrainQuarterSource = {
   readonly tile: number;
   readonly offsetX: 0 | 8;
   readonly offsetY: 0 | 8;
+};
+
+export type ChipsetQuarterComposition = {
+  readonly underlayTile?: number;
+  readonly sources: readonly TerrainQuarterSource[];
 };
 
 type TerrainQuarterMap = {
@@ -150,6 +157,17 @@ const QUARTERS = [
 
 export function isTerrainQuarterTile(tile: number): boolean {
   return TERRAIN_QUARTER_TILES.has(tile);
+}
+
+export function chipsetQuarterComposition(
+  map: TerrainQuarterMap,
+  tileset: Pick<TilesetDef, "autotileGroups" | "image">,
+  x: number,
+  y: number,
+): ChipsetQuarterComposition | null {
+  const terrainSources = terrainQuarterSources(map, x, y);
+  if (terrainSources) return { sources: terrainSources };
+  return interiorWallFrameQuarterComposition(map, tileset, x, y);
 }
 
 // (x,y)가 쿼터 합성 대상이면 쿼터 4개의 소스(타일 + 8px 오프셋)를 반환한다.
