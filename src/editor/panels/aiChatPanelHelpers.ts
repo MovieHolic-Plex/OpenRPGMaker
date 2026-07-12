@@ -48,9 +48,24 @@ export function isAiConfigReady(config: AiConfig): boolean {
 }
 
 export function phaseStatusText(phase: Extract<SessionEvent, { type: "phase" }>["value"]): string {
-  if (phase === "plan") return "계획 중(m3)";
-  if (phase === "execute") return "실행 중(flash)";
-  return "검수 중(m3)";
+  // 모델 코드(m3/flash)는 상태줄 노이즈 — 사용자에게는 단계만.
+  if (phase === "plan") return "계획 중";
+  if (phase === "execute") return "실행 중";
+  return "검수 중";
+}
+
+/** 채팅 말풍선으로 올릴 가치가 있는 status 문구인지. 대부분은 상태줄만으로 충분. */
+export function shouldShowStatusInChat(text: string): boolean {
+  const t = text.trim();
+  if (!t) return false;
+  // 재시도·예산 소진·사용자 중단처럼 행동 변경이 필요할 때만 로그에 남긴다.
+  if (/재시도|중단|오류|실패|토큰|예산|API 키|인증|일부만 제안|이어서 요청|요청이 커서/u.test(t)) return true;
+  return false;
+}
+
+/** 조회성(읽기) 툴 — 펼친 도구 목록에서 줄여 보여 쓰기 작업 위주로 읽히게 한다. */
+export function isReadOnlyToolNoise(name: string): boolean {
+  return /^(get_|list_|show_|query_|analyze_|tile_query|lint_)/u.test(name);
 }
 
 export function displayUserAuditText(text: string): string {

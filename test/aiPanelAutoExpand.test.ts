@@ -1,0 +1,199 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import {
+  AUTO_COLLAPSE_AFTER_AI_MS,
+  renderAiChatPanel,
+} from "@/editor/panels/aiChatPanel";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+
+const assistantMock = vi.hoisted(() => {
+  const sentMessages: string[] = [];
+
+  class MockAssistantSession {
+    constructor(_project: unknown, _options: unknown) {}
+
+    async sendUserMessage(text: string, _onEvent: (event: unknown) => void): Promise<{
+      assistantText: string;
+      proposedCalls: [];
+      stoppedReason: "final";
+    }> {
+      sentMessages.push(text);
+      return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
+    }
+
+    getAuditEntries(): [] {
+      return [];
+    }
+
+    getActiveSpec(): null {
+      return null;
+    }
+
+    getProposedProject(): ReturnType<typeof store.getCurrent> {
+      return store.getCurrent();
+    }
+
+    getHarnessSnapshot(): null {
+      return null;
+    }
+
+    updateConfig(_config: unknown): void {}
+  }
+
+  return {
+    MockAssistantSession,
+    sentMessages,
+    reset() {
+      sentMessages.length = 0;
+    },
+  };
+});
+
+vi.mock("@/ai/assistantSession", () => ({
+  AssistantSession: assistantMock.MockAssistantSession,
+  METADATA_ONLY_TOOLS: new Set(["set_tile_metadata", "set_tile_rules", "upsert_tile_group"]),
+}));
+
+let restoreDom: (() => void) | null = null;
+let restoreWindow: (() => void) | null = null;
+let storage: Map<string, string>;
+
+function installFakeLocalStorage(): void {
+  storage = new Map();
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    writable: true,
+    value: {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => void storage.set(key, String(value)),
+      removeItem: (key: string) => void storage.delete(key),
+      clear: () => storage.clear(),
+    },
+  });
+}
+
+function installFakeWindow(): () => void {
+  const previous = globalThis.window;
+  const listeners = new Map<string, Set<EventListener>>();
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: {
+      location: { search: "aiBridge=0" },
+      addEventListener: (type: string, listener: EventListener) => {
+        const bucket = listeners.get(type) ?? new Set<EventListener>();
+        bucket.add(listener);
+        listeners.set(type, bucket);
+      },
+      removeEventListener: (type: string, listener: EventListener) => {
+        listeners.get(type)?.delete(listener);
+      },
+      dispatchEvent: (event: Event): boolean => {
+        for (const listener of listeners.get(event.type) ?? []) listener(event);
+        return true;
+      },
+      clearTimeout: (...args: Parameters<typeof setTimeout>) => globalThis.clearTimeout(...args),
+      setTimeout: (...args: Parameters<typeof setTimeout>) => globalThis.setTimeout(...args),
+      setInterval: (...args: Parameters<typeof setInterval>) => globalThis.setInterval(...args),
+      clearInterval: (...args: Parameters<typeof clearInterval>) => globalThis.clearInterval(...args),
+    },
+  });
+  return () => {
+    if (previous === undefined) {
+      Reflect.deleteProperty(globalThis, "window");
+      return;
+    }
+    Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previous });
+  };
+}
+
+async function flushAsync(): Promise<void> {
+  for (let i = 0; i < 20; i += 1) await Promise.resolve();
+}
+
+function renderPanel(): FakeElement {
+  return renderWithFakeDom(() => renderAiChatPanel());
+}
+
+function expandPanel(panel: FakeElement): void {
+  findByTestId(panel, "ai-collapsed-restore")?.click();
+}
+
+beforeEach(() => {
+  assistantMock.reset();
+  store.replace(createBlankProject());
+  restoreDom = installFakeDom();
+  restoreWindow = installFakeWindow();
+  installFakeLocalStorage();
+  vi.useFakeTimers();
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+  restoreWindow?.();
+  restoreWindow = null;
+  restoreDom?.();
+  restoreDom = null;
+  Reflect.deleteProperty(globalThis, "localStorage");
+});
+
+describe("AI 패널 자동 펼침/접기", () => {
+  it("부팅 시 저장값이 펼침이어도 기본은 접힘이다", () => {
+    storage.set("rpg-zzu:ai-panel-collapsed", "0");
+    const panel = renderPanel();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+  });
+
+  it("접힌 채 전송하면 펼치고, 턴 종료 후 자동으로 다시 접는다", async () => {
+    const panel = renderPanel();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+
+    const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+    expect(bridge).toBeTruthy();
+    await bridge!.send("안녕");
+    await flushAsync();
+
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(assistantMock.sentMessages).toHaveLength(1);
+
+    await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
+    await flushAsync();
+
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+  });
+
+  it("이미 펼친 상태에서도 턴이 끝나면 맵 우선으로 다시 접는다", async () => {
+    const panel = renderPanel();
+    expandPanel(panel);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+
+    const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+    await bridge!.send("지도 그려줘");
+    await flushAsync();
+
+    await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
+    await flushAsync();
+
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+  });
+
+  it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {
+    const panel = renderPanel();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+
+    window.dispatchEvent(
+      new CustomEvent("rpgzzu:ai-assist", {
+        detail: { kind: "cluster-edit", tilesetId: "ts_default", groupId: "wall_group" },
+      })
+    );
+    await flushAsync();
+
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+  });
+});

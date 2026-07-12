@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { chromeForMode, setEditorUiMode } from "@/editor/editorUiMode";
+import { setEditorUiMode } from "@/editor/editorUiMode";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
@@ -38,15 +38,11 @@ afterEach(() => {
 });
 
 describe("AI shared surface (basic/expert)", () => {
-  it("does not expose expert-only AI density in either chrome mode", () => {
-    expect(chromeForMode("basic").aiDenseSections).toBe(false);
-    expect(chromeForMode("expert").aiDenseSections).toBe(false);
-  });
-
-  it("shows the same start discovery cards in basic and expert body classes", () => {
+  it("shows the same minimal start screen in basic and expert body classes", () => {
     document.body.classList.add("editor-ui-basic");
     const basicPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(basicPanel, "ai-start-try-region")).toBeTruthy();
+    expect(findByTestId(basicPanel, "ai-start-screen")).toBeTruthy();
+    expect(findByTestId(basicPanel, "ai-start-empty-hint")).toBeTruthy();
     expect(findByTestId(basicPanel, "ai-expert-board")).toBeNull();
     expect(basicPanel.dataset.uiDensity).toBe("shared");
 
@@ -54,7 +50,8 @@ describe("AI shared surface (basic/expert)", () => {
     document.body.classList.add("editor-ui-expert");
     setEditorUiMode("expert");
     const expertPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(expertPanel, "ai-start-try-region")).toBeTruthy();
+    expect(findByTestId(expertPanel, "ai-start-screen")).toBeTruthy();
+    expect(findByTestId(expertPanel, "ai-start-empty-hint")).toBeTruthy();
     expect(findByTestId(expertPanel, "ai-expert-board")).toBeNull();
     expect(expertPanel.dataset.uiDensity).toBe("shared");
   });

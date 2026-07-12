@@ -3,9 +3,11 @@
 
 import type { AuditEntry } from "@/ai/assistantSession";
 import type { ToolResult } from "@/editor/tools";
+import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
+import type { AiDocument } from "@/project/types";
 import { renderMarkdown } from "@/util/markdown";
 import { el } from "@/util/dom";
 import {
@@ -16,6 +18,7 @@ import {
   aiDayKey,
   displayUserAuditText,
   formatAiDayLabel,
+  isReadOnlyToolNoise,
   parseAiDayDate,
   type TileGridData,
 } from "./aiChatPanelHelpers";
@@ -162,6 +165,7 @@ export interface ConversationLogHost {
   appendToolLine: (name: string, result: ToolResult, args?: Record<string, unknown>) => void;
   appendTileThumbs: (tilesetId: string, tiles: readonly number[]) => void;
   appendTileGrid: (data: TileGridData) => void;
+  appendAiDocument: (documentData: AiDocument) => void;
   renderConversationEntry: (entry: AuditEntry) => void;
   clearLastReasoning: () => void;
   isLastReasoningBox: (node: HTMLElement) => boolean;
@@ -213,9 +217,22 @@ export function createConversationLogHost(options: {
     return { box, body: appendReasoningItem(body) };
   };
 
-  // 툴콜을 원문 버블로 쏟지 않고 접이식 한 줄 요약("🔧 툴 N회 실행 ▸")으로 묶는다.
-  let toolActivity: { list: HTMLElement; toggle: HTMLElement; count: number } | null = null;
+  // 툴콜을 접이식 한 줄 요약으로 묶는다. 조회성 성공 호출은 목록에 넣지 않고 개수만 센다.
+  let toolActivity: {
+    list: HTMLElement;
+    toggle: HTMLElement;
+    count: number;
+    writeOrFailCount: number;
+    readOkCount: number;
+  } | null = null;
   let toolDetailSeq = 0;
+  const refreshToolActivityToggle = (): void => {
+    if (!toolActivity) return;
+    const { count, writeOrFailCount, readOkCount, list, toggle } = toolActivity;
+    const parts = [`🔧 도구 ${count}회`];
+    if (readOkCount > 0 && writeOrFailCount > 0) parts.push(`(조회 ${readOkCount} · 작업 ${writeOrFailCount})`);
+    toggle.textContent = `${parts.join(" ")} ${list.hidden ? "▸" : "▾"}`;
+  };
   const closeToolActivity = (): void => {
     toolActivity = null;
   };
@@ -230,18 +247,26 @@ export function createConversationLogHost(options: {
         dataset: { testid: "ai-tool-activity-toggle" },
       });
       const group = el("div", { class: "ai-chat-bubble ai-chat-tool-activity", dataset: { testid: "ai-tool-activity" }, children: [toggle, list] });
-      const current = { list, toggle, count: 0 };
+      const current = { list, toggle, count: 0, writeOrFailCount: 0, readOkCount: 0 };
       toggle.addEventListener("click", () => {
         list.hidden = !list.hidden;
-        current.toggle.textContent = `🔧 도구 ${current.count}회 실행 ${list.hidden ? "▸" : "▾"}`;
+        refreshToolActivityToggle();
       });
       log.append(group);
       toolActivity = current;
     }
     toolActivity.count += 1;
+    const noiseRead = result.ok && isReadOnlyToolNoise(name);
+    if (noiseRead) {
+      toolActivity.readOkCount += 1;
+      refreshToolActivityToggle();
+      log.scrollTop = log.scrollHeight;
+      return;
+    }
+    toolActivity.writeOrFailCount += 1;
     toolDetailSeq += 1;
     toolActivity.list.append(renderToolActivityEntry(name, result, { args, index: toolDetailSeq }));
-    toolActivity.toggle.textContent = `🔧 도구 ${toolActivity.count}회 실행 ${toolActivity.list.hidden ? "▸" : "▾"}`;
+    refreshToolActivityToggle();
     log.scrollTop = log.scrollHeight;
   };
 
@@ -296,6 +321,19 @@ export function createConversationLogHost(options: {
     log.scrollTop = log.scrollHeight;
   };
 
+  // AI 리치 문서(present_doc)를 채팅 버블로 렌더 — 살아있는 타일셋 데이터 기반.
+  const appendAiDocument = (documentData: AiDocument): void => {
+    revealVolatileZone();
+    removeStartScreen();
+    const bubble = el("div", {
+      class: "ai-chat-bubble ai-chat-doc",
+      dataset: { testid: "ai-bubble-doc" },
+      children: [renderAiDocument(documentData, store.getCurrent().tilesets)],
+    });
+    log.append(bubble);
+    log.scrollTop = log.scrollHeight;
+  };
+
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
     revealVolatileZone();
@@ -341,6 +379,7 @@ export function createConversationLogHost(options: {
     appendToolLine,
     appendTileThumbs,
     appendTileGrid,
+    appendAiDocument,
     renderConversationEntry,
     clearLastReasoning: () => {
       lastReasoning = null;

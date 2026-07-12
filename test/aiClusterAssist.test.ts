@@ -76,6 +76,7 @@ function installFakeWindow(): () => void {
     configurable: true,
     writable: true,
     value: {
+      location: { search: "aiBridge=0" },
       addEventListener: (type: string, listener: EventListener) => {
         const bucket = listeners.get(type) ?? new Set<EventListener>();
         bucket.add(listener);
@@ -148,6 +149,7 @@ describe("클러스터 AI 스킬", () => {
 
 describe("AI 패널 브리지", () => {
   it("cluster-edit 이벤트가 접힌 패널을 펼치고 스킬 킥오프를 전송 경로로 보낸다", async () => {
+    storage.set("rpg-zzu:ai-map-first-collapse-v1", "1");
     storage.set("rpg-zzu:ai-panel-collapsed", "1");
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;

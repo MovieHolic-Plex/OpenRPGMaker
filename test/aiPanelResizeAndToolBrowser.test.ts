@@ -69,6 +69,8 @@ describe("패널 크기 커스텀", () => {
     // 커스텀 크기는 떠 있는(비도킹) 모드 전용 — 도킹이 기본값이라 float으로 전환해 확인한다.
     storage.set("rpg-zzu:ai-panel-docked", "0");
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
+    // 부팅 기본 접힘 — 펼친 뒤에야 인라인 크기 적용
+    findByTestId(panel, "ai-collapsed-restore")?.click();
     expect(findByTestId(panel, "ai-resize-handle")).toBeTruthy();
     expect(panel.getAttribute("style")).toContain("width:500px");
     expect(panel.getAttribute("style")).toContain("height:640px");

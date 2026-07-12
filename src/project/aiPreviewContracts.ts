@@ -1,4 +1,5 @@
-import { EASYRPG_CHARSET_ASSETS, type CharsetDirection, type EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { type CharsetDirection, type EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import type { TileAiMetadata, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 
 export type AiPreviewConfidence = "high" | "low" | "medium";
@@ -348,7 +349,7 @@ export function selectHighConfidenceCharsetCandidate(
 ): AiCharsetCandidate | null {
   const group = preferredGroup ?? charsetGroupForGoal(goal);
   if (!group) return null;
-  const asset = EASYRPG_CHARSET_ASSETS.find((candidate) => candidate.group === group);
+  const asset = CHARSET_ASSETS.find((candidate) => candidate.group === group);
   return asset ? charsetCandidate(asset, goal) : null;
 }
 

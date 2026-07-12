@@ -139,20 +139,26 @@ async function runSend(text: string): Promise<AiBridgeTurnResult> {
 }
 
 function bridgeBaseUrl(): string {
-  const port =
-    typeof window !== "undefined"
-      ? Number(new URLSearchParams(window.location.search).get("aiBridgePort") || AI_ASSISTANT_BRIDGE_DEFAULT_PORT)
-      : AI_ASSISTANT_BRIDGE_DEFAULT_PORT;
+  let port = AI_ASSISTANT_BRIDGE_DEFAULT_PORT;
+  if (typeof window !== "undefined") {
+    try {
+      const search = typeof window.location?.search === "string" ? window.location.search : "";
+      port = Number(new URLSearchParams(search).get("aiBridgePort") || AI_ASSISTANT_BRIDGE_DEFAULT_PORT);
+    } catch {
+      port = AI_ASSISTANT_BRIDGE_DEFAULT_PORT;
+    }
+  }
   return `http://${AI_ASSISTANT_BRIDGE_DEFAULT_HOST}:${Number.isFinite(port) && port > 0 ? port : AI_ASSISTANT_BRIDGE_DEFAULT_PORT}`;
 }
 
 function shouldEnableBridgeClient(): boolean {
   if (typeof window === "undefined") return false;
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("aiBridge") === "0") return false;
-  if (params.get("aiBridge") === "1") return true;
-  // 개발 서버에서는 기본 연결 시도(브리지 서버가 없으면 조용히 재시도)
   try {
+    const search = typeof window.location?.search === "string" ? window.location.search : "";
+    const params = new URLSearchParams(search);
+    if (params.get("aiBridge") === "0") return false;
+    if (params.get("aiBridge") === "1") return true;
+    // 개발 서버에서는 기본 연결 시도(브리지 서버가 없으면 조용히 재시도)
     return Boolean(import.meta.env?.DEV);
   } catch {
     return false;

@@ -142,11 +142,12 @@ body:has([data-testid='resource-modal']) .right-panel {
 .ai-assistant-input {
   background: var(--bg-inset);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
+  border-radius: 4px;
   color: var(--text-1);
-  font: inherit;
-  min-height: 52px;
-  padding: var(--space-2);
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 6px 8px;
   resize: none;
   transition: border-color var(--transition-fast);
 }
@@ -705,13 +706,13 @@ body.ai-panel-docked .editor-layout {
   border-radius: 999px;
 }
 
-/* 梨꾪똿 踰꾨툝 */
+/* 채팅 버블 — TUI 밀도 (둥근 카드 느낌 축소) */
 .ai-chat-bubble {
-  border-radius: 10px 10px 10px 4px;
+  border-radius: 4px;
   font-size: 12px;
-  line-height: 1.45;
-  max-width: 92%;
-  padding: 6px 10px;
+  line-height: 1.4;
+  max-width: 96%;
+  padding: 4px 8px;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -719,16 +720,16 @@ body.ai-panel-docked .editor-layout {
   align-self: flex-end;
   background: var(--accent-muted);
   border: 1px solid var(--accent-border);
-  border-radius: 10px 10px 4px 10px;
+  border-radius: 4px;
   color: var(--text-1);
-  max-width: 92%;
+  max-width: 96%;
 }
 .ai-chat-assistant {
   align-self: flex-start;
-  background: var(--control-bg);
+  background: transparent;
   border: 1px solid var(--border-subtle);
   color: var(--text-1);
-  max-width: 92%;
+  max-width: 96%;
 }
 .ai-chat-assistant.is-discarded,
 .ai-chat-assistant.is-reverted {
@@ -773,20 +774,26 @@ body.ai-panel-docked .editor-layout {
   font-style: italic;
 }
 .ai-chat-input-row {
+  align-items: flex-end;
   display: flex;
-  gap: var(--space-2);
+  gap: 4px;
 }
 .ai-chat-input-row .ai-assistant-input {
-  border-radius: 8px;
+  border-radius: 4px;
   flex: 1 1 auto;
-  min-height: 40px;
+  min-height: 32px;
 }
 .ai-chat-send {
   flex: 0 0 auto;
   align-self: stretch;
   background: var(--accent);
   border-color: var(--accent-border);
-  border-radius: 8px;
+  border-radius: 4px;
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  min-height: 32px;
+  padding: 4px 10px;
   color: var(--on-accent);
   font-weight: 600;
   min-height: 40px;
@@ -1770,14 +1777,26 @@ body.ai-panel-docked .editor-layout {
   }
 }
 
-/* ?쒖옉 ?붾㈃ ??鍮???붿쓽 泥レ씤??*/
+/* 시작 화면 — 최소 힌트만 (비주얼 카드는 추후) */
 .ai-start-screen {
   display: flex;
   flex-direction: column;
   gap: 10px;
   justify-content: flex-start;
-  padding: 4px 8px 16px;
+  padding: 16px 12px;
   text-align: center;
+}
+
+.ai-start-screen.is-minimal {
+  justify-content: center;
+  min-height: 120px;
+}
+
+.ai-start-empty-hint {
+  color: var(--text-3, var(--text-2));
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.85;
 }
 
 .ai-start-title {
@@ -1789,14 +1808,19 @@ body.ai-panel-docked .editor-layout {
 
 .ai-start-sub {
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.4;
 }
 
+/* 비주얼 갤러리 스타일 보류(추후 재사용 가능) */
+.ai-start-visual-gallery {
+  display: none;
+}
+
+/* 레거시 텍스트 스킬 카드(다른 진입점 호환) */
 .ai-start-grid {
   display: grid;
   gap: 8px;
-  /* 湲곕낯 2????醫곸? ?꾪겕?먯꽌??移대뱶 ?믪씠쨌??씠 ?쇱젙 */
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 4px;
 }
@@ -2251,3 +2275,29 @@ body.ai-panel-docked .editor-layout {
   opacity: 0.9;
   pointer-events: none;
 }
+
+/* ── AI 리치 문서 (present_doc) ─────────────────────────────────────────── */
+.ai-chat-bubble.ai-chat-doc { max-width: 100%; padding: 10px 12px; }
+.ai-doc { display: flex; flex-direction: column; gap: 10px; }
+.ai-doc-title { margin: 0; font-size: 14px; font-weight: 800; }
+.ai-doc-block { min-width: 0; }
+.ai-doc-error { color: #c65f5f; font-size: 12px; }
+.ai-doc-table-scroll, .ai-doc-sheet-scroll, .ai-doc-demo-scroll { overflow-x: auto; }
+.ai-doc-table-scroll table { border-collapse: collapse; font-size: 12.5px; width: 100%; }
+.ai-doc-table-scroll th, .ai-doc-table-scroll td { border-bottom: 1px solid rgba(128,128,128,0.25); padding: 4px 8px; text-align: left; }
+.ai-doc-sheet-inner { position: relative; image-rendering: pixelated; border-radius: 6px; }
+.ai-doc-zone { position: absolute; border: 2px solid; border-radius: 4px; pointer-events: none; }
+.ai-doc-zone span { position: absolute; left: -2px; top: -18px; font-size: 10px; font-weight: 700; color: #fff; padding: 0 4px; border-radius: 3px; white-space: nowrap; }
+.ai-doc-card-head { display: flex; align-items: center; gap: 6px; }
+.ai-doc-card-title { font-size: 13px; font-weight: 700; }
+.ai-doc-badge { font-size: 10.5px; font-weight: 700; color: #fff; background: #7c5b1e; border-radius: 4px; padding: 1px 6px; }
+.ai-doc-card-ids { font-size: 11px; opacity: 0.65; font-family: Consolas, monospace; }
+.ai-doc-card-grid { display: inline-block; margin-top: 6px; border-radius: 6px; overflow: hidden; background: #12160f; }
+.ai-doc-card-row { display: flex; }
+.ai-doc-card-cell { image-rendering: pixelated; flex: 0 0 auto; }
+.ai-doc-card-caption { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+.ai-doc-demo-toolbar { display: flex; gap: 6px; margin-bottom: 6px; }
+.ai-doc-demo-btn { font-size: 12px; padding: 3px 10px; border: 1px solid rgba(128,128,128,0.4); border-radius: 6px; background: transparent; cursor: pointer; color: inherit; }
+.ai-doc-demo-btn[aria-pressed="true"] { background: #7c5b1e; color: #fff; border-color: #7c5b1e; }
+.ai-doc-demo-canvas { image-rendering: pixelated; border-radius: 6px; display: block; }
+.ai-doc-iframe { width: 100%; height: 420px; border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; background: #fff; }

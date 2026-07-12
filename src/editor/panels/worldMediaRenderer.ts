@@ -1,4 +1,4 @@
-import { EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { renderEventGraphicIcon } from "@/editor/panels/eventEditor/eventGraphicPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import type { WorldEntity } from "@/project/world/types";
@@ -11,7 +11,7 @@ export function renderEntityMedia(entity: WorldEntity, project: Project): HTMLEl
     const actorRef = entity.refs?.find((ref) => ref.kind === "actor");
     const actor = actorRef ? project.database.actors.find((record) => record.id === actorRef.id) : undefined;
     const asset = actor?.characterResourceId
-      ? EASYRPG_CHARSET_ASSETS.find((candidate) => candidate.id === actor.characterResourceId)
+      ? CHARSET_ASSETS.find((candidate) => candidate.id === actor.characterResourceId)
       : undefined;
     if (asset) {
       const preview = renderEventGraphicIcon({ sprite: { type: "bundled", id: asset.textureKey } });

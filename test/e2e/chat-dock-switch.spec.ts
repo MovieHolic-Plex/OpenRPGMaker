@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout";
 const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
+const MAP_FIRST_KEY = "rpg-zzu:ai-map-first-collapse-v1";
 
 type Box = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 
@@ -21,15 +22,19 @@ async function dismissLogin(page: Page): Promise<void> {
 async function openEditor(page: Page): Promise<void> {
   // addInitScript는 모든 내비게이션(reload 포함)에서 실행되므로, 테스트 중간에 심은
   // localStorage 상태를 지워버리지 않도록 첫 로드에서만 초기화한다(sessionStorage 가드).
-  await page.addInitScript(({ layoutKey, collapsedKey }) => {
+  await page.addInitScript(({ layoutKey }) => {
     if (sessionStorage.getItem("chat-dock-e2e-cleared")) return;
     sessionStorage.setItem("chat-dock-e2e-cleared", "1");
     localStorage.removeItem(layoutKey);
-    localStorage.removeItem(collapsedKey);
-  }, { layoutKey: EDITOR_LAYOUT_KEY, collapsedKey: PANEL_COLLAPSED_KEY });
+  }, { layoutKey: EDITOR_LAYOUT_KEY });
   await page.goto("/?chatDockSwitch=1");
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
+  // 부팅 기본 접힘 — 레이아웃/입력 검증 전에 펼친다.
+  const restore = page.getByTestId("ai-collapsed-restore");
+  if (await restore.isVisible().catch(() => false)) {
+    await restore.click();
+  }
   await expect(page.getByTestId("ai-command-bar")).toBeVisible();
 }
 

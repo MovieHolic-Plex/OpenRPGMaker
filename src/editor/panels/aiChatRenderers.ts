@@ -17,8 +17,10 @@ export function formatAiRunningStatus(
 ): string {
   const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
   const label = phaseLabel?.trim();
-  const prefix = label ? `${label} …` : "생각 중…";
-  return `${prefix} ${elapsedSeconds}초 · 도구 ${toolCount}/${maxTools}`;
+  const prefix = label ? `${label}…` : "생각 중…";
+  // 분모(상한)는 진단용 — 일상 UI에는 호출 횟수만.
+  void maxTools;
+  return toolCount > 0 ? `${prefix} ${elapsedSeconds}초 · 도구 ${toolCount}` : `${prefix} ${elapsedSeconds}초`;
 }
 
 export function isDraftDestructiveTool(name: string): boolean {
@@ -89,14 +91,11 @@ export function renderToolCallDetail(name: string, result: ToolResult, detail: T
 
 export function renderToolActivityEntry(name: string, result: ToolResult, detail?: ToolDetailSource): HTMLElement {
   if (result.ok) {
-    if (!detail) return el("div", { class: "ai-tool-activity-line", text: formatToolActivityLine(name, result) });
-    return el("details", {
-      class: "ai-tool-activity-line ai-tool-entry",
+    // 성공한 호출은 한 줄 요약만 — JSON 인자/결과 원문은 실패·디버그 때만.
+    return el("div", {
+      class: "ai-tool-activity-line",
       dataset: { testid: "ai-tool-entry" },
-      children: [
-        el("summary", { class: "ai-tool-entry-summary", text: formatToolActivityLine(name, result) }),
-        renderToolCallDetail(name, result, detail),
-      ],
+      text: formatToolActivityLine(name, result),
     });
   }
   const draftPrefix = isDraftDestructiveTool(name) ? "(초안) " : "";

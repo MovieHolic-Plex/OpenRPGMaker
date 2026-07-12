@@ -138,9 +138,9 @@ describe("스킬 UI(fakeDom)", () => {
     expect(findByTestId(panel, "ai-learn-structure")).toBeTruthy();
     expect(findByTestId(panel, "ai-demo-teach")).toBeTruthy();
     expect(findByTestId(panel, "ai-export")).toBeTruthy();
-    // 설정 폼은 존재하되 기본 접힘(⚙ 토글).
+    // 설정은 모달 — 헤더 ⚙ 만 상시 노출.
     expect(findByTestId(panel, "ai-settings-toggle")).toBeTruthy();
-    expect(findByTestId(panel, "ai-config-save")).toBeTruthy();
+    expect(findByTestId(panel, "ai-config-save")).toBeNull();
     // 컨텍스트 칩에 현재 맵 이름이 뜬다.
     const chips = findByTestId(panel, "ai-context-chips");
     expect(chips?.textContent).toContain("🗺");
@@ -152,8 +152,13 @@ describe("스킬 UI(fakeDom)", () => {
     input.value = "/집";
     input.dispatchEvent(new Event("input"));
     expect(findByTestId(panel, "ai-slash-item-build-house")).toBeTruthy();
-    expect(findByTestId(panel, "ai-slash-item-build-house")?.textContent).toContain("집");
-    expect(findByTestId(panel, "ai-slash-item-build-house")?.textContent).toContain("/");
+    // TUI: `/build-house` + `# 예: …` 구체 예시만. `<width>` 같은 자리표시자 없음.
+    const house = findByTestId(panel, "ai-slash-item-build-house");
+    expect(house?.textContent).toContain("/build-house");
+    expect(house?.textContent).not.toContain("<");
+    expect(house?.textContent).toContain("예:");
+    expect(findByTestId(panel, "ai-slash-hint-build-house")?.textContent).toContain("회벽");
+    expect(house?.getAttribute("title")).toContain("집");
     input.value = "일반 텍스트";
     input.dispatchEvent(new Event("input"));
     expect(findByTestId(panel, "ai-slash-item-build-house")).toBeNull();
@@ -205,10 +210,11 @@ describe("스킬 UI(fakeDom)", () => {
     expect((onPick.mock.calls[0][0] as { id: string }).id).toBe("map-audit");
   });
 
-  it("시작 화면(빈 대화)에 큰 스킬 카드가 뜨고, 헤더/입력부는 경량 IA를 유지한다", () => {
+  it("시작 화면(빈 대화)은 최소 힌트만 두고, 헤더/입력부는 경량 IA를 유지한다", () => {
     const panel = renderAiChatPanel() as unknown as FakeElement;
     expect(findByTestId(panel, "ai-start-screen")).toBeTruthy();
-    expect(findByTestId(panel, "ai-start-build-house")).toBeTruthy();
+    expect(findByTestId(panel, "ai-start-empty-hint")).toBeTruthy();
+    expect(findByTestId(panel, "ai-start-build-house")).toBeNull();
     expect(findByTestId(panel, "ai-mode-badge")).toBeNull();
     expect(findByTestId(panel, "ai-skill-pinbar")).toBeNull();
     expect(findByTestId(panel, "ai-skill-slash-toggle")).toBeTruthy();

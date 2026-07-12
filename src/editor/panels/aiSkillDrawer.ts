@@ -59,13 +59,13 @@ export function renderSkillParamForm(
       toast("프롬프트를 만들 수 없습니다 — 인자를 확인하세요.", "info");
       return;
     }
-    onSubmit(prompt, skill.displayAs?.(args) ?? `${skill.icon} ${skill.name}`);
+    onSubmit(prompt, skillCommandLine(skill));
   };
   return el("div", {
     class: "ai-skill-param-form",
     dataset: { testid: "ai-skill-param-form" },
     children: [
-      el("div", { class: "ai-skill-param-title", text: `${skill.icon} ${skill.name}` }),
+      el("div", { class: "ai-skill-param-title", text: skillCommandLine(skill) }),
       ...rows,
       el("div", {
         class: "ai-skill-param-actions",
@@ -117,15 +117,60 @@ export interface SlashListOptions {
   readonly onViewAll?: () => void;
 }
 
+/** TUI 명령 줄 — `/build-house` 만. 인자 자리표시자(`<width>`)는 쓰지 않는다. */
+export function skillCommandLine(skill: SkillDef): string {
+  return `/${skill.id}`;
+}
+
+// 호환 alias (예전 recipe 이름).
 function skillRecipeLine(skill: SkillDef): string {
-  if (skill.params.length > 0) {
-    const args = skill.params
-      .slice(0, 3)
-      .map((param) => `<${param.label}>`)
-      .join(" ");
-    return `/${skill.name} ${args}`.trim();
+  return skillCommandLine(skill);
+}
+
+/**
+ * 한 줄 예시 힌트 — `# 예: …` 형태.
+ * 마케팅 문장 대신 "이렇게 쓰면 됨" 예시를 짧게(한글).
+ */
+const SKILL_TUI_HINTS: Readonly<Record<string, string>> = {
+  interview: "예: 모르는 타일 의미 Q&A로 배우기",
+  "learn-structure": "예: 선택 영역 → 구조 템플릿",
+  "cluster-edit": "예: groupId=roof_main",
+  "range-classify": "예: 범위 0,0,4,4 · 타일 12,13",
+  "unclassified-analysis": "예: 첫 배치 12,13,14",
+  "demo-teach": "예: 샌드박스에 직접 칠해서 가르치기",
+  "build-house": "예: 10×10 회벽 직사각 집",
+  "map-audit": "예: 린트 + 도달성 검사",
+  "build-village": "예: 강가 어촌 · 집 3 · NPC 2",
+  "quest-builder": "예: 반지 찾기 → 100G",
+  "build-road": "예: 남문 → 광장 모래길",
+  "place-npcs": "예: 시장에 상인 2명",
+  "npc-motion": "예: 주민은 랜덤 배회",
+  "make-items": "예: 화염 물약 2종",
+};
+
+export function skillTuiHint(skill: SkillDef): string {
+  const fixed = SKILL_TUI_HINTS[skill.id];
+  if (fixed) return fixed;
+  // 사용자 스킬: description 또는 placeholder 한 조각을 압축
+  const fromParam = skill.params.find((p) => p.placeholder)?.placeholder?.replace(/^예:\s*/u, "");
+  if (fromParam) return `예: ${fromParam.length > 36 ? `${fromParam.slice(0, 34)}…` : fromParam}`;
+  const d = skill.description.trim();
+  if (!d) return "";
+  return d.length > 40 ? `${d.slice(0, 38)}…` : d;
+}
+
+function renderSkillListBody(skill: SkillDef): HTMLElement[] {
+  const hint = skillTuiHint(skill);
+  const lines: HTMLElement[] = [
+    el("span", { class: "ai-slash-item-name", text: skillCommandLine(skill) }),
+  ];
+  if (hint) {
+    lines.push(el("span", { class: "ai-slash-item-hint", text: `# ${hint}`, dataset: { testid: `ai-slash-hint-${skill.id}` } }));
   }
-  return `/${skill.name}`;
+  return [
+    el("span", { class: "ai-slash-item-mark", text: ">", attrs: { "aria-hidden": "true" } }),
+    el("div", { class: "ai-slash-item-body", children: lines }),
+  ];
 }
 
 // 슬래시 자동완성 목록 — 입력창 위에 뜬다.
@@ -136,27 +181,35 @@ export function slashSkillMatches(query: string): SkillDef[] {
 export function renderSlashList(query: string, onPick: (skill: SkillDef) => void, options: SlashListOptions = {}): HTMLElement {
   const matches = slashSkillMatches(query);
   const activeIndex = Math.max(0, Math.min(options.activeIndex ?? 0, Math.max(0, matches.length - 1)));
+  // TUI: `/build-house …` + `# e.g. …` 예시 한 줄. 한글 정식 이름은 title.
   const skillItems = matches.map((skill, index) =>
     el("button", {
       class: `ai-slash-item${index === activeIndex ? " is-active" : ""}`,
-      attrs: { type: "button", title: skill.description, "aria-selected": String(index === activeIndex) },
+      attrs: {
+        type: "button",
+        title: `${skill.name} — ${skill.description}`,
+        "aria-selected": String(index === activeIndex),
+        "aria-label": `${skillCommandLine(skill)} ${skillTuiHint(skill)}`.trim(),
+      },
       dataset: { testid: `ai-slash-item-${skill.id}` },
-      children: [
-        el("span", { class: "ai-slash-item-name", text: `${skill.icon} ${skill.name}` }),
-        el("span", { class: "ai-slash-item-desc", text: skill.description }),
-        el("span", { class: "ai-slash-item-example", text: skillRecipeLine(skill) }),
-      ],
+      children: renderSkillListBody(skill),
       on: { click: () => onPick(skill) },
     })
   );
   const footer = options.onViewAll
     ? [el("button", {
         class: "ai-slash-item ai-slash-view-all",
-        attrs: { type: "button", title: "스킬 전체 보기" },
+        attrs: { type: "button", title: "스킬 전체 목록", "aria-label": "/skills" },
         dataset: { testid: "ai-slash-view-all" },
         children: [
-          el("span", { class: "ai-slash-item-name", text: "전체 보기" }),
-          el("span", { class: "ai-slash-item-desc", text: "스킬 서랍에서 저장/삭제와 전체 목록을 봅니다." }),
+          el("span", { class: "ai-slash-item-mark", text: ">", attrs: { "aria-hidden": "true" } }),
+          el("div", {
+            class: "ai-slash-item-body",
+            children: [
+              el("span", { class: "ai-slash-item-name", text: "/skills" }),
+              el("span", { class: "ai-slash-item-hint", text: "# 예: 전체 스킬 목록" }),
+            ],
+          }),
         ],
         on: { click: options.onViewAll },
       })]
@@ -167,7 +220,7 @@ export function renderSlashList(query: string, onPick: (skill: SkillDef) => void
     attrs: { role: "listbox", "aria-label": "스킬 검색" },
     children: matches.length > 0
       ? [...skillItems, ...footer]
-      : [el("div", { class: "ai-slash-empty", text: "일치하는 스킬이 없습니다" }), ...footer],
+      : [el("div", { class: "ai-slash-empty", text: "일치 없음" }), ...footer],
   });
 }
 
@@ -253,7 +306,7 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
     if (!prompt.trim()) return;
     recordSkillUse(skill.id);
     element.hidden = true;
-    options.onRunPrompt(prompt, skill.displayAs?.({}) ?? `${skill.icon} ${skill.name}`);
+    options.onRunPrompt(prompt, skillCommandLine(skill));
   };
 
   const openSkill = (skill: SkillDef): void => {
@@ -321,14 +374,20 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
   };
 
   const skillCard = (skill: SkillDef): HTMLElement => {
+    const hint = skillTuiHint(skill);
     const children: HTMLElement[] = [
-      el("span", { class: "ai-skill-card-icon", text: skill.icon }),
-      el("span", { class: "ai-skill-card-name", text: skill.name }),
-      el("span", { class: "ai-skill-card-desc", text: skill.description }),
+      el("span", { class: "ai-skill-card-icon", text: ">", attrs: { "aria-hidden": "true" } }),
+      el("div", {
+        class: "ai-skill-card-body",
+        children: [
+          el("span", { class: "ai-skill-card-name", text: skillCommandLine(skill) }),
+          ...(hint ? [el("span", { class: "ai-skill-card-hint", text: `# ${hint}` })] : []),
+        ],
+      }),
     ];
     const card = el("button", {
       class: `ai-skill-card${skill.source === "user" ? " is-user" : ""}`,
-      attrs: { type: "button", title: skill.description },
+      attrs: { type: "button", title: `${skill.name} — ${skill.description}` },
       dataset: { testid: LEGACY_TESTIDS[skill.id] ?? `ai-skill-${skill.id}` },
       children,
       on: { click: () => runSkill(skill) },

@@ -50,20 +50,33 @@ function findByTag(root: FakeElement, tagName: string): FakeElement | null {
   return null;
 }
 
+/** 부팅은 항상 접힘 — 테스트에서 펼침이 필요하면 복귀 버튼 클릭. */
+function expandPanel(panel: FakeElement): void {
+  findByTestId(panel, "ai-collapsed-restore")?.click();
+  expect(panel.classList.contains("is-collapsed")).toBe(false);
+}
+
 describe("AI 패널 크롬", () => {
   it("제목을 클릭해도 패널이 접히지 않는다", () => {
     const panel = renderPanel();
+    expandPanel(panel);
     const title = findByTag(panel, "h2");
     if (!title) throw new Error("AI panel title missing");
 
     title.click();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBeUndefined();
+  });
+
+  it("부팅 시 기본은 축소(접힘)이다", () => {
+    storage.set("rpg-zzu:ai-panel-collapsed", "0"); // 예전 펼침 저장값 무시
+    const panel = renderPanel();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
   });
 
   it("접기 버튼은 커맨드 바 인셋을 유지하고, 복귀 타깃 클릭으로 펼친다", () => {
     const panel = renderPanel();
+    expandPanel(panel);
     const collapse = findByTestId(panel, "ai-collapse");
     if (!collapse) throw new Error("collapse button missing");
     expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
@@ -92,6 +105,7 @@ describe("AI 패널 크롬", () => {
   it("떠 있는 말풍선으로 접어도 고대비 복귀 알약이 남는다", () => {
     storage.set("rpg-zzu:ai-panel-docked", "0");
     const panel = renderPanel();
+    expandPanel(panel);
     const collapse = findByTestId(panel, "ai-collapse");
     if (!collapse) throw new Error("collapse button missing");
 
@@ -106,6 +120,7 @@ describe("AI 패널 크롬", () => {
 
   it("스튜디오에서 접어도 화면 안 복귀 타깃이 남는다", () => {
     const panel = renderPanel();
+    expandPanel(panel);
     const studio = findByTestId(panel, "ai-studio-toggle");
     const collapse = findByTestId(panel, "ai-collapse");
     if (!studio || !collapse) throw new Error("studio or collapse button missing");
@@ -119,24 +134,20 @@ describe("AI 패널 크롬", () => {
     expect(restore).toBeTruthy();
   });
 
-  it("시작 화면은 짧은 스킬 카드만 두고 설명은 title에 둔다", () => {
+  it("시작 화면은 최소 힌트만 두고 카드 갤러리는 없다", () => {
     const panel = renderPanel();
+    expandPanel(panel);
     const startScreen = findByTestId(panel, "ai-start-screen");
-    const card = findByTestId(panel, "ai-start-build-house");
-    if (!startScreen || !card) throw new Error("start screen missing");
+    if (!startScreen) throw new Error("start screen missing");
 
-    const cardTitle = card.getAttribute("title");
-
-    // 긴 스킬 안내 블록은 제거 — 카드 title + 슬래시(/)로 탐색.
     expect(findByTestId(panel, "ai-start-guide")).toBeNull();
-    expect(card.querySelector(".ai-start-card-desc")).toBeNull();
-    expect(cardTitle).toBeTruthy();
-    expect(card.textContent).not.toContain(cardTitle ?? "");
-    expect(startScreen.textContent).toContain("영역을 선택하거나");
+    expect(findByTestId(panel, "ai-start-try-region")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-start-build-house")).toBeNull();
+    expect(findByTestId(panel, "ai-start-empty-hint")?.textContent).toContain("아래에 요청을 입력");
   });
 
-  it("기존 localStorage 접힘 키를 그대로 읽고 쓴다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+  it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {
     const panel = renderPanel();
     const restore = findByTestId(panel, "ai-collapsed-restore");
 

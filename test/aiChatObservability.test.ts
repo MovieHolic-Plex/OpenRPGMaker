@@ -93,21 +93,16 @@ describe("글자 크기 3단 (V3C ①)", () => {
 });
 
 describe("도구 호출 상세 아코디언 (V3C ③)", () => {
-  it("성공 라인은 detail 제공 시 details 아코디언이 되고 호출 인자 JSON과 결과 원문(data 포함)을 담는다", () => {
+  it("성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다", () => {
     const entry = renderToolActivityEntry(
       "paint_tiles",
       { ok: true, summary: "타일 5칸 칠함", data: { tilesTouched: 5 } },
       { args: { mapId: "m1", tile: 42 }, index: 3 }
     ) as unknown as FakeElement;
-    expect(entry.tagName).toBe("DETAILS");
-    const detail = findByTestId(entry, "ai-tool-detail-3");
-    expect(detail).toBeTruthy();
-    const text = detail?.textContent ?? "";
-    expect(text).toContain('"mapId": "m1"');
-    expect(text).toContain('"tile": 42');
-    expect(text).toContain("타일 5칸 칠함");
-    expect(text).toContain("tilesTouched");
-    // detail 없는 레거시 호출은 기존 한 줄 렌더를 유지한다.
+    expect(entry.tagName).toBe("DIV");
+    expect(entry.textContent).toContain("paint_tiles");
+    expect(entry.textContent).toContain("타일 5칸 칠함");
+    expect(findByTestId(entry, "ai-tool-detail-3")).toBeNull();
     const legacy = renderToolActivityEntry("paint_tiles", { ok: true, summary: "타일 5칸 칠함" }) as unknown as FakeElement;
     expect(legacy.tagName).toBe("DIV");
   });
@@ -133,7 +128,7 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
     expect(text).toContain('"id": "dup"');
   });
 
-  it("복원된 대화의 도구 로그에도 감사 항목의 호출 인자가 상세(ai-tool-detail-1)로 배선된다", () => {
+  it("복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다", () => {
     saveConversation({
       id: "conv_tool",
       title: "복원",
@@ -146,10 +141,11 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
       ],
     });
     const panel = renderPanel();
-    const detail = findByTestId(panel, "ai-tool-detail-1");
-    expect(detail).toBeTruthy();
-    expect(detail?.textContent).toContain('"mapId": "map_a"');
-    expect(detail?.textContent).toContain("타일 3칸");
+    const activity = findByTestId(panel, "ai-tool-activity");
+    expect(activity).toBeTruthy();
+    expect(activity?.textContent).toContain("paint_tiles");
+    expect(activity?.textContent).toContain("타일 3칸");
+    expect(findByTestId(panel, "ai-tool-detail-1")).toBeNull();
   });
 });
 
@@ -185,9 +181,11 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     expect(items[1]?.textContent).toBe("두 번째 추론 원문입니다.");
     // 병합 카운트가 토글 문구에 반영된다(💭 추론 2회).
     expect(reasoningBox.textContent).toContain("추론 2회");
-    // 도구 상세도 순번대로 배선됐다(같은 턴의 실호출 인자/결과).
-    expect(findByTestId(panel, "ai-tool-detail-1")).toBeTruthy();
-    expect(findByTestId(panel, "ai-tool-detail-2")).toBeTruthy();
+    // 조회성 툴(get_*)은 목록 줄 없이 카운트만 — 활동 그룹은 남는다.
+    const activity = findByTestId(panel, "ai-tool-activity");
+    expect(activity).toBeTruthy();
+    expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toMatch(/도구/);
+    expect(findByTestId(panel, "ai-tool-detail-1")).toBeNull();
   });
 });
 

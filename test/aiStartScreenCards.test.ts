@@ -3,10 +3,14 @@ import { installFakeDom, findByTestId, renderWithFakeDom } from "./fakeDom";
 import {
   buildRecentAiWorkCard,
   buildTryRegionCard,
+  buildVisualStartGallery,
+  defaultAiVisualStartPrompts,
   formatRelativeTime,
   summarizeActivityResult,
 } from "@/editor/panels/aiStartScreenCards";
 import type { AiActivityLogRecord } from "@/ai/activityLog";
+import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 
 beforeEach(() => installFakeDom());
 
@@ -66,5 +70,28 @@ describe("buildRecentAiWorkCard", () => {
     expect(card.textContent).toContain("34칸");
     expect(card.textContent).toContain("5분 전");
     expect(buildRecentAiWorkCard([], NOW)).toBeNull();
+  });
+});
+
+describe("buildVisualStartGallery", () => {
+  it("소수 비주얼 카드를 렌더하고 클릭 시 instruction을 넘긴다", () => {
+    const project = createBlankProject();
+    const tileset = project.tilesets[DEFAULT_TILESET_ID] ?? Object.values(project.tilesets)[0] ?? null;
+    const picked: string[] = [];
+    const gallery = renderWithFakeDom(() =>
+      buildVisualStartGallery({
+        tileset,
+        onPick: (instruction, id) => picked.push(`${id}:${instruction}`),
+      })
+    );
+    expect(findByTestId(gallery, "ai-start-visual-gallery")).toBeTruthy();
+    expect(defaultAiVisualStartPrompts()).toHaveLength(3);
+    const house = findByTestId(gallery, "ai-start-build-house");
+    expect(house).toBeTruthy();
+    expect(findByTestId(gallery, "ai-start-visual-stage-house")).toBeTruthy();
+    expect(findByTestId(gallery, "ai-start-visual-villager")).toBeTruthy();
+    house?.dispatchEvent(new Event("click"));
+    expect(picked[0]).toMatch(/^house:/);
+    expect(picked[0]).toContain("집");
   });
 });
