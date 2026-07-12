@@ -275,10 +275,16 @@ function scheduleHeartbeat(mapId: MapId, mapName: string): void {
     if (!config || status.kind !== "held" || status.mapId !== mapId) return;
     void acquireMapLock(config, mapId, mapName)
       .then((result) => {
-        if (result.kind === "held" && status.kind === "held" && status.mapId === mapId) {
+        if (status.kind !== "held" || status.mapId !== mapId) return;
+        if (result.kind === "held") {
           setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
           scheduleHeartbeat(mapId, mapName);
+          return;
         }
+        // 하트비트 도중 다른 세션이 락을 가져간 경우 — 여기서 상태를 갱신하지 않으면
+        // 로컬 UI가 영원히 stale "held"로 남아 소유권을 잃은 뒤에도 편집을 계속 허용한다.
+        stopHeartbeat();
+        setStatus({ kind: "locked", mapId, mapName, ownerLabel: result.ownerLabel, expiresAt: result.expiresAt, updatedAt: result.updatedAt });
       })
       .catch((error) => {
         if (status.kind === "held" && status.mapId === mapId) setStatus(unavailableStatusFromError(error, mapId, mapName));

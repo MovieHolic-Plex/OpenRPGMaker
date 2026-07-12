@@ -36,7 +36,6 @@ export function recordManualProjectCommitAfterSave(project: Project): void {
   const persistedProject = projectWithoutEventDrafts(project);
   const serialized = serialize(persistedProject);
   if (serialized === lastManualSerialized) return;
-  lastManualSerialized = serialized;
   const diff = manualDiffSummary();
   void recordProjectCommitToSupabase({
     project: persistedProject,
@@ -46,9 +45,15 @@ export function recordManualProjectCommitAfterSave(project: Project): void {
     diff,
     toolNames: [],
     serialized,
-  }).catch((error) => {
-    console.warn("[projectCommits] manual record failed:", error);
-  });
+  })
+    // 커밋 기록 요청이 실패하면(네트워크 오류 등) baseline을 전진시키지 않는다 —
+    // 미리 전진시키면 이후 동일 내용 재저장이 dedup에 걸려 그 커밋이 영구히 기록되지 않는다.
+    .then(() => {
+      lastManualSerialized = serialized;
+    })
+    .catch((error) => {
+      console.warn("[projectCommits] manual record failed:", error);
+    });
 }
 
 export function resetManualProjectCommitBaseline(project: Project): void {
