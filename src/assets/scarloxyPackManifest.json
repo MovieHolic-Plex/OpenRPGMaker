@@ -1,0 +1,473 @@
+{
+  "backdrops": [
+    "forest",
+    "ice",
+    "sand"
+  ],
+  "monsters": [
+    "atrox",
+    "charmadillo",
+    "cindrill",
+    "cleaf",
+    "draem",
+    "finiette",
+    "finsta",
+    "friolera",
+    "gulfin",
+    "ivieron",
+    "jacana",
+    "larvea",
+    "pluma",
+    "plumette",
+    "pouch",
+    "sparchu"
+  ],
+  "battleAnimations": [
+    "explosion",
+    "fire",
+    "green",
+    "ice",
+    "scratch",
+    "splash"
+  ],
+  "uiIcons": [
+    "attack",
+    "defense",
+    "energy",
+    "health",
+    "recovery",
+    "speed",
+    "star"
+  ],
+  "chipsets": [
+    {
+      "file": "scarloxy-chipset-grassland.png",
+      "blocks": [
+        {
+          "name": "grass-terrain",
+          "col": 0,
+          "row": 0,
+          "w": 10,
+          "h": 6,
+          "kind": "terrain"
+        },
+        {
+          "name": "water-terrain",
+          "col": 0,
+          "row": 6,
+          "w": 10,
+          "h": 3,
+          "kind": "water"
+        },
+        {
+          "name": "coast-pond-grass",
+          "col": 10,
+          "row": 6,
+          "w": 3,
+          "h": 3,
+          "kind": "water"
+        },
+        {
+          "name": "coast-island-grass",
+          "col": 13,
+          "row": 6,
+          "w": 3,
+          "h": 3,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-0",
+          "col": 16,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-1",
+          "col": 17,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-2",
+          "col": 18,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-3",
+          "col": 19,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "green-tree",
+          "col": 10,
+          "row": 0,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "green-tree-bushy",
+          "col": 12,
+          "row": 0,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "teal-tree",
+          "col": 14,
+          "row": 0,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "teal-tree-bushy",
+          "col": 16,
+          "row": 0,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "green-tree-small",
+          "col": 18,
+          "row": 0,
+          "w": 1,
+          "h": 2,
+          "kind": "tree"
+        },
+        {
+          "name": "teal-tree-small",
+          "col": 19,
+          "row": 0,
+          "w": 1,
+          "h": 2,
+          "kind": "tree"
+        },
+        {
+          "name": "grass-tuft",
+          "col": 18,
+          "row": 2,
+          "w": 1,
+          "h": 1,
+          "kind": "deco"
+        },
+        {
+          "name": "grass-rock-1",
+          "col": 16,
+          "row": 7,
+          "w": 1,
+          "h": 1,
+          "kind": "rock"
+        },
+        {
+          "name": "grass-rock-2",
+          "col": 17,
+          "row": 7,
+          "w": 1,
+          "h": 1,
+          "kind": "rock"
+        },
+        {
+          "name": "gate-pillar",
+          "col": 18,
+          "row": 7,
+          "w": 1,
+          "h": 2,
+          "kind": "structure"
+        },
+        {
+          "name": "gate-top",
+          "col": 20,
+          "row": 0,
+          "w": 4,
+          "h": 2,
+          "kind": "overhead"
+        },
+        {
+          "name": "house-small",
+          "col": 0,
+          "row": 9,
+          "w": 5,
+          "h": 5,
+          "kind": "structure"
+        },
+        {
+          "name": "house-small-alt",
+          "col": 5,
+          "row": 9,
+          "w": 5,
+          "h": 5,
+          "kind": "structure"
+        },
+        {
+          "name": "house-large",
+          "col": 10,
+          "row": 9,
+          "w": 7,
+          "h": 7,
+          "kind": "structure"
+        },
+        {
+          "name": "house-large-alt",
+          "col": 17,
+          "row": 9,
+          "w": 7,
+          "h": 7,
+          "kind": "structure"
+        },
+        {
+          "name": "hospital",
+          "col": 24,
+          "row": 9,
+          "w": 6,
+          "h": 6,
+          "kind": "structure"
+        }
+      ]
+    },
+    {
+      "file": "scarloxy-chipset-wilds.png",
+      "blocks": [
+        {
+          "name": "sand-terrain",
+          "col": 0,
+          "row": 0,
+          "w": 10,
+          "h": 6,
+          "kind": "terrain"
+        },
+        {
+          "name": "ice-terrain",
+          "col": 10,
+          "row": 0,
+          "w": 10,
+          "h": 6,
+          "kind": "terrain"
+        },
+        {
+          "name": "water-terrain",
+          "col": 20,
+          "row": 0,
+          "w": 10,
+          "h": 3,
+          "kind": "water"
+        },
+        {
+          "name": "coast-frame0",
+          "col": 0,
+          "row": 6,
+          "w": 24,
+          "h": 3,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-0",
+          "col": 24,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-1",
+          "col": 25,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-2",
+          "col": 26,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "water-still-3",
+          "col": 27,
+          "row": 6,
+          "w": 1,
+          "h": 1,
+          "kind": "water"
+        },
+        {
+          "name": "palm",
+          "col": 20,
+          "row": 3,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "palm-alt",
+          "col": 22,
+          "row": 3,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "palm-small",
+          "col": 24,
+          "row": 3,
+          "w": 1,
+          "h": 2,
+          "kind": "tree"
+        },
+        {
+          "name": "ice-tree",
+          "col": 25,
+          "row": 3,
+          "w": 2,
+          "h": 3,
+          "kind": "tree"
+        },
+        {
+          "name": "sand-rock-1",
+          "col": 27,
+          "row": 3,
+          "w": 1,
+          "h": 1,
+          "kind": "rock"
+        },
+        {
+          "name": "sand-rock-2",
+          "col": 28,
+          "row": 3,
+          "w": 1,
+          "h": 1,
+          "kind": "rock"
+        },
+        {
+          "name": "ice-rock-1",
+          "col": 27,
+          "row": 4,
+          "w": 1,
+          "h": 1,
+          "kind": "rock"
+        },
+        {
+          "name": "ice-rock-2",
+          "col": 28,
+          "row": 4,
+          "w": 1,
+          "h": 1,
+          "kind": "rock"
+        },
+        {
+          "name": "grass-ice-tuft",
+          "col": 29,
+          "row": 3,
+          "w": 1,
+          "h": 1,
+          "kind": "deco"
+        },
+        {
+          "name": "ruin-gate",
+          "col": 0,
+          "row": 9,
+          "w": 3,
+          "h": 3,
+          "kind": "structure"
+        },
+        {
+          "name": "ruin-pillar",
+          "col": 3,
+          "row": 9,
+          "w": 1,
+          "h": 3,
+          "kind": "structure"
+        },
+        {
+          "name": "ruin-pillar-broke",
+          "col": 4,
+          "row": 9,
+          "w": 1,
+          "h": 2,
+          "kind": "structure"
+        },
+        {
+          "name": "ruin-pillar-broke-alt",
+          "col": 5,
+          "row": 9,
+          "w": 1,
+          "h": 2,
+          "kind": "structure"
+        },
+        {
+          "name": "arena-plant",
+          "col": 6,
+          "row": 9,
+          "w": 7,
+          "h": 7,
+          "kind": "structure"
+        },
+        {
+          "name": "arena-fire",
+          "col": 13,
+          "row": 9,
+          "w": 7,
+          "h": 7,
+          "kind": "structure"
+        },
+        {
+          "name": "arena-water",
+          "col": 20,
+          "row": 9,
+          "w": 7,
+          "h": 7,
+          "kind": "structure"
+        }
+      ]
+    },
+    {
+      "file": "scarloxy-chipset-indoor.png",
+      "blocks": [
+        {
+          "name": "indoor-all",
+          "col": 0,
+          "row": 0,
+          "w": 10,
+          "h": 9,
+          "kind": "indoor"
+        }
+      ]
+    }
+  ],
+  "charsets": [
+    {
+      "file": "scarloxy-charset-people1.png",
+      "characters": [
+        "player",
+        "blond",
+        "hat_girl",
+        "purple_girl",
+        "young_girl",
+        "young_guy",
+        "straw",
+        "water_boss"
+      ]
+    },
+    {
+      "file": "scarloxy-charset-people2.png",
+      "characters": [
+        "fire_boss",
+        "grass_boss"
+      ]
+    }
+  ]
+}

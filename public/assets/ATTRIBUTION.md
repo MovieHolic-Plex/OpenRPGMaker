@@ -42,6 +42,17 @@
   - `CharSet/Object2.png` by Verdant_Jack, CC0, https://community.easyrpg.org/t/test-for-new-rtp/1067/8
 - Notes: This is an open replacement RTP material, not the proprietary RPG Maker 2000/2003 RTP.
 
+## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
+
+- Files: `scarloxy/*.png` (battle backdrops, monster battlers/icons, battle effect strips, chipsets, charsets, stat icons)
+- Author: Scarloxy (Ismael Garcia)
+- Source: https://scarloxy.itch.io/mpwsp01 (purchased copy)
+- License: Creative Commons Attribution 4.0 International — commercial use allowed with attribution
+- Notes: originals are vendored at `vendor/scarloxy-mpwsp01/` (2x/4x upscaled distribution).
+  `scripts/import-scarloxy-pack.py` downscales them back to native pixel resolution and repacks
+  tilesets/characters into RM2K3-compatible ChipSet (480x256, 16px) and CharSet (288x256, 24x32)
+  sheets. Fonts from the pack are not bundled (Latin-only; runtime uses Galmuri).
+
 ## EasyRPG RTP scoped runtime import
 
 - Files:

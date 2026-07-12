@@ -185,6 +185,24 @@ export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
     [6, "비행정", ["비행정", "탈것", "비행"], { gender: "none" }],
     [7, "우주선", ["우주선", "탈것", "비행"], { gender: "none" }],
   ]),
+
+  // tex_scarloxy_charset_people1 — Scarloxy MPWSP01 팩 주민 (scripts/import-scarloxy-pack.py 변환,
+  // 생성 프리뷰를 Read 도구로 육안 확인해 라벨링).
+  ...sheet("tex_scarloxy_charset_people1", [
+    [0, "초록 모자 트레이너 소년", ["주인공", "트레이너", "소년", "모자", "배낭", "scarloxy"], { gender: "male", age: "youth" }],
+    [1, "금발 소년", ["소년", "금발", "주민", "scarloxy"], { gender: "male", age: "youth" }],
+    [2, "초록 벙거지 소년", ["소년", "모자", "벙거지", "주민", "scarloxy"], { gender: "male", age: "youth" }],
+    [3, "보라 머리 소녀", ["소녀", "보라 머리", "주민", "scarloxy"], { gender: "female", age: "youth" }],
+    [4, "갈래머리 소녀", ["소녀", "아이", "갈래머리", "주민", "scarloxy"], { gender: "female", age: "child" }],
+    [5, "남색 머리 소년", ["소년", "청년", "주민", "scarloxy"], { gender: "male", age: "youth" }],
+    [6, "밀짚모자 농부", ["농부", "밀짚모자", "주민", "scarloxy"], { gender: "male" }],
+    [7, "물 도장 보스", ["보스", "물", "트레이너", "청록 머리", "scarloxy"], { gender: "female" }],
+  ]),
+  // tex_scarloxy_charset_people2 — Scarloxy MPWSP01 팩 보스 트레이너.
+  ...sheet("tex_scarloxy_charset_people2", [
+    [0, "불 도장 보스", ["보스", "불", "트레이너", "scarloxy"], { gender: "male" }],
+    [1, "풀 도장 보스", ["보스", "풀", "트레이너", "scarloxy"], { gender: "male" }],
+  ]),
 ];
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {

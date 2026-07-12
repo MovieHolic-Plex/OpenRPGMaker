@@ -1,4 +1,5 @@
-import { EASYRPG_CHARSET_ASSETS, charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Dir } from "@/player/input";
 import { defaultActorCharacterResourceId } from "@/project/actorModel";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
@@ -39,8 +40,8 @@ export function resolvePlayerSpriteResource(project: Project, session: PlaySessi
   return createCharsetSpriteResource(DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_EASYRPG_CHARSET_ID);
 }
 
-function findCharsetAsset(resourceId: string): (typeof EASYRPG_CHARSET_ASSETS)[number] | undefined {
-  return EASYRPG_CHARSET_ASSETS.find((asset) => asset.id === resourceId || asset.textureKey === resourceId);
+function findCharsetAsset(resourceId: string): (typeof CHARSET_ASSETS)[number] | undefined {
+  return CHARSET_ASSETS.find((asset) => asset.id === resourceId || asset.textureKey === resourceId);
 }
 
 function createCharsetSpriteResource(resourceId: string, texture: string): PlayerSpriteResource {

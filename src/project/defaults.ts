@@ -67,6 +67,8 @@ export {
   createVillageShoppingStreetProject,
   createRetroHouseShowcaseProject,
   createSampleAdventureProject,
+  createScarloxyDemoProject,
+  createScarloxyPokemonDemoProject,
   createTrainingExamplesProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,

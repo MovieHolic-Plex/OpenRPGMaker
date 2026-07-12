@@ -48,9 +48,14 @@ describe("bundled EasyRPG RTP assets", () => {
         count: 480,
       });
       // combined_town은 harness가 메타데이터를 채운 공식 디폴트 칩셋(bundled-default).
-      // 나머지 vendored 칩셋은 AI 분류 대기 상태(unknown)이다.
-      const expectedSource = id === DEFAULT_TILESET_ID ? "bundled-default" : "unknown";
-      expect(tileset.tileMeta?.[0]?.source).toBe(expectedSource);
+      // 테마 팩(interior/dungeon/scarloxy)이 있는 칩셋은 팩이 덮는 타일만 bundled-default,
+      // 그 외 vendored 칩셋 타일은 AI 분류 대기 상태(unknown)이다.
+      const source = tileset.tileMeta?.[0]?.source;
+      if (id === DEFAULT_TILESET_ID) {
+        expect(source).toBe("bundled-default");
+      } else {
+        expect(["bundled-default", "unknown"]).toContain(source);
+      }
     }
   });
 
