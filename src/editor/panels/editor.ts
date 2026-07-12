@@ -73,7 +73,6 @@ let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
 let unsubUiMode: (() => void) | null = null;
-let editorLayoutRoot: HTMLElement | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
@@ -83,9 +82,8 @@ export function renderEditor(main: HTMLElement): void {
   // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
   const layout = el("div", {
     class: `editor-layout ${chatDock === "side" ? "chat-dock-side" : "chat-dock-float"}`,
-    dataset: { testid: "editor-layout", editorUiMode: getEditorUiMode() },
+    dataset: { testid: "editor-layout" },
   });
-  editorLayoutRoot = layout;
   // applyLayout 전에도 1/3 폭 폴백을 심어 사이드 컬럼이 420→재계산으로 점프하지 않게 한다.
   if (chatDock === "side") {
     const bootWidth = computeSideChatWidth(
@@ -190,12 +188,9 @@ export function renderEditor(main: HTMLElement): void {
 
 /** Re-apply basic/expert density without tearing down Phaser or AI session. */
 export function applyEditorUiModeLayout(): void {
-  const mode = getEditorUiMode();
+  // 모드의 CSS 훅은 body.editor-ui-basic/expert 하나만 쓴다 (applyEditorUiModeClasses).
   const chrome = getEditorChrome();
-  applyEditorUiModeClasses(mode);
-  editorLayoutRoot?.setAttribute("data-editor-ui-mode", mode);
-  editorLayoutRoot?.classList.toggle("editor-layout-basic", mode === "basic");
-  editorLayoutRoot?.classList.toggle("editor-layout-expert", mode === "expert");
+  applyEditorUiModeClasses(getEditorUiMode());
 
   if (leftMapRoot) {
     leftMapRoot.hidden = !chrome.mapTree;
@@ -207,20 +202,8 @@ export function applyEditorUiModeLayout(): void {
     if (chrome.mapTree) mapTreeResizer.classList.remove("is-ui-hidden");
     else mapTreeResizer.classList.add("is-ui-hidden");
   }
-  if (canvasToolbarRoot) {
-    if (!chrome.canvasChromeDense) {
-      canvasToolbarRoot.classList.add("is-basic-chrome");
-      canvasToolbarRoot.classList.add("is-expanded");
-    } else {
-      canvasToolbarRoot.classList.remove("is-basic-chrome");
-    }
-    canvasToolbarRoot.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "basic";
-  }
-  if (aiChatPanelRoot) {
-    // AI 표면은 에디터 basic/expert와 무관 — 항상 공유 UI.
-    aiChatPanelRoot.dataset.uiDensity = "shared";
-    aiChatPanelRoot.classList.remove("ai-density-expert", "ai-density-basic");
-  }
+  // 캔버스 툴바 밀도(is-basic-chrome/is-expanded/uiDensity)는 아래 renderCanvasToolbar가
+  // 전부 다시 계산한다. AI 패널은 모드와 무관한 공유 표면(uiDensity="shared"는 패널 자신이 소유).
   // Re-render left/map chrome so palette tabs match density; keep event layer path live.
   // 맵 트리는 basic에서도 표시(맵 전환) — 숨기지 않는다.
   if (leftPaletteRoot && leftMapRoot && canvasToolbarRoot && statusBarRoot) {
@@ -262,7 +245,6 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
-  editorLayoutRoot = null;
   document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side", "editor-ui-basic", "editor-ui-expert");
 }
 

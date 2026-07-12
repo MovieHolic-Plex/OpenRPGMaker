@@ -75,7 +75,8 @@ class EditorStateStore {
     layer: "lower",
     paintShape: "pen",
     selectedTile: 360,
-    autoConnectMode: true,
+    // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.
+    autoConnectMode: false,
     activeStampId: null,
     activeStructureStampId: null,
     activePaletteStamp: null,

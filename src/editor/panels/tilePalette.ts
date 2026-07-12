@@ -1,7 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
-import { getEditorChrome, getEditorUiMode } from "@/editor/editorUiMode";
+import { getEditorUiMode } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
@@ -18,7 +18,7 @@ import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { compatibleStampIdForTile } from "@/editor/tileStampBrushes";
+import { compatibleStampIdForTile, isAutoConnectCandidate } from "@/editor/tileStampBrushes";
 import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
@@ -71,14 +71,10 @@ export function renderTilePalette(container: HTMLElement): void {
   const previousPaletteScroll = readPaletteScroll(container);
   clearChildren(container);
   const state = editorState.get();
-  const chrome = getEditorChrome();
   activeWorkTab = readWorkTab();
-  // Basic: paint-only density — find/props tabs stay expert; event layer still full path below.
-  if (!chrome.paletteFindPropsTabs && activeWorkTab !== "paint") {
-    activeWorkTab = "paint";
-  }
 
   // 기본 모드: 레퍼런스 밀도 좌측 레일 (도구·타일·레이어). 맵 트리는 하단 맵 루트.
+  // 작업탭(칠하기/찾기/속성)은 이 조기 return 아래 expert 경로에만 존재한다.
   if (getEditorUiMode() === "basic") {
     renderBasicLeftRail(container);
     return;
@@ -153,17 +149,12 @@ export function renderTilePalette(container: HTMLElement): void {
 }
 
 function makeWorkTabBar(): HTMLElement {
-  const chrome = getEditorChrome();
-  const tabs = chrome.paletteFindPropsTabs ? WORK_TABS : WORK_TABS.filter((tab) => tab.id === "paint");
   const bar = el("div", {
     class: "palette-work-tabs",
     attrs: { role: "tablist", "aria-label": "타일 작업 모드" },
-    dataset: {
-      testid: "palette-work-tabs",
-      uiDensity: chrome.paletteFindPropsTabs ? "expert" : "basic",
-    },
+    dataset: { testid: "palette-work-tabs" },
   });
-  for (const tab of tabs) {
+  for (const tab of WORK_TABS) {
     const active = activeWorkTab === tab.id;
     bar.append(
       el("button", {
@@ -422,6 +413,39 @@ function makePaintTitleRow(
       ],
     }),
   );
+  // 연결 Auto/Manual — 칠하기 탭에서도 바로 토글 (속성 탭에만 있으면 발견성 낮음)
+  const autoOn = editorState.get().autoConnectMode;
+  const candidate = selectedTile >= 0 && isAutoConnectCandidate(selectedTile, tileset);
+  controls.append(
+    el("button", {
+      class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
+      text: autoOn ? "Auto" : "Manual",
+      attrs: {
+        type: "button",
+        title: autoOn
+          ? "자동 연결 ON — 이웃 지형까지 재검사합니다. 클릭하면 Manual."
+          : "수동 배치 ON — 일반 타일은 그대로. 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다.",
+        "aria-pressed": String(autoOn),
+        "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
+      },
+      dataset: { testid: "auto-connect-mode-toggle-paint" },
+      on: {
+        click: () => {
+          editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
+          renderPalettePreservingViewport();
+        },
+      },
+    }),
+  );
+  if (candidate) {
+    controls.append(
+      el("span", {
+        class: "tile-brush-hint",
+        text: autoOn ? "이웃 성형" : "오토타일 항상 성형",
+        dataset: { testid: "auto-connect-mode-hint-paint" },
+      }),
+    );
+  }
   // 좁은 패널에서 시트 까기 어려울 때 — 큰 팝아웃으로 고르기
   controls.append(
     el("button", {

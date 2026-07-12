@@ -12,6 +12,7 @@ import { openSkillPalette } from "@/editor/panels/aiSkillDrawer";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { createBlankProject } from "@/project/defaults";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
 import type { GameEvent } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -70,14 +71,17 @@ function namedEvent(name: string): GameEvent {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
-  editorState.set({ currentMapId: store.getCurrent().startMapId, selectedEventId: null, selectedEventPageId: null });
+  _resetEventDraftVaultForTest();
   restoreDom = installFakeDom();
   installStorage();
+  store.replaceProject(createBlankProject());
+  editorState.set({ currentMapId: store.getCurrent().startMapId, selectedEventId: null, selectedEventPageId: null });
 });
 
 afterEach(() => {
   document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
+  document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]')?.remove();
+  _resetEventDraftVaultForTest();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -182,13 +186,13 @@ describe("UXC D20 편집 잠금 UX", () => {
 });
 
 describe("UXC D30 새 이벤트 모달 상태", () => {
-  it("새 이벤트 모달 제목과 취소 안내에 저장 전 상태를 표시한다", () => {
+  it("새 이벤트 모달 제목과 취소 안내에 자동 저장/복구 상태를 표시한다", () => {
     const mapId = store.getCurrent().startMapId;
 
     openNewEventEditorModal(mapId, 2, 2);
 
     expect(findByTestId(fakeBody(), "event-editor-titlebar")?.textContent).toContain("새 이벤트 (저장 전)");
-    expect(findByTestId(fakeBody(), "event-editor-draft-status")?.textContent).toContain("생성되지 않습니다");
+    expect(findByTestId(fakeBody(), "event-editor-draft-status")?.textContent).toContain("자동 저장");
   });
 
   it("새 이벤트 모달 취소는 이벤트를 남기지 않는다", () => {
