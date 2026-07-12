@@ -33,6 +33,8 @@ import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
 import { CASTLE_TOOLS } from "./castleBuilder";
 import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VILLAGE_SESSION_TOOLS } from "./villageSession";
+import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
+import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
@@ -105,6 +107,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HOUSE_LOT_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
+  ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
@@ -125,6 +128,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
+  ...withDomain(AI_DOC_TOOLS, "core"),
   ...withDomain(TILE_METADATA_TOOLS, "tile"),
   ...withDomain(CLUSTER_RULE_TOOLS, "tile"),
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),

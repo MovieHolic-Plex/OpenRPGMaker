@@ -1,4 +1,11 @@
-import type { PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
+import {
+  createDarkWallAutotileGroup,
+  DARK_WALL_AUTOTILE_GROUP_ID,
+} from "@/project/defaults/darkWallAutotile";
+import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interiorTerrainAutotiles";
+import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
+import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
 export const DUNGEON_METADATA_PACK_ID = "dungeon-v1";
 export const DUNGEON_METADATA_PACK_VERSION = "1";
@@ -10,6 +17,68 @@ export const INTERIOR_METADATA_PACK_VERSION = "1";
 export const INTERIOR_TEXTURE_KEY = "tex_easyrpg_chipset_interior";
 export const INTERIOR_HARNESS_PREFIX = "harness-interior-house-v1-";
 
+/** Built-in interior wall-frame autotile (outer ring + top trim/door alcove tiles). */
+export const INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID = `${INTERIOR_HARNESS_PREFIX}wall-frame-autotile`;
+
+/** Built-in dark-wall terrain autotile — brush tile 366, edges/corners auto-shape. */
+export const INTERIOR_DARK_WALL_AUTOTILE_GROUP_ID = DARK_WALL_AUTOTILE_GROUP_ID;
+
+/**
+ * Wall-frame surface tiles for EasyRPG interior chipset villager-house frames.
+ * Outer corners use labeled 233/258/456/458 (not render-only 368).
+ * Floor is connect-only (not a member).
+ */
+export const INTERIOR_WALL_FRAME_TILES = {
+  body: 105,
+  edgeN: 457,
+  edgeS: 397,
+  edgeW: 428,
+  edgeE: 426,
+  /** Outer corner NW (캡+포스트 열) — user-labeled, not 368. */
+  cornerNW: 233,
+  cornerNE: 258,
+  /** Outer corner SW/SE (남 프레임 연결) */
+  cornerSW: 456,
+  cornerSE: 458,
+} as const;
+
+/** Passable room floor used as connect neighbor so 1-tile wall rings get true N/S edges. */
+export const INTERIOR_WALL_FRAME_FLOOR_TILE = 72;
+
+const INTERIOR_WALL_FRAME_MEMBER_TILE_IDS: readonly number[] = [
+  INTERIOR_WALL_FRAME_TILES.body,
+  INTERIOR_WALL_FRAME_TILES.edgeN,
+  INTERIOR_WALL_FRAME_TILES.edgeS,
+  INTERIOR_WALL_FRAME_TILES.edgeW,
+  INTERIOR_WALL_FRAME_TILES.edgeE,
+  INTERIOR_WALL_FRAME_TILES.cornerNW,
+  INTERIOR_WALL_FRAME_TILES.cornerNE,
+  INTERIOR_WALL_FRAME_TILES.cornerSW,
+  INTERIOR_WALL_FRAME_TILES.cornerSE,
+  // Inner face trims + door-alcove companions painted with the wall ring.
+  104,
+  106,
+  396,
+  398,
+  // Render-only quarter source still a member so composition can see corners.
+  368,
+];
+
+export function createInteriorWallFrameAutotileGroup(): AutotileGroup {
+  const memberTileIds = uniqueTileIds(INTERIOR_WALL_FRAME_MEMBER_TILE_IDS);
+  return {
+    id: INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID,
+    name: "실내 벽 프레임",
+    neighborhood: 4,
+    memberTileIds,
+    connectTileIds: uniqueTileIds([...memberTileIds, INTERIOR_WALL_FRAME_FLOOR_TILE]),
+    variantMap: buildEdgeCornerVariantMap({ ...INTERIOR_WALL_FRAME_TILES }),
+  };
+}
+
+
+// 분홍 투명 배경 소품 전수 목록 — 2026-07-12 vision 업스케일 감사로 재검증.
+// 완전 빈 타일(357/447/477)은 제외, 누락돼 있던 358(피아노 좌)/474·475(잔해 계단 하단)/478(왕좌 좌하)을 추가.
 const INTERIOR_TRANSPARENT_PROP_TILES = [
   24, 25, 26, 27, 28, 29,
   54, 55, 56, 57, 58, 59,
@@ -22,11 +91,11 @@ const INTERIOR_TRANSPARENT_PROP_TILES = [
   259, 260, 261, 262, 263, 265, 266, 267, 268, 269,
   288, 289, 290, 291, 292, 293, 294, 296, 297, 298, 299,
   318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
-  348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 359,
+  348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359,
   378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389,
   408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419,
-  438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449,
-  468, 469, 470, 471, 472, 473, 476, 477, 479,
+  438, 439, 440, 441, 442, 443, 444, 445, 446, 448, 449,
+  468, 469, 470, 471, 472, 473, 474, 475, 476, 478, 479,
 ] as const;
 
 type PackHarnessGroup = Omit<TileGroupMetadata, "tileIds"> & {
@@ -53,22 +122,95 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-detail", "던전 소품", "prop", "mixed", [210, 211, 240, 241], "solid", "fixed", "바닥 위에 배치할 수 있는 던전 장식 소품입니다."),
 ];
 
+// 2026-07-12 vision 업스케일 감사 기준으로 재작성 — 이전 그룹은 옛 칩셋 이미지 기준이라
+// 현재 PNG와 어긋났다(예: 옛 "실내 바닥" 270/271/300/301은 현재 잔디, 옛 "실내 벽" 1~3/31~33은 연못 물).
+// 타일별 정밀 라벨은 tileSemanticsInterior.ts(검색 전용)가 제공하고, 여기는 통행성/레이어 계약을 시드한다.
 export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
-  packGroup(INTERIOR_HARNESS_PREFIX, "floor", "실내 바닥", "terrain", "lower", [270, 271, 300, 301], "passable", "repeat", "실내 방을 채우는 통행 가능한 바닥입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "wall", "실내 벽", "wall", "lower", [1, 2, 3, 31, 32, 33], "solid", "repeat", "방 외곽을 막는 실내 벽입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "room-trim", "실내 구조", "building", "lower", [116], "solid", "fixed", "방 가장자리와 고정 구조물 배치를 위한 비통행 실내 구조물입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "floor", "실내 나무 바닥", "terrain", "lower", [72, 73, 102, 103], "passable", "repeat", "실내 방을 채우는 통행 가능한 나무 바닥입니다(73은 구멍 난 변형)."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "floor-stone", "실내 돌바닥", "terrain", "lower", [12, 13, 42, 43, 162, 163], "passable", "repeat", "던전·지하실·석조 실내용 통행 가능한 돌바닥입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "floor-mat", "짚 돗자리", "terrain", "lower", [108, 109, 110, 138, 139, 140, 168, 169, 170], "passable", "repeat", "3×3 짚 돗자리(멍석) 바닥입니다. 블록 단위로 깔아야 테두리가 이어집니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "carpet-red", "붉은 카펫", "terrain", "lower", [375, 376, 377, 405, 406, 407, 435, 436, 437], "passable", "repeat", "금장 테두리 붉은 카펫 9-슬라이스입니다(고립 배치는 몸통 406)."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "stairs-horizontal", "가로 계단", "building", "lower", [465, 466, 467], "passable", "repeat", "가로로 늘릴 수 있는 계단입니다 — 좌 465 · 몸통 466(반복) · 우 467. (2026-07-12 사용자 확정: 카펫 술이 아니라 계단)"),
+  packGroup(INTERIOR_HARNESS_PREFIX, "carpet-teal", "청록 카펫", "terrain", "lower", [249, 251, 279, 280, 281, 309, 310, 311, 339, 340, 341], "passable", "repeat", "청록 카펫 3×3 테두리 세트와 1칸(249)/몸통(251) 변형입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "deck", "나무 단상", "terrain", "lower", [126, 128, 156, 157, 158, 186, 187, 188, 216, 217, 218], "passable", "repeat", "테두리가 있는 나무 단상(무대/데크) 바닥입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "arrow-plate", "화살표 바닥판", "terrain", "lower", [82, 83, 112, 113], "passable", "fixed", "방향 안내용 화살표 금속 바닥판입니다(상/하/좌/우)."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "grass", "야외 잔디", "terrain", "lower", [240, 241, 242, 270, 271, 272, 300, 301, 302, 330, 331, 332, 7, 127, 247, 361, 364, 243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335], "passable", "repeat", "마을 외곽 야외용 잔디입니다(짙은 잔디 경계 포함). 실내 바닥으로 쓰지 마세요."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "outdoor-ground", "야외 지면(흙/모래/자갈)", "terrain", "lower", [6, 8, 36, 37, 38, 66, 67, 68, 96, 97, 98, 9, 10, 11, 39, 40, 41, 69, 70, 71, 99, 100, 101, 246, 248, 276, 277, 278, 306, 307, 308, 336, 337, 338, 132, 133, 192, 193, 222, 223, 252, 253], "passable", "repeat", "야외 흙땅·모래밭·자갈 포장 등 통행 가능한 실외 지면입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "water", "연못/물", "water", "lower", [0, 1, 2, 3, 4, 5, 30, 31, 32, 33, 34, 35, 60, 61, 62, 63, 64, 65, 90, 91, 92, 93, 94, 95, 120, 121, 122, 123, 150, 151, 152, 153, 180, 181, 182, 183, 210, 211, 212, 213], "solid", "repeat", "연못·깊은 물·폭포 애니메이션 타일입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "wall-cream", "크림 회벽", "wall", "lower", [74, 75, 76, 77, 104, 105, 106, 107], "solid", "repeat", "주민 집 실내의 크림색 회벽 면입니다(105 브러시가 벽 프레임 오토타일)."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "wall-brick", "벽돌 벽", "wall", "lower", [14, 15, 16, 17, 44, 45, 46, 47, 134, 135, 136, 137, 164, 165, 166, 167, 314, 315, 316, 317, 344, 345, 346, 347], "solid", "repeat", "자주/밝은/금장 벽돌 벽면입니다. 방 외곽을 막습니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "wall-stone", "돌/동굴 벽", "wall", "lower", [194, 195, 196, 197, 224, 225, 226, 227, 254, 255, 256, 284, 285, 286, 287, 283, 282], "solid", "repeat", "어두운 돌벽과 동굴 암벽입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "wall-panel", "석벽/판자 벽", "wall", "lower", [402, 403, 404, 432, 433, 434, 462, 463, 464, 111, 141, 171, 81, 129, 159, 189, 219], "solid", "repeat", "흰 석벽·선반턱·격자 창살·판자 슬랫 등 기타 벽면입니다."),
+  // 234(반투명 그림자 오버레이)는 transparent-props 소속 — 두 그룹에 겹치면 재적용 시 tileMeta가 진동해 idempotency가 깨진다.
+  packGroup(INTERIOR_HARNESS_PREFIX, "dark-zone", "암흑/어두운 벽", "wall", "lower", [366, 367, 368, 369, 370, 371, 396, 397, 398, 399, 400, 401, 426, 427, 428, 429, 430, 431, 456, 457, 458, 459, 460, 461, 116, 146, 233, 257, 258], "solid", "repeat", "어두운 벽(366 브러시) 오토타일 계열과 동굴 암흑·공허(430/116) 타일입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "kitchen", "주방 설비", "building", "lower", [21, 51, 22, 23, 52, 53, 373], "solid", "fixed", "화덕 오븐(21+51 세로쌍)·조리대(22/23+52/53)·벽난로 아궁이(373)입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "counter", "카운터/천 테이블", "building", "lower", [198, 199, 200, 201, 228, 229, 230, 231], "solid", "fixed", "점토·나무 카운터와 흰 천 테이블(전면 뷰)입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "curtain", "붉은 대형 커튼", "building", "lower", [142, 143, 172, 173, 202, 203], "solid", "fixed", "무대용 대형 붉은 커튼(2×3)입니다. 벽면에 배치합니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "pillar", "기둥/제단", "building", "lower", [312, 313, 342, 343, 372, 374], "solid", "fixed", "석재 기둥 상·하단과 석판 제단입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "hedge", "산울타리/흙무더기", "building", "lower", [360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452, 363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "solid", "repeat", "야외 산울타리 수풀 블롭과 흙무더기 군집입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "fire-magic", "모닥불/마법 블록/용암", "building", "lower", [124, 154, 184, 214, 125, 155, 185, 215, 232], "solid", "fixed", "모닥불·푸른 마법 블록 애니메이션과 용암 바닥입니다. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "transparent-props", "실내 투명 배경 소품", "prop", "upper", INTERIOR_TRANSPARENT_PROP_TILES, "passable", "fixed", "분홍 투명 배경을 가진 실내 가구와 장식입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
+
+// Scarloxy MPWSP01 칩셋 3종 — 그룹 시드는 scripts/import-scarloxy-pack.py 가 기록한
+// scarloxyPackManifest.json 블록 배치에서 파생된다(scarloxyPack.ts 참조).
+function createScarloxyThemePacks(): readonly ThemeMetadataPack[] {
+  return SCARLOXY_CHIPSET_ASSETS.map((asset) => {
+    const key = asset.textureKey.replace("tex_scarloxy_chipset_", "");
+    const prefix = `harness-scarloxy-${key}-v1-`;
+    return {
+      id: `scarloxy-${key}-v1`,
+      version: "1",
+      textureKey: asset.textureKey,
+      prefix,
+      groups: scarloxyChipsetGroupSeeds(asset.textureKey).map((seed) =>
+        packGroup(prefix, seed.key, seed.name, seed.role, seed.defaultLayer, seed.tileIds, seed.passage, seed.repeatability, seed.description)
+      ),
+    };
+  });
+}
 
 const THEME_PACKS: readonly ThemeMetadataPack[] = [
   { id: DUNGEON_METADATA_PACK_ID, version: DUNGEON_METADATA_PACK_VERSION, textureKey: DUNGEON_TEXTURE_KEY, prefix: DUNGEON_HARNESS_PREFIX, groups: DUNGEON_HARNESS_GROUPS },
   { id: INTERIOR_METADATA_PACK_ID, version: INTERIOR_METADATA_PACK_VERSION, textureKey: INTERIOR_TEXTURE_KEY, prefix: INTERIOR_HARNESS_PREFIX, groups: INTERIOR_HARNESS_GROUPS },
+  ...createScarloxyThemePacks(),
 ];
 
 export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
   const pack = themePackForTileset(tileset);
   if (!pack) return false;
-  return applyThemeMetadataPack(tileset, pack);
+  let changed = applyThemeMetadataPack(tileset, pack);
+  if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
+    // Cream wall-frame (105 brush) + dark wall terrain (366 brush).
+    // Painting 366 with auto-connect must reshape edges/corners without hand-picking variants.
+    changed = seedInteriorWallFrameAutotileGroup(tileset) || changed;
+    changed = seedInteriorDarkWallAutotileGroup(tileset) || changed;
+    // 지형/카펫 RM2k3 블록 6종(산울타리·흙무더기·흙땅·데크·자갈·청록 카펫) — vision 감사(2026-07-12)로 확정.
+    for (const group of createInteriorTerrainAutotileGroups()) {
+      changed = upsertAutotileGroupKeepingCurrent(tileset, group) || changed;
+    }
+  }
+  return changed;
+}
+
+// 코드 정의가 갱신되면 기존 시드를 교체하고, 같으면 손대지 않는다(idempotent 재적용 계약).
+function upsertAutotileGroupKeepingCurrent(tileset: TilesetDef, desired: AutotileGroup): boolean {
+  const existing = tileset.autotileGroups ?? [];
+  const idx = existing.findIndex((group) => group.id === desired.id);
+  if (idx < 0) {
+    tileset.autotileGroups = [...existing, desired];
+    return true;
+  }
+  if (JSON.stringify(existing[idx]!.variantMap) === JSON.stringify(desired.variantMap)
+    && JSON.stringify(existing[idx]!.memberTileIds) === JSON.stringify(desired.memberTileIds)
+    && JSON.stringify(existing[idx]!.connectTileIds) === JSON.stringify(desired.connectTileIds)
+    && JSON.stringify(existing[idx]!.triggerTileIds) === JSON.stringify(desired.triggerTileIds)) {
+    return false;
+  }
+  const next = [...existing];
+  next[idx] = desired;
+  tileset.autotileGroups = next;
+  return true;
 }
 
 export function isThemePackTileset(tileset: Pick<TilesetDef, "image">): boolean {
@@ -188,6 +330,39 @@ function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
 function ensureTileMetaLength(tileset: TilesetDef): void {
   tileset.tileMeta ??= [];
   while (tileset.tileMeta.length < tileset.count) tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
+}
+
+
+function seedInteriorWallFrameAutotileGroup(tileset: TilesetDef): boolean {
+  const existing = tileset.autotileGroups ?? [];
+  if (existing.some((group) => group.id === INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID)) return false;
+  tileset.autotileGroups = [...existing, createInteriorWallFrameAutotileGroup()];
+  return true;
+}
+
+function seedInteriorDarkWallAutotileGroup(tileset: TilesetDef): boolean {
+  const desired = createDarkWallAutotileGroup();
+  const existing = tileset.autotileGroups ?? [];
+  const idx = existing.findIndex((group) => group.id === INTERIOR_DARK_WALL_AUTOTILE_GROUP_ID);
+  if (idx < 0) {
+    tileset.autotileGroups = [...existing, desired];
+    return true;
+  }
+  // Keep variantMap / members current when the 366 brush contract is updated in code.
+  if (JSON.stringify(existing[idx]!.variantMap) === JSON.stringify(desired.variantMap)
+    && JSON.stringify(existing[idx]!.memberTileIds) === JSON.stringify(desired.memberTileIds)
+    && JSON.stringify(existing[idx]!.connectTileIds) === JSON.stringify(desired.connectTileIds)
+    && JSON.stringify(existing[idx]!.triggerTileIds) === JSON.stringify(desired.triggerTileIds)) {
+    return false;
+  }
+  const next = [...existing];
+  next[idx] = desired;
+  tileset.autotileGroups = next;
+  return true;
+}
+
+function uniqueTileIds(tileIds: readonly number[]): number[] {
+  return [...new Set(tileIds)];
 }
 
 function packGroup(

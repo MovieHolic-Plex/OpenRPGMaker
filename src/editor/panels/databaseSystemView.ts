@@ -22,11 +22,12 @@ import {
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { ActorRecord, BattleFlow, TypeChartRecord } from "@/project/types";
+import type { ActorRecord, BattleFlow, BattleUiStyle, TypeChartRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
 const START_PARTY_SLOTS = 4;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
+const BATTLE_UI_STYLE_OPTIONS = ["classic", "pokemon"] as const satisfies readonly BattleUiStyle[];
 
 export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
   const project = store.getCurrent();
@@ -111,6 +112,18 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
         (value) => {
           updateSystem((draft) => {
             draft.system.battleFlow = value;
+          });
+        },
+      ),
+      selectLiteral(
+        "전투 UI 스타일",
+        "db-field-system-battle-ui-style",
+        project.system.battleUiStyle === "pokemon" ? "pokemon" : "classic",
+        BATTLE_UI_STYLE_OPTIONS,
+        (value) => {
+          updateSystem((draft) => {
+            if (value === "pokemon") draft.system.battleUiStyle = "pokemon";
+            else delete draft.system.battleUiStyle;
           });
         },
       ),

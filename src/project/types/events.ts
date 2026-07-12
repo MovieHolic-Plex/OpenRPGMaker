@@ -173,7 +173,16 @@ export type Command =
   | { kind: "fork"; condition: Condition; then: Command[]; else?: Command[] }
   | { kind: "wait"; ms: number }
   | { kind: "inputWait"; variableId?: string }
-  | { kind: "inputNumber"; variableId: string; digits: number }
+  | {
+      kind: "inputNumber";
+      variableId: string;
+      /** 입력 자릿수 상한 (1~6). */
+      digits: number;
+      /** 창 상단 안내 문구. 비우면 "숫자 입력". */
+      prompt?: string;
+      /** true 면 0~9 키패드 UI 를 함께 표시. */
+      showPad?: boolean;
+    }
   | { kind: "label"; name: string }
   | { kind: "gotoLabel"; name: string }
   | { kind: "loop"; body: Command[] }

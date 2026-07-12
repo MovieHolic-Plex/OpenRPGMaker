@@ -373,9 +373,11 @@ function adventureVillageInfoDocuments(): Project["villageInfoDocuments"] {
         "",
         "## 역할",
         "- 별등 마을의 첫 번째 집 문으로 들어갈 수 있는 작은 실내 테스트 맵.",
+        "- 실내 공터에 슬라임(event_starter_house_slime)이 있어 접촉 전투를 바로 시험할 수 있다.",
         "",
         "## 퀘스트 단서",
         "- 플레이어 터치 전이와 실내/실외 왕복 동선을 검증한다.",
+        "- 공터 슬라임은 troop_slime 단일 전투(도주 가능).",
       ].join("\n"),
     },
   ];

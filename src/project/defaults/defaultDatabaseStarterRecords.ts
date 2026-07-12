@@ -11,6 +11,7 @@ import type {
   SkillRecord,
   StateRecord,
 } from "../types";
+import { SCARLOXY_BATTLE_ANIMATION_SHEET } from "@/assets/scarloxyPack";
 import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from "../databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./constants";
@@ -168,6 +169,26 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
       position: "center",
       timings: [timingFlash({ frameIndex: 1, target: "target", red: 120, green: 255, blue: 120, durationFrames: 5, soundResourceId: "easyrpg-sound-poison" })],
     }),
+    // Scarloxy MPWSP01 팩 이펙트 — 96x96 4프레임 가로 스트립(scripts/import-scarloxy-pack.py 변환).
+    scarloxyEffectAnimation("anim_scarloxy_explosion", "폭발 (Scarloxy)", "explosion", [
+      timingFlash({ frameIndex: 0, target: "target", red: 255, green: 200, blue: 120, durationFrames: 5 }),
+      timingShake({ frameIndex: 1, power: 3, speed: 5, durationFrames: 6 }),
+    ]),
+    scarloxyEffectAnimation("anim_scarloxy_fire", "화염 (Scarloxy)", "fire", [
+      timingFlash({ frameIndex: 1, target: "target", red: 255, green: 140, blue: 60, durationFrames: 5 }),
+    ]),
+    scarloxyEffectAnimation("anim_scarloxy_green", "풀잎 (Scarloxy)", "green", [
+      timingFlash({ frameIndex: 1, target: "target", red: 140, green: 255, blue: 120, durationFrames: 5 }),
+    ]),
+    scarloxyEffectAnimation("anim_scarloxy_ice", "얼음 (Scarloxy)", "ice", [
+      timingFlash({ frameIndex: 1, target: "target", red: 170, green: 230, blue: 255, durationFrames: 5 }),
+    ]),
+    scarloxyEffectAnimation("anim_scarloxy_scratch", "할퀴기 (Scarloxy)", "scratch", [
+      timingFlash({ frameIndex: 1, target: "target", red: 255, green: 255, blue: 255, durationFrames: 4 }),
+    ]),
+    scarloxyEffectAnimation("anim_scarloxy_splash", "물보라 (Scarloxy)", "splash", [
+      timingFlash({ frameIndex: 1, target: "target", red: 120, green: 180, blue: 255, durationFrames: 5 }),
+    ]),
   ];
 }
 
@@ -236,6 +257,22 @@ function effectAnimation(seed: BattleEffectAnimationSeed): BattleAnimationRecord
       { cells: [{ pattern: 2, x: 0, y: -8, zoom: 120, opacity: 180, visible: true }] },
     ],
     timings: [...seed.timings],
+  });
+}
+
+// Scarloxy 이펙트는 4프레임 전체를 순서대로 재생한다(96x96, columns 4).
+function scarloxyEffectAnimation(id: string, name: string, key: string, timings: readonly BattleAnimationTiming[]): BattleAnimationRecord {
+  return normalizeBattleAnimationRecord({
+    id,
+    name,
+    resourceId: `scarloxy-battle-anim-${key}`,
+    sheet: { ...SCARLOXY_BATTLE_ANIMATION_SHEET },
+    scope: "singleTarget",
+    position: "center",
+    frames: [0, 1, 2, 3].map((pattern) => ({
+      cells: [{ pattern, x: 0, y: -8, zoom: 100, opacity: 255, visible: true }],
+    })),
+    timings: [...timings],
   });
 }
 

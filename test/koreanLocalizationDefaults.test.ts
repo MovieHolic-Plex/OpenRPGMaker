@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { SCARLOXY_BATTLE_ANIMATION_ASSETS } from "@/assets/scarloxyPack";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
 
@@ -39,7 +41,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     const project = createBlankProject();
     const ids: ReadonlySet<string> = new Set(EASYRPG_RTP_ASSETS.map((asset) => asset.id));
     const generatedIds: ReadonlySet<string> = new Set(RM2K3_GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
-    const allKnownIds: ReadonlySet<string> = new Set([...ids, ...generatedIds]);
+    const allKnownIds: ReadonlySet<string> = new Set([...ids, ...generatedIds, ...builtinGeneratedResourceIds()]);
 
     // When: default resource IDs are read from actors, enemies, and system settings.
     const defaultIds = [
@@ -56,7 +58,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(project.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
     expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
     expect(project.system.titleResourceId).toBe("easyrpg-title-title1");
-    expect(project.system.systemResourceId).toBe("easyrpg-system-system");
+    expect(project.system.systemResourceId).toBe("windowskin-rm2003");
     expect(project.system.battleSystemResourceId).toBe("easyrpg-system2-system2-c");
     for (const id of defaultIds) expect(allKnownIds.has(id ?? "")).toBe(true);
   });
@@ -66,7 +68,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     const project = createBlankProject();
     const easyRpgIds = new Set<string>(EASYRPG_RTP_ASSETS.map((asset) => asset.id));
     const generatedIds = new Set<string>(RM2K3_GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
-    const resourceIds = new Set<string>([...easyRpgIds, ...generatedIds]);
+    const resourceIds = new Set<string>([...easyRpgIds, ...generatedIds, ...builtinGeneratedResourceIds()]);
 
     // When: battle seed records are inspected and a starter troop runtime is created.
     const enemyIds = new Set(project.database.enemies.map((enemy) => enemy.id));
@@ -79,14 +81,32 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(animationIds.size).toBe(project.database.battleAnimations.length);
     expect(project.database.enemies).toHaveLength(29);
     expect(project.database.troops).toHaveLength(6);
-    expect(animationIds).toEqual(new Set(["anim_hit", "anim_sword", "anim_arrow", "anim_magic", "anim_heal", "anim_poison"]));
+    expect(animationIds).toEqual(
+      new Set([
+        "anim_hit",
+        "anim_sword",
+        "anim_arrow",
+        "anim_magic",
+        "anim_heal",
+        "anim_poison",
+        "anim_scarloxy_explosion",
+        "anim_scarloxy_fire",
+        "anim_scarloxy_green",
+        "anim_scarloxy_ice",
+        "anim_scarloxy_scratch",
+        "anim_scarloxy_splash",
+      ])
+    );
 
     for (const enemy of project.database.enemies) expect(resourceIds.has(enemy.monsterResourceId ?? "")).toBe(true);
     for (const troop of project.database.troops) {
       expect(resourceIds.has(troop.previewBackgroundResourceId ?? "")).toBe(true);
       for (const member of troop.members ?? []) expect(enemyIds.has(member.enemyId)).toBe(true);
     }
-    for (const animation of project.database.battleAnimations) expect(easyRpgIds.has(animation.resourceId ?? "")).toBe(true);
+    const scarloxyAnimationIds = new Set(SCARLOXY_BATTLE_ANIMATION_ASSETS.map((asset) => asset.id));
+    for (const animation of project.database.battleAnimations) {
+      expect(easyRpgIds.has(animation.resourceId ?? "") || scarloxyAnimationIds.has(animation.resourceId ?? "")).toBe(true);
+    }
 
     const runtime = createBattleRuntime({
       project,

@@ -23,6 +23,8 @@ import {
   defaultTerms,
 } from "./defaultDatabase";
 import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
+import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
+import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
 import { createTrainingExampleMaps } from "./trainingExampleMaps";
 import {
   createBlankMap,
@@ -59,6 +61,20 @@ export function createBlankProject(): Project {
 export function createSampleAdventureProject(): Project {
   const project = createProjectWithMaps(createAdventureMaps(), 0);
   configureAdventureProject(project);
+  return project;
+}
+
+// Scarloxy MPWSP01 팩 데모 — 팩 칩셋/캐릭셋/몬스터/전투 배경/이펙트를 조합한 예시.
+export function createScarloxyDemoProject(): Project {
+  const project = createProjectWithMaps(createScarloxyDemoMaps(), 0);
+  configureScarloxyDemoProject(project);
+  return project;
+}
+
+// Scarloxy 포켓몬풍 데모 — 스타터 선택/야생 포획/진화 등 몬스터 수집 시스템 예시.
+export function createScarloxyPokemonDemoProject(): Project {
+  const project = createProjectWithMaps(createScarloxyPokemonDemoMaps(), 0);
+  configureScarloxyPokemonDemoProject(project);
   return project;
 }
 

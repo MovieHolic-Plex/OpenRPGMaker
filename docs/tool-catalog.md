@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 141개 툴 — 쓰기 98, 읽기 43.
+> 총 147개 툴 — 쓰기 102, 읽기 45.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -29,6 +29,9 @@
 | `plant_tree_clusters` | `mapId: string`, `area?: object`, `style?: conifer\|broadleaf-2x2\|mixed`, `count?: integer`, `minGap?: integer`, `seed?: integer`, `sessionId?: string` | 숲 레이어 스킬: 지정 영역에 나무 군락을 심는다. style=broadleaf-2x2(기본 권장 대목) \| conifer \| mixed. 카탈로그는 list_village_tree_assets. 강촌 숲은 conifer 후 broadleaf-2x2를 따로 호출. |
 | `advance_village_build` | `sessionId: string`, `forceLayer?: string` | 세션 체크리스트에서 다음 open 레이어 하나만 시공/검증한다. 매 턴 1 레이어(settlement / water / forest_conifer / forest_big / critique / look). 에이전트 multi-turn 기본 경로. |
 | `run_village_session` | `sessionId?: string`, `theme?: string`, `query?: string`, `seed?: integer`, `width?: integer`, `height?: integer`, `mapName?: string`, `budgetTurns?: integer`, `houses?: array`, `npcs?: array`, `pathStyle?: string`, `settlementLayout?: string`, `roadWidth?: integer`, `buildOrder?: array`, `maxAdvances?: integer` | start(또는 기존 sessionId) 후 advance를 완료/예산까지 반복. 멀티턴 시공 자동 드라이버. 2×2 활엽수·레이어 게이트 포함. 원샷 숏컷 run_village_pipeline 대신 품질 경로로 사용. |
+| `start_interior_room_session` | `mapId: string`, `name?: string`, `width?: integer`, `height?: integer`, `wings?: array`, `rooms?: array`, `innerDoors?: array`, `door: object`, `theme: bedroom\|study\|dining\|kitchen\|storage\|tavern`, `seed?: integer` | 주민 집 실내(villager-room-v1) 멀티턴 시공 세션을 시작한다. 절차: plan → floor(bbox 바닥) → walls → furniture → entrance(입구 이벤트) → critique. wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355\|356은 hard 좌우 쌍. 이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. |
+| `advance_interior_room_build` | `sessionId: string`, `forceLayer?: floor\|walls\|furniture\|entrance\|critique` | 실내 세션 체크리스트에서 다음 open 레이어 하나만 시공/검증한다. 순서: floor → walls → furniture → entrance → critique. |
+| `run_interior_room_pipeline` | `mapId?: string`, `name?: string`, `width?: integer`, `height?: integer`, `wings?: array`, `rooms?: array`, `innerDoors?: array`, `door?: object`, `theme?: bedroom\|study\|dining\|kitchen\|storage\|tavern`, `seed?: integer`, `demo?: bedroom\|study\|dining\|kitchen\|storage\|tavern` | 실내 방을 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique). 멀티턴 품질 경로가 기본이면 start_interior_room_session을 써라. 침대는 355\|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다. |
 | `build_castle` | `mapId?: string`, `name?: string`, `id?: string`, `width?: integer`, `height?: integer`, `bounds?: object`, `wallHeight?: integer`, `gateWidth?: integer`, `roundTower?: boolean`, `roundTowerHeight?: integer`, `path?: boolean`, `npcs?: boolean`, `seed?: integer` | 성채 맵을 모듈 문법으로 시공한다(권장 정공법). 지붕/여장 면(18–110) + 성벽 정면(21/51*/81) + 원형 타워(24\|25↑·138–143·54\|55↑) + 남문 모래 접근로. 타일 ID를 직접 고르지 말 것. mapId 없으면 새 맵 생성. bounds로 기존 맵 일부에 시공 가능. 마당은 잔디 통행 유지(지붕 타일 금지). 최소 영역 28×24, 기본 48×40. |
 | `create_map` | `name: string`, `width: integer`, `height: integer`, `id?: string`, `border?: none\|wall` | 새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 256×256). 돌벽 테두리가 필요할 때만 border:"wall"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. |
 | `paint_tiles` | `mapId: string`, `layer: lower\|upper`, `mode: rect\|line\|fill\|cells`, `tile: integer`, `from?: object`, `to?: object`, `cells?: array` | 타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함). |
@@ -98,6 +101,7 @@
 | `prune_unused` | `apply?: boolean` | 미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. |
 | `revert_last_edit` | `steps?: integer` | 최근 편집 히스토리의 이전 상태로 되돌린다. 사용자가 '되돌려/취소/이전으로/undo'라고 하면 이 툴을 호출하라. 절대 clear_region 등으로 직접 지우지 말 것. |
 | `configure_time_system` | `enabled: boolean`, `minutesPerRealSecond?: number`, `dayStartHour?: integer`, `dayEndHour?: integer`, `forceSleep?: boolean`, `onDayEnd?: string` | 게임 시간/달력 시스템을 설정한다. enabled:false면 system.timeSystem을 제거해 기존 프로젝트와 같은 완전 비활성 상태로 둔다. |
+| `present_doc` | `title: string`, `blocks: array` | 리치 설명 문서를 만들어 채팅에 렌더하고 프로젝트에 저장한다. 블록: markdown(설명), table(헤더+행), sheetMap(칩셋 시트 + 색상 존 오버레이 — 타일 블록 위치 안내), tileBlockCard(칩셋 영역 크롭 카드 — col/row/w/h 타일 단위), paintDemo(RM2k3 3×4 오토타일 블록 인터랙티브 페인트 — blockCol/blockRow는 블록 좌상단), html(자유형 — 샌드박스 iframe). 타일 이미지는 살아있는 타일셋에서 그려지므로 base64가 필요 없다. 시각 자료가 필요한 설명(오토타일 구조, 타일 배치 문법, 비교표)에 우선 사용하라. |
 | `set_tile_metadata` | `tilesetId?: string`, `entries: array`, `confirmedByUser?: boolean` | 타일의 라벨/설명/태그/역할을 기록한다. 사용자가 답으로 확정한 내용이면 confirmedByUser=true(잠금·최우선). 잠긴 타일은 confirmedByUser=true로만 수정 가능. |
 | `set_tile_rules` | `tilesetId?: string`, `entries: array`, `confirmedByUser?: boolean` | 타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지형 태그). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에. |
 | `upsert_tile_group` | `tilesetId?: string`, `id?: string`, `name: string`, `role: building\|castle\|fence\|roof\|terrain\|water\|wall\|prop`, `tileIds: array`, `defaultLayer?: lower\|upper\|event\|mixed`, `description?: string`, `placementRules?: string`, `junctions?: array`, `overlays?: array`, `rules?: array` | 여러 타일이 하나의 구조(지붕/울타리/길 등)를 이룰 때 시맨틱 그룹과 배치 규칙(placementRules)을 기록한다. id가 기존 그룹이면 갱신. |
@@ -117,6 +121,7 @@
 | `list_village_tree_assets` | (없음) | 마을/숲 시공에 쓸 수 있는 나무 스탬프 카탈로그(침엽수 1×2, 활엽수 2×2). plant_tree_clusters / place_props 전에 조회. 맵 변경 없음. |
 | `get_village_session` | `sessionId: string` | 세션 상태·체크리스트·메모리·다음 open 레이어를 조회한다(맵 변경 없음). |
 | `evaluate_village_layer` | `sessionId?: string`, `mapId?: string`, `layer?: water\|forest_conifer\|forest_big\|settlement\|critique\|look\|all` | 체크리스트 레이어 단위 검증. layer 생략 시 마지막 진행 레이어 또는 전체 요약. 실패 시 해당 레이어를 open/failed로 되돌릴 수 있는 힌트 반환. |
+| `list_interior_room_demos` | (없음) | villager-room-v1 데모 플랜 6종(침실/서재/식탁/주방/창고/선술집)을 나열한다. |
 | `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|unapproved\|vocab\|labels`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer`, `query?: string` | 타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). |
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `list_endings` | (없음) | 프로젝트 엔딩 레지스트리를 나열하고 조건 충돌/priority 그림자 warning을 함께 반환한다. |
@@ -145,6 +150,7 @@
 | `run_lint` | `reachability?: array` | projectLint, 세계관 lint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
 | `list_project_commits` | `limit?: integer` | Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다. |
+| `list_ai_docs` | (없음) | 저장된 AI 문서 목록을 조회한다(제목/블록 수/생성 시각). |
 | `get_tile_info` | `tileIds: array`, `tilesetId?: string` | 타일들의 의미(라벨/설명/태그)·시맨틱 그룹·배치 규칙(placementRules)·통행성·레이어를 조회한다. 타일을 깔기 전에 확인하는 용도. |
 | `list_unclassified_tiles` | `tilesetId: string`, `limit?: integer`, `offset?: integer` | 타일셋에서 라벨이 없고 어떤 타일 그룹에도 속하지 않은 미분류 타일 인덱스를 페이지로 조회한다. 미분류 분석을 다음 배치로 이어갈 때 사용. |
 | `analyze_map_tile_usage` | `mapId: string`, `includeDescribed?: boolean` | 사람이 깐 맵에서 사용된 타일 종류·사용량·설명 유무·대표 영역(sampleRegion)·인접 통계(mostCommonBelow/Above)를 추출한다. 맵 인터뷰의 시작점 — 설명 없는(described=false) 타일부터 질문하라. |

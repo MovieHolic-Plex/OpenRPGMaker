@@ -183,6 +183,39 @@ export interface VillageInfoDocument {
   markdown: string;
 }
 
+// AI 문서(하이브리드 블록) — AI가 present_doc 툴로 만드는 리치 설명 문서.
+// 구조화 블록은 프로젝트의 살아있는 데이터(타일셋)를 참조해 렌더되고,
+// html 블록은 샌드박스 iframe 탈출구다. optional이라 마이그레이션 불필요.
+export type AiDocBlock =
+  | { kind: "markdown"; text: string }
+  | { kind: "table"; headers: string[]; rows: string[][] }
+  | {
+      kind: "sheetMap";
+      tilesetId: string;
+      zones: { col: number; row: number; w: number; h: number; label: string; color?: string }[];
+    }
+  | {
+      kind: "tileBlockCard";
+      tilesetId: string;
+      col: number;
+      row: number;
+      w: number;
+      h: number;
+      title: string;
+      caption?: string;
+      badge?: string;
+    }
+  | { kind: "paintDemo"; tilesetId: string; blockCol: number; blockRow: number; title?: string }
+  | { kind: "html"; src: string };
+
+export interface AiDocument {
+  id: string;
+  title: string;
+  createdAt: string;
+  blocks: AiDocBlock[];
+  pinned?: boolean;
+}
+
 // 테스트 상태 프리셋(Phase 4-1). 스위치/변수/인벤토리/골드/시작 좌표를 부분 저장해
 // 테스트 플레이/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
 export interface TestPreset {
@@ -237,6 +270,8 @@ export interface Project {
   maps: Record<MapId, GameMap>;
   mapConnections?: MapConnection[];
   villageInfoDocuments?: VillageInfoDocument[];
+  // AI 리치 설명 문서(채팅 present_doc 툴 산출물). optional이라 마이그레이션 불필요.
+  aiDocuments?: AiDocument[];
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
   // 선언적 퀘스트 정의(Phase 3). questCompiler가 스위치/변수/이벤트로 컴파일하며,
