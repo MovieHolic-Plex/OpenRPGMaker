@@ -765,8 +765,13 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private mapId(): MapId | null {
-    const id = editorState.get().currentMapId ?? store.getCurrent().startMapId;
-    return id;
+    // 프로젝트 교체 후에도 옛 mapId가 남아 있으면 맵이 안 그려지므로 유효한 id로 해석한다.
+    const project = store.getCurrent();
+    const preferred = editorState.get().currentMapId;
+    if (preferred && project.maps[preferred]) return preferred;
+    if (project.maps[project.startMapId]) return project.startMapId;
+    const first = Object.keys(project.maps)[0];
+    return first ?? null;
   }
 
   // ── 렌더 ──

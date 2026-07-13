@@ -70,10 +70,15 @@ describe("interior wall-frame autotile harness", () => {
     expect(interior.autotileGroups?.filter((group) => group.id === INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID)).toHaveLength(1);
   });
 
-  it("does not seed wall-frame autotile on dungeon tilesets", () => {
+  it("does not seed interior-specific autotiles on dungeon tilesets (but does seed dungeon's own)", () => {
     const dungeon = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    // 실내 전용 그룹(벽 프레임)은 던전에 새지 않는다.
     expect(wallFrameGroup(dungeon)).toBeUndefined();
-    expect(autotileGroupsForTileset(dungeon)).toHaveLength(0);
+    const ids = autotileGroupsForTileset(dungeon).map((group) => group.id);
+    expect(ids).not.toContain(INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID);
+    expect(ids.every((id) => !id.startsWith("harness-interior-house-v1-"))).toBe(true);
+    // 대신 던전 자체 지형 오토타일 13종은 시드된다(2026-07-13 추가).
+    expect(ids.filter((id) => id.startsWith("harness-dungeon-v1-terrain-"))).toHaveLength(13);
   });
 
   it("shapeAutotileGroupAround turns a hollow ring of body tiles into outer edges/corners", () => {

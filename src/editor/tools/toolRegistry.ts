@@ -180,6 +180,11 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     "build_house_kit",
     "build_house_lots", // 집 위치+마당 꾸밈 의도(LLM) → 산포 좌표(코드)
     "build_castle", // 성채 모듈(지붕면/성벽/원형타워) 결정론 시공
+    // 실내 하네스 — 상한(40) 트림에서 build_house_kit에 밀려 "실내 만들어줘"가 외장 집으로 새는 것을 막는다.
+    "start_interior_room_session",
+    "run_interior_room_pipeline",
+    "advance_interior_room_build",
+    "evaluate_interior_room",
     "fill_region",
     "build_wall",
     "paint_road", // 흙길/모래 8방 오토타일 — lay_path만 핀되면 AI가 길을 안 깔거나 비성형 경로로 감

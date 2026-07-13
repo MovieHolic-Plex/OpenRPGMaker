@@ -8,8 +8,9 @@ import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
+import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
-import { INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
+import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
@@ -136,6 +137,7 @@ function monsterCandidates(): ResourceCandidate[] {
 // 타일 인덱스는 칩셋마다 의미가 다르므로 combined_town 테이블을 다른 칩셋에 적용하면 오답이 된다.
 function bundledTileSemantics(tileset: TilesetDef | undefined): readonly { index: number; label: string; tags: readonly string[] }[] {
   if (tileset?.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_SEMANTICS;
+  if (tileset?.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_SEMANTICS;
   // 기본(타일셋 미지정 포함): combined_town — 기존 동작 유지.
   return COMBINED_TOWN_TILE_SEMANTICS;
 }

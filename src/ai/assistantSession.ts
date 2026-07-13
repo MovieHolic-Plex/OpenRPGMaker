@@ -58,6 +58,30 @@ import {
   proposalScopeCarryoverWarning,
   requestLikelyExpectsChange,
 } from "./proposalCompleteness";
+import {
+  formatIntentClarifyMessage,
+  resolveIntentClarification,
+} from "./intentClarify";
+import {
+  MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
+  ORCHESTRATOR_SYSTEM_PROMPT,
+  advanceWorkPlanFromTools,
+  buildDefaultWorkPlan,
+  buildOrchestratorUserPayload,
+  completeWorkItemById,
+  formatRalphContinueMessage,
+  formatWorkPlanForOrchestration,
+  formatWorkPlanUserVisible,
+  getCurrentWorkItem,
+  isWorkPlanComplete,
+  parseOrchestratorDecision,
+  shouldRalphContinue,
+  skipWorkItemById,
+  summarizeWorkPlan,
+  workPlanFromOrchestratorDecision,
+  workPlanFromSetToolArgs,
+  type WorkPlan,
+} from "./workPlan";
 
 // UI 스트리밍/로그용 이벤트.
 export type SessionEvent =
@@ -67,7 +91,8 @@ export type SessionEvent =
   | { type: "assistant_stream_reset" }
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
   | { type: "phase"; value: "plan" | "execute" | "review" }
-  | { type: "status"; text: string };
+  | { type: "status"; text: string }
+  | { type: "work_plan"; plan: WorkPlan };
 
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
 export interface ProposedCall {
@@ -85,6 +110,8 @@ export interface TurnResult {
   proposedCalls: ProposedCall[]; // 성공한 쓰기 툴콜(수락 시 store에 적용할 시퀀스).
   stoppedReason: "final" | "max-tool-calls" | "token-budget" | "error" | "aborted";
   error?: string;
+  /** 어려운 요청의 다층 To-do 진행 상태(있으면 UI/브리지에 노출). */
+  workPlan?: WorkPlan;
 }
 
 // 감사 로그 항목(Phase 1 헤드리스 러너로 리플레이 가능한 시퀀스).
@@ -104,6 +131,7 @@ export interface HarnessSnapshot {
   readonly maxTokens: number;
   readonly messages: readonly ChatMessage[];
   readonly audit: readonly AuditEntry[];
+  readonly workPlan?: WorkPlan | null;
 }
 
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
@@ -321,6 +349,74 @@ const MAX_SPEC_REJECTIONS = 3;
 const ASSISTANT_TURN_RETRY_ATTEMPTS = 3;
 const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.";
 
+/**
+ * Session-only WorkPlan tools (Claude TodoWrite / Anthropic task-list style).
+ * Always available so the main model can plan/replan inside the ReAct loop;
+ * the pre-turn planner also authors the first plan without tools.
+ */
+const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_work_plan",
+      description: "현재 다층 WorkPlan 진행 상태를 조회한다. 미완료 항목이 있으면 반드시 현재 항목만 실행한다.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "set_work_plan",
+      description:
+        "다층 작업 계획을 새로 세우거나 전면 교체한다(replan). layers/items 구조로 goal을 분해한다. " +
+        "실행 중 목표가 바뀌었거나 기존 계획이 틀렸을 때만 호출. 한 항목 완료에는 complete_work_item을 쓴다.",
+      parameters: {
+        type: "object",
+        properties: {
+          goal: { type: "string", description: "전체 목표" },
+          plannerNote: { type: "string", description: "전략 메모(선택)" },
+          layers: {
+            type: "array",
+            description:
+              "[{title, items:[{title, instruction, doneWhen?, successTools?}]}] — 2~6 레이어, 항목당 구체 instruction",
+            items: { type: "object" },
+          },
+        },
+        required: ["goal", "layers"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "complete_work_item",
+      description:
+        "현재 또는 지정 항목을 완료하고 다음 항목으로 넘긴다. doneWhen 충족 또는 해당 단계 쓰기 툴 성공 후 호출.",
+      parameters: {
+        type: "object",
+        properties: {
+          itemId: { type: "string", description: "생략 시 현재 in_progress 항목" },
+          note: { type: "string", description: "완료 메모" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "skip_work_item",
+      description: "현재 또는 지정 항목을 건너뛰고 다음으로 간다(막혔을 때만).",
+      parameters: {
+        type: "object",
+        properties: {
+          itemId: { type: "string" },
+          note: { type: "string" },
+        },
+      },
+    },
+  },
+];
+
 function specGateResult(summary: string, guidance: readonly string[]): ToolResult {
   return {
     ok: false,
@@ -380,6 +476,10 @@ export class AssistantSession {
   private lastTurnFailed = false;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
+  /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
+  private workPlan: WorkPlan | null = null;
+  /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
+  private workPlanAutoStepsThisUserMessage = 0;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -426,6 +526,14 @@ export class AssistantSession {
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.
   getActiveSpec(): BuildSpec | null {
     return this.activeSpec;
+  }
+
+  getWorkPlan(): WorkPlan | null {
+    return this.workPlan ? structuredClone(this.workPlan) : null;
+  }
+
+  clearWorkPlan(): void {
+    this.workPlan = null;
   }
 
   // set_build_spec 처리: 검증 통과 시 활성화(턴 간 유지), 실패 시 사유를 되돌려 재제출 유도.
@@ -557,14 +665,17 @@ export class AssistantSession {
       maxTokens: this.config.maxTokens,
       messages: this.messages.map((message) => ({ ...message })),
       audit: [...this.audit],
+      workPlan: this.workPlan ? structuredClone(this.workPlan) : null,
     };
   }
 
   // 한 턴 실행: 사용자 메시지 → (LLM ↔ 툴) 루프 → 최종 응답 + 제안 changeset.
+  // opts.explicitSkillId: 스킬 서랍/슬래시로 고른 경우 — 집/실내 되묻기 게이트를 건너뛴다.
   async sendUserMessage(
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    opts?: { readonly explicitSkillId?: string | null },
   ): Promise<TurnResult> {
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
@@ -588,11 +699,248 @@ export class AssistantSession {
     this.turnWriteDedupe = new Map();
     this.eventBaseProposalKeys = new Map();
 
+    // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
+    const clarify = resolveIntentClarification(text, { explicitSkillId: opts?.explicitSkillId });
+    if (clarify) {
+      const assistantText = formatIntentClarifyMessage(clarify);
+      this.messages.push({ role: "assistant", content: assistantText });
+      onEvent({ type: "assistant_message", content: assistantText });
+      this.pushAudit({ kind: "status", text: `의도 확인(${clarify.kind}): ${clarify.reason}` });
+      this.pushAudit({ kind: "assistant", text: assistantText });
+      this.pushAudit({ kind: "status", text: "턴 종료(final) — 의도 확인 · 제안 0건" });
+      return { assistantText, proposedCalls: [], stoppedReason: "final" };
+    }
+
+    // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
+    this.workPlanAutoStepsThisUserMessage = 0;
+    await this.runOrchestratorPlanner(text, onEvent, signal);
+
     try {
-      return await this.runTurnLoop(onEvent, signal);
+      const result = await this.runTurnLoop(onEvent, signal);
+      return this.withWorkPlanResult(result);
     } finally {
       this.removeOrchestrationMessages();
     }
+  }
+
+  /**
+   * Planner agent (main LLM, no tools): direct | resume | new_plan | replan.
+   * Anthropic long-running harness pattern — code only validates/stores/injects.
+   */
+  private async runOrchestratorPlanner(
+    text: string,
+    onEvent: (event: SessionEvent) => void,
+    signal?: AbortSignal
+  ): Promise<void> {
+    onEvent({ type: "status", text: "플래너(main LLM)가 작업 분해를 판단 중…" });
+    this.pushAudit({ kind: "status", text: "planner:start" });
+    const maps = Object.values(this.ctx.project.maps);
+    const projectSummary = [
+      `title=${this.ctx.project.meta?.title ?? ""}`,
+      `maps=${maps.length}`,
+      ...maps.slice(0, 12).map((m) => `- ${m.name} ${m.width}x${m.height} events=${m.events?.length ?? 0}`),
+    ].join("\n");
+
+    let raw = "";
+    try {
+      // Always main model — not lite. No tools. Planner is pure cognition.
+      const result = await this.chatWithTransientRetry(
+        this.config,
+        {
+          messages: [
+            { role: "system", content: ORCHESTRATOR_SYSTEM_PROMPT },
+            {
+              role: "user",
+              content: buildOrchestratorUserPayload({
+                userText: text,
+                activePlan: this.workPlan,
+                projectSummary,
+              }),
+            },
+          ],
+        },
+        onEvent,
+        signal,
+        false
+      );
+      raw = typeof result.message.content === "string" ? result.message.content : "";
+    } catch (cause) {
+      if (isLlmAbortError(cause) || signal?.aborted) throw cause;
+      this.pushAudit({
+        kind: "status",
+        text: `planner:error ${cause instanceof Error ? cause.message : String(cause)}`,
+      });
+      if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+        this.injectWorkPlanOrchestration();
+        this.emitWorkPlan(onEvent);
+      } else if (text.trim().length >= 60) {
+        this.workPlan = buildDefaultWorkPlan(text);
+        this.emitWorkPlan(onEvent);
+        this.injectWorkPlanOrchestration();
+        onEvent({ type: "status", text: "플래너 실패 — 최소 폴백 계획으로 진행" });
+      }
+      return;
+    }
+
+    const decision = parseOrchestratorDecision(raw);
+    if (!decision) {
+      this.pushAudit({ kind: "status", text: `planner:parse-fail raw=${raw.slice(0, 200)}` });
+      if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+        this.injectWorkPlanOrchestration();
+        this.emitWorkPlan(onEvent);
+      } else if (text.trim().length >= 60) {
+        this.workPlan = buildDefaultWorkPlan(text);
+        this.emitWorkPlan(onEvent);
+        this.injectWorkPlanOrchestration();
+      }
+      return;
+    }
+
+    if (decision.action === "direct") {
+      this.pushAudit({ kind: "status", text: `planner:direct ${decision.reason ?? ""}` });
+      return;
+    }
+
+    if (decision.action === "resume") {
+      if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+        this.pushAudit({ kind: "status", text: `planner:resume ${decision.reason ?? ""}` });
+        onEvent({ type: "status", text: "기존 WorkPlan을 이어 실행합니다 (Ralph resume)." });
+        this.emitWorkPlan(onEvent);
+        this.injectWorkPlanOrchestration();
+      }
+      return;
+    }
+
+    // new_plan | replan
+    this.workPlan = workPlanFromOrchestratorDecision(decision);
+    const progress = summarizeWorkPlan(this.workPlan);
+    this.pushAudit({
+      kind: "status",
+      text: `planner:${decision.action} items=${progress.itemsTotal} layers=${progress.layersTotal}`,
+    });
+    onEvent({
+      type: "status",
+      text: `플래너가 ${progress.layersTotal}레이어 / ${progress.itemsTotal}항목으로 분해했습니다.`,
+    });
+    this.emitWorkPlan(onEvent);
+    this.injectWorkPlanOrchestration();
+  }
+
+  private emitWorkPlan(onEvent: (event: SessionEvent) => void): void {
+    if (!this.workPlan) return;
+    onEvent({ type: "work_plan", plan: structuredClone(this.workPlan) });
+  }
+
+  private injectWorkPlanOrchestration(): void {
+    if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return;
+    this.pushOrchestrationMessage(formatWorkPlanForOrchestration(this.workPlan));
+  }
+
+  /** Ralph: re-inject current item when generator tries to exit early. */
+  private injectRalphContinue(onEvent: (event: SessionEvent) => void): void {
+    if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return;
+    this.workPlanAutoStepsThisUserMessage += 1;
+    this.pushOrchestrationMessage(formatRalphContinueMessage(this.workPlan));
+    this.pushAudit({
+      kind: "status",
+      text: `ralph:continue step=${this.workPlanAutoStepsThisUserMessage}/${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN}`,
+    });
+    onEvent({
+      type: "status",
+      text: `Ralph 연속 실행 (${this.workPlanAutoStepsThisUserMessage}/${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN}) — 미완료 항목 재주입`,
+    });
+  }
+
+  private applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult {
+    if (name === "set_work_plan") {
+      const plan = workPlanFromSetToolArgs(args);
+      if (!plan) {
+        return {
+          ok: false,
+          summary: "set_work_plan 인자 오류: goal + layers[{title, items[{title, instruction}]}] 필요",
+        };
+      }
+      this.workPlan = plan;
+      const progress = summarizeWorkPlan(plan);
+      return {
+        ok: true,
+        summary: `WorkPlan 설정: ${progress.layersTotal}레이어 / ${progress.itemsTotal}항목. 현재: ${progress.current?.itemTitle ?? "(완료)"}`,
+        data: { plan: structuredClone(plan), progress },
+      };
+    }
+    if (!this.workPlan) {
+      return {
+        ok: false,
+        summary: "활성 WorkPlan이 없습니다. set_work_plan으로 계획을 세우거나 어려운 요청으로 플래너가 계획을 만들게 하세요.",
+      };
+    }
+    if (name === "get_work_plan") {
+      return {
+        ok: true,
+        summary: formatWorkPlanUserVisible(this.workPlan).slice(0, 500),
+        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan) },
+      };
+    }
+    if (name === "complete_work_item") {
+      const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
+      if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
+      const note = typeof args.note === "string" ? args.note : undefined;
+      const done = completeWorkItemById(this.workPlan, id, note);
+      if (!done) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
+      const next = getCurrentWorkItem(this.workPlan);
+      return {
+        ok: true,
+        summary: next
+          ? `완료: ${done.title} → 다음: ${next.title}`
+          : `완료: ${done.title}. 작업 계획이 모두 끝났습니다.`,
+        data: { completed: done.id, next: next?.id ?? null, progress: summarizeWorkPlan(this.workPlan) },
+      };
+    }
+    if (name === "skip_work_item") {
+      const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
+      if (!id) return { ok: false, summary: "건너뛸 항목 id가 없습니다." };
+      const note = typeof args.note === "string" ? args.note : undefined;
+      const skipped = skipWorkItemById(this.workPlan, id, note);
+      if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
+      const next = getCurrentWorkItem(this.workPlan);
+      return {
+        ok: true,
+        summary: next ? `건너뜀: ${skipped.title} → 다음: ${next.title}` : `건너뜀: ${skipped.title}. 계획 종료.`,
+        data: { skipped: skipped.id, next: next?.id ?? null, progress: summarizeWorkPlan(this.workPlan) },
+      };
+    }
+    return { ok: false, summary: `알 수 없는 WorkPlan 툴: ${name}` };
+  }
+
+  private noteSuccessfulWriteTools(names: readonly string[], onEvent: (event: SessionEvent) => void): void {
+    if (!this.workPlan || names.length === 0) return;
+    const { completed, next } = advanceWorkPlanFromTools(this.workPlan, names);
+    if (completed) {
+      this.pushAudit({ kind: "status", text: `WorkPlan 자동 완료: ${completed.title}` });
+      this.emitWorkPlan(onEvent);
+      if (next) {
+        onEvent({ type: "status", text: `다음 할 일: ${next.title}` });
+      } else if (isWorkPlanComplete(this.workPlan)) {
+        onEvent({ type: "status", text: "작업 계획의 모든 항목이 완료되었습니다." });
+      }
+    }
+  }
+
+  private withWorkPlanResult(result: TurnResult): TurnResult {
+    if (!this.workPlan) return result;
+    const board = formatWorkPlanUserVisible(this.workPlan);
+    const hitCap =
+      !isWorkPlanComplete(this.workPlan) &&
+      this.workPlanAutoStepsThisUserMessage >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN;
+    const suffix = isWorkPlanComplete(this.workPlan)
+      ? `\n\n---\n${board}`
+      : hitCap
+        ? `\n\n---\n${board}\n\n(안전 상한 ${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN}단계) 이어서 진행하려면 **「계속」** 이라고 보내세요.`
+        : `\n\n---\n${board}`;
+    const assistantText = result.assistantText.includes("📋 작업 계획")
+      ? result.assistantText
+      : `${result.assistantText.trim()}${suffix}`;
+    return { ...result, assistantText, workPlan: structuredClone(this.workPlan) };
   }
 
   // 직전 턴이 LLM 오류로 끊긴 경우에만 재개 가능(도그푸딩 결함 ⑥ — 수동 재시도).
@@ -866,19 +1214,25 @@ export class AssistantSession {
     this.lastTurnFailed = false;
     // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온으로 툴을 고정한다.
     const domains = this.currentTurnToolDomains ?? computeActiveToolDomains("");
-    const tools = [...toOpenAiTools(undefined, { domains }), SET_BUILD_SPEC_TOOL];
+    // WorkPlan tools always on: set_work_plan / get / complete / skip (TodoWrite-style in ReAct loop).
+    const tools = [
+      ...toOpenAiTools(undefined, { domains }),
+      SET_BUILD_SPEC_TOOL,
+      ...WORK_PLAN_TOOLS,
+    ];
     // 토큰 보정 관측용: tools 스키마도 prompt_tokens에 포함되므로 문자 수에 더한다(근사).
     const toolsChars = JSON.stringify(tools).length;
     const proposedByKey = this.turnProposals;
     let assistantText = "";
-    const orchestrated = this.orchestrationEnabled();
-    let phase: AssistantPhase = "plan";
-    let executionStarted = false;
+    const orchestrated = this.orchestrationEnabled() || Boolean(this.workPlan);
+    let phase: AssistantPhase = this.workPlan ? "execute" : "plan";
+    let executionStarted = Boolean(this.workPlan);
     let writeToolAttempts = 0;
     let zeroChangeRekickUsed = false;
     let reviewRepairUsed = false;
     let reviewMissingWarnings: string[] = [];
-    if (orchestrated) this.emitPhase(onEvent, "plan");
+    if (orchestrated) this.emitPhase(onEvent, phase);
+    if (this.workPlan) this.addExecutionHintIfNeeded();
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
     // (maxToolCalls 기본 200은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
     let spentOutputTokens = 0;
@@ -948,6 +1302,20 @@ export class AssistantSession {
 
       const toolCalls = assistantMsg.tool_calls ?? [];
       if (toolCalls.length === 0) {
+        const finalText = sanitizeAssistantText(messageText ?? "");
+        // Ralph loop: incomplete WorkPlan → re-inject current item; do not early-exit.
+        if (
+          shouldRalphContinue(this.workPlan, {
+            autoStepsUsed: this.workPlanAutoStepsThisUserMessage,
+            assistantText: finalText,
+          })
+        ) {
+          phase = "execute";
+          executionStarted = true;
+          this.emitPhase(onEvent, "execute");
+          this.injectRalphContinue(onEvent);
+          continue;
+        }
         if (orchestrated && executionStarted) {
           phase = "review";
           this.emitPhase(onEvent, "review");
@@ -956,7 +1324,6 @@ export class AssistantSession {
           this.pushOrchestrationMessage(review.prompt);
           continue;
         }
-        const finalText = sanitizeAssistantText(messageText ?? "");
         if (
           orchestrated &&
           !zeroChangeRekickUsed &&
@@ -980,6 +1347,9 @@ export class AssistantSession {
       const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
+      const successfulWriteToolsThisRound: string[] = [];
+      // Capture before any complete/skip/set tools mutate the cursor.
+      const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
         const { name, args } = parseToolCall(call);
@@ -990,6 +1360,22 @@ export class AssistantSession {
         let toolResult: ToolResult;
         if (name === "set_build_spec") {
           toolResult = this.applyBuildSpec(args);
+        } else if (
+          name === "get_work_plan" ||
+          name === "set_work_plan" ||
+          name === "complete_work_item" ||
+          name === "skip_work_item"
+        ) {
+          toolResult = this.applyWorkPlanTool(name, args);
+          if (toolResult.ok) {
+            this.emitWorkPlan(onEvent);
+            if (name === "set_work_plan" && this.workPlan) {
+              executionStarted = true;
+              phase = "execute";
+              this.emitPhase(onEvent, "execute");
+              this.injectWorkPlanOrchestration();
+            }
+          }
         } else {
           const dedupeKey = writeDedupeKey(name, args);
           const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
@@ -1010,6 +1396,7 @@ export class AssistantSession {
             if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
           }
         }
+        if (toolResult.ok && tool?.mode === "write") successfulWriteToolsThisRound.push(name);
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({
@@ -1085,7 +1472,31 @@ export class AssistantSession {
         this.addExecutionHintIfNeeded();
       }
 
-      // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한이다.
+      // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
+      this.noteSuccessfulWriteTools(successfulWriteToolsThisRound, onEvent);
+      const afterItemId = this.workPlan?.currentItemId ?? null;
+      const advanced =
+        Boolean(this.workPlan) &&
+        !isWorkPlanComplete(this.workPlan!) &&
+        workItemIdAtRoundStart !== null &&
+        afterItemId !== null &&
+        afterItemId !== workItemIdAtRoundStart;
+      if (
+        advanced &&
+        this.workPlanAutoStepsThisUserMessage < MAX_WORK_PLAN_AUTO_STEPS_PER_TURN
+      ) {
+        this.workPlanAutoStepsThisUserMessage += 1;
+        phase = "execute";
+        executionStarted = true;
+        this.emitPhase(onEvent, "execute");
+        this.injectWorkPlanOrchestration();
+        onEvent({
+          type: "status",
+          text: `WorkPlan 다음 스프린트 (${this.workPlanAutoStepsThisUserMessage}/${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN})`,
+        });
+      }
+
+      // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
       if (spentOutputTokens >= this.config.maxTokens) {
         onEvent({
           type: "status",

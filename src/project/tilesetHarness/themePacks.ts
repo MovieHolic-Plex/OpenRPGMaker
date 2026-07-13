@@ -4,12 +4,13 @@ import {
   DARK_WALL_AUTOTILE_GROUP_ID,
 } from "@/project/defaults/darkWallAutotile";
 import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interiorTerrainAutotiles";
+import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
 export const DUNGEON_METADATA_PACK_ID = "dungeon-v1";
-export const DUNGEON_METADATA_PACK_VERSION = "1";
+export const DUNGEON_METADATA_PACK_VERSION = "2";
 export const DUNGEON_TEXTURE_KEY = "tex_easyrpg_chipset_dungeon";
 export const DUNGEON_HARNESS_PREFIX = "harness-dungeon-v1-";
 
@@ -117,11 +118,52 @@ type ThemeMetadataPack = {
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
 
+// 분홍 투명 배경 소품 전수 목록 — 2026-07-13 vision 업스케일 감사로 판독.
+// 대형 조립체: 왕좌 448/449/478/479(2×2), 파이프 오르간 444~446/474~476(3×2),
+// 황금 새장 441~443/471~473(3×2), 큰 문 294/324/354(1×3), 책장 329/359, 침대 384/414(세로)·415/416(가로).
+const DUNGEON_TRANSPARENT_PROP_TILES = [
+  117, 119, 149, 145, 175, 146, 176, 147, 148, 177, 178, 179,
+  207, 208, 209, 237, 238, 239,
+  259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269,
+  288, 289, 290, 291, 292, 293, 296, 297, 298, 299,
+  318, 319, 320, 321, 322, 323, 326, 327, 328, 329,
+  348, 349, 350, 351, 352, 353, 355, 356, 357, 358, 359,
+  382, 383, 384, 385, 386, 387, 388, 389,
+  412, 413, 414, 415, 416, 417, 418, 419,
+] as const;
+
+// 2026-07-13 vision 업스케일 감사(8x, 480타일)로 전면 재작성 — 옛 4그룹은 현재 PNG와 어긋났다
+// (옛 "던전 석벽" 1~3/31~33은 물웅덩이·수로, 옛 "입구" 91/92/121/122와 "소품" 210/211은 물가·깊은 물).
+// 타일별 정밀 라벨은 tileSemanticsDungeon.ts(검색 전용)가 제공하고, 여기는 통행성/레이어 계약을 시드한다.
 export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
-  packGroup(DUNGEON_HARNESS_PREFIX, "floor", "던전 바닥", "terrain", "lower", [270, 271, 300, 301], "passable", "repeat", "방과 복도를 채우는 통행 가능한 던전 바닥입니다."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "stone-wall", "던전 석벽", "wall", "lower", [1, 2, 3, 31, 32, 33], "solid", "repeat", "방 외곽과 복도 경계를 막는 단단한 던전 벽입니다."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "door-trim", "던전 입구/장식", "building", "lower", [91, 92, 121, 122], "solid", "fixed", "방 입구 주변을 표시하는 비통행 던전 구조물입니다."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "prop-detail", "던전 소품", "prop", "mixed", [210, 211, 240, 241], "solid", "fixed", "바닥 위에 배치할 수 있는 던전 장식 소품입니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "floor-cave", "동굴 돌바닥", "terrain", "lower", [126, 127, 128, 156, 157, 158, 186, 187, 188, 216, 217, 218], "passable", "repeat", "청회색 동굴 돌바닥입니다. 일반 던전 방·복도의 기본 바닥."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "floor-lava-rock", "용암 바위 바닥", "terrain", "lower", [240, 241, 242, 270, 271, 272, 300, 301, 302, 330, 331, 332], "passable", "repeat", "적갈색 용암 동굴 바닥입니다. 화산 층 던전용."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "floor-dirt", "흙 바위 바닥", "terrain", "lower", [360, 361, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452], "passable", "repeat", "갈색 흙 동굴 바닥입니다. 토굴·갱도용."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "floor-ice", "빙판 바닥", "terrain", "lower", [6, 7, 8, 36, 37, 38, 66, 67, 68, 96, 97, 98], "passable", "repeat", "설원 동굴의 빙판 바닥입니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "floor-mosaic", "별무늬 모자이크 바닥", "terrain", "lower", [80, 81, 82, 83, 110, 111], "passable", "repeat", "신전·유적용 별무늬 모자이크 바닥 4색 변형입니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "floor-plank", "나무 판자 바닥", "terrain", "lower", [141, 142, 143, 171, 201, 231], "passable", "repeat", "갱도 다리·발판용 나무 판자 바닥입니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "carpet-red", "붉은 카펫", "terrain", "lower", [138, 139, 140, 168, 169, 170, 198, 199, 200], "passable", "repeat", "금장 테두리 붉은 카펫 9-슬라이스입니다. 왕좌실·보스방 전용 연출."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "snow-field", "눈밭", "terrain", "lower", [282, 283, 284, 312, 313, 314, 342, 343, 344], "passable", "repeat", "설원 블롭 지형입니다. 빙판 위 가장자리 연출."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "moss-thicket", "이끼 덤불 지대", "terrain", "lower", [363, 364, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "passable", "repeat", "반투명 디더 이끼 덤불 블롭입니다. 습지 층 연출."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "arrow-plate", "화살표 발판", "terrain", "lower", [172, 173, 202, 203], "passable", "fixed", "방향 안내용 화살표 금속 발판입니다(상/하/좌/우)."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "plateau", "융기 단상 지형", "terrain", "lower", [12, 13, 14, 42, 44, 72, 73, 74, 135, 136, 137, 165, 166, 167, 195, 196, 197, 225, 226, 227, 405, 406, 407, 435, 437, 465, 466, 467], "passable", "repeat", "테두리 있는 융기 단상(용암 대지·흙 단상·이끼 석재 단상)입니다. 블록 단위로 깔아야 테두리가 이어집니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "wall-cave", "동굴 암벽", "wall", "lower", [15, 45, 21, 22, 23, 51, 52, 53, 102, 103, 104, 132, 133, 134, 18, 19, 48, 49, 50, 252, 253, 254, 432, 433, 462, 463, 434, 464], "solid", "repeat", "암갈색·청회 지층 동굴 암벽입니다. 방 외곽과 복도 경계를 막습니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "wall-roots", "뿌리 얽힌 벽", "wall", "lower", [16, 17, 46, 47, 76, 77, 162, 163, 192, 193, 222, 223, 164, 194, 224], "solid", "repeat", "뿌리·비늘 무늬가 얽힌 유기물 벽면입니다. 토굴·거목 던전용."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "wall-brick", "벽돌/석벽", "wall", "lower", [105, 106, 107, 108, 109, 78, 79, 20, 75], "solid", "repeat", "붉은 벽돌·흰 석벽돌·보석 벽돌과 얼굴 조각 바위(20/75) 벽면입니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "wall-ore", "광맥 암반", "wall", "lower", [255, 256, 257, 285, 315, 372, 373, 374, 402, 403, 404], "solid", "repeat", "금맥(255~257)·푸른 광석 암반입니다. 광산 층 벽면."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "wall-ice", "빙벽/빙붕", "wall", "lower", [286, 287, 316, 317, 346, 347, 375, 376, 377, 9, 39, 69, 99, 10, 11, 40, 41, 70, 71, 100, 101], "solid", "repeat", "고드름 빙벽·빙붕 선반과 얼음 결정 지대입니다. 설원 층 벽면."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "hazard-lava", "용암 못", "water", "lower", [243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335, 43], "solid", "repeat", "끓는 용암 못 블롭과 용암 균열(43)입니다. 통행 불가 위험 지형."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "hazard-pit", "구덩이/심연", "terrain", "lower", [129, 159, 189, 219, 130, 131, 160, 161, 190, 191, 220, 221, 246, 247, 248, 276, 277, 278, 306, 307, 308, 336, 337, 338, 249, 279, 309, 339, 250, 251, 280, 281, 310, 311, 340, 341, 369, 399, 429, 459, 370, 371, 400, 401, 430, 431, 460, 461], "solid", "repeat", "검은 낭떠러지 구덩이 블롭 계열입니다. 통행 불가."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "abyss-glow", "푸른 발광 심연", "terrain", "lower", [366, 367, 368, 396, 397, 398, 426, 427, 428, 456, 457, 458], "solid", "repeat", "푸른 발광 테두리 심연입니다. 마법 던전 최하층 연출."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "water", "지하수/수로", "water", "lower", [0, 1, 2, 30, 31, 32, 60, 61, 62, 90, 91, 92, 3, 4, 5, 33, 34, 35, 63, 64, 65, 93, 94, 95, 120, 121, 122, 150, 151, 152, 180, 181, 182, 210, 211, 212, 123, 153, 183, 213, 124, 154, 184, 214], "solid", "repeat", "동굴 물웅덩이·석조 수로·깊은 물·폭포 애니메이션입니다. 통행 불가."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "magic-block", "푸른 마법 블록", "building", "lower", [125, 155, 185, 215], "solid", "fixed", "봉인·장치 연출용 푸른 마법 블록 애니메이션입니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "rail-track", "광산 레일", "building", "upper", [114, 144, 174, 115, 116], "passable", "fixed", "광산 수레 레일(세로 114/144/174, 가로 115/116)입니다. 분홍 투명 배경 — 바닥 위 레이어에 얹으면 통행 가능."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "rail-trestle", "레일 목조 골조", "building", "upper", [57, 58, 59, 87, 88, 89, 54, 55, 56, 84, 85, 86], "solid", "fixed", "광산 레일 지지 골조와 대형 나무 수차(54~56/84~86)입니다. 분홍 투명 배경."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "jail-gate", "감옥 철창", "building", "upper", [204, 205, 206, 234, 235, 236], "solid", "fixed", "감옥 철창 문(포트컬리스 3×2)입니다. 분홍 투명 배경 — 감옥 방 전용."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "gate-crown", "석조 관문 상단", "building", "upper", [24, 25, 26, 27, 28, 29], "solid", "fixed", "석조 아치 관문 상단(24~26)과 황금 아치 장식(27~29, 용도 판독 보류)입니다. 분홍 투명 배경."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "throne-hall", "왕좌/의례 조형물", "building", "upper", [448, 449, 478, 479, 447, 477, 444, 445, 446, 474, 475, 476, 441, 442, 443, 471, 472, 473, 228, 229, 230], "solid", "fixed", "붉은 왕좌(448/449/478/479 2×2)·석조 기둥·파이프 오르간·황금 새장·붉은 커튼입니다. 왕좌실·보스방 전용."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "structure", "대형 구조물", "building", "upper", [294, 324, 354, 295, 325, 378, 379, 380, 381, 410, 411, 408, 409, 438, 439, 468, 469, 440, 470], "solid", "fixed", "큰 나무 문(1×3)·어두운 통로 입구·천막 지붕·설산 봉우리·석조 원형 구조물·석탑입니다. 분홍 투명 배경."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "transparent-props", "던전 투명 배경 소품", "prop", "upper", DUNGEON_TRANSPARENT_PROP_TILES, "solid", "fixed", "분홍 투명 배경 소품(횃불·수정·바위·해골·가구·석상 등)입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
 
 // 2026-07-12 vision 업스케일 감사 기준으로 재작성 — 이전 그룹은 옛 칩셋 이미지 기준이라
@@ -199,6 +241,13 @@ export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
     changed = seedInteriorDarkWallAutotileGroup(tileset) || changed;
     // 지형/카펫 RM2k3 블록 6종(산울타리·흙무더기·흙땅·데크·자갈·청록 카펫) — vision 감사(2026-07-12)로 확정.
     for (const group of createInteriorTerrainAutotileGroups()) {
+      changed = upsertAutotileGroupKeepingCurrent(tileset, group) || changed;
+    }
+  }
+  if (pack.textureKey === DUNGEON_TEXTURE_KEY) {
+    // 던전 지형 RM2k3 오토타일 13종(바닥·구덩이·용암못·눈밭·발광심연) — vision 감사 + 합성 렌더 검증(2026-07-13).
+    // 브러시(각 블록 몸통)를 칠하면 shapeAutotileGroupAround가 테두리/코너를 자동 성형한다.
+    for (const group of createDungeonTerrainAutotileGroups()) {
       changed = upsertAutotileGroupKeepingCurrent(tileset, group) || changed;
     }
   }

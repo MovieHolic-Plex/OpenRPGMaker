@@ -530,41 +530,43 @@ function applyHistory(action: () => boolean, topbar: HTMLElement): void {
 async function newProject(): Promise<void> {
   if (!(await showConfirm({ title: "새 프로젝트", message: "현재 작업을 지우고 새 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   await store.clearAll();
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  const { focusProjectStartMap } = await import("@/editor/mapSelection");
+  focusProjectStartMap();
   toast("새 프로젝트를 만들었습니다", "ok");
 }
 
 async function newTrainingExamplesProject(): Promise<void> {
   if (!(await showConfirm({ title: "학습 예시 12맵", message: "현재 작업을 지우고 학습 예시 12맵 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createTrainingExamplesProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("학습 예시 12맵을 불러왔습니다 — 각 맵 이름의 주제대로 예시를 채워넣으세요", "ok");
 }
 
 async function newScarloxyPokemonDemoProject(): Promise<void> {
   if (!(await showConfirm({ title: "Scarloxy 포켓몬풍 데모", message: "현재 작업을 지우고 Scarloxy 포켓몬풍 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createScarloxyPokemonDemoProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("Scarloxy 포켓몬풍 데모를 불러왔습니다 — 박사에게 스타터를 받고 남쪽 풀숲에서 포획해 보세요", "ok");
 }
 
 async function newScarloxyDemoProject(): Promise<void> {
   if (!(await showConfirm({ title: "Scarloxy 데모", message: "현재 작업을 지우고 Scarloxy 몬스터 초원 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createScarloxyDemoProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("Scarloxy 몬스터 초원 데모를 불러왔습니다", "ok");
 }
 
 async function newSampleAdventureProject(): Promise<void> {
   if (!(await showConfirm({ title: "예제 프로젝트", message: "현재 작업을 지우고 예제 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createSampleAdventureProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("예제 프로젝트를 불러왔습니다", "ok");
+}
+
+function focusLoadedProjectStartMap(): void {
+  void import("@/editor/mapSelection").then(({ focusProjectStartMap }) => {
+    focusProjectStartMap();
+  });
 }
 
 function newMap(): void {
@@ -597,7 +599,7 @@ async function togglePlayMode(): Promise<void> {
 }
 
 async function openTestPlayWindow(): Promise<void> {
-  await store.flush();
+  // flush 는 openTestPlayModal 이 창을 먼저 띄운 뒤 진행(로딩 UI 표시).
   window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
 }
 
@@ -702,6 +704,6 @@ function replaceProjectFromJson(json: string): void {
 
 function replaceProject(project: Project): void {
   store.replaceProject(project);
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null });
+  focusLoadedProjectStartMap();
   toast("가져오기 완료", "ok");
 }

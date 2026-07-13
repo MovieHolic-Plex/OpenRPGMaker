@@ -52,6 +52,7 @@ function findByTag(root: FakeElement, tagName: string): FakeElement | null {
 
 /** 접힌 채 부팅한 경우 복귀 버튼으로 펼침 (이미 펼쳐져 있으면 no-op). */
 function expandPanel(panel: FakeElement): void {
+  if (!panel.classList.contains("is-collapsed")) return;
   findByTestId(panel, "ai-collapsed-restore")?.click();
   expect(panel.classList.contains("is-collapsed")).toBe(false);
 }
@@ -68,9 +69,9 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
-  it("첫 방문(저장값 없음)은 펼친 채 부팅한다", () => {
+  it("첫 방문(저장값 없음)은 접힌 채 부팅한다", () => {
     const panel = renderPanel();
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
   });
 
   it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {

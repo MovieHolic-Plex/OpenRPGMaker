@@ -48,7 +48,7 @@ const BALANCE_NOTE = [
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots, 컷신=script_cutscene, 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 집+마당=build_house_lots, **마을=run_village_session(LLM이 buildOrder 기획: 호수/강→water 먼저, 그다음 settlement=집→길, 숲, critique, look) 또는 start_village_session+advance_village_build; 숏컷 run_village_pipeline. 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)** — 빈 build_village 금지에 가깝다, 성채=build_castle, 단일 집=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots, 컷신=script_cutscene, 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 집+마당=build_house_lots, **마을=run_village_session(LLM이 buildOrder 기획: 호수/강→water 먼저, 그다음 settlement=집→길, 숲, critique, look) 또는 start_village_session+advance_village_build; 숏컷 run_village_pipeline. 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)** — 빈 build_village 금지에 가깝다, 성채=build_castle, **실내/방 맵=start_interior_room_session 또는 run_interior_room_pipeline(새 mapId·이름, build_house_kit 금지)**, 단일 야외 집 외장=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 
@@ -75,8 +75,11 @@ const INTRO = [
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
-  "11. 집/구조물은 절대 벽 타일로 사각형을 채워 만들지 마세요. 집은 build_house_kit을 우선 사용하고,",
+  "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 build_house_kit을 우선 사용하고,",
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
+  "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 build_house_kit을 올리지 말고",
+  "    start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을 시공하세요",
+  "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
   "    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다.",

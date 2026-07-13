@@ -55,6 +55,36 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(JSON.parse(session.exportAudit()).model).toBe("main-session-model");
   }, 30000);
 
+  it("집만 요청하면 LLM 전에 실내/야외 선택지를 되묻고 툴을 호출하지 않는다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let chatCalls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      chatCalls += 1;
+      return assistantFinal("이 응답은 나오면 안 됨");
+    };
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
+    expect(chatCalls).toBe(0);
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.assistantText).toContain("실내 맵으로");
+    expect(result.assistantText).toContain("[선택지]");
+    const audit = JSON.parse(session.exportAudit()) as { entries: { kind: string; text?: string }[] };
+    expect(audit.entries.some((entry) => entry.kind === "status" && entry.text?.includes("의도 확인"))).toBe(true);
+  }, 30000);
+
+  it("실내 표지가 있으면 되묻지 않고 LLM으로 진행한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let chatCalls = 0;
+    const chat = async (): Promise<ChatResult> => {
+      chatCalls += 1;
+      return assistantFinal("실내 준비");
+    };
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const result = await session.sendUserMessage("연금술사의 집 이라는 실내 를 하나 만드렁줘", () => {});
+    expect(chatCalls).toBe(1);
+    expect(result.assistantText).toBe("실내 준비");
+  }, 30000);
+
   it("연쇄 툴콜 2개(읽기→쓰기) 후 최종 응답을 반환하고 쓰기만 제안에 담는다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([

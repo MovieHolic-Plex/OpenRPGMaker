@@ -7,6 +7,7 @@
 // 효과가 없는 죽은 복잡도로 판정돼 제거했다).
 
 export type RegionIntentCategory =
+  | "interior"
   | "structure"
   | "npc-shop"
   | "door-transfer"
@@ -16,6 +17,11 @@ export type RegionIntentCategory =
   | "transform";
 
 export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, readonly string[]>> = {
+  // 실내/방 맵 — 야외 build_house_kit 과 충돌하므로 structure보다 우선·배타.
+  interior: [
+    "실내", "인테리어", "실내맵", "실내 맵", "방 맵", "방맵",
+    "침실", "서재", "주방", "창고", "선술집", "interior",
+  ],
   structure: [
     "집을", "집이", "집에", "집은", "집 ", "건물", "오두막", "여관", "성벽",
     "탑을", "탑이", "탑에", "탑은", "탑 ", "대장간", "광장", "울타리", "목장",
@@ -40,10 +46,15 @@ export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, reado
 };
 
 const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
+  interior:
+    "- 실내: 현재 맵/선택 영역에 야외 집(build_house_kit)을 짓지 마세요. "
+    + "start_interior_room_session 또는 run_interior_room_pipeline으로 **새 mapId·요청 이름** 실내 맵을 시공 "
+    + "(rooms[] 역할 테마 bedroom|study|dining|kitchen|storage|tavern|corridor, door, wallMaterial) → "
+    + "advance_interior_room_build 반복 → evaluate_interior_room. create_map만 하고 멈추지 마세요.",
   structure:
     // stamp_structure는 v1→v2(tile_structure)→v3(build_wall) 폐기 체인이라 LLM에 노출되지 않는다
     // (2026-07-10 라이브 실측 수정) — 탑 등 구조물도 build_wall로 안내한다.
-    "- 구조물: build_house_kit(집·여관·대장간 등), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭)",
+    "- 구조물(야외): build_house_kit(집·여관·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
   "npc-shop":
     "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정), set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결)",
   "door-transfer":
@@ -61,18 +72,39 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
 };
 
 const CATEGORY_ORDER: readonly RegionIntentCategory[] = [
-  "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
+  "interior", "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
 ];
 
 function normalize(text: string): string {
   return text.toLowerCase().replace(/\s+/g, " ");
 }
 
+/**
+ * 선택 영역 작업(하드 클립)으로는 이행할 수 없는 요청.
+ * 실내 맵·새 맵 생성은 현재 맵 사각형 밖 프로젝트 변경이 본업이라 영역 클립에 담기지 않는다
+ * → 채팅 전량 경로로 우회해야 한다(audit 18: create_map 후 "이 영역에서 바뀐 것이 없습니다").
+ */
+export function isRegionEscapingIntent(instruction: string): boolean {
+  const normalized = normalize(instruction);
+  if (!normalized) return false;
+  if (REGION_INTENT_KEYWORDS.interior.some((keyword) => normalized.includes(keyword))) return true;
+  const newMapPatterns = [
+    "새 맵", "새로운 맵", "맵을 만들", "맵 생성", "맵을 생성", "맵 하나", "맵을 하나",
+    "맵을 새로", "새로 맵", "create map", "new map",
+  ];
+  return newMapPatterns.some((pattern) => normalized.includes(pattern));
+}
+
 export function routeRegionIntent(instruction: string): RegionIntentCategory[] {
   const normalized = normalize(instruction);
-  return CATEGORY_ORDER.filter((category) =>
+  const routed = CATEGORY_ORDER.filter((category) =>
     REGION_INTENT_KEYWORDS[category].some((keyword) => normalized.includes(keyword)),
   );
+  // 실내 요청에 "집"이 들어 있어도 야외 build_house_kit 가이드를 붙이지 않는다.
+  if (routed.includes("interior")) {
+    return routed.filter((category) => category !== "structure");
+  }
+  return routed;
 }
 
 export function regionIntentGuideLines(categories: readonly RegionIntentCategory[]): string[] {

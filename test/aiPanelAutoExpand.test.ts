@@ -173,6 +173,8 @@ describe("AI 패널 자동 펼침/접기", () => {
     const panel = renderPanel();
     expandPanel(panel);
     expect(panel.classList.contains("is-collapsed")).toBe(false);
+    // 사용자가 펼치면 저장값은 "0"이 된다.
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
 
     const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
     await bridge!.send("지도 그려줘");
@@ -182,8 +184,8 @@ describe("AI 패널 자동 펼침/접기", () => {
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    // 자동 재접기는 저장값을 건드리지 않는다 — 다음 부팅은 여전히 펼침.
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBeUndefined();
+    // 자동 재접기는 저장값을 덮어쓰지 않는다 — 다음 부팅은 여전히 펼침("0").
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
   });
 
   it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {

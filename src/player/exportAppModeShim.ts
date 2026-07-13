@@ -7,12 +7,16 @@ let currentGame: Phaser.Game | null = null;
 
 export type StartPlayGameOptions = {
   readonly trackGlobalGame?: boolean;
+  readonly initialEventTestId?: string;
+  readonly onPlayLoadProgress?: (ratio: number) => void;
+  readonly onPlayLoadStage?: (stage: "map" | "ready") => void;
+  readonly onPlaySceneReady?: () => void;
 };
 
 export async function startPlayGame(
   parent: HTMLElement,
   initialSession?: PlaySession,
-  _options: StartPlayGameOptions = {}
+  options: StartPlayGameOptions = {}
 ): Promise<Phaser.Game> {
   const PhaserRuntime = await ensurePhaser();
   const { PlayScene } = await import("@/player/PlayScene");
@@ -34,6 +38,18 @@ export async function startPlayGame(
   currentGame = game;
   if (initialSession) {
     game.registry.set("initialSession", initialSession);
+  }
+  if (options.initialEventTestId) {
+    game.registry.set("initialEventTestId", options.initialEventTestId);
+  }
+  if (options.onPlayLoadProgress) {
+    game.registry.set("onPlayLoadProgress", options.onPlayLoadProgress);
+  }
+  if (options.onPlayLoadStage) {
+    game.registry.set("onPlayLoadStage", options.onPlayLoadStage);
+  }
+  if (options.onPlaySceneReady) {
+    game.registry.set("onPlaySceneReady", options.onPlaySceneReady);
   }
   return game;
 }

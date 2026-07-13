@@ -32,11 +32,12 @@ import { el } from "@/util/dom";
 import { installFakeDom } from "./fakeDom";
 
 const ALL_CATEGORIES: readonly RegionIntentCategory[] = [
-  "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
+  "interior", "structure", "npc-shop", "door-transfer", "quest-trigger", "battle-trap", "mood", "transform",
 ];
 
 // 대표 지시문 — 각각 정확히 해당 카테고리를 라우팅하는 문장.
 const REPRESENTATIVE_INSTRUCTIONS: Readonly<Record<RegionIntentCategory, string>> = {
+  interior: "연금술사의 집 이라는 실내 를 하나 만드렁줘",
   structure: "여기에 여관을 짓고 밭도 만들어줘",
   "npc-shop": "여기에 상인 NPC를 배치해줘",
   "door-transfer": "다음 맵으로 이어지는 텔레포트를 놔줘",
@@ -51,6 +52,7 @@ const REPRESENTATIVE_INSTRUCTIONS: Readonly<Record<RegionIntentCategory, string>
 // 다도메인 조합에서는 이 목록 밖의 부차적 가이드 도구(예: place_trap, move_event)까지
 // 전부 보장하지는 못한다 — 별도의 상한 알고리즘 개선이 필요한 사전 존재 이슈로 남겨둔다.
 const GUARANTEED_TOOLS_BY_CATEGORY: Readonly<Record<RegionIntentCategory, readonly string[]>> = {
+  interior: ["start_interior_room_session", "run_interior_room_pipeline", "advance_interior_room_build", "evaluate_interior_room"],
   structure: ["build_house_kit", "build_wall", "fill_region", "create_farm_plot"],
   "npc-shop": ["place_npc", "make_villager"],
   "door-transfer": ["create_transfer_pair", "place_door"],

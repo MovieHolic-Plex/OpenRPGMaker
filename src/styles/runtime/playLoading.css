@@ -1,0 +1,119 @@
+/* 테스트 플레이 / 플레이 부트 로딩 오버레이 */
+.play-loading-overlay {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(48, 72, 110, 0.28), transparent 55%),
+    #000;
+  bottom: 0;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 40;
+}
+
+.test-play-modal-body > .play-loading-overlay,
+.player-layout > .play-loading-overlay {
+  position: absolute;
+}
+
+.test-play-modal-body {
+  position: relative;
+}
+
+.play-loading-card {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(280px, 90%);
+  padding: 18px 16px 14px;
+  text-align: center;
+}
+
+.play-loading-spinner {
+  border: 3px solid rgba(230, 236, 248, 0.14);
+  border-radius: 999px;
+  border-top-color: #cfe0ff;
+  box-shadow: 0 0 16px rgba(120, 170, 255, 0.18);
+  height: 34px;
+  width: 34px;
+  animation: play-loading-spin 0.85s linear infinite;
+}
+
+.play-loading-dot {
+  display: none;
+}
+
+@keyframes play-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.play-loading-message {
+  color: #f2f5fb;
+  font: 700 13px/1.35 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.01em;
+}
+
+.play-loading-hint {
+  color: rgba(210, 220, 236, 0.72);
+  font: 500 11px/1.4 var(--font-ui, system-ui, sans-serif);
+  max-width: 34ch;
+  min-height: 2.8em;
+}
+
+.play-loading-bar {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  height: 6px;
+  overflow: hidden;
+  position: relative;
+  width: min(220px, 100%);
+}
+
+.play-loading-bar-fill {
+  background: linear-gradient(90deg, #6ea8ff, #b7d4ff);
+  border-radius: inherit;
+  height: 100%;
+  transition: width 120ms linear;
+  width: 0%;
+}
+
+.play-loading-bar.is-indeterminate .play-loading-bar-fill {
+  animation: play-loading-bar-slide 1.1s ease-in-out infinite;
+  width: 36%;
+}
+
+@keyframes play-loading-bar-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.play-loading-stage {
+  color: rgba(190, 205, 230, 0.55);
+  font: 600 10px/1 var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.play-loading-overlay.is-error .play-loading-message {
+  color: #ffb4b4;
+}
+
+.play-loading-overlay.is-error .play-loading-bar-fill {
+  background: #ff8e8e;
+}
+
+.play-loading-overlay.is-error .play-loading-spinner {
+  opacity: 0.35;
+}

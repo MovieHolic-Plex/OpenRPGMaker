@@ -4,6 +4,8 @@ Use the lightest command that proves the change.
 
 ## Agent validation rule
 
+**Authored game content** (demo maps, events, sample adventure data meant for the product): incomplete until **Supabase save + load-back** succeeds. Repo fixtures alone do not count. See root `AGENTS.md`.
+
 Pick validation based on the touched boundary:
 
 - Type-only or low-risk helper changes: run `npm run typecheck` plus a focused unit test if one exists.

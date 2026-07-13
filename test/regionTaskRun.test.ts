@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   buildRegionTaskMessage,
+  countAddedMaps,
   countInRegionChangedCells,
   describeRegionTaskResult,
   runRegionTask,
   type RegionTaskDeps,
   type RegionTaskSessionLike,
 } from "@/editor/regionTask/runRegionTask";
+import { isRegionEscapingIntent, routeRegionIntent } from "@/editor/regionTask/regionIntentRouter";
 import { __clearPendingRegionApplyForTest, getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail, type RegionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
@@ -95,6 +97,29 @@ describe("buildRegionTaskMessage", () => {
     expect(spec).not.toBeNull();
     const asset = spec?.assets[0];
     expect(asset).toMatchObject({ x: 1, y: 1, w: 3, h: 3 });
+  });
+
+  it("실내 요청은 build_house_kit 대신 실내 세션 툴을 안내한다", () => {
+    const message = buildRegionTaskMessage("연금술사의 집 이라는 실내 를 하나 만드렁줘", "외곽", MAP_ID, REGION);
+    expect(message).toContain("start_interior_room_session");
+    expect(message).toContain("run_interior_room_pipeline");
+    expect(message).toMatch(/build_house_kit 금지/);
+    expect(message).not.toContain("이 작업은 아래 선택 영역 안에서만 수행하라");
+    expect(message).toContain("새 맵 전체를 시공하라");
+  });
+});
+
+describe("isRegionEscapingIntent / routeRegionIntent — 실내·새 맵", () => {
+  it("실내·새 맵 요청은 영역 우회 대상이다", () => {
+    expect(isRegionEscapingIntent("연금술사의 집 이라는 실내 를 하나 만드렁줘")).toBe(true);
+    expect(isRegionEscapingIntent("아니 새로운 맵을 만들어서 진행해달라니까")).toBe(true);
+    expect(isRegionEscapingIntent("여기 나무 3그루 심어줘")).toBe(false);
+  });
+
+  it("실내+집 문구는 interior만 잡고 structure(야외 집)는 뺀다", () => {
+    const routed = routeRegionIntent("연금술사의 집 이라는 실내 를 하나 만드렁줘");
+    expect(routed).toContain("interior");
+    expect(routed).not.toContain("structure");
   });
 });
 
@@ -196,6 +221,28 @@ describe("runRegionTask", () => {
     expect(result.changedCells).toBe(0);
     expect(result.clippedCells).toBe(1);
     expect(applied()).toBeNull();
+  });
+
+  it("영역 셀 0이어도 새 맵이 추가되면 적용한다(실내/create_map)", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    const interiorId = "map_interior_atelier";
+    proposed.maps[interiorId] = {
+      ...structuredClone(proposed.maps[MAP_ID]),
+      id: interiorId,
+      name: "연금술사의 집",
+    };
+    expect(countAddedMaps(base, proposed)).toBe(1);
+    const { deps, applied } = makeDeps(base, proposed);
+    const result = await runRegionTask(
+      { mapId: MAP_ID, region: REGION, instruction: "실내 맵 만들어", gate: "immediate" },
+      deps,
+    );
+    expect(result.ok).toBe(true);
+    expect(result.applied).toBe(true);
+    expect(result.changedCells).toBe(0);
+    expect(result.mapsAdded).toBe(1);
+    expect(applied()?.project.maps[interiorId]?.name).toBe("연금술사의 집");
   });
 
   it("영역 안 NPC만 바뀌어도 적용한다(타일 0칸이어도)", async () => {

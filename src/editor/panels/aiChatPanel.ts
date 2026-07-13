@@ -15,6 +15,7 @@ import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeac
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
+import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -454,7 +455,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
   // 큐에 쌓고 "대기 중 N건"으로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
-  const pendingSends: { text: string; displayAs?: string }[] = [];
+  const pendingSends: { text: string; displayAs?: string; explicitSkillId?: string }[] = [];
   const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
   queueIndicator.hidden = true;
   const refreshQueueIndicator = (): void => {
@@ -465,7 +466,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const drainPendingSends = (): void => {
     const next = pendingSends.shift();
     refreshQueueIndicator();
-    if (next) void sendText(next.text, next.displayAs);
+    if (next) {
+      void sendText(
+        next.text,
+        next.displayAs,
+        next.explicitSkillId ? { explicitSkillId: next.explicitSkillId } : undefined,
+      );
+    }
   };
 
   let keyPromptBubble: HTMLElement | null = null;
@@ -543,12 +550,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
   };
 
-  const sendText = async (text: string, displayAs?: string): Promise<void> => {
+  const sendText = async (
+    text: string,
+    displayAs?: string,
+    opts?: { readonly explicitSkillId?: string | null },
+  ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
     if (!ensureConfigReadyForSend()) return;
     if (turnBusy) {
-      pendingSends.push({ text: trimmed, ...(displayAs !== undefined ? { displayAs } : {}) });
+      pendingSends.push({
+        text: trimmed,
+        ...(displayAs !== undefined ? { displayAs } : {}),
+        ...(opts?.explicitSkillId ? { explicitSkillId: opts.explicitSkillId } : {}),
+      });
       refreshQueueIndicator();
       return;
     }
@@ -559,7 +574,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (displayAs !== undefined && displayAs !== trimmed) appendSkillPromptToggle(userBubble, trimmed);
     const session = ensureSession();
     await executeTurn(session, trimmed, (onEvent, signal) =>
-      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal)
+      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, {
+        explicitSkillId: opts?.explicitSkillId,
+      })
     );
   };
 
@@ -713,6 +730,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 대부분은 상태줄만. 재시도·오류 등 행동 신호만 말풍선.
         setStatus(event.text);
         if (shouldShowStatusInChat(event.text)) appendBubble("system", event.text);
+      } else if (event.type === "work_plan") {
+        const s = event.plan;
+        const items = s.layers.flatMap((l) => l.items);
+        const done = items.filter((i) => i.status === "done" || i.status === "skipped").length;
+        setStatus(`작업 계획 ${done}/${items.length}`);
       }
     };
 
@@ -884,6 +906,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!selection) {
       selectionTaskActive = false;
       refreshContextChips();
+      await sendText(text);
+      return;
+    }
+    // 실내/새 맵은 선택 영역 하드 클립에 담기지 않는다(audit 18: create_map 후 0칸 폐기).
+    // 일반 채팅 전량 경로로 우회해 start_interior_room_session 등이 제안으로 남게 한다.
+    if (isRegionEscapingIntent(text)) {
+      selectionTaskActive = false;
+      refreshContextChips();
+      toast("실내·새 맵 요청은 선택 영역 밖 작업이라 일반 채팅으로 진행합니다", "info");
       await sendText(text);
       return;
     }
@@ -1158,7 +1189,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     recordSkillUse(skill.id);
     drawer.element.hidden = true;
     // 채팅 표시도 TUI 명령 줄 — "🏠 집 짓기" 같은 앱 라벨 쓰지 않음.
-    void sendText(prompt, `/${skill.id}`);
+    // explicitSkillId: 집/실내 되묻기 게이트를 건너뛰고 스킬이 고른 경로를 신뢰한다.
+    void sendText(prompt, `/${skill.id}`, { explicitSkillId: skill.id });
   };
 
   // 빈 대화 시작 화면 — 최소 힌트 + 클릭 한 번으로 입력창을 채우는 예시 3개.

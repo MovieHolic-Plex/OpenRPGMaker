@@ -1,6 +1,7 @@
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene } from "@/player/battleDom";
+import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
 import { renderPlayer, teardownPlayer } from "@/player/player";
 import { startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
@@ -14,42 +15,76 @@ let removePlayWindowKeydown: (() => void) | null = null;
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
-  await store.flush();
-  const title = startOverride ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})` : "테스트 플레이 - RPG 쯔꾸르";
+  const title = startOverride
+    ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
+    : "테스트 플레이 - RPG 쯔꾸르";
   const body = openTestPlayShell(title);
-  renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false, startOverride });
+  const loading = mountPlayLoadingOverlay(body, "saving");
+  try {
+    await store.flush();
+    loading.setStage("preparing");
+    // Give the browser a paint before heavy player bootstrap.
+    await yieldToBrowser();
+    renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false, startOverride });
+  } catch (error) {
+    console.error("[test-play] failed to open test play:", error);
+    loading.setStage("error", "테스트 플레이를 열지 못했습니다");
+    return;
+  }
+  // renderPlayer clears body children (including this overlay) when it mounts.
+  // If title path ran, loading is already gone; if not, remove explicitly.
+  if (loading.root.isConnected) loading.remove();
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
-  await store.flush();
   const project = store.getCurrent();
   const map = project.maps[mapId];
   const event = map?.events.find((item) => item.id === eventId);
   if (!map || !event) return false;
-  const session = selectedEventTestSession(mapId, event);
   const title = `이벤트 테스트 - ${eventDisplayName(event)}`;
   const body = openTestPlayShell(title);
-  renderPlayer(body, {
-    initialEventTestId: eventId,
-    initialSession: session,
-    onExit: closeTestPlayModal,
-    trackGlobalGame: false,
-  });
+  const loading = mountPlayLoadingOverlay(body, "saving");
+  try {
+    await store.flush();
+    loading.setStage("preparing");
+    await yieldToBrowser();
+    const session = selectedEventTestSession(mapId, event);
+    renderPlayer(body, {
+      initialEventTestId: eventId,
+      initialSession: session,
+      onExit: closeTestPlayModal,
+      trackGlobalGame: false,
+    });
+  } catch (error) {
+    console.error("[test-play] failed to open selected-event test:", error);
+    loading.setStage("error", "이벤트 테스트를 열지 못했습니다");
+    return false;
+  }
+  if (loading.root.isConnected) loading.remove();
   return true;
 }
 
 export async function openTroopBattleTestModal(troopId: string): Promise<void> {
-  await store.flush();
   const project = store.getCurrent();
   const troop = project.database.troops.find((record) => record.id === troopId);
   const body = openTestPlayShell(`전투 테스트 - ${troop?.name ?? troopId}`);
-  const runtime = createBattleRuntime({ project, troopId, canEscape: true, canLose: true });
-  advanceBattleRuntime(runtime);
-  mountBattleScene({
-    host: body,
-    runtime,
-    onResult: () => undefined,
-  });
+  const loading = mountPlayLoadingOverlay(body, "saving");
+  try {
+    await store.flush();
+    loading.setStage("preparing");
+    await yieldToBrowser();
+    loading.remove();
+    const runtime = createBattleRuntime({ project, troopId, canEscape: true, canLose: true });
+    advanceBattleRuntime(runtime);
+    mountBattleScene({
+      host: body,
+      runtime,
+      onResult: () => undefined,
+    });
+  } catch (error) {
+    console.error("[test-play] failed to open troop battle test:", error);
+    loading.setStage("error", "전투 테스트를 열지 못했습니다");
+  }
 }
 
 export function closeTestPlayModal(): void {
@@ -163,4 +198,10 @@ function selectedEventTestSession(mapId: MapId, event: GameEvent): PlaySession {
 
 function eventDisplayName(event: GameEvent): string {
   return event.pages?.[0]?.name || event.id;
+}
+
+function yieldToBrowser(): Promise<void> {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => resolve());
+  });
 }

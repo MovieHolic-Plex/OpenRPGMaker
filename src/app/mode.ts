@@ -84,8 +84,8 @@ export async function bootApp(root: HTMLElement): Promise<void> {
 }
 
 async function finishEditorBoot(startedAt: number): Promise<void> {
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId });
+  const { focusProjectStartMap } = await import("@/editor/mapSelection");
+  focusProjectStartMap();
 
   await renderTopbar();
   await enterMode("edit");
@@ -343,6 +343,12 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
 export type StartPlayGameOptions = {
   readonly trackGlobalGame?: boolean;
   readonly initialEventTestId?: string;
+  /** PlayScene preload progress 0..1 (optional UI hook). */
+  readonly onPlayLoadProgress?: (ratio: number) => void;
+  /** PlayScene create stages for boot UI. */
+  readonly onPlayLoadStage?: (stage: "map" | "ready") => void;
+  /** Fired when PlayScene.create finishes. */
+  readonly onPlaySceneReady?: () => void;
 };
 
 export async function startPlayGame(
@@ -370,11 +376,21 @@ export async function startPlayGame(
   if (options.trackGlobalGame !== false) {
     game = nextGame;
   }
+  // Registry hooks must be set immediately so preload/create can report progress.
   if (initialSession) {
     nextGame.registry.set("initialSession", initialSession);
   }
   if (options.initialEventTestId) {
     nextGame.registry.set("initialEventTestId", options.initialEventTestId);
+  }
+  if (options.onPlayLoadProgress) {
+    nextGame.registry.set("onPlayLoadProgress", options.onPlayLoadProgress);
+  }
+  if (options.onPlayLoadStage) {
+    nextGame.registry.set("onPlayLoadStage", options.onPlayLoadStage);
+  }
+  if (options.onPlaySceneReady) {
+    nextGame.registry.set("onPlaySceneReady", options.onPlaySceneReady);
   }
   return nextGame;
 }

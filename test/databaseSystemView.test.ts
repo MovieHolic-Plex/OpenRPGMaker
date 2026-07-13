@@ -44,7 +44,12 @@ describe("database system view", () => {
   });
 
   it("preserves multi-member start party when editing one slot", () => {
-    store.replace(createSampleAdventureProject());
+    const sample = createSampleAdventureProject();
+    const actorIds = sample.database.actors.map((actor) => actor.id).filter(Boolean);
+    if (actorIds.length < 2) throw new Error("need at least two actors in sample database");
+    sample.system = { ...sample.system, startActorIds: actorIds.slice(0, 2) };
+    sample.session = { ...sample.session, partyActorIds: actorIds.slice(0, 2) };
+    store.replace(sample);
     const before = [...store.getCurrent().system.startActorIds];
     expect(before.length).toBeGreaterThan(1);
 

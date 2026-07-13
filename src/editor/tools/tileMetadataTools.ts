@@ -8,9 +8,10 @@
 
 import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
+import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { COMBINED_TOWN_HARNESS_PREFIX, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
+import { COMBINED_TOWN_HARNESS_PREFIX, DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
 import { tileMetaLocked } from "@/project/tilesetPalette";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
@@ -171,10 +172,14 @@ const INTERIOR_TILE_LABELS = new Map<number, string>(
   INTERIOR_TILE_SEMANTICS.map((entry) => [entry.index, entry.label])
 );
 
+const DUNGEON_TILE_LABELS = new Map<number, string>(
+  DUNGEON_TILE_SEMANTICS.map((entry) => [entry.index, entry.label])
+);
+
 // 타일셋 텍스처에 맞는 번들 라벨 테이블 — 칩셋마다 같은 인덱스의 의미가 다르다.
-// (던전 칩셋은 아직 전용 테이블이 없어 기존 동작대로 combined_town을 쓴다.)
 function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
   if (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_LABELS;
+  if (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_LABELS;
   return COMBINED_TOWN_TILE_LABELS;
 }
 
