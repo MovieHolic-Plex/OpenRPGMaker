@@ -37,7 +37,7 @@ type SupabaseProjectListRow = {
   readonly title: string | null;
 };
 
-type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "maps" | "tilesets";
+type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "ai_conversations" | "maps" | "tilesets" | "user_skills";
 type SupabaseCommitTable = "project_changes" | "project_commits";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
@@ -309,6 +309,162 @@ async function fetchJsonArray(url: string, config: SupabaseProjectConfig): Promi
   const parsed: unknown = await response.json();
   if (!Array.isArray(parsed)) return [];
   return parsed.filter(isRecord);
+}
+
+// ── AI 대화 기록 미러 (로컬 정본, 여기는 기기 간 복원/검색용) ────────────────
+export type SupabaseConversationInput = {
+  readonly conversationId: string;
+  readonly title: string;
+  readonly model: string;
+  readonly projectContextKey?: string;
+  readonly entries: unknown;
+  /** epoch ms */
+  readonly savedAt: number;
+};
+
+export async function recordSupabaseConversation(
+  input: SupabaseConversationInput,
+  config = supabaseProjectConfig(),
+): Promise<SupabaseSaveResult> {
+  if (!config) return { kind: "not-configured" };
+  try {
+    await upsertRows(config, "ai_conversations", "conversation_id", [
+      {
+        conversation_id: input.conversationId,
+        project_id: config.projectId,
+        title: input.title.slice(0, 200),
+        model: input.model,
+        project_context_key: input.projectContextKey ?? null,
+        entries_json: input.entries,
+        saved_at: new Date(input.savedAt).toISOString(),
+      },
+    ]);
+    return { kind: "saved" };
+  } catch (error) {
+    // 마이그레이션 전(테이블 없음)에도 앱이 죽지 않게 활동 로그와 같은 폴백 규약을 따른다.
+    if (error instanceof SupabaseProjectSyncError && error.status === 404) return { kind: "not-configured" };
+    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    throw error;
+  }
+}
+
+/** 대화 요약 목록 — query가 있으면 제목 부분일치(ilike) 검색. entries_json은 내리지 않는다. */
+export async function listSupabaseConversations(
+  opts: { readonly query?: string; readonly limit?: number } = {},
+  config = supabaseProjectConfig(),
+): Promise<readonly Record<string, unknown>[]> {
+  if (!config) return [];
+  const n = Math.max(1, Math.min(100, Math.floor(opts.limit ?? 50)));
+  const params = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    select: "conversation_id,title,model,project_context_key,saved_at",
+    order: "saved_at.desc",
+    limit: String(n),
+  });
+  const query = opts.query?.trim();
+  if (query) params.set("title", `ilike.*${query.replaceAll("*", "").replaceAll(",", "")}*`);
+  try {
+    return await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config);
+  } catch {
+    return [];
+  }
+}
+
+/** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
+export async function loadSupabaseConversation(
+  conversationId: string,
+  config = supabaseProjectConfig(),
+): Promise<Record<string, unknown> | null> {
+  if (!config) return null;
+  const params = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    conversation_id: `eq.${conversationId}`,
+    select: "conversation_id,title,model,project_context_key,entries_json,saved_at",
+    limit: "1",
+  });
+  try {
+    const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config);
+    return rows[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ── 사용자 정의 스킬 미러 ────────────────────────────────────────────────
+export type SupabaseUserSkillInput = {
+  readonly id: string;
+  readonly icon: string;
+  readonly name: string;
+  readonly description: string;
+  readonly template: string;
+  /** params/needsSelection 등 확장 필드 원본(하위호환용 통째 저장). */
+  readonly skill: unknown;
+};
+
+export async function recordSupabaseUserSkill(
+  input: SupabaseUserSkillInput,
+  config = supabaseProjectConfig(),
+): Promise<SupabaseSaveResult> {
+  if (!config) return { kind: "not-configured" };
+  try {
+    await upsertRows(config, "user_skills", "project_id,skill_id", [
+      {
+        skill_id: input.id,
+        project_id: config.projectId,
+        icon: input.icon || "⭐",
+        name: input.name.slice(0, 120),
+        description: input.description.slice(0, 500),
+        template: input.template,
+        skill_json: input.skill,
+        updated_at: new Date().toISOString(),
+      },
+    ]);
+    return { kind: "saved" };
+  } catch (error) {
+    if (error instanceof SupabaseProjectSyncError && error.status === 404) return { kind: "not-configured" };
+    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    throw error;
+  }
+}
+
+export async function deleteSupabaseUserSkill(
+  skillId: string,
+  config = supabaseProjectConfig(),
+): Promise<SupabaseSaveResult> {
+  if (!config) return { kind: "not-configured" };
+  const params = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    skill_id: `eq.${skillId}`,
+  });
+  try {
+    const response = await fetch(`${config.url}/rest/v1/user_skills?${params.toString()}`, {
+      method: "DELETE",
+      headers: supabaseJsonHeaders(config, "write"),
+    });
+    if (!response.ok) throw new SupabaseProjectSyncError(await response.text(), response.status);
+    return { kind: "saved" };
+  } catch (error) {
+    if (error instanceof SupabaseProjectSyncError && error.status === 404) return { kind: "not-configured" };
+    if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
+    throw error;
+  }
+}
+
+export async function listSupabaseUserSkills(
+  config = supabaseProjectConfig(),
+): Promise<readonly Record<string, unknown>[]> {
+  if (!config) return [];
+  const params = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    select: "skill_id,icon,name,description,template,skill_json,updated_at",
+    order: "updated_at.desc",
+    limit: "100",
+  });
+  try {
+    return await fetchJsonArray(`${config.url}/rest/v1/user_skills?${params.toString()}`, config);
+  } catch {
+    return [];
+  }
 }
 
 export async function recordProjectCommitToSupabase(

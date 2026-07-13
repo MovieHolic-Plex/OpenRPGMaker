@@ -6,6 +6,7 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
+import { hpBarState } from "@/player/battleFieldDom";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
@@ -190,6 +191,12 @@ export function syncEnemyListPanel(panel: HTMLElement, enemies: readonly BattleB
     if (!row) continue;
     const hp = row.querySelector<HTMLElement>(".battle-enemy-list-hp");
     if (hp) hp.textContent = `HP ${enemy.hp}/${enemy.maxHp}`;
+    const bar = row.querySelector<HTMLElement>(".battle-enemy-list-bar");
+    if (bar) {
+      const pct = Math.max(0, Math.min(100, Math.round(enemy.hp / Math.max(1, enemy.maxHp) * 100)));
+      bar.style.setProperty("--battle-stat", `${pct}%`);
+      bar.dataset.hpState = hpBarState(pct);
+    }
     row.classList.toggle("defeated", enemy.defeated);
   }
 }
@@ -201,11 +208,23 @@ function enemyListRow(enemy: BattleBattlerSnapshot): HTMLElement {
   const name = document.createElement("span");
   name.className = "battle-enemy-list-name";
   name.textContent = enemy.name;
+  if (enemy.level) {
+    const lv = document.createElement("span");
+    lv.className = "battle-enemy-list-level";
+    lv.textContent = `Lv.${enemy.level}`;
+    name.append(lv);
+  }
   const hp = document.createElement("span");
   hp.className = "battle-enemy-list-hp";
   hp.dataset.testid = `battle-enemy-list-hp-${enemy.id}`;
   hp.textContent = `HP ${enemy.hp}/${enemy.maxHp}`;
-  row.append(name, hp);
+  // 포켓몬 스킨에선 숫자 대신 이 바만 노출된다(CSS로 전환).
+  const pct = Math.max(0, Math.min(100, Math.round(enemy.hp / Math.max(1, enemy.maxHp) * 100)));
+  const bar = document.createElement("span");
+  bar.className = "battle-enemy-list-bar battle-stat-bar battle-stat-bar-hp";
+  bar.style.setProperty("--battle-stat", `${pct}%`);
+  bar.dataset.hpState = hpBarState(pct);
+  row.append(name, hp, bar);
   if (enemy.defeated) row.classList.add("defeated");
   return row;
 }

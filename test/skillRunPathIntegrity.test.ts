@@ -61,8 +61,9 @@ describe("마을 생성 스킬 제출 경로", () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const [prompt, displayAs] = onSubmit.mock.calls[0] as [string, string];
     expect(prompt).toContain("강가의 어촌");
-    expect(prompt).toContain("단계별로 진행");
-    expect(displayAs).toContain("마을 생성");
+    expect(prompt).toContain("단계별로 한 줄 보고하며 끝까지 진행");
+    // 채팅 표시는 TUI 명령 줄 — 앱 라벨("🏘️ 마을 생성")이 아니라 `/build-village`.
+    expect(displayAs).toBe("/build-village");
   });
 
   it("스킬 서랍 실행 경로가 테스트 플레이 창 이벤트를 발생시키지 않는다(자동 오픈 없음 — ④)", () => {

@@ -156,7 +156,8 @@ describe("battle sequencer", () => {
     );
 
     sequencer.startIntro(runtime.snapshot());
-    expect(introLines[0]).toContain("전투가 시작");
-    expect(introLines.at(-1)).toContain("명령");
+    // 인트로는 "○○이(가) 나타났다!" 배너 → 커맨드 프롬프트("무엇을 할까?") 순으로 흐른다.
+    expect(introLines[0]).toContain("나타났다");
+    expect(introLines.at(-1)).toMatch(/무엇을 할까|게이지/);
   });
 });

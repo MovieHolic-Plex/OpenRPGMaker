@@ -6,6 +6,8 @@ import {
   applyInteriorRoomLayer,
   createEmptyRoomMap,
   ensureInteriorRoomHarness,
+  evaluateInteriorRoom,
+  furnishInteriorSpace,
   INTERIOR_ROOM_BUILD_ORDER,
   INTERIOR_ROOM_DEMO_PLANS,
   INTERIOR_ROOM_KIT_ID,
@@ -37,6 +39,15 @@ function loadSession(project: Project, sessionId: string): InteriorRoomSession |
   return bagOf(project).interiorRoomSessions?.[sessionId] ?? null;
 }
 
+// 세션이 만든 맵은 맵 트리에도 올라가야 에디터 맵 목록/전환 UI에 보인다(mapTools의 create_map 관례).
+function registerMapInTree(draft: Project, mapId: string): void {
+  if (!draft.maps[draft.mapTree.mapId]) {
+    draft.mapTree = { mapId, children: [] };
+  } else if (draft.mapTree.mapId !== mapId && !draft.mapTree.children.some((child) => child.mapId === mapId)) {
+    draft.mapTree.children.push({ mapId, children: [] });
+  }
+}
+
 function parsePlan(args: Record<string, unknown>): InteriorRoomPlan {
   const mapId = String(args.mapId ?? "").trim();
   const name = String(args.name ?? mapId).trim();
@@ -65,7 +76,7 @@ function parsePlan(args: Record<string, unknown>): InteriorRoomPlan {
     h: Math.floor(Number(w.h)),
   }));
   const rooms = hasRooms
-    ? roomsRaw.map((r, index) => {
+    ? roomsRaw.map((r: Record<string, unknown>, index) => {
         const roomTheme = r.theme !== undefined ? (String(r.theme) as InteriorRoomTheme) : undefined;
         if (roomTheme !== undefined && !INTERIOR_ROOM_THEMES.includes(roomTheme)) {
           throw new ToolError(`rooms[${index}].theme must be ${INTERIOR_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
@@ -77,6 +88,8 @@ function parsePlan(args: Record<string, unknown>): InteriorRoomPlan {
           w: Math.floor(Number(r.w)),
           h: Math.floor(Number(r.h)),
           theme: roomTheme,
+          // 방별 바닥 재질(돌 12, 널 102, 돗자리 139 등) — 2026-07-13 노출.
+          floorTile: r.floorTile !== undefined ? Math.floor(Number(r.floorTile)) : undefined,
         };
       })
     : undefined;
@@ -84,6 +97,11 @@ function parsePlan(args: Record<string, unknown>): InteriorRoomPlan {
   const innerDoors = Array.isArray(innerDoorsRaw)
     ? innerDoorsRaw.map((d) => ({ x: Math.floor(Number(d.x)), y: Math.floor(Number(d.y)) }))
     : undefined;
+  // 2026-07-13: 바닥/벽 재질 노출 — 이 필드들이 없으면 어시스턴트가 스크립트 전용 기능을 못 쓴다.
+  const wallMaterial = args.wallMaterial !== undefined ? String(args.wallMaterial) : undefined;
+  if (wallMaterial !== undefined && !["cream", "gold-brick", "stone-brick"].includes(wallMaterial)) {
+    throw new ToolError(`wallMaterial must be cream|gold-brick|stone-brick`, { code: "invalid-args" });
+  }
   return {
     mapId,
     name,
@@ -94,7 +112,11 @@ function parsePlan(args: Record<string, unknown>): InteriorRoomPlan {
     innerDoors,
     door: { x: Math.floor(door.x), y: Math.floor(door.y) },
     theme,
-    seed: args.seed !== undefined ? Math.floor(Number(args.seed)) : undefined,
+    // seed 미지정 시 매번 새 판을 뽑는다(구버그: 상수 1로 고정 → 재생성이 항상 동일).
+    // 뽑힌 시드는 플랜에 기록되어 세션 내 재적용·재현이 가능하다.
+    seed: args.seed !== undefined ? Math.floor(Number(args.seed)) : Date.now() % 1_000_000,
+    floorTile: args.floorTile !== undefined ? Math.floor(Number(args.floorTile)) : undefined,
+    wallMaterial: wallMaterial as InteriorRoomPlan["wallMaterial"],
   };
 }
 
@@ -121,7 +143,11 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         rooms: {
           type: "array",
-          description: "방 구조 bbox [{id,x,y,w,h,theme?}] — 상하 인접 방은 3행 간격(파티션). 지정 시 wings 대신 사용, 방마다 테마 가구",
+          description:
+            "공간 구조 bbox [{id,x,y,w,h,theme?,floorTile?}] — 상하 인접 방은 3행 간격(파티션). "
+            + "지정 시 wings 대신 사용. '실내'는 상위 개념이고 배치는 공간(방) 단위: 방마다 역할 테마"
+            + "(bedroom|study|dining|kitchen|storage|tavern|corridor)와 바닥 재질을 준다. "
+            + "corridor는 복도 — 바닥 점유물 없이 벽 장식·전시물만 놓인다(저택 통로에 사용).",
           items: { type: "object" },
         },
         innerDoors: {
@@ -131,7 +157,13 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         door: { type: "object", description: "{x,y} 남측 입구(floor 남 경계)" },
         theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
-        seed: { type: "integer" },
+        seed: { type: "integer", description: "배치 난수 시드 — 같은 플랜이라도 시드가 다르면 가구 배치가 달라진다" },
+        floorTile: { type: "integer", description: "기본 바닥 재질(예: 돌 12, 널 102, 돗자리 139). 미지정=나무 72" },
+        wallMaterial: {
+          type: "string",
+          enum: ["cream", "gold-brick", "stone-brick"],
+          description: "벽면 재질 — gold-brick은 귀족 저택(식당 러그도 붉은 카펫)",
+        },
       },
       required: ["mapId", "door", "theme"],
     },
@@ -153,6 +185,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       ) as InteriorRoomSession["checklist"];
       const map = createEmptyRoomMap(plan);
       draft.maps[plan.mapId] = map;
+      registerMapInTree(draft, plan.mapId);
       const session: InteriorRoomSession = {
         id: sessionId,
         plan,
@@ -276,6 +309,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       }
       const result = runInteriorRoomPipeline(plan);
       draft.maps[plan.mapId] = result.map;
+      registerMapInTree(draft, plan.mapId);
       return {
         summary: result.ok
           ? `실내 파이프라인 완료 ${plan.mapId}`
@@ -288,6 +322,98 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           ok: result.ok,
           events: (result.map.events ?? []).map((e) => ({ id: e.id, name: e.name, x: e.x, y: e.y })),
         },
+      };
+    },
+  },
+  {
+    name: "furnish_interior_space",
+    description:
+      "실내 세션의 공간(방) 하나만 철거하고 지정 테마로 다시 시공한다 — 공간 단위 하네싱의 실행 도구. "
+      + "furniture 레이어 전체 재실행 없이 방별로 배치를 다듬을 때 쓴다(테마 교체·재추첨). "
+      + "방 범위의 가구·벽 장식·러그를 걷어내고 역할 테마 문법으로 재배치한 뒤 전체 통행 보정을 다시 돌린다. "
+      + "시공 후 evaluate_interior_room으로 재평가하라.",
+    mode: "write",
+    parameters: {
+      type: "object",
+      properties: {
+        sessionId: { type: "string" },
+        roomId: { type: "string", description: "플랜 rooms[].id — 재시공할 공간" },
+        theme: {
+          type: "string",
+          enum: [...INTERIOR_ROOM_THEMES],
+          description: "역할 테마 교체(미지정 시 기존 테마 유지). corridor=복도(바닥 점유물 없음)",
+        },
+        seed: { type: "integer", description: "이 공간만의 배치 재추첨 시드(미지정 시 플랜 시드 파생)" },
+      },
+      required: ["sessionId", "roomId"],
+    },
+    invalidArgsExample: { sessionId: "iroom_1", roomId: "hall", theme: "corridor" },
+    run(draft, args): ToolExecResult {
+      const sessionId = String(args.sessionId ?? "").trim();
+      const session = loadSession(draft, sessionId);
+      if (!session) throw new ToolError(`session 없음: ${sessionId}`, { code: "session-not-found" });
+      const map = draft.maps[session.mapId];
+      if (!map) throw new ToolError(`map 없음: ${session.mapId}`, { code: "map-not-found" });
+      if (!session.plan.rooms || session.plan.rooms.length === 0) {
+        throw new ToolError("rooms 플랜이 아닌 세션 — 공간 단위 재시공은 rooms 구조에서만 가능", { code: "invalid-args" });
+      }
+      const roomId = String(args.roomId ?? "").trim();
+      const theme = args.theme !== undefined ? (String(args.theme) as InteriorRoomTheme) : undefined;
+      if (theme !== undefined && !INTERIOR_ROOM_THEMES.includes(theme)) {
+        throw new ToolError(`theme must be ${INTERIOR_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
+      }
+      const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : undefined;
+      let outcome: { plan: InteriorRoomPlan; warnings: string[] };
+      try {
+        outcome = furnishInteriorSpace(map, session.plan, roomId, theme, seed);
+      } catch (error) {
+        throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" });
+      }
+      const nextSession = { ...session, plan: outcome.plan };
+      nextSession.log.push(`[space:${roomId}] theme=${theme ?? "유지"} seed=${seed ?? "플랜 파생"} warnings=${outcome.warnings.length}`);
+      saveSession(draft, nextSession);
+      return {
+        summary: `공간 재시공 ${roomId}${theme ? ` → ${theme}` : ""}${outcome.warnings.length ? ` (경고 ${outcome.warnings.length})` : ""}`,
+        data: {
+          sessionId,
+          mapId: session.mapId,
+          roomId,
+          theme: theme ?? null,
+          warnings: outcome.warnings,
+          next: `evaluate_interior_room({ sessionId: "${sessionId}" })`,
+        },
+      };
+    },
+  },
+  {
+    name: "evaluate_interior_room",
+    description:
+      "실내 세션의 완성 맵을 평가한다(villageEvaluate 계약 정렬: ok/score/issues/metrics/feedbackForLlm). " +
+      "검사: 테마 필수 가구 매니페스트 · 문 기준 통행 연결성(가구=장애물) · 사분면 밀도 균형. " +
+      "불합격이면 feedbackForLlm 지침대로 수정 후 재평가하라.",
+    mode: "read",
+    parameters: {
+      type: "object",
+      properties: {
+        sessionId: { type: "string" },
+        attempt: { type: "integer", description: "자가 수정 루프 회차(기본 1)" },
+      },
+      required: ["sessionId"],
+    },
+    invalidArgsExample: { sessionId: "iroom_1" },
+    run(draft, args): ToolExecResult {
+      const sessionId = String(args.sessionId ?? "").trim();
+      const session = loadSession(draft, sessionId);
+      if (!session) throw new ToolError(`session 없음: ${sessionId}`, { code: "session-not-found" });
+      const map = draft.maps[session.mapId];
+      if (!map) throw new ToolError(`map 없음: ${session.mapId}`, { code: "map-not-found" });
+      const attempt = args.attempt !== undefined ? Math.floor(Number(args.attempt)) : 1;
+      const report = evaluateInteriorRoom(map, session.plan, attempt);
+      return {
+        summary: report.ok
+          ? `실내 평가 합격 (score ${report.score})`
+          : `실내 평가 ${report.issues.length}건 (score ${report.score})`,
+        data: { sessionId, mapId: session.mapId, report },
       };
     },
   },

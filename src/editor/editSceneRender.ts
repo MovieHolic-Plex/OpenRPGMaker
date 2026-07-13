@@ -165,10 +165,21 @@ function addTileObject(
 
 function uniqueRenderableTileCells(cells: readonly ProjectChangeCell[]): readonly RenderableTileCell[] {
   const unique = new Map<string, RenderableTileCell>();
+  const add = (layer: "lower" | "upper", x: number, y: number) => {
+    unique.set(tileIndexKey(layer, x, y), { x, y, layer });
+  };
   for (const cell of cells) {
     if (cell.layer === "event") continue;
-    const renderableCell: RenderableTileCell = { x: cell.x, y: cell.y, layer: cell.layer };
-    unique.set(tileIndexKey(renderableCell.layer, renderableCell.x, renderableCell.y), renderableCell);
+    add(cell.layer, cell.x, cell.y);
+    // 하위 타일의 쿼터 합성(벽 프레임 랩·지형 9-슬라이스·호수 기슭·길)은 이웃 의존 —
+    // 칠한 셀만 다시 그리면 이웃 셀에 낡은 프레임 조각이 남는다. 8방 이웃도 함께 재렌더.
+    if (cell.layer === "lower") {
+      for (let dy = -1; dy <= 1; dy += 1) {
+        for (let dx = -1; dx <= 1; dx += 1) {
+          if (dx !== 0 || dy !== 0) add("lower", cell.x + dx, cell.y + dy);
+        }
+      }
+    }
   }
   return [...unique.values()];
 }

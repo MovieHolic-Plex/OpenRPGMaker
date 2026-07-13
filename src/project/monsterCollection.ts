@@ -202,12 +202,20 @@ export function monsterSkillIds(project: Project, instance: MonsterInstance | un
   return mergeSkillIds(instance.skillIds ?? [], species ? monsterSkillIdsForSpecies(species, instance.level) : []);
 }
 
-export function applyMonsterExperienceAndEvolution(project: Project, session: PlaySession, earnedExp: number): MonsterExperienceResult[] {
+export function applyMonsterExperienceAndEvolution(
+  project: Project,
+  session: PlaySession,
+  earnedExp: number,
+  // 지정 시 이 인스턴스들에만 경험치를 준다(전투 참전 몬스터 한정). 미지정이면 파티 전원(기존 동작).
+  participantInstanceIds?: readonly string[]
+): MonsterExperienceResult[] {
   ensureMonsterSessionFields(session);
   const exp = Math.max(0, Math.trunc(earnedExp));
   if (exp <= 0) return [];
+  const eligible = participantInstanceIds ? new Set(participantInstanceIds) : null;
   const results: MonsterExperienceResult[] = [];
   for (const instanceId of session.monsterParty) {
+    if (eligible && !eligible.has(instanceId)) continue;
     const before = session.monsterInstances[instanceId];
     if (!before) continue;
     const species = monsterSpeciesById(project, before.speciesId);
@@ -349,8 +357,46 @@ function normalizeSkillsByLevel(skills: readonly Partial<ActorLearnedSkill>[] | 
     .sort((left, right) => left.level - right.level || left.skillId.localeCompare(right.skillId));
 }
 
+export interface MonsterBattleStats {
+  readonly maxHp: number;
+  readonly maxMp: number;
+  readonly attack: number;
+  readonly defense: number;
+  readonly mind: number;
+  readonly agility: number;
+}
+
+// 포켓몬 유사 스탯 공식(EV 없음, IV 0~15):
+//   HP     = floor((2*base + iv) * level / 100) + level + 10
+//   기타   = floor((2*base + iv) * level / 100) + 5
+// MP는 원작에 대응이 없어 base를 레벨로 완만 스케일한다. mind는 IV가 없어 iv=0.
+export function monsterBattleStatsForSpecies(
+  species: MonsterSpeciesRecord | undefined,
+  level: number,
+  ivs: MonsterInstance["ivs"]
+): MonsterBattleStats {
+  const base = species?.baseStats;
+  const lv = clampInteger(level, 1, ACTOR_LEVEL_MAX);
+  const other = (statBase: number, iv: number): number =>
+    Math.max(1, Math.floor((2 * statBase + iv) * lv / 100) + 5);
+  const hp = Math.floor((2 * (base?.maxHp ?? 1) + (ivs?.hp ?? 0)) * lv / 100) + lv + 10;
+  return {
+    maxHp: Math.max(1, hp),
+    maxMp: Math.max(0, Math.floor((base?.maxMp ?? 0) * (1 + lv / 50))),
+    attack: other(base?.attack ?? 1, ivs?.atk ?? 0),
+    defense: other(base?.defense ?? 1, ivs?.def ?? 0),
+    mind: other(base?.mind ?? 1, 0),
+    agility: other(base?.agility ?? 1, ivs?.spd ?? 0),
+  };
+}
+
+/** 인스턴스의 전투 유효 스탯(종족+레벨+IV). 전투 배틀러 생성에 사용. */
+export function monsterBattleStats(project: Project, instance: MonsterInstance): MonsterBattleStats {
+  return monsterBattleStatsForSpecies(monsterSpeciesById(project, instance.speciesId), instance.level, instance.ivs);
+}
+
 function monsterMaxHpFor(_project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {
-  return Math.max(1, (species?.baseStats.maxHp ?? 1) + (instance.ivs?.hp ?? 0));
+  return monsterBattleStatsForSpecies(species, instance.level, instance.ivs).maxHp;
 }
 
 function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {

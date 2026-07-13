@@ -107,15 +107,20 @@ export function applyAiFontSize(target: HTMLElement, size: AiFontSize): void {
 
 /**
  * 접힘 상태.
- * **부팅(로드) 시 항상 축소** — 맵이 화면을 먹고, 필요할 때만 펼친다.
- * 펼침/접힘 토글은 세션 중 DOM 상태로 유지되며, localStorage 에도 기록하지만
- * 다음 페이지 로드에서는 다시 접힌 채 시작한다.
+ * 첫 방문(저장값 없음)은 **펼침** — AI 어시스턴트가 제품의 주 진입점인데
+ * 접힌 세로 띠만 보이면 초보는 존재 자체를 모른다.
+ * 이후에는 사용자가 마지막으로 명시한 접힘/펼침을 복원한다.
+ * 자동 펼침/재접기(맵 우선)는 세션 안에서만 동작하고 저장값을 건드리지 않는다.
  */
 export const MAP_FIRST_MIGRATION_KEY = "rpg-zzu:ai-map-first-collapse-v1"; // 레거시 키(테스트/정리용)
 
 export function loadPanelCollapsed(): boolean {
-  // 기본 UI: 축소. 저장값이 "0"이어도 부팅 시에는 펼치지 않는다.
-  return true;
+  if (typeof localStorage === "undefined") return false;
+  try {
+    return localStorage.getItem(PANEL_COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
 export function savePanelCollapsed(collapsed: boolean): void {

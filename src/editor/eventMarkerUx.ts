@@ -24,6 +24,7 @@ export function shouldOfferEventLayerSwitch(input: {
   return input.activeLayer !== "event" && input.clickCount >= 2 && input.hasEvent;
 }
 
-export function eventLayerSwitchPrompt(event: Pick<GameEvent, "id" | "pages">): string {
-  return `이벤트 레이어로 전환하고 '${eventDisplayName(event)}' 이벤트를 편집할까요?`;
+/** 더블클릭은 편집 의도가 명확하므로 확인 모달 없이 바로 전환하고, 무슨 일이 있었는지 토스트로 알린다. */
+export function eventLayerSwitchNotice(event: Pick<GameEvent, "id" | "pages">): string {
+  return `'${eventDisplayName(event)}' 이벤트를 엽니다 — 이벤트 레이어로 전환했습니다.`;
 }

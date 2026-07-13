@@ -1,4 +1,4 @@
-import { EDITOR_ZOOM_LEVELS, editorState } from "@/editor/editorState";
+import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
 import { renderBuildPaletteToggle } from "@/editor/panels/buildPalette";
@@ -8,6 +8,16 @@ import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 let mapScreenshotRequestSeq = 0;
+
+// 기본 모드는 자주 쓰는 배율만 노출한다 — 7컨트롤(라벨+6버튼)은 초보에게 소음.
+// 현재 배율이 목록 밖(3/6/8x)이면 활성 표시를 위해 끼워 넣는다.
+const BASIC_ZOOM_LEVELS: readonly EditorZoom[] = [1, 2, 4];
+
+export function visibleZoomLevels(dense: boolean, currentZoom: EditorZoom): readonly EditorZoom[] {
+  if (dense) return EDITOR_ZOOM_LEVELS;
+  if (BASIC_ZOOM_LEVELS.includes(currentZoom)) return BASIC_ZOOM_LEVELS;
+  return [...BASIC_ZOOM_LEVELS, currentZoom].sort((a, b) => a - b);
+}
 
 export function renderCanvasToolbar(container: HTMLElement): void {
   clearChildren(container);
@@ -30,7 +40,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     dataset: { testid: "editor-zoom-group" },
     children: [el("span", { class: "canvas-toolbar-label", text: "확대" })],
   });
-  for (const zoom of EDITOR_ZOOM_LEVELS) {
+  for (const zoom of visibleZoomLevels(chrome.canvasChromeDense, currentZoom)) {
     zoomGroup.append(
       el("button", {
         class: "rm2k3-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),

@@ -336,7 +336,7 @@ function menuCommands(
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
-        item("내보내기...", "menu-project-export", () => void doExport()),
+        item("내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("가져오기...", "menu-project-import", () => doImport()),
       ];
     case "map":
@@ -377,8 +377,9 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
   return { kind: "item", label, testId, onClick, disabled };
 }
 
-const SHORTCUT_HELP =
-  "F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
+// 커맨드 팔레트("도움말: 단축키")에서도 재사용한다.
+export const SHORTCUT_HELP =
+  "V/B/E/G/N/I: 선택/브러시/지우개/채우기/이벤트/스포이트  •  F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+K: 명령·맵·스킬 검색  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
 
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
@@ -610,7 +611,7 @@ function doLoad(topbar: HTMLElement): void {
 // 1) `await store.flush()`가 저장 오류 시 reject → 함수 전체가 무반응으로 중단(다운로드 없음).
 // 2) anchor가 DOM에 붙지 않은 채 click() — 일부 환경에서 다운로드가 시작되지 않음.
 // 3) click() 직후 동기 revokeObjectURL — 브라우저가 fetch를 시작하기 전에 URL이 무효화될 수 있음.
-async function doExport(): Promise<void> {
+export async function exportProjectPackage(): Promise<void> {
   try {
     // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).
     await store.flush().catch((error) => {

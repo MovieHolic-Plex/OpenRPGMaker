@@ -35,7 +35,8 @@ export function resolveContextViewport(options: ContextOptions): MapViewportSnap
   return options.viewport ?? null;
 }
 
-const DEFAULT_BUDGET = 12000;
+// 기본 문자 예산(현행 동작 기준). tokenBudget.calibratedBudgetChars가 실측 usage로 이 값을 재척도한다.
+export const DEFAULT_BUDGET_CHARS = 12000;
 
 // ⑥ 밸런스 상수(handoff 검증치). 모델이 수치 감각을 갖도록 명시한다.
 const BALANCE_NOTE = [
@@ -358,7 +359,7 @@ function ruleText(rule: ClusterRuleHint): string {
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
 export function buildSystemPrompt(project: Project, options: ContextOptions = {}): string {
-  const budget = options.budgetChars ?? DEFAULT_BUDGET;
+  const budget = options.budgetChars ?? DEFAULT_BUDGET_CHARS;
   const sections: string[] = [INTRO, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);

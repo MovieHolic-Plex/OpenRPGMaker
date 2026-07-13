@@ -53,9 +53,12 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     expect(fake.classList.contains("is-basic-chrome")).toBe(true);
     expect(fake.classList.contains("is-expanded")).toBe(true);
     expect(fake.dataset.uiDensity).toBe("basic");
-    // Zoom levels present — figma CSS shows .zoom-button only when is-expanded.
-    for (const z of [1, 2, 3, 4, 6, 8]) {
+    // 기본 모드는 자주 쓰는 배율만 — 1x/2x/4x (e2e가 클릭하는 testid 계약 유지).
+    for (const z of [1, 2, 4]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
+    }
+    for (const z of [3, 6, 8]) {
+      expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeNull();
     }
     // No expand control / map-save in basic path
     expect(fake.querySelector('[data-testid="editor-canvas-toolbar-expand"]')).toBeNull();

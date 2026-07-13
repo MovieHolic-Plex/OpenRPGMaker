@@ -50,6 +50,13 @@ describe("commandRegistry", () => {
     expect(picked).toHaveLength(1);
   });
 
+  it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {
+    const commands = listEditorCommands();
+    expect(commands.some((c) => c.id === "help-shortcuts")).toBe(true);
+    expect(matchEditorCommands("단축키", commands).some((c) => c.id === "help-shortcuts")).toBe(true);
+    expect(matchEditorCommands("help", commands).some((c) => c.id === "help-shortcuts")).toBe(true);
+  });
+
   it("matchEditorCommands는 라벨/키워드 포함 매칭, 빈 질의는 전체", () => {
     const commands = listEditorCommands();
     expect(matchEditorCommands("", commands)).toHaveLength(commands.length);

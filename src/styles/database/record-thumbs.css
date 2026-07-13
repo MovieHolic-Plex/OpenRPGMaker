@@ -358,8 +358,95 @@
   opacity: 0.35;
 }
 
+/* 종족 그래픽 프리뷰 — 적 스테이지(db-enemy-graphic-stage, height:100%)와 분리한 고정 높이 박스.
+   상세 폼 안에서 세로로 늘어나 아래 필드(스탯·스킬·진화)를 밀어내지 않게 한다. */
 .db-monster-species-stage {
+  align-items: center;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: flex;
+  height: 120px;
+  justify-content: center;
   margin: 8px 0;
   max-width: 180px;
-  min-height: 96px;
+  overflow: hidden;
+}
+
+.db-monster-species-stage img {
+  image-rendering: pixelated;
+  max-height: 104px;
+  max-width: 132px;
+}
+
+/* 데이터베이스 탭 상단의 역할 안내 배너 (몬스터·종족 탭 구분) */
+/* 셸: 배너(auto) + 워크스페이스(1fr)로 높이를 나눠, height:100% 워크스페이스가
+   배너에 밀려 넘치지 않게 한다(특히 dense 고정높이 스크롤인 몬스터 탭). */
+.db-record-intro-shell {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.db-record-intro {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+  padding: var(--space-2);
+}
+
+.db-monster-species-empty-row {
+  color: var(--text-dim);
+  font-size: 10px;
+  margin: 0;
+  padding: 4px 2px;
+}
+
+/* 진화 행: 좁은 디테일 패널에서도 안 깨지게 flex-wrap */
+.db-monster-species-evo-list {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.db-monster-species-evo-row {
+  align-items: center;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+}
+
+.db-monster-species-evo-row > select {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+.db-monster-species-evo-cond {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.db-monster-species-evo-cond > span {
+  color: var(--text-dim);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.db-monster-species-evo-cond input {
+  width: 56px;
+}
+
+.db-monster-species-evo-row > button {
+  margin-left: auto;
 }

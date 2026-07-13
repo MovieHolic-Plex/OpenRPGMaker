@@ -141,13 +141,14 @@ afterEach(() => {
 });
 
 describe("AI 패널 자동 펼침/접기", () => {
-  it("부팅 시 저장값이 펼침이어도 기본은 접힘이다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "0");
+  it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {
+    storage.set("rpg-zzu:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
   });
 
-  it("접힌 채 전송하면 펼치고, 턴 종료 후 자동으로 다시 접는다", async () => {
+  it("접힌 채 전송하면 펼치고, 턴 종료 후 자동으로 다시 접는다 — 저장값은 불변", async () => {
+    storage.set("rpg-zzu:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
@@ -157,7 +158,8 @@ describe("AI 패널 자동 펼침/접기", () => {
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    // 자동 펼침은 사용자의 저장된 선택을 덮어쓰지 않는다.
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
     expect(assistantMock.sentMessages).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
@@ -167,7 +169,7 @@ describe("AI 패널 자동 펼침/접기", () => {
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
   });
 
-  it("이미 펼친 상태에서도 턴이 끝나면 맵 우선으로 다시 접는다", async () => {
+  it("이미 펼친 상태에서도 턴이 끝나면 맵 우선으로 다시 접는다 — 저장값은 불변", async () => {
     const panel = renderPanel();
     expandPanel(panel);
     expect(panel.classList.contains("is-collapsed")).toBe(false);
@@ -180,10 +182,12 @@ describe("AI 패널 자동 펼침/접기", () => {
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    // 자동 재접기는 저장값을 건드리지 않는다 — 다음 부팅은 여전히 펼침.
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBeUndefined();
   });
 
   it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {
+    storage.set("rpg-zzu:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 

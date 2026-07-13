@@ -46,6 +46,9 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     ...project.system,
     monsterCollection: true,
     battleUiStyle: "pokemon",
+    // 잡은 파티 몬스터가 필드에 나서 싸운다(트레이너 대신). 1:1 대치.
+    battleParty: "monsters",
+    activeSlots: 1,
     startActorIds: [DEFAULT_ACTOR_ID],
     ...(titleScreen
       ? {
@@ -70,6 +73,18 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     hero.name = "트레이너";
     hero.characterResourceId = "scarloxy-charset-people1";
     hero.characterIndex = 0;
+    // 포켓몬풍 밸런스: 기본 용사 스탯(HP 500+, 공격 원킬)을 데모 규모로 낮춘다.
+    hero.parameterCurves = {
+      ...hero.parameterCurves,
+      maxHp: flatCurve(130, 6),
+      maxMp: flatCurve(20, 1),
+      attack: flatCurve(30, 2),
+      defense: flatCurve(14, 1),
+      mind: flatCurve(9, 1),
+      agility: flatCurve(9, 1),
+    };
+    // 기술 목록에서 용사 스킬(집중·검격)을 걷어내고 트레이너다운 기술만 남긴다.
+    hero.learnedSkills = [{ level: 1, skillId: "skill_pkmn_rock" }];
   }
 
   project.database.skills.push(
@@ -78,7 +93,8 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     demoSkill("skill_scarloxy_splash", "물장구", 24, "anim_scarloxy_splash", "물보라를 일으켜 공격합니다.", "water"),
     demoSkill("skill_scarloxy_scratch", "할퀴기", 18, "anim_scarloxy_scratch", "발톱으로 할큅니다."),
     demoSkill("skill_scarloxy_ice", "얼음 조각", 28, "anim_scarloxy_ice", "얼음 조각을 날립니다.", "water"),
-    demoSkill("skill_scarloxy_burst", "대폭발", 36, "anim_scarloxy_explosion", "거대한 폭발을 일으킵니다.", "fire")
+    demoSkill("skill_scarloxy_burst", "대폭발", 36, "anim_scarloxy_explosion", "거대한 폭발을 일으킵니다.", "fire"),
+    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다.")
   );
 
   project.database.monsterSpecies = [
@@ -87,13 +103,13 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
   ];
 
   project.database.enemies.push(
-    wildEnemy("enemy_pkmn_larvea", "라르베아", "larvea", 3, { maxHp: 55, maxMp: 2, attack: 6, defense: 8, mind: 4, agility: 5 }, { exp: 5, gold: 3 }, ["skill_scarloxy_scratch"]),
-    wildEnemy("enemy_pkmn_plumette", "플루메트", "plumette", 4, { maxHp: 60, maxMp: 4, attack: 7, defense: 5, mind: 6, agility: 15 }, { exp: 6, gold: 4 }, ["skill_scarloxy_leaf"]),
-    wildEnemy("enemy_pkmn_finsta", "핀스타", "finsta", 4, { maxHp: 62, maxMp: 5, attack: 7, defense: 7, mind: 7, agility: 11 }, { exp: 6, gold: 4 }, ["skill_scarloxy_splash"]),
-    wildEnemy("enemy_pkmn_jacana", "자카나", "jacana", 5, { maxHp: 70, maxMp: 5, attack: 8, defense: 7, mind: 8, agility: 13 }, { exp: 8, gold: 6 }, ["skill_scarloxy_splash"]),
-    wildEnemy("enemy_pkmn_draem", "드림", "draem", 6, { maxHp: 80, maxMp: 8, attack: 9, defense: 8, mind: 11, agility: 9 }, { exp: 10, gold: 8 }, ["skill_scarloxy_leaf"]),
-    wildEnemy("enemy_pkmn_rival_cindrill", "라이벌의 신드릴", "cindrill", 8, { maxHp: 120, maxMp: 8, attack: 12, defense: 10, mind: 9, agility: 12 }, { exp: 20, gold: 20 }, ["skill_scarloxy_ember"]),
-    wildEnemy("enemy_pkmn_atrox", "전설의 아트록스", "atrox", 15, { maxHp: 220, maxMp: 16, attack: 17, defense: 13, mind: 13, agility: 12 }, { exp: 50, gold: 60 }, ["skill_scarloxy_ember", "skill_scarloxy_burst"])
+    wildEnemy("enemy_pkmn_larvea", "라르베아", "larvea", 3, { maxHp: 40, maxMp: 2, attack: 6, defense: 8, mind: 4, agility: 5 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_scratch"]),
+    wildEnemy("enemy_pkmn_plumette", "플루메트", "plumette", 4, { maxHp: 44, maxMp: 4, attack: 7, defense: 5, mind: 6, agility: 15 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_finsta", "핀스타", "finsta", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 7, mind: 7, agility: 11 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
+    wildEnemy("enemy_pkmn_jacana", "자카나", "jacana", 5, { maxHp: 52, maxMp: 5, attack: 8, defense: 7, mind: 8, agility: 13 }, { exp: 8, gold: 6 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
+    wildEnemy("enemy_pkmn_draem", "드림", "draem", 6, { maxHp: 60, maxMp: 8, attack: 9, defense: 8, mind: 11, agility: 9 }, { exp: 10, gold: 8 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_rival_cindrill", "라이벌의 신드릴", "cindrill", 8, { maxHp: 90, maxMp: 8, attack: 12, defense: 10, mind: 9, agility: 12 }, { exp: 20, gold: 20 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
+    wildEnemy("enemy_pkmn_atrox", "전설의 아트록스", "atrox", 15, { maxHp: 170, maxMp: 16, attack: 17, defense: 13, mind: 13, agility: 12 }, { exp: 50, gold: 60 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember", "skill_scarloxy_burst"])
   );
 
   project.database.troops.push(
@@ -178,6 +194,10 @@ function scarloxySpeciesRecords() {
         : [],
     })
   );
+}
+
+function flatCurve(base: number, perLevel: number): number[] {
+  return Array.from({ length: 99 }, (_, index) => base + index * perLevel);
 }
 
 function wildEnemy(

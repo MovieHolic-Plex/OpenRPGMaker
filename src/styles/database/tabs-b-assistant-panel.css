@@ -1799,6 +1799,40 @@ body.ai-panel-docked .editor-layout {
   opacity: 0.85;
 }
 
+/* 시작 화면 예시 칩 — 클릭하면 입력창을 채운다 */
+.ai-start-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 auto;
+  max-width: 260px;
+  width: 100%;
+}
+
+.ai-start-example-chip {
+  background: var(--bg-inset, #12151c);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.ai-start-example-chip:hover,
+.ai-start-example-chip:focus-visible {
+  border-color: var(--accent, #6ea8fe);
+  outline: none;
+}
+
+.ai-start-shortcut-hint {
+  color: var(--text-3, var(--text-2));
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
 .ai-start-title {
   color: var(--text-1);
   font-size: 16px;

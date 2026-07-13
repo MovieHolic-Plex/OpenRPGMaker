@@ -1,9 +1,13 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
+import type { BattleActionResultSnapshot } from "@/battle/types";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
   actorCommandDirectorState,
+  battleResultRewardRowCount,
   commandPromptState,
   directorStateAfterTurn,
+  enemyActionDirectorState,
+  introDirectorState,
   type BattleDirectorState,
   resultDirectorState,
 } from "@/player/battleDirectorDom";
@@ -22,6 +26,7 @@ export interface DamageFeedback {
   readonly amount: number;
   readonly critical: boolean;
   readonly healing: boolean;
+  readonly miss?: boolean;
 }
 
 export type ScheduleFn = (callback: () => void, delayMs: number) => number;
@@ -35,6 +40,8 @@ export interface BattleSequencerHooks {
   readonly onHitFeel?: (active: boolean, feedback?: DamageFeedback) => void;
   readonly onResultStage: (stage: number) => void;
   readonly onSequenceBusy: (busy: boolean) => void;
+  /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
+  readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
 }
 
 export interface BattleSequencer {
@@ -45,19 +52,6 @@ export interface BattleSequencer {
   cancel(): void;
 }
 
-function enemyActionAdvanced(before: BattleSnapshot, after: BattleSnapshot): boolean {
-  const beforeResult = before.lastActionResult;
-  const afterResult = after.lastActionResult;
-  if (!afterResult) return false;
-  if (!beforeResult) return true;
-  return beforeResult.targetId !== afterResult.targetId
-    || beforeResult.amount !== afterResult.amount
-    || beforeResult.hit !== afterResult.hit
-    || beforeResult.critical !== afterResult.critical
-    || beforeResult.skillName !== afterResult.skillName
-    || before.turn !== after.turn;
-}
-
 export function createBattleSequencer(
   runtime: BattleRuntime,
   hooks: BattleSequencerHooks,
@@ -66,6 +60,8 @@ export function createBattleSequencer(
 ): BattleSequencer {
   const timers = new Set<number>();
   let busy = false;
+  // 행동 로그 소비 지점 — 이보다 뒤의 엔트리만 새 비트로 재생한다.
+  let consumedActions = runtime.snapshot().actionLog.length;
 
   function setBusy(next: boolean): void {
     busy = next;
@@ -85,16 +81,28 @@ export function createBattleSequencer(
     trackTimer(schedule(callback, ms));
   }
 
-  function damageFeedbackFromSnapshots(before: BattleSnapshot, after: BattleSnapshot, healingHint = false): DamageFeedback | undefined {
+  function feedbackFromEntry(entry: BattleActionResultSnapshot): DamageFeedback | undefined {
+    if (!entry.hit) return { targetId: entry.targetId, amount: 0, critical: false, healing: false, miss: true };
+    if (entry.amount === 0) return undefined;
+    if (entry.amount < 0) {
+      return { targetId: entry.targetId, amount: Math.abs(entry.amount), critical: false, healing: true };
+    }
+    return { targetId: entry.targetId, amount: entry.amount, critical: entry.critical, healing: false };
+  }
+
+  function damageFeedback(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): DamageFeedback | undefined {
     const result = after.lastActionResult;
-    if (!result?.targetId || result.amount === 0) return undefined;
+    if (!result?.targetId) return undefined;
     const target = after.enemies.find((enemy) => enemy.id === result.targetId)
       ?? after.actors.find((actor) => actor.id === result.targetId);
     if (!target) return undefined;
     const beforeTarget = before.enemies.find((entry) => entry.id === result.targetId)
       ?? before.actors.find((entry) => entry.id === result.targetId);
     const delta = beforeTarget ? beforeTarget.hp - target.hp : Math.abs(result.amount);
-    const healing = healingHint || (beforeTarget ? target.hp > beforeTarget.hp : false);
+    const healing = command.kind === "skill" || command.kind === "item"
+      ? (beforeTarget ? target.hp > beforeTarget.hp : false)
+      : false;
+    if (!result.hit) return { targetId: result.targetId, amount: 0, critical: false, healing: false, miss: true };
     if (!healing && delta <= 0) return undefined;
     return {
       targetId: result.targetId,
@@ -104,21 +112,12 @@ export function createBattleSequencer(
     };
   }
 
-  function damageFeedback(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): DamageFeedback | undefined {
-    return damageFeedbackFromSnapshots(
-      before,
-      after,
-      command.kind === "skill" || command.kind === "item"
-    );
-  }
-
   function revealResult(snapshot: BattleSnapshot, previous: BattleDirectorState): void {
     const resultState = resultDirectorState(snapshot, previous);
     hooks.onDirectorState(resultState);
     hooks.onSyncView();
-    const rewardCount = snapshot.result === "victory"
-      ? 1 + (snapshot.rewards.items.length > 0 ? snapshot.rewards.items.length : 0) + (snapshot.rewards.levelUps?.length ?? 0)
-      : 1;
+    // 보상 행 수와 공개 스테이지 수를 동일한 소스로 계산한다(골드 행 미공개 버그 방지).
+    const rewardCount = battleResultRewardRowCount(snapshot);
     let stage = 0;
     const revealNext = (): void => {
       hooks.onResultStage(stage);
@@ -131,6 +130,7 @@ export function createBattleSequencer(
 
   function finishTurn(previous: BattleDirectorState): void {
     const snapshot = runtime.snapshot();
+    consumedActions = snapshot.actionLog.length;
     if (snapshot.result) {
       revealResult(snapshot, previous);
       setBusy(false);
@@ -142,25 +142,34 @@ export function createBattleSequencer(
     setBusy(false);
   }
 
+  /** 새 행동 로그 엔트리들을 하나씩 비트로 재생한 뒤 done을 호출한다. */
+  function playActionEntries(entries: readonly BattleActionResultSnapshot[], snapshot: BattleSnapshot, done: () => void): void {
+    if (entries.length === 0) {
+      done();
+      return;
+    }
+    const [entry, ...rest] = entries;
+    hooks.onDirectorState(enemyActionDirectorState(entry, snapshot));
+    const feedback = feedbackFromEntry(entry);
+    hooks.onDamageFeedback(feedback);
+    if (feedback && !feedback.healing && !feedback.miss) hooks.onHitFeel?.(true, feedback);
+    hooks.onSyncView();
+    const next = (): void => {
+      hooks.onHitFeel?.(false, feedback);
+      hooks.onSyncView();
+      delay(() => playActionEntries(rest, snapshot, done), BATTLE_IMPACT_MS);
+    };
+    if (feedback && !feedback.healing && !feedback.miss) delay(next, BATTLE_HITSTOP_MS);
+    else next();
+  }
+
   function resolveEnemyTurns(previous: BattleDirectorState): void {
     delay(() => {
-      const before = runtime.snapshot();
       advanceBattleRuntime(runtime);
       const after = runtime.snapshot();
-      const enemyAction = after.lastActionResult;
-      if (enemyAction && enemyActionAdvanced(before, after)) {
-        hooks.onDirectorState({
-          step: "acting",
-          lines: ["적의 행동!", enemyAction.skillName ?? "공격이 이어진다."],
-          activeActorRecordId: undefined,
-          targetId: enemyAction.targetId,
-        });
-        hooks.onDamageFeedback(damageFeedbackFromSnapshots(before, after));
-        hooks.onSyncView();
-        delay(() => finishTurn(previous), BATTLE_IMPACT_MS);
-        return;
-      }
-      finishTurn(previous);
+      const entries = after.actionLog.slice(consumedActions);
+      consumedActions = after.actionLog.length;
+      playActionEntries(entries, after, () => finishTurn(previous));
     }, BATTLE_RESOLVE_MS);
   }
 
@@ -170,56 +179,59 @@ export function createBattleSequencer(
     },
     startIntro(snapshot: BattleSnapshot): void {
       clearTimers();
-      hooks.onDirectorState({
-        step: "command",
-        lines: ["전투가 시작되었습니다.", "적이 나타났다!"],
-        activeActorRecordId: snapshot.activeActorId,
-      });
+      // 인트로 동안 게이지 틱이 배너를 덮지 않도록 시퀀스를 점유한다.
+      setBusy(true);
+      hooks.onDirectorState(introDirectorState(snapshot));
       hooks.onSyncView();
       delay(() => {
         hooks.onDirectorState(commandPromptState(snapshot));
+        setBusy(false);
         hooks.onSyncView();
       }, BATTLE_INTRO_MS);
     },
     runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void {
       clearTimers();
       setBusy(true);
+      // 플레이어 자신의 행동 엔트리는 아래 연출이 담당하므로 로그에서 소비 처리.
+      consumedActions = after.actionLog.length;
       const actingState = actorCommandDirectorState(command, before, after);
       hooks.onDirectorState({ ...actingState, step: "acting", lines: [actingState.lines[0] ?? ""] });
       hooks.onSyncView();
+      // 포획은 구슬 시네마틱이 먼저 재생된 뒤 결과 텍스트/임팩트로 이어진다.
+      const cinematicMs = command.kind === "capture"
+        ? hooks.onCaptureCinematic?.(command.targetEnemyId, after.lastCaptureResult?.success === true) ?? 0
+        : 0;
       delay(() => {
         const feedback = damageFeedback(command, before, after);
         hooks.onDirectorState(actingState);
         hooks.onDamageFeedback(feedback);
-        if (feedback && !feedback.healing) {
+        if (feedback && !feedback.healing && !feedback.miss) {
           hooks.onHitFeel?.(true, feedback);
         }
         hooks.onSyncView();
         const afterHitStop = (): void => {
           hooks.onHitFeel?.(false, feedback);
           hooks.onSyncView();
-          delay(() => resolveEnemyTurns(actingState), BATTLE_IMPACT_MS);
+          // 막타로 전투가 끝났으면 적 턴 비트를 건너뛰고 곧바로 결과·보상 공개로 넘어간다.
+          if (runtime.snapshot().result) {
+            delay(() => finishTurn(actingState), BATTLE_IMPACT_MS);
+          } else {
+            delay(() => resolveEnemyTurns(actingState), BATTLE_IMPACT_MS);
+          }
         };
-        if (feedback && !feedback.healing) delay(afterHitStop, BATTLE_HITSTOP_MS);
+        if (feedback && !feedback.healing && !feedback.miss) delay(afterHitStop, BATTLE_HITSTOP_MS);
         else afterHitStop();
-      }, BATTLE_ACTING_MS);
+      }, Math.max(BATTLE_ACTING_MS, cinematicMs));
     },
-    runAfterEnemyAdvance(before: BattleSnapshot, after: BattleSnapshot): void {
+    runAfterEnemyAdvance(_before: BattleSnapshot, after: BattleSnapshot): void {
       if (busy) return;
-      if (!after.lastActionResult || after.lastActionResult === before.lastActionResult) return;
+      const entries = after.actionLog.slice(consumedActions);
+      if (entries.length === 0) return;
+      consumedActions = after.actionLog.length;
       setBusy(true);
-      hooks.onDirectorState({
-        step: "acting",
-        lines: ["적의 행동!", after.lastActionResult.skillName ?? "공격이 이어진다."],
-        targetId: after.lastActionResult.targetId,
-      });
-      const feedback = damageFeedbackFromSnapshots(before, after);
-      hooks.onDamageFeedback(feedback);
-      if (feedback && !feedback.healing) hooks.onHitFeel?.(true, feedback);
-      hooks.onSyncView();
-      const finish = (): void => {
-        hooks.onHitFeel?.(false, feedback);
+      playActionEntries(entries, after, () => {
         const snapshot = runtime.snapshot();
+        consumedActions = snapshot.actionLog.length;
         if (snapshot.result) {
           revealResult(snapshot, commandPromptState(snapshot));
           setBusy(false);
@@ -229,8 +241,7 @@ export function createBattleSequencer(
         hooks.onDamageFeedback(undefined);
         hooks.onSyncView();
         setBusy(false);
-      };
-      delay(finish, (feedback && !feedback.healing ? BATTLE_HITSTOP_MS : 0) + BATTLE_IMPACT_MS);
+      });
     },
     cancel(): void {
       clearTimers();

@@ -34,5 +34,14 @@ handoff.md
 /mcps/
 /output/
 /tmp-*
+# 에이전트/세션 잡 · 런타임 pid · 파이썬 캐시
+.claude/
+.gjc/
+.codex/
+.codex-vite*.pid
+.codex-vite*.log
+.codex-event-proof*.log
+__pycache__/
+*.pyc
 # 심링크 형태의 node_modules도 차단 (과거 심링크 커밋 사고 — 슬래시 규칙은 디렉터리만 매치)
 node_modules

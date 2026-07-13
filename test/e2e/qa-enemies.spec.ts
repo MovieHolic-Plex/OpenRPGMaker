@@ -3,8 +3,8 @@ import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } 
 
 const ENEMIES_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "enemies")!;
 const ITEMS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "items")!;
-// Species 탭은 rm2k3-database-helpers의 DATABASE_TAB_SPECS에 아직 없어 직접 정의한다(database.ts orderedTabs 기준).
-const SPECIES_TAB = { label: "Species", slug: "monster-species", testId: "db-tab-monster-species" };
+// 종족 탭은 rm2k3-database-helpers의 DATABASE_TAB_SPECS에 아직 없어 직접 정의한다(database.ts orderedTabs 기준).
+const SPECIES_TAB = { label: "종족", slug: "monster-species", testId: "db-tab-monster-species" };
 
 type ExportedEnemy = {
   id: string;
@@ -265,10 +265,19 @@ test.describe("QA — Species tab", () => {
     await page.getByTestId("db-monster-species-def").fill("22");
     await page.getByTestId("db-monster-species-mind").fill("23");
     await page.getByTestId("db-monster-species-agi").fill("24");
-    await page.getByTestId("db-monster-species-skills").fill("3:skill_attack\n7:skill_fire");
-    await page.getByTestId("db-monster-species-skills").blur();
-    await page.getByTestId("db-monster-species-evolutions").fill("species_king_slime | level=7 | friendship=220");
-    await page.getByTestId("db-monster-species-evolutions").blur();
+    // 레벨별 스킬: 드롭다운 행 편집기(스킬 추가 → 레벨 입력 + 스킬 선택). 값 편집은 rerender 없이
+    // store만 갱신하고, 행 추가는 rerender 하므로 이전 행 값이 보존된다.
+    await page.getByTestId("db-monster-species-skill-add").click();
+    await page.getByTestId("db-monster-species-skill-level-0").fill("3");
+    await page.getByTestId("db-monster-species-skill-0").selectOption("skill_attack");
+    await page.getByTestId("db-monster-species-skill-add").click();
+    await page.getByTestId("db-monster-species-skill-level-1").fill("7");
+    await page.getByTestId("db-monster-species-skill-1").selectOption("skill_fire");
+    // 진화: 대상 종족 드롭다운 + 조건(레벨/친밀도)
+    await page.getByTestId("db-monster-species-evo-add").click();
+    await page.getByTestId("db-monster-species-evo-target-0").selectOption("species_king_slime");
+    await page.getByTestId("db-monster-species-evo-level-0").fill("7");
+    await page.getByTestId("db-monster-species-evo-friendship-0").fill("220");
 
     // tab away/back: persistence (선택 상태 + 값)
     await switchDatabaseTab(page, ENEMIES_TAB);
@@ -284,8 +293,13 @@ test.describe("QA — Species tab", () => {
     await expect(page.getByTestId("db-monster-species-def")).toHaveValue("22");
     await expect(page.getByTestId("db-monster-species-mind")).toHaveValue("23");
     await expect(page.getByTestId("db-monster-species-agi")).toHaveValue("24");
-    await expect(page.getByTestId("db-monster-species-skills")).toHaveValue("3:skill_attack\n7:skill_fire");
-    await expect(page.getByTestId("db-monster-species-evolutions")).toHaveValue("species_king_slime | level=7 | friendship=220");
+    await expect(page.getByTestId("db-monster-species-skill-level-0")).toHaveValue("3");
+    await expect(page.getByTestId("db-monster-species-skill-0")).toHaveValue("skill_attack");
+    await expect(page.getByTestId("db-monster-species-skill-level-1")).toHaveValue("7");
+    await expect(page.getByTestId("db-monster-species-skill-1")).toHaveValue("skill_fire");
+    await expect(page.getByTestId("db-monster-species-evo-target-0")).toHaveValue("species_king_slime");
+    await expect(page.getByTestId("db-monster-species-evo-level-0")).toHaveValue("7");
+    await expect(page.getByTestId("db-monster-species-evo-friendship-0")).toHaveValue("220");
 
     // export: real project state
     const project = await exportedProject(page) as unknown as { database: { monsterSpecies?: ExportedSpecies[] } };

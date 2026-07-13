@@ -21,44 +21,41 @@ type StampPattern = {
 
 export const INTERIOR_HOUSE_TILESET_ID = "easyrpg_chipset_interior";
 
+// 타일 ID는 src/project/defaults/tileSemanticsInterior.ts(정본) 라벨과 전수 대조했다.
+// 문 문법(서 플랭크 398 | 개구부 바닥 72 | 동 플랭크 396)은 interiorRoomPipeline의
+// 하우스 셸(HOUSE_WALL_FACE) 규약을 따른다.
 export const INTERIOR_HOUSE_TILE = {
-  BED_BOTTOM_LEFT: 354,
-  BED_BOTTOM_MID: 355,
-  BED_BOTTOM_RIGHT: 356,
-  BED_TOP_LEFT: 324,
-  BED_TOP_MID: 325,
-  BED_TOP_RIGHT: 326,
-  BOOKSHELF_LEFT: 48,
-  BOOKSHELF_MID: 49,
-  BOOKSHELF_RIGHT: 50,
-  CABINET: 265,
-  CHAIR_LEFT: 468,
-  CHAIR_RIGHT: 470,
-  DOOR_BOTTOM: 294,
-  DOOR_TOP: 264,
-  FLOOR: 138,
-  FLOWER_POT: 288,
-  KITCHEN_LEFT: 408,
-  KITCHEN_MID: 409,
-  KITCHEN_RIGHT: 410,
-  RUG_BOTTOM_LEFT: 465,
-  RUG_BOTTOM_MID: 466,
-  RUG_BOTTOM_RIGHT: 467,
-  RUG_TOP_LEFT: 375,
-  RUG_TOP_MID: 376,
-  RUG_TOP_RIGHT: 377,
-  TABLE_BOTTOM_LEFT: 438,
-  TABLE_BOTTOM_MID: 439,
-  TABLE_BOTTOM_RIGHT: 440,
-  TABLE_TOP_LEFT: 408,
-  TABLE_TOP_MID: 409,
-  TABLE_TOP_RIGHT: 410,
-  WALL_BODY_LEFT: 132,
-  WALL_BODY_MID: 133,
-  WALL_BODY_RIGHT: 134,
-  WALL_TOP_LEFT: 102,
-  WALL_TOP_MID: 103,
-  WALL_TOP_RIGHT: 104,
+  BED_LEFT: 355, // 가로 침대 좌(355|356 hard 좌우쌍)
+  BED_RIGHT: 356, // 가로 침대 우
+  BOOKSHELF_LEFT: 48, // 책장 중단(좌·책 2단)
+  BOOKSHELF_MID: 49, // 책장 중단(중·가로 반복)
+  BOOKSHELF_RIGHT: 50, // 책장 중단(우)
+  CABINET_BOTTOM: 178, // 선반장 하단
+  CABINET_TOP: 148, // 선반장 상단
+  CHAIR_EAST: 298, // 의자(좌향) — 탁자 동쪽 자리
+  CHAIR_WEST: 297, // 의자(우향) — 탁자 서쪽 자리
+  DOOR_EAST: 396, // 남벽 문 동쪽 플랭크(하우스 셸 트림)
+  DOOR_WEST: 398, // 남벽 문 서쪽 플랭크(하우스 셸 트림)
+  FLOOR: 72, // 나무 바닥(파이프라인 표준 바닥 VR.FLOOR)
+  FLOWER_POT: 288, // 화분
+  KITCHEN_LEFT: 408, // 카운터 경로 윗줄 좌 코너
+  KITCHEN_MID: 409, // 카운터 경로 윗줄 가로 직선(반복)
+  KITCHEN_RIGHT: 410, // 카운터 경로 윗줄 우 코너
+  RUG_BOTTOM_LEFT: 435, // 붉은 카펫(3×3 세트) 하단행 좌
+  RUG_BOTTOM_MID: 436, // 붉은 카펫 하단행 중
+  RUG_BOTTOM_RIGHT: 437, // 붉은 카펫 하단행 우
+  RUG_TOP_LEFT: 375, // 붉은 카펫 상단행 좌
+  RUG_TOP_MID: 376, // 붉은 카펫 상단행 중
+  RUG_TOP_RIGHT: 377, // 붉은 카펫 상단행 우
+  TABLE_LEFT: 325, // 긴 탁자 좌
+  TABLE_MID: 326, // 긴 탁자 몸통(가로 반복)
+  TABLE_RIGHT: 327, // 긴 탁자 우
+  WALL_BODY_LEFT: 104, // 크림 회벽 하단 좌
+  WALL_BODY_MID: 105, // 크림 회벽 하단 중
+  WALL_BODY_RIGHT: 106, // 크림 회벽 하단 우
+  WALL_TOP_LEFT: 74, // 크림 회벽 상단 좌
+  WALL_TOP_MID: 75, // 크림 회벽 상단 중
+  WALL_TOP_RIGHT: 76, // 크림 회벽 상단 우
 } as const;
 
 const INTERIOR_TILE = INTERIOR_HOUSE_TILE;
@@ -107,8 +104,11 @@ function frameInteriorRoom(map: GameMap, origin: TilePoint): void {
   for (let x = 1; x < 9; x += 1) {
     setTile(map, { layer: "lower", tile: INTERIOR_TILE.WALL_BODY_MID, x: origin.x + x, y: origin.y + 9 });
   }
-  setTile(map, { layer: "lower", tile: INTERIOR_TILE.DOOR_TOP, x: origin.x + 4, y: origin.y + 8 });
-  setTile(map, { layer: "lower", tile: INTERIOR_TILE.DOOR_BOTTOM, x: origin.x + 4, y: origin.y + 9 });
+  // 남벽 문 — 하우스 셸 문법: 서 플랭크 398 | 개구부 바닥 72 | 동 플랭크 396.
+  const doorX = origin.x + 4;
+  setTile(map, { layer: "lower", tile: INTERIOR_TILE.DOOR_WEST, x: doorX - 1, y: origin.y + 9 });
+  setTile(map, { layer: "lower", tile: INTERIOR_TILE.FLOOR, x: doorX, y: origin.y + 9 });
+  setTile(map, { layer: "lower", tile: INTERIOR_TILE.DOOR_EAST, x: doorX + 1, y: origin.y + 9 });
 }
 
 function placeInteriorFurniture(map: GameMap, origin: TilePoint): void {
@@ -120,10 +120,7 @@ function placeInteriorFurniture(map: GameMap, origin: TilePoint): void {
   stampPattern(map, {
     layer: "upper",
     origin: { x: origin.x + 6, y: origin.y + 2 },
-    rows: [
-      [INTERIOR_TILE.BED_TOP_LEFT, INTERIOR_TILE.BED_TOP_MID, INTERIOR_TILE.BED_TOP_RIGHT],
-      [INTERIOR_TILE.BED_BOTTOM_LEFT, INTERIOR_TILE.BED_BOTTOM_MID, INTERIOR_TILE.BED_BOTTOM_RIGHT],
-    ],
+    rows: [[INTERIOR_TILE.BED_LEFT, INTERIOR_TILE.BED_RIGHT]],
   });
   stampPattern(map, {
     layer: "lower",
@@ -136,18 +133,16 @@ function placeInteriorFurniture(map: GameMap, origin: TilePoint): void {
   stampPattern(map, {
     layer: "upper",
     origin: { x: origin.x + 3, y: origin.y + 5 },
-    rows: [
-      [INTERIOR_TILE.TABLE_TOP_LEFT, INTERIOR_TILE.TABLE_TOP_MID, INTERIOR_TILE.TABLE_TOP_RIGHT],
-      [INTERIOR_TILE.TABLE_BOTTOM_LEFT, INTERIOR_TILE.TABLE_BOTTOM_MID, INTERIOR_TILE.TABLE_BOTTOM_RIGHT],
-    ],
+    rows: [[INTERIOR_TILE.TABLE_LEFT, INTERIOR_TILE.TABLE_MID, INTERIOR_TILE.TABLE_RIGHT]],
   });
   placeTiles(map, [
     { layer: "upper", tile: INTERIOR_TILE.KITCHEN_LEFT, x: origin.x + 1, y: origin.y + 7 },
     { layer: "upper", tile: INTERIOR_TILE.KITCHEN_MID, x: origin.x + 2, y: origin.y + 7 },
     { layer: "upper", tile: INTERIOR_TILE.KITCHEN_RIGHT, x: origin.x + 3, y: origin.y + 7 },
-    { layer: "upper", tile: INTERIOR_TILE.CHAIR_LEFT, x: origin.x + 2, y: origin.y + 5 },
-    { layer: "upper", tile: INTERIOR_TILE.CHAIR_RIGHT, x: origin.x + 6, y: origin.y + 5 },
-    { layer: "upper", tile: INTERIOR_TILE.CABINET, x: origin.x + 8, y: origin.y + 6 },
+    { layer: "upper", tile: INTERIOR_TILE.CHAIR_WEST, x: origin.x + 2, y: origin.y + 5 },
+    { layer: "upper", tile: INTERIOR_TILE.CHAIR_EAST, x: origin.x + 6, y: origin.y + 5 },
+    { layer: "upper", tile: INTERIOR_TILE.CABINET_TOP, x: origin.x + 8, y: origin.y + 5 },
+    { layer: "upper", tile: INTERIOR_TILE.CABINET_BOTTOM, x: origin.x + 8, y: origin.y + 6 },
     { layer: "upper", tile: INTERIOR_TILE.FLOWER_POT, x: origin.x + 8, y: origin.y + 3 },
   ]);
 }

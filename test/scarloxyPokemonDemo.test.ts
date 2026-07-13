@@ -3,7 +3,8 @@ import { createBattleRuntime } from "@/battle/runtime";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createScarloxyPokemonDemoProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
-import { evolveMonster, giveMonster } from "@/project/monsterCollection";
+import { evolveMonster, giveMonster, monsterBattleStatsForSpecies } from "@/project/monsterCollection";
+import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { startSession } from "@/project/session";
 
@@ -79,5 +80,60 @@ describe("Scarloxy 포켓몬풍 데모 프로젝트", () => {
     const evolved = evolveMonster(project, session, { instanceId, allowItemEvolution: false });
     expect(evolved.ok).toBe(true);
     expect(session.monsterInstances[instanceId]?.speciesId).toBe(scarloxySpeciesId("cindrill"));
+  });
+
+  it("파티 몬스터가 트레이너 대신 전투 필드에 나선다", () => {
+    const project = createScarloxyPokemonDemoProject();
+    expect(project.system.battleParty).toBe("monsters");
+    const session = startSession(project, 7);
+    giveMonster(project, session, { speciesId: scarloxySpeciesId("sparchu"), level: 5, nickname: "스파르츄" });
+    const partyMonsters = session.monsterParty.map((id) => session.monsterInstances[id]!);
+
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: false,
+      partyMonsters,
+      sessionState: { switches: {}, variables: {}, inventory: {} },
+      rng: () => 0,
+    });
+    const snap = runtime.snapshot();
+    // 필드 아군 = 트레이너 액터가 아니라 파티 몬스터(스파르츄).
+    expect(snap.actors).toHaveLength(1);
+    const field = snap.actors[0]!;
+    expect(field.speciesId).toBe(scarloxySpeciesId("sparchu"));
+    expect(field.monsterInstanceId).toBe(partyMonsters[0]!.instanceId);
+    expect(field.name).toBe("스파르츄");
+    expect(String(field.recordId).startsWith("mon:")).toBe(true);
+    expect(field.maxHp).toBeGreaterThan(0);
+    // 상대는 야생 몬스터.
+    expect(snap.enemies).toHaveLength(1);
+  });
+
+  it("스탯 공식이 레벨/IV에 반응하고, 전투 HP가 인스턴스로 되돌려쓰인다", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const species = (project.database.monsterSpecies ?? []).find((s) => s.id === scarloxySpeciesId("larvea"))!;
+    const lo = monsterBattleStatsForSpecies(species, 3, { hp: 0, atk: 0, def: 0, spd: 0 });
+    const hi = monsterBattleStatsForSpecies(species, 30, { hp: 15, atk: 15, def: 15, spd: 15 });
+    expect(hi.maxHp).toBeGreaterThan(lo.maxHp);
+    expect(hi.attack).toBeGreaterThan(lo.attack);
+
+    // 전투 몬스터가 피해를 입으면 세션 인스턴스 currentHp에 반영된다.
+    const session = startSession(project, 3);
+    giveMonster(project, session, { speciesId: scarloxySpeciesId("larvea"), level: 5, nickname: "라르베아" });
+    const instanceId = session.monsterParty[0]!;
+    const maxHp = session.monsterInstances[instanceId]!.currentHp ?? 0;
+    applyBattleRewardsToSession(
+      session,
+      {
+        result: "victory",
+        rewards: { exp: 0, gold: 0, items: [], enemyLevel: 3 },
+        actors: [{ id: `mon:${instanceId}`, recordId: `mon:${instanceId}`, monsterInstanceId: instanceId, name: "라르베아", hp: 4, maxHp, mp: 0, maxMp: 0, gauge: 0, defeated: false, defending: false, pose: "idle", stateIds: [], skillIds: [] }],
+        participatingActorIds: [`mon:${instanceId}`],
+      },
+      project
+    );
+    expect(session.monsterInstances[instanceId]?.currentHp).toBe(4);
   });
 });

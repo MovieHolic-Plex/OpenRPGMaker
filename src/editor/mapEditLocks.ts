@@ -68,10 +68,16 @@ export function canEditMap(mapId: MapId): boolean {
   return true;
 }
 
+/** 내부 세션 라벨("브라우저 481e")을 초보가 읽을 수 있는 문구로 바꾼다. */
+export function lockOwnerPhrase(ownerLabel: string): string {
+  const browserSession = ownerLabel.trim().match(/^브라우저\s+(.+)$/u)?.[1];
+  return browserSession ? `다른 브라우저 탭(${browserSession})에서 편집 중` : `${ownerLabel.trim()} 세션이 편집 중`;
+}
+
 export function mapEditLockNotice(mapId: MapId): string {
   if (status.kind === "checking" && status.mapId === mapId) return "맵 편집 권한 확인 중입니다.";
   if (status.kind === "locked" && status.mapId === mapId) {
-    return `${status.mapName} 맵은 ${status.ownerLabel} 세션이 편집 중입니다.`;
+    return `${status.mapName} 맵은 지금 ${lockOwnerPhrase(status.ownerLabel)}입니다.`;
   }
   return "이 맵은 지금 읽기 전용입니다.";
 }

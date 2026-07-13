@@ -60,10 +60,10 @@ describe("패널 접기", () => {
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
   });
 
-  it("부팅 시 저장값이 펼침이어도 기본은 접힘이다", () => {
+  it("부팅 시 저장된 펼침 선택('0')을 복원한다", () => {
     storage.set("rpg-zzu:ai-panel-collapsed", "0");
     const panel = renderPanel();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 });
 

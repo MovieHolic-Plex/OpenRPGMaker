@@ -186,8 +186,10 @@ function frameInterior(map: GameMap): void {
     setTile(map, { layer: "lower", x: 0, y, tile: INTERIOR_HOUSE_TILE.WALL_BODY_LEFT });
     setTile(map, { layer: "lower", x: right, y, tile: INTERIOR_HOUSE_TILE.WALL_BODY_RIGHT });
   }
-  setTile(map, { layer: "lower", x: HOUSE_INTERIOR_ENTRY.x, y: bottom - 1, tile: INTERIOR_HOUSE_TILE.DOOR_TOP });
-  setTile(map, { layer: "lower", x: HOUSE_INTERIOR_ENTRY.x, y: bottom, tile: INTERIOR_HOUSE_TILE.DOOR_BOTTOM });
+  // 남벽 문 — interiorRoomPipeline 하우스 셸 문법: 서 플랭크 398 | 개구부 바닥 72 | 동 플랭크 396.
+  setTile(map, { layer: "lower", x: HOUSE_INTERIOR_ENTRY.x - 1, y: bottom, tile: INTERIOR_HOUSE_TILE.DOOR_WEST });
+  setTile(map, { layer: "lower", x: HOUSE_INTERIOR_ENTRY.x, y: bottom, tile: INTERIOR_HOUSE_TILE.FLOOR });
+  setTile(map, { layer: "lower", x: HOUSE_INTERIOR_ENTRY.x + 1, y: bottom, tile: INTERIOR_HOUSE_TILE.DOOR_EAST });
 }
 
 function placeSeededFurniture(map: GameMap, seed: number): void {
@@ -210,16 +212,16 @@ function bookshelf(map: GameMap): void {
 }
 
 function bed(map: GameMap): void {
+  // 가로 침대는 355|356 hard 좌우쌍(1×2) — 북벽에 붙여 배치.
   placePattern(map, "upper", { x: 9, y: 2 }, [
-    [INTERIOR_HOUSE_TILE.BED_TOP_LEFT, INTERIOR_HOUSE_TILE.BED_TOP_MID, INTERIOR_HOUSE_TILE.BED_TOP_RIGHT],
-    [INTERIOR_HOUSE_TILE.BED_BOTTOM_LEFT, INTERIOR_HOUSE_TILE.BED_BOTTOM_MID, INTERIOR_HOUSE_TILE.BED_BOTTOM_RIGHT],
+    [INTERIOR_HOUSE_TILE.BED_LEFT, INTERIOR_HOUSE_TILE.BED_RIGHT],
   ]);
 }
 
 function table(map: GameMap): void {
+  // 긴 탁자는 좌 325 · 몸통 326(가로 반복) · 우 327의 1×3 세트.
   placePattern(map, "upper", { x: 4, y: 4 }, [
-    [INTERIOR_HOUSE_TILE.TABLE_TOP_LEFT, INTERIOR_HOUSE_TILE.TABLE_TOP_MID, INTERIOR_HOUSE_TILE.TABLE_TOP_RIGHT],
-    [INTERIOR_HOUSE_TILE.TABLE_BOTTOM_LEFT, INTERIOR_HOUSE_TILE.TABLE_BOTTOM_MID, INTERIOR_HOUSE_TILE.TABLE_BOTTOM_RIGHT],
+    [INTERIOR_HOUSE_TILE.TABLE_LEFT, INTERIOR_HOUSE_TILE.TABLE_MID, INTERIOR_HOUSE_TILE.TABLE_RIGHT],
   ]);
 }
 

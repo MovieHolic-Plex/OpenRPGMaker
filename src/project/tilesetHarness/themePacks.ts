@@ -4,6 +4,7 @@ import {
   DARK_WALL_AUTOTILE_GROUP_ID,
 } from "@/project/defaults/darkWallAutotile";
 import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interiorTerrainAutotiles";
+import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
@@ -78,7 +79,8 @@ export function createInteriorWallFrameAutotileGroup(): AutotileGroup {
 
 
 // 분홍 투명 배경 소품 전수 목록 — 2026-07-12 vision 업스케일 감사로 재검증.
-// 완전 빈 타일(357/447/477)은 제외, 누락돼 있던 358(피아노 좌)/474·475(잔해 계단 하단)/478(왕좌 좌하)을 추가.
+// 357(피아노 좌)·447/477(왕좌 좌열)은 RTP 결손을 미러 보완 작화(2026-07-12)로 채워 포함.
+// 피아노 = 357|358|359 가로 3칸, 왕좌 = 447~449/477~479 3×2.
 const INTERIOR_TRANSPARENT_PROP_TILES = [
   24, 25, 26, 27, 28, 29,
   54, 55, 56, 57, 58, 59,
@@ -91,11 +93,11 @@ const INTERIOR_TRANSPARENT_PROP_TILES = [
   259, 260, 261, 262, 263, 265, 266, 267, 268, 269,
   288, 289, 290, 291, 292, 293, 294, 296, 297, 298, 299,
   318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
-  348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359,
+  348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359,
   378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389,
   408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419,
-  438, 439, 440, 441, 442, 443, 444, 445, 446, 448, 449,
-  468, 469, 470, 471, 472, 473, 474, 475, 476, 478, 479,
+  438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449,
+  468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479,
 ] as const;
 
 type PackHarnessGroup = Omit<TileGroupMetadata, "tileIds"> & {
@@ -147,7 +149,7 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "counter", "카운터/천 테이블", "building", "lower", [198, 199, 200, 201, 228, 229, 230, 231], "solid", "fixed", "점토·나무 카운터와 흰 천 테이블(전면 뷰)입니다. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "curtain", "붉은 대형 커튼", "building", "lower", [142, 143, 172, 173, 202, 203], "solid", "fixed", "무대용 대형 붉은 커튼(2×3)입니다. 벽면에 배치합니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "pillar", "기둥/제단", "building", "lower", [312, 313, 342, 343, 372, 374], "solid", "fixed", "석재 기둥 상·하단과 석판 제단입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "hedge", "산울타리/흙무더기", "building", "lower", [360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452, 363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "solid", "repeat", "야외 산울타리 수풀 블롭과 흙무더기 군집입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "hedge", "숲/산(월드맵 겸용)", "building", "lower", [360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452, 363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "solid", "repeat", "숲 수풀 블롭과 산 둔덕 군집입니다 — 월드맵과 공용 표현. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "fire-magic", "모닥불/마법 블록/용암", "building", "lower", [124, 154, 184, 214, 125, 155, 185, 215, 232], "solid", "fixed", "모닥불·푸른 마법 블록 애니메이션과 용암 바닥입니다. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "transparent-props", "실내 투명 배경 소품", "prop", "upper", INTERIOR_TRANSPARENT_PROP_TILES, "passable", "fixed", "분홍 투명 배경을 가진 실내 가구와 장식입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
@@ -176,11 +178,21 @@ const THEME_PACKS: readonly ThemeMetadataPack[] = [
   ...createScarloxyThemePacks(),
 ];
 
+// 큐레이션 시맨틱(타일별 정밀 라벨·태그) — 실내 팩 tileMeta 시드의 라벨 정본.
+// 2026-07-12 라벨 이중 소스 통일: 검색 전용이던 테이블을 시드 원천으로 승격(combined_town의 labelForTile 대응물).
+const INTERIOR_SEMANTIC_BY_INDEX = new Map(INTERIOR_TILE_SEMANTICS.map((entry) => [entry.index, entry]));
+
+function isInteriorPackTileset(tileset: Pick<TilesetDef, "image">): boolean {
+  return tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY;
+}
+
 export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
   const pack = themePackForTileset(tileset);
   if (!pack) return false;
   let changed = applyThemeMetadataPack(tileset, pack);
   if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
+    // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
+    changed = seedInteriorUngroupedTileMeta(tileset) || changed;
     // Cream wall-frame (105 brush) + dark wall terrain (366 brush).
     // Painting 366 with auto-connect must reshape edges/corners without hand-picking variants.
     changed = seedInteriorWallFrameAutotileGroup(tileset) || changed;
@@ -273,14 +285,19 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
+  // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 나머지 계약(레이어/설명)은 그룹에서.
+  // 통행성 per-타일 오버라이드(2026-07-13): 가구는 solid, 바닥 장식은 passable — 그룹 일괄값의 한계 해소.
+  const semantic = isInteriorPackTileset(tileset) ? INTERIOR_SEMANTIC_BY_INDEX.get(tile) : undefined;
+  const passage = semantic?.passage ?? group.passage;
   const nextMeta: TileAiMetadata = {
-    label: `${group.name} ${tile}`,
+    label: semantic ? semantic.label : `${group.name} ${tile}`,
     description: group.description,
+    tags: semantic ? [...semantic.tags] : undefined,
     role: group.role,
     repeatability: group.repeatability,
     defaultLayer: group.defaultLayer,
     terrainTag: group.role === "terrain" ? 0 : undefined,
-    passage: group.passage,
+    passage,
     confidence: "high",
     source: "bundled-default",
   };
@@ -289,7 +306,49 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
     tileset.tileMeta![tile] = nextMeta;
     changed = true;
   }
-  return setTileRuntimeContract(tileset, tile, group, tileset.tileMeta?.[tile]) || changed;
+  const effectiveGroup = passage === group.passage ? group : { ...group, passage };
+  return setTileRuntimeContract(tileset, tile, effectiveGroup, tileset.tileMeta?.[tile]) || changed;
+}
+
+// 하네스 그룹에 속하지 않은 실내 타일도 큐레이션 라벨로 시드한다. 큐레이션에도 없는 타일은
+// 빈 메타로 리셋해 옛 팩 버전의 잔존 라벨을 청소한다. 사용자 수기(source="user"/userLocked)는 불변.
+function seedInteriorUngroupedTileMeta(tileset: TilesetDef): boolean {
+  ensureTileMetaLength(tileset);
+  const covered = new Set<number>();
+  for (const group of INTERIOR_HARNESS_GROUPS) {
+    for (const tile of group.tileIds) covered.add(tile);
+  }
+  let changed = false;
+  for (let tile = 0; tile < tileset.count; tile += 1) {
+    if (covered.has(tile)) continue;
+    const meta = tileset.tileMeta?.[tile];
+    if (meta?.userLocked === true || meta?.source === "user") continue;
+    const semantic = INTERIOR_SEMANTIC_BY_INDEX.get(tile);
+    const nextMeta: TileAiMetadata = semantic
+      ? {
+          label: semantic.label,
+          description: "",
+          tags: [...semantic.tags],
+          role: semantic.role,
+          passage: semantic.passage,
+          confidence: "high",
+          source: "bundled-default",
+        }
+      : { label: "", description: "", source: "unknown" };
+    if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
+      tileset.tileMeta![tile] = nextMeta;
+      changed = true;
+    }
+    // 런타임 통행성도 기록 — 그룹 밖 타일(책장 3×3 등)이 충돌 배열에서 빠지지 않게 한다.
+    if (semantic) {
+      const passability = semantic.passage === "solid" ? solid : passable;
+      if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
+        tileset.passability[tile] = { ...passability };
+        changed = true;
+      }
+    }
+  }
+  return changed;
 }
 
 function setTileRuntimeContract(

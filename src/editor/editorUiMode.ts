@@ -24,7 +24,8 @@ const BASIC_CHROME: EditorChromeVisibility = {
   mapTree: false,
   classicToolbar: false,
   canvasChromeDense: false,
-  helpMenu: false,
+  // 도움말(단축키 표)은 초보용 모드에서 더 필요하다 — 기본 모드에서도 노출.
+  helpMenu: true,
   gameMenuLabel: "실행",
 };
 

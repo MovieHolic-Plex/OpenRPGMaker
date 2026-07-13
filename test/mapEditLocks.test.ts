@@ -66,6 +66,14 @@ afterEach(() => {
   vi.resetModules();
 });
 
+describe("잠금 소유자 라벨", () => {
+  it("내부 '브라우저 xxxx' 라벨을 사람이 읽을 문구로 바꾼다", async () => {
+    const { lockOwnerPhrase } = await import("@/editor/mapEditLocks");
+    expect(lockOwnerPhrase("브라우저 481e")).toBe("다른 브라우저 탭(481e)에서 편집 중");
+    expect(lockOwnerPhrase("동료 A")).toBe("동료 A 세션이 편집 중");
+  });
+});
+
 describe("맵 편집 잠금 가져오기", () => {
   it("기존 소유자 조회 없이 현재 세션으로 upsert하고 held 상태로 바꾼다", async () => {
     const fetchMock = vi.fn<typeof fetch>(async () => new Response("", { status: 201 }));
