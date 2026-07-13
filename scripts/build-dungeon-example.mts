@@ -92,6 +92,10 @@ paintRect(lower, 0, 0, W - 1, H - 1, ABYSS, (x, y) => x >= 3 && x <= 32 && y >= 
 const abyssPoints: { x: number; y: number }[] = [];
 for (let y = 2; y <= 21; y += 1) {
   for (let x = 2; x <= 33; x += 1) {
+    // 북쪽 링(y2) 중 벽면 밴드가 바로 아래 깔리는 구간(x3~23, 26~32)은 성형하지 않는다 —
+    // 칠흑 몸통이 암벽 상단과 바로 맞닿아야 발광 테두리가 이중으로 생기지 않는다.
+    if (y === 2 && x >= 3 && x <= 23) continue;
+    if (y === 2 && x >= 26 && x <= 32) continue;
     if (x === 2 || x === 33 || y === 2 || y === 21) abyssPoints.push({ x, y });
   }
 }
@@ -100,9 +104,29 @@ abyssPoints.push(...paintRect(lower, 24, 3, 25, 11, ABYSS, (_x, y) => y === 6 ||
 abyssPoints.push(...paintRect(lower, 26, 10, 32, 11, ABYSS, (x) => x === 28 || x === 29));
 shape("abyss-blue", abyssPoints);
 
+// ── 1.5 벽면 밴드(상단 2줄) — 심연이 아닌 실제 암벽 타일 사용 ───────────
+// 잔해 벽(225~227 상 + 255~257 하)을 홀 북쪽에, 청록 석벽(18~20 상 + 48~50 하)을
+// 왕좌의 방 북쪽에 깐다. 가로 반복은 3타일 주기, 얼굴 부조(20)는 포인트로 섞는다.
+// 각 벽 계열은 [좌측 캡, 반복 몸통, 우측 캡] 3타일 구성 — 몸통만 반복해야 이음매가 없다.
+const wallBand = (x0: number, x1: number, y0: number, top: readonly [number, number, number], bottom: readonly [number, number, number]) => {
+  for (let x = x0; x <= x1; x += 1) {
+    const pos = x === x0 ? 0 : x === x1 ? 2 : 1;
+    lower[at(x, y0)] = top[pos];
+    lower[at(x, y0 + 1)] = bottom[pos];
+  }
+};
+wallBand(3, 23, 3, [225, 226, 227], [255, 256, 257]); // 홀 북벽 — 금갈색 잔해 암벽
+wallBand(26, 32, 3, [18, 19, 18], [48, 49, 50]);      // 왕좌의 방 북벽 — 청록 석벽
+lower[at(29, 3)] = 20;                                 // 북벽 중앙 얼굴 부조
+// 남쪽 폐허 — 적갈 신전 벽 4단(15~17/45~47/75~77/105~107) 조각
+const RED_WALL_ROWS = [[15, 16, 17], [45, 46, 47], [75, 76, 77], [105, 106, 107]] as const;
+for (let dy = 0; dy < 4; dy += 1) {
+  for (let dx = 0; dx < 3; dx += 1) lower[at(21 + dx, 13 + dy)] = RED_WALL_ROWS[dy]![dx]!;
+}
+
 // ── 2. 이끼 정원(북서): 흙 패치 성형 후 이끼 blob 성형 ─────────────────
-shape("dirt", paintRect(lower, 4, 4, 11, 9, DIRT));
-shape("moss", paintRect(lower, 5, 5, 8, 8, MOSS));
+shape("dirt", paintRect(lower, 4, 6, 11, 10, DIRT));
+shape("moss", paintRect(lower, 5, 7, 8, 9, MOSS));
 
 // ── 3. 용암 동굴(남서): 적암 패치 성형 후 용암 blob 성형 ───────────────
 shape("redrock", paintRect(lower, 4, 13, 12, 19, REDROCK));
@@ -119,27 +143,28 @@ shape("chasm", chasmPoints);
 shape("pit-gold", paintRect(lower, 27, 14, 30, 17, PIT_GOLD));
 
 // ── 6. 왕좌의 방(북동): 붉은 카펫 9-슬라이스 + 왕좌/석주/횃불 ──────────
-shape("red-carpet", paintRect(lower, 27, 4, 31, 8, CARPET));
-upper[at(28, 4)] = 448; upper[at(29, 4)] = 449; // 왕좌 상단
-upper[at(28, 5)] = 478; upper[at(29, 5)] = 479; // 왕좌 하단
-upper[at(26, 4)] = 446; upper[at(26, 5)] = 476; // 석주(서)
-upper[at(32, 4)] = 446; upper[at(32, 5)] = 476; // 석주(동)
-upper[at(27, 3)] = 263; upper[at(31, 3)] = 263; // 횃불
+shape("red-carpet", paintRect(lower, 27, 5, 31, 8, CARPET));
+upper[at(28, 5)] = 448; upper[at(29, 5)] = 449; // 왕좌 상단
+upper[at(28, 6)] = 478; upper[at(29, 6)] = 479; // 왕좌 하단
+upper[at(26, 5)] = 446; upper[at(26, 6)] = 476; // 석주(서)
+upper[at(32, 5)] = 446; upper[at(32, 6)] = 476; // 석주(동)
+upper[at(27, 4)] = 263; upper[at(31, 4)] = 263; // 벽면 횃불 걸이
 
-// ── 7. 홀 중앙 마법진(3×2, 441~443/471~473) + 소품 ─────────────────────
-// 촛대 아치(27~29)는 별개 장식 — 마법진과 픽셀이 이어지지 않으므로 겹치지 않는다.
+// ── 7. 홀 중앙 마법진(3×3) + 소품 ──────────────────────────────────────
+// 팔레트 세로 순서가 파일 행과 다르다(상위레이어 6×8 블록 경계): 441~443 → 471~473 → 27~29.
 const CIRCLE = [
   [441, 442, 443],
   [471, 472, 473],
+  [27, 28, 29],
 ] as const;
-for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 3; dx += 1) upper[at(13 + dx, 8 + dy)] = CIRCLE[dy]![dx]!;
-upper[at(5, 11)] = 261; //  종유석
-upper[at(21, 5)] = 262; //  푸른 수정
+for (let dy = 0; dy < 3; dy += 1) for (let dx = 0; dx < 3; dx += 1) upper[at(13 + dx, 8 + dy)] = CIRCLE[dy]![dx]!;
+upper[at(5, 12)] = 261; //  종유석
+upper[at(21, 6)] = 262; //  푸른 수정
 upper[at(20, 12)] = 299; // 해골
 upper[at(30, 12)] = 417; // 나무통
 upper[at(31, 12)] = 418; // 항아리
 upper[at(18, 16)] = 267; // 구덩이 위 박쥐
-upper[at(4, 3)] = 263; upper[at(11, 3)] = 263; // 홀 횃불
+upper[at(5, 4)] = 263; upper[at(11, 4)] = 263; upper[at(17, 4)] = 263; upper[at(22, 4)] = 263; // 홀 북벽 횃불 걸이
 
 const map: GameMap = {
   id: MAP_ID,

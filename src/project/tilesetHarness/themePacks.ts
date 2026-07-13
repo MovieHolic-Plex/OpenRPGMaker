@@ -167,7 +167,7 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-fire", "횃불/모닥불", "prop", "upper", [207, 208, 209, 263, 264, 293], "passable", "fixed", "불꽃 애니메이션(207~209)과 횃불·모닥불 받침입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-furniture", "가구/집기", "prop", "upper", [265, 266, 296, 297, 298, 299, 326, 327, 328, 329, 354, 355, 356, 357, 358, 359, 384, 385, 386, 387, 388, 389, 414, 415, 416, 417, 418, 419], "passable", "fixed", "표지판·선반·해골·탁자·의자·책장·침대·항아리 등 투명 배경 집기입니다. 바닥 위 레이어에 배치합니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-swarm", "박쥐/그림자 떼", "prop", "upper", [267, 268, 269], "passable", "fixed", "박쥐 떼와 그림자 파편 오버레이입니다."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "prop-magic-circle", "마법진/촛대 아치", "prop", "upper", [27, 28, 29, 441, 442, 443, 471, 472, 473], "passable", "fixed", "촛불 마법진은 3×2 — 윗줄 441~443 · 아랫줄 471~473. 촛대 아치(27~29)는 별개의 걸이 장식이니 마법진 위에 겹쳐 붙이지 마세요."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "prop-magic-circle", "마법진", "prop", "upper", [27, 28, 29, 441, 442, 443, 471, 472, 473], "passable", "fixed", "촛불 4개가 둘린 3×3 대형 마법진입니다. 팔레트 세로 순서가 파일 행과 다르니 주의 — 윗줄 441~443 · 중간 471~473 · 아랫줄 27~29 순으로 붙여야 원이 이어집니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-overlay", "안개/반짝임 오버레이", "prop", "upper", [232, 237, 238, 239], "passable", "fixed", "반투명 안개(237~239)와 얼음 반짝임(232) 오버레이입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-peak", "봉우리/천막 지붕", "prop", "upper", [378, 379, 380, 381, 408, 409, 410, 411], "passable", "fixed", "설산 봉우리와 천막 지붕 꼭대기 조각입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-crystal-vine", "수정/덩굴 소품", "prop", "upper", [118, 119, 149, 177, 178, 179], "passable", "fixed", "푸른 수정 조각과 잎 돋은 덩굴 가지입니다."),

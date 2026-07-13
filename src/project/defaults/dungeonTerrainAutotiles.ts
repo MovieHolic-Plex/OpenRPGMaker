@@ -97,6 +97,48 @@ function createGroup(spec: DungeonTerrainBlockSpec, connectAlso: readonly number
   };
 }
 
+/** 쿼터(8×8 미니타일) 합성 렌더용 블록 역할표 — 표준 3×4 블록 12종(카펫 nineSlice 제외). */
+export type DungeonTerrainBlockRoles = {
+  readonly key: string;
+  readonly body: number;
+  readonly edgeNorth: number;
+  readonly edgeSouth: number;
+  readonly edgeWest: number;
+  readonly edgeEast: number;
+  readonly cornerNorthWest: number;
+  readonly cornerNorthEast: number;
+  readonly cornerSouthWest: number;
+  readonly cornerSouthEast: number;
+  readonly inner: number;
+  readonly isolated: number;
+  readonly memberTileIds: readonly number[];
+  readonly connectTileIds: readonly number[];
+};
+
+export function dungeonTerrainBlockRoles(): DungeonTerrainBlockRoles[] {
+  const membersByKey = new Map(DUNGEON_TERRAIN_BLOCKS.map((spec) => [spec.key, memberTileIdsFor(spec)]));
+  return DUNGEON_TERRAIN_BLOCKS.filter((spec) => spec.layout !== "nineSlice").map((spec) => {
+    const memberTileIds = membersByKey.get(spec.key)!;
+    const connectAlso = (spec.connectsTo ?? []).flatMap((key) => membersByKey.get(key) ?? []);
+    return {
+      key: spec.key,
+      body: tileAt(spec, 1, 2),
+      edgeNorth: tileAt(spec, 1, 1),
+      edgeSouth: tileAt(spec, 1, 3),
+      edgeWest: tileAt(spec, 0, 2),
+      edgeEast: tileAt(spec, 2, 2),
+      cornerNorthWest: tileAt(spec, 0, 1),
+      cornerNorthEast: tileAt(spec, 2, 1),
+      cornerSouthWest: tileAt(spec, 0, 3),
+      cornerSouthEast: tileAt(spec, 2, 3),
+      inner: tileAt(spec, 2, 0),
+      isolated: tileAt(spec, 0, 0),
+      memberTileIds,
+      connectTileIds: [...new Set([...memberTileIds, ...connectAlso])],
+    };
+  });
+}
+
 /** 던전 지형 오토타일 그룹 13종 — 브러시는 각 블록의 중앙(몸통) 타일. */
 export function createDungeonTerrainAutotileGroups(): AutotileGroup[] {
   const membersByKey = new Map(DUNGEON_TERRAIN_BLOCKS.map((spec) => [spec.key, memberTileIdsFor(spec)]));
