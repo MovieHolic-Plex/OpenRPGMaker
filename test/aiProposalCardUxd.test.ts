@@ -308,6 +308,47 @@ describe("UXD proposal panel integration", () => {
     expect(pill.hidden).toBe(true);
   });
 
+  it("후속 채팅 턴(제안 0건)이 와도 대기 중인 변경 제안 카드 본문을 지우지 않는다", async () => {
+    const mapId = store.getCurrent().startMapId;
+    const calls = [
+      proposed("paint_tiles", { mapId }, { tilesChanged: 2 }, "타일 2칸"),
+      proposed("place_npc", { mapId, x: 1, y: 1 }, { eventsAdded: 1 }, "NPC 1명"),
+    ];
+    const sendSpy = vi.spyOn(AssistantSession.prototype, "sendUserMessage");
+    sendSpy
+      .mockResolvedValueOnce(turn({ assistantText: "초안입니다.", proposedCalls: calls }))
+      .mockResolvedValueOnce(turn({ assistantText: "추가로 설명만 할게요.", proposedCalls: [] }));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+
+    input.value = "맵 고쳐줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    const modal = findByTestId(panel, "ai-proposal-modal") as FakeElement;
+    expect(modal.hidden).toBe(false);
+    expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("2건");
+    expect(findByTestId(modal, "ai-proposal-accept")).toBeTruthy();
+    expect(findByTestId(modal, "ai-proposal-item-1")).toBeTruthy();
+    expect(findByTestId(modal, "ai-proposal-item-2")).toBeTruthy();
+
+    // 제안 대기 중 후속 질문(쓰기 툴 없음) — 예전 버그는 host를 비우고 헤더(2건)만 남김.
+    input.value = "왜 이렇게 했어?";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(modal.hidden).toBe(false);
+    expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("2건");
+    expect(findByTestId(modal, "ai-proposal-accept")).toBeTruthy();
+    // testid는 체크박스에 붙으므로 본문 문구는 host 텍스트로 확인한다.
+    const hostText = findByTestId(panel, "ai-proposal-host")?.textContent ?? "";
+    expect(hostText).toContain("타일 2칸");
+    expect(hostText).toContain("NPC 1명");
+    expect(findByTestId(modal, "ai-proposal-item-1")).toBeTruthy();
+    expect(findByTestId(modal, "ai-proposal-item-2")).toBeTruthy();
+  });
+
   it("미니 스트림: 새 턴이 시작되면 이전 턴을 접이식 그룹으로 묶는다", async () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "첫 응답." }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
