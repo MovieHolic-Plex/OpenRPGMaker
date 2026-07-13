@@ -15,6 +15,7 @@ import {
 } from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import type { Project } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -100,6 +101,10 @@ export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void 
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     scene.load.image(rawCharsetTextureKey(asset.textureKey), asset.path);
   }
+  for (const asset of FARMING_CROP_SPRITE_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.id)) continue;
+    scene.load.image(asset.id, asset.path);
+  }
   scene.load.image(TEX_DIALOGUE_FRAME, ASSET_DIALOGUE_FRAME);
 
   scene.load.on("loaderror", (file: Phaser.Loader.File) => {
@@ -142,6 +147,24 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       .map((asset) => asset.textureKey),
   ]);
   registerEasyRpgCharsetTextures(scene, usedTextures);
+  registerFarmingCropFrames(scene, usedTextures);
+}
+
+// 작물 성장 시트(16x16 프레임 가로 나열)를 성장 단계 인덱스로 접근할 수 있게 숫자 프레임을 등록한다.
+function registerFarmingCropFrames(scene: Phaser.Scene, usedTextures: ReadonlySet<string> | null = null): void {
+  for (const asset of FARMING_CROP_SPRITE_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.id)) continue;
+    if (!scene.textures.exists(asset.id)) {
+      console.error(`[assets] ${asset.id} 가 로드되지 않았습니다. 농사 작물 스프라이트 파일을 확인하세요.`);
+      continue;
+    }
+    const texture = scene.textures.get(asset.id);
+    const existing = texture.getFrameNames();
+    for (let frameIndex = 0; frameIndex < asset.frameCount; frameIndex += 1) {
+      if (existing.includes(String(frameIndex))) continue;
+      texture.add(frameIndex, 0, frameIndex * asset.frameWidth, 0, asset.frameWidth, asset.frameHeight);
+    }
+  }
 }
 
 export function registerTilesetTextureFrames(scene: Phaser.Scene, textureKey: string): void {
@@ -210,6 +233,9 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
+  for (const asset of FARMING_CROP_SPRITE_ASSETS) {
+    if (strings.has(asset.id)) keys.add(asset.id);
+  }
   return keys;
 }
 
@@ -249,11 +275,13 @@ function rawCharsetTextureKey(textureKey: string): string {
 }
 
 function isExtraBundledLoadKey(fileKey: string): boolean {
-  return EXTRA_BUNDLED_IMAGE_ASSETS.some(
-    (asset) =>
-      asset.textureKey === fileKey ||
-      rawCharsetTextureKey(asset.textureKey) === fileKey ||
-      rawChipsetTextureKey(asset.textureKey) === fileKey
+  return (
+    EXTRA_BUNDLED_IMAGE_ASSETS.some(
+      (asset) =>
+        asset.textureKey === fileKey ||
+        rawCharsetTextureKey(asset.textureKey) === fileKey ||
+        rawChipsetTextureKey(asset.textureKey) === fileKey
+    ) || FARMING_CROP_SPRITE_ASSETS.some((asset) => asset.id === fileKey)
   );
 }
 

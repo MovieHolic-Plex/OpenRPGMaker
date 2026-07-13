@@ -11,6 +11,7 @@ import type {
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
 import { assert } from "./guards";
@@ -31,6 +32,7 @@ export function collectResourceIds(project: Project): Set<string> {
   }
   for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
+  for (const id of FARMING_RESOURCE_IDS) ids.add(id);
   return ids;
 }
 
