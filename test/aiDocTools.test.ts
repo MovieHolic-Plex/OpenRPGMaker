@@ -61,6 +61,22 @@ describe("present_doc — AI 리치 문서 툴", () => {
     expect(data.documents.map((doc) => doc.title)).toEqual(["문서 1", "문서 2"]);
   });
 
+  it("list_ai_docs가 query로 제목·마크다운 본문을 부분일치 검색한다(대소문자 무시)", () => {
+    const ctx = ctxOf();
+    runTool(ctx, "present_doc", { title: "오토타일 안내", blocks: [{ kind: "markdown", text: "다크월 블록 구조" }] });
+    runTool(ctx, "present_doc", { title: "NPC Guide", blocks: [{ kind: "markdown", text: "주민 배치 요령" }] });
+
+    const byTitle = runTool(ctx, "list_ai_docs", { query: "npc" });
+    expect(byTitle.ok).toBe(true);
+    expect((byTitle.data as { documents: { title: string }[] }).documents.map((doc) => doc.title)).toEqual(["NPC Guide"]);
+
+    const byBody = runTool(ctx, "list_ai_docs", { query: "다크월" });
+    expect((byBody.data as { documents: { title: string }[] }).documents.map((doc) => doc.title)).toEqual(["오토타일 안내"]);
+
+    const miss = runTool(ctx, "list_ai_docs", { query: "존재하지않음" });
+    expect((miss.data as { documents: unknown[] }).documents).toHaveLength(0);
+  });
+
   it("aiDocuments가 직렬화 왕복에서 보존된다", () => {
     const ctx = ctxOf();
     runTool(ctx, "present_doc", {

@@ -14,7 +14,7 @@ import {
   type SkillRunContext,
 } from "@/ai/skills";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { openSkillPalette, renderSkillParamForm, renderSlashList } from "@/editor/panels/aiSkillDrawer";
+import { openSkillPalette, renderSkillDrawer, renderSkillParamForm, renderSlashList } from "@/editor/panels/aiSkillDrawer";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -51,10 +51,10 @@ afterEach(() => {
 });
 
 describe("스킬 레지스트리", () => {
-  it("시스템 스킬 14종이 등록되어 있다", () => {
-    expect(SYSTEM_SKILLS.length).toBe(14);
+  it("시스템 스킬 16종이 등록되어 있다", () => {
+    expect(SYSTEM_SKILLS.length).toBe(16);
     const ids = SYSTEM_SKILLS.map((skill) => skill.id);
-    for (const id of ["interview", "learn-structure", "cluster-edit", "range-classify", "unclassified-analysis", "demo-teach", "build-house", "map-audit", "build-village", "quest-builder", "build-road", "place-npcs", "npc-motion", "make-items"]) {
+    for (const id of ["interview", "learn-structure", "cluster-edit", "range-classify", "unclassified-analysis", "demo-teach", "build-house", "map-audit", "build-village", "build-interior", "quest-builder", "build-road", "place-npcs", "npc-motion", "make-items", "battle-balance"]) {
       expect(ids, id).toContain(id);
     }
   });
@@ -63,7 +63,7 @@ describe("스킬 레지스트리", () => {
     const house = SYSTEM_SKILLS.find((skill) => skill.id === "build-house")!;
     const rect = house.buildPrompt!({ width: 12, height: 8, material: "wood", shape: "rect", where: "" }, CTX);
     expect(rect).toContain("12×8");
-    expect(rect).toContain("build_wall(mapId, rect{x,y,w,h}, wallVocabId)");
+    expect(rect).toContain("build_wall(mapId, rect{x,y,w,h}, material)");
     expect(rect).toContain("벽 타일을 직접 칠해");
     expect(rect).toContain("place_door");
     expect(rect).toContain("build_roof");
@@ -79,14 +79,58 @@ describe("스킬 레지스트리", () => {
     expect(audit).toContain("얼버무림 없이");
     const village = SYSTEM_SKILLS.find((skill) => skill.id === "build-village")!.buildPrompt!({ theme: "어촌", houses: 3, npcs: 2 }, CTX);
     expect(village).toContain("단계");
-    expect(village).toContain("build_wall");
-    expect(village).toContain("lay_path");
+    expect(village).toContain("run_village_session");
+    expect(village).toContain("build_house_lots");
     expect(village).toContain("place_props");
-    expect(village).toContain("propose_tile_vocabulary");
+    expect(village).toContain("check_reachability");
     expect(village).toContain("자연스러움: 보통");
     const motion = SYSTEM_SKILLS.find((skill) => skill.id === "npc-motion")!.buildPrompt!({ brief: "주민 랜덤" }, CTX);
     expect(motion).toContain("get_event");
     expect(motion).toContain("random");
+  });
+
+  it("전투 밸런스 리포트: simulate_battle/tune_enemy 실제 시그니처가 절차에 들어 있다", () => {
+    const skill = SYSTEM_SKILLS.find((entry) => entry.id === "battle-balance")!;
+    expect(skill.icon).toBe("⚔️");
+    expect(skill.name).toBe("전투 밸런스 리포트");
+    const prompt = skill.buildPrompt!({ troopId: "troop_boss", heroLevel: 7, targetWinRate: 90 }, CTX);
+    expect(prompt).toContain("troop_boss");
+    expect(prompt).toContain("get_database_records(troops)");
+    expect(prompt).toContain("simulate_battle({ troopId, heroLevel: 7, n: 50, seed: 42 })");
+    expect(prompt).toContain("tune_enemy({ enemyId, targetHitsToKill, targetDamageToHeroPerHit, heroLevel: 7 })");
+    expect(prompt).toContain("90%");
+    expect(prompt).toContain("before/after");
+    expect(prompt).toContain("얼버무림 없이"); // HONEST_REPORT_RULE 재사용
+    expect(prompt).not.toContain("set_build_spec"); // SPEC_RULE(공간 작업용)은 붙이지 않는다
+    // troopId 비우면 전체 트룹 + 기본값(Lv5, 85%)으로 동작.
+    const all = skill.buildPrompt!({}, CTX);
+    expect(all).toContain("모든 트룹");
+    expect(all).toContain("heroLevel: 5");
+    expect(all).toContain("85%");
+    expect(skill.displayAs!({ troopId: "" })).toContain("전체 트룹");
+    expect(skill.displayAs!({ troopId: "troop_boss", heroLevel: 7, targetWinRate: 90 })).toContain("troop_boss");
+  });
+
+  it("타일 지식 스킬의 autoFill이 타일셋 컨텍스트에서 초기값을 만들고, 컨텍스트 없으면 undefined", () => {
+    const withTileset: SkillRunContext = {
+      ...CTX,
+      tileset: { id: "tiles_town", selectedGroupId: "roof_main", sheetRect: { x: 2, y: 3, w: 4, h: 5 } },
+    };
+    const param = (skillId: string, key: string) =>
+      SYSTEM_SKILLS.find((entry) => entry.id === skillId)!.params.find((entry) => entry.key === key)!;
+    expect(param("cluster-edit", "tilesetId").autoFill!(withTileset)).toBe("tiles_town");
+    expect(param("cluster-edit", "groupId").autoFill!(withTileset)).toBe("roof_main");
+    expect(param("range-classify", "tilesetId").autoFill!(withTileset)).toBe("tiles_town");
+    expect(param("range-classify", "rect").autoFill!(withTileset)).toBe("2,3,4,5");
+    expect(param("unclassified-analysis", "tilesetId").autoFill!(withTileset)).toBe("tiles_town");
+    // 컨텍스트 없음(하위호환 ctx) → undefined → placeholder 현행 동작 유지.
+    expect(param("cluster-edit", "tilesetId").autoFill!(CTX)).toBeUndefined();
+    expect(param("cluster-edit", "groupId").autoFill!(CTX)).toBeUndefined();
+    expect(param("range-classify", "rect").autoFill!(CTX)).toBeUndefined();
+    // 그룹/시트 선택 없이 타일셋만 있어도 id는 채워진다.
+    const idOnly: SkillRunContext = { ...CTX, tileset: { id: "tiles_town" } };
+    expect(param("cluster-edit", "tilesetId").autoFill!(idOnly)).toBe("tiles_town");
+    expect(param("range-classify", "rect").autoFill!(idOnly)).toBeUndefined();
   });
 
   it("슬래시 필터가 이름/설명으로 스킬을 찾는다", () => {
@@ -110,6 +154,64 @@ describe("사용자 정의 스킬", () => {
   it("템플릿 플레이스홀더가 현재 맵/영역으로 치환된다", () => {
     const expanded = expandUserSkillTemplate("{{맵}}({{맵id}})의 {{영역}}에 꽃밭", CTX);
     expect(expanded).toBe("잿불 마을(map_x)의 (3,4) 5×6에 꽃밭");
+  });
+
+  it("{{인자키}}가 args로 치환되고, args 없이 호출해도 기존 3종은 그대로 동작한다(하위호환)", () => {
+    const template = "{{맵}}의 {{영역}}에 {{재료}} 우물 {{개수}}개";
+    expect(expandUserSkillTemplate(template, CTX, { 재료: "석재", 개수: 2 })).toBe("잿불 마을의 (3,4) 5×6에 석재 우물 2개");
+    // 하위호환: args 생략 시 내장 3종만 치환되고 {{인자키}}는 그대로 남는다.
+    expect(expandUserSkillTemplate(template, CTX)).toBe("잿불 마을의 (3,4) 5×6에 {{재료}} 우물 {{개수}}개");
+    // 내장 플레이스홀더가 같은 이름의 인자 키보다 우선한다.
+    expect(expandUserSkillTemplate("{{맵}}", CTX, { 맵: "가짜" })).toBe("잿불 마을");
+  });
+
+  it("loadUserSkills는 params 있는/없는 레코드를 모두 수용한다(하위호환 + 정화)", () => {
+    localStorage.setItem(
+      "rpg-zzu:user-skills",
+      JSON.stringify([
+        { id: "u-old", icon: "⭐", name: "옛 스킬", description: "", template: "{{맵}} 정리" },
+        {
+          id: "u-new",
+          icon: "🪣",
+          name: "새 스킬",
+          description: "",
+          template: "{{재료}} 우물",
+          params: [
+            { key: "재료", label: "재료", type: "enum", options: [{ value: "석재", label: "석재" }] },
+            { key: "", label: "무효", type: "text" },
+            { key: "개수", type: "이상한타입" },
+          ],
+          needsSelection: true,
+        },
+      ])
+    );
+    const skills = loadUserSkills();
+    const legacy = skills.find((skill) => skill.id === "u-old")!;
+    expect(legacy.params).toBeUndefined();
+    expect(legacy.needsSelection).toBeUndefined();
+    const fresh = skills.find((skill) => skill.id === "u-new")!;
+    expect(fresh.needsSelection).toBe(true);
+    // key 없는 행은 버려지고, 알 수 없는 type은 text로, label 없으면 key로 정화된다.
+    expect(fresh.params?.map((param) => param.key)).toEqual(["재료", "개수"]);
+    expect(fresh.params?.[0].options).toEqual([{ value: "석재", label: "석재" }]);
+    expect(fresh.params?.[1].type).toBe("text");
+    expect(fresh.params?.[1].label).toBe("개수");
+  });
+
+  it("params 있는 사용자 스킬은 SkillDef 인자 폼/치환/선택 필수까지 흐른다", () => {
+    const saved = saveUserSkill({
+      name: "꽃밭",
+      icon: "🌸",
+      description: "",
+      template: "{{영역}}에 {{색}} 꽃밭",
+      params: [{ key: "색", label: "색", type: "text" }],
+      needsSelection: true,
+    });
+    expect(loadUserSkills().find((skill) => skill.id === saved.id)?.params?.length).toBe(1);
+    const def = listAllSkills().find((skill) => skill.id === saved.id)!;
+    expect(def.params.map((param) => param.key)).toEqual(["색"]);
+    expect(def.needsSelection).toBe(true);
+    expect(def.buildPrompt!({ 색: "노란" }, CTX)).toBe("(3,4) 5×6에 노란 꽃밭");
   });
 });
 
@@ -199,7 +301,59 @@ describe("스킬 UI(fakeDom)", () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const [prompt, displayAs] = onSubmit.mock.calls[0] as [string, string];
     expect(prompt).toContain("14×9");
-    expect(displayAs).toContain("14×9");
+    // 채팅 표시는 TUI 명령 줄(`/build-house`) — 앱 라벨("🏠 …")을 쓰지 않는다.
+    expect(displayAs).toBe("/build-house");
+  });
+
+  it("인자 폼 초기값: autoFill이 타일셋 컨텍스트를 채우고, 없으면 placeholder 동작 유지", () => {
+    const clusterEdit = SYSTEM_SKILLS.find((skill) => skill.id === "cluster-edit")!;
+    const withTileset: SkillRunContext = { ...CTX, tileset: { id: "tiles_town", selectedGroupId: "roof_main" } };
+    const filled = renderSkillParamForm(clusterEdit, withTileset, () => {}, () => {}) as unknown as FakeElement;
+    expect((findByTestId(filled, "skill-param-tilesetId") as unknown as HTMLInputElement).value).toBe("tiles_town");
+    expect((findByTestId(filled, "skill-param-groupId") as unknown as HTMLInputElement).value).toBe("roof_main");
+    // 컨텍스트 없음 → 빈 입력 + placeholder(현행 동작).
+    const empty = renderSkillParamForm(clusterEdit, CTX, () => {}, () => {}) as unknown as FakeElement;
+    const tilesetInput = findByTestId(empty, "skill-param-tilesetId") as unknown as HTMLInputElement;
+    expect(tilesetInput.value).toBe("");
+    expect(tilesetInput.getAttribute("placeholder")).toBe("tiles_default");
+  });
+
+  it("내 스킬 저장 폼: 파라미터 추가/선택 필수 체크가 저장 레코드에 반영된다", () => {
+    const drawer = renderSkillDrawer({ getContext: () => CTX, onRunPrompt: () => {}, onAction: () => {}, getSavePrefill: () => "" });
+    const root = drawer.element as unknown as FakeElement;
+    (findByTestId(root, "ai-user-skill-open") as unknown as HTMLElement).click();
+    (findByTestId(root, "ai-user-skill-name") as unknown as HTMLInputElement).value = "꽃밭";
+    (findByTestId(root, "ai-user-skill-template") as unknown as HTMLTextAreaElement).value = "{{영역}}에 {{색}} 꽃밭";
+    (findByTestId(root, "ai-user-skill-param-add") as unknown as HTMLElement).click();
+    (findByTestId(root, "ai-user-skill-param-key-0") as unknown as HTMLInputElement).value = "색";
+    (findByTestId(root, "ai-user-skill-param-type-0") as unknown as HTMLSelectElement).value = "enum";
+    (findByTestId(root, "ai-user-skill-param-options-0") as unknown as HTMLInputElement).value = "노랑, 파랑";
+    (findByTestId(root, "ai-user-skill-needs-selection") as unknown as HTMLInputElement).checked = true;
+    (findByTestId(root, "ai-user-skill-save") as unknown as HTMLElement).click();
+    const saved = loadUserSkills().find((skill) => skill.name === "꽃밭")!;
+    expect(saved.needsSelection).toBe(true);
+    expect(saved.params).toEqual([
+      { key: "색", label: "색", type: "enum", options: [{ value: "노랑", label: "노랑" }, { value: "파랑", label: "파랑" }] },
+    ]);
+  });
+
+  it("needsSelection 사용자 스킬은 선택 없으면 시스템 스킬과 같은 안내 경로로 멈춘다", () => {
+    const saved = saveUserSkill({ name: "영역 손질", icon: "✂️", description: "", template: "{{영역}} 손질", needsSelection: true });
+    const def = listAllSkills().find((skill) => skill.id === saved.id)!;
+    const onRunPrompt = vi.fn();
+    const drawer = renderSkillDrawer({
+      getContext: () => ({ mapId: "map_x", mapName: "잿불 마을", selection: null }),
+      onRunPrompt,
+      onAction: () => {},
+      getSavePrefill: () => "",
+    });
+    drawer.run(def);
+    expect(onRunPrompt).not.toHaveBeenCalled();
+    // 선택이 있으면 params 없는 사용자 스킬은 즉시 실행된다.
+    const withSelection = renderSkillDrawer({ getContext: () => CTX, onRunPrompt, onAction: () => {}, getSavePrefill: () => "" });
+    withSelection.run(def);
+    expect(onRunPrompt).toHaveBeenCalledTimes(1);
+    expect(onRunPrompt.mock.calls[0][0]).toBe("(3,4) 5×6 손질");
   });
 
   it("슬래시 목록 클릭이 onPick으로 스킬을 넘긴다", () => {

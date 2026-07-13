@@ -32,16 +32,18 @@ import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
   deriveTitle,
+  listConversations,
   loadConversation,
   loadLatestConversation,
   projectConversationContextKey,
   saveConversation,
+  searchConversations,
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
-import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
+import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createCommandBarElements } from "./aiCommandBar";
@@ -1130,6 +1132,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       selection: state.selection
         ? { mapId: state.selection.mapId, x: state.selection.x, y: state.selection.y, width: state.selection.width, height: state.selection.height }
         : null,
+      tileset: currentTilesetSkillContext(),
     };
   };
 
@@ -1165,6 +1168,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     { label: "🌲 지형 다듬기", prompt: "맵 가장자리를 나무와 수풀로 자연스럽게 다듬어줘." },
     { label: "💬 NPC 대사 넣기", prompt: "마을 주민 NPC를 하나 만들고 말을 걸면 인사하는 대사를 넣어줘." },
   ];
+  // 대화 기록 검색 — 제목 부분일치(searchConversations), 클릭으로 복원. 기록 2건 이상일 때만 노출
+  // (1건이면 "이전 대화 이어가기" 버튼과 중복).
+  const buildConversationHistoryCard = (): HTMLElement | null => {
+    if (listConversations().length < 2) return null;
+    const rows = el("div", { class: "ai-start-history-rows", dataset: { testid: "ai-start-history-rows" } });
+    const renderRows = (query: string): void => {
+      rows.replaceChildren(
+        ...searchConversations(query).slice(0, 5).map((conversation) =>
+          el("button", {
+            class: "ai-start-history-row",
+            attrs: { type: "button", title: conversation.title },
+            dataset: { testid: `ai-start-history-${conversation.id}` },
+            children: [
+              el("span", { class: "ai-start-history-title", text: conversation.title }),
+              el("span", { class: "ai-start-history-meta", text: `${conversation.turnCount}턴` }),
+            ],
+            on: { click: () => restoreConversationById(conversation.id) },
+          })
+        ),
+      );
+    };
+    const search = el("input", {
+      class: "ai-start-history-search",
+      attrs: { type: "search", placeholder: "대화 기록 검색…" },
+      dataset: { testid: "ai-start-history-search" },
+      on: { input: () => renderRows(search.value) },
+    }) as HTMLInputElement;
+    renderRows("");
+    return el("div", {
+      class: "ai-start-basic-card ai-start-history",
+      dataset: { testid: "ai-start-history" },
+      children: [el("div", { class: "ai-start-basic-card-title", text: "대화 기록" }), search, rows],
+    });
+  };
+
   const buildStartScreen = (): HTMLElement => {
     const resume = resumeCandidate
       ? [el("button", {
@@ -1175,6 +1213,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           on: { click: () => restoreConversationById(resumeCandidate.id) },
         })]
       : [];
+    const history = buildConversationHistoryCard();
     return el("div", {
       class: "ai-start-screen is-minimal",
       dataset: { testid: "ai-start-screen" },
@@ -1208,6 +1247,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           text: "Ctrl+K 명령·맵·스킬 검색 · 캔버스에서 영역을 드래그하면 ✨ AI 작업",
           dataset: { testid: "ai-start-shortcut-hint" },
         }),
+        ...(history ? [history] : []),
       ],
     });
   };

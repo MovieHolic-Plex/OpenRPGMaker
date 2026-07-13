@@ -361,3 +361,57 @@
   color: var(--editor-text-soft, #7f8db0);
   font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
 }
+
+/* 대화 기록 검색 카드 — 시작 화면 */
+.ai-start-history-search {
+  background: transparent;
+  border: 1px solid var(--editor-line, #2a3550);
+  border-radius: 8px;
+  color: var(--editor-text, #e8eefc);
+  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  padding: 6px 10px;
+}
+
+.ai-start-history-search:focus-visible {
+  border-color: var(--editor-blue, #3d6df0);
+  outline: none;
+}
+
+.ai-start-history-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-start-history-row {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--editor-text, #e8eefc);
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 5px 8px;
+  text-align: left;
+}
+
+.ai-start-history-row:hover,
+.ai-start-history-row:focus-visible {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 14%, transparent);
+  outline: none;
+}
+
+.ai-start-history-title {
+  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-start-history-meta {
+  color: var(--editor-text-soft, #7f8db0);
+  flex: none;
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}

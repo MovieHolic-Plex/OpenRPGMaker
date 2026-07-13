@@ -176,19 +176,35 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
   },
   {
     name: "list_ai_docs",
-    description: "저장된 AI 문서 목록을 조회한다(제목/블록 수/생성 시각).",
+    description:
+      "저장된 AI 문서 목록을 조회한다(제목/블록 수/생성 시각). " +
+      "query로 제목·마크다운 본문을 부분일치 검색할 수 있다(대소문자 무시).",
     mode: "read",
-    parameters: { type: "object", properties: {} },
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "제목/본문 검색어(생략 시 전체)" },
+      },
+    },
     invalidArgsExample: {},
-    run(project): ToolExecResult {
-      const documents = (project.aiDocuments ?? []).map((doc) => ({
+    run(project, args): ToolExecResult {
+      const query = typeof args.query === "string" ? args.query.trim().toLowerCase() : "";
+      const matchesQuery = (doc: AiDocument): boolean => {
+        if (!query) return true;
+        if (doc.title.toLowerCase().includes(query)) return true;
+        return doc.blocks.some((block) => block.kind === "markdown" && block.text.toLowerCase().includes(query));
+      };
+      const documents = (project.aiDocuments ?? []).filter(matchesQuery).map((doc) => ({
         id: doc.id,
         title: doc.title,
         createdAt: doc.createdAt,
         blockCount: doc.blocks.length,
         pinned: doc.pinned === true,
       }));
-      return { summary: `AI 문서 ${documents.length}건`, data: { documents } };
+      return {
+        summary: query ? `AI 문서 ${documents.length}건 (검색: ${query})` : `AI 문서 ${documents.length}건`,
+        data: { documents },
+      };
     },
   },
 ];

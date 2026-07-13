@@ -169,10 +169,10 @@ export interface ToolExposureOptions {
 }
 
 // 다도메인 region AI에서 place_props·place_npc가 함께 남도록 여유.
-// 주의: 이 핀 목록은 전역이다(일반 채팅 등 region-task 이외 흐름도 공유) — 여기 추가한
-// 도구만큼 다른 비핀 도구가 상한(40) 경합에서 밀려날 수 있다(2026-07-10 라이브 실측 수정으로
-// place_chest 등 region 가이드 도구를 추가하며 확인). 도메인별 페어 슬라이스 등 상한
-// 알고리즘 자체의 개선은 별도 과제로 남겨뒀다.
+// 이 핀 목록은 전역이다(일반 채팅 등 region-task 이외 흐름도 공유). 상한(40) 초과 시
+// 비핀 자리는 도메인별 라운드로빈 쿼터로 배분되므로(trimToExposureCap), 핀 1개 추가의
+// 비용은 특정 도메인(특히 레지스트리 후순위 패밀리) 전멸이 아니라 전 도메인에 1툴씩
+// 분산된다 — 2026-07-10 라이브 실측(place_chest 크라우드아웃)의 재발 방지 구조.
 const MAX_EXPOSED_TOOLS = 40;
 const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
   ["tile", new Set([
@@ -186,6 +186,7 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     "lay_path",
     "tile_query",
     "propose_tile_vocabulary",
+    "tile_erase", // transform 가이드 대표 도구(regionIntentExposure) — clear_region 폐기 후 유일한 지우기 경로
   ])],
   ["event", new Set([
     "place_npc", "make_villager", "list_npc_graphics", "find_events", "get_event",
@@ -196,8 +197,9 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
   ])],
   ["map", new Set([
     "get_map_region", "show_map_region", "get_project_summary",
-    // 영역 작업 transform/battle-trap 가이드 대표 도구(2026-07-10 라이브 실측 수정).
-    "mirror_region", "set_encounter_table",
+    // 영역 작업 transform/battle-trap/structure 가이드 대표 도구(2026-07-10 라이브 실측 수정).
+    // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.
+    "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",
   ])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
@@ -266,12 +268,57 @@ function isPinnedTool(tool: ToolDefinition, domains: ReadonlySet<ToolDomain>): b
   return false;
 }
 
+// 상한 트림 — 레지스트리 등록 순서 슬라이스가 아니라 도메인별 라운드로빈 쿼터.
+// 종전 slice(0, room)은 등록 후순위 도메인(worldTools 등)을 통째로 밀어냈고, 핀을 하나
+// 추가할 때마다 그 비용이 전부 마지막 도메인에 전가됐다. 라운드로빈은 활성 도메인마다
+// 최소 ⌊room/도메인 수⌋개를 보장하고, 핀 추가 비용을 전 도메인에 1툴씩 분산한다.
+// 도메인 내부 순서는 레지스트리 순서를 유지한다(패밀리 배열 앞쪽 = 우선 노출 의도).
 function trimToExposureCap(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain>): readonly ToolDefinition[] {
   if (exposed.length <= MAX_EXPOSED_TOOLS) return exposed;
   const pinned = exposed.filter((tool) => isPinnedTool(tool, domains));
+  if (pinned.length >= MAX_EXPOSED_TOOLS) return pinned.slice(0, MAX_EXPOSED_TOOLS);
   const rest = exposed.filter((tool) => !isPinnedTool(tool, domains));
-  const room = Math.max(0, MAX_EXPOSED_TOOLS - pinned.length);
-  return [...pinned, ...rest.slice(0, room)].slice(0, MAX_EXPOSED_TOOLS);
+
+  const NO_DOMAIN = "__none__" as const;
+  const buckets = new Map<ToolDomain | typeof NO_DOMAIN, ToolDefinition[]>();
+  for (const tool of rest) {
+    const key = toolPrimaryDomain(tool) ?? NO_DOMAIN;
+    const bucket = buckets.get(key);
+    if (bucket) bucket.push(tool);
+    else buckets.set(key, [tool]);
+  }
+  // 중요한 도메인이 먼저 뽑는다(우선순위 낮은 숫자 = 중요). 동률은 쓰기 중심 순서.
+  const order = [...buckets.keys()].sort((a, b) => {
+    const pa = a === NO_DOMAIN ? 99 : domainPriority(a, domains);
+    const pb = b === NO_DOMAIN ? 99 : domainPriority(b, domains);
+    if (pa !== pb) return pa - pb;
+    const wa = a === NO_DOMAIN ? 99 : (WRITE_HEAVY_DOMAIN_ORDER.get(a) ?? 99);
+    const wb = b === NO_DOMAIN ? 99 : (WRITE_HEAVY_DOMAIN_ORDER.get(b) ?? 99);
+    return wa - wb;
+  });
+
+  // 가중 라운드로빈: UI/강한 의도 도메인(priority ≤ 2)은 라운드당 2개, 나머지는 1개.
+  // 균등 배분은 강한 의도 도메인(예: database 전량 유지 기대)을 약한 도메인과 같은
+  // 지분으로 깎아버린다 — 의도가 명확한 도메인이 더 넓은 툴셋을 받아야 한다.
+  let room = MAX_EXPOSED_TOOLS - pinned.length;
+  const picked = new Set<ToolDefinition>(pinned);
+  while (room > 0) {
+    let tookAny = false;
+    for (const key of order) {
+      if (room <= 0) break;
+      const quantum = key !== NO_DOMAIN && domainPriority(key, domains) <= 2 ? 2 : 1;
+      for (let take = 0; take < quantum && room > 0; take += 1) {
+        const next = buckets.get(key)?.shift();
+        if (!next) break;
+        picked.add(next);
+        room -= 1;
+        tookAny = true;
+      }
+    }
+    if (!tookAny) break;
+  }
+  // 반환은 원래 노출 순서(레지스트리 순서)를 유지해 프롬프트 안정성을 지킨다.
+  return exposed.filter((tool) => picked.has(tool));
 }
 
 function applyExposureLimit(exposed: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain> | undefined): readonly ToolDefinition[] {

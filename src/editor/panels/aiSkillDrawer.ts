@@ -9,8 +9,12 @@ import {
   saveUserSkill,
   type SkillDef,
   type SkillParam,
+  type SkillParamType,
   type SkillRunContext,
+  type SkillTilesetContext,
 } from "@/ai/skills";
+import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -28,6 +32,36 @@ const LEGACY_TESTIDS: Record<string, string> = {
   "demo-teach": "ai-demo-teach",
 };
 
+/**
+ * 현재 타일셋 컨텍스트 — SkillRunContext.tileset을 채우는 유일한 구성처.
+ * 출처: 현재 맵의 tilesetId(project.maps[*].tilesetId) + 팔레트 선택 타일(editorState.selectedTile,
+ * 속한 tileGroups에서 그룹 역산) + 시트 드래그 스탬프(editorState.activePaletteStamp → 시트 rect).
+ */
+export function currentTilesetSkillContext(): SkillTilesetContext | null {
+  const state = editorState.get();
+  const project = store.getCurrent();
+  const mapId = state.currentMapId ?? project.startMapId ?? null;
+  const tilesetId = mapId ? project.maps[mapId]?.tilesetId : undefined;
+  const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
+  if (!tilesetId || !tileset) return null;
+  const selectedGroupId = tileset.tileGroups?.find((group) => group.tileIds.includes(state.selectedTile))?.id;
+  const stamp = state.activePaletteStamp;
+  const perRow = Math.max(1, tileset.tilesPerRow);
+  const sheetRect = stamp
+    ? {
+        x: Math.min(stamp.source.startTile % perRow, stamp.source.endTile % perRow),
+        y: Math.min(Math.floor(stamp.source.startTile / perRow), Math.floor(stamp.source.endTile / perRow)),
+        w: stamp.width,
+        h: stamp.height,
+      }
+    : undefined;
+  return {
+    id: tilesetId,
+    ...(selectedGroupId ? { selectedGroupId } : {}),
+    ...(sheetRect ? { sheetRect } : {}),
+  };
+}
+
 export function renderSkillParamForm(
   skill: SkillDef,
   ctx: SkillRunContext,
@@ -36,7 +70,7 @@ export function renderSkillParamForm(
 ): HTMLElement {
   const inputs = new Map<string, HTMLInputElement | HTMLSelectElement>();
   const rows = skill.params.map((param) => {
-    const control = paramControl(param);
+    const control = paramControl(param, ctx);
     inputs.set(param.key, control);
     return el("label", { class: "ai-skill-param-row", children: [el("span", { class: "ai-skill-param-label", text: param.label }), control] });
   });
@@ -87,14 +121,18 @@ export function renderSkillParamForm(
   });
 }
 
-function paramControl(param: SkillParam): HTMLInputElement | HTMLSelectElement {
+function paramControl(param: SkillParam, ctx: SkillRunContext): HTMLInputElement | HTMLSelectElement {
+  // 자동 주입: autoFill이 컨텍스트에서 값을 내면 초기값으로 쓴다(사용자 편집 가능).
+  // 컨텍스트가 없어 undefined면 defaultValue/placeholder 현행 동작 유지.
+  const autoFilled = param.autoFill?.(ctx);
+  const initialValue = autoFilled ?? param.defaultValue;
   if (param.type === "enum") {
     const select = el("select", { class: "ai-skill-param-input" }) as HTMLSelectElement;
     for (const option of param.options ?? []) {
       const optionEl = el("option", { text: option.label, value: option.value }) as HTMLOptionElement;
       select.append(optionEl);
     }
-    select.value = String(param.defaultValue ?? param.options?.[0]?.value ?? "");
+    select.value = String(initialValue ?? param.options?.[0]?.value ?? "");
     select.dataset.testid = `skill-param-${param.key}`;
     return select;
   }
@@ -106,7 +144,7 @@ function paramControl(param: SkillParam): HTMLInputElement | HTMLSelectElement {
       ...(param.max !== undefined ? { max: String(param.max) } : {}),
       ...(param.placeholder ? { placeholder: param.placeholder } : {}),
     },
-    value: param.defaultValue !== undefined ? String(param.defaultValue) : "",
+    value: initialValue !== undefined ? String(initialValue) : "",
   }) as HTMLInputElement;
   input.dataset.testid = `skill-param-${param.key}`;
   return input;
@@ -120,11 +158,6 @@ export interface SlashListOptions {
 /** TUI 명령 줄 — `/build-house` 만. 인자 자리표시자(`<width>`)는 쓰지 않는다. */
 export function skillCommandLine(skill: SkillDef): string {
   return `/${skill.id}`;
-}
-
-// 호환 alias (예전 recipe 이름).
-function skillRecipeLine(skill: SkillDef): string {
-  return skillCommandLine(skill);
 }
 
 /**
@@ -330,10 +363,46 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
     const iconInput = el("input", { class: "ai-skill-param-input ai-skill-icon-input", attrs: { type: "text", placeholder: "⭐" }, value: "⭐", dataset: { testid: "ai-user-skill-icon" } }) as HTMLInputElement;
     const templateInput = el("textarea", {
       class: "ai-skill-param-input",
-      attrs: { rows: "5", placeholder: "프롬프트 템플릿 — {{맵}}, {{맵id}}, {{영역}} 플레이스홀더 사용 가능" },
+      attrs: { rows: "5", placeholder: "프롬프트 템플릿 — {{맵}}, {{맵id}}, {{영역}} + {{인자키}}(아래 파라미터) 사용 가능" },
       text: options.getSavePrefill(),
       dataset: { testid: "ai-user-skill-template" },
     }) as HTMLTextAreaElement;
+    const needsSelectionInput = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "ai-user-skill-needs-selection" } }) as HTMLInputElement;
+    // 파라미터 편집 행 — key/label/type(+enum 옵션). "파라미터 추가"로 행을 늘린다.
+    type UserParamRow = { key: HTMLInputElement; label: HTMLInputElement; type: HTMLSelectElement; options: HTMLInputElement };
+    const paramRows: UserParamRow[] = [];
+    const paramList = el("div", { class: "ai-user-skill-params", dataset: { testid: "ai-user-skill-params" } });
+    const addParamRow = (): void => {
+      const index = paramRows.length;
+      const keyInput = el("input", { class: "ai-skill-param-input", attrs: { type: "text", placeholder: "키(예: 재료)" }, dataset: { testid: `ai-user-skill-param-key-${index}` } }) as HTMLInputElement;
+      const labelInput = el("input", { class: "ai-skill-param-input", attrs: { type: "text", placeholder: "라벨(비우면 키)" }, dataset: { testid: `ai-user-skill-param-label-${index}` } }) as HTMLInputElement;
+      const typeSelect = el("select", { class: "ai-skill-param-input", dataset: { testid: `ai-user-skill-param-type-${index}` } }) as HTMLSelectElement;
+      for (const type of ["text", "number", "enum"] as const) typeSelect.append(el("option", { text: type, value: type }) as HTMLOptionElement);
+      typeSelect.value = "text";
+      const optionsInput = el("input", { class: "ai-skill-param-input", attrs: { type: "text", placeholder: "enum 옵션(콤마 구분)" }, dataset: { testid: `ai-user-skill-param-options-${index}` } }) as HTMLInputElement;
+      paramRows.push({ key: keyInput, label: labelInput, type: typeSelect, options: optionsInput });
+      paramList.append(el("div", { class: "ai-skill-param-row", children: [keyInput, labelInput, typeSelect, optionsInput] }));
+    };
+    const collectParams = (): SkillParam[] => {
+      const params: SkillParam[] = [];
+      for (const row of paramRows) {
+        const key = row.key.value.trim();
+        if (!key) continue;
+        const type = (["text", "number", "enum"] as const).includes(row.type.value as SkillParamType) ? (row.type.value as SkillParamType) : "text";
+        const enumOptions = row.options.value
+          .split(",")
+          .map((entry) => entry.trim())
+          .filter(Boolean)
+          .map((value) => ({ value, label: value }));
+        params.push({
+          key,
+          label: row.label.value.trim() || key,
+          type,
+          ...(type === "enum" && enumOptions.length > 0 ? { options: enumOptions } : {}),
+        });
+      }
+      return params;
+    };
     body.replaceChildren(
       el("div", {
         class: "ai-skill-param-form",
@@ -342,6 +411,23 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
           el("label", { class: "ai-skill-param-row", children: [el("span", { class: "ai-skill-param-label", text: "이름" }), nameInput] }),
           el("label", { class: "ai-skill-param-row", children: [el("span", { class: "ai-skill-param-label", text: "아이콘" }), iconInput] }),
           templateInput,
+          paramList,
+          el("div", {
+            class: "ai-skill-param-actions",
+            children: [
+              el("button", {
+                class: "ai-assistant-action",
+                text: "+ 파라미터 추가",
+                attrs: { type: "button", title: "템플릿에서 {{키}}로 치환되는 인자 폼을 추가" },
+                dataset: { testid: "ai-user-skill-param-add" },
+                on: { click: addParamRow },
+              }),
+            ],
+          }),
+          el("label", {
+            class: "ai-skill-param-row",
+            children: [needsSelectionInput, el("span", { class: "ai-skill-param-label", text: "선택 영역 필수" })],
+          }),
           el("div", { class: "ai-skill-param-note", text: "저장하면 슬래시(/)와 이 서랍에서 언제든 다시 실행할 수 있습니다." }),
           el("div", {
             class: "ai-skill-param-actions",
@@ -359,7 +445,15 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
                       toast("이름과 프롬프트 템플릿을 채워주세요.", "info");
                       return;
                     }
-                    saveUserSkill({ name, icon: iconInput.value.trim() || "⭐", description: "사용자 정의 스킬", template });
+                    const params = collectParams();
+                    saveUserSkill({
+                      name,
+                      icon: iconInput.value.trim() || "⭐",
+                      description: "사용자 정의 스킬",
+                      template,
+                      ...(params.length > 0 ? { params } : {}),
+                      ...(needsSelectionInput.checked ? { needsSelection: true } : {}),
+                    });
                     toast(`스킬 '${name}' 저장됨`, "ok");
                     renderCards();
                   },

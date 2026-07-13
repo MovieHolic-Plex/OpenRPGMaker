@@ -11,7 +11,13 @@ import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
-import { buildSystemPrompt, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import {
+  calibratedBudgetChars,
+  estimatePromptChars,
+  loadTokenObservations,
+  recordTokenObservation,
+} from "./tokenBudget";
 import {
   formatViewportContextBlock,
   mapRegionImagePayload,
@@ -372,6 +378,8 @@ export class AssistantSession {
   private currentTurnRequestText = "";
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
+  // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
+  private appliedBudgetChars: number;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -380,7 +388,14 @@ export class AssistantSession {
     this.renderImages = options.renderImages;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: structuredClone(project) };
-    this.messages.push({ role: "system", content: buildSystemPrompt(project, this.contextOptions) });
+    // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
+    // 문자 예산을 재척도한다. 관측이 없으면 DEFAULT_BUDGET_CHARS 그대로(현행 동작).
+    this.appliedBudgetChars = this.contextOptions.budgetChars
+      ?? calibratedBudgetChars(DEFAULT_BUDGET_CHARS, loadTokenObservations());
+    this.messages.push({
+      role: "system",
+      content: buildSystemPrompt(project, { ...this.contextOptions, budgetChars: this.appliedBudgetChars }),
+    });
   }
 
   getMessages(): readonly ChatMessage[] {
@@ -551,6 +566,8 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal
   ): Promise<TurnResult> {
+    // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
+    this.refreshSystemPromptBudget();
     // 매 턴: 에디터 뷰포트 좌표(+가능하면 맵 이미지)를 사용자 메시지에 붙여 "여기" 해석을 빠르게 한다.
     const userContent = await this.buildUserTurnContent(text);
     this.messages.push({ role: "user", content: userContent });
@@ -600,6 +617,32 @@ export class AssistantSession {
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
   private pushAudit(entry: AuditEntry): void {
     this.audit.push({ ...entry, at: new Date().toISOString() });
+  }
+
+  // 토큰 보정(문자↔토큰 계수): 관측 누적으로 보정 예산이 바뀌었으면 시스템 프롬프트를
+  // 최신 기준 프로젝트(baselineProject)로 재조립한다. 예산이 같으면 no-op(현행 동작 보존).
+  // contextOptions.budgetChars가 명시 주입된 세션은 보정하지 않는다.
+  private refreshSystemPromptBudget(): void {
+    if (this.contextOptions.budgetChars !== undefined) return;
+    const budget = calibratedBudgetChars(DEFAULT_BUDGET_CHARS, loadTokenObservations());
+    if (budget === this.appliedBudgetChars) return;
+    const system = this.messages[0];
+    if (!system || system.role !== "system") return;
+    this.appliedBudgetChars = budget;
+    system.content = buildSystemPrompt(this.baselineProject, { ...this.contextOptions, budgetChars: budget });
+    this.pushAudit({ kind: "status", text: `토큰 보정: 컨텍스트 문자 예산 ${budget}자로 재조립` });
+  }
+
+  // 실측 usage.prompt_tokens ↔ 이번 요청으로 보낸 프롬프트 총 문자 수를 짝지어 보정 관측으로 기록.
+  // usage가 없으면(공급자가 스트리밍 usage 미지원) 조용히 건너뛴다. 이미지 파트가 섞인 요청은
+  // 토큰이 문자 수와 비례하지 않으므로 관측하지 않는다. 호출 시점: 응답 메시지를 messages에
+  // 추가하기 전(= messages가 방금 보낸 프롬프트와 정확히 일치할 때).
+  private recordPromptUsage(result: ChatResult, toolsChars: number): void {
+    const promptTokens = result.usage?.prompt_tokens;
+    if (typeof promptTokens !== "number" || !Number.isFinite(promptTokens) || promptTokens <= 0) return;
+    const estimate = estimatePromptChars(this.messages, toolsChars);
+    if (estimate.hasImages || estimate.chars <= 0) return;
+    recordTokenObservation({ promptChars: estimate.chars, promptTokens, at: new Date().toISOString() });
   }
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
@@ -824,6 +867,8 @@ export class AssistantSession {
     // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온으로 툴을 고정한다.
     const domains = this.currentTurnToolDomains ?? computeActiveToolDomains("");
     const tools = [...toOpenAiTools(undefined, { domains }), SET_BUILD_SPEC_TOOL];
+    // 토큰 보정 관측용: tools 스키마도 prompt_tokens에 포함되므로 문자 수에 더한다(근사).
+    const toolsChars = JSON.stringify(tools).length;
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     const orchestrated = this.orchestrationEnabled();
@@ -867,6 +912,8 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
       }
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
+      // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
+      this.recordPromptUsage(result, phase === "review" ? 0 : toolsChars);
 
       const assistantMsg = result.message;
       // assistant 응답은 항상 문자열 content다(멀티모달 파트는 우리가 넣는 user 메시지 전용).

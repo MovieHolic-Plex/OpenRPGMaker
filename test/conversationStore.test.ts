@@ -7,6 +7,7 @@ import {
   listConversations,
   loadConversation,
   saveConversation,
+  searchConversations,
   type ConversationRecord,
 } from "@/ai/conversationStore";
 
@@ -123,6 +124,16 @@ describe("conversationStore", () => {
     expect(summaries[0].id).toBe("c55");
     expect(summaries.at(-1)?.id).toBe("c6");
     expect(loadConversation("c5")).toBeNull();
+  });
+
+  it("Given saved conversations When searched by title Then partial case-insensitive matches return", () => {
+    saveConversation(record("a", 1, [user("마을에 집 지어줘")]));
+    saveConversation(record("b", 2, [user("NPC Dialogue 수정")]));
+
+    expect(searchConversations("집").map((conversation) => conversation.id)).toEqual(["a"]);
+    expect(searchConversations("npc dialogue").map((conversation) => conversation.id)).toEqual(["b"]);
+    expect(searchConversations("").map((conversation) => conversation.id)).toEqual(["b", "a"]);
+    expect(searchConversations("없는검색어")).toHaveLength(0);
   });
 
   it("Given corrupted storage When listed Then it returns an empty list", () => {
