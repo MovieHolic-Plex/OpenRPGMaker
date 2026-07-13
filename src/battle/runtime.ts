@@ -3,12 +3,12 @@
 import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
-import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterBattlers, type MutableBattler } from "@/battle/battleBattlers";
+import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, type MutableBattler } from "@/battle/battleBattlers";
 import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
-import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { typeChartMultiplierFor } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
@@ -86,11 +86,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const rng: Rng = options.rng ?? mulberry32(1);
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
-  // 모드 분기(옵션 A): 몬스터 파티가 주어지면 영웅 대신 몬스터가 출전한다.
-  // 비어있으면 기존 액터 경로 100% 유지(회귀 0). activeActorIds 는 recordId=instanceId 로 자동 정합.
-  const monsterParty = options.party?.monsterParty;
-  const actors = monsterParty && monsterParty.length > 0
-    ? monsterBattlers(options.project, monsterParty)
+  // 아군측 소스: system.battleParty가 "monsters"이고 파티 몬스터가 있으면 몬스터가 필드에 나선다(포켓몬식).
+  // 그 외에는 기존대로 파티 액터가 직접 싸운다.
+  const usePartyMonsters =
+    options.project.system.battleParty === "monsters" && (options.partyMonsters?.length ?? 0) > 0;
+  const actors = usePartyMonsters
+    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
     : actorBattlers(options.project, {
         names: options.party?.names,
         levels: options.party?.levels,
@@ -119,6 +120,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let activeActorId: ActorId | undefined;
   let lastAnimation: BattleAnimationSnapshot | undefined;
   let lastActionResult: BattleActionResultSnapshot | undefined;
+  // 모든 행동 결과의 누적 로그 — 시퀀서가 다중 적 턴을 개별 비트로 재생할 수 있게 한다.
+  const actionLog: BattleActionResultSnapshot[] = [];
+  function recordAction(entry: BattleActionResultSnapshot): void {
+    lastActionResult = entry;
+    actionLog.push(entry);
+  }
   let result: BattleResult | undefined;
   let escaped = false;
   let turn = 0;
@@ -327,7 +334,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       rng,
     });
     if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
-    lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+    recordAction({ userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical });
   }
 
   function attemptEscape(): void {
@@ -626,6 +633,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy, undefined, poseContext)),
       lastAnimation,
       lastActionResult,
+      actionLog: [...actionLog],
       hitFeel: hitFeelFromActionResult(lastActionResult),
       lastCaptureResult,
       capturedMonsters,
@@ -697,7 +705,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       rng,
     });
     if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
-    lastActionResult = { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+    recordAction({ userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical });
   }
 
   function lookupSkill(skillId: SkillId) {
@@ -725,7 +733,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       rng,
     });
     if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
-    lastActionResult = { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical };
+    recordAction({ userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical });
   }
 
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
@@ -815,13 +823,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const mp = Math.max(0, Math.floor((target.maxMp * item.mpRecovery.percentMax) / 100) + item.mpRecovery.flat);
     if (hp > 0) target.hp = Math.min(target.maxHp, target.hp + hp);
     if (mp > 0) target.mp = Math.min(target.maxMp, target.mp + mp);
-    lastActionResult = {
+    recordAction({
       userRecordId: user.recordId,
       targetId: target.id,
       hit: true,
       amount: hp + mp,
       critical: false,
-    };
+    });
   }
 
   function itemStateEffectsForBattle(item: {
@@ -975,7 +983,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       rng,
     });
-    lastActionResult = { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name };
+    recordAction({ userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name });
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
     }
@@ -1032,13 +1040,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function elementMultiplierFor(elementId: string | undefined, user: MutableBattler, target: MutableBattler): number {
     if (!elementId) return 1;
     const element = options.project.database.elements?.find((entry) => entry.id === elementId);
-    // 배틀러 types 를 직접 해석한다(플레이어 몬스터 STAB/약점 + enemy 대칭 상성).
-    const typeMultiplier = typeChartMultiplierForTypes(
-      options.project,
-      elementId,
-      battlerTypes(options.project, user),
-      battlerTypes(options.project, target)
-    );
+    const typeMultiplier = typeChartMultiplierFor(options.project, elementId, user.recordId, target.recordId);
     if (!element?.damageMultipliers) return typeMultiplier;
     // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
     const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);

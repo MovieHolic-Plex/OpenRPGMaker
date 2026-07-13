@@ -3,6 +3,18 @@ import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import { store } from "@/project/store";
 
+/** targetId(적 id·아군 배틀러 id·recordId)를 실제 DOM 노드로 해석한다.
+ *  아군 노드 testid는 `battle-actor-<recordId>`라 직접 조회가 실패하던 버그의 단일 수정 지점. */
+export function findBattlerNode(scope: HTMLElement | Document, targetId: string): HTMLElement | null {
+  return scope.querySelector<HTMLElement>(`[data-testid="${targetId}"]`)
+    ?? scope.querySelector<HTMLElement>(`[data-testid="battle-actor-${targetId}"]`)
+    ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`);
+}
+
+function pokemonUiActive(): boolean {
+  return store.getCurrent().system.battleUiStyle === "pokemon";
+}
+
 export function battleField(snapshot: BattleSnapshot): HTMLElement {
   const field = document.createElement("div");
   field.className = "battle-field";
@@ -36,7 +48,11 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
     const mp = row.querySelector(".battle-actor-mp");
     if (mp) mp.textContent = `MP ${actor.mp}/${actor.maxMp}`;
     const hpBar = row.querySelector<HTMLElement>(".battle-stat-bar-hp");
-    if (hpBar) hpBar.style.setProperty("--battle-stat", `${hpPercent(actor.hp, actor.maxHp)}%`);
+    if (hpBar) {
+      const pct = hpPercent(actor.hp, actor.maxHp);
+      hpBar.style.setProperty("--battle-stat", `${pct}%`);
+      hpBar.dataset.hpState = hpBarState(pct);
+    }
     const atbBar = row.querySelector<HTMLElement>(".battle-atb-bar");
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${Math.max(0, Math.min(100, Math.round(actor.gauge)))}%`);
     row.classList.toggle("defeated", actor.defeated);
@@ -58,10 +74,10 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
   const group = field.querySelector(".battle-enemy-group");
   if (!group) return;
-  for (const enemy of snapshot.enemies) {
+  for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     if (!node) {
-      group.append(enemyButton(enemy, snapshot));
+      group.append(enemyButton(enemy, snapshot, index));
       node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     }
     if (!node) continue;
@@ -124,8 +140,9 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
   popup.dataset.targetId = feedback.targetId;
   popup.classList.toggle("battle-damage-popup-critical", feedback.critical);
   popup.classList.toggle("battle-damage-popup-heal", feedback.healing);
-  popup.textContent = feedback.healing ? `+${feedback.amount}` : `-${feedback.amount}`;
-  const anchor = field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`);
+  popup.classList.toggle("battle-damage-popup-miss", feedback.miss === true);
+  popup.textContent = feedback.miss ? "MISS" : feedback.healing ? `+${feedback.amount}` : `-${feedback.amount}`;
+  const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
     popup.style.setProperty("--battle-node-y", anchor.style.getPropertyValue("--battle-node-y"));
@@ -171,17 +188,22 @@ function battleTitle(troopId: string): HTMLElement {
 function enemyGroup(enemies: readonly BattleBattlerSnapshot[], snapshot: BattleSnapshot): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-enemy-group";
-  for (const enemy of enemies) {
-    group.append(enemyButton(enemy, snapshot));
+  for (const [index, enemy] of enemies.entries()) {
+    group.append(enemyButton(enemy, snapshot, index));
   }
   return group;
 }
 
-function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot): HTMLButtonElement {
+function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, index = 0): HTMLButtonElement {
   const enemyNode = document.createElement("button");
   enemyNode.type = "button";
   enemyNode.className = "battle-enemy";
-  positionBattleNode(enemyNode, enemy.battleX, enemy.battleY);
+  if (pokemonUiActive()) {
+    // 포켓몬 문법: 상대는 우상단 존(카메라에서 멀게). 다수면 왼쪽으로 벌린다.
+    positionBattleNode(enemyNode, 236 - index * 54, 58 + (index % 2) * 12);
+  } else {
+    positionBattleNode(enemyNode, enemy.battleX, enemy.battleY);
+  }
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
   enemyNode.dataset.facing = "right";
@@ -239,8 +261,8 @@ function enemyHpHud(enemy: BattleBattlerSnapshot): HTMLElement {
 function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-actor-group";
-  for (const actor of actors) {
-    group.append(actorNode(actor));
+  for (const [index, actor] of actors.entries()) {
+    group.append(actorNode(actor, index));
   }
   return group;
 }
@@ -255,23 +277,40 @@ function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: 
   return group;
 }
 
-function actorNode(actor: BattleBattlerSnapshot): HTMLElement {
+function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
   const node = document.createElement("div");
   node.className = "battle-actor";
-  positionBattleNode(node, actor.battleX, actor.battleY);
+  if (pokemonUiActive()) {
+    // 포켓몬 문법: 아군은 좌하단(카메라에 가깝게 크게). 다수면 오른쪽으로 벌린다.
+    positionBattleNode(node, 64 + index * 46, 132 - (index % 2) * 8);
+  } else {
+    positionBattleNode(node, actor.battleX, actor.battleY);
+  }
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
   node.dataset.facing = "left";
   node.setAttribute("aria-label", actor.name);
-  // 몬스터 배틀러(speciesId 有)는 종족 그래픽으로, 액터는 기존 battleCharset 로 렌더한다.
-  const resourceId = actor.speciesId
-    ? monsterSpeciesResourceId(actor.speciesId)
-    : battleCharsetResourceId(actor.recordId);
-  if (resourceId) {
-    node.dataset.battleCharsetResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  // 파티 몬스터가 필드에 나선 경우: 종족 그래픽을 아군측(back) 스프라이트로 렌더.
+  // 팩엔 정면 시트만 있어 CSS(.battle-monster-back)로 좌우반전+확대해 뒷모습을 근사한다.
+  const monsterResource = actor.speciesId ? monsterSpeciesResourceId(actor.speciesId) : undefined;
+  if (monsterResource) {
+    node.dataset.monsterBattler = "true";
+    const url = resolveAssetResourceUrl(monsterResource, { project: store.getCurrent() });
     if (url) {
-      node.append(actorBattleImage(actor.name, resourceId, url));
+      const image = document.createElement("img");
+      image.className = "battle-actor-image battle-monster-image battle-monster-back";
+      image.alt = `${actor.name} 몬스터`;
+      image.src = url;
+      node.append(image);
+    }
+  } else {
+    const resourceId = battleCharsetResourceId(actor.recordId);
+    if (resourceId) {
+      node.dataset.battleCharsetResourceId = resourceId;
+      const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+      if (url) {
+        node.append(actorBattleImage(actor.name, resourceId, url));
+      }
     }
   }
   applyBattlerPose(node, actor.pose);
@@ -305,6 +344,12 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   const name = document.createElement("span");
   name.className = "battle-actor-name";
   name.textContent = actor.name;
+  if (actor.level) {
+    const lv = document.createElement("span");
+    lv.className = "battle-actor-level";
+    lv.textContent = `Lv.${actor.level}`;
+    name.append(lv);
+  }
 
   const vitals = document.createElement("span");
   vitals.className = "battle-actor-vitals";
@@ -330,8 +375,15 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 function statBar(kind: "hp" | "mp" | "tp", value: number, max: number): HTMLElement {
   const bar = document.createElement("span");
   bar.className = `battle-stat-bar battle-stat-bar-${kind}`;
-  bar.style.setProperty("--battle-stat", `${hpPercent(value, max)}%`);
+  const pct = hpPercent(value, max);
+  bar.style.setProperty("--battle-stat", `${pct}%`);
+  if (kind === "hp") bar.dataset.hpState = hpBarState(pct);
   return bar;
+}
+
+/** 포켓몬식 HP 바 색 구간: 초록(>50) · 노랑(21~50) · 빨강(≤20). */
+export function hpBarState(pct: number): "high" | "mid" | "low" {
+  return pct > 50 ? "high" : pct > 20 ? "mid" : "low";
 }
 
 function atbLabel(): HTMLElement {
@@ -392,10 +444,6 @@ function battleCharsetResourceId(recordId: string): string | undefined {
   return store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.battleCharacterResourceId;
 }
 
-function monsterSpeciesResourceId(speciesId: string): string | undefined {
-  return store.getCurrent().database.monsterSpecies?.find((species) => species.id === speciesId)?.graphic.monsterResourceId;
-}
-
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
   if (resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
     const sprite = document.createElement("span");
@@ -423,4 +471,42 @@ function isGeneratedBattleActor(resourceId: string): boolean {
 
 function monsterResourceId(recordId: string): string | undefined {
   return store.getCurrent().database.enemies.find((enemy) => enemy.id === recordId)?.monsterResourceId;
+}
+
+function monsterSpeciesResourceId(speciesId: string): string | undefined {
+  return store.getCurrent().database.monsterSpecies?.find((species) => species.id === speciesId)?.graphic.monsterResourceId;
+}
+
+/** 포획 구슬 시네마틱을 재생하고 총 소요 ms를 반환한다.
+ *  투척(480ms) → 흡수(240ms) → 흔들림 3회(1,260ms) → 성공 반짝/실패 탈출(420ms). */
+export function playCaptureCinematic(field: HTMLElement, targetId: string, success: boolean): number {
+  const target = findBattlerNode(field, targetId);
+  if (!target) return 0;
+  const orb = document.createElement("span");
+  orb.className = "battle-capture-orb";
+  orb.dataset.testid = "battle-capture-orb";
+  orb.style.setProperty("--orb-to-x", target.style.getPropertyValue("--battle-node-x") || "70%");
+  orb.style.setProperty("--orb-to-y", target.style.getPropertyValue("--battle-node-y") || "35%");
+  field.append(orb);
+  const timers: number[] = [];
+  const at = (fn: () => void, ms: number): void => {
+    timers.push(window.setTimeout(fn, ms));
+  };
+  at(() => target.classList.add("battle-capture-absorbed"), 460);
+  at(() => orb.classList.add("battle-orb-shake"), 720);
+  at(() => {
+    orb.classList.remove("battle-orb-shake");
+    if (success) {
+      orb.classList.add("battle-orb-caught");
+    } else {
+      orb.classList.add("battle-orb-burst");
+      target.classList.remove("battle-capture-absorbed");
+    }
+  }, 1980);
+  at(() => {
+    orb.remove();
+    // 성공 시 런타임 스냅샷에서 적이 사라지므로 잔류 노드도 정리한다.
+    if (success) target.remove();
+  }, 2400);
+  return 2400;
 }

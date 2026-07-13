@@ -1,4 +1,5 @@
 import type { AuditEntry } from "@/ai/assistantSession";
+import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
@@ -76,6 +77,23 @@ function writeConversations(records: readonly ConversationRecord[]): void {
 
 export function saveConversation(record: ConversationRecord): void {
   writeConversations([record, ...readConversations().filter((conversation) => conversation.id !== record.id)]);
+  // 원격 미러는 best-effort — 미설정/미마이그레이션/네트워크 실패는 조용히 무시(로컬이 정본).
+  void recordSupabaseConversation({
+    conversationId: record.id,
+    title: record.title,
+    model: record.model,
+    projectContextKey: record.projectContextKey,
+    entries: record.entries,
+    savedAt: record.savedAt,
+  }).catch(() => undefined);
+}
+
+/** 제목 부분일치 검색(대소문자 무시) — 시작 화면 대화 목록용. */
+export function searchConversations(query: string): ConversationSummary[] {
+  const needle = query.trim().toLowerCase();
+  const all = listConversations();
+  if (!needle) return all;
+  return all.filter((conversation) => conversation.title.toLowerCase().includes(needle));
 }
 
 export function listConversations(): ConversationSummary[] {

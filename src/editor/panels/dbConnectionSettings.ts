@@ -1,4 +1,3 @@
-import { ensureCurrentMapLock } from "@/editor/mapEditLocks";
 import type { DbConfigField, DbPersistenceStatus } from "@/project/persistenceStatus";
 import {
   clearSupabaseProjectConfigDraft,
@@ -351,7 +350,9 @@ async function connectFromForm(form: HTMLFormElement, statusLine: HTMLElement, o
   onRefresh();
   if (result.kind === "connected") {
     markSupabaseRecoveredLocation();
-    ensureCurrentMapLock();
+    // 이전 프로젝트 mapId가 남지 않도록 시작 맵으로 포커스 — 캔버스에 새 프로젝트 맵이 바로 보이게 함.
+    const { focusProjectStartMap } = await import("@/editor/mapSelection");
+    focusProjectStartMap();
     toast("DB 프로젝트를 불러왔습니다.", "ok");
     closeDbConnectionSettings();
     return;

@@ -27,7 +27,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
         panel("이름", [textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("enemies", record.id, { name }))], "db-enemy-panel-name"),
         panel("능력치", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })], "db-enemy-panel-stats"),
         panel("그래픽", graphicFields(record, rerender), "db-enemy-panel-graphic"),
-        panel("Species", speciesFields(record), "db-enemy-panel-species"),
+        panel("종족", speciesFields(record), "db-enemy-panel-species"),
         panel("보상", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })], "db-enemy-panel-rewards"),
         panel("치명타 %", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record) })], "db-enemy-panel-critical"),
         panel("옵션", optionFields(record), "db-enemy-panel-options"),
@@ -41,7 +41,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
 
 function speciesFields(record: EnemyRecord): HTMLElement[] {
   return [
-    selectField("포획 species", "db-picker-enemy-species", record.speciesId ?? "", store.getCurrent().database.monsterSpecies ?? [], (speciesId) =>
+    selectField("포획 종족", "db-picker-enemy-species", record.speciesId ?? "", store.getCurrent().database.monsterSpecies ?? [], (speciesId) =>
       updateDatabaseRecord("enemies", record.id, { speciesId: emptyToUndefined(speciesId) })
     ),
   ];

@@ -49,7 +49,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "crops", label: "작물", testid: "db-tab-crops" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
-  { id: "monsterSpecies", label: "Species", testid: "db-tab-monster-species" },
+  { id: "monsterSpecies", label: "종족", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },

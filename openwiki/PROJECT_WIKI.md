@@ -58,6 +58,12 @@ Use this checklist before editing:
 - For UI work, verify through the browser surface and save screenshots or logs under `output/evidence` or `evidence`.
 - If the change reveals stale wiki guidance, update the wiki as part of the same work.
 
+## Supabase DB mandatory (see root `AGENTS.md`)
+
+Root `AGENTS.md` hard rule: **do not finish map/event/demo/content work without Supabase save + reload proof.**  
+`blankProject` / `freshProject` / `dev-showcase` skip remote persistence — never treat those sessions as a complete deliverable.  
+Engine-only code changes and narrow unit-test fixtures are the only default exceptions.
+
 ## Per-project wiki structure
 
 For each project that uses this pattern, keep:

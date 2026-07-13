@@ -350,12 +350,12 @@ describe("createBlankProject", () => {
 });
 
 describe("createSampleAdventureProject", () => {
-  it("명시 예제 프로젝트로 기존 어드벤처 5맵을 유지한다", () => {
+  it("명시 예제 프로젝트로 이슬 마을 데모(2맵)를 제공한다", () => {
     const p = createSampleAdventureProject();
 
-    expect(Object.keys(p.maps)).toHaveLength(5);
-    expect(p.meta.title).toBe("별등 마을과 세 개의 봉인");
-    expect(p.maps.map_lantern_village?.events.length).toBeGreaterThan(0);
+    expect(Object.keys(p.maps)).toHaveLength(2);
+    expect(p.meta.title).toBe("이슬 마을의 종");
+    expect(Object.values(p.maps).some((map) => map.name === "이슬 마을" && map.events.length > 0)).toBe(true);
   });
 });
 

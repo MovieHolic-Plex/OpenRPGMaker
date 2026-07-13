@@ -3,6 +3,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { store } from "@/project/store";
 import type { BattleAnimationRecord } from "@/project/types";
 import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
+import { findBattlerNode } from "@/player/battleFieldDom";
 
 type CellSourceRect = {
   readonly x: number;
@@ -93,7 +94,8 @@ export function mountBattleAnimationPlayback(
 }
 
 function positionAnimationOnTarget(element: HTMLElement, targetId: string): void {
-  const target = document.querySelector<HTMLElement>(`[data-testid="${targetId}"]`);
+  // 아군 노드 testid는 battle-actor-<id> 형식 — findBattlerNode로 통일 조회(오위치 버그 수정).
+  const target = findBattlerNode(document, targetId);
   if (!target) return;
   element.style.setProperty("--battle-node-x", target.style.getPropertyValue("--battle-node-x"));
   element.style.setProperty("--battle-node-y", target.style.getPropertyValue("--battle-node-y"));

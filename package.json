@@ -5,9 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --configLoader runner",
+    "dev": "vite --configLoader runner --host 127.0.0.1 --port 9173 --strictPort",
     "mcp:assistant": "node scripts/rpgzzu-assistant-mcp.mjs",
-    "start": "vite preview --configLoader runner --host 127.0.0.1 --port 4173 --strictPort",
+    "start": "vite preview --configLoader runner --host 127.0.0.1 --port 9174 --strictPort",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player",
     "build:app": "vite build --configLoader runner",
     "build:fast": "vite build --configLoader runner",

@@ -135,10 +135,25 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   preload(): void {
+    const reportProgress = (ratio: number): void => {
+      const handler: unknown = this.game.registry.get("onPlayLoadProgress");
+      if (typeof handler === "function") {
+        (handler as (ratio: number) => void)(ratio);
+      }
+    };
+    this.load.on("progress", reportProgress);
+    reportProgress(0);
     loadBundledAssets(this, store.getCurrent());
   }
 
   create(): void {
+    const reportStage = (stage: "map" | "ready"): void => {
+      const handler: unknown = this.game.registry.get("onPlayLoadStage");
+      if (typeof handler === "function") {
+        (handler as (stage: "map" | "ready") => void)(stage);
+      }
+    };
+    reportStage("map");
     const project = store.getCurrent();
     registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
@@ -189,6 +204,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
     this.events.once("shutdown", stopAllAudio);
     this.events.once("destroy", stopAllAudio);
+    // player.ts 로딩 오버레이가 create 완료를 기다릴 수 있게 신호.
+    reportStage("ready");
+    const onReady: unknown = this.game.registry.get("onPlaySceneReady");
+    if (typeof onReady === "function") {
+      (onReady as () => void)();
+    }
+    this.game.events.emit("playscene-ready");
   }
 
   update(_time: number, deltaMs: number): void {

@@ -59,8 +59,8 @@ describe("local dev project URL overrides", () => {
     const project = createDevShowcaseProjectForLocation();
 
     if (!project) throw new Error("expected sample adventure project");
-    expect(project?.meta.title).toBe("별등 마을과 세 개의 봉인");
-    expect(Object.keys(project.maps)).toHaveLength(5);
+    expect(project?.meta.title).toBe("이슬 마을의 종");
+    expect(Object.keys(project.maps)).toHaveLength(2);
   });
 
   it("keeps the sample adventure behind an explicit example URL flag", () => {
@@ -74,8 +74,8 @@ describe("local dev project URL overrides", () => {
     const project = createDevShowcaseProjectForLocation();
 
     if (!project) throw new Error("expected sample adventure project");
-    expect(project?.meta.title).toBe("별등 마을과 세 개의 봉인");
-    expect(Object.keys(project.maps)).toHaveLength(5);
+    expect(project?.meta.title).toBe("이슬 마을의 종");
+    expect(Object.keys(project.maps)).toHaveLength(2);
   });
 
   it("keeps generated showcase URLs available behind the explicit devProject flag", () => {

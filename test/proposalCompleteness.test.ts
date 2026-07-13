@@ -86,6 +86,34 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건)."]);
   });
 
+  it("실내 요청에 야외 집 키트만 쓰면 경고한다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "연금술사의 집 이라는 실내 를 하나 만드렁줘",
+      calls: [
+        call("build_house_kit", { mapId: "m1", kitId: "bright-plaster", wings: [{ x: 4, y: 5, w: 12, h: 10 }] }, { tilesChanged: 80 }),
+      ],
+    });
+    expect(warnings.some((line) => line.includes("실내 요청") && line.includes("야외 집 키트"))).toBe(true);
+  });
+
+  it("실내 요청에 create_map만 하면 경고한다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "실내 맵 하나 만들어줘",
+      calls: [call("create_map", { name: "새로운 시작의 터전", width: 30, height: 30 }, { mapsAdded: 1 })],
+    });
+    expect(warnings.some((line) => line.includes("빈 맵만"))).toBe(true);
+  });
+
+  it("실내 세션 툴을 쓰면 실내 경고가 없다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "연금술사 실내 만들어줘",
+      calls: [
+        call("start_interior_room_session", { mapId: "map_interior_1", door: { x: 8, y: 10 }, theme: "study" }, { mapsAdded: 1, tilesChanged: 40 }),
+      ],
+    });
+    expect(warnings.filter((line) => line.includes("실내"))).toEqual([]);
+  });
+
   it("진행 지시에서 체인지셋이 비면 질문 대신 실행 힌트를 붙인다", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "진행하라고",

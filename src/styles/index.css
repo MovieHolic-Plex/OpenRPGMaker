@@ -22,6 +22,7 @@
 @import "./runtime/battle.css";
 @import "./runtime/commerce.css";
 @import "./runtime/title.css";
+@import "./runtime/playLoading.css";
 @import "./runtime/timer.css";
 @import "./runtime/touchpad.css";
 @import "./runtime/pictures.css";

@@ -24,8 +24,8 @@ type InteriorTerrainBlockSpec = {
 export const INTERIOR_TERRAIN_AUTOTILE_PREFIX = "harness-interior-house-v1-terrain-";
 
 const INTERIOR_TERRAIN_BLOCKS: readonly InteriorTerrainBlockSpec[] = [
-  { key: "hedge", name: "산울타리 수풀", col: 0, row: 12 },
-  { key: "mound", name: "흙무더기 군집", col: 3, row: 12 },
+  { key: "hedge", name: "숲 수풀(월드맵 겸용)", col: 0, row: 12 },
+  { key: "mound", name: "산 둔덕(월드맵 겸용)", col: 3, row: 12 },
   { key: "dirt", name: "흙땅", col: 6, row: 0 },
   { key: "deck", name: "나무 단상(데크)", col: 6, row: 4 },
   { key: "cobble", name: "자갈 포장", col: 6, row: 8 },

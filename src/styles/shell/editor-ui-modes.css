@@ -209,12 +209,91 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
   opacity: 0.45;
 }
 
+/* 아이콘만으로는 초보가 못 알아본다 — hover/focus 즉시 라벨을 오른쪽에 띄운다
+   (네이티브 title 툴팁은 ~1초 지연이라 발견성이 낮다). */
+.basic-rail-btn[data-rail-label]:hover::after,
+.basic-rail-btn[data-rail-label]:focus-visible::after {
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 96%, #000);
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  border-radius: 6px;
+  color: var(--editor-text, #e8eefc);
+  content: attr(data-rail-label);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  left: calc(100% + 8px);
+  padding: 5px 8px;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  z-index: 70;
+}
+
 .basic-rail-sep {
   background: var(--editor-line, #2a3550);
   flex-shrink: 0;
   height: 1px;
   margin: 2px 0;
   width: 22px;
+}
+
+/* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */
+
+.coach-mark-card {
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 97%, #000);
+  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 60%, transparent);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  padding: 12px 14px;
+  position: fixed;
+  z-index: 90;
+}
+
+.coach-mark-head {
+  color: var(--editor-text, #e8eefc);
+  font: 700 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  margin-bottom: 6px;
+}
+
+.coach-mark-body {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 400 12px/1.55 var(--font-ui, system-ui, sans-serif);
+  margin-bottom: 10px;
+}
+
+.coach-mark-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.coach-mark-skip,
+.coach-mark-next {
+  border-radius: 6px;
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 6px 12px;
+}
+
+.coach-mark-skip {
+  background: transparent;
+  border: 1px solid var(--editor-line, #2a3550);
+  color: var(--editor-text-muted, #9aa8c7);
+}
+
+.coach-mark-next {
+  background: var(--editor-blue, #3d6df0);
+  border: 1px solid transparent;
+  color: #fff;
+}
+
+.coach-mark-skip:hover {
+  border-color: var(--editor-line-strong, #3a4a6a);
+  color: var(--editor-text, #e8eefc);
+}
+
+.coach-mark-next:hover {
+  filter: brightness(1.12);
 }
 
 .basic-rail-tile-thumb {

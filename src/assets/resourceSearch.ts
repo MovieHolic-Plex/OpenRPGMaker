@@ -8,8 +8,9 @@ import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
+import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
-import { INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
+import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
@@ -136,6 +137,7 @@ function monsterCandidates(): ResourceCandidate[] {
 // 타일 인덱스는 칩셋마다 의미가 다르므로 combined_town 테이블을 다른 칩셋에 적용하면 오답이 된다.
 function bundledTileSemantics(tileset: TilesetDef | undefined): readonly { index: number; label: string; tags: readonly string[] }[] {
   if (tileset?.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_SEMANTICS;
+  if (tileset?.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_SEMANTICS;
   // 기본(타일셋 미지정 포함): combined_town — 기존 동작 유지.
   return COMBINED_TOWN_TILE_SEMANTICS;
 }
@@ -161,9 +163,15 @@ function tileCandidates(tileset: TilesetDef | undefined): ResourceCandidate[] {
       if (!label && !description && !(meta.tags?.length)) return;
       const entry = byTile.get(tile) ?? { label: label || `타일 ${tile}`, tags: [] };
       if (label) {
-        // 사용자 라벨이 우선 — 기존(번들) 라벨은 태그로 강등해 계속 검색되게 한다.
-        if (entry.label !== label) entry.tags.push(entry.label);
-        entry.label = label;
+        // 사용자 수기 라벨만 큐레이션(번들 시맨틱)을 이긴다 — 하네스 시드 라벨(bundled-default)은
+        // 태그로 강등해 계속 검색되게 한다(구버전은 source 불문 밀어내서 큐레이션이 가려졌음).
+        const userAuthored = meta.source === "user" || meta.origin === "user";
+        if (userAuthored) {
+          if (entry.label !== label) entry.tags.push(entry.label);
+          entry.label = label;
+        } else if (entry.label !== label) {
+          entry.tags.push(label);
+        }
       }
       if (description) entry.tags.push(description);
       entry.tags.push(...(meta.tags ?? []));

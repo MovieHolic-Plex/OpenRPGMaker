@@ -336,7 +336,7 @@ function menuCommands(
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         { kind: "separator" },
-        item("내보내기...", "menu-project-export", () => void doExport()),
+        item("내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("가져오기...", "menu-project-import", () => doImport()),
       ];
     case "map":
@@ -377,8 +377,9 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
   return { kind: "item", label, testId, onClick, disabled };
 }
 
-const SHORTCUT_HELP =
-  "F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
+// 커맨드 팔레트("도움말: 단축키")에서도 재사용한다.
+export const SHORTCUT_HELP =
+  "V/B/E/G/N/I: 선택/브러시/지우개/채우기/이벤트/스포이트  •  F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+K: 명령·맵·스킬 검색  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
 
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
@@ -529,41 +530,43 @@ function applyHistory(action: () => boolean, topbar: HTMLElement): void {
 async function newProject(): Promise<void> {
   if (!(await showConfirm({ title: "새 프로젝트", message: "현재 작업을 지우고 새 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   await store.clearAll();
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  const { focusProjectStartMap } = await import("@/editor/mapSelection");
+  focusProjectStartMap();
   toast("새 프로젝트를 만들었습니다", "ok");
 }
 
 async function newTrainingExamplesProject(): Promise<void> {
   if (!(await showConfirm({ title: "학습 예시 12맵", message: "현재 작업을 지우고 학습 예시 12맵 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createTrainingExamplesProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("학습 예시 12맵을 불러왔습니다 — 각 맵 이름의 주제대로 예시를 채워넣으세요", "ok");
 }
 
 async function newScarloxyPokemonDemoProject(): Promise<void> {
   if (!(await showConfirm({ title: "Scarloxy 포켓몬풍 데모", message: "현재 작업을 지우고 Scarloxy 포켓몬풍 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createScarloxyPokemonDemoProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("Scarloxy 포켓몬풍 데모를 불러왔습니다 — 박사에게 스타터를 받고 남쪽 풀숲에서 포획해 보세요", "ok");
 }
 
 async function newScarloxyDemoProject(): Promise<void> {
   if (!(await showConfirm({ title: "Scarloxy 데모", message: "현재 작업을 지우고 Scarloxy 몬스터 초원 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createScarloxyDemoProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("Scarloxy 몬스터 초원 데모를 불러왔습니다", "ok");
 }
 
 async function newSampleAdventureProject(): Promise<void> {
   if (!(await showConfirm({ title: "예제 프로젝트", message: "현재 작업을 지우고 예제 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createSampleAdventureProject());
-  const project = store.getCurrent();
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+  focusLoadedProjectStartMap();
   toast("예제 프로젝트를 불러왔습니다", "ok");
+}
+
+function focusLoadedProjectStartMap(): void {
+  void import("@/editor/mapSelection").then(({ focusProjectStartMap }) => {
+    focusProjectStartMap();
+  });
 }
 
 function newMap(): void {
@@ -596,7 +599,7 @@ async function togglePlayMode(): Promise<void> {
 }
 
 async function openTestPlayWindow(): Promise<void> {
-  await store.flush();
+  // flush 는 openTestPlayModal 이 창을 먼저 띄운 뒤 진행(로딩 UI 표시).
   window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
 }
 
@@ -610,7 +613,7 @@ function doLoad(topbar: HTMLElement): void {
 // 1) `await store.flush()`가 저장 오류 시 reject → 함수 전체가 무반응으로 중단(다운로드 없음).
 // 2) anchor가 DOM에 붙지 않은 채 click() — 일부 환경에서 다운로드가 시작되지 않음.
 // 3) click() 직후 동기 revokeObjectURL — 브라우저가 fetch를 시작하기 전에 URL이 무효화될 수 있음.
-async function doExport(): Promise<void> {
+export async function exportProjectPackage(): Promise<void> {
   try {
     // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).
     await store.flush().catch((error) => {
@@ -701,6 +704,6 @@ function replaceProjectFromJson(json: string): void {
 
 function replaceProject(project: Project): void {
   store.replaceProject(project);
-  editorState.set({ currentMapId: project.startMapId, selectedEventId: null });
+  focusLoadedProjectStartMap();
   toast("가져오기 완료", "ok");
 }

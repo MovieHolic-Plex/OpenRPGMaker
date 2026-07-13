@@ -16,13 +16,12 @@ import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval"
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { showConfirm } from "@/editor/ui/modal";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
-import { eventLayerSwitchPrompt, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
+import { eventLayerSwitchNotice, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
 import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
@@ -718,17 +717,12 @@ export class EditScene extends PhaserRuntime.Scene {
       return false;
     }
     if (!existing) return false;
-    // 커스텀 인앱 모달(§2.4): 확인은 비동기로 받고, 제안이 뜬 시점에 페인팅은 즉시 멈춘다.
+    // 더블클릭은 "이걸 편집하고 싶다"가 명확하다(D13) — 확인 모달 없이 즉시 전환하고 편집기를 연다.
     this.isPainting = false;
     this.lastPaintKey = "";
-    void showConfirm({ title: "이벤트 레이어 전환", message: eventLayerSwitchPrompt(existing), confirmLabel: "전환" }).then((confirmed) => {
-      if (!confirmed) {
-        toast("이벤트 레이어 전환을 취소했습니다.", "info");
-        return;
-      }
-      editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
-      openEventEditorModal(mapId, existing.id);
-    });
+    editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
+    toast(eventLayerSwitchNotice(existing), "info");
+    openEventEditorModal(mapId, existing.id);
     return true;
   }
 
@@ -771,8 +765,13 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private mapId(): MapId | null {
-    const id = editorState.get().currentMapId ?? store.getCurrent().startMapId;
-    return id;
+    // 프로젝트 교체 후에도 옛 mapId가 남아 있으면 맵이 안 그려지므로 유효한 id로 해석한다.
+    const project = store.getCurrent();
+    const preferred = editorState.get().currentMapId;
+    if (preferred && project.maps[preferred]) return preferred;
+    if (project.maps[project.startMapId]) return project.startMapId;
+    const first = Object.keys(project.maps)[0];
+    return first ?? null;
   }
 
   // ── 렌더 ──

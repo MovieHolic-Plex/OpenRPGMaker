@@ -161,7 +161,8 @@ describe("AI 패널 브리지", () => {
     await flushMicrotasks();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    // 자동 펼침은 사용자의 저장된 접힘 선택("1")을 덮어쓰지 않는다.
+    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
     expect(assistantMock.sentMessages).toHaveLength(1);
     expect(assistantMock.sentMessages[0]).toContain("클러스터 수정");
     expect(assistantMock.sentMessages[0]).toContain("\"id\": \"wall_group\"");

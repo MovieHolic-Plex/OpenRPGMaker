@@ -27,6 +27,10 @@ import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice"
 import { renderTitleScreen } from "@/player/titleScreen";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
+import {
+  mountPlayLoadingOverlay,
+  type PlayLoadingOverlay,
+} from "@/player/playLoadingOverlay";
 
 let teardownShell: (() => void) | null = null;
 
@@ -105,28 +109,87 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const surface = createPlaySurface();
     playStage = surface.stage;
     layout.append(surface.viewport);
+    // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
+    const loading = mountPlayLoadingOverlay(layout, "engine");
     surface.sync();
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
     // 합성 이벤트로 기존 키보드 입력 경로(이동/대사/메뉴)를 그대로 구동한다.
     touchPad = createTouchPad(surface.stage);
-    void startPlayGame(surface.phaserContainer, session, {
-      initialEventTestId: eventTestId,
-      trackGlobalGame: options.trackGlobalGame,
-    }).then((nextGame) => {
+    void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt);
+  };
+
+  const bootPlayGame = async (
+    phaserContainer: HTMLElement,
+    session: PlaySession | undefined,
+    eventTestId: string,
+    loading: PlayLoadingOverlay,
+    run: number,
+    startedAt: number
+  ): Promise<void> => {
+    let resolveReady: (() => void) | null = null;
+    const readyPromise = new Promise<void>((resolve) => {
+      resolveReady = resolve;
+    });
+    const signalReady = (): void => {
+      resolveReady?.();
+      resolveReady = null;
+    };
+    try {
+      loading.setStage("engine");
+      loading.setProgress(0.08);
+      const nextGame = await startPlayGame(phaserContainer, session, {
+        initialEventTestId: eventTestId,
+        trackGlobalGame: options.trackGlobalGame,
+        onPlayLoadProgress: (ratio: number) => {
+          if (run !== startRun) return;
+          loading.setStage("assets");
+          // engine ~ assets 구간: 0.15..0.85
+          loading.setProgress(0.15 + Math.max(0, Math.min(1, ratio)) * 0.7);
+        },
+        onPlayLoadStage: (stage: "map" | "ready") => {
+          if (run !== startRun) return;
+          if (stage === "map") {
+            loading.setStage("map");
+            loading.setProgress(0.9);
+            return;
+          }
+          loading.setStage("ready");
+          loading.setProgress(1);
+          signalReady();
+        },
+        onPlaySceneReady: () => {
+          if (run !== startRun) return;
+          signalReady();
+        },
+      });
       if (run !== startRun) {
         nextGame.destroy(true);
+        loading.remove();
         return;
       }
       game = nextGame;
-      const dialogue = createDialogueUI(surface.stage);
+      const dialogue = createDialogueUI(playStage!);
       game.registry.set("dialogue", dialogue);
-      game.registry.set("dialogueHost", surface.stage);
+      game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
+      // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
+      await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
+      if (run !== startRun) {
+        nextGame.destroy(true);
+        loading.remove();
+        return;
+      }
       const scene = nextGame.scene.getScene("PlayScene");
       if (isPlayScene(scene)) scene.refreshRuntimeSurfaces();
       markPlayRender(startedAt);
-    });
+      loading.remove();
+    } catch (error) {
+      console.error("[player] failed to start play game:", error);
+      if (run === startRun) {
+        loading.setStage("error", "플레이를 시작하지 못했습니다");
+      }
+    }
   };
 
   const loadSlot = (slot: SaveSlotIndex, fromTitle: boolean): void => {
@@ -348,4 +411,43 @@ function isRuntimeMenuKey(key: string): key is RuntimeMenuKey {
     key === "e" ||
     key === "x" ||
     key === "Escape";
+}
+
+async function waitForPlaySceneReady(
+  game: Phaser.Game,
+  isCurrentRun: () => boolean,
+  readyPromise: Promise<void>
+): Promise<void> {
+  if (!isCurrentRun()) return;
+  const scene = game.scene.getScene("PlayScene");
+  // create() 가 끝났으면 scene.sys.settings.status 가 RUNNING 이상.
+  if (isPlayScene(scene) && scene.sys?.settings?.status >= 5 /* RUNNING */) {
+    return;
+  }
+  await new Promise<void>((resolve) => {
+    let settled = false;
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      window.clearInterval(pollTimer);
+      window.clearTimeout(timeout);
+      game.events.off("playscene-ready", onReady);
+      resolve();
+    };
+    const onReady = (): void => finish();
+    void readyPromise.then(onReady);
+    game.events.once("playscene-ready", onReady);
+    const pollTimer = window.setInterval(() => {
+      if (!isCurrentRun()) {
+        finish();
+        return;
+      }
+      const current = game.scene.getScene("PlayScene");
+      if (isPlayScene(current) && current.sys?.settings?.status >= 5) {
+        finish();
+      }
+    }, 50);
+    // 대용량 맵 create 가 길어도 오버레이가 영원히 남지 않게 상한.
+    const timeout = window.setTimeout(finish, 30_000);
+  });
 }

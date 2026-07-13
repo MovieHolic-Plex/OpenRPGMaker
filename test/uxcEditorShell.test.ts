@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { eventDisplayName, eventLayerSwitchPrompt, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
+import { eventDisplayName, eventLayerSwitchNotice, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
 import { editorState } from "@/editor/editorState";
 import {
   isMapEditLockTakeoverImmediate,
@@ -97,12 +97,13 @@ describe("UXC D13 이벤트 마커 편집 동선", () => {
     expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 2, hasEvent: false })).toBe(false);
   });
 
-  it("이벤트 이름을 툴팁과 전환 확인 문구에 사용한다", () => {
+  it("이벤트 이름을 툴팁과 전환 안내 문구에 사용한다", () => {
     const event = namedEvent("장터 상인");
 
     expect(eventDisplayName(event)).toBe("장터 상인");
     expect(eventMarkerTooltip(event)).toBe("이벤트: 장터 상인 (4,5)");
-    expect(eventLayerSwitchPrompt(event)).toContain("장터 상인");
+    expect(eventLayerSwitchNotice(event)).toContain("장터 상인");
+    expect(eventLayerSwitchNotice(event)).toContain("이벤트 레이어로 전환");
   });
 });
 

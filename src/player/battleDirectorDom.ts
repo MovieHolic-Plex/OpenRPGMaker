@@ -1,8 +1,10 @@
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
+import type { BattleActionResultSnapshot } from "@/battle/types";
+import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { store } from "@/project/store";
 
-export type BattleDirectorStep = "command" | "target" | "acting" | "impact" | "result";
+export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
 export interface BattleDirectorState {
   readonly step: BattleDirectorStep;
@@ -20,10 +22,43 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   return {
     step: "command",
     lines: [
-      openingLine ?? "명령을 선택하십시오.",
-      actor ? `${actor.name}: 행동을 선택하십시오.` : "게이지가 차는 중입니다.",
+      openingLine ?? (actor ? `${withJosa(actor.name, "은/는")} 무엇을 할까?` : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
+  };
+}
+
+/** 인카운트 인트로 배너 — "야생의 ○○이(가) 나타났다!" */
+export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
+  const names = snapshot.enemies.filter((enemy) => !enemy.defeated).map((enemy) => enemy.name);
+  const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
+  return {
+    step: "intro",
+    lines: [`${withJosa(label, "이/가")} 나타났다!`],
+    activeActorRecordId: snapshot.activeActorId,
+  };
+}
+
+/** 행동 로그 엔트리 하나를 이름이 드러나는 메시지로 변환(다중 적 턴 개별 연출용). */
+export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot): BattleDirectorState {
+  const user = snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId)
+    ?? snapshot.actors.find((actor) => actor.recordId === entry.userRecordId);
+  const target = snapshot.actors.find((actor) => actor.id === entry.targetId)
+    ?? snapshot.enemies.find((enemy) => enemy.id === entry.targetId);
+  const userName = user?.name ?? "적";
+  const action = entry.skillName
+    ? `${withJosa(userName, "이/가")} ${withJosa(entry.skillName, "을/를")} 사용했다!`
+    : `${userName}의 공격!`;
+  const impact = !entry.hit
+    ? "공격이 빗나갔다!"
+    : entry.amount > 0
+      ? `${withJosa(target?.name ?? "대상", "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
+      : "효과가 충분하지 않았다.";
+  return {
+    step: "acting",
+    lines: [action, impact],
+    activeActorRecordId: undefined,
+    targetId: entry.targetId,
   };
 }
 
@@ -79,7 +114,7 @@ function impactLine(
   after: BattleSnapshot
 ): string {
   if (command.kind === "defend") return "받는 피해를 줄일 준비를 마쳤다.";
-  if (command.kind === "escape") return "전장에서 벗어나려 한다.";
+  if (command.kind === "escape") return after.result === "escape" ? "무사히 도망쳤다!" : "그러나 도망칠 수 없었다!";
   if (command.kind === "switch") return "전열을 교체했다.";
   if (command.kind === "capture") return captureImpactLine(after.lastCaptureResult, target);
   if (result && !result.hit) return "공격이 빗나갔다!";
@@ -97,7 +132,7 @@ export function targetSelectDirectorState(snapshot: BattleSnapshot): BattleDirec
     step: "target",
     lines: [
       actor ? `${actor.name}: 대상을 선택하십시오.` : "대상을 선택하십시오.",
-      selectedEnemy ? `${selectedEnemy.name}을 겨냥하고 있습니다.` : "선택 가능한 적이 없습니다.",
+      selectedEnemy ? `${withJosa(selectedEnemy.name, "을/를")} 겨냥하고 있습니다.` : "선택 가능한 적이 없습니다.",
     ],
     activeActorRecordId: actor?.recordId,
     targetId: selectedEnemy?.id,
@@ -260,27 +295,28 @@ function commandTarget(
 
 function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undefined): string {
   const actorName = actor?.name ?? "아군";
+  const subject = withJosa(actorName, "이/가");
   switch (command.kind) {
     case "attack":
       return `${actorName}의 공격!`;
     case "skill":
-      return `${actorName}이 ${skillName(command.skillId)}을 사용했다!`;
+      return `${subject} ${withJosa(skillName(command.skillId), "을/를")} 사용했다!`;
     case "item":
-      return `${actorName}이 ${itemName(command.itemId)}을 사용했다!`;
+      return `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
     case "capture":
-      return `${actorName}이 ${itemName(command.captureItemId)}을 던졌다!`;
+      return `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
     case "defend":
-      return `${actorName}이 방어 태세를 취했다.`;
+      return `${subject} 방어 태세를 취했다.`;
     case "escape":
-      return `${actorName}이 후퇴를 시도했다.`;
+      return `${subject} 도망치려 한다…`;
     case "switch":
-      return `${actorName}이 교체를 지시했다.`;
+      return `${subject} 교체를 지시했다.`;
   }
 }
 
 function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: BattleBattlerSnapshot | undefined): string {
   if (!result) return "포획을 시도했다.";
-  if (result.success) return `${target?.name ?? "몬스터"} 포획에 성공했다!`;
+  if (result.success) return `신난다! ${withJosa(target?.name ?? "몬스터", "을/를")} 잡았다!`;
   switch (result.blockedReason) {
     case "uncapturable":
       return "이 전투에서는 포획할 수 없다.";
@@ -291,7 +327,7 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
     case "missingTarget":
       return "포획할 대상이 없다.";
     case undefined:
-      return "포획에 실패했다.";
+      return "아앗, 아깝다! 몬스터가 구슬에서 빠져나왔다!";
   }
 }
 
@@ -324,6 +360,10 @@ function rewardsLine(snapshot: BattleSnapshot): string {
   if (levelUps.length === 0) return base;
   const names = levelUps.map((entry) => `${entry.actorName} Lv.${entry.toLevel}`).join(", ");
   return `${base} · 레벨 업! ${names}`;
+}
+
+export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
+  return rewardRows(snapshot).length;
 }
 
 function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {

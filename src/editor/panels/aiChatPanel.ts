@@ -15,6 +15,7 @@ import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeac
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
+import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -32,16 +33,18 @@ import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
   deriveTitle,
+  listConversations,
   loadConversation,
   loadLatestConversation,
   projectConversationContextKey,
   saveConversation,
+  searchConversations,
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
-import { renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
+import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createCommandBarElements } from "./aiCommandBar";
@@ -452,7 +455,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
   // 큐에 쌓고 "대기 중 N건"으로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
-  const pendingSends: { text: string; displayAs?: string }[] = [];
+  const pendingSends: { text: string; displayAs?: string; explicitSkillId?: string }[] = [];
   const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
   queueIndicator.hidden = true;
   const refreshQueueIndicator = (): void => {
@@ -463,7 +466,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const drainPendingSends = (): void => {
     const next = pendingSends.shift();
     refreshQueueIndicator();
-    if (next) void sendText(next.text, next.displayAs);
+    if (next) {
+      void sendText(
+        next.text,
+        next.displayAs,
+        next.explicitSkillId ? { explicitSkillId: next.explicitSkillId } : undefined,
+      );
+    }
   };
 
   let keyPromptBubble: HTMLElement | null = null;
@@ -541,12 +550,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
   };
 
-  const sendText = async (text: string, displayAs?: string): Promise<void> => {
+  const sendText = async (
+    text: string,
+    displayAs?: string,
+    opts?: { readonly explicitSkillId?: string | null },
+  ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
     if (!ensureConfigReadyForSend()) return;
     if (turnBusy) {
-      pendingSends.push({ text: trimmed, ...(displayAs !== undefined ? { displayAs } : {}) });
+      pendingSends.push({
+        text: trimmed,
+        ...(displayAs !== undefined ? { displayAs } : {}),
+        ...(opts?.explicitSkillId ? { explicitSkillId: opts.explicitSkillId } : {}),
+      });
       refreshQueueIndicator();
       return;
     }
@@ -557,7 +574,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (displayAs !== undefined && displayAs !== trimmed) appendSkillPromptToggle(userBubble, trimmed);
     const session = ensureSession();
     await executeTurn(session, trimmed, (onEvent, signal) =>
-      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal)
+      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, {
+        explicitSkillId: opts?.explicitSkillId,
+      })
     );
   };
 
@@ -711,6 +730,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 대부분은 상태줄만. 재시도·오류 등 행동 신호만 말풍선.
         setStatus(event.text);
         if (shouldShowStatusInChat(event.text)) appendBubble("system", event.text);
+      } else if (event.type === "work_plan") {
+        const s = event.plan;
+        const items = s.layers.flatMap((l) => l.items);
+        const done = items.filter((i) => i.status === "done" || i.status === "skipped").length;
+        setStatus(`작업 계획 ${done}/${items.length}`);
       }
     };
 
@@ -882,6 +906,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!selection) {
       selectionTaskActive = false;
       refreshContextChips();
+      await sendText(text);
+      return;
+    }
+    // 실내/새 맵은 선택 영역 하드 클립에 담기지 않는다(audit 18: create_map 후 0칸 폐기).
+    // 일반 채팅 전량 경로로 우회해 start_interior_room_session 등이 제안으로 남게 한다.
+    if (isRegionEscapingIntent(text)) {
+      selectionTaskActive = false;
+      refreshContextChips();
+      toast("실내·새 맵 요청은 선택 영역 밖 작업이라 일반 채팅으로 진행합니다", "info");
       await sendText(text);
       return;
     }
@@ -1130,6 +1163,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       selection: state.selection
         ? { mapId: state.selection.mapId, x: state.selection.x, y: state.selection.y, width: state.selection.width, height: state.selection.height }
         : null,
+      tileset: currentTilesetSkillContext(),
     };
   };
 
@@ -1155,10 +1189,52 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     recordSkillUse(skill.id);
     drawer.element.hidden = true;
     // 채팅 표시도 TUI 명령 줄 — "🏠 집 짓기" 같은 앱 라벨 쓰지 않음.
-    void sendText(prompt, `/${skill.id}`);
+    // explicitSkillId: 집/실내 되묻기 게이트를 건너뛰고 스킬이 고른 경로를 신뢰한다.
+    void sendText(prompt, `/${skill.id}`, { explicitSkillId: skill.id });
   };
 
-  // 빈 대화 시작 화면 — 깔끔한 최소 상태. (비주얼 카드 등은 나중에)
+  // 빈 대화 시작 화면 — 최소 힌트 + 클릭 한 번으로 입력창을 채우는 예시 3개.
+  // 예시는 전송하지 않고 입력창만 채운다(키 미설정 오류 회피 + 편집 여지).
+  const START_EXAMPLE_PROMPTS: readonly { readonly label: string; readonly prompt: string }[] = [
+    { label: "🏘 작은 마을 만들기", prompt: "빈 곳에 집 두세 채와 길이 이어진 작은 마을을 만들어줘." },
+    { label: "🌲 지형 다듬기", prompt: "맵 가장자리를 나무와 수풀로 자연스럽게 다듬어줘." },
+    { label: "💬 NPC 대사 넣기", prompt: "마을 주민 NPC를 하나 만들고 말을 걸면 인사하는 대사를 넣어줘." },
+  ];
+  // 대화 기록 검색 — 제목 부분일치(searchConversations), 클릭으로 복원. 기록 2건 이상일 때만 노출
+  // (1건이면 "이전 대화 이어가기" 버튼과 중복).
+  const buildConversationHistoryCard = (): HTMLElement | null => {
+    if (listConversations().length < 2) return null;
+    const rows = el("div", { class: "ai-start-history-rows", dataset: { testid: "ai-start-history-rows" } });
+    const renderRows = (query: string): void => {
+      rows.replaceChildren(
+        ...searchConversations(query).slice(0, 5).map((conversation) =>
+          el("button", {
+            class: "ai-start-history-row",
+            attrs: { type: "button", title: conversation.title },
+            dataset: { testid: `ai-start-history-${conversation.id}` },
+            children: [
+              el("span", { class: "ai-start-history-title", text: conversation.title }),
+              el("span", { class: "ai-start-history-meta", text: `${conversation.turnCount}턴` }),
+            ],
+            on: { click: () => restoreConversationById(conversation.id) },
+          })
+        ),
+      );
+    };
+    const search = el("input", {
+      class: "ai-start-history-search",
+      attrs: { type: "search", placeholder: "대화 기록 검색…" },
+      dataset: { testid: "ai-start-history-search" },
+      on: { input: () => renderRows(search.value) },
+    }) as HTMLInputElement;
+    renderRows("");
+    return el("div", {
+      class: "ai-start-basic-card ai-start-history",
+      dataset: { testid: "ai-start-history" },
+      children: [el("div", { class: "ai-start-basic-card-title", text: "대화 기록" }), search, rows],
+    });
+  };
+
   const buildStartScreen = (): HTMLElement => {
     const resume = resumeCandidate
       ? [el("button", {
@@ -1169,6 +1245,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           on: { click: () => restoreConversationById(resumeCandidate.id) },
         })]
       : [];
+    const history = buildConversationHistoryCard();
     return el("div", {
       class: "ai-start-screen is-minimal",
       dataset: { testid: "ai-start-screen" },
@@ -1176,9 +1253,33 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ...resume,
         el("div", {
           class: "ai-start-empty-hint",
-          text: "아래에 요청을 입력하세요",
+          text: "아래에 요청을 입력하세요 — 예를 들어:",
           dataset: { testid: "ai-start-empty-hint" },
         }),
+        el("div", {
+          class: "ai-start-examples",
+          dataset: { testid: "ai-start-examples" },
+          children: START_EXAMPLE_PROMPTS.map((example, index) =>
+            el("button", {
+              class: "ai-start-example-chip",
+              text: example.label,
+              attrs: { type: "button", title: example.prompt },
+              dataset: { testid: `ai-start-example-${index}` },
+              on: {
+                click: () => {
+                  input.value = example.prompt;
+                  input.focus();
+                },
+              },
+            }),
+          ),
+        }),
+        el("div", {
+          class: "ai-start-shortcut-hint",
+          text: "Ctrl+K 명령·맵·스킬 검색 · 캔버스에서 영역을 드래그하면 ✨ AI 작업",
+          dataset: { testid: "ai-start-shortcut-hint" },
+        }),
+        ...(history ? [history] : []),
       ],
     });
   };
@@ -1784,12 +1885,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     autoCollapseTimer = null;
   };
   // 접힌 패널을 AI 작업용으로 펼친다. 이미 열려 있으면 폭만 유지하고 종료 후 재접기 플래그는 유지.
+  // 자동 경로 — 사용자의 저장된 접힘 선택(savePanelCollapsed)은 건드리지 않는다.
   expandForAiWork = (): void => {
     clearAutoCollapseTimer();
     if (!collapsed) return;
     collapsed = false;
     if (studio) applyStudio(false);
-    savePanelCollapsed(false);
     applyCollapsed();
   };
   // AI 작업 종료 후 맵 우선으로 접기 (이미 펼쳐 있던 경우 포함).
@@ -1800,7 +1901,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       collapseAfterAiWork = false;
       collapsed = true;
       if (studio) applyStudio(false);
-      savePanelCollapsed(true);
       applyCollapsed();
       return;
     }
@@ -1811,7 +1911,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       collapseAfterAiWork = false;
       collapsed = true;
       if (studio) applyStudio(false);
-      savePanelCollapsed(true);
       applyCollapsed();
     }, AUTO_COLLAPSE_AFTER_AI_MS);
   };

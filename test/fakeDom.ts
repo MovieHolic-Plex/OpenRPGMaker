@@ -102,6 +102,10 @@ export class FakeElement extends FakeNode {
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;
+  /** HTMLElement 호환 — 제안 모달 open()이 빈 host 가드에 사용. */
+  get childElementCount(): number {
+    return this.childNodes.filter((child) => child instanceof FakeElement).length;
+  }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
     add: (...tokens: string[]): void => {

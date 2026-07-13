@@ -373,10 +373,14 @@ export function createProposalHost(options: {
   };
 
   const renderProposal = (result: TurnResult, extraWarnings: readonly string[] = [], assistantBubble: HTMLElement | null = null): void => {
+    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
+    // 제안·경고 모두 없는 턴(순수 채팅 응답)은 기존 대기 카드를 건드리지 않는다.
+    // 예전에는 여기서 replaceChildren 후 early return 해서 모달 헤더(N건)만 남고
+    // 본문이 빈 껍데기로 남는 버그가 있었다(큐 연속 전송·후속 질문 시 재현).
+    if (result.proposedCalls.length === 0 && lines.length === 0) return;
+
     proposalHost.replaceChildren();
     proposalHost.classList.remove("is-sticky-empty");
-    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
-    if (result.proposedCalls.length === 0 && lines.length === 0) return;
 
     if (result.proposedCalls.length === 0) {
       closeProposalModal();

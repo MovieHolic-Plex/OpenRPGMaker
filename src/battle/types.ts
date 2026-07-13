@@ -67,6 +67,9 @@ export interface BattleRuntimeOptions {
   readonly sessionState?: BattleSessionState;
   readonly captureLocation?: MonsterCaughtAt;
   readonly onMonsterCaptured?: (capture: BattleCapturedMonsterSnapshot) => void;
+  // 아군측을 파티 몬스터로 구성할 때 필드 순서대로의 인스턴스 목록.
+  // system.battleParty === "monsters" 이고 이 값이 비어있지 않을 때 액터 대신 사용된다.
+  readonly partyMonsters?: readonly MonsterInstance[];
   readonly rng?: Rng;
 }
 
@@ -115,6 +118,10 @@ export interface BattleBattlerSnapshot {
   // 플레이어 몬스터 배틀러의 종족 id(스프라이트/타입 해석용). 액터·적 스냅샷은 미설정.
   readonly speciesId?: MonsterSpeciesId;
   readonly classId?: string;
+  readonly level?: number;
+  /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
+  readonly monsterInstanceId?: string;
+  readonly speciesId?: string;
   readonly name: string;
   readonly hp: number;
   readonly maxHp: number;
@@ -263,6 +270,8 @@ export interface BattleSnapshot {
   readonly enemies: readonly BattleBattlerSnapshot[];
   readonly lastAnimation?: BattleAnimationSnapshot;
   readonly lastActionResult?: BattleActionResultSnapshot;
+  /** 전투 시작부터 누적된 행동 결과 로그(append-only). 다중 행동 연출용. */
+  readonly actionLog: readonly BattleActionResultSnapshot[];
   /** Present when the last resolved action should show hit-feel juice. */
   readonly hitFeel?: BattleHitFeelSnapshot;
   readonly lastCaptureResult?: BattleCaptureResultSnapshot;

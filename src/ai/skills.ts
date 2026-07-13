@@ -10,7 +10,7 @@ import {
   type ClusterGroupSnapshot,
 } from "@/ai/clusterAssistPrompt";
 import { store } from "@/project/store";
-import { pokemonPresetGroupIds, pokemonPresetRoleLabels } from "@/project/defaults";
+import { deleteSupabaseUserSkill, recordSupabaseUserSkill } from "@/project/supabaseProjectSync";
 
 export type SkillParamType = "enum" | "number" | "text";
 export interface SkillRectArg {
@@ -30,12 +30,28 @@ export interface SkillParam {
   readonly max?: number;
   readonly defaultValue?: string | number;
   readonly placeholder?: string;
+  /**
+   * 컨텍스트 자동 주입 — 인자 폼의 초기값을 SkillRunContext에서 채운다(사용자 덮어쓰기 가능).
+   * undefined를 반환하면 defaultValue/placeholder 현행 동작으로 폴백.
+   */
+  readonly autoFill?: (ctx: SkillRunContext) => string | number | undefined;
+}
+
+/** 타일 팔레트/시트에서 파생한 타일셋 컨텍스트 — 타일 지식 스킬 인자 자동 주입용. */
+export interface SkillTilesetContext {
+  readonly id: string;
+  /** 팔레트에서 선택된 타일이 속한 그룹(있으면). */
+  readonly selectedGroupId?: string;
+  /** 팔레트 시트 드래그 선택 사각형(타일 단위 x,y,w,h — 있으면). */
+  readonly sheetRect?: SkillRectArg;
 }
 
 export interface SkillRunContext {
   readonly mapId: string | null;
   readonly mapName: string | null;
   readonly selection: { readonly mapId: string; readonly x: number; readonly y: number; readonly width: number; readonly height: number } | null;
+  /** 현재 타일셋 컨텍스트 — 구성처가 채우지 않으면 자동 주입 없이 동작(하위호환). */
+  readonly tileset?: SkillTilesetContext | null;
 }
 
 export interface SkillDef {
@@ -115,6 +131,10 @@ function rectArg(args: Record<string, SkillArgValue>, key: string): SkillRectArg
   return { h, w, x, y };
 }
 
+function rectText(rect: SkillRectArg): string {
+  return `${rect.x},${rect.y},${rect.w},${rect.h}`;
+}
+
 function clusterGroupSnapshot(tilesetId: string, groupId: string): ClusterGroupSnapshot | null {
   const group = store.getCurrent().tilesets[tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
   if (!group) return null;
@@ -165,8 +185,8 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
     source: "system",
     kind: "prompt",
     params: [
-      { key: "tilesetId", label: "타일셋 ID", type: "text", placeholder: "tiles_default" },
-      { key: "groupId", label: "그룹 ID", type: "text", placeholder: "roof_main" },
+      { key: "tilesetId", label: "타일셋 ID", type: "text", placeholder: "tiles_default", autoFill: (ctx) => ctx.tileset?.id },
+      { key: "groupId", label: "그룹 ID", type: "text", placeholder: "roof_main", autoFill: (ctx) => ctx.tileset?.selectedGroupId },
     ],
     buildPrompt: (args) => {
       const tilesetId = textArg(args, "tilesetId");
@@ -183,8 +203,8 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
     source: "system",
     kind: "prompt",
     params: [
-      { key: "tilesetId", label: "타일셋 ID", type: "text", placeholder: "tiles_default" },
-      { key: "rect", label: "범위", type: "text", placeholder: "x,y,w,h" },
+      { key: "tilesetId", label: "타일셋 ID", type: "text", placeholder: "tiles_default", autoFill: (ctx) => ctx.tileset?.id },
+      { key: "rect", label: "범위", type: "text", placeholder: "x,y,w,h", autoFill: (ctx) => (ctx.tileset?.sheetRect ? rectText(ctx.tileset.sheetRect) : undefined) },
       { key: "tileIds", label: "타일 ID", type: "text", placeholder: "예: 12,13,14" },
     ],
     buildPrompt: (args) => {
@@ -206,7 +226,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
     source: "system",
     kind: "prompt",
     params: [
-      { key: "tilesetId", label: "타일셋 ID", type: "text", placeholder: "tiles_default" },
+      { key: "tilesetId", label: "타일셋 ID", type: "text", placeholder: "tiles_default", autoFill: (ctx) => ctx.tileset?.id },
       { key: "sampleTiles", label: "첫 배치", type: "text", placeholder: "예: 12,13,14" },
       { key: "total", label: "총 미분류", type: "number", min: 0, max: 10000, defaultValue: 0 },
     ],
@@ -334,6 +354,57 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
     displayAs: (args) => `🏘️ 마을 생성 — ${args.theme || "기본"} / 집 ${args.houses}채 / NPC ${args.npcs}명`,
   },
   {
+    id: "build-interior",
+    icon: "🛏️",
+    name: "실내 방 시공",
+    description: "villager-room-v1 하네스로 실내 맵을 짓습니다 — 공간(방·복도) 역할별 시공 + 평가·자가수정 루프.",
+    source: "system",
+    kind: "prompt",
+    params: [
+      {
+        key: "brief",
+        label: "요구사항",
+        type: "text",
+        placeholder: "예: 석재 벽 연금술사의 집 — 공방(돌바닥)·서재·접객 홀",
+      },
+      { key: "width", label: "가로", type: "number", min: 10, max: 40, defaultValue: 18 },
+      { key: "height", label: "세로", type: "number", min: 9, max: 40, defaultValue: 14 },
+      {
+        key: "wallMaterial",
+        label: "벽 재질",
+        type: "enum",
+        defaultValue: "cream",
+        options: [
+          { value: "cream", label: "크림(민가)" },
+          { value: "stone-brick", label: "석재" },
+          { value: "gold-brick", label: "금장(귀족 — 붉은 카펫)" },
+        ],
+      },
+      { key: "rooms", label: "방 수(1=단일 홀)", type: "number", min: 1, max: 6, defaultValue: 3 },
+    ],
+    buildPrompt: (args, ctx) => [
+      `실내 맵을 새로 지어주세요. 요구사항: ${args.brief || "아늑한 주민 집"} (${args.width}×${args.height}, 벽=${args.wallMaterial}, 방 ${args.rooms}개)`,
+      ctx.mapName ? `현재 맵(${ctx.mapName})은 건드리지 말고 새 mapId(예: map_interior_<슬러그>_v1)로 만드세요.` : "새 mapId(예: map_interior_<슬러그>_v1)로 만드세요.",
+      "",
+      "절차(준수 — 실내 하네스 villager-room-v1):",
+      "1. 플랜 설계(당신의 역할) — '실내'는 상위 개념, 배치는 공간 단위다. rooms[]에 방마다 역할 테마를 부여:",
+      "   bedroom|study|dining|kitchen|storage|tavern|corridor. corridor는 복도(바닥 점유물 없음, 전시물만).",
+      "   좌표 문법: 좌우 인접 방은 1열 파티션(방 사이 x 간격 1), 상하 인접 방은 3행 파티션(y 간격 3).",
+      "   innerDoors는 파티션 개구부 — 수평 파티션은 트림 행(위 방 바닥 최하단+1) 좌표, 수직 파티션은 그 열의 바닥 행.",
+      "   door는 남측 바닥 경계 셀. 바닥 재질은 room.floorTile(돌 12, 널 102, 짚 돗자리 139; 기본 나무 72).",
+      "   벽 재질 gold-brick은 귀족 전용(식당 러그가 붉은 카펫이 됨). 붉은 카펫 계단(465~467)도 귀족 전용.",
+      "2. start_interior_room_session({ mapId, name, width, height, rooms, innerDoors, door, theme, wallMaterial })",
+      "3. advance_interior_room_build({ sessionId }) 반복 — floor→walls→furniture→entrance→critique 순서로 done까지.",
+      "4. evaluate_interior_room({ sessionId }) — 불합격이면 feedbackForLlm 지침을 따르세요:",
+      "   방 하나가 문제면 furnish_interior_space({ sessionId, roomId, theme?, seed? })로 그 방만 재시공(테마 교체/재추첨),",
+      "   전반 문제면 advance_interior_room_build({ forceLayer: \"furniture\" })로 가구층 재실행. 최대 3회 재평가.",
+      "5. 합격 후 show_map_region으로 결과를 확인하고 방별 구성(테마·좌표)을 한 줄씩 보고하세요.",
+      SPEC_RULE,
+      HONEST_REPORT_RULE,
+    ].join("\n"),
+    displayAs: (args) => `🛏️ 실내 방 시공 — ${args.width}×${args.height} ${args.wallMaterial} / 방 ${args.rooms}개`,
+  },
+  {
     id: "quest-builder",
     icon: "📜",
     name: "퀘스트 빌더",
@@ -456,38 +527,37 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
     displayAs: (args) => `🎒 아이템 생성 — ${args.count}개 (${String(args.concept).slice(0, 30)})`,
   },
   {
-    id: "make-monster-collection",
-    icon: "🐾",
-    name: "몬스터 수집 게임",
-    description: "포켓몬처럼 몬스터를 잡아 파티로 전투하는 게임을 한 번에 배선합니다(수집 ON+스타터+야생 조우+오버월드).",
+    id: "battle-balance",
+    icon: "⚔️",
+    name: "전투 밸런스 리포트",
+    description: "트룹 전투를 시뮬레이션해 승률·평균 타수를 측정하고, 목표 승률에 맞게 적을 튜닝합니다.",
     source: "system",
     kind: "prompt",
     params: [
-      { key: "theme", label: "테마", type: "text", placeholder: "예: 숲 마을에서 시작하는 3속성 스타터" },
-      { key: "starterCount", label: "스타터 수", type: "number", min: 1, max: 3, defaultValue: 3 },
+      { key: "troopId", label: "트룹 ID(비우면 전체)", type: "text", placeholder: "예: troop_slime" },
+      { key: "heroLevel", label: "영웅 레벨", type: "number", min: 1, max: 99, defaultValue: 5 },
+      { key: "targetWinRate", label: "목표 승률(%)", type: "number", min: 1, max: 100, defaultValue: 85 },
     ],
     buildPrompt: (args) => {
-      const theme = textArg(args, "theme");
-      const starterCount = Math.max(1, Math.min(3, Math.round(numberArg(args, "starterCount", 3))));
-      const roleLabels = pokemonPresetRoleLabels().map((entry) => `${entry.role}(${entry.label})`).join(", ");
-      const groupIds = pokemonPresetGroupIds().join(", ");
+      const troopId = textArg(args, "troopId").trim();
+      const heroLevel = numberArg(args, "heroLevel", 5);
+      const targetWinRate = numberArg(args, "targetWinRate", 85);
       return [
-        `'${theme || "포켓몬풍 몬스터 수집"}' 테마의 몬스터 수집 게임을 만들어 주세요. 스타터 ${starterCount}종.`,
-        "잡은 몬스터가 실제 전투에 출전하는 완결된 게임이 되도록 아래 순서를 지키세요:",
+        troopId
+          ? `트룹 '${troopId}'의 전투 밸런스를 점검해 주세요(영웅 Lv${heroLevel}, 목표 승률 ${targetWinRate}%).`
+          : `모든 트룹의 전투 밸런스를 점검해 주세요(영웅 Lv${heroLevel}, 목표 승률 ${targetWinRate}%).`,
         "",
-        "1. configure_monster_system({enabled:true, battleParty:true})를 먼저 호출하세요 — 이걸 켜야 전투에 '포획' 커맨드가 뜨고, 잡은 몬스터가 영웅 대신 파티로 출전합니다(둘 다 필수).",
-        `2. 스타터 ${starterCount}종 + 야생 1~2종을 준비하세요. 번들 종족(species_leafling·species_sparkit·species_aqualing, 야생 species_wild_slime 등)을 get_database_records(monsterSpecies)로 먼저 확인해 재사용하세요. 부족하면 define_monster_species로 새로 정의하되 types는 2개 이하, baseStats는 영웅 곡선보다 낮게(L1 몬스터가 곧 base+iv) 잡으세요.`,
-        "3. give_starter_monsters({speciesIds:[...위 스타터 종족...]})로 게임 시작 시 스타터를 고르는 지급 이벤트를 만드세요.",
-        "4. 야생 조우 — make_hunting_ground 또는 set_encounter_table로 잔디/키큰 풀에서 야생 몬스터가 등장하도록 배선하세요.",
-        `5. 오버월드 — POKEMON_OVERWORLD_PRESET role로 fill_region을 grass_field 전면 → dirt_route 루트 → tall_grass 인카운터 구역 → water 순으로 깔고, 나무/꽃은 place_props로 산포하세요. role→라벨: ${roleLabels}. 이 프리셋의 그룹 id(${groupIds})를 fill_region/lay_path/place_props의 *VocabId 인자에 그대로 넣으세요(추측 금지).`,
-        SPEC_RULE,
+        "절차(준수):",
+        `1. get_database_records(troops)와 get_database_records(enemies)로 ${troopId ? `트룹 '${troopId}'` : "모든 트룹"}과 소속 적(enemyId·스탯)을 파악하세요.`,
+        `2. 트룹마다 simulate_battle({ troopId, heroLevel: ${heroLevel}, n: 50, seed: 42 })로 승률/평균 타수를 측정하세요(n=50, seed 고정 — 재실행해도 같은 결과가 나와야 합니다).`,
+        `3. 승률이 목표 ${targetWinRate}%에서 크게 벗어난 트룹은 tune_enemy({ enemyId, targetHitsToKill, targetDamageToHeroPerHit, heroLevel: ${heroLevel} })로 소속 적의 maxHp/attack을 조정한 뒤, 같은 seed로 simulate_battle을 재실행해 개선을 증명하세요.`,
+        "4. 트룹별 승률/평균 타수를 before/after 표로 요약하세요(조정하지 않은 트룹은 사유를 명기).",
         HONEST_REPORT_RULE,
       ].join("\n");
     },
     displayAs: (args) => {
-      const theme = textArg(args, "theme");
-      const starterCount = Math.max(1, Math.min(3, Math.round(numberArg(args, "starterCount", 3))));
-      return `🐾 몬스터 수집 게임 — ${theme ? theme.slice(0, 30) : "기본"} / 스타터 ${starterCount}종`;
+      const troopId = textArg(args, "troopId").trim();
+      return `⚔️ 전투 밸런스 — ${troopId || "전체 트룹"} · Lv${numberArg(args, "heroLevel", 5)} · 목표 ${numberArg(args, "targetWinRate", 85)}%`;
     },
   },
 ];
@@ -499,9 +569,52 @@ export interface UserSkill {
   readonly name: string;
   readonly description: string;
   readonly template: string;
+  /** 인자 폼(단순화: text/number/enum) — 템플릿의 {{인자키}}로 치환된다. 없으면 기존 동작. */
+  readonly params?: readonly SkillParam[];
+  /** 선택 영역 필수(시스템 스킬과 동일한 안내 경로 재사용). */
+  readonly needsSelection?: boolean;
 }
 
 const USER_SKILLS_KEY = "rpg-zzu:user-skills";
+const USER_PARAM_TYPES: readonly SkillParamType[] = ["text", "number", "enum"];
+
+// 사용자 스킬 파라미터 정화 — 저장 포맷이 손상됐어도 유효한 행만 살린다(하위호환).
+function sanitizeUserSkillParam(entry: unknown): SkillParam | null {
+  if (typeof entry !== "object" || entry === null) return null;
+  const source = entry as Partial<SkillParam>;
+  if (typeof source.key !== "string" || !source.key.trim()) return null;
+  const type = USER_PARAM_TYPES.includes(source.type as SkillParamType) ? (source.type as SkillParamType) : "text";
+  const options = Array.isArray(source.options)
+    ? source.options.filter(
+        (option): option is { value: string; label: string } =>
+          typeof option === "object" && option !== null && typeof option.value === "string" && typeof option.label === "string"
+      )
+    : [];
+  return {
+    key: source.key,
+    label: typeof source.label === "string" && source.label.trim() ? source.label : source.key,
+    type,
+    ...(type === "enum" && options.length > 0 ? { options } : {}),
+    ...(typeof source.defaultValue === "string" || typeof source.defaultValue === "number" ? { defaultValue: source.defaultValue } : {}),
+    ...(typeof source.placeholder === "string" ? { placeholder: source.placeholder } : {}),
+  };
+}
+
+// 하위호환 정규화 — params/needsSelection 없는 기존 레코드는 그대로 동작한다.
+function normalizeUserSkill(entry: UserSkill): UserSkill {
+  const params = Array.isArray(entry.params)
+    ? entry.params.map(sanitizeUserSkillParam).filter((param): param is SkillParam => param !== null)
+    : [];
+  return {
+    id: entry.id,
+    icon: typeof entry.icon === "string" && entry.icon ? entry.icon : "⭐",
+    name: typeof entry.name === "string" ? entry.name : entry.id,
+    description: typeof entry.description === "string" ? entry.description : "",
+    template: entry.template,
+    ...(params.length > 0 ? { params } : {}),
+    ...(entry.needsSelection === true ? { needsSelection: true } : {}),
+  };
+}
 
 export function loadUserSkills(): UserSkill[] {
   if (typeof localStorage === "undefined") return [];
@@ -510,9 +623,11 @@ export function loadUserSkills(): UserSkill[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((entry): entry is UserSkill =>
-      typeof entry === "object" && entry !== null && typeof (entry as UserSkill).id === "string" && typeof (entry as UserSkill).template === "string"
-    );
+    return parsed
+      .filter((entry): entry is UserSkill =>
+        typeof entry === "object" && entry !== null && typeof (entry as UserSkill).id === "string" && typeof (entry as UserSkill).template === "string"
+      )
+      .map(normalizeUserSkill);
   } catch {
     return [];
   }
@@ -521,25 +636,55 @@ export function loadUserSkills(): UserSkill[] {
 export function saveUserSkill(skill: Omit<UserSkill, "id"> & { id?: string }): UserSkill {
   const skills = loadUserSkills();
   const id = skill.id ?? `user-${Math.abs(hashText(skill.name + skill.template)).toString(36)}`;
-  const next: UserSkill = { id, icon: skill.icon || "⭐", name: skill.name, description: skill.description, template: skill.template };
+  const next: UserSkill = {
+    id,
+    icon: skill.icon || "⭐",
+    name: skill.name,
+    description: skill.description,
+    template: skill.template,
+    ...(skill.params && skill.params.length > 0 ? { params: skill.params } : {}),
+    ...(skill.needsSelection ? { needsSelection: true } : {}),
+  };
   const index = skills.findIndex((entry) => entry.id === id);
   if (index >= 0) skills[index] = next;
   else skills.push(next);
   if (typeof localStorage !== "undefined") localStorage.setItem(USER_SKILLS_KEY, JSON.stringify(skills));
+  // 원격 미러는 best-effort — 미설정/미마이그레이션/네트워크 실패는 조용히 무시(로컬이 정본).
+  void recordSupabaseUserSkill({
+    id: next.id,
+    icon: next.icon,
+    name: next.name,
+    description: next.description,
+    template: next.template,
+    skill: next,
+  }).catch(() => undefined);
   return next;
 }
 
 export function deleteUserSkill(id: string): void {
   const skills = loadUserSkills().filter((entry) => entry.id !== id);
   if (typeof localStorage !== "undefined") localStorage.setItem(USER_SKILLS_KEY, JSON.stringify(skills));
+  void deleteSupabaseUserSkill(id).catch(() => undefined);
 }
 
-// 템플릿 플레이스홀더: {{맵}}(이름), {{맵id}}, {{영역}}((x,y) w×h).
-export function expandUserSkillTemplate(template: string, ctx: SkillRunContext): string {
-  return template
+function skillArgText(value: SkillArgValue): string {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (Array.isArray(value)) return value.join(",");
+  if (isSkillRectArg(value)) return rectText(value);
+  return "";
+}
+
+// 템플릿 플레이스홀더: {{맵}}(이름), {{맵id}}, {{영역}}((x,y) w×h) + {{인자키}}(사용자 params).
+// 내장 3종을 먼저 치환하므로 같은 이름의 인자 키보다 내장이 우선한다.
+export function expandUserSkillTemplate(template: string, ctx: SkillRunContext, args: Record<string, SkillArgValue> = {}): string {
+  let expanded = template
     .replaceAll("{{맵}}", ctx.mapName ?? "현재 맵")
     .replaceAll("{{맵id}}", ctx.mapId ?? "")
     .replaceAll("{{영역}}", regionText(ctx));
+  for (const [key, value] of Object.entries(args)) {
+    expanded = expanded.replaceAll(`{{${key}}}`, skillArgText(value));
+  }
+  return expanded;
 }
 
 function userSkillToDef(skill: UserSkill): SkillDef {
@@ -550,8 +695,9 @@ function userSkillToDef(skill: UserSkill): SkillDef {
     description: skill.description || "사용자 정의 스킬",
     source: "user",
     kind: "prompt",
-    params: [],
-    buildPrompt: (_args, ctx) => expandUserSkillTemplate(skill.template, ctx),
+    params: skill.params ?? [],
+    ...(skill.needsSelection ? { needsSelection: true } : {}),
+    buildPrompt: (args, ctx) => expandUserSkillTemplate(skill.template, ctx, args),
     displayAs: () => `${skill.icon} ${skill.name}`,
   };
 }

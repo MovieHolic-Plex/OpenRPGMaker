@@ -122,6 +122,7 @@ function mockEditorDependencies(): void {
     ensureCurrentMapLock: vi.fn(),
     getMapEditLockStatus: () => lockStatus,
     isMapEditLockTakeoverImmediate: () => false,
+    lockOwnerPhrase: (ownerLabel: string) => `${ownerLabel} 세션이 편집 중`,
     mapEditLockLastActivityText: () => "방금 활동",
     subscribeMapEditLocks: vi.fn(() => () => undefined),
     takeoverMapLock,

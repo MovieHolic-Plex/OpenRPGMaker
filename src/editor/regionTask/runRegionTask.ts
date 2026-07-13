@@ -107,6 +107,8 @@ export interface RegionTaskResult {
   readonly applied: boolean;
   readonly changedCells: number; // 영역 안에서 실제 바뀐 셀 수.
   readonly changedEvents: number; // 영역 안 이벤트(NPC 등) 변경 수.
+  /** 새로 추가된 맵 수(실내 파이프라인·create_map). 영역 셀 0이어도 적용 가치가 있다. */
+  readonly mapsAdded?: number;
   readonly clippedCells: number; // 영역 밖에서 되돌린(막은) 셀 수.
   readonly proposedCalls: number;
   readonly assistantText: string;
@@ -119,24 +121,40 @@ export interface RegionTaskResult {
   readonly pending?: PendingRegionApply;
 }
 
-export function describeRegionTaskResult(result: RegionTaskResult): string {
-  if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
-  if (result.pending && !result.pending.settled) {
-    const parts: string[] = [];
-    if (result.changedCells > 0) parts.push(`${result.changedCells}칸 타일`);
-    if (result.changedEvents > 0) parts.push(`이벤트 ${result.changedEvents}건`);
-    return `제안 준비 — ${parts.join(" · ") || "변경"} · 적용 여부를 선택하세요`;
-  }
-  if (!result.applied) {
-    return result.changedCells === 0 && result.changedEvents === 0
-      ? "이 영역에서 바뀐 것이 없습니다."
-      : "적용할 변경이 없습니다.";
-  }
+function hasRegionTaskChanges(result: Pick<RegionTaskResult, "changedCells" | "changedEvents" | "mapsAdded">): boolean {
+  return result.changedCells > 0 || result.changedEvents > 0 || (result.mapsAdded ?? 0) > 0;
+}
+
+function formatRegionTaskChangeParts(result: Pick<RegionTaskResult, "changedCells" | "changedEvents" | "mapsAdded">): string[] {
   const parts: string[] = [];
   if (result.changedCells > 0) parts.push(`${result.changedCells}칸 타일`);
   if (result.changedEvents > 0) parts.push(`이벤트 ${result.changedEvents}건`);
+  if ((result.mapsAdded ?? 0) > 0) parts.push(`맵 ${result.mapsAdded}개 추가`);
+  return parts;
+}
+
+export function describeRegionTaskResult(result: RegionTaskResult): string {
+  if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
+  if (result.pending && !result.pending.settled) {
+    return `제안 준비 — ${formatRegionTaskChangeParts(result).join(" · ") || "변경"} · 적용 여부를 선택하세요`;
+  }
+  if (!result.applied) {
+    return hasRegionTaskChanges(result)
+      ? "적용할 변경이 없습니다."
+      : "이 영역에서 바뀐 것이 없습니다.";
+  }
+  const parts = formatRegionTaskChangeParts(result);
   const clipped = result.clippedCells > 0 ? ` · 영역 밖 ${result.clippedCells}칸 차단` : "";
   return `완료 — ${parts.join(" · ") || "변경 적용"}${clipped}`;
+}
+
+/** proposed에 생기고 base에 없는 맵 수. */
+export function countAddedMaps(base: Project, proposed: Project): number {
+  let added = 0;
+  for (const id of Object.keys(proposed.maps)) {
+    if (!base.maps[id]) added += 1;
+  }
+  return added;
 }
 
 const defaultDeps: RegionTaskDeps = {
@@ -305,9 +323,12 @@ export function buildRegionTaskMessage(
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
   const categories = routeRegionIntent(instruction);
   const intentGuides = regionIntentGuideLines(categories);
+  const wantsInterior = categories.includes("interior");
   const toolGuide = [
     "영역 작업 도구 규칙:",
-    "- 집/건물: build_house_kit (벽 타일로 직사각 채우기 금지)",
+    wantsInterior
+      ? "- 실내/방: start_interior_room_session 또는 run_interior_room_pipeline (새 mapId). 야외 build_house_kit 금지. create_map만 하고 끝내지 말 것"
+      : "- 집/건물(야외 외장): build_house_kit (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 build_house_kit 금지 → 실내 세션 툴",
     "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회",
     formatMaterialLabelHint(tileset),
     // 툴콜링 사고: "박스 2개" → small-props 랜덤 산포. 전용 그룹 id를 강제한다.
@@ -323,7 +344,9 @@ export function buildRegionTaskMessage(
     // 부분일치로 충돌해(2026-07-10 라이브 실측 수정) 이 고정 문구가 매 턴 battle+database
     // 도메인을 허위로 열고 노출 상한(40)을 잠식해 mirror_region 등 map/quest 도구를 밀어냈다.
     "- 결과는 사용자 승인 후에만 반영된다. propose_tile_vocabulary 댄스는 하지 말 것",
-    "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
+    wantsInterior
+      ? "- 실내 요청: 새 맵 시공은 선택 영역 밖이어도 허용한다. 현재 맵 타일은 불필요하면 건드리지 말 것"
+      : "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
   ].join("\n");
   // intent 스코핑용 키워드 — "맵" 단독 과활성은 피하고 타일/이벤트/소품 쓰기 도메인을 우선한다.
   // map/quest 등 다른 도메인 도구의 노출은 여기서 시드를 보태 여는 게 아니라, footer의
@@ -331,8 +354,13 @@ export function buildRegionTaskMessage(
   // 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
   // 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 도메인 시드 병합은 A/B 실측상 효과가
   // 없는 죽은 복잡도로 판정돼 제거했다).
-  const domainSeed = "(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민)";
-  return `${instruction.trim()}\n\n${domainSeed}\n${toolGuide}\n\n이 작업은 아래 선택 영역 안에서만 수행하라.\n${footer}`;
+  const domainSeed = wantsInterior
+    ? "(영역 작업: 타일 실내 방 맵 인테리어 집 npc 이벤트)"
+    : "(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민)";
+  const scopeLine = wantsInterior
+    ? "이 작업은 실내/새 맵 시공이다. 선택 영역은 참고용이며 새 맵 전체를 시공하라."
+    : "이 작업은 아래 선택 영역 안에서만 수행하라.";
+  return `${instruction.trim()}\n\n${domainSeed}\n${toolGuide}\n\n${scopeLine}\n${footer}`;
 }
 
 // 영역 안에서 base 대비 lower/upper가 바뀐 셀 수(적용 여부 판단·요약용).
@@ -388,6 +416,7 @@ export async function runRegionTask(
     applied: false,
     changedCells: 0,
     changedEvents: 0,
+    mapsAdded: 0,
     clippedCells: 0,
     proposedCalls: 0,
     assistantText: "",
@@ -488,18 +517,22 @@ export async function runRegionTask(
     .map((call) => extractVocabSoftConfirm(call.result.data))
     .filter((soft): soft is NonNullable<typeof soft> => soft !== null);
   if (softs.length > 0) applyVocabSoftConfirmApprovals(proposed, softs);
+  // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
+  // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
   const { project: clipped, clippedCells } = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
   const changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
   const changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
+  const mapsAdded = countAddedMaps(base, clipped);
 
-  // 타일만 보면 NPC-only 제안이 버려진다 — 이벤트 변경도 적용 조건에 포함.
-  if (changedCells === 0 && changedEvents === 0) {
+  // 타일만 보면 NPC-only·새 맵 only 제안이 버려진다 — 이벤트·맵 추가도 적용 조건에 포함.
+  if (!hasRegionTaskChanges({ changedCells, changedEvents, mapsAdded })) {
     clearAgentGhostPreview();
     return attachLog({
       ok: true,
       applied: false,
       changedCells: 0,
       changedEvents: 0,
+      mapsAdded: 0,
       clippedCells,
       proposedCalls: turn.proposedCalls.length,
       assistantText: turn.assistantText,
@@ -507,33 +540,37 @@ export async function runRegionTask(
   }
 
   // 배치 후 검증: 물 위 나무, 나무 짝 깨짐, 지시 대비 나무 누락 등 → 적용 거부
+  // 새 맵만 추가된 경우(현재 맵 영역 무변경)에는 영역 레이아웃 검증을 건너뛴다.
   const toolNames = turn.proposedCalls.map((call) => call.name);
-  const layoutIssues = validateLayoutPlacement(clipped, {
-    mapId: opts.mapId,
-    region: {
-      x: opts.region.x,
-      y: opts.region.y,
-      width: opts.region.width,
-      height: opts.region.height,
-    },
-    instruction,
-    toolNames,
-  });
-  const blocking = layoutValidationBlocking(layoutIssues);
-  if (blocking.length > 0) {
-    clearAgentGhostPreview();
-    const validationSummary = formatLayoutValidationSummary(layoutIssues);
-    return attachLog({
-      ok: false,
-      applied: false,
-      changedCells,
-      changedEvents,
-      clippedCells,
-      proposedCalls: turn.proposedCalls.length,
-      assistantText: turn.assistantText,
-      error: validationSummary,
-      validationSummary,
-    }, turn);
+  if (changedCells > 0 || changedEvents > 0) {
+    const layoutIssues = validateLayoutPlacement(clipped, {
+      mapId: opts.mapId,
+      region: {
+        x: opts.region.x,
+        y: opts.region.y,
+        width: opts.region.width,
+        height: opts.region.height,
+      },
+      instruction,
+      toolNames,
+    });
+    const blocking = layoutValidationBlocking(layoutIssues);
+    if (blocking.length > 0) {
+      clearAgentGhostPreview();
+      const validationSummary = formatLayoutValidationSummary(layoutIssues);
+      return attachLog({
+        ok: false,
+        applied: false,
+        changedCells,
+        changedEvents,
+        mapsAdded,
+        clippedCells,
+        proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText,
+        error: validationSummary,
+        validationSummary,
+      }, turn);
+    }
   }
 
   const gate = opts.gate ?? "approval";
@@ -546,6 +583,7 @@ export async function runRegionTask(
       applied: true,
       changedCells,
       changedEvents,
+      mapsAdded,
       clippedCells,
       proposedCalls: turn.proposedCalls.length,
       assistantText: turn.assistantText,
@@ -592,6 +630,7 @@ export async function runRegionTask(
     applied: false,
     changedCells,
     changedEvents,
+    mapsAdded,
     clippedCells,
     proposedCalls: turn.proposedCalls.length,
     assistantText: turn.assistantText,

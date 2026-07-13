@@ -224,6 +224,9 @@ function headers(config: AiConfig): Record<string, string> {
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
   const effective = configWithReasoningPolicy(config);
   const body: Record<string, unknown> = { model: effective.model, messages: req.messages, stream, max_tokens: effective.maxTokens };
+  // 스트리밍에서도 usage(prompt_tokens 등)를 마지막 청크로 받는다(OpenAI 호환, OpenRouter 지원).
+  // 미지원 공급자가 usage를 안 주면 소비 측(tokenBudget 관측)이 조용히 건너뛴다.
+  if (stream) body.stream_options = { include_usage: true };
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
   if (effective.reasoningEffort && effective.reasoningEffort !== "off") {
     body.reasoning = { effort: effective.reasoningEffort };

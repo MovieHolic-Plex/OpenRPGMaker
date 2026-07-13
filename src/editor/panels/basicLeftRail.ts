@@ -50,11 +50,12 @@ type BasicLayerRow = {
   readonly hotkey: string;
 };
 
-/** Rail order: 하위 → 상위 → 이벤트 (직접 선택, 플라이아웃 없음). */
+/** Rail order: 바닥 → 장식 → 이벤트 (직접 선택, 플라이아웃 없음).
+ * 기본 모드는 결과 중심 용어를 쓴다 — 초보에게 '하위/상위 레이어'는 개념 장벽이다. */
 const BASIC_LAYERS: readonly BasicLayerRow[] = [
-  { id: "lower", label: "하위", short: "하", hint: "하위(지면) 레이어", icon: "tile", hotkey: "F5" },
-  { id: "upper", label: "상위", short: "상", hint: "상위(오브젝트) 레이어", icon: "layers", hotkey: "F6" },
-  { id: "event", label: "이벤트", short: "이", hint: "이벤트 레이어", icon: "event", hotkey: "F7" },
+  { id: "lower", label: "바닥", short: "바", hint: "잔디·길 등 지면을 칠하는 레이어", icon: "tile", hotkey: "F5" },
+  { id: "upper", label: "장식", short: "장", hint: "나무·가구 등 바닥 위에 얹는 레이어", icon: "layers", hotkey: "F6" },
+  { id: "event", label: "이벤트", short: "이", hint: "NPC·문·보물상자 등 상호작용 레이어", icon: "event", hotkey: "F7" },
 ] as const;
 
 const BASIC_TILE_CAP = 48;
@@ -131,7 +132,7 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
           "aria-label": tool.label,
           "aria-pressed": String(active),
         },
-        dataset: { testid: `tool-${tool.id}`, basicTool: tool.id },
+        dataset: { testid: `tool-${tool.id}`, basicTool: tool.id, railLabel: `${tool.label} ${tool.hotkey}` },
         on: {
           click: () => {
             if (tool.id === "paint") {
@@ -181,6 +182,7 @@ function makeLayerSwitcher(activeLayer: Layer): HTMLElement {
         dataset: {
           testid: layer.id === "lower" ? "layer-lower" : layer.id === "upper" ? "layer-upper" : "layer-event",
           basicLayer: layer.id,
+          railLabel: `${layer.label} ${layer.hotkey}`,
         },
         on: { click: () => applyLayerSelection(layer.id) },
         children: [makeSvgIcon(layer.icon), el("span", { class: "basic-rail-badge", text: layer.short })],
@@ -208,7 +210,7 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
       "aria-label": "타일 패널",
       "aria-expanded": String(flyoutState.open === "tiles"),
     },
-    dataset: { testid: "basic-rail-toggle-tiles" },
+    dataset: { testid: "basic-rail-toggle-tiles", railLabel: "타일 고르기" },
     on: { click: () => { if (!tileDisabled) dispatchFlyout({ type: "toggle", id: "tiles" }); } },
     children: [el("span", { class: "basic-rail-tile-thumb", attrs: { style: tileThumbStyle, "aria-hidden": "true" } })],
   });
@@ -219,7 +221,7 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
     el("button", {
       class: "basic-rail-btn" + (flyoutState.open === "maps" ? " is-open" : ""),
       attrs: { type: "button", title: "맵 트리", "aria-label": "맵 패널", "aria-expanded": String(flyoutState.open === "maps") },
-      dataset: { testid: "basic-rail-toggle-maps" },
+      dataset: { testid: "basic-rail-toggle-maps", railLabel: "맵 목록" },
       on: { click: () => dispatchFlyout({ type: "toggle", id: "maps" }) },
       children: [makeSvgIcon("map")],
     }),

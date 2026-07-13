@@ -29,7 +29,12 @@ export function proposalCompletenessWarnings(input: ProposalCompletenessInput): 
   const base = input.buildSpec
     ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
     : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "");
-  return dedupe([...base, ...worldCompletenessWarnings(input.calls), ...questGraphCompletenessWarnings(input.calls)]);
+  return dedupe([
+    ...base,
+    ...interiorCompletenessWarnings(input.requestText ?? "", input.calls),
+    ...worldCompletenessWarnings(input.calls),
+    ...questGraphCompletenessWarnings(input.calls),
+  ]);
 }
 
 export function proposalCompletenessWarningLines(
@@ -76,6 +81,8 @@ function heuristicCompletenessWarnings(requestText: string, calls: readonly Prop
   const changedCalls = calls.filter((call) => call.result.ok && hasMeaningfulDiff(call.result.diff));
   const requestedCount = requestedPlacementCount(requestText);
   if (changedCalls.length === 0) {
+    // 의도 확인 질문(선택지)은 0-변경이 정상 — 미이행으로 보지 않는다.
+    if (assistantTextLooksLikeIntentClarify(assistantText)) return [];
     const promised = endsWithProgressPromise(assistantText);
     if (promised) {
       return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 진행을 약속했지만 실제 변경이 없습니다(체인지셋 0건). 질문 대신 실행했어야 합니다.`];
@@ -90,6 +97,39 @@ function heuristicCompletenessWarnings(requestText: string, calls: readonly Prop
   const actualCount = actualPlacementCount(changedCalls);
   if (!isClearlyShort(requestedCount, actualCount)) return [];
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 요청 수량 ${requestedCount}개 대비 실제 배치 ${actualCount}개입니다.`];
+}
+
+const INTERIOR_ROOM_TOOL_NAMES = new Set([
+  "start_interior_room_session",
+  "run_interior_room_pipeline",
+  "advance_interior_room_build",
+  "evaluate_interior_room",
+  "furnish_interior_space",
+]);
+
+function requestLikelyWantsInterior(text: string): boolean {
+  const normalized = text.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+  if (!normalized) return false;
+  return /실내|인테리어|실내맵|방 맵|침실|서재|주방|선술집|\binterior\b/u.test(normalized);
+}
+
+/** 실내 요청인데 야외 집 키트만 쓰거나 create_map만 한 턴을 잡아낸다(audit 18). */
+function interiorCompletenessWarnings(requestText: string, calls: readonly ProposalCompletenessCall[]): string[] {
+  if (!requestLikelyWantsInterior(requestText)) return [];
+  const okCalls = calls.filter((call) => call.result.ok);
+  if (okCalls.some((call) => INTERIOR_ROOM_TOOL_NAMES.has(call.name))) return [];
+  const usedOutdoorHouse = okCalls.some((call) => call.name === "build_house_kit" || call.name === "build_house_lots");
+  if (usedOutdoorHouse) {
+    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 키트(build_house_kit)만 사용했습니다. start_interior_room_session/run_interior_room_pipeline으로 새 실내 맵을 시공하세요.`];
+  }
+  const onlyEmptyMap =
+    okCalls.length > 0
+    && okCalls.every((call) => call.name === "create_map" || call.name === "generate_map" || call.name === "set_build_spec")
+    && okCalls.some((call) => call.name === "create_map" || call.name === "generate_map");
+  if (onlyEmptyMap) {
+    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 빈 맵만 만들었습니다. 실내 세션 툴로 방·가구까지 시공하세요.`];
+  }
+  return [];
 }
 
 function worldCompletenessWarnings(calls: readonly ProposalCompletenessCall[]): string[] {
@@ -376,6 +416,15 @@ function isProceedInstruction(text: string): boolean {
 
 function endsWithProgressPromise(text: string): boolean {
   return /(?:잠시만\s*기다려\s*주세요|잠시만요|다시\s*설계하겠습니다|설계하겠습니다|진행하겠습니다|처리하겠습니다|만들겠습니다|하겠습니다|하겠어요)[.!?。…\s]*$/u.test(text.trim());
+}
+
+/** 집 vs 실내 등 의도 확인 턴 — 체인지셋 0건 경고 면제. */
+function assistantTextLooksLikeIntentClarify(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (/\[선택지\]/.test(trimmed) && /실내 맵으로|야외 집|외장/.test(trimmed)) return true;
+  if (/야외 외장|실내 맵인지|어떻게 만들까요/.test(trimmed) && /[?？]/.test(trimmed)) return true;
+  return false;
 }
 
 function isClearlyShort(expected: number, actual: number): boolean {

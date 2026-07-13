@@ -22,7 +22,6 @@ import {
   defaultSystem,
   defaultTerms,
 } from "./defaultDatabase";
-import { configureAdventureProject, createAdventureMaps } from "./defaultAdventureGame";
 import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
 import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
 import { createTrainingExampleMaps } from "./trainingExampleMaps";
@@ -44,6 +43,9 @@ import {
   type TownHouseShowcaseStyle,
   singleNodeTree,
 } from "./defaultMaps";
+// Editor-authored sample demo export (blankProject → editor modules → fixture).
+// Regenerate: npx playwright test test/e2e/author-dew-village-editor-demo.spec.ts
+import dewVillageDemoFixture from "./fixtures/dew-village-demo.json" with { type: "json" };
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 const BLANK_PROJECT_START_MAP_ID = "map_blank_start";
 const BLANK_PROJECT_MAP_WIDTH = 20;
@@ -58,9 +60,16 @@ export function createBlankProject(): Project {
   return project;
 }
 
+/** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
-  const project = createProjectWithMaps(createAdventureMaps(), 0);
-  configureAdventureProject(project);
+  const project = structuredClone(dewVillageDemoFixture as Project);
+  // Fixture는 blank 시드에서 왔으므로 시작 파티가 1명일 수 있다. DB에 배우가 더 있으면 2인 파티로 맞춘다.
+  const actorIds = project.database.actors.map((actor) => actor.id).filter(Boolean);
+  if (actorIds.length >= 2 && project.system.startActorIds.length < 2) {
+    project.system = { ...project.system, startActorIds: actorIds.slice(0, 2) };
+    project.session = { ...project.session, partyActorIds: actorIds.slice(0, 2) };
+  }
+  ensureSwitchVariableSlots(project);
   return project;
 }
 

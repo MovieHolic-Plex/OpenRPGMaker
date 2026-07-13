@@ -47,13 +47,20 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
     ],
   });
   const open = (): void => {
+    // 본문(host)이 비어 있으면 헤더만 뜬 빈 껍데기를 열지 않는다.
+    if (proposalHost.childElementCount === 0) {
+      root.hidden = true;
+      pill.hidden = true;
+      return;
+    }
     root.hidden = false;
     pill.hidden = true;
   };
   const minimize = (): void => {
     if (root.hidden) return;
     root.hidden = true;
-    pill.hidden = false;
+    // 최소화는 승인 대기 유지 — host에 카드가 있을 때만 pill 노출.
+    pill.hidden = proposalHost.childElementCount === 0;
   };
   const close = (): void => {
     root.hidden = true;

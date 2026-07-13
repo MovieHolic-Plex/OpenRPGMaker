@@ -84,7 +84,10 @@ def convert_battle_assets(manifest: dict) -> None:
     for name in MONSTERS:
         sheet = nearest_downscale(load(f"monsters/{name}.png"), 2)
         assert sheet.size == (384, 192), (name, sheet.size)
-        battler = sheet.crop((0, 0, 96, 96))
+        # idle 첫 프레임(96px)을 몸통 기준으로 트림·정규화한다. 원본은 몬스터가
+        # 96px 프레임 상단에 작게 그려져 있어(예: 라르베아 31×44) 전투 필드에서
+        # 배경에 묻혔다 — 몸통을 프레임의 ~86%로 키우고 발밑을 하단에 맞춘다.
+        battler = normalize_battler_frame(sheet.crop((0, 0, 96, 96)))
         battler.save(os.path.join(OUT, f"scarloxy-monster-{name.lower()}.png"))
         icon = load(f"icons/{name}.png")
         icon.save(os.path.join(OUT, f"scarloxy-monster-icon-{name.lower()}.png"))
@@ -99,6 +102,26 @@ def convert_battle_assets(manifest: dict) -> None:
     for name in UI_ICONS:
         load(f"ui/{name}.png").save(os.path.join(OUT, f"scarloxy-ui-{name}.png"))
     manifest["uiIcons"] = UI_ICONS
+
+
+def normalize_battler_frame(frame: Image.Image, target: int = 96, fill: float = 0.86, foot_pad: float = 0.04) -> Image.Image:
+    """몬스터 배틀러 프레임을 몸통 기준으로 트림한 뒤 정사각 캔버스에 발밑 정렬.
+    몸통 비율은 유지하고, 긴 축이 target*fill이 되도록 최근접 스케일한다."""
+    a = np.array(frame.convert("RGBA"))
+    ys, xs = np.nonzero(a[..., 3] > 30)
+    if len(xs) == 0:
+        return frame
+    crop = frame.crop((int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1))
+    limit = target * fill
+    scale = min(limit / crop.width, limit / crop.height)
+    nw = max(1, round(crop.width * scale))
+    nh = max(1, round(crop.height * scale))
+    scaled = crop.resize((nw, nh), Image.NEAREST)
+    canvas = Image.new("RGBA", (target, target), (0, 0, 0, 0))
+    x = (target - nw) // 2
+    y = target - nh - round(target * foot_pad)
+    canvas.paste(scaled, (x, max(0, y)))
+    return canvas
 
 
 # ---------------------------------------------------------------------------

@@ -30,6 +30,8 @@ export function applyBattleRewardsToSession(
   // RM2K3 관례: 승리/도주 모두 전투에서 입은 피해와 MP 소모가 필드로 유지된다.
   if (outcome.result === "victory" || outcome.result === "escape") {
     applyBattleVitalsToSession(session, outcome.actors ?? []);
+    // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
+    applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
     applyBattleStatesToSession(session, outcome.actors ?? []);
     applyBattleEventStateToSession(session, outcome.eventState);
   }
@@ -55,8 +57,27 @@ export function applyBattleRewardsToSession(
   for (const itemId of outcome.rewards.items) {
     changeItem(session, itemId, "+=", 1);
   }
-  applyMonsterExperienceAndEvolution(project, session, earnedExp);
+  // 전투에 나선 파티 몬스터에게만 경험치를 준다(참전 몬스터가 있으면 그들로 한정, 없으면 기존 파티 전원).
+  const participantInstanceIds = (outcome.actors ?? [])
+    .map((actor) => actor.monsterInstanceId)
+    .filter((id): id is string => typeof id === "string");
+  applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds.length > 0 ? participantInstanceIds : undefined);
   return levelUps;
+}
+
+// 파티 몬스터 배틀러의 전투 종료 HP를 세션 인스턴스의 currentHp로 되돌려쓴다.
+function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
+  session.monsterInstances ??= {};
+  for (const actor of actors) {
+    const instanceId = actor.monsterInstanceId;
+    if (!instanceId) continue;
+    const instance = session.monsterInstances[instanceId];
+    if (!instance) continue;
+    session.monsterInstances[instanceId] = {
+      ...instance,
+      currentHp: Math.max(0, Math.min(actor.maxHp, actor.hp)),
+    };
+  }
 }
 
 function applyBattleStatesToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {

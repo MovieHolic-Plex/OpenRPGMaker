@@ -77,6 +77,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleFlow: normalizeBattleFlow(system.battleFlow),
     // 기본(classic)은 저장하지 않고, 명시적 pokemon 선택만 보존한다.
     ...(system.battleUiStyle === "pokemon" ? { battleUiStyle: "pokemon" as const } : {}),
+    // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
+    ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
