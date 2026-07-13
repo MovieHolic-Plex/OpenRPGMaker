@@ -73,7 +73,10 @@ describe("interior wall-frame autotile harness", () => {
   it("does not seed wall-frame autotile on dungeon tilesets", () => {
     const dungeon = createBlankProject().tilesets.easyrpg_chipset_dungeon;
     expect(wallFrameGroup(dungeon)).toBeUndefined();
-    expect(autotileGroupsForTileset(dungeon)).toHaveLength(0);
+    // 던전은 자기 지형 오토타일(harness-dungeon-v1-terrain-*)만 갖는다 — 실내 그룹 유출 금지.
+    const groups = autotileGroupsForTileset(dungeon);
+    expect(groups.length).toBeGreaterThan(0);
+    expect(groups.every((group) => group.id.startsWith("harness-dungeon-v1-terrain-"))).toBe(true);
   });
 
   it("shapeAutotileGroupAround turns a hollow ring of body tiles into outer edges/corners", () => {

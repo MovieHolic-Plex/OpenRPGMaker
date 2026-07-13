@@ -36,3 +36,4 @@ handoff.md
 /tmp-*
 # 심링크 형태의 node_modules도 차단 (과거 심링크 커밋 사고 — 슬래시 규칙은 디렉터리만 매치)
 node_modules
+.gjc/
