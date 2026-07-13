@@ -155,7 +155,7 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "abyss-gray", "심연/천장(회암 테두리)", "wall", "lower", [369, 370, 371, 399, 400, 401, 429, 430, 431, 459, 460, 461], "solid", "repeat", "회암 테두리의 칠흑 천장(미굴착 어둠)입니다. 방 바깥을 채우는 경계로 씁니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "stairs-red", "카펫 계단", "building", "lower", [228, 229, 230], "passable", "repeat", "붉은 카펫과 이어지는 가로 계단입니다 — 좌 228 · 몸통 229(반복) · 우 230."),
   packGroup(DUNGEON_HARNESS_PREFIX, "passage", "어둠 통로", "building", "lower", [295, 325], "solid", "fixed", "어둠 통로 세로쌍(295+325)입니다 — 문인지 벽 구멍인지 용도 잠정."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "stairs-single", "1×1 계단", "building", "lower", [444, 445, 474, 475], "passable", "fixed", "각각 독립된 1×1 계단 4종 — 444 우측 오름 · 445 좌측 오름 · 474/475 정면 오름 변형. 성문이 아닙니다."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "stairs-single", "1×1 계단", "building", "upper", [444, 445, 474, 475], "passable", "fixed", "각각 독립된 1×1 계단 4종 — 444 우측 오름 · 445 좌측 오름 · 474/475 정면 오름 변형. 투명 배경이라 바닥 위 레이어에 얹어야 합니다(하위에 깔면 배경이 검게 나옴). 성문이 아닙니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "cage", "감옥 창살", "building", "lower", [204, 205, 206, 234, 235, 236], "solid", "fixed", "3×2 감옥 창살(감방 벽)입니다. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "statue", "석상/비석", "building", "lower", [145, 146, 147, 148, 175, 176], "solid", "fixed", "여신상(145+175)·가고일(146+176)·왕관 비석·아궁이 비석입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "dome", "석조 돔/화덕", "building", "lower", [438, 439, 440, 468, 469, 470, 24, 25, 26], "solid", "fixed", "3×3 대형 석조 돔(용광로) — 윗줄 438~440 · 중간 468~470 · 받침 24~26. 마법진처럼 팔레트 세로 순서가 파일 행(14→15→0)과 다르니 주의. 통행 불가."),
