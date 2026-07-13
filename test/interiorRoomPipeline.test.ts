@@ -146,7 +146,8 @@ describe("interior room procedural pipeline (house-shell cream wall frame)", () 
       for (let x = 0; x < map.width; x += 1) {
         if (map.lowerTiles[y * map.width + x] === VR.STOVE_BOT && inBox(x, y, kitchen)) stoveInKitchen = true;
         if (map.upperTiles[y * map.width + x] === VR.TABLE_L && inBox(x, y, hall)) tableInHall = true;
-        if (map.upperTiles[y * map.width + x] === VR.BED_L && inBox(x, y, guest1)) bedInGuest1 = true;
+        // 침대 방향 변주(가로 355 | 세로 324) — 어느 쪽이든 침대가 있으면 통과.
+        if ((map.upperTiles[y * map.width + x] === VR.BED_L || map.upperTiles[y * map.width + x] === VR.BED_V_HEAD) && inBox(x, y, guest1)) bedInGuest1 = true;
       }
     }
     expect(stoveInKitchen).toBe(true);

@@ -285,8 +285,10 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
-  // 실내 팩: 라벨·태그는 타일별 큐레이션 정본에서, 계약(통행/레이어/설명)은 그룹에서.
+  // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 나머지 계약(레이어/설명)은 그룹에서.
+  // 통행성 per-타일 오버라이드(2026-07-13): 가구는 solid, 바닥 장식은 passable — 그룹 일괄값의 한계 해소.
   const semantic = isInteriorPackTileset(tileset) ? INTERIOR_SEMANTIC_BY_INDEX.get(tile) : undefined;
+  const passage = semantic?.passage ?? group.passage;
   const nextMeta: TileAiMetadata = {
     label: semantic ? semantic.label : `${group.name} ${tile}`,
     description: group.description,
@@ -295,7 +297,7 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
     repeatability: group.repeatability,
     defaultLayer: group.defaultLayer,
     terrainTag: group.role === "terrain" ? 0 : undefined,
-    passage: group.passage,
+    passage,
     confidence: "high",
     source: "bundled-default",
   };
@@ -304,7 +306,8 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
     tileset.tileMeta![tile] = nextMeta;
     changed = true;
   }
-  return setTileRuntimeContract(tileset, tile, group, tileset.tileMeta?.[tile]) || changed;
+  const effectiveGroup = passage === group.passage ? group : { ...group, passage };
+  return setTileRuntimeContract(tileset, tile, effectiveGroup, tileset.tileMeta?.[tile]) || changed;
 }
 
 // 하네스 그룹에 속하지 않은 실내 타일도 큐레이션 라벨로 시드한다. 큐레이션에도 없는 타일은
@@ -335,6 +338,14 @@ function seedInteriorUngroupedTileMeta(tileset: TilesetDef): boolean {
     if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
       tileset.tileMeta![tile] = nextMeta;
       changed = true;
+    }
+    // 런타임 통행성도 기록 — 그룹 밖 타일(책장 3×3 등)이 충돌 배열에서 빠지지 않게 한다.
+    if (semantic) {
+      const passability = semantic.passage === "solid" ? solid : passable;
+      if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
+        tileset.passability[tile] = { ...passability };
+        changed = true;
+      }
     }
   }
   return changed;

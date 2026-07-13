@@ -9,6 +9,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import {
   INTERIOR_ROOM_DEMO_PLANS,
+  evaluateInteriorRoom,
   runInteriorRoomPipeline,
   type InteriorRoomPlan,
 } from "../src/editor/interiorRoomPipeline.ts";
@@ -89,7 +90,7 @@ const PLANS: readonly InteriorRoomPlan[] = [
       { id: "g1", x: 3, y: 4, w: 4, h: 3, theme: "bedroom" }, //  x3–6
       { id: "g2", x: 8, y: 4, w: 4, h: 3, theme: "bedroom" }, //  x8–11 (파티션 x7)
       { id: "g3", x: 13, y: 4, w: 4, h: 3, theme: "bedroom" }, // x13–16 (파티션 x12)
-      { id: "hall", x: 3, y: 10, w: 14, h: 3, theme: "tavern" }, // y10–12 (수평 파티션 y7–9)
+      { id: "hall", x: 3, y: 10, w: 14, h: 3, theme: "corridor" }, // 객실 앞 복도 — 공간 역할 분리(카운터 금지)
     ],
     innerDoors: [
       { x: 4, y: 7 },
@@ -133,7 +134,155 @@ const PLANS: readonly InteriorRoomPlan[] = [
     ],
     door: { x: 6, y: 11 },
     theme: "dining",
+    wallMaterial: "gold-brick", // 연회장 — 금장 벽 + 붉은 카펫 상석 + 탁자 열 정렬(luxury 문법)
     seed: 19,
+  },
+  // ── 확장 10종 (2026-07-12, 20종 라운드): 도서관·저택 1층·창고·길드·병영·공방·안방·만찬장·골목 상점·여관 1층 ──
+  {
+    mapId: "map_rp_library_hall_v1",
+    name: "연습 · 도서관 (24×16)",
+    width: 24,
+    height: 16,
+    wings: [{ x: 2, y: 4, w: 20, h: 8 }],
+    door: { x: 11, y: 11 },
+    theme: "study",
+    floorTile: 102, // 널 바닥
+    seed: 21,
+  },
+  {
+    mapId: "map_rp_manor_ground_v1",
+    name: "연습 · 저택 1층 (30×26, 방 6개)",
+    width: 30,
+    height: 26,
+    wings: [],
+    rooms: [
+      { id: "study", x: 3, y: 4, w: 9, h: 5, theme: "study" }, //     x3–11
+      { id: "bedroom", x: 13, y: 4, w: 6, h: 5, theme: "bedroom" }, // x13–18 (파티션 x12)
+      { id: "storage", x: 20, y: 4, w: 7, h: 5, theme: "storage", floorTile: 12 }, // x20–26 (파티션 x19)
+      { id: "kitchen", x: 3, y: 12, w: 9, h: 5, theme: "kitchen", floorTile: 12 }, // y12–16 (수평 파티션 y9–11)
+      { id: "dining", x: 13, y: 12, w: 14, h: 5, theme: "dining" }, // x13–26
+      { id: "hall", x: 3, y: 20, w: 24, h: 3, theme: "corridor" }, //  저택 복도 — 흉상·갑옷 전시, 바닥 점유물 없음
+    ],
+    innerDoors: [
+      { x: 6, y: 9 }, //   서재 → 주방
+      { x: 15, y: 9 }, //  침실 → 식당
+      { x: 22, y: 9 }, //  창고 → 식당
+      { x: 12, y: 14 }, // 주방 ↔ 식당 (수직 1칸)
+      { x: 7, y: 17 }, //  주방 → 홀
+      { x: 18, y: 17 }, // 식당 → 홀
+    ],
+    door: { x: 14, y: 22 },
+    theme: "tavern",
+    wallMaterial: "gold-brick", // 귀족 저택 — 금장 벽돌 면 + 붉은 카펫
+    seed: 22,
+  },
+  {
+    mapId: "map_rp_warehouse_v1",
+    name: "연습 · 대형 창고 (20×14)",
+    width: 20,
+    height: 14,
+    wings: [{ x: 2, y: 4, w: 16, h: 6 }],
+    door: { x: 9, y: 9 },
+    theme: "storage",
+    floorTile: 12,
+    seed: 23,
+  },
+  {
+    mapId: "map_rp_guildhall_v1",
+    name: "연습 · 길드 홀 (22×15)",
+    width: 22,
+    height: 15,
+    wings: [{ x: 2, y: 4, w: 18, h: 8 }],
+    door: { x: 10, y: 11 },
+    theme: "tavern",
+    seed: 24,
+  },
+  {
+    mapId: "map_rp_barracks_v1",
+    name: "연습 · 병영 숙소 (21×16, 침상 3+홀)",
+    width: 21,
+    height: 16,
+    wings: [],
+    rooms: [
+      { id: "bunk1", x: 3, y: 4, w: 4, h: 3, theme: "bedroom", floorTile: 139 },
+      { id: "bunk2", x: 8, y: 4, w: 4, h: 3, theme: "bedroom", floorTile: 139 }, //  파티션 x7
+      { id: "bunk3", x: 13, y: 4, w: 4, h: 3, theme: "bedroom", floorTile: 139 }, // 파티션 x12
+      { id: "hall", x: 3, y: 10, w: 15, h: 3, theme: "dining" }, // 병영 식당(mess hall) — 술집 카운터 금지
+    ],
+    innerDoors: [
+      { x: 4, y: 7 },
+      { x: 9, y: 7 },
+      { x: 14, y: 7 },
+    ],
+    door: { x: 10, y: 12 },
+    theme: "tavern",
+    seed: 25,
+  },
+  {
+    mapId: "map_rp_atelier_v1",
+    name: "연습 · 연금술 공방 (14×12)",
+    width: 14,
+    height: 12,
+    wings: [{ x: 2, y: 4, w: 10, h: 5 }],
+    door: { x: 6, y: 8 },
+    theme: "kitchen", // 연금술 공방: 화덕+솥+단지 키트가 공방 문법에 가장 근접(3차 리뷰 "테마 전멸" 해소)
+    floorTile: 12,
+    seed: 26,
+  },
+  {
+    mapId: "map_rp_master_bedroom_v1",
+    name: "연습 · 안방 (15×12)",
+    width: 15,
+    height: 12,
+    wings: [{ x: 2, y: 4, w: 11, h: 5 }],
+    door: { x: 7, y: 8 },
+    theme: "bedroom",
+    seed: 27,
+  },
+  {
+    mapId: "map_rp_dining_hall_v1",
+    name: "연습 · 만찬장 (19×13)",
+    width: 19,
+    height: 13,
+    wings: [{ x: 2, y: 4, w: 15, h: 6 }],
+    door: { x: 9, y: 9 },
+    theme: "dining",
+    wallMaterial: "stone-brick", // 석재 벽 만찬장 — 벽 재질 변주 데모
+    seed: 28,
+  },
+  {
+    mapId: "map_rp_shop_small_v1",
+    name: "연습 · 골목 상점 (12×10)",
+    width: 12,
+    height: 10,
+    wings: [{ x: 2, y: 4, w: 8, h: 4 }],
+    door: { x: 5, y: 7 },
+    theme: "tavern",
+    floorTile: 102,
+    seed: 29,
+  },
+  {
+    mapId: "map_rp_inn_ground_v1",
+    name: "연습 · 여관 1층 (23×19, 방 5개)",
+    width: 23,
+    height: 19,
+    wings: [],
+    rooms: [
+      { id: "pantry", x: 3, y: 4, w: 5, h: 3, theme: "storage", floorTile: 12 },
+      { id: "guest1", x: 9, y: 4, w: 5, h: 3, theme: "bedroom" },
+      { id: "guest2", x: 15, y: 4, w: 5, h: 3, theme: "bedroom" },
+      { id: "kitchen", x: 3, y: 10, w: 5, h: 6, theme: "kitchen", floorTile: 12 },
+      { id: "hall", x: 9, y: 10, w: 11, h: 6, theme: "tavern" },
+    ],
+    innerDoors: [
+      { x: 5, y: 7 },
+      { x: 11, y: 7 },
+      { x: 17, y: 7 },
+      { x: 8, y: 12 },
+    ],
+    door: { x: 12, y: 15 },
+    theme: "tavern",
+    seed: 30,
   },
   {
     mapId: "map_rp_manor_v1",
@@ -186,6 +335,7 @@ const PLANS: readonly InteriorRoomPlan[] = [
     ],
     door: { x: 19, y: 34 },
     theme: "tavern",
+    wallMaterial: "gold-brick", // 귀족 저택 — 금장 벽돌 면 + 붉은 카펫
     seed: 20,
   },
 ];
@@ -194,25 +344,65 @@ const PLANS: readonly InteriorRoomPlan[] = [
 const outDir = path.resolve("output/docs/room-practice");
 fs.mkdirSync(outDir, { recursive: true });
 
+// --reroll N: 전 플랜 시드를 밀어 완전히 새 배치 판을 뽑는다(구조/테마는 유지).
+const rerollIdx = process.argv.indexOf("--reroll");
+const reroll = rerollIdx >= 0 ? Number(process.argv[rerollIdx + 1] ?? "1") : 0;
+
+// 시드 재추첨 루프: 평가 불합격이면 시드를 밀어 다시 뽑는다(최대 12회). 합격 판만 채택.
+const MAX_TRIES = 12;
 const maps: GameMap[] = [];
+const failed: string[] = [];
 for (const plan of PLANS) {
-  const result = runInteriorRoomPipeline(plan);
-  maps.push(result.map);
-  console.log(`built ${plan.mapId} (${plan.width}×${plan.height}, theme=${plan.theme})`);
+  const baseSeed = (plan.seed ?? 1) + reroll * 97;
+  let best: { map: GameMap; report: ReturnType<typeof evaluateInteriorRoom>; seed: number; tries: number } | null = null;
+  for (let k = 0; k < MAX_TRIES; k += 1) {
+    const rolled = { ...plan, seed: baseSeed + k * 131 };
+    const result = runInteriorRoomPipeline(rolled);
+    const report = evaluateInteriorRoom(result.map, rolled);
+    if (!best || report.score > best.report.score) best = { map: result.map, report, seed: rolled.seed, tries: k + 1 };
+    if (report.ok) break;
+  }
+  const { map, report, seed, tries } = best!;
+  maps.push(map);
+  const grade = report.ok ? "합격" : "불합격";
+  console.log(
+    `built ${plan.mapId} (${plan.width}×${plan.height}, theme=${plan.theme}, seed=${seed}, tries=${tries}) — ${grade} score=${report.score}${report.issues.length ? ` | ${report.issues.join(" / ")}` : ""}`,
+  );
+  if (!report.ok) failed.push(plan.mapId);
 }
 
-// 여관 '2층' 설정 보정: 남쪽 출구를 아래층으로 내려가는 계단참으로 표현(가로 계단 465|466|467).
+// 계단 스탬프 — 파이프라인 이후에 찍으므로 그 칸의 가구를 걷어낸다.
+// 465~467 붉은 카펫 대계단은 귀족 전용(사용자 확정)이라 서민 여관에는 쓰지 않는다:
+// 하행은 어둠 하강 계단 474|475 쌍, 상행은 대각 계단 444 한 칸(전형적 쯔꾸르 문법).
+const TALL_PAIR_TOPS = new Set([263, 269, 389, 88, 87]);
+function stampStairs(map: GameMap, cells: ReadonlyArray<{ x: number; y: number; tile: number }>): void {
+  for (const { x, y, tile } of cells) {
+    map.lowerTiles[y * map.width + x] = tile;
+    map.upperTiles[y * map.width + x] = -1;
+    const above = (y - 1) * map.width + x;
+    if (TALL_PAIR_TOPS.has(map.upperTiles[above]!)) map.upperTiles[above] = -1;
+  }
+}
+
+// 여관 '2층' 설정 보정: 남쪽 출구를 아래층으로 내려가는 어둠 계단참으로 표현(474|475 쌍).
 {
   const inn = maps.find((m) => m.id === "map_rp_inn_floor_v1");
   const plan = PLANS.find((p) => p.mapId === "map_rp_inn_floor_v1");
   if (inn && plan) {
-    const y = plan.door.y;
-    const xs = [plan.door.x - 1, plan.door.x, plan.door.x + 1];
-    const stairs = [465, 466, 467];
-    xs.forEach((x, i) => {
-      inn.lowerTiles[y * inn.width + x] = stairs[i]!;
-    });
-    console.log(`inn stairs stamped at (${xs[0]}~${xs[2]}, ${y})`);
+    stampStairs(inn, [
+      { x: plan.door.x, y: plan.door.y, tile: 474 },
+      { x: plan.door.x + 1, y: plan.door.y, tile: 475 },
+    ]);
+    console.log(`inn descending stairs (474|475) at (${plan.door.x}~${plan.door.x + 1}, ${plan.door.y})`);
+  }
+}
+
+// 여관 1층: 2층으로 올라가는 대각 계단 한 칸(444)을 홀 동쪽 끝 벽에 붙임.
+{
+  const inn = maps.find((m) => m.id === "map_rp_inn_ground_v1");
+  if (inn) {
+    stampStairs(inn, [{ x: 18, y: 10, tile: 444 }]);
+    console.log(`inn-ground ascending stair (444) at (18, 10)`);
   }
 }
 
@@ -288,6 +478,10 @@ for (const map of maps) {
 
 // ── Supabase 저장 (--save) ────────────────────────────────────────────────────
 if (process.argv.includes("--save")) {
+  if (failed.length) {
+    console.error(`저장 중단 — 평가 불합격 ${failed.length}건: ${failed.join(", ")}`);
+    process.exit(1);
+  }
   const env: Record<string, string> = {};
   for (const line of fs.readFileSync(".env.local", "utf8").split(/\n/)) {
     const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
