@@ -48,7 +48,11 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
     const mp = row.querySelector(".battle-actor-mp");
     if (mp) mp.textContent = `MP ${actor.mp}/${actor.maxMp}`;
     const hpBar = row.querySelector<HTMLElement>(".battle-stat-bar-hp");
-    if (hpBar) hpBar.style.setProperty("--battle-stat", `${hpPercent(actor.hp, actor.maxHp)}%`);
+    if (hpBar) {
+      const pct = hpPercent(actor.hp, actor.maxHp);
+      hpBar.style.setProperty("--battle-stat", `${pct}%`);
+      hpBar.dataset.hpState = hpBarState(pct);
+    }
     const atbBar = row.querySelector<HTMLElement>(".battle-atb-bar");
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${Math.max(0, Math.min(100, Math.round(actor.gauge)))}%`);
     row.classList.toggle("defeated", actor.defeated);
@@ -340,6 +344,12 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   const name = document.createElement("span");
   name.className = "battle-actor-name";
   name.textContent = actor.name;
+  if (actor.level) {
+    const lv = document.createElement("span");
+    lv.className = "battle-actor-level";
+    lv.textContent = `Lv.${actor.level}`;
+    name.append(lv);
+  }
 
   const vitals = document.createElement("span");
   vitals.className = "battle-actor-vitals";
@@ -365,8 +375,15 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 function statBar(kind: "hp" | "mp" | "tp", value: number, max: number): HTMLElement {
   const bar = document.createElement("span");
   bar.className = `battle-stat-bar battle-stat-bar-${kind}`;
-  bar.style.setProperty("--battle-stat", `${hpPercent(value, max)}%`);
+  const pct = hpPercent(value, max);
+  bar.style.setProperty("--battle-stat", `${pct}%`);
+  if (kind === "hp") bar.dataset.hpState = hpBarState(pct);
   return bar;
+}
+
+/** 포켓몬식 HP 바 색 구간: 초록(>50) · 노랑(21~50) · 빨강(≤20). */
+export function hpBarState(pct: number): "high" | "mid" | "low" {
+  return pct > 50 ? "high" : pct > 20 ? "mid" : "low";
 }
 
 function atbLabel(): HTMLElement {

@@ -36,6 +36,7 @@ export interface MutableBattler {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   readonly classId?: string;
+  readonly level?: number;
   // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.
   // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
   readonly monsterInstanceId?: string;
@@ -97,6 +98,7 @@ export function actorBattlers(
       id: actor.id,
       recordId: actor.id,
       classId: effectiveClassId,
+      level,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
       maxHp,
       hp,
@@ -203,6 +205,7 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
       recordId: `mon:${instance.instanceId}` as ActorId,
       monsterInstanceId: instance.instanceId,
       speciesId: instance.speciesId,
+      level: instance.level,
       name: monsterDisplayName(project, instance),
       maxHp: stats.maxHp,
       hp,
@@ -238,6 +241,7 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
     return {
       id: `enemy-${index + 1}`,
       recordId: enemy.id,
+      level: normalizedEnemy.level,
       name: normalizedEnemy.name,
       maxHp: stats.maxHp,
       hp: stats.maxHp,
@@ -280,6 +284,7 @@ export function battlerSnapshot(
     recordId: battler.recordId,
     name: battler.name,
     classId: battler.classId,
+    level: battler.level,
     monsterInstanceId: battler.monsterInstanceId,
     speciesId: battler.speciesId,
     hp: battler.hp,
