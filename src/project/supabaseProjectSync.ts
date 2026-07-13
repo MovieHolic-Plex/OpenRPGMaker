@@ -1031,7 +1031,9 @@ function mapConflictName(mapId: string, project: Project, latestProject: Project
 }
 
 function supabaseListValue(value: string): string {
-  return `"${value.replaceAll("\"", "\\\"")}"`;
+  // 백슬래시를 먼저 이스케이프해야 한다 — 순서를 바꾸면 원본 backslash가
+  // 뒤이은 큰따옴표 이스케이프의 백슬래시까지 삼켜 PostgREST in.() 리스트 파싱이 깨진다.
+  return `"${value.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"")}"`;
 }
 
 function isOptionalTableMissingError(error: unknown): boolean {

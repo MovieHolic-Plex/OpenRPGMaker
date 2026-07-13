@@ -46,8 +46,19 @@ function textContent(value) {
   return [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value, null, 2) }];
 }
 
-function cors(res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+// 이 브리지는 127.0.0.1에 바인딩되지만 브라우저의 CORS는 IP 바인딩이 아니라 Origin 헤더로만
+// 판정한다 — Access-Control-Allow-Origin:"*"는 열려 있는 아무 탭(신뢰 못 하는 웹사이트 포함)이
+// fetch로 /v1/agent/send 등을 호출해 라이브 AI 어시스턴트를 원격 조종할 수 있게 만든다
+// (localhost 서비스 대상 drive-by/CSRF 패턴). 같은 머신의 Vite dev 서버(localhost/127.0.0.1,
+// 임의 포트)만 허용하고 그 외 Origin은 헤더를 아예 세팅하지 않아 브라우저가 응답 읽기를 막게 한다.
+const ALLOWED_ORIGIN_PATTERN = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
+function cors(req, res) {
+  const origin = req.headers.origin;
+  if (typeof origin === "string" && ALLOWED_ORIGIN_PATTERN.test(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
 }
@@ -227,7 +238,7 @@ function handleMcpRequest(request) {
 
 function startHttpBridge(port) {
   const server = createServer(async (req, res) => {
-    cors(res);
+    cors(req, res);
     if (req.method === "OPTIONS") {
       res.writeHead(204);
       res.end();
