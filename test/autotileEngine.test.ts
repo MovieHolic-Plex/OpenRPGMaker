@@ -223,7 +223,10 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
     expect(autotileGroupsForTileset(undefined)).toHaveLength(2);
     const project = createBlankProject();
     expect(autotileGroupsForTileset(project.tilesets[DEFAULT_TILESET_ID])).toHaveLength(2);
-    expect(autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon)).toHaveLength(0);
+    // 던전은 내장 Combined Town 그룹으로 폴백하지 않고 자기 시드 그룹만 노출한다.
+    const dungeonGroups = autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon);
+    expect(dungeonGroups.every((group) => group.id.startsWith("harness-dungeon-v1-terrain-"))).toBe(true);
+    expect(dungeonGroups.some((group) => group.id.startsWith("builtin_"))).toBe(false);
     // 병합 폴백: 흙길만 덮는 사용자 그룹이 영속돼 있어도 내장 모래 그룹은 살아있어야 한다.
     const withCustomRoad = structuredClone(project.tilesets[DEFAULT_TILESET_ID]!);
     withCustomRoad.autotileGroups = [

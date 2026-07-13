@@ -18,12 +18,6 @@ function standardSlice(col, row, gridTop = 1) {
   };
 }
 
-// 어두운 벽식(4방, 브러시=좌상단 366). 실내 darkWallAutotile와 동일 슬롯.
-const darkWallSlice = {
-  body: 366, edgeN: 367, edgeS: 427, edgeW: 396, edgeE: 398,
-  cornerNW: 368, cornerNE: 369, cornerSW: 426, cornerSE: 428,
-};
-
 function tileFor(slice, north, east, south, west) {
   if (!north && !west) return slice.cornerNW;
   if (!north && !east) return slice.cornerNE;
@@ -36,23 +30,21 @@ function tileFor(slice, north, east, south, west) {
   return slice.body;
 }
 
+// 1d8e9ee dungeonTerrainAutotiles 블록 좌표 (host/overlay + red-carpet nineSlice)
 const BLOCKS = [
-  { name: "cave-floor c6r4", slice: standardSlice(6, 4) },
-  { name: "lava-rock c0r8", slice: standardSlice(0, 8) },
-  { name: "dirt-floor c0r12", slice: standardSlice(0, 12) },
+  { name: "stone c6r4", slice: standardSlice(6, 4) },
+  { name: "chasm c9r4", slice: standardSlice(9, 4) },
+  { name: "redrock c0r8", slice: standardSlice(0, 8) },
+  { name: "lava c3r8", slice: standardSlice(3, 8) },
+  { name: "pit-pale c6r8", slice: standardSlice(6, 8) },
+  { name: "pit-gold c9r8", slice: standardSlice(9, 8) },
+  { name: "snow c6r0", slice: standardSlice(6, 0) },
+  { name: "ice c9r0", slice: standardSlice(9, 0) },
+  { name: "dirt c0r12", slice: standardSlice(0, 12) },
   { name: "moss c3r12", slice: standardSlice(3, 12) },
-  { name: "ice c6r0", slice: standardSlice(6, 0) },
-  { name: "ice-crystal c9r0", slice: standardSlice(9, 0) },
-  { name: "pit-cave c9r4", slice: standardSlice(9, 4) },
-  { name: "pit-brown c6r8", slice: standardSlice(6, 8) },
-  { name: "pit-dark c9r8", slice: standardSlice(9, 8) },
-  { name: "pit-grey c9r12", slice: standardSlice(9, 12) },
-  { name: "lava-pool c3r8", slice: standardSlice(3, 8) },
-  { name: "dirt-plateau c15r4", slice: standardSlice(15, 4) },
-  { name: "mossy-stone c15r12", slice: standardSlice(15, 12) },
-  { name: "lava-plateau c12r0", slice: standardSlice(12, 0) },
-  { name: "snow nineSlice c12r9", slice: standardSlice(12, 9, 0) },
-  { name: "abyss darkwall 366", slice: darkWallSlice },
+  { name: "abyss-blue c6r12", slice: standardSlice(6, 12) },
+  { name: "abyss-gray c9r12", slice: standardSlice(9, 12) },
+  { name: "red-carpet nineSlice c18r4", slice: standardSlice(18, 4, 0) },
 ];
 
 // 각 블록: 6×4 채운 영역, 4배 스케일. 라벨 여백 포함.
