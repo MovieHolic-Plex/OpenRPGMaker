@@ -1,6 +1,7 @@
 /**
  * 던전 테마별 자연 맵 3종 — 용암 / 석재 / 얼음.
- * 방 구조(세트): 테마 천장(공허) → 바로 아래 벽(윗선은 대각+평면으로 \___/\/ 성형) → 바닥.
+ * 방 구조(2D 쿼터뷰): 테마 천장(공허)이 방을 감싸고, 벽 면은 천장 "하단"(남향)에만 보인다.
+ * 좌/우/하단은 벽 면 없이 천장이 바닥과 바로 만난다. 벽 윗선은 대각+평면으로 \___/\/ 성형.
  * 판자 다리는 상위 레이어(구덩이/급류 위에 뜬 다리). 실행: npx tsx scripts/build-dungeon-themed-maps.mts
  */
 import fs from "node:fs";
@@ -75,16 +76,6 @@ function backWall(g: Grid, x0: number, x1: number, yTop: number, faceRows: numbe
     for (let r = 2; r <= faceRows; r += 1) g.lower[idx(x, yTop + r)] = ws.faceBody;
   }
 }
-// 좌우 세로 벽 + 하단 벽 밴드 — 방을 감싼다.
-function sideBottomWalls(g: Grid, x0: number, y0: number, x1: number, y1: number, ws: WallSet) {
-  const bodyMid = ws.bandBody[1];
-  for (let y = y0; y <= y1; y += 1) { g.lower[idx(x0, y)] = bodyMid; g.lower[idx(x1, y)] = bodyMid; }
-  for (let x = x0; x <= x1; x += 1) {
-    const c = x === x0 ? 0 : x === x1 ? 2 : 1;
-    g.lower[idx(x, y1 - 1)] = ws.band[c]!;
-    g.lower[idx(x, y1)] = ws.bandBody[c]!;
-  }
-}
 function plankV(g: Grid, x: number, y0: number, y1: number) { g.upper[idx(x, y0)] = 171; for (let y = y0 + 1; y < y1; y += 1) g.upper[idx(x, y)] = 201; g.upper[idx(x, y1)] = 231; }
 function plankH(g: Grid, x0: number, x1: number, y: number) { for (let x = x0; x <= x1; x += 1) g.upper[idx(x, y)] = x === x0 ? 252 : x === x1 ? 254 : 253; }
 
@@ -109,7 +100,6 @@ function lavaMap(): Grid {
   const g = blank(301);
   ceiling(g, WS_LAVA);
   backWall(g, 2, W - 3, 2, 2, WS_LAVA);
-  sideBottomWalls(g, 2, 5, W - 3, H - 3, WS_LAVA);
   g.lower[idx(13, 3)] = 75;
   g.upper[idx(5, 2)] = 263; g.upper[idx(20, 2)] = 263;
   shape(g, "redrock", rect(g, 4, 8, 12, 14, 301));
@@ -128,7 +118,6 @@ function stoneMap(): Grid {
   const g = blank(187);
   ceiling(g, WS_STONE);
   backWall(g, 2, W - 3, 2, 2, WS_STONE);
-  sideBottomWalls(g, 2, 5, W - 3, H - 3, WS_STONE);
   shape(g, "chasm", rect(g, 15, 6, 20, 13, 190));
   plankV(g, 17, 6, 13);
   const cx = 5, cy = 8;
@@ -151,7 +140,6 @@ function iceMap(): Grid {
   const g = blank(67);
   ceiling(g, WS_ICE);
   backWall(g, 2, W - 3, 2, 2, WS_ICE);
-  sideBottomWalls(g, 2, 5, W - 3, H - 3, WS_ICE);
   shape(g, "ice", rect(g, 4, 8, 11, 13, 70));
   const floe = [[282, 283, 284], [312, 313, 314], [342, 343, 344]];
   for (let dy = 0; dy < 3; dy += 1) for (let dx = 0; dx < 3; dx += 1) g.upper[idx(6 + dx, 9 + dy)] = floe[dy]![dx]!;
