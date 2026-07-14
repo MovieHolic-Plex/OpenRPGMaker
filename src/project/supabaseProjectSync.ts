@@ -49,12 +49,18 @@ export type SupabaseMapSaveConflict = {
 export type SupabaseSaveResult =
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly SupabaseMapSaveConflict[] }
-  | { readonly kind: "saved"; readonly project?: Project };
+  | { readonly kind: "saved"; readonly project?: Project; readonly sha256?: string };
 
 export type SupabaseProjectMapPatchInput = {
   readonly baseProject: Project;
   readonly changedMapIds?: readonly string[];
   readonly project: Project;
+};
+
+type ProjectWire = {
+  readonly json: unknown;
+  readonly serialized: string;
+  readonly sha256: string;
 };
 
 type SupabaseAiAnalysisRunInput = {
@@ -123,6 +129,7 @@ export async function listSupabaseProjects(config: SupabaseProjectListConfig): P
 
 async function loadProjectSnapshotFromSupabase(
   config = supabaseProjectConfig(),
+  options: { readonly overlayMaps?: boolean } = {},
 ): Promise<SupabaseProjectSnapshot | null> {
   if (!config) return null;
   const response = await fetch(supabaseProjectUrl(config), {
@@ -134,8 +141,19 @@ async function loadProjectSnapshotFromSupabase(
   const rows = await parseProjectRows(response);
   const row = rows[0];
   if (!row) return null;
+  const project = deserialize(JSON.stringify(repairSupabaseCurrentJson(row.current_json)));
+  // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
+  // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
+  if (options.overlayMaps !== false) {
+    try {
+      const mapRows = await loadMapRowsFromSupabase(config);
+      if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
+    } catch (error) {
+      if (!isOptionalTableMissingError(error)) throw error;
+    }
+  }
   return {
-    project: deserialize(JSON.stringify(repairSupabaseCurrentJson(row.current_json))),
+    project,
     sha256: row.current_sha256,
   };
 }
@@ -144,21 +162,22 @@ export async function saveProjectToSupabase(project: Project, config = supabaseP
   if (!config) return { kind: "not-configured" };
   const persistedProject = projectWithoutEventDrafts(project);
   removeLegacySpriteReferences(persistedProject);
-  const serialized = serialize(persistedProject);
+  const wire = await projectWire(persistedProject);
   const response = await fetch(supabaseUpsertUrl(config), {
     method: "POST",
     headers: supabaseJsonHeaders(config, "write"),
-    body: JSON.stringify(await projectUpsertPayload(config.projectId, persistedProject, serialized)),
+    body: JSON.stringify(projectUpsertPayload(config.projectId, persistedProject, wire)),
   });
   if (!response.ok) {
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
   try {
+    // maps/tilesets tables are the map/tileset SoT mirror; current_json stays full-project compat blob.
     await saveProjectChildRows(config, persistedProject);
   } catch (error) {
     if (!isOptionalTableMissingError(error)) throw error;
   }
-  return { kind: "saved" };
+  return { kind: "saved", project: persistedProject, sha256: wire.sha256 };
 }
 
 export async function saveProjectMapPatchToSupabase(
@@ -173,23 +192,26 @@ export async function saveProjectMapPatchToSupabase(
   const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(baseProject, persistedProject);
   const changedMapTreeIds = changedMapTreeIdsBetween(baseProject.mapTree, persistedProject.mapTree);
   for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
-    const latestSnapshot = await loadProjectSnapshotFromSupabase(config);
+    // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
+    // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
+    const latestSnapshot = await loadProjectSnapshotFromSupabase(config, { overlayMaps: false });
     const latestProject = latestSnapshot?.project ?? baseProject;
+    const latestSha = latestSnapshot?.sha256 ?? null;
+
     const conflicts = mapSaveConflicts(baseProject, persistedProject, latestProject, changedMapIds);
     if (conflicts.length > 0) return { kind: "conflict", conflicts };
+
     const mergedProject = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
-    const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSnapshot?.sha256 ?? null);
+    const wire = await projectWire(mergedProject);
+    const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSha, wire);
     if (!saved) continue;
     try {
-      if (latestSnapshot?.sha256) {
-        await saveChangedMapRowsFromCanonical(config, mergedProject, changedMapIds);
-      } else {
-        await saveChangedMapRows(config, mergedProject, changedMapIds);
-      }
+      // maps table = map-content SoT mirror written after successful project snapshot.
+      await saveChangedMapRows(config, mergedProject, changedMapIds);
     } catch (error) {
       if (!isOptionalTableMissingError(error)) throw error;
     }
-    return { kind: "saved", project: mergedProject };
+    return { kind: "saved", project: mergedProject, sha256: wire.sha256 };
   }
   throw new SupabaseProjectSyncError("Supabase project changed too often while saving map patch", 409);
 }
@@ -619,9 +641,10 @@ async function saveProjectSnapshotToSupabase(
   config: SupabaseProjectConfig,
   project: Project,
   expectedCurrentSha256: string | null,
+  wire?: ProjectWire,
 ): Promise<boolean> {
-  const serialized = serialize(project);
-  const payload = await projectUpsertPayload(config.projectId, project, serialized);
+  const resolvedWire = wire ?? await projectWire(project);
+  const payload = projectUpsertPayload(config.projectId, project, resolvedWire);
   if (expectedCurrentSha256 === null) {
     const response = await fetch(supabaseUpsertUrl(config), {
       method: "POST",
@@ -652,8 +675,16 @@ async function responseUpdatedRows(response: Response): Promise<boolean> {
   return parsed.length > 0;
 }
 
-async function projectUpsertPayload(projectId: string, project: Project, serialized: string): Promise<Record<string, unknown>> {
-  const currentJson: unknown = JSON.parse(serialized);
+async function projectWire(project: Project): Promise<ProjectWire> {
+  const serialized = serialize(project);
+  return {
+    serialized,
+    json: JSON.parse(serialized) as unknown,
+    sha256: await sha256Hex(serialized),
+  };
+}
+
+function projectUpsertPayload(projectId: string, project: Project, wire: ProjectWire): Record<string, unknown> {
   const terrainTemplateCount = Object.values(project.tilesets).reduce((sum, tileset) => {
     const templates = (tileset as { terrainTemplates?: unknown }).terrainTemplates;
     return sum + (Array.isArray(templates) ? templates.length : 0);
@@ -662,8 +693,8 @@ async function projectUpsertPayload(projectId: string, project: Project, seriali
     project_id: projectId,
     title: project.meta.title.trim() || DEFAULT_PROJECT_TITLE,
     schema_version: project.version,
-    current_json: currentJson,
-    current_sha256: await sha256Hex(serialized),
+    current_json: wire.json,
+    current_sha256: wire.sha256,
     map_count: Object.keys(project.maps).length,
     tileset_count: Object.keys(project.tilesets).length,
     // DB NOT NULL — upsert 시 null 금지 (둥근 호수 저장 등 전체 저장 경로).
@@ -690,27 +721,6 @@ async function saveChangedMapRows(
   const deletedMapIds = changedMapIds.filter((mapId) => project.maps[mapId] === undefined);
   if (deletedMapIds.length > 0) await deleteMapRows(config, deletedMapIds);
   await upsertRows(config, "maps", "project_id,map_id", mapRows);
-}
-
-async function saveChangedMapRowsFromCanonical(
-  config: SupabaseProjectConfig,
-  fallbackProject: Project,
-  changedMapIds: readonly string[],
-): Promise<void> {
-  let project = fallbackProject;
-  let beforeSha256: string | null = null;
-  for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
-    const beforeSnapshot = await loadProjectSnapshotFromSupabase(config);
-    if (beforeSnapshot) {
-      project = beforeSnapshot.project;
-      beforeSha256 = beforeSnapshot.sha256;
-    }
-    await saveChangedMapRows(config, project, changedMapIds);
-    const afterSnapshot = await loadProjectSnapshotFromSupabase(config);
-    if (!afterSnapshot || afterSnapshot.sha256 === beforeSha256) return;
-    project = afterSnapshot.project;
-    beforeSha256 = afterSnapshot.sha256;
-  }
 }
 
 async function replaceRows(
@@ -1020,6 +1030,25 @@ function insertMapTreeNode(node: MapTreeNode, parentId: string | null, index: nu
     return { ...node, children };
   }
   return { ...node, children: node.children.map((child) => insertMapTreeNode(child, parentId, index, childNode)) };
+}
+
+async function loadMapRowsFromSupabase(config: SupabaseProjectConfig): Promise<readonly Record<string, unknown>[]> {
+  const query = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    select: "map_id,map_json",
+  });
+  return await fetchJsonArray(`${config.url}/rest/v1/maps?${query.toString()}`, config);
+}
+
+function overlayMapsFromRows(project: Project, rows: readonly Record<string, unknown>[]): void {
+  for (const row of rows) {
+    const mapId = typeof row.map_id === "string" ? row.map_id : null;
+    const mapJson = row.map_json;
+    if (!mapId || !isRecord(mapJson)) continue;
+    const map = mapJson as unknown as GameMap;
+    if (typeof map.id !== "string" || typeof map.width !== "number" || typeof map.height !== "number") continue;
+    project.maps[mapId] = map;
+  }
 }
 
 function mapSnapshot(map: GameMap | undefined): string {

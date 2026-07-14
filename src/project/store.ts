@@ -79,6 +79,7 @@ class ProjectStore {
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
+  private persistInFlight: Promise<ProjectFlushResult> | null = null;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
   // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
@@ -300,6 +301,12 @@ class ProjectStore {
     if (!this.remotePersistenceEnabled && this.remotePersistenceDisabledReason === null) {
       return { kind: "not-configured" };
     }
+    // Clean flush: skip network/serialize when nothing changed since last successful persist.
+    if (!this.dirtySinceLastPersist && this.autoSaveState.kind !== "error") {
+      if (this.remotePersistenceEnabled) return { kind: "saved" };
+      if (this.remotePersistenceDisabledReason === "dev-showcase") return { kind: "saved-local" };
+      return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
+    }
     return await this.saveCurrentWithAutoSaveState(true);
   }
 
@@ -377,16 +384,23 @@ class ProjectStore {
   }
 
   private async saveCurrentWithAutoSaveState(allowRetry: boolean): Promise<ProjectFlushResult> {
+    if (this.persistInFlight) return await this.persistInFlight;
     this.setAutoSaveState({ kind: "saving" });
-    try {
-      const result = await this.persistCurrent();
-      this.setAutoSaveState(autoSaveStateForFlushResult(result));
-      return result;
-    } catch (error) {
-      this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
-      if (allowRetry) this.scheduleAutoSaveRetry();
-      throw error;
-    }
+    const run = (async (): Promise<ProjectFlushResult> => {
+      try {
+        const result = await this.persistCurrent();
+        this.setAutoSaveState(autoSaveStateForFlushResult(result));
+        return result;
+      } catch (error) {
+        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
+        if (allowRetry) this.scheduleAutoSaveRetry();
+        throw error;
+      } finally {
+        this.persistInFlight = null;
+      }
+    })();
+    this.persistInFlight = run;
+    return await run;
   }
 
   private async persistCurrent(): Promise<ProjectFlushResult> {

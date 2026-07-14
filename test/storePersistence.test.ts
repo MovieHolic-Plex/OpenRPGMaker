@@ -197,4 +197,30 @@ describe("Project store remote persistence", () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(fetchSpy.mock.calls[0]?.[1]?.method ?? "GET").toBe("GET");
   });
+
+  it("skips remote flush when there are no unsaved changes", async () => {
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-house-template-gallery");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("window", {
+      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: {
+        getItem: () => null,
+        setItem: () => undefined,
+      },
+    });
+    const fetchSpy = vi.fn<typeof fetch>();
+    vi.stubGlobal("fetch", fetchSpy);
+    vi.resetModules();
+
+    const { store } = await import("@/project/store");
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    const result = await store.flush();
+
+    expect(result).toEqual({ kind: "saved" });
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(store.hasUnsavedChanges()).toBe(false);
+  });
+
+
 });

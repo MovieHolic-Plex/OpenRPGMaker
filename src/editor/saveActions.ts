@@ -2,6 +2,10 @@ import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 
 export async function saveProjectNow(): Promise<boolean> {
+  if (store.isLoaded() && !store.hasUnsavedChanges() && store.getAutoSaveState().kind !== "error") {
+    toast("이미 최신 상태입니다", "ok");
+    return true;
+  }
   toast("저장 중...", "info");
   try {
     const result = await store.flush();
