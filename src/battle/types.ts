@@ -121,7 +121,6 @@ export interface BattleBattlerSnapshot {
   readonly level?: number;
   /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
   readonly monsterInstanceId?: string;
-  readonly speciesId?: string;
   readonly name: string;
   readonly hp: number;
   readonly maxHp: number;
