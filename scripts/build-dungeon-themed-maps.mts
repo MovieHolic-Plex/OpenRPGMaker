@@ -55,10 +55,18 @@ function ceiling(g: Grid, key: "abyss-blue" | "abyss-gray", body: number, top = 
     if (x === 1 || x === W - 2 || y === 2 || y === H - 2) pts.push({ x, y });
   shape(g, key, pts);
 }
-// 암벽 벽 링(1타일) — 바닥 사각형을 감싸는 실제 벽. wallBody = 벽 몸통 타일.
-function wallRing(g: Grid, x0: number, y0: number, x1: number, y1: number, wallBody: number) {
-  for (let x = x0; x <= x1; x += 1) { g.lower[idx(x, y0)] = wallBody; g.lower[idx(x, y1)] = wallBody; }
-  for (let y = y0; y <= y1; y += 1) { g.lower[idx(x0, y)] = wallBody; g.lower[idx(x1, y)] = wallBody; }
+// 테마 벽 밴드로 방을 감싼다 — 좌우/하단은 [캡 상단 + 몸통 하단] 2단 느낌, 몸통 반복.
+// cap = 벽 상단 3타일(좌·몸통·우), body = 벽 하단 3타일. 세로 벽은 몸통(body[1]) 반복.
+function wallEnclosure(g: Grid, x0: number, y0: number, x1: number, y1: number, cap: readonly [number,number,number], body: readonly [number,number,number]) {
+  const bodyMid = body[1];
+  // 좌우 세로 벽 (몸통 반복)
+  for (let y = y0; y <= y1; y += 1) { g.lower[idx(x0, y)] = bodyMid; g.lower[idx(x1, y)] = bodyMid; }
+  // 하단 벽 (캡 위 + 몸통 아래 2단)
+  for (let x = x0; x <= x1; x += 1) {
+    const c = x === x0 ? 0 : x === x1 ? 2 : 1;
+    g.lower[idx(x, y1 - 1)] = cap[c]!;
+    g.lower[idx(x, y1)] = body[c]!;
+  }
 }
 // 전폭 대각 절벽 벽 — 뒤쪽(북) 벽. 좌코너/직선 몸통/우코너 + 면 반복.
 function redCliffWall(g: Grid, x0: number, x1: number, yTop: number, faceRows: number, face?: number) {
@@ -84,9 +92,9 @@ function plankBridgeH(g: Grid, x0: number, x1: number, y: number) {
 // ───────────────────────── 용암 동굴 ─────────────────────────
 function lavaMap(): Grid {
   const g = blank(301);
-  ceiling(g, "abyss-blue", 427);
-  wallRing(g, 2, 2, W - 3, H - 3, 22);          // 갈색 암벽 벽 링
-  redCliffWall(g, 2, W - 3, 2, 2, 75);           // 뒤쪽 전폭 적암 대각 절벽 + 얼굴
+  ceiling(g, "pit-gold", 310);                   // 용암 지대 천장(금빛 테두리 어둠)
+  wallEnclosure(g, 2, 2, W - 3, H - 3, [102, 103, 104], [132, 133, 134]); // 검붉은 벽돌 벽
+  redCliffWall(g, 3, W - 4, 2, 2, 75);           // 뒤쪽 전폭 적암 대각 절벽 + 얼굴
   g.upper[idx(4, 2)] = 263; g.upper[idx(20, 2)] = 263; // 절벽 위 횃불
   // 용암 호수(적암 shore + 용암) — 왼쪽 아래, 판자 다리로 건넘
   shape(g, "redrock", rect(g, 3, 9, 12, 15, 301));
@@ -107,9 +115,9 @@ function lavaMap(): Grid {
 // ───────────────────────── 석재 홀 ─────────────────────────
 function stoneMap(): Grid {
   const g = blank(187);
-  ceiling(g, "abyss-gray", 430);
-  wallRing(g, 2, 2, W - 3, H - 3, 22);
-  stoneCliffWall(g, 2, W - 3, 2, 2);             // 뒤쪽 전폭 석재 대각 절벽
+  ceiling(g, "abyss-gray", 430);                 // 석재 지대 천장(회암 테두리 어둠)
+  wallEnclosure(g, 2, 2, W - 3, H - 3, [21, 22, 23], [51, 52, 53]); // 갈색 암벽 벽
+  stoneCliffWall(g, 3, W - 4, 2, 2);             // 뒤쪽 전폭 석재 대각 절벽
   g.upper[idx(13, 1)] = 268; g.upper[idx(14, 1)] = 269; // 천장 벽 균열
   // 균열 구덩이 + 판자 다리(상위 레이어, 구덩이 위)
   shape(g, "chasm", rect(g, 15, 8, 20, 14, 190));
@@ -137,9 +145,9 @@ function stoneMap(): Grid {
 // ───────────────────────── 얼음 동굴 ─────────────────────────
 function iceMap(): Grid {
   const g = blank(67);
-  ceiling(g, "abyss-blue", 427);
-  wallRing(g, 2, 2, W - 3, H - 3, 22);           // 암벽 벽 링
-  iceCliffWall(g, 2, W - 3, 2);                   // 뒤쪽 전폭 대각 빙벽(얼음 폭포)
+  ceiling(g, "abyss-blue", 427);                 // 얼음 지대 천장(푸른 테두리 어둠)
+  wallEnclosure(g, 2, 2, W - 3, H - 3, [372, 373, 374], [402, 403, 404]); // 푸른 빙벽
+  iceCliffWall(g, 3, W - 4, 2);                   // 뒤쪽 전폭 대각 빙벽(얼음 폭포)
   for (let x = 3; x <= 21; x += 4) { g.upper[idx(x, 2)] = 237; g.upper[idx(x + 1, 2)] = 238; g.upper[idx(x + 2, 2)] = 239; } // 절벽 위 눈 캡
   // 얼음판 연못 + 부빙(수동)
   shape(g, "ice", rect(g, 3, 8, 11, 14, 70));
