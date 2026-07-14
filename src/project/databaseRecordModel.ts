@@ -82,6 +82,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
+    ...(system.monsterBattleParty !== undefined ? { monsterBattleParty: system.monsterBattleParty === true } : {}),
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),

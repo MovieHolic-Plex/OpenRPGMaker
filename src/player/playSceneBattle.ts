@@ -36,6 +36,15 @@ export function playBattle(
     return Promise.resolve("escape");
   }
   const savedAudio = enterBattleAudio(project, scene.session);
+  // 몬스터 전투 모드(옵션 A): system.monsterBattleParty 가 켜져 있고 세션 몬스터 파티가
+  // 비어있지 않으면 영웅 대신 몬스터 파티로 전투한다. 아니면 기존 영웅 경로.
+  const monsterParty = project.system.monsterBattleParty === true
+    ? (scene.session.monsterParty ?? []).flatMap((instanceId) => {
+        const instance = scene.session.monsterInstances?.[instanceId];
+        return instance ? [instance] : [];
+      })
+    : [];
+  const monsterPartyMode = monsterParty.length > 0;
   const runtime = createBattleRuntime({
     project,
     troopId: step.troopId,
@@ -53,6 +62,7 @@ export function playBattle(
       classOverrides: scene.session.classOverrides,
       stateIds: scene.session.actorStateIds,
       partyActorIds: scene.session.partyActorIds,
+      monsterParty: monsterPartyMode ? monsterParty : undefined,
     },
     sessionState: {
       switches: scene.session.switches,
@@ -86,7 +96,7 @@ export function playBattle(
         exitBattleAudio(project, scene.session, savedAudio);
         applyBattleRewardsToSession(
           scene.session,
-          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds },
+          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
           project
         );
         battleScene.destroy();

@@ -15,6 +15,9 @@ export type BattleRewardsOutcome = {
   // 전투 중 아이템 소모와 전투 이벤트의 스위치/변수 변경을 세션에 되돌려 쓴다.
   readonly eventState?: BattleEventStateSnapshot;
   readonly participatingActorIds?: readonly string[];
+  // 옵션 A 몬스터 전투 모드였는지. true면 액터 exp/레벨업 루프를 건너뛴다
+  // (전투에 나간 건 몬스터라 영웅에게 exp 를 주면 안 됨). 몬스터 exp 는 아래 기존 경로 유지.
+  readonly monsterPartyMode?: boolean;
 };
 
 // 승리 보상을 세션에 적립하고, 누적 경험치 기준 자동 레벨업을 판정/반영한다.
@@ -35,16 +38,20 @@ export function applyBattleRewardsToSession(
   if (outcome.result !== "victory") return [];
   const earnedExp = Math.max(0, Math.trunc(outcome.rewards.exp));
   const levelUps: BattleLevelUpResult[] = [];
-  const processed = new Set<string>();
-  const rewardActorIdList = rewardActorIds(project, session.partyActorIds, outcome.participatingActorIds);
-  for (const actorId of rewardActorIdList) {
-    const actorLevel = session.actorLevels[actorId] ?? 1;
-    const actorExp = expForRewardActor(earnedExp, actorLevel, outcome.rewards.enemyLevel, project.system.rewardPolicy);
-    session.actorExperience[actorId] = (session.actorExperience[actorId] ?? 0) + actorExp;
-    if (processed.has(actorId)) continue;
-    processed.add(actorId);
-    const levelUp = applyActorLevelUp(session, project, actorId);
-    if (levelUp) levelUps.push(levelUp);
+  // 몬스터 전투 모드에서는 액터가 출전하지 않았으므로 영웅 exp/레벨업을 적립하지 않는다.
+  // (몬스터 exp 는 아래 applyMonsterExperienceAndEvolution 이 담당 — 기존 경로 유지.)
+  if (outcome.monsterPartyMode !== true) {
+    const processed = new Set<string>();
+    const rewardActorIdList = rewardActorIds(project, session.partyActorIds, outcome.participatingActorIds);
+    for (const actorId of rewardActorIdList) {
+      const actorLevel = session.actorLevels[actorId] ?? 1;
+      const actorExp = expForRewardActor(earnedExp, actorLevel, outcome.rewards.enemyLevel, project.system.rewardPolicy);
+      session.actorExperience[actorId] = (session.actorExperience[actorId] ?? 0) + actorExp;
+      if (processed.has(actorId)) continue;
+      processed.add(actorId);
+      const levelUp = applyActorLevelUp(session, project, actorId);
+      if (levelUp) levelUps.push(levelUp);
+    }
   }
   changeGold(session, "+=", Math.max(0, Math.trunc(outcome.rewards.gold)));
   for (const itemId of outcome.rewards.items) {

@@ -658,8 +658,12 @@ const giveStarterMonsters: ToolDefinition = {
     const index = map.events.findIndex((entry) => entry.id === eventId);
     if (index >= 0) map.events[index] = event;
     else map.events.push(event);
+    const warnings = draft.system.monsterCollection === true
+      ? undefined
+      : ["system.monsterCollection 이 꺼져 있어 전투에 '포획' 커맨드가 뜨지 않습니다. configure_monster_system(enabled:true) 를 먼저 실행하세요."];
     return {
       summary: `스타팅 몬스터 선택 이벤트 '${event.id}' 생성(${speciesIds.length}종)`,
+      warnings,
       data: { mapId, eventId: event.id, speciesIds },
     };
   },

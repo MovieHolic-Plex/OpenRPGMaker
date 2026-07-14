@@ -28,6 +28,7 @@ export function validateSystem(value: unknown): void {
   requireArray("system.startActorIds", system.startActorIds);
   if (system.titleScreen !== undefined) requireRecord("system.titleScreen", system.titleScreen);
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
+  if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
   if (system.timeSystem !== undefined) validateTimeSystem(system.timeSystem);
   if (system.typeChart !== undefined) {

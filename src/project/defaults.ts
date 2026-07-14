@@ -33,6 +33,15 @@ export {
   ensureBundledTilesets,
   removeLegacyRmTileset,
 } from "./defaults/defaultAssets";
+export {
+  POKEMON_OVERWORLD_PRESET,
+  pokemonPresetRole,
+  pokemonPresetGroupIds,
+  pokemonPresetRoleLabels,
+  type PokemonChipsetPreset,
+  type PokemonPresetRole,
+  type PokemonPresetTool,
+} from "./defaults/pokemonChipsetPreset";
 export { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 export { createStarterHouseInteriorMap } from "./defaults/starterHouseTransfer";
 export {

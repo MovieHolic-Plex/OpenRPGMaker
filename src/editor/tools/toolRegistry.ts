@@ -17,6 +17,7 @@ import { HOUSE_LOT_TOOLS } from "./houseLotTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { MAP_TOOLS } from "./mapTools";
+import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
 import { PLACEMENT_TOOLS } from "./placementTools";
@@ -34,6 +35,7 @@ import { CASTLE_TOOLS } from "./castleBuilder";
 import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
+import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
@@ -108,6 +110,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile"),
+  ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
@@ -125,6 +128,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),
+  ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),

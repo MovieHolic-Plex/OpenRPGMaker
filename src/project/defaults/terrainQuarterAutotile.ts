@@ -1,5 +1,6 @@
 import { DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "./autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
+import { dungeonTerrainQuarterKits } from "./dungeonTerrainQuarter";
 import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
 import type { TilesetDef } from "../types";
 
@@ -27,7 +28,7 @@ type TerrainQuarterMap = {
   readonly lowerTiles: readonly number[];
 };
 
-type TerrainQuarterKit = {
+export type TerrainQuarterKit = {
   readonly body: number;
   readonly bodyAlt?: number;
   readonly edgeNorth: number;
@@ -165,6 +166,16 @@ export function chipsetQuarterComposition(
   x: number,
   y: number,
 ): ChipsetQuarterComposition | null {
+  // 던전 킷을 먼저 본다 — dirt/moss 블록 위치가 combined-town 흙길/모래와 같아
+  // 타일 id가 겹치므로, 텍스처 가드가 있는 던전 킷이 우선해야 connect 집합이 맞는다.
+  const tile = tileAt(map, x, y);
+  const dungeonKit = typeof tile === "number"
+    ? dungeonTerrainQuarterKits(tileset)?.find((kit) => kit.targetTiles.includes(tile))
+    : undefined;
+  if (dungeonKit) {
+    const dungeonSources = terrainQuarterSourcesForKit(map, dungeonKit, x, y);
+    return dungeonSources ? { sources: dungeonSources } : null;
+  }
   const terrainSources = terrainQuarterSources(map, x, y);
   if (terrainSources) return { sources: terrainSources };
   return interiorWallFrameQuarterComposition(map, tileset, x, y);
@@ -181,6 +192,18 @@ export function terrainQuarterSources(
   if (typeof tile !== "number") return null;
   const kit = KITS.find((entry) => entry.targetTiles.includes(tile));
   if (!kit) return null;
+  return terrainQuarterSourcesForKit(map, kit, x, y);
+}
+
+// 킷 하나에 대한 쿼터 합성 — 던전 등 다른 칩셋 킷(dungeonTerrainQuarter.ts)이 재사용한다.
+export function terrainQuarterSourcesForKit(
+  map: TerrainQuarterMap,
+  kit: TerrainQuarterKit,
+  x: number,
+  y: number
+): readonly TerrainQuarterSource[] | null {
+  const tile = tileAt(map, x, y);
+  if (typeof tile !== "number") return null;
   if (isBodyAltIsolatedArt(map, kit, tile, x, y)) return null;
   const sources = QUARTERS.map((quarter) =>
     quarterSource(kit, {

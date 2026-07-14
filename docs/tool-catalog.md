@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 147개 툴 — 쓰기 102, 읽기 45.
+> 총 148개 툴 — 쓰기 103, 읽기 45.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -101,6 +101,7 @@
 | `prune_unused` | `apply?: boolean` | 미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. |
 | `revert_last_edit` | `steps?: integer` | 최근 편집 히스토리의 이전 상태로 되돌린다. 사용자가 '되돌려/취소/이전으로/undo'라고 하면 이 툴을 호출하라. 절대 clear_region 등으로 직접 지우지 말 것. |
 | `configure_time_system` | `enabled: boolean`, `minutesPerRealSecond?: number`, `dayStartHour?: integer`, `dayEndHour?: integer`, `forceSleep?: boolean`, `onDayEnd?: string` | 게임 시간/달력 시스템을 설정한다. enabled:false면 system.timeSystem을 제거해 기존 프로젝트와 같은 완전 비활성 상태로 둔다. |
+| `configure_monster_system` | `enabled: boolean`, `battleParty?: boolean` | 몬스터 수집/포획 시스템을 켠다. enabled:true면 전투에 '포획' 커맨드가 뜨고 종족/타입표/사냥터/조우 저작이 실제 플레이로 연결된다. battleParty:true면 전투를 영웅 대신 잡은 몬스터 파티로 진행한다(포켓몬식 출전). enabled:false면 두 플래그를 모두 제거한다. |
 | `present_doc` | `title: string`, `blocks: array` | 리치 설명 문서를 만들어 채팅에 렌더하고 프로젝트에 저장한다. 블록: markdown(설명), table(헤더+행), sheetMap(칩셋 시트 + 색상 존 오버레이 — 타일 블록 위치 안내), tileBlockCard(칩셋 영역 크롭 카드 — col/row/w/h 타일 단위), paintDemo(RM2k3 3×4 오토타일 블록 인터랙티브 페인트 — blockCol/blockRow는 블록 좌상단), html(자유형 — 샌드박스 iframe). 타일 이미지는 살아있는 타일셋에서 그려지므로 base64가 필요 없다. 시각 자료가 필요한 설명(오토타일 구조, 타일 배치 문법, 비교표)에 우선 사용하라. |
 | `set_tile_metadata` | `tilesetId?: string`, `entries: array`, `confirmedByUser?: boolean` | 타일의 라벨/설명/태그/역할을 기록한다. 사용자가 답으로 확정한 내용이면 confirmedByUser=true(잠금·최우선). 잠긴 타일은 confirmedByUser=true로만 수정 가능. |
 | `set_tile_rules` | `tilesetId?: string`, `entries: array`, `confirmedByUser?: boolean` | 타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지형 태그). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에. |

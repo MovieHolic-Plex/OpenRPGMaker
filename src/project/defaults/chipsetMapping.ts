@@ -170,6 +170,10 @@ export const CHIPSET_TILE_GROUPS = {
     300, 301, 302, 303, 304, 305,
     330, 331, 332, 333, 334, 335,
   ],
+  // 키큰 풀(포켓몬풍 인카운터 풀숲 상징) — 잔디 블록 우측의 짙은 대역.
+  // grass-autotile 하네스 그룹이 이미 점유한 273·333은 제외해 이중 배선을 피한다.
+  // 통행성은 잔디와 동일(passable) — 인카운터는 사냥터/조우표로 별도 배선하며 타일 자체엔 로직을 넣지 않는다.
+  tallGrass: [303, 304, 305, 334, 335, 243, 244, 245, 274, 275],
   lakeWaterBody: LAKE_WATER_BODY_TILES,
   lakeWaterBodyAnimationFrames: LAKE_WATER_BODY_ANIMATION_FRAMES,
   lakeShoreEdges: LAKE_SHORE_EDGE_TILES,
@@ -567,6 +571,7 @@ function tileSemanticForIndex(index: number): TileSemantic {
   if (hasTile(CHIPSET_TILE_GROUPS.waterfallWaterAnimationFrames, index)) return semantic({ key: "waterfall_water", label: "Waterfall", aiLabel: "Waterfall water: lower-layer vertical flowing water tile for cliffs with 3fps animation, not a lake surface.", usage: "terrain", tags: ["waterfall", "flowing-water", "cliff", "animation-frame", "impassable"] });
   if (isWaterChipsetTile(index)) return semantic({ key: "water_surface", label: "Water", aiLabel: "Water surface: lower-layer impassable lake or river tile.", usage: "terrain", tags: ["water", "lake", "river", "impassable"] });
   if (hasTile(CHIPSET_TILE_GROUPS.snowGround, index)) return semantic({ key: "snow_ground", label: "Snow", aiLabel: "Snow ground: lower-layer cold terrain surface.", usage: "terrain", tags: ["snow", "ground", "cold"] });
+  if (hasTile(CHIPSET_TILE_GROUPS.tallGrass, index)) return semantic({ key: "tall_grass", label: "Tall grass", aiLabel: "Tall grass: lower-layer walkable dark-grass band that symbolizes a Pokémon-style encounter/route thicket. Passable like normal grass; encounters are wired separately via hunting ground / encounter table, never on the tile itself.", usage: "terrain", tags: ["tall-grass", "dark-grass", "grass", "encounter", "route", "pokemon", "walkable", "outdoor"] });
   if (hasTile(CHIPSET_TILE_GROUPS.grassGround, index)) return semantic({ key: "grass_ground", label: "Grass", aiLabel: "Grass ground: lower-layer walkable outdoor base terrain.", usage: "terrain", tags: ["grass", "ground", "walkable", "outdoor"] });
   if (hasTile(CHIPSET_TILE_GROUPS.dirtRoadBody, index)) return semantic({ key: "dirt_road_body", label: "Dirt road", aiLabel: "Dirt road body: lower-layer walkable road center tile.", usage: "path", tags: ["dirt", "road", "walkable", "body"] });
   if (hasTile(CHIPSET_TILE_GROUPS.dirtRoadDetail, index)) return semantic({ key: "dirt_road_detail", label: "Dirt detail", aiLabel: "Dirt detail: small lower-layer road variation or ground accent.", usage: "detail", tags: ["dirt", "detail", "variation"] });
@@ -906,6 +911,7 @@ function koreanTileLabel(key: string, index: number): string {
     water_surface: "물",
     snow_ground: "눈밭",
     grass_ground: "풀밭",
+    tall_grass: "키큰 풀",
     dirt_road_body: "흙길 중심",
     dirt_road_detail: "흙길 장식",
     dirt_road_edge: "흙길 외곽",

@@ -36,7 +36,9 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
 
   // 검증된 통행 가능 지면(핸드오프 0.4).
   ...entries([TILE.GRASS, 270, 271, 272, 273, 300, 301, 302, 330, 331, 332, 333], "잔디", "terrain", "passable", ["grass", "GRASS", "풀밭"]),
-  ...entries([TILE.DARK_GRASS], "짙은 잔디", "terrain", "passable", ["dark grass", "숲", "풀밭"]),
+  // 키큰 풀(포켓몬풍 인카운터 풀숲 상징) — DARK_GRASS(303) + 짙은 대역. 통행 가능(잔디와 동일).
+  // 인카운터는 사냥터/조우표로 별도 배선하며 타일 자체엔 로직을 넣지 않는다.
+  ...entries([TILE.DARK_GRASS, 304, 305, 334, 335, 243, 244, 245, 274, 275], "키큰 풀", "terrain", "passable", ["dark grass", "tall grass", "짙은 잔디", "키큰 풀", "풀숲", "인카운터", "encounter", "route", "루트", "숲", "풀밭", "pokemon"]),
   ...entries([TILE.PATH], "흙길 변형", "terrain", "passable", ["길", "path", "흙길", "자갈"]),
   ...entries([421], "흙길", "terrain", "passable", ["길", "흙길", "dirt road"]),
   ...entries([390, 391, 392, 420, 422, 450, 451, 452], "흙길 외곽", "terrain", "passable", ["길", "흙길", "dirt road", "edge"]),
