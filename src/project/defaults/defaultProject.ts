@@ -8,6 +8,7 @@ import type {
   VariableDef,
 } from "../types";
 import { SCHEMA_VERSION } from "../types";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
@@ -195,6 +196,8 @@ export function createFarmingDemoProject(): Project {
       item_watering_can: 1,
       item_potato_seed: 3,
       item_strawberry_seed: 2,
+      item_tomato_seed: 2,
+      item_corn_seed: 2,
     },
   };
   project.database.items.push(
@@ -203,7 +206,11 @@ export function createFarmingDemoProject(): Project {
     normalizeItemRecord({ id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true }),
     normalizeItemRecord({ id: "item_potato", name: "감자", scope: "none", price: 40, type: "normalGoods" }),
     normalizeItemRecord({ id: "item_strawberry_seed", name: "딸기 씨앗", scope: "none", price: 40, type: "seed", consumable: true }),
-    normalizeItemRecord({ id: "item_strawberry", name: "딸기", scope: "none", price: 80, type: "normalGoods" })
+    normalizeItemRecord({ id: "item_strawberry", name: "딸기", scope: "none", price: 80, type: "normalGoods" }),
+    normalizeItemRecord({ id: "item_tomato_seed", name: "토마토 씨앗", scope: "none", price: 30, type: "seed", consumable: true }),
+    normalizeItemRecord({ id: "item_tomato", name: "토마토", scope: "none", price: 60, type: "normalGoods" }),
+    normalizeItemRecord({ id: "item_corn_seed", name: "옥수수 씨앗", scope: "none", price: 35, type: "seed", consumable: true }),
+    normalizeItemRecord({ id: "item_corn", name: "옥수수", scope: "none", price: 70, type: "normalGoods" })
   );
   project.database.crops = [
     normalizeCropRecord({
@@ -214,6 +221,10 @@ export function createFarmingDemoProject(): Project {
       harvestCount: 1,
       stages: [{ days: 1 }, { days: 1 }],
       seasons: ["spring"],
+      graphicStages: [
+        { resourceId: "farming-crop-potato", frame: 0, label: "감자 새싹" },
+        { resourceId: "farming-crop-potato", frame: 1, label: "감자 수확기" },
+      ],
     }),
     normalizeCropRecord({
       id: "crop_strawberry",
@@ -224,9 +235,73 @@ export function createFarmingDemoProject(): Project {
       stages: [{ days: 1 }, { days: 1 }],
       seasons: ["spring"],
       regrow: { days: 1 },
+      graphicStages: [
+        { resourceId: "farming-crop-strawberry", frame: 0, label: "딸기 새싹" },
+        { resourceId: "farming-crop-strawberry", frame: 1, label: "딸기 수확기" },
+      ],
+    }),
+    normalizeCropRecord({
+      id: "crop_tomato",
+      name: "토마토",
+      seedItemId: "item_tomato_seed",
+      harvestItemId: "item_tomato",
+      harvestCount: 1,
+      stages: [{ days: 1 }, { days: 1 }, { days: 1 }],
+      seasons: ["spring"],
+      graphicStages: [
+        { resourceId: "farming-crop-tomato", frame: 0, label: "토마토 새싹" },
+        { resourceId: "farming-crop-tomato", frame: 1, label: "토마토 줄기" },
+        { resourceId: "farming-crop-tomato", frame: 2, label: "토마토 수확기" },
+      ],
+    }),
+    normalizeCropRecord({
+      id: "crop_corn",
+      name: "옥수수",
+      seedItemId: "item_corn_seed",
+      harvestItemId: "item_corn",
+      harvestCount: 1,
+      stages: [{ days: 1 }, { days: 1 }, { days: 1 }],
+      seasons: ["spring"],
+      graphicStages: [
+        { resourceId: "farming-crop-corn", frame: 0, label: "옥수수 새싹" },
+        { resourceId: "farming-crop-corn", frame: 1, label: "옥수수 줄기" },
+        { resourceId: "farming-crop-corn", frame: 2, label: "옥수수 수확기" },
+      ],
     }),
   ];
+  map.events.push(
+    createFarmAnimalEvent("ev_farm_chicken", "닭", "tex_farming_charset_chicken", 11, 6),
+    createFarmAnimalEvent("ev_farm_cow", "젖소", "tex_farming_charset_cow", 13, 8)
+  );
   return project;
+}
+
+// 농장 동물 — 밭 근처를 배회하는 장식 이벤트 (대화 없음).
+function createFarmAnimalEvent(id: string, name: string, charsetTextureKey: string, x: number, y: number): GameEvent {
+  return {
+    id,
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: `page_${id}`,
+        name,
+        conditions: [],
+        graphic: {
+          sprite: { type: "bundled", id: charsetTextureKey },
+          direction: "down",
+          pattern: charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 }),
+        },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "random", speed: 2, frequency: 3 },
+        commands: [],
+      },
+    ],
+  };
 }
 
 function smallHouseVariantStartPos(variant: SmallHouseVariantIndex): Project["startPos"] {

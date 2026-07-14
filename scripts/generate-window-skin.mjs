@@ -1,48 +1,10 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { deflateSync } from "node:zlib";
+import { writePng } from "./lib/pixelPng.mjs";
 
 const TARGET = "public/assets/ui/windowskin-rm2003.png";
 const WIDTH = 96;
 const HEIGHT = 96;
-
-const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-
-const crcTable = new Uint32Array(256);
-for (let n = 0; n < 256; n += 1) {
-  let value = n;
-  for (let k = 0; k < 8; k += 1) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
-  crcTable[n] = value >>> 0;
-}
-
-function crc32(bytes) {
-  let value = 0xffffffff;
-  for (const byte of bytes) value = crcTable[(value ^ byte) & 0xff] ^ (value >>> 8);
-  return (value ^ 0xffffffff) >>> 0;
-}
-
-function chunk(type, payload) {
-  const typeBytes = Buffer.from(type, "ascii");
-  const body = Buffer.concat([typeBytes, payload]);
-  const out = Buffer.alloc(12 + payload.length);
-  out.writeUInt32BE(payload.length, 0);
-  typeBytes.copy(out, 4);
-  payload.copy(out, 8);
-  out.writeUInt32BE(crc32(body), 8 + payload.length);
-  return out;
-}
-
-function ihdr(width, height) {
-  const data = Buffer.alloc(13);
-  data.writeUInt32BE(width, 0);
-  data.writeUInt32BE(height, 4);
-  data[8] = 8;
-  data[9] = 6;
-  data[10] = 0;
-  data[11] = 0;
-  data[12] = 0;
-  return data;
-}
 
 function mix(a, b, t) {
   return Math.round(a + (b - a) * t);
@@ -103,27 +65,18 @@ function pixel(x, y) {
 }
 
 function createPng() {
-  const stride = 1 + WIDTH * 4;
-  const raw = Buffer.alloc(stride * HEIGHT);
+  const rgba = Buffer.alloc(WIDTH * HEIGHT * 4);
   for (let y = 0; y < HEIGHT; y += 1) {
-    const row = y * stride;
-    raw[row] = 0;
     for (let x = 0; x < WIDTH; x += 1) {
-      const offset = row + 1 + x * 4;
+      const offset = (y * WIDTH + x) * 4;
       const [r, g, b, a] = pixel(x, y);
-      raw[offset] = r;
-      raw[offset + 1] = g;
-      raw[offset + 2] = b;
-      raw[offset + 3] = a;
+      rgba[offset] = r;
+      rgba[offset + 1] = g;
+      rgba[offset + 2] = b;
+      rgba[offset + 3] = a;
     }
   }
-
-  return Buffer.concat([
-    PNG_SIGNATURE,
-    chunk("IHDR", ihdr(WIDTH, HEIGHT)),
-    chunk("IDAT", deflateSync(raw, { level: 9 })),
-    chunk("IEND", Buffer.alloc(0)),
-  ]);
+  return writePng(WIDTH, HEIGHT, rgba);
 }
 
 mkdirSync(path.dirname(TARGET), { recursive: true });

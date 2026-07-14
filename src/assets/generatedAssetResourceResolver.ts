@@ -1,4 +1,5 @@
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
+import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
@@ -53,6 +54,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ??
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
     resolveScarloxyAssetUrl(resourceId) ??
+    resolveFarmingAssetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId);
   if (packagedUrl !== null) return packagedUrl;
   const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;

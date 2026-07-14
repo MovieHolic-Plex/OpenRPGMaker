@@ -81,6 +81,17 @@ light from top-left.
 - **버전 히스토리**:
   - v1 (2026-07-12): 최초 변환·등록. 등록 코드는 `src/assets/scarloxyPack.ts`.
 
+## farming/*.png
+- **출처/라이선스**: 자체 절차 생성 (외부 에셋 없음). `scripts/lib/pixelPng.mjs` 기반 순수 픽셀 버퍼 드로잉.
+- **생성**: `node scripts/generate-farming-crop-sprites.mjs` / `node scripts/generate-farming-animal-sprites.mjs`. 수동 편집 금지 — 스크립트의 ASCII 그리드를 고치고 재실행할 것.
+- **구성**:
+  - `farming/crops/crop_{potato,strawberry}.png`: 32x16, 16px 성장 프레임 2개(새싹 → 수확기) 가로 나열.
+  - `farming/crops/crop_{tomato,corn}.png`: 48x16, 성장 프레임 3개(새싹 → 줄기 → 수확기).
+  - `farming/animals/{chicken,cow}.png`: 288x256/24x32 RM2K3 CharSet, 캐릭터 슬롯 0, 3패턴 x 4방향(up/right/down/left). 배경 투명 — 런타임 색키가 좌상단 RGB 를 투명 처리하므로 아트에 순수 검정 없음.
+- **등록 코드**: `src/assets/farmingSprites.ts` (작물 시트 로딩·프레임 등록은 `src/assets/bundled.ts`, 캐릭셋 합류는 `src/assets/charsetCatalog.ts`).
+- **버전 히스토리**:
+  - v1 (2026-07-13): 최초 생성. 농사 데모(봄 밭) 작물 4종 성장 스프라이트 + 농장 동물 2종.
+
 ---
 
 ## 정밀수정 워크플로우

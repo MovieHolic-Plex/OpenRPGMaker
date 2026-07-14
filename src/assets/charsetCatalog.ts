@@ -3,11 +3,13 @@
 // 캐릭셋을 열거/조회하는 소비자는 EASYRPG_CHARSET_ASSETS 대신 이 배열을 사용한다.
 
 import { EASYRPG_CHARSET_ASSETS, type EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
+import { FARMING_ANIMAL_CHARSET_ASSETS } from "@/assets/farmingSprites";
 import { SCARLOXY_CHARSET_ASSETS } from "@/assets/scarloxyPack";
 
 export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...EASYRPG_CHARSET_ASSETS,
   ...SCARLOXY_CHARSET_ASSETS,
+  ...FARMING_ANIMAL_CHARSET_ASSETS,
 ];
 
 export function findCharsetAsset(idOrTextureKey: string): EasyRpgCharsetAsset | undefined {
