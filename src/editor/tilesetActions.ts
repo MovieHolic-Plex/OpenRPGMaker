@@ -1,8 +1,13 @@
 import { store } from "@/project/store";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { cloneDefaultAutotileGroups } from "@/project/defaults/autotileGroups";
+import { cloneDefaultAutotileGroups, autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { buildEdgeCornerVariantMap, type EdgeCornerTileSet } from "@/project/defaults/autotileEngine";
-import type { AutotileGroup, PassFlag, TilesetId } from "@/project/types";
+import {
+  buildAnimatedWaterStrip,
+  buildTemplateGroup,
+  type AutotileTemplateKind,
+} from "@/editor/panels/tilesetAutotileTemplates";
+import type { AutotileGroup, PassFlag, TilesetDef, TilesetId } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
 export function setTerrainTag(tilesetId: TilesetId, tile: number, terrain: number): void {
@@ -74,6 +79,72 @@ export function seedDefaultAutotileGroups(tilesetId: TilesetId): void {
     if (!tileset) return;
     tileset.autotileGroups = [...(tileset.autotileGroups ?? []), ...cloneDefaultAutotileGroups()];
   });
+}
+
+export type AutotileTemplateActionResult = { ok: true; groupId?: string } | { ok: false; error: string };
+
+// 템플릿 위저드(tilesetAutotileTemplateWizard.ts)의 커밋 액션.
+// - 오토타일 템플릿(rm2k-3x4/grid-3x3/grid-3x2): buildTemplateGroup 결과를 autotileGroups 에 push.
+//   이때 rmTypeExpander.ts registerAutotileGroup 의 "내장 폴백 승계" 규약을 적용한다 —
+//   autotileGroupsForTileset 은 자체 정의가 있으면 내장 그룹 중 멤버가 겹치지 않는 것만 폴백으로
+//   남기므로, 첫 커스텀 그룹을 넣기 전에 내장(흙길/모래/포석/경작지)을 편집 가능한 사본으로 승계해
+//   기존 오토타일이 죽지 않게 한다.
+// - animated-water: 그룹 대신 tileset.animationStrips 에 스트립을 push 한다(groupId 없음).
+export function addAutotileGroupFromTemplate(
+  tilesetId: TilesetId,
+  kind: AutotileTemplateKind,
+  anchorTile: number
+): AutotileTemplateActionResult {
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  if (!tileset) return { ok: false, error: "타일셋을 찾을 수 없습니다." };
+
+  if (kind === "animated-water") {
+    const built = buildAnimatedWaterStrip(anchorTile, tileset.tilesPerRow, tileset.count);
+    if ("error" in built) return { ok: false, error: built.error };
+    recordProjectSnapshot();
+    store.update((project) => {
+      const target = project.tilesets[tilesetId];
+      if (!target) return;
+      target.animationStrips = [...(target.animationStrips ?? []), built.strip];
+    });
+    return { ok: true };
+  }
+
+  const built = buildTemplateGroup(kind, anchorTile, tileset.tilesPerRow, tileset.count);
+  if ("error" in built) return { ok: false, error: built.error };
+  let created: string | undefined;
+  recordProjectSnapshot();
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (!target) return;
+    inheritBuiltinFallbackGroups(target);
+    const id = `autotile_${uniqueSuffix(target.autotileGroups ?? [])}`;
+    const group: AutotileGroup = {
+      id,
+      name: built.name,
+      neighborhood: built.neighborhood,
+      memberTileIds: [...built.memberTileIds],
+      connectTileIds: [...built.connectTileIds],
+      variantMap: { ...built.variantMap },
+    };
+    target.autotileGroups = [...(target.autotileGroups ?? []), group];
+    created = id;
+  });
+  return { ok: true, groupId: created };
+}
+
+// 내장 폴백 승계(rmTypeExpander.ts registerAutotileGroup 과 동일 규약):
+// 자체 정의가 하나도 없는 타일셋이면 현재 유효한 그룹(기본 칩셋 = 내장 4종)을
+// 편집 가능한 깊은 사본으로 먼저 넣는다. 비기본 타일셋은 빈 배열이라 no-op.
+function inheritBuiltinFallbackGroups(tileset: TilesetDef): void {
+  if (tileset.autotileGroups && tileset.autotileGroups.length > 0) return;
+  tileset.autotileGroups = autotileGroupsForTileset(tileset).map((group) => ({
+    ...group,
+    memberTileIds: [...group.memberTileIds],
+    connectTileIds: group.connectTileIds ? [...group.connectTileIds] : undefined,
+    triggerTileIds: group.triggerTileIds ? [...group.triggerTileIds] : undefined,
+    variantMap: { ...group.variantMap },
+  }));
 }
 
 export function removeAutotileGroup(tilesetId: TilesetId, groupId: string): void {

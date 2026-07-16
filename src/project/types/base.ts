@@ -214,6 +214,11 @@ export interface TilesetDef {
   transparentColor?: string;
   // 범용 오토타일(지형 자동 연결) 그룹 정의. 없으면 내장 기본 그룹(흙길/모래)을 사용한다.
   autotileGroups?: AutotileGroup[];
+  // 타일 애니메이션 스트립: baseTile 부터 가로로 frames 개 연속 프레임을 fps 로 재생.
+  // (커스텀 타일셋 물 등 — 기본 칩셋의 CHIPSET_ANIMATION_STRIPS 상수를 데이터로 일반화)
+  // TODO(렌더 연동): chipsetTileRender.ts / playSceneMapRuntime.ts 의 isDefaultTilesetTexture
+  // 가드를 이 필드 기반으로 교체해야 실제 재생된다 — 현재는 데이터 모델+UI 까지만.
+  animationStrips?: TilesetAnimationStrip[];
   // v3 시공 문법 프로파일(2026-07-07). 생략 시 "rm-type"(RM2003 combined_town 규약).
   // 프리미티브 전개는 프로파일 레지스트리(grammarProfiles.ts) 디스패치.
   grammarProfile?: string;
@@ -221,6 +226,13 @@ export interface TilesetDef {
 
 // 이웃 판정 범위: 4방향(상하좌우) 또는 8방향(대각 포함).
 export type AutotileNeighborhood = 4 | 8;
+
+// 타일셋 타일 애니메이션 스트립 정의(가로 연속 프레임). TilesetDef.animationStrips 참조.
+export interface TilesetAnimationStrip {
+  baseTile: number;
+  frames: number;
+  fps: number;
+}
 
 // 하나의 지형 패밀리를 이웃 연결 상태에 따라 자동으로 변형 타일로 바꾸는 정의.
 export interface AutotileGroup {

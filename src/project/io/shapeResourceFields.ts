@@ -260,6 +260,17 @@ export function validateTileset(id: string, value: unknown): void {
       }
     }
   }
+  if (tileset.animationStrips !== undefined) {
+    for (const [index, strip] of requireArray(`tileset ${id}.animationStrips`, tileset.animationStrips).entries()) {
+      const record = requireRecord(`tileset ${id}.animationStrips[${index}]`, strip);
+      const baseTile = requireNumber(`tileset ${id}.animationStrips[${index}].baseTile`, record.baseTile);
+      assert(baseTile >= 0 && baseTile < count, `tileset ${id}: animationStrips[${index}] baseTile out of range`);
+      const frames = requireNumber(`tileset ${id}.animationStrips[${index}].frames`, record.frames);
+      assert(frames >= 1, `tileset ${id}: animationStrips[${index}] frames must be >= 1`);
+      const fps = requireNumber(`tileset ${id}.animationStrips[${index}].fps`, record.fps);
+      assert(fps > 0, `tileset ${id}: animationStrips[${index}] fps must be > 0`);
+    }
+  }
 }
 
 export function validateSwitches(value: unknown): void {
