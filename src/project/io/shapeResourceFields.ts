@@ -113,6 +113,20 @@ export function validateTileset(id: string, value: unknown): void {
   if (tileset.transparentColor !== undefined) {
     requireString(`tileset ${id}.transparentColor`, tileset.transparentColor);
   }
+  if (tileset.tileGrafts !== undefined) {
+    for (const [index, graft] of requireArray(`tileset ${id}.tileGrafts`, tileset.tileGrafts).entries()) {
+      const record = requireRecord(`tileset ${id}.tileGrafts[${index}]`, graft);
+      const targetTile = requireNumber(`tileset ${id}.tileGrafts[${index}].targetTile`, record.targetTile);
+      assert(targetTile >= 0, `tileset ${id}: tileGrafts[${index}] targetTile must be >= 0`);
+      // count 확장 규칙 일관성: 확장 모드는 addTileGraft 가 count 를 먼저 늘려 저장하므로
+      // 로드 시 targetTile 은 항상 count 범위 안이어야 한다.
+      assert(targetTile < count, `tileset ${id}: tileGrafts[${index}] targetTile out of range (count 확장 누락)`);
+      const sourceTile = requireNumber(`tileset ${id}.tileGrafts[${index}].sourceTile`, record.sourceTile);
+      assert(sourceTile >= 0, `tileset ${id}: tileGrafts[${index}] sourceTile must be >= 0`);
+      const sourceChipset = requireString(`tileset ${id}.tileGrafts[${index}].sourceChipset`, record.sourceChipset);
+      assert(sourceChipset.length > 0, `tileset ${id}: tileGrafts[${index}] sourceChipset must not be empty`);
+    }
+  }
   if (tileset.grammarProfile !== undefined) {
     requireString(`tileset ${id}.grammarProfile`, tileset.grammarProfile);
   }

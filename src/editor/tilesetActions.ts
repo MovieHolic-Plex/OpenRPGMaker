@@ -1,5 +1,7 @@
 import { store } from "@/project/store";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { BUNDLED_EASYRPG_CHIPSET_ASSETS, TEX_TILESET, TILE_FRAME_COUNT } from "@/assets/bundled";
+import { isValidTileGraft, rowAlignedTileCount } from "@/assets/tileGrafts";
 import { cloneDefaultAutotileGroups, autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { buildEdgeCornerVariantMap, type EdgeCornerTileSet } from "@/project/defaults/autotileEngine";
 import {
@@ -7,7 +9,7 @@ import {
   buildTemplateGroup,
   type AutotileTemplateKind,
 } from "@/editor/panels/tilesetAutotileTemplates";
-import type { AutotileGroup, PassFlag, TilesetDef, TilesetId } from "@/project/types";
+import type { AutotileGroup, PassFlag, TileAiMetadata, TileGraft, TilesetDef, TilesetId } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
 export function setTerrainTag(tilesetId: TilesetId, tile: number, terrain: number): void {
@@ -46,6 +48,125 @@ export function setTilePassageBulk(tilesetId: TilesetId, tile: number, passable:
     tileset.passability[tile] = next;
     markUserTileRuntimeMetadata(tileset, tile, { passage: passable ? "passable" : "solid" });
   });
+}
+
+// ── 타일 이식(tile graft) ──────────────────────────────────────────
+// 다른 번들 칩셋의 개별 타일을 이 타일셋 슬롯에 이식한다. 넘버링 보존:
+// - targetTile < count: 기존 슬롯 덮어쓰기(예: 밴 슬롯 411/412/413/443 재활용).
+// - targetTile >= count: 행 단위 확장 — count 가 tilesPerRow 배수로 늘고
+//   passability/priority/terrain(/tileMeta) 배열도 함께 늘린다(기본 통과/lower/0).
+// 텍스처 캐시 무효화는 tilesetTextureKey 의 graft 해시 suffix 가 담당한다.
+
+export type TileGraftActionResult = { ok: true } | { ok: false; error: string };
+
+export function addTileGraft(tilesetId: TilesetId, graft: TileGraft): TileGraftActionResult {
+  if (!isValidTileGraft(graft)) {
+    return { ok: false, error: "타일 이식 정보가 잘못되었습니다 (targetTile/sourceTile ≥ 0 정수, sourceChipset 필요)." };
+  }
+  if (!isKnownGraftSourceChipset(graft.sourceChipset)) {
+    return { ok: false, error: `알 수 없는 소스 칩셋입니다: ${graft.sourceChipset}` };
+  }
+  const current = store.getCurrent().tilesets[tilesetId];
+  if (!current) return { ok: false, error: `타일셋을 찾을 수 없습니다: ${tilesetId}` };
+  if (graft.sourceTile >= TILE_FRAME_COUNT) {
+    return { ok: false, error: `sourceTile 은 0~${TILE_FRAME_COUNT - 1} 이어야 합니다.` };
+  }
+  recordProjectSnapshot();
+  store.update((project) => {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset) return;
+    if (graft.targetTile >= tileset.count) {
+      extendTilesetToRowAlignedCount(tileset, rowAlignedTileCount(graft.targetTile + 1, tileset.tilesPerRow));
+    }
+    const next: TileGraft = {
+      targetTile: graft.targetTile,
+      sourceChipset: graft.sourceChipset,
+      sourceTile: graft.sourceTile,
+    };
+    tileset.tileGrafts = [...(tileset.tileGrafts ?? []).filter((entry) => entry.targetTile !== graft.targetTile), next];
+    // 이식으로 덮인 슬롯의 낡은 시맨틱 라벨(하네스 등)이 남지 않게 출처를 라벨로 남긴다.
+    stampGraftTileMeta(tileset, next);
+  });
+  return { ok: true };
+}
+
+export function removeTileGraft(tilesetId: TilesetId, targetTile: number): TileGraftActionResult {
+  const current = store.getCurrent().tilesets[tilesetId];
+  if (!current) return { ok: false, error: `타일셋을 찾을 수 없습니다: ${tilesetId}` };
+  const removed = (current.tileGrafts ?? []).find((entry) => entry.targetTile === targetTile);
+  if (!removed) return { ok: false, error: `이식이 없는 타일입니다: ${targetTile}` };
+  recordProjectSnapshot();
+  store.update((project) => {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset?.tileGrafts) return;
+    tileset.tileGrafts = tileset.tileGrafts.filter((entry) => entry.targetTile !== targetTile);
+    if (tileset.tileGrafts.length === 0) delete tileset.tileGrafts;
+    clearGraftTileMeta(tileset, removed);
+    shrinkTilesetAfterGraftRemoval(tileset);
+  });
+  return { ok: true };
+}
+
+function isKnownGraftSourceChipset(textureKey: string): boolean {
+  return textureKey === TEX_TILESET || BUNDLED_EASYRPG_CHIPSET_ASSETS.some((asset) => asset.textureKey === textureKey);
+}
+
+// 확장 모드: count 와 count 길이에 의존하는 배열들을 함께 늘린다(직렬화 검증 일관성).
+function extendTilesetToRowAlignedCount(tileset: TilesetDef, newCount: number): void {
+  if (newCount <= tileset.count) return;
+  while (tileset.passability.length < newCount) {
+    tileset.passability.push({ up: true, down: true, left: true, right: true });
+  }
+  while (tileset.priority.length < newCount) tileset.priority.push("lower");
+  while (tileset.terrain.length < newCount) tileset.terrain.push(0);
+  if (tileset.tileMeta) {
+    while (tileset.tileMeta.length < newCount) {
+      tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
+    }
+  }
+  tileset.count = newCount;
+}
+
+// 확장분에 남은 graft 가 없으면 count 를 다시 줄인다(번들 칩셋 기본 480 밑으로는 안 내려감).
+function shrinkTilesetAfterGraftRemoval(tileset: TilesetDef): void {
+  if (tileset.image.type !== "bundled" || tileset.count <= TILE_FRAME_COUNT) return;
+  const maxTarget = (tileset.tileGrafts ?? []).reduce((max, entry) => Math.max(max, entry.targetTile), -1);
+  const newCount = Math.max(TILE_FRAME_COUNT, rowAlignedTileCount(maxTarget + 1, tileset.tilesPerRow));
+  if (newCount >= tileset.count) return;
+  tileset.passability.length = newCount;
+  tileset.priority.length = newCount;
+  tileset.terrain.length = newCount;
+  if (tileset.tileMeta) tileset.tileMeta.length = Math.min(tileset.tileMeta.length, newCount);
+  tileset.count = newCount;
+}
+
+function stampGraftTileMeta(tileset: TilesetDef, graft: TileGraft): void {
+  ensureTileMetaLength(tileset);
+  const existing = tileset.tileMeta![graft.targetTile];
+  tileset.tileMeta![graft.targetTile] = {
+    ...(existing ?? { description: "" }),
+    label: graftTileMetaLabel(graft),
+    description: existing?.description ?? "",
+    source: "user",
+  };
+}
+
+function clearGraftTileMeta(tileset: TilesetDef, removed: TileGraft): void {
+  const meta = tileset.tileMeta?.[removed.targetTile];
+  if (!meta || meta.label !== graftTileMetaLabel(removed)) return;
+  const next: TileAiMetadata = { ...meta, label: "", source: "unknown" };
+  tileset.tileMeta![removed.targetTile] = next;
+}
+
+function graftTileMetaLabel(graft: TileGraft): string {
+  return `이식: ${graft.sourceChipset}#${graft.sourceTile}`;
+}
+
+function ensureTileMetaLength(tileset: TilesetDef): void {
+  tileset.tileMeta ??= [];
+  while (tileset.tileMeta.length < tileset.count) {
+    tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
+  }
 }
 
 // ── 오토타일 그룹 편집 ─────────────────────────────────────────────

@@ -167,8 +167,13 @@ function registerFarmingCropFrames(scene: Phaser.Scene, usedTextures: ReadonlySe
   }
 }
 
-export function registerTilesetTextureFrames(scene: Phaser.Scene, textureKey: string): void {
-  registerTileFrames(scene, textureKey);
+// frameCount: 확장 타일셋(타일 이식)용 — 기본 480(TILE_FRAME_COUNT)은 불변, 확장분만 추가 등록.
+export function registerTilesetTextureFrames(
+  scene: Phaser.Scene,
+  textureKey: string,
+  frameCount: number = TILE_FRAME_COUNT
+): void {
+  registerTileFrames(scene, textureKey, frameCount);
   registerTileAnimationsForTexture(scene, textureKey);
 }
 
@@ -285,11 +290,12 @@ function isExtraBundledLoadKey(fileKey: string): boolean {
   );
 }
 
-function registerTileFrames(scene: Phaser.Scene, textureKey: string): void {
+function registerTileFrames(scene: Phaser.Scene, textureKey: string, frameCount: number = TILE_FRAME_COUNT): void {
   const tex = scene.textures.get(textureKey);
   const existing = tex.getFrameNames();
-  if (existing.includes("tile_0") && existing.includes("tile_0_nw")) return;
-  for (let i = 0; i < TILE_FRAME_COUNT; i++) {
+  // 마지막 프레임까지 이미 있으면 완료 — 확장 타일셋(frameCount > 480)은 확장분만 이어서 등록한다.
+  if (existing.includes("tile_0") && existing.includes("tile_0_nw") && existing.includes(`tile_${frameCount - 1}_se`)) return;
+  for (let i = 0; i < frameCount; i++) {
     const { sx, sy } = tileSourceXY(i);
     if (!existing.includes(`tile_${i}`)) {
       tex.add(`tile_${i}`, 0, sx, sy, TILE_SIZE, TILE_SIZE);

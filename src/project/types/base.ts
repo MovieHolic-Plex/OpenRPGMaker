@@ -197,6 +197,17 @@ export interface PalettePreset {
   locked?: boolean;
 }
 
+// 타일 이식(graft): 다른 번들 칩셋의 개별 타일을 이 타일셋의 특정 슬롯에 "부분 로딩"한다.
+// - targetTile < count(원본): 기존 슬롯을 덮어쓴다(예: 밴 슬롯 재활용).
+// - targetTile >= count(원본): 행 단위 확장 — count 를 tilesPerRow 배수로 늘리고
+//   아틀라스가 세로로 자란다. 기존 타일 id 는 절대 변하지 않는다(넘버링 보존).
+export interface TileGraft {
+  targetTile: number;
+  // 소스 칩셋의 번들 textureKey (예: "tex_easyrpg_chipset_retro_house").
+  sourceChipset: string;
+  sourceTile: number;
+}
+
 export interface TilesetDef {
   id: TilesetId;
   name: string;
@@ -207,6 +218,8 @@ export interface TilesetDef {
   passability: PassFlag[];
   priority: ("lower" | "upper")[];
   terrain: number[];
+  // 타일 이식 목록. 렌더는 베이크(캔버스 합성)로 처리 — tileGrafts.ts / tilesetImage.ts 참고.
+  tileGrafts?: TileGraft[];
   tileMeta?: TileAiMetadata[];
   tileGroups?: TileGroupMetadata[];
   palettePresets?: PalettePreset[];
