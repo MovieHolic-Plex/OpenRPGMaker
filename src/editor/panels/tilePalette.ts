@@ -9,8 +9,8 @@ import { setTerrainTag } from "@/editor/tilesetActions";
 import { TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
-import { renderTilePaletteClusters, type PaletteViewMode } from "@/editor/panels/tilePaletteClusters";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
+import { makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
 import { makeChipsetSheet } from "@/editor/panels/tilePaletteSheet";
 import { makeTilePaletteToolSection } from "@/editor/panels/tilePaletteToolbar";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -22,7 +22,6 @@ import { compatibleStampIdForTile, isAutoConnectCandidate } from "@/editor/tileS
 import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
-const PALETTE_VIEW_STORAGE_KEY = "rpg-zzu:palette-view";
 /** 작업 모드 탭: 칠하기 | 찾기 | 속성 */
 const PALETTE_WORK_TAB_KEY = "rpg-zzu:palette-work-tab";
 /** 구 advanced 플래그 — 있으면 find 탭으로 마이그레이션 */
@@ -57,6 +56,8 @@ let activeTileCategory: TileCategoryId = "recent";
 let tileSearchQuery = "";
 let showQuickTileNumbers = false;
 let activeWorkTab: PaletteWorkTab = "paint";
+/** 맵 우클릭 스포이트 후 팔레트 칩셋 셀로 스크롤 (전문가 모드). */
+let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
 const recentTiles: number[] = [];
 
@@ -146,6 +147,11 @@ export function renderTilePalette(container: HTMLElement): void {
 
   container.append(shell);
   if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
+  if (pendingRevealSelectedTile) {
+    pendingRevealSelectedTile = false;
+    const tile = state.selectedTile;
+    window.requestAnimationFrame(() => revealChipsetTileInPalette(tile));
+  }
 }
 
 function makeWorkTabBar(): HTMLElement {
@@ -234,28 +240,17 @@ function makePaintTabBody(input: {
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
 
-  const paletteView = readPaletteView();
-  const palette =
-    paletteView === "sheet"
-      ? makeChipsetSheet({
-          activePaletteStamp: state.activePaletteStamp,
-          layer: tileLayer,
-          onCreatePaletteStamp: setPaletteStampFromDrag,
-          onSelectTile: selectPaletteTile,
-          selectedTile: state.selectedTile,
-          tileset,
-        })
-      : renderTilePaletteClusters({
-          layer: tileLayer,
-          onSelectTile: selectPaletteTile,
-          selectedTile: state.selectedTile,
-          tileset,
-        });
+  // RM2003식 단일 팔레트 — 그룹/시트 보기 분리 없이 6열 고정, 오토타일은 대표 1칸 축약.
+  const palette = makeRm2kPalette({
+    layer: tileLayer,
+    onSelectTile: selectPaletteTile,
+    selectedTile: state.selectedTile,
+    tileset,
+  });
 
   root.append(
     makePaintTitleRow(
       tileLayer,
-      paletteView,
       tileset,
       state.selectedTile,
       state.activePaletteStamp,
@@ -390,7 +385,6 @@ function renderPalettePreservingViewport(): void {
 
 function makePaintTitleRow(
   layer: Exclude<Layer, "event">,
-  paletteView: PaletteViewMode,
   tileset: TilesetDef,
   selectedTile: number,
   activePaletteStamp: PaletteStamp | null,
@@ -403,16 +397,6 @@ function makePaintTitleRow(
     })
   );
   const controls = el("div", { class: "tile-palette-title-controls" });
-  controls.append(
-    el("div", {
-      class: "palette-view-segment",
-      attrs: { role: "group", "aria-label": "타일 팔레트 보기" },
-      children: [
-        makePaletteViewButton("cluster", "그룹", paletteView),
-        makePaletteViewButton("sheet", "시트", paletteView),
-      ],
-    }),
-  );
   // 연결 Auto/Manual — 칠하기 탭에서도 바로 토글 (속성 탭에만 있으면 발견성 낮음)
   const autoOn = editorState.get().autoConnectMode;
   const candidate = selectedTile >= 0 && isAutoConnectCandidate(selectedTile, tileset);
@@ -540,30 +524,6 @@ function openChipsetSheetPopout(args: {
   document.addEventListener("keydown", onKey);
 }
 
-function makePaletteViewButton(view: PaletteViewMode, label: string, activeView: PaletteViewMode): HTMLButtonElement {
-  const active = view === activeView;
-  return el("button", {
-    class: "btn palette-view-button" + (active ? " active" : ""),
-    text: label,
-    attrs: {
-      "aria-label": `${label} 보기`,
-      "aria-pressed": String(active),
-      title: `${label} 보기`,
-    },
-    dataset: { testid: view === "cluster" ? "palette-view-cluster" : "palette-view-sheet" },
-    on: {
-      click: () => {
-        writePaletteStorage(PALETTE_VIEW_STORAGE_KEY, view);
-        renderPalettePreservingViewport();
-      },
-    },
-  });
-}
-
-function readPaletteView(): PaletteViewMode {
-  return readPaletteStorage(PALETTE_VIEW_STORAGE_KEY) === "sheet" ? "sheet" : "cluster";
-}
-
 function readWorkTab(): PaletteWorkTab {
   const stored = readPaletteStorage(PALETTE_WORK_TAB_KEY);
   if (stored === "paint" || stored === "find" || stored === "props") return stored;
@@ -689,6 +649,47 @@ export function selectPaletteTile(index: number): void {
       );
     }
   });
+}
+
+
+/**
+ * 맵에서 스포이트한 타일을 전문가 모드 팔레트 칩셋 시트로 스크롤·하이라이트.
+ * 하위/상위 레이어는 editorState.layer 를 이미 맞춘 뒤 호출한다.
+ * 기본 모드에서는 무시(레일만 노출).
+ */
+export function revealPaletteTileFromMap(tile: number): void {
+  if (typeof document === "undefined") return;
+  if (getEditorUiMode() !== "expert") return;
+  if (tile < 0) return;
+  // 칠하기 탭에서 셀이 보이도록
+  activeWorkTab = "paint";
+  writePaletteStorage(PALETTE_WORK_TAB_KEY, "paint");
+  pendingRevealSelectedTile = true;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (root) renderTilePalette(root);
+  else {
+    window.requestAnimationFrame(() => {
+      const r = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+      if (r) renderTilePalette(r);
+    });
+  }
+}
+
+function revealChipsetTileInPalette(tile: number): void {
+  if (typeof document === "undefined") return;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (!root) return;
+  // 숨겨진 오토타일 변형(예: 흙길 몸통 421)은 대표 칸(360)으로 매핑해 하이라이트한다.
+  const tileset = currentTilesetForPalette();
+  const displayTile = tileset ? rm2kPaletteDisplayTile(tileset, tile) : tile;
+  const cell =
+    root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + displayTile + '"]') ??
+    root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + tile + '"]') ??
+    root.querySelector<HTMLElement>('[data-testid="quick-tile-' + tile + '"]');
+  if (!cell) return;
+  cell.scrollIntoView?.({ block: "center", inline: "nearest", behavior: "smooth" });
+  cell.classList.add("is-map-reveal");
+  window.setTimeout(() => cell.classList.remove("is-map-reveal"), 1400);
 }
 
 function preservePaletteViewport(action: () => void): void {

@@ -195,17 +195,32 @@ describe("tile palette cluster UI", () => {
     resetEditorUiModeForTests("expert");
   });
 
-  it("renders cluster view by default and persists sheet view when the sheet segment is clicked", () => {
+  it("renders the single RM2003-style palette without group/sheet view segments", () => {
     const root = renderPalette();
 
-    expect(findByTestId(root, "tile-palette-clusters")).not.toBeNull();
-    expect(findByTestId(root, "tile-palette")).toBeNull();
-
-    requireTestId(root, "palette-view-sheet").click();
-
-    expect(storage.getItem("rpg-zzu:palette-view")).toBe("sheet");
+    // 그룹/시트 보기 분기 제거 — 단일 팔레트만 존재한다.
     expect(findByTestId(root, "tile-palette")).not.toBeNull();
+    expect(findByTestId(root, "tile-palette-clusters")).toBeNull();
+    expect(findByTestId(root, "palette-view-sheet")).toBeNull();
+    expect(findByTestId(root, "palette-view-cluster")).toBeNull();
+    expect(findByTestId(root, "rm2k-palette-grid")).not.toBeNull();
     expect(findByTestId(root, "palette-sheet-expand")).not.toBeNull();
+
+    // 오토타일 대표 1칸 축약: 물(0)·흙길(360) 대표는 있고, 변형(흙길 몸통 421)은 숨김.
+    expect(findByTestId(root, "chipset-tile-0")?.className).toContain("rm2k-autotile");
+    expect(findByTestId(root, "chipset-tile-360")?.className).toContain("rm2k-autotile");
+    expect(findByTestId(root, "chipset-tile-421")).toBeNull();
+  });
+
+  it("selects the representative tile when an autotile cell is pressed", () => {
+    const root = renderPalette();
+
+    const cell = requireTestId(root, "chipset-tile-360");
+    const event = new Event("pointerdown", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "button", { configurable: true, value: 0 });
+    cell.dispatchEvent(event);
+
+    expect(editorState.get().selectedTile).toBe(360);
   });
 
   it("work tabs switch paint / find / props panes", () => {

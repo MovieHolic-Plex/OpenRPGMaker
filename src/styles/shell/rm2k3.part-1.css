@@ -621,6 +621,32 @@
   width: 11px;
 }
 
+/* ── RM2003식 단일 팔레트 (6열 고정) ───────────────────────── */
+/* 열 수 자체는 인라인 grid-template-columns로 못박는다(미디어쿼리 auto-fill 대응).
+   여기서는 오토타일 대표 칸 배지만 정의한다. */
+.chipset-tile.rm2k-autotile {
+  position: relative;
+}
+
+.rm2k-autotile-badge {
+  align-items: center;
+  background: rgba(10, 36, 106, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 2px;
+  color: var(--text-inverse, #fff);
+  display: flex;
+  font-size: 7px;
+  font-weight: 700;
+  height: 10px;
+  justify-content: center;
+  left: 1px;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  top: 1px;
+  width: 10px;
+}
+
 .chipset-tile.range-selected {
   border-color: var(--accent);
   box-shadow:
