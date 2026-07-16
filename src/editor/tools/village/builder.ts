@@ -105,7 +105,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         theme: { type: "string", description: "마을 테마/사용자 쿼리(예: 강촌마을). 강·숲·장터 등 필수 스펙을 자동 추출한다." },
         query: { type: "string", description: "theme과 별도 원문 쿼리. 있으면 스펙 추출에 우선." },
         pathStyle: { type: "string", enum: ["sand", "dirt", "stone"], description: "stone=유기 돌마당 필드(성곽·석조 마을)" },
-        kitMix: { type: "string", enum: ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood"] },
+        kitMix: { type: "string", enum: ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] },
         yardStyle: { type: "string", enum: ["mixed", "garden", "workshop", "market", "minimal"] },
         plazaStyle: { type: "string", enum: ["market", "garden", "empty"] },
         edgeTrees: { type: "string", enum: ["conifer", "dense", "none"] },
@@ -413,7 +413,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         },
         kitMix: {
           type: "string",
-          enum: ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood"],
+          enum: ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"],
           description: "집 키트 믹스(기본 mixed). houses[].kitId가 있으면 집 단위가 우선.",
         },
         yardStyle: {
@@ -1282,6 +1282,7 @@ function setVillageHarnessLayoutPlan(
     "bright-plaster": "오렌지 회벽",
     "amber-wood": "오렌지 통나무",
     "slate-wood": "파랑 통나무",
+    "timber-hall": "빨간 널지붕 목조홀",
   };
   const explicitKits = intent.houseKits.slice(0, houses.length);
   const explicitTemplates = intent.houseTemplates.slice(0, houses.length);

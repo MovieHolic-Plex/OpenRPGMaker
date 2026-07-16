@@ -132,6 +132,28 @@ export function clearHouseRidgeRowProps(map: GameMap, houses: readonly BuiltHous
         map.upperTiles[index] = expected;
       }
     }
+    // 파랑 키트: 지붕 최상행(bbox.y)이 좌우 1칸 인셋이라 어깨 칸이 잔디로 남는다 —
+    // 여기 심긴 나무 밑동은 사후 나무 짝 보정(toolRunner)이 수관을 용마루 행(y-1)에
+    // 재부착하므로, 어깨 칸의 밑동(lower/upper)을 걷어낸다 (2026-07-17).
+    if (kit.roof.kind === "blue") {
+      const shoulderY = house.bbox.y;
+      for (const x of [house.bbox.x, lastX]) {
+        if (!pointInMap(map, { x, y: shoulderY })) continue;
+        const index = shoulderY * map.width + x;
+        if (TREE_BOTTOM_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) {
+          map.lowerTiles[index] = TILE.GRASS;
+          cleared += 1;
+        }
+        if (TREE_BOTTOM_TILES.has(map.upperTiles[index] ?? TILE.EMPTY)) {
+          map.upperTiles[index] = TILE.EMPTY;
+          cleared += 1;
+        }
+        if (shoulderY > 0 && TREE_TOP_TILES.has(map.upperTiles[index - map.width] ?? TILE.EMPTY)) {
+          map.upperTiles[index - map.width] = TILE.EMPTY;
+          cleared += 1;
+        }
+      }
+    }
   }
   return cleared;
 }

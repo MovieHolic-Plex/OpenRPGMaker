@@ -3,6 +3,7 @@
 
 import type { Project } from "@/project/types";
 import { HOUSE_KIT_TOOLS } from "./houseKitTools";
+import { ALL_HOUSE_KIT_IDS, isHouseKitId } from "@/editor/houseKit";
 import {
   houseBBox,
   isYardDecorKind,
@@ -52,7 +53,7 @@ export const HOUSE_LOT_TOOLS: readonly ToolDefinition[] = [
       "문 위치·타일 ID·마당 산포 좌표는 코드가 결정한다. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|" +
       "flowers|fruit_box|wood_box|table_h|sign (의자는 탁자 옆 전용 — 마당 가방 산포 제외). " +
       "소품을 place_props로 직접 광장에 몰지 말고, 집 계획이면 이 툴을 우선 사용. " +
-      "키트: blue-stone | bright-plaster.",
+      "키트: blue-stone | bright-plaster | amber-wood | slate-wood | timber-hall.",
     mode: "write",
     version: 3,
     parameters: {
@@ -65,7 +66,7 @@ export const HOUSE_LOT_TOOLS: readonly ToolDefinition[] = [
           items: {
             type: "object",
             properties: {
-              kitId: { type: "string", enum: ["blue-stone", "bright-plaster"] },
+              kitId: { type: "string", enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] },
               wings: {
                 type: "array",
                 items: {
@@ -233,8 +234,8 @@ function coerceHouses(value: unknown): LotHouseInput[] {
     }
     const row = entry as Record<string, unknown>;
     const kitId = typeof row.kitId === "string" ? row.kitId : "";
-    if (kitId !== "blue-stone" && kitId !== "bright-plaster") {
-      throw new ToolError(`houses[${index}].kitId는 blue-stone|bright-plaster — got ${String(row.kitId)}`, {
+    if (!isHouseKitId(kitId)) {
+      throw new ToolError(`houses[${index}].kitId는 ${ALL_HOUSE_KIT_IDS.join("|")} — got ${String(row.kitId)}`, {
         code: "invalid-args",
       });
     }

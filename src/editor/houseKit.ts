@@ -13,7 +13,14 @@ import { TILE } from "@/project/defaults/constants";
 import { createHouseDoorEvent } from "@/editor/houseInteriors";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 
-export type HouseKitId = "blue-stone" | "bright-plaster";
+export type HouseKitId = "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall";
+
+/** 모든 집 키트 id (툴 enum/마을 믹스 공용). */
+export const ALL_HOUSE_KIT_IDS = ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] as const satisfies readonly HouseKitId[];
+
+export function isHouseKitId(value: unknown): value is HouseKitId {
+  return typeof value === "string" && (ALL_HOUSE_KIT_IDS as readonly string[]).includes(value);
+}
 
 interface WallNineSlice {
   readonly top: readonly [number, number, number];
@@ -72,6 +79,39 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
       upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
     },
   },
+  "amber-wood": {
+    id: "amber-wood",
+    name: "밝은 오렌지 지붕 + 통나무 벽",
+    windowTile: 85,
+    wall: { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] },
+    roof: {
+      kind: "bright",
+      body: 404,
+      eave: 405,
+      upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
+    },
+  },
+  "slate-wood": {
+    id: "slate-wood",
+    name: "파랑 지붕 + 통나무 벽",
+    windowTile: 87,
+    wall: { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] },
+    roof: { kind: "blue", body: 406, rightEdge: 407, eave: 467, upper: { nw: 356, ne: 357, sw: 386, se: 387 } },
+  },
+  // 2026-07-17 사용자 레퍼런스(빨간 널지붕 + 목조 기둥 + 크림 벽) — 전부 combined_town 타일로 조립.
+  // 조립 검증: scratchpad todo-evidence/timber-hall-A.png (196/197 기둥·크림, 226/227 하단, bright 지붕 재사용).
+  "timber-hall": {
+    id: "timber-hall",
+    name: "빨간 널지붕 + 목조 기둥 홀",
+    windowTile: 85,
+    wall: { top: [196, 197, 196], mid: [196, 197, 196], bottom: [226, 227, 226] },
+    roof: {
+      kind: "bright",
+      body: 404,
+      eave: 405,
+      upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
+    },
+  },
 };
 
 export type HouseKitWindowsOption = { readonly spacing?: number } | false;
@@ -83,7 +123,7 @@ export interface RectHousePlan {
   /** 벽 폭(칸). 최소 3 — 좌/우 모서리 + 중앙 1칸. */
   readonly width: number;
   /** 층수. 벽 중단 행 수 = 2*stories - 1 (1층=1, 2층=3). */
-  readonly stories: 1 | 2;
+  readonly stories: 1 | 2 | 3;
   /** 지붕 몸통 행 수(≥1). 높은 지붕이 필요하면 늘린다. */
   readonly roofBodyRows: number;
   readonly kitId: HouseKitId;
@@ -105,7 +145,7 @@ export function rectHouseHeight(plan: Pick<RectHousePlan, "stories" | "roofBodyR
   return 1 + plan.roofBodyRows + 1 + wallRows;
 }
 
-function wallMidRows(stories: 1 | 2): number {
+function wallMidRows(stories: 1 | 2 | 3): number {
   return 2 * stories - 1;
 }
 
@@ -148,23 +188,31 @@ function placeWindowsOnWallRuns(
   }
 }
 
-function wallMidRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width: number): WallRun[] {
+function wallWindowRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width: number): WallRun[] {
   const runs: WallRun[] = [];
   const cellKey = (x: number, y: number): number => y * width + x;
+  const eligible = new Set<number>();
   for (const [cell, role] of wallRole.entries()) {
     if (role !== 1) continue;
     const x = cell % width;
     const y = Math.floor(cell / width);
-    if (x > 0 && wallRole.get(cellKey(x - 1, y)) === 1) continue;
+    let midRowsAbove = 0;
+    while (wallRole.get(cellKey(x, y - midRowsAbove - 1)) === 1) midRowsAbove += 1;
+    if (midRowsAbove % 2 === 0) eligible.add(cell);
+  }
+  for (const cell of eligible) {
+    const x = cell % width;
+    const y = Math.floor(cell / width);
+    if (x > 0 && eligible.has(cellKey(x - 1, y))) continue;
     let x1 = x;
-    while (x1 + 1 < width && wallRole.get(cellKey(x1 + 1, y)) === 1) x1 += 1;
+    while (x1 + 1 < width && eligible.has(cellKey(x1 + 1, y))) x1 += 1;
     runs.push({ x0: x, x1, y });
   }
   return runs.sort((a, b) => a.y - b.y || a.x0 - b.x0);
 }
 
-function rectWallMidRuns(left: number, right: number, wallTopY: number, stories: 1 | 2): WallRun[] {
-  return Array.from({ length: wallMidRows(stories) }, (_, row) => ({ x0: left, x1: right, y: wallTopY + 1 + row }));
+function rectWallWindowRuns(left: number, right: number, wallTopY: number, stories: 1 | 2 | 3): WallRun[] {
+  return Array.from({ length: stories }, (_, floor) => ({ x0: left, x1: right, y: wallTopY + 1 + floor * 2 }));
 }
 
 // ── 임의 평면(ㄱ/ㄴ/ㄷ/ㅁ/O …) 일반화 ────────────────────────────────────────
@@ -184,6 +232,11 @@ export interface FootprintWing {
 export interface FootprintHousePlan {
   readonly wings: readonly FootprintWing[];
   readonly kitId: HouseKitId;
+  /**
+   * 층수. 벽 밴드 행 수 = 2 + (2*stories-1).
+   * 1층=벽3행(상·중·하), 2층=벽5행(상·중×3·하). 기본 1.
+   */
+  readonly stories?: 1 | 2 | 3;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
   /** 내부 맵으로 이어지는 문 이벤트. 도구 계층에서 내부 맵을 만든 뒤 주입한다. */
@@ -196,12 +249,13 @@ export interface FootprintHouseDoorEventPlan {
   readonly name?: string;
 }
 
-const WALL_BAND_ROWS = 3; // 하네싱 불변식: 벽 = 상단+중단+하단
-
 export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): RectHouseStampResult {
   const kit = HOUSE_KITS[plan.kitId];
   if (!kit) return { ok: false, reason: `알 수 없는 키트: ${plan.kitId}` };
   if (plan.wings.length === 0) return { ok: false, reason: "날개가 없습니다." };
+  const stories: 1 | 2 | 3 = plan.stories === 3 ? 3 : plan.stories === 2 ? 2 : 1;
+  // 벽 밴드: 상단1 + 중단(2*stories-1) + 하단1
+  const wallBandRows = 2 + wallMidRows(stories);
 
   // 질량 집합 + 경계 검증.
   const mass = new Set<number>();
@@ -238,13 +292,16 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       while (inMass(x, y + 1)) y += 1;
       const bottom = y;
       const height = bottom - top + 1;
-      if (height < WALL_BAND_ROWS + 2) {
-        return { ok: false, reason: `열 x=${x}의 구간 높이(${height})가 최소 5(벽 3+지붕 2)보다 작습니다.` };
+      if (height < wallBandRows + 2) {
+        return { ok: false, reason: `열 x=${x}의 구간 높이(${height})가 최소 ${wallBandRows + 2}(벽 ${wallBandRows}+지붕 2)보다 작습니다.` };
       }
-      for (let wy = bottom - WALL_BAND_ROWS + 1; wy <= bottom; wy += 1) {
-        wallRole.set(key(x, wy), (wy - (bottom - WALL_BAND_ROWS + 1)) as 0 | 1 | 2);
+      // role: 0=상단, 마지막=하단, 중간=중단(창 배치 대상)
+      for (let wy = bottom - wallBandRows + 1; wy <= bottom; wy += 1) {
+        const offset = wy - (bottom - wallBandRows + 1);
+        const role: 0 | 1 | 2 = offset === 0 ? 0 : offset === wallBandRows - 1 ? 2 : 1;
+        wallRole.set(key(x, wy), role);
       }
-      for (let ry = top; ry <= bottom - WALL_BAND_ROWS; ry += 1) roof.add(key(x, ry));
+      for (let ry = top; ry <= bottom - wallBandRows; ry += 1) roof.add(key(x, ry));
       y = bottom + 1;
     }
   }
@@ -333,7 +390,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (!best || x1 - x > best.x1 - best.x0 || (x1 - x === best.x1 - best.x0 && y > best.y)) best = { x0: x, x1, y };
   }
   const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
-  placeWindowsOnWallRuns(map, kit, wallMidRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
+  placeWindowsOnWallRuns(map, kit, wallWindowRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
   if (doorAt && plan.doorEvent) {
     upsertEvent(map, createHouseDoorEvent({
       eventId: plan.doorEvent.eventId,
@@ -427,7 +484,7 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   nineSliceRow(y, kit.wall.bottom);
 
   const doorAt = { x: left + Math.floor(plan.width / 2), y };
-  placeWindowsOnWallRuns(map, kit, rectWallMidRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
+  placeWindowsOnWallRuns(map, kit, rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
 
   return { ok: true, doorAt, height };
 }
