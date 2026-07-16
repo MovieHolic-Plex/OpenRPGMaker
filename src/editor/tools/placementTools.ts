@@ -106,11 +106,18 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
         ? bagPropFootprint(group, tileset, seed, step)
         : footprint;
       const sourceCandidates = ranked?.ordered ?? candidates;
-      const allowed = sourceCandidates.filter((origin) => {
-        if (!footprintFits(map, stepFootprint, origin, protectedCells)) return false;
+      // 성능 캡(2026-07-17): 스텝마다 전 후보(면적 규모)를 재검사·재채점하면 대형 맵에서
+      // count×면적 곱으로 폭주한다(100×100 침엽수 84그루 = 수백 초). ranked는 이미
+      // 자연도 순 정렬이라 "상위 512개 중 선택"이 의미를 보존한다. uniform은 전수 유지.
+      const allowedCap = ranked ? 512 : Number.POSITIVE_INFINITY;
+      const allowed: typeof candidates = [];
+      for (const origin of sourceCandidates) {
+        if (allowed.length >= allowedCap) break;
+        if (!footprintFits(map, stepFootprint, origin, protectedCells)) continue;
         // 숲: 레이어가 다르면 발자국이 겹쳐도 됨(수관 upper + 밑동 lower).
-        return layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap);
-      });
+        if (!layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap)) continue;
+        allowed.push(origin);
+      }
       if (allowed.length === 0) break;
       const remaining = args.count - placed.length;
       const chosen = ranked

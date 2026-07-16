@@ -24,6 +24,39 @@ import {
 } from "./constants";
 import { paintMarketDeck } from "./plaza";
 
+/**
+ * 대로(boulevard) — 대형 맵(72+)의 골격 (2026-07-17, 외부 리서치 반영: spine-first).
+ * 동서 대로는 광장 남쪽(게이트 앞)을 전폭으로 관통, 남북 대로는 광장 동쪽에서 교차.
+ * 대로 밴드는 집 배치 전에 예약되어(builder) 구멍 없는 직선 대로가 보장된다.
+ */
+export type Boulevard = {
+  readonly ewRow: number;
+  readonly nsCol: number;
+  readonly width: number;
+};
+
+export function villageBoulevard(area: Rect, plaza: Plaza): Boulevard | null {
+  if (area.w < 72 || area.h < 72) return null;
+  return {
+    ewRow: plaza.rect.y + plaza.rect.h + 1,
+    nsCol: plaza.rect.x + plaza.rect.w + 2,
+    width: 3,
+  };
+}
+
+/** 대로 밴드 전체 칸(폭 width, 전 구간). 집 예약·시공 양쪽이 같은 계산을 쓴다. */
+export function boulevardCells(area: Rect, boulevard: Boulevard): Point[] {
+  const half = Math.floor(boulevard.width / 2);
+  const cells: Point[] = [];
+  for (let x = area.x; x < area.x + area.w; x += 1) {
+    for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+  }
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+  }
+  return cells;
+}
+
 /** 스타일별 길 몸통 타일. stone = 포석(129 블록) 몸통 190. */
 function roadBodyTile(style: RoadStyle): number {
   if (style === "dirt") return DIRT_ROAD_TILE.BODY;
@@ -58,17 +91,31 @@ export function paintVillageRoadsChecked(args: {
   readonly hardBlocked: ReadonlySet<string>;
   readonly throughBlocked: ReadonlySet<string>;
   readonly forbidden: ReadonlySet<string>;
+  readonly boulevard?: Boulevard | null;
 }): number {
-  const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden } = args;
+  const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden, boulevard } = args;
   const MAX_RETRY = 100;
   const baseLower = [...map.lowerTiles];
   const baseUpper = [...map.upperTiles];
+  // 대로 칸은 조그 분절·가지치기에서 보호한다 — 대로는 곧고 온전해야 한다.
+  const boulevardProtected = boulevard
+    ? new Set(boulevardCells(area, boulevard).map((cell) => coordKey(cell.x, cell.y)))
+    : new Set<string>();
 
   const paintOnce = (runIntent: VillageIntent, runSeed: number): void => {
-    paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked);
+    if (boulevard) {
+      // 대로 먼저(spine-first) — 밴드는 집 배치 전에 예약돼 있어 구멍이 없다.
+      paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardCells(area, boulevard), hardBlocked);
+    }
+    paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard);
     connectHousesToRoads(draft, map, area, plaza, houses, runIntent, runSeed, warnings, hardBlocked);
     ensureSingleRoadComponent(map, area, hardBlocked, runIntent.pathStyle, throughBlocked);
-    breakLongStraightRuns(map, area, hardBlocked, runIntent.pathStyle, houses);
+    breakLongStraightRuns(map, area, hardBlocked, runIntent.pathStyle, houses, boulevardProtected);
+    pruneDeadEndStubs(map, area, houses, runIntent.pathStyle, boulevardProtected, plaza);
+    // 마감 2패스(2026-07-17): 분절·가지치기·밀집 스퍼가 남긴 고아 조각을 재연결 시도 후,
+    // 그래도 남은 문 없는 소형 고아(<20칸)는 소거한다 — "길 성분 1" 감사 보증.
+    ensureSingleRoadComponent(map, area, hardBlocked, runIntent.pathStyle, throughBlocked);
+    eraseOrphanRoadFragments(map, area, houses, runIntent.pathStyle);
   };
   const restore = (): void => {
     for (let i = 0; i < baseLower.length; i += 1) {
@@ -120,6 +167,7 @@ export function paintPlazaAndAvenue(
   seed: number,
   warnings: string[],
   houseBlocked: ReadonlySet<string> = EMPTY_BLOCKED,
+  boulevard: Boulevard | null = null,
 ): void {
   const pathStyle = intent.pathStyle;
   const width = intent.roadWidth;
@@ -127,17 +175,25 @@ export function paintPlazaAndAvenue(
   const anchors = villageRoadAnchors(area, plaza, seed);
   if (intent.plazaStyle === "market") paintMarketDeck(map, plaza.rect);
 
+  // garden/market은 광장 rect가 도로 봉쇄 구역이라, 링을 rect 바깥 1칸으로 두른다 —
+  // 링이 없으면 광장 가장자리로 향하던 집 스퍼가 고아 성분이 된다 (2026-07-17).
+  const ringRect = intent.plazaStyle === "garden" || intent.plazaStyle === "market"
+    ? { x: plaza.rect.x - 1, y: plaza.rect.y - 1, w: plaza.rect.w + 2, h: plaza.rect.h + 2 }
+    : plaza.rect;
   const loop: readonly Point[] = [
-    { x: plaza.rect.x, y: plaza.rect.y + 1 },
-    { x: plaza.centerX, y: plaza.rect.y - 1 },
-    { x: plaza.rect.x + plaza.rect.w - 1, y: plaza.rect.y },
-    { x: plaza.rect.x + plaza.rect.w, y: plaza.centerRow },
-    { x: plaza.rect.x + plaza.rect.w - 2, y: plaza.rect.y + plaza.rect.h - 1 },
-    { x: plaza.centerX - 1, y: plaza.rect.y + plaza.rect.h },
-    { x: plaza.rect.x, y: plaza.rect.y + plaza.rect.h - 2 },
-    { x: plaza.rect.x, y: plaza.rect.y + 1 },
+    { x: ringRect.x, y: ringRect.y + 1 },
+    { x: plaza.centerX, y: ringRect.y - 1 },
+    { x: ringRect.x + ringRect.w - 1, y: ringRect.y },
+    { x: ringRect.x + ringRect.w, y: plaza.centerRow },
+    { x: ringRect.x + ringRect.w - 2, y: ringRect.y + ringRect.h - 1 },
+    { x: plaza.centerX - 1, y: ringRect.y + ringRect.h },
+    { x: ringRect.x, y: ringRect.y + ringRect.h - 2 },
+    { x: ringRect.x, y: ringRect.y + 1 },
   ];
   paintWideRoad(draft, map, pathStyle, loop, 1, Math.max(0.65, naturalness), seed + 7, warnings, houseBlocked);
+
+  // 대로 모드: 골격은 대로 2축이 담당하므로 가는 간선 4갈래는 깔지 않는다(스텁·평행 중복 원인).
+  if (boulevard) return;
 
   const rng = mulberry32((seed ^ 0x5f3759df) >>> 0);
   const shift = (): number => Math.round((rng() - 0.5) * (2 + naturalness * 4));
@@ -209,6 +265,7 @@ export function breakLongStraightRuns(
   hardBlocked: ReadonlySet<string>,
   pathStyle: RoadStyle,
   houses: readonly BuiltHouse[],
+  protectedExtra: ReadonlySet<string> = EMPTY_BLOCKED,
 ): void {
   const body = roadBodyTile(pathStyle);
   const maxRun = Math.max(12, Math.floor(Math.max(map.width, map.height) * 0.42));
@@ -217,8 +274,8 @@ export function breakLongStraightRuns(
   const isGrass = (x: number, y: number): boolean =>
     inMapBounds(map, x, y) && (map.lowerTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.GRASS
     && (map.upperTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.EMPTY;
-  // 문 앞 게이트 보호: front 행의 door.x±1은 제거 금지.
-  const protectedCells = new Set<string>();
+  // 문 앞 게이트 보호: front 행의 door.x±1은 제거 금지. 대로 칸도 제거 금지(protectedExtra).
+  const protectedCells = new Set<string>(protectedExtra);
   for (const house of houses) {
     for (let dx = -1; dx <= 1; dx += 1) protectedCells.add(coordKey(house.front.x + dx, house.front.y));
   }
@@ -279,16 +336,149 @@ export function breakLongStraightRuns(
   }
 }
 
-/** 광장 데크(장터) 칸 — 길이 데크 테두리를 갈아엎지 못하게 하드 차단. */
+/**
+ * 광장 보호 칸 — 길이 광장 내부를 갈아엎지 못하게 하드 차단.
+ * market: 데크. garden: 울타리·꽃밭·석상 구역 전체 (2026-07-17 — 물결 간선·스퍼가
+ * 광장을 관통해 울타리가 끊기던 버그의 근본 수정. 출입은 남쪽 게이트 길로만).
+ */
 export function plazaDeckBlockedCells(plaza: Plaza, intent: VillageIntent): Set<string> {
   const blocked = new Set<string>();
-  if (intent.plazaStyle !== "market") return blocked;
+  if (intent.plazaStyle !== "market" && intent.plazaStyle !== "garden") return blocked;
   for (let y = plaza.rect.y; y < plaza.rect.y + plaza.rect.h; y += 1) {
     for (let x = plaza.rect.x; x < plaza.rect.x + plaza.rect.w; x += 1) {
       blocked.add(coordKey(x, y));
     }
   }
   return blocked;
+}
+
+/**
+ * garden 광장 게이트 길(2026-07-17) — 울타리 남쪽 게이트(3칸)에서 광장 밖 도로(대로)까지
+ * 짧은 진입로를 깐다. 광장 rect는 도로 마스크로 봉쇄돼 있으므로 이 함수가 유일한 통로다.
+ */
+export function paintPlazaGatePath(map: GameMap, plaza: Plaza, pathStyle: RoadStyle): void {
+  const rect = plaza.rect;
+  const innerX = rect.x + 1;
+  const innerW = Math.max(1, rect.w - 2);
+  const gateC = innerX + Math.floor(innerW / 2);
+  const painted: Point[] = [];
+  for (let y = rect.y + rect.h - 1; y <= rect.y + rect.h; y += 1) {
+    for (let x = gateC - 1; x <= gateC + 1; x += 1) {
+      if (!inMapBounds(map, x, y)) continue;
+      const index = y * map.width + x;
+      if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
+      if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
+      map.lowerTiles[index] = roadBodyTile(pathStyle);
+      painted.push({ x, y });
+    }
+  }
+  if (painted.length > 0) shapeRoadStyle(map, pathStyle, painted);
+}
+
+/**
+ * 고아 도로 조각 소거(2026-07-17) — 최대 성분·집 문이 붙은 성분만 남기고,
+ * 20칸 미만의 고아 조각을 잔디로 되돌린다. 재연결이 실패한 잔여물의 최종 방어선.
+ */
+export function eraseOrphanRoadFragments(
+  map: GameMap,
+  area: Rect,
+  houses: readonly BuiltHouse[],
+  pathStyle: RoadStyle,
+): void {
+  const isRoad = (x: number, y: number): boolean =>
+    inMapBounds(map, x, y) && ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
+  const seen = new Set<string>();
+  const components: Point[][] = [];
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      if (!isRoad(x, y) || seen.has(coordKey(x, y))) continue;
+      const cells: Point[] = [];
+      const stack: Point[] = [{ x, y }];
+      seen.add(coordKey(x, y));
+      while (stack.length > 0) {
+        const cur = stack.pop()!;
+        cells.push(cur);
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const nx = cur.x + dx;
+          const ny = cur.y + dy;
+          if (!isRoad(nx, ny) || seen.has(coordKey(nx, ny))) continue;
+          seen.add(coordKey(nx, ny));
+          stack.push({ x: nx, y: ny });
+        }
+      }
+      components.push(cells);
+    }
+  }
+  if (components.length <= 1) return;
+  const fronts = new Set(houses.map((house) => coordKey(house.front.x, house.front.y)));
+  const touchesFront = (cells: readonly Point[]): boolean =>
+    cells.some((cell) =>
+      fronts.has(coordKey(cell.x, cell.y)) || fronts.has(coordKey(cell.x, cell.y - 1)) || fronts.has(coordKey(cell.x, cell.y + 1))
+      || fronts.has(coordKey(cell.x - 1, cell.y)) || fronts.has(coordKey(cell.x + 1, cell.y)));
+  const largest = components.reduce((best, cells) => (cells.length > best.length ? cells : best), components[0]!);
+  const changed: Point[] = [];
+  for (const cells of components) {
+    if (cells === largest || cells.length >= 20 || touchesFront(cells)) continue;
+    for (const cell of cells) {
+      map.lowerTiles[cell.y * map.width + cell.x] = TILE.GRASS;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        if (isRoad(cell.x + dx, cell.y + dy)) changed.push({ x: cell.x + dx, y: cell.y + dy });
+      }
+    }
+  }
+  if (changed.length > 0) shapeRoadStyle(map, pathStyle, changed);
+}
+
+/**
+ * 막다른 토막길 가지치기(2026-07-17, 리서치 ⑤ 마감 패스) — 이웃 도로가 1칸 이하인
+ * 끝 칸을 반복 회수한다. 문앞 게이트(front±1)·대로·광장 게이트 주변은 보호.
+ * 집 진입 스퍼는 front 칸에서 끝나므로 보호 집합이 지켜준다.
+ */
+export function pruneDeadEndStubs(
+  map: GameMap,
+  area: Rect,
+  houses: readonly BuiltHouse[],
+  pathStyle: RoadStyle,
+  protectedExtra: ReadonlySet<string>,
+  plaza: Plaza,
+): void {
+  const protectedCells = new Set<string>(protectedExtra);
+  for (const house of houses) {
+    for (let dy = 0; dy <= 1; dy += 1) {
+      for (let dx = -1; dx <= 1; dx += 1) protectedCells.add(coordKey(house.front.x + dx, house.front.y + dy));
+    }
+  }
+  // 광장 게이트 길 보호 (남쪽 게이트 아래 3열)
+  for (let dx = -2; dx <= 2; dx += 1) {
+    for (let dy = 0; dy <= 3; dy += 1) protectedCells.add(coordKey(plaza.centerX + dx, plaza.rect.y + plaza.rect.h - 1 + dy));
+  }
+  const isRoad = (x: number, y: number): boolean =>
+    inMapBounds(map, x, y) && ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
+  const changed: Point[] = [];
+  for (let round = 0; round < 6; round += 1) {
+    const removals: Point[] = [];
+    // 가장자리 2칸 밴드는 건드리지 않는다 — 맵 경계로 나가는 진입로는 의도된 막다른 길.
+    for (let y = area.y + 2; y < area.y + area.h - 2; y += 1) {
+      for (let x = area.x + 2; x < area.x + area.w - 2; x += 1) {
+        if (!isRoad(x, y) || protectedCells.has(coordKey(x, y))) continue;
+        let neighbors = 0;
+        if (isRoad(x + 1, y)) neighbors += 1;
+        if (isRoad(x - 1, y)) neighbors += 1;
+        if (isRoad(x, y + 1)) neighbors += 1;
+        if (isRoad(x, y - 1)) neighbors += 1;
+        if (neighbors <= 1) removals.push({ x, y });
+      }
+    }
+    if (removals.length === 0) break;
+    for (const cell of removals) {
+      map.lowerTiles[cell.y * map.width + cell.x] = TILE.GRASS;
+      changed.push(cell);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        if (isRoad(cell.x + dx, cell.y + dy)) changed.push({ x: cell.x + dx, y: cell.y + dy });
+      }
+    }
+  }
+  if (changed.length > 0) shapeRoadStyle(map, pathStyle, changed);
 }
 
 function paintRoadCellsAvoidingHouses(

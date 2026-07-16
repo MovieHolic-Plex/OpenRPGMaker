@@ -2,7 +2,8 @@
 // 시공 감사·비평 — 문 연결/무결, 용마루 침범, 길 성분, 울타리/NPC 집계, 도달성 비평.
 
 import { checkReachability } from "@/project/lint/reachability";
-import { DEFAULT_COBBLE_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { ToolError, type ToolExecResult } from "../types";
@@ -137,15 +138,35 @@ function doorHasRoad(map: GameMap, door: Point): boolean {
 }
 
 const COBBLE_SURFACE = new Set<number>(DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds);
+// 조경 흙마당(밭 지구 세트) 판정용 — 순수 흙길 소형 성분은 도로망이 아니다 (2026-07-17).
+const DIRT_SURFACE = new Set<number>(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
+// 백사장 판정용 — 물에 접한 순수 모래 성분은 해변이지 길이 아니다 (2026-07-17).
+const SAND_SURFACE = new Set<number>(DEFAULT_SAND_AUTOTILE_GROUP.memberTileIds);
+
+/** 성분>1 진단용 — 각 도로 성분의 대표 좌표와 크기. (노두/흙마당 필터 적용 후) */
+export function roadComponentNotes(map: GameMap, area: Rect): string[] {
+  return collectRoadComponents(map, area).map((cells) => {
+    const tiles = new Set(cells.map((key) => {
+      const point = pointFromKey(key);
+      return map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
+    }));
+    const first = pointFromKey(cells[0]!);
+    return `(${first.x},${first.y})×${cells.length}[${[...tiles].slice(0, 6).join("/")}]`;
+  });
+}
 
 function countRoadComponents(map: GameMap, area: Rect): number {
+  return collectRoadComponents(map, area).length;
+}
+
+function collectRoadComponents(map: GameMap, area: Rect): string[][] {
   const road = new Set<string>();
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
       if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) road.add(coordKey(x, y));
     }
   }
-  let components = 0;
+  const components: string[][] = [];
   while (road.size > 0) {
     const first = road.values().next().value as string | undefined;
     if (!first) break;
@@ -168,13 +189,28 @@ function countRoadComponents(map: GameMap, area: Rect): number {
         stack.push(nextKey);
       }
     }
-    // 16칸 미만의 순수 포석 성분은 도로망이 아니라 바위 노두(포석 패치+441/442)다 — 성분 수에서 제외.
-    // (노두 2개가 인접 병합돼도 최대 12칸. 돌길 자체는 재연결 후라 작은 고립 조각이 없다.)
-    const isNatureOutcrop = cells.length < 16 && cells.every((key) => {
+    // 자연 성분 제외 규칙: ① 16칸 미만의 순수 포석(바위 노두)·순수 흙길(조경 흙마당),
+    // ② 물에 접한 순수 모래(백사장 — 모래가 길 재질과 겹쳐 오검출되던 것, 2026-07-17).
+    const tileAtKey = (key: string): number => {
       const point = pointFromKey(key);
-      return COBBLE_SURFACE.has(map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY);
+      return map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
+    };
+    const touchesWater = (): boolean => cells.some((key) => {
+      const point = pointFromKey(key);
+      return [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => {
+        const nx = point.x + dx!;
+        const ny = point.y + dy!;
+        if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) return false;
+        return isWaterChipsetTile(map.lowerTiles[ny * map.width + nx] ?? TILE.EMPTY);
+      });
     });
-    if (!isNatureOutcrop) components += 1;
+    const isNatureOutcrop =
+      (cells.length < 16 && (
+        cells.every((key) => COBBLE_SURFACE.has(tileAtKey(key)))
+        || cells.every((key) => DIRT_SURFACE.has(tileAtKey(key)))
+      ))
+      || (cells.every((key) => SAND_SURFACE.has(tileAtKey(key))) && touchesWater());
+    if (!isNatureOutcrop) components.push(cells);
   }
   return components;
 }

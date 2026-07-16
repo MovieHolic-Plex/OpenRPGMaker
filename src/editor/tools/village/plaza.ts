@@ -40,6 +40,11 @@ export function villagePlaza(
     pw = 7 + Math.floor(rng() * 4); // 7~10
     ph = 5 + Math.floor(rng() * 3); // 5~7
   }
+  // 대형 맵(72+)은 광장도 면적에 맞게 키운다 — 100×100에 8×6 광장은 존재감이 없다 (2026-07-17).
+  if (area.w >= 72 && area.h >= 72) {
+    pw = 12 + (rng ? Math.floor(rng() * 3) : 1);
+    ph = 8 + (rng ? Math.floor(rng() * 2) : 1);
+  }
   pw = Math.min(pw, Math.max(4, area.w - 10));
   ph = Math.min(ph, Math.max(4, area.h - 10));
 

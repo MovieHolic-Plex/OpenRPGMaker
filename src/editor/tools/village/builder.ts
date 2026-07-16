@@ -59,7 +59,7 @@ import {
   type SettlementLayout,
   type VillageIntent,
 } from "./constants";
-import { auditVillage, critiqueBuiltVillage, critiqueVillageMap } from "./audit";
+import { auditVillage, critiqueBuiltVillage, critiqueVillageMap, roadComponentNotes } from "./audit";
 import { placeVillageDecor } from "./decor";
 import { placeHouseLotFences } from "./fences";
 import {
@@ -71,6 +71,7 @@ import {
   terrainBlockedCells,
 } from "./houses";
 import { createVillageHouseInteriors } from "./interiors";
+import { dressVillageLandscape } from "./landscape";
 import { npcOverrides, npcText, placeVillageNpcs } from "./npcs";
 import {
   mergePlanIntoBuildArgs,
@@ -79,8 +80,10 @@ import {
 } from "./pipeline";
 import { villagePlaza } from "./plaza";
 import {
+  boulevardCells,
   paintVillageRoadsChecked,
   plazaDeckBlockedCells,
+  villageBoulevard,
   villageRoadAnchors,
 } from "./roads";
 
@@ -397,6 +400,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           description:
             "마을 테마 한 줄(예: 강가 어촌, 산골 광산촌, 장터 마을). pathStyle/yardStyle 등 미지정 시 휴리스틱으로 추론한다.",
         },
+        houseCount: { type: "integer", description: "집 수(4~32). houses/housePlans 없을 때 사용. 미지정 시 면적 비례 기본값." },
         fences: { type: "boolean", description: "집 필지 울타리(기본 true). false면 울타리를 깔지 않는다." },
         decor: {
           type: "boolean",
@@ -494,8 +498,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
     run(draft, args): ToolExecResult {
       const merged = mergePlanIntoBuildArgs(draft, args);
       const seed = integerArg(merged, "seed", 1);
-      const housePlan = coerceHousePlan(merged.houses, merged.housePlans);
-      const targetHouses = housePlan.count;
+      // houseCount 별칭 소비(2026-07-17) — 예전엔 build_village가 이를 조용히 무시해 8채 고정이었다.
+      const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
       const interiorEnabled = merged.interior !== false;
       const doorEventEnabled = merged.doorEvent !== false;
       const fencesEnabled = merged.fences !== false;
@@ -548,10 +552,39 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
 
       const upperBefore = [...map.upperTiles];
       const rng = mulberry32(seed);
+      const perf: string[] = [];
+      let perfMark = Date.now();
+      const perfLap = (label: string): void => {
+        perf.push(`${label}=${((Date.now() - perfMark) / 1000).toFixed(1)}s`);
+        perfMark = Date.now();
+      };
       const plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
+      // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
+      const targetHouses = housePlan.explicit
+        ? housePlan.count
+        : Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
+      // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
+      const boulevard = villageBoulevard(area, plaza);
+      const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
+      if (boulevard) {
+        for (const cell of boulevardCells(area, boulevard)) {
+          if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
+            houseBlockedIdx.add(cell.y * map.width + cell.x);
+          }
+        }
+      }
+      // 대형 맵은 시가지 코어(61×61)에 집을 압축 — 외곽은 밭·숲·수변 몫 (리서치: 코어 압축 룰).
+      const coreArea = boulevard
+        ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
+        : area;
       // 자연 시공 순서: 집 배치 → 광장·대로·집 연결 길(얽기설기) → 문 복구 → 울타리
       // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
-      const houses = buildHouses(map, area, plaza, targetHouses, rng, windows, intent, warnings, terrainBlockedCells(terrainMasks));
+      const houses = buildHouses(
+        map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
+        houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
+        boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
+      );
+      perfLap("houses");
       if (houses.length === 0) {
         throw new ToolError(
           "집을 한 채도 시공하지 못했다 — 맵/bounds가 좁거나 후보 슬롯이 전부 물·숲·광장에 막혀 있다. " +
@@ -585,11 +618,16 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         hardBlocked,
         throughBlocked,
         forbidden: roadForbidden,
+        boulevard,
       });
+      perfLap("roads");
       // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
       restoreHouseDoors(map, houses);
       // 길은 다 깐 뒤 울타리(길 칸 스킵)
       if (fencesEnabled) placeHouseLotFences(map, houses, seed);
+      // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
+      // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
+      assignShopPrograms(houses, plaza, warnings);
 
       // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
       // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
@@ -603,6 +641,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       } else if (skipTerrain) {
         landmarkNotes = ["skipTerrain: multi-turn forest/water layers"];
       }
+      perfLap("terrain");
 
       let decorPlaced = 0;
       if (decorEnabled) {
@@ -610,6 +649,15 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       }
       // 용마루 행 보호구역 정리 — 범용 place_props가 심은 나무/소품을 걷어낸다.
       clearHouseRidgeRowProps(map, houses);
+      perfLap("decor");
+      // 조경(2026-07-17): 대형 맵(대로 모드)은 시가지 코어 밖을 수변·밭·숲·설원 지구로 채운다.
+      // 문법 규칙(수로=물의 논리, 백사장 접안, 눈↔밭 이격, 어둠+계단 세트)은 landscape.ts가 보증.
+      if (boulevard) {
+        const landscaped = dressVillageLandscape(map, { area, houses, plaza, seed, warnings });
+        warnings.push(`조경 지구 ${landscaped}칸`);
+        restoreHouseDoors(map, houses);
+      }
+      perfLap("landscape");
 
       // 필수 랜드마크 실측 게이트 — 타일 카운트 기준. warning이 아니라 실패다.
       // ("강촌"인데 물 0칸인 맵이 성공으로 반환되는 것을 막는다. skipTerrain 세션은 water 레이어가 따로 검증.)
@@ -639,6 +687,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       const houseInteriors = interiorEnabled && doorEventEnabled
         ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
         : [];
+      perfLap("interiors");
       placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings);
       setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled);
 
@@ -646,12 +695,16 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       ensureVillageStartPosition(draft, map, plaza);
 
       const audit = auditVillage(map, houses, upperBefore, area);
+      perfLap("audit");
+      warnings.push(`[vperf] ${perf.join(" ")}`);
       if (houses.length < targetHouses) warnings.push(`집 수 미달: ${houses.length}/${targetHouses}`);
       if (audit.doorsConnected < houses.length) warnings.push(`문 연결 미달: ${audit.doorsConnected}/${houses.length}`);
       if (audit.doorsIntact < houses.length) warnings.push(`문 타일 훼손: ${houses.length - audit.doorsIntact}곳`);
       if (audit.roadInsideHouses > 0) warnings.push(`집 내부를 침범한 도로 ${audit.roadInsideHouses}칸`);
       if (audit.ridgeInvaded > 0) warnings.push(`지붕 용마루 행 침범 ${audit.ridgeInvaded}칸 (길/소품이 지붕을 찢음)`);
-      if (audit.roadComponents !== 1) warnings.push(`길 연결 성분 미달: ${audit.roadComponents}`);
+      if (audit.roadComponents !== 1) {
+        warnings.push(`길 연결 성분 미달: ${audit.roadComponents} — ${roadComponentNotes(map, area).join(", ")}`);
+      }
       if (audit.npcCount !== houses.length + 2) warnings.push(`NPC 수 미달: ${audit.npcCount}/${houses.length + 2}`);
       if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
       if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
@@ -697,6 +750,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
             settlementLayout: intent.settlementLayout,
           },
           housesBuilt: houses.length,
+          // 경고를 결과 데이터로도 노출(2026-07-17) — 재시도 횟수·[vperf]·미달 사유가 호출자에게 보이게.
+          warnings: warnings.length > 0 ? [...warnings] : undefined,
           fencesEnabled,
           fencedHouses: fencesEnabled ? audit.fencedHouses : 0,
           fenceTiles: fencesEnabled ? audit.fenceTiles : 0,
@@ -816,6 +871,7 @@ function assertBuildAreaSize(map: GameMap, area: Rect): void {
 
 interface HousePlanCoerced {
   readonly count: number;
+  readonly explicit: boolean;
   readonly yards: readonly (readonly YardDecorKind[])[];
   readonly kits: readonly (HouseKitId | undefined)[];
   readonly templates: readonly (string | undefined)[];
@@ -874,6 +930,7 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
     const count = Math.min(MAX_HOUSES, Math.max(MIN_HOUSES, housePlansArg.length));
     return {
       count,
+      explicit: true,
       yards: yards.slice(0, count),
       kits: kits.slice(0, count),
       templates: templates.slice(0, count),
@@ -887,7 +944,30 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
   if (housesArg !== undefined && (typeof housesArg !== "number" || !Number.isInteger(housesArg))) {
     throw new ToolError("houses는 정수이거나 housePlans 배열을 쓰세요.", { code: "invalid-args" });
   }
-  return { count, yards: [], kits: [], templates: [], owners: [], programs: [] };
+  // explicit=false면 빌더가 맵 면적 비례 기본값으로 대체한다(100×100에 8채 고정 방지).
+  return { count, explicit: housesArg !== undefined, yards: [], kits: [], templates: [], owners: [], programs: [] };
+}
+
+/**
+ * 상점 클러스터 지정(2026-07-17) — 광장 게이트에서 가까운 집부터 무기점·잡화점·여관 프로그램을
+ * 부여한다(이미 프로그램이 있으면 건너뜀). 간판(472/473)은 decor가 이 프로그램을 보고 건다.
+ */
+function assignShopPrograms(houses: BuiltHouse[], plaza: Plaza, warnings: string[]): void {
+  if (houses.length < 3) return;
+  const gate = { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h };
+  const order = houses
+    .map((house, index) => ({ index, dist: Math.abs(house.front.x - gate.x) + Math.abs(house.front.y - gate.y) }))
+    .sort((a, b) => a.dist - b.dist)
+    .filter(({ index }) => houses[index]!.program === undefined)
+    .map(({ index }) => index);
+  const roles: HouseInteriorProgram[] = ["shop", "shop", "inn"];
+  const assigned: string[] = [];
+  for (let i = 0; i < roles.length && i < order.length; i += 1) {
+    const index = order[i]!;
+    houses[index] = { ...houses[index]!, program: roles[i] };
+    assigned.push(`${index}:${roles[i]}`);
+  }
+  if (assigned.length > 0) warnings.push(`상점가 지정: ${assigned.join(", ")} (광장 근접순)`);
 }
 
 function coerceYardTags(value: unknown, label: string): YardDecorKind[] {

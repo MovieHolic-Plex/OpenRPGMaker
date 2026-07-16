@@ -160,6 +160,11 @@ function bboxTouchesBlocked(bbox: Rect, blocked: ReadonlySet<number>, width: num
   return false;
 }
 
+export interface HouseBoulevardHint {
+  readonly ewRow: number;
+  readonly nsCol: number;
+}
+
 export function buildHouses(
   map: GameMap,
   area: Rect,
@@ -169,9 +174,10 @@ export function buildHouses(
   windows: HouseKitWindowsOption | undefined,
   intent: VillageIntent,
   warnings: string[],
-  terrainBlocked?: ReadonlySet<number>
+  terrainBlocked?: ReadonlySet<number>,
+  boulevard?: HouseBoulevardHint,
 ): BuiltHouse[] {
-  const available = houseCandidates(area, plaza, target, intent.settlementLayout);
+  const available = houseCandidates(area, plaza, target, intent.settlementLayout, boulevard);
   const candidates = [
     ...shuffled(available.filter((candidate) => candidate.organic), rng),
     ...shuffled(available.filter((candidate) => !candidate.organic), rng),
@@ -232,7 +238,10 @@ export function buildHouses(
   tryCandidates(candidates);
   // 변형 레이아웃에서 집이 모자라면 고전 위·아래 밴드로 보충
   if (houses.length < target && intent.settlementLayout !== "plaza-ring") {
-    tryCandidates(shuffled(houseCandidates(area, plaza, target, "plaza-ring"), rng));
+    tryCandidates(shuffled(houseCandidates(area, plaza, target, "plaza-ring", boulevard), rng));
+  }
+  if (houses.length < target) {
+    warnings.push(`집 후보 진단: 후보 ${candidates.length}개 중 ${houses.length}/${target} 시공 (area ${area.w}×${area.h})`);
   }
   // Forced templateId is a hard contract — never silently under-build or shift indices.
   for (let i = 0; i < target; i += 1) {
@@ -255,6 +264,7 @@ function houseCandidates(
   plaza: Plaza,
   target: number,
   settlement: SettlementLayout = "plaza-ring",
+  boulevard?: HouseBoulevardHint,
 ): HouseCandidate[] {
   const minTemplateWidth = Math.min(...HOUSE_TEMPLATES.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
@@ -293,7 +303,10 @@ function houseCandidates(
     }
   }
 
-  // 공통: 광장 위·아래 밴드
+  // 공통: 광장 위·아래 밴드. 대형 맵(72+)은 동서 대로(광장 남측 y+h+1, 폭3)와 겹치지 않게
+  // 아래 밴드를 대로 남쪽 접면(frontage)으로 내린다 — 대로변 상가/주거 열 (2026-07-17).
+  const largeBoulevard = boulevard !== undefined;
+  const ewBoulevardRow = boulevard?.ewRow ?? plaza.rect.y + plaza.rect.h + 1;
   for (let col = 0; col < columns; col += 1) {
     const slotX = xStart + col * (slotWidth + HOUSE_MARGIN * 2);
     for (const template of templates) {
@@ -301,37 +314,65 @@ function houseCandidates(
       const staggerTop = settlement === "clusters" ? ((col * 2) % 5) - 2 : 0;
       const staggerBottom = settlement === "clusters" ? ((col * 3 + 1) % 5) - 2 : 0;
       const x = slotX + Math.floor((slotWidth - template.w) / 2) + staggerX;
+      const bottomY = largeBoulevard
+        ? ewBoulevardRow + 3
+        : plaza.rect.y + plaza.rect.h + HOUSE_MARGIN + staggerBottom;
       candidates.push({ template, bbox: { x, y: plaza.rect.y - HOUSE_MARGIN - template.h + staggerTop, w: template.w, h: template.h }, organic: false });
-      candidates.push({ template, bbox: { x, y: plaza.rect.y + plaza.rect.h + HOUSE_MARGIN + staggerBottom, w: template.w, h: template.h }, organic: false });
+      candidates.push({ template, bbox: { x, y: bottomY, w: template.w, h: template.h }, organic: false });
     }
   }
 
-  // street-grid / clusters: 광장 좌·우 밴드도 후보에 넣어 배치가 위·아래만 되지 않게
-  if (settlement === "street-grid" || settlement === "clusters") {
+  // 대형 맵 격자 lot(2026-07-17, 리서치 필지 분할 룰): 코어 전체를 stepY=11 행 격자로 덮는
+  // 후보를 공급한다 — 광장·대로 충돌은 bboxTouchesBlocked/canPlaceHouse가 걸러낸다.
+  if (largeBoulevard) {
+    for (let y = area.y + HOUSE_MARGIN; y + 9 <= area.y + area.h - HOUSE_MARGIN; y += 11) {
+      for (let col = 0; col < columns; col += 1) {
+        const slotX = xStart + col * (slotWidth + HOUSE_MARGIN * 2);
+        for (const template of templates) {
+          const x = slotX + Math.floor((slotWidth - template.w) / 2);
+          candidates.push({ template, organic: false, bbox: { x, y, w: template.w, h: template.h } });
+        }
+      }
+    }
+  }
+
+  // street-grid / clusters: 광장 좌·우 밴드도 후보에 넣어 배치가 위·아래만 되지 않게.
+  // 대형 코어(56+)는 어느 레이아웃이든 좌·우 밴드를 공급한다 — 상하 2밴드만으로는
+  // 면적 비례 집 수(20+)의 후보가 고갈된다 (2026-07-17).
+  if (settlement === "street-grid" || settlement === "clusters" || area.w >= 56) {
     const rowStep = 7;
+    // 대형 코어는 좌·우 밴드를 다중 열(최대 3링)로 공급 — 면적 비례 집 수(20+)의 후보 확보.
+    const columnRings = area.w >= 56 ? 3 : 1;
     for (let row = area.y + HOUSE_MARGIN; row + 6 < area.y + area.h - HOUSE_MARGIN; row += rowStep) {
       if (row + 6 > plaza.rect.y - 2 && row < plaza.rect.y + plaza.rect.h + 2) continue;
       for (const template of templates) {
-        candidates.push({
-          template,
-          organic: false,
-          bbox: {
-            x: plaza.rect.x - HOUSE_MARGIN - template.w,
-            y: row,
-            w: template.w,
-            h: template.h,
-          },
-        });
-        candidates.push({
-          template,
-          organic: false,
-          bbox: {
-            x: plaza.rect.x + plaza.rect.w + HOUSE_MARGIN,
-            y: row,
-            w: template.w,
-            h: template.h,
-          },
-        });
+        for (let ring = 0; ring < columnRings; ring += 1) {
+          const offset = (template.w + HOUSE_MARGIN * 2) * ring;
+          // 대형 맵: 남북 대로와 겹치지 않게 오른쪽 밴드를 대로 동쪽 접면으로.
+          const rightBase = boulevard
+            ? boulevard.nsCol + 2 + 1
+            : plaza.rect.x + plaza.rect.w + HOUSE_MARGIN;
+          candidates.push({
+            template,
+            organic: false,
+            bbox: {
+              x: plaza.rect.x - HOUSE_MARGIN - template.w - offset,
+              y: row,
+              w: template.w,
+              h: template.h,
+            },
+          });
+          candidates.push({
+            template,
+            organic: false,
+            bbox: {
+              x: rightBase + offset,
+              y: row,
+              w: template.w,
+              h: template.h,
+            },
+          });
+        }
       }
     }
   }

@@ -31,6 +31,7 @@ import {
 } from "./constants";
 import { houseBlockedCells } from "./houses";
 import { paintFlowerField, paintPlazaFence, placeMarketDeckProps } from "./plaza";
+import { paintPlazaGatePath } from "./roads";
 
 const placePropsTool = requireTool(CONSTRUCTION_TOOLS_V3, "place_props");
 
@@ -220,6 +221,7 @@ export function placeVillageDecor(
   placed += placeVillageWell(map, plaza, houses);
   // 화려한 깃발 — 중요한 집 문 양옆 벽면 (208/209).
   placed += placeEntranceBanners(map, houses);
+  placed += placeShopSigns(map, houses, plaza);
 
   const plazaInner = {
     x: plaza.rect.x + 1,
@@ -230,6 +232,8 @@ export function placeVillageDecor(
   if (intent.plazaStyle === "market") {
     placed += placeMarketDeckProps(map, plazaInner);
   } else if (intent.plazaStyle === "garden") {
+    // 게이트 진입로 — 광장 rect가 도로 마스크로 봉쇄되므로 여기서 유일한 통로를 깐다.
+    paintPlazaGatePath(map, plaza, intent.pathStyle);
     // 울타리 정원(2026-07-16): 둘레 문법으로 광장을 두르고 남쪽 게이트를 연다.
     placed += paintPlazaFence(map, plazaInner);
     // 석상 페어 2기 — 울타리 안쪽 위 모서리 (상단 266 + 하단 296, 반쪽 배치 금지).
@@ -289,6 +293,21 @@ function placeVillageWell(
   houses: readonly BuiltHouse[],
 ): number {
   const blocked = houseBlockedCells(houses);
+  // 우물은 광장의 앵커(리서치: marketplace = well) — 광장 내부 중앙 자리를 최우선으로.
+  const centerCandidates = [
+    { x: plaza.centerX, y: plaza.centerRow },
+    { x: plaza.centerX - 1, y: plaza.centerRow },
+    { x: plaza.centerX + 1, y: plaza.centerRow },
+    { x: plaza.centerX, y: plaza.centerRow - 1 },
+  ];
+  for (const cell of centerCandidates) {
+    if (!inMapBounds(map, cell.x, cell.y)) continue;
+    const index = cell.y * map.width + cell.x;
+    if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
+    if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
+    map.upperTiles[index] = 382;
+    return 1;
+  }
   for (const distance of [2, 3, 4]) {
     const rect = expandRect(plaza.rect, distance);
     for (let y = rect.y; y < rect.y + rect.h; y += 1) {
@@ -312,6 +331,34 @@ function placeVillageWell(
  * 화려한 깃발(208/209) — 가장 중요한 집(다층 우선)의 "지붕 바로 아래 최상단 벽" 행에 건다.
  * (2026-07-16 사용자 하네싱 지시: 깃발은 벽 최상단 행에 걸리는 장식이다.)
  */
+/**
+ * 상점 간판(2026-07-17, 리서치: 간판 없는 상점은 기능이 안 읽힌다) —
+ * program==="shop" 집의 문 옆 벽면에 무기점 방패(472)·잡화점 물약(473)을 번갈아 건다.
+ */
+function placeShopSigns(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaza): number {
+  const gate = { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h };
+  const shops = houses
+    .filter((house) => house.program === "shop")
+    .sort((a, b) =>
+      (Math.abs(a.front.x - gate.x) + Math.abs(a.front.y - gate.y))
+      - (Math.abs(b.front.x - gate.x) + Math.abs(b.front.y - gate.y)));
+  let placed = 0;
+  shops.forEach((house, index) => {
+    const tile = index % 2 === 0 ? 472 : 473;
+    const { doorAt, bbox } = house;
+    for (const dx of [1, -1]) {
+      const x = doorAt.x + dx;
+      if (x <= bbox.x || x >= bbox.x + bbox.w - 1) continue;
+      const cellIndex = doorAt.y * map.width + x;
+      if ((map.upperTiles[cellIndex] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
+      map.upperTiles[cellIndex] = tile;
+      placed += 1;
+      break;
+    }
+  });
+  return placed;
+}
+
 function placeEntranceBanners(map: GameMap, houses: readonly BuiltHouse[]): number {
   const important = houses.find((house) => house.stories > 1) ?? houses[0];
   if (!important) return 0;
