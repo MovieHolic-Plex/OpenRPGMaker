@@ -163,7 +163,10 @@ function collectRoadComponents(map: GameMap, area: Rect): string[][] {
   const road = new Set<string>();
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
-      if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) road.add(coordKey(x, y));
+      const index = y * map.width + x;
+      // 상위 판자 다리(199)는 도로 연결로 인정 — 수로가 대로를 지나가면 하위가 물이 된다 (2026-07-17).
+      const isBridge = (map.upperTiles[index] ?? TILE.EMPTY) === 199;
+      if (isBridge || ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) road.add(coordKey(x, y));
     }
   }
   const components: string[][] = [];

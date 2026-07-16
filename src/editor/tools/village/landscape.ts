@@ -330,9 +330,12 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
         used.add(coordKey(vx, vy));
         painted += 1;
       }
-      // 다리는 길 칸을 대체하는 것이라 placed(잔디→지형) 계약에 세지 않는다.
+      // 다리 = RM2K 정본: 하위는 수로 물이 계속 흐르고, 판자(199)는 상위 레이어에 얹는다.
+      // (상위 O가 하위 X를 덮는 tilePassability 규약 — 물 위를 걷는 진짜 다리.)
+      // placed(잔디→지형) 계약에는 세지 않는다.
       for (const [bx, by] of bridges) {
-        map.lowerTiles[by * W + bx] = BRIDGE_PLANK_TILE;
+        map.lowerTiles[by * W + bx] = CANAL_VERTICAL_TILE;
+        map.upperTiles[by * W + bx] = BRIDGE_PLANK_TILE;
         used.add(coordKey(bx, by));
       }
       if (bridges.length > 0) warnings.push(`조경: 수로-길 횡단 판자 다리 ${bridges.length}칸(199)`);
@@ -381,9 +384,9 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
       for (let i = 0; i < pierLen; i += 1) {
         const ny = py - i;
         if (!isWater(px, ny)) break;
-        // 잔교는 물 칸을 대체하는 것이라 placed(잔디→지형) 계약에 세지 않는다.
-        map.lowerTiles[ny * W + px] = BRIDGE_PLANK_TILE;
-        lakeSet.delete(coordKey(px, ny));
+        // 잔교도 정본대로: 하위 물 유지 + 상위 판자(199). 물이 판자 밑에서 계속 출렁인다.
+        // placed(잔디→지형) 계약에는 세지 않는다.
+        map.upperTiles[ny * W + px] = BRIDGE_PLANK_TILE;
         used.add(coordKey(px, ny));
         laid += 1;
       }

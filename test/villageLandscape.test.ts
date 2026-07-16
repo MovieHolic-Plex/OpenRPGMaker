@@ -331,35 +331,28 @@ describe("dressVillageLandscape", () => {
     expect(bridged, "60시드 안에 다리 케이스가 있어야 한다").not.toBeNull();
     // 다리 칸(199)은 도로 밴드 행 위에 있고, 위·아래로 수로가 이어진다.
     const map = bridged!;
+    // 정본 다리: 하위는 수로 물(3)이 계속 흐르고 판자(199)는 상위 레이어.
+    const upperAt = (m: GameMap, x: number, y: number): number => m.upperTiles[y * size + x] ?? -1;
     let verified = false;
     for (let x = 1; x < size - 1 && !verified; x += 1) {
       for (let y = 18; y <= 20; y += 1) {
-        if (at(map, x, y) !== 199) continue;
-        const above = at(map, x, 17);
-        const below = at(map, x, 21);
-        const canalish = (tile: number): boolean => tile === 199 || tile === 3 || tile === 4 || tile === 5;
-        if (canalish(above) && canalish(below)) verified = true;
+        if (upperAt(map, x, y) !== 199) continue;
+        const canalish = (tile: number): boolean => tile === 3 || tile === 4 || tile === 5;
+        if (canalish(at(map, x, y)) && canalish(at(map, x, 17)) && canalish(at(map, x, 21))) verified = true;
       }
     }
-    expect(verified, "다리 위아래로 수로 연속").toBe(true);
+    expect(verified, "다리 칸은 하위 수로+상위 판자, 위아래로 수로 연속").toBe(true);
     // 잔교: 판자(199)가 물(호수 프레임) 옆에 뜬 케이스도 존재해야 한다 — 표준 시드에서 확인.
     const pier = runFixture(60, 123);
     const pierWarned = pier.warnings.some((w) => w.includes("잔교"));
     if (pierWarned) {
-      const hasPlankTouchingWater = pier.map.lowerTiles.some((tile, index) => {
-        if (tile !== 199) return false;
-        const x = index % size;
-        const y = Math.floor(index / size);
-        return [[0, -1], [0, 1], [1, 0], [-1, 0]].some(([dx, dy]) => {
-          const nx = x + dx!;
-          const ny = y + dy!;
-          if (nx < 0 || ny < 0 || nx >= size || ny >= size) return false;
-          const neighbor = pier.map.lowerTiles[ny * size + nx] ?? -1;
-          return neighbor <= 2 || (neighbor >= 30 && neighbor <= 32) || (neighbor >= 60 && neighbor <= 62)
-            || (neighbor >= 90 && neighbor <= 92) || (neighbor >= 120 && neighbor <= 122);
-        });
-      });
-      expect(hasPlankTouchingWater, "잔교 판자는 물과 접해야 한다").toBe(true);
+      // 정본 잔교: 상위 판자(199) 아래 하위는 물 그대로.
+      const isWaterTile = (tile: number): boolean =>
+        tile <= 2 || (tile >= 30 && tile <= 32) || (tile >= 60 && tile <= 62)
+        || (tile >= 90 && tile <= 92) || (tile >= 120 && tile <= 122);
+      const hasPlankOverWater = pier.map.upperTiles.some((tile, index) =>
+        tile === 199 && isWaterTile(pier.map.lowerTiles[index] ?? -1));
+      expect(hasPlankOverWater, "잔교 판자는 물 위 상위 레이어여야 한다").toBe(true);
     }
   });
 });
