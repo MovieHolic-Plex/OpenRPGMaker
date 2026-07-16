@@ -628,6 +628,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
       // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
       assignShopPrograms(houses, plaza, warnings);
+      // 여관 간판: retro House 칩셋의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
+      ensureInnSignGraft(draft, map.tilesetId);
 
       // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
       // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
@@ -968,6 +970,22 @@ function assignShopPrograms(houses: BuiltHouse[], plaza: Plaza, warnings: string
     assigned.push(`${index}:${roles[i]}`);
   }
   if (assigned.length > 0) warnings.push(`상점가 지정: ${assigned.join(", ")} (광장 근접순)`);
+}
+
+/**
+ * 여관 간판 이식(2026-07-17) — combined_town에는 여관 간판이 없어서, retro House 칩셋의
+ * INN 간판(443)을 사용 금지 슬롯 443에 타일 이식한다. 넘버링 불변(덮어쓰기 모드).
+ */
+export const INN_SIGN_TILE = 443;
+function ensureInnSignGraft(draft: Project, tilesetId: string): void {
+  const tileset = draft.tilesets[tilesetId];
+  if (!tileset) return;
+  const grafts = tileset.tileGrafts ?? [];
+  if (grafts.some((graft) => graft.targetTile === INN_SIGN_TILE)) return;
+  tileset.tileGrafts = [
+    ...grafts,
+    { targetTile: INN_SIGN_TILE, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 443 },
+  ];
 }
 
 function coerceYardTags(value: unknown, label: string): YardDecorKind[] {

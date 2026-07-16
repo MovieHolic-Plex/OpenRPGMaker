@@ -332,43 +332,67 @@ function placeVillageWell(
  * (2026-07-16 사용자 하네싱 지시: 깃발은 벽 최상단 행에 걸리는 장식이다.)
  */
 /**
- * 상점 간판(2026-07-17, 리서치: 간판 없는 상점은 기능이 안 읽힌다) —
- * program==="shop" 집의 문 옆 벽면에 무기점 방패(472)·잡화점 물약(473)을 번갈아 건다.
+ * 상점 간판(2026-07-17, 사용자 규약 2차) — 벽에 파묻히면 안 보인다:
+ * **벽 최상단 높이의 집 바깥 열**(벽 아닌 잔디 칸)에 걸이 간판을 내민다.
+ * 무기점 방패(472)·잡화점 물약(473) 번갈아, 광장 게이트를 향한 쪽 우선.
+ * 도로 위 장식 금지 룰에 따라 잔디 칸만 쓰고, 실패 시 반대편 → 문 옆 벽면 폴백.
  */
 function placeShopSigns(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaza): number {
   const gate = { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h };
   const shops = houses
-    .filter((house) => house.program === "shop")
+    .filter((house) => house.program === "shop" || house.program === "inn")
     .sort((a, b) =>
       (Math.abs(a.front.x - gate.x) + Math.abs(a.front.y - gate.y))
       - (Math.abs(b.front.x - gate.x) + Math.abs(b.front.y - gate.y)));
   let placed = 0;
-  shops.forEach((house, index) => {
-    const tile = index % 2 === 0 ? 472 : 473;
-    const { doorAt, bbox } = house;
+  let shopIndex = 0;
+  shops.forEach((house) => {
+    // 여관은 이식된 INN 간판(443, builder.ensureInnSignGraft), 상점은 무기(472)/잡화(473) 교대.
+    const tile = house.program === "inn" ? 443 : (shopIndex++ % 2 === 0 ? 472 : 473);
+    const { doorAt, bbox, stories } = house;
+    const wallBandRows = 2 + (2 * stories - 1);
+    const topWallY = bbox.y + bbox.h - wallBandRows;
+    // 게이트 쪽 측면 우선 — 플레이어 접근 방향에서 먼저 보인다.
+    const sides = gate.x >= bbox.x + Math.floor(bbox.w / 2)
+      ? [bbox.x + bbox.w, bbox.x - 1]
+      : [bbox.x - 1, bbox.x + bbox.w];
+    const tryPlace = (x: number, y: number, requireGrass: boolean): boolean => {
+      if (!inMapBounds(map, x, y)) return false;
+      const cellIndex = y * map.width + x;
+      if ((map.upperTiles[cellIndex] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
+      if (requireGrass && (map.lowerTiles[cellIndex] ?? TILE.EMPTY) !== TILE.GRASS) return false;
+      map.upperTiles[cellIndex] = tile;
+      placed += 1;
+      return true;
+    };
+    for (const x of sides) {
+      if (tryPlace(x, topWallY, true)) return;
+    }
+    // 폴백: 문 옆 벽면(구 규약)
     for (const dx of [1, -1]) {
       const x = doorAt.x + dx;
       if (x <= bbox.x || x >= bbox.x + bbox.w - 1) continue;
-      const cellIndex = doorAt.y * map.width + x;
-      if ((map.upperTiles[cellIndex] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
-      map.upperTiles[cellIndex] = tile;
-      placed += 1;
-      break;
+      if (tryPlace(x, doorAt.y, false)) return;
     }
   });
   return placed;
 }
 
 function placeEntranceBanners(map: GameMap, houses: readonly BuiltHouse[]): number {
+  // 여관은 이식된 INN 간판(placeShopSigns)이 담당 — 깃발은 다층 중요 건물 하나만.
   const important = houses.find((house) => house.stories > 1) ?? houses[0];
   if (!important) return 0;
-  const wallBandRows = 2 + (2 * important.stories - 1);
-  const topWallY = important.bbox.y + important.bbox.h - wallBandRows;
-  const { doorAt } = important;
+  return placeBannersOnHouse(map, important);
+}
+
+function placeBannersOnHouse(map: GameMap, house: BuiltHouse): number {
+  const wallBandRows = 2 + (2 * house.stories - 1);
+  const topWallY = house.bbox.y + house.bbox.h - wallBandRows;
+  const { doorAt } = house;
   let placed = 0;
   for (const [dx, tile] of [[-1, 208], [1, 209]] as const) {
     const x = doorAt.x + dx;
-    if (x <= important.bbox.x || x >= important.bbox.x + important.bbox.w - 1) continue;
+    if (x <= house.bbox.x || x >= house.bbox.x + house.bbox.w - 1) continue;
     if (!inMapBounds(map, x, topWallY)) continue;
     const index = topWallY * map.width + x;
     if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;

@@ -303,4 +303,63 @@ describe("dressVillageLandscape", () => {
     expect(c.map.upperTiles).toEqual(d.map.upperTiles);
     expect(c.placed).toBe(d.placed);
   });
+
+  it("수로가 길을 만나면 판자 다리(199)로 횡단하고, 잔교(199)가 물 위에 뜬다 (2026-07-17)", () => {
+    // 전 시드 공통 픽스처가 어려우니(호수 사분면이 시드 의존) 시드를 스캔해
+    // "가로 도로 밴드를 세로 수로가 횡단"하는 케이스를 찾아 고정한다.
+    const size = 60;
+    const at = (map: GameMap, x: number, y: number): number => map.lowerTiles[y * size + x] ?? -1;
+    let bridged: GameMap | null = null;
+    for (let seed = 1; seed <= 60 && !bridged; seed += 1) {
+      const map = makeMap(size, size);
+      // 맵 전폭 가로 도로 3줄(포석 몸통 190) — 호수(북쪽 상단 배치 시 y≈1..10) 남하 수로가
+      // CANAL_MAX_RUN(18) 안에서 반드시 만나는 y=18..20 에 둔다.
+      for (let y = 18; y <= 20; y += 1) {
+        for (let x = 1; x < size - 1; x += 1) map.lowerTiles[y * size + x] = 190;
+      }
+      const warnings: string[] = [];
+      dressVillageLandscape(map, {
+        area: { x: 1, y: 1, w: size - 2, h: size - 2 },
+        houses: [makeHouse(8, 44)],
+        plaza: makePlaza(40, 44),
+        seed,
+        warnings,
+      });
+      const hasBridge = warnings.some((w) => w.includes("판자 다리"));
+      if (hasBridge) bridged = map;
+    }
+    expect(bridged, "60시드 안에 다리 케이스가 있어야 한다").not.toBeNull();
+    // 다리 칸(199)은 도로 밴드 행 위에 있고, 위·아래로 수로가 이어진다.
+    const map = bridged!;
+    let verified = false;
+    for (let x = 1; x < size - 1 && !verified; x += 1) {
+      for (let y = 18; y <= 20; y += 1) {
+        if (at(map, x, y) !== 199) continue;
+        const above = at(map, x, 17);
+        const below = at(map, x, 21);
+        const canalish = (tile: number): boolean => tile === 199 || tile === 3 || tile === 4 || tile === 5;
+        if (canalish(above) && canalish(below)) verified = true;
+      }
+    }
+    expect(verified, "다리 위아래로 수로 연속").toBe(true);
+    // 잔교: 판자(199)가 물(호수 프레임) 옆에 뜬 케이스도 존재해야 한다 — 표준 시드에서 확인.
+    const pier = runFixture(60, 123);
+    const pierWarned = pier.warnings.some((w) => w.includes("잔교"));
+    if (pierWarned) {
+      const hasPlankTouchingWater = pier.map.lowerTiles.some((tile, index) => {
+        if (tile !== 199) return false;
+        const x = index % size;
+        const y = Math.floor(index / size);
+        return [[0, -1], [0, 1], [1, 0], [-1, 0]].some(([dx, dy]) => {
+          const nx = x + dx!;
+          const ny = y + dy!;
+          if (nx < 0 || ny < 0 || nx >= size || ny >= size) return false;
+          const neighbor = pier.map.lowerTiles[ny * size + nx] ?? -1;
+          return neighbor <= 2 || (neighbor >= 30 && neighbor <= 32) || (neighbor >= 60 && neighbor <= 62)
+            || (neighbor >= 90 && neighbor <= 92) || (neighbor >= 120 && neighbor <= 122);
+        });
+      });
+      expect(hasPlankTouchingWater, "잔교 판자는 물과 접해야 한다").toBe(true);
+    }
+  });
 });

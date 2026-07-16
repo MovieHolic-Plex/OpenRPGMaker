@@ -20,7 +20,7 @@ import { DEFAULT_AUTOTILE_GROUPS } from "@/project/defaults/autotileGroups";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
-import { coordKey, expandRect, type BuiltHouse, type Plaza, type Rect } from "./constants";
+import { coordKey, expandRect, ROAD_TILES, type BuiltHouse, type Plaza, type Rect } from "./constants";
 import { houseBlockedCells, houseStandoffCells } from "./houses";
 
 /** 호수 물가 앵커(쿼터 물 시스템) — combined_town 전용. */
@@ -48,6 +48,10 @@ export const MIN_BRUSH_PATCH_W = 5;
 export const MIN_BRUSH_PATCH_H = 4;
 /** 수로 세그먼트(세로/가로 각각) 최대 길이. */
 export const CANAL_MAX_RUN = 18;
+/** 다리·잔교 판자(사용자 지정: 199 중심 나무판자를 물/길 위에 띄운다). */
+export const BRIDGE_PLANK_TILE = 199;
+/** 수로가 길을 횡단할 때 판자 다리의 최대 연속 칸(대로 폭 3 대응). */
+export const BRIDGE_MAX_SPAN = 3;
 
 export interface VillageLandscapeArgs {
   readonly area: Rect;
@@ -286,6 +290,7 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
   }
 
   // ══ 3. 수로 — 호수 남안 인접 칸에서 시작, 세로(3) 런 + 필요시 한 번 꺾어 가로(63) ══
+  let canalColumn = -1;
   if (lakeCells.length > 0) {
     const lakeCenterX = lakeCells.reduce((sum, [cx]) => sum + cx, 0) / lakeCells.length;
     const starts: Cell[] = [];
@@ -296,10 +301,28 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
     let canalLaid = 0;
     for (const [sx, sy] of starts) {
       const vertical: Cell[] = [];
+      const bridges: Cell[] = [];
       let yy = sy;
-      while (yy < y1 && vertical.length < CANAL_MAX_RUN && paintable(sx, yy)) {
-        vertical.push([sx, yy]);
-        yy += 1;
+      while (yy < y1 && vertical.length < CANAL_MAX_RUN) {
+        if (paintable(sx, yy)) {
+          vertical.push([sx, yy]);
+          yy += 1;
+          continue;
+        }
+        // 길 횡단(2026-07-17 사용자 지시): 연속 도로 ≤3칸이면 판자 다리(199)로 건너고,
+        // 건너편에 수로가 2칸 이상 이어질 때만 — 다리 뒤가 막히면 횡단하지 않는다.
+        const span: Cell[] = [];
+        let by = yy;
+        while (by < y1 && span.length < BRIDGE_MAX_SPAN && ROAD_TILES.has(lowerAt(sx, by))) {
+          span.push([sx, by]);
+          by += 1;
+        }
+        if (span.length > 0 && paintable(sx, by) && paintable(sx, by + 1)) {
+          bridges.push(...span);
+          yy = by;
+          continue;
+        }
+        break;
       }
       if (vertical.length < 3) continue; // 짧은 토막은 수로가 아니다 — 다음 시작 후보로.
       for (const [vx, vy] of vertical) {
@@ -307,11 +330,18 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
         used.add(coordKey(vx, vy));
         painted += 1;
       }
-      canalLaid = vertical.length;
+      // 다리는 길 칸을 대체하는 것이라 placed(잔디→지형) 계약에 세지 않는다.
+      for (const [bx, by] of bridges) {
+        map.lowerTiles[by * W + bx] = BRIDGE_PLANK_TILE;
+        used.add(coordKey(bx, by));
+      }
+      if (bridges.length > 0) warnings.push(`조경: 수로-길 횡단 판자 다리 ${bridges.length}칸(199)`);
+      canalLaid = vertical.length + bridges.length;
       const reachedEdge = yy >= y1;
       if (!reachedEdge && vertical.length < CANAL_MAX_RUN) {
         // 막혔으면 한 번만 꺾는다 — 마지막 세로 칸 행에서 가까운 x 가장자리 방향으로.
-        const bendY = sy + vertical.length - 1;
+        // (다리 횡단이 있으면 세로가 불연속이므로 실제 마지막 칸의 y를 쓴다.)
+        const bendY = vertical[vertical.length - 1]![1];
         const dir = sx - x0 <= x1 - 1 - sx ? -1 : 1;
         const horizontal: Cell[] = [];
         let xx = sx + dir;
@@ -329,9 +359,36 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
           canalLaid += horizontal.length;
         }
       }
+      canalColumn = sx;
       break; // 수로는 1기.
     }
     if (canalLaid === 0) warnings.push("조경: 수로 생략 — 호수 남안에서 뻗을 자리 없음");
+  }
+
+  // ══ 3.5 잔교(pier) — 판자(199)를 물 위에 띄운다 (사용자 지시). 남안 중앙 부근에서
+  // 물속으로 2~3칸: 물가 잔디에서 걸어 들어가는 나무 잔교. 수로 열과는 3칸 이상 이격.
+  if (lakeCells.length > 0) {
+    const lakeCenterX = lakeCells.reduce((sum, [cx]) => sum + cx, 0) / lakeCells.length;
+    const southShore = lakeCells
+      .filter(([cx, cy]) => !isWater(cx, cy + 1) && isWater(cx, cy - 1) && isWater(cx, cy - 2)
+        && (canalColumn < 0 || Math.abs(cx - canalColumn) >= 3))
+      .sort((a, b) => Math.abs(a[0] - lakeCenterX) - Math.abs(b[0] - lakeCenterX) || a[0] - b[0]);
+    const pierBase = southShore[0];
+    if (pierBase) {
+      const [px, py] = pierBase;
+      const pierLen = 2 + Math.floor(rng() * 2); // 2~3칸
+      let laid = 0;
+      for (let i = 0; i < pierLen; i += 1) {
+        const ny = py - i;
+        if (!isWater(px, ny)) break;
+        // 잔교는 물 칸을 대체하는 것이라 placed(잔디→지형) 계약에 세지 않는다.
+        map.lowerTiles[ny * W + px] = BRIDGE_PLANK_TILE;
+        lakeSet.delete(coordKey(px, ny));
+        used.add(coordKey(px, ny));
+        laid += 1;
+      }
+      if (laid > 0) warnings.push(`조경: 호수 잔교 ${laid}칸(판자 199)`);
+    }
   }
 
   // ══ 4. 눈밭 — 경작지·모래와 12칸 이내 금지 (모래는 이미 깔렸으니 여기서, 밭은 아래서 검사) ══
