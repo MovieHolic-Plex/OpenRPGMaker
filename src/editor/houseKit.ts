@@ -56,6 +56,11 @@ export interface HouseKit {
   readonly name: string;
   readonly windowTile: number;
   readonly wall: WallNineSlice;
+  /**
+   * 하프팀버 기둥 열(2026-07-17 사용자 규약): 벽 내부 열을 every 간격으로 기둥
+   * 세로 3단(top/mid/bottom)으로 교체한다 — 기둥(196/226/256)과 회벽(16/46/76)의 반복.
+   */
+  readonly postColumn?: { readonly tiles: readonly [number, number, number]; readonly every: number };
   readonly roof: BlueRoofKit | BrightRoofKit;
 }
 
@@ -98,13 +103,14 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
     wall: { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] },
     roof: { kind: "blue", body: 406, rightEdge: 407, eave: 467, upper: { nw: 356, ne: 357, sw: 386, se: 387 } },
   },
-  // 2026-07-17 사용자 레퍼런스(빨간 널지붕 + 목조 기둥 + 크림 벽) — 전부 combined_town 타일로 조립.
-  // 조립 검증: scratchpad todo-evidence/timber-hall-A.png (196/197 기둥·크림, 226/227 하단, bright 지붕 재사용).
+  // 2026-07-17 사용자 규약 2차: 기둥 세로 3단(196/226/256)과 회벽 열(16/46/76)의 교대 반복.
+  // 조립 검증: scratchpad todo-evidence/timber-hall-C.png — 좌우 가장자리 기둥 + 내부 3칸 간격 기둥.
   "timber-hall": {
     id: "timber-hall",
     name: "빨간 널지붕 + 목조 기둥 홀",
     windowTile: 85,
-    wall: { top: [196, 197, 196], mid: [196, 197, 196], bottom: [226, 227, 226] },
+    wall: { top: [196, 16, 196], mid: [226, 46, 226], bottom: [256, 76, 256] },
+    postColumn: { tiles: [196, 226, 256], every: 3 },
     roof: {
       kind: "bright",
       body: 404,
@@ -183,6 +189,9 @@ function placeWindowsOnWallRuns(
     if (run.x1 - run.x0 + 1 < 3) continue;
     for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) {
       if (doorAt && Math.abs(x - doorAt.x) <= 1) continue;
+      // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
+      const lowerTile = map.lowerTiles[run.y * map.width + x] ?? TILE.EMPTY;
+      if (kit.postColumn && (kit.postColumn.tiles as readonly number[]).includes(lowerTile)) continue;
       upperIfEmpty(map, x, run.y, kit.windowTile);
     }
   }
@@ -316,14 +325,20 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
   };
 
-  // ── 벽: 같은 행·같은 역할의 연속 런을 나인슬라이스로 ──
+  // ── 벽: 같은 행·같은 역할의 연속 런을 나인슬라이스로 (+하프팀버 기둥 열 교대) ──
   for (const [cell, role] of [...wallRole.entries()].sort((a, b) => a[0] - b[0])) {
     const x = cell % map.width;
     const y = Math.floor(cell / map.width);
     const slice = role === 0 ? kit.wall.top : role === 1 ? kit.wall.mid : kit.wall.bottom;
     const runStart = !wallRole.has(key(x - 1, y)) || wallRole.get(key(x - 1, y)) !== role;
     const runEnd = !wallRole.has(key(x + 1, y)) || wallRole.get(key(x + 1, y)) !== role;
-    lower(x, y, runStart ? slice[0] : runEnd ? slice[2] : slice[1]);
+    let tile = runStart ? slice[0] : runEnd ? slice[2] : slice[1];
+    if (!runStart && !runEnd && kit.postColumn) {
+      let runX0 = x;
+      while (wallRole.get(key(runX0 - 1, y)) === role) runX0 -= 1;
+      if ((x - runX0) % kit.postColumn.every === 0) tile = kit.postColumn.tiles[role as 0 | 1 | 2];
+    }
+    lower(x, y, tile);
   }
 
   // ── 지붕: 기준 집에서 추출한 국소 규칙 ──
@@ -431,10 +446,13 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
     const index = y * map.width + x;
     if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
   };
-  // 나인슬라이스 한 행: 좌 모서리 + 중앙 반복 + 우 모서리.
-  const nineSliceRow = (y: number, [l, c, r]: readonly [number, number, number]): void => {
+  // 나인슬라이스 한 행: 좌 모서리 + 중앙 반복 + 우 모서리 (+하프팀버 기둥 열 교대).
+  const nineSliceRow = (y: number, [l, c, r]: readonly [number, number, number], postTile?: number): void => {
     lower(left, y, l);
-    for (let x = left + 1; x < right; x += 1) lower(x, y, c);
+    for (let x = left + 1; x < right; x += 1) {
+      const isPost = postTile !== undefined && kit.postColumn !== undefined && (x - left) % kit.postColumn.every === 0;
+      lower(x, y, isPost ? postTile : c);
+    }
     lower(right, y, r);
   };
 
@@ -478,10 +496,10 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
 
   // ── 벽(상단 1 + 중단 N + 하단 1) ──
   const wallTopY = y;
-  nineSliceRow(y, kit.wall.top);
+  nineSliceRow(y, kit.wall.top, kit.postColumn?.tiles[0]);
   y += 1;
-  for (let row = 0; row < wallMidRows(plan.stories); row += 1, y += 1) nineSliceRow(y, kit.wall.mid);
-  nineSliceRow(y, kit.wall.bottom);
+  for (let row = 0; row < wallMidRows(plan.stories); row += 1, y += 1) nineSliceRow(y, kit.wall.mid, kit.postColumn?.tiles[1]);
+  nineSliceRow(y, kit.wall.bottom, kit.postColumn?.tiles[2]);
 
   const doorAt = { x: left + Math.floor(plan.width / 2), y };
   placeWindowsOnWallRuns(map, kit, rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
