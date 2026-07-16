@@ -355,7 +355,8 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
         // 데드엔드 가로 조각 금지 — 3칸 미만이면 가로 없이 세로로 끝낸다.
         if (horizontal.length >= 3) {
           for (const [hx, hy] of horizontal) {
-            map.lowerTiles[hy * W + hx] = CANAL_HORIZONTAL_TILE;
+            // 수로는 전부 마커 타일 3으로 저장 — 쿼터 렌더가 가로 변(63)·코너를 복원한다.
+            map.lowerTiles[hy * W + hx] = CANAL_VERTICAL_TILE;
             used.add(coordKey(hx, hy));
             painted += 1;
           }

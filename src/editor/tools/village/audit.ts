@@ -207,12 +207,19 @@ function collectRoadComponents(map: GameMap, area: Rect): string[][] {
         return isWaterChipsetTile(map.lowerTiles[ny * map.width + nx] ?? TILE.EMPTY);
       });
     });
+    // 백사장/잔교: 모래 또는 "물 위 판자(잔교 199)" 셀로만 이뤄지고 물에 접한 성분 = 물가 도크.
+    const isBeachDockCell = (key: string): boolean => {
+      const point = pointFromKey(key);
+      const lower = map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
+      const upper = map.upperTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
+      return SAND_SURFACE.has(lower) || (upper === 199 && isWaterChipsetTile(lower));
+    };
     const isNatureOutcrop =
       (cells.length < 16 && (
         cells.every((key) => COBBLE_SURFACE.has(tileAtKey(key)))
         || cells.every((key) => DIRT_SURFACE.has(tileAtKey(key)))
       ))
-      || (cells.every((key) => SAND_SURFACE.has(tileAtKey(key))) && touchesWater());
+      || (cells.every(isBeachDockCell) && touchesWater());
     if (!isNatureOutcrop) components.push(cells);
   }
   return components;

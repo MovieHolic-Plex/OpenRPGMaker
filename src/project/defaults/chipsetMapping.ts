@@ -141,9 +141,11 @@ const LAKE_SHORE_EDGE_TILES = [0, 30, 60, 90] as const;
 const LAKE_SHORE_EDGE_ANIMATION_FRAMES = [
   ...tilesInRect({ left: 0, top: 0, right: 2, bottom: 3 }),
 ] as const;
-const WATERFALL_WATER_TILES = [93, 123, 153, 183, 213] as const;
+// 2026-07-17 정본 교정: 3행(93~95)은 폭포가 아니라 수로(석축 스킨)의 오목(inner) 코너다.
+// 폭포는 4행부터 — lakeAutotile.ts CANAL_AUTOTILE_TILE 참조.
+const WATERFALL_WATER_TILES = [123, 153, 183, 213] as const;
 const WATERFALL_WATER_ANIMATION_FRAMES = [
-  ...tilesInRect({ left: 3, top: 3, right: 5, bottom: 7 }),
+  ...tilesInRect({ left: 3, top: 4, right: 5, bottom: 7 }),
 ] as const;
 const DESERT_SAND_BODY_TILES = [SAND_TILE.BODY] as const;
 const DESERT_SAND_EDGE_TILES = [...SAND_SIDE_EDGES, ...SAND_CORNERS] as const;

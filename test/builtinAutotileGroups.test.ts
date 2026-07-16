@@ -168,10 +168,40 @@ describe("석축 수로(관개수로) 애니메이션 배선", () => {
     }
   });
 
-  it("호수 쿼터 합성 대상은 수로를 포함하지 않는다 (통타일 렌더 유지)", async () => {
-    const { isLakeAutotileTile } = await import("@/project/defaults/lakeAutotile");
-    for (const tile of [3, 4, 5, 33, 34, 35, 63, 64, 65]) {
-      expect(isLakeAutotileTile(tile)).toBe(false);
+  it("수로는 호수와 같은 쿼터 물 시스템의 석축 스킨이다 (2026-07-17 정본)", async () => {
+    const { isLakeAutotileTile, lakeAutotileQuarterSources, CANAL_AUTOTILE_TILE } = await import("@/project/defaults/lakeAutotile");
+    // 수로 프레임 전부(오목 93 포함) 쿼터 렌더 대상.
+    for (const tile of [3, 4, 5, 33, 34, 35, 63, 64, 65, 93, 94, 95]) {
+      expect(isLakeAutotileTile(tile), `수로 프레임 ${tile}`).toBe(true);
     }
+    // 5×5 수로 풀(전부 마커 3 저장): 중앙=몸통 120, 모서리 셀 nw 쿼터=볼록 3,
+    // 상변 중앙 셀의 상단 쿼터=가로 변 63, 좌변 중앙 셀의 좌측 쿼터=세로 변 33.
+    const size = 7;
+    const lower = new Array<number>(size * size).fill(240);
+    for (let y = 1; y <= 5; y += 1) for (let x = 1; x <= 5; x += 1) lower[y * size + x] = 3;
+    const map = { width: size, height: size, lowerTiles: lower };
+    const center = lakeAutotileQuarterSources(map, 3, 3);
+    expect(center.every((part) => part.tile === CANAL_AUTOTILE_TILE.BODY)).toBe(true);
+    const cornerNW = lakeAutotileQuarterSources(map, 1, 1).find((part) => part.quarter === "nw");
+    expect(cornerNW?.tile).toBe(CANAL_AUTOTILE_TILE.OUTER_CORNER);
+    const topMid = lakeAutotileQuarterSources(map, 3, 1).find((part) => part.quarter === "nw");
+    expect(topMid?.tile).toBe(CANAL_AUTOTILE_TILE.EDGE_NORTH);
+    const leftMid = lakeAutotileQuarterSources(map, 1, 3).find((part) => part.quarter === "nw");
+    expect(leftMid?.tile).toBe(CANAL_AUTOTILE_TILE.EDGE_WEST);
+    // L자 오목: (1..5,1..5)에 (6..?, ...) 없음 — 대각만 땅인 지점을 만들기 위해 모서리 셀 검사:
+    // 풀 안쪽 셀 (2,2)의 nw 쿼터는 직교 물·대각 물 → 몸통. 오목은 (1,1) 대각 이웃이 땅인 (2,2)가 아니라
+    // 프레임 꺾임에서 나온다 — L자: (5,5) 밖 (6,6)이 땅이므로 (5,5) se 쿼터는 볼록이 아닌 코너 검사로 대체.
+    const seCorner = lakeAutotileQuarterSources(map, 5, 5).find((part) => part.quarter === "se");
+    expect(seCorner?.tile).toBe(CANAL_AUTOTILE_TILE.OUTER_CORNER);
+    // 오목(93): 5×5에 (6,3)~(6,5) 확장 → (5,2)의 se 쿼터: 직교 물(동=6..아님)… 간단히 L자 풀로:
+    const lower2 = new Array<number>(size * size).fill(240);
+    for (let y = 1; y <= 5; y += 1) for (let x = 1; x <= 3; x += 1) lower2[y * size + x] = 3;
+    for (let y = 3; y <= 5; y += 1) for (let x = 4; x <= 6; x += 1) lower2[y * size + x] = 3;
+    const mapL = { width: size, height: size, lowerTiles: lower2 };
+    // 오목 지점: (3,2)의 se 쿼터 — 동(4,2)=땅? (4,2)는 풀 밖(y=2,x=4 → lower2[2*7+4]=240) ✓,
+    // 남(3,3)=물, 동(4,2)=땅 → se 쿼터는 세로 변. 진짜 오목은 (4,3)의 nw: 북(4,2)=땅? 직교(서(3,3)=물, 북(4,2)=땅)…
+    // 오목 = 직교 둘 다 물 + 대각만 땅: (3,3)의 ne 쿼터 — 북(3,2)=물, 동(4,3)=물, 대각(4,2)=땅 → INNER ✓
+    const innerNE = lakeAutotileQuarterSources(mapL, 3, 3).find((part) => part.quarter === "ne");
+    expect(innerNE?.tile).toBe(CANAL_AUTOTILE_TILE.INNER_CORNER);
   });
 });
