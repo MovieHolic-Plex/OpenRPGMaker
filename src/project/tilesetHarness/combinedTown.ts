@@ -385,6 +385,11 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
     return "장터 레일 우";
   }
   if (group.id.includes("stone-step-slab")) return "돌단/석판";
+  if (group.id.includes("barrel-prop")) return tile === 177 ? "술통" : "오크통";
+  if (group.id.includes("plaza-statue")) return tile === 266 ? "석상 상단" : "석상 하단";
+  if (group.id.includes("plaza-pillar")) return tile === 267 ? "돌기둥 상단" : "돌기둥 하단";
+  if (group.id.includes("village-well")) return "우물";
+  if (group.id.includes("small-props")) return smallPropLabel(tile);
   if (group.id.includes("magic-circle")) return "마법진";
   if (group.id.includes("wood-door")) return tile === 116 ? "나무 문 상" : "나무 문 하";
   if (group.id.includes("stone-stairs")) {
@@ -416,6 +421,39 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
 function castleSolidLabel(tile: number): string {
   if (tile === TILE.STAIRS) return "계단";
   return "어두운 벽";
+}
+
+/** small-props 가방 멤버의 구체 라벨 — place_props material로 개별 지정 가능하게 한다.
+ * 2026-07-16 사용자 교정: 320=벽보(벽 전용), 440=팻말(갈림길), 441=그루터기, 443=자갈 바닥(텍스처),
+ * 382/412=돌바닥 사이 잡석(단독 배치 어색), 472=방패 간판(무기점), 473=물약 간판(잡화점). */
+function smallPropLabel(tile: number): string {
+  switch (tile) {
+    case 318:
+      return "벽 횃불";
+    case 381:
+      return "모닥불";
+    case 320:
+      return "벽보";
+    case 319:
+      return "쪽문";
+    case 259:
+      return "마른 가지";
+    case 441:
+    case 442:
+      return "바위"; // 412 돌바닥 패치 위에 섞어 쓴다
+    case 443:
+      return "자갈(사용 금지)";
+    case 440:
+      return "팻말";
+    case 411:
+      return "이끼 자갈";
+    case 472:
+      return "방패 간판";
+    case 473:
+      return "물약 간판";
+    default:
+      return `마을 소품 ${tile}`;
+  }
 }
 
 function castleRoofDeckLabel(tile: number): string {

@@ -11,6 +11,8 @@ const ANIMATED_WATER_BASE_TILES = [
   0, 30, 60, 90,
   120, 150, 180, 210,
   93, 123, 153, 183, 213,
+  // 석축 수로(관개수로) — 3~5열 0~2행. 세로 수로 2단(3·33) + 가로 석축(63) (2026-07-17 사용자 확정).
+  3, 33, 63,
 ] as const;
 
 export const CHIPSET_ANIMATION_STRIPS: readonly ChipsetAnimationStrip[] = ANIMATED_WATER_BASE_TILES.map((baseTile) =>

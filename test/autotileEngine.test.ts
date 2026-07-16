@@ -9,6 +9,7 @@ import {
   shapeAutotileGroupAround,
 } from "@/project/defaults/autotileEngine";
 import {
+  DEFAULT_AUTOTILE_GROUPS,
   DEFAULT_ROAD_AUTOTILE_GROUP,
   DEFAULT_SAND_AUTOTILE_GROUP,
   autotileGroupsForTileset,
@@ -220,9 +221,10 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
   });
 
   it("autotileGroupsForTileset 는 기본 Combined Town에서만 내장 그룹으로 폴백한다", () => {
-    expect(autotileGroupsForTileset(undefined)).toHaveLength(2);
+    // 내장 그룹 수가 늘어도 깨지지 않게 파생값으로 대조 (2026-07-17: 4→11종).
+    expect(autotileGroupsForTileset(undefined)).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
     const project = createBlankProject();
-    expect(autotileGroupsForTileset(project.tilesets[DEFAULT_TILESET_ID])).toHaveLength(2);
+    expect(autotileGroupsForTileset(project.tilesets[DEFAULT_TILESET_ID])).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
     // 던전은 내장 Combined Town 그룹으로 폴백하지 않고 자기 시드 그룹만 노출한다.
     const dungeonGroups = autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon);
     expect(dungeonGroups.every((group) => group.id.startsWith("harness-dungeon-v1-terrain-"))).toBe(true);
@@ -233,9 +235,12 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
       { id: "custom_road", name: "커스텀 흙길", neighborhood: 8, memberTileIds: [DIRT_ROAD_TILE.BODY], variantMap: {} },
     ];
     const merged = autotileGroupsForTileset(withCustomRoad);
-    expect(merged.map((group) => group.id)).toEqual(["custom_road", "builtin_sand"]);
+    expect(merged.map((group) => group.id)).toEqual([
+      "custom_road",
+      ...DEFAULT_AUTOTILE_GROUPS.filter((group) => group.id !== "builtin_dirt_road").map((group) => group.id),
+    ]);
     const cloned = cloneDefaultAutotileGroups();
-    expect(cloned).toHaveLength(2);
+    expect(cloned).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
     expect(cloned[0]?.memberTileIds).not.toBe(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
   });
 });

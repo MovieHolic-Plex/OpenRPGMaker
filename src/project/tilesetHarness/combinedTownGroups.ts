@@ -74,7 +74,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     name: "잔디",
     role: "terrain",
     defaultLayer: "lower",
-    tileIds: [TILE.GRASS, 270, 271, 272, 273, 300, 301, 302, 330, 331, 332, 333],
+    // 273/333은 키큰 풀(243 블록)의 NW/SW 모서리 — 잔디 오분류 교정으로 제거 (2026-07-17).
+    tileIds: [TILE.GRASS, 270, 271, 272, 300, 301, 302, 330, 331, 332],
     description: "기본 잔디 지형입니다. 영역을 잔디로 채우거나 원상 복구할 때 사용합니다.",
     placementRules: "하위 레이어 면 채우기 전용. 균질 지형이라 이웃 연결 성형이 필요 없습니다.",
     confidence: "high",
@@ -91,7 +92,7 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
         { role: "top", tileIds: [TILE.GRASS] },
         { role: "topRight", tileIds: [TILE.GRASS] },
         { role: "left", tileIds: [TILE.GRASS] },
-        { role: "center", tileIds: [TILE.GRASS, 270, 271, 272, 273] },
+        { role: "center", tileIds: [TILE.GRASS, 270, 271, 272] },
         { role: "right", tileIds: [TILE.GRASS] },
         { role: "bottomLeft", tileIds: [TILE.GRASS] },
         { role: "bottom", tileIds: [TILE.GRASS] },
@@ -379,7 +380,14 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
   },
   lowerSolidGroup("roof-wall-boundary", "지붕-벽 경계", [404, 405, 406, 407, 434, 435, 436, 437, 464, 466, 467], "직선 지붕면과 벽 경계는 하위 레이어입니다. 사선 지붕만 상위에 겹칩니다."),
   verticalTreeGroup("conifer-tree", "침엽수", CONIFER_TOP, CONIFER_BOTTOM, "침엽수는 상단과 하단을 세로 2칸 원자로 배치합니다."),
-  verticalTreeGroup("dry-tree", "마른나무", DRY_TREE_TOP, DRY_TREE_BOTTOM, "마른나무는 상단과 하단을 세로 2칸 원자로 배치합니다."),
+  verticalTreeGroup(
+    "dry-tree",
+    "마른나무",
+    DRY_TREE_TOP,
+    DRY_TREE_BOTTOM,
+    "마른나무는 상단(261)을 세로로 여러 칸 이어 키를 키울 수 있고, 체인의 맨 아래는 하단(291)으로 끝납니다.",
+    { stackableTop: true },
+  ),
   broadleafTreeGroup(),
   mixedStackGroup("bush-props", "덤불", [BUSH_TILE], "덤불은 단독 배치 가능한 자연 소품입니다.", "solid", {
     rules: [
@@ -632,6 +640,23 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "passable",
   ),
   mixedStackGroup(
+    "barrel-prop",
+    "술통",
+    [...CHIPSET_TILE_GROUPS.barrelObjects],
+    "술통 177 + 오크통 207. 마당·작업장·장터 옆에 어울리는 단독 소품. 통행 불가(×).",
+    "solid",
+  ),
+  // 석상/돌기둥은 세로 2칸 페어 오브젝트 — 상단이 하단 바로 위에 와야 한다.
+  verticalTreeGroup("plaza-statue", "석상", 266, 296, "석상은 상단(266)+하단(296) 세로 2칸 원자로 광장·입구에 배치합니다."),
+  verticalTreeGroup("plaza-pillar", "돌기둥", 267, 297, "돌기둥은 상단(267)+하단(297) 세로 2칸 원자로 배치합니다."),
+  mixedStackGroup(
+    "village-well",
+    "우물",
+    [...CHIPSET_TILE_GROUPS.wellObjects],
+    "돌 우물(413, 위에서 본 모습). 마을 광장 근처에 하나 정도 단독 배치. 통행 불가(×).",
+    "solid",
+  ),
+  mixedStackGroup(
     "small-props",
     "마을 소품",
     [
@@ -650,6 +675,7 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "표지판·횃불·석상 등 잔여 소품 가방. 통행 불가(×). 꽃·사다리는 별 그룹.",
     "solid",
   ),
+  // 411/412/413/443: 용도 미확정 — 사용 금지(2026-07-16 사용자 밴). 그룹 미등록 상태 유지.
   // 헤드리스 플레이테스트로 검증된 통행성 함정 타일(핸드오프 0.4) — 겉보기와 달리 통행이 막히는 돌바닥.
   lowerSolidGroup("stone-floor-trap", "돌바닥", [TILE.FLOOR, 343], "겉보기엔 평평해 통행 가능해 보이지만 실측 결과 통행이 막히는 돌바닥입니다. 장식용 바닥 마감으로만 사용하세요."),
   // 검증된 통행 불가 성벽 계단/어두운 벽 타일.
@@ -716,7 +742,14 @@ function mixedStackGroup(
   return { id: `${COMBINED_TOWN_HARNESS_PREFIX}${id}`, name, role: "prop", defaultLayer: "mixed", tileIds, description: placementRules, placementRules, confidence: "high", source: "bundled-default", passage, repeatability: "fixed", stackable: true, ...extras };
 }
 
-function verticalTreeGroup(id: string, name: string, top: number, bottom: number, placementRules: string): CombinedTownHarnessGroup {
+function verticalTreeGroup(
+  id: string,
+  name: string,
+  top: number,
+  bottom: number,
+  placementRules: string,
+  opts: { readonly stackableTop?: boolean } = {},
+): CombinedTownHarnessGroup {
   return mixedStackGroup(id, name, [top, bottom], placementRules, "solid", {
     patternGrammar: {
       axis: "vertical",
@@ -734,8 +767,13 @@ function verticalTreeGroup(id: string, name: string, top: number, bottom: number
       {
         id: `r_${id.replace(/-/g, "_")}_above`,
         kind: "adjacency",
-        message: `${name} 상단(${top})은 하단(${bottom}) 바로 위에 있어야 합니다.`,
-        params: { a: top, b: bottom, relation: "aAboveB" },
+        message: opts.stackableTop
+          ? `${name} 상단(${top}) 아래에는 하단(${bottom}) 또는 상단(${top})이 이어져야 합니다.`
+          : `${name} 상단(${top})은 하단(${bottom}) 바로 위에 있어야 합니다.`,
+        // stackableTop: 상단 타일을 세로로 연속 배치 허용(체인 끝은 하단) — 마른나무 261 등.
+        params: opts.stackableTop
+          ? { a: top, b: bottom, bAlt: [top], relation: "aAboveB" }
+          : { a: top, b: bottom, relation: "aAboveB" },
         strength: "hard",
       },
     ],
