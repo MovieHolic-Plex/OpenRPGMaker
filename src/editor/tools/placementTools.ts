@@ -2,6 +2,7 @@ import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
 import { TILE } from "@/project/defaults/constants";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";
+import { isCobbleTile } from "@/project/defaults/cobbleAutotile";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isTreeCanopyTileId, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, PaletteSlotRole, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -507,7 +508,8 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
 
 /** 흙길·모래 등 길/포장 하층 — 소품 산포 시 보호. */
 export function isPathSurfaceTile(tile: number): boolean {
-  return isRoadTile(tile) || isSandTile(tile) || tile === TILE.PATH;
+  // 포석(129 블록)도 길 표면 — 소품 산포가 돌길을 막지 않게 보호.
+  return isRoadTile(tile) || isSandTile(tile) || tile === TILE.PATH || isCobbleTile(tile);
 }
 
 function origins(map: GameMap, area: Area, footprint: Footprint): readonly Point[] {
@@ -541,14 +543,8 @@ function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protec
       if (isLakeAutotileTile(haveLower) || isPathSurfaceTile(haveLower) || haveLower === TILE.WALL) return false;
       if (wantUpper !== TILE.EMPTY) {
         if (haveUpper !== TILE.EMPTY) return false;
-        // 수관은 잔디·빈 칸·기존 나무 밑동 위에만 (집 벽 위 금지)
-        if (
-          haveLower !== TILE.EMPTY
-          && haveLower !== TILE.GRASS
-          && !isTreeTrunkTileId(haveLower)
-        ) {
-          return false;
-        }
+        // 상위 소품: 물·길·벽만 금지. 실내 나무바닥(72) 등 비-잔디 통행 바닥 위에도 놓인다.
+        // (예전 잔디/빈칸/나무밑동 제한은 야외 수관 전제 — 실내 가구 place_props가 0개 스킵되던 원인)
       }
       if (wantLower !== TILE.EMPTY) {
         // 밑동 자리: 잔디/빈 칸만. 이미 밑동이 있으면 겹침 금지.

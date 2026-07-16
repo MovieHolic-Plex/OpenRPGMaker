@@ -2,7 +2,7 @@
 // 타일을 바꾸지 않고 검증·정규화만 한다. 시공은 build_village가 맡는다.
 
 import type { BuildSpec, SpecAsset } from "@/ai/buildSpec";
-import type { HouseKitId } from "@/editor/houseKit";
+import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import type { Project } from "@/project/types";
 import { isYardDecorKind, type YardDecorKind } from "./houseLotDecor";
 import { ToolError } from "./types";
@@ -14,8 +14,8 @@ import {
   type VillageRequirements,
 } from "./villageRequirements";
 
-export type RoadStyle = "sand" | "dirt";
-export type KitMix = "mixed" | "blue-stone" | "bright-plaster";
+export type RoadStyle = "sand" | "dirt" | "stone";
+export type KitMix = "mixed" | HouseKitId;
 export type YardStyle = "mixed" | "garden" | "workshop" | "market" | "minimal";
 export type PlazaStyle = "market" | "garden" | "empty";
 export type EdgeTrees = "conifer" | "dense" | "none";
@@ -126,8 +126,8 @@ export function normalizeVillagePlan(raw: unknown, seedFallback = DEFAULT_SEED):
   }
 
   const inferred = { ...inferFromTheme(theme), ...styleHintsFromRequirements(requirements) };
-  const pathStyle = enumOr(input.pathStyle, ["sand", "dirt"] as const, inferred.pathStyle ?? "sand", "pathStyle", issues);
-  const kitMix = enumOr(input.kitMix, ["mixed", "blue-stone", "bright-plaster"] as const, inferred.kitMix ?? "mixed", "kitMix", issues);
+  const pathStyle = enumOr(input.pathStyle, ["sand", "dirt", "stone"] as const, inferred.pathStyle ?? "sand", "pathStyle", issues);
+  const kitMix = enumOr(input.kitMix, ["mixed", ...ALL_HOUSE_KIT_IDS] as const, inferred.kitMix ?? "mixed", "kitMix", issues);
   const yardStyle = enumOr(input.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle", issues);
   const plazaStyle = enumOr(input.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "market", "plazaStyle", issues);
   const edgeTrees = enumOr(input.edgeTrees, ["conifer", "dense", "none"] as const, inferred.edgeTrees ?? "conifer", "edgeTrees", issues);
@@ -538,9 +538,9 @@ function normalizeHouses(raw: unknown, kitMix: KitMix, issues: PlanIssue[]): Vil
     }
     const rec = entry as Record<string, unknown>;
     let kitId: HouseKitId = kitMix === "mixed"
-      ? (i % 2 === 0 ? "blue-stone" : "bright-plaster")
+      ? ALL_HOUSE_KIT_IDS[i % ALL_HOUSE_KIT_IDS.length]!
       : kitMix;
-    if (rec.kitId === "blue-stone" || rec.kitId === "bright-plaster") kitId = rec.kitId;
+    if (isHouseKitId(rec.kitId)) kitId = rec.kitId;
     else if (rec.kitId !== undefined) {
       issues.push({ severity: "error", message: `houses[${i}].kitId 무효: ${String(rec.kitId)}` });
     }
@@ -598,7 +598,7 @@ function defaultHouses(count: number, kitMix: KitMix): VillageHousePlan[] {
 
 function defaultHouse(index: number, kitMix: KitMix): VillageHousePlan {
   const kitId: HouseKitId = kitMix === "mixed"
-    ? (index % 2 === 0 ? "blue-stone" : "bright-plaster")
+    ? ALL_HOUSE_KIT_IDS[index % ALL_HOUSE_KIT_IDS.length]!
     : kitMix;
   const yards: YardDecorKind[][] = [
     ["mailbox", "flowers"],
@@ -616,6 +616,10 @@ function defaultHouse(index: number, kitMix: KitMix): VillageHousePlan {
 function inferFromTheme(theme: string): Partial<Pick<VillagePlan, "pathStyle" | "kitMix" | "yardStyle" | "plazaStyle" | "edgeTrees" | "plazaLayout">> {
   if (!theme) return {};
   const t = theme.toLowerCase();
+  // 성곽·석조 마을은 돌마당 필드 (참조 맵 학습 2026-07-16)
+  if (/성곽|석조|돌길|성문|castle|citadel/.test(t)) {
+    return { pathStyle: "stone", yardStyle: "workshop", plazaStyle: "garden", edgeTrees: "conifer" };
+  }
   if (/어촌|항구|바다|호수|강가|해안|coast|harbor|lake|river|beach/.test(t)) {
     return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", plazaLayout: "south", edgeTrees: "conifer" };
   }

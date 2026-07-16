@@ -1,0 +1,216 @@
+// editor/tools/village/npcs.ts
+// 마을 NPC — 이름/대사 오버라이드, 배치(문 앞/광장), 스케줄, 그래픽 시드 셔플.
+
+import { findCharsetSemantic, type CharsetSemanticEntry } from "@/assets/charsetSemantics";
+import { isPassable } from "@/project/collision";
+import { TILE } from "@/project/defaults/constants";
+import type { GameMap, Project } from "@/project/types";
+import { mulberry32 } from "@/util/rng";
+import { EVENT_TOOLS } from "../eventTools";
+import { inMapBounds } from "../mapHelpers";
+import { ToolError } from "../types";
+import {
+  coordKey,
+  DEFAULT_NPCS,
+  pointInMap,
+  pointInRect,
+  requireTool,
+  ROAD_TILES,
+  runNested,
+  VILLAGE_NPC_GRAPHIC_REFS,
+  type BuiltHouse,
+  type NpcText,
+  type Plaza,
+  type Point,
+  type Rect,
+} from "./constants";
+import { villageRoadAnchors } from "./roads";
+
+const placeNpcTool = requireTool(EVENT_TOOLS, "place_npc");
+const setNpcScheduleTool = requireTool(EVENT_TOOLS, "set_npc_schedule");
+
+export function placeVillageNpcs(
+  draft: Project,
+  map: GameMap,
+  area: Rect,
+  houses: readonly BuiltHouse[],
+  plaza: Plaza,
+  overrides: readonly Partial<NpcText>[],
+  seed: number,
+  warnings: string[]
+): void {
+  const occupied = new Set<string>();
+  const placements = [
+    ...houses.map((house, index) => npcPointNearHouseFront(map, area, house, index, occupied)),
+    { x: plaza.centerX - 1, y: plaza.centerRow },
+    { x: plaza.centerX + 1, y: plaza.centerRow },
+  ];
+  const graphics = seededVillageNpcGraphics(seed);
+  const workAnchors = villageNpcWorkAnchors(area, plaza, seed);
+  for (let index = 0; index < placements.length; index += 1) {
+    const point = placements[index] as Point;
+    const text = npcText(index, overrides);
+    const graphic = graphics[index % graphics.length] as CharsetSemanticEntry;
+    const placement = runNested(placeNpcTool, draft, {
+      mapId: map.id,
+      x: point.x,
+      y: point.y,
+      name: text.name,
+      graphic: { textureKey: graphic.textureKey, characterIndex: graphic.characterIndex },
+      movement: index % 3 === 0 || index >= houses.length ? "fixed" : "random",
+      pages: [{ lines: text.lines }],
+      id: uniqueEventId(draft, map.id, seed, index),
+    }, warnings);
+    const placed = placement.data as { eventId: string; x: number; y: number };
+    const home = { x: placed.x, y: placed.y };
+    const work = nearestOpenRoadPoint(draft, map, workAnchors[index % workAnchors.length]!, 12) ?? home;
+    const evening = nearestOpenRoadPoint(draft, map, { x: plaza.centerX + (index % 3) - 1, y: plaza.centerRow }, 8) ?? home;
+    runNested(setNpcScheduleTool, draft, {
+      mapId: map.id,
+      eventId: placed.eventId,
+      schedule: [
+        { when: { timePhase: "morning" }, at: { mapId: map.id, ...home }, facing: "down", activity: "아침 집안일" },
+        { when: { timePhase: "day" }, at: { mapId: map.id, ...work }, facing: index % 2 === 0 ? "right" : "left", activity: villageNpcActivity(index) },
+        { when: { timePhase: "evening" }, at: { mapId: map.id, ...evening }, facing: "down", activity: index % 2 === 0 ? "장터 소식 나누기" : "이웃 안부 묻기" },
+      ],
+    }, warnings);
+  }
+}
+
+function villageNpcWorkAnchors(area: Rect, plaza: Plaza, seed: number): readonly Point[] {
+  const [north, south, west, east] = villageRoadAnchors(area, plaza, seed);
+  return [
+    { x: plaza.rect.x + 1, y: plaza.centerRow },
+    { x: plaza.centerX, y: plaza.rect.y + 1 },
+    { x: plaza.rect.x + plaza.rect.w - 2, y: plaza.centerRow },
+    north!,
+    { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h - 2 },
+    east!,
+    south!,
+    west!,
+    { x: plaza.rect.x + 2, y: plaza.rect.y + plaza.rect.h - 2 },
+    { x: plaza.rect.x + plaza.rect.w - 3, y: plaza.rect.y + 1 },
+  ];
+}
+
+function nearestOpenRoadPoint(draft: Project, map: GameMap, origin: Point, maxRadius: number): Point | undefined {
+  for (let radius = 0; radius <= maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      const dx = radius - Math.abs(dy);
+      for (const x of dx === 0 ? [origin.x] : [origin.x - dx, origin.x + dx]) {
+        const y = origin.y + dy;
+        if (!inMapBounds(map, x, y)) continue;
+        const index = y * map.width + x;
+        if (!ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY) || map.upperTiles[index] !== TILE.EMPTY) continue;
+        // 타일 판정만으론 부족 — 스케줄 검증과 같은 실통행(isPassable) 기준으로 확정한다.
+        if (!isPassable(draft, map, x, y)) continue;
+        return { x, y };
+      }
+    }
+  }
+  return undefined;
+}
+
+function villageNpcActivity(index: number): string {
+  const activities = [
+    "채소밭 돌보기",
+    "지붕 수리",
+    "장작 패기",
+    "창문 닦기",
+    "동쪽 길 순찰",
+    "저녁거리 손질",
+    "목공 작업",
+    "약초와 꽃 돌보기",
+    "서쪽 배송 받기",
+    "장터 진열 정리",
+    "우물물 긷기",
+    "아이들 돌보기",
+  ] as const;
+  return activities[index % activities.length]!;
+}
+
+function seededVillageNpcGraphics(seed: number): readonly CharsetSemanticEntry[] {
+  const entries = VILLAGE_NPC_GRAPHIC_REFS.map(([textureKey, characterIndex]) => findCharsetSemantic(textureKey, characterIndex))
+    .filter((entry): entry is CharsetSemanticEntry => entry !== undefined);
+  if (entries.length === 0) throw new Error("마을 NPC 그래픽 후보가 비어 있습니다.");
+  const rng = mulberry32((seed ^ 0x6d2b79f5) >>> 0);
+  const offset = Math.floor(rng() * entries.length);
+  return [...entries.slice(offset), ...entries.slice(0, offset)];
+}
+
+function npcPointNearHouseFront(map: GameMap, area: Rect, house: BuiltHouse, index: number, occupied: Set<string>): Point {
+  const leftFirst = index % 2 === 0;
+  const candidates = leftFirst
+    ? [
+        { x: house.front.x - 1, y: house.front.y },
+        { x: house.front.x + 1, y: house.front.y },
+        { x: house.front.x, y: house.front.y + 1 },
+        { x: house.front.x - 2, y: house.front.y },
+        { x: house.front.x + 2, y: house.front.y },
+      ]
+    : [
+        { x: house.front.x + 1, y: house.front.y },
+        { x: house.front.x - 1, y: house.front.y },
+        { x: house.front.x, y: house.front.y + 1 },
+        { x: house.front.x + 2, y: house.front.y },
+        { x: house.front.x - 2, y: house.front.y },
+      ];
+  for (const point of candidates) {
+    if (!pointInMap(map, point)) continue;
+    if (!pointInRect(point, area)) continue;
+    if (point.x === house.front.x && point.y === house.front.y) continue;
+    if (point.x === house.doorAt.x && point.y === house.doorAt.y) continue;
+    if (pointInRect(point, house.bbox)) continue;
+    const key = coordKey(point.x, point.y);
+    if (occupied.has(key)) continue;
+    occupied.add(key);
+    return point;
+  }
+  const fallback = house.front;
+  occupied.add(coordKey(fallback.x, fallback.y));
+  return fallback;
+}
+
+function uniqueEventId(draft: Project, mapId: string, seed: number, index: number): string {
+  const mapPart = mapId.replace(/[^a-zA-Z0-9_]+/g, "_").slice(0, 32) || "map";
+  const base = `ev_village_${seed >>> 0}_${mapPart}_${index + 1}`;
+  let id = base;
+  let suffix = 2;
+  const existing = new Set(Object.values(draft.maps).flatMap((map) => map.events.map((event) => event.id)));
+  while (existing.has(id)) {
+    id = `${base}_${suffix}`;
+    suffix += 1;
+  }
+  return id;
+}
+
+export function npcOverrides(value: unknown): Partial<NpcText>[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new ToolError("npcs는 [{name, lines}] 배열이어야 합니다.", { code: "invalid-args" });
+  return value.map((entry, index) => {
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+      throw new ToolError(`npcs[${index}]는 객체여야 합니다.`, { code: "invalid-args" });
+    }
+    const record = entry as Record<string, unknown>;
+    const name = record.name;
+    const lines = record.lines;
+    if (name !== undefined && (typeof name !== "string" || name.trim().length === 0)) {
+      throw new ToolError(`npcs[${index}].name은 비어 있지 않은 문자열이어야 합니다.`, { code: "invalid-args" });
+    }
+    if (lines !== undefined && (!Array.isArray(lines) || !lines.every((line) => typeof line === "string" && line.length > 0))) {
+      throw new ToolError(`npcs[${index}].lines는 문자열 배열이어야 합니다.`, { code: "invalid-args" });
+    }
+    return {
+      ...(typeof name === "string" ? { name: name.trim() } : {}),
+      ...(Array.isArray(lines) ? { lines: lines as string[] } : {}),
+    };
+  });
+}
+
+export function npcText(index: number, overrides: readonly Partial<NpcText>[]): NpcText {
+  const base = DEFAULT_NPCS[index % DEFAULT_NPCS.length] as NpcText;
+  const override = overrides[index];
+  const name = override?.name ?? (index < DEFAULT_NPCS.length ? base.name : `${base.name}${Math.floor(index / DEFAULT_NPCS.length) + 1}`);
+  const lines = override?.lines && override.lines.length > 0 ? override.lines : base.lines;
+  return { name, lines };
+}
