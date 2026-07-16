@@ -78,6 +78,77 @@ describe("지형 템플릿 앵커 카탈로그", () => {
   });
 });
 
+describe("얇은 런(폭/높이 1칸) 쿼터 합성 — 신규 그룹도 절반 합성을 받는다", () => {
+  const GRASS = 240;
+  const makeMap = (rows: number[][]): { width: number; height: number; lowerTiles: number[] } => ({
+    width: rows[0]?.length ?? 0,
+    height: rows.length,
+    lowerTiles: rows.flat(),
+  });
+  const quarterMap = (sources: readonly { quarter: string; tile: number }[]): Record<string, number> =>
+    Object.fromEntries(sources.map((source) => [source.quarter, source.tile]));
+
+  it("포석 3×1 가로 런: 가운데 = N변 윗절반 + S변 아랫절반", async () => {
+    const { terrainQuarterSources } = await import("@/project/defaults/terrainQuarterAutotile");
+    // 저장 타일: [코너NW 159, 변N 160, 코너NE 161] — variantMap 이 실제로 저장하는 값.
+    const map = makeMap([
+      [GRASS, GRASS, GRASS, GRASS, GRASS],
+      [GRASS, 159, 160, 161, GRASS],
+      [GRASS, GRASS, GRASS, GRASS, GRASS],
+    ]);
+    const middle = terrainQuarterSources(map, 2, 1);
+    expect(middle).not.toBeNull();
+    expect(quarterMap(middle!)).toEqual({ nw: 160, ne: 160, sw: 220, se: 220 });
+  });
+
+  it("포석 3×1 왼쪽 끝 캡: 코너 열 절반(159/219) + 변 열 절반(160/220)", async () => {
+    const { terrainQuarterSources } = await import("@/project/defaults/terrainQuarterAutotile");
+    const map = makeMap([
+      [GRASS, GRASS, GRASS, GRASS, GRASS],
+      [GRASS, 159, 160, 161, GRASS],
+      [GRASS, GRASS, GRASS, GRASS, GRASS],
+    ]);
+    const leftCap = terrainQuarterSources(map, 1, 1);
+    expect(quarterMap(leftCap!)).toEqual({ nw: 159, ne: 160, sw: 219, se: 220 });
+    const rightCap = terrainQuarterSources(map, 3, 1);
+    expect(quarterMap(rightCap!)).toEqual({ nw: 160, ne: 161, sw: 220, se: 221 });
+  });
+
+  it("포석 1×3 세로 런: 가운데 = W변 왼절반 + E변 오른절반", async () => {
+    const { terrainQuarterSources } = await import("@/project/defaults/terrainQuarterAutotile");
+    const map = makeMap([
+      [GRASS, 159, GRASS],
+      [GRASS, 189, GRASS],
+      [GRASS, 219, GRASS],
+    ]);
+    const middle = terrainQuarterSources(map, 1, 1);
+    expect(quarterMap(middle!)).toEqual({ nw: 189, ne: 191, sw: 189, se: 191 });
+  });
+
+  it("2칸 폭 이상 몸통은 합성 불필요(null) — 기존 통짜 렌더 유지", async () => {
+    const { terrainQuarterSources } = await import("@/project/defaults/terrainQuarterAutotile");
+    const body = 190;
+    const map = makeMap([
+      [body, body, body],
+      [body, body, body],
+      [body, body, body],
+    ]);
+    expect(terrainQuarterSources(map, 1, 1)).toBeNull();
+  });
+
+  it("눈·어둠 등 신규 그룹 대상 타일도 쿼터 합성 대상으로 등록되어 있다", async () => {
+    const { isTerrainQuarterTile } = await import("@/project/defaults/terrainQuarterAutotile");
+    // 눈 변N 37, 어둠 변N 397, 키큰 풀 몸통 304, 석축 단 몸통 307/310, 경작지 변S 217.
+    for (const tile of [37, 397, 304, 307, 310, 217]) {
+      expect(isTerrainQuarterTile(tile), `타일 ${tile}`).toBe(true);
+    }
+    // 외딴 아트(129·6·243 등)는 통짜 렌더 유지 — target 제외.
+    for (const tile of [129, 6, 243]) {
+      expect(isTerrainQuarterTile(tile), `외딴 ${tile}`).toBe(false);
+    }
+  });
+});
+
 describe("석축 수로(관개수로) 애니메이션 배선", () => {
   it("3·33·63 기준 3프레임 스트립이 등록되어 있다", () => {
     for (const base of [3, 33, 63]) {

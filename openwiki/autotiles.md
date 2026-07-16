@@ -15,6 +15,7 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 
 - **외딴 점**: 사방이 비연결일 때. **오목 코너**: 4방향 직교가 모두 연결인데 대각이 빠질 때(정본 RM2K는 8×8 쿼터 4장 합성 — 우리 엔진은 통짜 근사, `RESOURCE_SLICING` 의 subcell 8×8 이 그 흔적).
 - 공식 구현: `templateBlockFromAnchor()` (`src/project/defaults/autotileGroups.ts`) ↔ 위저드 `buildTemplateGroup("rm2k-3x4")` (`src/editor/panels/tilesetAutotileTemplates.ts`) — 두 구현은 테스트로 상호 대조된다.
+- **얇은 런(폭/높이 1칸)은 12칸에 전용 타일이 없다** — 렌더 시 8×8 쿼터 합성으로 해결: 가로 런 = N변 윗절반+S변 아랫절반, 세로 런 = W변 왼절반+E변 오른절반, 끝 캡 = 코너 열 절반+변 열 절반. `terrainQuarterAutotile.ts` 의 킷이 내장 그룹 11종 전체를 커버한다(2026-07-17 확장, 원래 모래·흙길 전용이었음). 저장 타일은 변/코너 그대로고 합성은 렌더 전용. 외딴 아트는 통짜 렌더 유지.
 - 변형 출력은 `AutotileGroup.variantMap` (8비트 이웃 비트마스크 N=1·E=2·S=4·W=8·NE=16·SE=32·SW=64·NW=128 → 256키, `buildEdgeCornerInnerVariantMap`).
 
 ## 2. 지형 앵커 카탈로그 — 4행 밴드 × 열 0/3/6/9 격자
