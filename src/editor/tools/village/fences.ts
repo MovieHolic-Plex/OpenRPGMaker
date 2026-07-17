@@ -1,6 +1,7 @@
 // editor/tools/village/fences.ts
 // 집 필지 울타리 — 둘레 정본 문법 시공, 모서리 강등, 울타리 존재/개수 검사.
 
+import { HOUSE_KITS as HOUSE_KIT_DEFS } from "@/editor/houseKit";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import {
@@ -13,7 +14,9 @@ import {
   FENCE_LOT_MARGIN,
   FENCE_SIDE_RAIL,
   FENCE_TILES,
+  FENCE_TOP_LEFT,
   FENCE_TOP_RAIL,
+  FENCE_TOP_RIGHT,
   pointInMap,
   ROAD_TILES,
   type BuiltHouse,
@@ -29,6 +32,11 @@ export function placeHouseLotFences(map: GameMap, houses: readonly BuiltHouse[],
 function placeLotFence(map: GameMap, house: BuiltHouse, houseIndex: number, seed: number): void {
   const lot = expandRect(house.bbox, FENCE_LOT_MARGIN);
   if (lot.w < 2 || lot.h < 2) return;
+  // estate 필지(본채+헛간)는 둘레 전체를 두른다 — "울타리 안에 헛간 있는 큰 집" (2026-07-17).
+  if (house.templateId.startsWith("estate")) {
+    placeEstatePerimeterFence(map, house, lot);
+    return;
+  }
   const lastX = lot.x + lot.w - 1;
   const lastY = lot.y + lot.h - 1;
   const hash = Math.abs(Math.imul(seed + 31, 1103515245) ^ Math.imul(houseIndex + 7, 12345));
@@ -111,6 +119,65 @@ function placeLotFence(map: GameMap, house: BuiltHouse, houseIndex: number, seed
         break;
       }
     }
+  }
+}
+
+/** 모든 키트의 하위(벽·지붕·기둥) 타일 — "이 칸은 건물이다" 판정용. */
+const HOUSE_LOWER_TILES = (() => {
+  const tiles = new Set<number>();
+  for (const kit of Object.values(HOUSE_KIT_DEFS)) {
+    for (const slice of [kit.wall.top, kit.wall.mid, kit.wall.bottom]) for (const tile of slice) tiles.add(tile);
+    if (kit.postColumn) for (const tile of kit.postColumn.tiles) tiles.add(tile);
+    for (const value of Object.values(kit.roof)) if (typeof value === "number") tiles.add(value);
+  }
+  return tiles;
+})();
+
+/**
+ * estate 필지 둘레 울타리 — 앞줄(게이트 뚫음) + 좌우 세로 변 + 뒷줄.
+ * 뒷줄은 바로 아래 칸이 건물(헛간 지붕/벽)이면 치지 않는다 — 헛간이 뒷경계를 대신하고,
+ * 파랑 키트처럼 용마루 upper가 없는 지붕 위에 "지붕 위 울타리"가 서는 함정을 피한다.
+ */
+function placeEstatePerimeterFence(map: GameMap, house: BuiltHouse, lot: Rect): void {
+  const lastX = lot.x + lot.w - 1;
+  const lastY = lot.y + lot.h - 1;
+  const setFence = (x: number, y: number, tile: number): boolean => {
+    if (!pointInMap(map, { x, y })) return false;
+    if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) return false;
+    if ((map.upperTiles[y * map.width + x] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
+    map.upperTiles[y * map.width + x] = tile;
+    return true;
+  };
+  // 앞줄: 게이트(문 앞) 양옆을 끝 조각으로 마감, 바깥 끝은 모서리(세로 변이 이어지므로 정당).
+  const gateL = house.doorAt.x - FENCE_GATE_HALF_WIDTH;
+  const gateR = house.doorAt.x + FENCE_GATE_HALF_WIDTH;
+  for (let x = lot.x; x <= lastX; x += 1) {
+    if (x >= gateL && x <= gateR) continue;
+    const tile = x === lot.x
+      ? FENCE_BOTTOM_LEFT
+      : x === lastX
+        ? FENCE_BOTTOM_RIGHT
+        : x === gateL - 1
+          ? FENCE_END_RIGHT
+          : x === gateR + 1
+            ? FENCE_END_LEFT
+            : FENCE_TOP_RAIL;
+    setFence(x, lastY, tile);
+  }
+  // 뒷줄(세로 변보다 먼저 — 모서리의 belowBusy 판정이 방금 친 세로 변에 오염되지 않게):
+  // 아래 칸이 건물(헛간 지붕/벽 하위 또는 용마루 upper)이면 건너뛴다 — 헛간이 뒷경계를 대신한다.
+  for (let x = lot.x; x <= lastX; x += 1) {
+    const belowIndex = (lot.y + 1) * map.width + x;
+    const belowBusy = (map.upperTiles[belowIndex] ?? TILE.EMPTY) !== TILE.EMPTY
+      || HOUSE_LOWER_TILES.has(map.lowerTiles[belowIndex] ?? TILE.EMPTY);
+    if (belowBusy) continue;
+    const tile = x === lot.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL;
+    setFence(x, lot.y, tile);
+  }
+  // 좌우 세로 변.
+  for (let y = lot.y + 1; y < lastY; y += 1) {
+    setFence(lot.x, y, FENCE_SIDE_RAIL);
+    setFence(lastX, y, FENCE_SIDE_RAIL);
   }
 }
 

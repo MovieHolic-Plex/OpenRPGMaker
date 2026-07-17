@@ -1,8 +1,8 @@
-// 마을 계층 계획(VillagePlan): LLM/에디터가 쓰는 의도 문서.
+﻿// 마을 계층 계획(VillagePlan): LLM/에디터가 쓰는 의도 문서.
 // 타일을 바꾸지 않고 검증·정규화만 한다. 시공은 build_village가 맡는다.
 
 import type { BuildSpec, SpecAsset } from "@/ai/buildSpec";
-import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { MIXABLE_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import type { Project } from "@/project/types";
 import { isYardDecorKind, type YardDecorKind } from "./houseLotDecor";
 import { ToolError } from "./types";
@@ -127,7 +127,7 @@ export function normalizeVillagePlan(raw: unknown, seedFallback = DEFAULT_SEED):
 
   const inferred = { ...inferFromTheme(theme), ...styleHintsFromRequirements(requirements) };
   const pathStyle = enumOr(input.pathStyle, ["sand", "dirt", "stone"] as const, inferred.pathStyle ?? "sand", "pathStyle", issues);
-  const kitMix = enumOr(input.kitMix, ["mixed", ...ALL_HOUSE_KIT_IDS] as const, inferred.kitMix ?? "mixed", "kitMix", issues);
+  const kitMix = enumOr(input.kitMix, ["mixed", ...MIXABLE_HOUSE_KIT_IDS] as const, inferred.kitMix ?? "mixed", "kitMix", issues);
   const yardStyle = enumOr(input.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle", issues);
   const plazaStyle = enumOr(input.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "market", "plazaStyle", issues);
   const edgeTrees = enumOr(input.edgeTrees, ["conifer", "dense", "none"] as const, inferred.edgeTrees ?? "conifer", "edgeTrees", issues);
@@ -538,7 +538,7 @@ function normalizeHouses(raw: unknown, kitMix: KitMix, issues: PlanIssue[]): Vil
     }
     const rec = entry as Record<string, unknown>;
     let kitId: HouseKitId = kitMix === "mixed"
-      ? ALL_HOUSE_KIT_IDS[i % ALL_HOUSE_KIT_IDS.length]!
+      ? MIXABLE_HOUSE_KIT_IDS[i % MIXABLE_HOUSE_KIT_IDS.length]!
       : kitMix;
     if (isHouseKitId(rec.kitId)) kitId = rec.kitId;
     else if (rec.kitId !== undefined) {
@@ -598,7 +598,7 @@ function defaultHouses(count: number, kitMix: KitMix): VillageHousePlan[] {
 
 function defaultHouse(index: number, kitMix: KitMix): VillageHousePlan {
   const kitId: HouseKitId = kitMix === "mixed"
-    ? ALL_HOUSE_KIT_IDS[index % ALL_HOUSE_KIT_IDS.length]!
+    ? MIXABLE_HOUSE_KIT_IDS[index % MIXABLE_HOUSE_KIT_IDS.length]!
     : kitMix;
   const yards: YardDecorKind[][] = [
     ["mailbox", "flowers"],

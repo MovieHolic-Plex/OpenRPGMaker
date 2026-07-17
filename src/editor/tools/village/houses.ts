@@ -208,7 +208,8 @@ export function buildHouses(
   const usedTemplateIds = new Set<string>();
   const usedKitIds = new Set<HouseKitId>();
   const candidateTemplateIds = new Set(candidates.map((candidate) => candidate.template.id));
-  const requiredTemplateKinds = Math.min(4, target, candidateTemplateIds.size);
+  // 형태 다양성 강제 — 카탈로그 34종(2026-07-17) 기준, 대형 마을(20+집)이 같은 꼴 반복이 되지 않게.
+  const requiredTemplateKinds = Math.min(8, target, candidateTemplateIds.size);
   const hasMultiStoryCandidate = candidates.some((candidate) => (candidate.template.stories ?? 1) > 1);
   const tryCandidates = (list: readonly HouseCandidate[]): void => {
     for (const candidate of list) {
@@ -222,7 +223,9 @@ export function buildHouses(
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
       const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
       const mixedKitPool = usedKitIds.size < Math.min(3, target) && unusedKits.length > 0 ? unusedKits : HOUSE_KITS;
-      const kitId = forced
+      // 템플릿 강제 킷(aframe/옥상 데크)이 최우선 — 지오메트리가 킷에 종속이라 다른 킷이면 시공이 깨진다.
+      const kitId = candidate.template.kitId
+        ?? forced
         ?? (intent.kitMix === "mixed"
           ? (mixedKitPool[Math.floor(rng() * mixedKitPool.length)] as HouseKitId)
           : intent.kitMix);
@@ -232,6 +235,7 @@ export function buildHouses(
       const result = stampFootprintHouseKit(map, {
         kitId,
         stories,
+        ...(candidate.template.lowWall ? { lowWall: true } : {}),
         wings: candidate.template.wingsAt(candidate.bbox.x, candidate.bbox.y),
         windows,
       });
@@ -242,6 +246,7 @@ export function buildHouses(
       const doorAt = result.doorAt;
       map.lowerTiles[(doorAt.y - 1) * map.width + doorAt.x] = DOOR_TOP_TILE;
       map.lowerTiles[doorAt.y * map.width + doorAt.x] = DOOR_BOTTOM_TILE;
+      if (candidate.template.roofDeck) applyRoofDeck(map, candidate.bbox, doorAt);
       const houseIndex = houses.length;
       houses.push({
         bbox: candidate.bbox,
@@ -281,6 +286,33 @@ export function buildHouses(
   return houses;
 }
 
+const ROOF_DECK_PLANK = 199; // 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드
+const WALL_LADDER = 322; // 벽 사다리(상위, 통과 O)
+
+/**
+ * 옥상 데크(파랑 평지붕 전용) — 지붕 몸통 안쪽에 판자(199)를 얹어 보행면으로 만들고,
+ * 벽면 사다리(322) 기둥으로 마당과 잇는다. 다리의 "상위 통행 오버라이드" 메커니즘 재사용.
+ * 데크 테두리(지붕 최상행·몸통 좌우 끝 열·처마)는 하위 지붕 그대로라 지붕 밖으로 샐 수 없고,
+ * 유일한 출입은 사다리 열이다.
+ */
+export function applyRoofDeck(map: GameMap, bbox: Rect, doorAt: { readonly x: number; readonly y: number }): void {
+  const left = bbox.x;
+  const right = bbox.x + bbox.w - 1;
+  const eaveY = bbox.y + bbox.h - 3 - 1; // 벽 밴드 3행(1층) 바로 위가 처마
+  for (let y = bbox.y + 1; y < eaveY; y += 1) {
+    for (let x = left + 1; x <= right - 2; x += 1) {
+      const index = y * map.width + x;
+      if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = ROOF_DECK_PLANK;
+    }
+  }
+  // 사다리 기둥: 문에서 먼 쪽 벽 열, 처마→벽→지면 1칸까지 강제 설치(창문은 사다리로 대체).
+  const ladderX = Math.abs(right - 2 - doorAt.x) >= Math.abs(left + 2 - doorAt.x) ? right - 2 : left + 2;
+  for (let y = eaveY; y <= bbox.y + bbox.h; y += 1) {
+    if (!pointInMap(map, { x: ladderX, y })) break;
+    map.upperTiles[y * map.width + ladderX] = WALL_LADDER;
+  }
+}
+
 function houseCandidates(
   area: Rect,
   plaza: Plaza,
@@ -290,10 +322,13 @@ function houseCandidates(
 ): HouseCandidate[] {
   const minTemplateWidth = Math.min(...HOUSE_TEMPLATES.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
-  const maxColumns = Math.max(1, Math.floor(area.w / (minTemplateWidth + HOUSE_MARGIN * 2)));
+  // 슬롯 폭은 카탈로그 최대 폭 8을 기본으로 — 폭 8 슬롯이 한 열도 안 서는 좁은 맵만
+  // 최소 폭으로 강등한다. (예전 로직은 "모든 열이 8폭으로 서는가"를 물어서 대형 맵이
+  // 오히려 최소 폭 슬롯이 되고, 소형 오두막만 배치되는 함정이 있었다 — 2026-07-17.)
+  const maxWideColumns = Math.floor(area.w / (8 + HOUSE_MARGIN * 2));
+  const slotWidth = maxWideColumns >= 1 ? 8 : minTemplateWidth;
+  const maxColumns = Math.max(1, Math.floor(area.w / (slotWidth + HOUSE_MARGIN * 2)));
   const columns = Math.max(1, Math.min(wantedColumns, maxColumns));
-  const allTemplatesFit = columns * 8 + (columns - 1) * HOUSE_MARGIN * 2 + HOUSE_MARGIN * 2 <= area.w;
-  const slotWidth = allTemplatesFit ? 8 : minTemplateWidth;
   const templates = HOUSE_TEMPLATES.filter((template) => template.w <= slotWidth);
   const span = columns * slotWidth + (columns - 1) * HOUSE_MARGIN * 2;
   const xStart = area.x + Math.max(HOUSE_MARGIN, Math.floor((area.w - span) / 2));

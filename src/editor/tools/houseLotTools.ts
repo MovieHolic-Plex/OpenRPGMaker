@@ -53,7 +53,8 @@ export const HOUSE_LOT_TOOLS: readonly ToolDefinition[] = [
       "문 위치·타일 ID·마당 산포 좌표는 코드가 결정한다. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|" +
       "flowers|fruit_box|wood_box|table_h|sign (의자는 탁자 옆 전용 — 마당 가방 산포 제외). " +
       "소품을 place_props로 직접 광장에 몰지 말고, 집 계획이면 이 툴을 우선 사용. " +
-      "키트: blue-stone | bright-plaster | amber-wood | slate-wood | timber-hall.",
+      "키트: blue-stone | bright-plaster | amber-wood | slate-wood | timber-hall | aframe-stone" +
+      " (aframe은 단일 직사각 날개 + h=벽3+floor((w-1)/2)+1 필수).",
     mode: "write",
     version: 3,
     parameters: {
@@ -66,7 +67,7 @@ export const HOUSE_LOT_TOOLS: readonly ToolDefinition[] = [
           items: {
             type: "object",
             properties: {
-              kitId: { type: "string", enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] },
+              kitId: { type: "string", enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall", "aframe-stone"] },
               wings: {
                 type: "array",
                 items: {
