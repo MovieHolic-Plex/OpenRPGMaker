@@ -726,10 +726,8 @@ function readPaletteScroll(container: HTMLElement): PaletteScroll {
 }
 
 function paletteViewportElement(container: HTMLElement): HTMLElement | null {
-  return (
-    container.querySelector<HTMLElement>('[data-testid="tile-palette"]') ??
-    container.querySelector<HTMLElement>('[data-testid="tile-palette-clusters"]')
-  );
+  // 구 클러스터 팔레트(tile-palette-clusters)는 RM2K 팔레트로 대체·삭제됨 (2026-07-17).
+  return container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
 }
 
 function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {
