@@ -1,8 +1,9 @@
+import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import type { Command, VariableOperand } from "@/project/types";
+import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 
 export type CommandSummaryTone =
   | "plain"
@@ -76,7 +77,12 @@ type CommandSummaryPartHandlers = {
 };
 
 const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
-  text: (cmd) => commandLine("문장 표시", textPart(oneLine(cmd.body || "..."))),
+  text: (cmd) => commandLine(
+    "문장 표시",
+    textPart(oneLine(cmd.body || "...")),
+    ...(cmd.emotion && cmd.emotion !== "neutral" ? [plainPart(" · "), valuePart(textEmotionLabel(cmd.emotion))] : []),
+    ...(cmd.autoAdvance ? [plainPart(" · "), valuePart("자동 넘김")] : [])
+  ),
   changeFace: (cmd) => commandLine(
     "얼굴 그래픽 변경",
     ...(cmd.resourceId ? [faceVisualPart(cmd.resourceId, cmd.faceIndex)] : []),
@@ -101,7 +107,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...(cmd.cancelBehavior ? [plainPart(" / 취소 "), valuePart(choiceCancelSummary(cmd.cancelBehavior))] : [])
   ),
   fork: (cmd) => commandLine("조건 분기", valuePart(conditionSummary(cmd.condition))),
-  wait: (cmd) => commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초")),
+  wait: (cmd) => {
+    if (cmd.variableId?.trim()) {
+      return commandLine("대기", plainPart("변수 "), valuePart(recordName("variable", cmd.variableId)));
+    }
+    return commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초"));
+  },
   inputWait: (cmd) => cmd.variableId
     ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
     : [commandPart("입력 대기")],
@@ -119,7 +130,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   gotoLabel: (cmd) => commandLine("라벨로 점프", valuePart(cmd.name)),
   loop: (cmd) => commandLine("반복", valuePart(String(cmd.body.length)), plainPart("개 명령")),
   breakLoop: () => [commandPart("반복 탈출")],
-  setSwitch: (cmd) => commandLine("스위치 조작", valuePart(recordName("switch", cmd.switchId)), plainPart(" "), onOffBadgePart(cmd.value)),
+  setSwitch: (cmd) => commandLine(
+    "스위치 조작",
+    valuePart(recordName("switch", cmd.switchId)),
+    plainPart(" "),
+    ...switchValueParts(cmd.value),
+  ),
   setVariable: (cmd) => commandLine(
     "변수 조작",
     valuePart(recordName("variable", cmd.variableId)),
@@ -170,9 +186,36 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   ),
   callCommonEvent: (cmd) => commandLine("이벤트 호출", valuePart(commonEventName(cmd.commonEventId))),
   callMapEvent: (cmd) => commandLine("맵 이벤트 호출", valuePart(cmd.eventId || "(이벤트 선택)")),
-  battleProcessing: (cmd) => commandLine("전투 처리", valuePart(cmd.canEscape ? "도망 가능" : "일반"), plainPart(", ["), valuePart(troopName(cmd.troopId)), plainPart("]")),
-  learnSkill: (cmd) => commandLine("특수기 변경", valuePart(actorName(cmd.actorId)), plainPart(" / "), valuePart(skillName(cmd.skillId))),
-  changeExp: (cmd) => commandLine("경험치 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  battleProcessing: (cmd) => commandLine(
+    "전투 처리",
+    valuePart(
+      cmd.troopSource === "variable"
+        ? `변수 ${cmd.troopVariableId || "?"}`
+        : troopName(cmd.troopId)
+    ),
+    plainPart(" / "),
+    valuePart(cmd.canEscape ? "도망 가능" : "도망 불가"),
+    plainPart(" / "),
+    valuePart(cmd.canLose ? "패배 허용" : "게임오버"),
+    plainPart(cmd.battleFlow === "strict" ? " / 엄격" : cmd.battleFlow === "gauge" ? " / 게이지" : ""),
+    plainPart(cmd.branchOnResult ? " / 결과 분기" : ""),
+  ),
+  learnSkill: (cmd) => commandLine(
+    "특수기 변경",
+    valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체"),
+    plainPart(" "),
+    valuePart(cmd.action === "forget" ? "망각" : "습득"),
+    plainPart(" "),
+    valuePart(skillName(cmd.skillId)),
+  ),
+  changeExp: (cmd) => commandLine(
+    "경험치 변경",
+    valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체"),
+    plainPart(" "),
+    opPart(cmd.op),
+    plainPart(" "),
+    valuePart(typeof cmd.amount === "number" ? String(cmd.amount) : operandSummary(cmd.amount)),
+  ),
   changeLevel: (cmd) => commandLine("레벨 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
   promoteActor: (cmd) => commandLine("승급", valuePart(actorName(cmd.actorId)), plainPart(" → "), valuePart(cmd.toClassId ? className(cmd.toClassId) : "자동 선택")),
   changeEquipment: (cmd) => commandLine(
@@ -184,11 +227,34 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...equipmentIconParts(cmd.equipmentId),
     valuePart(equipmentName(cmd.equipmentId))
   ),
-  changeActorHp: (cmd) => commandLine("HP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
-  changeActorMp: (cmd) => commandLine("MP 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  changeActorHp: (cmd) => commandLine(
+    "HP 변경",
+    valuePart(actorName(cmd.actorId)),
+    plainPart(" "),
+    opPart(cmd.op),
+    plainPart(" "),
+    valuePart(formatActorVitalAmount(cmd.amount, cmd.amountMode))
+  ),
+  changeActorMp: (cmd) => commandLine(
+    "MP 변경",
+    valuePart(actorName(cmd.actorId)),
+    plainPart(" "),
+    opPart(cmd.op),
+    plainPart(" "),
+    valuePart(formatActorVitalAmount(cmd.amount, cmd.amountMode))
+  ),
   recoverAll: (cmd) => commandLine("모두 회복", valuePart(cmd.actorId ? actorName(cmd.actorId) : "파티 전체")),
   enterHeroName: (cmd) => commandLine("이름 입력 처리", valuePart(actorName(cmd.actorId)), plainPart(" / 최대 "), valuePart(String(cmd.maxLength)), plainPart("자")),
-  changeGold: (cmd) => commandLine("소지금 변경", opPart(cmd.op), plainPart(" "), valuePart(String(cmd.amount))),
+  changeGold: (cmd) => commandLine(
+    "소지금 변경",
+    opPart(cmd.op),
+    plainPart(" "),
+    valuePart(typeof cmd.amount === "number" ? String(cmd.amount) : operandSummary(cmd.amount)),
+  ),
+  craftRecipe: (cmd) => commandLine("제작", valuePart(cmd.recipeId || "레시피 없음")),
+  applyItemUpgrade: (cmd) => commandLine("아이템 업그레이드", valuePart(cmd.upgradeId || "규칙 없음")),
+  equipTool: (cmd) => commandLine("도구 장착", valuePart(cmd.itemId || "해제")),
+  openChest: (cmd) => commandLine("보관 상자", valuePart(cmd.chestId || "이 타일 상자")),
   changeItem: (cmd) => commandLine(
     "아이템 변경",
     ...itemIconParts(cmd.itemId),
@@ -196,7 +262,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(" "),
     opPart(cmd.op),
     plainPart(" "),
-    valuePart(String(cmd.amount))
+    valuePart(typeof cmd.amount === "number" ? String(cmd.amount) : operandSummary(cmd.amount)),
   ),
   changeFriendship: (cmd) => commandLine(
     "호감도 변경",
@@ -240,7 +306,15 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(cmd.animationId || "(선택 없음)"),
     ...(cmd.wait ? [plainPart(" / "), valuePart("대기")] : [])
   ),
-  showPicture: (cmd) => commandLine("그림 표시", valuePart(cmd.pictureId), plainPart(" ("), valuePart(`${cmd.x},${cmd.y}`), plainPart(")")),
+  showPicture: (cmd) =>
+    commandLine(
+      "그림 표시",
+      valuePart(cmd.pictureId),
+      plainPart(" ("),
+      valuePart(`${cmd.x},${cmd.y}`),
+      plainPart(")"),
+      ...(cmd.resourceId?.trim() ? [plainPart(" · "), valuePart(cmd.resourceId.trim())] : [])
+    ),
   erasePicture: (cmd) => commandLine("그림 삭제", valuePart(cmd.pictureId)),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(cmd.resourceId || "(선택 없음)")),
   stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
@@ -253,7 +327,16 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
       plainPart("·"),
       valuePart(`${cmd.merchantGold ?? 100}G`)
     ),
-  inn: (cmd) => commandLine("여관 처리", valuePart(String(cmd.price)), plainPart("G")),
+  inn: (cmd) => {
+    const recover = cmd.recoverMp === false ? "HP만" : "전원 회복";
+    const extras: ReturnType<typeof plainPart>[] = [];
+    if (cmd.advanceToMorning) extras.push(plainPart(" · 아침"));
+    if (cmd.branchOnNotEnoughGold) extras.push(plainPart(" · 부족분기"));
+    if (cmd.price <= 0) {
+      return commandLine("여관 처리", valuePart("무료"), plainPart(` · ${recover}`), ...extras);
+    }
+    return commandLine("여관 처리", valuePart(String(cmd.price)), plainPart(`G · ${recover}`), ...extras);
+  },
   checkpointSave: (cmd) => commandLine("체크포인트 저장", valuePart(cmd.label || "세션")),
   killPlayer: (cmd) => commandLine("즉사", valuePart(cmd.message || "게임 오버")),
   triggerEnding: (cmd) => commandLine("엔딩 트리거", valuePart(cmd.endingId || "자동 선택")),
@@ -289,6 +372,14 @@ function advanceTimeSummary(cmd: Extract<Command, { kind: "advanceTime" }>): str
 // 스위치/플래그 ON·OFF 배지 토큰. 텍스트는 기존 "ON"/"OFF" 그대로.
 function onOffBadgePart(value: boolean): CommandSummaryPart {
   return { text: value ? "ON" : "OFF", tone: value ? "badge-on" : "badge-off" };
+}
+
+function switchValueParts(value: SwitchValue): CommandSummaryPart[] {
+  if (value === "toggle") return [{ text: "전환", tone: "badge-off" }];
+  if (typeof value === "object" && value !== null) {
+    return [valuePart(`변수 ${recordName("variable", value.id)}`)];
+  }
+  return [onOffBadgePart(value)];
 }
 
 // 아이콘 토큰 생성. 리소스 id 만 담고 URL 해석은 렌더러(commandList) 몫.
@@ -373,6 +464,96 @@ function commandPart(text: string): CommandSummaryPart {
   return { text, tone: "command" };
 }
 
+
+
+function changeStateSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): readonly CommandSummaryPart[] {
+  const project = store.getCurrent();
+  const targetRaw = String(cmd.fields.target ?? "").trim();
+  const target =
+    !targetRaw || targetRaw === "party" || targetRaw === "all"
+      ? "파티 전체"
+      : project.database.actors.find((actor) => actor.id === targetRaw)?.name ?? targetRaw;
+  const operation = String(cmd.fields.operation ?? "add");
+  const opLabel = operation === "remove" ? "해제" : "부여";
+  const stateId = String(cmd.fields.value ?? "").trim();
+  const stateName = stateId
+    ? project.database.states.find((state) => state.id === stateId)?.name ?? stateId
+    : "(상태 선택)";
+  return commandLine("상태 변경", valuePart(target), plainPart(" · "), valuePart(stateName), plainPart(" "), valuePart(opLabel));
+}
+
+function changeParametersSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): readonly CommandSummaryPart[] {
+  const project = store.getCurrent();
+  const targetRaw = String(cmd.fields.target ?? "").trim();
+  const target =
+    !targetRaw || targetRaw === "party" || targetRaw === "all"
+      ? "파티 전체"
+      : project.database.actors.find((actor) => actor.id === targetRaw)?.name ?? targetRaw;
+  const parameter = String(cmd.fields.parameter ?? "maxHp");
+  const parameterLabel =
+    ({
+      maxHp: "최대 HP",
+      maxMp: "최대 MP",
+      attack: "공격",
+      defense: "방어",
+      mind: "정신",
+      spirit: "정신",
+      agility: "민첩",
+    } as Record<string, string>)[parameter] ?? parameter;
+  const operation = String(cmd.fields.operation ?? "add");
+  const opLabel = operation === "remove" ? "−" : operation === "set" ? "＝" : "＋";
+  const valueLabel = m2NumericValueLabel(cmd);
+  return commandLine("능력치 변경", valuePart(target), plainPart(" "), valuePart(parameterLabel), plainPart(" "), valuePart(`${opLabel}${valueLabel}`));
+}
+
+function damageProcessingSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): readonly CommandSummaryPart[] {
+  const project = store.getCurrent();
+  const targetRaw = String(cmd.fields.target ?? "").trim();
+  const target =
+    !targetRaw || targetRaw === "party" || targetRaw === "all"
+      ? "파티 전체"
+      : project.database.actors.find((actor) => actor.id === targetRaw)?.name ?? targetRaw;
+  const operation = String(cmd.fields.operation ?? "add");
+  const opLabel = operation === "remove" ? "회복" : "데미지";
+  return commandLine("데미지 처리", valuePart(target), plainPart(" · "), valuePart(opLabel), plainPart(" "), valuePart(m2NumericValueLabel(cmd)));
+}
+
+function changeActorIdentitySummaryParts(
+  cmd: Extract<Command, { kind: "m2Command" }>,
+  label: string
+): readonly CommandSummaryPart[] {
+  const project = store.getCurrent();
+  const targetRaw = String(cmd.fields.target ?? "").trim();
+  const actorName = targetRaw
+    ? project.database.actors.find((actor) => actor.id === targetRaw)?.name ?? targetRaw
+    : "(주인공 선택)";
+  const value = String(cmd.fields.value ?? "").trim() || "(값 없음)";
+  const faceIndex = cmd.fields.faceIndex;
+  const faceSuffix =
+    label === "주인공 얼굴 변경" && faceIndex !== undefined && faceIndex !== ""
+      ? ` #${Number(faceIndex) + 1}`
+      : "";
+  return commandLine(label, valuePart(actorName), plainPart(" · "), valuePart(`${value}${faceSuffix}`));
+}
+
+function weightedBranchSummaryParts(
+  cmd: Extract<Command, { kind: "m2Command" }>,
+): readonly CommandSummaryPart[] {
+  const table = String(cmd.fields.table ?? "");
+  const resultVariableId = String(cmd.fields.resultVariableId ?? "").trim();
+  const variableName = resultVariableId ? recordName("variable", resultVariableId) : undefined;
+  const summary = formatWeightedBranchSummary(table, resultVariableId, variableName);
+  return commandLine("가중 분기", valuePart(summary));
+}
+
+function m2NumericValueLabel(cmd: Extract<Command, { kind: "m2Command" }>): string {
+  if (String(cmd.fields.valueSource ?? "") === "variable" || String(cmd.fields.valueVariableId ?? "").trim()) {
+    const variableId = String(cmd.fields.valueVariableId ?? "").trim();
+    return variableId ? `변수 ${recordName("variable", variableId)}` : "변수 (미선택)";
+  }
+  return String(cmd.fields.value ?? 0);
+}
+
 function plainPart(text: string): CommandSummaryPart {
   return { text, tone: "plain" };
 }
@@ -387,13 +568,341 @@ function valuePart(text: string): CommandSummaryPart {
 
 function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): readonly CommandSummaryPart[] {
   const entry = m2CommandById(cmd.commandId);
+  const title = entry?.title ?? "";
+  if (title === "Comment" || cmd.commandId === "m2-088-comment") {
+    const text = String(cmd.fields.comment ?? "").trim() || "(빈 주석)";
+    return commandLine("◆ 주석", valuePart(oneLine(text)));
+  }
+  if (title === "Erase Event" || cmd.commandId === "m2-086-erase-event") {
+    const eventId = String(cmd.fields.eventId ?? "").trim();
+    return commandLine(
+      "이벤트 지우기",
+      valuePart(eventId ? eventId : "이 이벤트"),
+    );
+  }
+  if (title === "Change Parameters" || cmd.commandId === "m2-014-change-parameters") {
+    return changeParametersSummaryParts(cmd);
+  }
+  if (title === "Change State" || cmd.commandId === "m2-019-change-state") {
+    return changeStateSummaryParts(cmd);
+  }
+  if (title === "Damage Processing" || cmd.commandId === "m2-021-damage-processing") {
+    return damageProcessingSummaryParts(cmd);
+  }
+  if (title === "Change Actor Name" || cmd.commandId === "m2-022-change-actor-name") {
+    return changeActorIdentitySummaryParts(cmd, "주인공 이름 변경");
+  }
+  if (title === "Change Actor Nickname" || cmd.commandId === "m2-023-change-actor-nickname") {
+    return changeActorIdentitySummaryParts(cmd, "주인공 별명 변경");
+  }
+  if (title === "Change Actor Graphic" || cmd.commandId === "m2-024-change-actor-graphic") {
+    return changeActorIdentitySummaryParts(cmd, "주인공 그래픽 변경");
+  }
+  if (title === "Change Actor Faceset" || cmd.commandId === "m2-025-change-actor-faceset") {
+    return changeActorIdentitySummaryParts(cmd, "주인공 얼굴 변경");
+  }
+  if (title === "Change Actor Class" || cmd.commandId === "m2-091-change-actor-class") {
+    return changeActorIdentitySummaryParts(cmd, "주인공 직업 변경");
+  }
+  if (title === "Weighted Branch" || cmd.commandId === "m2-211-weighted-branch") {
+    return weightedBranchSummaryParts(cmd);
+  }
+
+  const page3 = page3M2SummaryParts(cmd, title, entry?.label);
+  if (page3) return page3;
+
   const label = entry?.label ?? cmd.commandId;
   const fields = Object.entries(cmd.fields)
-    .filter(([, value]) => String(value).length > 0)
+    .filter(([key, value]) => key !== "color" && key !== "valueSource" && key !== "valueVariableId" && String(value).length > 0)
     .slice(0, 3)
     .map(([key, value]) => `${key}: ${String(value)}`);
   if (fields.length === 0) return [commandPart(label)];
   return commandLine(label, valuePart(fields.join(", ")));
+}
+
+function page3M2SummaryParts(
+  cmd: Extract<Command, { kind: "m2Command" }>,
+  title: string,
+  fallbackLabel: string | undefined
+): readonly CommandSummaryPart[] | null {
+  const f = cmd.fields;
+  const str = (key: string): string => String(f[key] ?? "").trim();
+  const num = (key: string): string => {
+    const raw = f[key];
+    return typeof raw === "number" ? String(raw) : String(raw ?? "").trim();
+  };
+  const labelOf = (ko: string) => ko || fallbackLabel || title;
+
+  switch (title) {
+    case "Get Player Location": {
+      const variableId = str("variableId") || str("target");
+      return commandLine(
+        labelOf("주인공 위치 얻기"),
+        plainPart("→ "),
+        valuePart(variableId ? `변수 ${variableId}` : "(변수 미지정)")
+      );
+    }
+    case "Move to Variable Location": {
+      const mapId = str("mapId");
+      const x = str("x") || str("variableX") || "?";
+      const y = str("y") || str("variableY") || "?";
+      return commandLine(
+        labelOf("변수 위치로 이동"),
+        valuePart(mapId ? mapName(mapId) : "(맵)"),
+        plainPart(" · 변수 좌표 ("),
+        valuePart(`${x}, ${y}`),
+        plainPart(")")
+      );
+    }
+    case "Get On/Off Vehicle": {
+      const target = str("target") || str("vehicle") || "탈것";
+      const enabled = str("enabled");
+      const action =
+        enabled === "false" || enabled === "0" ? "하차" : enabled === "true" || enabled === "1" ? "승차" : "승하차";
+      return commandLine(labelOf("탈것 승하차"), valuePart(target), plainPart(" · "), valuePart(action));
+    }
+    case "Set Vehicle Location": {
+      const vehicle = str("target") || str("vehicle") || "탈것";
+      const mapId = str("mapId");
+      return commandLine(
+        labelOf("탈것 위치 설정"),
+        valuePart(vehicle),
+        plainPart(" → "),
+        valuePart(mapId ? mapName(mapId) : "(맵)"),
+        plainPart(" ("),
+        valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
+        plainPart(")")
+      );
+    }
+    case "Set Event Location": {
+      const target = str("target") || str("eventId") || "이 이벤트";
+      const mapId = str("mapId");
+      return commandLine(
+        labelOf("이벤트 위치 설정"),
+        valuePart(target),
+        plainPart(" → "),
+        ...(mapId ? [valuePart(mapName(mapId)), plainPart(" ")] : []),
+        plainPart("("),
+        valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
+        plainPart(")")
+      );
+    }
+    case "Swap Event Location": {
+      const a = str("target") || str("eventId") || "이벤트 A";
+      const b = str("target2") || str("eventId2") || str("with") || "이벤트 B";
+      return commandLine(labelOf("이벤트 위치 교환"), valuePart(a), plainPart(" ↔ "), valuePart(b));
+    }
+    case "Get Terrain ID": {
+      const variableId = str("variableId");
+      return commandLine(
+        labelOf("지형 ID 얻기"),
+        plainPart("("),
+        valuePart(`${num("x") || "?"}, ${num("y") || "?"}`),
+        plainPart(") → "),
+        valuePart(variableId ? `변수 ${variableId}` : "(변수 미지정)")
+      );
+    }
+    case "Get Event ID": {
+      const variableId = str("variableId");
+      return commandLine(
+        labelOf("이벤트 ID 얻기"),
+        plainPart("("),
+        valuePart(`${num("x") || "?"}, ${num("y") || "?"}`),
+        plainPart(") → "),
+        valuePart(variableId ? `변수 ${variableId}` : "(변수 미지정)")
+      );
+    }
+    case "Hide Screen":
+      return commandLine(labelOf("화면 숨기기"), valuePart(str("value") || str("transition") || "페이드 아웃"));
+    case "Show Screen":
+      return commandLine(labelOf("화면 표시"), valuePart(str("value") || str("transition") || "페이드 인"));
+    case "Tint Screen": {
+      const color = str("value") || str("color") || "기본";
+      const duration = str("duration") || str("durationMs");
+      return commandLine(
+        labelOf("화면 색조 변경"),
+        valuePart(color),
+        ...(duration ? [plainPart(" · "), valuePart(`${duration}${str("durationMs") ? "ms" : ""}`)] : [])
+      );
+    }
+    case "Flash Screen": {
+      const color = str("color") || str("value") || "white";
+      const duration = str("durationMs") || str("duration") || "300";
+      return commandLine(
+        labelOf("화면 플래시"),
+        valuePart(m2ScreenColorLabel(color)),
+        plainPart(" · "),
+        valuePart(`${duration}ms`)
+      );
+    }
+    case "Shake Screen": {
+      const intensity = str("intensity") || str("value") || "3";
+      const duration = str("durationMs") || str("duration") || "400";
+      return commandLine(
+        labelOf("화면 흔들기"),
+        plainPart("강도 "),
+        valuePart(intensity),
+        plainPart(" · "),
+        valuePart(`${duration}ms`)
+      );
+    }
+    case "Scroll Map": {
+      const direction = m2ScrollDirectionLabel(str("direction") || str("target") || "down");
+      const distance = str("distance") || str("value") || "1";
+      const mode = str("mode");
+      const modeLabel =
+        mode === "lock" ? "고정" : mode === "pan" ? "패닝" : mode === "return" ? "복귀" : "";
+      return commandLine(
+        labelOf("맵 스크롤"),
+        valuePart(direction),
+        plainPart(" "),
+        valuePart(distance),
+        plainPart("타일"),
+        ...(modeLabel ? [plainPart(" · "), valuePart(modeLabel)] : [])
+      );
+    }
+    case "Set Weather Effects": {
+      const weather = m2WeatherValueLabel(str("value") || str("weather") || "none");
+      const intensity = str("intensity");
+      const transition = str("transitionMs") || str("durationMs") || str("duration");
+      return commandLine(
+        labelOf("날씨 효과 설정"),
+        valuePart(weather),
+        ...(intensity ? [plainPart(" · 강도 "), valuePart(intensity)] : []),
+        ...(transition ? [plainPart(" · "), valuePart(`${transition}ms`)] : [])
+      );
+    }
+    case "Show Picture": {
+      const pictureId = str("pictureId") || "pic1";
+      const resourceId = str("resourceId");
+      return commandLine(
+        labelOf("그림 표시"),
+        valuePart(pictureId),
+        plainPart(" ("),
+        valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
+        plainPart(")"),
+        ...(resourceId ? [plainPart(" · "), valuePart(resourceId)] : [])
+      );
+    }
+    case "Move Picture": {
+      const pictureId = str("pictureId") || "pic1";
+      const duration = str("durationMs") || str("duration");
+      return commandLine(
+        labelOf("그림 이동"),
+        valuePart(pictureId),
+        plainPart(" → ("),
+        valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
+        plainPart(")"),
+        ...(duration ? [plainPart(" · "), valuePart(`${duration}ms`)] : [])
+      );
+    }
+    case "Erase Picture":
+      return commandLine(labelOf("그림 삭제"), valuePart(str("pictureId") || "pic1"));
+    case "Show Animation": {
+      const target = str("target") || "대상";
+      const anim = str("animationId") || str("value") || "(애니메이션)";
+      return commandLine(
+        labelOf("애니메이션 표시"),
+        valuePart(target),
+        plainPart(" · "),
+        valuePart(anim)
+      );
+    }
+    case "Flash Event": {
+      const target = str("target") || str("eventId") || "이 이벤트";
+      const color = str("color") || str("value");
+      return commandLine(
+        labelOf("이벤트 플래시"),
+        valuePart(target),
+        ...(color ? [plainPart(" · "), valuePart(m2ScreenColorLabel(color))] : [])
+      );
+    }
+    case "Stop All Movement":
+      return [commandPart(labelOf("모든 이동 중지"))];
+    case "Key Input Processing": {
+      const variableId = str("variableId") || str("target");
+      return commandLine(
+        labelOf("키 입력 처리"),
+        valuePart(variableId ? `변수 ${variableId}` : "키 대기")
+      );
+    }
+    case "Change Tileset": {
+      const tileset = str("value") || str("tilesetId") || str("target") || "(타일셋)";
+      return commandLine(labelOf("타일셋 변경"), valuePart(tileset));
+    }
+    case "Change Parallax Back": {
+      const resource = str("value") || str("resourceId") || str("target") || "(파노라마)";
+      return commandLine(labelOf("파노라마 변경"), valuePart(resource));
+    }
+    case "Set Encounter Rate": {
+      const rate = str("value") || str("rate") || str("target") || "0";
+      return commandLine(labelOf("인카운트율 설정"), valuePart(rate));
+    }
+    case "Change Tile": {
+      const mapId = str("mapId");
+      const layer = str("layer") === "upper" ? "상위" : "하위";
+      return commandLine(
+        labelOf("타일 변경"),
+        valuePart(mapId ? mapName(mapId) : "(맵)"),
+        plainPart(" "),
+        valuePart(layer),
+        plainPart(" ("),
+        valuePart(`${num("x") || "0"}, ${num("y") || "0"}`),
+        plainPart(") = "),
+        valuePart(str("tile") || str("value") || "0")
+      );
+    }
+    default:
+      return null;
+  }
+}
+
+function m2ScreenColorLabel(color: string): string {
+  const key = color.toLowerCase();
+  const map: Record<string, string> = {
+    white: "흰색",
+    red: "빨강",
+    green: "초록",
+    blue: "파랑",
+    black: "검정",
+    yellow: "노랑",
+    cyan: "청록",
+    magenta: "자홍",
+    neutral: "기본",
+  };
+  return map[key] ?? color;
+}
+
+function m2ScrollDirectionLabel(direction: string): string {
+  switch (direction) {
+    case "up":
+      return "위";
+    case "down":
+      return "아래";
+    case "left":
+      return "왼쪽";
+    case "right":
+      return "오른쪽";
+    default:
+      return direction || "아래";
+  }
+}
+
+function m2WeatherValueLabel(value: string): string {
+  const raw = value.toLowerCase();
+  if (raw.startsWith("rain")) return "비";
+  if (raw.startsWith("storm")) return "폭풍";
+  if (raw.startsWith("snow")) return "눈";
+  if (raw.startsWith("fog")) return "안개";
+  if (raw === "none" || raw === "" || raw === "clear") return "맑음";
+  // "rain,0.5" style runtime strings
+  const head = raw.split(",")[0]?.trim() ?? raw;
+  if (head === "rain") return "비";
+  if (head === "storm") return "폭풍";
+  if (head === "snow") return "눈";
+  if (head === "fog") return "안개";
+  if (head === "none") return "맑음";
+  return value || "맑음";
 }
 
 function choiceSummary(cmd: Extract<Command, { kind: "choices" }>): string {
@@ -435,7 +944,7 @@ function operandSummary(value: VariableOperand): string {
   return typeof value === "number" ? String(value) : `변수 ${recordName("variable", value.id)}`;
 }
 
-function conditionSummary(condition: Extract<Command, { kind: "fork" }>["condition"]): string {
+function conditionSummary(condition: Extract<Command, { kind: "fork" }>['condition']): string {
   switch (condition.kind) {
     case "switch":
       return `${recordName("switch", condition.switchId)} ${condition.value ? "ON" : "OFF"}`;
@@ -444,7 +953,7 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>["conditi
     case "selfSwitch":
       return `셀프 ${condition.key} ${condition.value ? "ON" : "OFF"}`;
     case "actor":
-      return `${actorName(condition.actorId)} ${condition.present ? "있음" : "없음"}`;
+      return `${actorName(condition.actorId)} ${condition.present ? "파티" : "부재"}`;
     case "item":
       return `${itemName(condition.itemId)} ${condition.present ? "소지" : "미소지"}`;
     case "gold":
@@ -459,6 +968,18 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>["conditi
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+    case "battleResult":
+      return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
+    case "all":
+      return condition.conditions.length
+        ? `모두(${condition.conditions.map((child) => conditionSummary(child)).join(" ∧ ")})`
+        : "모두(없음)";
+    case "any":
+      return condition.conditions.length
+        ? `하나(${condition.conditions.map((child) => conditionSummary(child)).join(" ∨ ")})`
+        : "하나(없음)";
+    case "not":
+      return `아님(${conditionSummary(condition.condition)})`;
   }
 }
 
@@ -511,6 +1032,10 @@ function equipmentSlotLabel(slot: Extract<Command, { kind: "changeEquipment" }>[
   return { weapon: "무기", shield: "방패", armor: "갑옷", helmet: "머리", accessory: "장신구" }[slot];
 }
 
+function formatActorVitalAmount(amount: number, amountMode?: "flat" | "percent"): string {
+  return amountMode === "percent" ? `${Math.trunc(amount)}%` : String(amount);
+}
+
 function recordName(kind: "switch" | "variable", id: string): string {
   const project = store.getCurrent();
   const collection = kind === "switch" ? project.switches : project.variables;
@@ -518,4 +1043,19 @@ function recordName(kind: "switch" | "variable", id: string): string {
   if (index >= 0) return `[${storyFlagOptionLabel(project, kind, collection[index]!, index)}]`;
   const label = id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
   return `[${label}]`;
+}
+
+function textEmotionLabel(emotion: string): string {
+  switch (emotion) {
+    case "happy":
+      return "기쁨";
+    case "sad":
+      return "슬픔";
+    case "angry":
+      return "분노";
+    case "surprised":
+      return "놀람";
+    default:
+      return emotion;
+  }
 }

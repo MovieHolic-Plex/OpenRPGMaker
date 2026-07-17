@@ -122,4 +122,54 @@ describe("fork 계약", () => {
     expect(result.pauses).toEqual([]);
     expect(result.finished).toBe(true);
   });
+
+  it("복합 조건: all/any/not 이 then/else 분기를 올바르게 고른다", () => {
+    expectBranch(
+      {
+        kind: "all",
+        conditions: [
+          { kind: "switch", switchId: "sw_gate", value: true },
+          { kind: "gold", op: ">=", amount: 10 },
+        ],
+      },
+      "then",
+      (session) => {
+        session.switches.sw_gate = true;
+        session.gold = 10;
+      },
+    );
+    expectBranch(
+      {
+        kind: "any",
+        conditions: [
+          { kind: "switch", switchId: "sw_gate", value: true },
+          { kind: "gold", op: ">=", amount: 999 },
+        ],
+      },
+      "then",
+      (session) => {
+        session.switches.sw_gate = true;
+        session.gold = 0;
+      },
+    );
+    expectBranch(
+      { kind: "not", condition: { kind: "switch", switchId: "sw_gate", value: true } },
+      "then",
+    );
+    expectBranch(
+      {
+        kind: "all",
+        conditions: [
+          { kind: "switch", switchId: "sw_gate", value: true },
+          { kind: "gold", op: ">=", amount: 10 },
+        ],
+      },
+      "else",
+      (session) => {
+        session.switches.sw_gate = true;
+        session.gold = 0;
+      },
+    );
+  });
+
 });

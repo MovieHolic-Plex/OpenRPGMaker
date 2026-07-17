@@ -276,6 +276,14 @@ describe("assistantSession 승인 게이트 (명시 수락만 커밋)", () => {
     // 제거해 groupId를 미승인 상태로 되돌린다.
     project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].source = undefined;
     const steps: ChatResult[] = [
+      // planner (no tools) → direct
+      {
+        message: {
+          role: "assistant",
+          content: JSON.stringify({ action: "direct", reason: "single vocab proposal" }),
+        },
+        finishReason: "stop",
+      } as ChatResult,
       {
         message: {
           role: "assistant",
@@ -298,7 +306,12 @@ describe("assistantSession 승인 게이트 (명시 수락만 커밋)", () => {
     let index = 0;
     const session = new AssistantSession(project, {
       config: { baseUrl: "x", model: "m", liteModel: "m", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 },
-      chat: async () => steps[index++],
+      chat: async (_cfg, req) => {
+        // 플래너 호출은 tools 없음 — steps[0] direct 고정, 이후 순차.
+        const hasTools = Array.isArray((req as { tools?: unknown }).tools);
+        if (!hasTools && index === 0) return steps[index++]!;
+        return steps[index++] ?? steps[steps.length - 1]!;
+      },
     });
     const result = await session.sendUserMessage("이 벽 타일들 승인해줘");
     expect(result.proposedCalls).toHaveLength(1);

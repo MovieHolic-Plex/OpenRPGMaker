@@ -1,8 +1,7 @@
 import { numberedName } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
-import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { el } from "@/util/dom";
-import { openSwitchVariablePicker } from "./recordPickerDialog";
+import { switchVariablePicker } from "./switchVariablePicker";
 
 type SwitchVariableKind = "switch" | "variable";
 type DatabaseRecordKind = "item" | "actor";
@@ -23,38 +22,18 @@ type RecordSelectParams = {
   readonly onChange: (id: string) => void;
 };
 
+/** 페이지 조건 슬롯용 — 공용 switchVariablePicker 를 밀도 높은 레이아웃으로 감싼다. */
 export function switchVariableIdPicker(params: IdPickerParams): HTMLElement {
-  const project = store.getCurrent();
-  const records = switchVariableRecords(params.kind);
-  const select = el("select", {
-    dataset: { testid: params.inputTestId },
-  }) as HTMLSelectElement;
-  select.append(el("option", { text: "(선택)", attrs: { value: "" } }));
-  for (const [index, record] of records.entries()) {
-    select.append(el("option", { text: storyFlagOptionLabel(project, params.kind, record, index), attrs: { value: record.id } }));
-  }
-  if (params.currentId && !records.some((record) => record.id === params.currentId)) {
-    select.append(el("option", { text: params.currentId, attrs: { value: params.currentId } }));
-  }
-  select.value = params.currentId;
-  select.addEventListener("change", () => params.onChange(select.value));
-  const picker = el("button", {
-    class: "btn small",
-    text: "...",
-    attrs: { type: "button", title: params.kind === "switch" ? "스위치 선택" : "변수 선택" },
-    dataset: { testid: params.pickerTestId },
-    on: {
-      click: () => openSwitchVariablePicker({
-        kind: params.kind,
-        currentId: select.value,
-        onSelect: (id) => {
-          select.value = id;
-          params.onChange(id);
-        },
-      }),
-    },
-  });
-  return el("div", { class: "event-condition-id-picker", children: [select, picker] });
+  return switchVariablePicker({
+    kind: params.kind,
+    selectedId: params.currentId,
+    onChange: params.onChange,
+    selectTestId: params.inputTestId,
+    pickerTestId: params.pickerTestId,
+    keepMissingId: true,
+    showFilter: false,
+    className: "event-condition-id-picker",
+  }).root;
 }
 
 export function databaseRecordSelect(params: RecordSelectParams): HTMLSelectElement {
@@ -77,9 +56,4 @@ export function databaseRecordSelect(params: RecordSelectParams): HTMLSelectElem
 function databaseRecords(kind: DatabaseRecordKind): readonly NamedRecord[] {
   const project = store.getCurrent();
   return kind === "item" ? project.database.items : project.database.actors;
-}
-
-function switchVariableRecords(kind: SwitchVariableKind): readonly NamedRecord[] {
-  const project = store.getCurrent();
-  return kind === "switch" ? project.switches : project.variables;
 }

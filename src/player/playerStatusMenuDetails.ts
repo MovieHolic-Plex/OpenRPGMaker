@@ -14,6 +14,7 @@ import type {
 import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
+import { listFriendshipEntries } from "@/project/friendship";
 
 export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
@@ -44,6 +45,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
     case "quests": return questsDetail(options.project, options.session);
+    case "relationships": return relationshipsDetail(options.project, options.session);
     case "wait": return waitDetail(options.waitModeEnabled);
     case "to-title": return { title: "타이틀", entries: [], hint: "타이틀 화면으로 돌아갑니다." };
     default: return assertNever(options.selectedCommand);
@@ -320,6 +322,21 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
     ]),
     emptyLabel: "등록된 임무가 없습니다",
     hint: "선택하면 임무 진행 상황을 봅니다.",
+  };
+}
+
+function relationshipsDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const entries = listFriendshipEntries(session.friendship, undefined, undefined, project).map((entry) => ({
+    label: entry.displayName ?? entry.key,
+    value: entry.secondary,
+    description: entry.label,
+    testId: `status-menu-relationship-${entry.key}`,
+  }));
+  return {
+    title: "관계",
+    entries,
+    emptyLabel: "알려진 관계가 없습니다.",
+    hint: "호감이 기록된 관계만 표시됩니다.",
   };
 }
 

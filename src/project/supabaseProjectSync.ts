@@ -32,7 +32,6 @@ export type SupabaseProjectListItem = {
 };
 
 type SupabaseProjectListRow = {
-  readonly current_json: unknown;
   readonly project_id: string;
   readonly title: string | null;
 };
@@ -40,6 +39,8 @@ type SupabaseProjectListRow = {
 type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "ai_conversations" | "maps" | "tilesets" | "user_skills";
 type SupabaseCommitTable = "project_changes" | "project_commits";
 const MAP_PATCH_MAX_ATTEMPTS = 4;
+/** project_id → 마지막 성공 insert 커밋 id (parent 계보). */
+const lastRemoteCommitIdByProject = new Map<string, string>();
 
 export type SupabaseMapSaveConflict = {
   readonly mapId: string;
@@ -49,7 +50,7 @@ export type SupabaseMapSaveConflict = {
 export type SupabaseSaveResult =
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly SupabaseMapSaveConflict[] }
-  | { readonly kind: "saved"; readonly project?: Project; readonly sha256?: string };
+  | { readonly kind: "saved"; readonly project?: Project; readonly sha256?: string; readonly commitId?: string };
 
 export type SupabaseProjectMapPatchInput = {
   readonly baseProject: Project;
@@ -80,6 +81,8 @@ export type SupabaseProjectCommitInput = {
   readonly serialized?: string;
   readonly summary: string;
   readonly toolNames: readonly string[];
+  /** 직전 원격 커밋 id — 계보 연결. 없으면 null parent. */
+  readonly parentCommitId?: string | null;
 };
 
 export type SupabaseProjectCommitListItem = {
@@ -110,7 +113,9 @@ export class SupabaseProjectSyncError extends Error {
 }
 
 export async function loadProjectFromSupabase(config = supabaseProjectConfig()): Promise<Project | null> {
-  return (await loadProjectSnapshotFromSupabase(config))?.project ?? null;
+  const project = (await loadProjectSnapshotFromSupabase(config))?.project ?? null;
+  if (project && config) void hydrateLastRemoteCommitTip(config);
+  return project;
 }
 
 export async function listSupabaseProjects(config: SupabaseProjectListConfig): Promise<readonly SupabaseProjectListItem[]> {
@@ -295,21 +300,29 @@ export async function listSupabaseAiActivityLogs(
 ): Promise<readonly Record<string, unknown>[]> {
   if (!config) return [];
   const n = Math.max(1, Math.min(100, Math.floor(limit)));
+  let primary: Record<string, unknown>[] = [];
+  let fallback: Record<string, unknown>[] = [];
   try {
-    const primary = await fetchJsonArray(
-      `${config.url}/rest/v1/ai_activity_logs?select=log_id,channel,instruction,map_id,payload_json,created_at&order=created_at.desc&limit=${n}`,
-      config,
-    );
-    if (primary.length > 0) return primary;
+    const primaryParams = new URLSearchParams({
+      project_id: `eq.${config.projectId}`,
+      select: "log_id,channel,instruction,map_id,payload_json,created_at",
+      order: "created_at.desc",
+      limit: String(n),
+    });
+    primary = await fetchJsonArray(`${config.url}/rest/v1/ai_activity_logs?${primaryParams.toString()}`, config);
   } catch {
-    /* fall through */
+    /* primary missing or network — still try fallback */
   }
   try {
-    const rows = await fetchJsonArray(
-      `${config.url}/rest/v1/ai_analysis_runs?tileset_id=eq.${encodeURIComponent(AI_ACTIVITY_FALLBACK_TILESET_ID)}&select=run_id,project_id,prompt_context_json,result_json,created_at&order=created_at.desc&limit=${n}`,
-      config,
-    );
-    return rows.map((row) => ({
+    const fallbackParams = new URLSearchParams({
+      project_id: `eq.${config.projectId}`,
+      tileset_id: `eq.${AI_ACTIVITY_FALLBACK_TILESET_ID}`,
+      select: "run_id,project_id,prompt_context_json,result_json,created_at",
+      order: "created_at.desc",
+      limit: String(n),
+    });
+    const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_analysis_runs?${fallbackParams.toString()}`, config);
+    fallback = rows.map((row) => ({
       log_id: row.run_id,
       channel: isRecord(row.prompt_context_json) ? row.prompt_context_json.channel : undefined,
       instruction: isRecord(row.prompt_context_json) ? row.prompt_context_json.instruction : undefined,
@@ -319,8 +332,32 @@ export async function listSupabaseAiActivityLogs(
       source: "ai_analysis_runs_fallback",
     }));
   } catch {
-    return [];
+    /* ignore */
   }
+  return mergeAiActivityLogRows(primary, fallback, n);
+}
+
+function mergeAiActivityLogRows(
+  primary: readonly Record<string, unknown>[],
+  fallback: readonly Record<string, unknown>[],
+  limit: number,
+): Record<string, unknown>[] {
+  const byId = new Map<string, Record<string, unknown>>();
+  for (const row of fallback) {
+    const id = typeof row.log_id === "string" ? row.log_id : null;
+    if (id) byId.set(id, row);
+  }
+  for (const row of primary) {
+    const id = typeof row.log_id === "string" ? row.log_id : null;
+    if (id) byId.set(id, { ...row, source: row.source ?? "ai_activity_logs" });
+  }
+  return [...byId.values()]
+    .sort((a, b) => {
+      const at = typeof a.created_at === "string" ? a.created_at : "";
+      const bt = typeof b.created_at === "string" ? b.created_at : "";
+      return bt.localeCompare(at);
+    })
+    .slice(0, limit);
 }
 
 async function fetchJsonArray(url: string, config: SupabaseProjectConfig): Promise<Record<string, unknown>[]> {
@@ -489,6 +526,30 @@ export async function listSupabaseUserSkills(
   }
 }
 
+/** 원격 최신 commit tip 을 세션 맵에 심는다 — 리로드 후 parent_commit 계보 유지. */
+export async function hydrateLastRemoteCommitTip(
+  config = supabaseProjectConfig(),
+): Promise<string | null> {
+  if (!config) return null;
+  try {
+    const commits = await listProjectCommitsFromSupabase(1, config);
+    const tip = commits[0]?.commitId ?? null;
+    if (tip) lastRemoteCommitIdByProject.set(config.projectId, tip);
+    return tip;
+  } catch {
+    return null;
+  }
+}
+
+export function peekLastRemoteCommitTip(projectId: string): string | null {
+  return lastRemoteCommitIdByProject.get(projectId) ?? null;
+}
+
+export function seedLastRemoteCommitTip(projectId: string, commitId: string | null | undefined): void {
+  if (!commitId) return;
+  lastRemoteCommitIdByProject.set(projectId, commitId);
+}
+
 export async function recordProjectCommitToSupabase(
   input: SupabaseProjectCommitInput,
   config = supabaseProjectConfig(),
@@ -497,14 +558,18 @@ export async function recordProjectCommitToSupabase(
   const serialized = input.serialized ?? serialize(projectWithoutEventDrafts(input.project));
   const commitId = randomUuid();
   const currentSha256 = await sha256Hex(serialized);
+  const parentCommitId = input.parentCommitId ?? lastRemoteCommitIdByProject.get(config.projectId) ?? null;
   try {
-    await insertRows(config, "project_commits", [projectCommitRow(config.projectId, commitId, currentSha256, input)]);
+    await insertRows(config, "project_commits", [
+      projectCommitRow(config.projectId, commitId, currentSha256, input, parentCommitId),
+    ]);
     await insertRows(config, "project_changes", [projectChangeRow(config.projectId, commitId, input)]);
   } catch (error) {
     if (isOptionalTableMissingError(error)) return { kind: "not-configured" };
     throw error;
   }
-  return { kind: "saved" };
+  lastRemoteCommitIdByProject.set(config.projectId, commitId);
+  return { kind: "saved", commitId };
 }
 
 export async function listProjectCommitsFromSupabase(
@@ -516,7 +581,10 @@ export async function listProjectCommitsFromSupabase(
     headers: supabaseJsonHeaders(config, "read"),
   });
   if (!response.ok) throw new SupabaseProjectSyncError(await response.text(), response.status);
-  return parseProjectCommitRows(await response.json());
+  const rows = parseProjectCommitRows(await response.json());
+  const tip = rows[0]?.commitId;
+  if (tip) lastRemoteCommitIdByProject.set(config.projectId, tip);
+  return rows;
 }
 
 function supabaseProjectUrl(config: SupabaseProjectConfig): string {
@@ -528,9 +596,11 @@ function supabaseProjectUrl(config: SupabaseProjectConfig): string {
 }
 
 function supabaseProjectListUrl(config: SupabaseProjectListConfig): string {
+  // List picker only needs ids/titles. Pulling every current_json blob is ~20MB+ and
+  // hangs the "목록 불러오기" UI over Tailscale/dbserver.
   const query = new URLSearchParams({
     order: "project_id.asc",
-    select: "project_id,title,current_json",
+    select: "project_id,title",
   });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
 }
@@ -616,7 +686,6 @@ async function parseProjectListRows(response: Response): Promise<readonly Supaba
       throw new SupabaseProjectSyncError("Supabase projects list row is missing project_id");
     }
     return {
-      current_json: entry.current_json,
       project_id: entry.project_id,
       title: typeof entry.title === "string" ? entry.title : null,
     };
@@ -624,13 +693,7 @@ async function parseProjectListRows(response: Response): Promise<readonly Supaba
 }
 
 function supabaseProjectListTitle(row: SupabaseProjectListRow): string {
-  const directTitle = trimmedOrUndefined(row.title);
-  if (directTitle) return directTitle;
-  if (isRecord(row.current_json) && isRecord(row.current_json.meta)) {
-    const metaTitle = trimmedOrUndefined(row.current_json.meta.title);
-    if (metaTitle) return metaTitle;
-  }
-  return row.project_id;
+  return trimmedOrUndefined(row.title) ?? row.project_id;
 }
 
 function trimmedOrUndefined(value: unknown): string | undefined {
@@ -841,11 +904,12 @@ function projectCommitRow(
   commitId: string,
   currentSha256: string,
   input: SupabaseProjectCommitInput,
+  parentCommitId: string | null = null,
 ): Record<string, unknown> {
   return {
     commit_id: commitId,
     project_id: projectId,
-    parent_commit_id: null,
+    parent_commit_id: parentCommitId,
     message: input.summary,
     summary: input.summary,
     review_status: input.reviewStatus,

@@ -14,7 +14,7 @@ AI 어시스턴트(툴 레이어 + LLM 루프)의 품질을 골든 태스크로 
 # 오프라인(정답 시퀀스) 채점 — CI 포함(test/evals.test.ts).
 npm test -- evals
 
-# 실제 LLM 채점(google/gemini-3.1-flash-lite, OpenRouter). .env.local의 OPENROUTER_API_KEY 필요.
+# 실제 LLM 채점(google/gemini-3.1-flash-lite, LLM). .env.local의 VITE_LLM_API_KEY 필요.
 # 비용/네트워크가 있어 CI 미포함 — 수동/야간 배치용.
 node evals/run.mjs 4      # 상위 4개 태스크
 node evals/run.mjs 10     # 전체 10개(1회 권장)

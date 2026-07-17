@@ -11,7 +11,7 @@ import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const CONFIG: AiConfig = {
-  baseUrl: "https://openrouter.ai/api/v1",
+  baseUrl: "https://example.invalid/v1",
   model: "minimax/minimax-m3",
   liteModel: "minimax/minimax-m3",
   apiKey: "sk-test",

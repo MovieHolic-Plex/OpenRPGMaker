@@ -1,6 +1,6 @@
 // test/evals.test.ts
 // 골든 태스크 프레임워크 검증: 오프라인 정답 시퀀스 채점 + 모킹 LLM 툴콜 루프 채점.
-// 실제 OpenRouter 호출은 하지 않는다(chat 주입).
+// 실제 LLM 호출은 하지 않는다(chat 주입).
 
 import { describe, expect, it } from "vitest";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";

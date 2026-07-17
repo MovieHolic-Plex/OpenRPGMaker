@@ -15,7 +15,7 @@ export const DUNGEON_TEXTURE_KEY = "tex_easyrpg_chipset_dungeon";
 export const DUNGEON_HARNESS_PREFIX = "harness-dungeon-v1-";
 
 export const INTERIOR_METADATA_PACK_ID = "interior-house-v1";
-export const INTERIOR_METADATA_PACK_VERSION = "1";
+export const INTERIOR_METADATA_PACK_VERSION = "3";
 export const INTERIOR_TEXTURE_KEY = "tex_easyrpg_chipset_interior";
 export const INTERIOR_HARNESS_PREFIX = "harness-interior-house-v1-";
 
@@ -44,9 +44,66 @@ export const INTERIOR_WALL_FRAME_TILES = {
   cornerSE: 458,
 } as const;
 
+/**
+ * @deprecated Option B 정본은 `HOUSE_SHELL_TILE` in `@/project/defaults/interiorHouseWallTiles`.
+ * 주택 벽 writer는 `planInteriorHouseWalls` 하나뿐이고 이 상수는 참조하지 않는다 —
+ * 새 코드에서 쓰지 말 것. (구 `paintHouseShellWalls` 경로와 함께 남은 이름.)
+ */
+export const INTERIOR_HOUSE_SHELL_CREAM_FACE = {
+  upperL: 74,
+  upperM: 75,
+  upperR: 76,
+  lowerL: 104,
+  lowerM: 105,
+  lowerR: 106,
+  soloUpper: 77,
+  soloLower: 107,
+} as const;
+
 /** Passable room floor used as connect neighbor so 1-tile wall rings get true N/S edges. */
 export const INTERIOR_WALL_FRAME_FLOOR_TILE = 72;
 
+/**
+ * 벽이 딛고 선 "실내 지면" — 벽 프레임 오토타일의 connect 이웃. 벽면(105)의 남쪽/북쪽 이웃이
+ * 이 집합이면 "방 안쪽"으로 보고 변을 노출하지 않는다. 72만 알면 돗자리(139)·돌바닥(12)·널(102)로
+ * 리틴트한 방이나 러그를 깐 방에서 벽면 아래 지면이 공허로 오판돼 남/북 변을 397 트림으로 잘못
+ * 성형한다(오두막 회귀: (2,3) 트림 104 → 397).
+ *   • 바닥 재질(리틴트 대상): 나무 72 · 돌 12/13/42/43 · 구멍 73 · 널 102/103 · 짚 돗자리 139
+ *   • 바닥 깔개(러그): 청록/붉은 카펫 3×3 + 짚 돗자리 러그 (아트 원천 interiorRoomPipeline RUG_*)
+ * 고형 가구(화덕 하단 51·책장 18~80 등)가 벽면 바로 아래 붙는 배치는 별개 관심사라 여기 넣지 않는다
+ * — 오토타일 connect에 가구를 열거하면 취약하고 결합이 잘못된다.
+ */
+export const INTERIOR_WALL_FRAME_FLOOR_TILES: readonly number[] = [
+  INTERIOR_WALL_FRAME_FLOOR_TILE, 12, 13, 42, 43, 73, 102, 103, 139,
+  279, 280, 281, 309, 310, 311, 339, 340, 341, // 청록 카펫
+  375, 376, 377, 405, 406, 407, 435, 436, 437, // 붉은 카펫
+  108, 109, 110, 138, 140, 168, 169, 170, //       짚 돗자리 러그(139는 위 바닥 재질과 중복 → 생략)
+];
+
+/**
+ * 벽 링과 함께 칠하지만 오토타일 variantMap이 절대 "생성"하지 않는 동반 타일 —
+ * 크림 벽면 전체(위 74–76 · 아래 104–106 · 1칸 77/107) + 문 알코브 플랭크 396/398.
+ * 멤버로 두면 성형이 이들을 재작성(파괴)만 하므로 connect 전용으로 둔다 —
+ * 마스크 계산에는 이웃으로 참여하되 성형 대상(멤버)에서는 제외한다.
+ */
+export const INTERIOR_WALL_FRAME_COMPANION_TILE_IDS: readonly number[] = [
+  // 가로 run 윗줄
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.upperL,
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.upperM,
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.upperR,
+  // 가로 run 아랫줄 — lowerM(105)은 wall-frame body 멤버라 companion 제외
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.lowerL,
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.lowerR,
+  // 1칸 세로 칸막이
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.soloUpper,
+  INTERIOR_HOUSE_SHELL_CREAM_FACE.soloLower,
+  // 문 알코브
+  396,
+  398,
+];
+
+// 멤버는 variantMap이 생성할 수 있는 타일(본체·4변·4모서리 9종)뿐이어야 성형이 멤버 집합에
+// 닫힌다 — 생성 불가 타일을 멤버로 두면 성형은 그것을 파괴만 한다. 368은 렌더 전용 쿼터 소스.
 const INTERIOR_WALL_FRAME_MEMBER_TILE_IDS: readonly number[] = [
   INTERIOR_WALL_FRAME_TILES.body,
   INTERIOR_WALL_FRAME_TILES.edgeN,
@@ -57,15 +114,11 @@ const INTERIOR_WALL_FRAME_MEMBER_TILE_IDS: readonly number[] = [
   INTERIOR_WALL_FRAME_TILES.cornerNE,
   INTERIOR_WALL_FRAME_TILES.cornerSW,
   INTERIOR_WALL_FRAME_TILES.cornerSE,
-  // Inner face trims + door-alcove companions painted with the wall ring.
-  104,
-  106,
-  396,
-  398,
-  // Render-only quarter source still a member so composition can see corners.
+  // Render-only quarter source (dark-mass) — never stored, kept for composition parity.
   368,
 ];
 
+/** @deprecated Option B: house walls no longer use store autotile. Kept for legacy map reads only. */
 export function createInteriorWallFrameAutotileGroup(): AutotileGroup {
   const memberTileIds = uniqueTileIds(INTERIOR_WALL_FRAME_MEMBER_TILE_IDS);
   return {
@@ -73,7 +126,14 @@ export function createInteriorWallFrameAutotileGroup(): AutotileGroup {
     name: "실내 벽 프레임",
     neighborhood: 4,
     memberTileIds,
-    connectTileIds: uniqueTileIds([...memberTileIds, INTERIOR_WALL_FRAME_FLOOR_TILE]),
+    // 성형 트리거는 벽 타일(멤버) 편집으로 한정 — 바닥 페인트가 벽을 재성형하지 않게 한다.
+    // (벽을 바닥으로 지우는 편집도 previousTile 멤버 검사로 여전히 트리거된다.)
+    triggerTileIds: [...memberTileIds],
+    connectTileIds: uniqueTileIds([
+      ...memberTileIds,
+      ...INTERIOR_WALL_FRAME_COMPANION_TILE_IDS,
+      ...INTERIOR_WALL_FRAME_FLOOR_TILES,
+    ]),
     variantMap: buildEdgeCornerVariantMap({ ...INTERIOR_WALL_FRAME_TILES }),
   };
 }
@@ -191,7 +251,7 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "grass", "야외 잔디", "terrain", "lower", [240, 241, 242, 270, 271, 272, 300, 301, 302, 330, 331, 332, 7, 127, 247, 361, 364, 243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335], "passable", "repeat", "마을 외곽 야외용 잔디입니다(짙은 잔디 경계 포함). 실내 바닥으로 쓰지 마세요."),
   packGroup(INTERIOR_HARNESS_PREFIX, "outdoor-ground", "야외 지면(흙/모래/자갈)", "terrain", "lower", [6, 8, 36, 37, 38, 66, 67, 68, 96, 97, 98, 9, 10, 11, 39, 40, 41, 69, 70, 71, 99, 100, 101, 246, 248, 276, 277, 278, 306, 307, 308, 336, 337, 338, 132, 133, 192, 193, 222, 223, 252, 253], "passable", "repeat", "야외 흙땅·모래밭·자갈 포장 등 통행 가능한 실외 지면입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "water", "연못/물", "water", "lower", [0, 1, 2, 3, 4, 5, 30, 31, 32, 33, 34, 35, 60, 61, 62, 63, 64, 65, 90, 91, 92, 93, 94, 95, 120, 121, 122, 123, 150, 151, 152, 153, 180, 181, 182, 183, 210, 211, 212, 213], "solid", "repeat", "연못·깊은 물·폭포 애니메이션 타일입니다. 통행 불가."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "wall-cream", "크림 회벽", "wall", "lower", [74, 75, 76, 77, 104, 105, 106, 107], "solid", "repeat", "주민 집 실내의 크림색 회벽 면입니다(105 브러시가 벽 프레임 오토타일)."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "wall-cream", "크림 회벽", "wall", "lower", [74, 75, 76, 77, 104, 105, 106, 107], "solid", "repeat", "주민 집 실내 크림 회벽(하우스 셸). 가로 run: 윗줄 74/75/76 · 아랫줄 104/105/106. 1칸 칸막이: 상 77 · 하 107. 105는 벽 프레임 오토타일 브러시이기도 함. 문 이남 깊은 칸막이·천장 밴드 관통은 프레임 포스트 428."),
   packGroup(INTERIOR_HARNESS_PREFIX, "wall-brick", "벽돌 벽", "wall", "lower", [14, 15, 16, 17, 44, 45, 46, 47, 134, 135, 136, 137, 164, 165, 166, 167, 314, 315, 316, 317, 344, 345, 346, 347], "solid", "repeat", "자주/밝은/금장 벽돌 벽면입니다. 방 외곽을 막습니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "wall-stone", "돌/동굴 벽", "wall", "lower", [194, 195, 196, 197, 224, 225, 226, 227, 254, 255, 256, 284, 285, 286, 287, 283, 282], "solid", "repeat", "어두운 돌벽과 동굴 암벽입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "wall-panel", "석벽/판자 벽", "wall", "lower", [402, 403, 404, 432, 433, 434, 462, 463, 464, 111, 141, 171, 81, 129, 159, 189, 219], "solid", "repeat", "흰 석벽·선반턱·격자 창살·판자 슬랫 등 기타 벽면입니다."),
@@ -245,9 +305,10 @@ export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
   if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
     // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
     changed = seedInteriorUngroupedTileMeta(tileset) || changed;
-    // Cream wall-frame (105 brush) + dark wall terrain (366 brush).
-    // Painting 366 with auto-connect must reshape edges/corners without hand-picking variants.
-    changed = seedInteriorWallFrameAutotileGroup(tileset) || changed;
+    // Option B (2026-07-15): house walls are whole-tile grammar (no wall-frame store autotile).
+    // Only dark wall 366 is seeded as terrain autotile (store-only body; render quarters separate).
+    // Strip legacy wall-frame group if present so dark quarter gate is not tied to house group.
+    changed = removeLegacyInteriorWallFrameAutotileGroup(tileset) || changed;
     changed = seedInteriorDarkWallAutotileGroup(tileset) || changed;
     // 지형/카펫 RM2k3 블록 6종(산울타리·흙무더기·흙땅·데크·자갈·청록 카펫) — vision 감사(2026-07-12)로 확정.
     for (const group of createInteriorTerrainAutotileGroups()) {
@@ -451,10 +512,11 @@ function ensureTileMetaLength(tileset: TilesetDef): void {
 }
 
 
-function seedInteriorWallFrameAutotileGroup(tileset: TilesetDef): boolean {
+function removeLegacyInteriorWallFrameAutotileGroup(tileset: TilesetDef): boolean {
   const existing = tileset.autotileGroups ?? [];
-  if (existing.some((group) => group.id === INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID)) return false;
-  tileset.autotileGroups = [...existing, createInteriorWallFrameAutotileGroup()];
+  const next = existing.filter((group) => group.id !== INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID);
+  if (next.length === existing.length) return false;
+  tileset.autotileGroups = next;
   return true;
 }
 

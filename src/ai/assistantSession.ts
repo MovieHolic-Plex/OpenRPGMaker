@@ -120,7 +120,7 @@ export interface TurnResult {
 export type AuditEntry =
   | { kind: "user"; text: string; at?: string }
   | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
-  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[]; at?: string }
+  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[]; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
   | { kind: "status"; text: string; at?: string };
 
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
@@ -143,7 +143,8 @@ export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set
 // requiresApproval 이 메타데이터 자동 커밋·autoApprove 를 막아 명시 수락만 합의로 친다.
 export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
 const VOCABULARY_APPROVAL_WARNING = "🔒 재료 합의 제안: 적용하면 해당 타일/그룹을 다음부터 바로 씁니다. 자동 적용되지 않습니다.";
-const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING = "🖼 맵에 이렇게 놓습니다 — [이대로 적용]하면 배치와 재료 합의가 함께 끝납니다.";
+const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
+  "🖼 맵 배치 초안입니다. [맵만 적용]은 배치만, [맵 적용 + 재료 합의]는 배치와 재료 영구 합의(origin:user)를 함께 합니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지";
@@ -432,7 +433,7 @@ interface SpecGatePass {
 export interface AssistantSessionOptions {
   config?: AiConfig;
   contextOptions?: ContextOptions;
-  // 테스트/대체용 chat 구현. 기본은 실제 OpenRouter 호출.
+  // 테스트/대체용 chat 구현. 기본은 설정 baseUrl의 OpenAI 호환 chatCompletion.
   chat?: ChatFn;
   // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
   renderImages?: ToolImageRenderer;
@@ -480,6 +481,8 @@ export class AssistantSession {
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
   private workPlanAutoStepsThisUserMessage = 0;
+  /** 이번 사용자 메시지 동안 성공한 쓰기 툴 이름(WorkPlan complete 가드용). */
+  private turnSuccessfulWriteTools = new Set<string>();
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -697,6 +700,7 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
+    this.turnSuccessfulWriteTools = new Set();
     this.eventBaseProposalKeys = new Map();
 
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
@@ -885,8 +889,17 @@ export class AssistantSession {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
-      const done = completeWorkItemById(this.workPlan, id, note);
-      if (!done) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
+      const result = completeWorkItemById(this.workPlan, id, note, {
+        successfulWriteTools: [...this.turnSuccessfulWriteTools],
+      });
+      if (!result.ok) {
+        return {
+          ok: false,
+          summary: result.reason,
+          issues: [{ severity: "error", code: "work-item-incomplete", message: result.reason }],
+        };
+      }
+      const done = result.item;
       const next = getCurrentWorkItem(this.workPlan);
       return {
         ok: true,
@@ -1396,7 +1409,10 @@ export class AssistantSession {
             if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
           }
         }
-        if (toolResult.ok && tool?.mode === "write") successfulWriteToolsThisRound.push(name);
+        if (toolResult.ok && tool?.mode === "write") {
+          successfulWriteToolsThisRound.push(name);
+          this.turnSuccessfulWriteTools.add(name);
+        }
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({

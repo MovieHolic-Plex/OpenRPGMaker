@@ -22,10 +22,14 @@ export function previewMoveRoute(cmd: Extract<Command, { kind: "moveEvent" }>): 
     })
   );
   const points = tracePath(cmd.route.moves);
-  if (points.length >= 2 && svgSupported()) {
+  // 빈 경로도 시작점 격자를 그려 "미리보기 불가"처럼 보이지 않게 한다.
+  if (svgSupported()) {
     root.append(renderTrajectory(points));
   } else {
-    root.append(el("div", { class: "ecp-move-nogrid", text: points.length >= 2 ? "이동 궤적" : "이동 궤적 없음 (제자리/상대 이동)" }));
+    root.append(el("div", {
+      class: "ecp-move-nogrid",
+      text: points.length >= 2 ? "이동 궤적" : "시작점 (명령 추가 시 궤적 표시)",
+    }));
   }
   const mapOverlay = points.length >= 2 ? renderMapTrajectoryOverlay(cmd, points) : null;
   if (mapOverlay) root.append(mapOverlay);
@@ -179,10 +183,11 @@ function applyDir(cur: Pt, dir: Dir): Pt {
 function renderTrajectory(points: Pt[]): HTMLElement {
   const xs = points.map((p) => p.x);
   const ys = points.map((p) => p.y);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
+  // 빈/단일 점이어도 최소 3×3 격자를 유지해 시작 위치가 보이게 한다.
+  const minX = Math.min(-1, ...xs);
+  const maxX = Math.max(1, ...xs);
+  const minY = Math.min(-1, ...ys);
+  const maxY = Math.max(1, ...ys);
   const cols = maxX - minX + 1;
   const rows = maxY - minY + 1;
   const cell = 18;
@@ -193,14 +198,24 @@ function renderTrajectory(points: Pt[]): HTMLElement {
   const cy = (y: number) => pad + (y - minY) * cell + cell / 2;
 
   const svg = svgEl("svg", { viewBox: `0 0 ${width} ${height}`, class: "ecp-move-grid" });
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
+  svg.setAttribute("width", String(Math.max(width, 72)));
+  svg.setAttribute("height", String(Math.max(height, 72)));
   for (let gx = 0; gx < cols; gx += 1) {
     for (let gy = 0; gy < rows; gy += 1) {
-      svg.append(svgEl("circle", { cx: String(pad + gx * cell + cell / 2), cy: String(pad + gy * cell + cell / 2), r: "1.3", class: "ecp-grid-dot" }));
+      svg.append(svgEl("circle", {
+        cx: String(pad + gx * cell + cell / 2),
+        cy: String(pad + gy * cell + cell / 2),
+        r: "1.3",
+        class: "ecp-grid-dot",
+      }));
     }
   }
-  svg.append(svgEl("polyline", { points: points.map((p) => `${cx(p.x)},${cy(p.y)}`).join(" "), class: "ecp-move-line" }));
+  if (points.length >= 2) {
+    svg.append(svgEl("polyline", {
+      points: points.map((p) => `${cx(p.x)},${cy(p.y)}`).join(" "),
+      class: "ecp-move-line",
+    }));
+  }
   points.forEach((p, index) => {
     svg.append(
       svgEl("circle", {
@@ -211,8 +226,15 @@ function renderTrajectory(points: Pt[]): HTMLElement {
       })
     );
   });
-  const box = el("div", { class: "ecp-move-grid-box" });
+  const caption = points.length >= 2
+    ? `궤적 ${points.length - 1}칸`
+    : "시작점 · 오른쪽에서 이동 명령을 추가하세요";
+  const box = el("div", {
+    class: "ecp-move-grid-box",
+    dataset: { testid: "ecp-move-grid-box" },
+  });
   box.append(svg);
+  box.append(el("div", { class: "ecp-move-grid-caption", text: caption }));
   return box;
 }
 

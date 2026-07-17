@@ -1,3 +1,6 @@
+import { renderActorM2CommandBody } from "./commandBodyM2Actor";
+import { renderPage3M2CommandBody } from "./commandBodyM2Page3";
+import { renderWeightedBranchCommandBody } from "./commandBodyWeightedBranch";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { m2CommandById, type M2CommandFieldSpec } from "@/editor/eventCommands/m2Catalog";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -30,6 +33,12 @@ const PLAYER_OPTIONS = [{ value: "player", label: "주인공" }] as const;
 
 export function renderM2CommandBody(context: CommandEditContext, cmd: Command): HTMLElement | undefined {
   if (cmd.kind !== "m2Command") return undefined;
+  const rich = renderActorM2CommandBody(context, cmd);
+  if (rich) return rich;
+  const weighted = renderWeightedBranchCommandBody(context, cmd);
+  if (weighted) return weighted;
+  const page3 = renderPage3M2CommandBody(context, cmd);
+  if (page3) return page3;
   const entry = m2CommandById(cmd.commandId);
   const wrap = el("div", {
     class: "m2-command-body",

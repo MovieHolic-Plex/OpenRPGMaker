@@ -8,7 +8,7 @@ import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
-import { typeChartMultiplierFor } from "@/battle/typeChart";
+import { battlerTypes, typeChartMultiplierFor, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
@@ -86,10 +86,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const rng: Rng = options.rng ?? mulberry32(1);
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
-  // 아군측 소스: system.battleParty가 "monsters"이고 파티 몬스터가 있으면 몬스터가 필드에 나선다(포켓몬식).
+  // 아군측 소스: battleParty==="monsters" 또는 레거시 monsterBattleParty, 그리고 파티 몬스터가 있으면 몬스터가 필드에 나선다.
   // 그 외에는 기존대로 파티 액터가 직접 싸운다.
   const usePartyMonsters =
-    options.project.system.battleParty === "monsters" && (options.partyMonsters?.length ?? 0) > 0;
+    (options.project.system.battleParty === "monsters" || options.project.system.monsterBattleParty === true)
+    && (options.partyMonsters?.length ?? 0) > 0;
   const actors = usePartyMonsters
     ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
     : actorBattlers(options.project, {
@@ -151,6 +152,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     actorSkillIds: { ...(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}) },
     actorExperience: { ...(sessionState.actorExperience ?? options.party?.experience ?? {}) },
     actorLevels: { ...(sessionState.actorLevels ?? options.party?.levels ?? {}) },
+    actorBattleCommands: {
+      ...((sessionState as { actorBattleCommands?: Record<string, string[]> }).actorBattleCommands
+        ?? (options.party?.battleCommands as Record<string, string[]> | undefined)
+        ?? {}),
+    },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
@@ -1040,7 +1046,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function elementMultiplierFor(elementId: string | undefined, user: MutableBattler, target: MutableBattler): number {
     if (!elementId) return 1;
     const element = options.project.database.elements?.find((entry) => entry.id === elementId);
-    const typeMultiplier = typeChartMultiplierFor(options.project, elementId, user.recordId, target.recordId);
+    // Prefer battler.speciesId paths so party monsters (recordId=instanceId) still get type chart + STAB.
+    const typeMultiplier = typeChartMultiplierForTypes(
+      options.project,
+      elementId,
+      battlerTypes(options.project, user),
+      battlerTypes(options.project, target),
+    );
     if (!element?.damageMultipliers) return typeMultiplier;
     // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
     const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);
@@ -1145,7 +1157,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function activeActorPosition(index: number): { readonly battleX: number; readonly battleY: number } {
-    return { battleX: 248 + (index % 2) * 32, battleY: 70 + index * 24 };
+    // RM2k3 side-view right column (must match battleBattlers actor slots).
+    return { battleX: 252, battleY: 70 + index * 36 };
   }
 
   function resolveOutcome(): void {

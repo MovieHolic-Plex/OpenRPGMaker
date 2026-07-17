@@ -1,6 +1,6 @@
 import { store } from "@/project/store";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
-import { renderPlayerStatusMenu, type StatusMenuCommandId } from "@/player/playerStatusMenu";
+import { listStatusMenuCommandIds, renderPlayerStatusMenu, type StatusMenuCommandId } from "@/player/playerStatusMenu";
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment } from "@/project/types";
@@ -167,8 +167,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
     if (isRailNavKey(key)) {
       const railKey = key === "ArrowRight" ? "ArrowDown" : key === "ArrowLeft" ? "ArrowUp" : key;
-      const next = reduceStatusMenuKeyboard({ selectedCommand, mode }, railKey);
-      selectedCommand = next.selectedCommand;
+      const session = options.getActiveScene()?.getSession();
+      const commandIds = session
+        ? listStatusMenuCommandIds(store.getCurrent(), session)
+        : undefined;
+      const next = reduceStatusMenuKeyboard({ selectedCommand, mode, commandIds }, railKey);
+      if (commandIds && !commandIds.includes(next.selectedCommand)) {
+        selectedCommand = commandIds[0] ?? "items";
+      } else {
+        selectedCommand = next.selectedCommand;
+      }
       renderMenu(undefined, selectedCommand);
       return emitAndHandle("menu-select");
     }
@@ -262,7 +270,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const scene = options.getActiveScene();
     if (!scene) return;
     rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
-    const result = moveMonster(scene.getSession(), instanceId, to);
+    const result = moveMonster(scene.getSession(), instanceId, to, store.getCurrent());
     const message = result.ok
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
       : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
@@ -298,10 +306,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "row":
       case "formation":
       case "quests":
+      case "relationships":
         resetSubscreenState();
         mode = "function";
         options.emitMenuJuice("menu-confirm", renderMenu(undefined, commandId));
         return;
+      default:
+        assertNever(commandId);
     }
   }
 
@@ -370,6 +381,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return false;
       case "load":
       case "quests":
+      case "relationships":
       case "row":
       case "status":
       case "to-title":
@@ -461,6 +473,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "save":
       case "load":
       case "quests":
+      case "relationships":
       case "row":
       case "status":
       case "to-title":
@@ -502,4 +515,8 @@ function isConfirmMenuKey(key: RuntimeMenuKey): boolean {
 
 function isCancelMenuKey(key: RuntimeMenuKey): boolean {
   return key === "Escape" || key === "x";
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled status menu command: ${String(value)}`);
 }

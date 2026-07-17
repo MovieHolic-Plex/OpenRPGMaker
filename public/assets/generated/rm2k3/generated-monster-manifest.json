@@ -1,0 +1,254 @@
+[
+  {
+    "id": "generated-enemy-aqualing-01",
+    "fileName": "monster-aqualing-01.png",
+    "sha256": "c62016f463c69ae72c63aa7e2e7c8076995eefe4fb103e154d9a692459bf92a5",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7391
+  },
+  {
+    "id": "generated-enemy-bat-01",
+    "fileName": "monster-bat-01.png",
+    "sha256": "d1fd0b057cbd8101771ce92abcfbd3f02f874535eecb9d04a14b02a38f9c7871",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6922
+  },
+  {
+    "id": "generated-enemy-carbuncle-01",
+    "fileName": "monster-carbuncle-01.png",
+    "sha256": "9bae2c67fc8fcf0d626b222c5027fe75e6cac47fc4d3bdef42fe28921701d0c0",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6822
+  },
+  {
+    "id": "generated-enemy-cat-01",
+    "fileName": "monster-cat-01.png",
+    "sha256": "d8f9b7bb1bd3c7017da6ec3eafd0b06ef87b8f5abc4a146f283ce8118eb6591c",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6462
+  },
+  {
+    "id": "generated-enemy-centipede-01",
+    "fileName": "monster-centipede-01.png",
+    "sha256": "3e3e9555979e460ed6b0e9010c36f360e6b43df3c3c21dacb6c8a526c391fd4a",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7397
+  },
+  {
+    "id": "generated-enemy-cockatrice-01",
+    "fileName": "monster-cockatrice-01.png",
+    "sha256": "39dce8fbba9a46659de7a21534edb264286f2bf700d732ac54ffec497dd11197",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 5798
+  },
+  {
+    "id": "generated-enemy-crab-01",
+    "fileName": "monster-crab-01.png",
+    "sha256": "2d8a4e94506729465a007e7e30107502d85a4184ecb6158b9d9356a071ba34ff",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7444
+  },
+  {
+    "id": "generated-enemy-dragon-01",
+    "fileName": "monster-dragon-01.png",
+    "sha256": "15f7afa579a6e7a24c917bfae518db1e33b4fb7582ac950590cac02972c3adaf",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6763
+  },
+  {
+    "id": "generated-enemy-fish-01",
+    "fileName": "monster-fish-01.png",
+    "sha256": "8105cc6b8d16a7f5ae547981b19650d49995ff8d0e2504d8d52481d535d62339",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6113
+  },
+  {
+    "id": "generated-enemy-ghost-01",
+    "fileName": "monster-ghost-01.png",
+    "sha256": "860528fb43ff480153733d3a4144f6263824566f1f9435807643ab1a9948be75",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6970
+  },
+  {
+    "id": "generated-enemy-ghoul-01",
+    "fileName": "monster-ghoul-01.png",
+    "sha256": "8c760a74b8dbb95c9fbefb51b96a9fab865c5e2d90515eb4814b90acf99f43a4",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7318
+  },
+  {
+    "id": "generated-enemy-golem-01",
+    "fileName": "monster-golem-01.png",
+    "sha256": "87f5282fd692c63ae11da46a66280fd137384039661aa9f9114ab8c287e0d1f6",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 5909
+  },
+  {
+    "id": "generated-enemy-harpy-01",
+    "fileName": "monster-harpy-01.png",
+    "sha256": "23bf3378bf88ddcbd9d8cddc1d49da7dd0078b1213d8a2864978a625ea62de53",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 5715
+  },
+  {
+    "id": "generated-enemy-horse-01",
+    "fileName": "monster-horse-01.png",
+    "sha256": "f6b476320f7e0e0269d857920c157ae3d7ff7bb5dee1602d066b0659cc66a0b5",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7319
+  },
+  {
+    "id": "generated-enemy-jackolantern-01",
+    "fileName": "monster-jackolantern-01.png",
+    "sha256": "a5b283692cdc72d60f867c388c10dab29cbc498516de26400aa50dc9162bffaa",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 5814
+  },
+  {
+    "id": "generated-enemy-kappa-01",
+    "fileName": "monster-kappa-01.png",
+    "sha256": "49b9f33d5b02c32be26eb1688d4f9fdeb7ef6bcea061c7b094cf9e3dd5e44b53",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6668
+  },
+  {
+    "id": "generated-enemy-king-slime-01",
+    "fileName": "monster-king-slime-01.png",
+    "sha256": "d76547e5250cf02a0cd22e68378c5774fdf33c84b900cc366aa6dc803603ec7c",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6548
+  },
+  {
+    "id": "generated-enemy-leafling-01",
+    "fileName": "monster-leafling-01.png",
+    "sha256": "85120b481b1aa885a359972c781a85b797118323c24c943a703c570396b51745",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6617
+  },
+  {
+    "id": "generated-enemy-lemora-01",
+    "fileName": "monster-lemora-01.png",
+    "sha256": "5b1e65c4f01920532e57aa23893d74f5704a237453ea90e94f42aef6705d9bbc",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6426
+  },
+  {
+    "id": "generated-enemy-mantis-01",
+    "fileName": "monster-mantis-01.png",
+    "sha256": "38c6c4becfafd1cd03123e9c9fca6ec816beb4d4b1bea0b98ca2390ce8ceed99",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7383
+  },
+  {
+    "id": "generated-enemy-orc-01",
+    "fileName": "monster-orc-01.png",
+    "sha256": "83b9b4e88869b685e65957015e4ef923e58905bcf9fcf392fc2bab81ec059890",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6763
+  },
+  {
+    "id": "generated-enemy-parasite-01",
+    "fileName": "monster-parasite-01.png",
+    "sha256": "a2c3e126cdf3882fe219cbc2d0b686e02107feb21ecbff05855c96a32bd184ca",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 5522
+  },
+  {
+    "id": "generated-enemy-plant-01",
+    "fileName": "monster-plant-01.png",
+    "sha256": "865a3257d710f3b6024d4f05a08afdf41cba549b1e9612fd19c8e301fc806ee1",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6682
+  },
+  {
+    "id": "generated-enemy-salamander-01",
+    "fileName": "monster-salamander-01.png",
+    "sha256": "4e76c3f56016605cfbbb68990e78018848ae47cfda4e27c496b8987241ac1a6f",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7022
+  },
+  {
+    "id": "generated-enemy-scorpion-01",
+    "fileName": "monster-scorpion-01.png",
+    "sha256": "9594ce886c94af534aa7cc1869f23f4bfbdbe75cbb50340eeeabfbeb91d02352",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7583
+  },
+  {
+    "id": "generated-enemy-skeleton-01",
+    "fileName": "monster-skeleton-01.png",
+    "sha256": "b32f53c9491eb60e1bff87bcb8f96c0667f969884c145bbfd18d3b6036dadcd3",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7410
+  },
+  {
+    "id": "generated-enemy-slime-01",
+    "fileName": "monster-slime-01.png",
+    "sha256": "19d5135cd508ae15b43675cd086c17dd9b581631c06ab0156a0a0d002f61290e",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7033
+  },
+  {
+    "id": "generated-enemy-snake-01",
+    "fileName": "monster-snake-01.png",
+    "sha256": "7b790291bfd3752f5ceb0a1191637ffc8871bc1ccd74267091e8a2fcf3c4827a",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6817
+  },
+  {
+    "id": "generated-enemy-sparkit-01",
+    "fileName": "monster-sparkit-01.png",
+    "sha256": "dc8e33e8f1cfb7e5ce1c1779ac87ede6c8d12877103fc42a5d55b2a171a50f1a",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6332
+  },
+  {
+    "id": "generated-enemy-specter-01",
+    "fileName": "monster-specter-01.png",
+    "sha256": "961798a3f32f9f5106e4dfe8a8ee4a8dcc8c8520d76435f955943b2d94a652d6",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7287
+  },
+  {
+    "id": "generated-enemy-spider-01",
+    "fileName": "monster-spider-01.png",
+    "sha256": "fac32f8834d46f74dcac482d865e1cde5d0cf309d21d56ff8f9c75a2d109a449",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6443
+  },
+  {
+    "id": "generated-enemy-spirit-01",
+    "fileName": "monster-spirit-01.png",
+    "sha256": "ccaf58d25fc1ecfa8e78899f9aff53bf184da427cef6aef91b44b3a2a4625d52",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6951
+  },
+  {
+    "id": "generated-enemy-sylph-01",
+    "fileName": "monster-sylph-01.png",
+    "sha256": "fc82ff0176760852df71f75678d65db8a439ec4312546bc3755a0ff4dfbfa384",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6703
+  },
+  {
+    "id": "generated-enemy-unicorn-01",
+    "fileName": "monster-unicorn-01.png",
+    "sha256": "88620cbe525666370c94ae7c93e586934ff04a12d298c6f91df8a90c8bc98e9e",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7001
+  },
+  {
+    "id": "generated-enemy-wolf-01",
+    "fileName": "monster-wolf-01.png",
+    "sha256": "87c64e72dec4eab6e64e91954c5cab72d6d7552d2bce376c695dc8ea69bdea1e",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 6676
+  },
+  {
+    "id": "generated-enemy-zombie-01",
+    "fileName": "monster-zombie-01.png",
+    "sha256": "492f19591c2593bf9b2383efcdde88adf9f6f5fa1d338e49747c41fb3ee23e7c",
+    "model": "google/gemini-2.5-flash-image",
+    "keyedPixels": 7611
+  }
+]

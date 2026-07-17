@@ -39,6 +39,7 @@
 }
 
 .player-layout.system-shell .rm-title-menu-button {
+  cursor: pointer;
   font-size: var(--runtime-font-size-11);
   line-height: 1.15;
   min-height: 20px;
@@ -75,7 +76,7 @@
 
 .player-layout.system-shell .rm2k3-load-panel.system-panel {
   align-items: center;
-  background-color: #7fd3ff;
+  background-color: #101820;
   border: 0;
   box-shadow: none;
   box-sizing: border-box;

@@ -6,6 +6,7 @@ import {
   type PictureState,
   type PlaySession,
 } from "@/project/session";
+import { syncMonsterPartyFollowers } from "@/player/followers";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { normalizeGameTime } from "@/project/gameTime";
@@ -90,6 +91,12 @@ export type SaveSnapshot = {
     readonly farmPlots?: PlaySession["farmPlots"];
     readonly friendship?: PlaySession["friendship"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
+    readonly dailyTalks?: PlaySession["dailyTalks"];
+    readonly monsterCareSteps?: number;
+    readonly monsterCareDaily?: PlaySession["monsterCareDaily"];
+    readonly equippedToolItemId?: PlaySession["equippedToolItemId"];
+    readonly chests?: PlaySession["chests"];
+    readonly placeables?: PlaySession["placeables"];
     readonly followers?: PlaySession["followers"];
     readonly followerTrail?: PlaySession["followerTrail"];
     readonly currentMapId: string;
@@ -156,6 +163,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
+      actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
@@ -171,6 +179,12 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       farmPlots: structuredClone(session.farmPlots ?? {}),
       friendship: structuredClone(session.friendship ?? {}),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
+      dailyTalks: structuredClone(session.dailyTalks ?? {}),
+      monsterCareSteps: session.monsterCareSteps,
+      monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
+      equippedToolItemId: session.equippedToolItemId,
+      chests: structuredClone(session.chests ?? {}),
+      placeables: structuredClone(session.placeables ?? {}),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
       currentMapId: session.currentMapId,
@@ -251,6 +265,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
+  if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
@@ -266,6 +281,16 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
+  session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
+  if (typeof snapshot.session.monsterCareSteps === "number") {
+    session.monsterCareSteps = Math.max(0, Math.trunc(snapshot.session.monsterCareSteps));
+  }
+  if (snapshot.session.monsterCareDaily) {
+    session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
+  }
+  if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
+  if (snapshot.session.chests) session.chests = structuredClone(snapshot.session.chests);
+  if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
@@ -287,6 +312,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
+  syncMonsterPartyFollowers(project, session);
   return session;
 }
 
@@ -363,6 +389,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
+      actorBattleCommands: isActorStateIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
@@ -378,6 +405,14 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
+      dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
+      monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)
+        ? Math.max(0, Math.trunc(session.monsterCareSteps))
+        : undefined,
+      monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
+      equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
+      chests: session.chests && typeof session.chests === "object" ? structuredClone(session.chests) : undefined,
+      placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
       currentMapId: session.currentMapId,

@@ -1,3 +1,4 @@
+import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import type { DamageFeedback } from "@/player/battleSequencer";
@@ -126,8 +127,10 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
   if (sprite?.classList.contains("battle-actor-sprite")) {
     // Generated battle sheets: 3 columns × idle/attack/hit along X.
+    // Frame width must match actorBattleImage display frame (96px = 2× of 48).
+    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width")) || 96;
     const col = pose === "attack" ? 1 : pose === "hit" || pose === "dead" ? 2 : 0;
-    sprite.style.backgroundPosition = `-${col * 36}px 0`;
+    sprite.style.backgroundPosition = `-${col * frameW}px 0`;
   }
 }
 
@@ -199,10 +202,13 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   enemyNode.type = "button";
   enemyNode.className = "battle-enemy";
   if (pokemonUiActive()) {
-    // 포켓몬 문법: 상대는 우상단 존(카메라에서 멀게). 다수면 왼쪽으로 벌린다.
-    positionBattleNode(enemyNode, 236 - index * 54, 58 + (index % 2) * 12);
+    // 포켓몬 문법: 상대는 우상단 존(카메라에서 멀게, 크게). 다수면 왼쪽으로 벌린다.
+    positionBattleNode(enemyNode, 248 - index * 48, 52 + (index % 2) * 14);
   } else {
-    positionBattleNode(enemyNode, enemy.battleX, enemy.battleY);
+    // RM2k3 side-view: enemies on the LEFT facing the party.
+    const x = enemy.battleX ?? 84 + (index % 2) * 44;
+    const y = enemy.battleY ?? 52 + index * 36;
+    positionBattleNode(enemyNode, x, y);
   }
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
@@ -281,10 +287,13 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
   const node = document.createElement("div");
   node.className = "battle-actor";
   if (pokemonUiActive()) {
-    // 포켓몬 문법: 아군은 좌하단(카메라에 가깝게 크게). 다수면 오른쪽으로 벌린다.
-    positionBattleNode(node, 64 + index * 46, 132 - (index % 2) * 8);
+    // 포켓몬 문법: 아군은 좌하단(카메라에 가깝게 더 크게). 다수면 오른쪽으로 벌린다.
+    positionBattleNode(node, 78 + index * 44, 138 - (index % 2) * 10);
   } else {
-    positionBattleNode(node, actor.battleX, actor.battleY);
+    // RM2k3 side-view: party stacks on the RIGHT facing enemies.
+    const x = actor.battleX ?? 252;
+    const y = actor.battleY ?? 70 + index * 36;
+    positionBattleNode(node, x, y);
   }
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
@@ -325,6 +334,33 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
 function positionBattleNode(node: HTMLElement, x: number | undefined, y: number | undefined): void {
   node.style.setProperty("--battle-node-x", `${clampBattleCoordinate(x ?? 160, 0, 320) / 320 * 100}%`);
   node.style.setProperty("--battle-node-y", `${clampBattleCoordinate(y ?? 96, 0, 160) / 160 * 100}%`);
+}
+
+/** Side-view approach / knockback classes for the current resolve beat. */
+export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined): void {
+  for (const node of field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")) {
+    node.classList.remove(
+      "battle-motion-lunge",
+      "battle-motion-return",
+      "battle-motion-knockback",
+      "battle-motion-user",
+      "battle-motion-target",
+    );
+  }
+  if (!beat) return;
+  const user = findBattlerNode(field, beat.userId);
+  if (user) {
+    user.classList.add("battle-motion-user");
+    if (beat.userMotion === "lunge") user.classList.add("battle-motion-lunge");
+    else if (beat.userMotion === "return") user.classList.add("battle-motion-return");
+  }
+  if (beat.targetId) {
+    const target = findBattlerNode(field, beat.targetId);
+    if (target) {
+      target.classList.add("battle-motion-target");
+      if (beat.targetMotion === "knockback") target.classList.add("battle-motion-knockback");
+    }
+  }
 }
 
 function clampBattleCoordinate(value: number, min: number, max: number): number {
@@ -446,15 +482,19 @@ function battleCharsetResourceId(recordId: string): string | undefined {
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
   if (resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
+    // Generated battle sheets are 3×N grids of 48×64 cells (144×384 source).
+    // Display at 2× so actors read as field protagonists, not stickers.
+    const frameW = 96;
+    const frameH = 128;
     const sprite = document.createElement("span");
     sprite.className = "battle-actor-sprite";
     sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;
     sprite.setAttribute("role", "img");
     sprite.setAttribute("aria-label", `${name} 전투 캐릭터`);
-    sprite.style.setProperty("--battle-sprite-frame-width", "36px");
-    sprite.style.setProperty("--battle-sprite-frame-height", "48px");
+    sprite.style.setProperty("--battle-sprite-frame-width", `${frameW}px`);
+    sprite.style.setProperty("--battle-sprite-frame-height", `${frameH}px`);
     sprite.style.backgroundPosition = "0 0";
-    sprite.style.backgroundSize = "108px 288px";
+    sprite.style.backgroundSize = `${frameW * 3}px ${frameH * 6}px`;
     sprite.style.backgroundImage = `url("${url}")`;
     return sprite;
   }

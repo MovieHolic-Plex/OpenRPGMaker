@@ -70,9 +70,69 @@ describe("command edit modal — image-rich preview", () => {
   it("renders the RM2003 message window for text and reflects speaker + body", () => {
     const preview = renderWithFakeDom(() => renderCommandPreview({ kind: "text", speaker: "촌장", body: "마을에 온 걸 환영하네." }));
     expect(findByTestId(preview, "ecp-message-window")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-message-speaker")?.className).toContain("ecp-message-speaker-nameplate");
     expect(preview.textContent).toContain("촌장");
     expect(preview.textContent).toContain("마을에 온 걸");
   });
+
+
+  it("text preview resolves control codes and shows effect examples without raw escape syntax", () => {
+    const bs = String.fromCharCode(92);
+    const bodyText = [
+      "값 ",
+      bs + "v[1]",
+      " 이름 ",
+      bs + "n[1]",
+      bs + "c[2]",
+      " 색",
+      bs + "s[3]",
+      bs + "$",
+      bs + "!",
+      bs + ".",
+      bs + "|",
+      bs + ">",
+      bs + "<",
+      bs + "^",
+      bs + "_",
+      "끝",
+    ].join("");
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({ kind: "text", body: bodyText })
+    );
+    const body = findByTestId(preview, "ecp-message-body");
+    expect(body).toBeTruthy();
+    if (!body) return;
+    expect(body.textContent).toContain("값 0");
+    expect(body.textContent).toContain("이름");
+    expect(body.textContent).toContain("색");
+    expect(body.textContent).toContain(" 끝");
+    expect(body.textContent).not.toContain(bs);
+    expect(findByTestId(body, "ecp-message-control-pause")?.textContent).toContain("키 입력 대기");
+    expect(findByTestId(body, "ecp-message-control-gold")?.textContent).toContain("소지금 창 · 0 G");
+    expect(findByTestId(body, "ecp-message-control-speed")?.textContent).toContain("표시 속도 3");
+    expect(findByTestId(body, "ecp-message-control-fast-on")?.textContent).toContain("즉시 표시 시작");
+    expect(findByTestId(body, "ecp-message-control-skip-wait")?.textContent).toContain("입력 대기 없이 닫기");
+    expect(findByTestId(body, "ecp-message-control-space")?.textContent).toContain("반각 공백");
+    expect(body.textContent.indexOf("색")).toBeLessThan(body.textContent.indexOf("표시 속도 3"));
+    expect(body.textContent.indexOf("표시 속도 3")).toBeLessThan(body.textContent.indexOf("소지금 창 · 0 G"));
+    expect(body.textContent.indexOf("반각 공백")).toBeLessThan(body.textContent.lastIndexOf("끝"));
+    expect(findByTestId(preview, "ecp-message-control-badges")).toBeNull();
+  });
+
+  it("text editor keeps body primary and speaker optional with labeled control palette", () => {
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        { path: [], actions: noopActions, lockKind: true },
+        { kind: "text", body: "안녕" }
+      )
+    );
+    expect(findByTestId(body, "event-command-text-editor")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-body")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-speaker-details")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-palette")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-insert-variable")?.textContent).toContain("변수");
+  });
+
 
   it("renders digit-slot preview for inputNumber with prompt and optional pad", () => {
     const preview = renderWithFakeDom(() =>
@@ -83,9 +143,83 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "ecp-number-pad")).toBeTruthy();
     expect(preview.textContent).toContain("비밀번호");
     expect(preview.textContent).toContain("4자리");
+    expect(preview.textContent).toContain("대기 중");
     const slots = findByTestId(preview, "ecp-number-slots");
     // FakeDom uses childNodes (no HTMLElement.children).
     expect(slots?.childNodes?.length).toBe(4);
+    // Idle preview: empty slots, no filled sample digits like "1234".
+    const slotNodes = [...(slots?.childNodes ?? [])] as Array<{ className?: string; textContent?: string }>;
+    expect(slotNodes.every((node) => String(node.className ?? "").includes("empty"))).toBe(true);
+    expect(slotNodes.some((node) => String(node.className ?? "").includes("cursor"))).toBe(true);
+    expect(slotNodes.every((node) => !(node.textContent ?? "").trim())).toBe(true);
+  });
+
+  it("inputNumber form uses digit chips only and labels window title / keypad option", () => {
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        { path: [0], actions: noopActions, lockKind: true },
+        { kind: "inputNumber", variableId: "var_0001", digits: 2, prompt: "PIN", showPad: true }
+      )
+    );
+    expect(findByTestId(body, "input-number-command-body")).toBeTruthy();
+    expect(findByTestId(body, "input-number-digit-stepper")).toBeTruthy();
+    expect(findByTestId(body, "input-number-digit-chip-2")?.className).toContain("active");
+    expect(findByTestId(body, "input-number-digits")).toBeTruthy();
+    expect(body.textContent).toContain("창 제목");
+    expect(body.textContent).toContain("터치용 숫자 키패드 표시");
+    expect(body.textContent).not.toContain("안내 문구");
+  });
+
+  it("inputNumber preview without pad shows OK mock instead of keypad", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({ kind: "inputNumber", variableId: "var_0001", digits: 1 })
+    );
+    expect(findByTestId(preview, "ecp-number-ok-mock")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-number-pad")).toBeFalsy();
+    expect(preview.textContent).toContain("1자리");
+  });
+
+  it("setVariable form shows labeled fields, op segments, and live formula", () => {
+    const project = store.getCurrent();
+    const variableId = project.variables[0]?.id ?? "var_0001";
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        { path: [0], actions: noopActions, lockKind: true },
+        { kind: "setVariable", variableId, op: "+=", value: 7 }
+      )
+    );
+    expect(findByTestId(body, "event-command-variable-form")).toBeTruthy();
+    expect(findByTestId(body, "event-command-variable-op")).toBeTruthy();
+    expect(findByTestId(body, "event-command-variable-value-source")).toBeTruthy();
+    expect(findByTestId(body, "event-command-variable-number-value")).toBeTruthy();
+    expect(body.textContent).toContain("대상 변수");
+    expect(body.textContent).toContain("값 소스");
+    expect(body.textContent).toContain("정수 나눗셈");
+    const formula = findByTestId(body, "event-command-variable-formula");
+    expect(formula?.textContent).toContain("+=");
+    expect(formula?.textContent).toContain("7");
+  });
+
+  it("setVariable preview renders formula card for number and variable operands", () => {
+    const project = store.getCurrent();
+    const variableId = project.variables[0]?.id ?? "var_0001";
+    const numberPreview = renderWithFakeDom(() =>
+      renderCommandPreview({ kind: "setVariable", variableId, op: "=", value: 12 })
+    );
+    expect(findByTestId(numberPreview, "ecp-variable-card")).toBeTruthy();
+    expect(findByTestId(numberPreview, "ecp-variable-formula")?.textContent).toContain("12");
+    expect(numberPreview.textContent).toContain("값 소스: 숫자");
+
+    const varPreview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "setVariable",
+        variableId,
+        op: "+=",
+        value: { kind: "var", id: variableId },
+      })
+    );
+    expect(findByTestId(varPreview, "ecp-variable-formula")?.textContent).toContain("+=");
+    expect(varPreview.textContent).toContain("값 소스: 변수");
   });
 
   it("changeFace play mock shows a tall message window with crop-only face (no editor meta card)", () => {
@@ -130,7 +264,7 @@ describe("command edit modal — image-rich preview", () => {
     expect(badges?.textContent).toContain("이벤트 이동 정지");
   });
 
-  it("groups displayTextSettings form into format/position/options fieldsets", () => {
+  it("groups displayTextSettings form into format/position segments and options fieldsets", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
         { path: [], actions: noopActions, lockKind: true },
@@ -146,6 +280,11 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(body, "event-command-message-settings")).toBeTruthy();
     expect(findByTestId(body, "event-command-message-format")).toBeTruthy();
     expect(findByTestId(body, "event-command-message-position")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-format-segment-transparent")?.className).toContain("selected");
+    expect(findByTestId(body, "event-command-message-position-segment-top")?.className).toContain("selected");
+    expect(findByTestId(body, "event-command-message-format-segment-normal")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-position-segment-center")).toBeTruthy();
+    expect(findByTestId(body, "event-command-message-position-segment-bottom")).toBeTruthy();
     expect(findByTestId(body, "event-command-message-prevent-obscuring")).toBeTruthy();
     expect(findByTestId(body, "event-command-message-allow-movement")).toBeTruthy();
     expect(body.textContent).toContain("윈도우 표시 형식");
@@ -191,6 +330,28 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(body, "ecp-move-preview")).toBeTruthy();
   });
 
+  it("empty move-route still shows path preview shell and command add panel", () => {
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        {
+          path: [],
+          actions: noopActions,
+          lockKind: true,
+        },
+        { kind: "moveEvent", eventId: "", route: { moves: [], repeat: false } },
+      )
+    );
+    expect(findByTestId(body, "move-route-editor")).toBeTruthy();
+    expect(findByTestId(body, "move-route-path-preview")).toBeTruthy();
+    expect(findByTestId(body, "move-route-help")).toBeTruthy();
+    expect(findByTestId(body, "ecp-move-preview")).toBeTruthy();
+    expect(findByTestId(body, "move-route-add-move-up")).toBeTruthy();
+    expect(findByTestId(body, "move-route-parameters-details")).toBeTruthy();
+    // 매개변수는 접힌 채로 시작 — 주 작업면이 먼저 보인다.
+    const params = findByTestId(body, "move-route-parameters-details") as unknown as { open?: boolean };
+    expect(params?.open).toBeFalsy();
+  });
+
   it("summarizes fork branches with then/else counts", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "fork", condition: { kind: "switch", switchId: "", value: true }, then: [{ kind: "text", body: "a" }, { kind: "text", body: "b" }] })
@@ -198,6 +359,51 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "ecp-fork-preview")).toBeTruthy();
     expect(preview.textContent).toContain("2개 명령");
     expect(preview.textContent).toContain("분기 없음");
+  });
+
+  it("setEventGraphicPattern shows charset sprite preview instead of text-only summary", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview({
+        kind: "setEventGraphicPattern",
+        eventId: "ev_house_door_77_map_village_77_48x48_1",
+        pattern: 24,
+      })
+    );
+    expect(findByTestId(preview, "ecp-pattern-stage")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-pattern-sprite")).toBeTruthy();
+    expect(findByTestId(preview, "ecp-pattern-caption")?.textContent).toContain("ev_house_door");
+    expect(preview.textContent).toContain("아래");
+    expect(preview.textContent).toContain("왼쪽");
+  });
+
+  it("setEventGraphicPattern editor uses RM2003 graphic picker layout", () => {
+    let staged: Command = {
+      kind: "setEventGraphicPattern",
+      eventId: "ev_door",
+      pattern: 24, // ch0 down pattern0 closed door
+    };
+    const actions: CommandListActions = {
+      ...noopActions,
+      replaceCommand: (_path, command) => {
+        staged = command;
+      },
+    };
+    const body = renderWithFakeDom(() =>
+      renderCommandBody({ path: [], actions, lockKind: true }, staged)
+    );
+    expect(findByTestId(body, "event-command-frame-editor")).toBeTruthy();
+    // Same shell as page graphic dialog: file list + 8 character chips + direction/pattern radios.
+    expect(findByTestId(body, "event-graphic-resource-list")).toBeTruthy();
+    expect(findByTestId(body, "event-command-frame-character-grid")).toBeTruthy();
+    expect(findByTestId(body, "event-command-frame-direction-group")).toBeTruthy();
+    expect(findByTestId(body, "event-command-frame-pattern-group")).toBeTruthy();
+    expect(findByTestId(body, "event-command-frame-probe")).toBeTruthy();
+    expect(findByTestId(body, "event-command-frame-door-seq")).toBeTruthy();
+    // Door open step 2 = direction up, pattern left → frame 0 for ch0.
+    findByTestId(body, "event-command-frame-door-step-2")?.click();
+    expect(staged.kind).toBe("setEventGraphicPattern");
+    if (staged.kind !== "setEventGraphicPattern") return;
+    expect(staged.pattern).toBe(0);
   });
 
   it("locks the command-kind select when editing an existing command, keeps it for new commands", () => {
@@ -304,6 +510,33 @@ describe("command edit modal — image-rich preview", () => {
         { kind: "choices", options: [{ text: "예", branch: [] }], cancelBehavior: "branch" }
       )
     ).toBe(true);
+  });
+
+  it("shouldRerenderCommandForm flags fork structure and loop body length", () => {
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },
+        { kind: "fork", condition: { kind: "variable", variableId: "v", op: "==", value: 1 }, then: [] },
+      ),
+    ).toBe(true);
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },
+        { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [], else: [] },
+      ),
+    ).toBe(true);
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "loop", body: [] },
+        { kind: "loop", body: [{ kind: "text", body: "x" }] },
+      ),
+    ).toBe(true);
+    expect(
+      shouldRerenderCommandForm(
+        { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },
+        { kind: "fork", condition: { kind: "switch", switchId: "a", value: false }, then: [] },
+      ),
+    ).toBe(false);
   });
 });
 

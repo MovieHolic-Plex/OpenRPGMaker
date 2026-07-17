@@ -54,7 +54,7 @@ export function renderCropTab(host: HTMLElement, rerender: () => void): void {
 function toolbar(rerender: () => void): HTMLElement {
   const add = el("button", {
     class: "db-toolbar-button",
-    text: "추가",
+    text: "+ 추가",
     attrs: { type: "button" },
     dataset: { testid: "db-crop-add" },
     on: {

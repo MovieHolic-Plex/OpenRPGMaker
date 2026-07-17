@@ -17,10 +17,22 @@ describe("changeFriendship 계약", () => {
     expect(result.finished).toBe(true);
   });
 
-  it("self fallback: npcKey 생략 시 현재 이벤트 id를 사용한다", () => {
-    const result = runCommandContract([{ kind: "changeFriendship", delta: 40 }]);
+  it("self fallback: npcKey 생략 시 characterId를 사용한다", () => {
+    const result = runCommandContract([{ kind: "changeFriendship", delta: 40 }], {
+      mutateProject: (project) => {
+        const event = project.maps[project.startMapId]?.events.find((entry) => entry.id === CONTRACT_EVENT_ID);
+        if (event) event.characterId = CONTRACT_EVENT_ID;
+      },
+    });
 
     expect(result.session.friendship?.[CONTRACT_EVENT_ID]).toBe(40);
+    expect(result.finished).toBe(true);
+  });
+
+  it("self without characterId: 세션을 변경하지 않는다", () => {
+    const result = runCommandContract([{ kind: "changeFriendship", delta: 40 }]);
+
+    expect(result.session.friendship).toBeUndefined();
     expect(result.finished).toBe(true);
   });
 

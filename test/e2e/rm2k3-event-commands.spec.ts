@@ -648,8 +648,7 @@ test("input number command stores runtime entry in the selected variable", async
     await picker.getByTestId("event-record-picker-ok").click();
     await command.locator(".cmd-head").dblclick();
     await expect(command).toHaveClass(/editing/);
-    await command.getByTestId("input-number-digits").fill("4");
-    await command.getByTestId("input-number-digits").blur();
+    await command.getByTestId("input-number-digit-chip-4").click();
   });
 
   await applyEventEditor(page);

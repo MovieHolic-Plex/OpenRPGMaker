@@ -1,5 +1,6 @@
 import { defaultActorFaceResourceId } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
+import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 
@@ -14,6 +15,7 @@ export const STATUS_MENU_COMMAND_IDS = [
   "row",
   "formation",
   "quests",
+  "relationships",
   "wait",
   "to-title",
 ] as const;
@@ -48,6 +50,14 @@ export type StatusMenuSnapshotOptions = {
   readonly elapsedMs?: number;
   readonly waitModeEnabled?: boolean;
 };
+/** O3: hide 관계 rail unless giftSystem or any known friendship keys. */
+export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
+  const showRelationships =
+    isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
+  if (showRelationships) return [...STATUS_MENU_COMMAND_IDS];
+  return STATUS_MENU_COMMAND_IDS.filter((id) => id !== "relationships");
+}
+
 
 export function createPlayerStatusMenuSnapshot(
   project: Project,
@@ -73,7 +83,7 @@ export function createPlayerStatusMenuSnapshot(
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
     }];
   });
-  const commands = STATUS_MENU_COMMAND_IDS.map((id) => ({
+  const commands = listStatusMenuCommandIds(project, session).map((id) => ({
     id,
     label: statusMenuCommandLabel(id, options.waitModeEnabled ?? true),
   }));
@@ -100,6 +110,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "row": return "열";
     case "formation": return "진형";
     case "quests": return "임무";
+    case "relationships": return "관계";
     case "wait": return waitModeEnabled ? "대기 ON" : "대기 OFF";
     case "to-title": return "타이틀";
     default: return assertNever(commandId);

@@ -76,7 +76,7 @@ test("database common events use full command dialogs for nested command editing
   await page.getByTestId("command-picker-add-setSwitch").click();
   const dialog = page.getByTestId("event-command-edit-dialog");
   await expect(dialog).toContainText("스위치 조작");
-  await dialog.locator("select").last().selectOption("false");
+  await dialog.getByTestId("event-command-switch-value").selectOption("false");
   await dialog.getByTestId("event-command-edit-ok").click();
   await applyDatabaseChanges(page);
 

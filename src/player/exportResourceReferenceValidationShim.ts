@@ -1,4 +1,5 @@
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
+import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import type { Project } from "@/project/types";
@@ -15,5 +16,6 @@ export function collectResourceIds(project: Project): Set<string> {
     if ("textureKey" in asset) ids.add(asset.textureKey);
   }
   for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
+  for (const asset of CC0_AUDIO_ASSETS) ids.add(asset.id);
   return ids;
 }

@@ -177,7 +177,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
       ];
     case "Weighted Branch":
       return [
-        { key: "table", label: "가중치 표", type: "textarea", defaultValue: "success=1\nfailure=1" },
+        { key: "table", label: "가중치 표", type: "textarea", defaultValue: "성공=1\n실패=1" },
         { key: "resultVariableId", label: "결과 변수", type: "text", defaultValue: "" },
       ];
     case "Cutscene Control":
@@ -219,7 +219,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
       ];
     case "Tint Screen":
       return [
-        { key: "color", label: "색상", type: "select", defaultValue: "neutral", options: SCREEN_COLOR_OPTIONS },
+        { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS },
         { key: "value", label: "색(R,G,B 또는 hex)", type: "text", defaultValue: "" },
       ];
     case "Data Query":

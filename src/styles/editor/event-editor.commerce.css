@@ -677,3 +677,201 @@
 .event-command-edit-body .event-command-text-editor .inline-field:has(textarea) > span {
   padding-top: 0;
 }
+
+
+/* ---- 여관 처리 ---- */
+.inn-command-body {
+  gap: 12px;
+}
+
+.inn-command-card {
+  background: color-mix(in srgb, var(--bg-raised, #1a1d26) 92%, #0b1220);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 10px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.inn-command-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.inn-command-preset.active {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, var(--bg-raised, #1a1d26));
+  border-color: var(--accent, #6ea8ff);
+  color: var(--accent, #6ea8ff);
+}
+
+.inn-command-dialog-mock,
+.ecp-inn-window {
+  background: linear-gradient(180deg, #1a2233 0%, #121826 100%);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, #2a3140);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.inn-command-dialog-title,
+.ecp-inn-title {
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  font: 700 13px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.inn-command-dialog-note,
+.ecp-inn-note {
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.inn-command-dialog-question,
+.ecp-inn-question {
+  color: var(--text-1, #e9ecf5);
+  font: 600 13px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+.inn-command-dialog-actions,
+.ecp-inn-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.inn-command-dialog-choice,
+.ecp-inn-choice {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 6px;
+  color: var(--text-2, #aeb6c8);
+  font: 600 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 56px;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+.inn-command-dialog-choice.selected,
+.ecp-inn-choice.selected {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 18%, transparent);
+  border-color: var(--accent, #6ea8ff);
+  color: var(--accent, #6ea8ff);
+}
+
+.ecp-inn-stage {
+  align-items: center;
+  display: grid;
+  justify-items: stretch;
+  min-height: 140px;
+}
+
+.ecp-inn-price-chip {
+  color: #9ad0ff;
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+
+/* ---- P0 layout: list-first 2-column ---- */
+.shop-processing-v2.shop-processing-command-body { gap: 12px; }
+.shop-processing-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(240px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .shop-processing-layout { grid-template-columns: minmax(0, 1fr); }
+}
+.shop-processing-main,
+.shop-processing-side { display: grid; gap: 10px; min-width: 0; }
+.shop-processing-intent {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+}
+.shop-processing-intent-title {
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+.shop-processing-intent-body {
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+.shop-processing-intent-flow {
+  color: var(--text-1, #e9ecf5);
+  font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  opacity: 0.9;
+}
+.shop-processing-empty-banner {
+  background: color-mix(in srgb, #ff7b8a 18%, transparent);
+  border: 1px solid color-mix(in srgb, #ff7b8a 45%, transparent);
+  border-radius: 8px;
+  color: #ffd0d6;
+  font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 10px 12px;
+}
+.shop-processing-presets {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.shop-processing-presets-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-right: 4px;
+}
+.shop-processing-preset-btn { white-space: nowrap; }
+.shop-processing-v2 .shop-processing-settings { grid-template-columns: minmax(0, 1fr); }
+.shop-processing-v2 .shop-processing-settings .shop-processing-option,
+.shop-processing-v2 .shop-processing-settings .shop-processing-merchant-gold { grid-column: auto; }
+.shop-processing-v2 .shop-processing-segment { grid-template-columns: minmax(0, 1fr); }
+.shop-stock-editor {
+  border-top: 1px solid var(--border-subtle, #2a2e38);
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.shop-stock-editor-title {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+.shop-stock-season-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.shop-stock-season-chip.is-active {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+  color: var(--text-1, #e9ecf5);
+}
+.shop-stock-price-field { display: grid; gap: 4px; }
+.shop-stock-price-field > span {
+  color: var(--text-2, #aeb6c8);
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.inn-command-options {
+  display: grid;
+  gap: 6px;
+}
+
+.inn-command-timing {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .inn-command-timing {
+    grid-template-columns: 1fr;
+  }
+}

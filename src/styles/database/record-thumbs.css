@@ -5,6 +5,12 @@
   grid-template-columns: auto 32px minmax(0, 1fr);
 }
 
+/* Characters catalog has no ordinal column — thumb + name + badge. */
+.database-modal-body .rm2k3-record-characters .db-list-row.db-list-row-has-thumb {
+  gap: 8px;
+  grid-template-columns: 32px auto minmax(0, 1fr);
+}
+
 .db-list-thumb {
   align-self: center;
   background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
@@ -449,4 +455,23 @@
 
 .db-monster-species-evo-row > button {
   margin-left: auto;
+}
+
+
+.db-resource-picker-audio {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+.db-resource-picker-audio-title {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+.db-resource-picker-audio-id,
+.db-resource-picker-audio-url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  word-break: break-all;
 }

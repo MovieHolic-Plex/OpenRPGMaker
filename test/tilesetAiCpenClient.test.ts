@@ -10,7 +10,7 @@ describe("requestCpenTilesetMapping", () => {
     vi.unstubAllGlobals();
   });
 
-  it("Given an API key When requesting a tileset mapping Then it sends the default OpenRouter request", async () => {
+  it("Given an API key When requesting a tileset mapping Then it sends the default LLM request", async () => {
     const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
       new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
     );
@@ -18,7 +18,7 @@ describe("requestCpenTilesetMapping", () => {
     vi.stubGlobal("fetch", fetchMock);
     vi.stubEnv("VITE_YUNWU_API_KEY", "");
     vi.stubEnv("VITE_LLM_API_KEY", "");
-    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_URL", "https://example.invalid/v1");
     vi.stubGlobal("window", testWindow());
 
     await requestCpenTilesetMapping({
@@ -28,11 +28,11 @@ describe("requestCpenTilesetMapping", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0] ?? [];
-    expect(url).toBe("https://openrouter.ai/api/v1/chat/completions");
+    expect(url).toBe("https://example.invalid/v1/chat/completions");
     expect(typeof init?.body).toBe("string");
     expect(readHeader(init, "Authorization")).toBe("Bearer test-key");
     const body = parseBody(readStringBody(init));
-    expect(body.model).toBe("minimax/minimax-m3");
+    expect(body.model).toBe("google/gemini-3.1-flash-lite");
     expect(body.messages?.[0]?.role).toBe("system");
     expect(body.messages?.[1]?.content).toBe("타일셋을 분석해줘");
     expect(body.routing?.max_input_per_1m).toBe(0.1);
@@ -95,7 +95,20 @@ function testWindow(): TestWindow {
   return {
     clearTimeout,
     localStorage: {
-      getItem: (key: string) => (key === LOCAL_STORAGE_KEY ? "test-key" : null),
+      getItem: (key: string) => {
+        if (key === LOCAL_STORAGE_KEY) return "test-key";
+        if (key === "rpg-zzu:ai-config") {
+          return JSON.stringify({
+            baseUrl: "https://example.invalid/v1",
+            apiKey: "test-key",
+            model: "google/gemini-3.1-flash-lite",
+            liteModel: "google/gemini-3.1-flash-lite",
+            maxToolCalls: 8,
+            maxTokens: 1024,
+          });
+        }
+        return null;
+      },
     },
     setTimeout,
   };

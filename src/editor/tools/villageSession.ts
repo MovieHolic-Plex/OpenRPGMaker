@@ -23,7 +23,7 @@ import {
 import { countBroadleaf2x2, evaluateVillageLook, type VillageLookReport } from "./villageEvaluate";
 import { checkReachability } from "@/project/lint/reachability";
 import { MAP_TOOLS } from "./mapTools";
-import { VILLAGE_TOOLS } from "./villageBuilder";
+import { buildVillageDomain } from "./villageBuilder";
 
 const CONIFER_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 const BROADLEAF_2X2_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
@@ -503,9 +503,14 @@ function advanceVillageBuild(draft: Project, args: Record<string, unknown>): Too
         break;
       case "settlement":
         layerData = stepSettlement(draft, session, plan, warnings);
-        item.status = "done";
-        item.lastVerify = String(layerData.summary ?? "settlement ok");
-        session.memory.push(`settlement: ${session.settlementSummary ?? "ok"}`);
+        {
+          // 다른 레이어와 동일하게 실측 verify를 거친다 — build_village 호출 성공 ≠ 집 시공 성공.
+          const v = verifyLayer(draft, session, "settlement");
+          item.lastVerify = v.detail;
+          item.status = v.ok ? "done" : "failed";
+          if (!v.ok) session.memory.push(`settlement fail: ${v.detail}`);
+          else session.memory.push(`settlement: ${session.settlementSummary ?? "ok"}`);
+        }
         break;
       case "water":
         layerData = stepWater(draft, session, plan, warnings);
@@ -712,9 +717,7 @@ function stepSettlement(
   warnings: string[],
 ): Record<string, unknown> {
   if (!session.mapId) throw new ToolError("map 레이어 먼저", { code: "order" });
-  // Lazy import avoidance: call via tool registry would be circular; use runTool pattern from villageBuilder
-  const build = requireVillageBuildTool();
-  const result = build.run(draft, {
+  const result = buildVillageDomain(draft, {
     planId: plan.id,
     mapId: session.mapId,
     skipTerrain: true,
@@ -852,7 +855,12 @@ function stepCritique(draft: Project, session: VillageBuildSession): Record<stri
     ? draft.startPos
     : { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
   if (doorFronts.length === 0) {
-    return { ok: true, summary: "문 앞 좌표 없음 — start만 존재로 통과", reachable: 0, targets: 0 };
+    return {
+      ok: false,
+      summary: "문 앞 좌표 0개 — settlement가 집을 만들지 못했거나 문이 유실됐다. settlement 레이어를 재시공하라.",
+      reachable: 0,
+      targets: 0,
+    };
   }
   const reach = checkReachability(draft, map.id, start, [...doorFronts]);
   const ok = reach.reachable;
@@ -1045,7 +1053,7 @@ function verifyLayer(
   }
   if (layer === "critique") {
     const doors = session.doorFronts ?? [];
-    if (doors.length === 0) return { ok: true, layer, detail: "문 없음" };
+    if (doors.length === 0) return { ok: false, layer, detail: "doorFronts=0 — settlement 미완, 도달성 검증 불가" };
     const start = project.startMapId === map.id
       ? project.startPos
       : { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
@@ -1142,12 +1150,6 @@ function requireMap(draft: Project, mapId: string | undefined): GameMap {
   const map = draft.maps[mapId];
   if (!map) throw new ToolError(`맵 없음: ${mapId}`, { code: "map-not-found" });
   return map;
-}
-
-function requireVillageBuildTool(): ToolDefinition {
-  const tool = VILLAGE_TOOLS.find((t) => t.name === "build_village");
-  if (!tool) throw new Error("build_village 툴 없음");
-  return tool;
 }
 
 function placeProps(

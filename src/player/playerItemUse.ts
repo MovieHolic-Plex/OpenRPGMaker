@@ -1,3 +1,4 @@
+import { applyCareItem } from "@/project/monsterCare";
 import { changeItem, learnSkill, type PlaySession } from "@/project/session";
 import type { ItemRecord, Project, SkillId } from "@/project/types";
 
@@ -9,11 +10,16 @@ export function useItemFromMenu(
   project: Project,
   session: PlaySession,
   itemId: string,
-  targetActorId?: string
+  targetActorId?: string,
+  targetMonsterInstanceId?: string
 ): MenuItemUseResult {
   const item = project.database.items.find((record) => record.id === itemId);
   if (!item || (session.inventory[item.id] ?? 0) <= 0) return { kind: "unusable", message: "사용할 수 없습니다" };
   if (!canUseItemInMenu(item)) return { kind: "unusable", message: `${item.name}은(는) 지금 사용할 수 없습니다` };
+
+  if (item.careProfile) {
+    return useCareItem(project, session, item, targetMonsterInstanceId);
+  }
 
   const learnedSkillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
   if (learnedSkillId) {
@@ -33,6 +39,23 @@ export function useItemFromMenu(
   if (!changed) return { kind: "unusable", message: `${item.name}의 효과가 없습니다` };
 
   if (item.consumable) changeItem(session, item.id, "-=", 1);
+  return { kind: "used", message: `${item.name}을 사용했습니다` };
+}
+
+function useCareItem(
+  project: Project,
+  session: PlaySession,
+  item: ItemRecord,
+  targetMonsterInstanceId?: string
+): MenuItemUseResult {
+  const instanceId = targetMonsterInstanceId?.trim();
+  if (!instanceId) return { kind: "unusable", message: "대상을 선택하세요" };
+  const result = applyCareItem(project, session, { itemId: item.id, instanceId });
+  if (!result.ok) {
+    if (result.reason === "notInParty") return { kind: "unusable", message: "파티 몬스터에게만 사용할 수 있습니다" };
+    if (result.reason === "missingInstance") return { kind: "unusable", message: "대상을 찾을 수 없습니다" };
+    return { kind: "unusable", message: `${item.name}은(는) 지금 사용할 수 없습니다` };
+  }
   return { kind: "used", message: `${item.name}을 사용했습니다` };
 }
 

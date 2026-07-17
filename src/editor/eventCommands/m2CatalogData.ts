@@ -305,6 +305,7 @@ export const EXISTING_KIND_BY_TITLE: Partial<Record<string, Command["kind"]>> = 
   "Show Choices": "choices",
   "Show Picture": "showPicture",
   "Show Text": "text",
+  "Advanced Dialogue": "text",
   "Transfer Player": "transfer",
   "Wait": "wait",
 };

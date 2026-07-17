@@ -6,8 +6,9 @@ import { renderPlayer, teardownPlayer } from "@/player/player";
 import { startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
 import { store } from "@/project/store";
-import type { GameEvent, MapId } from "@/project/types";
+import type { GameEvent, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -23,6 +24,8 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
   try {
     await store.flush();
     loading.setStage("preparing");
+    // 타이틀/플레이 전에 번들 에셋을 브라우저 캐시에 데운다.
+    void warmBundledPlayAssets(store.getCurrent());
     // Give the browser a paint before heavy player bootstrap.
     await yieldToBrowser();
     renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false, startOverride });
@@ -47,6 +50,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
   try {
     await store.flush();
     loading.setStage("preparing");
+    void warmBundledPlayAssets(store.getCurrent());
     await yieldToBrowser();
     const session = selectedEventTestSession(mapId, event);
     renderPlayer(body, {
@@ -85,6 +89,36 @@ export async function openTroopBattleTestModal(troopId: string): Promise<void> {
     console.error("[test-play] failed to open troop battle test:", error);
     loading.setStage("error", "전투 테스트를 열지 못했습니다");
   }
+}
+export function pickRandomTroopId(
+  project: Project,
+  random: () => number = Math.random
+): string | undefined {
+  const troops = project.database.troops.filter((troop) => {
+    const members = troop.members?.length ?? 0;
+    const enemies = troop.enemyIds?.length ?? 0;
+    return members > 0 || enemies > 0;
+  });
+  if (troops.length === 0) {
+    return project.system.initialTroopId ?? project.database.troops[0]?.id;
+  }
+  const index = Math.min(troops.length - 1, Math.max(0, Math.floor(random() * troops.length)));
+  return troops[index]?.id;
+}
+
+/** Editor quick-test: open a battle against a random authored troop (no field walk). */
+export async function openRandomTroopBattleTestModal(
+  random: () => number = Math.random
+): Promise<void> {
+  const project = store.getCurrent();
+  const troopId = pickRandomTroopId(project, random);
+  if (!troopId) {
+    const body = openTestPlayShell("전투 테스트");
+    const loading = mountPlayLoadingOverlay(body, "error");
+    loading.setStage("error", "적 그룹이 없습니다. 데이터베이스에서 트룹을 추가하세요.");
+    return;
+  }
+  await openTroopBattleTestModal(troopId);
 }
 
 export function closeTestPlayModal(): void {

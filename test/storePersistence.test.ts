@@ -96,7 +96,7 @@ describe("Project store remote persistence", () => {
 
     expect(project.meta.title).toBe("새 프로젝트");
     expect(Object.keys(project.maps)).toHaveLength(1);
-    expect(project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title1");
+    expect(project.system.titleScreen?.backgroundResourceId).toBe("rpg-zzu-title-field");
     expect(saveResult).toEqual({ kind: "saved-local" });
     expect(setItem).not.toHaveBeenCalled();
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -222,5 +222,62 @@ describe("Project store remote persistence", () => {
     expect(store.hasUnsavedChanges()).toBe(false);
   });
 
+  it("keeps local map paint when remote save finishes with a stale snapshot", async () => {
+    vi.useFakeTimers();
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-paint-local-first");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("window", {
+      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: {
+        getItem: () => null,
+        setItem: () => undefined,
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>());
+    vi.resetModules();
 
+    const saveMapPatch = vi.fn();
+    vi.doMock("@/project/supabaseProjectSync", async () => {
+      const actual = await vi.importActual<typeof import("@/project/supabaseProjectSync")>(
+        "@/project/supabaseProjectSync",
+      );
+      return {
+        ...actual,
+        saveProjectToSupabase: vi.fn(async (project: import("@/project/types").Project) => {
+          // Slow RTT: paint happens while this is in flight.
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          return { kind: "saved" as const, project };
+        }),
+        saveProjectMapPatchToSupabase: saveMapPatch,
+      };
+    });
+
+    const { store } = await import("@/project/store");
+    const { createBlankProject } = await import("@/project/defaults");
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    store.replaceProject(project);
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    store._setPersistedBaselineForTest(null);
+
+    const firstTile = 7;
+    const secondTile = 9;
+    store.updateMap(mapId, (map) => {
+      map.lowerTiles[0] = firstTile;
+    });
+
+    const flushPromise = store.flush();
+    // Paint again while save is still awaiting the network.
+    store.updateMap(mapId, (map) => {
+      map.lowerTiles[0] = secondTile;
+    });
+    await vi.advanceTimersByTimeAsync(50);
+    const result = await flushPromise;
+
+    expect(result.kind).toBe("saved");
+    // Local-first: second paint during RTT must remain visible (not rewound by save response).
+    expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(secondTile);
+    expect(store.hasUnsavedChanges()).toBe(true);
+  });
 });

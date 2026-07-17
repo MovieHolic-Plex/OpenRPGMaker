@@ -4,11 +4,14 @@ import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
+import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 
 describe("event editor settings column layout", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
+    openEventConditions.clear();
+    openEventMovement.clear();
     const project = createBlankProject();
     const mapId = project.startMapId;
     const map = project.maps[mapId]!;
@@ -42,6 +45,8 @@ describe("event editor settings column layout", () => {
 
   afterEach(() => {
     host.remove();
+    openEventConditions.clear();
+    openEventMovement.clear();
   });
 
   it("keeps page tabs and settings-main as the only two direct settings-column children", () => {
@@ -55,5 +60,42 @@ describe("event editor settings column layout", () => {
     // RM2003 셸: 스케줄 패널은 마운트하지 않음. 페이지 설정만 settings-main 안.
     expect(direct[1]?.querySelector("[data-testid='event-schedule-section']")).toBeNull();
     expect(direct[1]?.querySelector(".event-page-props")).toBeTruthy();
+  });
+
+  it("orders character connect → conditions → graphic → trigger/priority → movement", () => {
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_layout");
+    const main = host.querySelector(".event-editor-settings-main");
+    expect(main).toBeTruthy();
+
+    // Empty characterId renders the connect CTA host (still testid event-character-id-field).
+    const characterId = host.querySelector('[data-testid="event-character-id-field"]');
+    const conditions = host.querySelector('[data-testid="event-classic-conditions"]');
+    const graphic = host.querySelector('[data-testid="event-classic-graphic"]');
+    const triggerPriority = host.querySelector('[data-testid="event-page-trigger-priority-stack"]');
+    const movement = host.querySelector('[data-testid="event-classic-movement-section"]');
+    expect(characterId).toBeTruthy();
+    expect(conditions).toBeTruthy();
+    expect(graphic).toBeTruthy();
+    expect(triggerPriority).toBeTruthy();
+    expect(movement).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
+
+    // Trigger is a sibling of movement, not nested inside it.
+    expect(movement?.contains(triggerPriority)).toBe(false);
+    expect(movement?.querySelector('[data-testid="event-page-trigger-select"]')).toBeNull();
+
+    const order = [characterId, conditions, graphic, triggerPriority, movement]
+      .map((node) => {
+        const nodes = main!.querySelectorAll(
+          '[data-testid="event-character-id-field"], [data-testid="event-classic-conditions"], [data-testid="event-classic-graphic"], [data-testid="event-page-trigger-priority-stack"], [data-testid="event-classic-movement-section"]'
+        );
+        return [...nodes].indexOf(node as Element);
+      });
+    expect(order).toEqual([0, 1, 2, 3, 4]);
+
+    // Disposition B: no bottom-left/right panes.
+    expect(host.querySelector('[data-testid="event-page-bottom-left"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-page-bottom-right"]')).toBeNull();
   });
 });

@@ -5,7 +5,7 @@
 import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
 import { setMapLayoutPlan } from "@/project/mapLayoutPlan";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
@@ -13,7 +13,6 @@ import {
   isYardDecorKind,
   type YardDecorKind,
 } from "../houseLotDecor";
-import { MAP_TOOLS } from "../mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
 import {
   loadVillagePlan,
@@ -49,7 +48,6 @@ import {
   MAX_SIZE,
   MIN_HOUSES,
   MIN_SIZE,
-  requireTool,
   ROAD_TILES,
   uniqueId,
   type BuiltHouse,
@@ -87,7 +85,398 @@ import {
   villageRoadAnchors,
 } from "./roads";
 
-const createMapTool = requireTool(MAP_TOOLS, "create_map");
+export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
+
+export function buildVillageDomain(
+  draft: Project,
+  args: VillageBuildDomainArgs,
+): ToolExecResult {
+  const merged = mergePlanIntoBuildArgs(draft, args);
+  const seed = integerArg(merged, "seed", 1);
+  // houseCount 별칭 소비(2026-07-17) — 예전엔 build_village가 이를 조용히 무시해 8채 고정이었다.
+  const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
+  const interiorEnabled = merged.interior !== false;
+  const doorEventEnabled = merged.doorEvent !== false;
+  const fencesEnabled = merged.fences !== false;
+  const decorEnabled = merged.decor !== false;
+  const intent = resolveVillageIntent(merged, housePlan);
+  const windows = coerceWindows(merged.windows);
+  const overrides = npcOverrides(merged.npcs);
+  const warnings: string[] = [];
+  if (!intent.theme && !hasExplicitVillageIntent(merged) && !merged.planId) {
+    warnings.push(
+      "계획/의도 없이 기본 레시피로 시공했다. " +
+        "plan_village → build_village({ planId }) 또는 theme·housePlans·npcs를 넘겨라.",
+    );
+  }
+  const createArgs = { ...args, ...merged };
+  const mapId = typeof createArgs.mapId === "string" && String(createArgs.mapId).trim().length > 0
+    ? String(createArgs.mapId).trim()
+    : createVillageMap(draft, createArgs, seed);
+  const map = requireVillageMap(draft, mapId);
+  // 타일셋 스코프 가드 — village/ 모듈의 원시 타일 id는 전부 combined_town 좌표다.
+  const tilesetForMap = draft.tilesets?.[map.tilesetId];
+  if (!tilesetForMap || !isCombinedTownTileset(tilesetForMap)) {
+    throw new ToolError(
+      `build_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
+        "다른 칩셋에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
+      { code: "village-tileset-mismatch", mapId },
+    );
+  }
+  // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
+  const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
+  const requirements = planForReq?.requirements
+    ?? (typeof intent.theme === "string" && intent.theme
+      ? inferRequirementsFromQuery(intent.theme)
+      : undefined);
+  const baseArea = villageBuildArea(map, createArgs.bounds);
+  // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
+  const terrainMasks = requirements && requirements.landmarks.length > 0
+    ? buildTerrainConstraintMasks(map, requirements)
+    : undefined;
+  const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
+  const area = intersectRects(baseArea, reserved);
+  assertBuildAreaSize(map, area);
+  if (requirements && requirements.landmarks.length > 0) {
+    warnings.push(`상식 스펙 적용: ${requirements.mustExist.join(", ")}`);
+  }
+
+  const upperBefore = [...map.upperTiles];
+  const rng = mulberry32(seed);
+  const perf: string[] = [];
+  let perfMark = Date.now();
+  const perfLap = (label: string): void => {
+    perf.push(`${label}=${((Date.now() - perfMark) / 1000).toFixed(1)}s`);
+    perfMark = Date.now();
+  };
+  const plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
+  // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
+  const targetHouses = housePlan.explicit
+    ? housePlan.count
+    : Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
+  // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
+  const boulevard = villageBoulevard(area, plaza);
+  const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
+  if (boulevard) {
+    for (const cell of boulevardCells(area, boulevard)) {
+      if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
+        houseBlockedIdx.add(cell.y * map.width + cell.x);
+      }
+    }
+  }
+  // 대형 맵은 시가지 코어(61×61)에 집을 압축 — 외곽은 밭·숲·수변 몫 (리서치: 코어 압축 룰).
+  const coreArea = boulevard
+    ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
+    : area;
+  // 자연 시공 순서: 집 배치 → 광장·대로·집 연결 길(얽기설기) → 문 복구 → 울타리
+  // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
+  const houses = buildHouses(
+    map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
+    houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
+    boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
+  );
+  perfLap("houses");
+  if (houses.length === 0) {
+    throw new ToolError(
+      "집을 한 채도 시공하지 못했다 — 맵/bounds가 좁거나 후보 슬롯이 전부 물·숲·광장에 막혀 있다. " +
+        "맵을 키우거나 bounds를 넓히거나 houses 수를 줄여라.",
+      { code: "no-houses-built", mapId },
+    );
+  }
+  // 집 footprint(용마루 포함) + 장터 데크 = 하드 마스크 — 길이 절대 못 칠한다.
+  const hardBlocked = new Set([...houseBlockedCells(houses), ...plazaDeckBlockedCells(plaza, intent)]);
+  // 간선·루프용 스탠드오프 마스크 — 벽에서 1칸 띄운다 (문 앞 행은 개방).
+  const throughBlocked = new Set([...hardBlocked, ...houseStandoffCells(houses)]);
+  // 침범 금지 구역: 하드 마스크 + 수역(마스크 roles) — 훅이 시공 후 강제 점검한다.
+  const roadForbidden = new Set(hardBlocked);
+  if (terrainMasks) {
+    for (let i = 0; i < terrainMasks.roles.length; i += 1) {
+      if (terrainMasks.roles[i] === "water") {
+        roadForbidden.add(coordKey(i % map.width, Math.floor(i / map.width)));
+      }
+    }
+  }
+  // 길 시공 강제 훅 — 시공→침범 점검→롤백 재시도(최대 100회), 시뮬레이션식.
+  paintVillageRoadsChecked({
+    draft,
+    map,
+    plaza,
+    area,
+    houses,
+    intent,
+    seed,
+    warnings,
+    hardBlocked,
+    throughBlocked,
+    forbidden: roadForbidden,
+    boulevard,
+  });
+  perfLap("roads");
+  // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
+  restoreHouseDoors(map, houses);
+  // 길은 다 깐 뒤 울타리(길 칸 스킵)
+  if (fencesEnabled) placeHouseLotFences(map, houses, seed);
+  // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
+  // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
+  assignShopPrograms(houses, plaza, warnings);
+  // 여관 간판: retro House 칩셋의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
+  ensureInnSignGraft(draft, map.tilesetId);
+
+  // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
+  // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
+  const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
+  let landmarkNotes: string[] = [];
+  if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings);
+    landmarkNotes = [...terrain.notes];
+    if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
+    restoreHouseDoors(map, houses);
+  } else if (skipTerrain) {
+    landmarkNotes = ["skipTerrain: multi-turn forest/water layers"];
+  }
+  perfLap("terrain");
+
+  let decorPlaced = 0;
+  if (decorEnabled) {
+    decorPlaced = placeVillageDecor(draft, map, area, plaza, houses, seed, intent, warnings);
+  }
+  // 용마루 행 보호구역 정리 — 범용 place_props가 심은 나무/소품을 걷어낸다.
+  clearHouseRidgeRowProps(map, houses);
+  perfLap("decor");
+  // 조경(2026-07-17): 대형 맵(대로 모드)은 시가지 코어 밖을 수변·밭·숲·설원 지구로 채운다.
+  // 문법 규칙(수로=물의 논리, 백사장 접안, 눈↔밭 이격, 어둠+계단 세트)은 landscape.ts가 보증.
+  if (boulevard) {
+    const landscaped = dressVillageLandscape(map, { area, houses, plaza, seed, warnings });
+    warnings.push(`조경 지구 ${landscaped}칸`);
+    restoreHouseDoors(map, houses);
+  }
+  perfLap("landscape");
+
+  // 필수 랜드마크 실측 게이트 — 타일 카운트 기준. warning이 아니라 실패다.
+  // ("강촌"인데 물 0칸인 맵이 성공으로 반환되는 것을 막는다. skipTerrain 세션은 water 레이어가 따로 검증.)
+  if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
+    const needRiver = requirements.landmarks.includes("river") || requirements.landmarks.includes("harbor");
+    const needLake = requirements.landmarks.includes("lake");
+    if (needRiver || needLake) {
+      const waterFloor = needRiver ? 30 : 25;
+      const waterCells = countWaterCells(map);
+      if (waterCells < waterFloor) {
+        throw new ToolError(
+          `필수 수역 미시공: 실측 ${waterCells}칸 < ${waterFloor} — fill_region(물)이 실패했거나 타일셋에 물 어휘가 없다. 쿼리「${requirements.query}」`,
+          { code: "landmark-water-missing", mapId },
+        );
+      }
+    }
+    if (requirements.landmarks.includes("forest")) {
+      const treeCells = countTreeCells(map);
+      if (treeCells < 15) {
+        throw new ToolError(
+          `필수 숲 미시공: 실측 나무 ${treeCells}칸 < 15 — place_props(침엽수/활엽수)가 실패했다. 쿼리「${requirements.query}」`,
+          { code: "landmark-forest-missing", mapId },
+        );
+      }
+    }
+  }
+  const houseInteriors = interiorEnabled && doorEventEnabled
+    ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
+    : [];
+  perfLap("interiors");
+  placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled);
+
+  // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
+  ensureVillageStartPosition(draft, map, plaza);
+
+  const audit = auditVillage(map, houses, upperBefore, area);
+  perfLap("audit");
+  warnings.push(`[vperf] ${perf.join(" ")}`);
+  if (houses.length < targetHouses) warnings.push(`집 수 미달: ${houses.length}/${targetHouses}`);
+  if (audit.doorsConnected < houses.length) warnings.push(`문 연결 미달: ${audit.doorsConnected}/${houses.length}`);
+  if (audit.doorsIntact < houses.length) warnings.push(`문 타일 훼손: ${houses.length - audit.doorsIntact}곳`);
+  if (audit.roadInsideHouses > 0) warnings.push(`집 내부를 침범한 도로 ${audit.roadInsideHouses}칸`);
+  if (audit.ridgeInvaded > 0) warnings.push(`지붕 용마루 행 침범 ${audit.ridgeInvaded}칸 (길/소품이 지붕을 찢음)`);
+  if (audit.roadComponents !== 1) {
+    warnings.push(`길 연결 성분 미달: ${audit.roadComponents} — ${roadComponentNotes(map, area).join(", ")}`);
+  }
+  if (audit.npcCount !== houses.length + 2) warnings.push(`NPC 수 미달: ${audit.npcCount}/${houses.length + 2}`);
+  if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
+  if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
+  if (fencesEnabled && audit.fencedHouses < houses.length) {
+    warnings.push(`울타리 미달: ${audit.fencedHouses}/${houses.length}`);
+  }
+
+  const doorFronts = houses.map((house) => house.front);
+  const critique = critiqueBuiltVillage(draft, map, doorFronts);
+  if (!critique.ok) {
+    warnings.push(`비평 루프: ${critique.summary}`);
+    for (const issue of critique.issues) warnings.push(issue);
+  }
+
+  const themeLabel = intent.theme ? `「${intent.theme}」 ` : "";
+  const reqNote = requirements && requirements.landmarks.length > 0
+    ? ` 필수[${requirements.landmarks.join(",")}]`
+    : "";
+  return {
+    summary:
+      `마을 시공 ${themeLabel}: 집 ${houses.length}/${targetHouses}, 울타리 ${fencesEnabled ? audit.fencedHouses : 0}/${houses.length}, ` +
+      `길 ${intent.pathStyle}, 마당 ${intent.yardStyle}, 광장 ${intent.plazaStyle}/${intent.plazaLayout}, ` +
+      `소품 ${decorEnabled ? decorPlaced : 0}, 문 연결 ${audit.doorsConnected}/${houses.length}, ` +
+      `길 성분 ${audit.roadComponents}, NPC ${audit.npcCount}, 내부 ${houseInteriors.length} (창문 ${audit.windowCount}).` +
+      `${reqNote} 비평: ${critique.ok ? "통과" : "이슈"}.`,
+    data: {
+      mapId,
+      bounds: area,
+      requirements: requirements ?? undefined,
+      landmarks: landmarkNotes,
+      planId: typeof merged.planId === "string" ? merged.planId : undefined,
+      theme: intent.theme || undefined,
+      critique,
+      intent: {
+        pathStyle: intent.pathStyle,
+        kitMix: intent.kitMix,
+        yardStyle: intent.yardStyle,
+        plazaStyle: intent.plazaStyle,
+        edgeTrees: intent.edgeTrees,
+        plazaLayout: intent.plazaLayout,
+        roadWidth: intent.roadWidth,
+        roadNaturalness: intent.roadNaturalness,
+        settlementLayout: intent.settlementLayout,
+      },
+      housesBuilt: houses.length,
+      // 경고를 결과 데이터로도 노출(2026-07-17) — 재시도 횟수·[vperf]·미달 사유가 호출자에게 보이게.
+      warnings: warnings.length > 0 ? [...warnings] : undefined,
+      fencesEnabled,
+      fencedHouses: fencesEnabled ? audit.fencedHouses : 0,
+      fenceTiles: fencesEnabled ? audit.fenceTiles : 0,
+      pathStyle: intent.pathStyle,
+      decorEnabled,
+      decorPlaced: decorEnabled ? decorPlaced : 0,
+      doorsConnected: audit.doorsConnected,
+      doorsIntact: audit.doorsIntact,
+      ridgeInvaded: audit.ridgeInvaded,
+      roadComponents: audit.roadComponents,
+      npcCount: audit.npcCount,
+      interiorCount: houseInteriors.length,
+      doorEventCount: houseInteriors.length,
+      houses: houses.map((house, index) => {
+        const interiorRef = houseInteriors[index];
+        return {
+          index,
+          kitId: house.kitId,
+          stories: house.stories,
+          templateId: house.templateId,
+          doorAt: house.doorAt,
+          front: house.front,
+          ownerName: house.ownerName ?? npcText(index, overrides).name,
+          ...(interiorRef
+            ? {
+                interiorMapId: interiorRef.interiorMapId,
+                doorEventId: interiorRef.doorEventId,
+                exitEventId: interiorRef.exitEventId,
+                entry: interiorRef.entry,
+                exit: interiorRef.exit,
+                returnTo: interiorRef.returnTo,
+                interiorScale: interiorRef.scale,
+                interiorProgram: interiorRef.program,
+                interiorStories: interiorRef.stories,
+                ...(interiorRef.upperMapId ? { upperMapId: interiorRef.upperMapId } : {}),
+                ...(interiorRef.floorMapIds ? { floorMapIds: interiorRef.floorMapIds } : {}),
+              }
+            : {}),
+        };
+      }),
+    },
+    warnings: warnings.length > 0 ? warnings : undefined,
+  };
+}
+
+export type VillageStructuralQa = {
+  readonly ok: boolean;
+  readonly doorsConnected: number;
+  readonly doorsIntact: number;
+  readonly roadComponents: number;
+  readonly ridgeInvaded: number;
+  readonly critiqueOk: boolean;
+};
+
+export type VillageBuildInspection = {
+  readonly exteriorMapId: string;
+  readonly interiorMapIds: readonly string[];
+  readonly actualHouseCount: number;
+  readonly structuralQa: VillageStructuralQa;
+};
+
+export function inspectVillageBuild(
+  project: Project,
+  result: ToolExecResult,
+): VillageBuildInspection {
+  const data = result.data;
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    throw new ToolError("build_village 결과 데이터가 객체가 아니다.", { code: "invalid-village-result" });
+  }
+  const exteriorMapId = Reflect.get(data, "mapId");
+  const houses = Reflect.get(data, "houses");
+  if (typeof exteriorMapId !== "string" || !project.maps[exteriorMapId] || !Array.isArray(houses)) {
+    throw new ToolError("build_village 결과에 실제 외부 맵 또는 집 목록이 없다.", {
+      code: "invalid-village-result",
+      ...(typeof exteriorMapId === "string" ? { mapId: exteriorMapId } : {}),
+    });
+  }
+
+  const interiorMapIds = new Set<string>();
+  for (const house of houses) {
+    if (typeof house !== "object" || house === null || Array.isArray(house)) continue;
+    const candidates = [
+      Reflect.get(house, "interiorMapId"),
+      Reflect.get(house, "upperMapId"),
+    ];
+    const floorMapIds = Reflect.get(house, "floorMapIds");
+    if (Array.isArray(floorMapIds)) candidates.push(...floorMapIds);
+    for (const candidate of candidates) {
+      if (typeof candidate === "string" && candidate !== exteriorMapId && project.maps[candidate]) {
+        interiorMapIds.add(candidate);
+      }
+    }
+  }
+
+  const numericMetric = (key: string): number => {
+    const value = Reflect.get(data, key);
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new ToolError(`build_village 결과의 ${key}가 숫자가 아니다.`, { code: "invalid-village-result", mapId: exteriorMapId });
+    }
+    return value;
+  };
+  const doorsConnected = numericMetric("doorsConnected");
+  const doorsIntact = numericMetric("doorsIntact");
+  const roadComponents = numericMetric("roadComponents");
+  const ridgeInvaded = numericMetric("ridgeInvaded");
+  const critique = Reflect.get(data, "critique");
+  const critiqueOk = typeof critique === "object"
+    && critique !== null
+    && !Array.isArray(critique)
+    && Reflect.get(critique, "ok") === true;
+  const actualHouseCount = houses.length;
+  const structuralQa = {
+    ok: actualHouseCount > 0
+      && doorsConnected === actualHouseCount
+      && doorsIntact === actualHouseCount
+      && roadComponents === 1
+      && ridgeInvaded === 0
+      && critiqueOk,
+    doorsConnected,
+    doorsIntact,
+    roadComponents,
+    ridgeInvaded,
+    critiqueOk,
+  } satisfies VillageStructuralQa;
+
+  return {
+    exteriorMapId,
+    interiorMapIds: [...interiorMapIds].sort(),
+    actualHouseCount,
+    structuralQa,
+  };
+}
 
 export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
   {
@@ -496,307 +885,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       seed: 7,
     },
     run(draft, args): ToolExecResult {
-      const merged = mergePlanIntoBuildArgs(draft, args);
-      const seed = integerArg(merged, "seed", 1);
-      // houseCount 별칭 소비(2026-07-17) — 예전엔 build_village가 이를 조용히 무시해 8채 고정이었다.
-      const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
-      const interiorEnabled = merged.interior !== false;
-      const doorEventEnabled = merged.doorEvent !== false;
-      const fencesEnabled = merged.fences !== false;
-      const decorEnabled = merged.decor !== false;
-      const intent = resolveVillageIntent(merged, housePlan);
-      const windows = coerceWindows(merged.windows);
-      const overrides = npcOverrides(merged.npcs);
-      const warnings: string[] = [];
-      if (!intent.theme && !hasExplicitVillageIntent(merged) && !merged.planId) {
-        warnings.push(
-          "계획/의도 없이 기본 레시피로 시공했다. " +
-            "plan_village → build_village({ planId }) 또는 theme·housePlans·npcs를 넘겨라.",
-        );
-      }
-      // create_map name/size may come from plan
-      if (merged.name !== undefined) args = { ...args, name: merged.name };
-      if (merged.width !== undefined) args = { ...args, width: merged.width };
-      if (merged.height !== undefined) args = { ...args, height: merged.height };
-      const createArgs = { ...args, ...merged };
-      const mapId = typeof createArgs.mapId === "string" && String(createArgs.mapId).trim().length > 0
-        ? String(createArgs.mapId).trim()
-        : createVillageMap(draft, createArgs, seed);
-      const map = requireVillageMap(draft, mapId);
-      // 타일셋 스코프 가드 — village/ 모듈의 원시 타일 id는 전부 combined_town 좌표다.
-      const tilesetForMap = draft.tilesets?.[map.tilesetId];
-      if (!tilesetForMap || !isCombinedTownTileset(tilesetForMap)) {
-        throw new ToolError(
-          `build_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
-            "다른 칩셋에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
-          { code: "village-tileset-mismatch", mapId },
-        );
-      }
-      // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
-      const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
-      const requirements = planForReq?.requirements
-        ?? (typeof intent.theme === "string" && intent.theme
-          ? inferRequirementsFromQuery(intent.theme)
-          : undefined);
-      const baseArea = villageBuildArea(map, createArgs.bounds);
-      // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
-      const terrainMasks = requirements && requirements.landmarks.length > 0
-        ? buildTerrainConstraintMasks(map, requirements)
-        : undefined;
-      const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
-      const area = intersectRects(baseArea, reserved);
-      assertBuildAreaSize(map, area);
-      if (requirements && requirements.landmarks.length > 0) {
-        warnings.push(`상식 스펙 적용: ${requirements.mustExist.join(", ")}`);
-      }
-
-      const upperBefore = [...map.upperTiles];
-      const rng = mulberry32(seed);
-      const perf: string[] = [];
-      let perfMark = Date.now();
-      const perfLap = (label: string): void => {
-        perf.push(`${label}=${((Date.now() - perfMark) / 1000).toFixed(1)}s`);
-        perfMark = Date.now();
-      };
-      const plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
-      // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
-      const targetHouses = housePlan.explicit
-        ? housePlan.count
-        : Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
-      // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
-      const boulevard = villageBoulevard(area, plaza);
-      const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
-      if (boulevard) {
-        for (const cell of boulevardCells(area, boulevard)) {
-          if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
-            houseBlockedIdx.add(cell.y * map.width + cell.x);
-          }
-        }
-      }
-      // 대형 맵은 시가지 코어(61×61)에 집을 압축 — 외곽은 밭·숲·수변 몫 (리서치: 코어 압축 룰).
-      const coreArea = boulevard
-        ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
-        : area;
-      // 자연 시공 순서: 집 배치 → 광장·대로·집 연결 길(얽기설기) → 문 복구 → 울타리
-      // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
-      const houses = buildHouses(
-        map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
-        houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
-        boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
-      );
-      perfLap("houses");
-      if (houses.length === 0) {
-        throw new ToolError(
-          "집을 한 채도 시공하지 못했다 — 맵/bounds가 좁거나 후보 슬롯이 전부 물·숲·광장에 막혀 있다. " +
-            "맵을 키우거나 bounds를 넓히거나 houses 수를 줄여라.",
-          { code: "no-houses-built", mapId },
-        );
-      }
-      // 집 footprint(용마루 포함) + 장터 데크 = 하드 마스크 — 길이 절대 못 칠한다.
-      const hardBlocked = new Set([...houseBlockedCells(houses), ...plazaDeckBlockedCells(plaza, intent)]);
-      // 간선·루프용 스탠드오프 마스크 — 벽에서 1칸 띄운다 (문 앞 행은 개방).
-      const throughBlocked = new Set([...hardBlocked, ...houseStandoffCells(houses)]);
-      // 침범 금지 구역: 하드 마스크 + 수역(마스크 roles) — 훅이 시공 후 강제 점검한다.
-      const roadForbidden = new Set(hardBlocked);
-      if (terrainMasks) {
-        for (let i = 0; i < terrainMasks.roles.length; i += 1) {
-          if (terrainMasks.roles[i] === "water") {
-            roadForbidden.add(coordKey(i % map.width, Math.floor(i / map.width)));
-          }
-        }
-      }
-      // 길 시공 강제 훅 — 시공→침범 점검→롤백 재시도(최대 100회), 시뮬레이션식.
-      paintVillageRoadsChecked({
-        draft,
-        map,
-        plaza,
-        area,
-        houses,
-        intent,
-        seed,
-        warnings,
-        hardBlocked,
-        throughBlocked,
-        forbidden: roadForbidden,
-        boulevard,
-      });
-      perfLap("roads");
-      // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
-      restoreHouseDoors(map, houses);
-      // 길은 다 깐 뒤 울타리(길 칸 스킵)
-      if (fencesEnabled) placeHouseLotFences(map, houses, seed);
-      // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
-      // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
-      assignShopPrograms(houses, plaza, warnings);
-      // 여관 간판: retro House 칩셋의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
-      ensureInnSignGraft(draft, map.tilesetId);
-
-      // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
-      // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
-      const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
-      let landmarkNotes: string[] = [];
-      if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-        const terrain = runTerrainConstraintPass(draft, map, requirements, warnings);
-        landmarkNotes = [...terrain.notes];
-        if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
-        restoreHouseDoors(map, houses);
-      } else if (skipTerrain) {
-        landmarkNotes = ["skipTerrain: multi-turn forest/water layers"];
-      }
-      perfLap("terrain");
-
-      let decorPlaced = 0;
-      if (decorEnabled) {
-        decorPlaced = placeVillageDecor(draft, map, area, plaza, houses, seed, intent, warnings);
-      }
-      // 용마루 행 보호구역 정리 — 범용 place_props가 심은 나무/소품을 걷어낸다.
-      clearHouseRidgeRowProps(map, houses);
-      perfLap("decor");
-      // 조경(2026-07-17): 대형 맵(대로 모드)은 시가지 코어 밖을 수변·밭·숲·설원 지구로 채운다.
-      // 문법 규칙(수로=물의 논리, 백사장 접안, 눈↔밭 이격, 어둠+계단 세트)은 landscape.ts가 보증.
-      if (boulevard) {
-        const landscaped = dressVillageLandscape(map, { area, houses, plaza, seed, warnings });
-        warnings.push(`조경 지구 ${landscaped}칸`);
-        restoreHouseDoors(map, houses);
-      }
-      perfLap("landscape");
-
-      // 필수 랜드마크 실측 게이트 — 타일 카운트 기준. warning이 아니라 실패다.
-      // ("강촌"인데 물 0칸인 맵이 성공으로 반환되는 것을 막는다. skipTerrain 세션은 water 레이어가 따로 검증.)
-      if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-        const needRiver = requirements.landmarks.includes("river") || requirements.landmarks.includes("harbor");
-        const needLake = requirements.landmarks.includes("lake");
-        if (needRiver || needLake) {
-          const waterFloor = needRiver ? 30 : 25;
-          const waterCells = countWaterCells(map);
-          if (waterCells < waterFloor) {
-            throw new ToolError(
-              `필수 수역 미시공: 실측 ${waterCells}칸 < ${waterFloor} — fill_region(물)이 실패했거나 타일셋에 물 어휘가 없다. 쿼리「${requirements.query}」`,
-              { code: "landmark-water-missing", mapId },
-            );
-          }
-        }
-        if (requirements.landmarks.includes("forest")) {
-          const treeCells = countTreeCells(map);
-          if (treeCells < 15) {
-            throw new ToolError(
-              `필수 숲 미시공: 실측 나무 ${treeCells}칸 < 15 — place_props(침엽수/활엽수)가 실패했다. 쿼리「${requirements.query}」`,
-              { code: "landmark-forest-missing", mapId },
-            );
-          }
-        }
-      }
-      const houseInteriors = interiorEnabled && doorEventEnabled
-        ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
-        : [];
-      perfLap("interiors");
-      placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings);
-      setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled);
-
-      // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
-      ensureVillageStartPosition(draft, map, plaza);
-
-      const audit = auditVillage(map, houses, upperBefore, area);
-      perfLap("audit");
-      warnings.push(`[vperf] ${perf.join(" ")}`);
-      if (houses.length < targetHouses) warnings.push(`집 수 미달: ${houses.length}/${targetHouses}`);
-      if (audit.doorsConnected < houses.length) warnings.push(`문 연결 미달: ${audit.doorsConnected}/${houses.length}`);
-      if (audit.doorsIntact < houses.length) warnings.push(`문 타일 훼손: ${houses.length - audit.doorsIntact}곳`);
-      if (audit.roadInsideHouses > 0) warnings.push(`집 내부를 침범한 도로 ${audit.roadInsideHouses}칸`);
-      if (audit.ridgeInvaded > 0) warnings.push(`지붕 용마루 행 침범 ${audit.ridgeInvaded}칸 (길/소품이 지붕을 찢음)`);
-      if (audit.roadComponents !== 1) {
-        warnings.push(`길 연결 성분 미달: ${audit.roadComponents} — ${roadComponentNotes(map, area).join(", ")}`);
-      }
-      if (audit.npcCount !== houses.length + 2) warnings.push(`NPC 수 미달: ${audit.npcCount}/${houses.length + 2}`);
-      if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
-      if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
-      if (fencesEnabled && audit.fencedHouses < houses.length) {
-        warnings.push(`울타리 미달: ${audit.fencedHouses}/${houses.length}`);
-      }
-
-      const doorFronts = houses.map((house) => house.front);
-      const critique = critiqueBuiltVillage(draft, map, doorFronts);
-      if (!critique.ok) {
-        warnings.push(`비평 루프: ${critique.summary}`);
-        for (const issue of critique.issues) warnings.push(issue);
-      }
-
-      const themeLabel = intent.theme ? `「${intent.theme}」 ` : "";
-      const reqNote = requirements && requirements.landmarks.length > 0
-        ? ` 필수[${requirements.landmarks.join(",")}]`
-        : "";
-      return {
-        summary:
-          `마을 시공 ${themeLabel}: 집 ${houses.length}/${targetHouses}, 울타리 ${fencesEnabled ? audit.fencedHouses : 0}/${houses.length}, ` +
-          `길 ${intent.pathStyle}, 마당 ${intent.yardStyle}, 광장 ${intent.plazaStyle}/${intent.plazaLayout}, ` +
-          `소품 ${decorEnabled ? decorPlaced : 0}, 문 연결 ${audit.doorsConnected}/${houses.length}, ` +
-          `길 성분 ${audit.roadComponents}, NPC ${audit.npcCount}, 내부 ${houseInteriors.length} (창문 ${audit.windowCount}).` +
-          `${reqNote} 비평: ${critique.ok ? "통과" : "이슈"}.`,
-        data: {
-          mapId,
-          bounds: area,
-          requirements: requirements ?? undefined,
-          landmarks: landmarkNotes,
-          planId: typeof merged.planId === "string" ? merged.planId : undefined,
-          theme: intent.theme || undefined,
-          critique,
-          intent: {
-            pathStyle: intent.pathStyle,
-            kitMix: intent.kitMix,
-            yardStyle: intent.yardStyle,
-            plazaStyle: intent.plazaStyle,
-            edgeTrees: intent.edgeTrees,
-            plazaLayout: intent.plazaLayout,
-            roadWidth: intent.roadWidth,
-            roadNaturalness: intent.roadNaturalness,
-            settlementLayout: intent.settlementLayout,
-          },
-          housesBuilt: houses.length,
-          // 경고를 결과 데이터로도 노출(2026-07-17) — 재시도 횟수·[vperf]·미달 사유가 호출자에게 보이게.
-          warnings: warnings.length > 0 ? [...warnings] : undefined,
-          fencesEnabled,
-          fencedHouses: fencesEnabled ? audit.fencedHouses : 0,
-          fenceTiles: fencesEnabled ? audit.fenceTiles : 0,
-          pathStyle: intent.pathStyle,
-          decorEnabled,
-          decorPlaced: decorEnabled ? decorPlaced : 0,
-          doorsConnected: audit.doorsConnected,
-          doorsIntact: audit.doorsIntact,
-          ridgeInvaded: audit.ridgeInvaded,
-          roadComponents: audit.roadComponents,
-          npcCount: audit.npcCount,
-          interiorCount: houseInteriors.length,
-          doorEventCount: houseInteriors.length,
-          houses: houses.map((house, index) => {
-            const interiorRef = houseInteriors[index];
-            return {
-              index,
-              kitId: house.kitId,
-              stories: house.stories,
-              templateId: house.templateId,
-              doorAt: house.doorAt,
-              front: house.front,
-              ownerName: house.ownerName ?? npcText(index, overrides).name,
-              ...(interiorRef
-                ? {
-                    interiorMapId: interiorRef.interiorMapId,
-                    doorEventId: interiorRef.doorEventId,
-                    exitEventId: interiorRef.exitEventId,
-                    entry: interiorRef.entry,
-                    exit: interiorRef.exit,
-                    returnTo: interiorRef.returnTo,
-                    interiorScale: interiorRef.scale,
-                    interiorProgram: interiorRef.program,
-                    interiorStories: interiorRef.stories,
-                    ...(interiorRef.upperMapId ? { upperMapId: interiorRef.upperMapId } : {}),
-                    ...(interiorRef.floorMapIds ? { floorMapIds: interiorRef.floorMapIds } : {}),
-                  }
-                : {}),
-            };
-          }),
-        },
-        warnings: warnings.length > 0 ? warnings : undefined,
-      };
+      return buildVillageDomain(draft, args);
     },
   },
 ];
@@ -832,7 +921,28 @@ function createVillageMap(draft: Project, args: Record<string, unknown>, seed: n
   const height = integerArg(args, "height", DEFAULT_SIZE, MIN_SIZE, MAX_SIZE);
   const name = typeof args.name === "string" && args.name.trim().length > 0 ? args.name.trim() : "마을 50x50";
   const id = uniqueId(draft, "map_village", `${seed >>> 0}_${width}x${height}`);
-  createMapTool.run(draft, { id, name, width, height, border: "none" });
+  const size = width * height;
+  const map: GameMap = {
+    id,
+    name,
+    width,
+    height,
+    tilesetId: DEFAULT_TILESET_ID,
+    tileSize: DEFAULT_TILE_SIZE,
+    lowerTiles: new Array<number>(size).fill(TILE.GRASS),
+    upperTiles: new Array<number>(size).fill(TILE.EMPTY),
+    events: [],
+  };
+  draft.maps[id] = map;
+  if (!draft.maps[draft.mapTree.mapId]) {
+    draft.mapTree = { mapId: id, children: [] };
+  } else if (draft.mapTree.mapId !== id && !draft.mapTree.children.some((child) => child.mapId === id)) {
+    draft.mapTree.children.push({ mapId: id, children: [] });
+  }
+  if (!draft.maps[draft.startMapId]) {
+    draft.startMapId = id;
+    draft.startPos = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+  }
   return id;
 }
 
@@ -1154,7 +1264,7 @@ function runVillagePipeline(draft: Project, args: Record<string, unknown>): Tool
     if (attempt > 1) wipeAttemptMaps(draft, baseline);
 
     try {
-      const built = villageTool("build_village").run(draft, { planId });
+      const built = buildVillageDomain(draft, { planId });
       lastSummary = built.summary;
       lastBuildData = (built.data ?? {}) as Record<string, unknown>;
       log.push({ step: "build", attempt, summary: built.summary });

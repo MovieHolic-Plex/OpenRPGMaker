@@ -241,6 +241,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "removeEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);
       return true;
+    case "openChest":
+      scene.showRuntimeOverlay("chest-scene", "보관 상자");
+      return true;
     case "shop":
       scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
       return true;
@@ -306,6 +309,7 @@ function applyEventGraphicPatternStep(
 ): void {
   const eventId = step.eventId || currentEventId;
   if (!eventId) return;
+  scene.eventGraphicPatternOverrides.set(eventId, step.pattern);
   scene.eventSprites.get(eventId)?.setFrame(step.pattern);
   scene.syncRuntimeState();
 }

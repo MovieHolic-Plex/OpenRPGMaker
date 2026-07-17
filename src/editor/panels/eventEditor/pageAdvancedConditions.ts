@@ -23,6 +23,7 @@ import {
   removeConditionAt,
   replaceConditionAt,
 } from "./pageConditionModel";
+import { bindEventSectionOpenState, eventEditorOpenKey, openEventAdvanced } from "./eventEditorOpenState";
 
 type AdvancedConditionKind = EventPageCondition["kind"];
 
@@ -50,9 +51,8 @@ export function renderAdvancedConditions(context: PageConditionContext): HTMLEle
       : [el("div", { class: "event-advanced-condition-empty", text: "추가 조건 없음" })],
   });
   const kind = selectWithOptions(ADVANCED_CONDITION_OPTIONS, "switch", "event-page-advanced-condition-kind");
-  return el("details", {
+  const details = el("details", {
     class: "event-advanced-conditions",
-    attrs: { open: "" },
     dataset: { testid: "event-page-advanced-conditions" },
     children: [
       el("summary", { text: `고급 조건 (${entries.length})` }),
@@ -73,7 +73,13 @@ export function renderAdvancedConditions(context: PageConditionContext): HTMLEle
         ],
       }),
     ],
-  });
+  }) as HTMLDetailsElement;
+  bindEventSectionOpenState(
+    details,
+    openEventAdvanced,
+    eventEditorOpenKey(context.mapId, context.eventId, context.page.id)
+  );
+  return details;
 }
 
 function advancedConditionRow(

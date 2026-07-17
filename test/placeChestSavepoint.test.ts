@@ -48,3 +48,39 @@ describe("place_savepoint", () => {
     expect(kinds).toContain("checkpointSave");
   });
 });
+
+describe("place_storage_chest", () => {
+  it("openChest 커맨드 1페이지 보관 상자 이벤트를 만든다", () => {
+    const { project, mapId } = projectWithMap();
+    const result = getTool("place_storage_chest")!.run(project, { mapId, x: 4, y: 5, name: "창고" });
+    expect(result.summary).toContain("보관 상자");
+    const data = result.data as { eventId: string; chestId: string };
+    const event = project.maps[mapId].events.find((entry) => entry.id === data.eventId)!;
+    expect(event.pages).toHaveLength(1);
+    expect(event.trigger).toEqual({ kind: "action" });
+    const page = event.pages![0];
+    expect(page.commands).toEqual([{ kind: "openChest", chestId: data.chestId }]);
+    expect(data.chestId).toBe(`storage_${data.eventId}`);
+  });
+
+  it("chestId를 지정하면 그대로 쓴다", () => {
+    const { project, mapId } = projectWithMap();
+    const result = getTool("place_storage_chest")!.run(project, {
+      mapId,
+      x: 1,
+      y: 1,
+      id: "ev_box_home",
+      chestId: "farm_main_chest",
+    });
+    const data = result.data as { eventId: string; chestId: string };
+    expect(data.eventId).toBe("ev_box_home");
+    expect(data.chestId).toBe("farm_main_chest");
+    const event = project.maps[mapId].events.find((entry) => entry.id === data.eventId)!;
+    expect(event.pages![0].commands[0]).toEqual({ kind: "openChest", chestId: "farm_main_chest" });
+  });
+
+  it("맵 밖이면 ToolError", () => {
+    const { project, mapId } = projectWithMap();
+    expect(() => getTool("place_storage_chest")!.run(project, { mapId, x: 999, y: 999 })).toThrow(/맵 밖/);
+  });
+});

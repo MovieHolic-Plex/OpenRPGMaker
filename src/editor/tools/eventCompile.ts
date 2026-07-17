@@ -3,8 +3,8 @@
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
 import { faceGraphicFromEventGraphic, faceGraphicForCharset } from "@/assets/charsetFaceMap";
-import { EASYRPG_RTP_ASSETS, charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { npcGraphicExampleLabels, resolveNpcGraphic } from "@/assets/charsetQuery";
+import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
@@ -111,8 +111,8 @@ export function charsetGraphic(textureKey: string, characterIndex: number | unde
 }
 
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
-export function resolveGraphicQuery(query: string): EventPageGraphic {
-  const entry = resolveNpcGraphic(query);
+export function resolveGraphicQuery(query: string, pick?: NpcGraphicPickOptions): EventPageGraphic {
+  const entry = pickNpcGraphic(query, pick ?? {});
   if (!entry) {
     const examples = npcGraphicExampleLabels(12).join(", ");
     throw new ToolError(
@@ -124,11 +124,29 @@ export function resolveGraphicQuery(query: string): EventPageGraphic {
 }
 
 // GraphicSpec을 EventPageGraphic으로 변환.
-export function resolveGraphic(spec: GraphicSpec | undefined): EventPageGraphic {
+export function resolveGraphic(spec: GraphicSpec | undefined, pick?: NpcGraphicPickOptions): EventPageGraphic {
   if (!spec) return { transparent: true };
   if ("transparent" in spec) return { transparent: true };
-  if ("query" in spec) return resolveGraphicQuery(spec.query);
+  if ("query" in spec) return resolveGraphicQuery(spec.query, pick);
   return charsetGraphic(spec.textureKey, spec.characterIndex);
+}
+
+/** 맵 이벤트에 이미 쓰인 charset 슬롯 키 집합. */
+export function usedCharsetGraphicKeysOnMap(map: {
+  readonly events: readonly { readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[];
+}): Set<string> {
+  const used = new Set<string>();
+  for (const event of map.events) {
+    for (const page of event.pages ?? []) {
+      const g = page.graphic;
+      const spriteId = g?.sprite?.id;
+      if (!spriteId || g?.transparent) continue;
+      const pattern = typeof g.pattern === "number" ? g.pattern : 0;
+      const characterIndex = decodeCharsetFrameIndex(pattern).characterIndex;
+      used.add(`${spriteId}#${characterIndex}`);
+    }
+  }
+  return used;
 }
 
 // 대사 한 줄을 text 커맨드로.

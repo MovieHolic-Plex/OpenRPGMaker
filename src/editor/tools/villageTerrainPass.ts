@@ -119,8 +119,12 @@ export function applyTerrainPassFromMasks(
   for (const rect of masks.waterRects) {
     // 강: 긴 축이면 ellipse, 호수에 가까운 정사각이면 circle
     const shape = Math.abs(rect.w - rect.h) <= 2 ? "circle" : "ellipse";
-    waterOps += runFill(fill, draft, map.id, rect, shape, warnings);
-    notes.push(`terrainPass water ${shape} ${rect.w}×${rect.h}`);
+    const painted = runFill(fill, draft, map.id, rect, shape, warnings);
+    waterOps += painted;
+    // 실패(0칸)를 시공 완료로 기록하지 않는다 — 게이트·로그가 이 노트를 근거로 삼는다.
+    notes.push(painted > 0
+      ? `terrainPass water ${shape} ${rect.w}×${rect.h} (${painted}칸)`
+      : `terrainPass water FAILED ${shape} ${rect.w}×${rect.h}`);
   }
 
   for (const rect of masks.forestRects) {
@@ -279,6 +283,9 @@ function runFill(
       shape,
     });
     if (result.warnings) warnings.push(...result.warnings);
+    // fill_region은 실제 채운 칸 수를 반환한다 — 추정치(w*h*0.7)는 실측이 없을 때만.
+    const filled = (result.data as { filled?: number } | undefined)?.filled;
+    if (typeof filled === "number") return filled;
     return Math.max(1, Math.floor(rect.w * rect.h * (shape === "rect" ? 1 : 0.7)));
   } catch (err) {
     warnings.push(err instanceof Error ? err.message : String(err));

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RPG ZZU · 쯔꾸르 명작 리서치 &amp; AI 제작 가능 축</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #171b26;
+      --muted: #5a6274;
+      --paper: #f3efe6;
+      --card: #fffcf6;
+      --line: #d5ccba;
+      --teal: #0c7469;
+      --teal-deep: #08564f;
+      --teal-soft: #d5eee9;
+      --amber: #b86f0f;
+      --amber-soft: #f6e6c4;
+      --rose: #a13646;
+      --rose-soft: #f5d8de;
+      --blue: #2c5b98;
+      --blue-soft: #dce7f7;
+      --violet: #564392;
+      --violet-soft: #e5dff5;
+      --green: #2a7236;
+      --green-soft: #d7edd8;
+      --ink2: #2a3142;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans KR", system-ui, sans-serif;
+      --display: "Newsreader", "IBM Plex Sans KR", serif;
+      --shadow: 0 16px 44px rgba(23, 27, 38, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      line-height: 1.55;
+      background:
+        radial-gradient(1000px 420px at 0% -5%, #fff5dc 0%, transparent 55%),
+        radial-gradient(800px 360px at 100% 0%, #e4f2ef 0%, transparent 50%),
+        var(--paper);
+    }
+    a { color: var(--teal-deep); text-underline-offset: 3px; }
+    .wrap { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
+    header.hero {
+      padding: 3rem 0 1.5rem;
+      border-bottom: 1px solid rgba(213,204,186,.75);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--teal-deep);
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+      box-shadow: 0 0 0 4px var(--teal-soft);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.12; letter-spacing: -.02em;
+      margin: .7rem 0 .85rem;
+    }
+    .lede { max-width: 68ch; color: var(--muted); font-size: 1.05rem; margin: 0 0 1.2rem; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip {
+      font-size: .8rem; color: var(--muted);
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 999px; padding: .32rem .7rem;
+    }
+    .chip b { color: var(--ink); }
+    nav.toc {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(243,239,230,.88);
+      border-bottom: 1px solid var(--line);
+    }
+    nav.toc .wrap { display: flex; gap: .35rem; overflow-x: auto; padding: .6rem 0; }
+    nav.toc a {
+      white-space: nowrap; text-decoration: none; color: var(--muted);
+      font-size: .84rem; padding: .35rem .7rem; border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    nav.toc a:hover { background: var(--teal-soft); color: var(--teal-deep); border-color: #9ecfc6; }
+    section { padding: 2.2rem 0 .2rem; }
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 2.3vw, 1.85rem);
+      margin: 0 0 .35rem; letter-spacing: -.01em;
+    }
+    .sec-sub { color: var(--muted); margin: 0 0 1.1rem; max-width: 72ch; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; box-shadow: var(--shadow); overflow: hidden;
+    }
+    .card .body { padding: 1.05rem 1.15rem 1.2rem; }
+    .grid-2 { display: grid; grid-template-columns: 1.05fr .95fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .85rem; }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    .callout {
+      border-left: 4px solid var(--teal);
+      background: linear-gradient(90deg, var(--teal-soft), transparent);
+      padding: .9rem 1rem; border-radius: 0 12px 12px 0; margin: .9rem 0;
+    }
+    .callout.warn { border-left-color: var(--amber); background: linear-gradient(90deg, var(--amber-soft), transparent); }
+    .callout.danger { border-left-color: var(--rose); background: linear-gradient(90deg, var(--rose-soft), transparent); }
+    .pill {
+      display: inline-flex; align-items: center;
+      font-size: .74rem; font-weight: 600;
+      padding: .2rem .55rem; border-radius: 999px; border: 1px solid transparent;
+    }
+    .pill.ok { background: var(--green-soft); color: var(--green); border-color: #b5deb8; }
+    .pill.mid { background: var(--amber-soft); color: #86570a; border-color: #ebcf96; }
+    .pill.bad { background: var(--rose-soft); color: var(--rose); border-color: #e6b5bd; }
+    .pill.blue { background: var(--blue-soft); color: var(--blue); border-color: #b7ccea; }
+    .pill.violet { background: var(--violet-soft); color: var(--violet); border-color: #c9bde8; }
+    .pill.neutral { background: #eef1f5; color: #455; border-color: #d4dae3; }
+    .axis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: .85rem;
+    }
+    .axis {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; box-shadow: var(--shadow); overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .axis .head {
+      padding: .85rem 1rem; color: #fff; min-height: 78px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .axis .head .n { font-family: var(--mono); font-size: .72rem; opacity: .85; margin-bottom: .25rem; }
+    .axis .head h3 { margin: 0; font-size: 1.05rem; }
+    .axis .body { padding: .9rem 1rem 1.05rem; display: grid; gap: .55rem; flex: 1; }
+    .axis ul { margin: 0; padding-left: 1.05rem; color: var(--muted); font-size: .9rem; }
+    .axis li { margin: .15rem 0; }
+    .a1 { background: linear-gradient(135deg, #2c5b98, #4d7ec4); }
+    .a2 { background: linear-gradient(135deg, #564392, #8872c4); }
+    .a3 { background: linear-gradient(135deg, #6a3a52, #b06a84); }
+    .a4 { background: linear-gradient(135deg, #3a2a48, #7a4f86); }
+    .a5 { background: linear-gradient(135deg, #b86f0f, #dca03a); }
+    .a6 { background: linear-gradient(135deg, #0c7469, #3aa58f); }
+    .a7 { background: linear-gradient(135deg, #2a7236, #63a86b); }
+    .a8 { background: linear-gradient(135deg, #5a3d2b, #9a6b4a); }
+    .a9 { background: linear-gradient(135deg, #1f3d4a, #4a7f93); }
+    .a10 { background: linear-gradient(135deg, #4a2140, #8b4a74); }
+    table.m {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; overflow: hidden; box-shadow: var(--shadow);
+      font-size: .88rem;
+    }
+    table.m th, table.m td {
+      padding: .68rem .75rem; border-bottom: 1px solid #ebe4d5;
+      text-align: left; vertical-align: top;
+    }
+    table.m th { background: #f6f0e4; font-weight: 600; color: #3a4153; white-space: nowrap; }
+    table.m tr:last-child td { border-bottom: 0; }
+    .tiny { font-size: .8rem; color: var(--muted); }
+    .stat {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 1rem; box-shadow: var(--shadow);
+    }
+    .stat .n {
+      font-family: var(--display); font-size: 1.85rem; line-height: 1; margin-bottom: .3rem;
+    }
+    .stat .l { color: var(--muted); font-size: .88rem; }
+    .verdict {
+      display: grid; gap: .7rem;
+    }
+    .verdict .row {
+      display: grid; grid-template-columns: 120px 1fr; gap: .8rem;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: .8rem .95rem;
+    }
+    .verdict .row strong { font-size: .92rem; }
+    .verdict .row p { margin: .2rem 0 0; color: var(--muted); font-size: .88rem; }
+    footer {
+      margin: 2.4rem 0 2rem; padding-top: 1rem;
+      border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem;
+    }
+    code {
+      font-family: var(--mono); font-size: .84em;
+      background: #f0ebe0; padding: .05rem .32rem; border-radius: 4px;
+    }
+    h3 { margin: 0 0 .4rem; font-size: 1.02rem; }
+    .src-list { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: .86rem; }
+    .src-list li { margin: .25rem 0; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: .3rem; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span> Research · RPG Maker Canon</div>
+      <h1>쯔꾸르 명작은 7개가 아니다.<br />AI가 만들어야 할 건 “작품 복제”가 아니라 “축”이다.</h1>
+      <p class="lede">
+        질문: <b>저 7축 정도는 AI로 만들 수 있어야 하는 거 아닌가?</b>
+        답: <b>예, 다만 “완작 클론”이 아니라 “그 게임이 증명하는 플레이 축의 수직 슬라이스”를 원큐/소수 턴으로 뽑을 수 있어야 한다.</b>
+        아래는 해외·국내에서 반복적으로 거론되는 쯔꾸르 명작을 축으로 재분류한 리서치다.
+      </p>
+      <div class="meta-row">
+        <span class="chip">기준일 <b>2026-07-15</b></span>
+        <span class="chip">기존 목표 <b>7 레퍼런스</b></span>
+        <span class="chip">확장 카논 <b>~30 작품 / 10 축</b></span>
+        <span class="chip">연결 <b>target-games-matrix.html</b></span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#answer">결론 먼저</a>
+      <a href="#seven">기존 7축</a>
+      <a href="#canon">명작 카논</a>
+      <a href="#axes">10개 장르 축</a>
+      <a href="#ai">AI 가능 기준</a>
+      <a href="#gaps">7축에 빠진 것</a>
+      <a href="#recommend">추천 제품 축</a>
+      <a href="#sources">출처</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="answer">
+      <h2>1. 결론 먼저</h2>
+      <p class="sec-sub">“7축을 AI로 만들 수 있어야 하냐”에 대한 제품 판정.</p>
+      <div class="grid-3">
+        <div class="stat">
+          <div class="n" style="color:var(--green)">YES</div>
+          <div class="l">7축 = 엔진이 커버해야 할 최소 장르 포트폴리오</div>
+        </div>
+        <div class="stat">
+          <div class="n" style="color:var(--amber)">BUT</div>
+          <div class="l">목표는 상업작 1:1 복제가 아니라 10분 수직 슬라이스</div>
+        </div>
+        <div class="stat">
+          <div class="n" style="color:var(--blue)">MORE</div>
+          <div class="l">쯔꾸르 카논은 7이 아니라 대략 10축·30작품급</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <b>정확한 제품 문장:</b>
+        AI RPG Maker는 “포켓몬/스타듀/투더문 같은 걸 전부 자동 완성”이 목표가 아니라,
+        <b>그 게임들이 대표하는 상호작용 패턴을 자연어 → 플레이 가능 초안으로 컴파일</b>할 수 있어야 한다.
+        2026-07-09 성적표도 이미 그 기준(원큐 수직 슬라이스)으로 7종을 채점했다.
+      </div>
+
+      <div class="verdict" style="margin-top:1rem">
+        <div class="row">
+          <span class="pill ok">필수</span>
+          <div>
+            <strong>축 커버리지</strong>
+            <p>전투 JRPG · 수집 · 농사/생활 · 연출 스토리 · 조사 호러 · 트랩 호러 · 성장/사냥 — 이 7축은 “만들 수 있다”가 제품 약속이 되어야 한다.</p>
+          </div>
+        </div>
+        <div class="row">
+          <span class="pill mid">품질 바</span>
+          <div>
+            <strong>성공 정의 = 수직 슬라이스</strong>
+            <p>예: 포켓몬 = 스타터→풀숲→포획→1회 진화. 스타듀 = 밭→수확→선물. 투더문 = 회상 컷신 1 + 엔딩 분기. 풀 길이 캠페인은 사람+AI 협업 영역.</p>
+          </div>
+        </div>
+        <div class="row">
+          <span class="pill bad">비목표</span>
+          <div>
+            <strong>명작 그 자체의 복제</strong>
+            <p>Undertale 전투 미니게임, OneShot OS 메타, OMORI급 장편 연출, Fear &amp; Hunger급 시스템 밀도를 원큐로 뽑는 건 엔진 목표가 아니라 별도 장르 엔진 확장이다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="seven">
+      <h2>2. 우리가 이미 찍은 7축 — 다시 보면 “쯔꾸르 카논의 샘플”</h2>
+      <p class="sec-sub">Notion 로드맵의 7게임은 임의 취향 목록이 아니라, 서로 다른 엔진 요구를 커버하려는 포트폴리오에 가깝다.</p>
+      <div style="overflow-x:auto">
+        <table class="m">
+          <thead>
+            <tr>
+              <th>목표 게임</th>
+              <th>대표 축</th>
+              <th>엔진이 증명해야 할 것</th>
+              <th>쯔꾸르 계열?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>영웅서기 제로</b></td>
+              <td>고전 JRPG 전투·성장</td>
+              <td>파티 전투, 필드, 보스 패턴, 승급</td>
+              <td><span class="pill mid">국산 레퍼런스 (쯔꾸르 외/인접)</span></td>
+            </tr>
+            <tr>
+              <td><b>투더문</b></td>
+              <td>연출 스토리</td>
+              <td>컷신 타임라인, 픽처/카메라, 엔딩</td>
+              <td><span class="pill ok">RPG Maker 계열 명작</span></td>
+            </tr>
+            <tr>
+              <td><b>이브 (Ib)</b></td>
+              <td>조사·퍼즐 호러</td>
+              <td>핫스팟, 아이템 게이트, 동행</td>
+              <td><span class="pill ok">쯔꾸르 호러 정전</span></td>
+            </tr>
+            <tr>
+              <td><b>마녀의 집</b></td>
+              <td>트랩·즉사 호러</td>
+              <td>체크포인트, 추격, 분위기 라이팅</td>
+              <td><span class="pill ok">쯔꾸르 호러 정전</span></td>
+            </tr>
+            <tr>
+              <td><b>포켓몬</b></td>
+              <td>몬스터 수집</td>
+              <td>포획·종족·타입·진화·보관함</td>
+              <td><span class="pill neutral">비쯔꾸르 · 장르 목표</span></td>
+            </tr>
+            <tr>
+              <td><b>스타듀 밸리</b></td>
+              <td>농사·생활 시뮬</td>
+              <td>시간/계절, 농사, 호감, 상점</td>
+              <td><span class="pill neutral">비쯔꾸르 · 장르 목표</span></td>
+            </tr>
+            <tr>
+              <td><b>바람의 나라</b></td>
+              <td>성장·사냥·월드</td>
+              <td>사냥터 스폰, 승급, 월드 그래프</td>
+              <td><span class="pill mid">국산 레퍼런스 (쯔꾸르 외)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny" style="margin-top:.7rem">
+        즉 7축 중 <b>순수 쯔꾸르 정전</b>은 투더문·이브·마녀의집 쪽이고,
+        포켓몬/스타듀/영웅서기/바람은 “쯔꾸르로 자주 흉내 내는 장르” 또는 “한국 플레이어 기대 레퍼런스”다.
+      </p>
+    </section>
+
+    <section id="canon">
+      <h2>3. 쯔꾸르 명작 카논 — 더 많다</h2>
+      <p class="sec-sub">
+        해외 랭킹(GameRant, DualShockers, TheGamer, Slant, Game Trellis 등)과
+        국내/일본 프리게임 담론(프리무, 0en-game, Steam 쯔꾸르 추천 등)에서
+        반복 등장하는 작품군. “모든 명작”이 아니라 <b>엔진 설계에 영향 주는 정전</b> 위주.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="body">
+            <h3>A. 글로벌 정전 (거의 항상 언급)</h3>
+            <table class="m" style="box-shadow:none;border:0">
+              <tbody>
+                <tr><td><b>To the Moon</b></td><td>연출·감정 스토리</td><td class="tiny">RMXP</td></tr>
+                <tr><td><b>Finding Paradise / Impostor Factory</b></td><td>연출 시리즈 확장</td><td class="tiny">Freebird</td></tr>
+                <tr><td><b>OneShot</b></td><td>메타·퍼즐·세계관</td><td class="tiny">RM</td></tr>
+                <tr><td><b>Yume Nikki</b></td><td>서핑·드림월드·비전투</td><td class="tiny">RM2003</td></tr>
+                <tr><td><b>OMORI</b></td><td>장편 심리·전투+스토리</td><td class="tiny">RMXP 기반 상용</td></tr>
+                <tr><td><b>Ib</b></td><td>갤러리 조사 호러</td><td class="tiny">RM</td></tr>
+                <tr><td><b>The Witch's House</b></td><td>트랩 호러</td><td class="tiny">VX → MV 리메이크</td></tr>
+                <tr><td><b>Mad Father / Misao</b></td><td>일본식 쯔꾸르 호러</td><td class="tiny">RM</td></tr>
+                <tr><td><b>Corpse Party</b></td><td>호러 시리즈 원류</td><td class="tiny">PC-98→리메이크</td></tr>
+                <tr><td><b>LISA: The Painful</b></td><td>잔혹 JRPG·선택 대가</td><td class="tiny">VX Ace</td></tr>
+                <tr><td><b>Fear &amp; Hunger</b></td><td>고난이도 다크 던전 RPG</td><td class="tiny">MV 계열</td></tr>
+                <tr><td><b>OFF</b></td><td>아방가르드·세계관 JRPG</td><td class="tiny">RM2003</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="body">
+            <h3>B. 자주 빠지지만 중요한 축</h3>
+            <table class="m" style="box-shadow:none;border:0">
+              <tbody>
+                <tr><td><b>Ao Oni</b></td><td>추격 호러 대중화</td><td class="tiny">VX</td></tr>
+                <tr><td><b>Hello Charlotte</b></td><td>메타 비주얼/연출</td><td class="tiny">MV</td></tr>
+                <tr><td><b>Wadanohara</b></td><td>동화·탐험·캐릭터</td><td class="tiny">VX Ace</td></tr>
+                <tr><td><b>Space Funeral / Hylics</b></td><td>아방가르드 미학</td><td class="tiny">RM</td></tr>
+                <tr><td><b>End Roll</b></td><td>연출·멀티엔딩</td><td class="tiny">RM</td></tr>
+                <tr><td><b>Seraphic Blue</b></td><td>고전 하드코어 JRPG</td><td class="tiny">2000</td></tr>
+                <tr><td><b>In Stars and Time</b></td><td>루프 서사 JRPG</td><td class="tiny">MV</td></tr>
+                <tr><td><b>Ara Fell / Declan</b> 계열</td><td>정통 파티 JRPG 상용</td><td class="tiny">Ace/MV</td></tr>
+                <tr><td><b>Yume 2kki</b> 등 팬 확장</td><td>드림월드 공동 제작</td><td class="tiny">커뮤니티</td></tr>
+                <tr><td><b>일본 프리게임 거작들</b></td><td>흑마검사 어스, Ruina 등</td><td class="tiny">프리무/꿈현</td></tr>
+                <tr><td><b>국내 인식 레퍼런스</b></td><td>영웅서기, 바람의 나라 감성</td><td class="tiny">쯔꾸르 외 포함</td></tr>
+                <tr><td><b>Undertale / Deltarune</b></td><td>전투 미니게임·메타 (엔진 영감, 비쯔꾸르)</td><td class="tiny">GameMaker</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <b>주의:</b> Undertale은 쯔꾸르가 아니다(GameMaker). 그래도 “쯔꾸르로 만들고 싶다”는 사용자 발화에 자주 등장하므로
+        <b>레퍼런스 욕구</b>로는 카논에 인접시킨다. 포켓몬·스타듀와 같은 위치 — “엔진 기원”이 아니라 “장르 기대”.
+      </div>
+    </section>
+
+    <section id="axes">
+      <h2>4. 작품을 10개 “엔진 축”으로 재분류</h2>
+      <p class="sec-sub">명작 리스트를 그대로 제품 백로그에 넣으면 끝없다. <b>같은 런타임 슬롯을 요구하는 작품끼리 묶는 게 맞다.</b></p>
+
+      <div class="axis-grid">
+        <article class="axis">
+          <div class="head a1"><div class="n">AXIS 01</div><h3>연출 스토리</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 투더문</span></div>
+            <ul>
+              <li>To the Moon, Finding Paradise</li>
+              <li>End Roll, Hello Charlotte</li>
+              <li>필요: 컷신 시퀀서, 픽처, 카메라, 엔딩 그래프</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a2"><div class="n">AXIS 02</div><h3>메타·퍼즐 어드벤처</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill mid">7축에 약함</span></div>
+            <ul>
+              <li>OneShot, (부분) Hello Charlotte</li>
+              <li>필요: 비선형 퍼즐, 4벽 파괴, 파일/UI 메타(선택)</li>
+              <li>풀 OneShot급 OS 연동은 비목표 권장</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a3"><div class="n">AXIS 03</div><h3>조사 호러</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 이브</span></div>
+            <ul>
+              <li>Ib, Mad Father, Misao 일부</li>
+              <li>필요: 조사 핫스팟, 아이템 퍼즐, 동행</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a4"><div class="n">AXIS 04</div><h3>트랩·추격 호러</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 마녀의 집</span></div>
+            <ul>
+              <li>Witch's House, Ao Oni, Corpse Party 감성</li>
+              <li>필요: checkpoint, kill, chase, lighting</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a5"><div class="n">AXIS 05</div><h3>정통 파티 JRPG</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 영웅서기</span></div>
+            <ul>
+              <li>Seraphic Blue, Ara Fell, 영웅서기 감성</li>
+              <li>필요: 전투, 직업, 필드, 보스 이벤트</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a6"><div class="n">AXIS 06</div><h3>다크·하드코어 JRPG</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill mid">7축에 부분</span></div>
+            <ul>
+              <li>LISA, Fear &amp; Hunger, OFF 일부</li>
+              <li>필요: 가혹 자원, 영구 손실, 분기 대가</li>
+              <li>영웅서기 축의 “난이도/대가” 확장</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a7"><div class="n">AXIS 07</div><h3>몬스터 수집</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 포켓몬</span></div>
+            <ul>
+              <li>Pokémon-like, Cassette/Temtem 감성</li>
+              <li>필요: species, capture, type, box, 진화</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a8"><div class="n">AXIS 08</div><h3>농사·생활 시뮬</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 스타듀</span></div>
+            <ul>
+              <li>Stardew-like, Harvest/Rune Factory 감성</li>
+              <li>필요: 시간, 농사, 호감, 상점, 스케줄</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a9"><div class="n">AXIS 09</div><h3>성장·사냥·월드</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill ok">기존 7: 바람</span></div>
+            <ul>
+              <li>바람의 나라 감성, 필드 파밍 JRPG</li>
+              <li>필요: 인카운터 테이블, 스폰, 승급, worldGraph</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="axis">
+          <div class="head a10"><div class="n">AXIS 10</div><h3>드림월드·비전투 탐험</h3></div>
+          <div class="body">
+            <div class="tag-row"><span class="pill bad">7축 공백</span></div>
+            <ul>
+              <li>Yume Nikki, Yume 2kki, Space Funeral 일부</li>
+              <li>필요: 광역 맵 연결, 약한 목표, 분위기 이벤트</li>
+              <li>전투/퀘스트 강제가 없는 “산책 엔진”</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="ai">
+      <h2>5. “AI로 만들 수 있어야 한다”의 합격선</h2>
+      <p class="sec-sub">작품명이 아니라, 에이전트가 자연어 한 방으로 내야 하는 <b>최소 플레이 루프</b>.</p>
+      <div style="overflow-x:auto">
+        <table class="m">
+          <thead>
+            <tr>
+              <th>축</th>
+              <th>AI 합격 수직 슬라이스</th>
+              <th>지금 엔진</th>
+              <th>원큐 성적(당시)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>연출 스토리</td>
+              <td>회상 컷신 1 + 선택지 + 엔딩 2</td>
+              <td><span class="pill ok">슬롯 있음</span></td>
+              <td><span class="pill mid">부분</span></td>
+            </tr>
+            <tr>
+              <td>조사 호러</td>
+              <td>방 1 + 조사 10+ + 퍼즐 1 + 엔딩/탈출</td>
+              <td><span class="pill mid">슬롯 있음</span></td>
+              <td><span class="pill bad">실패</span></td>
+            </tr>
+            <tr>
+              <td>트랩 호러</td>
+              <td>트랩 3 + 체크포인트 리트라이 + 추격 1</td>
+              <td><span class="pill ok">슬롯 있음</span></td>
+              <td><span class="pill mid">부분</span></td>
+            </tr>
+            <tr>
+              <td>정통 JRPG</td>
+              <td>마을→필드 전투→보스 10분</td>
+              <td><span class="pill ok">강함</span></td>
+              <td><span class="pill ok">완주</span></td>
+            </tr>
+            <tr>
+              <td>수집</td>
+              <td>스타터 3택1 → 야생 조우 → 포획 → 진화 1</td>
+              <td><span class="pill ok">강함</span></td>
+              <td><span class="pill ok">완주</span></td>
+            </tr>
+            <tr>
+              <td>농사·생활</td>
+              <td>밭 경작→수확→NPC 선물→상점</td>
+              <td><span class="pill ok">강함</span></td>
+              <td><span class="pill ok">완주</span></td>
+            </tr>
+            <tr>
+              <td>성장·사냥 월드</td>
+              <td>마을+사냥터+승급 1차</td>
+              <td><span class="pill mid">중상</span></td>
+              <td><span class="pill mid">부분</span></td>
+            </tr>
+            <tr>
+              <td>메타·퍼즐</td>
+              <td>맵 퍼즐 3 + 세계 규칙 1 (OS 메타 제외)</td>
+              <td><span class="pill mid">부분</span></td>
+              <td><span class="pill neutral">미측정</span></td>
+            </tr>
+            <tr>
+              <td>드림월드</td>
+              <td>허브+방 5 연결, 전투 없음, 분위기 이벤트</td>
+              <td><span class="pill mid">맵은 됨</span></td>
+              <td><span class="pill neutral">미측정</span></td>
+            </tr>
+            <tr>
+              <td>다크 하드코어</td>
+              <td>자원 압박 던전 1층 + 영구 대가 1</td>
+              <td><span class="pill mid">부분</span></td>
+              <td><span class="pill neutral">미측정</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <b>판정:</b> “7축은 AI로 만들 수 있어야 한다”는 말에 <b>동의</b>한다.
+        이미 로드맵이 그걸 목표로 짰고, 절반 가까이는 원큐로도 된다.
+        지금 부족한 건 새 장르 발명이 아니라 <b>약한 축(호러 실내·연출 순서·월드 연결)의 컴파일러/템플릿</b>이다.
+      </div>
+    </section>
+
+    <section id="gaps">
+      <h2>6. 기존 7축이 놓친 쯔꾸르 정전</h2>
+      <p class="sec-sub">7축이 틀린 게 아니라, <b>쯔꾸르 역사에서 유독 강한 두 축</b>이 빠져 있다.</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="body">
+            <h3>빠진 축 1 — 드림월드 / 서핑</h3>
+            <p class="tiny">Yume Nikki로 시작해 OMORI·팬게임 생태계까지 이어진, 쯔꾸르 고유 강세 장르.</p>
+            <ul>
+              <li>전투·퀘스트 없이도 “게임”이 성립</li>
+              <li>맵 연결 + 분위기 이벤트 + 수집식 효과 중심</li>
+              <li>AI 맵 생성 능력과 잘 맞지만, <b>성공 기준(클리어 조건)</b> 정의가 필요</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="body">
+            <h3>빠진 축 2 — 메타/4벽 파괴</h3>
+            <p class="tiny">OneShot, (부분) Undertale 기대, Hello Charlotte.</p>
+            <ul>
+              <li>플레이어 이름, 창 밖 파일, 거짓말하는 UI</li>
+              <li>웹 엔진에선 보안/UX 제약으로 풀 구현이 위험</li>
+              <li>제품 권장: <b>소프트 메타</b>(독백이 플레이어를 지목, 선택지 배신)까지만 1차</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warn" style="margin-top:1rem">
+        추가로 LISA / Fear &amp; Hunger 계열의 <b>가혹 자원·영구 대가</b>는
+        영웅서기 축의 확장으로 넣을 수 있다. 새 장르라기보다 전투/인벤 정책 옵션.
+      </div>
+    </section>
+
+    <section id="recommend">
+      <h2>7. 제품 추천 — “AI가 만들어야 하는 축” 우선순위</h2>
+      <p class="sec-sub">명작 나열을 백로그로 바꾸면 이렇게 자른다.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="body">
+            <h3>P0 — 이미 약속한 7축 완성 (유지)</h3>
+            <ol>
+              <li>포켓몬 / 스타듀 / 영웅서기 → <b>데모 고정</b> (이미 원큐 강함)</li>
+              <li>투더문 / 마녀의집 / 바람 → <b>템플릿 컴파일러</b>로 부분→완주</li>
+              <li>이브 → <b>실내 밀도 + 재킥/오케스트레이션</b> (가장 아픈 축)</li>
+            </ol>
+            <p class="tiny">이게 “7축은 AI로 만들 수 있어야지”의 직접 답.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="body">
+            <h3>P1 — 쯔꾸르 카논 공백 메우기</h3>
+            <ol>
+              <li><b>드림월드 프리셋</b> (Yume Nikki-like) — 맵 연결 특화 웰컴 칩 후보</li>
+              <li><b>소프트 메타 스토리</b> (OneShot-lite) — OS 해킹 없이 연출/퍼즐</li>
+              <li><b>다크 JRPG 옵션팩</b> (LISA/F&amp;H-lite) — 영구 대가·기아·사지 손실은 단계적</li>
+            </ol>
+            <p class="tiny">P0 안정 후. 웰컴 칩을 4→6으로 늘릴 때 1순위 후보.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <div class="body">
+          <h3>한 문장 제품 정의 (추천)</h3>
+          <p style="margin:0;font-size:1.05rem;color:var(--ink2)">
+            RPG ZZU의 AI는 <b>쯔꾸르 정전 7~10개 플레이 축</b>에 대해
+            자연어 → <b>플레이 가능한 10분 초안</b>을 제안할 수 있어야 한다.
+            상업 명작의 서사·아트·길이 복제는 목표가 아니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources">
+      <h2>8. 출처 · 근거</h2>
+      <p class="sec-sub">웹 리서치 + 기존 Notion/레포 문서.</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="body">
+            <h3>외부</h3>
+            <ul class="src-list">
+              <li><a href="https://gamerant.com/best-rpg-maker-games-ever-made/" target="_blank" rel="noopener">GameRant — Best RPG Maker Games</a></li>
+              <li><a href="https://www.dualshockers.com/best-rpg-maker-games/" target="_blank" rel="noopener">DualShockers — 10 Best RPG Maker Games</a></li>
+              <li><a href="https://www.thegamer.com/rpg-maker-best-games-ever/" target="_blank" rel="noopener">TheGamer — Best RPG Maker Games</a></li>
+              <li><a href="https://gametrellis.com/the-best-rpg-maker-games/" target="_blank" rel="noopener">Game Trellis — Best RPG Maker Games 2026</a></li>
+              <li><a href="https://www.slant.co/topics/2282/~best-rpg-maker-games" target="_blank" rel="noopener">Slant — Best RPG Maker games</a></li>
+              <li><a href="https://rpgmaker.fandom.com/wiki/Well_Known_RPG_Maker_Games_List" target="_blank" rel="noopener">RPG Maker Wiki — Well Known list</a></li>
+              <li><a href="https://gamedesignskills.com/gaming/rpg-maker/" target="_blank" rel="noopener">GameDesignSkills — 51 popular RM games</a></li>
+              <li><a href="https://www.0en-game.com/free/rpgtkool/item/meisaku/" target="_blank" rel="noopener">0en-game — 쯔꾸르 명작 소개</a></li>
+              <li><a href="https://hedgehog.ryukyu/%E3%80%902024%E5%B9%B4%E3%80%91steam%E3%81%AErpg%E3%83%84%E3%82%AF%E3%83%BC%E3%83%AB%E8%A3%BD%E3%81%AE%E3%81%8A%E3%81%99%E3%81%99%E3%82%81%E5%90%8D%E4%BD%9C%E3%82%B2%E3%83%BC%E3%83%A09%E9%81%B8/" target="_blank" rel="noopener">はりぼう記 — Steam 쯔꾸르 명작</a></li>
+              <li><a href="https://freegame-mugen.jp/genre/tkool.html" target="_blank" rel="noopener">프리게임 꿈현 — 쯔꾸르 장르</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="body">
+            <h3>내부</h3>
+            <ul class="src-list">
+              <li>Notion: <code>2026-07-08 고도화 로드맵 — 7개 목표 게임 12 Phase</code></li>
+              <li>Notion: <code>2026-07-09 Phase 6~13 완주 보고 — 타깃 7종 성적표</code></li>
+              <li>레포: <code>docs/target-games-matrix.html</code></li>
+              <li>레포: <code>src/editor/welcomeGenrePresets.ts</code> (칩 4종)</li>
+              <li>레포: <code>openwiki/runtime-and-data.md</code> (현재 슬롯)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      이 문서는 리서치/제품 판단용이다. 특정 상업 게임의 에셋·시나리오·상표 복제를 권하지 않는다.
+      RPG ZZU의 목표는 클린룸 엔진 위에서 <b>같은 종류의 플레이 축</b>을 저작하는 것이다.
+    </footer>
+  </main>
+</body>
+</html>

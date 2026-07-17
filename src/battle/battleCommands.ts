@@ -22,12 +22,31 @@ export const DEFAULT_RUNTIME_BATTLE_COMMANDS: readonly RuntimeBattleCommand[] = 
 export function battleCommandsForActor(
   project: Project,
   actorRecordId: string | undefined,
-  options: { readonly includeSwitch?: boolean; readonly forceSwitchOnly?: boolean; readonly classId?: string } = {}
+  options: {
+    readonly includeSwitch?: boolean;
+    readonly forceSwitchOnly?: boolean;
+    readonly classId?: string;
+    readonly overrideCommandIds?: readonly string[];
+  } = {}
 ): readonly RuntimeBattleCommand[] {
   if (options.forceSwitchOnly) return [switchCommand()];
   const actor = actorRecordId ? project.database.actors.find((record) => record.id === actorRecordId) : undefined;
   const klass = actor ? project.database.classes.find((record) => record.id === (options.classId ?? actor.classId)) : undefined;
-  const source = klass?.battleCommands ?? [];
+  const overrideIds = options.overrideCommandIds;
+  let source: readonly ClassBattleCommand[] = klass?.battleCommands ?? [];
+  if (overrideIds && overrideIds.length > 0) {
+    source = overrideIds.map((id, index) => {
+      const global = project.database.battleCommands?.find((record) => record.id === id);
+      const fromClass = klass?.battleCommands.find((entry) => entry.id === id);
+      return {
+        id,
+        name: fromClass?.name ?? global?.name ?? id,
+        kind: fromClass?.kind ?? global?.kind ?? "attack",
+        skillSubsetName: fromClass?.skillSubsetName ?? global?.skillSubsetName,
+        skillId: fromClass?.skillId ?? global?.skillId,
+      } satisfies ClassBattleCommand;
+    });
+  }
   const commands = source
     .map((command) => resolveClassBattleCommand(project, command))
     .filter((command): command is RuntimeBattleCommand => command !== undefined)

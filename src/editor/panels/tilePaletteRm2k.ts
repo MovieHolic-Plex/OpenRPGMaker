@@ -132,13 +132,16 @@ export function makeRm2kPalette(args: MakeRm2kPaletteArgs): HTMLElement {
   const sheet = el("div", {
     class: "chipset-sheet tile-palette rm2k-palette",
     dataset: { testid: "tile-palette" },
-    attrs: { style: `--chipset-cell:${RM2K_CELL_SIZE}px` },
+    attrs: {
+      // 칸 크기는 CSS가 패널 폭에 맞춰 계산. 열 수는 항상 6.
+      style: `--rm2k-cols:${RM2K_PALETTE_COLUMNS}`,
+    },
   });
   const grid = el("div", {
     class: "chipset-grid rm2k-palette-grid",
     dataset: { testid: "rm2k-palette-grid" },
     attrs: {
-      // 6열 고정 리플로우 — 미디어쿼리의 auto-fill 재정의를 이기도록 인라인으로 못박는다.
+      // 6열 고정 — 칸 크기는 CSS --chipset-cell(cqi) 이 담당.
       style: `grid-template-columns:repeat(${RM2K_PALETTE_COLUMNS}, var(--chipset-cell))`,
     },
   });

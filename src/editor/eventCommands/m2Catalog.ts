@@ -63,6 +63,56 @@ const BOOLEAN_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "true", label: "ON / 허가" },
   { value: "false", label: "OFF / 금지" },
 ];
+const WEATHER_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "none", label: "없음" },
+  { value: "rain", label: "비" },
+  { value: "storm", label: "폭풍" },
+  { value: "snow", label: "눈" },
+  { value: "fog", label: "안개" },
+];
+
+const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "white", label: "흰색" },
+  { value: "red", label: "빨강" },
+  { value: "green", label: "초록" },
+  { value: "blue", label: "파랑" },
+  { value: "yellow", label: "노랑" },
+  { value: "purple", label: "보라" },
+  { value: "black", label: "검정" },
+  { value: "neutral", label: "중립" },
+];
+
+const SHAKE_INTENSITY_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "1", label: "약하게" },
+  { value: "3", label: "보통" },
+  { value: "6", label: "강하게" },
+  { value: "10", label: "매우 강하게" },
+];
+
+const SCROLL_DIRECTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "down", label: "아래" },
+  { value: "left", label: "왼쪽" },
+  { value: "right", label: "오른쪽" },
+  { value: "up", label: "위" },
+];
+
+const SCROLL_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "return", label: "복귀" },
+  { value: "lock", label: "고정" },
+  { value: "pan", label: "패닝" },
+];
+
+const ANIMATION_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "player", label: "플레이어" },
+  { value: "this-event", label: "이 이벤트" },
+];
+
+const VEHICLE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "boat", label: "배" },
+  { value: "ship", label: "배(대형)" },
+  { value: "airship", label: "비행선" },
+];
+
 
 export const M2_COMMAND_CATALOG: readonly M2CommandCatalogEntry[] = [...PDF_COMMAND_ROWS, ...MODERN_COMMAND_ROWS].map(buildCatalogEntry);
 
@@ -126,10 +176,28 @@ function pickerLabelFor(title: string, label: string, fields: readonly M2Command
 }
 
 function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
+  const page3Fields = page3FieldsFor(title);
+  if (page3Fields) return page3Fields;
   const modernFields = modernFieldsFor(title);
   if (modernFields) return modernFields;
   if (title === "Comment") {
-    return [{ key: "comment", label: "내용", type: "textarea", defaultValue: "" }];
+    return [
+      { key: "comment", label: "내용", type: "textarea", defaultValue: "" },
+      {
+        key: "color",
+        label: "글자색",
+        type: "select",
+        defaultValue: "green",
+        options: [
+          { value: "green", label: "초록" },
+          { value: "yellow", label: "노랑" },
+          { value: "cyan", label: "청록" },
+          { value: "pink", label: "분홍" },
+          { value: "gray", label: "회색" },
+          { value: "white", label: "흰색" },
+        ],
+      },
+    ];
   }
   if (title === "Enemy Encounter") {
     return [{ key: "target", label: "적", type: "text", defaultValue: "" }];
@@ -137,25 +205,14 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
   if (title === "Change Battleback") {
     return [{ key: "resourceId", label: "전투 배경", type: "text", defaultValue: "" }];
   }
-  if (title === "Scroll Map") {
-    return [
-      { key: "direction", label: "방향", type: "select", defaultValue: "down", options: [
-        { value: "down", label: "아래" },
-        { value: "left", label: "왼쪽" },
-        { value: "right", label: "오른쪽" },
-        { value: "up", label: "위" },
-      ] },
-      { key: "distance", label: "거리(타일)", type: "number", defaultValue: 1 },
-      { key: "speed", label: "속도", type: "number", defaultValue: 4 },
-      { key: "wait", label: "대기", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
-      { key: "mode", label: "모드", type: "select", defaultValue: "return", options: [
-        { value: "return", label: "복귀" },
-        { value: "lock", label: "고정" },
-        { value: "pan", label: "패닝" },
-      ] },
-    ];
-  }
-  if (title.includes("Location") || title.includes("Player") || title.includes("Event") || title.includes("Map")) {
+
+  // Location/transfer-like commands only. Never match Erase/End Event Processing.
+  if (
+    title.includes("Location")
+    || title.includes("Player")
+    || title === "Call Event"
+    || (title.includes("Map") && title !== "Stop All Movement")
+  ) {
     return [
       { key: "target", label: "대상", type: "text", defaultValue: "" },
       { key: "mapId", label: "맵 ID", type: "text", defaultValue: "" },
@@ -180,7 +237,15 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
   if (title.includes("On/Off") || title.includes("Access") || title.startsWith("Toggle ")) {
     return [{ key: "enabled", label: "상태", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS }];
   }
-  if (title.startsWith("Open ") || title === "Exit Game" || title === "Break Loop" || title === "End Event Processing" || title === "Erase Event") {
+  if (
+    title.startsWith("Open ")
+    || title === "Exit Game"
+    || title === "Break Loop"
+    || title === "End Event Processing"
+    || title === "Erase Event"
+    || title === "Wait for All Movement"
+    || title === "Stop All Movement"
+  ) {
     return [];
   }
   if (title.includes("Animation")) {
@@ -193,6 +258,73 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
     return [
       { key: "target", label: "대상", type: "text", defaultValue: "" },
       { key: "variableId", label: "변수 ID", type: "text", defaultValue: "" },
+    ];
+  }
+  if (title === "Change Parameters") {
+    return [
+      { key: "target", label: "배우", type: "text", defaultValue: "" },
+      { key: "parameter", label: "능력치", type: "select", defaultValue: "maxHp", options: [
+        { value: "maxHp", label: "최대 HP" },
+        { value: "maxMp", label: "최대 MP" },
+        { value: "attack", label: "공격" },
+        { value: "defense", label: "방어" },
+        { value: "mind", label: "정신" },
+        { value: "agility", label: "민첩" },
+      ] },
+      { key: "operation", label: "조작", type: "select", defaultValue: "add", options: OPERATION_OPTIONS },
+      { key: "value", label: "값", type: "number", defaultValue: 1 },
+      { key: "valueSource", label: "값 소스", type: "select", defaultValue: "number", options: [
+        { value: "number", label: "숫자" },
+        { value: "variable", label: "변수" },
+      ] },
+      { key: "valueVariableId", label: "값 변수", type: "text", defaultValue: "" },
+    ];
+  }
+  if (title === "Change State") {
+    return [
+      { key: "target", label: "주인공", type: "text", defaultValue: "party" },
+      { key: "operation", label: "조작", type: "select", defaultValue: "add", options: OPERATION_OPTIONS },
+      { key: "value", label: "상태", type: "text", defaultValue: "" },
+    ];
+  }
+  if (title === "Damage Processing") {
+    return [
+      { key: "target", label: "주인공", type: "text", defaultValue: "party" },
+      { key: "operation", label: "조작", type: "select", defaultValue: "add", options: [
+        { value: "add", label: "데미지" },
+        { value: "remove", label: "회복" },
+      ] },
+      { key: "value", label: "값", type: "number", defaultValue: 10 },
+      { key: "valueSource", label: "값 소스", type: "select", defaultValue: "number", options: [
+        { value: "number", label: "숫자" },
+        { value: "variable", label: "변수" },
+      ] },
+      { key: "valueVariableId", label: "값 변수", type: "text", defaultValue: "" },
+    ];
+  }
+  if (title === "Change Actor Name" || title === "Change Actor Nickname") {
+    return [
+      { key: "target", label: "주인공", type: "text", defaultValue: "" },
+      { key: "value", label: "이름", type: "text", defaultValue: "" },
+    ];
+  }
+  if (title === "Change Actor Graphic") {
+    return [
+      { key: "target", label: "주인공", type: "text", defaultValue: "" },
+      { key: "value", label: "캐릭터 그래픽", type: "text", defaultValue: "" },
+    ];
+  }
+  if (title === "Change Actor Faceset") {
+    return [
+      { key: "target", label: "주인공", type: "text", defaultValue: "" },
+      { key: "value", label: "얼굴 그래픽", type: "text", defaultValue: "" },
+      { key: "faceIndex", label: "얼굴 번호", type: "number", defaultValue: 0 },
+    ];
+  }
+  if (title === "Change Actor Class") {
+    return [
+      { key: "target", label: "주인공", type: "text", defaultValue: "" },
+      { key: "value", label: "직업", type: "text", defaultValue: "" },
     ];
   }
   if (
@@ -210,4 +342,148 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
     ];
   }
   return [{ key: "note", label: "메모", type: "text", defaultValue: "" }];
+}
+
+/** Page 3 (맵·연출) M2 field specs aligned with m2Runtime / commandCatalog keys. */
+function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefined {
+  switch (title) {
+    case "Get Player Location":
+      return [{ key: "variableId", label: "변수 ID", type: "text", defaultValue: "" }];
+    case "Move to Variable Location":
+      return [
+        { key: "mapVariableId", label: "맵 변수", type: "text", defaultValue: "" },
+        { key: "xVariableId", label: "X 변수", type: "text", defaultValue: "" },
+        { key: "yVariableId", label: "Y 변수", type: "text", defaultValue: "" },
+      ];
+    case "Get On/Off Vehicle":
+      return [
+        { key: "target", label: "탈것", type: "select", defaultValue: "boat", options: VEHICLE_OPTIONS },
+        { key: "enabled", label: "탑승", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
+      ];
+    case "Set Vehicle Location":
+      return [
+        { key: "target", label: "탈것", type: "select", defaultValue: "boat", options: VEHICLE_OPTIONS },
+        { key: "mapId", label: "맵 ID", type: "text", defaultValue: "" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+      ];
+    case "Set Event Location":
+      return [
+        { key: "target", label: "이벤트", type: "text", defaultValue: "" },
+        { key: "mapId", label: "맵 ID", type: "text", defaultValue: "" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+      ];
+    case "Swap Event Location":
+      return [
+        { key: "target", label: "이벤트 A", type: "text", defaultValue: "" },
+        { key: "value", label: "이벤트 B", type: "text", defaultValue: "" },
+      ];
+    case "Get Terrain ID":
+      return [
+        { key: "variableId", label: "변수 ID", type: "text", defaultValue: "" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+      ];
+    case "Get Event ID":
+      return [
+        { key: "variableId", label: "변수 ID", type: "text", defaultValue: "" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+      ];
+    case "Hide Screen":
+    case "Show Screen":
+    case "Stop All Movement":
+      return [];
+    case "Tint Screen":
+      return [
+        { key: "color", label: "색상", type: "select", defaultValue: "neutral", options: SCREEN_COLOR_OPTIONS },
+        { key: "value", label: "색(R,G,B 또는 hex)", type: "text", defaultValue: "" },
+        { key: "duration", label: "시간(초/ms)", type: "number", defaultValue: 0 },
+      ];
+    case "Flash Screen":
+      return [
+        { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS },
+        { key: "value", label: "색 값", type: "text", defaultValue: "flash" },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+      ];
+    case "Shake Screen":
+      return [
+        { key: "value", label: "강도(값)", type: "number", defaultValue: 3 },
+        { key: "intensity", label: "강도", type: "select", defaultValue: "3", options: SHAKE_INTENSITY_OPTIONS },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 400 },
+      ];
+    case "Scroll Map":
+      return [
+        { key: "direction", label: "방향", type: "select", defaultValue: "down", options: SCROLL_DIRECTION_OPTIONS },
+        { key: "distance", label: "거리(타일)", type: "number", defaultValue: 1 },
+        { key: "speed", label: "속도", type: "number", defaultValue: 4 },
+        { key: "wait", label: "대기", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
+        { key: "mode", label: "모드", type: "select", defaultValue: "return", options: SCROLL_MODE_OPTIONS },
+      ];
+    case "Set Weather Effects":
+      return [
+        { key: "value", label: "날씨", type: "select", defaultValue: "none", options: WEATHER_OPTIONS },
+        { key: "intensity", label: "강도(0~1)", type: "number", defaultValue: 0.5 },
+        { key: "transitionMs", label: "전환(ms)", type: "number", defaultValue: 0 },
+      ];
+    case "Show Picture":
+      return [
+        { key: "pictureId", label: "그림 ID", type: "text", defaultValue: "pic1" },
+        { key: "resourceId", label: "리소스 ID", type: "text", defaultValue: "" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+        { key: "scale", label: "배율", type: "number", defaultValue: 100 },
+        { key: "opacity", label: "불투명도", type: "number", defaultValue: 255 },
+      ];
+    case "Move Picture":
+      return [
+        { key: "pictureId", label: "그림 ID", type: "text", defaultValue: "pic1" },
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+        { key: "scale", label: "배율", type: "number", defaultValue: 100 },
+        { key: "opacity", label: "불투명도", type: "number", defaultValue: 255 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 0 },
+      ];
+    case "Erase Picture":
+      return [{ key: "pictureId", label: "그림 ID", type: "text", defaultValue: "pic1" }];
+    case "Show Animation":
+      return [
+        { key: "target", label: "대상", type: "select", defaultValue: "player", options: ANIMATION_TARGET_OPTIONS },
+        { key: "animationId", label: "애니메이션 ID", type: "text", defaultValue: "" },
+        { key: "wait", label: "완료까지 대기", type: "select", defaultValue: "false", options: BOOLEAN_OPTIONS },
+      ];
+    case "Flash Event":
+      return [
+        { key: "target", label: "이벤트", type: "text", defaultValue: "" },
+        { key: "value", label: "색 값", type: "text", defaultValue: "flash" },
+        { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS },
+      ];
+    case "Key Input Processing":
+      return [
+        { key: "variableId", label: "변수 ID", type: "text", defaultValue: "" },
+        {
+          key: "wait",
+          label: "키 대기",
+          type: "select",
+          defaultValue: "true",
+          options: BOOLEAN_OPTIONS,
+        },
+      ];
+    case "Change Tileset":
+      return [{ key: "value", label: "타일셋 ID", type: "text", defaultValue: "" }];
+    case "Change Parallax Back":
+      return [{ key: "resourceId", label: "파노라마 리소스", type: "text", defaultValue: "" }];
+    case "Set Encounter Rate":
+      return [{ key: "value", label: "인카운트율", type: "number", defaultValue: 25 }];
+    case "Change Tile":
+      return [
+        { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y", type: "number", defaultValue: 0 },
+        { key: "value", label: "타일 ID", type: "text", defaultValue: "" },
+        { key: "layer", label: "레이어", type: "number", defaultValue: 0 },
+      ];
+    default:
+      return undefined;
+  }
 }

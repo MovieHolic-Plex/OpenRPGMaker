@@ -21,18 +21,16 @@ test("toolbar load lists Supabase projects and selects one", async ({ page }, te
   await page.route("http://dbserver:8100/rest/v1/projects**", async (route) => {
     const requestUrl = new URL(route.request().url());
     const select = requestUrl.searchParams.get("select") ?? "";
-    if (select.includes("project_id,title,current_json")) {
+    if (select === "project_id,title" || (select.includes("project_id") && select.includes("title") && !select.includes("current_json"))) {
       await route.fulfill({
         contentType: "application/json",
         status: 200,
         body: JSON.stringify([
           {
-            current_json: { meta: { title: "안개 항구와 등대의 밤" } },
             project_id: "fog-harbor-lighthouse",
-            title: null,
+            title: "안개 항구와 등대의 밤",
           },
           {
-            current_json: { meta: { title: "Fallback ignored" } },
             project_id: "star-village",
             title: "별등 마을",
           },

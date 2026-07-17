@@ -95,11 +95,11 @@ describe("rich event page tabs", () => {
     expect(spriteIcon).not.toBeNull();
     expect(spriteIcon?.dataset.spriteId).toBe("unknown-sprite");
 
-    // Page tabs use 48×64 charset cells (scale 2) so the graphic fills the tab.
+    // Page tabs use 36×48 charset cells (scale 1.5) so the full frame fits the tab without crop squash.
     const fullIcon = findByTestId(thumb3!, "event-page-graphic-icon-preview");
     expect(fullIcon).not.toBeNull();
-    expect(fullIcon?.style.width).toBe("48px");
-    expect(fullIcon?.style.height).toBe("64px");
+    expect(fullIcon?.style.width).toBe("36px");
+    expect(fullIcon?.style.height).toBe("48px");
   });
 
   it("renders condition badges capped at three plus an overflow counter", () => {

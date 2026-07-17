@@ -1,6 +1,8 @@
 import { giftDayKey } from "@/project/session";
 import { store } from "@/project/store";
-import { giveGiftToNpc, giftResponseForKey } from "@/project/friendship";
+import { formatFriendshipFeedback, giveGiftToNpc, giftResponseForKey } from "@/project/friendship";
+import { resolveGiftResponses } from "@/project/characterProfiles";
+import { resolveSocialKey } from "@/project/socialKey";
 import type { GameEvent } from "@/project/types";
 import type { ItemRecord } from "@/project/types/database";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
@@ -11,16 +13,27 @@ import { el } from "@/util/dom";
 export async function playGiftSelection(scene: PlaySceneContext, event: GameEvent): Promise<void> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return;
-  const npcKey = event.id;
+  const project = store.getCurrent();
+  const responses = resolveGiftResponses(project, event);
+  const npcKey = resolveSocialKey(event);
+  if (!npcKey) {
+    await showGiftMessage(scene, event, giftResponseForKey(responses, "noItems"));
+    return;
+  }
   const today = giftDayKey(scene.session.gameTime);
   if ((scene.session.dailyGifts ?? {})[npcKey] === today) {
-    await showGiftMessage(scene, event, giftResponseForKey(event.giftResponses, "alreadyGifted"));
+    await showGiftMessage(scene, event, giftResponseForKey(responses, "alreadyGifted"));
     return;
   }
   const item = await chooseGiftItem(scene, event);
   if (!item) return;
-  const result = giveGiftToNpc(store.getCurrent(), scene.session, event, item.id);
+  const result = giveGiftToNpc(project, scene.session, event, item.id);
   scene.syncRuntimeState();
+  if (result.ok) {
+    const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship });
+    await showGiftMessage(scene, event, `${result.message}\n${feedback}`);
+    return;
+  }
   await showGiftMessage(scene, event, result.message);
 }
 
@@ -82,9 +95,10 @@ function giftableInventoryItems(scene: PlaySceneContext): ItemRecord[] {
 async function showNoItems(scene: PlaySceneContext, event: GameEvent): Promise<void> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return;
+  const responses = resolveGiftResponses(store.getCurrent(), event);
   await dialogue.showText({
     speaker: event.pages?.[0]?.name,
-    body: giftResponseForKey(event.giftResponses, "noItems"),
+    body: giftResponseForKey(responses, "noItems"),
     textContext: { session: scene.session, project: store.getCurrent() },
     playerTileY: scene.tileY,
     mapHeight: scene.map.height,

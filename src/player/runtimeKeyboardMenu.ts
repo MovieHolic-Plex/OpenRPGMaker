@@ -19,6 +19,7 @@ export type StatusMenuKeyboardMode = "function" | "main";
 export type StatusMenuKeyboardState = {
   readonly selectedCommand: StatusMenuCommandId;
   readonly mode: StatusMenuKeyboardMode;
+  readonly commandIds?: readonly StatusMenuCommandId[];
 };
 
 export type StatusMenuKeyboardAction =
@@ -33,9 +34,14 @@ export type StatusMenuKeyboardResult = StatusMenuKeyboardState & {
   readonly action: StatusMenuKeyboardAction;
 };
 
-export function moveTitleSelection(selectedIndex: number, key: "ArrowDown" | "ArrowUp"): number {
+export function moveTitleSelection(
+  selectedIndex: number,
+  key: "ArrowDown" | "ArrowUp",
+  visibleCount: number = TITLE_MENU_ITEM_COUNT,
+): number {
+  const count = Math.max(1, visibleCount | 0);
   const delta = key === "ArrowDown" ? 1 : -1;
-  return wrapIndex(selectedIndex + delta, TITLE_MENU_ITEM_COUNT);
+  return wrapIndex(selectedIndex + delta, count);
 }
 
 export function reduceStatusMenuKeyboard(
@@ -44,7 +50,7 @@ export function reduceStatusMenuKeyboard(
 ): StatusMenuKeyboardResult {
   if (key === "ArrowDown" || key === "ArrowUp") {
     return {
-      selectedCommand: nextStatusCommand(state.selectedCommand, key === "ArrowDown" ? 1 : -1),
+      selectedCommand: nextStatusCommand(state.selectedCommand, key === "ArrowDown" ? 1 : -1, state.commandIds),
       mode: state.mode,
       action: "select",
     };
@@ -69,9 +75,15 @@ export function reduceStatusMenuKeyboard(
   return { selectedCommand: state.selectedCommand, mode: state.mode, action: "none" };
 }
 
-function nextStatusCommand(current: StatusMenuCommandId, delta: number): StatusMenuCommandId {
-  const currentIndex = STATUS_MENU_COMMAND_IDS.indexOf(current);
-  return STATUS_MENU_COMMAND_IDS[wrapIndex(currentIndex + delta, STATUS_MENU_COMMAND_IDS.length)] ?? "items";
+function nextStatusCommand(
+  current: StatusMenuCommandId,
+  delta: number,
+  commandIds: readonly StatusMenuCommandId[] = STATUS_MENU_COMMAND_IDS
+): StatusMenuCommandId {
+  const ids = commandIds.length > 0 ? commandIds : STATUS_MENU_COMMAND_IDS;
+  const currentIndex = ids.indexOf(current);
+  const base = currentIndex >= 0 ? currentIndex : 0;
+  return ids[wrapIndex(base + delta, ids.length)] ?? "items";
 }
 
 function wrapIndex(index: number, length: number): number {

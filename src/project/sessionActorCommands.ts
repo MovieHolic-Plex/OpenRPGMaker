@@ -1,4 +1,4 @@
-import type { ActorAmountOp, ActorId, Command } from "@/project/types";
+import type { ActorAmountOp, ActorId, Command, VariableOperand } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
 
 type ActorVitalKind = "hp" | "mp";
@@ -6,10 +6,16 @@ type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActor
 
 export function changeActorVital(session: PlaySessionLike, command: ActorVitalCommand): void {
   const kind = vitalKind(command);
-  const vitals = session.actorVitals[command.actorId];
-  if (!vitals) return;
-  const max = kind === "hp" ? vitals.maxHp : vitals.maxMp;
-  vitals[kind] = clamp(applyAmount(vitals[kind], command.op, command.amount), 0, max);
+  const actorIds = resolveExperienceTargets(session, command.actorId);
+  for (const actorId of actorIds) {
+    const vitals = session.actorVitals[actorId];
+    if (!vitals) continue;
+    const max = kind === "hp" ? vitals.maxHp : vitals.maxMp;
+    const rawAmount = Math.trunc(command.amount);
+    const amount =
+      command.amountMode === "percent" ? Math.trunc((Math.max(0, max) * rawAmount) / 100) : rawAmount;
+    vitals[kind] = clamp(applyAmount(vitals[kind], command.op, amount), 0, max);
+  }
 }
 
 // 런타임 액터 이름을 세션 오버라이드에 저장한다(프로젝트 DB 는 건드리지 않음).
@@ -38,10 +44,13 @@ export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefine
 
 export function changeActorExperience(session: PlaySessionLike, command: Extract<Command, { kind: "changeExp" }>): void {
   session.actorExperience ??= {};
-  session.actorExperience[command.actorId] = Math.max(
-    0,
-    applyAmount(session.actorExperience[command.actorId] ?? 0, command.op, command.amount)
-  );
+  const amount = resolveOperandAmount(session, command.amount);
+  for (const actorId of resolveExperienceTargets(session, command.actorId)) {
+    session.actorExperience[actorId] = Math.max(
+      0,
+      applyAmount(session.actorExperience[actorId] ?? 0, command.op, amount)
+    );
+  }
 }
 
 export function changeActorLevel(session: PlaySessionLike, command: Extract<Command, { kind: "changeLevel" }>): void {
@@ -72,6 +81,18 @@ function vitalKind(command: ActorVitalCommand): ActorVitalKind {
     case "changeActorMp":
       return "mp";
   }
+}
+
+function resolveExperienceTargets(session: PlaySessionLike, actorId: string | undefined): readonly string[] {
+  if (!actorId || actorId === "party" || actorId === "all") {
+    return session.partyActorIds ?? [];
+  }
+  return [actorId];
+}
+
+function resolveOperandAmount(session: PlaySessionLike, amount: VariableOperand): number {
+  if (typeof amount === "number") return Math.trunc(amount);
+  return Math.trunc(session.variables[amount.id] ?? 0);
 }
 
 function applyAmount(current: number, op: ActorAmountOp, amount: number): number {

@@ -56,6 +56,7 @@ import {
   type AiBridgeAuditEntry,
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
+import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import {
   AUTO_COLLAPSE_AFTER_AI_MS,
   applyAiFontSize,
@@ -489,7 +490,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const showMissingKeyPrompt = (): void => {
     openAiSettings("apiKey");
     if (keyPromptBubble?.parentNode) return;
-    keyPromptBubble = appendBubble("system", "API 키가 필요합니다. 설정을 열어 OpenRouter 키를 입력하세요.");
+    keyPromptBubble = appendBubble("system", "API 키가 필요합니다. 설정을 열어 LLM API 키와 baseUrl을 입력하세요.");
     appendOpenSettingsButton(keyPromptBubble, "apiKey");
   };
   const ensureConfigReadyForSend = (): boolean => {
@@ -2209,6 +2210,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     abort: () => abortActiveTurn(),
     // DB 모달 AI 바 등 외부 진입점이 "채팅 도크 열기"를 요청할 때 — 접힘만 해제한다.
     openPanel: () => restoreCollapsed(),
+  });
+
+  // Welcome boot target — prefill and optional auto-send (writes still proposal-gated).
+  registerAiBootIntentTarget({
+    open: () => restoreCollapsed(),
+    prefill: (text: string) => {
+      input.value = text;
+      try {
+        input.focus();
+      } catch {
+        // ignore focus failures in headless tests
+      }
+    },
+    send: (text: string) => {
+      input.value = text;
+      try {
+        input.focus();
+      } catch {
+        /* headless */
+      }
+      void sendText(text);
+    },
   });
 
   return panel;

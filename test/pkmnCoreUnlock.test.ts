@@ -40,40 +40,37 @@ function firstActorDamage(result: ReturnType<typeof simulateBattle>): number {
 // 배치 1 — 몬스터 6스탯 레벨 스케일링
 // ─────────────────────────────────────────────────────────────────────────────
 describe("batch 1 · monster stat level scaling", () => {
-  it("returns base+iv at L1 (backward-compat) and ~GROWTH× at L99", () => {
-    // L1 = base+iv (구 monsterMaxHpFor 와 비트 동일)
-    expect(monsterStatAtLevel(22, 7, 1, 10)).toBe(29);
-    // L99 ≈ (base+iv) × growth
-    expect(monsterStatAtLevel(22, 7, 99, 10)).toBe(290);
-    expect(monsterStatAtLevel(8, 7, 99, 6)).toBe(90);
+  it("returns base+iv at L1 (backward-compat) and scales with level", () => {
+    // Pokemon-style other-stat formula: floor((2*base+iv)*level/100)+5
+    expect(monsterStatAtLevel(22, 7, 1, 10)).toBe(5);
+    expect(monsterStatAtLevel(22, 7, 99, 10)).toBe(55);
+    expect(monsterStatAtLevel(8, 7, 99, 6)).toBe(27);
     // clamp: 최소 1, round 적용
-    expect(monsterStatAtLevel(0, 0, 99, 10)).toBe(1);
+    expect(monsterStatAtLevel(0, 0, 99, 10)).toBe(5);
     expect(monsterStatAtLevel(1, 0, 50, 10)).toBeGreaterThanOrEqual(1);
   });
 
-  it("scales all six stats and keeps L1 equal to species baseStats", () => {
+  it("scales all six stats with Pokemon formula and keeps L1 near base floor", () => {
     const project = createBlankProject();
     const species = project.database.monsterSpecies?.find((s) => s.id === "species_leafling");
     if (!species) throw new Error("missing leafling");
-    const l1 = monsterBattleStats(project, species, aqualing(project, "x", 1) satisfies MonsterInstance);
-    // (aqualing instance used only as a level-1 carrier — override species explicitly above)
-    const leaflingL1 = monsterBattleStats(project, species, {
+    const leaflingL1 = monsterBattleStats(project, {
       ...aqualing(project, "leaf", 1),
       speciesId: "species_leafling",
     });
-    expect(leaflingL1.maxHp).toBe(species.baseStats.maxHp);
-    expect(leaflingL1.attack).toBe(species.baseStats.attack);
-    expect(leaflingL1.agility).toBe(species.baseStats.agility);
+    // L1 HP = floor((2*base+iv)/100)+1+10 = 11 for base 36
+    expect(leaflingL1.maxHp).toBe(11);
+    expect(leaflingL1.attack).toBe(5);
+    expect(leaflingL1.agility).toBe(5);
 
-    const leaflingL99 = monsterBattleStats(project, species, {
+    const leaflingL99 = monsterBattleStats(project, {
       ...aqualing(project, "leaf99", 99),
       speciesId: "species_leafling",
     });
-    expect(leaflingL99.maxHp).toBe(species.baseStats.maxHp * 10);
-    expect(leaflingL99.attack).toBe(species.baseStats.attack * 9);
-    expect(leaflingL99.agility).toBe(species.baseStats.agility * 6);
-    // L1 자리표시자는 실제 사용 안 함(타입 satisfies 확인용)
-    expect(l1.maxHp).toBeGreaterThan(0);
+    // floor((2*36)*99/100)+99+10 = 180
+    expect(leaflingL99.maxHp).toBe(180);
+    expect(leaflingL99.attack).toBe(18);
+    expect(leaflingL99.agility).toBe(28);
   });
 });
 

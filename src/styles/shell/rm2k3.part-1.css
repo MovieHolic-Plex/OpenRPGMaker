@@ -621,9 +621,37 @@
   width: 11px;
 }
 
-/* ── RM2003식 단일 팔레트 (6열 고정) ───────────────────────── */
-/* 열 수 자체는 인라인 grid-template-columns로 못박는다(미디어쿼리 auto-fill 대응).
-   여기서는 오토타일 대표 칸 배지만 정의한다. */
+/* ── RM2003식 단일 팔레트 (가로 6칸 고정) ───────────────────── */
+/* 열 수는 항상 6. 칸 크기는 시트 컨테이너 폭(cqi) 기준 — % 순환 참조 금지. */
+.chipset-sheet.rm2k-palette {
+  container-type: inline-size;
+}
+
+.chipset-grid.rm2k-palette-grid {
+  --rm2k-cols: 6;
+  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
+  box-sizing: border-box;
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  justify-content: start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px;
+  width: max-content;
+}
+
+.chipset-grid.rm2k-palette-grid .chipset-tile {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+
+
 .chipset-tile.rm2k-autotile {
   position: relative;
 }

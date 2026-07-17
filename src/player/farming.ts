@@ -1,6 +1,8 @@
+import { hasFarmToolAvailable, resolveToolUseOnTile } from "@/project/toolActions";
 import type { GameTime, Season } from "@/project/gameTime";
 import { changeItem, type FarmPlotState, type PlaySession } from "@/project/session";
 import type { CropRecord, FarmTool, GameMap, Project, Rect } from "@/project/types";
+import { placeableKey, removeObjectAt } from "@/project/placeables";
 
 export type FarmInteractionKind = "tilled" | "planted" | "watered" | "harvested" | "ignored";
 
@@ -40,6 +42,10 @@ export function interactWithFarmPlot(
 ): FarmInteractionResult {
   const tileX = Math.trunc(x);
   const tileY = Math.trunc(y);
+
+  const placeableHit = tryPlaceableToolHarvest(project, session, map, tileX, tileY);
+  if (placeableHit) return placeableHit;
+
   if (!isTileFarmable(map, tileX, tileY)) return ignored(tileX, tileY, "not-farmable");
   const plots = ensureMapPlots(session, map.id);
   const key = farmPlotKey(tileX, tileY);
@@ -55,9 +61,10 @@ export function interactWithFarmPlot(
     }
   }
   if (!existing?.tilled) {
-    if (!hasFarmTool(project, session, "hoe")) return ignored(tileX, tileY, "missing-hoe");
+    const till = resolveToolUseOnTile(project, session, map, tileX, tileY, "till");
+    if (!till) return ignored(tileX, tileY, "missing-hoe");
     plots[key] = { tilled: true, watered: false };
-    return { kind: "tilled", x: tileX, y: tileY };
+    return { kind: "tilled", x: tileX, y: tileY, itemId: till.itemId };
   }
   if (!existing.cropId) {
     const crop = firstPlantableCrop(project, session, currentSeason(session));
@@ -76,11 +83,41 @@ export function interactWithFarmPlot(
   }
   if (existing.dead) return ignored(tileX, tileY, "dead-crop");
   if (!existing.watered) {
-    if (!hasFarmTool(project, session, "wateringCan")) return ignored(tileX, tileY, "missing-watering-can");
+    const water = resolveToolUseOnTile(project, session, map, tileX, tileY, "water");
+    if (!water) return ignored(tileX, tileY, "missing-watering-can");
     plots[key] = { ...existing, watered: true };
-    return { kind: "watered", x: tileX, y: tileY, cropId: existing.cropId };
+    return { kind: "watered", x: tileX, y: tileY, cropId: existing.cropId, itemId: water.itemId };
   }
   return ignored(tileX, tileY, "already-watered");
+}
+
+function tryPlaceableToolHarvest(
+  project: Project,
+  session: PlaySession,
+  map: GameMap,
+  tileX: number,
+  tileY: number
+): FarmInteractionResult | undefined {
+  const key = placeableKey(map.id, tileX, tileY);
+  const placeable = session.placeables?.[key];
+  if (!placeable) return undefined;
+  const preferred =
+    placeable.kind === "tree" ? "chop" : placeable.kind === "rock" ? "mine" : undefined;
+  if (!preferred) return undefined;
+  const use = resolveToolUseOnTile(project, session, map, tileX, tileY, preferred);
+  if (!use) return ignored(tileX, tileY, preferred === "chop" ? "missing-axe" : "missing-pickaxe");
+  const dropId = placeable.itemId;
+  const removed = removeObjectAt(session, map.id, tileX, tileY);
+  if (!removed) return ignored(tileX, tileY, "missing-placeable");
+  if (dropId) changeItem(session, dropId, "+=", 1);
+  return {
+    kind: "harvested",
+    x: tileX,
+    y: tileY,
+    itemId: dropId,
+    count: dropId ? 1 : 0,
+    reason: use.ruleId,
+  };
 }
 
 export function advanceFarmPlotsForDay(
@@ -179,7 +216,7 @@ function cropById(project: Project, cropId: string): CropRecord | undefined {
 }
 
 function hasFarmTool(project: Project, session: PlaySession, tool: FarmTool): boolean {
-  return project.database.items.some((item) => item.farmTool === tool && (session.inventory[item.id] ?? 0) > 0);
+  return hasFarmToolAvailable(project, session, tool);
 }
 
 function ensureMapPlots(session: PlaySession, mapId: string): Record<string, FarmPlotState> {

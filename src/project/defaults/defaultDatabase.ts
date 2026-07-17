@@ -66,7 +66,7 @@ export function defaultDatabase(): ProjectDatabaseRecords {
 export function defaultSystem(): SystemRecords {
   return {
     startActorIds: defaultStarterActorIds(),
-    titleResourceId: "easyrpg-title-title1",
+    titleResourceId: "rpg-zzu-title-field",
     // CSS-ready 9-slice windowskin. EasyRPG System/*.png is a chrome sheet (orange key + icons), not a windowskin.
     systemResourceId: "windowskin-rm2003",
     // System2 stays as gauge/number chrome only — never used as border-image fill.
@@ -89,18 +89,31 @@ export function defaultSystem(): SystemRecords {
 export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
-    backgroundResourceId: "easyrpg-title-title1",
+    backgroundResourceId: "rpg-zzu-title-field",
     layout: {
       titleX: 160,
-      titleY: 70,
+      titleY: 92,
       menuX: 160,
-      menuY: 118,
+      menuY: 148,
     },
     menuLabels: {
       newGame: "새 게임",
       continueGame: "계속",
       quit: "게임 종료",
     },
+    menuVisibility: {
+      newGame: true,
+      continueGame: true,
+      quit: true,
+    },
+    // Crest logo over night-field title art (scripts/generate-system-title-art.mts when available).
+    titleGraphic: {
+      mode: "both",
+      resourceId: "rpg-zzu-title-logo-crest",
+      x: 160,
+      y: 42,
+    },
+    showInputHint: true,
   };
 }
 

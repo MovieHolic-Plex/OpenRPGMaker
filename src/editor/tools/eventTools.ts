@@ -8,31 +8,33 @@ import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, Dir, EventPage, EventPageCondition, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
   type CutsceneBeat,
 } from "@/editor/cutscene";
-import { faceGraphicForCharset } from "@/assets/charsetFaceMap";
+import { faceGraphicForCharset, faceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
 import {
   charsetGraphic,
   compileSimplePages,
   resolveGraphic,
+  usedCharsetGraphicKeysOnMap,
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ensureNamedSwitch } from "./flagHelpers";
+import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
 
-/** place_npc/make_villager face 인자 → FaceGraphic. graphic charset과 맞춰 자동 추론도 가능. */
+/** place_npc/make_villager face 인자 → FaceGraphic. 실제 배치된 charset 기준으로 맞춘다. */
 function resolvePlaceNpcFaceArg(
   faceArg: unknown,
-  graphicSpec: GraphicSpec,
+  resolvedGraphic: EventPageGraphic,
 ): FaceGraphic | null | undefined {
   if (faceArg && typeof faceArg === "object" && !Array.isArray(faceArg)) {
     const rec = faceArg as Record<string, unknown>;
@@ -51,15 +53,12 @@ function resolvePlaceNpcFaceArg(
       );
     }
   }
-  // graphic {textureKey, characterIndex}면 여기서 선매핑 (query는 compile 단계에서 graphic으로)
-  if (graphicSpec && "textureKey" in graphicSpec && typeof graphicSpec.textureKey === "string") {
-    return faceGraphicForCharset(graphicSpec.textureKey, graphicSpec.characterIndex ?? 0);
-  }
-  return undefined; // compileSimplePage가 graphic에서 추론
+  // 다양화 픽 이후 실제 graphic → faceset (query 기본값 people1#0 고정 금지)
+  return faceGraphicFromEventGraphic(resolvedGraphic) ?? undefined;
 }
 const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
-const PLACE_NPC_OBJECT_GIMMICK_HINT = "보물상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요.";
+const PLACE_NPC_OBJECT_GIMMICK_HINT = "보물상자·보관 상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_storage_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요.";
 const DIRS: readonly Dir[] = ["down", "left", "right", "up"];
 
 const npcScheduleSchema = {
@@ -226,6 +225,43 @@ const upsertEvent: ToolDefinition = {
   },
 };
 
+
+// 같은 맵·근접 칸에 비슷한 이름의 NPC가 있으면 새로 만들지 않고 기존 id 재사용(중복 상인 thrash 방지).
+function isShopRoleNpcName(name: string): boolean {
+  return /상점|상인|주인|merchant|shop|가게|잡화/u.test(name.trim());
+}
+
+function findNearbySimilarNpc(
+  map: { events: GameEvent[] },
+  x: number,
+  y: number,
+  name: string,
+  maxDist = 2,
+): GameEvent | undefined {
+  const needle = name.trim().toLowerCase().replace(/\s+/g, "");
+  if (!needle) return undefined;
+  let best: GameEvent | undefined;
+  let bestDist = Infinity;
+  for (const event of map.events) {
+    const pageName = event.pages?.[0]?.name?.trim() ?? "";
+    const eventName = pageName || event.id;
+    const hay = eventName.toLowerCase().replace(/\s+/g, "");
+    // 상점/상인/주인 등 역할 유사 또는 부분 일치
+    const roleSimilar =
+      (isShopRoleNpcName(needle) && isShopRoleNpcName(hay))
+      || hay.includes(needle)
+      || needle.includes(hay);
+    if (!roleSimilar) continue;
+    const dist = Math.abs(event.x - x) + Math.abs(event.y - y);
+    if (dist > maxDist) continue;
+    if (dist < bestDist) {
+      best = event;
+      bestDist = dist;
+    }
+  }
+  return best;
+}
+
 const placeNpc: ToolDefinition = {
   name: "place_npc",
   description: `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. **대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.`,
@@ -267,13 +303,25 @@ const placeNpc: ToolDefinition = {
     }
     const { x, y } = landing;
     // graphic 생략 시 투명 고스트가 되지 않도록 주민 기본 캐릭터를 쓴다(함정/컷신은 별도 툴).
+    // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 칩셋 몰림을 줄인다.
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
-    const graphic = resolveGraphic(graphicSpec);
-    const id = (args.id as string | undefined) ?? genId("ev_npc");
+    const graphic = resolveGraphic(graphicSpec, {
+      avoidKeys: usedCharsetGraphicKeysOnMap(map),
+      seed: `${map.id}:${name}:${x},${y}`,
+    });
+    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
+    // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
+    // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
+    const similar = findNearbySimilarNpc(map, x, y, name, 2);
+    const shopRole = isShopRoleNpcName(name);
+    const mergeSimilar = Boolean(similar) && (shopRole || !explicitId);
+    const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_npc"));
+    const reused = mergeSimilar;
     const movement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
     const normalizationWarnings: string[] = [];
     if (args.graphic === undefined) normalizationWarnings.push("graphic 생략 → query:\"villager\" 기본 적용");
-    const faceArg = resolvePlaceNpcFaceArg(args.face, graphicSpec);
+    if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
+    const faceArg = resolvePlaceNpcFaceArg(args.face, graphic);
     const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, {
       movement,
       warnings: normalizationWarnings,
@@ -288,9 +336,10 @@ const placeNpc: ToolDefinition = {
       ...normalizationWarnings,
     ];
     const normalizationSummary = normalizationWarnings.length > 0 ? ` — SimplePage 정규화 경고 ${normalizationWarnings.length}건` : "";
+    const reuseSummary = reused ? ` — 기존 NPC 갱신` : "";
     return {
-      summary: `${map.name}에 NPC '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})가 통행 불가라 자동 조정` : ""}${normalizationSummary}`,
-      data: { eventId: id, x, y, adjusted },
+      summary: `${map.name}에 NPC '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})가 통행 불가라 자동 조정` : ""}${reuseSummary}${normalizationSummary}`,
+      data: { eventId: id, x, y, adjusted, reused },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -353,6 +402,9 @@ const makeVillager: ToolDefinition = {
         properties: { stock: shopStockSchema },
       },
       id: { type: "string" },
+      characterId: { type: "string", description: "공유 호감/선물 키. 생략 시 name slug 또는 생성 id" },
+      talkFriendship: { type: "boolean", description: "일일 대화 호감 opt-in" },
+      friendshipUnlock: { type: "integer", description: "호감 임계 페이지 추가 (D0 패턴)" },
     },
     required: ["mapId", "name", "home"],
   },
@@ -372,21 +424,60 @@ const makeVillager: ToolDefinition = {
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
-    const graphic = resolveGraphic(graphicSpec);
+    const graphic = resolveGraphic(graphicSpec, {
+      avoidKeys: usedCharsetGraphicKeysOnMap(map),
+      seed: `${map.id}:${name}:${home.x},${home.y}`,
+    });
     const id = typeof args.id === "string" && args.id.trim() ? args.id.trim() : genId("ev_villager");
     const warnings: string[] = [];
     if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
     const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
       movement: PASSIVE,
       warnings,
-      face: resolvePlaceNpcFaceArg(args.face, graphicSpec),
+      face: resolvePlaceNpcFaceArg(args.face, graphic),
     });
     const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");
     const giftResponses = parseGiftResponses(args.giftResponses, "giftResponses");
     const shopStock = parseOptionalShopStock(draft, (args.shop as Record<string, unknown> | undefined)?.stock, "shop.stock");
     if (shopStock) appendShopCommandToFirstPage(pages, shopStock);
+    const characterId = allocateCharacterId(draft, args.characterId, name, warnings);
+    const unlockAt = typeof args.friendshipUnlock === "number" && Number.isFinite(args.friendshipUnlock)
+      ? Math.max(1, Math.trunc(args.friendshipUnlock))
+      : undefined;
+    if (unlockAt !== undefined) {
+      pages.push({
+        id: genId("page_friend"),
+        name: "호감 해금",
+        conditions: [{ kind: "friendshipAtLeast", value: unlockAt }],
+        graphic: pages[0]?.graphic ?? {},
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: PASSIVE,
+        commands: [
+          { kind: "text", speaker: name, body: "고마워. 이제 더 이야기할 수 있겠어." },
+          { kind: "setSelfSwitch", key: "A", value: true },
+        ],
+      });
+      pages.push({
+        id: genId("page_friend_done"),
+        name: "호감 이후",
+        conditions: [
+          { kind: "selfSwitch", key: "A", value: true },
+          { kind: "friendshipAtLeast", value: unlockAt },
+        ],
+        graphic: pages[0]?.graphic ?? {},
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: PASSIVE,
+        commands: [{ kind: "text", speaker: name, body: "또 와줘서 기뻐." }],
+      });
+    }
+    const talkFriendship = args.talkFriendship === true ? true : undefined;
     const event: GameEvent = {
       id,
+      characterId,
       x: home.x,
       y: home.y,
       trigger: { kind: "action" },
@@ -395,12 +486,13 @@ const makeVillager: ToolDefinition = {
       ...(schedule.length > 0 ? { schedule } : {}),
       ...(giftPrefs ? { giftPrefs } : {}),
       ...(giftResponses ? { giftResponses } : {}),
+      ...(talkFriendship ? { talkFriendship } : {}),
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name}에 주민 '${name}' 생성 (${home.x}, ${home.y}) — 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}`,
-      data: { eventId: id, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0 },
+      summary: `${map.name}에 주민 '${name}' 생성 (${home.x}, ${home.y}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}`,
+      data: { eventId: id, characterId, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0 },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -441,6 +533,44 @@ const setShopStock: ToolDefinition = {
     };
   },
 };
+
+function allocateCharacterId(
+  project: Project,
+  raw: unknown,
+  name: string,
+  warnings: string[]
+): string {
+  const preferred =
+    typeof raw === "string" && raw.trim()
+      ? raw.trim()
+      : slugCharacterId(name) || genId("char_");
+  const used = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const id = event.characterId?.trim();
+      if (id) used.add(id);
+    }
+  }
+  if (!used.has(preferred)) return preferred;
+  let n = 2;
+  let candidate = `${preferred}_${n}`;
+  while (used.has(candidate)) {
+    n += 1;
+    candidate = `${preferred}_${n}`;
+  }
+  warnings.push(`characterId '${preferred}' 충돌 → '${candidate}' 사용`);
+  return candidate;
+}
+
+function slugCharacterId(name: string): string {
+  const base = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+  return base ? `char_${base}` : "";
+}
 
 function parseGiftPrefs(project: Project, raw: unknown, label: string): GiftPrefs | undefined {
   if (raw === undefined) return undefined;
@@ -858,7 +988,7 @@ const createTransferPair: ToolDefinition = {
 
 const placeBattleBlocker: ToolDefinition = {
   name: "place_battle_blocker",
-  description: "전투 블로커를 배치한다(전투 페이지 + 승리 후 투명 페이지). clearSwitchId로 재전투를 막는다.",
+  description: "필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -892,45 +1022,17 @@ const placeBattleBlocker: ToolDefinition = {
     const victory = (args.victory as string[] | undefined) ?? ["길이 열렸다."];
     const victoryItems = (args.victoryItems as Array<{ itemId: string; amount: number }> | undefined) ?? [];
     const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
-
-    const fightCommands: Command[] = [
-      ...intro.map((body): Command => ({ kind: "text", body })),
-      { kind: "battleProcessing", troopId, canEscape: true, canLose: false },
-      { kind: "setSwitch", switchId: clearSwitchId, value: true },
-      ...victoryItems.map((entry): Command => ({ kind: "changeItem", itemId: entry.itemId, op: "+=", amount: entry.amount })),
-      ...victory.map((body): Command => ({ kind: "text", body })),
-    ];
-    const event: GameEvent = {
-      id,
+    const event = buildFieldMonsterEvent({
+      eventId: id,
       x,
       y,
-      trigger: { kind: "action" },
-      commands: [],
-      pages: [
-        {
-          id: `${id}_fight`,
-          name: "전투",
-          conditions: [],
-          graphic,
-          trigger: { kind: "action" },
-          priority: "same",
-          overlapForbidden: true,
-          movement: PASSIVE,
-          commands: fightCommands,
-        },
-        {
-          id: `${id}_cleared`,
-          name: "정리된 자리",
-          conditions: [{ kind: "switch", switchId: clearSwitchId, value: true }],
-          graphic: { transparent: true },
-          trigger: { kind: "action" },
-          priority: "below",
-          overlapForbidden: false,
-          movement: PASSIVE,
-          commands: [],
-        },
-      ],
-    };
+      troopId,
+      clearSwitchId,
+      intro,
+      victory,
+      victoryItems,
+      graphic,
+    });
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     return { summary: `${map.name}에 전투 블로커 '${troopId}' 배치 (${x}, ${y})`, data: { eventId: id, clearSwitchId } };
@@ -1165,6 +1267,68 @@ const placeChest: ToolDefinition = {
 };
 
 // 세이브 포인트: 조사 → checkpointSave. (코퍼스 auto-save-point가 "불가"이던 갭 해소)
+const placeStorageChest: ToolDefinition = {
+  name: "place_storage_chest",
+  description:
+    "보관 상자 이벤트를 배치한다. 조사하면 openChest로 소지품↔상자 입출고 UI를 연다(session.chests). " +
+    "농장 창고·인벤 확장용. 보물상자(1회 보상)는 place_chest. 장식 박스는 place_props.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      x: { type: "integer" },
+      y: { type: "integer" },
+      name: { type: "string" },
+      id: { type: "string" },
+      chestId: { type: "string", description: "session.chests 키. 생략 시 storage_<eventId>" },
+    },
+    required: ["mapId", "x", "y"],
+  },
+  invalidArgsExample: { mapId: "map_1", x: 4, y: 6, name: "창고 상자" },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const x = args.x as number;
+    const y = args.y as number;
+    if (!inMapBounds(map, x, y)) {
+      throw new ToolError(`보관 상자 위치가 맵 밖입니다: (${x}, ${y})`, { code: "storage-chest-out-of-bounds", mapId: map.id, x, y });
+    }
+    const graphic = resolveGraphic({ query: "보물상자" });
+    const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
+    const name = (args.name as string | undefined) ?? "보관 상자";
+    const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
+    const chestId = chestIdRaw || `storage_${id}`;
+    const trigger: Trigger = { kind: "action" };
+    const event: GameEvent = {
+      id,
+      x,
+      y,
+      trigger,
+      commands: [],
+      pages: [
+        {
+          id: `${id}_page`,
+          name,
+          conditions: [],
+          graphic,
+          trigger,
+          priority: "same",
+          overlapForbidden: true,
+          animationType: "fixedGraphic",
+          movement: PASSIVE,
+          commands: [{ kind: "openChest", chestId }],
+        },
+      ],
+    };
+    assertEventShape(event);
+    upsertEventIntoMap(map, event);
+    return {
+      summary: `${map.name}에 보관 상자 '${name}' 배치 (${x}, ${y}) — chestId=${chestId}`,
+      data: { eventId: id, x, y, chestId },
+    };
+  },
+};
+
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
   description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형).",
@@ -1541,6 +1705,7 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   placeBattleBlocker,
   placeTrap,
   placeChest,
+  placeStorageChest,
   placeSavepoint,
   makeChaseScene,
   duplicateEvent,

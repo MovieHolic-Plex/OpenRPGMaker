@@ -6,19 +6,167 @@
   min-width: 0;
 }
 
+.transfer-command-editor-inline {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.transfer-command-summary-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
 .transfer-command-summary {
   background: var(--event-rm-field, var(--bg-raised));
   border-color: var(--event-rm-mid, var(--border-default)) var(--event-rm-light, var(--border-subtle)) var(--event-rm-light, var(--border-subtle)) var(--event-rm-mid, var(--border-default));
   border-style: solid;
   border-width: 1px;
   color: var(--event-rm-text, var(--text-1));
+  flex: 1 1 12rem;
   font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  min-width: 210px;
+  min-width: 0;
   overflow: hidden;
-  padding: 1px 5px;
+  padding: 4px 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.transfer-command-inline-picker,
+.transfer-player-inline-host {
+  min-width: 0;
+}
+
+.transfer-player-dialog-inline {
+  grid-template-rows: minmax(220px, 34vh) auto auto;
+}
+
+.event-command-edit-body .transfer-player-dialog-inline {
+  max-height: none;
+}
+
+.event-command-edit-columns:has(.transfer-command-editor-inline) {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+}
+
+.event-subdialog-window.wide:has(.transfer-command-editor-inline) {
+  width: min(980px, calc(100vw - 24px));
+}
+
+.event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-edit-body {
+  max-height: min(78vh, 720px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+
+/* Transfer inline command editor — stable 2-col layout (map list | preview), options below. */
+.event-command-edit-body .transfer-command-editor-inline {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .transfer-command-inline-picker,
+.event-command-edit-body .transfer-player-inline-host {
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .transfer-player-dialog,
+.event-command-edit-body .transfer-player-dialog-inline {
+  display: grid !important;
+  gap: 12px !important;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) !important;
+  grid-template-rows: minmax(280px, 38vh) auto auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.event-command-edit-body .transfer-player-tree {
+  grid-column: 1;
+  grid-row: 1;
+  max-height: 38vh;
+  min-height: 240px;
+  overflow: auto;
+}
+
+.event-command-edit-body .transfer-player-preview {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 240px;
+  max-height: 38vh;
+  overflow: hidden;
+}
+
+.event-command-edit-body .transfer-player-controls {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.event-command-edit-body .transfer-player-footer {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+}
+
+.event-command-edit-body .transfer-player-direction {
+  display: grid;
+  gap: 8px;
+}
+
+.event-command-edit-body .transfer-player-direction-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.event-command-edit-columns:has(.transfer-command-editor-inline) {
+  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 300px) !important;
+}
+
+.event-subdialog-window.wide:has(.transfer-command-editor-inline) {
+  width: min(1040px, calc(100vw - 20px)) !important;
+}
+
+.event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-edit-body {
+  max-height: min(78vh, 760px);
+  overflow: auto;
+  min-width: 0;
+}
+
+/* Prevent parent auto-fit/grid from collapsing the transfer picker into a single narrow column. */
+.event-command-edit-body > div:has(.transfer-command-editor-inline),
+.event-command-edit-body .transfer-command-editor-inline,
+.event-command-edit-body .transfer-command-editor-inline > * {
+  min-width: 0;
+}
+
+.event-command-edit-body .transfer-command-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.event-command-edit-body .transfer-command-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] {
   align-items: center;
@@ -324,12 +472,6 @@
     font: 700 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   }
 
-  .event-page-bottom-grid {
-    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
-  }
-
-  .event-page-bottom-left,
-  .event-page-bottom-right,
   .event-page-safety-warning {
     min-width: 0;
     overflow-wrap: anywhere;
@@ -423,10 +565,6 @@
     grid-template-columns: minmax(0, 1fr) 44px;
   }
 
-  .event-page-bottom-grid {
-    gap: 4px;
-    grid-template-columns: minmax(0, 1fr);
-  }
 
   .event-graphic-control {
     grid-template-columns: 42px minmax(0, 1fr);
@@ -726,16 +864,28 @@
    auto-fit 트랙에 얹혀 가지 패널이 취소 라디오 위로 겹치던 결함 수정. */
 .event-command-edit-body .event-command-choices-inline {
   display: grid;
+  gap: 12px;
   grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
 }
 
 .event-command-edit-body .event-command-choices-panel {
-  grid-template-columns: minmax(0, 1fr) minmax(150px, 190px);
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(148px, 176px);
   max-width: none;
+  min-width: 0;
 }
 
 .event-command-edit-body .event-command-choices-panel > * {
   min-width: 0;
+}
+
+.event-command-edit-body .event-command-choice-row {
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+}
+
+.event-command-edit-body .event-command-choice-row-prompt {
+  grid-template-columns: 44px minmax(0, 1fr);
 }
 
 .event-command-edit-body .event-command-choice-branch {
@@ -747,6 +897,14 @@
 .event-command-choice-branch .cmd-list {
   min-width: 0;
   overflow-x: auto;
+}
+
+/* 좌측 폼이 좁아지면 선택지 입력 + 취소 패널을 세로 스택으로 바꿔 글자 깨짐 방지. */
+@media (max-width: 920px) {
+  .event-command-edit-body .event-command-choices-panel,
+  .event-command-choices-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .event-command-edit-summary {
@@ -764,10 +922,10 @@
 }
 
 /* [치명-1/치명-2] auto-fit 그리드는 단순 폼에만 적용한다.
-   선택지/레코드/문장/상점/이동경로 등 자체 레이아웃 폼은 제외 — 트랙 폭보다 넓은 자식이
+   선택지/레코드/문장/상점/이동경로/숫자입력 등 자체 레이아웃 폼은 제외 — 트랙 폭보다 넓은 자식이
    이웃 위로 겹치거나 듀얼 리스트가 가로로 찢어지던 원인. */
 .event-command-edit-body > div > span,
-.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor):not(.commerce-command-body):not(.shop-processing-command-body):not(.event-command-edit-summary):not(.event-command-face-editor):not(.move-route-editor) {
+.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor):not(.commerce-command-body):not(.shop-processing-command-body):not(.event-command-edit-summary):not(.event-command-face-editor):not(.move-route-editor):not(.event-command-frame-editor):not(.transfer-command-editor):not(.transfer-command-editor-inline):not(.input-number-command-body):not(.play-audio-command-body):not(.event-command-fork-form):not(.event-condition-form):not(.party-member-command-body):not(.change-equipment-command-body):not(.change-parameters-command-body):not(.actor-m2-command-body):not(.page3-command-body):not(.actor-amount-command-body):not(.rich-command-form):not(.m2-command-body):not(.weighted-branch-command-body) {
   align-items: end;
   display: grid;
   gap: 10px;
@@ -787,8 +945,14 @@
   align-items: center;
   display: grid;
   gap: 6px;
-  grid-template-columns: minmax(150px, 1fr) auto;
+  grid-template-columns: minmax(72px, 0.8fr) minmax(120px, 1.4fr) auto;
   min-width: 0;
+  width: 100%;
+}
+
+.event-record-inline-filter {
+  min-width: 0;
+  width: 100%;
 }
 
 .event-record-select select {
@@ -820,6 +984,258 @@
   color: var(--text-dim, var(--text-1));
   font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
 }
+
+.event-command-switch-value-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-switch-value-row:not(.is-variable) {
+  grid-template-columns: minmax(120px, 200px);
+}
+
+.event-command-switch-value-row select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-switch-hint {
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+/* 변수 조작: 스위치 폼과 같은 세로 필드 스택 + 세그먼트 연산/소스 */
+.event-command-edit-body .event-command-variable-form,
+.event-command-variable-form {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .event-command-variable-form .event-command-variable-field,
+.event-command-variable-form .event-command-variable-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(72px, 88px) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-variable-form .event-command-variable-field-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 7px;
+  white-space: nowrap;
+}
+
+.event-command-variable-form .rich-segment-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-command-variable-formula {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, var(--border-default, #3a3f4b));
+  border-radius: 8px;
+  color: var(--text-1, #e9ecf5);
+  font: 700 13px/1.4 "Cascadia Mono", Consolas, "Malgun Gothic", monospace;
+  padding: 10px 12px;
+  word-break: break-word;
+}
+
+.event-command-variable-hint {
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+/* 조건 분기 / 조건 폼 */
+.event-command-edit-body .event-command-fork-form,
+.event-command-fork-form {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-fork-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-fork-section-title {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.event-fork-section-hint {
+  color: var(--text-dim, #8b93a7);
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+.event-fork-else-toggle {
+  align-self: flex-start;
+}
+
+.event-condition-form {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-condition-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-command-edit-body .event-condition-field,
+.event-condition-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(72px, 92px) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-condition-field-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 7px;
+  white-space: nowrap;
+}
+
+.event-condition-hint {
+  color: var(--text-dim, #8b93a7);
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+.fork-branch {
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  background: color-mix(in srgb, var(--bg-raised, #20242e) 88%, transparent);
+}
+
+.fork-branch-then {
+  border-color: color-mix(in srgb, var(--success, #58e08a) 45%, var(--border-default, #3a3f4b));
+}
+
+.fork-branch-else {
+  border-color: color-mix(in srgb, var(--danger, #e08a8a) 45%, var(--border-default, #3a3f4b));
+}
+
+.fork-branch-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fork-branch-title {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.fork-branch-then .fork-branch-title {
+  color: var(--success, #58e08a);
+}
+
+.fork-branch-else .fork-branch-title {
+  color: var(--danger, #e08a8a);
+}
+
+.fork-branch-meta {
+  color: var(--text-dim, #8b93a7);
+  font: 600 11px/1.35 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.fork-branch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fork-branch-empty {
+  border: 1px dashed var(--border-default, #3a3f4b);
+  border-radius: 8px;
+  color: var(--text-dim, #8b93a7);
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  padding: 10px;
+  text-align: center;
+}
+
+.fork-branch-item {
+  align-items: start;
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr) auto;
+  padding: 8px;
+}
+
+.fork-branch-item-kind {
+  color: var(--accent, #6ea8ff);
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 4px;
+}
+
+.fork-branch-item-note {
+  color: var(--text-dim, #8b93a7);
+  font: 600 11px/1.35 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  padding-top: 4px;
+}
+
+.fork-branch-text {
+  min-height: 48px;
+  resize: vertical;
+  width: 100%;
+}
+
+.fork-branch-delete {
+  white-space: nowrap;
+}
+
+.fork-branch-add-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.fork-branch-add-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+
 
 .event-command-edit-body .event-command-edit-summary {
   display: block;
@@ -861,8 +1277,8 @@
 .event-command-face-editor {
   align-items: stretch;
   display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   width: 100%;
 }
@@ -871,18 +1287,40 @@
   min-width: 0;
 }
 
-.event-command-face-fields {
-  display: grid;
-  gap: 10px;
+.event-command-face-grid-host,
+.event-command-face-grid-section {
   min-width: 0;
 }
 
-.event-command-face-resource-row {
+.event-command-face-resource-actions {
   align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-face-resource-actions .btn {
+  flex: 0 0 auto;
+  min-width: max-content;
+  white-space: nowrap;
+  width: auto;
+  writing-mode: horizontal-tb;
+}
+
+.event-command-face-index-grid {
   display: grid;
   gap: 6px;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: center;
+  max-width: 248px;
   min-width: 0;
+  width: 100%;
+}
+
+.event-command-face-index-grid[data-empty="true"] {
+  display: block;
+  max-width: none;
 }
 
 .event-command-face-hint {
@@ -1645,4 +2083,100 @@
   .event-graphic-option-area {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+
+/* fork RM rhythm: condition-only dialog */
+.event-fork-else-check {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  font: 600 12px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #e9ecf5);
+  cursor: pointer;
+}
+.event-fork-branch-summary {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+.event-fork-branch-summary-card {
+  border-radius: 10px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  padding: 10px;
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+.event-fork-branch-summary-card.then {
+  border-color: color-mix(in srgb, var(--success, #58e08a) 50%, var(--border-default, #3a3f4b));
+  color: var(--success, #58e08a);
+}
+.event-fork-branch-summary-card.else {
+  border-color: color-mix(in srgb, var(--danger, #e08a8a) 50%, var(--border-default, #3a3f4b));
+  color: var(--danger, #e08a8a);
+}
+.event-fork-branch-summary-card.absent {
+  opacity: 0.55;
+}
+.event-condition-eval {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  padding: 10px;
+}
+.event-condition-eval.is-true {
+  border-color: color-mix(in srgb, var(--success, #58e08a) 55%, var(--border-default, #3a3f4b));
+  background: color-mix(in srgb, var(--success, #58e08a) 10%, transparent);
+}
+.event-condition-eval.is-false {
+  border-color: color-mix(in srgb, var(--danger, #e08a8a) 55%, var(--border-default, #3a3f4b));
+  background: color-mix(in srgb, var(--danger, #e08a8a) 10%, transparent);
+}
+.event-condition-eval-badge {
+  font: 800 11px/1 JetBrains Mono, Consolas, monospace;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(0,0,0,.25);
+}
+.event-condition-eval.is-true .event-condition-eval-badge { color: var(--success, #58e08a); }
+.event-condition-eval.is-false .event-condition-eval-badge { color: var(--danger, #e08a8a); }
+.event-condition-eval-summary {
+  font: 600 12px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #e9ecf5);
+  word-break: break-word;
+}
+.event-condition-eval-note {
+  margin-top: 4px;
+  font: 600 11px/1.35 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--text-dim, #8b93a7);
+}
+.event-condition-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.event-condition-group-item {
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: color-mix(in srgb, var(--bg-raised, #20242e) 80%, transparent);
+}
+.event-condition-group-item-title {
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #aeb6c8);
+}
+.event-condition-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* nested condition forms should not explode width */
+.event-condition-group-item .event-condition-form {
+  gap: 8px;
 }

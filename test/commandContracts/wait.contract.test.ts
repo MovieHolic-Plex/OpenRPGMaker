@@ -55,4 +55,20 @@ describe("wait 계약", () => {
     expect(result.pauses[0]?.kind).toBe("wait");
     expect(result.finished).toBe(true);
   });
+
+  it("variableId 가 있으면 세션 변수 값(ms)으로 wait pause 한다", () => {
+    const variableId = "var_wait_ms";
+    const result = runCommandContract(
+      [
+        { kind: "setVariable", variableId, op: "=", value: 750 },
+        { kind: "wait", ms: 1, variableId },
+        { kind: "setSwitch", switchId: "after_var_wait", value: true },
+      ],
+      {}
+    );
+
+    expect(result.pauses).toEqual([{ kind: "wait", ms: 750 }]);
+    expect(result.session.switches.after_var_wait).toBe(true);
+    expect(result.finished).toBe(true);
+  });
 });

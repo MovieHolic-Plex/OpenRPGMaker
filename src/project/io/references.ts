@@ -393,25 +393,36 @@ function validateMapRecords(
     }
     for (const event of map.events) {
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
-      validateGiftPreferenceReferences(event.id, event.giftPrefs, context.itemIds, issues);
+      validateGiftPreferenceReferences(`event ${event.id}`, event.giftPrefs, context.itemIds, issues);
       const condition = event.condition;
       if (condition) capture(issues, () => validateCondition(condition, switchIds, variableIds));
       capture(issues, () => validateCommands(event.commands, context));
       capture(issues, () => validateEventPages(event.pages ?? [], context));
     }
   }
+  validateCharacterGiftPreferenceReferences(project, context.itemIds, issues);
+}
+
+function validateCharacterGiftPreferenceReferences(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  issues: string[]
+): void {
+  for (const [characterId, profile] of Object.entries(project.characters ?? {})) {
+    validateGiftPreferenceReferences(`characters.${characterId}`, profile.giftPrefs, itemIds, issues);
+  }
 }
 
 function validateGiftPreferenceReferences(
-  eventId: string,
+  label: string,
   giftPrefs: { readonly loved?: readonly string[]; readonly liked?: readonly string[]; readonly disliked?: readonly string[] } | undefined,
   itemIds: ReadonlySet<string>,
   issues: string[]
 ): void {
   if (!giftPrefs) return;
-  collectExistingIdIssues(`event ${eventId}: giftPrefs.loved`, giftPrefs.loved ?? [], itemIds, issues);
-  collectExistingIdIssues(`event ${eventId}: giftPrefs.liked`, giftPrefs.liked ?? [], itemIds, issues);
-  collectExistingIdIssues(`event ${eventId}: giftPrefs.disliked`, giftPrefs.disliked ?? [], itemIds, issues);
+  collectExistingIdIssues(`${label}: giftPrefs.loved`, giftPrefs.loved ?? [], itemIds, issues);
+  collectExistingIdIssues(`${label}: giftPrefs.liked`, giftPrefs.liked ?? [], itemIds, issues);
+  collectExistingIdIssues(`${label}: giftPrefs.disliked`, giftPrefs.disliked ?? [], itemIds, issues);
 }
 
 function validateTroopMembers(
@@ -506,6 +517,10 @@ function pruneDanglingCommandRefs(
     }
     if (command.kind === "shop" && command.transactionBranch) {
       pruned.push({ ...command, transactionBranch: recurse(command.transactionBranch) });
+      continue;
+    }
+    if (command.kind === "inn" && command.notEnoughBranch) {
+      pruned.push({ ...command, notEnoughBranch: recurse(command.notEnoughBranch) });
       continue;
     }
     pruned.push(command);

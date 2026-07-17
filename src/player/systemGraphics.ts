@@ -1,5 +1,7 @@
 import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { system2GaugeCssVars } from "@/assets/system2Sheet";
+import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackground";
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemWindowSkinId } from "@/project/databaseRecordModel";
 import type { Project } from "@/project/types";
 
@@ -30,6 +32,10 @@ export function applyTitleScreenBackground(node: HTMLElement, resourceId: string
   const url = resourceUrl(resourceId, project);
   if (url) {
     node.style.backgroundImage = `url("${url}")`;
+    node.style.backgroundSize = "100% 100%";
+    node.style.backgroundRepeat = "no-repeat";
+    node.style.backgroundPosition = "center";
+    node.style.imageRendering = "pixelated";
   } else {
     node.style.backgroundImage = "";
   }
@@ -49,24 +55,44 @@ export function applySystemGraphic(node: HTMLElement, project?: Project): void {
  * RM2K3 split:
  * - System (systemResourceId): windowskin for command/status/message panels
  * - System2 (battleSystemResourceId): gauge/number/arrow chrome sheet — NOT a windowskin
+ *   and NOT a battle field backdrop.
  *
  * Historically this applied System2 as border-image, which flooded panels with the
  * sheet's solid orange key color (System2C is mostly #ff9c00). Battle panels must
- * use a real 9-slice windowskin; System2 is exposed as a CSS variable for gauges.
+ * use a real 9-slice windowskin; System2 is chroma-keyed and exposed as
+ * `--runtime-battle-system2` plus slice CSS vars for HP/SP/AT gauges.
  */
 export function applyBattleSystemGraphic(node: HTMLElement, project?: Project): void {
   const source = project ?? store.getCurrent();
   const battleSystemId = source.system.battleSystemResourceId;
+  const gaugeVars = system2GaugeCssVars();
+  for (const [key, value] of Object.entries(gaugeVars)) {
+    node.style.setProperty(key, value);
+  }
   if (battleSystemId) {
     node.dataset.battleSystemResource = battleSystemId;
     const battleSystemUrl = resourceUrl(battleSystemId, source);
     if (battleSystemUrl) {
+      // Interim raw URL so layout can size before chroma-key finishes.
       node.style.setProperty("--runtime-battle-system2", `url("${battleSystemUrl}")`);
+      node.dataset.battleSystem2 = "pending";
+      void transparentColorKeyDataUrl(battleSystemUrl)
+        .then((dataUrl) => {
+          if (node.dataset.battleSystemResource !== battleSystemId) return;
+          node.style.setProperty("--runtime-battle-system2", `url("${dataUrl}")`);
+          node.dataset.battleSystem2 = "applied";
+        })
+        .catch(() => {
+          if (node.dataset.battleSystemResource !== battleSystemId) return;
+          node.dataset.battleSystem2 = "fallback";
+        });
     } else {
       node.style.removeProperty("--runtime-battle-system2");
+      delete node.dataset.battleSystem2;
     }
   } else {
     delete node.dataset.battleSystemResource;
+    delete node.dataset.battleSystem2;
     node.style.removeProperty("--runtime-battle-system2");
   }
   const windowSkinId = resolveWindowSkinResourceId(source.system.systemResourceId);

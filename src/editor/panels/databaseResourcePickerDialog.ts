@@ -11,6 +11,8 @@ import {
   EASYRPG_SYSTEM2_ASSETS,
   EASYRPG_SYSTEM_ASSETS,
   EASYRPG_TITLE_ASSETS,
+  EASYRPG_MUSIC_ASSETS,
+  EASYRPG_SOUND_ASSETS,
   FACESET_COLUMNS,
   FACESET_FACE_COUNT,
   FACESET_FACE_HEIGHT,
@@ -19,6 +21,7 @@ import {
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
+import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ASSETS,
@@ -26,6 +29,7 @@ import {
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { store } from "@/project/store";
@@ -40,6 +44,8 @@ export type DatabaseResourcePickerKind =
   | "charset"
   | "battleCharset"
   | "title"
+  | "music"
+  | "sound"
   | "system"
   | "system2"
   | "backdrop";
@@ -337,6 +343,14 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
     case "title":
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
       break;
+    case "music":
+      for (const asset of CC0_MUSIC_ASSETS) add(asset.id, asset.name);
+      for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
+      break;
+    case "sound":
+      for (const asset of CC0_SOUND_ASSETS) add(asset.id, asset.name);
+      for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
+      break;
     case "system":
       for (const asset of EASYRPG_SYSTEM_ASSETS) add(asset.id, asset.name);
       break;
@@ -382,6 +396,8 @@ function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: Re
   }
   if (kind === "monster") return resourceKind === "monster" || id.startsWith("generated-enemy-");
   if (kind === "title") return resourceKind === "title" || id.includes("title");
+  if (kind === "music") return resourceKind === "music" || id.startsWith("easyrpg-music-") || id.startsWith("cc0-music-");
+  if (kind === "sound") return resourceKind === "sound" || id.startsWith("easyrpg-sound-") || id.startsWith("cc0-sound-");
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";
   if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview");
@@ -419,6 +435,8 @@ function uploadedMatchesKind(
   if (kind === "charset") return uploadedKind === "charset";
   if (kind === "battleCharset") return uploadedKind === "battleCharset" || uploadedKind === "charset";
   if (kind === "title") return uploadedKind === "title" || uploadedKind === "picture";
+  if (kind === "music") return uploadedKind === "music";
+  if (kind === "sound") return uploadedKind === "sound";
   if (kind === "system") return uploadedKind === "system";
   if (kind === "system2") return uploadedKind === "system2";
   if (kind === "backdrop") return uploadedKind === "backdrop" || uploadedKind === "picture";
@@ -436,6 +454,33 @@ function resourceVisual(
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
+
+  if (kind === "music" || kind === "sound") {
+    const playable = !url.toLowerCase().endsWith(".mid");
+    const play = el("button", {
+      class: "btn",
+      text: playable ? "미리 듣기" : "MIDI 비재생",
+      attrs: playable ? { type: "button" } : { type: "button", disabled: "" },
+      dataset: { testid: "db-resource-picker-audio-play" },
+      on: playable ? {
+        click: () => {
+          getAudioEngine().installUnlockListeners();
+          getAudioEngine().unlock();
+          stopAudioCommand();
+          playAudioCommand({ resourceId, loop: kind === "music" }, project);
+        },
+      } : undefined,
+    });
+    return el("div", {
+      class: className + " db-resource-picker-audio",
+      children: [
+        el("div", { class: "db-resource-picker-audio-title", text: kind === "music" ? "BGM" : "SE" }),
+        el("div", { class: "db-resource-picker-audio-id", text: resourceId }),
+        el("div", { class: "db-resource-picker-audio-url", text: url }),
+        play,
+      ],
+    });
+  }
 
   if (kind === "faceset") {
     const column = crop.faceIndex % FACESET_COLUMNS;

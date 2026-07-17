@@ -1,0 +1,115 @@
+/* Shared DB tab chrome: empty lists, list actions, intro banners, tab underline family. */
+@media (min-width: 901px) {
+  /* Empty list panes still reserve a real list region (crops/characters gold gap). */
+  .database-modal-body .rm2k3-record-list-pane .db-list {
+    min-height: 220px;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane .db-list:empty,
+  .database-modal-body .rm2k3-record-list-pane .db-list:not(:has(.db-list-row)) {
+    background: var(--bg-inset, rgba(0, 0, 0, 0.12));
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+  }
+
+  /* List action toolbar sits at bottom of list pane — match actors density. */
+  .database-modal-body .rm2k3-record-list-pane .db-toolbar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane .db-toolbar .db-toolbar-button,
+  .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font: 500 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    min-height: 28px;
+    padding: 4px 10px;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane .db-list-footer,
+  .database-modal-body .rm2k3-record-list-pane .rm2k3-record-count {
+    color: var(--text-2, var(--text-primary));
+    font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin-top: 4px;
+  }
+
+  /* Detail empty state card */
+  .database-modal-body .rm2k3-record-detail-pane > .db-detail-form:only-child {
+    align-content: start;
+    background: var(--bg-inset, rgba(0, 0, 0, 0.14));
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    color: var(--text-2, var(--text-primary));
+    min-height: 160px;
+    padding: 16px 18px;
+  }
+
+  /* Shared intro / note strip */
+  .database-modal-body .db-record-intro,
+  .database-modal-body .db-tab-note {
+    background: var(--bg-panel-2, var(--bg-raised));
+    border: 1px solid var(--border-soft, var(--border-subtle));
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    color: var(--text-2, var(--text-primary));
+    font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0 0 8px;
+    padding: 8px 12px;
+  }
+
+  /* Crops / characters / monster-species: same 2-col workspace as core records */
+  .database-modal-body .rm2k3-record-crops,
+  .database-modal-body .rm2k3-record-characters,
+  .database-modal-body .rm2k3-record-monster-species {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .rm2k3-record-crops .rm2k3-record-list-pane,
+  .database-modal-body .rm2k3-record-characters .rm2k3-record-list-pane,
+  .database-modal-body .rm2k3-record-monster-species .rm2k3-record-list-pane,
+  .database-modal-body .rm2k3-record-crops .rm2k3-record-detail-pane,
+  .database-modal-body .rm2k3-record-characters .rm2k3-record-detail-pane,
+  .database-modal-body .rm2k3-record-monster-species .rm2k3-record-detail-pane {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    height: 100%;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  /* Characters intro sits above workspace — fill remaining body height */
+  .database-modal-body .db-body:has(.rm2k3-record-characters),
+  .database-modal-body .db-body:has(.rm2k3-record-monster-species) {
+    display: grid;
+    gap: 8px;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .db-body:has(.rm2k3-record-characters) > .rm2k3-record-workspace,
+  .database-modal-body .db-body:has(.rm2k3-record-monster-species) > .rm2k3-record-workspace,
+  .database-modal-body .db-body:has(.rm2k3-record-crops) > .rm2k3-record-workspace {
+    min-height: 0;
+  }
+
+  /* Prefer underline-ish active tab for generic workspace family (when enemies/troops overrides absent) */
+  .database-modal-body:has(.rm2k3-record-crops) .db-tab.active,
+  .database-modal-body:has(.rm2k3-record-characters) .db-tab.active,
+  .database-modal-body:has(.rm2k3-record-monster-species) .db-tab.active {
+    background: linear-gradient(var(--accent), var(--accent));
+    border-bottom-color: var(--accent-border);
+    color: var(--text-1);
+  }
+}

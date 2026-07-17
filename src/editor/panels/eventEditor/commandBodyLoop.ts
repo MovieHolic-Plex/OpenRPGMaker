@@ -17,22 +17,22 @@ export function loopBody(context: CommandEditContext, cmd: LoopCommand): HTMLEle
   });
   wrap.append(el("label", { text: `반복 내용 (${cmd.body.length} 명령)` }));
   const working: Command[] = structuredClone(cmd.body);
+  const listEl = el("div", { class: "cmd-list", dataset: { testid: "event-loop-body-list" } });
   const commit = () => {
     context.actions.replaceCommand(context.path, { ...cmd, body: structuredClone(working) });
   };
-  const listEl = el("div", { class: "cmd-list", dataset: { testid: "event-loop-body-list" } });
   const rerender = () => {
     clearChildren(listEl);
     working.forEach((_, index) => {
-      listEl.append(renderLoopItem(working, index, commit));
+      listEl.append(renderLoopItem(working, index, commit, rerender));
     });
   };
   rerender();
-  wrap.append(listEl, renderLoopAddRow(working, commit));
+  wrap.append(listEl, renderLoopAddRow(working, commit, rerender));
   return wrap;
 }
 
-function renderLoopItem(working: Command[], index: number, commit: () => void): HTMLElement {
+function renderLoopItem(working: Command[], index: number, commit: () => void, rerender: () => void): HTMLElement {
   const command = working[index];
   const item = el("div", { class: "cmd-item", dataset: { testid: `event-loop-body-item-${index}` } });
   if (!command) return item;
@@ -55,14 +55,15 @@ function renderLoopItem(working: Command[], index: number, commit: () => void): 
         click: () => {
           working.splice(index, 1);
           commit();
+          rerender();
         },
       },
-    })
+    }),
   );
   return item;
 }
 
-function renderLoopAddRow(working: Command[], commit: () => void): HTMLElement {
+function renderLoopAddRow(working: Command[], commit: () => void, rerender: () => void): HTMLElement {
   const addRow = el("div", { dataset: { testid: "event-loop-body-add-row" } });
   const sel = commandKindSelect("text");
   sel.dataset.testid = "event-loop-body-add-kind";
@@ -76,9 +77,10 @@ function renderLoopAddRow(working: Command[], commit: () => void): HTMLElement {
         click: () => {
           working.push(newCommand(selectedOptionValue(sel, COMMAND_KIND_OPTIONS, "text")));
           commit();
+          rerender();
         },
       },
-    })
+    }),
   );
   return addRow;
 }

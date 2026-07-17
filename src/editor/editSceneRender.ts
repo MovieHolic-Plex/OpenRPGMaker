@@ -71,7 +71,10 @@ export function renderEditSceneTileCells(
   if (!map) return { tileObjectsUpdated: 0 };
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
-  const uniqueCells = uniqueRenderableTileCells(cells);
+  // lower 재추가가 upper 위에 올라가지 않도록 항상 lower → upper 순으로 그린다.
+  const uniqueCells = uniqueRenderableTileCells(cells)
+    .slice()
+    .sort((a, b) => (a.layer === b.layer ? 0 : a.layer === "lower" ? -1 : 1));
   let tileObjectsUpdated = 0;
   for (const cell of uniqueCells) {
     if (cell.x < 0 || cell.y < 0 || cell.x >= map.width || cell.y >= map.height) continue;
@@ -84,6 +87,10 @@ export function renderEditSceneTileCells(
     if (next.length) context.tileIndex.set(key, next);
     else context.tileIndex.delete(key);
     tileObjectsUpdated += next.length;
+  }
+  // Container 자식 depth 정렬 — 증분 lower 재추가로 한 프레임 upper가 가려지는 깜빡임 방지.
+  if ("sort" in context.tileLayer && typeof context.tileLayer.sort === "function") {
+    context.tileLayer.sort("depth");
   }
   return { tileObjectsUpdated };
 }
@@ -173,10 +180,15 @@ function uniqueRenderableTileCells(cells: readonly ProjectChangeCell[]): readonl
     add(cell.layer, cell.x, cell.y);
     // 하위 타일의 쿼터 합성(벽 프레임 랩·지형 9-슬라이스·호수 기슭·길)은 이웃 의존 —
     // 칠한 셀만 다시 그리면 이웃 셀에 낡은 프레임 조각이 남는다. 8방 이웃도 함께 재렌더.
+    // 같은 칸 upper도 반드시 재렌더: lower만 컨테이너 끝에 다시 add 되면 upper 위에 덮여
+    // "상위 물건이 잠깐 사라졌다 다시 나타나는" 깜빡임이 난다.
     if (cell.layer === "lower") {
+      add("upper", cell.x, cell.y);
       for (let dy = -1; dy <= 1; dy += 1) {
         for (let dx = -1; dx <= 1; dx += 1) {
-          if (dx !== 0 || dy !== 0) add("lower", cell.x + dx, cell.y + dy);
+          if (dx === 0 && dy === 0) continue;
+          add("lower", cell.x + dx, cell.y + dy);
+          add("upper", cell.x + dx, cell.y + dy);
         }
       }
     }

@@ -1,3 +1,5 @@
+import { readProjectFromUrl } from "./projectUrl";
+
 export const DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
 const STORAGE_KEY = "rpg-zzu:supabase-project-config";
@@ -51,10 +53,14 @@ export function supabaseProjectConfigDraftWithSource(
   const customActive = stored.source === "custom" && (stored.url.length > 0 || stored.anonKey.length > 0);
   const url = customActive && stored.url ? stored.url : envDraft.url || stored.url;
   const anonKey = customActive && stored.anonKey ? stored.anonKey : envDraft.anonKey || stored.anonKey;
+  // URL ?project= 가 있으면 로드 대상을 그쪽으로 고정 (공유 링크 / 북마크).
+  const urlProjectId = readProjectFromUrl().projectId;
   const projectId =
-    customActive && stored.projectId
-      ? stored.projectId
-      : envDraft.projectId || stored.projectId || DEFAULT_SUPABASE_PROJECT_ID;
+    urlProjectId
+      ? urlProjectId
+      : customActive && stored.projectId
+        ? stored.projectId
+        : envDraft.projectId || stored.projectId || DEFAULT_SUPABASE_PROJECT_ID;
   const source: SupabaseProjectConfigSource = customActive
     ? "custom"
     : envDraft.url && envDraft.anonKey

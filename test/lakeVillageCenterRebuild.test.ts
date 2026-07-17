@@ -48,7 +48,7 @@ function placeTreesAroundLake(
   return runOk(ctx, "place_props", {
     mapId,
     area,
-    propVocabId: BUILD_PALETTE_PRESETS.tree,
+    material: "침엽수",
     count,
     naturalness: 0.55,
     minGap: 1,
@@ -103,7 +103,7 @@ describe("center lake village rebuild", () => {
       runOk(ctx, "fill_region", {
         mapId: "map_lake_village",
         rect: villageLake,
-        tileVocabId: BUILD_PALETTE_PRESETS.water,
+        material: "물",
         layer: "lower",
         shape: "circle",
       }),
@@ -168,7 +168,7 @@ describe("center lake village rebuild", () => {
       runOk(ctx, "fill_region", {
         mapId: "map_lakeside_park",
         rect: parkLake,
-        tileVocabId: BUILD_PALETTE_PRESETS.water,
+        material: "물",
         layer: "lower",
         shape: "circle",
       }),

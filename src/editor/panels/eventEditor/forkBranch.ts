@@ -15,12 +15,33 @@ export function renderForkBranch(
   cmds: Command[]
 ): HTMLElement {
   const wrap = el("div", {
-    class: "fork-branch",
-    attrs: { style: "border:1px solid var(--border);padding:4px;margin-top:4px;border-radius:3px;" },
+    class: `fork-branch fork-branch-${branch}`,
     dataset: { testid: `event-fork-branch-${branch}` },
   });
-  wrap.append(el("label", { text: `${branch} (${cmds.length} 명령)` }));
+  const branchTitle = branch === "then" ? "참일 때" : "그 외의 경우";
+  const branchSub = branch === "then" ? "조건이 맞을 때 실행" : "조건이 틀릴 때 실행";
+  wrap.append(
+    el("div", {
+      class: "fork-branch-header",
+      children: [
+        el("div", {
+          class: "fork-branch-title",
+          text: branchTitle,
+          dataset: { testid: `event-fork-branch-label-${branch}` },
+        }),
+        el("div", {
+          class: "fork-branch-meta",
+          text: `${cmds.length}개 명령 · ${branchSub}`,
+          dataset: { testid: `event-fork-branch-meta-${branch}` },
+        }),
+      ],
+    }),
+  );
   const working: Command[] = structuredClone(cmds);
+  const listEl = el("div", {
+    class: "fork-branch-list",
+    dataset: { testid: `event-fork-branch-list-${branch}` },
+  });
   const commit = () => {
     const nextFork: ForkCommand =
       branch === "then"
@@ -28,25 +49,50 @@ export function renderForkBranch(
         : { ...fork, else: structuredClone(working) };
     actions.replaceCommand(path, nextFork);
   };
-  const listEl = el("div", { class: "cmd-list", dataset: { testid: `event-fork-branch-list-${branch}` } });
   const rerender = () => {
     clearChildren(listEl);
+    if (working.length === 0) {
+      listEl.append(
+        el("div", {
+          class: "fork-branch-empty",
+          text: "명령이 없습니다. 아래에서 추가하세요.",
+          dataset: { testid: `event-fork-branch-empty-${branch}` },
+        })
+      );
+      return;
+    }
     working.forEach((_, index) => {
-      listEl.append(renderForkBranchItem(working, index, commit, branch));
+      listEl.append(renderForkBranchItem(working, index, commit, rerender, branch));
     });
   };
   rerender();
-  wrap.append(listEl, renderForkBranchAddRow(working, commit, branch));
+  wrap.append(listEl, renderForkBranchAddRow(working, commit, rerender, branch));
   return wrap;
 }
 
-function renderForkBranchItem(working: Command[], index: number, commit: () => void, branch: "then" | "else"): HTMLElement {
+function renderForkBranchItem(
+  working: Command[],
+  index: number,
+  commit: () => void,
+  rerender: () => void,
+  branch: "then" | "else",
+): HTMLElement {
   const command = working[index];
-  const item = el("div", { class: "cmd-item", dataset: { testid: `event-fork-branch-item-${branch}-${index}` } });
+  const item = el("div", {
+    class: "fork-branch-item",
+    dataset: { testid: `event-fork-branch-item-${branch}-${index}` },
+  });
   if (!command) return item;
-  item.append(el("span", { class: "cmd-kind", text: commandKindLabel(command.kind) }));
+  item.append(
+    el("span", {
+      class: "fork-branch-item-kind",
+      text: commandKindLabel(command.kind),
+    })
+  );
   if (command.kind === "text") {
     const body = el("textarea", {
+      class: "fork-branch-text",
+      attrs: { rows: "2", placeholder: "대사 내용" },
       dataset: { testid: `event-fork-branch-text-${branch}-${index}` },
     }) as HTMLTextAreaElement;
     body.value = command.body;
@@ -55,40 +101,60 @@ function renderForkBranchItem(working: Command[], index: number, commit: () => v
       commit();
     });
     item.append(body);
+  } else {
+    item.append(
+      el("span", {
+        class: "fork-branch-item-note",
+        text: "상세 편집은 메인 명령 목록의 분기 안에서 하세요.",
+      })
+    );
   }
   item.append(
     el("button", {
-      class: "btn danger",
+      class: "btn danger fork-branch-delete",
       dataset: { testid: `event-fork-branch-delete-${branch}-${index}` },
-      text: "×",
+      text: "삭제",
+      attrs: { type: "button", title: "이 명령 삭제" },
       on: {
         click: () => {
           working.splice(index, 1);
           commit();
+          rerender();
         },
       },
-    })
+    }),
   );
   return item;
 }
 
-function renderForkBranchAddRow(working: Command[], commit: () => void, branch: "then" | "else"): HTMLElement {
-  const addRow = el("div", { dataset: { testid: `event-fork-branch-add-row-${branch}` } });
+function renderForkBranchAddRow(
+  working: Command[],
+  commit: () => void,
+  rerender: () => void,
+  branch: "then" | "else",
+): HTMLElement {
+  const addRow = el("div", {
+    class: "fork-branch-add-row",
+    dataset: { testid: `event-fork-branch-add-row-${branch}` },
+  });
   const sel = commandKindSelect("text");
   sel.dataset.testid = `event-fork-branch-add-kind-${branch}`;
   addRow.append(
+    el("span", { class: "fork-branch-add-label", text: "명령 추가" }),
     sel,
     el("button", {
       class: "btn",
       dataset: { testid: `event-fork-branch-add-${branch}` },
-      text: "+ 명령",
+      text: "+ 추가",
+      attrs: { type: "button" },
       on: {
         click: () => {
           working.push(newCommand(selectedOptionValue(sel, COMMAND_KIND_OPTIONS, "text")));
           commit();
+          rerender();
         },
       },
-    })
+    }),
   );
   return addRow;
 }

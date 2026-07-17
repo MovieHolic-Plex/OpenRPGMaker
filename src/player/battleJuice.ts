@@ -21,10 +21,10 @@ const BATTLE_SFX: Record<BattleJuiceEvent, string> = {
   "attack-swing": "easyrpg-sound-attack1",
   "hit-damage": "easyrpg-sound-damage2",
   "hit-critical": "easyrpg-sound-blow4",
-  "hit-miss": "easyrpg-sound-miss",
+  "hit-miss": "easyrpg-sound-evade1",
   defend: "easyrpg-sound-barrier1",
-  escape: "easyrpg-sound-run",
-  victory: "easyrpg-sound-jingle1",
+  escape: "easyrpg-sound-escape",
+  victory: "easyrpg-sound-chime2",
   defeat: "easyrpg-sound-collapse1",
 };
 
@@ -32,7 +32,7 @@ const BATTLE_SFX: Record<BattleJuiceEvent, string> = {
 const SFX_FALLBACK: Partial<Record<BattleJuiceEvent, string>> = {
   "hit-miss": "easyrpg-sound-buzzer1",
   escape: "easyrpg-sound-cancel2",
-  victory: "easyrpg-sound-chime1",
+  victory: "easyrpg-sound-item1",
 };
 
 const DEFAULT_VOLUME = 0.4;

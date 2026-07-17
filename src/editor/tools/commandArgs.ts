@@ -111,6 +111,10 @@ function nestedKindShapeFailures(path: string, command: RecordValue): string[] {
       return command.transactionBranch === undefined
         ? []
         : collectKindShapeFailures(`${path}.transactionBranch`, command.transactionBranch);
+    case "inn":
+      return command.notEnoughBranch === undefined
+        ? []
+        : collectKindShapeFailures(`${path}.notEnoughBranch`, command.notEnoughBranch);
     case "promoteActor":
     case "evolveMonster":
       return [

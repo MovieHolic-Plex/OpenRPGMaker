@@ -110,6 +110,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "setSwitch":
       assert(context.switchIds.has(command.switchId), `setSwitch: switchId가 존재하지 않습니다: ${command.switchId}`);
+      if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
+        assert(context.variableIds.has(command.value.id), `setSwitch: operand variableId가 존재하지 않습니다: ${command.value.id}`);
+      }
       return;
     case "setVariable":
       assert(context.variableIds.has(command.variableId), `setVariable: variableId가 존재하지 않습니다: ${command.variableId}`);
@@ -133,14 +136,28 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.commonEventIds.has(command.commonEventId), `callCommonEvent: commonEventId가 존재하지 않습니다: ${command.commonEventId}`);
       return;
     case "battleProcessing":
-      assert(context.troopIds.has(command.troopId), `battleProcessing: troopId가 존재하지 않습니다: ${command.troopId}`);
+      if (command.troopSource !== "variable") {
+        assert(context.troopIds.has(command.troopId), `battleProcessing: troopId가 존재하지 않습니다: ${command.troopId}`);
+      } else if (command.troopVariableId) {
+        assert(context.variableIds.has(command.troopVariableId), `battleProcessing: troopVariableId가 존재하지 않습니다: ${command.troopVariableId}`);
+      }
+      validateCommands(command.victoryBranch ?? [], context);
+      validateCommands(command.defeatBranch ?? [], context);
+      validateCommands(command.escapeBranch ?? [], context);
       return;
     case "learnSkill":
-      assert(context.actorIds.has(command.actorId), `learnSkill: actorId가 존재하지 않습니다: ${command.actorId}`);
+      if ((command.actorId ?? "").trim().length > 0) {
+        assert(context.actorIds.has(command.actorId), `learnSkill: actorId가 존재하지 않습니다: ${command.actorId}`);
+      }
       assert(context.skillIds.has(command.skillId), `learnSkill: skillId가 존재하지 않습니다: ${command.skillId}`);
       return;
     case "changeExp":
-      assert(context.actorIds.has(command.actorId), `changeExp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      if ((command.actorId ?? "").trim().length > 0) {
+        assert(context.actorIds.has(command.actorId), `changeExp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      }
+      if (typeof command.amount !== "number") {
+        assert(context.variableIds.has(command.amount.id), `changeExp: amount variableId가 존재하지 않습니다: ${command.amount.id}`);
+      }
       return;
     case "changeLevel":
       assert(context.actorIds.has(command.actorId), `changeLevel: actorId가 존재하지 않습니다: ${command.actorId}`);
@@ -168,6 +185,17 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "recoverAll":
       if ((command.actorId ?? "").trim().length > 0) {
         assert(context.actorIds.has(command.actorId ?? ""), `recoverAll: actorId가 존재하지 않습니다: ${command.actorId ?? ""}`);
+      }
+      return;
+    case "changeGold":
+      if (typeof command.amount !== "number") {
+        assert(context.variableIds.has(command.amount.id), `changeGold: amount variableId가 존재하지 않습니다: ${command.amount.id}`);
+      }
+      return;
+    case "changeItem":
+      assert(context.itemIds.has(command.itemId), `changeItem: itemId가 존재하지 않습니다: ${command.itemId}`);
+      if (typeof command.amount !== "number") {
+        assert(context.variableIds.has(command.amount.id), `changeItem: amount variableId가 존재하지 않습니다: ${command.amount.id}`);
       }
       return;
     case "giveMonster":
@@ -222,6 +250,14 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "season":
     case "npcActivity":
     case "friendshipAtLeast":
+    case "battleResult":
+      return;
+    case "all":
+    case "any":
+      for (const child of condition.conditions) validatePageCondition(child, context);
+      return;
+    case "not":
+      validatePageCondition(condition.condition, context);
       return;
   }
 }
@@ -243,6 +279,14 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "season":
     case "npcActivity":
     case "friendshipAtLeast":
+    case "battleResult":
+      return;
+    case "all":
+    case "any":
+      for (const child of condition.conditions) validateBattleEventCondition(child as BattleEventCondition, context);
+      return;
+    case "not":
+      validateBattleEventCondition(condition.condition as BattleEventCondition, context);
       return;
     case "enemyHp":
     case "enemyTurn":

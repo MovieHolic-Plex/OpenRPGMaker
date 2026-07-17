@@ -32,12 +32,15 @@ export function renderFacesetPreview(options: FacesetPreviewOptions): HTMLElemen
   const resourceId = options.resourceId.trim();
   const name = facesetName(resourceId);
   const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const mode = faceDisplayModeOf(resourceId);
+  const bust = mode !== "chip";
   const preview = el("div", {
-    class: `event-command-face-preview${options.flipHorizontally ? " flipped" : ""}`,
+    class: `event-command-face-preview${options.flipHorizontally ? " flipped" : ""}${bust ? " is-bust" : ""} face-mode-${mode}`,
     dataset: {
       testid: "event-command-face-preview",
       faceIndex: String(normalizedIndex),
       resourceId,
+      faceMode: mode,
     },
   });
 
@@ -50,15 +53,19 @@ export function renderFacesetPreview(options: FacesetPreviewOptions): HTMLElemen
     return preview;
   }
 
-  const crop = faceCrop(url, normalizedIndex, name, options.displaySize);
+  const visual = bust
+    ? bustVisual(url, name, options.displaySize ?? 96, mode)
+    : faceCrop(url, normalizedIndex, name, options.displaySize);
   preview.append(
-    crop,
+    visual,
     el("div", {
       class: "event-command-face-preview-copy",
       children: [
         el("strong", { text: name }),
         el("span", {
-          text: `얼굴 ${normalizedIndex + 1} · ${positionLabel(options.position)}${options.flipHorizontally ? " · 좌우 반전" : ""}`,
+          text: bust
+            ? `${mode === "full" ? "전신" : "흉상"} · ${positionLabel(options.position)}${options.flipHorizontally ? " · 좌우 반전" : ""}`
+            : `얼굴 ${normalizedIndex + 1} · ${positionLabel(options.position)}${options.flipHorizontally ? " · 좌우 반전" : ""}`,
         }),
         el("span", { class: "event-command-face-preview-id", text: resourceId }),
       ],
@@ -76,17 +83,31 @@ export function renderFacesetCrop(options: {
   readonly faceIndex: number;
   readonly flipHorizontally?: boolean;
   readonly displaySize?: number;
+  readonly position?: "left" | "right";
 }): HTMLElement {
   const normalizedIndex = normalizedFaceIndex(options.faceIndex);
   const resourceId = options.resourceId.trim();
   const name = facesetName(resourceId);
   const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const mode = faceDisplayModeOf(resourceId);
+  const whole = mode !== "chip";
+  const position = options.position === "right" ? "right" : "left";
   const shell = el("div", {
-    class: `event-command-face-crop-shell${options.flipHorizontally ? " flipped" : ""}`,
+    class: [
+      "event-command-face-crop-shell",
+      options.flipHorizontally ? "flipped" : "",
+      whole ? "is-bust" : "",
+      `face-mode-${mode}`,
+      `face-pos-${position}`,
+    ]
+      .filter(Boolean)
+      .join(" "),
     dataset: {
       testid: "event-command-face-crop-shell",
       faceIndex: String(normalizedIndex),
       resourceId,
+      faceMode: mode,
+      position,
     },
   });
   if (url === null) {
@@ -94,8 +115,59 @@ export function renderFacesetCrop(options: {
     shell.append(el("span", { class: "event-command-face-crop-missing", text: resourceId ? "?" : "—" }));
     return shell;
   }
-  shell.append(faceCrop(url, normalizedIndex, name, options.displaySize));
+  shell.append(
+    whole
+      ? bustVisual(url, name, options.displaySize ?? 96, mode)
+      : faceCrop(url, normalizedIndex, name, options.displaySize)
+  );
   return shell;
+}
+
+/** Whole-image face (not a 4×4 faceset cell). */
+export type FaceDisplayMode = "chip" | "bust" | "full";
+
+export function faceDisplayModeOf(resourceId: string): FaceDisplayMode {
+  const id = resourceId.trim().toLowerCase();
+  if (!id) return "chip";
+  if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
+    return "full";
+  }
+  if (
+    id.includes("-bust")
+    || id.includes("-portrait")
+    || id.startsWith("generated-face-")
+    || id.endsWith("/bust")
+  ) {
+    return "bust";
+  }
+  return "chip";
+}
+
+/** @deprecated use faceDisplayModeOf */
+export function isBustResourceId(resourceId: string): boolean {
+  return faceDisplayModeOf(resourceId) !== "chip";
+}
+
+function bustVisual(url: string, name: string, displaySize: number, mode: FaceDisplayMode = "bust"): HTMLElement {
+  const size = Math.max(64, Math.trunc(displaySize));
+  const height = mode === "full" ? Math.round(size * 1.7) : Math.round(size * 1.2);
+  const node = el("div", {
+    class: `event-command-face-crop event-command-face-bust event-command-face-${mode}`,
+    attrs: {
+      "aria-label": `${name} ${mode === "full" ? "전신" : "흉상"} 미리보기`,
+      role: "img",
+    },
+    dataset: { testid: "event-command-face-crop", faceMode: mode },
+  });
+  node.style.setProperty("background-image", `url("${url}")`);
+  node.style.setProperty("background-position", "bottom center");
+  node.style.setProperty("background-repeat", "no-repeat");
+  node.style.setProperty("background-size", "contain");
+  node.style.setProperty("--face-display-width", `${size}px`);
+  node.style.setProperty("--face-display-height", `${height}px`);
+  node.style.setProperty("width", `${size}px`);
+  node.style.setProperty("height", `${height}px`);
+  return node;
 }
 
 function faceCrop(url: string, faceIndex: number, name: string, displaySize?: number): HTMLElement {
@@ -139,4 +211,68 @@ function facesetName(resourceId: string): string {
 
 function positionLabel(position: "left" | "right"): string {
   return position === "right" ? "오른쪽" : "왼쪽";
+}
+/** Clickable 4×4 faceset index grid for the changeFace form. */
+export function renderFacesetIndexGrid(options: {
+  readonly resourceId: string;
+  readonly faceIndex: number;
+  readonly flipHorizontally?: boolean;
+  readonly onSelect: (faceIndex: number) => void;
+  /** Cell display size in px; default 56. */
+  readonly cellSize?: number;
+}): HTMLElement {
+  const normalizedIndex = normalizedFaceIndex(options.faceIndex);
+  const resourceId = options.resourceId.trim();
+  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const cellSize = Math.max(40, Math.trunc(options.cellSize ?? 56));
+  const grid = el("div", {
+    class: "event-command-face-index-grid",
+    attrs: {
+      role: "listbox",
+      "aria-label": "얼굴 번호 선택",
+    },
+    dataset: { testid: "event-command-face-index-grid" },
+  });
+
+  if (!url) {
+    grid.dataset.empty = "true";
+    grid.append(
+      el("div", {
+        class: "event-command-face-index-grid-empty",
+        text: resourceId
+          ? "이 리소스의 얼굴 시트를 불러올 수 없습니다."
+          : "위에서 얼굴 그래픽을 먼저 선택하세요.",
+      })
+    );
+    return grid;
+  }
+
+  for (let index = 0; index < FACESET_FACE_COUNT; index += 1) {
+    const selected = index === normalizedIndex;
+    const button = el("button", {
+      class: selected
+        ? "event-command-face-index-cell is-selected"
+        : "event-command-face-index-cell",
+      attrs: {
+        type: "button",
+        role: "option",
+        "aria-selected": selected ? "true" : "false",
+        title: `얼굴 ${index + 1}`,
+        "aria-label": `얼굴 ${index + 1}`,
+      },
+      dataset: {
+        testid: `event-command-face-slot-${index}`,
+        faceIndex: String(index),
+      },
+      on: {
+        click: () => options.onSelect(index),
+      },
+    }) as HTMLButtonElement;
+
+    if (options.flipHorizontally) button.classList.add("flipped");
+    button.append(faceCrop(url, index, facesetName(resourceId), cellSize));
+    grid.append(button);
+  }
+
+  return grid;
 }

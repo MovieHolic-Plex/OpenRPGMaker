@@ -10,10 +10,20 @@ import {
 } from "@/player/runtimeKeyboardMenu";
 
 describe("runtime keyboard menus", () => {
-  it("moves title selection with wrapping arrow keys", () => {
+  it("moves title selection with wrapping arrow keys for count 1/2/3", () => {
+    // count 3 (default)
     expect(moveTitleSelection(0, "ArrowDown")).toBe(1);
     expect(moveTitleSelection(0, "ArrowUp")).toBe(2);
     expect(moveTitleSelection(2, "ArrowDown")).toBe(0);
+    // count 2 (e.g. continue hidden): New ↔ Quit
+    expect(moveTitleSelection(0, "ArrowDown", 2)).toBe(1);
+    expect(moveTitleSelection(1, "ArrowDown", 2)).toBe(0);
+    expect(moveTitleSelection(0, "ArrowUp", 2)).toBe(1);
+    // count 1 (only newGame): sticky 0
+    expect(moveTitleSelection(0, "ArrowDown", 1)).toBe(0);
+    expect(moveTitleSelection(0, "ArrowUp", 1)).toBe(0);
+    // invalid count coerces to ≥1
+    expect(moveTitleSelection(0, "ArrowDown", 0)).toBe(0);
   });
 
   it("moves X-menu command selection and enters/cancels function mode", () => {

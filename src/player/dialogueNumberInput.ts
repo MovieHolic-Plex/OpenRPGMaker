@@ -64,10 +64,13 @@ export function showNumberInput(
       clearChildren(slots);
       for (let i = 0; i < digits; i += 1) {
         const ch = value[i] ?? "";
+        const isCursor = i === value.length && value.length < digits;
         slots.append(
           el("div", {
-            class: `number-input-slot${ch ? " filled" : ""}${i === value.length ? " cursor" : ""}`,
-            text: ch || "0",
+            class: `number-input-slot${ch ? " filled" : " empty"}${isCursor ? " cursor" : ""}`,
+            // Empty slots stay blank (not "0") so unfilled PIN digits are unambiguous.
+            text: ch,
+            attrs: ch ? undefined : { "aria-hidden": "true" },
           })
         );
       }

@@ -84,14 +84,76 @@ export async function bootApp(root: HTMLElement): Promise<void> {
 }
 
 async function finishEditorBoot(startedAt: number): Promise<void> {
+  const {
+    clearPendingAiBootIntent,
+    clearWelcomeIntentBootFlags,
+    applyPendingAiBootIntent,
+    peekPendingAiBootIntent,
+    setPendingAiBootIntent,
+    setPendingWelcomePipeline,
+    wasWelcomeIntentAppliedThisBoot,
+  } = await import("@/editor/aiBootIntent");
+  const {
+    presentEditorWelcome,
+    setEditorWelcomeDismissed,
+    shouldPresentEditorWelcome,
+  } = await import("@/editor/editorWelcome");
+
+  let runGenrePipeline = false;
+
+  // Cold-boot welcome only. Re-entry while edit/play shell is live must not overlay.
+  if (modeMounted) {
+    clearPendingAiBootIntent();
+  } else {
+    clearWelcomeIntentBootFlags();
+    if (shouldPresentEditorWelcome({ modeShellMounted: modeMounted }) && elements) {
+      const result = await presentEditorWelcome(elements.root);
+      if (result.dismiss) setEditorWelcomeDismissed(true);
+      if (result.replaceWithBlank && result.prompt) {
+        const { createBlankProject } = await import("@/project/defaults");
+        // Genre start must keep remote persistence and mint a new project id.
+        // loadFallbackProject turns remote OFF (load-failure recovery only) and
+        // would also risk overwriting the previously opened DB project row.
+        const title = (result.intent || result.prompt || "새 세계").slice(0, 48);
+        await store.loadNewRemoteProject(createBlankProject(), { title });
+        setPendingWelcomePipeline({
+          prompt: result.prompt,
+          autoSend: result.autoSend,
+          replaceWithBlank: true,
+          presetId: result.presetId,
+          source: result.source ?? "free-text",
+        });
+        runGenrePipeline = true;
+      } else if (result.intent) {
+        setPendingAiBootIntent(result.intent, { autoSend: false });
+      }
+    }
+  }
+
   const { focusProjectStartMap } = await import("@/editor/mapSelection");
   focusProjectStartMap();
 
   await renderTopbar();
   await enterMode("edit");
-  const { openLoginModalIfNeeded } = await import("@/editor/teamWorkflowUi");
-  openLoginModalIfNeeded(() => void renderTopbar());
+
+  const hadWelcomeIntent =
+    runGenrePipeline
+    || wasWelcomeIntentAppliedThisBoot()
+    || peekPendingAiBootIntent() !== null;
+  if (hadWelcomeIntent) {
+    const { ensureGuestIdentityForAiSurface } = await import("@/editor/teamWorkflowUi");
+    ensureGuestIdentityForAiSurface(() => void renderTopbar());
+    applyPendingAiBootIntent();
+  } else {
+    const { openLoginModalIfNeeded } = await import("@/editor/teamWorkflowUi");
+    openLoginModalIfNeeded(() => void renderTopbar());
+  }
   markInitialEditRender(startedAt);
+}
+
+/** Shared edit/play shell mount flag — cold-boot welcome gate uses this (not edit-only). */
+export function isModeShellMounted(): boolean {
+  return modeMounted;
 }
 
 function renderDbRequiredScreen(error: unknown): void {

@@ -6,33 +6,21 @@ import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDa
 import { deserialize, serialize } from "@/project/io";
 
 describe("safe CC0 item and equipment icons", () => {
-  it("ships every declared CC0 icon file and resolves it at runtime", async () => {
+  it("ships every declared icon file and resolves it at runtime", async () => {
     const existsSync = await loadExistsSync();
 
-    expect(CC0_ICON_ASSETS.every((asset) => asset.license === "CC0-1.0")).toBe(true);
-    expect(CC0_ICON_ASSETS.map((asset) => asset.id)).toEqual([
-      "cc0-jetrel-potion-red",
-      "cc0-jetrel-ether-blue",
-      "cc0-jetrel-antidote-green",
-      "cc0-jetrel-wake-herb",
-      "cc0-jetrel-poison-dart",
-      "cc0-jetrel-old-key-scroll",
-      "cc0-jetrel-bronze-sword",
-      "cc0-jetrel-mage-staff",
-      "cc0-jetrel-scout-dagger",
-      "cc0-jetrel-oak-shield",
-      "cc0-jetrel-leather-armor",
-      "cc0-jetrel-mystic-robe",
-      "cc0-jetrel-traveler-hat",
-      "cc0-jetrel-focus-charm",
-    ]);
+    expect(CC0_ICON_ASSETS.every((asset) => asset.license === "CC0-1.0" || asset.license === "generated")).toBe(true);
+    expect(CC0_ICON_ASSETS.length).toBeGreaterThanOrEqual(100);
+    expect(new Set(CC0_ICON_ASSETS.map((asset) => asset.id)).size).toBe(CC0_ICON_ASSETS.length);
 
     const missing = CC0_ICON_ASSETS.filter((asset) => !existsSync(`public/${asset.path}`)).map((asset) => asset.path);
     expect(missing).toEqual([]);
     expect(resolveAssetResourceUrl("cc0-jetrel-potion-red")).toBe("/assets/cc0/jetrel/icons/potion-red.png");
+    expect(resolveAssetResourceUrl("cc0-jetrel-old-key")).toBe("/assets/cc0/jetrel/icons/old-key.png");
+    expect(resolveAssetResourceUrl("cc0-jetrel-capture-orb")).toBe("/assets/cc0/jetrel/icons/capture-orb.png");
   });
 
-  it("fills all default items and equipment with safe CC0 image and icon resources", () => {
+  it("fills all default items and equipment with catalog image and icon resources", () => {
     const project = deserialize(serialize(createBlankProject()));
     const allowedIds = new Set(CC0_ICON_ASSETS.map((asset) => asset.id));
     const itemRefs = project.database.items.flatMap((item) => [item.imageResourceId, item.iconResourceId]);
@@ -43,14 +31,17 @@ describe("safe CC0 item and equipment icons", () => {
     expect(project.resourceProfiles.filter((profile) => profile.assetId?.startsWith("cc0-jetrel-"))).toHaveLength(CC0_ICON_ASSETS.length);
   });
 
-  it("ships a broad JRPG item catalog that uses every safe CC0 icon in the Items database", () => {
+  it("ships a broad JRPG item catalog that uses every catalog icon across items and equipment", () => {
     const project = deserialize(serialize(createBlankProject()));
-    const usedItemIcons = new Set(project.database.items.flatMap((item) => [item.imageResourceId, item.iconResourceId]));
+    const usedIcons = new Set([
+      ...project.database.items.flatMap((item) => [item.imageResourceId, item.iconResourceId]),
+      ...project.database.equipment.flatMap((equipment) => [equipment.imageResourceId, equipment.iconResourceId]),
+    ]);
     const itemIds = new Set(project.database.items.map((item) => item.id));
 
-    expect(project.database.items.length).toBeGreaterThanOrEqual(20);
+    expect(project.database.items.length).toBeGreaterThanOrEqual(100);
     for (const asset of CC0_ICON_ASSETS) {
-      expect(usedItemIcons).toContain(asset.id);
+      expect(usedIcons).toContain(asset.id);
     }
     expect([...itemIds]).toEqual(
       expect.arrayContaining([
@@ -60,8 +51,18 @@ describe("safe CC0 item and equipment icons", () => {
         "item_warp_scroll",
         "item_guard_talisman",
         "item_lucky_charm",
+        "item_old_key",
+        "item_capture_orb",
       ]),
     );
+    expect(project.database.items.find((item) => item.id === "item_old_key")).toMatchObject({
+      imageResourceId: "cc0-jetrel-old-key",
+      iconResourceId: "cc0-jetrel-old-key",
+    });
+    expect(project.database.items.find((item) => item.id === "item_capture_orb")).toMatchObject({
+      imageResourceId: "cc0-jetrel-capture-orb",
+      iconResourceId: "cc0-jetrel-capture-orb",
+    });
   });
 
   it("upgrades existing default database rows that are missing item and equipment icons", () => {
@@ -113,7 +114,7 @@ describe("safe CC0 item and equipment icons", () => {
     project.database.items = project.database.items.slice(0, 1);
 
     expect(ensureDefaultDatabaseIconResources(project)).toBe(true);
-    expect(project.database.items.length).toBeGreaterThanOrEqual(20);
+    expect(project.database.items.length).toBeGreaterThanOrEqual(100);
     expect(new Set(project.database.items.map((item) => item.id)).size).toBe(project.database.items.length);
     expect(ensureDefaultDatabaseIconResources(project)).toBe(false);
   });

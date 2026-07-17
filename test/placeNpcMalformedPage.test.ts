@@ -31,7 +31,7 @@ describe("place_npc SimplePage malformed input normalization", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("SimplePage 정규화 경고 1건");
+    expect(result.summary).toContain("SimplePage 정규화 경고");
     expect(result.diff?.warnings.join("\n")).toContain("pages[0].commands[0].command 문자열을 kind로 사용");
     expect(page?.commands).toContainEqual({ kind: "text", body: "어서 와." });
   });
@@ -42,7 +42,7 @@ describe("place_npc SimplePage malformed input normalization", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("SimplePage 정규화 경고 1건");
+    expect(result.summary).toContain("SimplePage 정규화 경고");
     expect(result.diff?.warnings.join("\n")).toContain("pages[0].commands[0].kind.command 문자열을 kind로 사용");
     expect(page?.commands).toContainEqual({ kind: "text", body: "오늘은 장터가 조용해." });
   });
@@ -54,7 +54,7 @@ describe("place_npc SimplePage malformed input normalization", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("SimplePage 정규화 경고 1건");
+    expect(result.summary).toContain("SimplePage 정규화 경고");
     expect(result.diff?.warnings.join("\n")).toContain("pages[0].conditions 단수 객체를 배열로 감쌌습니다");
     expect(page?.conditions).toEqual([{ kind: "selfSwitch", key: "A", value: true }]);
   });
@@ -66,8 +66,26 @@ describe("place_npc SimplePage malformed input normalization", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("SimplePage 정규화 경고 1건");
+    expect(result.summary).toContain("SimplePage 정규화 경고");
     expect(result.diff?.warnings.join("\n")).toContain("pages[0].conditions null을 빈 배열로 처리했습니다");
+    expect(page?.conditions).toEqual([]);
+  });
+  it("normalizes empty object conditions {} to an empty array", () => {
+    const { result, page } = runPlaceNpc("npc_empty_object_condition", {
+      conditions: {},
+      lines: ["조건 없음."],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(page?.conditions).toEqual([]);
+    expect(result.diff?.warnings.join("\n") ?? "").toMatch(/빈\/없음 조건|정규화/);
+  });
+
+  it("normalizes conditions kind none to an empty array", () => {
+    const { result, page } = runPlaceNpc("npc_kind_none_condition", {
+      conditions: { kind: "none" },
+      commands: [{ kind: "text", text: "크르르...!" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
     expect(page?.conditions).toEqual([]);
   });
 

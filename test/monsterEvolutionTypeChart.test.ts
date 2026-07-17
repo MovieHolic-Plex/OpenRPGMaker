@@ -65,10 +65,11 @@ describe("monster evolution", () => {
     expect(evolved.speciesId).toBe("species_king_slime");
     expect(evolved.nickname).toBe("방울");
     expect(evolved.level).toBe(7);
-    // 배치 6(멱곡선 지수 1.5) 반영: L7 wild_slime maxHp 는 base(18)→20, king_slime(42)→48.
-    // 진화 시 HP 비율(9/20)을 보존해 currentHp 는 round(48×9/20)=22 가 된다.
-    expect(evolved.currentHp).toBe(22);
-    expect(monsterMaxHp(project, evolved)).toBe(48);
+    // Pokemon-style formula: L7 wild_slime maxHp = floor((2*18+0)*7/100)+7+10 = 19
+    // king_slime L7 maxHp = floor((2*42+0)*7/100)+7+10 = 22
+    // HP ratio 9/19 preserved → round(22*9/19)=10
+    expect(evolved.currentHp).toBe(10);
+    expect(monsterMaxHp(project, evolved)).toBe(22);
     expect(evolved.skillIds).toEqual(expect.arrayContaining(["skill_leaf", "skill_water"]));
   });
 

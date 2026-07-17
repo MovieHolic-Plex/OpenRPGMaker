@@ -2,6 +2,7 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
+import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
@@ -26,6 +27,7 @@ export type DatabaseTab =
   | "battleScreen"
   | "battlerAnimations"
   | "commonEvents"
+  | "characters"
   | "crops"
   | "elements"
   | "monsterSpecies"
@@ -47,6 +49,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템", testid: "db-tab-items" },
   { id: "crops", label: "작물", testid: "db-tab-crops" },
+  { id: "characters", label: "캐릭터", testid: "db-tab-characters" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "종족", testid: "db-tab-monster-species" },
@@ -67,6 +70,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "skills",
   "items",
   "crops",
+  "characters",
   "equipment",
   "enemies",
   "monsterSpecies",
@@ -100,6 +104,14 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   activeTab = tab;
   if (typeof window === "undefined") return;
   window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
+}
+export function switchDatabaseActiveTab(tab: DatabaseTab, panelRoot: HTMLElement): void {
+  setDatabaseActiveTab(tab);
+  const header = panelRoot.querySelector(".db-tabs");
+  if (header instanceof HTMLElement) updateTabButtons(header);
+  // panelRoot must be the modal host passed to renderDatabasePanel (e.g. .database-modal-body),
+  // not the inner .db-body alone — refreshDatabasePanel looks up .db-body under the host.
+  refreshDatabasePanel(panelRoot);
 }
 
 export function getDatabaseActiveTab(): DatabaseTab {
@@ -193,6 +205,9 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       return;
     case "crops":
       renderCropTab(body, rerender);
+      return;
+    case "characters":
+      renderCharactersTab(body, rerender);
       return;
     case "switches":
       renderSwitchesTab(body, rerender);

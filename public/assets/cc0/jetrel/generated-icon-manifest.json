@@ -1,0 +1,662 @@
+[
+  {
+    "id": "cc0-jetrel-ale",
+    "fileName": "ale.png",
+    "sha256": "e7384b8e9402244d43644ccbb06cecd4428e7c9b5045d5ac8d40a9804383a451",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-antidote-plus",
+    "fileName": "antidote-plus.png",
+    "sha256": "51d12443de6831822dff1be8f2da58a0cb9dfb00bfb286132d936bd08ca82605",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-apple",
+    "fileName": "apple.png",
+    "sha256": "d7fc54b9ca98063d6bcf4f0a4846a854e53ee9ded4073c36d72f8bc37b9cf7d7",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-arrow-bundle",
+    "fileName": "arrow-bundle.png",
+    "sha256": "92d00b2cdbdf7dcc6a2e15a00be53f445dbaf5fc4f05348320a992d2ee1bf9c9",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-badge",
+    "fileName": "badge.png",
+    "sha256": "17e15b6cad87bff179fe75210a8048e0af1bc2a6641375c4da25f10b8ad410d6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-bandages",
+    "fileName": "bandages.png",
+    "sha256": "40468bd2488529dade94486733f2e644fdfd5d28690ada223566c313bd8f34d7",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-battery",
+    "fileName": "battery.png",
+    "sha256": "9e7b41e96b101563a7fad070b6c63b1ecf54f6781552f0d5739b83625e7a687c",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-bell",
+    "fileName": "bell.png",
+    "sha256": "7478d89b4c5a01e0c17811aa2b5833135e165dd31151fc56b19cf391397a1d83",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-bomb",
+    "fileName": "bomb.png",
+    "sha256": "224b27208456f74bf0ce88faaf7bdb8817026088ff8bb0c3acc9ec0456317799",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-bone",
+    "fileName": "bone.png",
+    "sha256": "f724fed664208a1fe84c5ba75cf5e4e610a9f501747fb9717c6fdaf4f0e6b4d3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-book-magic",
+    "fileName": "book-magic.png",
+    "sha256": "d36255ec341b555371daf22e63d5d6ee84b8ff796161fe7e055151ed7a015e32",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-book-sword",
+    "fileName": "book-sword.png",
+    "sha256": "894cb8826329e2f1b6d99ff372d865ae245f8b91f6a4f60dc5751e6bf6f3c9f6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-boots",
+    "fileName": "boots.png",
+    "sha256": "155c448495a3a291a915535d22c2c2ad85567c56b9b4003d51a96b4a1093640b",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-bread",
+    "fileName": "bread.png",
+    "sha256": "89aca113c075fa1f2f6157b318556b03c904b742ea4cf32a639feb00733424cf",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-bullet",
+    "fileName": "bullet.png",
+    "sha256": "73ebb9ef11866f73813ef30c1ddebcb87ea9a0e2abe1d34fa9dd43718efa18ce",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-camera",
+    "fileName": "camera.png",
+    "sha256": "3f6bf9e6db933ff19269627dafc0cc5e8c3f3b8eaf87db466c63b913e7bce106",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-candle",
+    "fileName": "candle.png",
+    "sha256": "75015a20768c3baa5639aaad51861797ed65918029218ff8a23250f2c2b521d3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-candy",
+    "fileName": "candy.png",
+    "sha256": "2e5f583086a35538bd6b88cada96ae3eeede053585da09087532d50efca017e1",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-capture-orb",
+    "fileName": "capture-orb.png",
+    "sha256": "8f014e5426d2ceaba9649852cb8c2c8a2f44a128e50bda8429c4e4aa772ff9a7",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-cheese",
+    "fileName": "cheese.png",
+    "sha256": "6d297bdd070d8759843f86d5acad58174ad7ed0d1ae0538e38c2bac51d1be3a6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-claw",
+    "fileName": "claw.png",
+    "sha256": "df269d8c254f4c4721aa2c649576997a6e6bd92832e56622557ccee9e9258e13",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-cloak",
+    "fileName": "cloak.png",
+    "sha256": "c85c39975a8acf9f137a051076e00018a53203dbfb697c70838325f622de5588",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-clock",
+    "fileName": "clock.png",
+    "sha256": "0adc1aad3c6c6251e987953ad7035b2c888e46aac65cf0702e7fb221fb7dc2c9",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-coal",
+    "fileName": "coal.png",
+    "sha256": "45db643e89c3470a99514c878e410c2f624afeaff4ca3953163f51c67f21027a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-coffee",
+    "fileName": "coffee.png",
+    "sha256": "680a5d9feafde7ecb2f5bb1766bff114f6e8ea97ea97c5b3041d131f5446bcbc",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-coin-pouch",
+    "fileName": "coin-pouch.png",
+    "sha256": "f1f68a1add25b18ad64da95f971295300142a3808c857a78183d605db045ef64",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-compass",
+    "fileName": "compass.png",
+    "sha256": "2a3d3f85fe9b97d9edb4fe52160f39923dd4aba5b7b745c22f31ac595200e779",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-cookie",
+    "fileName": "cookie.png",
+    "sha256": "a6ae9cffc099887064d0f63252f23637f8a1fc9493079f83727a4241f240f51c",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-corn",
+    "fileName": "corn.png",
+    "sha256": "a3c575fd9f37080efd91b1837679b180ef7e7c64fc00919bb43b90b55efd26c6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-crystal",
+    "fileName": "crystal.png",
+    "sha256": "f914657973c54894269a47619dddc572a7f3afcbfe157ad2859479b1edbbd986",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-earth-ore",
+    "fileName": "earth-ore.png",
+    "sha256": "8e1ac86cee642d18a132b21600300db2f083aa9fa6cc00f5b2e89c290408ef01",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-egg",
+    "fileName": "egg.png",
+    "sha256": "d3e4ce39c208530b0f3e6b90ba42df1fa9a7d6ba8e9624414e25ef6a5ebff1b5",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-elixir",
+    "fileName": "elixir.png",
+    "sha256": "af20c5544e832df25986d8b51836a183f069e5f142bd334cac67fbf0befa6064",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-eye-drops",
+    "fileName": "eye-drops.png",
+    "sha256": "c36a09fb25fbcaa6ccd582d6271074ff8a49e05c95831e949357d1b0110ab1a1",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-fang",
+    "fileName": "fang.png",
+    "sha256": "dbcfe4dbf9f069ad7519ec99bcba3b5503e63532a8505afddfbeeef2137894d3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-fire-bomb",
+    "fileName": "fire-bomb.png",
+    "sha256": "e1f04d77d4e5275b0035ef52e69d1fce7948e1a3fab2625a80f643da57d4676b",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-fish",
+    "fileName": "fish.png",
+    "sha256": "7bd7ba182a598bc4e70edbeaec55b4aa92175f56fa5e262dbfd7f7a0843bb706",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-fishing-rod",
+    "fileName": "fishing-rod.png",
+    "sha256": "b74f64c0da3ab0e5a95e852e5e23a6af3e2493146c5522200c53ca270508443a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-flute",
+    "fileName": "flute.png",
+    "sha256": "aa36908f1023654ffdc8aabee34ed0a459e31c7a2b1e0cd1f513b52e7dbb8acf",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-gear",
+    "fileName": "gear.png",
+    "sha256": "5881d537f33e9d995346588fc1f490e271a712dc6c9d8fa4e44fc799b683b888",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-gem-emerald",
+    "fileName": "gem-emerald.png",
+    "sha256": "c9494e1c411c8032ac4dc5732414abc79467db789fe09cb734bf5a3b40f1ab1a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-gem-ruby",
+    "fileName": "gem-ruby.png",
+    "sha256": "322abf55eae9b1c82382550e36fba9872780e2548c3166f2c94628f377ff52c6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-gem-sapphire",
+    "fileName": "gem-sapphire.png",
+    "sha256": "05d2cf3466b2cf36bfc76f4745252f61e4a7e65cdcfae8ce6b43f527c5dab45a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-gloves",
+    "fileName": "gloves.png",
+    "sha256": "bb93bd438f00b044db883d4af9d081f2fb3a3a5c1826c2c1c1bde8abdbc431ac",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-gold-bar",
+    "fileName": "gold-bar.png",
+    "sha256": "8875db5bcbdd2e5b7c318c1fc614d3a651a714cea26964084081e71f390d3533",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-herb-blue",
+    "fileName": "herb-blue.png",
+    "sha256": "ab282f07a9a231b2e97cc28a0fabf73d47a32f2766393409b3822c06ad401e4c",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-herb-green",
+    "fileName": "herb-green.png",
+    "sha256": "965f7a0578b6a4be6ecbb6e83ea1c89a6033b656d9dd58e0537eb547e99b65cb",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-hi-potion",
+    "fileName": "hi-potion.png",
+    "sha256": "16b0c6b503c5126fcf4d39f03b196c5443c93e57bfa238e8f05556c027176e1c",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-hide",
+    "fileName": "hide.png",
+    "sha256": "23aa469957af6dc719ddea0af0714cc44b33b442e7004309d55ffe675ad7fd65",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-hoe",
+    "fileName": "hoe.png",
+    "sha256": "8737cd237b0c4d9a01a38f749eca7e4685a145adbbd3dddb5a016ea9c3bbf958",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-holy-water",
+    "fileName": "holy-water.png",
+    "sha256": "da94d34209c11d1ba8d18ed0b1c83a22bfbab3115b714aa2be9626c379b9ed59",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-honey",
+    "fileName": "honey.png",
+    "sha256": "5c169c0df03509c97485eb255010ccc7b26ae0f913c9b8d50ce071500dc94c75",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-ice-shard",
+    "fileName": "ice-shard.png",
+    "sha256": "7e6bb357698893f53ae2c28b5d2cb8c407698facc77d3e799c2e3c895e590056",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-ink",
+    "fileName": "ink.png",
+    "sha256": "25cefe7c6450d8673858645be041e8ba6385fd897969fa13e8402b7ce085695b",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-iron-ore",
+    "fileName": "iron-ore.png",
+    "sha256": "e1b35e09fde59194ef4378f1db9de7b506009fd6dc1b5f04c99a1ee3cdcf89b4",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-lantern",
+    "fileName": "lantern.png",
+    "sha256": "ff7e9a0618c08420b56bfe69099fb4ba0af9bfa57af7232cdde2af314708d2fd",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-letter",
+    "fileName": "letter.png",
+    "sha256": "6cf455cd16775bef4000ff69fe0adc9e171d27d4e7aa2a21d5267cfb3740f0ba",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-lucky-charm",
+    "fileName": "lucky-charm.png",
+    "sha256": "77e3b8d75ad1430ec0723bbf2b0382354d7d73f38e634ab8344673b7775c0949",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-mana-tea",
+    "fileName": "mana-tea.png",
+    "sha256": "074d0967d683a2b8d0a20cbcdeb20950356000668859e65612da0982b3266493",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-map",
+    "fileName": "map.png",
+    "sha256": "c5f3fb49f2ff18dcf62548305bfeb542b68c17d32409bd67eee4c94470012b0d",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-meat",
+    "fileName": "meat.png",
+    "sha256": "995ff6872d769dad435ecb88ab525cdaabbda22c31d26da06c4cbcdf0ade73e3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-medal",
+    "fileName": "medal.png",
+    "sha256": "da0dea2067340b47585e1c476f603405a22fb5e3ff97f2fb4346476e1b50dcf6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-milk",
+    "fileName": "milk.png",
+    "sha256": "4bfcfd53bd3fff67519c05cd7be3638b8f1738fe215521b7b76bded9b05110bb",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-mirror",
+    "fileName": "mirror.png",
+    "sha256": "239d164467919dacc0155e1499f648a5b60c08a7d2a83ab94329dde043f163db",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-mushroom",
+    "fileName": "mushroom.png",
+    "sha256": "ca0bc610966d18f4378ca8159683e16bf79102c0b5bb2ff29aa0b53a3789fd16",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-mystic-cloth",
+    "fileName": "mystic-cloth.png",
+    "sha256": "4e7f9b64ae1460bc8d6e2109152c5929f3442e1804f8e25d34696099518c5ee3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-necklace",
+    "fileName": "necklace.png",
+    "sha256": "5b6fc66a6c2709d67786bfb8df4eed0e09f93c487f363e060b9f0e05ba00ffc9",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-net",
+    "fileName": "net.png",
+    "sha256": "c6b36b3b757f9247e0ad3b3d44d574b13f6bc1deea5a409ab27c64e92bd25ab3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-notebook",
+    "fileName": "notebook.png",
+    "sha256": "9bfedde56e110d6814cd20be2bb24463e63003fb1b678e5d41f7128bc9fc867c",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-oil",
+    "fileName": "oil.png",
+    "sha256": "54fa86f3ccd3f617d3cc94b2b93db1cfe3f7c40b9825a0ad46fcf1d9f39825ff",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-old-key",
+    "fileName": "old-key.png",
+    "sha256": "70825f5545444c57ca844cb3c2e75930c8dc723781c783d4168e704343903341",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-panacea",
+    "fileName": "panacea.png",
+    "sha256": "1b3c16e70b81c7ed8225f8afb2475cd88421147335b0f8729775c3b6e886c001",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-pass",
+    "fileName": "pass.png",
+    "sha256": "851d958e512f374995539cfa67044d0849573905545054466a56975658f78720",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-pearl",
+    "fileName": "pearl.png",
+    "sha256": "e9dfca9d30af12b4b4ce3b27cbd07d305d5feee492e2ee1ca4d919fe84f049b9",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-phoenix-down",
+    "fileName": "phoenix-down.png",
+    "sha256": "18c0c35f2f4d14abfe610905d0dc228334b827b59908c8fd920f84d4249dd44b",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-pickaxe",
+    "fileName": "pickaxe.png",
+    "sha256": "265a808976909364b43f31f74336005266aad76e6895f888bc7e435720375787",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-poison-vial",
+    "fileName": "poison-vial.png",
+    "sha256": "d8e63696f59124eb44d9fa3f7419b7a6a1cd82f8b90cf6b9c6e7d3707ee727a4",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-potato",
+    "fileName": "potato.png",
+    "sha256": "54325eef3b0849cc1df048d0ad5bec67f0e2c2043b4aff75317a72ac153f5a66",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-quill",
+    "fileName": "quill.png",
+    "sha256": "e31b2efc73578ac8cebc6fb76ac804511c0c6137897a76447fc2015114a999fd",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-radio",
+    "fileName": "radio.png",
+    "sha256": "e81f1c5faa098d03d0bcd0bff24a5aaa97a2ac03d0d893fceeb93591b4f954c3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-repair-kit",
+    "fileName": "repair-kit.png",
+    "sha256": "cbabe035294bc0d42eb41827d5f159cfd5ec704147e259a9b2fdfd71309d637a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-rice-ball",
+    "fileName": "rice-ball.png",
+    "sha256": "e92813b6e69c750012fc2ef262eb7ce8311fbf98f74f14c9521f9aeb9a2e99d6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-ring",
+    "fileName": "ring.png",
+    "sha256": "13764cb43add5388a9c4c4ec536a831c9890be9c4b0dc955b4d6fe2eb1d878e7",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-rope",
+    "fileName": "rope.png",
+    "sha256": "98625c5a64d72c17d0f0eaefeb42dff9450d6444a2809119edef0067af077d78",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-scale",
+    "fileName": "scale.png",
+    "sha256": "2d498219f5df046a1af9871e657ddc07fdfcc582d4ea71de1a42e9277f3a6f33",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-screw",
+    "fileName": "screw.png",
+    "sha256": "19415efe23c12ea9ecd97581320317097ea6fb2761a33e58b9b250bcb90f10e4",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-scroll",
+    "fileName": "scroll.png",
+    "sha256": "0ce264c4e1237b8c1aad9826ba35e2d9344f0afb73616ec3d722390e012bfbfe",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-seed-bag",
+    "fileName": "seed-bag.png",
+    "sha256": "38c5afe393c3b3c4f91deea4d623d4359613f9406a3bffc857ae4633d0e944b8",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-shell",
+    "fileName": "shell.png",
+    "sha256": "09033018d96a4f57cee50d25e984f97c74f7ea1e29492a6a7770a0b7c56736cc",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-sleeping-powder",
+    "fileName": "sleeping-powder.png",
+    "sha256": "059a395d9fcd1f928e961b4fc1623c7437705c8198899d9776cc97eef7b85922",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-smelling-salts",
+    "fileName": "smelling-salts.png",
+    "sha256": "dc731f5b27e432b8b4db085005cceb208b78bd75f6db61e4d8845f0fa3e4f59b",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-smoke-bomb",
+    "fileName": "smoke-bomb.png",
+    "sha256": "1a08594ad8d1018dfde325fe2c32619a7d662895c34cc60fb74e1b97f0a7d16a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-soap",
+    "fileName": "soap.png",
+    "sha256": "4e5752247c1190fa29066a070f106b78e3ad86aab9256a856bac8dd44ba62596",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-soup",
+    "fileName": "soup.png",
+    "sha256": "38e46a65216205af8be14371e74f522da924867c5e1eb153659f9864b3b5f5ef",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-stamina-drink",
+    "fileName": "stamina-drink.png",
+    "sha256": "b13cef957457f3d72084a29460ca436f761019748677a43dd7477facff4d912d",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-stew",
+    "fileName": "stew.png",
+    "sha256": "9961eea70706af5c95b0a5e4f0bf8c874e172081dd7d050c75dfb85595f9fcff",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-strawberry",
+    "fileName": "strawberry.png",
+    "sha256": "6f98d8302a1e167c8d4144fcfa55603200631624d13dfc63d4199c9ddba4811d",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-talisman",
+    "fileName": "talisman.png",
+    "sha256": "051e86dbbadb7be7af05c2f34acc59fda0a91a22f38a7101279960b4e1b204d9",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-tea",
+    "fileName": "tea.png",
+    "sha256": "dc6ea3c5bfd994f5ea7e1bdace6b79ce2f696e48ffad97253d291fb00803bac3",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-throwing-knife",
+    "fileName": "throwing-knife.png",
+    "sha256": "7f7c983819dca9ee0bab571787a87cd3c9a7cca8859739a59209b684e1e23a02",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-thunder-stone",
+    "fileName": "thunder-stone.png",
+    "sha256": "3b95eabbb0c5bc0e53c1317c8edb88d520aa4a70c2466d565140e6fc8ce7f47a",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-ticket",
+    "fileName": "ticket.png",
+    "sha256": "0a6ece9bdb70a73ac828d7a0a5086f7b56cdbea2f1abcca571539aa709c82257",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-tomato",
+    "fileName": "tomato.png",
+    "sha256": "7da436a0e93674e6fc252917c0bc2739c620295a55c09f45e9c07290cda3a9b6",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-torch",
+    "fileName": "torch.png",
+    "sha256": "b5cdb42b9b7bb172d24c5905afa3dc07eae523e8fd37e9883a3719b600431c39",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-trophy",
+    "fileName": "trophy.png",
+    "sha256": "3019405b7a0afe3685638cdec059fa7a1709477f8151e17e3b010813b30d0cb7",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-water-flask",
+    "fileName": "water-flask.png",
+    "sha256": "1f919ebd0991abe206cc73482243414603bc56d187ebbdabf683a774b2e06a60",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-watering-can",
+    "fileName": "watering-can.png",
+    "sha256": "ef50c753fdae93bb67e1116ee47cebc1fc337b8370de242ba6f46fdbd03b7d13",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-wind-feather",
+    "fileName": "wind-feather.png",
+    "sha256": "0f60cc25bf9c63557eef257a86b4dfe681e9fe4329217b755a9d8312c0eb8641",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-wine",
+    "fileName": "wine.png",
+    "sha256": "5d477d16a400ef4011bd0e5524278fedecd9119bdf6f0a3c4b1338189ab6c4f2",
+    "model": "google/gemini-2.5-flash-image"
+  },
+  {
+    "id": "cc0-jetrel-wood",
+    "fileName": "wood.png",
+    "sha256": "4288f691d807302d5ce296be978cdf809ab0e6d69126f1f65362ac03ba63b274",
+    "model": "google/gemini-2.5-flash-image"
+  }
+]

@@ -36,7 +36,7 @@ export function toolSequenceSolver(calls: readonly ToolCall[]): Solver {
 
 export interface LlmSolverOptions {
   readonly config: AiConfig;
-  // 테스트용 모킹 chat. 없으면 실제 OpenRouter 호출(chatCompletion).
+  // 테스트용 모킹 chat. 없으면 실제 chatCompletion(설정 baseUrl).
   readonly chat?: (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 }
 

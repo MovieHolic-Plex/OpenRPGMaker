@@ -89,14 +89,21 @@ export function renderResourceManager(container: HTMLElement): void {
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
-  fileInput.accept = "image/png,image/jpeg";
+  fileInput.accept = selectedResourceKind === "music" || selectedResourceKind === "sound"
+    ? "audio/wav,audio/mpeg,audio/ogg,.wav,.mp3,.ogg"
+    : "image/png,image/jpeg";
   fileInput.style.display = "none";
   fileInput.dataset.testid = "resource-file-input";
   fileInput.addEventListener("change", () => {
     const file = fileInput.files?.[0];
     if (!file) return;
-    selectedResourceKind = kindSel.value as ResourceKind;
-    importImageResource(file, selectedResourceKind, container);
+    // Category list owns selectedResourceKind (includes music/sound). kindSel is image-only.
+    const kind = selectedResourceKind;
+    if (kind === "music" || kind === "sound") {
+      importAudioResource(file, kind, container);
+    } else {
+      importImageResource(file, kind, container);
+    }
     fileInput.value = "";
   });
 
@@ -191,6 +198,46 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
     probe.src = dataUrl;
   };
   reader.onerror = () => toast("파일 읽기 실패", "error");
+  reader.readAsDataURL(file);
+}
+
+
+function importAudioResource(file: File, kind: ResourceKind, container: HTMLElement): void {
+  const maxBytes = 8 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    toast("파일이 너무 큽니다 (8MB 초과).", "error");
+    return;
+  }
+  const lower = file.name.toLowerCase();
+  if (!/\.(wav|mp3|ogg)$/i.test(lower)) {
+    toast("WAV/MP3/OGG 파일만 가져올 수 있습니다.", "error");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = String(reader.result ?? "");
+    if (!dataUrl.startsWith("data:audio/")) {
+      toast("오디오 데이터만 가져올 수 있습니다.", "error");
+      return;
+    }
+    const id = genId(kind === "music" ? "bgm" : "se");
+    const asset: UploadedAsset = {
+      id,
+      name: file.name.replace(/\.[^.]+$/, ""),
+      kind,
+      dataUrl,
+      meta: {},
+    };
+    store.update((project) => {
+      project.assets.uploaded[id] = asset;
+      if (!project.resourceProfiles.some((profile) => profile.assetId === id)) {
+        project.resourceProfiles.push({ kind, name: asset.name, assetId: id });
+      }
+    });
+    toast("오디오 가져오기 완료: " + asset.name, "ok");
+    renderResourceManager(container);
+  };
+  reader.onerror = () => toast("오디오 파일을 읽지 못했습니다.", "error");
   reader.readAsDataURL(file);
 }
 

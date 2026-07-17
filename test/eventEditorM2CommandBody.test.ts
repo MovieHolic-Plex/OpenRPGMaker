@@ -201,21 +201,30 @@ describe("event editor M2 command body", () => {
     expect(findByTestId(body, "m2-command-note-input")).toBeNull();
   });
 
-  it("renders modern long-form commands with text areas for author-friendly editing", () => {
-    const context = contextWithReplaceSpy(vi.fn());
+  it("routes Advanced Dialogue into the native text form (merged)", async () => {
+    // Advanced Dialogue is now existingKind:text — generic m2 body is not used.
+    const { m2CommandById } = await import("@/editor/eventCommands/m2Catalog");
+    const entry = m2CommandById("m2-209-advanced-dialogue");
+    expect(entry?.existingKind).toBe("text");
+    expect(entry?.bodyStrategy).toBe("existing");
+  });
 
-    const body = renderWithFakeDom(
-      () =>
-        renderM2CommandBody(context, {
-          kind: "m2Command",
-          commandId: "m2-209-advanced-dialogue",
-          fields: { speaker: "미나", portraitId: "face_mina", emotion: "happy", body: "오늘은 숲으로 가자.", autoAdvance: false },
-        }) ?? document.createElement("div")
+  it("explains Wait for All Movement intent for authors", () => {
+    const context = contextWithReplaceSpy(vi.fn());
+    const body = renderWithFakeDom(() =>
+      renderM2CommandBody(context, {
+        kind: "m2Command",
+        commandId: "m2-058-wait-for-all-movement",
+        fields: {},
+      }) ?? document.createElement("div")
     );
 
-    expect(findByTestId(body, "m2-command-body-textarea")?.tagName).toBe("TEXTAREA");
-    expect(findByTestId(body, "m2-command-emotion-option-select")?.tagName).toBe("SELECT");
-    expect(findByTestId(body, "m2-command-autoAdvance-checkbox")?.tagName).toBe("INPUT");
+    expect(findByTestId(body, "m2-command-intent-card")).not.toBeNull();
+    expect(findByTestId(body, "m2-command-intent-body")?.textContent).toContain("강제 이동");
+    expect(findByTestId(body, "m2-command-no-params")).not.toBeNull();
     expect(findByTestId(body, "m2-command-note-input")).toBeNull();
+    expect(body.textContent).toContain("대기 대상");
+    expect(body.textContent).not.toContain("필요한 값을 선택하고 확인을 누르세요");
   });
+
 });

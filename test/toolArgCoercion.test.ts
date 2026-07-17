@@ -106,7 +106,7 @@ describe("tool argument coercion", () => {
       y: 5,
       w: 4,
       h: 4,
-      wallVocabId: WALL_GROUP_ID,
+      material: "흰 집 벽",
     });
 
     expect(result.ok, result.summary).toBe(true);
@@ -123,7 +123,7 @@ describe("tool argument coercion", () => {
       y: 6,
       width: "5",
       height: "3",
-      wallVocabId: WALL_GROUP_ID,
+      material: "흰 집 벽",
     });
 
     expect(result.ok, result.summary).toBe(true);

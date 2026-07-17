@@ -63,7 +63,7 @@ export const BUILD_PALETTE_PRESETS: Record<PresetRole, string> = {
   path: `${P}dirt-road-autotile`,
   water: `${P}lake-water-autotile`,
   tree: `${P}conifer-tree`,
-  prop: `${P}small-props`,
+  prop: `${P}flower-props`,
 };
 
 export const HOUSE_SHAPE_PRESETS: readonly BuildHouseShapePreset[] = [
@@ -75,6 +75,8 @@ export const HOUSE_SHAPE_PRESETS: readonly BuildHouseShapePreset[] = [
 export const HOUSE_KIT_CARDS: readonly BuildHouseKitCard[] = [
   { id: "blue-stone", name: "파랑 지붕+석벽" },
   { id: "bright-plaster", name: "밝은 오렌지 지붕+흰 회벽" },
+  { id: "amber-wood", name: "오렌지 지붕+통나무" },
+  { id: "slate-wood", name: "파랑 지붕+통나무" },
 ];
 
 export const DEFAULT_HOUSE_SHAPE_ID: BuildHouseShapeId = "rect";
@@ -95,7 +97,7 @@ const PRESET_CLAIMS: Record<PresetRole, PresetClaim> = {
   path: { name: "흙길", role: "terrain", layerHome: "lower", patternKind: "autotile_3x3" },
   water: { name: "물", role: "water", layerHome: "lower" },
   tree: { name: "침엽수", role: "prop", layerHome: "perCell", patternKind: "vertical_expandable" },
-  prop: { name: "마을 소품", role: "prop", layerHome: "upper" },
+  prop: { name: "꽃", role: "prop", layerHome: "upper" },
 };
 
 export function applyBuildPalettePrimitive(selection: BuildPaletteSelection, primitive: BuildPalettePrimitive, options: BuildPaletteApplyOptions = {}): BuildPaletteResult {
@@ -140,7 +142,7 @@ export function applyBuildPalettePrimitiveToProject(
   else if (primitive === "river") ok = fillRoleTile(ctx.project, rect, "water");
   else if (primitive === "roof") ok = fillRoof(ctx.project, rect);
   else if (primitive === "tree") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "침엽수", count: countForArea(rect, 6), naturalness: 0.55, seed: seedFor(rect, "tree") });
-  else if (primitive === "prop") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "마을 소품", count: countForArea(rect, 10), naturalness: 0.45, seed: seedFor(rect, "prop") });
+  else if (primitive === "prop") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "꽃", count: countForArea(rect, 10), naturalness: 0.45, seed: seedFor(rect, "prop") });
   else if (primitive === "npc") ok = run("place_npc", { mapId: rect.mapId, x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2), name: "주민", pages: [{ lines: ["안녕하세요."] }] });
 
   const failed = toolResults.find((result) => !result.ok);

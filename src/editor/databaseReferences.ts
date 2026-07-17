@@ -170,6 +170,8 @@ function commandReferencesCommonEvent(command: Command, id: string): boolean {
       return commandListReferencesCommonEvent(command.body, id);
     case "shop":
       return commandListReferencesCommonEvent(command.transactionBranch ?? [], id);
+    case "inn":
+      return commandListReferencesCommonEvent(command.notEnoughBranch ?? [], id);
     default:
       return false;
   }

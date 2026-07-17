@@ -410,7 +410,7 @@ describe("구 v2 배치 제거 + v3 정공법 (스택 단순화)", () => {
     }
   });
 
-  it("DEFAULT_MODEL은 minimax/minimax-m3다 (v3 설계 축 7)", () => {
-    expect(DEFAULT_MODEL).toBe("minimax/minimax-m3");
+  it("DEFAULT_MODEL은 flash-lite 단일 경로다 (영역 작업 실측: MiniMax 이원화 기본 해제)", () => {
+    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
   });
 });

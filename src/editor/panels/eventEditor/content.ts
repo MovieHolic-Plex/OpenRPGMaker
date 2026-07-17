@@ -16,6 +16,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventAiAssist } from "./aiAssist";
+import { auxCompositeKey, getAuxOpen, setAuxOpen } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
@@ -24,12 +25,14 @@ import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   renderClassicPageTabStrip,
+  renderEventCharacterIdField,
   renderEventNameControl,
   renderEventPageProps,
   renderPageCommandCatalog,
   renderPageTabs,
 } from "./pageProps";
 import type { CommandListActions } from "./types";
+import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
 
 export function renderEventEditorContent(container: HTMLElement, mapId: MapId, eventId: string): void {
   renderEventEditorDynamic(container, mapId, eventId);
@@ -138,7 +141,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // (set_npc_schedule / make_villager 툴·project JSON 으로만 유지).
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
-    children: [renderEventPageProps(mapId, ev.id, activePage)],
+    children: [renderEventCharacterIdField(mapId, ev), renderEventPageProps(mapId, ev.id, activePage, ev)],
   });
   settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage), settingsMain);
   commandsColumn.append(
@@ -147,19 +150,25 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       dataset: { testid: "event-classic-contents" },
       children: [
         el("legend", { class: "event-contents-legend", text: "실행 내용" }),
-        renderCommandToolbar(cmdList, actions, commandHistory),
+        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
         cmdList,
       ],
     }),
     // 하단 보조 도구: AI / 미리보기 / 플로우 — 접힘 시 한 줄 칩, 실행 내용 높이 우선.
-    el("div", {
-      class: "event-editor-aux-tools",
-      dataset: { testid: "event-editor-aux-tools" },
-      children: [
-        renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
-        renderEventScriptModernViews(activePage),
-      ],
-    })
+    // 배타 아코디언: 세 패널 마운트 후 open 상태 재적용(호스트 전부 bind 이후).
+    (() => {
+      const auxTools = el("div", {
+        class: "event-editor-aux-tools",
+        dataset: { testid: "event-editor-aux-tools" },
+        children: [
+          renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
+          renderEventScriptModernViews({ mapId, eventId: ev.id, page: activePage }),
+        ],
+      });
+      const auxKey = auxCompositeKey(mapId, ev.id, activePage.id);
+      setAuxOpen(auxKey, getAuxOpen(auxKey));
+      return auxTools;
+    })()
   );
 
   const workbench = el("div", {
@@ -222,7 +231,10 @@ function activePageIdOf(mapId: MapId, eventId: string): string | null {
 function renderCommandToolbar(
   cmdList: HTMLElement,
   actions: CommandListActions,
-  commandHistory: CommandToolbarHistory
+  commandHistory: CommandToolbarHistory,
+  mapId: MapId,
+  eventId: string,
+  page: EventPage
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected");
@@ -264,6 +276,14 @@ function renderCommandToolbar(
           ),
         false,
         true
+      ),
+      toolbarButton(
+        "몬",
+        "필드 몬스터 템플릿 (전투→승리 소거)",
+        "event-command-toolbar-field-monster",
+        () => openFieldMonsterTemplateDialog(mapId, eventId, page),
+        false,
+        false
       ),
     ],
   });

@@ -1,11 +1,12 @@
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import type { Dir, EventPageGraphic, GameMap, Project } from "@/project/types";
-import type { PlaySession, RuntimeFollower } from "@/project/session";
+import type { Dir, EventPageGraphic, GameMap, MonsterSpeciesGraphic, Project } from "@/project/types";
+import type { MonsterInstance, PlaySession, RuntimeFollower } from "@/project/session";
 import { defaultActorCharacterResourceId } from "@/project/actorModel";
 import { inBounds } from "@/project/collision";
 
 const MAX_TRAIL_POINTS = 64;
+const DEFAULT_MONSTER_FIELD_CHARSET = "tex_easyrpg_charset_monster1";
 
 export function addFollowerToSession(
   project: Project,
@@ -14,10 +15,13 @@ export function addFollowerToSession(
 ): RuntimeFollower | null {
   const follower = followerFromInput(project, input);
   if (!follower) return null;
-  session.followers = [
-    ...(session.followers ?? []).filter((entry) => entry.name !== follower.name),
-    follower,
-  ];
+  const actorFollowers = (session.followers ?? []).filter(
+    (entry) => entry.kind !== "monster" && !entry.monsterInstanceId && entry.name !== follower.name
+  );
+  const monsterFollowers = (session.followers ?? []).filter(
+    (entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId)
+  );
+  session.followers = [...actorFollowers, follower, ...monsterFollowers];
   if (!session.followerTrail || session.followerTrail.length === 0) {
     resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId]);
   }
@@ -29,16 +33,55 @@ export function removeFollowerFromSession(
   input: { readonly name?: string; readonly all?: boolean }
 ): number {
   const current = session.followers ?? [];
+  const isMonsterFollower = (entry: RuntimeFollower): boolean =>
+    entry.kind === "monster" || Boolean(entry.monsterInstanceId);
+
   if (input.all === true || !input.name) {
-    const removed = current.length;
-    session.followers = [];
-    session.followerTrail = [];
-    return removed;
+    const actorEntries = current.filter((entry) => !isMonsterFollower(entry));
+    const monsterEntries = current.filter(isMonsterFollower);
+    session.followers = monsterEntries;
+    if (monsterEntries.length === 0) session.followerTrail = [];
+    return actorEntries.length;
   }
-  const next = current.filter((entry) => entry.name !== input.name);
+
+  // Name-based removal targets actor followers only; monster train is SSOT from monsterParty.
+  const next = current.filter((entry) => isMonsterFollower(entry) || entry.name !== input.name);
+  const removed = current.length - next.length;
   session.followers = next;
   if (next.length === 0) session.followerTrail = [];
-  return current.length - next.length;
+  return removed;
+}
+
+/**
+ * Rebuild monster train followers from session.monsterParty order.
+ * Actor followers (kind !== "monster" and no monsterInstanceId) are preserved first.
+ */
+export function syncMonsterPartyFollowers(project: Project, session: PlaySession): void {
+  const current = session.followers ?? [];
+  const actorFollowers = current.filter(
+    (entry) => entry.kind !== "monster" && !entry.monsterInstanceId
+  );
+  const monsterFollowers: RuntimeFollower[] = [];
+  for (const instanceId of session.monsterParty ?? []) {
+    const instance = session.monsterInstances?.[instanceId];
+    if (!instance) continue;
+    const species = (project.database.monsterSpecies ?? []).find((record) => record.id === instance.speciesId);
+    monsterFollowers.push({
+      name: monsterFollowerName(instance, species?.name),
+      graphic: monsterFieldGraphic(species?.graphic),
+      kind: "monster",
+      monsterInstanceId: instance.instanceId,
+    });
+  }
+  const hadFollowers = current.length > 0;
+  session.followers = [...actorFollowers, ...monsterFollowers];
+  if (session.followers.length === 0) {
+    session.followerTrail = [];
+    return;
+  }
+  if (!hadFollowers || !session.followerTrail || session.followerTrail.length === 0) {
+    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId]);
+  }
 }
 
 export function recordFollowerPlayerStep(
@@ -98,22 +141,41 @@ function followerFromInput(
       eventId: input.actorId,
       graphic,
       name: input.name?.trim() || actor?.name || input.actorId,
+      kind: "actor",
     };
   }
   if (!input.graphic) return null;
   return {
     graphic: input.graphic,
     name: input.name?.trim() || input.graphic.sprite?.id || "동행자",
+    kind: "actor",
   };
 }
 
 function actorFollowerGraphic(resourceId: string): EventPageGraphic | undefined {
   const asset = CHARSET_ASSETS.find((entry) => entry.id === resourceId || entry.textureKey === resourceId);
   const textureKey = asset?.textureKey ?? resourceId;
+  return charsetFollowerGraphic(textureKey, 0);
+}
+
+function monsterFollowerName(instance: MonsterInstance, speciesName: string | undefined): string {
+  return instance.nickname?.trim() || speciesName?.trim() || instance.instanceId;
+}
+
+function monsterFieldGraphic(graphic: MonsterSpeciesGraphic | undefined): EventPageGraphic {
+  if (graphic?.fieldGraphic?.sprite?.id) return graphic.fieldGraphic;
+  const fieldCharsetId = graphic?.fieldCharsetId?.trim();
+  if (fieldCharsetId) return charsetFollowerGraphic(fieldCharsetId, 0);
+  return charsetFollowerGraphic(DEFAULT_MONSTER_FIELD_CHARSET, 0);
+}
+
+function charsetFollowerGraphic(textureKey: string, characterIndex: number): EventPageGraphic {
+  const asset = CHARSET_ASSETS.find((entry) => entry.id === textureKey || entry.textureKey === textureKey);
+  const resolved = asset?.textureKey ?? textureKey;
   return {
-    sprite: { type: "bundled", id: textureKey },
+    sprite: { type: "bundled", id: resolved },
     direction: "down",
-    pattern: charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 }),
+    pattern: charsetFrameIndex({ characterIndex, direction: "down", pattern: 1 }),
   };
 }
 

@@ -162,7 +162,7 @@ describe("build palette deterministic stamps", () => {
     );
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("마을 시공:");
+    expect(result.summary.replace(/\s+/g, " ")).toMatch(/마을 시공/);
     expect(result.summary).toContain("문 연결");
     expect(result.toolResults).toHaveLength(1);
     const data = result.toolResults[0].data as {

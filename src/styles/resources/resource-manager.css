@@ -424,3 +424,19 @@
     flex-direction: column;
   }
 }
+
+
+.rm-profile-audio-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--accent, #6ea8fe) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8fe) 45%, var(--border-subtle, #333));
+  border-radius: 6px;
+  color: var(--text-1, #eee);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 8px;
+  min-width: 48px;
+  padding: 4px 6px;
+  justify-content: center;
+}

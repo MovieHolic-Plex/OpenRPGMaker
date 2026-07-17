@@ -61,10 +61,10 @@ describe("RPG Maker style event editor entry points", () => {
   });
 
   afterEach(() => {
+    document.querySelector<HTMLElement>('[data-testid="event-list-tooltip"]')?.remove();
     document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]')?.remove();
     _resetEventDraftVaultForTest();
     restoreFakeDom();
-    vi.unstubAllGlobals();
   });
 
   it("exposes the sidebar launcher and modal editor entry points", () => {
@@ -125,6 +125,15 @@ describe("RPG Maker style event editor entry points", () => {
     expect(sidebar.querySelector(".event-list-name")?.textContent).toBe("마을 상인");
     expect(sidebar.querySelector(".event-editor-launch-title")?.textContent).toBe("마을 상인");
     expect(sidebar.querySelector(".event-list-meta")?.textContent).toBe("2,3 · 1p");
+    const row = sidebar.querySelector<HTMLElement>('[data-testid="event-list-row-event-1"]');
+    // Custom hover panel is enough — native browser title tooltip must stay off.
+    expect(row?.getAttribute("title")).toBeNull();
+    row?.dispatchEvent(new Event("pointerenter"));
+    const tip = document.querySelector('[data-testid="event-list-tooltip"]');
+    expect(tip).not.toBeNull();
+    expect(tip?.textContent).toContain("마을 상인");
+    expect(tip?.textContent).toContain("페이지 1");
+    expect(tip?.textContent).toContain("Hello");
   });
 
   it("exposes classic ontology-aligned shell markers for a populated event page", () => {
@@ -141,8 +150,11 @@ describe("RPG Maker style event editor entry points", () => {
     const requiredShellMarkers = [
       "event-classic-name",
       "event-classic-page-controls",
+      "event-character-id-field",
       "event-classic-conditions",
       "event-classic-graphic",
+      "event-classic-movement-section",
+      // Nested under movement-section (still present in DOM when closed).
       "event-classic-movement-type",
       "event-classic-trigger",
       "event-classic-animation-type",
@@ -152,6 +164,9 @@ describe("RPG Maker style event editor entry points", () => {
     for (const testId of requiredShellMarkers) {
       expect(content.querySelector(`[data-testid="${testId}"]`), testId).not.toBeNull();
     }
+    // Disposition B: no bottom-left/right panes.
+    expect(content.querySelector('[data-testid="event-page-bottom-left"]')).toBeNull();
+    expect(content.querySelector('[data-testid="event-page-bottom-right"]')).toBeNull();
   });
 
   it("renders the classic page toolbar with icons and a left-attached page tab strip", () => {

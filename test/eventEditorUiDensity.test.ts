@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
+import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
@@ -42,10 +43,21 @@ function baseEvent(overrides: Partial<GameEvent> = {}): GameEvent {
   };
 }
 
+function expandDetails(section: HTMLDetailsElement | null): void {
+  if (!section) throw new Error("expected details section");
+  const summary = section.querySelector("summary");
+  if (!summary) throw new Error("expected summary");
+  // happy-dom: toggling open + dispatching toggle keeps module open-state in sync.
+  section.open = true;
+  section.dispatchEvent(new Event("toggle"));
+}
+
 describe("event editor UI density", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
+    openEventConditions.clear();
+    openEventMovement.clear();
     const project = createBlankProject();
     const mapId = project.startMapId;
     project.maps[mapId]!.events = [baseEvent()];
@@ -57,6 +69,8 @@ describe("event editor UI density", () => {
 
   afterEach(() => {
     host.remove();
+    openEventConditions.clear();
+    openEventMovement.clear();
   });
 
   it("uses Korean name label and hides disabled page actions", () => {
@@ -78,15 +92,31 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-schedule-json"]')).toBeNull();
   });
 
-  it("keeps conditions expanded and groups command toolbar in contents header", () => {
+  it("defaults conditions and movement closed, keeps trigger visible, groups command toolbar", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
-    expect(conditions?.open).toBe(true);
+    expect(conditions?.open).toBe(false);
     expect(conditions?.textContent).toContain("항상");
-    // 이동/애니메이션/속도는 RM 계약상 항상 노출
-    expect(host.querySelector('[data-testid="event-classic-movement-type"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-classic-animation-type"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-classic-movement-speed"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-condition-summary-empty"]')?.textContent).toBe("항상");
+
+    const movement = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-movement-section"]');
+    expect(movement?.open).toBe(false);
+    // Nested movement controls exist in DOM but are not always-visible chrome.
+    expect(host.querySelector('[data-testid="event-classic-graphic"]')).toBeTruthy();
+
+    // P0: trigger lives outside the closed movement section and is always visible.
+    const triggerSelect = host.querySelector('[data-testid="event-page-trigger-select"]');
+    const classicTrigger = host.querySelector('[data-testid="event-classic-trigger"]');
+    expect(triggerSelect).toBeTruthy();
+    expect(classicTrigger).toBeTruthy();
+    expect(movement?.contains(triggerSelect)).toBe(false);
+    expect(movement?.contains(classicTrigger)).toBe(false);
+    expect(host.querySelector('[data-testid="event-page-trigger-priority-stack"]')).toBeTruthy();
+
+    // Empty characterId collapses to connect CTA (no friendship-requires gate).
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
     const contents = host.querySelector('[data-testid="event-classic-contents"]');
     expect(contents?.querySelector(".event-editor-command-toolbar")).toBeTruthy();
@@ -95,7 +125,7 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-editor-aux-tools"]')).toBeTruthy();
   });
 
-  it("shows active condition count meta", () => {
+  it("shows active condition badges with switch id/ON-OFF, expands conditions on demand", () => {
     const project = store.getCurrent();
     project.maps[project.startMapId]!.events = [
       baseEvent({
@@ -110,7 +140,40 @@ describe("event editor UI density", () => {
 
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
+    expect(conditions?.open).toBe(false);
+    expect(conditions?.textContent).not.toContain("1개 활성");
+    expect(host.querySelector('[data-testid="event-condition-summary-badges"]')).toBeTruthy();
+
+    const badgeText = host.querySelector('[data-testid="event-condition-badge"]')?.textContent ?? "";
+    // Hostile UX: badge is not bare "스위치"; it carries id-ish token and ON/OFF.
+    expect(badgeText).not.toBe("스위치");
+    expect(badgeText).toMatch(/ON|OFF/);
+    expect(badgeText.length).toBeGreaterThan("스위치".length);
+
+    expandDetails(conditions);
     expect(conditions?.open).toBe(true);
-    expect(conditions?.textContent).toContain("1개 활성");
+    // expand-then-assert: condition grid controls become available
+    expect(host.querySelector('[data-testid="event-page-switch-condition-input"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-page-condition-add-toolbar"]')).toBeTruthy();
+  });
+
+  it("expands movement section for nested movement controls without burying trigger", () => {
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    const movement = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-movement-section"]');
+    expect(movement?.open).toBe(false);
+
+    // Trigger is already outside movement before expand.
+    expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
+    expect(movement?.querySelector('[data-testid="event-page-trigger-select"]')).toBeNull();
+    expect(movement?.querySelector('[data-testid="event-classic-trigger"]')).toBeNull();
+
+    expandDetails(movement);
+    expect(movement?.open).toBe(true);
+    expect(host.querySelector('[data-testid="event-classic-movement-type"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-classic-animation-type"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-classic-movement-speed"]')).toBeTruthy();
+    // Still outside the movement section after expand.
+    expect(movement?.querySelector('[data-testid="event-classic-trigger"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-classic-trigger"]')).toBeTruthy();
   });
 });

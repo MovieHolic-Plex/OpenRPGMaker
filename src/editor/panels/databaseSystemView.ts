@@ -22,12 +22,15 @@ import {
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { ActorRecord, BattleFlow, BattleUiStyle, TypeChartRecord } from "@/project/types";
+import type { ActorRecord, BattleFlow, BattleUiStyle, Project, TitleScreenSettings, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { listTitleMenuOptions } from "@/player/titleScreen";
 
 const START_PARTY_SLOTS = 4;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const BATTLE_UI_STYLE_OPTIONS = ["classic", "pokemon"] as const satisfies readonly BattleUiStyle[];
+const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
 
 export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
   const project = store.getCurrent();
@@ -168,53 +171,21 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
     timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender),
     typeChartFieldset(project.system.typeChart, rerender),
     rm2k3Fieldset("게임 시작화면", [
-      textControl("게임 타이틀", titleScreen.title, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.title = value;
-        }, "system:title-screen:title");
-      }, "db-field-title-screen-title"),
-      textControl("배경 리소스", titleBackgroundResourceId ?? "", (value) => {
-        const resourceId = emptyToUndefined(value);
-        updateSystem((draft) => {
-          draft.system.titleScreen ??= defaultTitleScreenSettings();
-          draft.system.titleScreen.backgroundResourceId = resourceId;
-        }, "system:title-screen:background");
-      }, "db-field-title-screen-background"),
-      numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.layout.titleX = clampStageCoordinate(value, 320);
-        }, "system:title-screen:title-x");
+      el("div", {
+        class: "db-title-workbench",
+        dataset: { testid: "db-title-workbench" },
+        children: [
+          el("div", {
+            class: "db-title-workbench-fields",
+            children: [
+              titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
+              titleScreenAudioFieldset(titleScreen, rerender),
+              titleScreenMenuFieldset(titleScreen, rerender),
+            ],
+          }),
+          titleScreenWorkbenchPreview(project, titleScreen, titleBackgroundResourceId),
+        ],
       }),
-      numberField("타이틀 Y", "db-field-title-screen-title-y", titleScreen.layout.titleY, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.layout.titleY = clampStageCoordinate(value, 240);
-        }, "system:title-screen:title-y");
-      }),
-      numberField("선택지 X", "db-field-title-screen-menu-x", titleScreen.layout.menuX, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.layout.menuX = clampStageCoordinate(value, 320);
-        }, "system:title-screen:menu-x");
-      }),
-      numberField("선택지 Y", "db-field-title-screen-menu-y", titleScreen.layout.menuY, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.layout.menuY = clampStageCoordinate(value, 240);
-        }, "system:title-screen:menu-y");
-      }),
-      textControl("선택지 1", titleScreen.menuLabels.newGame, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.menuLabels.newGame = value;
-        }, "system:title-screen:menu-new-game");
-      }, "db-field-title-screen-new-game"),
-      textControl("선택지 2", titleScreen.menuLabels.continueGame, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.menuLabels.continueGame = value;
-        }, "system:title-screen:menu-continue");
-      }, "db-field-title-screen-continue"),
-      textControl("선택지 3", titleScreen.menuLabels.quit, (value) => {
-        updateTitleScreen((titleScreenSettings) => {
-          titleScreenSettings.menuLabels.quit = value;
-        }, "system:title-screen:menu-quit");
-      }, "db-field-title-screen-quit"),
     ]),
     rm2k3Fieldset("그래픽 미리보기", [
       systemPreviewWell("타이틀", project.system.titleResourceId),
@@ -490,6 +461,460 @@ function systemPreviewWell(label: string, resourceId: string | undefined): HTMLE
       el("span", { class: "db-system-preview-label", text: label }),
       el("div", { class: "db-system-preview-frame", children: [preview] }),
       el("code", { text: resourceId ?? "(없음)" }),
+    ],
+  });
+}
+
+function titleScreenDisplayFieldset(
+  titleScreen: TitleScreenSettings,
+  titleBackgroundResourceId: string | undefined,
+  systemTitleResourceId: string | undefined,
+  rerender: () => void,
+): HTMLElement {
+  const presentationMode = titleScreen.titleGraphic?.mode ?? "text";
+  const showLogoFields = presentationMode === "graphic" || presentationMode === "both";
+  const children: HTMLElement[] = [
+    textControl("게임 타이틀", titleScreen.title, (value) => {
+      updateTitleScreen((settings) => {
+        settings.title = value;
+      }, "system:title-screen:title");
+      rerender();
+    }, "db-field-title-screen-title"),
+    selectLiteral(
+      "타이틀 표시 방식",
+      "db-field-title-screen-presentation",
+      presentationMode,
+      TITLE_PRESENTATION_MODES,
+      (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleGraphic(settings, { mode: value });
+        });
+        rerender();
+      },
+    ),
+  ];
+
+  if (showLogoFields) {
+    children.push(
+      resourcePickerControl({
+        label: "타이틀 로고",
+        resourceId: titleScreen.titleGraphic?.resourceId,
+        kind: "title",
+        testid: "db-field-title-screen-logo",
+        allowClear: true,
+        dialogTitle: "타이틀 로고",
+        onChange: (result) => {
+          updateTitleScreen((settings) => {
+            patchTitleGraphic(settings, { resourceId: emptyToUndefined(result.resourceId) });
+          }, "system:title-screen:logo");
+        },
+        rerender,
+      }),
+      numberField("로고 X", "db-field-title-screen-logo-x", titleScreen.titleGraphic?.x ?? titleScreen.layout.titleX, (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleGraphic(settings, { x: clampStageCoordinate(value, 320) });
+        }, "system:title-screen:logo-x");
+        rerender();
+      }),
+      numberField("로고 Y", "db-field-title-screen-logo-y", titleScreen.titleGraphic?.y ?? titleScreen.layout.titleY, (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleGraphic(settings, { y: clampStageCoordinate(value, 240) });
+        }, "system:title-screen:logo-y");
+        rerender();
+      }),
+    );
+  }
+
+  children.push(
+    resourcePickerControl({
+      label: "배경 리소스",
+      resourceId: titleBackgroundResourceId,
+      kind: "title",
+      testid: "db-field-title-screen-background",
+      allowClear: true,
+      dialogTitle: "타이틀 배경",
+      onChange: (result) => {
+        // Background writes only touch titleScreen.backgroundResourceId — never clear system.titleResourceId.
+        updateTitleScreen((settings) => {
+          settings.backgroundResourceId = emptyToUndefined(result.resourceId);
+        }, "system:title-screen:background");
+      },
+      rerender,
+    }),
+    el("code", {
+      class: "db-title-workbench-system-title-id",
+      text: `system.titleResourceId: ${systemTitleResourceId ?? "(없음)"}`,
+      dataset: { testid: "db-title-workbench-system-title-id" },
+    }),
+    numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {
+      updateTitleScreen((settings) => {
+        settings.layout.titleX = clampStageCoordinate(value, 320);
+      }, "system:title-screen:title-x");
+      rerender();
+    }),
+    numberField("타이틀 Y", "db-field-title-screen-title-y", titleScreen.layout.titleY, (value) => {
+      updateTitleScreen((settings) => {
+        settings.layout.titleY = clampStageCoordinate(value, 240);
+      }, "system:title-screen:title-y");
+      rerender();
+    }),
+    numberField("선택지 X", "db-field-title-screen-menu-x", titleScreen.layout.menuX, (value) => {
+      updateTitleScreen((settings) => {
+        settings.layout.menuX = clampStageCoordinate(value, 320);
+      }, "system:title-screen:menu-x");
+      rerender();
+    }),
+    numberField("선택지 Y", "db-field-title-screen-menu-y", titleScreen.layout.menuY, (value) => {
+      updateTitleScreen((settings) => {
+        settings.layout.menuY = clampStageCoordinate(value, 240);
+      }, "system:title-screen:menu-y");
+      rerender();
+    }),
+    checkboxField("조작 힌트 표시", "db-field-title-screen-show-input-hint", titleScreen.showInputHint !== false, (checked) => {
+      updateTitleScreen((settings) => {
+        settings.showInputHint = checked;
+      });
+      rerender();
+    }),
+  );
+
+  return el("fieldset", {
+    class: "rm2k3-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-workbench-display" },
+    children: [el("legend", { text: "표시" }), ...children],
+  });
+}
+
+function titleScreenAudioFieldset(titleScreen: TitleScreenSettings, rerender: () => void): HTMLElement {
+  return el("fieldset", {
+    class: "rm2k3-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-workbench-audio" },
+    children: [
+      el("legend", { text: "오디오" }),
+      resourcePickerControl({
+        label: "타이틀 BGM",
+        resourceId: titleScreen.musicResourceId,
+        kind: "music",
+        testid: "db-field-title-screen-music",
+        allowClear: true,
+        dialogTitle: "타이틀 BGM",
+        onChange: (result) => {
+          updateTitleScreen((settings) => {
+            settings.musicResourceId = emptyToUndefined(result.resourceId);
+          }, "system:title-screen:music");
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "커서 SE",
+        resourceId: titleScreen.sounds?.cursorSeResourceId,
+        kind: "sound",
+        testid: "db-field-title-screen-se-cursor",
+        allowClear: true,
+        dialogTitle: "타이틀 커서 SE",
+        onChange: (result) => {
+          updateTitleScreen((settings) => {
+            patchTitleSounds(settings, { cursorSeResourceId: emptyToUndefined(result.resourceId) });
+          }, "system:title-screen:se-cursor");
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "결정 SE",
+        resourceId: titleScreen.sounds?.confirmSeResourceId,
+        kind: "sound",
+        testid: "db-field-title-screen-se-confirm",
+        allowClear: true,
+        dialogTitle: "타이틀 결정 SE",
+        onChange: (result) => {
+          updateTitleScreen((settings) => {
+            patchTitleSounds(settings, { confirmSeResourceId: emptyToUndefined(result.resourceId) });
+          }, "system:title-screen:se-confirm");
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "취소 SE",
+        resourceId: titleScreen.sounds?.cancelSeResourceId,
+        kind: "sound",
+        testid: "db-field-title-screen-se-cancel",
+        allowClear: true,
+        dialogTitle: "타이틀 취소 SE",
+        onChange: (result) => {
+          updateTitleScreen((settings) => {
+            patchTitleSounds(settings, { cancelSeResourceId: emptyToUndefined(result.resourceId) });
+          }, "system:title-screen:se-cancel");
+        },
+        rerender,
+      }),
+    ],
+  });
+}
+
+function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () => void): HTMLElement {
+  const visibility = titleScreen.menuVisibility ?? {
+    newGame: true,
+    continueGame: true,
+    quit: true,
+  };
+  return el("fieldset", {
+    class: "rm2k3-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-workbench-menu" },
+    children: [
+      el("legend", { text: "메뉴" }),
+      el("div", {
+        class: "db-title-menu-option-row",
+        dataset: { testid: "db-title-menu-option-new-game" },
+        children: [
+          textControl("새 게임", titleScreen.menuLabels.newGame, (value) => {
+            updateTitleScreen((settings) => {
+              settings.menuLabels.newGame = value;
+            }, "system:title-screen:menu-new-game");
+            rerender();
+          }, "db-field-title-screen-new-game"),
+          lockedCheckboxField("표시", "db-field-title-screen-visible-new-game", true),
+        ],
+      }),
+      el("div", {
+        class: "db-title-menu-option-row",
+        dataset: { testid: "db-title-menu-option-continue" },
+        children: [
+          textControl("이어 하기", titleScreen.menuLabels.continueGame, (value) => {
+            updateTitleScreen((settings) => {
+              settings.menuLabels.continueGame = value;
+            }, "system:title-screen:menu-continue");
+            rerender();
+          }, "db-field-title-screen-continue"),
+          checkboxField("표시", "db-field-title-screen-visible-continue", visibility.continueGame !== false, (checked) => {
+            updateTitleScreen((settings) => {
+              settings.menuVisibility = {
+                newGame: true,
+                continueGame: checked,
+                quit: settings.menuVisibility?.quit !== false,
+              };
+            });
+            rerender();
+          }),
+        ],
+      }),
+      el("div", {
+        class: "db-title-menu-option-row",
+        dataset: { testid: "db-title-menu-option-quit" },
+        children: [
+          textControl("종료", titleScreen.menuLabels.quit, (value) => {
+            updateTitleScreen((settings) => {
+              settings.menuLabels.quit = value;
+            }, "system:title-screen:menu-quit");
+            rerender();
+          }, "db-field-title-screen-quit"),
+          checkboxField("표시", "db-field-title-screen-visible-quit", visibility.quit !== false, (checked) => {
+            updateTitleScreen((settings) => {
+              settings.menuVisibility = {
+                newGame: true,
+                continueGame: settings.menuVisibility?.continueGame !== false,
+                quit: checked,
+              };
+            });
+            rerender();
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+function lockedCheckboxField(label: string, testid: string, checked: boolean): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "checkbox", disabled: "true", ...(checked ? { checked: "true" } : {}) },
+    dataset: { testid },
+  }) as HTMLInputElement;
+  input.checked = checked;
+  input.disabled = true;
+  return el("label", { class: "db-field db-field-locked", children: [el("span", { text: label }), input] });
+}
+
+function patchTitleGraphic(
+  settings: TitleScreenSettings,
+  patch: {
+    readonly mode?: TitleScreenTitleMode;
+    readonly resourceId?: string | undefined;
+    readonly x?: number;
+    readonly y?: number;
+  },
+): void {
+  const current = settings.titleGraphic;
+  const mode = patch.mode ?? current?.mode ?? "text";
+  const resourceId = patch.resourceId !== undefined ? patch.resourceId : current?.resourceId;
+  const x = patch.x ?? current?.x ?? settings.layout.titleX;
+  const y = patch.y ?? current?.y ?? settings.layout.titleY;
+  if (mode === "text" && !resourceId) {
+    delete settings.titleGraphic;
+    return;
+  }
+  settings.titleGraphic = {
+    mode,
+    ...(resourceId ? { resourceId } : {}),
+    x: clampStageCoordinate(x, 320),
+    y: clampStageCoordinate(y, 240),
+  };
+}
+
+function patchTitleSounds(
+  settings: TitleScreenSettings,
+  patch: {
+    readonly cursorSeResourceId?: string | undefined;
+    readonly confirmSeResourceId?: string | undefined;
+    readonly cancelSeResourceId?: string | undefined;
+  },
+): void {
+  const current = settings.sounds ?? {};
+  const next = {
+    cursorSeResourceId: patch.cursorSeResourceId !== undefined ? patch.cursorSeResourceId : current.cursorSeResourceId,
+    confirmSeResourceId: patch.confirmSeResourceId !== undefined ? patch.confirmSeResourceId : current.confirmSeResourceId,
+    cancelSeResourceId: patch.cancelSeResourceId !== undefined ? patch.cancelSeResourceId : current.cancelSeResourceId,
+  };
+  const cleaned = {
+    ...(next.cursorSeResourceId ? { cursorSeResourceId: next.cursorSeResourceId } : {}),
+    ...(next.confirmSeResourceId ? { confirmSeResourceId: next.confirmSeResourceId } : {}),
+    ...(next.cancelSeResourceId ? { cancelSeResourceId: next.cancelSeResourceId } : {}),
+  };
+  if (Object.keys(cleaned).length === 0) delete settings.sounds;
+  else settings.sounds = cleaned;
+}
+
+function titleScreenWorkbenchPreview(
+  project: Project,
+  titleScreen: TitleScreenSettings,
+  backgroundResourceId: string | undefined,
+): HTMLElement {
+  const bgUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
+  const stage = el("div", {
+    class: "db-title-workbench-stage",
+    dataset: { testid: "db-title-workbench-stage" },
+    attrs: bgUrl
+      ? {
+          style: [
+            `background-image:url("${bgUrl}")`,
+            "background-size:100% 100%",
+            "background-repeat:no-repeat",
+            "background-position:center",
+            "image-rendering:pixelated",
+          ].join(";"),
+        }
+      : {},
+  });
+
+  const presentationMode = titleScreen.titleGraphic?.mode ?? "text";
+  const showText = presentationMode === "text" || presentationMode === "both" || !titleScreen.titleGraphic;
+  const showLogo = (presentationMode === "graphic" || presentationMode === "both") && !!titleScreen.titleGraphic?.resourceId;
+
+  if (showText) {
+    const titleNode = el("div", {
+      class: "db-title-workbench-title",
+      text: titleScreen.title || "(제목 없음)",
+      dataset: { testid: "db-title-workbench-title-text" },
+    });
+    titleNode.style.left = `${(titleScreen.layout.titleX / 320) * 100}%`;
+    titleNode.style.top = `${(titleScreen.layout.titleY / 240) * 100}%`;
+    stage.append(titleNode);
+  }
+
+  if (showLogo && titleScreen.titleGraphic) {
+    const logo = titleScreen.titleGraphic;
+    const logoUrl = resolveAssetResourceUrl(logo.resourceId, { project });
+    const logoNode = el("div", {
+      class: "db-title-workbench-logo",
+      dataset: {
+        testid: "db-title-workbench-logo",
+        ...(logo.resourceId ? { titleLogoResource: logo.resourceId } : {}),
+      },
+      attrs: logoUrl
+        ? {
+            style: [
+              `background-image:url("${logoUrl}")`,
+              "background-size:contain",
+              "background-repeat:no-repeat",
+              "background-position:center",
+              "image-rendering:pixelated",
+            ].join(";"),
+          }
+        : {},
+    });
+    logoNode.style.left = `${(logo.x / 320) * 100}%`;
+    logoNode.style.top = `${(logo.y / 240) * 100}%`;
+    stage.append(logoNode);
+  }
+
+  // graphic mode without logo still needs a stable title node for layout tests.
+  if (!showText && !showLogo) {
+    const fallback = el("div", {
+      class: "db-title-workbench-title",
+      text: titleScreen.title || "(제목 없음)",
+      dataset: { testid: "db-title-workbench-title-text" },
+    });
+    fallback.style.left = `${(titleScreen.layout.titleX / 320) * 100}%`;
+    fallback.style.top = `${(titleScreen.layout.titleY / 240) * 100}%`;
+    stage.append(fallback);
+  }
+
+  const visibleOptions = listTitleMenuOptions(titleScreen);
+  const menu = el("div", {
+    class: "db-title-workbench-menu",
+    dataset: { testid: "db-title-workbench-menu-preview" },
+    children: visibleOptions.map((option) =>
+      el("div", {
+        class: "db-title-workbench-menu-item",
+        text: option.label,
+        dataset: { titleMenuOption: option.id },
+      }),
+    ),
+  });
+  menu.style.left = `${(titleScreen.layout.menuX / 320) * 100}%`;
+  menu.style.top = `${(titleScreen.layout.menuY / 240) * 100}%`;
+  stage.append(menu);
+
+  const musicId = titleScreen.musicResourceId;
+  const play = el("button", {
+    class: "btn small",
+    text: "BGM 재생",
+    attrs: { type: "button", ...(musicId ? {} : { disabled: "true" }) },
+    dataset: { testid: "db-title-bgm-play" },
+    on: {
+      click: () => {
+        if (!musicId) return;
+        playAudioCommand({ resourceId: musicId, loop: true }, project);
+      },
+    },
+  });
+  const stop = el("button", {
+    class: "btn small",
+    text: "BGM 정지",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-bgm-stop" },
+    on: {
+      click: () => {
+        stopAudioCommand();
+      },
+    },
+  });
+  return el("div", {
+    class: "db-title-workbench-preview",
+    dataset: { testid: "db-title-workbench-preview" },
+    children: [
+      el("span", { class: "db-title-workbench-preview-label", text: "라이브 프리뷰" }),
+      stage,
+      el("div", {
+        class: "db-title-workbench-audio",
+        children: [
+          play,
+          stop,
+          el("code", {
+            class: "db-title-workbench-music-id",
+            text: musicId ?? "(BGM 없음)",
+            dataset: { testid: "db-title-workbench-music-id" },
+          }),
+        ],
+      }),
     ],
   });
 }

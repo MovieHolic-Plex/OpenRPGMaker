@@ -82,7 +82,7 @@ describe("region task log export", () => {
     const base = baseProject();
     const proposed = structuredClone(base);
     // mark a cell change inside region so apply happens
-    proposed.maps[MAP_ID].upperTiles[2 * 12 + 2] = 260;
+    proposed.maps[MAP_ID].upperTiles[2 * 12 + 2] = TILE.TREE;
 
     const turn: TurnResult = {
       assistantText: "영역 완료",

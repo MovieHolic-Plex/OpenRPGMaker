@@ -1,12 +1,16 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_SUPABASE_PROJECT_ID,
+  hydrateLastRemoteCommitTip,
+  listSupabaseAiActivityLogs,
   listSupabaseProjects,
   loadProjectFromSupabase,
+  peekLastRemoteCommitTip,
   recordSupabaseAiActivityLog,
   recordSupabaseAiAnalysisRun,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
+  seedLastRemoteCommitTip,
 } from "@/project/supabaseProjectSync";
 import { createHouseTemplateGalleryProject } from "@/project/defaults";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
@@ -55,14 +59,16 @@ describe("Supabase project sync", () => {
       calls.push({ input, init });
       return new Response(JSON.stringify([
         {
-          current_json: { meta: { title: "안개 항구와 등대의 밤" } },
           project_id: "fog-harbor-lighthouse",
-          title: null,
+          title: "안개 항구와 등대의 밤",
         },
         {
-          current_json: { meta: { title: "Fallback ignored" } },
           project_id: "star-village",
           title: "별등 마을",
+        },
+        {
+          project_id: "untitled-project",
+          title: null,
         },
       ]), { status: 200 });
     }) satisfies typeof fetch);
@@ -72,9 +78,11 @@ describe("Supabase project sync", () => {
     expect(projects).toEqual([
       { projectId: "fog-harbor-lighthouse", title: "안개 항구와 등대의 밤" },
       { projectId: "star-village", title: "별등 마을" },
+      { projectId: "untitled-project", title: "untitled-project" },
     ]);
     expect(String(calls[0]?.input)).toContain("/rest/v1/projects?");
-    expect(String(calls[0]?.input)).toContain("select=project_id%2Ctitle%2Ccurrent_json");
+    expect(String(calls[0]?.input)).toContain("select=project_id%2Ctitle");
+    expect(String(calls[0]?.input)).not.toContain("current_json");
     expect(String(calls[0]?.input)).toContain("order=project_id.asc");
     expect(calls[0]?.init?.headers).toMatchObject({
       "Accept-Profile": "rpg_zzu",
@@ -558,6 +566,49 @@ describe("Supabase project sync", () => {
     expect(row?.run_id).toBe("22222222-2222-4222-8222-222222222222");
   });
 
+  it("lists AI activity scoped to project and merges primary with fallback", async () => {
+    vi.stubGlobal("fetch", (async (input) => {
+      const url = String(input);
+      if (url.includes("ai_activity_logs")) {
+        expect(url).toContain("project_id=eq.");
+        return new Response(JSON.stringify([
+          { log_id: "a1", channel: "chat", instruction: "primary", created_at: "2026-07-14T12:00:00.000Z" },
+        ]), { status: 200 });
+      }
+      if (url.includes("ai_analysis_runs")) {
+        expect(url).toContain("project_id=eq.");
+        return new Response(JSON.stringify([
+          {
+            run_id: "b1",
+            prompt_context_json: { channel: "region", instruction: "fallback-only" },
+            result_json: { ok: true },
+            created_at: "2026-07-14T11:00:00.000Z",
+          },
+          {
+            run_id: "a1",
+            prompt_context_json: { channel: "chat", instruction: "stale-fallback" },
+            result_json: {},
+            created_at: "2026-07-14T10:00:00.000Z",
+          },
+        ]), { status: 200 });
+      }
+      return new Response(JSON.stringify([]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const rows = await listSupabaseAiActivityLogs(20, TEST_CONFIG);
+    expect(rows.map((r) => r.log_id)).toEqual(["a1", "b1"]);
+    expect(rows[0]?.instruction).toBe("primary");
+    expect(rows[1]?.source).toBe("ai_analysis_runs_fallback");
+  });
+
+  it("hydrates last remote commit tip from commit list", async () => {
+    vi.stubGlobal("fetch", (async () => new Response(JSON.stringify([
+      { commit_id: "tip-commit-9", message: "latest", summary: "latest", review_status: "direct", author_id: null, author_label: null, author_kind: null, agent_name: null, created_at: "2026-07-14T12:00:00.000Z" },
+    ]), { status: 200 })) satisfies typeof fetch);
+    const tip = await hydrateLastRemoteCommitTip(TEST_CONFIG);
+    expect(tip).toBe("tip-commit-9");
+    expect(peekLastRemoteCommitTip(TEST_CONFIG.projectId)).toBe("tip-commit-9");
+  });
 
   it("overlays map_json from maps table onto current_json on load", async () => {
     const source = createHouseTemplateGalleryProject();

@@ -287,7 +287,7 @@ describe("natural scatter tool integration", () => {
       runTool(ctx, "place_props", {
         mapId,
         area: { x: 2, y: 2, w: 6, h: 4 },
-        propVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}bench-horizontal`,
+        material: "벤치",
         count: 1,
         minGap: 0,
         naturalness: 0.2,
@@ -316,7 +316,7 @@ describe("natural scatter tool integration", () => {
       runTool(ctx, "place_props", {
         mapId,
         area: { x: 2, y: 2, w: 6, h: 6 },
-        propVocabId: `${COMBINED_TOWN_HARNESS_PREFIX}bench-vertical`,
+        material: "세로 의자",
         count: 1,
         minGap: 0,
         naturalness: 0.2,
@@ -385,7 +385,7 @@ describe("natural scatter tool integration", () => {
       runTool(props.ctx, "place_props", {
         mapId: props.mapId,
         area: { x: 1, y: 1, w: 22, h: 20 },
-        propVocabId: CONIFER_GROUP_ID,
+        material: "침엽수",
         count: 16,
         minGap: 0,
         naturalness: 0.55,

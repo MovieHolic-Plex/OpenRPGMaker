@@ -314,3 +314,1392 @@
   border-color: var(--danger);
   color: var(--danger);
 }
+
+/* 소지금 변경: 연산/금액 소스/변수 피커 2열 정리 */
+.event-command-gold-form {
+  width: 100%;
+}
+
+.event-command-gold-row {
+  width: 100%;
+}
+
+.event-command-gold-field {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(64px, auto) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-gold-field > span:first-child {
+  color: var(--text-2);
+  font: 650 11px/14px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.event-command-gold-hint {
+  color: var(--text-2);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.event-command-item-form {
+  width: 100%;
+}
+
+.event-command-item-row {
+  width: 100%;
+}
+
+.event-command-item-hint {
+  color: var(--text-2);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+/* 경험치 변경: 세로 스택 + 짧은 세그먼트 */
+.event-command-exp-form {
+  width: 100%;
+}
+
+.event-command-exp-form .event-command-exp-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-exp-controls {
+  display: grid !important;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: 100%;
+}
+
+.event-command-exp-form .rich-segment-group,
+.event-command-exp-form .record-picker {
+  max-width: 100%;
+}
+
+.event-command-exp-form .rich-segment {
+  min-width: 2.4rem;
+  white-space: nowrap;
+}
+
+.event-command-exp-form .rich-preview-strip {
+  width: 100%;
+}
+
+.event-command-exp-form .rich-preview-caption:empty {
+  display: none;
+}
+
+.rich-exp-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+  font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+
+/* 특수기 변경: 세로 스택 + 짧은 세그먼트 */
+.learn-skill-command-body {
+  width: 100%;
+}
+
+.learn-skill-command-body .learn-skill-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.learn-skill-command-body .rich-segment-group,
+.learn-skill-command-body .record-picker {
+  max-width: 100%;
+}
+
+.learn-skill-command-body .rich-segment {
+  min-width: 3rem;
+  white-space: nowrap;
+}
+
+.learn-skill-command-body .rich-preview-strip {
+  width: 100%;
+}
+
+.learn-skill-command-body .rich-preview-caption:empty {
+  display: none;
+}
+
+.rich-skill-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #9b7bff 22%, transparent);
+  border: 1px solid color-mix(in srgb, #9b7bff 50%, transparent);
+  color: #cbb6ff;
+  font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.rich-preview-caption-inline {
+  color: var(--text-3);
+  font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 전투 처리 */
+/* 전투 처리 세로 스택 — auto-fit 그리드 탈출 */
+.event-command-edit-body .battle-processing-command-body,
+.event-command-edit-body .rich-command-form.battle-processing-command-body {
+  align-content: start;
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  grid-template-columns: none !important;
+  min-width: 0;
+  width: 100%;
+}
+
+.battle-processing-intent {
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-subtle, #2a2e38);
+  background: color-mix(in srgb, var(--bg-inset, #14161c) 70%, transparent);
+}
+
+.battle-processing-preset {
+  min-width: 64px;
+}
+
+.battle-processing-preset:hover {
+  border-color: var(--accent, #7aa2ff);
+}
+
+.battle-processing-branch-controls {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle, #2a2e38);
+  background: color-mix(in srgb, var(--bg-raised, #1a2030) 90%, transparent);
+}
+
+/* 숨김 체크박스/select 는 기존 .rich-native-select 규칙 + HTML hidden 속성으로 처리.
+   pointer-events:none 금지 — e2e selectOption / check() 호환 유지. */
+
+.battle-processing-command-body {
+  width: 100%;
+}
+
+.battle-processing-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.battle-processing-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.battle-processing-warning {
+  color: var(--danger, #ff7b8a);
+  font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-warning.is-empty {
+  display: block;
+}
+
+.battle-processing-troop-hover {
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  background: var(--bg-raised, #1a2030);
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+
+.battle-processing-hover-title {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-hover-row,
+.battle-processing-hover-more {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-branch-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-1, #e9ecf5);
+  font: 500 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-branch-hint {
+  margin: 0;
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-battle-commands-slot-editor {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+
+.change-battle-commands-slot-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 6px;
+  padding: 4px 6px;
+  background: color-mix(in srgb, var(--bg-inset, #14161c) 80%, transparent);
+}
+
+/* 전투 커맨드 변경 메뉴 프리뷰 */
+.change-battle-commands-menu-preview {
+  background: var(--bg-raised, #1a2030);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.change-battle-commands-slot {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle, #2a2e38);
+  background: color-mix(in srgb, var(--bg-inset, #14161c) 80%, transparent);
+  font-size: 12px;
+}
+
+.change-battle-commands-slot .n {
+  color: var(--text-3, #8b93a7);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px;
+}
+
+.change-battle-commands-slot .muted {
+  color: var(--text-3, #8b93a7);
+  font-size: 10px;
+}
+
+.change-battle-commands-slot .gain {
+  color: var(--success, #5fd38d);
+  font-weight: 600;
+}
+
+.change-battle-commands-slot .set {
+  color: var(--accent, #7aa2ff);
+  font-weight: 600;
+}
+
+/* ---- 파티 멤버 변경 / 액터 수치 변경 공통 UX ---- */
+.party-member-command-body,
+.actor-amount-command-body {
+  gap: 10px;
+  width: 100%;
+}
+
+.actor-amount-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.actor-amount-presets {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.actor-amount-preset-btn {
+  min-height: 28px;
+}
+
+.party-member-intent {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.party-member-intent-title {
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.party-member-intent-body {
+  color: var(--text-2, #aeb6c8);
+  font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.party-member-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .party-member-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.party-member-main,
+.party-member-followups {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.party-member-field {
+  display: grid;
+  gap: 4px;
+}
+
+.party-member-field-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.party-member-followups {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.party-member-followups-title {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.party-member-followups-hint,
+.party-member-db-note {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.party-member-followup-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.party-member-followup-btn {
+  white-space: nowrap;
+}
+
+.actor-amount-controls {
+  align-items: center;
+  width: 100%;
+}
+
+
+/* ---- 능력치 변경 (Change Parameters) ---- */
+.change-parameters-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.change-parameters-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.95fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .change-parameters-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.change-parameters-main,
+.change-parameters-preview {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.change-parameters-field {
+  display: grid;
+  gap: 4px;
+}
+
+.change-parameters-field-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-parameters-controls {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.change-parameters-param-chips {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.change-parameters-param-chip.is-active {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+  color: var(--text-1, #e9ecf5);
+}
+
+.change-parameters-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.change-parameters-preview-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.change-parameters-preview-caption,
+.change-parameters-preview-empty,
+.change-parameters-preview-note,
+.change-parameters-db-note,
+.change-parameters-preview-more {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.change-parameters-preview-list {
+  display: grid;
+  gap: 8px;
+}
+
+.change-parameters-preview-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.change-parameters-preview-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.change-parameters-preview-copy strong {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-parameters-preview-copy span {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-parameters-preview-delta {
+  font: 700 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-parameters-preview-delta.gain {
+  color: var(--success, #5fd38d);
+}
+
+.change-parameters-preview-delta.loss {
+  color: var(--danger, #ff7b8a);
+}
+
+
+/* ---- 장비 변경 ---- */
+.change-equipment-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.change-equipment-layout {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
+}
+
+.change-equipment-toolbar {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .change-equipment-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.change-equipment-main,
+.change-equipment-preview {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.change-equipment-field {
+  display: grid;
+  gap: 4px;
+}
+
+.change-equipment-field-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 검색형 레코드 브라우저 (공용: 장비/아이템 등) */
+.record-browser {
+  background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.record-browser-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.record-browser-label,
+.record-browser-filter-meta {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.record-browser-filter-meta {
+  font-weight: 600;
+}
+
+.record-browser-search {
+  width: 100%;
+}
+
+.record-browser-selected {
+  align-items: center;
+  background: var(--bg-inset, #12161f);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, var(--border-subtle, #2a2e38));
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.record-browser-selected.is-empty {
+  border-style: dashed;
+  border-color: var(--border-subtle, #2a2e38);
+}
+
+.record-browser-selected-copy {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.record-browser-selected-copy strong {
+  color: var(--text-1, #e9ecf5);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.record-browser-selected-copy > span {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.record-browser-selected-card-alias {
+  display: none;
+}
+
+.record-browser-clear-btn {
+  flex: 0 0 auto;
+}
+
+/* 숨김 select: opacity 만 사용 — pointer-events:none / 1px offscreen 금지 (Playwright selectOption). */
+.record-browser-hidden-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  z-index: 1;
+}
+
+.record-browser-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  max-height: min(48vh, 420px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.record-browser-card {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  color: var(--text-1, #e9ecf5);
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  justify-items: start;
+  min-width: 0;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.record-browser-card.is-active {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+}
+
+.record-browser-card-icon {
+  display: inline-flex;
+  min-height: 24px;
+}
+
+.record-browser-card-icon.empty {
+  align-items: center;
+  background: var(--bg-inset, #12161f);
+  border-radius: 6px;
+  color: var(--text-3, #8b93a7);
+  display: inline-flex;
+  font-weight: 700;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.record-browser-card-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.record-browser-card strong {
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-browser-card-meta,
+.record-browser-grid-empty {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.record-browser-grid-empty {
+  grid-column: 1 / -1;
+  padding: 8px 2px;
+}
+
+.change-equipment-preview-caption,
+.change-equipment-preview-empty,
+.change-equipment-db-note,
+.change-equipment-preview-bonuses {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.change-equipment-warning {
+  color: #ffb4a2;
+  font: 600 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.change-equipment-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.change-equipment-preview-head,
+.change-equipment-preview-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.change-equipment-preview-actor,
+.change-equipment-preview-swap,
+.change-equipment-preview-cell-main {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.change-equipment-preview-swap {
+  justify-content: space-between;
+}
+
+.change-equipment-preview-cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.change-equipment-preview-cell-label {
+  color: var(--text-3, #8b93a7);
+  font: 700 10px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-equipment-preview-cell.is-unequip strong {
+  color: var(--danger, #ff7b8a);
+}
+
+
+/* ---- force modern actor/page3 forms out of auto-fit collapse ---- */
+.event-command-edit-body .party-member-command-body,
+.event-command-edit-body .change-equipment-command-body,
+.event-command-edit-body .change-parameters-command-body,
+.event-command-edit-body .actor-m2-command-body,
+.event-command-edit-body .page3-command-body,
+.event-command-edit-body .actor-amount-command-body,
+.event-command-edit-body .rich-command-form.party-member-command-body,
+.event-command-edit-body .rich-command-form.change-equipment-command-body,
+.event-command-edit-body .rich-command-form.actor-amount-command-body,
+.event-command-edit-body .rich-command-form.page3-command-body {
+  align-content: start;
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  grid-template-columns: none !important;
+  min-width: 0;
+  width: 100%;
+}
+
+
+.event-command-edit-body .party-member-layout,
+.event-command-edit-body .change-parameters-layout,
+.event-command-edit-body .actor-m2-layout,
+.event-command-edit-body .page3-layout,
+.event-command-edit-body .page3-command-layout {
+  align-items: start;
+  display: grid !important;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.95fr) !important;
+  min-width: 0;
+  width: 100%;
+}
+
+
+.event-command-edit-body .change-equipment-layout {
+  align-items: start;
+  display: grid !important;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) !important;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .event-command-edit-body .party-member-layout,
+  .event-command-edit-body .change-parameters-layout,
+  .event-command-edit-body .actor-m2-layout,
+  .event-command-edit-body .page3-layout,
+  .event-command-edit-body .page3-command-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+
+.event-command-edit-body .party-member-main,
+.event-command-edit-body .change-equipment-main,
+.event-command-edit-body .change-parameters-main,
+.event-command-edit-body .actor-m2-main,
+.event-command-edit-body .page3-main,
+.event-command-edit-body .page3-command-main,
+.event-command-edit-body .party-member-followups,
+.event-command-edit-body .change-equipment-preview,
+.event-command-edit-body .change-parameters-preview,
+.event-command-edit-body .actor-m2-preview,
+.event-command-edit-body .page3-preview,
+.event-command-edit-body .page3-command-preview {
+  display: grid !important;
+  gap: 10px;
+  min-width: 0;
+}
+
+
+.event-command-edit-body .party-member-intent,
+.event-command-edit-body .actor-m2-presets,
+.event-command-edit-body .page3-presets,
+.event-command-edit-body .change-parameters-param-chips,
+.event-command-edit-body .actor-m2-chip-grid,
+.event-command-edit-body .page3-chip-grid,
+.event-command-edit-body .party-member-followup-buttons,
+.event-command-edit-body .record-browser {
+  min-width: 0;
+  width: 100%;
+}
+
+
+.event-command-edit-body .party-member-field-label,
+.event-command-edit-body .change-equipment-field-label,
+.event-command-edit-body .change-parameters-field-label,
+.event-command-edit-body .actor-m2-field-label,
+.event-command-edit-body .page3-field-label {
+  writing-mode: horizontal-tb;
+}
+
+
+.event-command-edit-body .rich-segment-group,
+.event-command-edit-body .change-parameters-param-chips,
+.event-command-edit-body .actor-m2-chip-grid,
+.event-command-edit-body .page3-chip-grid,
+.event-command-edit-body .party-member-followup-buttons,
+.event-command-edit-body .actor-m2-presets,
+.event-command-edit-body .page3-presets {
+  align-items: center;
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+
+.event-command-edit-columns > .event-command-edit-body:has(.party-member-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.change-equipment-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.change-parameters-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.actor-m2-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.page3-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.actor-amount-command-body) {
+  max-height: min(70vh, 680px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+
+/* ---- Actor/combat M2 + recover/name modern forms ---- */
+.actor-m2-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.actor-m2-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .actor-m2-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.actor-m2-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.actor-m2-field {
+  display: grid;
+  gap: 4px;
+}
+
+.actor-m2-field-label,
+.actor-m2-presets-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.actor-m2-presets,
+.actor-m2-chip-grid,
+.actor-m2-inline {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actor-m2-chip.is-active {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+}
+
+.actor-m2-text-input {
+  min-width: 180px;
+}
+
+.actor-m2-check {
+  align-items: center;
+  color: var(--text-1, #e9ecf5);
+  display: inline-flex;
+  gap: 8px;
+  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.actor-m2-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.actor-m2-preview-line {
+  color: var(--text-1, #e9ecf5);
+  font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.actor-m2-preview-note {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.actor-m2-preview-actor,
+.actor-m2-preview-copy {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.actor-m2-preview-copy {
+  align-items: flex-start;
+  display: grid;
+  gap: 2px;
+}
+
+.actor-m2-faceset-preview,
+.actor-m2-faceset-grid {
+  min-width: 0;
+}
+
+/* ---- Page 3 맵·연출 modern forms ---- */
+.page3-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.page3-layout,
+.page3-command-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .page3-layout,
+  .page3-command-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+.page3-main,
+.page3-command-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+
+.page3-field {
+  display: grid;
+  gap: 4px;
+}
+
+.page3-field-label,
+.page3-presets-label,
+.page3-intent-title {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.page3-intent {
+  background: color-mix(in srgb, var(--accent-soft, #243248) 70%, var(--bg-raised));
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+}
+
+.page3-intent-body {
+  color: var(--text-1, #e9ecf5);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.page3-presets,
+.page3-chip-grid,
+.page3-inline {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.page3-chip.is-active {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+}
+
+.page3-text-input {
+  min-width: 180px;
+}
+
+.page3-check {
+  align-items: center;
+  color: var(--text-1, #e9ecf5);
+  display: inline-flex;
+  gap: 8px;
+  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.page3-preview,
+.page3-command-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+
+.page3-preview-line {
+  color: var(--text-1, #e9ecf5);
+  font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.page3-preview-note {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.page3-preview-stage {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-sunken, #12151c) 70%, #1a2030), var(--bg-sunken, #12151c));
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 6px;
+  min-height: 88px;
+  overflow: hidden;
+  position: relative;
+}
+
+.page3-preview-stage-label {
+  color: var(--text-2, #aeb6c8);
+  font: 600 10px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 8px;
+  letter-spacing: 0.04em;
+  position: absolute;
+  text-transform: uppercase;
+  top: 8px;
+}
+
+.page3-weather-preview,
+.page3-lighting-preview,
+.page3-tint-preview,
+.page3-flash-preview,
+.page3-shake-preview,
+.page3-picture-preview,
+.page3-scroll-preview {
+  inset: 0;
+  position: absolute;
+}
+
+.page3-weather-preview[data-weather="rain"] {
+  background:
+    repeating-linear-gradient(
+      -18deg,
+      transparent 0 10px,
+      color-mix(in srgb, #8ec8ff 35%, transparent) 10px 11px
+    );
+  opacity: 0.7;
+}
+
+.page3-weather-preview[data-weather="storm"] {
+  background:
+    repeating-linear-gradient(
+      -22deg,
+      transparent 0 8px,
+      color-mix(in srgb, #b8d8ff 45%, transparent) 8px 9px
+    ),
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, #fff 40%, transparent), transparent 28%);
+  opacity: 0.8;
+}
+
+.page3-weather-preview[data-weather="snow"] {
+  background-image:
+    radial-gradient(circle at 20% 30%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 50%, #fff 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 40% 75%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 20%, #fff 0 1px, transparent 2px);
+  opacity: 0.85;
+}
+
+.page3-weather-preview[data-weather="fog"] {
+  background: linear-gradient(180deg, color-mix(in srgb, #c9d4e8 35%, transparent), color-mix(in srgb, #9aabbf 45%, transparent));
+  opacity: 0.55;
+}
+
+.page3-lighting-preview {
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent), transparent 55%);
+  mix-blend-mode: screen;
+  opacity: 0.65;
+}
+
+.page3-tint-preview {
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+.page3-tint-preview[data-tint="red"],
+.page3-flash-preview[data-flash="red"] { background: #ff6b6b; }
+.page3-tint-preview[data-tint="green"] { background: #6bff8a; }
+.page3-tint-preview[data-tint="blue"],
+.page3-flash-preview[data-flash="blue"] { background: #6b9bff; }
+.page3-tint-preview[data-tint="yellow"] { background: #ffe066; }
+.page3-tint-preview[data-tint="purple"] { background: #c084fc; }
+.page3-tint-preview[data-tint="black"] { background: #111; }
+.page3-tint-preview[data-tint="white"],
+.page3-flash-preview[data-flash="white"],
+.page3-flash-preview[data-flash="flash"] { background: #fff; }
+.page3-tint-preview[data-tint="neutral"] { background: #9aa3b5; }
+
+.page3-flash-preview {
+  animation: page3-flash-pulse 1.1s ease-in-out infinite;
+  opacity: 0.35;
+}
+
+.page3-shake-preview {
+  border: 1px dashed color-mix(in srgb, var(--accent, #6ea8ff) 55%, transparent);
+  border-radius: 4px;
+  inset: 18px 22px;
+  animation: page3-shake-wobble 0.35s linear infinite;
+}
+
+.page3-picture-preview {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, transparent);
+  border-radius: 4px;
+  box-shadow: 0 6px 16px color-mix(in srgb, #000 35%, transparent);
+  height: 42px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 58px;
+}
+
+.page3-scroll-preview {
+  background:
+    linear-gradient(90deg, transparent 0 40%, color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent) 40% 60%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 12px, color-mix(in srgb, #fff 8%, transparent) 12px 13px);
+  opacity: 0.75;
+}
+
+@keyframes page3-flash-pulse {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes page3-shake-wobble {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(2px, -1px); }
+  50% { transform: translate(-2px, 1px); }
+  75% { transform: translate(1px, 2px); }
+}
+
+/* ---- Page 3 form controls + native preview stages ---- */
+.page3-slider-row,
+.page3-color-row,
+.page3-coord-row,
+.page3-resource-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.page3-range-input {
+  accent-color: var(--accent, #6ea8ff);
+  flex: 1 1 140px;
+  min-width: 120px;
+}
+
+.page3-color-swatch {
+  background: transparent;
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 6px;
+  cursor: pointer;
+  height: 32px;
+  padding: 0;
+  width: 42px;
+}
+
+.page3-preview-lighting,
+.page3-preview-light,
+.page3-preview-weather,
+.page3-preview-animation,
+.page3-preview-picture {
+  min-height: 96px;
+}
+
+.page3-preview-lighting-veil {
+  inset: 0;
+  position: absolute;
+}
+
+.page3-preview-lighting-label,
+.page3-preview-weather-label {
+  color: var(--text-1, #e9ecf5);
+  font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 8px;
+  letter-spacing: 0.05em;
+  position: absolute;
+  text-shadow: 0 1px 2px color-mix(in srgb, #000 55%, transparent);
+  top: 8px;
+}
+
+.page3-preview-light-glow {
+  border-radius: 999px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.page3-preview-animation-burst {
+  color: #ffe8a3;
+  font: 700 28px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 50%;
+  position: absolute;
+  text-shadow: 0 0 12px color-mix(in srgb, #ffd27a 70%, transparent);
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.page3-preview-weather-none {
+  background: linear-gradient(180deg, #2a3344, #171c26);
+}
+
+.page3-preview-weather-rain {
+  background:
+    repeating-linear-gradient(
+      -18deg,
+      transparent 0 10px,
+      color-mix(in srgb, #8ec8ff 35%, transparent) 10px 11px
+    ),
+    linear-gradient(180deg, #243147, #121820);
+}
+
+.page3-preview-weather-storm {
+  background:
+    repeating-linear-gradient(
+      -22deg,
+      transparent 0 8px,
+      color-mix(in srgb, #b8d8ff 45%, transparent) 8px 9px
+    ),
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, #fff 35%, transparent), transparent 28%),
+    linear-gradient(180deg, #1c2434, #0e1218);
+}
+
+.page3-preview-weather-snow {
+  background-color: #1a2230;
+  background-image:
+    radial-gradient(circle at 20% 30%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 50%, #fff 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 40% 75%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 20%, #fff 0 1px, transparent 2px);
+}
+
+.page3-preview-weather-fog {
+  background: linear-gradient(180deg, color-mix(in srgb, #c9d4e8 30%, #1d2533), color-mix(in srgb, #9aabbf 40%, #121820));
+}
+
+.page3-preview-picture-img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.page3-preview-picture-missing {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

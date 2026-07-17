@@ -1,14 +1,7 @@
 @media (min-width: 901px) {
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -38,15 +31,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -63,15 +49,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -87,15 +66,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -111,15 +83,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -133,15 +98,8 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -158,15 +116,8 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -187,15 +138,8 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -212,15 +156,8 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -241,15 +178,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -270,15 +200,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -292,15 +215,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -318,15 +234,8 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -790,6 +699,36 @@
 
   .database-modal-body .rm2k3-detail-equipment > .db-panel-equipment-graphic .db-field {
     grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .database-modal-body .rm2k3-detail-equipment > .db-equipment-summary-chips {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    grid-column: 1 / -1;
+    margin: 0 0 8px;
+    min-height: 28px;
+  }
+
+  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip {
+    background: color-mix(in srgb, var(--bg-raised, #fff) 88%, var(--db-modern-accent, #2f67c9) 12%);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
+    border-radius: 999px;
+    color: var(--text-1);
+    font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip-badge {
+    background: color-mix(in srgb, var(--bg-raised, #fff) 82%, #c97a2f 18%);
+  }
+
+  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip.muted,
+  .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip[data-kind="empty"] {
+    background: transparent;
+    color: var(--text-2, #5f5a52);
+    font-weight: 500;
   }
 
   .database-modal-body .db-system-form,

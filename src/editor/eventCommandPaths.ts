@@ -7,6 +7,10 @@ export const CHOICE_CANCEL_BRANCH_INDEX = -4;
 export const LOOP_BODY_BRANCH_INDEX = -5;
 export const PROMOTE_SUCCESS_BRANCH_INDEX = -6;
 export const PROMOTE_FAILURE_BRANCH_INDEX = -7;
+export const INN_NOT_ENOUGH_BRANCH_INDEX = -8;
+export const BATTLE_VICTORY_BRANCH_INDEX = -9;
+export const BATTLE_DEFEAT_BRANCH_INDEX = -10;
+export const BATTLE_ESCAPE_BRANCH_INDEX = -11;
 
 type MissingBranchMode = "read" | "create";
 
@@ -110,10 +114,14 @@ function resolveCommandBranch(
       return branchIndex === LOOP_BODY_BRANCH_INDEX ? command.body : null;
     case "shop":
       return resolveShopBranch(command, branchIndex, missingBranchMode(options));
+    case "inn":
+      return resolveInnBranch(command, branchIndex, missingBranchMode(options));
     case "promoteActor":
       return resolvePromoteActorBranch(command, branchIndex, missingBranchMode(options));
     case "evolveMonster":
       return resolveEvolveMonsterBranch(command, branchIndex, missingBranchMode(options));
+    case "battleProcessing":
+      return resolveBattleProcessingBranch(command, branchIndex, missingBranchMode(options));
     default:
       return null;
   }
@@ -182,6 +190,36 @@ function resolveEvolveMonsterBranch(
   if (branchIndex === PROMOTE_FAILURE_BRANCH_INDEX) {
     if (!command.failureBranch && mode === "create") command.failureBranch = [];
     return command.failureBranch ?? null;
+  }
+  return null;
+}
+
+function resolveInnBranch(
+  command: Extract<Command, { kind: "inn" }>,
+  branchIndex: number,
+  mode: MissingBranchMode
+): Command[] | null {
+  if (branchIndex !== INN_NOT_ENOUGH_BRANCH_INDEX) return null;
+  if (!command.notEnoughBranch && mode === "create") command.notEnoughBranch = [];
+  return command.notEnoughBranch ?? null;
+}
+
+function resolveBattleProcessingBranch(
+  command: Extract<Command, { kind: "battleProcessing" }>,
+  branchIndex: number,
+  mode: MissingBranchMode
+): Command[] | null {
+  if (branchIndex === BATTLE_VICTORY_BRANCH_INDEX) {
+    if (!command.victoryBranch && mode === "create") command.victoryBranch = [];
+    return command.victoryBranch ?? null;
+  }
+  if (branchIndex === BATTLE_DEFEAT_BRANCH_INDEX) {
+    if (!command.defeatBranch && mode === "create") command.defeatBranch = [];
+    return command.defeatBranch ?? null;
+  }
+  if (branchIndex === BATTLE_ESCAPE_BRANCH_INDEX) {
+    if (!command.escapeBranch && mode === "create") command.escapeBranch = [];
+    return command.escapeBranch ?? null;
   }
   return null;
 }

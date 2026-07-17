@@ -51,4 +51,31 @@ describe("map tree panel", () => {
     expect(categoryId ? current.maps[categoryId]?.name : "").toBe("새 카테고리");
     expect(categoryId ? current.maps[categoryId]?.width : 0).toBe(8);
   });
+
+  it("selects map on click (programmatic HTMLElement.click)", () => {
+    const project = createBlankProject();
+    const secondId = "map_second";
+    project.maps[secondId] = {
+      ...project.maps[project.startMapId]!,
+      id: secondId,
+      name: "두번째 맵",
+    };
+    project.mapTree = {
+      mapId: project.startMapId,
+      children: [{ mapId: secondId, children: [] }],
+    };
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+
+    const panel = renderWithFakeDom(() => {
+      const container = document.createElement("div");
+      renderMapList(container);
+      return container;
+    });
+    const row = findByTestId(panel, `map-tree-node-${secondId}`);
+    if (!row) throw new Error("Expected second map row");
+    row.dispatchEvent(new Event("click", { bubbles: true }));
+    expect(editorState.get().currentMapId).toBe(secondId);
+  });
+
 });

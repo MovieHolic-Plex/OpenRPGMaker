@@ -1,6 +1,6 @@
 // 라이브 스모크: 감사 로그(2026-07-04 "맵+집+깊은 대화 NPC") 시나리오 재현.
 // 에이전틱 개선 검증 — 토큰 예산 루프, NPC 자동 착지, 대사 별칭, 깊은 대화(choices) 유도.
-// 실행: OPENROUTER_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/agenticSmoke.eval.ts`
+// 실행: VITE_LLM_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/agenticSmoke.eval.ts`
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
@@ -17,9 +17,9 @@ function countTextCommands(commands: readonly Command[]): number {
 }
 
 describe("live smoke — 맵+집+깊은 대화 NPC 3명", () => {
-  it.skipIf(!process.env.OPENROUTER_API_KEY)("NPC 여러 명이 대사와 함께 생성된다", async () => {
+  it.skipIf(!process.env.VITE_LLM_API_KEY)("NPC 여러 명이 대사와 함께 생성된다", async () => {
     const session = new AssistantSession(createBlankProject(), {
-      config: { ...defaultAiConfig(), apiKey: process.env.OPENROUTER_API_KEY ?? "" },
+      config: { ...defaultAiConfig(), apiKey: process.env.VITE_LLM_API_KEY ?? "" },
     });
     const toolLog: string[] = [];
     const result = await session.sendUserMessage(

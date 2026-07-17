@@ -167,14 +167,14 @@ function validateEventShape(label: string, value: unknown): void {
   }
 }
 
-function validateGiftPrefs(label: string, value: unknown): void {
+export function validateGiftPrefs(label: string, value: unknown): void {
   const prefs = requireRecord(label, value);
   if (prefs.loved !== undefined) validateIdArray(`${label}.loved`, prefs.loved);
   if (prefs.liked !== undefined) validateIdArray(`${label}.liked`, prefs.liked);
   if (prefs.disliked !== undefined) validateIdArray(`${label}.disliked`, prefs.disliked);
 }
 
-function validateGiftResponses(label: string, value: unknown): void {
+export function validateGiftResponses(label: string, value: unknown): void {
   const responses = requireRecord(label, value);
   for (const key of ["loved", "liked", "neutral", "disliked", "alreadyGifted", "noItems"]) {
     if (responses[key] !== undefined) requireString(`${label}.${key}`, responses[key]);

@@ -3,6 +3,7 @@ import type {
   MessageWindowFormat,
   MessageWindowPosition,
 } from "@/project/types";
+import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { clearChildren, el } from "@/util/dom";
 import { renderFacesetPreview } from "./facesetPreview";
 import {
@@ -158,6 +159,26 @@ export function openFacesetDialog(
       right.addEventListener("change", refreshPreview);
       flip.addEventListener("change", refreshPreview);
       refreshPreview();
+      const openPicker = (): void => {
+        openDatabaseResourcePickerDialog({
+          kind: "faceset",
+          title: "얼굴 그래픽 선택",
+          currentId: resource.value.trim(),
+          currentFaceIndex: clampFaceIndex(faceIndex.value),
+          allowClear: true,
+          testidPrefix: "faceset-resource-dialog",
+          onConfirm: (result) => {
+            resource.value = result.resourceId;
+            faceIndex.value = String((result.faceIndex ?? 0) + 1);
+            refreshPreview();
+          },
+        });
+      };
+      const clearResource = (): void => {
+        resource.value = "";
+        faceIndex.value = "1";
+        refreshPreview();
+      };
 
       form.append(
         el("div", {
@@ -172,14 +193,14 @@ export function openFacesetDialog(
                 text: "설정",
                 attrs: { type: "button" },
                 dataset: { testid: "faceset-set" },
-                on: { click: () => resource.focus() },
+                on: { click: openPicker },
               }),
               el("button", {
                 class: "event-command-text-action",
                 text: "해제",
                 attrs: { type: "button" },
                 dataset: { testid: "faceset-remove" },
-                on: { click: () => { resource.value = ""; refreshPreview(); } },
+                on: { click: clearResource },
               }),
             ]),
             el("div", {

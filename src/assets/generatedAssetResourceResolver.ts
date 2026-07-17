@@ -1,4 +1,5 @@
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
+import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
@@ -9,12 +10,16 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   hero: "/assets/generated/rm2k3/hero-01-battle.png",
   "rpg-zzu-title-bright": "/assets/generated/title/bright-rpg-maker-title-v2.png",
   "rpg-zzu-title-blue": "/assets/generated/title/default-title-blue.png",
+  "rpg-zzu-title-field": "/assets/generated/title/rm2k3-title-field.png",
+  "rpg-zzu-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
   "generated-actor-hero-01-battle": "/assets/generated/rm2k3/hero-01-battle.png",
   "generated-actor-hero-01-charset": "/assets/generated/rm2k3/hero-01-charset.png",
   "generated-actor-hero-01-face": "/assets/generated/rm2k3/hero-01-face.png",
   "generated-actor-hero-02-battle": "/assets/generated/rm2k3/hero-02-battle.png",
   "generated-actor-hero-02-charset": "/assets/generated/rm2k3/hero-02-charset.png",
   "generated-actor-hero-02-face": "/assets/generated/rm2k3/hero-02-face.png",
+  "generated-face-actor1-bust": "/assets/generated/faces/actor1-bust.png",
+  "generated-face-actor1-full": "/assets/generated/faces/actor1-bust.png",
   "generated-actor-hero-03-battle": "/assets/generated/rm2k3/hero-03-battle.png",
   "generated-actor-hero-03-face": "/assets/generated/rm2k3/hero-03-face.png",
   "generated-actor-hero-04-battle": "/assets/generated/rm2k3/hero-04-battle.png",
@@ -24,6 +29,38 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-enemy-ontology-8da61312": "/assets/generated/rm2k3/monster-ontology-8da61312.png",
   "generated-enemy-slime-01": "/assets/generated/rm2k3/monster-slime-01.png",
   "generated-enemy-sylph-hornet": "/assets/generated/rm2k3/sylph-hornet-transparent.png",
+  "generated-enemy-zombie-01": "/assets/generated/rm2k3/monster-zombie-01.png",
+  "generated-enemy-skeleton-01": "/assets/generated/rm2k3/monster-skeleton-01.png",
+  "generated-enemy-orc-01": "/assets/generated/rm2k3/monster-orc-01.png",
+  "generated-enemy-ghost-01": "/assets/generated/rm2k3/monster-ghost-01.png",
+  "generated-enemy-crab-01": "/assets/generated/rm2k3/monster-crab-01.png",
+  "generated-enemy-spider-01": "/assets/generated/rm2k3/monster-spider-01.png",
+  "generated-enemy-snake-01": "/assets/generated/rm2k3/monster-snake-01.png",
+  "generated-enemy-scorpion-01": "/assets/generated/rm2k3/monster-scorpion-01.png",
+  "generated-enemy-wolf-01": "/assets/generated/rm2k3/monster-wolf-01.png",
+  "generated-enemy-harpy-01": "/assets/generated/rm2k3/monster-harpy-01.png",
+  "generated-enemy-centipede-01": "/assets/generated/rm2k3/monster-centipede-01.png",
+  "generated-enemy-plant-01": "/assets/generated/rm2k3/monster-plant-01.png",
+  "generated-enemy-horse-01": "/assets/generated/rm2k3/monster-horse-01.png",
+  "generated-enemy-unicorn-01": "/assets/generated/rm2k3/monster-unicorn-01.png",
+  "generated-enemy-salamander-01": "/assets/generated/rm2k3/monster-salamander-01.png",
+  "generated-enemy-carbuncle-01": "/assets/generated/rm2k3/monster-carbuncle-01.png",
+  "generated-enemy-cat-01": "/assets/generated/rm2k3/monster-cat-01.png",
+  "generated-enemy-kappa-01": "/assets/generated/rm2k3/monster-kappa-01.png",
+  "generated-enemy-cockatrice-01": "/assets/generated/rm2k3/monster-cockatrice-01.png",
+  "generated-enemy-parasite-01": "/assets/generated/rm2k3/monster-parasite-01.png",
+  "generated-enemy-mantis-01": "/assets/generated/rm2k3/monster-mantis-01.png",
+  "generated-enemy-jackolantern-01": "/assets/generated/rm2k3/monster-jackolantern-01.png",
+  "generated-enemy-fish-01": "/assets/generated/rm2k3/monster-fish-01.png",
+  "generated-enemy-spirit-01": "/assets/generated/rm2k3/monster-spirit-01.png",
+  "generated-enemy-ghoul-01": "/assets/generated/rm2k3/monster-ghoul-01.png",
+  "generated-enemy-specter-01": "/assets/generated/rm2k3/monster-specter-01.png",
+  "generated-enemy-lemora-01": "/assets/generated/rm2k3/monster-lemora-01.png",
+  "generated-enemy-sylph-01": "/assets/generated/rm2k3/monster-sylph-01.png",
+  "generated-enemy-leafling-01": "/assets/generated/rm2k3/monster-leafling-01.png",
+  "generated-enemy-sparkit-01": "/assets/generated/rm2k3/monster-sparkit-01.png",
+  "generated-enemy-aqualing-01": "/assets/generated/rm2k3/monster-aqualing-01.png",
+  "generated-enemy-king-slime-01": "/assets/generated/rm2k3/monster-king-slime-01.png",
   "generated-equipment-bronze-sword-icon": "/assets/generated/rm2k3/bronze-sword-icon.png",
   "generated-equipment-bronze-sword-image": "/assets/generated/rm2k3/bronze-sword-image.png",
   "generated-equipment-oak-shield-icon": "/assets/generated/rm2k3/oak-shield-icon.png",
@@ -55,7 +92,8 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
     resolveScarloxyAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??
-    resolveCc0IconAssetUrl(resourceId);
+    resolveCc0IconAssetUrl(resourceId) ??
+    resolveCc0AudioAssetUrl(resourceId);
   if (packagedUrl !== null) return packagedUrl;
   const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;
   if (uploadedUrl !== undefined) return safeUploadedResourceUrl(uploadedUrl);

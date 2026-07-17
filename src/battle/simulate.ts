@@ -73,6 +73,13 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
   for (const actorId of partyActorIds) levels[actorId] = input.heroLevel;
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
   const monsterMode = (input.monsterParty?.length ?? 0) > 0;
+  // Headless monster-party runs must flip battleParty and pass partyMonsters into the runtime.
+  // party.monsterParty alone is not enough — createBattleRuntime gates on partyMonsters + battleParty.
+  if (monsterMode) {
+    input.project.system.battleParty = "monsters";
+    input.project.system.monsterBattleParty = true;
+    input.project.system.monsterCollection = true;
+  }
 
   const options: BattleRuntimeOptions = {
     project: input.project,
@@ -82,8 +89,9 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     battleFlow: input.battleFlow,
     activeSlots: input.activeSlots,
     party: monsterMode
-      ? { levels: {}, experience: {}, monsterParty: input.monsterParty }
+      ? { levels: {}, experience: {}, monsterParty: input.monsterParty, partyActorIds: input.monsterParty!.map((m) => m.instanceId) }
       : { levels, experience: {}, partyActorIds: [...partyActorIds] },
+    partyMonsters: monsterMode ? input.monsterParty : undefined,
     sessionState: { switches: {}, variables: {}, inventory },
     captureLocation: { mapId: input.project.startMapId, x: input.project.startPos.x, y: input.project.startPos.y },
     onMonsterCaptured: (capture) => {

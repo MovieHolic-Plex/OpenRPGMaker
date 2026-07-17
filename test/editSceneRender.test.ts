@@ -121,6 +121,13 @@ function mockContainer(objects?: MockObject[]): Phaser.GameObjects.Container {
       objects?.push(object);
       return object;
     },
+    sort: (property: string) => {
+      objects?.sort((a, b) => {
+        const av = Number((a as Record<string, unknown>)[property] ?? 0);
+        const bv = Number((b as Record<string, unknown>)[property] ?? 0);
+        return av - bv;
+      });
+    },
   } as unknown as Phaser.GameObjects.Container;
 }
 
@@ -162,6 +169,9 @@ function mockScene(): Phaser.Scene {
       sprite: (x: number, y: number, texture: string, frame?: string | number) =>
         mockObject({ kind: "sprite", x, y, texture, frame, width: 16, height: 16 }),
       text: (x: number, y: number, text: string) => mockObject({ kind: "text", x, y, text, width: 16, height: 16 }),
+    },
+    textures: {
+      exists: () => true,
     },
   } as unknown as Phaser.Scene;
 }
@@ -403,7 +413,47 @@ describe("edit scene event rendering", () => {
     ]);
 
     expect(fullStats.tileObjectsUpdated).toBe(128 * 128);
-    expect(incrementalStats.tileObjectsUpdated).toBeLessThanOrEqual(8);
+    // lower 9-neighborhood + co-rendered upper cells for draw-order flash fix
+    expect(incrementalStats.tileObjectsUpdated).toBeLessThanOrEqual(64);
+  });
+
+  it("re-renders upper objects when lower cells repaint so upper never flashes under lower", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    // put an upper prop on center and neighbors
+    map.upperTiles[5 * map.width + 5] = 87;
+    map.upperTiles[4 * map.width + 5] = 87;
+    map.upperTiles[5 * map.width + 4] = 87;
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+
+    const tileObjects: MockObject[] = [];
+    const tileIndex: EditSceneTileIndex = new Map();
+    const context = {
+      scene: mockScene(),
+      tileLayer: mockContainer(tileObjects),
+      overlayLayer: mockContainer(),
+      gridGraphics: mockGridGraphics(),
+      mapId: map.id,
+      tileIndex,
+    };
+    renderEditScene(context);
+    const upperKeysBefore = [...tileIndex.keys()].filter((k) => k.startsWith("upper:")).sort();
+    expect(upperKeysBefore).toEqual(expect.arrayContaining(["upper:5,5", "upper:5,4", "upper:4,5"]));
+
+    // only lower dirty cells (as paintTilesBulk emits) — upper must still be re-drawn
+    renderEditSceneTileCells(context, [{ x: 5, y: 5, layer: "lower" }]);
+    const upperKeysAfter = [...tileIndex.keys()].filter((k) => k.startsWith("upper:")).sort();
+    expect(upperKeysAfter).toEqual(expect.arrayContaining(["upper:5,5", "upper:5,4", "upper:4,5"]));
+
+    // last container objects for upper cells must still be present with higher depth
+    const upperDepths = tileObjects.filter((o) => (o.depth ?? 0) >= 20).length;
+    expect(upperDepths).toBeGreaterThan(0);
+    // any lower object should not sit after the last upper for the same visual stack
+    const lastDepths = tileObjects.map((o) => o.depth ?? 0);
+    const lastLower = lastDepths.lastIndexOf(0);
+    const lastUpper = Math.max(...lastDepths.map((d, i) => (d >= 20 ? i : -1)));
+    expect(lastUpper).toBeGreaterThan(lastLower);
   });
 
   it("plans database changes as zero tile regeneration", () => {
