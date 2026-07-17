@@ -32,8 +32,9 @@ export const CANAL_HORIZONTAL_TILE = 63;
 /** 지하계단 세트(어둠 남변 중앙 하단) — 계단 없는 어둠 금지. */
 export const STAIRS_LEFT_TILE = 298;
 export const STAIRS_RIGHT_TILE = 299;
-/** 바위 소품(상단 레이어). */
-export const ROCK_TILES: readonly number[] = [441, 442];
+/** 돌기둥 세로 페어(상단 레이어) — 바위 441/442는 전역 밴(2026-07-17 사용자), 석상/기둥으로 대체. */
+export const PILLAR_TOP_TILE = 267;
+export const PILLAR_BOTTOM_TILE = 297;
 /** 가로 벤치 세트(상단 레이어). */
 export const BENCH_LEFT_TILE = 327;
 export const BENCH_RIGHT_TILE = 328;
@@ -476,23 +477,34 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
         // 계단은 어둠 셀을 덮어쓴다 — painted 는 이미 블롭에서 집계됐다.
         map.lowerTiles[stairY * W + stairX] = STAIRS_LEFT_TILE;
         map.lowerTiles[stairY * W + stairX + 1] = STAIRS_RIGHT_TILE;
-        // 둘레 바위 1~3개 — 어둠 밖 1칸 링의 잔디에만(상단 레이어).
-        const ring: Cell[] = [];
-        for (let ry = dy - 1; ry <= dy + darkH; ry += 1) {
-          for (let rx = dx - 1; rx <= dx + darkW; rx += 1) {
-            const inside = rx >= dx && rx < dx + darkW && ry >= dy && ry < dy + darkH;
-            if (inside || !inArea(rx, ry)) continue;
-            if (lowerAt(rx, ry) !== TILE.GRASS || upperAt(rx, ry) !== TILE.EMPTY) continue;
-            if (forbidden.has(coordKey(rx, ry))) continue;
-            ring.push([rx, ry]);
+        // 입구 문기둥 — 계단(2칸) 앞 잔디 행에서 좌우를 감싸는 돌기둥 세로 페어 1~2주.
+        // 기둥 하단은 계단 아래 행 잔디, 상단은 어둠 가장자리 위에 겹친다(입구 프레임).
+        // (바위 441/442 전역 밴, 2026-07-17: 석상/기둥으로 대체.)
+        // 계단 행/아랫행에서 좌·우로 걸어 나가며 첫 잔디 칸에 세운다 — 어둠이 영역
+        // 구석에 붙어도 반대편에는 자리가 남는다.
+        let pillars = 0;
+        const tryPillar = (px: number, py: number): boolean => {
+          if (!inArea(px, py) || !inArea(px, py - 1)) return false;
+          if (lowerAt(px, py) !== TILE.GRASS || upperAt(px, py) !== TILE.EMPTY) return false;
+          if (upperAt(px, py - 1) !== TILE.EMPTY || forbidden.has(coordKey(px, py))) return false;
+          map.upperTiles[(py - 1) * W + px] = PILLAR_TOP_TILE;
+          map.upperTiles[py * W + px] = PILLAR_BOTTOM_TILE;
+          return true;
+        };
+        for (const py of [stairY + 1, stairY]) {
+          if (pillars >= 2) break;
+          for (const direction of [-1, 1]) {
+            for (let step = 1; step <= 4; step += 1) {
+              const px = direction < 0 ? stairX - step : stairX + 1 + step;
+              if (tryPillar(px, py)) {
+                pillars += 1;
+                break;
+              }
+            }
+            if (pillars >= 2) break;
           }
         }
-        const rockCount = Math.min(ring.length, 1 + Math.floor(rng() * 3));
-        for (let i = 0; i < rockCount; i += 1) {
-          const pick = Math.floor(rng() * ring.length);
-          const [rx, ry] = ring.splice(pick, 1)[0] as Cell;
-          map.upperTiles[ry * W + rx] = ROCK_TILES[Math.floor(rng() * ROCK_TILES.length)] as number;
-        }
+        if (pillars === 0) warnings.push("조경: 어둠 입구 돌기둥 생략 — 계단 주변 잔디 자리 없음");
         reserveMargin(dx - 1, dy - 1, darkW + 2, darkH + 2);
       } else {
         // 계단 자리를 못 지키면 어둠 자체를 무른다 — 계단 없는 어둠 금지.
@@ -553,12 +565,13 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
       break;
     }
     if (!benchPlaced) warnings.push("조경: 호숫가 벤치 생략 — 물가 잔디 2칸 연속 자리 없음");
-    const rockSpots = shore.filter(([sx, sy]) => !benchUsed.has(coordKey(sx, sy)) && upperAt(sx, sy) === TILE.EMPTY);
-    const rockCount = Math.min(rockSpots.length, 1 + Math.floor(rng() * 2));
-    for (let i = 0; i < rockCount; i += 1) {
-      const pick = Math.floor(rng() * rockSpots.length);
-      const [rx, ry] = rockSpots.splice(pick, 1)[0] as Cell;
-      map.upperTiles[ry * W + rx] = ROCK_TILES[Math.floor(rng() * ROCK_TILES.length)] as number;
+    // 호숫가 바위 산포는 제거(바위 441/442 전역 밴, 2026-07-17) — 물가는 벤치+꽃덤불로 충분.
+    const bushSpots = shore.filter(([sx, sy]) => !benchUsed.has(coordKey(sx, sy)) && upperAt(sx, sy) === TILE.EMPTY);
+    const bushCount = Math.min(bushSpots.length, 1 + Math.floor(rng() * 2));
+    for (let i = 0; i < bushCount; i += 1) {
+      const pick = Math.floor(rng() * bushSpots.length);
+      const [bx, by] = bushSpots.splice(pick, 1)[0] as Cell;
+      map.upperTiles[by * W + bx] = rng() < 0.5 ? 288 : 289;
     }
   }
 

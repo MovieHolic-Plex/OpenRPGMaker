@@ -15,7 +15,8 @@ import {
   LAKE_WATER_TILE,
   MIN_BRUSH_PATCH_H,
   MIN_BRUSH_PATCH_W,
-  ROCK_TILES,
+  PILLAR_BOTTOM_TILE,
+  PILLAR_TOP_TILE,
   SNOW_MIN_SEPARATION,
   STAIRS_LEFT_TILE,
   STAIRS_RIGHT_TILE,
@@ -192,7 +193,7 @@ describe("dressVillageLandscape", () => {
     expect(minChebyshev(snow, sand)).toBeGreaterThanOrEqual(SNOW_MIN_SEPARATION);
   });
 
-  it("어둠은 민가 6칸 이격 + 지하계단 세트 + 둘레 바위", () => {
+  it("어둠은 민가 6칸 이격 + 지하계단 세트 + 입구 돌기둥", () => {
     const dark = cellsWhere(fx.map, (tile) => DARK_TILES.has(tile) || tile === STAIRS_LEFT_TILE || tile === STAIRS_RIGHT_TILE);
     expect(dark.length).toBeGreaterThan(0);
     // 민가 bbox와의 체비셰프 거리 ≥ 6.
@@ -210,14 +211,19 @@ describe("dressVillageLandscape", () => {
     expect(fx.map.lowerTiles[sy * fx.map.width + sx + 1]).toBe(STAIRS_RIGHT_TILE);
     const darkMaxY = Math.max(...dark.map(([, y]) => y));
     expect(sy).toBe(darkMaxY);
-    // 둘레 1칸 링에 바위(441/442, 상단 레이어) 1개 이상.
-    const rocks: Cell[] = [];
+    // 계단 좌우 바깥에 돌기둥 세로 페어(267/297) 1주 이상 — 바위 441/442는 전역 밴(2026-07-17).
+    const pillarBottoms: Cell[] = [];
     for (let y = 0; y < fx.map.height; y += 1) {
       for (let x = 0; x < fx.map.width; x += 1) {
-        if (ROCK_TILES.includes(fx.map.upperTiles[y * fx.map.width + x] ?? TILE.EMPTY)) rocks.push([x, y]);
+        if ((fx.map.upperTiles[y * fx.map.width + x] ?? TILE.EMPTY) === PILLAR_BOTTOM_TILE) pillarBottoms.push([x, y]);
       }
     }
-    expect(minChebyshev(rocks, dark)).toBe(1);
+    expect(pillarBottoms.length).toBeGreaterThanOrEqual(1);
+    for (const [px, py] of pillarBottoms) {
+      expect(fx.map.upperTiles[(py - 1) * fx.map.width + px]).toBe(PILLAR_TOP_TILE);
+    }
+    // 밴 확인: 맵 어디에도 441/442가 없다.
+    expect(fx.map.upperTiles.some((tile) => tile === 441 || tile === 442)).toBe(false);
   });
 
   it("호숫가 벤치(327+328)는 물가 1칸 잔디 위에 놓인다", () => {

@@ -125,7 +125,7 @@ export function combinedTownHarnessPrompt(tileset: Pick<TilesetDef, "id" | "imag
       "길과 물은 대표 타일을 칠하면 주변 연결에 맞춰 실제 타일이 바뀌는 오토타일입니다.",
       "userLocked 메타는 절대 덮어쓰지 않습니다.",
       // 성채(map_castle_keep) 실측 조립 순서
-      "성 맵: (1) 잔디 바탕 (2) castle-roof-deck로 북쪽 보루·본채 지붕·남쪽 커튼 윗면 (3) castle-wall-face로 커튼/본채 정면(21/51*/81) (4) 남쪽 성문 2~4칸 비우고 sand/dirt 접근로 (5) 마당은 잔디 통행 유지—지붕 타일 금지 (6) castle-round-tower는 마당 랜드마크(2폭, 창문 142|143).",
+      "성 맵: 자유조립 금지 — build_castle 툴(castleKit.stampCastle, 금본 map_castle_keep)로만 시공한다. 성문 접근로만 sand/dirt로 잇고 마당은 잔디 통행 유지.",
     ],
     groups: COMBINED_TOWN_HARNESS_GROUPS.map((group) => ({
       id: group.id,

@@ -277,8 +277,8 @@ export function placeVillageDecor(
       naturalness: 0.62,
       seed: seed + 1000,
     }, warnings);
-    // 바위 노두 — 포석(129 블록) 패치 위에 바위(441/442)를 얹는다.
-    placed += placeRockOutcrops(map, treeArea, houses, seed);
+    // 석상 쉼터 — 포석(129 블록) 패치 위 석상/돌기둥. (바위 441/442는 전역 밴, 2026-07-17.)
+    placed += placeStoneRestSpots(map, treeArea, houses, seed);
   }
 
   return placed;
@@ -405,11 +405,10 @@ function placeBannersOnHouse(map: GameMap, house: BuiltHouse): number {
 }
 
 /**
- * 바위 노두 — 412 돌바닥(하위 지면) 패치를 깔고 그 위에 441/442 바위를 얹는다.
- * (사용자 문법: 441/442는 412와 섞어 쓰는 것 — 잔디 위 단독 배치 금지.)
+ * 석상 쉼터 — 포석(129 블록) 패치를 깔고 그 위에 석상(266/296) 또는 돌기둥(267/297)
+ * 세로 페어를 세운다. (바위 441/442는 전역 밴 — 2026-07-17 사용자: "석상이나 기둥이 낫다".)
  */
-// 보류(412 밴): 자갈 오토타일 확보 후 재개 — export는 미사용 경고 방지 겸 재개 지점 표시.
-export function placeRockOutcrops(
+export function placeStoneRestSpots(
   map: GameMap,
   area: Rect,
   houses: readonly BuiltHouse[],
@@ -441,7 +440,7 @@ export function placeRockOutcrops(
       }
     }
     if (!ok) continue;
-    // 포석 패치(129 블록 몸통 → 오토타일 성형) + 바위(441/442, 상위) 1~2개
+    // 포석 패치(129 블록 몸통 → 오토타일 성형) + 석상 또는 돌기둥 세로 페어 1주.
     const patchCells: Point[] = [];
     for (let y = y0; y < y0 + h; y += 1) {
       for (let x = x0; x < x0 + w; x += 1) {
@@ -451,15 +450,15 @@ export function placeRockOutcrops(
       }
     }
     shapeCobbleAround(map, patchCells);
-    const rocks = 1 + Math.floor(rng() * 2);
-    for (let i = 0; i < rocks; i += 1) {
-      const rx = x0 + Math.floor(rng() * w);
-      const ry = y0 + Math.floor(rng() * h);
-      const index = ry * map.width + rx;
-      if ((map.upperTiles[index] ?? TILE.EMPTY) === TILE.EMPTY) {
-        map.upperTiles[index] = rng() < 0.5 ? 441 : 442;
-        placed += 1;
-      }
+    // 세로 2칸(상단/하단)이 패치 안에 들어가는 열을 골라 세운다 — h=2라 항상 성립.
+    const px = x0 + Math.floor(rng() * w);
+    const topIndex = y0 * map.width + px;
+    const bottomIndex = (y0 + 1) * map.width + px;
+    if ((map.upperTiles[topIndex] ?? TILE.EMPTY) === TILE.EMPTY && (map.upperTiles[bottomIndex] ?? TILE.EMPTY) === TILE.EMPTY) {
+      const statue = rng() < 0.5;
+      map.upperTiles[topIndex] = statue ? 266 : 267;
+      map.upperTiles[bottomIndex] = statue ? 296 : 297;
+      placed += 2;
     }
     outcrops += 1;
   }
@@ -554,21 +553,37 @@ function placeBroadleafGroves(
   }
   const shuffledCandidates = shuffled(candidates, rng);
   let clusters = 0;
-  for (const candidate of shuffledCandidates) {
-    if (clusters >= target) break;
-    const cells = [candidate, { x: candidate.x + 1, y: candidate.y }, { x: candidate.x, y: candidate.y + 1 }, { x: candidate.x + 1, y: candidate.y + 1 }];
-    if (cells.some((cell) => blocked.has(coordKey(cell.x, cell.y)))) continue;
-    if (cells.some((cell) => {
+  // 큰나무(2×2) 정본(2026-07-17 사용자): 상단 행(수관 262/263)=상위, 하단 행(밑동 292/293)=하위.
+  // 이렇게 나누면 다음 나무의 수관을 앞 나무 밑동 칸 위에 얹을 수 있어 "겹침"이 성립한다.
+  const stampBigTree = (x: number, y: number): void => {
+    const top = y * map.width + x;
+    const bottom = top + map.width;
+    map.upperTiles[top] = 262;
+    map.upperTiles[top + 1] = 263;
+    map.lowerTiles[bottom] = 292;
+    map.lowerTiles[bottom + 1] = 293;
+  };
+  const freeFor = (x: number, y: number, allowLowerTrunk: boolean): boolean => {
+    if (!inMapBounds(map, x, y) || !inMapBounds(map, x + 1, y + 1)) return false;
+    for (const cell of [{ x, y }, { x: x + 1, y }, { x, y: y + 1 }, { x: x + 1, y: y + 1 }]) {
+      if (blocked.has(coordKey(cell.x, cell.y))) return false;
       const index = cell.y * map.width + cell.x;
       const lower = map.lowerTiles[index] ?? TILE.EMPTY;
-      return lower !== TILE.GRASS || ROAD_TILES.has(lower) || map.upperTiles[index] !== TILE.EMPTY;
-    })) continue;
-    const index = candidate.y * map.width + candidate.x;
-    map.upperTiles[index] = 262;
-    map.upperTiles[index + 1] = 263;
-    map.upperTiles[index + map.width] = 292;
-    map.upperTiles[index + map.width + 1] = 293;
+      const lowerOk = lower === TILE.GRASS || (allowLowerTrunk && cell.y === y && (lower === 292 || lower === 293));
+      if (!lowerOk || ROAD_TILES.has(lower) || map.upperTiles[index] !== TILE.EMPTY) return false;
+    }
+    return true;
+  };
+  for (const candidate of shuffledCandidates) {
+    if (clusters >= target) break;
+    if (!freeFor(candidate.x, candidate.y, false)) continue;
+    stampBigTree(candidate.x, candidate.y);
     clusters += 1;
+    // 대각 캐스케이드(있어 보이는 겹침): 우하(+1,+1) 나무의 수관이 앞 나무 밑동 위에 겹친다.
+    if (rng() < 0.6 && freeFor(candidate.x + 1, candidate.y + 1, true)) {
+      stampBigTree(candidate.x + 1, candidate.y + 1);
+      clusters += 1;
+    }
   }
   return clusters * 4;
 }

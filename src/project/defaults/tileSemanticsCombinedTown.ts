@@ -111,7 +111,8 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
   ...entries([318], "벽 횃불", "decoration", "solid", ["torch", "조명", "벽 전용", "장식"]),
   ...entries([381], "모닥불", "decoration", "solid", ["campfire", "불", "야영", "장식"]),
   ...entries([348], "꽃잎", "decoration", "passable", ["petal", "꽃", "꽃밭", "장식"]),
-  ...entries([441, 442], "바위", "decoration", "solid", ["rock", "돌", "자연"]),
+  // 2026-07-17 사용자: 바위 441/442 전역 밴 — 석상(266/296)·돌기둥(267/297)으로 대체.
+  ...entries([441, 442], "바위(사용 금지)", "decoration", "solid", ["banned", "사용 금지", "rock"]),
   ...entries([411, 412, 413, 443], "용도 미확정(사용 금지)", "terrain", "solid", ["banned", "사용 금지"]),
   // 포석(129 블록)·경작지(126 블록) — RM2003식 3×4 오토타일 (2026-07-16 정본).
   ...entries([190], "포석", "terrain", "passable", ["cobble", "돌길", "오토타일 몸통"]),

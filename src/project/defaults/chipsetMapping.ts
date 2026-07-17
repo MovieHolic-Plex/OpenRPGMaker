@@ -322,7 +322,9 @@ export const CHIPSET_TILE_GROUPS = {
   castleRoundTowerBaseObjects: [54, 55],
   castleRoundTowerObjects: [24, 25, 54, 55, 138, 139, 140, 141, 142, 143],
   magicCircleObjects: [231],
-  vineObjects: [291, 321, 325, 355, 356],
+  // 2026-07-17 교정: 덩굴 정본은 265(V자)·295(대각) — 예전 목록(291=마른나무 하단,
+  // 355=지붕 캡 등)은 오분류였다.
+  vineObjects: [265, 295],
   signObjects: [319, 320],
   fireObjects: [318, 381],
   // 2026-07-16 사용자 교정: 382=우물(wellObjects로), 412=돌바닥 하위 지면 타일(소품 아님).
@@ -342,7 +344,9 @@ export const CHIPSET_TILE_GROUPS = {
   marketRailHorizontalObjects: [468, 469, 470],
   stoneStepObjects: [268],
   // 411/443은 소품이 아니라 돌바닥 지면 텍스처(통행 가능) — 가방에서 제외 (2026-07-16, 돌마당 필드).
-  smallObjects: [259, 318, 319, 320, 348, 349, 350, 351, 352, 440, 441, 442, 472, 473],
+  // 2026-07-17 교정: 441/442 바위는 전역 밴(석상/기둥으로 대체), 318 횃불·320 벽보·
+  // 472/473 간판은 "벽 전용"이라 지면 산포 가방에서 제외.
+  smallObjects: [259, 319, 348, 349, 350, 351, 352, 440],
 } as const;
 
 export const CONFIRMED_CHIPSET_TILE_INDEXES = [
