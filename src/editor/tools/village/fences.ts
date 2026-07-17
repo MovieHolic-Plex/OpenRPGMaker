@@ -129,6 +129,8 @@ const HOUSE_LOWER_TILES = (() => {
     for (const slice of [kit.wall.top, kit.wall.mid, kit.wall.bottom]) for (const tile of slice) tiles.add(tile);
     if (kit.postColumn) for (const tile of kit.postColumn.tiles) tiles.add(tile);
     for (const value of Object.values(kit.roof)) if (typeof value === "number") tiles.add(value);
+    // 용마루(374)·사선 트림(376/377)·꼭짓점은 하위로 이관됨(2026-07-17) — 포함.
+    for (const value of Object.values(kit.roof.upper)) if (typeof value === "number") tiles.add(value);
   }
   return tiles;
 })();

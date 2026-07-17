@@ -53,13 +53,13 @@ describe("house kit — 하네싱 골든", () => {
     const result = stampRectHouseKit(map, { x: 2, y: 2, width: 6, stories: 1, roofBodyRows: 2, kitId: "bright-plaster", windows: false });
     expect(result.ok, result.reason).toBe(true);
 
-    // 용마루(상위) 행: 몸통 폭(인셋), 캡은 바깥.
-    expect(row(map, "upper", 2, 2, 7)).toEqual([354, 374, 374, 374, 374, 355]);
-    expect(row(map, "lower", 2, 2, 7)).toEqual([G, G, G, G, G, G]); // 용마루 행 하위는 비움
-    // 몸통 2행: 인셋 + 좌우 바깥 열 상위 트림.
+    // 용마루 행(2026-07-17 교정): 불투명 용마루 374는 하위, 양끝 투명 캡만 상위.
+    expect(row(map, "upper", 2, 2, 7)).toEqual([354, E, E, E, E, 355]);
+    expect(row(map, "lower", 2, 2, 7)).toEqual([G, 374, 374, 374, 374, G]);
+    // 몸통 2행: 인셋 + 좌우 바깥 열 사선 트림(불투명 — 하위).
     for (const y of [3, 4]) {
-      expect(row(map, "lower", y, 2, 7)).toEqual([G, 404, 404, 404, 404, G]);
-      expect(row(map, "upper", y, 2, 7)).toEqual([376, E, E, E, E, 377]);
+      expect(row(map, "lower", y, 2, 7)).toEqual([376, 404, 404, 404, 404, 377]);
+      expect(row(map, "upper", y, 2, 7)).toEqual([E, E, E, E, E, E]);
     }
     // 처마: 벽 폭(몸통보다 +1 오버행), 트림 하단 캡이 처마 위에 겹침.
     expect(row(map, "lower", 5, 2, 7)).toEqual([405, 405, 405, 405, 405, 405]);
@@ -117,17 +117,18 @@ describe("house kit — 하네싱 골든", () => {
     });
     expect(result.ok, result.reason).toBe(true);
 
-    // 연습08 실데이터 전체 행 비교 (x2..13).
-    expect(row(map, "upper", 2, 2, 13)).toEqual([E, 354, 374, 374, 374, 374, 374, 374, 374, 374, 355, E]);
+    // 연습08 기준 형태 + 2026-07-17 레이어 교정: 불투명 사선(374/376/377)은 하위로.
+    expect(row(map, "upper", 2, 2, 13)).toEqual([E, 354, E, E, E, E, E, E, E, E, 355, E]);
+    expect(row(map, "lower", 2, 2, 13)).toEqual([G, G, 374, 374, 374, 374, 374, 374, 374, 374, G, G]);
     for (const y of [3, 4, 5]) {
-      expect(row(map, "lower", y, 2, 13)).toEqual([G, G, 404, 404, 404, 404, 404, 404, 404, 404, G, G]);
-      expect(row(map, "upper", y, 2, 13)).toEqual([E, 376, E, E, E, E, E, E, E, E, 377, E]);
+      expect(row(map, "lower", y, 2, 13)).toEqual([G, 376, 404, 404, 404, 404, 404, 404, 404, 404, 377, G]);
+      expect(row(map, "upper", y, 2, 13)).toEqual([E, E, E, E, E, E, E, E, E, E, E, E]);
     }
-    expect(row(map, "lower", 6, 2, 13)).toEqual([G, 405, 405, 405, 405, 405, G, 404, 404, 404, G, G]);
-    expect(row(map, "upper", 6, 2, 13)).toEqual([E, 384, E, E, E, E, 376, E, E, E, 377, E]);
-    expect(row(map, "lower", 7, 2, 13)).toEqual([G, 12, 13, 13, 13, 14, G, 404, 404, 404, G, G]);
-    expect(row(map, "upper", 7, 2, 13)).toEqual([E, E, E, E, E, E, 376, E, E, E, 377, E]);
-    expect(row(map, "lower", 8, 2, 13)).toEqual([G, 42, 43, 43, 43, 44, G, 404, 404, 404, G, G]);
+    expect(row(map, "lower", 6, 2, 13)).toEqual([G, 405, 405, 405, 405, 405, 376, 404, 404, 404, 377, G]);
+    expect(row(map, "upper", 6, 2, 13)).toEqual([E, 384, E, E, E, E, E, E, E, E, E, E]);
+    expect(row(map, "lower", 7, 2, 13)).toEqual([G, 12, 13, 13, 13, 14, 376, 404, 404, 404, 377, G]);
+    expect(row(map, "upper", 7, 2, 13)).toEqual([E, E, E, E, E, E, E, E, E, E, E, E]);
+    expect(row(map, "lower", 8, 2, 13)).toEqual([G, 42, 43, 43, 43, 44, 376, 404, 404, 404, 377, G]);
     expect(row(map, "lower", 9, 2, 13)).toEqual([G, 72, 73, 73, 73, 74, 405, 405, 405, 405, 405, G]);
     expect(row(map, "upper", 9, 2, 13)).toEqual([E, E, E, E, E, E, 384, E, E, E, 385, E]);
     expect(row(map, "lower", 10, 2, 13)).toEqual([G, G, G, G, G, G, 12, 13, 13, 13, 14, G]);
@@ -162,11 +163,10 @@ describe("house kit — 하네싱 골든", () => {
       ],
     });
     expect(result.ok, result.reason).toBe(true);
-    // 안마당(x6..13, y8..9)은 비어 있다.
+    // 안마당(x6..13): y8은 잔디, y9는 남쪽 날개의 용마루 줄(374 하위 — 2026-07-17 교정).
     for (let x = 6; x <= 13; x += 1) {
-      for (const y of [8, 9]) {
-        expect(map.lowerTiles[y * map.width + x], `courtyard(${x},${y})`).toBe(G);
-      }
+      expect(map.lowerTiles[8 * map.width + x], `courtyard(${x},8)`).toBe(G);
+      expect(map.lowerTiles[9 * map.width + x], `ridge(${x},9)`).toBe(374);
     }
     // 북쪽 날개의 안마당 쪽 벽(하단 행 y=7)과 남쪽 외벽(y=14)이 존재.
     expect(map.lowerTiles[7 * map.width + 8]).toBe(73);

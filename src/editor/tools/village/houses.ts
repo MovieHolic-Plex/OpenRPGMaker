@@ -123,13 +123,15 @@ export function clearHouseRidgeRowProps(map: GameMap, houses: readonly BuiltHous
         }
       }
       // bright 키트 용마루 재스탬프 — 나무/소품이 지운 캡·용마루를 되살린다.
-      if (kit.roof.kind === "bright" && (map.upperTiles[index] ?? TILE.EMPTY) === TILE.EMPTY) {
-        const expected = x === house.bbox.x
-          ? kit.roof.upper.ridgeCapL
-          : x === lastX
-            ? kit.roof.upper.ridgeCapR
-            : kit.roof.upper.ridge;
-        map.upperTiles[index] = expected;
+      // 2026-07-17 교정: 용마루(374)는 불투명 하위, 양끝 투명 캡만 상위.
+      if (kit.roof.kind === "bright") {
+        if (x === house.bbox.x || x === lastX) {
+          if ((map.upperTiles[index] ?? TILE.EMPTY) === TILE.EMPTY) {
+            map.upperTiles[index] = x === house.bbox.x ? kit.roof.upper.ridgeCapL : kit.roof.upper.ridgeCapR;
+          }
+        } else if ((map.lowerTiles[index] ?? TILE.EMPTY) !== kit.roof.upper.ridge) {
+          map.lowerTiles[index] = kit.roof.upper.ridge;
+        }
       }
     }
     // 파랑 키트: 지붕 최상행(bbox.y)이 좌우 1칸 인셋이라 어깨 칸이 잔디로 남는다 —

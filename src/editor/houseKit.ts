@@ -6,7 +6,9 @@
 // 불변식(하네싱 규칙):
 // 1) 벽 = 상단 1행 + 중단 N행 + 하단 1행 나인슬라이스. 가로는 중앙 열만 반복.
 // 2) 지붕(하위) = 처마 1행 + 몸통 N행 (+ 파랑은 좌우 1칸 인셋된 최상행 1행).
-// 3) 마감은 전부 상위 레이어, "빈 칸에만" 얹는다(이웃 오브젝트 보존).
+// 3) 레이어 분배(2026-07-17 사용자 교정): 불투명 지붕 조각(몸통·처마·용마루 374·
+//    사선 트림 376/377·A자 꼭짓점)은 전부 "하위" — 지붕 몸체다. 상위에는 투명 캡
+//    (354-357/384-387, 뒤로 잔디가 비침)과 소품(굴뚝 326 등)만 "빈 칸에만" 얹는다.
 // 4) 세트 혼합 금지 — 벽·지붕은 키트로 페어 고정.
 
 import { TILE } from "@/project/defaults/constants";
@@ -405,7 +407,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       const capLX = left + k;
       const capRX = right - k;
       if (capLX === capRX) {
-        upperIfEmpty(capLX, rowY, kit.roof.upper.apex);
+        lower(capLX, rowY, kit.roof.upper.apex); // 꼭짓점 374는 불투명 — 하위 (2026-07-17 교정)
         continue;
       }
       upperIfEmpty(capLX, rowY, kit.roof.upper.capL);
@@ -438,6 +440,12 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       continue;
     }
     // bright: 처마는 지지대로 안 치는 가장자리 판정(기준 08의 안쪽 트림 재현 조건).
+    // 2026-07-17 사용자 교정: 불투명 사선(용마루 374·트림 376/377)은 하위 레이어 —
+    // 상위는 투명 캡(354/355/384/385)과 소품(굴뚝 등)의 자리다.
+    const lowerIfInMap = (nx: number, ny: number, tile: number): void => {
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) return;
+      map.lowerTiles[key(nx, ny)] = tile;
+    };
     const eaveAt = (nx: number, ny: number): boolean => inRoof(nx, ny) && !inRoof(nx, ny + 1);
     const edgeL = !inRoof(x - 1, y) || eaveAt(x - 1, y);
     const edgeR = !inRoof(x + 1, y) || eaveAt(x + 1, y);
@@ -445,21 +453,21 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       lower(x, y, kit.roof.eave);
       if (!inRoof(x - 1, y)) upperIfEmpty(x, y, kit.roof.upper.trimCapL);
       if (!inRoof(x + 1, y)) upperIfEmpty(x, y, kit.roof.upper.trimCapR);
-      if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridge);
+      if (isTop) lowerIfInMap(x, y - 1, kit.roof.upper.ridge);
       continue;
     }
     if (edgeL) {
-      upperIfEmpty(x, y, kit.roof.upper.trimL);
+      lower(x, y, kit.roof.upper.trimL);
       if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridgeCapL);
       continue;
     }
     if (edgeR) {
-      upperIfEmpty(x, y, kit.roof.upper.trimR);
+      lower(x, y, kit.roof.upper.trimR);
       if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridgeCapR);
       continue;
     }
     lower(x, y, kit.roof.body);
-    if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridge);
+    if (isTop) lowerIfInMap(x, y - 1, kit.roof.upper.ridge);
   }
 
   // 문 권장 위치: 건물 최남단(외부에 면한) 벽 하단 런 중 가장 긴 것의 중앙.
@@ -546,16 +554,18 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
     upperIfEmpty(right, y, roof.upper.se);
     y += 1;
   } else if (roof.kind === "bright") {
-    // 용마루(상위) 행: 몸통 폭 = 벽보다 좌우 1칸 인셋 → 용마루도 인셋 폭, 캡은 그 바깥.
-    for (let x = left + 1; x < right; x += 1) upperIfEmpty(x, y, roof.upper.ridge);
+    // 용마루 행: 몸통 폭 = 벽보다 좌우 1칸 인셋 → 용마루도 인셋 폭, 캡은 그 바깥.
+    // 2026-07-17 사용자 교정: 사선 지붕의 불투명 조각(용마루 374·트림 376/377)은 지붕
+    // "몸체"라서 하위 레이어 — 상위는 투명 캡(354/355/384/385)과 소품(굴뚝 등)의 자리다.
+    for (let x = left + 1; x < right; x += 1) lower(x, y, roof.upper.ridge);
     upperIfEmpty(left, y, roof.upper.ridgeCapL);
     upperIfEmpty(right, y, roof.upper.ridgeCapR);
     y += 1;
-    // 몸통행 ×N (인셋) + 좌우 바깥 열 수직 트림(상위).
+    // 몸통행 ×N (인셋) + 좌우 바깥 열 수직 트림(하위).
     for (let row = 0; row < plan.roofBodyRows; row += 1, y += 1) {
       for (let x = left + 1; x < right; x += 1) lower(x, y, roof.body);
-      upperIfEmpty(left, y, roof.upper.trimL);
-      upperIfEmpty(right, y, roof.upper.trimR);
+      lower(left, y, roof.upper.trimL);
+      lower(right, y, roof.upper.trimR);
     }
     // 처마행: 벽과 같은 폭(몸통보다 +1 오버행), 트림 하단 캡을 처마 위에 겹침.
     for (let x = left; x <= right; x += 1) lower(x, y, roof.eave);
@@ -571,7 +581,7 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
       const capLX = left + inset;
       const capRX = right - inset;
       if (capLX === capRX) {
-        upperIfEmpty(capLX, y, roof.upper.apex);
+        lower(capLX, y, roof.upper.apex); // 꼭짓점 374는 불투명 — 하위 (2026-07-17 교정)
         continue;
       }
       upperIfEmpty(capLX, y, roof.upper.capL);

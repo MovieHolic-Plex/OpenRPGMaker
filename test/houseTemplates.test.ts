@@ -77,7 +77,7 @@ describe("A자 지붕 (aframe-stone)", () => {
     });
     expect(result.ok, result.reason).toBe(true);
     // 피라미드 3행 + 처마(y=7) + 벽 3행(y=8..10).
-    expect(upperAt(map, 7, 4)).toBe(374); // 꼭짓점(중앙 x=7)
+    expect(lowerAt(map, 7, 4)).toBe(374); // 꼭짓점(중앙 x=7) — 불투명이라 하위 (2026-07-17 교정)
     expect(upperAt(map, 6, 5)).toBe(354); // 사선 캡 좌
     expect(upperAt(map, 8, 5)).toBe(355); // 사선 캡 우
     expect(upperAt(map, 5, 6)).toBe(354);
@@ -120,7 +120,7 @@ describe("A자 지붕 (aframe-stone)", () => {
     const result = stampRectHouseKit(map, { x: 3, y: 3, width: 7, stories: 1, roofBodyRows: 1, kitId: "aframe-stone", windows: false });
     expect(result.ok, result.reason).toBe(true);
     expect(result.height).toBe(7); // floor(6/2)=3 + 처마 1 + 벽 3
-    expect(upperAt(map, 6, 3)).toBe(374);
+    expect(lowerAt(map, 6, 3)).toBe(374); // 꼭짓점 — 하위 (2026-07-17 교정)
   });
 });
 
@@ -159,9 +159,9 @@ describe("estate — 울타리 필지 안 본채+헛간", () => {
     expect(lowerAt(map, 7, 5)).toBe(405);
     // 본채(x4..x10, y11..y17): 문은 본채 하단(y17).
     expect(result.doorAt!.y).toBe(17);
-    // 사이 마당(y9..y10)은 잔디 그대로.
+    // 사이 마당: y9는 잔디, y10은 본채 용마루 줄(374 하위 — 2026-07-17 교정).
     expect(lowerAt(map, 6, 9)).toBe(G);
-    expect(lowerAt(map, 6, 10)).toBe(G);
+    expect(lowerAt(map, 6, 10)).toBe(374);
   });
 });
 
